@@ -424,14 +424,15 @@ class lizmapTiler
         $layers = $project->getLayers();
         $layer = $layers->{$layerName};
 
-        $xmlLayer = $wms_xml->xpath('//wms:Layer/wms:Name[. ="'.$layer->name.'"]/parent::*');
+        $wmsName = property_exists($layer, 'shortname') ? $layer->shortname : $layer->name;
+        $xmlLayer = $wms_xml->xpath('//wms:Layer/wms:Name[. ="'.$wmsName.'"]/parent::*');
         if (!$xmlLayer || count($xmlLayer) == 0) {
             return null;
         }
         $xmlLayer = $xmlLayer[0];
         $layerExtent = null;
 
-        $xmlLayers = $wms_xml->xpath('//wms:Layer/wms:Name[. ="'.$layer->name.'"]/parent::*//wms:Layer');
+        $xmlLayers = $wms_xml->xpath('//wms:Layer/wms:Name[. ="'.$wmsName.'"]/parent::*//wms:Layer');
         foreach ($xmlLayers as $xmlcLayer) {
             if (!property_exists($xmlcLayer, 'Layer')) {
                 if ($layerExtent == null) {
@@ -561,7 +562,7 @@ class lizmapTiler
 
         $l = (object) array(
             'id' => $layer->id,
-            'name' => $layer->name,
+            'name' => $wmsName,
             'title' => $layer->title,
             'abstract' => $layer->abstract,
             'imageFormat' => $layer->imageFormat,
