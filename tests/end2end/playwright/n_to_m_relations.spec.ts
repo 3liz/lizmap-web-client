@@ -297,7 +297,7 @@ test.describe('N to M relations', () => {
         
         // click on map to get popup list
         let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GetFeatureInfo'));
-        await page.locator('#map').click({
+        await page.locator('#newOlMap').click({
             position: {
               x: 413,
               y: 232
@@ -310,9 +310,9 @@ test.describe('N to M relations', () => {
         await page.waitForTimeout(500);
 
         await expect(page.locator('.lizmapPopupContent > .lizmapPopupSingleFeature .lizmapPopupTitle').first()).toHaveText("Natural areas");
-        await expect(page.locator(".container.popup_lizmap_dd .before-tabs div.field")).toHaveCount(2);
-        await expect(page.locator(".container.popup_lizmap_dd .before-tabs div.field").nth(0)).toHaveText("1");
-        await expect(page.locator(".container.popup_lizmap_dd .before-tabs div.field").nth(1)).toHaveText("Étang du Galabert");
+        await expect(page.locator(".container.popup_lizmap_dd").nth(0).locator(".before-tabs div.field")).toHaveCount(2);
+        await expect(page.locator(".container.popup_lizmap_dd").nth(0).locator(".before-tabs div.field").nth(0)).toHaveText("1");
+        await expect(page.locator(".container.popup_lizmap_dd").nth(0).locator(".before-tabs div.field").nth(1)).toHaveText("Étang du Galabert");
 
         // inspect popup children
         await expect(page.locator(".lizmapPopupContent .lizmapPopupChildren")).toHaveCount(2);
