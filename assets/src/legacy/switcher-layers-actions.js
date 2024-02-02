@@ -293,6 +293,8 @@ var lizLayerActionButtons = function() {
                             }
                         );
                     }
+                    $('#theme-selector.open').click();
+                    return false;
                 });
 
                 // Trigger event with the list of mapThemes
@@ -302,7 +304,7 @@ var lizLayerActionButtons = function() {
                     }
                 );
 
-                // Activate first map them on load
+                // Activate first map theme on load
                 if ('activateFirstMapTheme' in lizMap.config.options && lizMap.config.options.activateFirstMapTheme == 'True') {
                     $('#theme-selector li.theme:nth-child(1)').click();
                 }
