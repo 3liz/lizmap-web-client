@@ -21,6 +21,17 @@ test.describe('Permalink', () => {
 
         await page.getByTestId('Les quartiers à Montpellier').locator('.icon-info-sign').click({force:true});
         await expect(page.locator('#sub-dock .btn-opacity-layer.active')).toHaveText('80');
+
+        // The url does not change
+        const checked_url = new URL(page.url());
+        await expect(checked_url.hash).not.toHaveLength(0);
+        // The decoded hash is
+        // #3.7980645260916805,43.59756940064654,3.904383263124536,43.672963842067254
+        // |sousquartiers,Les%20quartiers%20%C3%A0%20Montpellier
+        // |red,d%C3%A9faut
+        // |0.6,0.8
+        await expect(checked_url.hash).toMatch(/#3.798064\d+,43.597569\d+,3.904383\d+,43.672963\d+\|/)
+        await expect(checked_url.hash).toContain('|sousquartiers,Les%20quartiers%20%C3%A0%20Montpellier|red,d%C3%A9faut|0.6,0.8')
     });
 
     test('Group as layer : UI according to permalink parameters', async ({ page }) => {
@@ -305,6 +316,18 @@ test.describe('Permalink', () => {
         await page.goto(newUrl, { waitUntil: 'networkidle' });
         // Reload to force applying hash with empty string styles
         await page.reload({ waitUntil: 'networkidle' });
+
+        // The url has changed
+        const checked_url = new URL(page.url());
+        await expect(checked_url.hash).not.toHaveLength(0);
+        // The decoded hash is
+        // #3.0635044037670305,43.401957103265374,4.567657653648659,43.92018105321636
+        // |layer_legend_single_symbol,layer_legend_categorized,tramway_lines,Group%20as%20layer
+        // |d%C3%A9faut,d%C3%A9faut,a_single,
+        // |1,1,1,1
+        await expect(checked_url.hash).toContain('|layer_legend_single_symbol,layer_legend_categorized,tramway_lines,Group%20as%20layer|')
+        await expect(checked_url.hash).toContain('|d%C3%A9faut,d%C3%A9faut,a_single,|')
+        await expect(checked_url.hash).toContain('|1,1,1,1')
 
         // No error
         await expect(page.locator('p.error-msg')).toHaveCount(0);

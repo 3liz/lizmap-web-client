@@ -5,9 +5,11 @@ export default class Permalink {
 
     constructor() {
 
-        // Used to behave diffently when hash is changed
+        // Used to behave differently when hash is changed
         // programmatically or by users in URL
         this._ignoreHashChange = false;
+        // Store the build or received hash
+        this._hash = '';
 
         // Change `checked`, `style` states based on URL fragment
         if (window.location.hash) {
@@ -16,8 +18,13 @@ export default class Permalink {
 
         window.addEventListener(
             "hashchange", () => {
+                // The hash has been changed by the module
                 if (this._ignoreHashChange) {
                     this._ignoreHashChange = false;
+                    return;
+                }
+                // Received the event but the hash does not change
+                if (this._hash == window.location.hash) {
                     return;
                 }
                 if (window.location.hash) {
@@ -129,6 +136,7 @@ export default class Permalink {
     }
 
     _runPermalink(setExtent = true) {
+        this._hash = ''+window.location.hash;
         const items = mainLizmap.state.layersAndGroupsCollection.layers.concat(mainLizmap.state.layersAndGroupsCollection.groups);
 
         if (window.location.hash === "") {
@@ -151,7 +159,7 @@ export default class Permalink {
                 if(itemsInURL && itemsInURL.includes(encodeURIComponent(item.name))){
                     const itemIndex = itemsInURL.indexOf(encodeURIComponent(item.name));
                     item.checked = true;
-                    if (item.type === 'layer' && stylesInURL[itemIndex]) {
+                    if (item.type === 'layer' && stylesInURL[itemIndex] !== undefined) {
                         item.wmsSelectedStyleName = decodeURIComponent(stylesInURL[itemIndex]);
                     }
                     if (opacitiesInURL[itemIndex]) {
@@ -242,6 +250,8 @@ export default class Permalink {
             hash += '|' + itemsOpacity.join();
         }
 
+        // Saved new hash
+        this._hash = '#'+hash;
         // Finally override URL fragment
         this._ignoreHashChange = true;
         window.location.hash = hash;
