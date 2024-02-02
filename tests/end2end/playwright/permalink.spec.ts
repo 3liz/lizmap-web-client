@@ -355,6 +355,70 @@ test.describe('Permalink', () => {
         await page.getByRole('button', { name: 'Close' }).click();
     });
 
+    test('Build permalink and change hash', async ({ page }) => {
+        const baseUrl = '/index.php/view/map?repository=testsrepository&project=layer_legends'
+        await page.goto(baseUrl, { waitUntil: 'networkidle' });
+
+        // Initial url has no hash
+        let url = new URL(page.url());
+        await expect(url.hash).toHaveLength(0);
+
+        // Visibility
+        await expect(page.getByTestId('layer_legend_single_symbol').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('layer_legend_categorized').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('tramway_lines').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('legend_option_test').locator('> div input')).not.toBeChecked();
+        await expect(page.getByTestId('expand_at_startup').locator('> div input')).not.toBeChecked();
+        await expect(page.getByTestId('disabled').locator('> div input')).not.toBeChecked();
+        await expect(page.getByTestId('hide_at_startup').locator('> div input')).not.toBeChecked();
+        await expect(page.getByTestId('Group as layer').locator('> div input')).not.toBeChecked();
+
+        // Style
+        await page.getByTestId('tramway_lines').locator('.icon-info-sign').click({force:true});
+        await expect(page.locator('#sub-dock select.styleLayer')).toHaveValue('a_single');
+
+        // Opacity
+        await page.getByTestId('layer_legend_single_symbol').locator('.icon-info-sign').click({force:true});
+        await expect(page.locator('#sub-dock .btn-opacity-layer.active')).toHaveText('100');
+
+        // Close subdock
+        await page.getByRole('button', { name: 'Close' }).click();
+
+        // The decoded hash is
+        const bbox = '3.0635044037670305,43.401957103265374,4.567657653648659,43.92018105321636'
+        const layers = 'layer_legend_single_symbol,tramway_lines,Group as layer'
+        const styles = 'défaut,categorized,'
+        const opacities = '0.6,1,1'
+        const newHash = bbox + '|' + layers + '|' + styles + '|' + opacities;
+
+        await page.evaluate(token => window.location.hash = token, newHash);
+
+        // No error
+        await expect(page.locator('p.error-msg')).toHaveCount(0);
+        await expect(page.locator('#switcher lizmap-treeview ul li')).not.toHaveCount(0);
+
+        // Visibility
+        await expect(page.getByTestId('layer_legend_single_symbol').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('layer_legend_categorized').locator('> div input')).not.toBeChecked();
+        await expect(page.getByTestId('tramway_lines').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('legend_option_test').locator('> div input')).not.toBeChecked();
+        await expect(page.getByTestId('expand_at_startup').locator('> div input')).not.toBeChecked();
+        await expect(page.getByTestId('disabled').locator('> div input')).not.toBeChecked();
+        await expect(page.getByTestId('hide_at_startup').locator('> div input')).not.toBeChecked();
+        await expect(page.getByTestId('Group as layer').locator('> div input')).toBeChecked();
+
+        // Style
+        await page.getByTestId('tramway_lines').locator('.icon-info-sign').click({force:true});
+        await expect(page.locator('#sub-dock select.styleLayer')).toHaveValue('categorized');
+
+        // Opacity
+        await page.getByTestId('layer_legend_single_symbol').locator('.icon-info-sign').click({force:true});
+        await expect(page.locator('#sub-dock .btn-opacity-layer.active')).toHaveText('60');
+
+        // Close subdock
+        await page.getByRole('button', { name: 'Close' }).click();
+    });
+
     test('Permalink parameters error: too many styles -> No errors', async ({ page }) => {
         const baseUrl = '/index.php/view/map?repository=testsrepository&project=permalink'
         const bbox = '3.7980645260916805,43.59756940064654,3.904383263124536,43.672963842067254'
