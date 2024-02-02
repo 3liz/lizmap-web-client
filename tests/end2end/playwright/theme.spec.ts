@@ -20,6 +20,17 @@ test.describe('Theme', () => {
         // Style
         await page.locator('lizmap-treeview > ul > li:nth-child(2) > div.checked.layer > div.node > div > i').click({force:true});
         expect(await page.locator('#sub-dock select.styleLayer').inputValue()).toBe('style1');
+
+        // The url has been updated
+        const url = new URL(page.url());
+        await expect(url.hash).not.toHaveLength(1);
+        // The decoded hash is
+        // #3.7308717840938743,43.54038574169922,4.017985172062126,43.679557362551954
+        // |group1,Les%20quartiers
+        // |,style1
+        // |1,1
+        await expect(url.hash).toMatch(/#3.730871\d+,43.540385\d+,4.0179851\d+,43.679557\d+\|/)
+        await expect(url.hash).toContain('|group1,Les%20quartiers|,style1|1,1')
     });
 
     test('must display theme2 when selected', async ({ page }) => {
@@ -38,5 +49,16 @@ test.describe('Theme', () => {
         // Style
         await page.locator('lizmap-treeview > ul > li:nth-child(2) > div.checked.layer > div.node > div > i').click({force:true});
         expect(await page.locator('#sub-dock select.styleLayer').inputValue()).toBe('style2');
+
+        // The url has been updated
+        const url = new URL(page.url());
+        await expect(url.hash).not.toHaveLength(0);
+        // The decoded hash is
+        // #3.731213820800494,43.540385230085235,4.0183280116947415,43.679557742508926
+        // |Les%20quartiers|style2|1
+        // |style2
+        // |1
+        await expect(url.hash).toMatch(/#3.731213\d+,43.540385\d+,4.018328\d+,43.679557\d+\|/)
+        await expect(url.hash).toContain('|Les%20quartiers|style2|1')
     });
 });
