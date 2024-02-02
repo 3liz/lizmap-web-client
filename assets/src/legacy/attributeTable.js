@@ -54,8 +54,14 @@ var lizAttributeTable = function() {
                 var typeName = featureType.getElementsByTagName('Name')[0].textContent;
                 // layername
                 var layername = lizMap.getNameByTypeName( typeName );
-                if ( !layername || layername == undefined )
+                if ( !layername || layername == undefined ) {
                     continue;
+                }
+                // Check layername
+                // if layer is in a restricted group, the layer wil not be available
+                if (!lizMap.mainLizmap.state.layersAndGroupsCollection.layerNames.includes(layername)) {
+                    continue;
+                }
                 // lizmap internal js cleaned name
                 var cleanName = lizMap.cleanName(layername);
                 // lizmap config file layer name
