@@ -21,6 +21,17 @@ test.describe('Permalink', () => {
 
         await page.getByTestId('Les quartiers à Montpellier').locator('.icon-info-sign').click({force:true});
         await expect(page.locator('#sub-dock .btn-opacity-layer.active')).toHaveText('80');
+
+        // The url does not change
+        const checked_url = new URL(page.url());
+        await expect(checked_url.hash).not.toHaveLength(0);
+        // The decoded hash is
+        // #3.7980645260916805,43.59756940064654,3.904383263124536,43.672963842067254
+        // |sousquartiers,Les%20quartiers%20%C3%A0%20Montpellier
+        // |red,d%C3%A9faut
+        // |0.6,0.8
+        await expect(checked_url.hash).toMatch(/#3.798064\d+,43.597569\d+,3.904383\d+,43.672963\d+\|/)
+        await expect(checked_url.hash).toContain('|sousquartiers,Les%20quartiers%20%C3%A0%20Montpellier|red,d%C3%A9faut|0.6,0.8')
     });
 
     test('Group as layer : UI according to permalink parameters', async ({ page }) => {
@@ -306,6 +317,18 @@ test.describe('Permalink', () => {
         // Reload to force applying hash with empty string styles
         await page.reload({ waitUntil: 'networkidle' });
 
+        // The url has changed
+        const checked_url = new URL(page.url());
+        await expect(checked_url.hash).not.toHaveLength(0);
+        // The decoded hash is
+        // #3.0635044037670305,43.401957103265374,4.567657653648659,43.92018105321636
+        // |layer_legend_single_symbol,layer_legend_categorized,tramway_lines,Group%20as%20layer
+        // |d%C3%A9faut,d%C3%A9faut,a_single,
+        // |1,1,1,1
+        await expect(checked_url.hash).toContain('|layer_legend_single_symbol,layer_legend_categorized,tramway_lines,Group%20as%20layer|')
+        await expect(checked_url.hash).toContain('|d%C3%A9faut,d%C3%A9faut,a_single,|')
+        await expect(checked_url.hash).toContain('|1,1,1,1')
+
         // No error
         await expect(page.locator('p.error-msg')).toHaveCount(0);
         await expect(page.locator('#switcher lizmap-treeview ul li')).not.toHaveCount(0);
@@ -327,6 +350,70 @@ test.describe('Permalink', () => {
         // Opacity
         await page.getByTestId('layer_legend_single_symbol').locator('.icon-info-sign').click({force:true});
         await expect(page.locator('#sub-dock .btn-opacity-layer.active')).toHaveText('100');
+
+        // Close subdock
+        await page.getByRole('button', { name: 'Close' }).click();
+    });
+
+    test('Build permalink and change hash', async ({ page }) => {
+        const baseUrl = '/index.php/view/map?repository=testsrepository&project=layer_legends'
+        await page.goto(baseUrl, { waitUntil: 'networkidle' });
+
+        // Initial url has no hash
+        let url = new URL(page.url());
+        await expect(url.hash).toHaveLength(0);
+
+        // Visibility
+        await expect(page.getByTestId('layer_legend_single_symbol').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('layer_legend_categorized').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('tramway_lines').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('legend_option_test').locator('> div input')).not.toBeChecked();
+        await expect(page.getByTestId('expand_at_startup').locator('> div input')).not.toBeChecked();
+        await expect(page.getByTestId('disabled').locator('> div input')).not.toBeChecked();
+        await expect(page.getByTestId('hide_at_startup').locator('> div input')).not.toBeChecked();
+        await expect(page.getByTestId('Group as layer').locator('> div input')).not.toBeChecked();
+
+        // Style
+        await page.getByTestId('tramway_lines').locator('.icon-info-sign').click({force:true});
+        await expect(page.locator('#sub-dock select.styleLayer')).toHaveValue('a_single');
+
+        // Opacity
+        await page.getByTestId('layer_legend_single_symbol').locator('.icon-info-sign').click({force:true});
+        await expect(page.locator('#sub-dock .btn-opacity-layer.active')).toHaveText('100');
+
+        // Close subdock
+        await page.getByRole('button', { name: 'Close' }).click();
+
+        // The decoded hash is
+        const bbox = '3.0635044037670305,43.401957103265374,4.567657653648659,43.92018105321636'
+        const layers = 'layer_legend_single_symbol,tramway_lines,Group as layer'
+        const styles = 'défaut,categorized,'
+        const opacities = '0.6,1,1'
+        const newHash = bbox + '|' + layers + '|' + styles + '|' + opacities;
+
+        await page.evaluate(token => window.location.hash = token, newHash);
+
+        // No error
+        await expect(page.locator('p.error-msg')).toHaveCount(0);
+        await expect(page.locator('#switcher lizmap-treeview ul li')).not.toHaveCount(0);
+
+        // Visibility
+        await expect(page.getByTestId('layer_legend_single_symbol').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('layer_legend_categorized').locator('> div input')).not.toBeChecked();
+        await expect(page.getByTestId('tramway_lines').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('legend_option_test').locator('> div input')).not.toBeChecked();
+        await expect(page.getByTestId('expand_at_startup').locator('> div input')).not.toBeChecked();
+        await expect(page.getByTestId('disabled').locator('> div input')).not.toBeChecked();
+        await expect(page.getByTestId('hide_at_startup').locator('> div input')).not.toBeChecked();
+        await expect(page.getByTestId('Group as layer').locator('> div input')).toBeChecked();
+
+        // Style
+        await page.getByTestId('tramway_lines').locator('.icon-info-sign').click({force:true});
+        await expect(page.locator('#sub-dock select.styleLayer')).toHaveValue('categorized');
+
+        // Opacity
+        await page.getByTestId('layer_legend_single_symbol').locator('.icon-info-sign').click({force:true});
+        await expect(page.locator('#sub-dock .btn-opacity-layer.active')).toHaveText('60');
 
         // Close subdock
         await page.getByRole('button', { name: 'Close' }).click();

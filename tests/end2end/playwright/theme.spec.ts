@@ -54,11 +54,11 @@ test.describe('Theme', () => {
         const url = new URL(page.url());
         await expect(url.hash).not.toHaveLength(0);
         // The decoded hash is
-        // #3.731213820800494,43.540385230085235,4.0183280116947415,43.679557742508926
+        // #3.7308717840938743,43.54038574169922,4.017985172062126,43.679557362551954
         // |Les%20quartiers|style2|1
         // |style2
         // |1
-        await expect(url.hash).toMatch(/#3.731213\d+,43.540385\d+,4.018328\d+,43.679557\d+\|/)
+        await expect(url.hash).toMatch(/#3.730871\d+,43.540385\d+,4.0179851\d+,43.679557\d+\|/)
         await expect(url.hash).toContain('|Les%20quartiers|style2|1')
     });
 });
