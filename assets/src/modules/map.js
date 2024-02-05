@@ -117,16 +117,33 @@ export default class map extends olMap {
             mainLizmap.initialConfig.options.wmsMaxHeight,
         ];
 
-        const customTileGrid = new TileGrid({
-            extent: mainLizmap.lizmap3.map.restrictedExtent.toArray(),
-            resolutions: resolutions,
-            tileSize: this.getSize().map((x, i) => Math.min(Math.ceil(x*this._WMSRatio/2), Math.ceil(wmsMaxSize[i]*this._WMSRatio/2))),
-        });
+        // Get pixel ratio
+        const pixelRatio = this.pixelRatio_;
 
-        const useTileWms = this.getSize().map((x) => Math.ceil(x*this._WMSRatio)).reduce(
-            (r /*accumulator*/, x /*currentValue*/, i /*currentIndex*/) => r || x > wmsMaxSize[i],
+        const useTileWms = this.getSize().reduce(
+            (r /*accumulator*/, x /*currentValue*/, i /*currentIndex*/) => r || Math.ceil(x*this._WMSRatio*pixelRatio) > wmsMaxSize[i],
             false,
         );
+
+        const customTileGrid = useTileWms ? new TileGrid({
+            extent: mainLizmap.lizmap3.map.restrictedExtent.toArray(),
+            resolutions: resolutions,
+            tileSize: this.getSize().map((x, i) => {
+                // Get the min value between the map size and the max size
+                // divided by pixel ratio
+                const vMin = Math.min(
+                    Math.floor(x/pixelRatio),
+                    Math.floor(wmsMaxSize[i]/pixelRatio)
+                );
+                // If the min value with a margin of WMS ratio is less
+                // than max size divided by pixel ratio the keep it
+                if (vMin*this._WMSRatio < wmsMaxSize[i]/pixelRatio) {
+                    return vMin;
+                }
+                // Else get the min value divided by WMS ratio
+                return Math.floor(vMin/this._WMSRatio);
+            })
+        }) : null;
 
         // Mapping between states and OL layers and groups
         this._statesOlLayersandGroupsMap = new Map();
@@ -248,6 +265,8 @@ export default class map extends olMap {
                                     DPI: 96,
                                     TILED: 'true'
                                 },
+                                wrapX: false, // do not reused across the 180° meridian.
+                                //hidpi: false, pixelRatio is used in useTileWms and customTileGrid definition
                             })
                         });
 
@@ -427,6 +446,8 @@ export default class map extends olMap {
                                     DPI: 96,
                                     TILED: 'true'
                                 },
+                                wrapX: false, // do not reused across the 180° meridian.
+                                //hidpi: false, pixelRatio is used in useTileWms and customTileGrid definition
                             })
                         });
                     }
@@ -698,7 +719,7 @@ export default class map extends olMap {
             this.getView().getCenter(),
             this.getView().getZoom()
         );
-    };
+    }
 
     changeBaseLayer(name){
         let selectedBaseLayer;
