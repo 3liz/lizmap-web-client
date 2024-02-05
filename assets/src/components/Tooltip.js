@@ -72,7 +72,7 @@ export default class Tooltip extends HTMLElement {
             }),
         });
 
-        const vector = new VectorLayer({
+        this._tooltipLayer = new VectorLayer({
             source: new VectorSource({
                 url: url,
                 format: new GeoJSON(),
@@ -80,7 +80,7 @@ export default class Tooltip extends HTMLElement {
             style: vectorStyle
         });
 
-        mainLizmap.map.addLayer(vector);
+        mainLizmap.map.addLayer(this._tooltipLayer);
 
         const tooltip = document.getElementById('tooltip');
 
@@ -103,6 +103,8 @@ export default class Tooltip extends HTMLElement {
                 ? undefined
                 : mainLizmap.map.forEachFeatureAtPixel(pixel, feature => {
                     return feature; // returning a truthy value stop detection
+                }, {
+                    layerFilter: layerCandidate => layerCandidate == this._tooltipLayer
                 });
 
             if (feature) {
