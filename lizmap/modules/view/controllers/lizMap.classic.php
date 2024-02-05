@@ -397,6 +397,7 @@ class lizMapCtrl extends jController
             $jsDirArray = array('default', $project);
             foreach ($jsDirArray as $dir) {
                 $jsUrls = array();
+                $mjsUrls = array();
                 $cssUrls = array();
                 $items = array(
                     'media/js/',
@@ -407,7 +408,7 @@ class lizMapCtrl extends jController
                     if (is_dir($jsPathRoot)) {
                         foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($jsPathRoot)) as $filename) {
                             $fileExtension = pathinfo($filename, PATHINFO_EXTENSION);
-                            if ($fileExtension == 'js' || $fileExtension == 'css') {
+                            if ($fileExtension == 'js' || $fileExtension == 'mjs' || $fileExtension == 'css') {
                                 $jsPath = realpath($filename);
                                 $jsRelPath = $item.$dir.str_replace($jsPathRoot, '', $jsPath);
                                 $url = 'view~media:getMedia';
@@ -425,6 +426,8 @@ class lizMapCtrl extends jController
                                 );
                                 if ($fileExtension == 'js') {
                                     $jsUrls[] = $jsUrl;
+                                } elseif ($fileExtension == 'mjs') {
+                                    $mjsUrls[] = $jsUrl;
                                 } else {
                                     $cssUrls[] = $jsUrl;
                                 }
@@ -433,7 +436,7 @@ class lizMapCtrl extends jController
                     }
                 }
 
-                // Add CSS and JS files orderd by name
+                // Add CSS, MJS and JS files ordered by name
                 sort($cssUrls);
                 foreach ($cssUrls as $cssUrl) {
                     $rep->addCSSLink($cssUrl);
@@ -442,6 +445,11 @@ class lizMapCtrl extends jController
                 foreach ($jsUrls as $jsUrl) {
                     // Use addHeadContent and not addJSLink to be sure it will be loaded after minified code
                     $rep->addContent('<script type="text/javascript" src="'.$jsUrl.'" ></script>');
+                }
+                sort($mjsUrls);
+                foreach ($mjsUrls as $mjsUrl) {
+                    // Use addHeadContent and not addJSLink to be sure it will be loaded after minified code
+                    $rep->addContent('<script type="module" src="'.$mjsUrl.'" ></script>');
                 }
             }
         }
