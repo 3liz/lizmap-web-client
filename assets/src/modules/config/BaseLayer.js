@@ -761,8 +761,8 @@ export class BaseLayersConfig {
             bingStreets: { name: 'bing-road', key: 'bingKey' },
             bingSatellite: { name: 'bing-aerial', key: 'bingKey' },
             bingHybrid: { name: 'bing-hybrid', key: 'bingKey' },
-            ignTerrain: { name: 'ign-plan' },
-            ignStreets: { name: 'ign-scan', key: 'ignKey' },
+            ignTerrain: { name: 'ign-scan', key: 'ignKey' },
+            ignStreets: { name: 'ign-plan' },
             ignSatellite: { name: 'ign-photo' },
             ignCadastral: { name: 'ign-cadastral' }
         };
