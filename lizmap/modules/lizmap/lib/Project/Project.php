@@ -164,6 +164,8 @@ class Project
                 }
             }
             $rewriteCache = false;
+            // embedded layers
+            $embeddedProjects = array();
             foreach ($data['qgis']['layers'] as $index => $layer) {
                 if (array_key_exists('embedded', $layer)
                     && $layer['embedded'] == '1'
@@ -172,16 +174,30 @@ class Project
                         || $layer['qgsmtime'] < filemtime($layer['file'])
                     )
                 ) {
-                    $qgsProj = new QgisProject($layer['file'], $services, $this->appContext);
-                    $newLayer = $qgsProj->getLayerDefinition($layer['id']);
-                    $newLayer['qgsmtime'] = filemtime($layer['file']);
-                    $newLayer['file'] = $layer['file'];
-                    $newLayer['embedded'] = 1;
-                    $newLayer['projectPath'] = $layer['projectPath'];
-                    $data['qgis']['layers'][$index] = $newLayer;
+                    if (!array_key_exists($layer['file'], $embeddedProjects)) {
+                        $embeddedProjects[$layer['file']] = array();
+                    }
+                    // populate array of embedded layers
+                    $embeddedProjects[$layer['file']][$index] = $layer;
                     $rewriteCache = true;
                 }
             }
+
+            // loop through the embedded projects if any, to get the embedded layers definition
+            foreach ($embeddedProjects as $projectPath => $embeddedLayers) {
+                if (is_array($embeddedLayers)) {
+                    $embeddedProject = new QgisProject($projectPath, $this->services, $this->appContext);
+                    foreach ($embeddedLayers as $index => $embeddedLayer) {
+                        $newLayer = $embeddedProject->getLayerDefinition($embeddedLayer['id']);
+                        $newLayer['qgsmtime'] = filemtime($embeddedLayer['file']);
+                        $newLayer['file'] = $embeddedLayer['file'];
+                        $newLayer['embedded'] = 1;
+                        $newLayer['projectPath'] = $embeddedLayer['projectPath'];
+                        $data['qgis']['layers'][$index] = $newLayer;
+                    }
+                }
+            }
+
             if ($rewriteCache) {
                 $this->cacheHandler->storeProjectData($data);
             }
