@@ -290,4 +290,26 @@ describe('BaseLayersState', function () {
     ])
     })
 
+    it('Bing Maps baselayers', function () {
+        const baseLayers = getBaseLayersState('bing_basemap')
+        expect(baseLayers.selectedBaseLayerName).to.be.eq('bing roads')
+        expect(baseLayers.selectedBaseLayer).to.not.be.undefined
+        expect(baseLayers.selectedBaseLayer.name).to.be.eq('bing roads')
+        expect(baseLayers.baseLayerNames).to.be.an('array')
+        .that.have.length(2)
+        .that.be.deep.eq([
+            "bing roads",
+            "bing aerial",
+        ])
+
+        expect(baseLayers.baseLayers.map(l => l.type))
+            .to.be.an('array')
+            .that.have.length(2)
+            .that.ordered.members([
+                BaseLayerTypes.Bing,
+                BaseLayerTypes.Bing,
+        ])
+
+    })
+
 })
