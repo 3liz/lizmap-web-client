@@ -276,6 +276,9 @@ export class LayerItemState extends EventDispatcher {
      */
     set checked(val) {
         const newVal = convertBoolean(val);
+        if (this._checked === newVal) {
+            return;
+        }
         // Set new value
         this._checked = newVal;
         // Propagation to parent if checked
@@ -293,6 +296,11 @@ export class LayerItemState extends EventDispatcher {
         }
         // Calculate visibility
         this.calculateVisibility();
+        if (!this._checked
+            && this._parentGroup != null
+            && this._parentGroup.children.filter(c => c.visibility).length == 0) {
+            this._parentGroup.checked = newVal;
+        }
     }
 
     /**
@@ -726,7 +734,6 @@ export class LayerVectorState extends LayerLayerState {
         this._expressionFilter = null;
         this._filterToken = null;
     }
-
 
     /**
      * Layer tree item is checked
@@ -1280,6 +1287,40 @@ export class LayerGroupState extends LayerItemState {
             return false;
         }
         return this.layerConfig.mutuallyExclusive;
+    }
+
+    /**
+     * Layer tree item is checked
+     * @type {boolean}
+     */
+    get checked() {
+        return super.checked;
+    }
+
+    /**
+     * Set layer tree item is checked
+     * @type {boolean}
+     */
+    set checked(val) {
+        const newVal = convertBoolean(val);
+        if (this._checked === newVal) {
+            return;
+        }
+        if (!newVal) {
+            for(const child of this._items) {
+                child.checked = newVal;
+            }
+        }
+        super.checked = val;
+        if (this.checked && this._items.filter(i => i.visibility).length == 0) {
+            if (this.mutuallyExclusive) {
+                this._items[0].checked = val;
+            } else {
+                for(const child of this._items) {
+                    child.checked = val;
+                }
+            }
+        }
     }
 
     /**
