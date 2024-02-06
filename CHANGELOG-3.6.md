@@ -10,10 +10,24 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ### Fixed
 
+* Too many embedded layers cause PHP to hit `max_execution_time`
 * Fix search result with IGN
 * Register projections from lizProj4 if unknown
 * Fix layer group visible only and location
 * Popup from the attribute table, use the correct content for the popup
+* Fixing WMTS capabilities for cached layers with a shortname defined
+
+### Translations
+
+* Update translated strings from the Transifex website :
+  * [Lizmap Web Client](https://www.transifex.com/3liz-1/lizmap-locales/dashboard/)
+  * [Jelix](https://www.transifex.com/3liz-1/jelix/dashboard/)
+
+### Funders
+
+* [Faunalia](https://www.faunalia.eu/fr)
+* [Terre de Provence Agglomération](https://www.terredeprovence-agglo.com/)
+* [Agence de l'eau Rhône Méditerranée Corse](https://www.eaurmc.fr/)
 
 ## 3.6.9 - 2024-01-16
 
