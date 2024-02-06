@@ -246,21 +246,26 @@ export default class Print extends HTMLElement {
             opacityLayers.push(parseInt(255 * selectedBaseLayer.itemState.opacity * selectedBaseLayer.layerConfig.opacity));
         }
 
-        // Add visible layers
-        for (const layer of mainLizmap.state.rootMapGroup.findMapLayers().slice().reverse()) {
+        // Add visible layers in defined order
+        const orderedVisibleLayers = {};
+        mainLizmap.state.rootMapGroup.findMapLayers().forEach(layer => {
             if (layer.visibility) {
-                // Add layer to the list of printed layers
-                printLayers.push(layer.wmsName);
+                orderedVisibleLayers[layer.layerOrder] = layer;
+            }
+        });
+        for (const layerIndex of Object.keys(orderedVisibleLayers).reverse()) {
+            const layer = orderedVisibleLayers[layerIndex];
+            // Add layer to the list of printed layers
+            printLayers.push(layer.wmsName);
 
-                // Optionally add layer style if needed (same order as layers )
-                styleLayers.push(layer.wmsSelectedStyleName);
+            // Optionally add layer style if needed (same order as layers )
+            styleLayers.push(layer.wmsSelectedStyleName);
 
-                // Handle qgis layer opacity otherwise client value override it
-                if (layer.layerConfig?.opacity) {
-                    opacityLayers.push(parseInt(255 * layer.opacity * layer.layerConfig.opacity));
-                } else {
-                    opacityLayers.push(parseInt(255 * layer.opacity));
-                }
+            // Handle qgis layer opacity otherwise client value override it
+            if (layer.layerConfig?.opacity) {
+                opacityLayers.push(parseInt(255 * layer.opacity * layer.layerConfig.opacity));
+            } else {
+                opacityLayers.push(parseInt(255 * layer.opacity));
             }
         }
 
