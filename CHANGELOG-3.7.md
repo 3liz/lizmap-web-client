@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.7.3 - 2024-02-07
+
 ### Added
 
 * Editing form - Upload fields: allow to use an expression to set up the storage path
@@ -15,6 +17,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 ### Changed
 
 * Reintroduce the [AtlasPrint](https://docs.lizmap.com/current/en/install/pre_requirements.html#qgis-server-plugins) plugin for printing an atlas
+* Load custom JavaScript as a module
 
 ### Fixed
 
@@ -28,14 +31,22 @@ with some extra keywords: backend, tests, test, translation, funders, important
   * Fix projection and scales when the project has some "legacy" baselayers
   * Keep print configurations
 * Fix the selection tool about layer name used
-* Fix using WMTS requests for baselayers, contribution from @mind84
+* Fix using WMTS requests
+  * For baselayers, contribution from @mind84
+  * When there is a shortname
 * Fix search result with IGN
+* Fix using Bing with OpenLayers, contribution from @mind84
 * Register projections from lizProj4 if unknown
 * Fix layer group visible only and location
 * Popup from the attribute table, use the correct content for the popup
 * Fix display of a child layer in attribute table tool, get the correct layer name from the parent layer
 * Fix display of the map if there is a single resolution in the configuration file
 * Do not refresh child layer not displayed in map
+* Check if previous drawing made before Lizmap Web Client 3.7 in the local storage of the web browser is valid
+* Some fixes about permalink and theme
+* Too many embedded layers cause PHP to hit `max_execution_time`, contributions from @mind84
+* Fix inversions between two French layers
+* Fix display of layers on 4K screens
 
 ### Tests
 
