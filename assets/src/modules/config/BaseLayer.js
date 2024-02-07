@@ -722,6 +722,29 @@ const defaultCompleteBaseLayersCfg = {
 };
 
 /**
+ * The QuickMapServices external layers object configuration
+ * It will be used to define base layers config based on the type of external layer
+ * @constant
+ * @type {object}
+ * @see https://plugins.qgis.org/plugins/quick_map_services/
+ * @private
+ */
+const QMSExternalLayer = {
+    "qms-bing-roads": {
+        "type": "bing",
+        "title": "Bing Streets",
+        "imagerySet": "RoadOnDemand",
+        "key": "",
+    },
+    "qms-bing-satellite": {
+        "type": "bing",
+        "title": "Bing Satellite",
+        "imagerySet": "Aerial",
+        "key": "",
+    },
+}
+
+/**
  * Class representing a base layers config
  * @class
  */
@@ -787,8 +810,25 @@ export class BaseLayersConfig {
                     } else if ( layerTreeItem.layerConfig.externalWmsToggle ){
                         // The layer config has external access parameters
                         if (layerTreeItem.layerConfig.externalAccess.hasOwnProperty('type')) {
-                            // layer could be converted to XYZ or WMTS background layers
-                            extendedCfg[layerTreeItem.name] = structuredClone(layerTreeItem.layerConfig.externalAccess);
+                            // search for QuickMapSevice plugin layers. 
+                            // The layers identification is based on the url property of the externalAccess object
+                            const externalUrl = layerTreeItem.layerConfig.externalAccess.url;
+                            if (externalUrl && externalUrl.includes('virtualearth.net') && options["bingKey"]) {
+                                // Bing maps
+                                // detect if the url is for roads or satellite
+                                if (externalUrl.includes('dynamic')) {
+                                    // roads
+                                    extendedCfg[layerTreeItem.name] = structuredClone(QMSExternalLayer["qms-bing-roads"])
+                                } else {
+                                    // fallback on satellite map
+                                    extendedCfg[layerTreeItem.name] = structuredClone(QMSExternalLayer["qms-bing-satellite"])
+                                }
+                                // add the apikey to the configuration
+                                Object.assign(extendedCfg[layerTreeItem.name],{key:options["bingKey"]})
+                            } else {
+                                // layer could be converted to XYZ or WMTS background layers
+                                extendedCfg[layerTreeItem.name] = structuredClone(layerTreeItem.layerConfig.externalAccess);
+                            }
                         } else {
                             extendedCfg[layerTreeItem.name] = Object.assign(
                                 structuredClone(layerTreeItem.layerConfig.externalAccess),
