@@ -8,9 +8,11 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.6.10 - 2024-02-07
+
 ### Fixed
 
-* Too many embedded layers cause PHP to hit `max_execution_time`
+* Too many embedded layers cause PHP to hit `max_execution_time`, contributions from @mind84
 * Fix search result with IGN
 * Register projections from lizProj4 if unknown
 * Fix layer group visible only and location
