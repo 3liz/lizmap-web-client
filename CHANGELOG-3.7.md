@@ -54,11 +54,11 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ### Funders
 
-* **[Agence de l'eau Rhône Méditerranée Corse](https://www.eaurmc.fr/)
+* **[Agence de l'eau Rhône Méditerranée Corse](https://www.eaurmc.fr/)**
 * **[Avignon](https://www.avignon.fr)**
 * **[Calvados](https://www.calvados.fr)**
 * **[Faunalia](https://www.faunalia.eu/fr)**, contributions on source code from @mind84
-* **[Terre de Provence Agglomération](https://www.terredeprovence-agglo.com/)
+* **[Terre de Provence Agglomération](https://www.terredeprovence-agglo.com/)**
 * **[Territoire de Belfort](https://www.territoiredebelfort.fr/)**
 
 ## 3.7.2 - 2024-01-18
