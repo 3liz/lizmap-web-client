@@ -51,7 +51,10 @@ export default class Treeview extends HTMLElement {
                         ? html`<div class="loading ${item.loadStatus === MapLayerLoadStatus.Loading ? 'spinner' : ''}"></div>`
                         : ''
                     }
-                    <input type="checkbox" class="${layerTreeGroupState.mutuallyExclusive ? 'rounded-checkbox' : ''}" id="node-${item.name}" .checked=${item.checked} @click=${() => item.checked = !item.checked} >
+                    ${item.type === 'group' && mainLizmap.initialConfig.options.hideGroupCheckbox
+                        ? ''
+                        : html`<input type="checkbox" class="${layerTreeGroupState.mutuallyExclusive ? 'rounded-checkbox' : ''}" id="node-${item.name}" .checked=${item.checked} @click=${() => item.checked = !item.checked} >`
+                    }
                     <div class="node ${item.isFiltered ? 'filtered' : ''}">
                         ${item.type === 'layer'
                             ? html`<img class="legend" src="${item.icon}">`
