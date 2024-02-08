@@ -29,6 +29,7 @@ const optionalProperties = {
     'fixed_scale_overview_map': {type: 'boolean', default: true},
     'use_native_zoom_levels': {type: 'boolean', nullable: true, default: null},
     'hide_numeric_scale_value': {type: 'boolean', default: false},
+    'hideGroupCheckbox': { type: 'boolean', nullable: true, default: null },
 };
 
 /**
@@ -58,6 +59,7 @@ export class OptionsConfig  extends BaseObjectConfig {
      * @param {Boolean}  [cfg.fixed_scale_overview_map=true]  - does the Overview map have fixed scale ?
      * @param {Boolean}  [cfg.use_native_zoom_levels=false]   - does the map use native zoom levels ?
      * @param {Boolean}  [cfg.hide_numeric_scale_value=false] - does the scale line hide numeric scale value ?
+     * @param {Boolean}  [cfg.hideGroupCheckbox=false]        - are groups checkbox hidden ?
      */
     constructor(cfg) {
         if (!cfg || typeof cfg !== "object") {
@@ -221,5 +223,13 @@ export class OptionsConfig  extends BaseObjectConfig {
      */
     get hide_numeric_scale_value() {
         return this._hide_numeric_scale_value;
+    }
+
+    /**
+     * Hide groups checkbox
+     * @type {boolean}
+     */
+    get hideGroupCheckbox() {
+        return this._hideGroupCheckbox;
     }
 }
