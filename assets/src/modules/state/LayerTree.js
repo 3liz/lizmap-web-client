@@ -354,6 +354,26 @@ export class LayerTreeGroupState extends LayerTreeItemState {
     }
 
     /**
+     * Propagate throught tree item the new checked state
+     * @param {boolean} val The new checked state
+     * @returns {boolean} the new checked state
+     */
+    propagateCheckedState(val) {
+        for (const item of this._items) {
+            if (item.type == 'group') {
+                item.propagateCheckedState(val);
+            } else {
+                item.checked = val;
+            }
+            if (item.checked && this.mutuallyExclusive) {
+                break;
+            }
+        }
+        this.checked = val;
+        return this.checked;
+    }
+
+    /**
      * Find layer names
      * @returns {string[]} List of layer names
      */
