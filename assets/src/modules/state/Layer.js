@@ -34,7 +34,7 @@ export class LayerItemState extends EventDispatcher {
         this._minScaleDenominator = null;
         this._maxScaleDenominator = null;
         this._checked = this._parentGroup == null ? true : false;
-        this._visibility = null;
+        this._visibility =  this._parentGroup == null ? true : null;
         this._opacity = 1;
         this._inGroupAsLayer = (this._parentGroup !== null
             && (this._parentGroup.groupAsLayer || this._parentGroup.isInGroupAsLayer)) ? true : false;
@@ -279,7 +279,11 @@ export class LayerItemState extends EventDispatcher {
         // Set new value
         this._checked = newVal;
         // Propagation to parent if checked
-        if (this._checked && this._parentGroup != null && !this.isInGroupAsLayer) {
+        if (this._checked
+            && this._parentGroup != null // if item has a parent
+            && this.displayInLegend // if the item is display in legend
+            && !this.isInGroupAsLayer // if the item is not in a group as layer
+        ) {
             this._parentGroup.checked = newVal;
             // If the parent is mutually exclusive, unchecked other layer
             if (this._parentGroup.mutuallyExclusive) {
@@ -483,6 +487,11 @@ export class LayerItemState extends EventDispatcher {
                 }
             }
             return this._visibility;
+        }
+        // if the item is not displayed in the legend
+        // the visibility depends on the checked state
+        else if (!this.displayInLegend) {
+            this._visibility = this._checked;
         }
         // if the parent layer tree group is visible
         // the visibility depends if the layer tree item is checked
