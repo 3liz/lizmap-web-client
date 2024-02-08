@@ -50,3 +50,19 @@ test.describe('Treeview', () => {
         await expect(page.getByTestId('tramway_lines').locator('label')).toHaveText('Tramway lines');
     });
 });
+
+test.describe('Treeview mocked with "Hide checkboxes for groups" option', () => {
+    test('"Hide checkboxes for groups" option', async ({ page }) => {
+        await page.route('**/service/getProjectConfig*', async route => {
+            const response = await route.fetch();
+            const json = await response.json();
+            json.options['hideGroupCheckbox'] = 'True';
+            await route.fulfill({ response, json });
+        });
+
+        const url = '/index.php/view/map/?repository=testsrepository&project=treeview';
+        await page.goto(url, { waitUntil: 'networkidle' });
+
+        await expect(page.locator('lizmap-treeview div.group > input')).toHaveCount(0);
+    });
+});
