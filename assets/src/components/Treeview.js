@@ -27,6 +27,7 @@ export default class Treeview extends HTMLElement {
     connectedCallback() {
 
         this._onChange = () => {
+            if (this._freeze) return;
             render(this._layerTemplate(mainLizmap.state.layerTree), this);
         };
 
@@ -66,14 +67,22 @@ export default class Treeview extends HTMLElement {
                     }
                     ${item.type === 'group' && mainLizmap.initialConfig.options.hideGroupCheckbox
                         ? ''
-                        : html`<input type="checkbox" class="${layerTreeGroupState.mutuallyExclusive ? 'rounded-checkbox' : ''}" id="node-${item.name}" .checked=${item.checked} @click=${() => item.checked = !item.checked} >`
+                        : html`<input type="checkbox"
+                        class="${layerTreeGroupState.mutuallyExclusive ? 'rounded-checkbox' : ''}"
+                        id="node-${item.name}"
+                        .checked=${item.checked}
+                        @click=${() => this._clickItem(item)}
+                        @dblclick=${() => this._dblclickItem(item)} >`
                     }
                     <div class="node ${item.isFiltered ? 'filtered' : ''}">
                         ${item.type === 'layer'
                             ? html`<img class="legend" src="${item.icon}">`
                             : ''
                         }
-                        <label for="node-${item.name}">${item.layerConfig.title}</label>
+                        ${mainLizmap.initialConfig.options.hideGroupCheckbox
+                            ? html`<label for="node-${item.name}" >${item.layerConfig.title}</label>`
+                            : html`<label for="node-${item.name}" @dblclick=${() => this._dblclickItem(item)} >${item.layerConfig.title}</label>`
+                        }
                         <div class="layer-actions">
                             <a href="${this._createDocLink(item.name)}" target="_blank" title="${lizDict['tree.button.link']}">
                                 <i class="icon-share"></i>
@@ -146,6 +155,30 @@ export default class Treeview extends HTMLElement {
         const scale = Utils.getScaleFromResolution(mainLizmap.map.getView().getResolution(), metersPerUnit);
         const visibility = item.isVisible(scale);
         return visibility;
+    }
+
+    _clickItem(item) {
+        if (this._freeze) {
+            return false;
+        }
+        item.checked = !item.checked;
+        return false;
+    }
+
+    _dblclickItem(item) {
+        if (item.type != 'group') {
+            return false;
+        }
+
+        if (this._freeze) {
+            return false;
+        }
+
+        this._freeze = true;
+        item.propagateCheckedState(!item.checked);
+        this._freeze = false;
+        this._onChange();
+        return false;
     }
 
     _createDocLink(layerName) {
