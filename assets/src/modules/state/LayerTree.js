@@ -355,7 +355,7 @@ export class LayerTreeGroupState extends LayerTreeItemState {
 
     /**
      * Find layer names
-     * @returns {string[]} The layer names of all tree layers
+     * @returns {string[]} List of layer names
      */
     findTreeLayerNames() {
         let names = []
@@ -371,7 +371,7 @@ export class LayerTreeGroupState extends LayerTreeItemState {
 
     /**
      * Find layer items
-     * @returns {LayerTreeLayerState[]} The tree layer states of all tree layers
+     * @returns {LayerTreeLayerState[]}  List of tree layers (not tree groups)
      */
     findTreeLayers() {
         let items = []
@@ -387,7 +387,7 @@ export class LayerTreeGroupState extends LayerTreeItemState {
 
     /**
      * Find layer and group items
-     * @returns {LayerTreeLayerState[]} All tThe tree layer and tree group states
+     * @returns {LayerTreeLayerState[]} List of tree layers and tree groups
      */
     findTreeLayersAndGroups() {
         let items = []
