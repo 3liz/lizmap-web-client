@@ -22,9 +22,10 @@
 import Layer from 'ol/layer/Layer.js';
 import {createCanvasContext2D} from 'ol/dom.js';
 import {toRadians} from 'ol/math.js';
+import {FrameState} from 'ol/Map'
 
 /**
- * @augments {Layer<import("ol/source/Source").default>}
+ * @augments Layer
  */
 export default class Mask extends Layer {
     constructor(options = {}) {
@@ -39,24 +40,28 @@ export default class Mask extends Layer {
         this.context_.canvas.style.position = 'absolute';
 
         /**
-         * @type {function(import('ol/Map').FrameState):number}
+         * Provide scale (number) from FrameState
+         * @function
          */
         this.getScale;
 
         /**
-         * @type {function():import('ol/size').Size}
+         * Provide the size of type import('ol/size').Size
+         * @function
          */
         this.getSize;
 
         /**
-         * @type {undefined|function():number}
+         * Provide the rotation
+         * @type {undefined|Function}
          */
         this.getRotation;
     }
 
     /**
-     * @param {import("ol/Map").FrameState} frameState
-     * @returns {HTMLElement}
+     * Render function. Takes the frame state as input and is expected to return an HTML element. Will overwrite the default rendering for the layer.
+     * @param {FrameState} frameState Frame state
+     * @returns {HTMLElement} The rendered element
      */
     render(frameState) {
 
@@ -94,7 +99,7 @@ export default class Mask extends Layer {
         // gamma = angle between horizontal and diagonal (with rotation).
         const gamma = Math.atan(extentHalfHeight / extentHalfWidth) - rotation;
         // omega = angle between diagonal and vertical (with rotation).
-        const omega = Math.atan(extentHalfWidth / extentHalfHeight) - rotation;
+        // NOT USED const omega = Math.atan(extentHalfWidth / extentHalfHeight) - rotation;
         // Calculation of up left corner.
         const x1 = Math.round(center[0] - Math.cos(gamma) * diagonal);
         const y1 = Math.round(center[1] + Math.sin(gamma) * diagonal);
