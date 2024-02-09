@@ -1,3 +1,11 @@
+/**
+ * @module modules/Action.js
+ * @name Action
+ * @copyright 2023 3Liz
+ * @author DHONT René-Luc
+ * @license MPL-2.0
+ */
+
 import { mainLizmap } from '../modules/Globals.js';
 
 export default class Action {
