@@ -1,12 +1,14 @@
 /**
  * @module config/Options.js
+ * @name Options
  * @copyright 2023 3Liz
  * @author DHONT René-Luc
- * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
+ * @license MPL-2.0
  */
 
 import { BaseObjectConfig } from './BaseObject.js';
 import { ValidationError } from './../Errors.js';
+import { Extent } from './../utils/Extent.js';
 
 const requiredProperties = {
     'bbox': {type: 'extent'},
@@ -41,25 +43,25 @@ export class OptionsConfig  extends BaseObjectConfig {
 
     /**
      * Create an options config instance based on a config object
-     * @param {object}   cfg                                  - the lizmap config object for options
-     * @param {number[]} cfg.bbox                             - the project and web services max extent
-     * @param {number[]} cfg.initialExtent                    - the map extent at the loading page
-     * @param {number[]} cfg.mapScales                        - the map scales
-     * @param {number}   cfg.minScale                         - the map's min scale
-     * @param {number}   cfg.maxScale                         - the map's max scale
-     * @param {object}   cfg.projection                       - the web map projection
-     * @param {number}   cfg.pointTolerance                   - the point tolerance for QGIS Server WMS GetFeatureInfo request
-     * @param {number}   cfg.lineTolerance                    - the line tolerance for QGIS Server WMS GetFeatureInfo request
-     * @param {Number}   cfg.polygonTolerance                 - the polygon tolerance for QGIS Server WMS GetFeatureInfo request
-     * @param {String}   cfg.popupLocation                    - the popup location in the User interface: dock, bottom-dock, right-dock, mini-dock, map
-     * @param {String}   cfg.datavizLocation                  - the popup location in the User interface: dock, bottom-dock, right-dock
-     * @param {Boolean}  [cfg.hideProject=false]              - is the project hidden in user interface ? Only services are available.
-     * @param {Number}   [cfg.wmsMaxHeight=3000]              - the image max height for WMS GetMap request
-     * @param {Number}   [cfg.wmsMaxWidth=3000]               - the image max width for WMS GetMap request
-     * @param {Boolean}  [cfg.fixed_scale_overview_map=true]  - does the Overview map have fixed scale ?
-     * @param {Boolean}  [cfg.use_native_zoom_levels=false]   - does the map use native zoom levels ?
-     * @param {Boolean}  [cfg.hide_numeric_scale_value=false] - does the scale line hide numeric scale value ?
-     * @param {Boolean}  [cfg.hideGroupCheckbox=false]        - are groups checkbox hidden ?
+     * @param {object}   cfg                            - the lizmap config object for options
+     * @param {number[]} cfg.bbox                       - the project and web services max extent
+     * @param {number[]} cfg.initialExtent              - the map extent at the loading page
+     * @param {number[]} cfg.mapScales                  - the map scales
+     * @param {number}   cfg.minScale                   - the map's min scale
+     * @param {number}   cfg.maxScale                   - the map's max scale
+     * @param {object}   cfg.projection                 - the web map projection
+     * @param {number}   cfg.pointTolerance             - the point tolerance for QGIS Server WMS GetFeatureInfo request
+     * @param {number}   cfg.lineTolerance              - the line tolerance for QGIS Server WMS GetFeatureInfo request
+     * @param {number}   cfg.polygonTolerance           - the polygon tolerance for QGIS Server WMS GetFeatureInfo request
+     * @param {string}   cfg.popupLocation              - the popup location in the User interface: dock, bottom-dock, right-dock, mini-dock, map
+     * @param {string}   cfg.datavizLocation            - the popup location in the User interface: dock, bottom-dock, right-dock
+     * @param {boolean}  [cfg.hideProject]              - is the project hidden in user interface ? Only services are available.
+     * @param {number}   [cfg.wmsMaxHeight]             - the image max height for WMS GetMap request
+     * @param {number}   [cfg.wmsMaxWidth]              - the image max width for WMS GetMap request
+     * @param {boolean}  [cfg.fixed_scale_overview_map] - does the Overview map have fixed scale ?
+     * @param {boolean}  [cfg.use_native_zoom_levels]   - does the map use native zoom levels ?
+     * @param {boolean}  [cfg.hide_numeric_scale_value] - does the scale line hide numeric scale value ?
+     * @param {Boolean}  [cfg.hideGroupCheckbox=false]  - are groups checkbox hidden ?
      */
     constructor(cfg) {
         if (!cfg || typeof cfg !== "object") {

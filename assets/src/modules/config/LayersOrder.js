@@ -1,9 +1,12 @@
 /**
  * @module config/LayersOrder.js
+ * @name LayersOrder
  * @copyright 2023 3Liz
  * @author DHONT René-Luc
- * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
+ * @license MPL-2.0
  */
+
+import { LayerTreeGroupConfig } from './LayerTree.js';
 
 /**
  * Recursive function to build the layer names displaying order like in QGIS based on the layer tree
@@ -37,7 +40,7 @@ function layersOrderFromLayerTreeGroup(layerTreeGroupCfg) {
  * The first one in this list is the top one in the map
  * The last one in this list is the bottom one in the map
  * @function
- * @param {object} initialConfig
+ * @param {object} initialConfig - the initial config object
  * @param {LayerTreeGroupConfig} rootLayerTreeCfg - The root layer tree config based on WMS capabilities
  * @returns {string[]} The layer names displaying order from top to bottom
  */
