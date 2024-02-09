@@ -1564,6 +1564,114 @@ describe('LayersAndGroupsCollection', function () {
         expect(collectionLayerVisibilityChangedEvt[2].name).to.be.eq('publicbuildings')
     })
 
+    it('Display in legend', function () {
+        const capabilities = JSON.parse(readFileSync('./data/display-in-legend-capabilities.json', 'utf8'));
+        expect(capabilities).to.not.be.undefined
+        expect(capabilities.Capability).to.not.be.undefined
+        const config = JSON.parse(readFileSync('./data/display-in-legend-config.json', 'utf8'));
+        expect(config).to.not.be.undefined
+
+        const layers = new LayersConfig(config.layers);
+
+        const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+        expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
+
+        const layersOrder = buildLayersOrder(config, rootCfg);
+
+        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
+
+        const shapefilesGroup = collection.getGroupByName('Shapefiles')
+        expect(shapefilesGroup).to.be.instanceOf(LayerGroupState)
+
+        expect(shapefilesGroup.checked).to.be.true
+        expect(shapefilesGroup.visibility).to.be.true
+        expect(shapefilesGroup.displayInLegend).to.be.true
+
+        const polygons = shapefilesGroup.children[1]
+        expect(polygons.name).to.be.eq('polygons')
+        expect(polygons).to.be.instanceOf(LayerVectorState)
+
+        expect(polygons.isSpatial).to.be.true
+        expect(polygons.checked).to.be.true
+        expect(polygons.visibility).to.be.true
+        expect(polygons.displayInLegend).to.be.false
+
+        // Hide Shapefiles group
+        shapefilesGroup.checked = false;
+        expect(shapefilesGroup.checked).to.be.false
+        expect(shapefilesGroup.visibility).to.be.false
+        // Polygons which is not display in legend is not affected
+        expect(polygons.checked).to.be.true
+        expect(polygons.visibility).to.be.true
+
+        const poisGroup = shapefilesGroup.children[0]
+        expect(poisGroup.name).to.be.eq('POIs')
+        expect(poisGroup).to.be.instanceOf(LayerGroupState)
+
+        expect(poisGroup.checked).to.be.false
+        expect(poisGroup.visibility).to.be.false
+        expect(poisGroup.displayInLegend).to.be.true
+
+        const townhalls = poisGroup.children[0]
+        expect(townhalls.name).to.be.eq('townhalls_EPSG2154')
+        expect(townhalls).to.be.instanceOf(LayerVectorState)
+
+        expect(townhalls.isSpatial).to.be.true
+        expect(townhalls.checked).to.be.false
+        expect(townhalls.visibility).to.be.false
+        expect(townhalls.displayInLegend).to.be.true
+
+        // Display townhalls
+        townhalls.checked = true;
+        expect(townhalls.checked).to.be.true
+        expect(townhalls.visibility).to.be.true
+        // Parent groups will be checked
+        expect(poisGroup.checked).to.be.true
+        expect(poisGroup.visibility).to.be.true
+        expect(shapefilesGroup.checked).to.be.true
+        expect(shapefilesGroup.visibility).to.be.true
+        // Nothing change for not display in legend layer
+        expect(polygons.checked).to.be.true
+        expect(polygons.visibility).to.be.true
+
+        // Hide polygons
+        polygons.checked = false
+        expect(polygons.checked).to.be.false
+        expect(polygons.visibility).to.be.false
+        expect(shapefilesGroup.checked).to.be.true
+        expect(shapefilesGroup.visibility).to.be.true
+        expect(poisGroup.checked).to.be.true
+        expect(poisGroup.visibility).to.be.true
+        expect(townhalls.checked).to.be.true
+        expect(townhalls.visibility).to.be.true
+
+        // Hide Shapefiles group
+        shapefilesGroup.checked = false
+        expect(shapefilesGroup.checked).to.be.false
+        expect(shapefilesGroup.visibility).to.be.false
+        // Children are hidden
+        expect(poisGroup.checked).to.be.true
+        expect(poisGroup.visibility).to.be.false
+        expect(townhalls.checked).to.be.true
+        expect(townhalls.visibility).to.be.false
+        // Nothing change for not display in legend layer
+        expect(polygons.checked).to.be.false
+        expect(polygons.visibility).to.be.false
+
+        // Display Polygons
+        polygons.checked = true
+        expect(polygons.checked).to.be.true
+        expect(polygons.visibility).to.be.true
+        // Nothing change for parent group
+        expect(shapefilesGroup.checked).to.be.false
+        expect(shapefilesGroup.visibility).to.be.false
+        // Nothing change for others
+        expect(poisGroup.checked).to.be.true
+        expect(poisGroup.visibility).to.be.false
+        expect(townhalls.checked).to.be.true
+        expect(townhalls.visibility).to.be.false
+    })
+
     it('Opacity', function () {
         const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
         expect(capabilities).to.not.be.undefined
