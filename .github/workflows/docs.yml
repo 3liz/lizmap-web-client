@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - '*'
+    branches:
+      - jsdoc
   workflow_dispatch:
 
 permissions:
