@@ -34,6 +34,7 @@ export const BaseLayerTypes = createEnum({
 /**
  * Class representing a base layer config
  * @class
+ * @name BaseLayerConfig
  * @augments BaseObjectConfig
  */
 export class BaseLayerConfig extends BaseObjectConfig {
