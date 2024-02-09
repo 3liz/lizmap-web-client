@@ -22,7 +22,7 @@
 import Layer from 'ol/layer/Layer.js';
 import {createCanvasContext2D} from 'ol/dom.js';
 import {toRadians} from 'ol/math.js';
-import {FrameState} from 'ol/Map'
+import {FrameState} from 'ol/Map.js'
 
 /**
  * @augments Layer
