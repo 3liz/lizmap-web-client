@@ -120,8 +120,8 @@ export class BaseObjectConfig {
 
 /**
  * Class representing an object layer config with layerId and order attribute
- * @name
- * @class BaseObjectLayerConfig
+ * @name BaseObjectLayerConfig
+ * @class
  * @augments BaseObjectConfig
  */
 export class BaseObjectLayerConfig extends BaseObjectConfig {
