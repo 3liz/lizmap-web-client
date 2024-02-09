@@ -2,7 +2,7 @@
  * @module config/Theme.js
  * @copyright 2023 3Liz
  * @author DHONT René-Luc
- * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
+ * @license MPL-2.0
  */
 
 import { BaseObjectConfig } from './BaseObject.js';
@@ -25,7 +25,7 @@ export class LayerThemeConfig extends BaseObjectConfig {
 
     /**
      * Create a layer in theme config instance
-     * @param layerId
+     * @param {string} layerId - the layer Id
      * @param {object} cfg - the lizmap config object for a layer in theme
      */
     constructor(layerId, cfg) {
@@ -75,7 +75,7 @@ export class ThemeConfig extends BaseObjectConfig {
 
     /**
      * Create a theme config instance
-     * @param name
+     * @param {string} name - The theme name
      * @param {object} cfg - the lizmap config object for a theme
      */
     constructor(name, cfg) {
@@ -101,24 +101,24 @@ export class ThemeConfig extends BaseObjectConfig {
     }
 
     /**
-     * The layer ids of the theme
-     * @type {string[]} the copy of the layer ids of the theme
+     * The copy of the layer ids of the theme
+     * @type {string[]}
      */
     get layerIds() {
         return [...this._layerIds];
     }
 
     /**
-     * The layer configs of the theme
-     * @type {LayerThemeConfig[]} the copy of the layer configs of the theme
+     * The copy of the layer configs of the theme
+     * @type {LayerThemeConfig[]}
      */
     get layerConfigs() {
         return [...this._layerConfigs];
     }
 
     /**
-     * The expanded group nodes list
-     * @type {string[]} the copy of the expanded group nodes list
+     * The copy of the expanded group nodes list
+     * @type {string[]}
      */
     get expandedGroupNodes() {
         return [...this._expandedGroupNode];
@@ -204,16 +204,16 @@ export class ThemesConfig {
     }
 
     /**
-     * The theme names from config
-     * @type {string[]} the copy of the theme names
+     * The copy of the theme names from config
+     * @type {string[]}
      */
     get themeNames() {
         return [...this._names];
     }
 
     /**
-     * The theme configs from config
-     * @type {ThemeConfig[]} the copy of the theme configs
+     * The copy of theme configs from config
+     * @type {ThemeConfig[]}
      */
     get themeConfigs() {
         return [...this._configs];
@@ -244,7 +244,7 @@ export class ThemesConfig {
     /**
      * Get a theme config by theme name
      * @param {string} name the theme name
-     * @returns {LayerConfig} The theme config associated to the name
+     * @returns {ThemeConfig} The theme config associated to the name
      * @throws {RangeError|Error} The theme name is unknown or the config has been corrupted
      */
     getThemeConfigByThemeName(name) {
