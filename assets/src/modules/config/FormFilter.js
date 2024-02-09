@@ -1,7 +1,7 @@
 /**
  * @module utils/FormFilter.js
  * @name FormFilter
- * @copyright 2025 3Liz
+ * @copyright 2023 3Liz
  * @author DHONT René-Luc
  * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
  */
