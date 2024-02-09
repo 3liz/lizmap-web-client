@@ -1,8 +1,9 @@
 /**
- * @module utils/BaseLayer.js
+ * @module config/BaseLayer.js
+ * @name BaseLayer
  * @copyright 2023 3Liz
  * @author DHONT René-Luc
- * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
+ * @license MPL-2.0
  */
 
 import { ValidationError } from './../Errors.js';
@@ -11,6 +12,7 @@ import { convertBoolean } from './../utils/Converters.js';
 import { createEnum } from './../utils/Enums.js';
 import { AttributionConfig } from './Attribution.js';
 import { LayerConfig, LayersConfig } from './Layer.js';
+import { LayerTreeGroupConfig } from './LayerTree.js';
 
 /**
  * Enum for base layer types
@@ -167,7 +169,7 @@ export class BaseLayerConfig extends BaseObjectConfig {
 export class EmptyBaseLayerConfig extends BaseLayerConfig {
     /**
      * Create an empty base layer config based on a config object (it can be empty)
-     * @param name
+     * @param {string} name - the base layer name
      * @param {object} cfg - an object for empty base layer
      */
     constructor(name, cfg) {
@@ -340,8 +342,8 @@ export class WmtsBaseLayerConfig extends BaseLayerConfig {
      * @param {string} cfg.tileMatrixSet   - the base layer matrixSet
      * @param {string} cfg.crs             - the base layer crs
      * @param {number} [cfg.numZoomLevels] - the base layer numZoomLevels
-     * @param {String} [cfg.key]           - the base layer key
-     * @param {Object} [cfg.attribution]   - the base layer attribution config object
+     * @param {string} [cfg.key]           - the base layer key
+     * @param {object} [cfg.attribution]   - the base layer attribution config object
      */
     constructor(name, cfg) {
         if (!cfg || typeof cfg !== "object") {
@@ -752,10 +754,10 @@ const QMSExternalLayer = {
 export class BaseLayersConfig {
     /**
      * Create a base layers config based on a config object, the options config object and the layers config
-     * @param {object} cfg          - the lizmap config object for base layers
-     * @param {object} options      - the lizmap config object for options
-     * @param {LayersConfig} layers - the lizmap layers config
-     * @param {LayerTreeGroupConfig} [baseLayersTreeGroup]
+     * @param {object} cfg                                 - the lizmap config object for base layers
+     * @param {object} options                             - the lizmap config object for options
+     * @param {LayersConfig} layers                        - the lizmap layers config
+     * @param {LayerTreeGroupConfig} [baseLayersTreeGroup] - the layer tree group config which contains base layers
      */
     constructor(cfg, options, layers, baseLayersTreeGroup) {
         if (!cfg || typeof cfg !== "object") {
@@ -811,7 +813,7 @@ export class BaseLayersConfig {
                     } else if ( layerTreeItem.layerConfig.externalWmsToggle ){
                         // The layer config has external access parameters
                         if (layerTreeItem.layerConfig.externalAccess.hasOwnProperty('type')) {
-                            // search for QuickMapSevice plugin layers. 
+                            // search for QuickMapSevice plugin layers.
                             // The layers identification is based on the url property of the externalAccess object
                             const externalUrl = layerTreeItem.layerConfig.externalAccess.url;
                             if (externalUrl && externalUrl.includes('virtualearth.net') && options["bingKey"]) {

@@ -1,8 +1,9 @@
 /**
- * @module utils/Edition.js
+ * @module config/Edition.js
+ * @name Edition
  * @copyright 2023 3Liz
  * @author DHONT René-Luc
- * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
+ * @license MPL-2.0
  */
 
 import { BaseObjectConfig, BaseObjectLayerConfig, BaseObjectLayersConfig } from './BaseObject.js';
@@ -100,7 +101,7 @@ export class EditionLayerConfig extends BaseObjectLayerConfig {
 
     /**
      * The capabilities
-     * @type {capabilitiesEditionConfig}
+     * @type {EditionCapabilitiesConfig}
      */
     get capabilities() {
         return this._capabilities;
