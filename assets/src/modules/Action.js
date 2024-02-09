@@ -1,3 +1,11 @@
+/**
+ * @module modules/Action.js
+ * @name Action
+ * @copyright 2023 3Liz
+ * @author DHONT René-Luc
+ * @license MPL-2.0
+ */
+
 import { mainLizmap } from '../modules/Globals.js';
 import { Vector as VectorSource } from 'ol/source.js';
 import { Vector as VectorLayer } from 'ol/layer.js';
