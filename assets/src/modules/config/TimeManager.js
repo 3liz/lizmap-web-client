@@ -20,7 +20,7 @@ const optionalProperties = {
 
 /**
  * Class representing a time manager layer config
- * @class
+ * @class TimeManagerLayerConfig
  * @augments BaseObjectLayerConfig
  */
 export class TimeManagerLayerConfig extends BaseObjectLayerConfig {

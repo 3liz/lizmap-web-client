@@ -1,5 +1,9 @@
 import {mainLizmap, mainEventDispatcher} from '../modules/Globals.js';
 
+/**
+ * Edition Class
+ * @Class Edition
+ */
 export default class Edition {
 
     constructor() {
