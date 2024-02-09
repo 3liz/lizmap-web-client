@@ -431,7 +431,11 @@ export default class Action {
                 this.runCallbacks(action, features);
             }
 
-            // Lizmap event to allow other scripts to process the data if needed
+            /**
+             * Lizmap event to allow other scripts to process the data if needed
+             * @event actionResultReceived
+             * @property {string} action Name of the action
+             */
             lizMap.events.triggerEvent("actionResultReceived",
                 {
                     'action': action,
