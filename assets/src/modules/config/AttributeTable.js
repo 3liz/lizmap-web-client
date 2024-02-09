@@ -21,6 +21,7 @@ const optionalProperties = {
 /**
  * Class representing an attribute layer config
  * @class
+ * @name AttributeLayerConfig
  * @augments BaseObjectLayerConfig
  */
 export class AttributeLayerConfig extends BaseObjectLayerConfig {
