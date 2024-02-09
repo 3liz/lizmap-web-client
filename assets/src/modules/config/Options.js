@@ -29,7 +29,7 @@ const optionalProperties = {
     'fixed_scale_overview_map': {type: 'boolean', default: true},
     'use_native_zoom_levels': {type: 'boolean', nullable: true, default: null},
     'hide_numeric_scale_value': {type: 'boolean', default: false},
-    'hideGroupCheckbox': { type: 'boolean', nullable: true, default: null },
+    'hideGroupCheckbox': { type: 'boolean', default: false },
 };
 
 /**
