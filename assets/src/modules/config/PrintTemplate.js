@@ -1,5 +1,6 @@
 /**
  * @module config/PrintTemplate.js
+ * @name PrintTemplate
  * @copyright 2023 3Liz
  * @author DHONT René-Luc
  * @license MPL-2.0

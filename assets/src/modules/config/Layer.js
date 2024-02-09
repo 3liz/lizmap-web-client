@@ -1,12 +1,14 @@
 /**
  * @module config/Layer.js
+ * @name Layer
  * @copyright 2023 3Liz
  * @author DHONT René-Luc
- * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
+ * @license MPL-2.0
  */
 
 import { BaseObjectConfig } from './BaseObject.js';
 import { ValidationError } from './../Errors.js';
+import { Extent } from './../utils/Extent.js';
 
 const requiredProperties = {
     'id': {type: 'string'},
@@ -63,30 +65,30 @@ export class LayerConfig extends BaseObjectConfig {
      * @param {string}   cfg.link                  - the layer link
      * @param {number}   cfg.minScale              - the layer minScale
      * @param {number}   cfg.maxScale              - the layer maxScale
-     * @param {Boolean}  cfg.toggled               - the layer toggled activation
-     * @param {Boolean}  cfg.popup                 - the layer popup activation
-     * @param {String}   cfg.popupSource           - the layer popup source
-     * @param {String}   cfg.popupTemplate         - the layer popup template
-     * @param {Number}   cfg.popupMaxFeatures      - the layer popup max features
-     * @param {Boolean}  cfg.popupDisplayChildren  - the layer popup display children activation
-     * @param {Boolean}  cfg.groupAsLayer          - the layer as group as layer activation (only group type)
-     * @param {Boolean}  cfg.baseLayer             - the layer as base layer activation
-     * @param {Boolean}  cfg.displayInLegend       - the layer display in legend activation
-     * @param {Boolean}  cfg.singleTile            - the layer singleTile activation
-     * @param {String}   cfg.imageFormat           - the layer image format
-     * @param {Boolean}  cfg.cached                - the layer cached activation
-     * @param {Number}   cfg.clientCacheExpiration - the layer client cache expiration
-     * @param {String}   [cfg.shortname]           - the layer short name
-     * @param {String}   [cfg.layerType]           - the layer layer type (layer only)
-     * @param {String}   [cfg.geometryType]        - the layer geometry type (layer only)
-     * @param {Number[]} [cfg.extent]              - the layer extent (layer only)
-     * @param {String}   [cfg.crs]                 - the layer crs (layer only)
-     * @param {Number}   [cfg.opacity]             - the layer opacity defined in QGIS project
-     * @param {Boolean}  [cfg.noLegendImage]       - the layer no legend image activation
-     * @param {String}   [cfg.legend_image_option] - the layer legend image option
-     * @param {Boolean}  [cfg.mutuallyExclusive]   - the layer mutuallyExclusive (only group type)
-     * @param {Boolean}  [cfg.externalWmsToggle]   - the layer provides parameters for external access
-     * @param {Object}   [cfg.externalAccess]      - the layer external access
+     * @param {boolean}  cfg.toggled               - the layer toggled activation
+     * @param {boolean}  cfg.popup                 - the layer popup activation
+     * @param {string}   cfg.popupSource           - the layer popup source
+     * @param {string}   cfg.popupTemplate         - the layer popup template
+     * @param {number}   cfg.popupMaxFeatures      - the layer popup max features
+     * @param {boolean}  cfg.popupDisplayChildren  - the layer popup display children activation
+     * @param {boolean}  cfg.groupAsLayer          - the layer as group as layer activation (only group type)
+     * @param {boolean}  cfg.baseLayer             - the layer as base layer activation
+     * @param {boolean}  cfg.displayInLegend       - the layer display in legend activation
+     * @param {boolean}  cfg.singleTile            - the layer singleTile activation
+     * @param {string}   cfg.imageFormat           - the layer image format
+     * @param {boolean}  cfg.cached                - the layer cached activation
+     * @param {number}   cfg.clientCacheExpiration - the layer client cache expiration
+     * @param {string}   [cfg.shortname]           - the layer short name
+     * @param {string}   [cfg.layerType]           - the layer layer type (layer only)
+     * @param {string}   [cfg.geometryType]        - the layer geometry type (layer only)
+     * @param {number[]} [cfg.extent]              - the layer extent (layer only)
+     * @param {string}   [cfg.crs]                 - the layer crs (layer only)
+     * @param {number}   [cfg.opacity]             - the layer opacity defined in QGIS project
+     * @param {boolean}  [cfg.noLegendImage]       - the layer no legend image activation
+     * @param {string}   [cfg.legend_image_option] - the layer legend image option
+     * @param {boolean}  [cfg.mutuallyExclusive]   - the layer mutuallyExclusive (only group type)
+     * @param {boolean}  [cfg.externalWmsToggle]   - the layer provides parameters for external access
+     * @param {object}   [cfg.externalAccess]      - the layer external access
      */
     constructor(cfg) {
         super(cfg, requiredProperties, optionalProperties)
