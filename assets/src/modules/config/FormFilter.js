@@ -1,9 +1,9 @@
 /**
- * @module utils/FormFilter.js
+ * @module config/FormFilter.js
  * @name FormFilter
  * @copyright 2023 3Liz
  * @author DHONT René-Luc
- * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
+ * @license MPL-2.0
  */
 
 import { BaseObjectConfig } from './BaseObject.js';
@@ -154,16 +154,16 @@ export class FormFilterConfig {
     }
 
     /**
-     * The layer ids from config
-     * @type {string[]} the copy of the layer ids
+     * The copy of layer ids from config
+     * @type {string[]}
      */
     get layerIds() {
         return [...this._layerIds];
     }
 
     /**
-     * The element configs from config
-     * @type {FormFilterElementConfig[]} the copy of the edition layer configs
+     * The copy of element configs from config
+     * @type {FormFilterElementConfig[]}
      */
     get elementConfigs() {
         return [...this._configs];
