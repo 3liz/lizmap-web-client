@@ -1,12 +1,15 @@
 /**
  * @module config/LayerTree.js
+ * @name LayerTree
  * @copyright 2023 3Liz
  * @author DHONT René-Luc
- * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
+ * @license MPL-2.0
  */
 
+import { ValidationError, ConversionError } from './../Errors.js';
 import { Extent } from './../utils/Extent.js';
 import { AttributionConfig } from './Attribution.js';
+import { LayerConfig, LayersConfig } from './Layer.js';
 
 /**
  * Class representing a wMS layer Geographic Bounding Box
@@ -362,7 +365,7 @@ export class LayerTreeGroupConfig extends LayerTreeItemConfig {
 
     /**
      * Find layer names
-     * @returns {string[]}
+     * @returns {string[]} The layer names of all the tree layer
      */
     findTreeLayerConfigNames() {
         let names = []
@@ -378,7 +381,7 @@ export class LayerTreeGroupConfig extends LayerTreeItemConfig {
 
     /**
      * Find layer items
-     * @returns {LayerTreeLayer[]}
+     * @returns {LayerTreeLayerConfig[]} All the tree layer layers config
      */
     findTreeLayerConfigs() {
         let items = []
