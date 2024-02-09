@@ -1,5 +1,6 @@
 /**
  * @module modules/utils/Extent.js
+ * @name Extent
  * @copyright 2023 3Liz
  * @author DHONT René-Luc
  * @license MPL-2.0

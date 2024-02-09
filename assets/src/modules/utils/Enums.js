@@ -1,5 +1,6 @@
 /**
  * @module modules/utils/Enums.js
+ * @name Enums
  * @copyright 2023 3Liz
  * @author DHONT René-Luc
  * @license MPL-2.0
