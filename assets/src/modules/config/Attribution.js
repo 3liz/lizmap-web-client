@@ -18,7 +18,7 @@ const optionalAttributionProperties = {
 
 /**
  * Class representing an attribution
- * @class
+ * @class AttributionConfig
  * @augments BaseObjectConfig
  */
 export class AttributionConfig extends BaseObjectConfig {
