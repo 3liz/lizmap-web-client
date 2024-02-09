@@ -1,0 +1,38 @@
+name: 📖 Documentation
+
+on:
+  push:
+    tags:
+      - '*'
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  pages: write
+
+jobs:
+  jsdoc:
+    name: "🟨 JS-Doc"
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+
+      - name: Building docs
+        working-directory: docs/
+        run: make js || exit 0
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/js/assets/1.0.0/
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
