@@ -317,6 +317,8 @@ test.describe('Permalink', () => {
         // Reload to force applying hash with empty string styles
         await page.reload({ waitUntil: 'networkidle' });
 
+        // waiting for hash updated
+        await page.waitForTimeout(1000);
         // The url has changed
         const checked_url = new URL(page.url());
         await expect(checked_url.hash).not.toHaveLength(0);

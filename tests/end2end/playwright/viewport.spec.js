@@ -25,6 +25,8 @@ test.describe('Viewport devicePixelRatio 1', () => {
 
         // Go to the map
         await page.goto(url, { waitUntil: 'load' });
+        // Wait to let the config loaded
+        await page.waitForTimeout(1000);
         // Check that the get project config has been catched
         expect(requests).toHaveLength(1);
 
@@ -92,6 +94,8 @@ test.describe('Viewport devicePixelRatio 2', () => {
 
         // Go to the map
         await page.goto(url, { waitUntil: 'load' });
+        // Wait to let the config loaded
+        await page.waitForTimeout(1000);
         // Check that the get project config has been catched
         expect(requests).toHaveLength(1);
 
