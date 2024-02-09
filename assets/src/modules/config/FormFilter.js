@@ -1,6 +1,7 @@
 /**
  * @module utils/FormFilter.js
- * @copyright 2023 3Liz
+ * @name FormFilter
+ * @copyright 2025 3Liz
  * @author DHONT René-Luc
  * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
  */
@@ -26,7 +27,7 @@ const optionalProperties = {
 
 /**
  * Class representing a form filter element config
- * @class
+ * @class FormFilterElementConfig
  * @augments BaseObjectConfig
  */
 export class FormFilterElementConfig extends BaseObjectConfig {
