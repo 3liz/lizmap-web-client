@@ -1,8 +1,15 @@
+/**
+ * @module modules/Edition.js
+ * @name Edition
+ * @copyright 2023 3Liz
+ * @author DHONT René-Luc
+ * @license MPL-2.0
+ */
+
 import {mainLizmap, mainEventDispatcher} from '../modules/Globals.js';
 
 /**
  * Edition Class
- * @Class Edition
  */
 export default class Edition {
 
