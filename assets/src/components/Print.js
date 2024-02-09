@@ -196,7 +196,7 @@ export default class Print extends HTMLElement {
         const deltaY = (this._maskHeight * this._printScale) / 2 / INCHES_PER_METER / DOTS_PER_INCH;
         let extent = [center[0] - deltaX, center[1] - deltaY, center[0] + deltaX, center[1] + deltaY];
         const mapProjection = mainLizmap.config.options.projection.ref;
-        const projectProjection = mainLizmap.config.options.qgisProjectProjection.ref;
+        const projectProjection = mainLizmap.config.options.qgisProjectProjection.ref ? mainLizmap.config.options.qgisProjectProjection.ref : mapProjection;
 
         if(projectProjection != mapProjection){
             extent = transformExtent(extent, mapProjection, projectProjection);
@@ -208,7 +208,7 @@ export default class Print extends HTMLElement {
             VERSION: '1.3.0',
             FORMAT: this._printFormat,
             TRANSPARENT: true,
-            SRS: projectProjection,
+            CRS: projectProjection,
             DPI: this._printDPI,
             TEMPLATE: this._printTemplates[this._printTemplate].title
         };
