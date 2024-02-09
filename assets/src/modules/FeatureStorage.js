@@ -1,3 +1,11 @@
+/**
+ * @module modules/FeatureStorage.js
+ * @name FeatureStorage
+ * @copyright 2023 3Liz
+ * @author DHONT René-Luc
+ * @license MPL-2.0
+ */
+
 import {mainEventDispatcher} from '../modules/Globals.js';
 
 export default class FeatureStorage {
