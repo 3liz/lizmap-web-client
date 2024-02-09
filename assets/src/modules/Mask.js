@@ -19,6 +19,11 @@
 // IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 // CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+/**
+ * @module Mask.js
+ * @name Mask
+ */
+
 import Layer from 'ol/layer/Layer.js';
 import {createCanvasContext2D} from 'ol/dom.js';
 import {toRadians} from 'ol/math.js';
