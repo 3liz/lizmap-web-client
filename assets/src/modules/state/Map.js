@@ -29,17 +29,12 @@ const mapStateProperties = {
  */
 export class MapState extends EventDispatcher {
 
-<<<<<<< HEAD
-    constructor() {
-        super()
-=======
     /**
      * Creating the map state
      * @param {string|undefined} [startupFeatures] - The features to highlight at startup in GeoJSON
      */
     constructor(startupFeatures) {
         super();
->>>>>>> 7e4925461 (JSDoc - state/Map.js)
         // default values
         this._projection = 'EPSG:3857'
         this._center = [0, 0]
@@ -189,8 +184,6 @@ export class MapState extends EventDispatcher {
     get pointScaleDenominator() {
         return this._pointScaleDenominator;
     }
-<<<<<<< HEAD
-=======
 
     /**
      * The features to highlight at startup in GeoJSON
@@ -199,5 +192,4 @@ export class MapState extends EventDispatcher {
     get startupFeatures() {
         return this._startupFeatures;
     }
->>>>>>> 7e4925461 (JSDoc - state/Map.js)
 }
