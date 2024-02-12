@@ -1,6 +1,17 @@
+/**
+ * @module state/LayerTree.js
+ * @name LayerTreeState
+ * @copyright 2023 3Liz
+ * @author DHONT René-Luc
+ * @license MPL-2.0
+ */
+
 import EventDispatcher from './../../utils/EventDispatcher.js';
-import { MapGroupState, MapLayerState } from './MapLayer.js';
-import { getDefaultLayerIcon, LayerIconSymbology, LayerSymbolsSymbology, LayerGroupSymbology } from './Symbology.js';
+import { LayerConfig } from './../config/Layer.js';
+import { AttributionConfig } from './../config/Attribution.js'
+import { LayerStyleConfig, LayerGeographicBoundingBoxConfig, LayerBoundingBoxConfig } from './../config/LayerTree.js';
+import { MapItemState, MapGroupState, MapLayerState } from './MapLayer.js';
+import { getDefaultLayerIcon, LayerIconSymbology, LayerSymbolsSymbology, LayerGroupSymbology, SymbolIconSymbology, BaseIconSymbology, BaseSymbolsSymbology } from './Symbology.js';
 import { convertBoolean } from './../utils/Converters.js';
 
 /**
@@ -220,7 +231,7 @@ export class LayerTreeItemState extends EventDispatcher {
 
     /**
      * Get item visibility taking care of this.visibility and scale
-     * @param scaleDenominator
+     * @param {number} scaleDenominator the scale denominator for which the visibility has to be evaluated
      * @returns {boolean} the item visibility
      */
     isVisible(scaleDenominator) {
@@ -229,7 +240,7 @@ export class LayerTreeItemState extends EventDispatcher {
         }
 
         if(this._mapItemState.wmsMinScaleDenominator !== undefined && this._mapItemState.wmsMaxScaleDenominator !== undefined){
-            return this.visibility && this._mapItemState.wmsMinScaleDenominator < scaleDenominator 
+            return this.visibility && this._mapItemState.wmsMinScaleDenominator < scaleDenominator
             && scaleDenominator < this._mapItemState.wmsMaxScaleDenominator;
         }
         return this.visibility;
@@ -330,7 +341,7 @@ export class LayerTreeGroupState extends LayerTreeItemState {
     /**
      * Iterate through children items
      * @generator
-     * @yields {LayerTreeItem} The next child item
+     * @yields {LayerTreeItemState} The next child item
      */
     *getChildren() {
         for (const item of this._items) {
@@ -340,7 +351,7 @@ export class LayerTreeGroupState extends LayerTreeItemState {
 
     /**
      * Find layer names
-     * @returns {string[]}
+     * @returns {string[]} The layer names of all tree layers
      */
     findTreeLayerNames() {
         let names = []
@@ -356,7 +367,7 @@ export class LayerTreeGroupState extends LayerTreeItemState {
 
     /**
      * Find layer items
-     * @returns {LayerTreeLayerState[]}
+     * @returns {LayerTreeLayerState[]} The tree layer states of all tree layers
      */
     findTreeLayers() {
         let items = []
@@ -372,7 +383,7 @@ export class LayerTreeGroupState extends LayerTreeItemState {
 
     /**
      * Find layer and group items
-     * @returns {LayerTreeLayerState[]}
+     * @returns {LayerTreeLayerState[]} All tThe tree layer and tree group states
      */
     findTreeLayersAndGroups() {
         let items = []
@@ -460,7 +471,7 @@ export class LayerTreeLayerState extends LayerTreeItemState {
     /**
      * Update WMS selected layer style name
      * based on wmsStyles list
-     * @param {string} styleName
+     * @param {string} styleName - the WMS layer style name to select
      */
     set wmsSelectedStyleName(styleName) {
         this._mapItemState.wmsSelectedStyleName = styleName;
