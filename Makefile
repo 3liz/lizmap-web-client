@@ -208,6 +208,12 @@ saas_deploy_snap:
 saas_release: check-release
 	saas_release_lizmap stable $(SAAS_LIZMAP_VERSION) $(GENERIC_PACKAGE_PATH)
 
+js-doc:
+	rm -rf docs/js
+	npx jsdoc --package assets/package.json -r assets/src/ -d docs/js/
+	# JSDoc errors should be cleaned from the logs
+	exit 0
+
 docker-build: debug $(GENERIC_PACKAGE_PATH) docker-build-ci
 
 docker-build-ci: debug $(DOCKER_MANIFEST)
