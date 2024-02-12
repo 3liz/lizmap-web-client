@@ -1,7 +1,18 @@
+/**
+ * @module state/MapLayer.js
+ * @name MapLayerState
+ * @copyright 2023 3Liz
+ * @author DHONT René-Luc
+ * @license MPL-2.0
+ */
+
 import EventDispatcher from './../../utils/EventDispatcher.js';
 import { createEnum } from './../utils/Enums.js';
-import { LayerStyleConfig } from './../config/LayerTree.js';
-import { LayerGroupState, LayerLayerState, LayerVectorState } from './Layer.js';
+import { LayerConfig } from './../config/Layer.js';
+import { AttributionConfig } from './../config/Attribution.js'
+import { LayerStyleConfig, LayerGeographicBoundingBoxConfig, LayerBoundingBoxConfig } from './../config/LayerTree.js';
+import { LayerItemState, LayerGroupState, LayerLayerState, LayerVectorState, LayerRasterState } from './Layer.js';
+import { LayerSymbolsSymbology, LayerIconSymbology, LayerGroupSymbology } from './Symbology.js';
 
 /**
  * Enum for map layer load status
@@ -380,7 +391,7 @@ export class MapGroupState extends MapItemState {
 
     /**
      * Find layer names
-     * @returns {string[]}
+     * @returns {string[]} The layer names of all map layers
      */
     findMapLayerNames() {
         let names = []
@@ -397,9 +408,9 @@ export class MapGroupState extends MapItemState {
     /**
      * Count map layers by exploding the layers within every "group as layer" groups.
      * Used to get the actual total layers number for ordering purpose (i.e. assign correct zIndex value to each map layer)
-     * @returns {number}
+     * @returns {number} The exploded layers count
      */
-     countExplodedMapLayers() {
+    countExplodedMapLayers() {
         let layersCount = 0;
         for(const item of this.getChildren()) {
             if (item instanceof MapLayerState) {
@@ -421,7 +432,7 @@ export class MapGroupState extends MapItemState {
 
     /**
      * Find layer items
-     * @returns {MapLayerState[]}
+     * @returns {MapLayerState[]} The layer names of all map layers
      */
     findMapLayers() {
         let items = []
@@ -437,7 +448,7 @@ export class MapGroupState extends MapItemState {
 
     /**
      * Find layer and group items
-     * @returns {Array<MapLayerState|MapGroupState>}
+     * @returns {Array<MapLayerState|MapGroupState>} All tThe map layer and map group states
      */
     findMapLayersAndGroups() {
         let items = []
@@ -574,7 +585,7 @@ export class MapLayerState extends MapItemState {
     /**
      * Update WMS selected layer style name
      * based on wmsStyles list
-     * @param {string} styleName
+     * @param {string} styleName - the WMS layer style name to select
      */
     set wmsSelectedStyleName(styleName) {
         this._layerItemState.wmsSelectedStyleName = styleName;
