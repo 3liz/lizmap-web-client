@@ -9,7 +9,7 @@
 import EventDispatcher from './../../utils/EventDispatcher.js';
 import { LayerConfig } from './../config/Layer.js';
 import { AttributionConfig } from './../config/Attribution.js'
-import { BaseLayerTypes, BaseLayersConfig, BaseLayerConfig, EmptyBaseLayersConfig, XyzBaseLayersConfig, BingBaseLayersConfig, WmtsBaseLayersConfig, WmsBaseLayersConfig } from './../config/BaseLayer.js';
+import { BaseLayerTypes, BaseLayersConfig, BaseLayerConfig, EmptyBaseLayerConfig, XyzBaseLayerConfig, BingBaseLayerConfig, WmtsBaseLayerConfig, WmsBaseLayerConfig } from './../config/BaseLayer.js';
 import { LayerVectorState, LayerRasterState, LayerGroupState, LayersAndGroupsCollection } from './Layer.js'
 import { MapLayerLoadStatus } from './MapLayer.js';
 
@@ -162,7 +162,7 @@ export class BaseLayerState extends EventDispatcher {
 export class EmptyBaseLayerState extends BaseLayerState {
     /**
      * Create a base layers empty state based on the empty base layer config
-     * @param {EmptyBaseLayersConfig} baseLayerCfg - the lizmap empty base layer config object
+     * @param {EmptyBaseLayerConfig} baseLayerCfg - the lizmap empty base layer config object
      * @param {LayerGroupState}       [itemState]  - the lizmap empty layer group state
      */
     constructor(baseLayerCfg, itemState = null ) {
@@ -181,7 +181,7 @@ export class EmptyBaseLayerState extends BaseLayerState {
 export class XyzBaseLayerState extends BaseLayerState {
     /**
      * Create a base layers xyz state based on the xyz base layer config
-     * @param {XyzBaseLayersConfig} baseLayerCfg - the lizmap xyz base layer config object
+     * @param {XyzBaseLayerConfig} baseLayerCfg - the lizmap xyz base layer config object
      * @param {LayerRasterState}    [itemState]  - the lizmap xyz layer layer state
      */
     constructor(baseLayerCfg, itemState = null ) {
@@ -232,7 +232,7 @@ export class XyzBaseLayerState extends BaseLayerState {
 export class BingBaseLayerState extends BaseLayerState {
     /**
      * Create a base layers bing state based on the bing base layer config
-     * @param {BingBaseLayersConfig} baseLayerCfg - the lizmap bing base layer config object
+     * @param {BingBaseLayerConfig} baseLayerCfg - the lizmap bing base layer config object
      * @param {LayerRasterState}     [itemState]  - the lizmap bing layer layer state
      */
     constructor(baseLayerCfg, itemState = null ) {
@@ -259,7 +259,7 @@ export class BingBaseLayerState extends BaseLayerState {
 export class WmtsBaseLayerState extends BaseLayerState {
     /**
      * Create a base layers WMTS state based on the WMTS base layer config
-     * @param {WmtsBaseLayersConfig} baseLayerCfg - the lizmap WMTS base layer config object
+     * @param {WmtsBaseLayerConfig} baseLayerCfg - the lizmap WMTS base layer config object
      * @param {LayerRasterState}      [itemState]  - the lizmap WMTS layer layer state
      */
     constructor(baseLayerCfg, itemState = null ) {
@@ -334,7 +334,7 @@ export class WmtsBaseLayerState extends BaseLayerState {
 export class WmsBaseLayerState extends BaseLayerState {
     /**
      * Create a base layers WMS state based on the WMS base layer config
-     * @param {WmsBaseLayersConfig} baseLayerCfg - the lizmap WMS base layer config object
+     * @param {WmsBaseLayerConfig} baseLayerCfg - the lizmap WMS base layer config object
      * @param {LayerRasterState}    [itemState]  - the lizmap WMS layer layer state
      */
     constructor(baseLayerCfg, itemState = null ) {
