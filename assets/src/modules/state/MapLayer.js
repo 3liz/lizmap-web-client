@@ -448,7 +448,7 @@ export class MapGroupState extends MapItemState {
 
     /**
      * Find layer and group items
-     * @returns {Array<MapLayerState|MapGroupState>} All tThe map layer and map group states
+     * @returns {Array<MapLayerState|MapGroupState>} All map layers and map group states
      */
     findMapLayersAndGroups() {
         let items = []
@@ -585,7 +585,7 @@ export class MapLayerState extends MapItemState {
     /**
      * Update WMS selected layer style name
      * based on wmsStyles list
-     * @param {string} styleName - the WMS layer style name to select
+     * @param {string} styleName - The WMS layer style name to select
      */
     set wmsSelectedStyleName(styleName) {
         this._layerItemState.wmsSelectedStyleName = styleName;
