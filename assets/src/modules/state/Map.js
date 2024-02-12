@@ -1,3 +1,11 @@
+/**
+ * @module state/Map.js
+ * @name MapState
+ * @copyright 2023 3Liz
+ * @author DHONT René-Luc
+ * @license MPL-2.0
+ */
+
 import { ValidationError } from './../Errors.js';
 import EventDispatcher from './../../utils/EventDispatcher.js';
 import { convertNumber, convertBoolean } from './../utils/Converters.js';
@@ -14,8 +22,17 @@ const mapStateProperties = {
     pointScaleDenominator: {type: 'number'},
 };
 
+/**
+ * Class representing the map state
+ * @class
+ * @augments EventDispatcher
+ */
 export class MapState extends EventDispatcher {
 
+    /**
+     * Creating the map state
+     * @param {string|undefined} [startupFeatures] - The features to highlight at startup in GeoJSON
+     */
     constructor(startupFeatures) {
         super();
         // default values
@@ -33,7 +50,15 @@ export class MapState extends EventDispatcher {
 
     /**
      * Update the map state
-     * @param {object} evt - the map state changed object
+     * @param {object}   evt                         - the map state changed object
+     * @param {string}   [evt.projection]            - the map projection code
+     * @param {number[]} [evt.center]                - the map center
+     * @param {number[]} [evt.size]                  - the map size
+     * @param {number[]} [evt.extent]                - the map extent (calculate by the map view)
+     * @param {number}   [evt.resolution]            - the map resolution
+     * @param {number}   [evt.scaleDenominator]      - the map scale denominator
+     * @param {number}   [evt.pointResolution]       - the map resolution (calculate from the center)
+     * @param {number}   [evt.pointScaleDenominator] - the map scale denominator (calculate from the center)
      */
     update(evt) {
         let updatedProperties = {};
@@ -162,9 +187,9 @@ export class MapState extends EventDispatcher {
     }
 
     /**
-    * The features to highlight at startup in GeoJSON
-    * @type {string|undefined}
-    */
+     * The features to highlight at startup in GeoJSON
+     * @type {string|undefined}
+     */
     get startupFeatures() {
         return this._startupFeatures;
     }
