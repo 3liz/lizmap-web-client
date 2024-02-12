@@ -4528,6 +4528,10 @@ window.lizMap = function() {
                 // to let the JS external script modify some plugin cfg layers properties
                 // before Lizmap will create the layer tree
                 self.config = config;
+                /**
+                 * Event when the tree is going to be created
+                 * @event beforetreecreated
+                 */
                 self.events.triggerEvent("beforetreecreated", self);
                 buildNativeScales();
 
@@ -4536,6 +4540,10 @@ window.lizMap = function() {
                 // Re-save the config in self
                 self.config = config;
                 self.keyValueConfig = keyValueConfig;
+                /**
+                 * Event when the tree has been created
+                 * @event treecreated
+                 */
                 self.events.triggerEvent("treecreated", self);
 
                 // create the map
@@ -4545,10 +4553,18 @@ window.lizMap = function() {
                 self.layers = layers;
                 self.baselayers = baselayers;
                 self.controls = controls;
+                /**
+                 * Event when the map has been created
+                 * @event mapcreated
+                 */
                 self.events.triggerEvent("mapcreated", self);
 
                 // create the switcher
                 createSwitcher();
+                /**
+                 * Event when layers have been added
+                 * @event layersadded
+                 */
                 self.events.triggerEvent("layersadded", self);
 
 
@@ -4789,6 +4805,10 @@ window.lizMap = function() {
  * but after this file
  */
 lizMap.events.on({
+    /**
+     * Event when the map has been created
+     * @event mapcreated
+     */
     'mapcreated':function(evt){
     }
     ,

@@ -1,8 +1,19 @@
+/**
+ * @module state/Layer.js
+ * @name LayerState
+ * @copyright 2023 3Liz
+ * @author DHONT René-Luc
+ * @license MPL-2.0
+ */
+
 import EventDispatcher from './../../utils/EventDispatcher.js';
 import { ValidationError } from './../Errors.js';
 import { convertBoolean, convertNumber } from './../utils/Converters.js';
-import { LayerGeographicBoundingBoxConfig, LayerTreeGroupConfig } from './../config/LayerTree.js';
-import { buildLayerSymbology, LayerSymbolsSymbology } from './Symbology.js';
+import { Extent } from './../utils/Extent.js';
+import { LayerConfig } from './../config/Layer.js';
+import { AttributionConfig } from './../config/Attribution.js'
+import { LayerStyleConfig, LayerGeographicBoundingBoxConfig, LayerBoundingBoxConfig, LayerTreeGroupConfig, LayerTreeItemConfig } from './../config/LayerTree.js';
+import { buildLayerSymbology, LayerSymbolsSymbology, LayerIconSymbology, LayerGroupSymbology } from './Symbology.js';
 
 /**
  * Class representing a layer item state: could be group, vector or raster layer
@@ -532,8 +543,7 @@ export class LayerLayerState extends LayerItemState {
      * Creating a layer state
      * @param {LayerTreeItemConfig} layerTreeItemCfg - the layer item config
      * @param {number[]}            layersOrder      - the layers order
-     * @param {LayerItemState}      [parentGroup]    - the parent layer group
-     * @param parentMapGroup
+     * @param {LayerGroupState}     [parentMapGroup] - the parent layer group
      */
     constructor(layerTreeItemCfg, layersOrder, parentMapGroup) {
         super('layer', layerTreeItemCfg, parentMapGroup);
@@ -632,7 +642,7 @@ export class LayerLayerState extends LayerItemState {
     /**
      * Update WMS selected layer style name
      * based on wmsStyles list
-     * @param {string} styleName
+     * @param {string} styleName - the WMS layer style name to select
      */
     set wmsSelectedStyleName(styleName) {
         if (styleName == '') {
@@ -719,8 +729,7 @@ export class LayerVectorState extends LayerLayerState {
      * Creating a vector layer state
      * @param {LayerTreeItemConfig} layerTreeItemCfg - the layer item config
      * @param {number[]}            layersOrder      - the layers order
-     * @param {LayerItemState}      [parentGroup]    - the parent layer group
-     * @param parentMapGroup
+     * @param {LayerGroupState}     [parentMapGroup] - the parent layer group
      */
     constructor(layerTreeItemCfg, layersOrder, parentMapGroup) {
         super(layerTreeItemCfg, layersOrder, parentMapGroup)
@@ -828,7 +837,7 @@ export class LayerVectorState extends LayerLayerState {
 
     /**
      * Update vector layer selection
-     * @param {?string} select - The selection
+     * @param {?string} selectIds - The selection Ids
      */
     set selectedFeatures(selectIds) {
         // Validate selectIds
@@ -1109,8 +1118,7 @@ export class LayerRasterState extends LayerLayerState {
      * Creating a raster layer state
      * @param {LayerTreeItemConfig} layerTreeItemCfg - the layer item config
      * @param {string[]}            layersOrder      - the layers order
-     * @param {LayerItemState}      [parentGroup]    - the parent layer group
-     * @param parentMapGroup
+     * @param {LayerGroupState}     [parentMapGroup] - the parent layer group
      */
     constructor(layerTreeItemCfg, layersOrder, parentMapGroup) {
         super(layerTreeItemCfg, layersOrder, parentMapGroup)
@@ -1146,9 +1154,8 @@ export class LayerGroupState extends LayerItemState {
     /**
      * Creating a layer group state
      * @param {LayerTreeGroupConfig} layerTreeGroupCfg - the layer item config
-     * @param {number[]}            layersOrder        - the layers order
-     * @param {LayerItemState}      [parentGroup]      - the parent layer group
-     * @param parentMapGroup
+     * @param {number[]}             layersOrder       - the layers order
+     * @param {LayerGroupState}     [parentMapGroup]  - the parent layer group
      */
     constructor(layerTreeGroupCfg, layersOrder, parentMapGroup) {
         super('group', layerTreeGroupCfg, parentMapGroup);
@@ -1320,7 +1327,7 @@ export class LayerGroupState extends LayerItemState {
 
     /**
      * Find layer names
-     * @returns {string[]}
+     * @returns {string[]} The layer names of all layers
      */
     findLayerNames() {
         let names = []
@@ -1336,7 +1343,7 @@ export class LayerGroupState extends LayerItemState {
 
     /**
      * Find layer items
-     * @returns {LayerLayerState[]}
+     * @returns {LayerLayerState[]} The layer states of all layers
      */
     findLayers() {
         let items = []
@@ -1352,7 +1359,7 @@ export class LayerGroupState extends LayerItemState {
 
     /**
      * Find group items
-     * @returns {LayerGroupState[]}
+     * @returns {LayerGroupState[]} The group states of all groups
      */
     findGroups() {
         let items = []

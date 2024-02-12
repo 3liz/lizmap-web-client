@@ -1,0 +1,62 @@
+name: 📖 Documentation
+
+on:
+  push:
+#    tags:
+#      - '*'
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  pages: write
+
+jobs:
+  jsdoc:
+    name: "🟨 JS-Doc"
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+
+      - name: Building docs
+        run: make js-doc || exit 0
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/js/assets/1.0.0/
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+#      - name: Branch name
+#        id: branch-name
+#        run: make debug | grep SHORT_VERSION= >> "$GITHUB_OUTPUT"
+#
+#      - name: Install multi deploy version
+#        run: npm i @koumoul/gh-pages-multi
+#
+#      - name: Token
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.TOKEN_TEST }}
+#        run: git remote set-url origin https://${{ secrets.TOKEN_TEST }}@github.com/Gustry/lizmap-web-client.git
+#
+#      - name: Deploy build
+#        env:
+#          BRANCH_NAME: ${{ steps.branch-name.outputs.SHORT_VERSION }}
+#        run: |
+#          git config --global user.name "Bot"
+#          git config --global user.email "no@mail.org"
+#          ./node_modules/.bin/gh-pages-multi deploy -s docs/js/assets/1.0.0/ -t $BRANCH_NAME -v
+
+      - name: Summary
+        run: echo "### Published ! :rocket:" >> $GITHUB_STEP_SUMMARY
