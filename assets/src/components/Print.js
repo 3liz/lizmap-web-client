@@ -196,7 +196,7 @@ export default class Print extends HTMLElement {
         const deltaY = (this._maskHeight * this._printScale) / 2 / INCHES_PER_METER / DOTS_PER_INCH;
         let extent = [center[0] - deltaX, center[1] - deltaY, center[0] + deltaX, center[1] + deltaY];
         const mapProjection = mainLizmap.config.options.projection.ref;
-        const projectProjection = mainLizmap.config.options.qgisProjectProjection.ref;
+        const projectProjection = mainLizmap.config.options.qgisProjectProjection.ref ? mainLizmap.config.options.qgisProjectProjection.ref : mapProjection;
 
         if(projectProjection != mapProjection){
             extent = transformExtent(extent, mapProjection, projectProjection);
@@ -208,7 +208,7 @@ export default class Print extends HTMLElement {
             VERSION: '1.3.0',
             FORMAT: this._printFormat,
             TRANSPARENT: true,
-            SRS: projectProjection,
+            CRS: projectProjection,
             DPI: this._printDPI,
             TEMPLATE: this._printTemplates[this._printTemplate].title
         };
@@ -253,13 +253,20 @@ export default class Print extends HTMLElement {
                 orderedVisibleLayers[layer.layerOrder] = layer;
             }
         });
+
+        // Selection and filter
+        const filter = [];
+        const selection = [];
+        const legendOn = [];
+        const legendOff = [];
         for (const layerIndex of Object.keys(orderedVisibleLayers).reverse()) {
             const layer = orderedVisibleLayers[layerIndex];
+            const layerWmsParams = layer.wmsParameters;
             // Add layer to the list of printed layers
-            printLayers.push(layer.wmsName);
+            printLayers.push(layerWmsParams['LAYERS']);
 
             // Optionally add layer style if needed (same order as layers )
-            styleLayers.push(layer.wmsSelectedStyleName);
+            styleLayers.push(layerWmsParams['STYLES']);
 
             // Handle qgis layer opacity otherwise client value override it
             if (layer.layerConfig?.opacity) {
@@ -267,30 +274,35 @@ export default class Print extends HTMLElement {
             } else {
                 opacityLayers.push(parseInt(255 * layer.opacity));
             }
+            if ('FILTERTOKEN' in layerWmsParams) {
+                filter.push(layerWmsParams['FILTERTOKEN']);
+            }
+            if ('SELECTIONTOKEN' in layerWmsParams) {
+                selection.push(layerWmsParams['SELECTIONTOKEN']);
+            }
+            if ('LEGEND_ON' in layerWmsParams) {
+                legendOn.push(layerWmsParams['LEGEND_ON']);
+            }
+            if ('LEGEND_OFF' in layerWmsParams) {
+                legendOff.push(layerWmsParams['LEGEND_OFF']);
+            }
         }
 
         wmsParams[this._mainMapID + ':LAYERS'] = printLayers.join(',');
         wmsParams[this._mainMapID + ':STYLES'] = styleLayers.join(',');
         wmsParams[this._mainMapID + ':OPACITIES'] = opacityLayers.join(',');
 
-        // Selection and filter
-        const filter = [];
-        const selection = [];
-        for (const layerConfig of Object.values(mainLizmap.config.layers)) {
-            const filtertoken = layerConfig?.request_params?.filtertoken;
-            const selectiontoken = layerConfig?.request_params?.selectiontoken;
-            if (filtertoken) {
-                filter.push(filtertoken);
-            }
-            if (selectiontoken) {
-                selection.push(selectiontoken);
-            }
-        }
         if (filter.length) {
             wmsParams.FILTERTOKEN = filter.join(';');
         }
         if (selection.length) {
             wmsParams.SELECTIONTOKEN = selection.join(';');
+        }
+        if (legendOn.length) {
+            wmsParams.LEGEND_ON = legendOn.join(';');
+        }
+        if (legendOff.length) {
+            wmsParams.LEGEND_OFF = legendOff.join(';');
         }
 
         // If user has made a draw, print it with redlining
