@@ -61,7 +61,7 @@ export class OptionsConfig  extends BaseObjectConfig {
      * @param {boolean}  [cfg.fixed_scale_overview_map] - does the Overview map have fixed scale ?
      * @param {boolean}  [cfg.use_native_zoom_levels]   - does the map use native zoom levels ?
      * @param {boolean}  [cfg.hide_numeric_scale_value] - does the scale line hide numeric scale value ?
-     * @param {Boolean}  [cfg.hideGroupCheckbox=false]  - are groups checkbox hidden ?
+     * @param {boolean}  [cfg.hideGroupCheckbox]        - are groups checkbox hidden ?
      */
     constructor(cfg) {
         if (!cfg || typeof cfg !== "object") {
