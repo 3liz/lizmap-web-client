@@ -1,3 +1,11 @@
+/**
+ * @module MGRS.js
+ * @name MGRS
+ * @copyright 2023 3Liz
+ * @author BOISTEAULT Nicolas
+ * @license MPL-2.0
+ */
+
 import Graticule from 'ol/layer/Graticule.js';
 
 import Point from 'ol/geom/Point.js';
@@ -6,6 +14,8 @@ import Feature from 'ol/Feature.js';
 
 import {Text, Fill, Stroke, Style} from 'ol/style.js';
 
+import {Coordinate} from 'ol/coordinate.js'
+
 import {
     applyTransform,
     equals,
@@ -13,6 +23,7 @@ import {
     isEmpty,
     getIntersection,
     intersects,
+    Extent
 } from 'ol/extent.js';
 
 import {
@@ -22,10 +33,111 @@ import {
     get as getProjection,
 } from 'ol/proj.js';
 
+import Projection from 'ol/proj/Projection.js';
+
 import {clamp} from 'ol/math.js';
 
 import { forward, toPoint } from '../dependencies/mgrs.js';
 import { mainLizmap } from './Globals.js';
+
+/**
+ * @typedef {object} Options
+ * @property {string} [className='ol-layer'] A CSS class name to set to the layer element.
+ * @property {number} [opacity=1] Opacity (0, 1).
+ * @property {boolean} [visible=true] Visibility.
+ * @property {Extent} [extent] The bounding extent for layer rendering.  The layer will not be
+ * rendered outside of this extent.
+ * @property {number} [zIndex] The z-index for layer rendering.  At rendering time, the layers
+ * will be ordered, first by Z-index and then by position. When `undefined`, a `zIndex` of 0 is assumed
+ * for layers that are added to the map's `layers` collection, or `Infinity` when the layer's `setMap()`
+ * method was used.
+ * @property {number} [minResolution] The minimum resolution (inclusive) at which this layer will be
+ * visible.
+ * @property {number} [maxResolution] The maximum resolution (exclusive) below which this layer will
+ * be visible.
+ * @property {number} [minZoom] The minimum view zoom level (exclusive) above which this layer will be
+ * visible.
+ * @property {number} [maxZoom] The maximum view zoom level (inclusive) at which this layer will
+ * be visible.
+ * @property {number} [maxLines=100] The maximum number of meridians and
+ * parallels from the center of the map. The default value of 100 means that at
+ * most 200 meridians and 200 parallels will be displayed. The default value is
+ * appropriate for conformal projections like Spherical Mercator. If you
+ * increase the value, more lines will be drawn and the drawing performance will
+ * decrease.
+ * @property {Stroke} [strokeStyle] The
+ * stroke style to use for drawing the graticule. If not provided, the following stroke will be used:
+ * ```js
+ * new Stroke({
+ *   color: 'rgba(0, 0, 0, 0.2)' // a not fully opaque black
+ * });
+ * ```
+ * @property {number} [targetSize=100] The target size of the graticule cells,
+ * in pixels.
+ * @property {boolean} [showLabels=false] Render a label with the respective
+ * latitude/longitude for each graticule line.
+ * @property {function(number):string} [lonLabelFormatter] Label formatter for
+ * longitudes. This function is called with the longitude as argument, and
+ * should return a formatted string representing the longitude. By default,
+ * labels are formatted as degrees, minutes, seconds and hemisphere.
+ * @property {function(number):string} [latLabelFormatter] Label formatter for
+ * latitudes. This function is called with the latitude as argument, and
+ * should return a formatted string representing the latitude. By default,
+ * labels are formatted as degrees, minutes, seconds and hemisphere.
+ * @property {number} [lonLabelPosition=0] Longitude label position in fractions
+ * (0..1) of view extent. 0 means at the bottom of the viewport, 1 means at the
+ * top.
+ * @property {number} [latLabelPosition=1] Latitude label position in fractions
+ * (0..1) of view extent. 0 means at the left of the viewport, 1 means at the
+ * right.
+ * @property {Text} [lonLabelStyle] Longitude label text
+ * style. If not provided, the following style will be used:
+ * ```js
+ * new Text({
+ *   font: '12px Calibri,sans-serif',
+ *   textBaseline: 'bottom',
+ *   fill: new Fill({
+ *     color: 'rgba(0,0,0,1)'
+ *   }),
+ *   stroke: new Stroke({
+ *     color: 'rgba(255,255,255,1)',
+ *     width: 3
+ *   })
+ * });
+ * ```
+ * Note that the default's `textBaseline` configuration will not work well for
+ * `lonLabelPosition` configurations that position labels close to the top of
+ * the viewport.
+ * @property {Text} [latLabelStyle] Latitude label text style.
+ * If not provided, the following style will be used:
+ * ```js
+ * new Text({
+ *   font: '12px Calibri,sans-serif',
+ *   textAlign: 'end',
+ *   fill: new Fill({
+ *     color: 'rgba(0,0,0,1)'
+ *   }),
+ *   stroke: Stroke({
+ *     color: 'rgba(255,255,255,1)',
+ *     width: 3
+ *   })
+ * });
+ * ```
+ * Note that the default's `textAlign` configuration will not work well for
+ * `latLabelPosition` configurations that position labels close to the left of
+ * the viewport.
+ * @property {Array<number>} [intervals=[90, 45, 30, 20, 10, 5, 2, 1, 30/60, 20/60, 10/60, 5/60, 2/60, 1/60, 30/3600, 20/3600, 10/3600, 5/3600, 2/3600, 1/3600]]
+ * Intervals (in degrees) for the graticule. Example to limit graticules to 30 and 10 degrees intervals:
+ * ```js
+ * [30, 10]
+ * ```
+ * @property {boolean} [wrapX=true] Whether to repeat the graticule horizontally.
+ * @property {object} [properties] Arbitrary observable properties. Can be accessed with `#get()` and `#set()`.
+ */
+
+/**
+ * @augments Graticule
+ */
 class MGRS extends Graticule {
 
     /**
@@ -54,7 +166,7 @@ class MGRS extends Graticule {
      * @param {number} minLat Minimal latitude.
      * @param {number} maxLat Maximal latitude.
      * @param {number} squaredTolerance Squared tolerance.
-     * @param {import("../extent.js").Extent} extent Extent.
+     * @param {Extent} extent Extent.
      * @param {number} index Index.
      * @returns {number} Index.
      * @private
@@ -115,9 +227,9 @@ class MGRS extends Graticule {
 
     /**
      * Update geometries in the source based on current view
-     * @param {import("../extent").Extent} extent Extent
+     * @param {Extent} extent Extent
      * @param {number} resolution Resolution
-     * @param {import("../proj/Projection.js").default} projection Projection
+     * @param {Projection} projection Projection
      */
     loaderFunction(extent, resolution, projection) {
         this.loadedExtent_ = extent;
@@ -222,8 +334,8 @@ class MGRS extends Graticule {
     }
 
     /**
-     * @param {import("../extent.js").Extent} extent Extent.
-     * @param {import("../coordinate.js").Coordinate} center Center.
+     * @param {Extent} extent Extent.
+     * @param {Coordinate} center Center.
      * @param {number} resolution Resolution.
      * @param {number} squaredTolerance Squared tolerance.
      * @private
@@ -440,7 +552,9 @@ class MGRS extends Graticule {
                                 let label = '';
                                 try {
                                     label = forward([leftBottomCoords[0] + delta, leftBottomCoords[1] + delta], 0);
-                                } catch (error) {}
+                                } catch (error) {
+                                    console.log(error);
+                                }
                                 parallel.set('label', label, true);
 
                                 this.lines_.push(parallel);

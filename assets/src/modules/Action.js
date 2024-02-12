@@ -1,3 +1,11 @@
+/**
+ * @module modules/Action.js
+ * @name Action
+ * @copyright 2023 3Liz
+ * @author DHONT René-Luc
+ * @license MPL-2.0
+ */
+
 import { mainLizmap } from '../modules/Globals.js';
 import { Vector as VectorSource } from 'ol/source.js';
 import { Vector as VectorLayer } from 'ol/layer.js';
@@ -435,7 +443,11 @@ export default class Action {
                 this.runCallbacks(action, features);
             }
 
-            // Lizmap event to allow other scripts to process the data if needed
+            /**
+             * Lizmap event to allow other scripts to process the data if needed
+             * @event actionResultReceived
+             * @property {string} action Name of the action
+             */
             lizMap.events.triggerEvent("actionResultReceived",
                 {
                     'action': action,

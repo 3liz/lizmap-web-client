@@ -1,8 +1,9 @@
 /**
- * @module utils/Converters.js
+ * @module modules/utils/Converters.js
+ * @name Converters
  * @copyright 2023 3Liz
  * @author DHONT René-Luc
- * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
+ * @license MPL-2.0
  */
 
 import { ConversionError } from './../Errors.js';

@@ -1,24 +1,58 @@
+/**
+ * @module state/Symbology.js
+ * @name SymbologyState
+ * @copyright 2023 3Liz
+ * @author DHONT René-Luc
+ * @license MPL-2.0
+ */
+
 import { ValidationError } from './../Errors.js';
 import { convertBoolean } from './../utils/Converters.js';
 import EventDispatcher from './../../utils/EventDispatcher.js';
 import { applyConfig } from './../config/BaseObject.js';
+import { LayerConfig } from './../config/Layer.js';
 
+/**
+ * The started base 64 string for PNG image
+ * @type {string}
+ */
 export const base64png = 'data:image/png;base64, ';
+/**
+ * The base 64 string for transparent PNG image
+ * @type {string}
+ */
 export const base64pngNullData = 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9bpUUrDu0g4pChdrIgKuKoVShChVArtOpgcukXNGlIUlwcBdeCgx+LVQcXZ10dXAVB8APE1cVJ0UVK/F9SaBHjwXE/3t173L0D/M0qU82ecUDVLCOTSgq5/KoQfEUQEYTQj7jETH1OFNPwHF/38PH1LsGzvM/9OQaUgskAn0A8y3TDIt4gnt60dM77xFFWlhTic+Ixgy5I/Mh12eU3ziWH/TwzamQz88RRYqHUxXIXs7KhEk8RxxRVo3x/zmWF8xZntVpn7XvyF4YL2soy12mOIIVFLEGEABl1VFCFhQStGikmMrSf9PAPO36RXDK5KmDkWEANKiTHD/4Hv7s1i5MTblI4CfS+2PbHKBDcBVoN2/4+tu3WCRB4Bq60jr/WBGY+SW90tNgRMLgNXFx3NHkPuNwBhp50yZAcKUDTXywC72f0TXkgcgv0rbm9tfdx+gBkqav0DXBwCMRLlL3u8e5Qd2//nmn39wNBG3KTQZt3dAAAAAZiS0dEAAAAAAAA+UO7fwAAAAlwSFlzAAAuIwAALiMBeKU/dgAAAAd0SU1FB+cHEwgMJzC1DiQAAAAZdEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIEdJTVBXgQ4XAAAAEklEQVQ4y2NgGAWjYBSMAggAAAQQAAGFP6pyAAAAAElFTkSuQmCC';
 
+/**
+ * The started base 64 string for SVG image
+ * @type {string}
+ */
 export const base64svg = 'data:image/svg+xml;base64,';
-// https://raw.githubusercontent.com/qgis/QGIS/master/images/themes/default/mIconPointLayer.svg
+
+/**
+ * The base 64 string for https://raw.githubusercontent.com/qgis/QGIS/master/images/themes/default/mIconPointLayer.svg SVG image
+ * @type {string}
+ */
 export const base64svgPointLayer = 'PHN2ZyBoZWlnaHQ9IjE2IiB3aWR0aD0iMTYiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0iI2VlZWVlYyIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2U9IiM4ODhhODUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCAtMTYpIj48cGF0aCBkPSJtNC41IDEyLjVjMCAuNTUyMjg1LS40NDc3MTUzIDEtMSAxcy0xLS40NDc3MTUtMS0xIC40NDc3MTUzLTEgMS0xIDEgLjQ0NzcxNSAxIDF6IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwIDE2KSIvPjxwYXRoIGQ9Im00LjUgMTIuNWMwIC41NTIyODUtLjQ0NzcxNTMgMS0xIDFzLTEtLjQ0NzcxNS0xLTEgLjQ0NzcxNTMtMSAxLTEgMSAuNDQ3NzE1IDEgMXoiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDIgOSkiLz48cGF0aCBkPSJtNC41IDEyLjVjMCAuNTUyMjg1LS40NDc3MTUzIDEtMSAxcy0xLS40NDc3MTUtMS0xIC40NDc3MTUzLTEgMS0xIDEgLjQ0NzcxNSAxIDF6IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg5IDYpIi8+PC9nPjwvc3ZnPg=='
-// https://raw.githubusercontent.com/qgis/QGIS/master/images/themes/default/mIconLineLayer.svg
+/**
+ * The base 64 string for https://raw.githubusercontent.com/qgis/QGIS/master/images/themes/default/mIconLineLayer.svg SVG image
+ * @type {string}
+ */
 export const base64svgLineLayer = 'PHN2ZyBoZWlnaHQ9IjE2IiB3aWR0aD0iMTYiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgc3Ryb2tlPSIjODg4YTg1IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAgLTE2KSI+PHBhdGggZD0ibTEuNSA0LjUgNCA5IDUtMTFoNCIgZmlsbD0ibm9uZSIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCAxNikiLz48ZyBmaWxsPSIjZWVlZWVjIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Im00LjUgMTIuNWMwIC41NTIyODUtLjQ0NzcxNTMgMS0xIDFzLTEtLjQ0NzcxNS0xLTEgLjQ0NzcxNTMtMSAxLTEgMSAuNDQ3NzE1IDEgMXoiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDIgMTcpIi8+PHBhdGggZD0ibTQuNSAxMi41YzAgLjU1MjI4NS0uNDQ3NzE1MyAxLTEgMXMtMS0uNDQ3NzE1LTEtMSAuNDQ3NzE1My0xIDEtMSAxIC40NDc3MTUgMSAxeiIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTEgNikiLz48cGF0aCBkPSJtNC41IDEyLjVjMCAuNTUyMjg1LS40NDc3MTUzIDEtMSAxcy0xLS40NDc3MTUtMS0xIC40NDc3MTUzLTEgMS0xIDEgLjQ0NzcxNSAxIDF6IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg3IDYpIi8+PHBhdGggZD0ibTQuNSAxMi41YzAgLjU1MjI4NS0uNDQ3NzE1MyAxLTEgMXMtMS0uNDQ3NzE1LTEtMSAuNDQ3NzE1My0xIDEtMSAxIC40NDc3MTUgMSAxeiIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTIgOCkiLz48L2c+PC9nPjwvc3ZnPg=='
-// https://raw.githubusercontent.com/qgis/QGIS/master/images/themes/default/mIconPolygonLayer.svg
+/**
+ * The base 64 string for https://raw.githubusercontent.com/qgis/QGIS/master/images/themes/default/mIconPolygonLayer.svg SVG image
+ * @type {string}
+ */
 export const base64svgPolygonLayer = 'PHN2ZyBoZWlnaHQ9IjE2IiB3aWR0aD0iMTYiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxsaW5lYXJHcmFkaWVudCBpZD0iYSIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiIHgxPSI0LjUiIHgyPSI2LjUiIHkxPSIzLjUiIHkyPSIxMC41Ij48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNlZWUiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNjZmNmY2YiLz48L2xpbmVhckdyYWRpZW50PjxwYXRoIGQ9Im0uNSA2LjVjMCAxMiA2IDIgOSAyIDIgMCA2IDQgNi0xIDAtOC00LjM5ODI2Mi0zLjE5MDUwNTUtNy00LTEuOTQyMzQwMi0uNjA0MzMyLTgtNC04IDN6IiBmaWxsPSJ1cmwoI2EpIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzg4OGE4NSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9zdmc+'
-// https://raw.githubusercontent.com/qgis/QGIS/master/images/themes/default/mIconRasterLayer.svg
+/**
+ * The base 64 string for https://raw.githubusercontent.com/qgis/QGIS/master/images/themes/default/mIconRasterLayer.svg SVG image
+ * @type {string}
+ */
 export const base64svgRasterLayer = 'PHN2ZyBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAxNiAxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDE2IDE2IiB3aWR0aD0iMTYiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTIwLjUgLTMuNSkiPjxwYXRoIGQ9Im0yMC41IDE0LjE2N2g1LjMzM3Y1LjMzM2gtNS4zMzN6IiBmaWxsPSIjOTY5Njk2Ii8+PHBhdGggZD0ibTIwLjUgOC44MzNoNS4zMzN2NS4zMzNoLTUuMzMzeiIgZmlsbD0iI2M5YzljOSIvPjxwYXRoIGQ9Im0yMC41IDMuNWg1LjMzM3Y1LjMzM2gtNS4zMzN6IiBmaWxsPSIjOTY5Njk2Ii8+PHBhdGggZD0ibTI1LjgzMyAzLjVoNS4zMzN2NS4zMzNoLTUuMzMzeiIgZmlsbD0iI2M5YzljOSIvPjxnIGZpbGw9IiM5Njk2OTYiPjxwYXRoIGQ9Im0yNS44MzMgOC44MzNoNS4zMzN2NS4zMzNoLTUuMzMzeiIvPjxwYXRoIGQ9Im0zMS4xNjcgMy41aDUuMzMzdjUuMzMzaC01LjMzM3oiLz48cGF0aCBkPSJtMjUuODMzIDE0LjE2N2g1LjMzM3Y1LjMzM2gtNS4zMzN6Ii8+PC9nPjxwYXRoIGQ9Im0zMS4xNjcgOC44MzNoNS4zMzN2NS4zMzNoLTUuMzMzeiIgZmlsbD0iI2M5YzljOSIvPjwvZz48L3N2Zz4='
 
 /**
- * @param {LayerConfig} layerCfg
- * @returns {?string}
+ * @param {LayerConfig} layerCfg - The layer config for which getting default icon
+ * @returns {?string} The default layer icon as base 64 string image
  */
 export function getDefaultLayerIcon(layerCfg) {
     if (layerCfg.type == 'group' || layerCfg.groupAsLayer) {
@@ -194,7 +228,7 @@ export class SymbolIconSymbology extends BaseIconSymbology {
 
     /**
      * Checked or Unchecked rule
-     * @param {boolean}
+     * @param {boolean} val - The checked state
      */
     set checked(val) {
         const newVal = convertBoolean(val);
@@ -335,7 +369,7 @@ export class BaseSymbolsSymbology extends BaseObjectSymbology {
      * @param {string}  node.title   - the node title
      * @param {object} [requiredProperties] - the required properties definition
      * @param {object} [optionalProperties] - the optional properties definition
-     * @param iconClass
+     * @param {object} [iconClass]          - The icon class to build
      */
     constructor(node, requiredProperties={}, optionalProperties = {}, iconClass = BaseIconSymbology) {
 
@@ -492,7 +526,7 @@ export class LayerSymbolsSymbology extends BaseSymbolsSymbology {
 
     /**
      * Parameters for OGC WMS Request
-     * @param {string} wmsName
+     * @param {string} wmsName - The WMS layer name
      * @returns {object} can contain LEGEND_ON and LEGEND_OFF parameters
      */
     wmsParameters(wmsName) {
@@ -598,7 +632,7 @@ export class LayerGroupSymbology extends BaseObjectSymbology {
 /**
  * Build layer symbology
  * @param {(object | LayerIconSymbology | LayerSymbolsSymbology | LayerGroupSymbology)} node - The symbology node
- * @returns {(LayerIconSymbology|LayerSymbolsSymbology|LayerGroupSymbology)}
+ * @returns {(LayerIconSymbology|LayerSymbolsSymbology|LayerGroupSymbology)} The layer symbology
  */
 export function buildLayerSymbology(node) {
     if (node instanceof LayerIconSymbology
