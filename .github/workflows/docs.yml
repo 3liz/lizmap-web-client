@@ -2,10 +2,10 @@ name: 📖 Documentation
 
 on:
   push:
-    tags:
-      - '*'
+#    tags:
+#      - '*'
     branches:
-      - jsdoc
+      - master
   workflow_dispatch:
 
 permissions:
@@ -24,8 +24,7 @@ jobs:
       - uses: actions/setup-node@v4
 
       - name: Building docs
-        working-directory: docs/
-        run: make js || exit 0
+        run: make js-doc || exit 0
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -38,3 +37,26 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+#      - name: Branch name
+#        id: branch-name
+#        run: make debug | grep SHORT_VERSION= >> "$GITHUB_OUTPUT"
+#
+#      - name: Install multi deploy version
+#        run: npm i @koumoul/gh-pages-multi
+#
+#      - name: Token
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.TOKEN_TEST }}
+#        run: git remote set-url origin https://${{ secrets.TOKEN_TEST }}@github.com/Gustry/lizmap-web-client.git
+#
+#      - name: Deploy build
+#        env:
+#          BRANCH_NAME: ${{ steps.branch-name.outputs.SHORT_VERSION }}
+#        run: |
+#          git config --global user.name "Bot"
+#          git config --global user.email "no@mail.org"
+#          ./node_modules/.bin/gh-pages-multi deploy -s docs/js/assets/1.0.0/ -t $BRANCH_NAME -v
+
+      - name: Summary
+        run: echo "### Published ! :rocket:" >> $GITHUB_STEP_SUMMARY
