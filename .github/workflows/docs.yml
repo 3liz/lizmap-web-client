@@ -24,7 +24,7 @@ jobs:
       - uses: actions/setup-node@v4
 
       - name: Building docs
-        run: make js-doc || exit 0
+        run: make js-doc
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
