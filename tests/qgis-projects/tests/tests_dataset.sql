@@ -972,6 +972,37 @@ CREATE TABLE tests_projects.form_filter_child_bus_stops (
     geom public.geometry(Point,2154)
 );
 
+--
+-- Name: edition_layer_embed_point; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.edition_layer_embed_point (
+    id SERIAL PRIMARY KEY,
+    id_ext_point integer,
+    descr text,
+    geom public.geometry(Point,4326)
+);
+
+--
+-- Name: edition_layer_embed_line; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.edition_layer_embed_line (
+    id SERIAL PRIMARY KEY,
+    descr text,
+    geom public.geometry(LineString,4326)
+);
+
+--
+-- Name: edition_layer_embed_line; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.edition_layer_embed_child (
+    id SERIAL PRIMARY KEY,
+    descr text
+);
+
+
 
 --
 -- Name: form_filter_child_bus_stops_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
@@ -2178,6 +2209,33 @@ COPY tests_projects.form_edition_upload_webdav_geom (id, remote_path, local_path
 \.
 
 
+--
+-- Data for Name: edition_layer_embed_point; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.edition_layer_embed_point (id_ext_point, descr, geom) FROM stdin;
+1	Point1	01010000003E7C3323ADF30E40EFCE98ADC5D04540
+2	Point2	0101000000132532C38BE00E405159256142CE4540
+\N	Point2	0101000000932A36E3EF190F40AB0239509FCE4540
+\.
+
+--
+-- Data for Name: edition_layer_embed_line; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.edition_layer_embed_line (descr, geom) FROM stdin;
+Line1	01020000000200000094A384CD4FDF0E408076888FC4CA454093B1E7F88F540F40B9EC7E14F8CB4540
+Line2	010200000002000000B77CE5D938BF0E40921F2ED9AACC45401A956FEB839E0E40404F49F9E0CF4540
+\.
+
+--
+-- Data for Name: edition_layer_embed_child; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.edition_layer_embed_child (descr) FROM stdin;
+External1
+External2
+\.
 --
 -- Data for Name: form_edition_vr_dd_list; Type: TABLE DATA; Schema: tests_projects; Owner: -
 --

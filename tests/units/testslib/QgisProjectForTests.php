@@ -103,6 +103,11 @@ class QgisProjectForTests extends QgisProject
         $this->readEditionLayers($eLayer);
     }
 
+    public function readEditionFormsForTest($eLayer, $prj)
+    {
+        $this->readEditionForms($eLayer, $prj);
+    }
+
     public function readAttributeLayersForTest($aLayer)
     {
         $this->readAttributeLayers($aLayer);

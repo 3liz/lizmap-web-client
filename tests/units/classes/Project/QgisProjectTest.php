@@ -2,6 +2,9 @@
 
 use Lizmap\Project;
 use PHPUnit\Framework\TestCase;
+use function PHPUnit\Framework\assertContains;
+use function PHPUnit\Framework\assertCount;
+use function PHPUnit\Framework\assertEquals;
 
 /**
  * @internal
@@ -455,6 +458,188 @@ class QgisProjectTest extends TestCase
         $testProj->setXml(simplexml_load_file($file));
         $testProj->readEditionLayersForTest($eLayers);
         $this->assertEquals($expectedELayer, $eLayers);
+    }
+
+    public function testReadEditionFormsForEmbeddedLayers()
+    {
+        $file = __DIR__.'/Ressources/edition_embed.qgs';
+        $data = array(
+            'WMSInformation' => array(),
+            'layers' => array(),
+        );
+        $file = __DIR__.'/Ressources/edition_embed.qgs';
+        $testProj = new ProjectForTests();
+
+        $testQgis = new QgisProjectForTests($data);
+        $rep = new Project\Repository('key', array(), null, null, null);
+        $testQgis->setPath($file);
+        $testQgis->readXMLProjectTest($file);
+
+        $cfg = json_decode(file_get_contents($file.'.cfg'));
+        $config = new Project\ProjectConfig($cfg);
+
+        $testProj->setCfg($config);
+        $testProj->setQgis($testQgis);
+        $testProj->setRepo($rep);
+        $testProj->setKey('test');
+
+        $editonCfgLayers = '{
+            "edition_layer_embed_line": {
+                "layerId": "edition_layer_embed_line_e74301b9_95ae_4b72_81cc_71fafb80082f",
+                "snap_vertices": "False",
+                "snap_segments": "False",
+                "snap_intersections": "False",
+                "snap_vertices_tolerance": 10,
+                "snap_segments_tolerance": 10,
+                "snap_intersections_tolerance": 10,
+                "provider": "postgres",
+                "capabilities": {
+                    "createFeature": "True",
+                    "allow_without_geom": "False",
+                    "modifyAttribute": "True",
+                    "modifyGeometry": "True",
+                    "deleteFeature": "True"
+                },
+                "geometryType": "line",
+                "order": 0
+            },
+            "edition_layer_embed_point": {
+                "layerId": "edition_layer_embed_point_7794e305_0e9b_40d0_bf0b_2494790d4eb3",
+                "snap_vertices": "False",
+                "snap_segments": "False",
+                "snap_intersections": "False",
+                "snap_vertices_tolerance": 10,
+                "snap_segments_tolerance": 10,
+                "snap_intersections_tolerance": 10,
+                "provider": "postgres",
+                "capabilities": {
+                    "createFeature": "True",
+                    "allow_without_geom": "False",
+                    "modifyAttribute": "True",
+                    "modifyGeometry": "True",
+                    "deleteFeature": "True"
+                },
+                "geometryType": "point",
+                "order": 1
+            },
+            "edition_layer_embed_child": {
+                "layerId": "edition_layer_embed_child_d87f81cd_26d2_4c40_820d_676ba03ff6ab",
+                "snap_layers": [],
+                "snap_vertices": "False",
+                "snap_segments": "False",
+                "snap_intersections": "False",
+                "snap_vertices_tolerance": 10,
+                "snap_segments_tolerance": 10,
+                "snap_intersections_tolerance": 10,
+                "provider": "postgres",
+                "capabilities": {
+                    "createFeature": "True",
+                    "allow_without_geom": "False",
+                    "modifyAttribute": "True",
+                    "modifyGeometry": "False",
+                    "deleteFeature": "True"
+                },
+                "geometryType": "none",
+                "order": 2
+            }
+        }';
+        $eLayers = json_decode($editonCfgLayers);
+
+        $testQgis->readEditionFormsForTest($eLayers, $testProj);
+
+        // check layer edition_layer_embed_line
+        // drag n drop form
+        $formControlCache = $testProj->getCacheHandler()->getEditableLayerFormCache("edition_layer_embed_line_e74301b9_95ae_4b72_81cc_71fafb80082f");
+        $names = array('id','descr');
+        assertCount(2,$formControlCache);
+        foreach($formControlCache as $formControl) {
+            assertContains($formControl->getName(), $names);
+            switch($formControl->getName()){
+                case 'id':
+                    assertEquals($formControl->getFieldAlias(),'id');
+                    assertEquals($formControl->getMarkup(),'input');
+                    assertEquals($formControl->getFieldEditType(),'TextEdit');
+                    break;
+                case 'descr':
+                    assertEquals($formControl->getFieldAlias(),'Description');
+                    assertEquals($formControl->getMarkup(),'input');
+                    assertEquals($formControl->getFieldEditType(),'TextEdit');
+                    break;
+                default:
+                    break;
+            }
+        }
+        // check layer edition_layer_embed_point
+        // drag n drop form
+        $formControlCache = $testProj->getCacheHandler()->getEditableLayerFormCache("edition_layer_embed_point_7794e305_0e9b_40d0_bf0b_2494790d4eb3");
+        $names = array('id','id_ext_point','descr');
+        assertCount(3,$formControlCache);
+        foreach($formControlCache as $formControl) {
+            assertContains($formControl->getName(), $names);
+            switch($formControl->getName()){
+                case 'id':
+                    assertEquals($formControl->getFieldAlias(),'Id');
+                    assertEquals($formControl->getMarkup(),'input');
+                    assertEquals($formControl->getFieldEditType(),'TextEdit');
+                    break;
+                case 'id_ext_point':
+                    assertEquals($formControl->getFieldAlias(),'external_ref');
+                    assertEquals($formControl->getMarkup(),'menulist');
+                    assertEquals($formControl->getFieldEditType(),'ValueRelation');
+                    $attributesArray =     array (
+                        'AllowMulti' => false,
+                        'AllowNull' => true,
+                        'Description' => '',
+                        'FilterExpression' => '',
+                        'Key' => 'id',
+                        'Layer' => 'edition_layer_embed_child_d87f81cd_26d2_4c40_820d_676ba03ff6ab',
+                        'LayerName' => 'edition_layer_embed_child',
+                        'LayerProviderName' => 'postgres',
+                        'LayerSource' => 'service=\'lizmapdb\' sslmode=disable key=\'id\' checkPrimaryKeyUnicity=\'1\' table="tests_projects"."edition_layer_embed_child"',
+                        'NofColumns' => 1,
+                        'OrderByValue' => false,
+                        'UseCompleter' => false,
+                        'Value' => 'descr',
+                        'filters' => 
+                        array (
+                        ),
+                        'chainFilters' => false,
+                    );
+                    assertEquals($formControl->getEditAttributes(),$attributesArray);
+                    break;
+                case 'descr':
+                    assertEquals($formControl->getFieldAlias(),'Point description');
+                    assertEquals($formControl->getMarkup(),'input');
+                    assertEquals($formControl->getFieldEditType(),'TextEdit');
+                    break;
+                default:
+                    break;
+            }
+        }
+        // check layer edition_layer_embed_child
+        // autogenerated form
+        $formControlCache = $testProj->getCacheHandler()->getEditableLayerFormCache("edition_layer_embed_child_d87f81cd_26d2_4c40_820d_676ba03ff6ab");
+        $names = array('id','descr');
+
+        assertCount(2,$formControlCache);
+        foreach($formControlCache as $formControl) {
+            assertContains($formControl->getName(), $names);
+            switch($formControl->getName()){
+                case 'id':
+                    assertEquals($formControl->getFieldAlias(),'');
+                    assertEquals($formControl->getMarkup(),'');
+                    assertEquals($formControl->getFieldEditType(),'');
+                    break;
+                case 'descr':
+                    assertEquals($formControl->getFieldAlias(),'');
+                    assertEquals($formControl->getMarkup(),'');
+                    assertEquals($formControl->getFieldEditType(),'');
+                    break;
+                default:
+                    break;
+            }
+        }
+
     }
 
     public function testReadAttributeLayer()
