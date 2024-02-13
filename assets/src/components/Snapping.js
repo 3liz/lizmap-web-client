@@ -1,7 +1,20 @@
+/**
+ * @module components/Snapping.js
+ * @name Snapping
+ * @copyright 2023 3Liz
+ * @author BOISTEAULT Nicolas
+ * @license MPL-2.0
+ */
+
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import { html, render } from 'lit-html';
 import '../images/svg/refresh.svg';
 
+/**
+ * @class
+ * @name Snapping
+ * @augments HTMLElement
+ */
 export default class Snapping extends HTMLElement {
     constructor() {
         super();

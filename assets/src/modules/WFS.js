@@ -1,3 +1,14 @@
+/**
+ * @module modules/WFS.js
+ * @name WFS
+ * @copyright 2023 3Liz
+ * @license MPL-2.0
+ */
+
+/**
+ * @class
+ * @name WFS
+ */
 export default class WFS {
 
     constructor() {

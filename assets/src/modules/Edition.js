@@ -9,7 +9,8 @@
 import {mainLizmap, mainEventDispatcher} from '../modules/Globals.js';
 
 /**
- * Edition Class
+ * @class
+ * @name Edition
  */
 export default class Edition {
 

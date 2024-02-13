@@ -1,3 +1,11 @@
+/**
+ * @module components/MousePosition.js
+ * @name MousePosition
+ * @copyright 2023 3Liz
+ * @author BOISTEAULT Nicolas
+ * @license MPL-2.0
+ */
+
 import { mainLizmap } from '../modules/Globals.js';
 import { html, render } from 'lit-html';
 
@@ -7,6 +15,11 @@ import { forward } from '../dependencies/mgrs.js';
 
 import MGRS from '../modules/MGRS.js';
 
+/**
+ * @class
+ * @name MousePosition
+ * @augments HTMLElement
+ */
 export default class MousePosition extends HTMLElement {
     constructor() {
         super();

@@ -1,6 +1,17 @@
+/**
+ * @module modules/Legend.js
+ * @name Legend
+ * @copyright 2023 3Liz
+ * @license MPL-2.0
+ */
+
 import { mainLizmap } from './Globals.js';
 import { updateLayerTreeLayerSymbology, updateLayerTreeGroupLayersSymbology } from '../modules/action/Symbology.js';
 
+/**
+ * @class
+ * @name Legend
+ */
 export default class Legend {
 
     constructor() {

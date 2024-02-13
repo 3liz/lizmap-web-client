@@ -1,3 +1,10 @@
+/**
+ * @module legacy/switch-layers-actions.js
+ * @name Switch layer actions
+ * @copyright 2023 3Liz
+ * @license MPL-2.0
+ */
+
 var lizLayerActionButtons = function() {
 
     var tooltipControl = null;

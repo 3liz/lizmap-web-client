@@ -8,6 +8,10 @@
 
 import { mainLizmap } from '../modules/Globals.js';
 
+/**
+ * @class
+ * @name Action
+ */
 export default class Action {
 
     /**

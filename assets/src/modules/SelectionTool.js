@@ -1,3 +1,9 @@
+/**
+ * @module modules/State.js
+ * @name State
+ * @copyright 2023 3Liz
+ * @license MPL-2.0
+ */
 import {mainLizmap, mainEventDispatcher} from '../modules/Globals.js';
 
 import BufferOp from 'jsts/org/locationtech/jts/operation/buffer/BufferOp.js';
@@ -23,6 +29,10 @@ import {Vector as VectorSource} from 'ol/source.js';
 import {Vector as VectorLayer} from 'ol/layer.js';
 import { Feature } from 'ol';
 
+/**
+ * @class
+ * @name SelectionTool
+ */
 export default class SelectionTool {
 
     constructor() {

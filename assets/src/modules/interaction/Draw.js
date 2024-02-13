@@ -1,3 +1,11 @@
+/**
+ * @module interaction/Draw.js
+ * @name Draw
+ * @copyright 2023 3Liz
+ * @author BOISTEAULT Nicolas
+ * @license MPL-2.0
+ */
+
 import { mainLizmap, mainEventDispatcher } from '../Globals.js';
 
 import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style.js';
@@ -5,6 +13,10 @@ import { Vector as VectorSource } from 'ol/source.js';
 import { Vector as VectorLayer } from 'ol/layer.js';
 import { Draw as olDraw, Modify as olModify } from 'ol/interaction.js';
 
+/**
+ * @class
+ * @name Draw
+ */
 export default class Draw {
 
     constructor() { }

@@ -1,3 +1,10 @@
+/**
+ * @module modules/State.js
+ * @name State
+ * @copyright 2023 3Liz
+ * @license MPL-2.0
+ */
+
 import EventDispatcher from './../utils/EventDispatcher.js';
 import { MapState } from './state/Map.js';
 import { BaseLayersState } from './state/BaseLayer.js';
@@ -5,6 +12,11 @@ import { LayersAndGroupsCollection } from './state/Layer.js';
 import { MapGroupState } from './state/MapLayer.js';
 import { LayerTreeGroupState } from './state/LayerTree.js';
 
+/**
+ * @class
+ * @name State
+ * @augments EventDispatcher
+ */
 export class State extends EventDispatcher {
     /**
      * @param {Config} initialCfg - the lizmap initial config instance

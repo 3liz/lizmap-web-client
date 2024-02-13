@@ -1,9 +1,19 @@
+/**
+ * @module components/edition/ReverseGeom.js
+ * @name ReverseGeom
+ * @copyright 2023 3Liz
+ * @author BOISTEAULT Nicolas
+ * @license MPL-2.0
+ */
+
 import { mainLizmap } from '../../modules/Globals.js';
 
 import '../../images/svg/mActionReverseLine.svg';
 
 /**
  * Webcomponent used to reverse vertices order for a modified feature
+ * @class
+ * @name reverseGeom
  * @augments HTMLElement
  */
 export default class reverseGeom extends HTMLElement {

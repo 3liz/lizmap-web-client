@@ -1,5 +1,18 @@
+/**
+ * @module components/ActionSelector.js
+ * @name ActionSelector
+ * @copyright 2023 3Liz
+ * @author DOUCHIN Michaël
+ * @license MPL-2.0
+ */
+
 import {mainLizmap} from '../modules/Globals.js';
 
+/**
+ * @class
+ * @name ActionSelector
+ * @augments HTMLElement
+ */
 export default class ActionSelector extends HTMLElement {
 
     constructor() {

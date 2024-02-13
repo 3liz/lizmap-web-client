@@ -1,3 +1,9 @@
+/**
+ * @module modules/maps.js
+ * @name maps
+ * @copyright 2023 3Liz
+ * @license MPL-2.0
+ */
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import Utils from '../modules/Utils.js';
 import { BaseLayerTypes } from '../modules/config/BaseLayer.js';
@@ -23,7 +29,12 @@ import MouseWheelZoom from "ol/interaction/MouseWheelZoom.js";
 import DoubleClickZoom from 'ol/interaction/DoubleClickZoom.js';
 import { defaults as defaultInteractions } from 'ol/interaction.js';
 
-/** Class initializing Openlayers Map. */
+/**
+ * Class initializing Openlayers Map.
+ * @class
+ * @name BaseLayersMap
+ * @augments olMap
+ */
 export default class BaseLayersMap extends olMap {
 
     constructor() {

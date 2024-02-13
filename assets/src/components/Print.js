@@ -1,3 +1,10 @@
+/**
+ * @module components/Print.js
+ * @name Print
+ * @copyright 2023 3Liz
+ * @author BOISTEAULT Nicolas
+ * @license MPL-2.0
+ */
 import { mainLizmap } from '../modules/Globals.js';
 import { ADJUSTED_DPI } from '../utils/Constants.js';
 import { html, render } from 'lit-html';
@@ -11,6 +18,11 @@ import { transformExtent, get as getProjection } from 'ol/proj.js';
 const INCHES_PER_METER = 39.37;
 const DOTS_PER_INCH = 72;
 
+/**
+ * @class
+ * @name Print
+ * @augments HTMLElement
+ */
 export default class Print extends HTMLElement {
     constructor() {
         super();

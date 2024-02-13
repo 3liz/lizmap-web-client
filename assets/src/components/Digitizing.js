@@ -1,3 +1,11 @@
+/**
+ * @module components/Digitizing.js
+ * @name Digitizing
+ * @copyright 2023 3Liz
+ * @author BOISTEAULT Nicolas
+ * @license MPL-2.0
+ */
+
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import { html, render } from 'lit-html';
 
@@ -16,6 +24,11 @@ import '../images/svg/save.svg';
 import '../images/svg/file-download.svg';
 import '../images/svg/file-upload.svg';
 
+/**
+ * @class
+ * @name Digitizing
+ * @augments HTMLElement
+ */
 export default class Digitizing extends HTMLElement {
     constructor() {
         super();
