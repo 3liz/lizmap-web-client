@@ -165,7 +165,7 @@ export default class Map extends olMap {
      * Returns Lizmap 3 map center
      * @readonly
      * @memberof Map
-     * @returns {[number, number]} lon, lat coords
+     * @returns {number[]} lon, lat coords
      */
     get _lizmap3Center(){
         return [mainLizmap.lizmap3.map.getCenter().lon, mainLizmap.lizmap3.map.getCenter().lat];
