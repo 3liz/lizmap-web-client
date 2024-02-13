@@ -210,9 +210,7 @@ saas_release: check-release
 
 js-doc:
 	rm -rf docs/js
-	npx jsdoc --package assets/package.json -r assets/src/ -d docs/js/
-	# JSDoc errors should be cleaned from the logs
-	exit 0
+	npx jsdoc -c docs/jsdoc.json
 
 docker-build: debug $(GENERIC_PACKAGE_PATH) docker-build-ci
 
