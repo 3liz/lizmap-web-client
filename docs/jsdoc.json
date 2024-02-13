@@ -1,0 +1,20 @@
+{
+    "source": {
+        "include": [
+            "assets/src/"
+        ],
+        "exclude": [
+            "assets/src/legacy/edition.js",
+            "assets/src/modules/Lizmap.js",
+            "assets/src/modules/Layers.js",
+            "assets/src/dependencies"
+        ],
+        "includePattern": ".+\\.js(doc|x)?$",
+        "excludePattern": "(^|\\/|\\\\)_"
+    },
+    "opts": {
+        "package": "assets/package.json",
+        "destination": "docs/js/",
+        "recurse": true
+    }
+}
