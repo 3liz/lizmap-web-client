@@ -533,7 +533,10 @@ export default class map extends olMap {
             );
         });
 
-        this.on('moveend', this.refreshOL2View);
+        this.on('moveend', () => {
+            this.refreshOL2View();
+            this._dispatchMapStateChanged();
+        });
 
         // Init view
         this.syncNewOLwithOL2View();
@@ -584,7 +587,14 @@ export default class map extends olMap {
         }
 
         mainLizmap.state.rootMapGroup.addListener(
-            evt => this.getLayerOrGroupByName(evt.name).setVisible(evt.visibility),
+            evt => {
+                const olLayerOrGroup = this.getLayerOrGroupByName(evt.name);
+                if (olLayerOrGroup) {
+                    olLayerOrGroup.setVisible(evt.visibility);
+                } else {
+                    console.log('`'+evt.name+'` is not an OpenLayers layer or group!');
+                }
+            },
             ['layer.visibility.changed', 'group.visibility.changed']
         );
 
@@ -648,6 +658,29 @@ export default class map extends olMap {
         if (startupFeatures) {
             this.setHighlightFeatures(startupFeatures, "geojson");
         }
+
+        mainLizmap.state.map.addListener(
+            evt => {
+                const view = this.getView();
+                const updateCenter = ('center' in evt && view.getCenter().filter((v, i) => {return evt['center'][i] != v}).length != 0);
+                const updateResolution = ('resolution' in evt  && evt['resolution'] !== view.getResolution());
+                const updateExtent = ('extent' in evt && view.calculateExtent().filter((v, i) => {return evt['extent'][i] != v}).length != 0);
+                if (updateCenter && updateResolution) {
+                    view.animate({
+                        center: evt['center'],
+                        resolution: evt['resolution'],
+                        duration: 50
+                    });
+                } else if (updateCenter) {
+                    view.setCenter(evt['center']);
+                } else if (updateResolution) {
+                    view.setResolution(evt['resolution']);
+                } else if (updateExtent) {
+                    view.fit(evt['extent'], {nearest: true});
+                }
+            },
+            ['map.state.changed']
+        );
     }
 
     get hasEmptyBaseLayer() {
