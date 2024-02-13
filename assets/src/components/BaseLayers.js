@@ -1,8 +1,20 @@
+/**
+ * @module components/BaseLayers.js
+ * @name BaseLayers
+ * @copyright 2023 3Liz
+ * @author BOISTEAULT Nicolas
+ * @license MPL-2.0
+ */
+
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import { BaseLayerTypes } from '../modules/config/BaseLayer.js';
 import {html, render} from 'lit-html';
 
-
+/**
+ * @class
+ * @name BaseLayers
+ * @augments HTMLElement
+ */
 export default class BaseLayers extends HTMLElement {
     constructor() {
         super();

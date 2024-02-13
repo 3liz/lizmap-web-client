@@ -1,3 +1,10 @@
+/**
+ * @module index.js
+ * @name Index
+ * @copyright 2023 3Liz
+ * @license MPL-2.0
+ */
+
 import Geolocation from './components/Geolocation.js';
 import GeolocationSurvey from './components/GeolocationSurvey.js';
 import SelectionTool from './components/SelectionTool.js';

@@ -1,3 +1,10 @@
+/**
+ * @module legacy/atlas.js
+ * @name Atlas
+ * @copyright 2023 3Liz
+ * @license MPL-2.0
+ */
+
 (function () {
 
     lizMap.events.on({

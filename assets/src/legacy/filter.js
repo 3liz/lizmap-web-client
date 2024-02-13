@@ -1,3 +1,10 @@
+/**
+ * @module legacy/filter.js
+ * @name Filter
+ * @copyright 2023 3Liz
+ * @license MPL-2.0
+ */
+
 var lizLayerFilterTool = function () {
 
     lizMap.events.on({

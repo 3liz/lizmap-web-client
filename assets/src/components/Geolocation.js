@@ -1,6 +1,19 @@
+/**
+ * @module components/Geolocation.js
+ * @name Geolocation
+ * @copyright 2023 3Liz
+ * @author BOISTEAULT Nicolas
+ * @license MPL-2.0
+ */
+
 import {mainLizmap, mainEventDispatcher} from '../modules/Globals.js';
 import {html, render} from 'lit-html';
 
+/**
+ * @class
+ * @name Geolocation
+ * @augments HTMLElement
+ */
 export default class Geolocation extends HTMLElement {
     constructor() {
         super();

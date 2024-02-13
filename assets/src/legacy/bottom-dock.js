@@ -1,3 +1,10 @@
+/**
+ * @module legacy/bottom-dock.js
+ * @name BottomDock
+ * @copyright 2023 3Liz
+ * @license MPL-2.0
+ */
+
 var bottomDockFunction = function() {
 
     lizMap.events.on({

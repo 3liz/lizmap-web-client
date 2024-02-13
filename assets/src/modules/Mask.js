@@ -30,6 +30,8 @@ import {toRadians} from 'ol/math.js';
 import {FrameState} from 'ol/Map.js'
 
 /**
+ * @class
+ * @name Mask
  * @augments Layer
  */
 export default class Mask extends Layer {

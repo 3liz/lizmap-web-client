@@ -1,8 +1,21 @@
+/**
+ * @module components/FullScreen.js
+ * @name FullScreen
+ * @copyright 2023 3Liz
+ * @author BOISTEAULT Nicolas
+ * @license MPL-2.0
+ */
+
 import { html, render } from 'lit-html';
 
 import '../images/svg/fullscreen.svg';
 import '../images/svg/fullscreen-exit.svg';
 
+/**
+ * @class
+ * @name FullScreen
+ * @augments HTMLElement
+ */
 export default class FullScreen extends HTMLElement {
     constructor() {
         super();

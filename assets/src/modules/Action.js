@@ -11,6 +11,10 @@ import { Vector as VectorSource } from 'ol/source.js';
 import { Vector as VectorLayer } from 'ol/layer.js';
 import GeoJSON from 'ol/format/GeoJSON.js';
 
+/**
+ * @class
+ * @name Action
+ */
 export default class Action {
 
     /**

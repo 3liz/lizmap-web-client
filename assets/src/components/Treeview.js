@@ -1,3 +1,11 @@
+/**
+ * @module components/Treeview.js
+ * @name Treeview
+ * @copyright 2023 3Liz
+ * @author BOISTEAULT Nicolas
+ * @license MPL-2.0
+ */
+
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import Utils from '../modules/Utils.js';
 import { MapLayerLoadStatus } from '../modules/state/MapLayer.js';
@@ -5,6 +13,11 @@ import { MapLayerLoadStatus } from '../modules/state/MapLayer.js';
 import { html, render } from 'lit-html';
 import { when } from 'lit-html/directives/when.js';
 
+/**
+ * @class
+ * @name Treeview
+ * @augments HTMLElement
+ */
 export default class Treeview extends HTMLElement {
     constructor() {
         super();

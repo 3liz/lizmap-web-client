@@ -1,7 +1,19 @@
+/**
+ * @module modules/Popup.js
+ * @name Popup
+ * @copyright 2023 3Liz
+ * @license MPL-2.0
+ */
+
+
 import { mainLizmap } from '../modules/Globals.js';
 import Overlay from 'ol/Overlay.js';
 import WMS from '../modules/WMS.js';
 
+/**
+ * @class
+ * @name Popup
+ */
 export default class Popup {
     constructor() {
         // OL2

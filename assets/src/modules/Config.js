@@ -1,3 +1,11 @@
+/**
+ * @module modules/Config.js
+ * @name Config
+ * @copyright 2023 3Liz
+ * @author DHONT René-Luc
+ * @license MPL-2.0
+ */
+
 import { ValidationError } from './Errors.js';
 import { deepFreeze } from './config/Tools.js';
 import { MetadataConfig } from './config/Metadata.js';
@@ -14,6 +22,10 @@ import { DatavizOptionsConfig, DatavizLayersConfig } from './config/Dataviz.js';
 import { buildLayerTreeConfig } from './config/LayerTree.js';
 import { buildLayersOrder } from './config/LayersOrder.js';
 
+/**
+ * @class
+ * @name Config
+ */
 export class Config {
 
     /**

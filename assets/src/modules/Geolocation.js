@@ -1,3 +1,9 @@
+/**
+ * @module modules/Geolocation.js
+ * @name Geolocation
+ * @copyright 2023 3Liz
+ * @license MPL-2.0
+ */
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import olGeolocation from 'ol/Geolocation.js';
 import { transform } from 'ol/proj.js';
@@ -7,6 +13,10 @@ import Point from 'ol/geom/Point.js';
 import Circle from 'ol/geom/Circle.js';
 import Feature from 'ol/Feature.js';
 
+/**
+ * @class
+ * @name Geolocation
+ */
 export default class Geolocation {
 
     constructor() {

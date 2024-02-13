@@ -1,3 +1,11 @@
+/**
+ * @module components/OverviewMap.js
+ * @name OverviewMap
+ * @copyright 2023 3Liz
+ * @author BOISTEAULT Nicolas
+ * @license MPL-2.0
+ */
+
 import { mainLizmap } from '../modules/Globals.js';
 import olOverviewMap from 'ol/control/OverviewMap.js';
 
@@ -5,6 +13,11 @@ import ImageWMS from 'ol/source/ImageWMS.js';
 import { Image as ImageLayer } from 'ol/layer.js';
 import View from 'ol/View.js';
 
+/**
+ * @class
+ * @name OverviewMap
+ * @augments HTMLElement
+ */
 export default class OverviewMap extends HTMLElement {
     constructor() {
         super();
