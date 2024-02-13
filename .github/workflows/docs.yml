@@ -27,19 +27,60 @@ jobs:
 
       - uses: actions/setup-node@v4
 
-      - name: Building docs
+      - name: Building JS docs
         run: make js-doc
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
+      - uses: actions/upload-artifact@master
+        with:
+          name: js
+          path: docs/js/assets/1.0.0/
+
+  phpdoc:
+    name: "🐘 PHP-Doc"
+    if: github.repository == '3liz/lizmap-web-client' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Building PHP docs
+        run: make php-doc
+
+      - uses: actions/upload-artifact@master
+        with:
+          name: php
+          path: docs/php
+
+  deploy:
+    needs: [ jsdoc, phpdoc ]
+    name: "📤 Deploy"
+    if: github.repository == '3liz/lizmap-web-client' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@master
+        with:
+          name: php
+          path: docs/php/
+
+      - uses: actions/download-artifact@master
+        with:
+          name: js
+          path: docs/js/
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: docs/js/assets/1.0.0/
+          path: docs/
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
 
       - name: Deploy to GitHub Pages
-        if: github.repository == '3liz/lizmap-web-client' && github.ref == 'refs/heads/master'
         id: deployment
         uses: actions/deploy-pages@v4
 
@@ -64,5 +105,9 @@ jobs:
 #          ./node_modules/.bin/gh-pages-multi deploy -s docs/js/assets/1.0.0/ -t $BRANCH_NAME -v
 
       - name: Summary
-        if: github.repository == '3liz/lizmap-web-client' && github.ref == 'refs/heads/master'
-        run: echo "### Published ! :rocket:" >> $GITHUB_STEP_SUMMARY
+        run: |
+          echo "
+            ### Published ! :rocket:
+          
+            [Visit the doc](https://docs.3liz.org/lizmap-web-client/)
+          " >> $GITHUB_STEP_SUMMARY
