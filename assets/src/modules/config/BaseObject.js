@@ -1,24 +1,28 @@
 /**
- * @module utils/BaseObject.js
+ * @module config/BaseObject.js
+ * @name BaseObject
  * @copyright 2023 3Liz
  * @author DHONT René-Luc
- * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
+ * @license MPL-2.0
  */
 
 import { convertNumber, convertBoolean, convertArray } from './../utils/Converters.js';
 import { Extent } from './../utils/Extent.js';
 import { getNotContains } from './Tools.js';
-import { ValidationError } from '../Errors.js';
+import { ValidationError, ConversionError } from './../Errors.js';
 
 /**
  * The function to update an instance based on required and optional properties description
  * The values of each properties defined in requiredProperties and optionalProperties will be converted to is type:
  * boolean, number, extent; and will be stored in an _{name} attribute
  * This will help to get values respecting the type defined in getter and to validate the config
- * @param {object} obj                     - the instance on which apply the config
- * @param {object} cfg                     - the lizmap config object
+ * @param {object} obj                  - the instance on which apply the config
+ * @param {object} cfg                  - the lizmap config object
  * @param {object} [requiredProperties] - the required properties definition
  * @param {object} [optionalProperties] - the optional properties definition
+ * @returns {object} - The instance updated
+ * @throws {ValidationError} for required properties
+ * @throws {ConversionError} for values
  */
 export function applyConfig(obj, cfg, requiredProperties={}, optionalProperties={}) {
     if (!cfg || typeof cfg !== "object") {
@@ -116,6 +120,7 @@ export class BaseObjectConfig {
 
 /**
  * Class representing an object layer config with layerId and order attribute
+ * @name BaseObjectLayerConfig
  * @class
  * @augments BaseObjectConfig
  */

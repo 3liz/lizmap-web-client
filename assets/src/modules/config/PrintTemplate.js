@@ -1,8 +1,9 @@
 /**
  * @module config/PrintTemplate.js
+ * @name PrintTemplate
  * @copyright 2023 3Liz
  * @author DHONT René-Luc
- * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
+ * @license MPL-2.0
  */
 
 import { BaseObjectConfig } from './BaseObject.js';
@@ -211,8 +212,8 @@ export class PrintTemplateConfig extends BaseObjectConfig {
     }
 
     /**
-     * The maps
-     * @type {PrintMapConfig[]} the copy of print maps
+     * The copy of print maps
+     * @type {PrintMapConfig[]}
      */
     get maps() {
         return [...this._maps];
@@ -230,8 +231,8 @@ export class PrintTemplateConfig extends BaseObjectConfig {
     }
 
     /**
-     * The labels
-     * @type {PrintLabelConfig[]} the copy of print labels
+     * The copy of print labels
+     * @type {PrintLabelConfig[]}
      */
     get labels() {
         return [...this._labels];

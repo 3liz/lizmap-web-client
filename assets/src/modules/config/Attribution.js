@@ -1,8 +1,9 @@
 /**
  * @module config/Attribution.js
+ * @name Attribution
  * @copyright 2023 3Liz
  * @author DHONT René-Luc
- * @license MPL-2.0 - Mozilla Public License 2.0 : http://www.mozilla.org/MPL/
+ * @license MPL-2.0
  */
 
 import { ValidationError } from './../Errors.js';
@@ -18,7 +19,7 @@ const optionalAttributionProperties = {
 
 /**
  * Class representing an attribution
- * @class
+ * @class AttributionConfig
  * @augments BaseObjectConfig
  */
 export class AttributionConfig extends BaseObjectConfig {
