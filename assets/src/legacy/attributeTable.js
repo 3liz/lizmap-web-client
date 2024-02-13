@@ -1,3 +1,10 @@
+/**
+ * @module legacy/attributeTable.js
+ * @name AttributeTable
+ * @copyright 2023 3Liz
+ * @license MPL-2.0
+ */
+
 var lizAttributeTable = function() {
 
     lizMap.events.on({

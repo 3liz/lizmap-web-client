@@ -5,7 +5,7 @@
  * @author    3liz
  * @copyright 2011 3liz
  * @link      http://3liz.com
- * @license    Mozilla Public License : http://www.mozilla.org/MPL/
+ * @license MPL-2.0
  */
 
 import {extend} from 'ol/extent.js';
