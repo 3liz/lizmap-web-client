@@ -179,7 +179,16 @@ export default class Lizmap {
     }
 
     /**
-     * @param {Array} bounds - Left, bottom, right, top
+     * The view extent - an array with left, bottom, right, top
+     * @type {Array<number>}
+     */
+    get extent() {
+        return this.map.getView().calculateExtent();
+    }
+
+    /**
+     * Setting the view extent
+     * @param {Array<number>} bounds - Left, bottom, right, top
      */
     set extent(bounds) {
         this.map.getView().fit(bounds, {nearest: true});
