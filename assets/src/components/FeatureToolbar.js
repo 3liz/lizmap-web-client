@@ -1,3 +1,11 @@
+/**
+ * @module components/FeatureToolbar.js
+ * @name FeatureToolbar
+ * @copyright 2023 3Liz
+ * @author BOISTEAULT Nicolas
+ * @license MPL-2.0
+ */
+
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import Utils from '../modules/Utils.js';
 import { html, render } from 'lit-html';
@@ -10,6 +18,11 @@ import KML from 'ol/format/KML.js';
 
 import '../images/svg/map-print.svg';
 
+/**
+ * @class
+ * @name FeatureToolbar
+ * @augments HTMLElement
+ */
 export default class FeatureToolbar extends HTMLElement {
     constructor() {
         super();
