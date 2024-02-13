@@ -208,6 +208,9 @@ saas_deploy_snap:
 saas_release: check-release
 	saas_release_lizmap stable $(SAAS_LIZMAP_VERSION) $(GENERIC_PACKAGE_PATH)
 
+php-doc:
+	docker run --rm -v ${PWD}:/data phpdoc/phpdoc:3 -c docs/phpdoc.xml
+
 js-doc:
 	rm -rf docs/js
 	npx jsdoc -c docs/jsdoc.json
