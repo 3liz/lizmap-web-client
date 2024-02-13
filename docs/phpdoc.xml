@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpdocumentor
+        configVersion="3"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="https://www.phpdoc.org"
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/phpDocumentor/phpDocumentor/master/data/xsd/phpdoc.xsd"
+>
+    <title>Lizmap Web Client Master</title>
+    <paths>
+        <output>php</output>
+        <cache>.build/cache</cache>
+    </paths>
+    <version number="master">
+        <api>
+            <source dsn="../lizmap/">
+                <path>modules</path>
+            </source>
+        </api>
+    </version>
+</phpdocumentor>
