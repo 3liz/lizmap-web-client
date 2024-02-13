@@ -1,3 +1,9 @@
+/**
+ * @module modules/Lizmap.js
+ * @name Lizmap
+ * @copyright 2023 3Liz
+ * @license MPL-2.0
+ */
 import {Config} from './Config.js';
 import {State} from './State.js';
 import map from './map.js';
@@ -26,6 +32,10 @@ import { register } from 'ol/proj/proj4.js';
 import proj4 from 'proj4';
 import ProxyEvents from './ProxyEvents.js';
 
+/**
+ * @class
+ * @name Lizmap
+ */
 export default class Lizmap {
 
     constructor() {

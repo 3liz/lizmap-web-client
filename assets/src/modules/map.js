@@ -1,3 +1,10 @@
+/**
+ * @module modules/maps.js
+ * @name maps
+ * @copyright 2023 3Liz
+ * @license MPL-2.0
+ */
+
 import { mainLizmap, mainEventDispatcher } from './Globals.js';
 import Utils from './Utils.js';
 import { BaseLayerTypes } from './config/BaseLayer.js';
@@ -28,7 +35,12 @@ import DragZoom from 'ol/interaction/DragZoom.js';
 import { defaults as defaultInteractions } from 'ol/interaction.js';
 import { always } from 'ol/events/condition.js';
 
-/** Class initializing Openlayers Map. */
+/**
+ * Class initializing Openlayers Map.
+ * @class
+ * @name map
+ * @augments olMap
+ */
 export default class map extends olMap {
 
     constructor() {

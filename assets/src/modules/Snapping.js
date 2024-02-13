@@ -1,5 +1,16 @@
+/**
+ * @module modules/Snapping.js
+ * @name Snapping
+ * @copyright 2023 3Liz
+ * @license MPL-2.0
+ */
+
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 
+/**
+ * @class
+ * @name Snapping
+ */
 export default class Snapping {
 
     constructor() {

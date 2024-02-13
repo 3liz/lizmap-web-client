@@ -1,3 +1,11 @@
+/**
+ * @module components/edition/PasteGeom.js
+ * @name PasteGeom
+ * @copyright 2023 3Liz
+ * @author BOISTEAULT Nicolas
+ * @license MPL-2.0
+ */
+
 import { mainLizmap, mainEventDispatcher } from '../../modules/Globals.js';
 import { html, render } from 'lit-html';
 
@@ -5,6 +13,8 @@ import '../../images/svg/mActionEditPaste.svg';
 
 /**
  * Webcomponent used to reverse vertices order for a modified feature
+ * @class
+ * @name pasteGeom
  * @augments HTMLElement
  */
 export default class pasteGeom extends HTMLElement {

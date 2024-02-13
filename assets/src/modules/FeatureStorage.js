@@ -8,6 +8,10 @@
 
 import {mainEventDispatcher} from '../modules/Globals.js';
 
+/**
+ * @class
+ * @name FeatureStorage
+ */
 export default class FeatureStorage {
 
     constructor() {

@@ -1,3 +1,9 @@
+/**
+ * @module modules/Digitizing.js
+ * @name Digitizing
+ * @copyright 2023 3Liz
+ * @license MPL-2.0
+ */
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import Utils from '../modules/Utils.js';
 
@@ -24,6 +30,10 @@ import { unByKey } from 'ol/Observable.js';
 
 import { transform } from 'ol/proj.js';
 
+/**
+ * @class
+ * @name Digitizing
+ */
 export default class Digitizing {
 
     constructor() {

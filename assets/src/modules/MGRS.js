@@ -136,6 +136,8 @@ import { mainLizmap } from './Globals.js';
  */
 
 /**
+ * @class
+ * @name MGRS
  * @augments Graticule
  */
 class MGRS extends Graticule {

@@ -1,3 +1,10 @@
+/**
+ * @module legacy/timemanager.js
+ * @name Time manager
+ * @copyright 2023 3Liz
+ * @license MPL-2.0
+ */
+
 var lizTimemanager = function() {
 
     lizMap.events.on({

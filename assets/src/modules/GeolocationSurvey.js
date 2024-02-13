@@ -1,6 +1,17 @@
+/**
+ * @module modules/State.js
+ * @name State
+ * @copyright 2023 3Liz
+ * @license MPL-2.0
+ */
+
 import {mainLizmap, mainEventDispatcher} from '../modules/Globals.js';
 import {transform} from 'ol/proj.js';
 
+/**
+ * @class
+ * @name GeolocationSurvey
+ */
 export default class GeolocationSurvey {
 
     constructor() {

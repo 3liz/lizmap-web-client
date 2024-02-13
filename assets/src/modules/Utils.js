@@ -1,3 +1,14 @@
+/**
+ * @module modules/Utils.js
+ * @name Utils
+ * @copyright 2023 3Liz
+ * @license MPL-2.0
+ */
+
+/**
+ * @class
+ * @name Utils
+ */
 export default class Utils {
 
     /**

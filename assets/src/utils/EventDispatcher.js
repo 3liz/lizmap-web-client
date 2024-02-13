@@ -10,7 +10,9 @@
 import { hashCode } from './../modules/utils/Converters.js'
 
 /**
+ * @class
  * Dispatch some application events to listeners
+ * @name EventDispatcher
  */
 export default class EventDispatcher {
 

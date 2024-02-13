@@ -1,3 +1,9 @@
+/**
+ * @module legacy/view.js
+ * @name View
+ * @copyright 2023 3Liz
+ * @license MPL-2.0
+ */
 
 var searchProjects = function(){
     // Hide search if there are no projects

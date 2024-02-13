@@ -1,3 +1,10 @@
+/**
+ * @module modules/State.js
+ * @name State
+ * @copyright 2023 3Liz
+ * @license MPL-2.0
+ */
+
 import { mainLizmap } from './Globals.js';
 
 import { Vector as VectorSource } from 'ol/source.js';
@@ -6,6 +13,10 @@ import { Vector as VectorLayer } from 'ol/layer.js';
 import WKT from 'ol/format/WKT.js';
 import GeoJSON from 'ol/format/GeoJSON.js';
 
+/**
+ * @class
+ * @name Layers
+ */
 export default class Layers {
 
     constructor() {}

@@ -1,3 +1,10 @@
+/**
+ * @module components/SelectionInvert.js
+ * @name SelectionInvert
+ * @copyright 2023 3Liz
+ * @author BOISTEAULT Nicolas
+ * @license MPL-2.0
+ */
 import {mainLizmap, mainEventDispatcher} from '../modules/Globals.js';
 import {html, render} from 'lit-html';
 
@@ -6,6 +13,8 @@ import '../images/svg/mActionInvertSelection.svg';
 /**
  * Webcomponent used to invert selection on layer selection defined by 'feature-type' attribute
  * or allFeatureTypeSelected defined in SelectionTool module
+ * @class
+ * @name SelectionInvert
  * @augments HTMLElement
  */
 export default class SelectionInvert extends HTMLElement {

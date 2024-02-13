@@ -1,3 +1,14 @@
+/**
+ * @module modules/WMS.js
+ * @name WMS
+ * @copyright 2023 3Liz
+ * @license MPL-2.0
+ */
+
+/**
+ * @class
+ * @name WMS
+ */
 export default class WMS {
 
     constructor() {

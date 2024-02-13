@@ -1,6 +1,17 @@
+/**
+ * @module modules/Search.js
+ * @name Search
+ * @copyright 2023 3Liz
+ * @license MPL-2.0
+ */
+
 import { mainLizmap } from '../modules/Globals.js';
 import { transformExtent } from 'ol/proj.js';
 
+/**
+ * @class
+ * @name Search
+ */
 export default class Search {
 
     constructor() {
