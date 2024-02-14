@@ -25,11 +25,11 @@ test.describe('Theme', () => {
         const url = new URL(page.url());
         await expect(url.hash).not.toHaveLength(1);
         // The decoded hash is
-        // #3.7308717840938743,43.54038574169922,4.017985172062126,43.679557362551954
+        // #3.730872,43.540386,4.017985,43.679557
         // |group1,Les%20quartiers
         // |,style1
         // |1,1
-        await expect(url.hash).toMatch(/#3.730871\d+,43.540385\d+,4.0179851\d+,43.679557\d+\|/)
+        await expect(url.hash).toMatch(/#3.7308\d+,43.5403\d+,4.0179\d+,43.6795\d+\|/)
         await expect(url.hash).toContain('|group1,Les%20quartiers|,style1|1,1')
     });
 
@@ -54,11 +54,11 @@ test.describe('Theme', () => {
         const url = new URL(page.url());
         await expect(url.hash).not.toHaveLength(0);
         // The decoded hash is
-        // #3.7308717840938743,43.54038574169922,4.017985172062126,43.679557362551954
+        // #3.730872,43.540386,4.017985,43.679557
         // |Les%20quartiers|style2|1
         // |style2
         // |1
-        await expect(url.hash).toMatch(/#3.730871\d+,43.540385\d+,4.0179851\d+,43.679557\d+\|/)
+        await expect(url.hash).toMatch(/#3.7308\d+,43.5403\d+,4.0179\d+,43.6795\d+\|/)
         await expect(url.hash).toContain('|Les%20quartiers|style2|1')
     });
 });
