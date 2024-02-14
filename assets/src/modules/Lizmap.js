@@ -26,7 +26,8 @@ import Permalink from './Permalink.js';
 import Search from './Search.js';
 
 import WMSCapabilities from 'ol/format/WMSCapabilities.js';
-import { transform as transformOL, transformExtent as transformExtentOL, get as getProjection } from 'ol/proj.js';
+import {intersects as extentIntersects} from 'ol/extent.js';
+import { transform as transformOL, transformExtent as transformExtentOL, get as getProjection, clearAllProjections } from 'ol/proj.js';
 import { register } from 'ol/proj/proj4.js';
 
 import proj4 from 'proj4';
@@ -46,19 +47,66 @@ export default class Lizmap {
                 // The initialConfig has been cloned because it will be freezed
                 this._initialConfig = new Config(structuredClone(configs.initialConfig), wmsCapabilities);
                 this._state = new State(this._initialConfig, configs.startupFeatures);
+
+                // Register projections if unknown
+                for (const [ref, def] of Object.entries(lizProj4)) {
+                    if (ref !== "" && !proj4.defs(ref)) {
+                        proj4.defs(ref, def);
+                    }
+                }
+                // Register project projection if unknown
+                const configProj = this._initialConfig.options.projection;
+                if (configProj.ref !== "" && !proj4.defs(configProj.ref)) {
+                    proj4.defs(configProj.ref, configProj.proj4);
+                }
+                // About axis orientation https://proj.org/en/9.3/usage/projections.html#axis-orientation
+                // Add CRS:84 projection, same as EPSG:4326 but with ENU axis orientation
+                proj4.defs("CRS:84","+proj=longlat +datum=WGS84 +no_defs +type=crs");
+                register(proj4);
+                // Update project projection if its axis orientation is not ENU
+                if (configProj.ref !== "") {
+                    // loop through bounding boxes of the project provided by WMS capabilities
+                    for (const bbox of wmsCapabilities.Capability.Layer.BoundingBox) {
+                        // If the BBOX CRS is not the same of the project projection, continue.
+                        if (bbox.crs !== configProj.ref) {
+                            continue;
+                        }
+                        // Get project projection
+                        const projectProj = getProjection(configProj.ref);
+                        // Check axis orientation, if it is not ENU, break, we don't have to do anything
+                        if (projectProj.getAxisOrientation() !== 'enu') {
+                            break;
+                        }
+                        // Transform geographic extent to project projection
+                        const extent = transformExtentOL(wmsCapabilities.Capability.Layer.EX_GeographicBoundingBox, 'CRS:84', bbox.crs);
+                        // Check closest coordinates
+                        if (Math.abs(extent[0] - bbox.extent[1]) < Math.abs(extent[0] - bbox.extent[0])
+                            && Math.abs(extent[1] - bbox.extent[0]) < Math.abs(extent[1] - bbox.extent[1])
+                            && Math.abs(extent[2] - bbox.extent[3]) < Math.abs(extent[2] - bbox.extent[2])
+                            && Math.abs(extent[3] - bbox.extent[2]) < Math.abs(extent[3] - bbox.extent[3])) {
+                            // If inverted axis are closest, we have to update the projection definition
+                            proj4.defs(configProj.ref, configProj.proj4+' +axis=neu');
+                            clearAllProjections();
+                            register(proj4);
+                            break;
+                        }
+                        // Transform extent from project projection to CRS:84
+                        const geoExtent = transformExtentOL(bbox.extent, bbox.crs, 'CRS:84');
+                        // Check intersects between transform extent and provided extent by WMS Capapbilities
+                        if (!extentIntersects(geoExtent, wmsCapabilities.Capability.Layer.EX_GeographicBoundingBox)) {
+                            // if extents do not intersect, we have to update the projection definition
+                            proj4.defs(configProj.ref, configProj.proj4+' +axis=neu');
+                            clearAllProjections();
+                            register(proj4);
+                            break;
+                        }
+                    }
+                }
             },
             toolbarcreated: () => {
                 this._lizmap3 = lizMap;
 
                 // Register projections if unknown
-                for (const [ref, def] of Object.entries(lizProj4)) {
-                    if (ref !== "" && !getProjection(ref)) {
-                        proj4.defs(ref, def);
-                    }
-                }
-
-                register(proj4);
-
                 if (!getProjection(this.projection)) {
                     const proj = this.config.options.projection;
                     proj4.defs(proj.ref, proj.proj4);
