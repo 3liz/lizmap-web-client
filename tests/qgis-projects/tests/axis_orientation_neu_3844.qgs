@@ -1,0 +1,3340 @@
+<!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
+<qgis version="3.22.16-Białowieża" saveUser="" saveDateTime="2024-02-14T16:24:26" projectname="" saveUserFull="">
+  <homePath path=""/>
+  <title></title>
+  <autotransaction active="0"/>
+  <evaluateDefaultValues active="0"/>
+  <trust active="1"/>
+  <projectCrs>
+    <spatialrefsys>
+      <wkt>PROJCRS["Pulkovo 1942(58) / Stereo70",BASEGEOGCRS["Pulkovo 1942(58)",DATUM["Pulkovo 1942(58)",ELLIPSOID["Krassowsky 1940",6378245,298.3,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4179]],CONVERSION["Stereo 70",METHOD["Oblique Stereographic",ID["EPSG",9809]],PARAMETER["Latitude of natural origin",46,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8801]],PARAMETER["Longitude of natural origin",25,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8802]],PARAMETER["Scale factor at natural origin",0.99975,SCALEUNIT["unity",1],ID["EPSG",8805]],PARAMETER["False easting",500000,LENGTHUNIT["metre",1],ID["EPSG",8806]],PARAMETER["False northing",500000,LENGTHUNIT["metre",1],ID["EPSG",8807]]],CS[Cartesian,2],AXIS["northing (X)",north,ORDER[1],LENGTHUNIT["metre",1]],AXIS["easting (Y)",east,ORDER[2],LENGTHUNIT["metre",1]],USAGE[SCOPE["Engineering survey, topographic mapping."],AREA["Romania - onshore and offshore."],BBOX[43.44,20.26,48.27,31.41]],ID["EPSG",3844]]</wkt>
+      <proj4>+proj=sterea +lat_0=46 +lon_0=25 +k=0.99975 +x_0=500000 +y_0=500000 +ellps=krass +units=m +no_defs</proj4>
+      <srsid>27265</srsid>
+      <srid>3844</srid>
+      <authid>EPSG:3844</authid>
+      <description>Pulkovo 1942(58) / Stereo70</description>
+      <projectionacronym>sterea</projectionacronym>
+      <ellipsoidacronym>EPSG:7024</ellipsoidacronym>
+      <geographicflag>false</geographicflag>
+    </spatialrefsys>
+  </projectCrs>
+  <layer-tree-group>
+    <customproperties>
+      <Option/>
+    </customproperties>
+    <layer-tree-layer patch_size="-1,-1" id="axis_orientation_neu_3844_2736d6ce_df61_4ae0_abf5_5e75f7b5bdac" name="județ" checked="Qt::Checked" legend_exp="" expanded="1" legend_split_behavior="0" source="./axis_orientation_neu_3844.fgb|layername=axis_orientation_neu_3844" providerKey="ogr">
+      <customproperties>
+        <Option/>
+      </customproperties>
+    </layer-tree-layer>
+    <layer-tree-group mutually-exclusive="1" name="baselayers" checked="Qt::Checked" expanded="1" mutually-exclusive-child="0">
+      <customproperties>
+        <Option type="Map">
+          <Option type="QString" name="wmsShortName" value="baselayers"/>
+        </Option>
+      </customproperties>
+      <layer-tree-group mutually-exclusive="1" name="project-background-color" checked="Qt::Checked" expanded="1" mutually-exclusive-child="-1">
+        <customproperties>
+          <Option type="Map">
+            <Option type="QString" name="wmsShortName" value="project-background-color"/>
+          </Option>
+        </customproperties>
+      </layer-tree-group>
+      <layer-tree-layer patch_size="-1,-1" id="OpenStreetMap_7b286d9e_bf0a_47cc_b63e_95892d15cea8" name="OpenStreetMap" checked="Qt::Unchecked" legend_exp="" expanded="0" legend_split_behavior="0" source="crs=EPSG:3857&amp;format&amp;type=xyz&amp;url=https://tile.openstreetmap.org/%7Bz%7D/%7Bx%7D/%7By%7D.png&amp;zmax=19&amp;zmin=0" providerKey="wms">
+        <customproperties>
+          <Option/>
+        </customproperties>
+      </layer-tree-layer>
+    </layer-tree-group>
+    <custom-order enabled="0">
+      <item>OpenStreetMap_7b286d9e_bf0a_47cc_b63e_95892d15cea8</item>
+      <item>axis_orientation_neu_3844_2736d6ce_df61_4ae0_abf5_5e75f7b5bdac</item>
+    </custom-order>
+  </layer-tree-group>
+  <snapping-settings tolerance="12" minScale="0" scaleDependencyMode="0" maxScale="0" type="1" intersection-snapping="0" mode="2" unit="1" enabled="0" self-snapping="0">
+    <individual-layer-settings>
+      <layer-setting id="axis_orientation_neu_3844_2736d6ce_df61_4ae0_abf5_5e75f7b5bdac" tolerance="12" minScale="0" maxScale="0" type="1" units="1" enabled="0"/>
+    </individual-layer-settings>
+  </snapping-settings>
+  <relations/>
+  <polymorphicRelations/>
+  <mapcanvas name="theMapCanvas" annotationsVisible="1">
+    <units>meters</units>
+    <extent>
+      <xmin>127948.25766162329819053</xmin>
+      <ymin>170388.0270258056698367</ymin>
+      <xmax>895007.29889273433946073</xmax>
+      <ymax>811271.90322997397743165</ymax>
+    </extent>
+    <rotation>0</rotation>
+    <destinationsrs>
+      <spatialrefsys>
+        <wkt>PROJCRS["Pulkovo 1942(58) / Stereo70",BASEGEOGCRS["Pulkovo 1942(58)",DATUM["Pulkovo 1942(58)",ELLIPSOID["Krassowsky 1940",6378245,298.3,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4179]],CONVERSION["Stereo 70",METHOD["Oblique Stereographic",ID["EPSG",9809]],PARAMETER["Latitude of natural origin",46,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8801]],PARAMETER["Longitude of natural origin",25,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8802]],PARAMETER["Scale factor at natural origin",0.99975,SCALEUNIT["unity",1],ID["EPSG",8805]],PARAMETER["False easting",500000,LENGTHUNIT["metre",1],ID["EPSG",8806]],PARAMETER["False northing",500000,LENGTHUNIT["metre",1],ID["EPSG",8807]]],CS[Cartesian,2],AXIS["northing (X)",north,ORDER[1],LENGTHUNIT["metre",1]],AXIS["easting (Y)",east,ORDER[2],LENGTHUNIT["metre",1]],USAGE[SCOPE["Engineering survey, topographic mapping."],AREA["Romania - onshore and offshore."],BBOX[43.44,20.26,48.27,31.41]],ID["EPSG",3844]]</wkt>
+        <proj4>+proj=sterea +lat_0=46 +lon_0=25 +k=0.99975 +x_0=500000 +y_0=500000 +ellps=krass +units=m +no_defs</proj4>
+        <srsid>27265</srsid>
+        <srid>3844</srid>
+        <authid>EPSG:3844</authid>
+        <description>Pulkovo 1942(58) / Stereo70</description>
+        <projectionacronym>sterea</projectionacronym>
+        <ellipsoidacronym>EPSG:7024</ellipsoidacronym>
+        <geographicflag>false</geographicflag>
+      </spatialrefsys>
+    </destinationsrs>
+    <rendermaptile>0</rendermaptile>
+    <expressionContextScope/>
+  </mapcanvas>
+  <projectModels/>
+  <legend updateDrawingOrder="true">
+    <legendlayer drawingOrder="-1" checked="Qt::Checked" name="județ" showFeatureCount="0" open="true">
+      <filegroup open="true" hidden="false">
+        <legendlayerfile isInOverview="0" layerid="axis_orientation_neu_3844_2736d6ce_df61_4ae0_abf5_5e75f7b5bdac" visible="1"/>
+      </filegroup>
+    </legendlayer>
+    <legendgroup name="baselayers" checked="Qt::Checked" open="true">
+      <legendgroup name="project-background-color" checked="Qt::Checked" open="true"/>
+      <legendlayer drawingOrder="-1" checked="Qt::Unchecked" name="OpenStreetMap" showFeatureCount="0" open="false">
+        <filegroup open="false" hidden="false">
+          <legendlayerfile isInOverview="0" layerid="OpenStreetMap_7b286d9e_bf0a_47cc_b63e_95892d15cea8" visible="0"/>
+        </filegroup>
+      </legendlayer>
+    </legendgroup>
+  </legend>
+  <mapViewDocks/>
+  <mapViewDocks3D/>
+  <main-annotation-layer autoRefreshTime="0" refreshOnNotifyMessage="" legendPlaceholderImage="" type="annotation" autoRefreshEnabled="0" refreshOnNotifyEnabled="0">
+    <id>Annotations_12fecda4_1de5_48bf_b3c1_637b410e7461</id>
+    <datasource></datasource>
+    <keywordList>
+      <value></value>
+    </keywordList>
+    <layername>Annotations</layername>
+    <srs>
+      <spatialrefsys>
+        <wkt>GEOGCRS["WGS 84",ENSEMBLE["World Geodetic System 1984 ensemble",MEMBER["World Geodetic System 1984 (Transit)"],MEMBER["World Geodetic System 1984 (G730)"],MEMBER["World Geodetic System 1984 (G873)"],MEMBER["World Geodetic System 1984 (G1150)"],MEMBER["World Geodetic System 1984 (G1674)"],MEMBER["World Geodetic System 1984 (G1762)"],MEMBER["World Geodetic System 1984 (G2139)"],ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]],ENSEMBLEACCURACY[2.0]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],CS[ellipsoidal,2],AXIS["geodetic latitude (Lat)",north,ORDER[1],ANGLEUNIT["degree",0.0174532925199433]],AXIS["geodetic longitude (Lon)",east,ORDER[2],ANGLEUNIT["degree",0.0174532925199433]],USAGE[SCOPE["Horizontal component of 3D system."],AREA["World."],BBOX[-90,-180,90,180]],ID["EPSG",4326]]</wkt>
+        <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
+        <srsid>3452</srsid>
+        <srid>4326</srid>
+        <authid>EPSG:4326</authid>
+        <description>WGS 84</description>
+        <projectionacronym>longlat</projectionacronym>
+        <ellipsoidacronym>EPSG:7030</ellipsoidacronym>
+        <geographicflag>true</geographicflag>
+      </spatialrefsys>
+    </srs>
+    <resourceMetadata>
+      <identifier></identifier>
+      <parentidentifier></parentidentifier>
+      <language></language>
+      <type></type>
+      <title></title>
+      <abstract></abstract>
+      <links/>
+      <fees></fees>
+      <encoding></encoding>
+      <crs>
+        <spatialrefsys>
+          <wkt></wkt>
+          <proj4></proj4>
+          <srsid>0</srsid>
+          <srid>0</srid>
+          <authid></authid>
+          <description></description>
+          <projectionacronym></projectionacronym>
+          <ellipsoidacronym></ellipsoidacronym>
+          <geographicflag>false</geographicflag>
+        </spatialrefsys>
+      </crs>
+      <extent/>
+    </resourceMetadata>
+    <items/>
+    <layerOpacity>1</layerOpacity>
+    <blendMode>0</blendMode>
+    <paintEffect/>
+  </main-annotation-layer>
+  <projectlayers>
+    <maplayer autoRefreshTime="0" refreshOnNotifyMessage="" minScale="1e+08" maxScale="0" legendPlaceholderImage="" type="raster" styleCategories="AllStyleCategories" autoRefreshEnabled="0" refreshOnNotifyEnabled="0" hasScaleBasedVisibilityFlag="0">
+      <extent>
+        <xmin>-20037508.34278924390673637</xmin>
+        <ymin>-20037508.34278924763202667</ymin>
+        <xmax>20037508.34278924390673637</xmax>
+        <ymax>20037508.34278924763202667</ymax>
+      </extent>
+      <wgs84extent>
+        <xmin>-180</xmin>
+        <ymin>-85.05112877980660357</ymin>
+        <xmax>179.99999999999997158</xmax>
+        <ymax>85.05112877980660357</ymax>
+      </wgs84extent>
+      <id>OpenStreetMap_7b286d9e_bf0a_47cc_b63e_95892d15cea8</id>
+      <datasource>crs=EPSG:3857&amp;format&amp;type=xyz&amp;url=https://tile.openstreetmap.org/%7Bz%7D/%7Bx%7D/%7By%7D.png&amp;zmax=19&amp;zmin=0</datasource>
+      <shortname>OpenStreetMap</shortname>
+      <keywordList>
+        <value></value>
+      </keywordList>
+      <attribution href="https://openstreetmap.org">© Contributeurs OpenStreetMap</attribution>
+      <layername>OpenStreetMap</layername>
+      <srs>
+        <spatialrefsys>
+          <wkt>PROJCRS["WGS 84 / Pseudo-Mercator",BASEGEOGCRS["WGS 84",ENSEMBLE["World Geodetic System 1984 ensemble",MEMBER["World Geodetic System 1984 (Transit)"],MEMBER["World Geodetic System 1984 (G730)"],MEMBER["World Geodetic System 1984 (G873)"],MEMBER["World Geodetic System 1984 (G1150)"],MEMBER["World Geodetic System 1984 (G1674)"],MEMBER["World Geodetic System 1984 (G1762)"],MEMBER["World Geodetic System 1984 (G2139)"],ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]],ENSEMBLEACCURACY[2.0]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4326]],CONVERSION["Popular Visualisation Pseudo-Mercator",METHOD["Popular Visualisation Pseudo Mercator",ID["EPSG",1024]],PARAMETER["Latitude of natural origin",0,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8801]],PARAMETER["Longitude of natural origin",0,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8802]],PARAMETER["False easting",0,LENGTHUNIT["metre",1],ID["EPSG",8806]],PARAMETER["False northing",0,LENGTHUNIT["metre",1],ID["EPSG",8807]]],CS[Cartesian,2],AXIS["easting (X)",east,ORDER[1],LENGTHUNIT["metre",1]],AXIS["northing (Y)",north,ORDER[2],LENGTHUNIT["metre",1]],USAGE[SCOPE["Web mapping and visualisation."],AREA["World between 85.06°S and 85.06°N."],BBOX[-85.06,-180,85.06,180]],ID["EPSG",3857]]</wkt>
+          <proj4>+proj=merc +a=6378137 +b=6378137 +lat_ts=0 +lon_0=0 +x_0=0 +y_0=0 +k=1 +units=m +nadgrids=@null +wktext +no_defs</proj4>
+          <srsid>3857</srsid>
+          <srid>3857</srid>
+          <authid>EPSG:3857</authid>
+          <description>WGS 84 / Pseudo-Mercator</description>
+          <projectionacronym>merc</projectionacronym>
+          <ellipsoidacronym>EPSG:7030</ellipsoidacronym>
+          <geographicflag>false</geographicflag>
+        </spatialrefsys>
+      </srs>
+      <resourceMetadata>
+        <identifier>Tuiles OpenStreetMap</identifier>
+        <parentidentifier></parentidentifier>
+        <language></language>
+        <type>dataset</type>
+        <title>Tuiles OpenStreetMap</title>
+        <abstract>OpenStreetMap est construit par une communauté de cartographes qui contribuent et maintiennent des données concernant les routes, chemins, cafés, gares ferroviaires, et bien plus, dans le monde entier.</abstract>
+        <links>
+          <link type="WWW:LINK" name="Source" size="" url="https://www.openstreetmap.org/" description="" mimeType="" format=""/>
+        </links>
+        <fees></fees>
+        <rights>Fond de carte et données d’OpenStreetMap et de la Fondation OpenStreetMap (CC-BY-SA). © les contributeurs de https://www.openstreetmap.org.</rights>
+        <license>Open Data Commons Open Database License (ODbL)</license>
+        <license>Creative Commons Attribution-ShareAlike (CC-BY-SA)</license>
+        <encoding></encoding>
+        <crs>
+          <spatialrefsys>
+            <wkt>PROJCRS["WGS 84 / Pseudo-Mercator",BASEGEOGCRS["WGS 84",ENSEMBLE["World Geodetic System 1984 ensemble",MEMBER["World Geodetic System 1984 (Transit)"],MEMBER["World Geodetic System 1984 (G730)"],MEMBER["World Geodetic System 1984 (G873)"],MEMBER["World Geodetic System 1984 (G1150)"],MEMBER["World Geodetic System 1984 (G1674)"],MEMBER["World Geodetic System 1984 (G1762)"],MEMBER["World Geodetic System 1984 (G2139)"],ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]],ENSEMBLEACCURACY[2.0]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4326]],CONVERSION["Popular Visualisation Pseudo-Mercator",METHOD["Popular Visualisation Pseudo Mercator",ID["EPSG",1024]],PARAMETER["Latitude of natural origin",0,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8801]],PARAMETER["Longitude of natural origin",0,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8802]],PARAMETER["False easting",0,LENGTHUNIT["metre",1],ID["EPSG",8806]],PARAMETER["False northing",0,LENGTHUNIT["metre",1],ID["EPSG",8807]]],CS[Cartesian,2],AXIS["easting (X)",east,ORDER[1],LENGTHUNIT["metre",1]],AXIS["northing (Y)",north,ORDER[2],LENGTHUNIT["metre",1]],USAGE[SCOPE["Web mapping and visualisation."],AREA["World between 85.06°S and 85.06°N."],BBOX[-85.06,-180,85.06,180]],ID["EPSG",3857]]</wkt>
+            <proj4>+proj=merc +a=6378137 +b=6378137 +lat_ts=0 +lon_0=0 +x_0=0 +y_0=0 +k=1 +units=m +nadgrids=@null +wktext +no_defs</proj4>
+            <srsid>3857</srsid>
+            <srid>3857</srid>
+            <authid>EPSG:3857</authid>
+            <description>WGS 84 / Pseudo-Mercator</description>
+            <projectionacronym>merc</projectionacronym>
+            <ellipsoidacronym>EPSG:7030</ellipsoidacronym>
+            <geographicflag>false</geographicflag>
+          </spatialrefsys>
+        </crs>
+        <extent>
+          <spatial minx="-180" miny="-85.05112877980660357" minz="0" maxz="0" maxx="180" maxy="85.05112877980660357" dimensions="2" crs="EPSG:4326"/>
+        </extent>
+      </resourceMetadata>
+      <provider>wms</provider>
+      <noData>
+        <noDataList bandNo="1" useSrcNoData="0"/>
+      </noData>
+      <map-layer-style-manager current="défaut">
+        <map-layer-style name="défaut"/>
+      </map-layer-style-manager>
+      <metadataUrls/>
+      <flags>
+        <Identifiable>1</Identifiable>
+        <Removable>1</Removable>
+        <Searchable>0</Searchable>
+        <Private>0</Private>
+      </flags>
+      <temporal mode="0" enabled="0" fetchMode="0">
+        <fixedRange>
+          <start></start>
+          <end></end>
+        </fixedRange>
+      </temporal>
+      <customproperties>
+        <Option type="Map">
+          <Option type="QString" name="identify/format" value="Value"/>
+        </Option>
+      </customproperties>
+      <pipe-data-defined-properties>
+        <Option type="Map">
+          <Option type="QString" name="name" value=""/>
+          <Option name="properties"/>
+          <Option type="QString" name="type" value="collection"/>
+        </Option>
+      </pipe-data-defined-properties>
+      <pipe>
+        <provider>
+          <resampling zoomedInResamplingMethod="nearestNeighbour" maxOversampling="2" zoomedOutResamplingMethod="nearestNeighbour" enabled="false"/>
+        </provider>
+        <rasterrenderer alphaBand="-1" type="singlebandcolordata" opacity="1" nodataColor="" band="1">
+          <rasterTransparency/>
+          <minMaxOrigin>
+            <limits>None</limits>
+            <extent>WholeRaster</extent>
+            <statAccuracy>Estimated</statAccuracy>
+            <cumulativeCutLower>0.02</cumulativeCutLower>
+            <cumulativeCutUpper>0.98</cumulativeCutUpper>
+            <stdDevFactor>2</stdDevFactor>
+          </minMaxOrigin>
+        </rasterrenderer>
+        <brightnesscontrast contrast="0" brightness="0" gamma="1"/>
+        <huesaturation colorizeOn="0" colorizeBlue="128" saturation="0" colorizeGreen="128" grayscaleMode="0" invertColors="0" colorizeStrength="100" colorizeRed="255"/>
+        <rasterresampler maxOversampling="2"/>
+        <resamplingStage>resamplingFilter</resamplingStage>
+      </pipe>
+      <blendMode>0</blendMode>
+    </maplayer>
+    <maplayer styleCategories="AllStyleCategories" labelsEnabled="1" maxScale="0" simplifyDrawingHints="1" minScale="100000000" refreshOnNotifyMessage="" geometry="Polygon" hasScaleBasedVisibilityFlag="0" simplifyMaxScale="1" wkbType="MultiPolygon" refreshOnNotifyEnabled="0" simplifyLocal="1" autoRefreshEnabled="0" autoRefreshTime="0" symbologyReferenceScale="-1" simplifyAlgorithm="0" legendPlaceholderImage="" simplifyDrawingTol="1" readOnly="0" type="vector">
+      <extent>
+        <xmin>20.26199550000000116</xmin>
+        <ymin>43.61868199999999973</ymin>
+        <xmax>29.76840580000000003</xmax>
+        <ymax>48.26547380000000231</ymax>
+      </extent>
+      <wgs84extent>
+        <xmin>20.26199550000000116</xmin>
+        <ymin>43.61868199999999973</ymin>
+        <xmax>29.76840580000000003</xmax>
+        <ymax>48.26547380000000231</ymax>
+      </wgs84extent>
+      <id>axis_orientation_neu_3844_2736d6ce_df61_4ae0_abf5_5e75f7b5bdac</id>
+      <datasource>./axis_orientation_neu_3844.fgb|layername=axis_orientation_neu_3844</datasource>
+      <shortname>judet</shortname>
+      <keywordList>
+        <value></value>
+      </keywordList>
+      <layername>județ</layername>
+      <srs>
+        <spatialrefsys>
+          <wkt>GEOGCRS["WGS 84",ENSEMBLE["World Geodetic System 1984 ensemble",MEMBER["World Geodetic System 1984 (Transit)"],MEMBER["World Geodetic System 1984 (G730)"],MEMBER["World Geodetic System 1984 (G873)"],MEMBER["World Geodetic System 1984 (G1150)"],MEMBER["World Geodetic System 1984 (G1674)"],MEMBER["World Geodetic System 1984 (G1762)"],MEMBER["World Geodetic System 1984 (G2139)"],ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]],ENSEMBLEACCURACY[2.0]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],CS[ellipsoidal,2],AXIS["geodetic latitude (Lat)",north,ORDER[1],ANGLEUNIT["degree",0.0174532925199433]],AXIS["geodetic longitude (Lon)",east,ORDER[2],ANGLEUNIT["degree",0.0174532925199433]],USAGE[SCOPE["Horizontal component of 3D system."],AREA["World."],BBOX[-90,-180,90,180]],ID["EPSG",4326]]</wkt>
+          <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
+          <srsid>3452</srsid>
+          <srid>4326</srid>
+          <authid>EPSG:4326</authid>
+          <description>WGS 84</description>
+          <projectionacronym>longlat</projectionacronym>
+          <ellipsoidacronym>EPSG:7030</ellipsoidacronym>
+          <geographicflag>true</geographicflag>
+        </spatialrefsys>
+      </srs>
+      <resourceMetadata>
+        <identifier></identifier>
+        <parentidentifier></parentidentifier>
+        <language></language>
+        <type></type>
+        <title></title>
+        <abstract></abstract>
+        <contact>
+          <name></name>
+          <organization></organization>
+          <position></position>
+          <voice></voice>
+          <fax></fax>
+          <email></email>
+          <role></role>
+        </contact>
+        <links/>
+        <fees></fees>
+        <rights>© contributeurs OpenStreetMap</rights>
+        <license>https://openstreetmap.org/copyright</license>
+        <encoding></encoding>
+        <crs>
+          <spatialrefsys>
+            <wkt></wkt>
+            <proj4></proj4>
+            <srsid>0</srsid>
+            <srid>0</srid>
+            <authid></authid>
+            <description></description>
+            <projectionacronym></projectionacronym>
+            <ellipsoidacronym></ellipsoidacronym>
+            <geographicflag>false</geographicflag>
+          </spatialrefsys>
+        </crs>
+        <extent>
+          <spatial minx="0" miny="0" minz="0" maxz="0" maxx="0" maxy="0" dimensions="2" crs=""/>
+          <temporal>
+            <period>
+              <start></start>
+              <end></end>
+            </period>
+          </temporal>
+        </extent>
+      </resourceMetadata>
+      <provider encoding="UTF-8">ogr</provider>
+      <vectorjoins/>
+      <layerDependencies/>
+      <dataDependencies/>
+      <expressionfields/>
+      <map-layer-style-manager current="default">
+        <map-layer-style name="default"/>
+      </map-layer-style-manager>
+      <auxiliaryLayer/>
+      <metadataUrls/>
+      <flags>
+        <Identifiable>1</Identifiable>
+        <Removable>1</Removable>
+        <Searchable>1</Searchable>
+        <Private>0</Private>
+      </flags>
+      <temporal startField="" accumulate="0" limitMode="0" durationField="" endField="" startExpression="" mode="0" durationUnit="min" fixedDuration="0" endExpression="" enabled="0">
+        <fixedRange>
+          <start></start>
+          <end></end>
+        </fixedRange>
+      </temporal>
+      <renderer-v2 type="singleSymbol" forceraster="0" referencescale="-1" symbollevels="0" enableorderby="0">
+        <symbols>
+          <symbol type="fill" clip_to_extent="1" name="0" force_rhr="0" alpha="1">
+            <data_defined_properties>
+              <Option type="Map">
+                <Option type="QString" name="name" value=""/>
+                <Option name="properties"/>
+                <Option type="QString" name="type" value="collection"/>
+              </Option>
+            </data_defined_properties>
+            <layer pass="0" class="SimpleLine" locked="0" enabled="1">
+              <Option type="Map">
+                <Option type="QString" name="align_dash_pattern" value="0"/>
+                <Option type="QString" name="capstyle" value="square"/>
+                <Option type="QString" name="customdash" value="5;2"/>
+                <Option type="QString" name="customdash_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                <Option type="QString" name="customdash_unit" value="MM"/>
+                <Option type="QString" name="dash_pattern_offset" value="0"/>
+                <Option type="QString" name="dash_pattern_offset_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                <Option type="QString" name="dash_pattern_offset_unit" value="MM"/>
+                <Option type="QString" name="draw_inside_polygon" value="0"/>
+                <Option type="QString" name="joinstyle" value="bevel"/>
+                <Option type="QString" name="line_color" value="255,255,255,255"/>
+                <Option type="QString" name="line_style" value="solid"/>
+                <Option type="QString" name="line_width" value="0.78"/>
+                <Option type="QString" name="line_width_unit" value="MM"/>
+                <Option type="QString" name="offset" value="0"/>
+                <Option type="QString" name="offset_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                <Option type="QString" name="offset_unit" value="MM"/>
+                <Option type="QString" name="ring_filter" value="0"/>
+                <Option type="QString" name="trim_distance_end" value="0"/>
+                <Option type="QString" name="trim_distance_end_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                <Option type="QString" name="trim_distance_end_unit" value="MM"/>
+                <Option type="QString" name="trim_distance_start" value="0"/>
+                <Option type="QString" name="trim_distance_start_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                <Option type="QString" name="trim_distance_start_unit" value="MM"/>
+                <Option type="QString" name="tweak_dash_pattern_on_corners" value="0"/>
+                <Option type="QString" name="use_custom_dash" value="0"/>
+                <Option type="QString" name="width_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+              </Option>
+              <prop v="0" k="align_dash_pattern"/>
+              <prop v="square" k="capstyle"/>
+              <prop v="5;2" k="customdash"/>
+              <prop v="3x:0,0,0,0,0,0" k="customdash_map_unit_scale"/>
+              <prop v="MM" k="customdash_unit"/>
+              <prop v="0" k="dash_pattern_offset"/>
+              <prop v="3x:0,0,0,0,0,0" k="dash_pattern_offset_map_unit_scale"/>
+              <prop v="MM" k="dash_pattern_offset_unit"/>
+              <prop v="0" k="draw_inside_polygon"/>
+              <prop v="bevel" k="joinstyle"/>
+              <prop v="255,255,255,255" k="line_color"/>
+              <prop v="solid" k="line_style"/>
+              <prop v="0.78" k="line_width"/>
+              <prop v="MM" k="line_width_unit"/>
+              <prop v="0" k="offset"/>
+              <prop v="3x:0,0,0,0,0,0" k="offset_map_unit_scale"/>
+              <prop v="MM" k="offset_unit"/>
+              <prop v="0" k="ring_filter"/>
+              <prop v="0" k="trim_distance_end"/>
+              <prop v="3x:0,0,0,0,0,0" k="trim_distance_end_map_unit_scale"/>
+              <prop v="MM" k="trim_distance_end_unit"/>
+              <prop v="0" k="trim_distance_start"/>
+              <prop v="3x:0,0,0,0,0,0" k="trim_distance_start_map_unit_scale"/>
+              <prop v="MM" k="trim_distance_start_unit"/>
+              <prop v="0" k="tweak_dash_pattern_on_corners"/>
+              <prop v="0" k="use_custom_dash"/>
+              <prop v="3x:0,0,0,0,0,0" k="width_map_unit_scale"/>
+              <data_defined_properties>
+                <Option type="Map">
+                  <Option type="QString" name="name" value=""/>
+                  <Option name="properties"/>
+                  <Option type="QString" name="type" value="collection"/>
+                </Option>
+              </data_defined_properties>
+            </layer>
+            <layer pass="0" class="SimpleLine" locked="0" enabled="1">
+              <Option type="Map">
+                <Option type="QString" name="align_dash_pattern" value="0"/>
+                <Option type="QString" name="capstyle" value="square"/>
+                <Option type="QString" name="customdash" value="5;2"/>
+                <Option type="QString" name="customdash_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                <Option type="QString" name="customdash_unit" value="MM"/>
+                <Option type="QString" name="dash_pattern_offset" value="0"/>
+                <Option type="QString" name="dash_pattern_offset_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                <Option type="QString" name="dash_pattern_offset_unit" value="MM"/>
+                <Option type="QString" name="draw_inside_polygon" value="0"/>
+                <Option type="QString" name="joinstyle" value="bevel"/>
+                <Option type="QString" name="line_color" value="35,35,35,255"/>
+                <Option type="QString" name="line_style" value="solid"/>
+                <Option type="QString" name="line_width" value="0.52"/>
+                <Option type="QString" name="line_width_unit" value="MM"/>
+                <Option type="QString" name="offset" value="0"/>
+                <Option type="QString" name="offset_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                <Option type="QString" name="offset_unit" value="MM"/>
+                <Option type="QString" name="ring_filter" value="0"/>
+                <Option type="QString" name="trim_distance_end" value="0"/>
+                <Option type="QString" name="trim_distance_end_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                <Option type="QString" name="trim_distance_end_unit" value="MM"/>
+                <Option type="QString" name="trim_distance_start" value="0"/>
+                <Option type="QString" name="trim_distance_start_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                <Option type="QString" name="trim_distance_start_unit" value="MM"/>
+                <Option type="QString" name="tweak_dash_pattern_on_corners" value="0"/>
+                <Option type="QString" name="use_custom_dash" value="0"/>
+                <Option type="QString" name="width_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+              </Option>
+              <prop v="0" k="align_dash_pattern"/>
+              <prop v="square" k="capstyle"/>
+              <prop v="5;2" k="customdash"/>
+              <prop v="3x:0,0,0,0,0,0" k="customdash_map_unit_scale"/>
+              <prop v="MM" k="customdash_unit"/>
+              <prop v="0" k="dash_pattern_offset"/>
+              <prop v="3x:0,0,0,0,0,0" k="dash_pattern_offset_map_unit_scale"/>
+              <prop v="MM" k="dash_pattern_offset_unit"/>
+              <prop v="0" k="draw_inside_polygon"/>
+              <prop v="bevel" k="joinstyle"/>
+              <prop v="35,35,35,255" k="line_color"/>
+              <prop v="solid" k="line_style"/>
+              <prop v="0.52" k="line_width"/>
+              <prop v="MM" k="line_width_unit"/>
+              <prop v="0" k="offset"/>
+              <prop v="3x:0,0,0,0,0,0" k="offset_map_unit_scale"/>
+              <prop v="MM" k="offset_unit"/>
+              <prop v="0" k="ring_filter"/>
+              <prop v="0" k="trim_distance_end"/>
+              <prop v="3x:0,0,0,0,0,0" k="trim_distance_end_map_unit_scale"/>
+              <prop v="MM" k="trim_distance_end_unit"/>
+              <prop v="0" k="trim_distance_start"/>
+              <prop v="3x:0,0,0,0,0,0" k="trim_distance_start_map_unit_scale"/>
+              <prop v="MM" k="trim_distance_start_unit"/>
+              <prop v="0" k="tweak_dash_pattern_on_corners"/>
+              <prop v="0" k="use_custom_dash"/>
+              <prop v="3x:0,0,0,0,0,0" k="width_map_unit_scale"/>
+              <data_defined_properties>
+                <Option type="Map">
+                  <Option type="QString" name="name" value=""/>
+                  <Option name="properties"/>
+                  <Option type="QString" name="type" value="collection"/>
+                </Option>
+              </data_defined_properties>
+            </layer>
+          </symbol>
+        </symbols>
+        <rotation/>
+        <sizescale/>
+      </renderer-v2>
+      <labeling type="simple">
+        <settings calloutType="simple">
+          <text-style textColor="50,50,50,255" fieldName="name" fontStrikeout="0" fontWordSpacing="0" fontKerning="1" fontSizeUnit="Point" fontLetterSpacing="0" fontItalic="0" fontFamily="Liberation Sans" namedStyle="Regular" allowHtml="0" textOpacity="1" previewBkgrdColor="255,255,255,255" fontWeight="50" legendString="Aa" capitalization="0" useSubstitutions="0" textOrientation="horizontal" fontUnderline="0" isExpression="0" multilineHeight="1" fontSizeMapUnitScale="3x:0,0,0,0,0,0" fontSize="10" blendMode="0">
+            <families/>
+            <text-buffer bufferSize="1" bufferJoinStyle="128" bufferBlendMode="0" bufferDraw="1" bufferColor="250,250,250,255" bufferOpacity="1" bufferSizeUnits="MM" bufferSizeMapUnitScale="3x:0,0,0,0,0,0" bufferNoFill="1"/>
+            <text-mask maskEnabled="0" maskOpacity="1" maskJoinStyle="128" maskType="0" maskSizeMapUnitScale="3x:0,0,0,0,0,0" maskSize="0" maskSizeUnits="MM" maskedSymbolLayers=""/>
+            <background shapeSVGFile="" shapeFillColor="255,255,255,255" shapeBorderWidthMapUnitScale="3x:0,0,0,0,0,0" shapeSizeType="0" shapeBorderWidth="0" shapeOffsetY="0" shapeOffsetX="0" shapeRadiiX="0" shapeRotationType="0" shapeOffsetMapUnitScale="3x:0,0,0,0,0,0" shapeRadiiY="0" shapeRadiiUnit="Point" shapeRadiiMapUnitScale="3x:0,0,0,0,0,0" shapeSizeY="0" shapeOffsetUnit="Point" shapeBorderWidthUnit="Point" shapeType="0" shapeBorderColor="128,128,128,255" shapeSizeUnit="Point" shapeRotation="0" shapeDraw="0" shapeBlendMode="0" shapeSizeX="0" shapeSizeMapUnitScale="3x:0,0,0,0,0,0" shapeJoinStyle="64" shapeOpacity="1">
+              <symbol type="marker" clip_to_extent="1" name="markerSymbol" force_rhr="0" alpha="1">
+                <data_defined_properties>
+                  <Option type="Map">
+                    <Option type="QString" name="name" value=""/>
+                    <Option name="properties"/>
+                    <Option type="QString" name="type" value="collection"/>
+                  </Option>
+                </data_defined_properties>
+                <layer pass="0" class="SimpleMarker" locked="0" enabled="1">
+                  <Option type="Map">
+                    <Option type="QString" name="angle" value="0"/>
+                    <Option type="QString" name="cap_style" value="square"/>
+                    <Option type="QString" name="color" value="141,90,153,255"/>
+                    <Option type="QString" name="horizontal_anchor_point" value="1"/>
+                    <Option type="QString" name="joinstyle" value="bevel"/>
+                    <Option type="QString" name="name" value="circle"/>
+                    <Option type="QString" name="offset" value="0,0"/>
+                    <Option type="QString" name="offset_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                    <Option type="QString" name="offset_unit" value="MM"/>
+                    <Option type="QString" name="outline_color" value="35,35,35,255"/>
+                    <Option type="QString" name="outline_style" value="solid"/>
+                    <Option type="QString" name="outline_width" value="0"/>
+                    <Option type="QString" name="outline_width_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                    <Option type="QString" name="outline_width_unit" value="MM"/>
+                    <Option type="QString" name="scale_method" value="diameter"/>
+                    <Option type="QString" name="size" value="2"/>
+                    <Option type="QString" name="size_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                    <Option type="QString" name="size_unit" value="MM"/>
+                    <Option type="QString" name="vertical_anchor_point" value="1"/>
+                  </Option>
+                  <prop v="0" k="angle"/>
+                  <prop v="square" k="cap_style"/>
+                  <prop v="141,90,153,255" k="color"/>
+                  <prop v="1" k="horizontal_anchor_point"/>
+                  <prop v="bevel" k="joinstyle"/>
+                  <prop v="circle" k="name"/>
+                  <prop v="0,0" k="offset"/>
+                  <prop v="3x:0,0,0,0,0,0" k="offset_map_unit_scale"/>
+                  <prop v="MM" k="offset_unit"/>
+                  <prop v="35,35,35,255" k="outline_color"/>
+                  <prop v="solid" k="outline_style"/>
+                  <prop v="0" k="outline_width"/>
+                  <prop v="3x:0,0,0,0,0,0" k="outline_width_map_unit_scale"/>
+                  <prop v="MM" k="outline_width_unit"/>
+                  <prop v="diameter" k="scale_method"/>
+                  <prop v="2" k="size"/>
+                  <prop v="3x:0,0,0,0,0,0" k="size_map_unit_scale"/>
+                  <prop v="MM" k="size_unit"/>
+                  <prop v="1" k="vertical_anchor_point"/>
+                  <data_defined_properties>
+                    <Option type="Map">
+                      <Option type="QString" name="name" value=""/>
+                      <Option name="properties"/>
+                      <Option type="QString" name="type" value="collection"/>
+                    </Option>
+                  </data_defined_properties>
+                </layer>
+              </symbol>
+              <symbol type="fill" clip_to_extent="1" name="fillSymbol" force_rhr="0" alpha="1">
+                <data_defined_properties>
+                  <Option type="Map">
+                    <Option type="QString" name="name" value=""/>
+                    <Option name="properties"/>
+                    <Option type="QString" name="type" value="collection"/>
+                  </Option>
+                </data_defined_properties>
+                <layer pass="0" class="SimpleFill" locked="0" enabled="1">
+                  <Option type="Map">
+                    <Option type="QString" name="border_width_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                    <Option type="QString" name="color" value="255,255,255,255"/>
+                    <Option type="QString" name="joinstyle" value="bevel"/>
+                    <Option type="QString" name="offset" value="0,0"/>
+                    <Option type="QString" name="offset_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                    <Option type="QString" name="offset_unit" value="MM"/>
+                    <Option type="QString" name="outline_color" value="128,128,128,255"/>
+                    <Option type="QString" name="outline_style" value="no"/>
+                    <Option type="QString" name="outline_width" value="0"/>
+                    <Option type="QString" name="outline_width_unit" value="Point"/>
+                    <Option type="QString" name="style" value="solid"/>
+                  </Option>
+                  <prop v="3x:0,0,0,0,0,0" k="border_width_map_unit_scale"/>
+                  <prop v="255,255,255,255" k="color"/>
+                  <prop v="bevel" k="joinstyle"/>
+                  <prop v="0,0" k="offset"/>
+                  <prop v="3x:0,0,0,0,0,0" k="offset_map_unit_scale"/>
+                  <prop v="MM" k="offset_unit"/>
+                  <prop v="128,128,128,255" k="outline_color"/>
+                  <prop v="no" k="outline_style"/>
+                  <prop v="0" k="outline_width"/>
+                  <prop v="Point" k="outline_width_unit"/>
+                  <prop v="solid" k="style"/>
+                  <data_defined_properties>
+                    <Option type="Map">
+                      <Option type="QString" name="name" value=""/>
+                      <Option name="properties"/>
+                      <Option type="QString" name="type" value="collection"/>
+                    </Option>
+                  </data_defined_properties>
+                </layer>
+              </symbol>
+            </background>
+            <shadow shadowDraw="0" shadowOffsetUnit="MM" shadowRadius="1.5" shadowRadiusAlphaOnly="0" shadowRadiusMapUnitScale="3x:0,0,0,0,0,0" shadowColor="0,0,0,255" shadowOffsetMapUnitScale="3x:0,0,0,0,0,0" shadowRadiusUnit="MM" shadowScale="100" shadowBlendMode="6" shadowOffsetDist="1" shadowOffsetAngle="135" shadowOpacity="0.69999999999999996" shadowOffsetGlobal="1" shadowUnder="0"/>
+            <dd_properties>
+              <Option type="Map">
+                <Option type="QString" name="name" value=""/>
+                <Option name="properties"/>
+                <Option type="QString" name="type" value="collection"/>
+              </Option>
+            </dd_properties>
+            <substitutions/>
+          </text-style>
+          <text-format reverseDirectionSymbol="0" leftDirectionSymbol="&lt;" addDirectionSymbol="0" useMaxLineLengthForAutoWrap="1" wrapChar="" multilineAlign="3" rightDirectionSymbol=">" decimals="3" autoWrapLength="0" placeDirectionSymbol="0" plussign="0" formatNumbers="0"/>
+          <placement quadOffset="4" polygonPlacementFlags="2" maxCurvedCharAngleIn="25" maxCurvedCharAngleOut="-25" overrunDistance="0" priority="5" repeatDistanceMapUnitScale="3x:0,0,0,0,0,0" distUnits="MM" preserveRotation="1" geometryGeneratorType="PointGeometry" rotationAngle="0" rotationUnit="AngleDegrees" fitInPolygonOnly="0" lineAnchorType="0" offsetUnits="MM" geometryGeneratorEnabled="0" overrunDistanceUnit="MM" dist="0" repeatDistance="0" repeatDistanceUnits="MM" yOffset="0" layerType="PolygonGeometry" predefinedPositionOrder="TR,TL,BR,BL,R,L,TSR,BSR" placementFlags="10" distMapUnitScale="3x:0,0,0,0,0,0" centroidInside="0" centroidWhole="0" placement="0" lineAnchorClipping="0" geometryGenerator="" labelOffsetMapUnitScale="3x:0,0,0,0,0,0" xOffset="0" overrunDistanceMapUnitScale="3x:0,0,0,0,0,0" lineAnchorPercent="0.5" offsetType="0"/>
+          <rendering scaleVisibility="0" obstacleFactor="1" labelPerPart="0" scaleMax="0" fontLimitPixelSize="0" fontMaxPixelSize="10000" scaleMin="0" upsidedownLabels="0" fontMinPixelSize="3" displayAll="0" obstacle="1" drawLabels="1" unplacedVisibility="0" mergeLines="0" minFeatureSize="0" maxNumLabels="2000" obstacleType="1" zIndex="0" limitNumLabels="0"/>
+          <dd_properties>
+            <Option type="Map">
+              <Option type="QString" name="name" value=""/>
+              <Option name="properties"/>
+              <Option type="QString" name="type" value="collection"/>
+            </Option>
+          </dd_properties>
+          <callout type="simple">
+            <Option type="Map">
+              <Option type="QString" name="anchorPoint" value="pole_of_inaccessibility"/>
+              <Option type="int" name="blendMode" value="0"/>
+              <Option type="Map" name="ddProperties">
+                <Option type="QString" name="name" value=""/>
+                <Option name="properties"/>
+                <Option type="QString" name="type" value="collection"/>
+              </Option>
+              <Option type="bool" name="drawToAllParts" value="false"/>
+              <Option type="QString" name="enabled" value="0"/>
+              <Option type="QString" name="labelAnchorPoint" value="point_on_exterior"/>
+              <Option type="QString" name="lineSymbol" value="&lt;symbol type=&quot;line&quot; clip_to_extent=&quot;1&quot; name=&quot;symbol&quot; force_rhr=&quot;0&quot; alpha=&quot;1&quot;>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option type=&quot;QString&quot; name=&quot;name&quot; value=&quot;&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;type&quot; value=&quot;collection&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;layer pass=&quot;0&quot; class=&quot;SimpleLine&quot; locked=&quot;0&quot; enabled=&quot;1&quot;>&lt;Option type=&quot;Map&quot;>&lt;Option type=&quot;QString&quot; name=&quot;align_dash_pattern&quot; value=&quot;0&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;capstyle&quot; value=&quot;square&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;customdash&quot; value=&quot;5;2&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;customdash_map_unit_scale&quot; value=&quot;3x:0,0,0,0,0,0&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;customdash_unit&quot; value=&quot;MM&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;dash_pattern_offset&quot; value=&quot;0&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;dash_pattern_offset_map_unit_scale&quot; value=&quot;3x:0,0,0,0,0,0&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;dash_pattern_offset_unit&quot; value=&quot;MM&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;draw_inside_polygon&quot; value=&quot;0&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;joinstyle&quot; value=&quot;bevel&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;line_color&quot; value=&quot;60,60,60,255&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;line_style&quot; value=&quot;solid&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;line_width&quot; value=&quot;0.3&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;line_width_unit&quot; value=&quot;MM&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;offset&quot; value=&quot;0&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;offset_map_unit_scale&quot; value=&quot;3x:0,0,0,0,0,0&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;offset_unit&quot; value=&quot;MM&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;ring_filter&quot; value=&quot;0&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;trim_distance_end&quot; value=&quot;0&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;trim_distance_end_map_unit_scale&quot; value=&quot;3x:0,0,0,0,0,0&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;trim_distance_end_unit&quot; value=&quot;MM&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;trim_distance_start&quot; value=&quot;0&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;trim_distance_start_map_unit_scale&quot; value=&quot;3x:0,0,0,0,0,0&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;trim_distance_start_unit&quot; value=&quot;MM&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;tweak_dash_pattern_on_corners&quot; value=&quot;0&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;use_custom_dash&quot; value=&quot;0&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;width_map_unit_scale&quot; value=&quot;3x:0,0,0,0,0,0&quot;/>&lt;/Option>&lt;prop v=&quot;0&quot; k=&quot;align_dash_pattern&quot;/>&lt;prop v=&quot;square&quot; k=&quot;capstyle&quot;/>&lt;prop v=&quot;5;2&quot; k=&quot;customdash&quot;/>&lt;prop v=&quot;3x:0,0,0,0,0,0&quot; k=&quot;customdash_map_unit_scale&quot;/>&lt;prop v=&quot;MM&quot; k=&quot;customdash_unit&quot;/>&lt;prop v=&quot;0&quot; k=&quot;dash_pattern_offset&quot;/>&lt;prop v=&quot;3x:0,0,0,0,0,0&quot; k=&quot;dash_pattern_offset_map_unit_scale&quot;/>&lt;prop v=&quot;MM&quot; k=&quot;dash_pattern_offset_unit&quot;/>&lt;prop v=&quot;0&quot; k=&quot;draw_inside_polygon&quot;/>&lt;prop v=&quot;bevel&quot; k=&quot;joinstyle&quot;/>&lt;prop v=&quot;60,60,60,255&quot; k=&quot;line_color&quot;/>&lt;prop v=&quot;solid&quot; k=&quot;line_style&quot;/>&lt;prop v=&quot;0.3&quot; k=&quot;line_width&quot;/>&lt;prop v=&quot;MM&quot; k=&quot;line_width_unit&quot;/>&lt;prop v=&quot;0&quot; k=&quot;offset&quot;/>&lt;prop v=&quot;3x:0,0,0,0,0,0&quot; k=&quot;offset_map_unit_scale&quot;/>&lt;prop v=&quot;MM&quot; k=&quot;offset_unit&quot;/>&lt;prop v=&quot;0&quot; k=&quot;ring_filter&quot;/>&lt;prop v=&quot;0&quot; k=&quot;trim_distance_end&quot;/>&lt;prop v=&quot;3x:0,0,0,0,0,0&quot; k=&quot;trim_distance_end_map_unit_scale&quot;/>&lt;prop v=&quot;MM&quot; k=&quot;trim_distance_end_unit&quot;/>&lt;prop v=&quot;0&quot; k=&quot;trim_distance_start&quot;/>&lt;prop v=&quot;3x:0,0,0,0,0,0&quot; k=&quot;trim_distance_start_map_unit_scale&quot;/>&lt;prop v=&quot;MM&quot; k=&quot;trim_distance_start_unit&quot;/>&lt;prop v=&quot;0&quot; k=&quot;tweak_dash_pattern_on_corners&quot;/>&lt;prop v=&quot;0&quot; k=&quot;use_custom_dash&quot;/>&lt;prop v=&quot;3x:0,0,0,0,0,0&quot; k=&quot;width_map_unit_scale&quot;/>&lt;data_defined_properties>&lt;Option type=&quot;Map&quot;>&lt;Option type=&quot;QString&quot; name=&quot;name&quot; value=&quot;&quot;/>&lt;Option name=&quot;properties&quot;/>&lt;Option type=&quot;QString&quot; name=&quot;type&quot; value=&quot;collection&quot;/>&lt;/Option>&lt;/data_defined_properties>&lt;/layer>&lt;/symbol>"/>
+              <Option type="double" name="minLength" value="0"/>
+              <Option type="QString" name="minLengthMapUnitScale" value="3x:0,0,0,0,0,0"/>
+              <Option type="QString" name="minLengthUnit" value="MM"/>
+              <Option type="double" name="offsetFromAnchor" value="0"/>
+              <Option type="QString" name="offsetFromAnchorMapUnitScale" value="3x:0,0,0,0,0,0"/>
+              <Option type="QString" name="offsetFromAnchorUnit" value="MM"/>
+              <Option type="double" name="offsetFromLabel" value="0"/>
+              <Option type="QString" name="offsetFromLabelMapUnitScale" value="3x:0,0,0,0,0,0"/>
+              <Option type="QString" name="offsetFromLabelUnit" value="MM"/>
+            </Option>
+          </callout>
+        </settings>
+      </labeling>
+      <customproperties>
+        <Option type="Map">
+          <Option type="bool" name="OnConvertFormatRegeneratePrimaryKey" value="false"/>
+          <Option type="int" name="embeddedWidgets/count" value="0"/>
+          <Option type="StringList" name="variableNames">
+            <Option type="QString" value="quickosm_query"/>
+          </Option>
+          <Option type="StringList" name="variableValues">
+            <Option type="QString" value="[out:xml] [timeout:25];&#xa; area(3600090689) -> .area_0;&#xa;(&#xa;    node[&quot;boundary&quot;=&quot;administrative&quot;][&quot;admin_level&quot;=&quot;4&quot;](area.area_0);&#xa;    way[&quot;boundary&quot;=&quot;administrative&quot;][&quot;admin_level&quot;=&quot;4&quot;](area.area_0);&#xa;    relation[&quot;boundary&quot;=&quot;administrative&quot;][&quot;admin_level&quot;=&quot;4&quot;](area.area_0);&#xa;);&#xa;(._;>;);&#xa;out body;"/>
+          </Option>
+        </Option>
+      </customproperties>
+      <blendMode>0</blendMode>
+      <featureBlendMode>0</featureBlendMode>
+      <layerOpacity>1</layerOpacity>
+      <SingleCategoryDiagramRenderer attributeLegend="1" diagramType="Histogram">
+        <DiagramCategory rotationOffset="270" enabled="0" barWidth="5" minimumSize="0" lineSizeScale="3x:0,0,0,0,0,0" labelPlacementMethod="XHeight" minScaleDenominator="0" lineSizeType="MM" penColor="#000000" showAxis="1" sizeType="MM" maxScaleDenominator="1e+08" spacingUnitScale="3x:0,0,0,0,0,0" spacingUnit="MM" sizeScale="3x:0,0,0,0,0,0" backgroundColor="#ffffff" width="15" penWidth="0" backgroundAlpha="255" scaleBasedVisibility="0" height="15" diagramOrientation="Up" spacing="5" penAlpha="255" scaleDependency="Area" direction="0" opacity="1">
+          <fontProperties style="" description="Sans Serif,9,-1,5,50,0,0,0,0,0"/>
+          <attribute label="" colorOpacity="1" field="" color="#000000"/>
+          <axisSymbol>
+            <symbol type="line" clip_to_extent="1" name="" force_rhr="0" alpha="1">
+              <data_defined_properties>
+                <Option type="Map">
+                  <Option type="QString" name="name" value=""/>
+                  <Option name="properties"/>
+                  <Option type="QString" name="type" value="collection"/>
+                </Option>
+              </data_defined_properties>
+              <layer pass="0" class="SimpleLine" locked="0" enabled="1">
+                <Option type="Map">
+                  <Option type="QString" name="align_dash_pattern" value="0"/>
+                  <Option type="QString" name="capstyle" value="square"/>
+                  <Option type="QString" name="customdash" value="5;2"/>
+                  <Option type="QString" name="customdash_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                  <Option type="QString" name="customdash_unit" value="MM"/>
+                  <Option type="QString" name="dash_pattern_offset" value="0"/>
+                  <Option type="QString" name="dash_pattern_offset_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                  <Option type="QString" name="dash_pattern_offset_unit" value="MM"/>
+                  <Option type="QString" name="draw_inside_polygon" value="0"/>
+                  <Option type="QString" name="joinstyle" value="bevel"/>
+                  <Option type="QString" name="line_color" value="35,35,35,255"/>
+                  <Option type="QString" name="line_style" value="solid"/>
+                  <Option type="QString" name="line_width" value="0.26"/>
+                  <Option type="QString" name="line_width_unit" value="MM"/>
+                  <Option type="QString" name="offset" value="0"/>
+                  <Option type="QString" name="offset_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                  <Option type="QString" name="offset_unit" value="MM"/>
+                  <Option type="QString" name="ring_filter" value="0"/>
+                  <Option type="QString" name="trim_distance_end" value="0"/>
+                  <Option type="QString" name="trim_distance_end_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                  <Option type="QString" name="trim_distance_end_unit" value="MM"/>
+                  <Option type="QString" name="trim_distance_start" value="0"/>
+                  <Option type="QString" name="trim_distance_start_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                  <Option type="QString" name="trim_distance_start_unit" value="MM"/>
+                  <Option type="QString" name="tweak_dash_pattern_on_corners" value="0"/>
+                  <Option type="QString" name="use_custom_dash" value="0"/>
+                  <Option type="QString" name="width_map_unit_scale" value="3x:0,0,0,0,0,0"/>
+                </Option>
+                <prop v="0" k="align_dash_pattern"/>
+                <prop v="square" k="capstyle"/>
+                <prop v="5;2" k="customdash"/>
+                <prop v="3x:0,0,0,0,0,0" k="customdash_map_unit_scale"/>
+                <prop v="MM" k="customdash_unit"/>
+                <prop v="0" k="dash_pattern_offset"/>
+                <prop v="3x:0,0,0,0,0,0" k="dash_pattern_offset_map_unit_scale"/>
+                <prop v="MM" k="dash_pattern_offset_unit"/>
+                <prop v="0" k="draw_inside_polygon"/>
+                <prop v="bevel" k="joinstyle"/>
+                <prop v="35,35,35,255" k="line_color"/>
+                <prop v="solid" k="line_style"/>
+                <prop v="0.26" k="line_width"/>
+                <prop v="MM" k="line_width_unit"/>
+                <prop v="0" k="offset"/>
+                <prop v="3x:0,0,0,0,0,0" k="offset_map_unit_scale"/>
+                <prop v="MM" k="offset_unit"/>
+                <prop v="0" k="ring_filter"/>
+                <prop v="0" k="trim_distance_end"/>
+                <prop v="3x:0,0,0,0,0,0" k="trim_distance_end_map_unit_scale"/>
+                <prop v="MM" k="trim_distance_end_unit"/>
+                <prop v="0" k="trim_distance_start"/>
+                <prop v="3x:0,0,0,0,0,0" k="trim_distance_start_map_unit_scale"/>
+                <prop v="MM" k="trim_distance_start_unit"/>
+                <prop v="0" k="tweak_dash_pattern_on_corners"/>
+                <prop v="0" k="use_custom_dash"/>
+                <prop v="3x:0,0,0,0,0,0" k="width_map_unit_scale"/>
+                <data_defined_properties>
+                  <Option type="Map">
+                    <Option type="QString" name="name" value=""/>
+                    <Option name="properties"/>
+                    <Option type="QString" name="type" value="collection"/>
+                  </Option>
+                </data_defined_properties>
+              </layer>
+            </symbol>
+          </axisSymbol>
+        </DiagramCategory>
+      </SingleCategoryDiagramRenderer>
+      <DiagramLayerSettings linePlacementFlags="18" obstacle="0" showAll="1" zIndex="0" priority="0" placement="1" dist="0">
+        <properties>
+          <Option type="Map">
+            <Option type="QString" name="name" value=""/>
+            <Option name="properties"/>
+            <Option type="QString" name="type" value="collection"/>
+          </Option>
+        </properties>
+      </DiagramLayerSettings>
+      <geometryOptions geometryPrecision="0" removeDuplicateNodes="0">
+        <activeChecks/>
+        <checkConfiguration type="Map">
+          <Option type="Map" name="QgsGeometryGapCheck">
+            <Option type="double" name="allowedGapsBuffer" value="0"/>
+            <Option type="bool" name="allowedGapsEnabled" value="false"/>
+            <Option type="QString" name="allowedGapsLayer" value=""/>
+          </Option>
+        </checkConfiguration>
+      </geometryOptions>
+      <legend type="default-vector" showLabelLegend="0"/>
+      <referencedLayers/>
+      <fieldConfiguration>
+        <field configurationFlags="None" name="full_id">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="osm_id">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="osm_type">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="boundary">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="admin_level">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="old_name:la">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:zh">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:yo">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:yi">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:war">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:vo">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:vi">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:vep">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:vec">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:ur">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:ug">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:udm">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:tr">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:tpi">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:tl">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:th">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:tg">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:tet">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:ta">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:szl">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:sv">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:sr">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:sq">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:sl">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:simple">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:sh">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:sco">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:scn">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:sah">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:roa-tara">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:roa-rup">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:rmy">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:rm">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:qu">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:pt">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:ps">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:pnb">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:pms">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:pl">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:os">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:oc">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:nov">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:no">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:nn">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:nl">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:ne">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:nap">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:nan">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:na">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:my">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:ms">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:mr">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:ml">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:mk">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:mi">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:lv">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:lt">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:ln">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:lmo">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:lij">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:li">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:lad">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:kv">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:ku">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:ko">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:kn">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:kk">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:ka">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:jv">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:ja">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:it">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:is">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:io">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:ie">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:id">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:ia">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:hy">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:ht">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:hr">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:hif">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:hi">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:he">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:gv">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:gl">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:gd">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:ga">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:fy">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:frp">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:fr">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:fi">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:fa">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:ext">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:et">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:es">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:eo">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:en">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:el">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:ee">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:diq">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:da">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:cy">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:cv">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:csb">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:cs">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:crh">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:co">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:ckb">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:ca">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:bs">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:bo">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:bn">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:bg">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:be-tarask">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:be">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:bat-smg">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:az">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:ast">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:arz">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:ar">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:an">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:am">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:af">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:ace">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="alt_name:gl">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="alt_name">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:la">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:ro">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="wikipedia">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:sk">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="wikidata">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="type">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="ref:nuts:3">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="ref:nuts">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="place:ro">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="place">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:uk">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:ru">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:hu">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name:de">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="name">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="is_in:country_code">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+        <field configurationFlags="None" name="ISO3166-2">
+          <editWidget type="TextEdit">
+            <config>
+              <Option/>
+            </config>
+          </editWidget>
+        </field>
+      </fieldConfiguration>
+      <aliases>
+        <alias index="0" name="" field="full_id"/>
+        <alias index="1" name="" field="osm_id"/>
+        <alias index="2" name="" field="osm_type"/>
+        <alias index="3" name="" field="boundary"/>
+        <alias index="4" name="" field="admin_level"/>
+        <alias index="5" name="" field="old_name:la"/>
+        <alias index="6" name="" field="name:zh"/>
+        <alias index="7" name="" field="name:yo"/>
+        <alias index="8" name="" field="name:yi"/>
+        <alias index="9" name="" field="name:war"/>
+        <alias index="10" name="" field="name:vo"/>
+        <alias index="11" name="" field="name:vi"/>
+        <alias index="12" name="" field="name:vep"/>
+        <alias index="13" name="" field="name:vec"/>
+        <alias index="14" name="" field="name:ur"/>
+        <alias index="15" name="" field="name:ug"/>
+        <alias index="16" name="" field="name:udm"/>
+        <alias index="17" name="" field="name:tr"/>
+        <alias index="18" name="" field="name:tpi"/>
+        <alias index="19" name="" field="name:tl"/>
+        <alias index="20" name="" field="name:th"/>
+        <alias index="21" name="" field="name:tg"/>
+        <alias index="22" name="" field="name:tet"/>
+        <alias index="23" name="" field="name:ta"/>
+        <alias index="24" name="" field="name:szl"/>
+        <alias index="25" name="" field="name:sv"/>
+        <alias index="26" name="" field="name:sr"/>
+        <alias index="27" name="" field="name:sq"/>
+        <alias index="28" name="" field="name:sl"/>
+        <alias index="29" name="" field="name:simple"/>
+        <alias index="30" name="" field="name:sh"/>
+        <alias index="31" name="" field="name:sco"/>
+        <alias index="32" name="" field="name:scn"/>
+        <alias index="33" name="" field="name:sah"/>
+        <alias index="34" name="" field="name:roa-tara"/>
+        <alias index="35" name="" field="name:roa-rup"/>
+        <alias index="36" name="" field="name:rmy"/>
+        <alias index="37" name="" field="name:rm"/>
+        <alias index="38" name="" field="name:qu"/>
+        <alias index="39" name="" field="name:pt"/>
+        <alias index="40" name="" field="name:ps"/>
+        <alias index="41" name="" field="name:pnb"/>
+        <alias index="42" name="" field="name:pms"/>
+        <alias index="43" name="" field="name:pl"/>
+        <alias index="44" name="" field="name:os"/>
+        <alias index="45" name="" field="name:oc"/>
+        <alias index="46" name="" field="name:nov"/>
+        <alias index="47" name="" field="name:no"/>
+        <alias index="48" name="" field="name:nn"/>
+        <alias index="49" name="" field="name:nl"/>
+        <alias index="50" name="" field="name:ne"/>
+        <alias index="51" name="" field="name:nap"/>
+        <alias index="52" name="" field="name:nan"/>
+        <alias index="53" name="" field="name:na"/>
+        <alias index="54" name="" field="name:my"/>
+        <alias index="55" name="" field="name:ms"/>
+        <alias index="56" name="" field="name:mr"/>
+        <alias index="57" name="" field="name:ml"/>
+        <alias index="58" name="" field="name:mk"/>
+        <alias index="59" name="" field="name:mi"/>
+        <alias index="60" name="" field="name:lv"/>
+        <alias index="61" name="" field="name:lt"/>
+        <alias index="62" name="" field="name:ln"/>
+        <alias index="63" name="" field="name:lmo"/>
+        <alias index="64" name="" field="name:lij"/>
+        <alias index="65" name="" field="name:li"/>
+        <alias index="66" name="" field="name:lad"/>
+        <alias index="67" name="" field="name:kv"/>
+        <alias index="68" name="" field="name:ku"/>
+        <alias index="69" name="" field="name:ko"/>
+        <alias index="70" name="" field="name:kn"/>
+        <alias index="71" name="" field="name:kk"/>
+        <alias index="72" name="" field="name:ka"/>
+        <alias index="73" name="" field="name:jv"/>
+        <alias index="74" name="" field="name:ja"/>
+        <alias index="75" name="" field="name:it"/>
+        <alias index="76" name="" field="name:is"/>
+        <alias index="77" name="" field="name:io"/>
+        <alias index="78" name="" field="name:ie"/>
+        <alias index="79" name="" field="name:id"/>
+        <alias index="80" name="" field="name:ia"/>
+        <alias index="81" name="" field="name:hy"/>
+        <alias index="82" name="" field="name:ht"/>
+        <alias index="83" name="" field="name:hr"/>
+        <alias index="84" name="" field="name:hif"/>
+        <alias index="85" name="" field="name:hi"/>
+        <alias index="86" name="" field="name:he"/>
+        <alias index="87" name="" field="name:gv"/>
+        <alias index="88" name="" field="name:gl"/>
+        <alias index="89" name="" field="name:gd"/>
+        <alias index="90" name="" field="name:ga"/>
+        <alias index="91" name="" field="name:fy"/>
+        <alias index="92" name="" field="name:frp"/>
+        <alias index="93" name="" field="name:fr"/>
+        <alias index="94" name="" field="name:fi"/>
+        <alias index="95" name="" field="name:fa"/>
+        <alias index="96" name="" field="name:ext"/>
+        <alias index="97" name="" field="name:et"/>
+        <alias index="98" name="" field="name:es"/>
+        <alias index="99" name="" field="name:eo"/>
+        <alias index="100" name="" field="name:en"/>
+        <alias index="101" name="" field="name:el"/>
+        <alias index="102" name="" field="name:ee"/>
+        <alias index="103" name="" field="name:diq"/>
+        <alias index="104" name="" field="name:da"/>
+        <alias index="105" name="" field="name:cy"/>
+        <alias index="106" name="" field="name:cv"/>
+        <alias index="107" name="" field="name:csb"/>
+        <alias index="108" name="" field="name:cs"/>
+        <alias index="109" name="" field="name:crh"/>
+        <alias index="110" name="" field="name:co"/>
+        <alias index="111" name="" field="name:ckb"/>
+        <alias index="112" name="" field="name:ca"/>
+        <alias index="113" name="" field="name:bs"/>
+        <alias index="114" name="" field="name:bo"/>
+        <alias index="115" name="" field="name:bn"/>
+        <alias index="116" name="" field="name:bg"/>
+        <alias index="117" name="" field="name:be-tarask"/>
+        <alias index="118" name="" field="name:be"/>
+        <alias index="119" name="" field="name:bat-smg"/>
+        <alias index="120" name="" field="name:az"/>
+        <alias index="121" name="" field="name:ast"/>
+        <alias index="122" name="" field="name:arz"/>
+        <alias index="123" name="" field="name:ar"/>
+        <alias index="124" name="" field="name:an"/>
+        <alias index="125" name="" field="name:am"/>
+        <alias index="126" name="" field="name:af"/>
+        <alias index="127" name="" field="name:ace"/>
+        <alias index="128" name="" field="alt_name:gl"/>
+        <alias index="129" name="" field="alt_name"/>
+        <alias index="130" name="" field="name:la"/>
+        <alias index="131" name="" field="name:ro"/>
+        <alias index="132" name="" field="wikipedia"/>
+        <alias index="133" name="" field="name:sk"/>
+        <alias index="134" name="" field="wikidata"/>
+        <alias index="135" name="" field="type"/>
+        <alias index="136" name="" field="ref:nuts:3"/>
+        <alias index="137" name="" field="ref:nuts"/>
+        <alias index="138" name="" field="place:ro"/>
+        <alias index="139" name="" field="place"/>
+        <alias index="140" name="" field="name:uk"/>
+        <alias index="141" name="" field="name:ru"/>
+        <alias index="142" name="" field="name:hu"/>
+        <alias index="143" name="" field="name:de"/>
+        <alias index="144" name="" field="name"/>
+        <alias index="145" name="" field="is_in:country_code"/>
+        <alias index="146" name="" field="ISO3166-2"/>
+      </aliases>
+      <defaults>
+        <default expression="" applyOnUpdate="0" field="full_id"/>
+        <default expression="" applyOnUpdate="0" field="osm_id"/>
+        <default expression="" applyOnUpdate="0" field="osm_type"/>
+        <default expression="" applyOnUpdate="0" field="boundary"/>
+        <default expression="" applyOnUpdate="0" field="admin_level"/>
+        <default expression="" applyOnUpdate="0" field="old_name:la"/>
+        <default expression="" applyOnUpdate="0" field="name:zh"/>
+        <default expression="" applyOnUpdate="0" field="name:yo"/>
+        <default expression="" applyOnUpdate="0" field="name:yi"/>
+        <default expression="" applyOnUpdate="0" field="name:war"/>
+        <default expression="" applyOnUpdate="0" field="name:vo"/>
+        <default expression="" applyOnUpdate="0" field="name:vi"/>
+        <default expression="" applyOnUpdate="0" field="name:vep"/>
+        <default expression="" applyOnUpdate="0" field="name:vec"/>
+        <default expression="" applyOnUpdate="0" field="name:ur"/>
+        <default expression="" applyOnUpdate="0" field="name:ug"/>
+        <default expression="" applyOnUpdate="0" field="name:udm"/>
+        <default expression="" applyOnUpdate="0" field="name:tr"/>
+        <default expression="" applyOnUpdate="0" field="name:tpi"/>
+        <default expression="" applyOnUpdate="0" field="name:tl"/>
+        <default expression="" applyOnUpdate="0" field="name:th"/>
+        <default expression="" applyOnUpdate="0" field="name:tg"/>
+        <default expression="" applyOnUpdate="0" field="name:tet"/>
+        <default expression="" applyOnUpdate="0" field="name:ta"/>
+        <default expression="" applyOnUpdate="0" field="name:szl"/>
+        <default expression="" applyOnUpdate="0" field="name:sv"/>
+        <default expression="" applyOnUpdate="0" field="name:sr"/>
+        <default expression="" applyOnUpdate="0" field="name:sq"/>
+        <default expression="" applyOnUpdate="0" field="name:sl"/>
+        <default expression="" applyOnUpdate="0" field="name:simple"/>
+        <default expression="" applyOnUpdate="0" field="name:sh"/>
+        <default expression="" applyOnUpdate="0" field="name:sco"/>
+        <default expression="" applyOnUpdate="0" field="name:scn"/>
+        <default expression="" applyOnUpdate="0" field="name:sah"/>
+        <default expression="" applyOnUpdate="0" field="name:roa-tara"/>
+        <default expression="" applyOnUpdate="0" field="name:roa-rup"/>
+        <default expression="" applyOnUpdate="0" field="name:rmy"/>
+        <default expression="" applyOnUpdate="0" field="name:rm"/>
+        <default expression="" applyOnUpdate="0" field="name:qu"/>
+        <default expression="" applyOnUpdate="0" field="name:pt"/>
+        <default expression="" applyOnUpdate="0" field="name:ps"/>
+        <default expression="" applyOnUpdate="0" field="name:pnb"/>
+        <default expression="" applyOnUpdate="0" field="name:pms"/>
+        <default expression="" applyOnUpdate="0" field="name:pl"/>
+        <default expression="" applyOnUpdate="0" field="name:os"/>
+        <default expression="" applyOnUpdate="0" field="name:oc"/>
+        <default expression="" applyOnUpdate="0" field="name:nov"/>
+        <default expression="" applyOnUpdate="0" field="name:no"/>
+        <default expression="" applyOnUpdate="0" field="name:nn"/>
+        <default expression="" applyOnUpdate="0" field="name:nl"/>
+        <default expression="" applyOnUpdate="0" field="name:ne"/>
+        <default expression="" applyOnUpdate="0" field="name:nap"/>
+        <default expression="" applyOnUpdate="0" field="name:nan"/>
+        <default expression="" applyOnUpdate="0" field="name:na"/>
+        <default expression="" applyOnUpdate="0" field="name:my"/>
+        <default expression="" applyOnUpdate="0" field="name:ms"/>
+        <default expression="" applyOnUpdate="0" field="name:mr"/>
+        <default expression="" applyOnUpdate="0" field="name:ml"/>
+        <default expression="" applyOnUpdate="0" field="name:mk"/>
+        <default expression="" applyOnUpdate="0" field="name:mi"/>
+        <default expression="" applyOnUpdate="0" field="name:lv"/>
+        <default expression="" applyOnUpdate="0" field="name:lt"/>
+        <default expression="" applyOnUpdate="0" field="name:ln"/>
+        <default expression="" applyOnUpdate="0" field="name:lmo"/>
+        <default expression="" applyOnUpdate="0" field="name:lij"/>
+        <default expression="" applyOnUpdate="0" field="name:li"/>
+        <default expression="" applyOnUpdate="0" field="name:lad"/>
+        <default expression="" applyOnUpdate="0" field="name:kv"/>
+        <default expression="" applyOnUpdate="0" field="name:ku"/>
+        <default expression="" applyOnUpdate="0" field="name:ko"/>
+        <default expression="" applyOnUpdate="0" field="name:kn"/>
+        <default expression="" applyOnUpdate="0" field="name:kk"/>
+        <default expression="" applyOnUpdate="0" field="name:ka"/>
+        <default expression="" applyOnUpdate="0" field="name:jv"/>
+        <default expression="" applyOnUpdate="0" field="name:ja"/>
+        <default expression="" applyOnUpdate="0" field="name:it"/>
+        <default expression="" applyOnUpdate="0" field="name:is"/>
+        <default expression="" applyOnUpdate="0" field="name:io"/>
+        <default expression="" applyOnUpdate="0" field="name:ie"/>
+        <default expression="" applyOnUpdate="0" field="name:id"/>
+        <default expression="" applyOnUpdate="0" field="name:ia"/>
+        <default expression="" applyOnUpdate="0" field="name:hy"/>
+        <default expression="" applyOnUpdate="0" field="name:ht"/>
+        <default expression="" applyOnUpdate="0" field="name:hr"/>
+        <default expression="" applyOnUpdate="0" field="name:hif"/>
+        <default expression="" applyOnUpdate="0" field="name:hi"/>
+        <default expression="" applyOnUpdate="0" field="name:he"/>
+        <default expression="" applyOnUpdate="0" field="name:gv"/>
+        <default expression="" applyOnUpdate="0" field="name:gl"/>
+        <default expression="" applyOnUpdate="0" field="name:gd"/>
+        <default expression="" applyOnUpdate="0" field="name:ga"/>
+        <default expression="" applyOnUpdate="0" field="name:fy"/>
+        <default expression="" applyOnUpdate="0" field="name:frp"/>
+        <default expression="" applyOnUpdate="0" field="name:fr"/>
+        <default expression="" applyOnUpdate="0" field="name:fi"/>
+        <default expression="" applyOnUpdate="0" field="name:fa"/>
+        <default expression="" applyOnUpdate="0" field="name:ext"/>
+        <default expression="" applyOnUpdate="0" field="name:et"/>
+        <default expression="" applyOnUpdate="0" field="name:es"/>
+        <default expression="" applyOnUpdate="0" field="name:eo"/>
+        <default expression="" applyOnUpdate="0" field="name:en"/>
+        <default expression="" applyOnUpdate="0" field="name:el"/>
+        <default expression="" applyOnUpdate="0" field="name:ee"/>
+        <default expression="" applyOnUpdate="0" field="name:diq"/>
+        <default expression="" applyOnUpdate="0" field="name:da"/>
+        <default expression="" applyOnUpdate="0" field="name:cy"/>
+        <default expression="" applyOnUpdate="0" field="name:cv"/>
+        <default expression="" applyOnUpdate="0" field="name:csb"/>
+        <default expression="" applyOnUpdate="0" field="name:cs"/>
+        <default expression="" applyOnUpdate="0" field="name:crh"/>
+        <default expression="" applyOnUpdate="0" field="name:co"/>
+        <default expression="" applyOnUpdate="0" field="name:ckb"/>
+        <default expression="" applyOnUpdate="0" field="name:ca"/>
+        <default expression="" applyOnUpdate="0" field="name:bs"/>
+        <default expression="" applyOnUpdate="0" field="name:bo"/>
+        <default expression="" applyOnUpdate="0" field="name:bn"/>
+        <default expression="" applyOnUpdate="0" field="name:bg"/>
+        <default expression="" applyOnUpdate="0" field="name:be-tarask"/>
+        <default expression="" applyOnUpdate="0" field="name:be"/>
+        <default expression="" applyOnUpdate="0" field="name:bat-smg"/>
+        <default expression="" applyOnUpdate="0" field="name:az"/>
+        <default expression="" applyOnUpdate="0" field="name:ast"/>
+        <default expression="" applyOnUpdate="0" field="name:arz"/>
+        <default expression="" applyOnUpdate="0" field="name:ar"/>
+        <default expression="" applyOnUpdate="0" field="name:an"/>
+        <default expression="" applyOnUpdate="0" field="name:am"/>
+        <default expression="" applyOnUpdate="0" field="name:af"/>
+        <default expression="" applyOnUpdate="0" field="name:ace"/>
+        <default expression="" applyOnUpdate="0" field="alt_name:gl"/>
+        <default expression="" applyOnUpdate="0" field="alt_name"/>
+        <default expression="" applyOnUpdate="0" field="name:la"/>
+        <default expression="" applyOnUpdate="0" field="name:ro"/>
+        <default expression="" applyOnUpdate="0" field="wikipedia"/>
+        <default expression="" applyOnUpdate="0" field="name:sk"/>
+        <default expression="" applyOnUpdate="0" field="wikidata"/>
+        <default expression="" applyOnUpdate="0" field="type"/>
+        <default expression="" applyOnUpdate="0" field="ref:nuts:3"/>
+        <default expression="" applyOnUpdate="0" field="ref:nuts"/>
+        <default expression="" applyOnUpdate="0" field="place:ro"/>
+        <default expression="" applyOnUpdate="0" field="place"/>
+        <default expression="" applyOnUpdate="0" field="name:uk"/>
+        <default expression="" applyOnUpdate="0" field="name:ru"/>
+        <default expression="" applyOnUpdate="0" field="name:hu"/>
+        <default expression="" applyOnUpdate="0" field="name:de"/>
+        <default expression="" applyOnUpdate="0" field="name"/>
+        <default expression="" applyOnUpdate="0" field="is_in:country_code"/>
+        <default expression="" applyOnUpdate="0" field="ISO3166-2"/>
+      </defaults>
+      <constraints>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="full_id" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="osm_id" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="osm_type" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="boundary" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="admin_level" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="old_name:la" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:zh" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:yo" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:yi" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:war" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:vo" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:vi" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:vep" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:vec" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:ur" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:ug" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:udm" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:tr" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:tpi" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:tl" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:th" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:tg" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:tet" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:ta" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:szl" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:sv" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:sr" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:sq" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:sl" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:simple" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:sh" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:sco" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:scn" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:sah" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:roa-tara" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:roa-rup" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:rmy" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:rm" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:qu" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:pt" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:ps" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:pnb" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:pms" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:pl" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:os" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:oc" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:nov" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:no" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:nn" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:nl" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:ne" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:nap" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:nan" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:na" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:my" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:ms" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:mr" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:ml" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:mk" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:mi" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:lv" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:lt" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:ln" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:lmo" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:lij" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:li" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:lad" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:kv" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:ku" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:ko" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:kn" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:kk" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:ka" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:jv" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:ja" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:it" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:is" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:io" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:ie" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:id" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:ia" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:hy" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:ht" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:hr" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:hif" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:hi" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:he" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:gv" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:gl" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:gd" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:ga" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:fy" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:frp" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:fr" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:fi" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:fa" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:ext" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:et" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:es" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:eo" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:en" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:el" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:ee" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:diq" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:da" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:cy" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:cv" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:csb" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:cs" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:crh" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:co" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:ckb" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:ca" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:bs" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:bo" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:bn" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:bg" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:be-tarask" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:be" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:bat-smg" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:az" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:ast" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:arz" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:ar" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:an" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:am" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:af" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:ace" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="alt_name:gl" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="alt_name" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:la" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:ro" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="wikipedia" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:sk" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="wikidata" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="type" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="ref:nuts:3" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="ref:nuts" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="place:ro" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="place" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:uk" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:ru" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:hu" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name:de" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="name" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="is_in:country_code" notnull_strength="0"/>
+        <constraint unique_strength="0" exp_strength="0" constraints="0" field="ISO3166-2" notnull_strength="0"/>
+      </constraints>
+      <constraintExpressions>
+        <constraint exp="" field="full_id" desc=""/>
+        <constraint exp="" field="osm_id" desc=""/>
+        <constraint exp="" field="osm_type" desc=""/>
+        <constraint exp="" field="boundary" desc=""/>
+        <constraint exp="" field="admin_level" desc=""/>
+        <constraint exp="" field="old_name:la" desc=""/>
+        <constraint exp="" field="name:zh" desc=""/>
+        <constraint exp="" field="name:yo" desc=""/>
+        <constraint exp="" field="name:yi" desc=""/>
+        <constraint exp="" field="name:war" desc=""/>
+        <constraint exp="" field="name:vo" desc=""/>
+        <constraint exp="" field="name:vi" desc=""/>
+        <constraint exp="" field="name:vep" desc=""/>
+        <constraint exp="" field="name:vec" desc=""/>
+        <constraint exp="" field="name:ur" desc=""/>
+        <constraint exp="" field="name:ug" desc=""/>
+        <constraint exp="" field="name:udm" desc=""/>
+        <constraint exp="" field="name:tr" desc=""/>
+        <constraint exp="" field="name:tpi" desc=""/>
+        <constraint exp="" field="name:tl" desc=""/>
+        <constraint exp="" field="name:th" desc=""/>
+        <constraint exp="" field="name:tg" desc=""/>
+        <constraint exp="" field="name:tet" desc=""/>
+        <constraint exp="" field="name:ta" desc=""/>
+        <constraint exp="" field="name:szl" desc=""/>
+        <constraint exp="" field="name:sv" desc=""/>
+        <constraint exp="" field="name:sr" desc=""/>
+        <constraint exp="" field="name:sq" desc=""/>
+        <constraint exp="" field="name:sl" desc=""/>
+        <constraint exp="" field="name:simple" desc=""/>
+        <constraint exp="" field="name:sh" desc=""/>
+        <constraint exp="" field="name:sco" desc=""/>
+        <constraint exp="" field="name:scn" desc=""/>
+        <constraint exp="" field="name:sah" desc=""/>
+        <constraint exp="" field="name:roa-tara" desc=""/>
+        <constraint exp="" field="name:roa-rup" desc=""/>
+        <constraint exp="" field="name:rmy" desc=""/>
+        <constraint exp="" field="name:rm" desc=""/>
+        <constraint exp="" field="name:qu" desc=""/>
+        <constraint exp="" field="name:pt" desc=""/>
+        <constraint exp="" field="name:ps" desc=""/>
+        <constraint exp="" field="name:pnb" desc=""/>
+        <constraint exp="" field="name:pms" desc=""/>
+        <constraint exp="" field="name:pl" desc=""/>
+        <constraint exp="" field="name:os" desc=""/>
+        <constraint exp="" field="name:oc" desc=""/>
+        <constraint exp="" field="name:nov" desc=""/>
+        <constraint exp="" field="name:no" desc=""/>
+        <constraint exp="" field="name:nn" desc=""/>
+        <constraint exp="" field="name:nl" desc=""/>
+        <constraint exp="" field="name:ne" desc=""/>
+        <constraint exp="" field="name:nap" desc=""/>
+        <constraint exp="" field="name:nan" desc=""/>
+        <constraint exp="" field="name:na" desc=""/>
+        <constraint exp="" field="name:my" desc=""/>
+        <constraint exp="" field="name:ms" desc=""/>
+        <constraint exp="" field="name:mr" desc=""/>
+        <constraint exp="" field="name:ml" desc=""/>
+        <constraint exp="" field="name:mk" desc=""/>
+        <constraint exp="" field="name:mi" desc=""/>
+        <constraint exp="" field="name:lv" desc=""/>
+        <constraint exp="" field="name:lt" desc=""/>
+        <constraint exp="" field="name:ln" desc=""/>
+        <constraint exp="" field="name:lmo" desc=""/>
+        <constraint exp="" field="name:lij" desc=""/>
+        <constraint exp="" field="name:li" desc=""/>
+        <constraint exp="" field="name:lad" desc=""/>
+        <constraint exp="" field="name:kv" desc=""/>
+        <constraint exp="" field="name:ku" desc=""/>
+        <constraint exp="" field="name:ko" desc=""/>
+        <constraint exp="" field="name:kn" desc=""/>
+        <constraint exp="" field="name:kk" desc=""/>
+        <constraint exp="" field="name:ka" desc=""/>
+        <constraint exp="" field="name:jv" desc=""/>
+        <constraint exp="" field="name:ja" desc=""/>
+        <constraint exp="" field="name:it" desc=""/>
+        <constraint exp="" field="name:is" desc=""/>
+        <constraint exp="" field="name:io" desc=""/>
+        <constraint exp="" field="name:ie" desc=""/>
+        <constraint exp="" field="name:id" desc=""/>
+        <constraint exp="" field="name:ia" desc=""/>
+        <constraint exp="" field="name:hy" desc=""/>
+        <constraint exp="" field="name:ht" desc=""/>
+        <constraint exp="" field="name:hr" desc=""/>
+        <constraint exp="" field="name:hif" desc=""/>
+        <constraint exp="" field="name:hi" desc=""/>
+        <constraint exp="" field="name:he" desc=""/>
+        <constraint exp="" field="name:gv" desc=""/>
+        <constraint exp="" field="name:gl" desc=""/>
+        <constraint exp="" field="name:gd" desc=""/>
+        <constraint exp="" field="name:ga" desc=""/>
+        <constraint exp="" field="name:fy" desc=""/>
+        <constraint exp="" field="name:frp" desc=""/>
+        <constraint exp="" field="name:fr" desc=""/>
+        <constraint exp="" field="name:fi" desc=""/>
+        <constraint exp="" field="name:fa" desc=""/>
+        <constraint exp="" field="name:ext" desc=""/>
+        <constraint exp="" field="name:et" desc=""/>
+        <constraint exp="" field="name:es" desc=""/>
+        <constraint exp="" field="name:eo" desc=""/>
+        <constraint exp="" field="name:en" desc=""/>
+        <constraint exp="" field="name:el" desc=""/>
+        <constraint exp="" field="name:ee" desc=""/>
+        <constraint exp="" field="name:diq" desc=""/>
+        <constraint exp="" field="name:da" desc=""/>
+        <constraint exp="" field="name:cy" desc=""/>
+        <constraint exp="" field="name:cv" desc=""/>
+        <constraint exp="" field="name:csb" desc=""/>
+        <constraint exp="" field="name:cs" desc=""/>
+        <constraint exp="" field="name:crh" desc=""/>
+        <constraint exp="" field="name:co" desc=""/>
+        <constraint exp="" field="name:ckb" desc=""/>
+        <constraint exp="" field="name:ca" desc=""/>
+        <constraint exp="" field="name:bs" desc=""/>
+        <constraint exp="" field="name:bo" desc=""/>
+        <constraint exp="" field="name:bn" desc=""/>
+        <constraint exp="" field="name:bg" desc=""/>
+        <constraint exp="" field="name:be-tarask" desc=""/>
+        <constraint exp="" field="name:be" desc=""/>
+        <constraint exp="" field="name:bat-smg" desc=""/>
+        <constraint exp="" field="name:az" desc=""/>
+        <constraint exp="" field="name:ast" desc=""/>
+        <constraint exp="" field="name:arz" desc=""/>
+        <constraint exp="" field="name:ar" desc=""/>
+        <constraint exp="" field="name:an" desc=""/>
+        <constraint exp="" field="name:am" desc=""/>
+        <constraint exp="" field="name:af" desc=""/>
+        <constraint exp="" field="name:ace" desc=""/>
+        <constraint exp="" field="alt_name:gl" desc=""/>
+        <constraint exp="" field="alt_name" desc=""/>
+        <constraint exp="" field="name:la" desc=""/>
+        <constraint exp="" field="name:ro" desc=""/>
+        <constraint exp="" field="wikipedia" desc=""/>
+        <constraint exp="" field="name:sk" desc=""/>
+        <constraint exp="" field="wikidata" desc=""/>
+        <constraint exp="" field="type" desc=""/>
+        <constraint exp="" field="ref:nuts:3" desc=""/>
+        <constraint exp="" field="ref:nuts" desc=""/>
+        <constraint exp="" field="place:ro" desc=""/>
+        <constraint exp="" field="place" desc=""/>
+        <constraint exp="" field="name:uk" desc=""/>
+        <constraint exp="" field="name:ru" desc=""/>
+        <constraint exp="" field="name:hu" desc=""/>
+        <constraint exp="" field="name:de" desc=""/>
+        <constraint exp="" field="name" desc=""/>
+        <constraint exp="" field="is_in:country_code" desc=""/>
+        <constraint exp="" field="ISO3166-2" desc=""/>
+      </constraintExpressions>
+      <expressionfields/>
+      <attributeactions>
+        <defaultAction key="Canvas" value="{00000000-0000-0000-0000-000000000000}"/>
+        <actionsetting icon="" id="{2fc14dc0-5010-4b34-86e8-614616ef75bf}" shortTitle="Navigateur OSM" type="5" name="Navigateur OSM" capture="0" action="http://www.openstreetmap.org/browse/[% &quot;osm_type&quot; %]/[% &quot;osm_id&quot; %]" isEnabledOnlyWhenEditable="0" notificationMessage="">
+          <actionScope id="Field"/>
+          <actionScope id="Feature"/>
+          <actionScope id="Canvas"/>
+        </actionsetting>
+        <actionsetting icon="//.local/share/QGIS/QGIS3/profiles/default/python/plugins/QuickOSM/resources/icons/josm_icon.svg" id="{06b43363-76d9-4d94-9723-65a820092148}" shortTitle="JOSM" type="1" name="JOSM" capture="0" action="from QuickOSM.core.actions import Actions;Actions.run(&quot;josm&quot;,&quot;[% &quot;full_id&quot; %]&quot;)" isEnabledOnlyWhenEditable="0" notificationMessage="">
+          <actionScope id="Field"/>
+          <actionScope id="Feature"/>
+          <actionScope id="Canvas"/>
+        </actionsetting>
+        <actionsetting icon="" id="{8e7239cb-9621-4beb-9f0d-bce3d02a020d}" shortTitle="Éditeur de l'utilisateur par défaut" type="5" name="Éditeur de l'utilisateur par défaut" capture="0" action="http://www.openstreetmap.org/edit?[% &quot;osm_type&quot; %]=[% &quot;osm_id&quot; %]" isEnabledOnlyWhenEditable="0" notificationMessage="">
+          <actionScope id="Field"/>
+          <actionScope id="Feature"/>
+          <actionScope id="Canvas"/>
+        </actionsetting>
+        <actionsetting icon="//.local/share/QGIS/QGIS3/profiles/default/python/plugins/QuickOSM/resources/icons/wikipedia.png" id="{d8ea6b95-6619-44c9-af65-2892fd1c52f7}" shortTitle="wikipedia" type="1" name="wikipedia" capture="0" action="from QuickOSM.core.actions import Actions;Actions.run(&quot;wikipedia&quot;,&quot;[% &quot;wikipedia&quot; %]&quot;)" isEnabledOnlyWhenEditable="0" notificationMessage="">
+          <actionScope id="Field"/>
+          <actionScope id="Feature"/>
+          <actionScope id="Canvas"/>
+        </actionsetting>
+        <actionsetting icon="//.local/share/QGIS/QGIS3/profiles/default/python/plugins/QuickOSM/resources/icons/wikidata.png" id="{96bee720-277d-4865-88ec-bc3f1676681a}" shortTitle="wikidata" type="1" name="wikidata" capture="0" action="from QuickOSM.core.actions import Actions;Actions.run(&quot;wikidata&quot;,&quot;[% &quot;wikidata&quot; %]&quot;)" isEnabledOnlyWhenEditable="0" notificationMessage="">
+          <actionScope id="Field"/>
+          <actionScope id="Feature"/>
+          <actionScope id="Canvas"/>
+        </actionsetting>
+        <actionsetting icon="" id="{dcf122f7-9aab-4a56-8444-bb90883af941}" shortTitle="Relancer la requête dans un nouveau fichier" type="1" name="Relancer la requête dans un nouveau fichier" capture="0" action="from QuickOSM.core.actions import Actions;Actions.run_reload(layer_name=&quot;boundary_administrative_admin_level_4_România&quot;)" isEnabledOnlyWhenEditable="0" notificationMessage="">
+          <actionScope id="Layer"/>
+        </actionsetting>
+      </attributeactions>
+      <attributetableconfig sortExpression="" actionWidgetStyle="dropDown" sortOrder="0">
+        <columns>
+          <column type="field" name="full_id" width="-1" hidden="0"/>
+          <column type="field" name="osm_id" width="-1" hidden="0"/>
+          <column type="field" name="osm_type" width="-1" hidden="0"/>
+          <column type="field" name="boundary" width="-1" hidden="0"/>
+          <column type="field" name="admin_level" width="-1" hidden="0"/>
+          <column type="field" name="old_name:la" width="-1" hidden="0"/>
+          <column type="field" name="name:zh" width="-1" hidden="0"/>
+          <column type="field" name="name:yo" width="-1" hidden="0"/>
+          <column type="field" name="name:yi" width="-1" hidden="0"/>
+          <column type="field" name="name:war" width="-1" hidden="0"/>
+          <column type="field" name="name:vo" width="-1" hidden="0"/>
+          <column type="field" name="name:vi" width="-1" hidden="0"/>
+          <column type="field" name="name:vep" width="-1" hidden="0"/>
+          <column type="field" name="name:vec" width="-1" hidden="0"/>
+          <column type="field" name="name:ur" width="-1" hidden="0"/>
+          <column type="field" name="name:ug" width="-1" hidden="0"/>
+          <column type="field" name="name:udm" width="-1" hidden="0"/>
+          <column type="field" name="name:tr" width="-1" hidden="0"/>
+          <column type="field" name="name:tpi" width="-1" hidden="0"/>
+          <column type="field" name="name:tl" width="-1" hidden="0"/>
+          <column type="field" name="name:th" width="-1" hidden="0"/>
+          <column type="field" name="name:tg" width="-1" hidden="0"/>
+          <column type="field" name="name:tet" width="-1" hidden="0"/>
+          <column type="field" name="name:ta" width="-1" hidden="0"/>
+          <column type="field" name="name:szl" width="-1" hidden="0"/>
+          <column type="field" name="name:sv" width="-1" hidden="0"/>
+          <column type="field" name="name:sr" width="-1" hidden="0"/>
+          <column type="field" name="name:sq" width="-1" hidden="0"/>
+          <column type="field" name="name:sl" width="-1" hidden="0"/>
+          <column type="field" name="name:simple" width="-1" hidden="0"/>
+          <column type="field" name="name:sh" width="-1" hidden="0"/>
+          <column type="field" name="name:sco" width="-1" hidden="0"/>
+          <column type="field" name="name:scn" width="-1" hidden="0"/>
+          <column type="field" name="name:sah" width="-1" hidden="0"/>
+          <column type="field" name="name:roa-tara" width="-1" hidden="0"/>
+          <column type="field" name="name:roa-rup" width="-1" hidden="0"/>
+          <column type="field" name="name:rmy" width="-1" hidden="0"/>
+          <column type="field" name="name:rm" width="-1" hidden="0"/>
+          <column type="field" name="name:qu" width="-1" hidden="0"/>
+          <column type="field" name="name:pt" width="-1" hidden="0"/>
+          <column type="field" name="name:ps" width="-1" hidden="0"/>
+          <column type="field" name="name:pnb" width="-1" hidden="0"/>
+          <column type="field" name="name:pms" width="-1" hidden="0"/>
+          <column type="field" name="name:pl" width="-1" hidden="0"/>
+          <column type="field" name="name:os" width="-1" hidden="0"/>
+          <column type="field" name="name:oc" width="-1" hidden="0"/>
+          <column type="field" name="name:nov" width="-1" hidden="0"/>
+          <column type="field" name="name:no" width="-1" hidden="0"/>
+          <column type="field" name="name:nn" width="-1" hidden="0"/>
+          <column type="field" name="name:nl" width="-1" hidden="0"/>
+          <column type="field" name="name:ne" width="-1" hidden="0"/>
+          <column type="field" name="name:nap" width="-1" hidden="0"/>
+          <column type="field" name="name:nan" width="-1" hidden="0"/>
+          <column type="field" name="name:na" width="-1" hidden="0"/>
+          <column type="field" name="name:my" width="-1" hidden="0"/>
+          <column type="field" name="name:ms" width="-1" hidden="0"/>
+          <column type="field" name="name:mr" width="-1" hidden="0"/>
+          <column type="field" name="name:ml" width="-1" hidden="0"/>
+          <column type="field" name="name:mk" width="-1" hidden="0"/>
+          <column type="field" name="name:mi" width="-1" hidden="0"/>
+          <column type="field" name="name:lv" width="-1" hidden="0"/>
+          <column type="field" name="name:lt" width="-1" hidden="0"/>
+          <column type="field" name="name:ln" width="-1" hidden="0"/>
+          <column type="field" name="name:lmo" width="-1" hidden="0"/>
+          <column type="field" name="name:lij" width="-1" hidden="0"/>
+          <column type="field" name="name:li" width="-1" hidden="0"/>
+          <column type="field" name="name:lad" width="-1" hidden="0"/>
+          <column type="field" name="name:kv" width="-1" hidden="0"/>
+          <column type="field" name="name:ku" width="-1" hidden="0"/>
+          <column type="field" name="name:ko" width="-1" hidden="0"/>
+          <column type="field" name="name:kn" width="-1" hidden="0"/>
+          <column type="field" name="name:kk" width="-1" hidden="0"/>
+          <column type="field" name="name:ka" width="-1" hidden="0"/>
+          <column type="field" name="name:jv" width="-1" hidden="0"/>
+          <column type="field" name="name:ja" width="-1" hidden="0"/>
+          <column type="field" name="name:it" width="-1" hidden="0"/>
+          <column type="field" name="name:is" width="-1" hidden="0"/>
+          <column type="field" name="name:io" width="-1" hidden="0"/>
+          <column type="field" name="name:ie" width="-1" hidden="0"/>
+          <column type="field" name="name:id" width="-1" hidden="0"/>
+          <column type="field" name="name:ia" width="-1" hidden="0"/>
+          <column type="field" name="name:hy" width="-1" hidden="0"/>
+          <column type="field" name="name:ht" width="-1" hidden="0"/>
+          <column type="field" name="name:hr" width="-1" hidden="0"/>
+          <column type="field" name="name:hif" width="-1" hidden="0"/>
+          <column type="field" name="name:hi" width="-1" hidden="0"/>
+          <column type="field" name="name:he" width="-1" hidden="0"/>
+          <column type="field" name="name:gv" width="-1" hidden="0"/>
+          <column type="field" name="name:gl" width="-1" hidden="0"/>
+          <column type="field" name="name:gd" width="-1" hidden="0"/>
+          <column type="field" name="name:ga" width="-1" hidden="0"/>
+          <column type="field" name="name:fy" width="-1" hidden="0"/>
+          <column type="field" name="name:frp" width="-1" hidden="0"/>
+          <column type="field" name="name:fr" width="-1" hidden="0"/>
+          <column type="field" name="name:fi" width="-1" hidden="0"/>
+          <column type="field" name="name:fa" width="-1" hidden="0"/>
+          <column type="field" name="name:ext" width="-1" hidden="0"/>
+          <column type="field" name="name:et" width="-1" hidden="0"/>
+          <column type="field" name="name:es" width="-1" hidden="0"/>
+          <column type="field" name="name:eo" width="-1" hidden="0"/>
+          <column type="field" name="name:en" width="-1" hidden="0"/>
+          <column type="field" name="name:el" width="-1" hidden="0"/>
+          <column type="field" name="name:ee" width="-1" hidden="0"/>
+          <column type="field" name="name:diq" width="-1" hidden="0"/>
+          <column type="field" name="name:da" width="-1" hidden="0"/>
+          <column type="field" name="name:cy" width="-1" hidden="0"/>
+          <column type="field" name="name:cv" width="-1" hidden="0"/>
+          <column type="field" name="name:csb" width="-1" hidden="0"/>
+          <column type="field" name="name:cs" width="-1" hidden="0"/>
+          <column type="field" name="name:crh" width="-1" hidden="0"/>
+          <column type="field" name="name:co" width="-1" hidden="0"/>
+          <column type="field" name="name:ckb" width="-1" hidden="0"/>
+          <column type="field" name="name:ca" width="-1" hidden="0"/>
+          <column type="field" name="name:bs" width="-1" hidden="0"/>
+          <column type="field" name="name:bo" width="-1" hidden="0"/>
+          <column type="field" name="name:bn" width="-1" hidden="0"/>
+          <column type="field" name="name:bg" width="-1" hidden="0"/>
+          <column type="field" name="name:be-tarask" width="-1" hidden="0"/>
+          <column type="field" name="name:be" width="-1" hidden="0"/>
+          <column type="field" name="name:bat-smg" width="-1" hidden="0"/>
+          <column type="field" name="name:az" width="-1" hidden="0"/>
+          <column type="field" name="name:ast" width="-1" hidden="0"/>
+          <column type="field" name="name:arz" width="-1" hidden="0"/>
+          <column type="field" name="name:ar" width="-1" hidden="0"/>
+          <column type="field" name="name:an" width="-1" hidden="0"/>
+          <column type="field" name="name:am" width="-1" hidden="0"/>
+          <column type="field" name="name:af" width="-1" hidden="0"/>
+          <column type="field" name="name:ace" width="-1" hidden="0"/>
+          <column type="field" name="alt_name:gl" width="-1" hidden="0"/>
+          <column type="field" name="alt_name" width="-1" hidden="0"/>
+          <column type="field" name="name:la" width="-1" hidden="0"/>
+          <column type="field" name="name:ro" width="-1" hidden="0"/>
+          <column type="field" name="wikipedia" width="-1" hidden="0"/>
+          <column type="field" name="name:sk" width="-1" hidden="0"/>
+          <column type="field" name="wikidata" width="-1" hidden="0"/>
+          <column type="field" name="type" width="-1" hidden="0"/>
+          <column type="field" name="ref:nuts:3" width="-1" hidden="0"/>
+          <column type="field" name="ref:nuts" width="-1" hidden="0"/>
+          <column type="field" name="place:ro" width="-1" hidden="0"/>
+          <column type="field" name="place" width="-1" hidden="0"/>
+          <column type="field" name="name:uk" width="-1" hidden="0"/>
+          <column type="field" name="name:ru" width="-1" hidden="0"/>
+          <column type="field" name="name:hu" width="-1" hidden="0"/>
+          <column type="field" name="name:de" width="-1" hidden="0"/>
+          <column type="field" name="name" width="-1" hidden="0"/>
+          <column type="field" name="is_in:country_code" width="-1" hidden="0"/>
+          <column type="field" name="ISO3166-2" width="-1" hidden="0"/>
+          <column type="actions" width="-1" hidden="1"/>
+        </columns>
+      </attributetableconfig>
+      <conditionalstyles>
+        <rowstyles/>
+        <fieldstyles/>
+      </conditionalstyles>
+      <storedexpressions/>
+      <editform tolerant="1"></editform>
+      <editforminit/>
+      <editforminitcodesource>0</editforminitcodesource>
+      <editforminitfilepath></editforminitfilepath>
+      <editforminitcode><![CDATA[# -*- coding: utf-8 -*-
+"""
+Les formulaires QGIS peuvent avoir une fonction Python qui est appelée lorsque le formulaire est
+ouvert.
+
+Utilisez cette fonction pour ajouter une logique supplémentaire à vos formulaires.
+
+Entrez le nom de la fonction dans le champ 
+"Fonction d'initialisation Python".
+Voici un exemple:
+"""
+from qgis.PyQt.QtWidgets import QWidget
+
+def my_form_open(dialog, layer, feature):
+    geom = feature.geometry()
+    control = dialog.findChild(QWidget, "MyLineEdit")
+]]></editforminitcode>
+      <featformsuppress>0</featformsuppress>
+      <editorlayout>generatedlayout</editorlayout>
+      <editable>
+        <field editable="1" name="ISO3166-2"/>
+        <field editable="1" name="admin_level"/>
+        <field editable="1" name="alt_name"/>
+        <field editable="1" name="alt_name:gl"/>
+        <field editable="1" name="boundary"/>
+        <field editable="1" name="full_id"/>
+        <field editable="1" name="is_in:country_code"/>
+        <field editable="1" name="name"/>
+        <field editable="1" name="name:ace"/>
+        <field editable="1" name="name:af"/>
+        <field editable="1" name="name:am"/>
+        <field editable="1" name="name:an"/>
+        <field editable="1" name="name:ar"/>
+        <field editable="1" name="name:arz"/>
+        <field editable="1" name="name:ast"/>
+        <field editable="1" name="name:az"/>
+        <field editable="1" name="name:bat-smg"/>
+        <field editable="1" name="name:be"/>
+        <field editable="1" name="name:be-tarask"/>
+        <field editable="1" name="name:bg"/>
+        <field editable="1" name="name:bn"/>
+        <field editable="1" name="name:bo"/>
+        <field editable="1" name="name:bs"/>
+        <field editable="1" name="name:ca"/>
+        <field editable="1" name="name:ckb"/>
+        <field editable="1" name="name:co"/>
+        <field editable="1" name="name:crh"/>
+        <field editable="1" name="name:cs"/>
+        <field editable="1" name="name:csb"/>
+        <field editable="1" name="name:cv"/>
+        <field editable="1" name="name:cy"/>
+        <field editable="1" name="name:da"/>
+        <field editable="1" name="name:de"/>
+        <field editable="1" name="name:diq"/>
+        <field editable="1" name="name:ee"/>
+        <field editable="1" name="name:el"/>
+        <field editable="1" name="name:en"/>
+        <field editable="1" name="name:eo"/>
+        <field editable="1" name="name:es"/>
+        <field editable="1" name="name:et"/>
+        <field editable="1" name="name:ext"/>
+        <field editable="1" name="name:fa"/>
+        <field editable="1" name="name:fi"/>
+        <field editable="1" name="name:fr"/>
+        <field editable="1" name="name:frp"/>
+        <field editable="1" name="name:fy"/>
+        <field editable="1" name="name:ga"/>
+        <field editable="1" name="name:gd"/>
+        <field editable="1" name="name:gl"/>
+        <field editable="1" name="name:gv"/>
+        <field editable="1" name="name:he"/>
+        <field editable="1" name="name:hi"/>
+        <field editable="1" name="name:hif"/>
+        <field editable="1" name="name:hr"/>
+        <field editable="1" name="name:ht"/>
+        <field editable="1" name="name:hu"/>
+        <field editable="1" name="name:hy"/>
+        <field editable="1" name="name:ia"/>
+        <field editable="1" name="name:id"/>
+        <field editable="1" name="name:ie"/>
+        <field editable="1" name="name:io"/>
+        <field editable="1" name="name:is"/>
+        <field editable="1" name="name:it"/>
+        <field editable="1" name="name:ja"/>
+        <field editable="1" name="name:jv"/>
+        <field editable="1" name="name:ka"/>
+        <field editable="1" name="name:kk"/>
+        <field editable="1" name="name:kn"/>
+        <field editable="1" name="name:ko"/>
+        <field editable="1" name="name:ku"/>
+        <field editable="1" name="name:kv"/>
+        <field editable="1" name="name:la"/>
+        <field editable="1" name="name:lad"/>
+        <field editable="1" name="name:li"/>
+        <field editable="1" name="name:lij"/>
+        <field editable="1" name="name:lmo"/>
+        <field editable="1" name="name:ln"/>
+        <field editable="1" name="name:lt"/>
+        <field editable="1" name="name:lv"/>
+        <field editable="1" name="name:mi"/>
+        <field editable="1" name="name:mk"/>
+        <field editable="1" name="name:ml"/>
+        <field editable="1" name="name:mr"/>
+        <field editable="1" name="name:ms"/>
+        <field editable="1" name="name:my"/>
+        <field editable="1" name="name:na"/>
+        <field editable="1" name="name:nan"/>
+        <field editable="1" name="name:nap"/>
+        <field editable="1" name="name:ne"/>
+        <field editable="1" name="name:nl"/>
+        <field editable="1" name="name:nn"/>
+        <field editable="1" name="name:no"/>
+        <field editable="1" name="name:nov"/>
+        <field editable="1" name="name:oc"/>
+        <field editable="1" name="name:os"/>
+        <field editable="1" name="name:pl"/>
+        <field editable="1" name="name:pms"/>
+        <field editable="1" name="name:pnb"/>
+        <field editable="1" name="name:ps"/>
+        <field editable="1" name="name:pt"/>
+        <field editable="1" name="name:qu"/>
+        <field editable="1" name="name:rm"/>
+        <field editable="1" name="name:rmy"/>
+        <field editable="1" name="name:ro"/>
+        <field editable="1" name="name:roa-rup"/>
+        <field editable="1" name="name:roa-tara"/>
+        <field editable="1" name="name:ru"/>
+        <field editable="1" name="name:sah"/>
+        <field editable="1" name="name:scn"/>
+        <field editable="1" name="name:sco"/>
+        <field editable="1" name="name:sh"/>
+        <field editable="1" name="name:simple"/>
+        <field editable="1" name="name:sk"/>
+        <field editable="1" name="name:sl"/>
+        <field editable="1" name="name:sq"/>
+        <field editable="1" name="name:sr"/>
+        <field editable="1" name="name:sv"/>
+        <field editable="1" name="name:szl"/>
+        <field editable="1" name="name:ta"/>
+        <field editable="1" name="name:tet"/>
+        <field editable="1" name="name:tg"/>
+        <field editable="1" name="name:th"/>
+        <field editable="1" name="name:tl"/>
+        <field editable="1" name="name:tpi"/>
+        <field editable="1" name="name:tr"/>
+        <field editable="1" name="name:udm"/>
+        <field editable="1" name="name:ug"/>
+        <field editable="1" name="name:uk"/>
+        <field editable="1" name="name:ur"/>
+        <field editable="1" name="name:vec"/>
+        <field editable="1" name="name:vep"/>
+        <field editable="1" name="name:vi"/>
+        <field editable="1" name="name:vo"/>
+        <field editable="1" name="name:war"/>
+        <field editable="1" name="name:yi"/>
+        <field editable="1" name="name:yo"/>
+        <field editable="1" name="name:zh"/>
+        <field editable="1" name="old_name:la"/>
+        <field editable="1" name="osm_id"/>
+        <field editable="1" name="osm_type"/>
+        <field editable="1" name="place"/>
+        <field editable="1" name="place:ro"/>
+        <field editable="1" name="ref:nuts"/>
+        <field editable="1" name="ref:nuts:3"/>
+        <field editable="1" name="type"/>
+        <field editable="1" name="wikidata"/>
+        <field editable="1" name="wikipedia"/>
+      </editable>
+      <labelOnTop>
+        <field name="ISO3166-2" labelOnTop="0"/>
+        <field name="admin_level" labelOnTop="0"/>
+        <field name="alt_name" labelOnTop="0"/>
+        <field name="alt_name:gl" labelOnTop="0"/>
+        <field name="boundary" labelOnTop="0"/>
+        <field name="full_id" labelOnTop="0"/>
+        <field name="is_in:country_code" labelOnTop="0"/>
+        <field name="name" labelOnTop="0"/>
+        <field name="name:ace" labelOnTop="0"/>
+        <field name="name:af" labelOnTop="0"/>
+        <field name="name:am" labelOnTop="0"/>
+        <field name="name:an" labelOnTop="0"/>
+        <field name="name:ar" labelOnTop="0"/>
+        <field name="name:arz" labelOnTop="0"/>
+        <field name="name:ast" labelOnTop="0"/>
+        <field name="name:az" labelOnTop="0"/>
+        <field name="name:bat-smg" labelOnTop="0"/>
+        <field name="name:be" labelOnTop="0"/>
+        <field name="name:be-tarask" labelOnTop="0"/>
+        <field name="name:bg" labelOnTop="0"/>
+        <field name="name:bn" labelOnTop="0"/>
+        <field name="name:bo" labelOnTop="0"/>
+        <field name="name:bs" labelOnTop="0"/>
+        <field name="name:ca" labelOnTop="0"/>
+        <field name="name:ckb" labelOnTop="0"/>
+        <field name="name:co" labelOnTop="0"/>
+        <field name="name:crh" labelOnTop="0"/>
+        <field name="name:cs" labelOnTop="0"/>
+        <field name="name:csb" labelOnTop="0"/>
+        <field name="name:cv" labelOnTop="0"/>
+        <field name="name:cy" labelOnTop="0"/>
+        <field name="name:da" labelOnTop="0"/>
+        <field name="name:de" labelOnTop="0"/>
+        <field name="name:diq" labelOnTop="0"/>
+        <field name="name:ee" labelOnTop="0"/>
+        <field name="name:el" labelOnTop="0"/>
+        <field name="name:en" labelOnTop="0"/>
+        <field name="name:eo" labelOnTop="0"/>
+        <field name="name:es" labelOnTop="0"/>
+        <field name="name:et" labelOnTop="0"/>
+        <field name="name:ext" labelOnTop="0"/>
+        <field name="name:fa" labelOnTop="0"/>
+        <field name="name:fi" labelOnTop="0"/>
+        <field name="name:fr" labelOnTop="0"/>
+        <field name="name:frp" labelOnTop="0"/>
+        <field name="name:fy" labelOnTop="0"/>
+        <field name="name:ga" labelOnTop="0"/>
+        <field name="name:gd" labelOnTop="0"/>
+        <field name="name:gl" labelOnTop="0"/>
+        <field name="name:gv" labelOnTop="0"/>
+        <field name="name:he" labelOnTop="0"/>
+        <field name="name:hi" labelOnTop="0"/>
+        <field name="name:hif" labelOnTop="0"/>
+        <field name="name:hr" labelOnTop="0"/>
+        <field name="name:ht" labelOnTop="0"/>
+        <field name="name:hu" labelOnTop="0"/>
+        <field name="name:hy" labelOnTop="0"/>
+        <field name="name:ia" labelOnTop="0"/>
+        <field name="name:id" labelOnTop="0"/>
+        <field name="name:ie" labelOnTop="0"/>
+        <field name="name:io" labelOnTop="0"/>
+        <field name="name:is" labelOnTop="0"/>
+        <field name="name:it" labelOnTop="0"/>
+        <field name="name:ja" labelOnTop="0"/>
+        <field name="name:jv" labelOnTop="0"/>
+        <field name="name:ka" labelOnTop="0"/>
+        <field name="name:kk" labelOnTop="0"/>
+        <field name="name:kn" labelOnTop="0"/>
+        <field name="name:ko" labelOnTop="0"/>
+        <field name="name:ku" labelOnTop="0"/>
+        <field name="name:kv" labelOnTop="0"/>
+        <field name="name:la" labelOnTop="0"/>
+        <field name="name:lad" labelOnTop="0"/>
+        <field name="name:li" labelOnTop="0"/>
+        <field name="name:lij" labelOnTop="0"/>
+        <field name="name:lmo" labelOnTop="0"/>
+        <field name="name:ln" labelOnTop="0"/>
+        <field name="name:lt" labelOnTop="0"/>
+        <field name="name:lv" labelOnTop="0"/>
+        <field name="name:mi" labelOnTop="0"/>
+        <field name="name:mk" labelOnTop="0"/>
+        <field name="name:ml" labelOnTop="0"/>
+        <field name="name:mr" labelOnTop="0"/>
+        <field name="name:ms" labelOnTop="0"/>
+        <field name="name:my" labelOnTop="0"/>
+        <field name="name:na" labelOnTop="0"/>
+        <field name="name:nan" labelOnTop="0"/>
+        <field name="name:nap" labelOnTop="0"/>
+        <field name="name:ne" labelOnTop="0"/>
+        <field name="name:nl" labelOnTop="0"/>
+        <field name="name:nn" labelOnTop="0"/>
+        <field name="name:no" labelOnTop="0"/>
+        <field name="name:nov" labelOnTop="0"/>
+        <field name="name:oc" labelOnTop="0"/>
+        <field name="name:os" labelOnTop="0"/>
+        <field name="name:pl" labelOnTop="0"/>
+        <field name="name:pms" labelOnTop="0"/>
+        <field name="name:pnb" labelOnTop="0"/>
+        <field name="name:ps" labelOnTop="0"/>
+        <field name="name:pt" labelOnTop="0"/>
+        <field name="name:qu" labelOnTop="0"/>
+        <field name="name:rm" labelOnTop="0"/>
+        <field name="name:rmy" labelOnTop="0"/>
+        <field name="name:ro" labelOnTop="0"/>
+        <field name="name:roa-rup" labelOnTop="0"/>
+        <field name="name:roa-tara" labelOnTop="0"/>
+        <field name="name:ru" labelOnTop="0"/>
+        <field name="name:sah" labelOnTop="0"/>
+        <field name="name:scn" labelOnTop="0"/>
+        <field name="name:sco" labelOnTop="0"/>
+        <field name="name:sh" labelOnTop="0"/>
+        <field name="name:simple" labelOnTop="0"/>
+        <field name="name:sk" labelOnTop="0"/>
+        <field name="name:sl" labelOnTop="0"/>
+        <field name="name:sq" labelOnTop="0"/>
+        <field name="name:sr" labelOnTop="0"/>
+        <field name="name:sv" labelOnTop="0"/>
+        <field name="name:szl" labelOnTop="0"/>
+        <field name="name:ta" labelOnTop="0"/>
+        <field name="name:tet" labelOnTop="0"/>
+        <field name="name:tg" labelOnTop="0"/>
+        <field name="name:th" labelOnTop="0"/>
+        <field name="name:tl" labelOnTop="0"/>
+        <field name="name:tpi" labelOnTop="0"/>
+        <field name="name:tr" labelOnTop="0"/>
+        <field name="name:udm" labelOnTop="0"/>
+        <field name="name:ug" labelOnTop="0"/>
+        <field name="name:uk" labelOnTop="0"/>
+        <field name="name:ur" labelOnTop="0"/>
+        <field name="name:vec" labelOnTop="0"/>
+        <field name="name:vep" labelOnTop="0"/>
+        <field name="name:vi" labelOnTop="0"/>
+        <field name="name:vo" labelOnTop="0"/>
+        <field name="name:war" labelOnTop="0"/>
+        <field name="name:yi" labelOnTop="0"/>
+        <field name="name:yo" labelOnTop="0"/>
+        <field name="name:zh" labelOnTop="0"/>
+        <field name="old_name:la" labelOnTop="0"/>
+        <field name="osm_id" labelOnTop="0"/>
+        <field name="osm_type" labelOnTop="0"/>
+        <field name="place" labelOnTop="0"/>
+        <field name="place:ro" labelOnTop="0"/>
+        <field name="ref:nuts" labelOnTop="0"/>
+        <field name="ref:nuts:3" labelOnTop="0"/>
+        <field name="type" labelOnTop="0"/>
+        <field name="wikidata" labelOnTop="0"/>
+        <field name="wikipedia" labelOnTop="0"/>
+      </labelOnTop>
+      <reuseLastValue>
+        <field name="ISO3166-2" reuseLastValue="0"/>
+        <field name="admin_level" reuseLastValue="0"/>
+        <field name="alt_name" reuseLastValue="0"/>
+        <field name="alt_name:gl" reuseLastValue="0"/>
+        <field name="boundary" reuseLastValue="0"/>
+        <field name="full_id" reuseLastValue="0"/>
+        <field name="is_in:country_code" reuseLastValue="0"/>
+        <field name="name" reuseLastValue="0"/>
+        <field name="name:ace" reuseLastValue="0"/>
+        <field name="name:af" reuseLastValue="0"/>
+        <field name="name:am" reuseLastValue="0"/>
+        <field name="name:an" reuseLastValue="0"/>
+        <field name="name:ar" reuseLastValue="0"/>
+        <field name="name:arz" reuseLastValue="0"/>
+        <field name="name:ast" reuseLastValue="0"/>
+        <field name="name:az" reuseLastValue="0"/>
+        <field name="name:bat-smg" reuseLastValue="0"/>
+        <field name="name:be" reuseLastValue="0"/>
+        <field name="name:be-tarask" reuseLastValue="0"/>
+        <field name="name:bg" reuseLastValue="0"/>
+        <field name="name:bn" reuseLastValue="0"/>
+        <field name="name:bo" reuseLastValue="0"/>
+        <field name="name:bs" reuseLastValue="0"/>
+        <field name="name:ca" reuseLastValue="0"/>
+        <field name="name:ckb" reuseLastValue="0"/>
+        <field name="name:co" reuseLastValue="0"/>
+        <field name="name:crh" reuseLastValue="0"/>
+        <field name="name:cs" reuseLastValue="0"/>
+        <field name="name:csb" reuseLastValue="0"/>
+        <field name="name:cv" reuseLastValue="0"/>
+        <field name="name:cy" reuseLastValue="0"/>
+        <field name="name:da" reuseLastValue="0"/>
+        <field name="name:de" reuseLastValue="0"/>
+        <field name="name:diq" reuseLastValue="0"/>
+        <field name="name:ee" reuseLastValue="0"/>
+        <field name="name:el" reuseLastValue="0"/>
+        <field name="name:en" reuseLastValue="0"/>
+        <field name="name:eo" reuseLastValue="0"/>
+        <field name="name:es" reuseLastValue="0"/>
+        <field name="name:et" reuseLastValue="0"/>
+        <field name="name:ext" reuseLastValue="0"/>
+        <field name="name:fa" reuseLastValue="0"/>
+        <field name="name:fi" reuseLastValue="0"/>
+        <field name="name:fr" reuseLastValue="0"/>
+        <field name="name:frp" reuseLastValue="0"/>
+        <field name="name:fy" reuseLastValue="0"/>
+        <field name="name:ga" reuseLastValue="0"/>
+        <field name="name:gd" reuseLastValue="0"/>
+        <field name="name:gl" reuseLastValue="0"/>
+        <field name="name:gv" reuseLastValue="0"/>
+        <field name="name:he" reuseLastValue="0"/>
+        <field name="name:hi" reuseLastValue="0"/>
+        <field name="name:hif" reuseLastValue="0"/>
+        <field name="name:hr" reuseLastValue="0"/>
+        <field name="name:ht" reuseLastValue="0"/>
+        <field name="name:hu" reuseLastValue="0"/>
+        <field name="name:hy" reuseLastValue="0"/>
+        <field name="name:ia" reuseLastValue="0"/>
+        <field name="name:id" reuseLastValue="0"/>
+        <field name="name:ie" reuseLastValue="0"/>
+        <field name="name:io" reuseLastValue="0"/>
+        <field name="name:is" reuseLastValue="0"/>
+        <field name="name:it" reuseLastValue="0"/>
+        <field name="name:ja" reuseLastValue="0"/>
+        <field name="name:jv" reuseLastValue="0"/>
+        <field name="name:ka" reuseLastValue="0"/>
+        <field name="name:kk" reuseLastValue="0"/>
+        <field name="name:kn" reuseLastValue="0"/>
+        <field name="name:ko" reuseLastValue="0"/>
+        <field name="name:ku" reuseLastValue="0"/>
+        <field name="name:kv" reuseLastValue="0"/>
+        <field name="name:la" reuseLastValue="0"/>
+        <field name="name:lad" reuseLastValue="0"/>
+        <field name="name:li" reuseLastValue="0"/>
+        <field name="name:lij" reuseLastValue="0"/>
+        <field name="name:lmo" reuseLastValue="0"/>
+        <field name="name:ln" reuseLastValue="0"/>
+        <field name="name:lt" reuseLastValue="0"/>
+        <field name="name:lv" reuseLastValue="0"/>
+        <field name="name:mi" reuseLastValue="0"/>
+        <field name="name:mk" reuseLastValue="0"/>
+        <field name="name:ml" reuseLastValue="0"/>
+        <field name="name:mr" reuseLastValue="0"/>
+        <field name="name:ms" reuseLastValue="0"/>
+        <field name="name:my" reuseLastValue="0"/>
+        <field name="name:na" reuseLastValue="0"/>
+        <field name="name:nan" reuseLastValue="0"/>
+        <field name="name:nap" reuseLastValue="0"/>
+        <field name="name:ne" reuseLastValue="0"/>
+        <field name="name:nl" reuseLastValue="0"/>
+        <field name="name:nn" reuseLastValue="0"/>
+        <field name="name:no" reuseLastValue="0"/>
+        <field name="name:nov" reuseLastValue="0"/>
+        <field name="name:oc" reuseLastValue="0"/>
+        <field name="name:os" reuseLastValue="0"/>
+        <field name="name:pl" reuseLastValue="0"/>
+        <field name="name:pms" reuseLastValue="0"/>
+        <field name="name:pnb" reuseLastValue="0"/>
+        <field name="name:ps" reuseLastValue="0"/>
+        <field name="name:pt" reuseLastValue="0"/>
+        <field name="name:qu" reuseLastValue="0"/>
+        <field name="name:rm" reuseLastValue="0"/>
+        <field name="name:rmy" reuseLastValue="0"/>
+        <field name="name:ro" reuseLastValue="0"/>
+        <field name="name:roa-rup" reuseLastValue="0"/>
+        <field name="name:roa-tara" reuseLastValue="0"/>
+        <field name="name:ru" reuseLastValue="0"/>
+        <field name="name:sah" reuseLastValue="0"/>
+        <field name="name:scn" reuseLastValue="0"/>
+        <field name="name:sco" reuseLastValue="0"/>
+        <field name="name:sh" reuseLastValue="0"/>
+        <field name="name:simple" reuseLastValue="0"/>
+        <field name="name:sk" reuseLastValue="0"/>
+        <field name="name:sl" reuseLastValue="0"/>
+        <field name="name:sq" reuseLastValue="0"/>
+        <field name="name:sr" reuseLastValue="0"/>
+        <field name="name:sv" reuseLastValue="0"/>
+        <field name="name:szl" reuseLastValue="0"/>
+        <field name="name:ta" reuseLastValue="0"/>
+        <field name="name:tet" reuseLastValue="0"/>
+        <field name="name:tg" reuseLastValue="0"/>
+        <field name="name:th" reuseLastValue="0"/>
+        <field name="name:tl" reuseLastValue="0"/>
+        <field name="name:tpi" reuseLastValue="0"/>
+        <field name="name:tr" reuseLastValue="0"/>
+        <field name="name:udm" reuseLastValue="0"/>
+        <field name="name:ug" reuseLastValue="0"/>
+        <field name="name:uk" reuseLastValue="0"/>
+        <field name="name:ur" reuseLastValue="0"/>
+        <field name="name:vec" reuseLastValue="0"/>
+        <field name="name:vep" reuseLastValue="0"/>
+        <field name="name:vi" reuseLastValue="0"/>
+        <field name="name:vo" reuseLastValue="0"/>
+        <field name="name:war" reuseLastValue="0"/>
+        <field name="name:yi" reuseLastValue="0"/>
+        <field name="name:yo" reuseLastValue="0"/>
+        <field name="name:zh" reuseLastValue="0"/>
+        <field name="old_name:la" reuseLastValue="0"/>
+        <field name="osm_id" reuseLastValue="0"/>
+        <field name="osm_type" reuseLastValue="0"/>
+        <field name="place" reuseLastValue="0"/>
+        <field name="place:ro" reuseLastValue="0"/>
+        <field name="ref:nuts" reuseLastValue="0"/>
+        <field name="ref:nuts:3" reuseLastValue="0"/>
+        <field name="type" reuseLastValue="0"/>
+        <field name="wikidata" reuseLastValue="0"/>
+        <field name="wikipedia" reuseLastValue="0"/>
+      </reuseLastValue>
+      <dataDefinedFieldProperties/>
+      <widgets/>
+      <previewExpression>"old_name:la"</previewExpression>
+      <mapTip></mapTip>
+    </maplayer>
+  </projectlayers>
+  <layerorder>
+    <layer id="OpenStreetMap_7b286d9e_bf0a_47cc_b63e_95892d15cea8"/>
+    <layer id="axis_orientation_neu_3844_2736d6ce_df61_4ae0_abf5_5e75f7b5bdac"/>
+  </layerorder>
+  <properties>
+    <DefaultStyles>
+      <ColorRamp type="QString"></ColorRamp>
+      <Fill type="QString"></Fill>
+      <Line type="QString"></Line>
+      <Marker type="QString"></Marker>
+      <Opacity type="double">1</Opacity>
+      <RandomColors type="bool">true</RandomColors>
+    </DefaultStyles>
+    <Digitizing>
+      <AvoidIntersectionsMode type="int">0</AvoidIntersectionsMode>
+    </Digitizing>
+    <Gui>
+      <CanvasColorBluePart type="int">255</CanvasColorBluePart>
+      <CanvasColorGreenPart type="int">255</CanvasColorGreenPart>
+      <CanvasColorRedPart type="int">255</CanvasColorRedPart>
+      <SelectionColorAlphaPart type="int">255</SelectionColorAlphaPart>
+      <SelectionColorBluePart type="int">0</SelectionColorBluePart>
+      <SelectionColorGreenPart type="int">255</SelectionColorGreenPart>
+      <SelectionColorRedPart type="int">255</SelectionColorRedPart>
+    </Gui>
+    <Legend>
+      <filterByMap type="bool">false</filterByMap>
+    </Legend>
+    <Macros>
+      <pythonCode type="QString"></pythonCode>
+    </Macros>
+    <Measure>
+      <Ellipsoid type="QString">EPSG:7024</Ellipsoid>
+    </Measure>
+    <Measurement>
+      <AreaUnits type="QString">m2</AreaUnits>
+      <DistanceUnits type="QString">meters</DistanceUnits>
+    </Measurement>
+    <PAL>
+      <CandidatesLinePerCM type="double">5</CandidatesLinePerCM>
+      <CandidatesPolygonPerCM type="double">2.5</CandidatesPolygonPerCM>
+      <DrawRectOnly type="bool">false</DrawRectOnly>
+      <DrawUnplaced type="bool">false</DrawUnplaced>
+      <PlacementEngineVersion type="int">1</PlacementEngineVersion>
+      <SearchMethod type="int">0</SearchMethod>
+      <ShowingAllLabels type="bool">false</ShowingAllLabels>
+      <ShowingCandidates type="bool">false</ShowingCandidates>
+      <ShowingPartialsLabels type="bool">true</ShowingPartialsLabels>
+      <TextFormat type="int">0</TextFormat>
+      <UnplacedColor type="QString">255,0,0,255</UnplacedColor>
+    </PAL>
+    <Paths>
+      <Absolute type="bool">false</Absolute>
+    </Paths>
+    <PositionPrecision>
+      <Automatic type="bool">true</Automatic>
+      <DecimalPlaces type="int">2</DecimalPlaces>
+      <DegreeFormat type="QString">MU</DegreeFormat>
+    </PositionPrecision>
+    <RenderMapTile type="bool">false</RenderMapTile>
+    <SpatialRefSys>
+      <ProjectionsEnabled type="int">1</ProjectionsEnabled>
+    </SpatialRefSys>
+    <Variables>
+      <variableNames type="QStringList">
+        <value>lizmap_repository</value>
+        <value>lizmap_user</value>
+        <value>lizmap_user_groups</value>
+      </variableNames>
+      <variableValues type="QStringList">
+        <value>cypress</value>
+        <value></value>
+        <value></value>
+      </variableValues>
+    </Variables>
+    <WCSLayers type="QStringList"/>
+    <WCSUrl type="QString"></WCSUrl>
+    <WFSLayers type="QStringList"/>
+    <WFSTLayers>
+      <Delete type="QStringList"/>
+      <Insert type="QStringList"/>
+      <Update type="QStringList"/>
+    </WFSTLayers>
+    <WFSUrl type="QString"></WFSUrl>
+    <WMSAccessConstraints type="QString">None</WMSAccessConstraints>
+    <WMSAddWktGeometry type="bool">false</WMSAddWktGeometry>
+    <WMSContactMail type="QString"></WMSContactMail>
+    <WMSContactOrganization type="QString"></WMSContactOrganization>
+    <WMSContactPerson type="QString"></WMSContactPerson>
+    <WMSContactPhone type="QString"></WMSContactPhone>
+    <WMSContactPosition type="QString"></WMSContactPosition>
+    <WMSDefaultMapUnitsPerMm type="double">1</WMSDefaultMapUnitsPerMm>
+    <WMSExtent type="QStringList">
+      <value>-20704.94577928603393957</value>
+      <value>170388.0270258056698367</value>
+      <value>1043660.50233364361338317</value>
+      <value>811271.90322997397743165</value>
+    </WMSExtent>
+    <WMSFeatureInfoUseAttributeFormSettings type="bool">false</WMSFeatureInfoUseAttributeFormSettings>
+    <WMSFees type="QString">conditions unknown</WMSFees>
+    <WMSImageQuality type="int">90</WMSImageQuality>
+    <WMSKeywordList type="QStringList">
+      <value></value>
+    </WMSKeywordList>
+    <WMSMaxAtlasFeatures type="int">1</WMSMaxAtlasFeatures>
+    <WMSOnlineResource type="QString"></WMSOnlineResource>
+    <WMSPrecision type="QString">8</WMSPrecision>
+    <WMSRootName type="QString">axis_orientation_neu_3844</WMSRootName>
+    <WMSSegmentizeFeatureInfoGeometry type="bool">false</WMSSegmentizeFeatureInfoGeometry>
+    <WMSServiceAbstract type="QString"></WMSServiceAbstract>
+    <WMSServiceCapabilities type="bool">false</WMSServiceCapabilities>
+    <WMSServiceTitle type="QString">axis_orientation_neu_3844</WMSServiceTitle>
+    <WMSTileBuffer type="int">0</WMSTileBuffer>
+    <WMSUrl type="QString"></WMSUrl>
+    <WMSUseLayerIDs type="bool">false</WMSUseLayerIDs>
+    <WMTSGrids>
+      <CRS type="QStringList"/>
+      <Config type="QStringList"/>
+    </WMTSGrids>
+    <WMTSJpegLayers>
+      <Group type="QStringList"/>
+      <Layer type="QStringList"/>
+      <Project type="bool">false</Project>
+    </WMTSJpegLayers>
+    <WMTSLayers>
+      <Group type="QStringList"/>
+      <Layer type="QStringList"/>
+      <Project type="bool">false</Project>
+    </WMTSLayers>
+    <WMTSMinScale type="int">5000</WMTSMinScale>
+    <WMTSPngLayers>
+      <Group type="QStringList"/>
+      <Layer type="QStringList"/>
+      <Project type="bool">false</Project>
+    </WMTSPngLayers>
+    <WMTSUrl type="QString"></WMTSUrl>
+  </properties>
+  <dataDefinedServerProperties>
+    <Option type="Map">
+      <Option type="QString" name="name" value=""/>
+      <Option name="properties"/>
+      <Option type="QString" name="type" value="collection"/>
+    </Option>
+  </dataDefinedServerProperties>
+  <visibility-presets/>
+  <transformContext>
+    <srcDest coordinateOp="+proj=pipeline +step +inv +proj=webmerc +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +step +proj=push +v_3 +step +proj=cart +ellps=WGS84 +step +inv +proj=helmert +x=2.329 +y=-147.042 +z=-92.08 +rx=0.309 +ry=-0.325 +rz=-0.497 +s=5.69 +convention=coordinate_frame +step +inv +proj=cart +ellps=krass +step +proj=pop +v_3 +step +proj=sterea +lat_0=46 +lon_0=25 +k=0.99975 +x_0=500000 +y_0=500000 +ellps=krass" allowFallback="1">
+      <src>
+        <spatialrefsys>
+          <wkt>PROJCRS["WGS 84 / Pseudo-Mercator",BASEGEOGCRS["WGS 84",ENSEMBLE["World Geodetic System 1984 ensemble",MEMBER["World Geodetic System 1984 (Transit)"],MEMBER["World Geodetic System 1984 (G730)"],MEMBER["World Geodetic System 1984 (G873)"],MEMBER["World Geodetic System 1984 (G1150)"],MEMBER["World Geodetic System 1984 (G1674)"],MEMBER["World Geodetic System 1984 (G1762)"],MEMBER["World Geodetic System 1984 (G2139)"],ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]],ENSEMBLEACCURACY[2.0]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4326]],CONVERSION["Popular Visualisation Pseudo-Mercator",METHOD["Popular Visualisation Pseudo Mercator",ID["EPSG",1024]],PARAMETER["Latitude of natural origin",0,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8801]],PARAMETER["Longitude of natural origin",0,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8802]],PARAMETER["False easting",0,LENGTHUNIT["metre",1],ID["EPSG",8806]],PARAMETER["False northing",0,LENGTHUNIT["metre",1],ID["EPSG",8807]]],CS[Cartesian,2],AXIS["easting (X)",east,ORDER[1],LENGTHUNIT["metre",1]],AXIS["northing (Y)",north,ORDER[2],LENGTHUNIT["metre",1]],USAGE[SCOPE["Web mapping and visualisation."],AREA["World between 85.06°S and 85.06°N."],BBOX[-85.06,-180,85.06,180]],ID["EPSG",3857]]</wkt>
+          <proj4>+proj=merc +a=6378137 +b=6378137 +lat_ts=0 +lon_0=0 +x_0=0 +y_0=0 +k=1 +units=m +nadgrids=@null +wktext +no_defs</proj4>
+          <srsid>3857</srsid>
+          <srid>3857</srid>
+          <authid>EPSG:3857</authid>
+          <description>WGS 84 / Pseudo-Mercator</description>
+          <projectionacronym>merc</projectionacronym>
+          <ellipsoidacronym>EPSG:7030</ellipsoidacronym>
+          <geographicflag>false</geographicflag>
+        </spatialrefsys>
+      </src>
+      <dest>
+        <spatialrefsys>
+          <wkt>PROJCRS["Pulkovo 1942(58) / Stereo70",BASEGEOGCRS["Pulkovo 1942(58)",DATUM["Pulkovo 1942(58)",ELLIPSOID["Krassowsky 1940",6378245,298.3,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4179]],CONVERSION["Stereo 70",METHOD["Oblique Stereographic",ID["EPSG",9809]],PARAMETER["Latitude of natural origin",46,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8801]],PARAMETER["Longitude of natural origin",25,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8802]],PARAMETER["Scale factor at natural origin",0.99975,SCALEUNIT["unity",1],ID["EPSG",8805]],PARAMETER["False easting",500000,LENGTHUNIT["metre",1],ID["EPSG",8806]],PARAMETER["False northing",500000,LENGTHUNIT["metre",1],ID["EPSG",8807]]],CS[Cartesian,2],AXIS["northing (X)",north,ORDER[1],LENGTHUNIT["metre",1]],AXIS["easting (Y)",east,ORDER[2],LENGTHUNIT["metre",1]],USAGE[SCOPE["Engineering survey, topographic mapping."],AREA["Romania - onshore and offshore."],BBOX[43.44,20.26,48.27,31.41]],ID["EPSG",3844]]</wkt>
+          <proj4>+proj=sterea +lat_0=46 +lon_0=25 +k=0.99975 +x_0=500000 +y_0=500000 +ellps=krass +units=m +no_defs</proj4>
+          <srsid>27265</srsid>
+          <srid>3844</srid>
+          <authid>EPSG:3844</authid>
+          <description>Pulkovo 1942(58) / Stereo70</description>
+          <projectionacronym>sterea</projectionacronym>
+          <ellipsoidacronym>EPSG:7024</ellipsoidacronym>
+          <geographicflag>false</geographicflag>
+        </spatialrefsys>
+      </dest>
+    </srcDest>
+    <srcDest coordinateOp="+proj=pipeline +step +proj=unitconvert +xy_in=deg +xy_out=rad +step +proj=push +v_3 +step +proj=cart +ellps=WGS84 +step +inv +proj=helmert +x=2.329 +y=-147.042 +z=-92.08 +rx=0.309 +ry=-0.325 +rz=-0.497 +s=5.69 +convention=coordinate_frame +step +inv +proj=cart +ellps=krass +step +proj=pop +v_3 +step +proj=sterea +lat_0=46 +lon_0=25 +k=0.99975 +x_0=500000 +y_0=500000 +ellps=krass" allowFallback="1">
+      <src>
+        <spatialrefsys>
+          <wkt>GEOGCRS["WGS 84",ENSEMBLE["World Geodetic System 1984 ensemble",MEMBER["World Geodetic System 1984 (Transit)"],MEMBER["World Geodetic System 1984 (G730)"],MEMBER["World Geodetic System 1984 (G873)"],MEMBER["World Geodetic System 1984 (G1150)"],MEMBER["World Geodetic System 1984 (G1674)"],MEMBER["World Geodetic System 1984 (G1762)"],MEMBER["World Geodetic System 1984 (G2139)"],ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]],ENSEMBLEACCURACY[2.0]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],CS[ellipsoidal,2],AXIS["geodetic latitude (Lat)",north,ORDER[1],ANGLEUNIT["degree",0.0174532925199433]],AXIS["geodetic longitude (Lon)",east,ORDER[2],ANGLEUNIT["degree",0.0174532925199433]],USAGE[SCOPE["Horizontal component of 3D system."],AREA["World."],BBOX[-90,-180,90,180]],ID["EPSG",4326]]</wkt>
+          <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
+          <srsid>3452</srsid>
+          <srid>4326</srid>
+          <authid>EPSG:4326</authid>
+          <description>WGS 84</description>
+          <projectionacronym>longlat</projectionacronym>
+          <ellipsoidacronym>EPSG:7030</ellipsoidacronym>
+          <geographicflag>true</geographicflag>
+        </spatialrefsys>
+      </src>
+      <dest>
+        <spatialrefsys>
+          <wkt>PROJCRS["Pulkovo 1942(58) / Stereo70",BASEGEOGCRS["Pulkovo 1942(58)",DATUM["Pulkovo 1942(58)",ELLIPSOID["Krassowsky 1940",6378245,298.3,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4179]],CONVERSION["Stereo 70",METHOD["Oblique Stereographic",ID["EPSG",9809]],PARAMETER["Latitude of natural origin",46,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8801]],PARAMETER["Longitude of natural origin",25,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8802]],PARAMETER["Scale factor at natural origin",0.99975,SCALEUNIT["unity",1],ID["EPSG",8805]],PARAMETER["False easting",500000,LENGTHUNIT["metre",1],ID["EPSG",8806]],PARAMETER["False northing",500000,LENGTHUNIT["metre",1],ID["EPSG",8807]]],CS[Cartesian,2],AXIS["northing (X)",north,ORDER[1],LENGTHUNIT["metre",1]],AXIS["easting (Y)",east,ORDER[2],LENGTHUNIT["metre",1]],USAGE[SCOPE["Engineering survey, topographic mapping."],AREA["Romania - onshore and offshore."],BBOX[43.44,20.26,48.27,31.41]],ID["EPSG",3844]]</wkt>
+          <proj4>+proj=sterea +lat_0=46 +lon_0=25 +k=0.99975 +x_0=500000 +y_0=500000 +ellps=krass +units=m +no_defs</proj4>
+          <srsid>27265</srsid>
+          <srid>3844</srid>
+          <authid>EPSG:3844</authid>
+          <description>Pulkovo 1942(58) / Stereo70</description>
+          <projectionacronym>sterea</projectionacronym>
+          <ellipsoidacronym>EPSG:7024</ellipsoidacronym>
+          <geographicflag>false</geographicflag>
+        </spatialrefsys>
+      </dest>
+    </srcDest>
+  </transformContext>
+  <projectMetadata>
+    <identifier></identifier>
+    <parentidentifier></parentidentifier>
+    <language></language>
+    <type></type>
+    <title></title>
+    <abstract></abstract>
+    <contact>
+      <name></name>
+      <organization></organization>
+      <position></position>
+      <voice></voice>
+      <fax></fax>
+      <email></email>
+      <role></role>
+    </contact>
+    <links/>
+    <author></author>
+    <creation>2024-02-14T15:44:58</creation>
+  </projectMetadata>
+  <Annotations/>
+  <Layouts/>
+  <Bookmarks/>
+  <ProjectViewSettings UseProjectScales="0" rotation="0">
+    <Scales/>
+    <DefaultViewExtent ymin="170388.0270258056698367" xmin="-20704.94577928603393957" xmax="1043660.50233364361338317" ymax="811271.90322997397743165">
+      <spatialrefsys>
+        <wkt>PROJCRS["Pulkovo 1942(58) / Stereo70",BASEGEOGCRS["Pulkovo 1942(58)",DATUM["Pulkovo 1942(58)",ELLIPSOID["Krassowsky 1940",6378245,298.3,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4179]],CONVERSION["Stereo 70",METHOD["Oblique Stereographic",ID["EPSG",9809]],PARAMETER["Latitude of natural origin",46,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8801]],PARAMETER["Longitude of natural origin",25,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8802]],PARAMETER["Scale factor at natural origin",0.99975,SCALEUNIT["unity",1],ID["EPSG",8805]],PARAMETER["False easting",500000,LENGTHUNIT["metre",1],ID["EPSG",8806]],PARAMETER["False northing",500000,LENGTHUNIT["metre",1],ID["EPSG",8807]]],CS[Cartesian,2],AXIS["northing (X)",north,ORDER[1],LENGTHUNIT["metre",1]],AXIS["easting (Y)",east,ORDER[2],LENGTHUNIT["metre",1]],USAGE[SCOPE["Engineering survey, topographic mapping."],AREA["Romania - onshore and offshore."],BBOX[43.44,20.26,48.27,31.41]],ID["EPSG",3844]]</wkt>
+        <proj4>+proj=sterea +lat_0=46 +lon_0=25 +k=0.99975 +x_0=500000 +y_0=500000 +ellps=krass +units=m +no_defs</proj4>
+        <srsid>27265</srsid>
+        <srid>3844</srid>
+        <authid>EPSG:3844</authid>
+        <description>Pulkovo 1942(58) / Stereo70</description>
+        <projectionacronym>sterea</projectionacronym>
+        <ellipsoidacronym>EPSG:7024</ellipsoidacronym>
+        <geographicflag>false</geographicflag>
+      </spatialrefsys>
+    </DefaultViewExtent>
+  </ProjectViewSettings>
+  <ProjectTimeSettings frameRate="1" timeStep="1" cumulativeTemporalRange="0" timeStepUnit="h"/>
+  <ProjectDisplaySettings>
+    <BearingFormat id="bearing">
+      <Option type="Map">
+        <Option type="QChar" name="decimal_separator" value=""/>
+        <Option type="int" name="decimals" value="6"/>
+        <Option type="int" name="direction_format" value="0"/>
+        <Option type="int" name="rounding_type" value="0"/>
+        <Option type="bool" name="show_plus" value="false"/>
+        <Option type="bool" name="show_thousand_separator" value="true"/>
+        <Option type="bool" name="show_trailing_zeros" value="false"/>
+        <Option type="QChar" name="thousand_separator" value=""/>
+      </Option>
+    </BearingFormat>
+  </ProjectDisplaySettings>
+</qgis>
