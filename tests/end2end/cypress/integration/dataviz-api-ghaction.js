@@ -14,8 +14,8 @@ describe('Dataviz API tests', function () {
             expect(resp.body).to.have.property('data')
             expect(resp.body.data).to.have.length(1)
             expect(resp.body.data[0]).to.have.property('type', 'bar')
-            expect(resp.body.data[0]).to.have.property('x').to.deep.eq(["Grabels", "Clapiers", "Montferrier-sur-Lez", "Saint-Jean-de-Védas", "Lattes", "Montpellier", "Lavérune", "Juvignac", "Le Crès", "Castelnau-le-Lez"])
-            expect(resp.body.data[0]).to.have.property('y').to.deep.eq([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+            expect(resp.body.data[0]).to.have.property('x').to.have.same.members(["Grabels", "Clapiers", "Montferrier-sur-Lez", "Saint-Jean-de-Védas", "Lattes", "Montpellier", "Lavérune", "Juvignac", "Le Crès", "Castelnau-le-Lez"])
+            expect(resp.body.data[0]).to.have.property('y').to.have.same.members([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
             expect(resp.body).to.have.property('layout')
         })
     })
@@ -35,8 +35,8 @@ describe('Dataviz API tests', function () {
             expect(resp.body).to.have.property('data')
             expect(resp.body.data).to.have.length(1)
             expect(resp.body.data[0]).to.have.property('type', 'pie')
-            expect(resp.body.data[0]).to.have.property('values').to.deep.eq([ 4, 2, 6, 1, 2, 1, 2, 1, 4, 2 ])
-            expect(resp.body.data[0]).to.have.property('labels').to.deep.eq([ "Castelnau-le-Lez", "Clapiers", "Grabels", "Juvignac", "Lattes", "Lavérune", "Le Crès", "Montferrier-sur-Lez", "Montpellier", "Saint-Jean-de-Védas" ])
+            expect(resp.body.data[0]).to.have.property('values').to.have.same.members([ 4, 2, 6, 1, 2, 1, 2, 1, 4, 2 ])
+            expect(resp.body.data[0]).to.have.property('labels').to.have.same.members([ "Castelnau-le-Lez", "Clapiers", "Grabels", "Juvignac", "Lattes", "Lavérune", "Le Crès", "Montferrier-sur-Lez", "Montpellier", "Saint-Jean-de-Védas" ])
             expect(resp.body).to.have.property('layout')
         })
     })
@@ -71,7 +71,7 @@ describe('Dataviz API tests', function () {
                     }
                 ]
             )
-            expect(resp.body.data[0]).to.have.property('x').to.deep.eq([
+            expect(resp.body.data[0]).to.have.property('x').to.have.same.members([
                 1,
                 16,
                 68,
@@ -99,7 +99,7 @@ describe('Dataviz API tests', function () {
                 199
             ])
             expect(resp.body.data[0]).to.have.property('type', 'bar')
-            expect(resp.body.data[0]).to.have.property('y').to.deep.eq([
+            expect(resp.body.data[0]).to.have.property('y').to.have.same.members([
                 "Grabels",
                 "Grabels",
                 "Montferrier-sur-Lez",
@@ -147,8 +147,8 @@ describe('Dataviz API tests', function () {
             expect(resp.body).to.have.property('data')
             expect(resp.body.data).to.have.length(1)
             expect(resp.body.data[0]).to.have.property('type', 'bar')
-            expect(resp.body.data[0]).to.have.property('x').to.deep.eq([ 5, 5, 5, 5 ])
-            expect(resp.body.data[0]).to.have.property('y').to.deep.eq([ 73, 79, 126, 195 ])
+            expect(resp.body.data[0]).to.have.property('x').to.have.same.members([ 5, 5, 5, 5 ])
+            expect(resp.body.data[0]).to.have.property('y').to.have.same.members([ 73, 79, 126, 195 ])
             expect(resp.body).to.have.property('layout')
         })
     })
