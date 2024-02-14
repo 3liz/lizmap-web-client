@@ -23,6 +23,29 @@ const mapStateProperties = {
 };
 
 /**
+ * Map state ready.
+ * @event MapState#map.state.ready
+ * @type {object}
+ * @property {string} type   - map.state.ready
+ * @property {boolean} ready - true
+ */
+
+/**
+ * Map state changed
+ * @event MapState#map.state.changed
+ * @type {object}
+ * @property {string}   type                    - map.state.changed
+ * @property {string}   [projection]            - the map projection code if it changed
+ * @property {number[]} [center]                - the map center if it changed
+ * @property {number[]} [size]                  - the map size if it changed
+ * @property {number[]} [extent]                - the map extent (calculate by the map view) if it changed
+ * @property {number}   [resolution]            - the map resolution if it changed
+ * @property {number}   [scaleDenominator]      - the map scale denominator if it changed
+ * @property {number}   [pointResolution]       - the map resolution (calculate from the center) if it changed
+ * @property {number}   [pointScaleDenominator] - the map scale denominator (calculate from the center) if it changed
+ */
+
+/**
  * Class representing the map state
  * @class
  * @augments EventDispatcher
@@ -35,6 +58,7 @@ export class MapState extends EventDispatcher {
      */
     constructor(startupFeatures) {
         super();
+        this._ready = false;
         // default values
         this._projection = 'EPSG:3857';
         this._center = [0, 0];
@@ -47,7 +71,6 @@ export class MapState extends EventDispatcher {
         this._startupFeatures = startupFeatures;
     }
 
-
     /**
      * Update the map state
      * @param {object}   evt                         - the map state changed object
@@ -59,6 +82,8 @@ export class MapState extends EventDispatcher {
      * @param {number}   [evt.scaleDenominator]      - the map scale denominator
      * @param {number}   [evt.pointResolution]       - the map resolution (calculate from the center)
      * @param {number}   [evt.pointScaleDenominator] - the map scale denominator (calculate from the center)
+     * @fires MapState#map.state.ready
+     * @fires MapState#map.state.changed
      */
     update(evt) {
         let updatedProperties = {};
@@ -114,12 +139,28 @@ export class MapState extends EventDispatcher {
         }
         // Dispatch event only if something have changed
         if (Object.getOwnPropertyNames(updatedProperties).length != 0) {
+            const neededProperties = ['center', 'size', 'extent', 'resolution'];
+            if (!this._ready && Object.getOwnPropertyNames(updatedProperties).filter(v => neededProperties.includes(v)).length == 4) {
+                this._ready = true;
+                this.dispatch({
+                    type: 'map.state.ready',
+                    ready: true,
+                });
+            }
             this.dispatch(
                 Object.assign({
                     type: 'map.state.changed'
                 }, updatedProperties)
             );
         }
+    }
+
+    /**
+     * Map is ready
+     * @type {boolean}
+     */
+    get isReady() {
+        return this._ready;
     }
 
     /**

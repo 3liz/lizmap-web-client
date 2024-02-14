@@ -21,6 +21,7 @@ export default class Permalink {
         this._ignoreHashChange = false;
         // Store the build or received hash
         this._hash = '';
+        this._extent4326 = [0, 0, 0, 0, 0];
 
         // Change `checked`, `style` states based on URL fragment
         if (window.location.hash) {
@@ -147,21 +148,29 @@ export default class Permalink {
     }
 
     _runPermalink(setExtent = true) {
-        this._hash = ''+window.location.hash;
-        const items = mainLizmap.state.layersAndGroupsCollection.layers.concat(mainLizmap.state.layersAndGroupsCollection.groups);
-
+        if (this._hash === ''+window.location.hash) {
+            return;
+        }
         if (window.location.hash === "") {
+            this._hash = '';
             return;
         }
 
+        this._hash = ''+window.location.hash;
+
+        const items = mainLizmap.state.layersAndGroupsCollection.layers.concat(mainLizmap.state.layersAndGroupsCollection.groups);
+
         const [extent4326, itemsInURL, stylesInURL, opacitiesInURL] = window.location.hash.substring(1).split('|').map(part => part.split(','));
 
-        if (setExtent && extent4326.length === 4) {
+        if (setExtent
+            && extent4326.length === 4
+            && this._extent4326.filter((v, i) => {return parseFloat(extent4326[i]).toPrecision(6) != v}).length != 0) {
             const mapExtent = transformExtent(
                 extent4326.map(coord => parseFloat(coord)),
                 'EPSG:4326',
                 lizMap.map.projection.projCode
             );
+            this._extent4326 = extent4326.map(coord => parseFloat(coord).toPrecision(6));
             mainLizmap.extent = mapExtent;
         }
 
@@ -225,7 +234,7 @@ export default class Permalink {
         let hash = '';
 
         // BBOX
-        let bbox = lizMap.map.getExtent().toArray();
+        let bbox = mainLizmap.extent;
         if (lizMap.map.projection.projCode !== 'EPSG:4326') {
             bbox = transformExtent(
                 bbox,
@@ -233,7 +242,8 @@ export default class Permalink {
                 'EPSG:4326'
             );
         }
-        hash = bbox.join();
+        this._extent4326 = bbox.map(x => x.toFixed(6));
+        hash = this._extent4326.join();
 
         // Item's visibility, style and opacity
         // Only write layer's properties when visible

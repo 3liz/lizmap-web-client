@@ -306,6 +306,18 @@ test.describe('Permalink', () => {
         // Close subdock
         await page.getByRole('button', { name: 'Close' }).click();
 
+        // The check hash url before changing it
+        const old_url = new URL(page.url());
+        await expect(old_url.hash).not.toHaveLength(0);
+        // The decoded hash is
+        // #3.0635044037670305,43.401957103265374,4.567657653648659,43.92018105321636
+        // |layer_legend_single_symbol,tramway_lines,Group%20as%20layer
+        // |d%C3%A9faut,categorized,
+        // |1,1,1,1
+        await expect(old_url.hash).toContain('|layer_legend_single_symbol,tramway_lines,Group%20as%20layer|')
+        await expect(old_url.hash).toContain('|d%C3%A9faut,categorized,|')
+        await expect(old_url.hash).toContain('|0.6,1,1')
+
         // Test permalink with empty string styles
         const bbox = '3.0635044037670305,43.401957103265374,4.567657653648659,43.92018105321636'
         const layers = 'layer_legend_single_symbol,layer_legend_categorized,tramway_lines,Group as layer'
@@ -316,20 +328,6 @@ test.describe('Permalink', () => {
         await page.goto(newUrl, { waitUntil: 'networkidle' });
         // Reload to force applying hash with empty string styles
         await page.reload({ waitUntil: 'networkidle' });
-
-        // waiting for hash updated
-        await page.waitForTimeout(1000);
-        // The url has changed
-        const checked_url = new URL(page.url());
-        await expect(checked_url.hash).not.toHaveLength(0);
-        // The decoded hash is
-        // #3.0635044037670305,43.401957103265374,4.567657653648659,43.92018105321636
-        // |layer_legend_single_symbol,layer_legend_categorized,tramway_lines,Group%20as%20layer
-        // |d%C3%A9faut,d%C3%A9faut,a_single,
-        // |1,1,1,1
-        await expect(checked_url.hash).toContain('|layer_legend_single_symbol,layer_legend_categorized,tramway_lines,Group%20as%20layer|')
-        await expect(checked_url.hash).toContain('|d%C3%A9faut,d%C3%A9faut,a_single,|')
-        await expect(checked_url.hash).toContain('|1,1,1,1')
 
         // No error
         await expect(page.locator('p.error-msg')).toHaveCount(0);
@@ -355,6 +353,18 @@ test.describe('Permalink', () => {
 
         // Close subdock
         await page.getByRole('button', { name: 'Close' }).click();
+
+        // The url has changed
+        const checked_url = new URL(page.url());
+        await expect(checked_url.hash).not.toHaveLength(0);
+        // The decoded hash is
+        // #3.0635044037670305,43.401957103265374,4.567657653648659,43.92018105321636
+        // |layer_legend_single_symbol,layer_legend_categorized,tramway_lines,Group%20as%20layer
+        // |d%C3%A9faut,d%C3%A9faut,a_single,
+        // |1,1,1,1
+        await expect(checked_url.hash).toContain('|layer_legend_single_symbol,layer_legend_categorized,tramway_lines,Group%20as%20layer|')
+        await expect(checked_url.hash).toContain('|d%C3%A9faut,d%C3%A9faut,a_single,|')
+        await expect(checked_url.hash).toContain('|1,1,1,1')
     });
 
     test('Build permalink and change hash', async ({ page }) => {
