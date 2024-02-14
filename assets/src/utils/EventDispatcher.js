@@ -138,6 +138,14 @@ export default class EventDispatcher {
                 // interpretation of what an "id" is
                 writable: false
             });
+            // Add the immutable target property
+            Object.defineProperty(event, "target", {
+                value: this,
+                enumerable: false,
+                // This could go either way, depending on your
+                // interpretation of what an "id" is
+                writable: false
+            });
             // Add it to the stack
             this._stackEventId.unshift(event['__eventid__']);
             // Limit the stack to 10 events
