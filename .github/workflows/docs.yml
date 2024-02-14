@@ -39,7 +39,7 @@ jobs:
           path: docs/js/assets/1.0.0/
 
       - name: Deploy to GitHub Pages
-        if: github.ref == 'refs/heads/master'
+        if: github.repository == '3liz/lizmap-web-client' && github.ref == 'refs/heads/master'
         id: deployment
         uses: actions/deploy-pages@v4
 
@@ -64,5 +64,5 @@ jobs:
 #          ./node_modules/.bin/gh-pages-multi deploy -s docs/js/assets/1.0.0/ -t $BRANCH_NAME -v
 
       - name: Summary
-        if: github.ref == 'refs/heads/master'
+        if: github.repository == '3liz/lizmap-web-client' && github.ref == 'refs/heads/master'
         run: echo "### Published ! :rocket:" >> $GITHUB_STEP_SUMMARY
