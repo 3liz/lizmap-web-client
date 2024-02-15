@@ -3020,7 +3020,7 @@ lizmap-feature-toolbar button:hover > [class^="icon-"],
 
 .feature-atlas .custom-labels {
   position: absolute;
-  right: 0px;
+  left: 0px;
   background: white;
   padding: 5px;
   border: black solid 1px;
