@@ -300,6 +300,9 @@ class WMSRequest extends OGCRequest
                 if ($result->code == 200) {
                     $layer = $this->project->findLayerByAnyName($lName);
                     $nodes = json_decode($result->data)->nodes;
+                    if (!$nodes) {
+                        return $result;
+                    }
                     // Rework nodes
                     if ($layer->groupAsLayer == 'True' | $layer->type == 'group') {
                         // Create a dedicated node for group
@@ -372,7 +375,9 @@ class WMSRequest extends OGCRequest
                     return $result;
                 }
                 $nodes = json_decode($result->data)->nodes;
-                $legends['nodes'][] = $nodes[0];
+                if ($nodes) {
+                    $legends['nodes'][] = $nodes[0];
+                }
             }
 
             return new OGCResponse(200, 'application/json', json_encode($legends));
