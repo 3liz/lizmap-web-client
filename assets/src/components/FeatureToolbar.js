@@ -106,7 +106,7 @@ export default class FeatureToolbar extends HTMLElement {
                         <i class="icon-plus-sign"></i>
                         <span class="caret"></span>
                     </button>
-                    <ul class="dropdown-menu pull-right" role="menu">
+                    <ul class="dropdown-menu" role="menu">
                         ${this.editableChildrenLayers.map((child) =>
                             html`<li><a data-child-layer-id="${child.layerId}" @click=${() => this.createChild(child)}>${child.title}</a></li>`)}
                     </ul>
