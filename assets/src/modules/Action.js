@@ -447,6 +447,9 @@ export default class Action {
              * Lizmap event to allow other scripts to process the data if needed
              * @event actionResultReceived
              * @property {string} action Name of the action
+             * @property {string} layerId Layer ID of the current layer
+             * @property {string} featureId Feature ID of the current feature
+             * @property {Array<*>} features List of features returned in the map projection
              */
             lizMap.events.triggerEvent("actionResultReceived",
                 {
