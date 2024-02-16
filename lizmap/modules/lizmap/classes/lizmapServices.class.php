@@ -207,22 +207,16 @@ class lizmapServices
 
     /**
      * Do not display Lizmap projects page.
-     *
-     * @var bool
      */
     public $onlyMaps = '';
 
     /**
      * Show projects switcher in maps page.
-     *
-     * @var bool
      */
     public $projectSwitcher = '';
 
     /**
      * Display all project in maps.
-     *
-     * @var bool
      */
     public $allInMap = '';
 
@@ -307,8 +301,6 @@ class lizmapServices
 
     /**
      * Debug mode : none or log.
-     *
-     * @var string
      */
     public $debugMode = '';
 
@@ -365,8 +357,6 @@ class lizmapServices
 
     /**
      * If we allow to view the form to request an account.
-     *
-     * @var string
      */
     public $allowUserAccountRequests = '';
 
