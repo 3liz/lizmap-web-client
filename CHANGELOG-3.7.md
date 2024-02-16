@@ -8,6 +8,25 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Added
+
+* New JavaScript event when the map state is ready
+
+### Fixed
+
+* Fix use of the "Hide checkbox for groups" from the plugin
+* Fix if the layer is explicitly hidden from the legend
+* Forward the state of the legend for categories when printing a QGIS layout
+* Use map projection if the project projection is not well-defined
+* Fix permalink precision to 6 digits if the EPSG:4326
+* Fix display of layers when the map projection has inverted axis
+* Fix display of UI widgets about print and create child object
+* Fix error when there isn't any icon in the GetLegendGraphic from QGIS Server
+
+### Backend
+
+* Update Jelix to 1.8.7
+
 ## 3.7.3 - 2024-02-07
 
 ### Added
