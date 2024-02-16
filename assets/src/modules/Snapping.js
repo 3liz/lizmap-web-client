@@ -21,6 +21,9 @@ export default class Snapping {
         this._maxFeatures = 1000;
         this._restrictToMapExtent = true;
         this._config = undefined;
+        this._snapEnabled = {};
+        this._snapToggled = {};
+        this._snapLayers = [];
 
         // Create layer to store snap features
         const snapLayer = new OpenLayers.Layer.Vector('snaplayer', {
@@ -28,7 +31,7 @@ export default class Snapping {
             styleMap: new OpenLayers.StyleMap({
                 pointRadius: 2,
                 fill: false,
-                stroke: true,
+                stroke: false,
                 strokeWidth: 3,
                 strokeColor: 'red',
                 strokeOpacity: 0.8
@@ -52,6 +55,39 @@ export default class Snapping {
             }
         }
 
+        this._setSnapLayersVisibility = () => {
+            if(this._active){
+                this._snapLayers.forEach((layer)=>{
+                    this._snapEnabled[layer] = mainLizmap.state.layersAndGroupsCollection.getLayerById(layer).visibility
+                })
+
+                this._sortSnapLayers();
+                const config = structuredClone(this._config);
+                config.snap_layers = this._snapLayers;
+                config.snap_enabled = this._snapEnabled;
+
+                this.config = config;
+                this.snapLayersRefreshable = true;
+
+                // dispatch an event, it might be useful to know when the list of visible layer for snap changed
+                mainEventDispatcher.dispatch('snapping.layer.visibility.changed');
+            }
+        }
+
+        this._sortSnapLayers = () => {
+            let snapLayers = [...this._snapLayers];
+            let visibleLayers = [];
+            for (let id in this._snapEnabled) {
+                if(this._snapEnabled[id]){
+                    let visibileLayer = snapLayers.splice(snapLayers.indexOf(id),1)
+                    visibleLayers = visibleLayers.concat(visibileLayer)
+                }
+            }
+            visibleLayers.sort();
+            snapLayers.sort();
+            this._snapLayers = visibleLayers.concat(snapLayers);
+        }
+
         // Activate snap when a layer is edited
         mainEventDispatcher.addListener(
             () => {
@@ -61,8 +97,23 @@ export default class Snapping {
                         if (mainLizmap.config.editionLayers[editionLayer].layerId === mainLizmap.edition.layerId){
                             const editionLayerConfig = mainLizmap.config.editionLayers[editionLayer];
                             if (editionLayerConfig.hasOwnProperty('snap_layers') && editionLayerConfig.snap_layers.length > 0){
+
+                                this._snapLayers = [...editionLayerConfig.snap_layers];
+                                this._snapLayers.forEach((layer)=>{
+                                    this._snapEnabled[layer] = mainLizmap.state.layersAndGroupsCollection.getLayerById(layer).visibility
+                                })
+                                this._snapLayers.forEach((layer)=>{
+                                    // on init enable snap by default on visible layers
+                                    this._snapToggled[layer] = mainLizmap.state.layersAndGroupsCollection.getLayerById(layer).visibility
+                                })
+
+                                // sorting of layers by name and put disabled layers on bottom of the list
+                                this._sortSnapLayers();
+
                                 this.config = {
-                                    'snap_layers': editionLayerConfig.snap_layers,
+                                    'snap_layers': this._snapLayers,
+                                    'snap_enabled': this._snapEnabled,
+                                    'snap_on_layers':this._snapToggled,
                                     'snap_vertices': (editionLayerConfig.hasOwnProperty('snap_vertices') && editionLayerConfig.snap_vertices === 'True') ? true : false,
                                     'snap_segments': (editionLayerConfig.hasOwnProperty('snap_segments') && editionLayerConfig.snap_segments === 'True') ? true : false,
                                     'snap_intersections': (editionLayerConfig.hasOwnProperty('snap_intersections') && editionLayerConfig.snap_intersections === 'True') ? true : false,
@@ -89,10 +140,11 @@ export default class Snapping {
                     snapControl.targets[0].vertexTolerance = this._config.snap_intersections_tolerance;
                     snapControl.targets[0].edgeTolerance = this._config.snap_segments_tolerance;
 
-                    // Listen to moveend event to able data refreshing
-                    mainEventDispatcher.addListener(
-                        this._setSnapLayersRefreshable,
-                        'map.moveend'
+                    // Listen to moveend event and to layers visibility changes to able data refreshing
+                    mainLizmap.lizmap3.map.events.register('moveend', this, this._setSnapLayersRefreshable);
+                    mainLizmap.state.rootMapGroup.addListener(
+                        this._setSnapLayersVisibility,
+                        ['layer.visibility.changed','group.visibility.changed']
                     );
                 }
             },
@@ -106,11 +158,12 @@ export default class Snapping {
                 mainLizmap.lizmap3.map.getLayersByName('snaplayer')[0].destroyFeatures();
                 this.config = undefined;
 
-                // Remove listener to moveend event
-                mainEventDispatcher.removeListener(
-                    this._setSnapLayersRefreshable,
-                    'map.moveend'
-                );
+                // Remove listener to moveend event to layers visibility event
+                mainLizmap.lizmap3.map.events.unregister('moveend', this, this._setSnapLayersRefreshable);
+                mainLizmap.state.rootMapGroup.removeListener(
+                    this._setSnapLayersVisibility,
+                    ['layer.visibility.changed','group.visibility.changed']
+                )
             },
             'edition.formClosed'
         );
@@ -120,8 +173,13 @@ export default class Snapping {
         // Empty snapping layer first
         mainLizmap.lizmap3.map.getLayersByName('snaplayer')[0].destroyFeatures();
 
+        // filter only visible layers and toggled layers on the the snap list
+        const currentSnapLayers = this._snapLayers.filter(
+            (layerId) => this._snapEnabled[layerId] && this._snapToggled[layerId]
+        );
+
         // TODO : group aync calls with Promises
-        for (const snapLayer of this._config.snap_layers) {
+        for (const snapLayer of currentSnapLayers) {
 
             lizMap.getFeatureData(mainLizmap.lizmap3.getLayerConfigById(snapLayer)[0], null, null, 'geom', this._restrictToMapExtent, null, this._maxFeatures,
                 (fName, fFilter, fFeatures) => {
@@ -155,6 +213,20 @@ export default class Snapping {
 
     toggle(){
         this.active = !this._active;
+    }
+
+    get snapEnabled(){
+        return this._snapEnabled;
+    }
+
+    set snapToggled(layerId){
+        this._snapToggled[layerId] = !this._snapToggled[layerId];
+
+        const config = structuredClone(this._config);
+        config.snap_on_layers = this._snapToggled;
+
+        this.config = config;
+        this.snapLayersRefreshable = true;
     }
 
     get snapLayersRefreshable(){
