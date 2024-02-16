@@ -123,43 +123,109 @@ class lizmapServices
     private $varPath = '';
     private $globalConfig;
 
-    // Wms map server
+    /**
+     * Application name
+     * @var string
+     */
     public $appName = 'Lizmap';
-    // QGIS Server version
-    // For external modules only, which are still using the variable
-    // See https://github.com/3liz/lizmap-cadastre-module/issues/94
+
+    /**
+     * QGIS Server version
+     * For external modules only, which are still using the variable
+     * @see https://github.com/3liz/lizmap-cadastre-module/issues/94
+     * @var string
+     * @deprecated 3.7.0 Use the {@see \Lizmap\Server\Server}
+     */
     public $qgisServerVersion = '3.0';
-    // Wms map server
+
+    /**
+     * QGIS Server URL
+     * @var string
+     */
     public $wmsServerURL = '';
-    // headers to send to Wms map server
+
+    /**
+     * Headers to send to WMS map server
+     * @var array
+     */
     public $wmsServerHeaders = array();
-    // Public Wms url list
+
+    /**
+     * Public WMS list
+     * @var string
+     */
     public $wmsPublicUrlList = '';
-    // Wms max width
+
+    /**
+     * WMS max width
+     * @var integer
+     */
     public $wmsMaxWidth = 3000;
-    // Wms max width
+
+    /**
+     * WMS max height
+     * @var integer
+     */
     public $wmsMaxHeight = 3000;
 
-    // URL to the API exposed by the Lizmap plugin for QGIS Server
+    /**
+     * URL to the API exposed by the Lizmap plugin for QGIS Server
+     * @var string
+     */
     public $lizmapPluginAPIURL = '';
 
-    // map cache server
+    /**
+     * Map cache server type
+     * @var string
+     */
     public $cacheStorageType = '';
-    // default repository
+
+    /**
+     * Default repository
+     * @var string
+     */
     public $defaultRepository = '';
-    // default project in default repository
+
+    /**
+     * Default project in default repository
+     * @var string
+     */
     public $defaultProject = '';
-    // Do not display Lizmap projects page
+
+    /**
+     * Do not display Lizmap projects page
+     * @var boolean
+     */
     public $onlyMaps = '';
-    // Show projects switcher in maps page
+
+    /**
+     * Show projects switcher in maps page
+     * @var boolean
+     */
     public $projectSwitcher = '';
-    // display all project in maps
+
+    /**
+     * Display all project in maps
+     * @var boolean
+     */
     public $allInMap = '';
-    // Root folder of repositories
+
+    /**
+     * Root folder of repositories
+     * @var string
+     */
     public $rootRepositories = '';
-    // Root folder of QGIS project inspection data output files (qgis-project-validator)
+
+    /**
+     * Root folder of QGIS project inspection data output files (qgis-project-validator)
+     * @var string
+     */
     public $qgisProjectsPrivateDataFolder = '';
-    // Does the server use relative Path from root folder?
+
+    /**
+     * Does the server use relative Path from root folder?
+     * @var string
+     */
     public $relativeWMSPath = '0';
 
     /**
@@ -171,42 +237,131 @@ class lizmapServices
      */
     public $proxyHttpBackend = '';
 
+    /**
+     * Map cache server
+     * @var boolean
+     */
     public $requestProxyEnabled = false;
+
+    /**
+     * Proxy host
+     * @var string
+     */
     public $requestProxyHost = '';
+
+    /**
+     * Proxy port
+     * @var string
+     */
     public $requestProxyPort = '';
+
+    /**
+     * Proxy user
+     * @var string
+     */
     public $requestProxyUser = '';
+
+    /**
+     * Proxy password
+     * @var string
+     */
     public $requestProxyPassword = '';
-    // proxy type: 'http' or 'socks5'. Only used with the curl proxyHttpBackend
+
+    /**
+     * Proxy type: 'http' or 'socks5'. Only used with the curl proxyHttpBackend
+     * @var string
+     */
     public $requestProxyType = 'http';
-    // list of domains separated by a comma, to which the proxy is not used
+
+    /**
+     * List of domains separated by a comma, to which the proxy is not used
+     * @var string
+     */
     public $requestProxyNotForDomain = 'localhost,127.0.0.1';
 
-    // debug mode : none or log
+    /**
+     * Debug mode : none or log
+     * @var string
+     */
     public $debugMode = '';
-    // Cache root directory
+
+    /**
+     * Cache root directory
+     * @var string
+     */
     public $cacheRootDirectory = '';
-    // Redis host
+
+    /**
+     * Redis host
+     * @var string
+     */
     public $cacheRedisHost = 'localhost';
-    // Redis port
+
+    /**
+     * Redis port
+     * @var string
+     */
     public $cacheRedisPort = '6379';
-    // Redis db
+
+    /**
+     * Redis DB
+     * @var string
+     */
     public $cacheRedisDb = '';
-    // Redis key prefix
+
+    /**
+     * Redis key prefix
+     * @var string
+     */
     public $cacheRedisKeyPrefix = '';
-    // cache Expiration
+
+    /**
+     * Cache expiration
+     * @var string
+     */
     public $cacheExpiration = '';
-    // method to flush keys when $cacheRedisKeyPrefix is set. See Jelix documentation
+
+    /**
+     * Method to flush keys when $cacheRedisKeyPrefix is set.
+     * @see https://docs.jelix.org/en/manual
+     * @var string
+     */
     public $cacheRedisKeyPrefixFlushMethod = '';
-    // if we allow to view the form to request an account
+
+    /**
+     * If we allow to view the form to request an account
+     * @var string
+     */
     public $allowUserAccountRequests = '';
-    // admin contact email
+
+    /**
+     * Admin contact email
+     * @var string
+     */
     public $adminContactEmail = '';
-    // admin sender email
+
+    /**
+     * Administrator sender email
+     * @var string
+     */
     public $adminSenderEmail = '';
+
+    /**
+     * Administrator sender name
+     * @var string
+     */
     public $adminSenderName = '';
-    // application id for google analytics
+
+    /**
+     * Application ID for Google Analytics
+     * @var string
+     */
     public $googleAnalyticsID = '';
 
+    /**
+     * Uploaded image maximum width and height
+     * @var integer
+     */
     public $uploadedImageMaxWidthHeight = 1920;
 
     /**
