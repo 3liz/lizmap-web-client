@@ -1084,14 +1084,18 @@ export default class Digitizing {
 
     download(format) {
         if (this.featureDrawn) {
+            const options = {
+                featureProjection: mainLizmap.projection,
+                dataProjection: 'EPSG:4326'
+            };
             if (format === 'geojson') {
-                const geoJSON = (new GeoJSON()).writeFeatures(this.featureDrawn);
+                const geoJSON = (new GeoJSON()).writeFeatures(this.featureDrawn, options);
                 Utils.downloadFileFromString(geoJSON, 'application/geo+json', 'export.geojson');
             } else if (format === 'gpx') {
-                const gpx = (new GPX()).writeFeatures(this.featureDrawn);
+                const gpx = (new GPX()).writeFeatures(this.featureDrawn, options);
                 Utils.downloadFileFromString(gpx, 'application/gpx+xml', 'export.gpx');
             } else if (format === 'kml') {
-                const kml = (new KML()).writeFeatures(this.featureDrawn);
+                const kml = (new KML()).writeFeatures(this.featureDrawn, options);
                 Utils.downloadFileFromString(kml, 'application/vnd.google-earth.kml+xml', 'export.kml');
             }
         }
