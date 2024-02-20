@@ -71,6 +71,11 @@ class ProjectConfig
     /**
      * @var mixed
      */
+    protected $warnings;
+
+    /**
+     * @var mixed
+     */
     protected $options;
 
     protected static $cachedProperties = array(
@@ -87,6 +92,7 @@ class ProjectConfig
         'filter_by_polygon',
         'datavizLayers',
         'metadata',
+        'warnings',
     );
 
     /**
@@ -462,6 +468,17 @@ class ProjectConfig
     public function getTooltipLayers()
     {
         return $this->tooltipLayers;
+    }
+
+    /**
+     * Get warnings from the CFG files
+     * If the CFG file has been made with at least with 4.0.0 version.
+     *
+     * @return null|object
+     */
+    public function getProjectCfgWarnings()
+    {
+        return $this->warnings;
     }
 
     /**
