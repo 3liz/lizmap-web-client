@@ -196,7 +196,7 @@ var lizAttributeTable = function() {
                             const tableSelector = '#attribute-layer-table-' + cleanName;
 
                             // Get data and fill attribute table
-                            getDataAndFillAttributeTable(layerName, layerFilter, tableSelector);
+                            getDataAndFillAttributeTable(layerName, layerFilter, tableSelector, false);
 
                             $('#nav-tab-attribute-layer-' + cleanName + ' a' ).tab('show');
 
@@ -292,9 +292,10 @@ var lizAttributeTable = function() {
              * @param layerName
              * @param filter
              * @param tableSelector
+             * @param forceEmptyTable
              * @param callBack
              */
-            function getDataAndFillAttributeTable(layerName, filter, tableSelector, callBack){
+            function getDataAndFillAttributeTable(layerName, filter, tableSelector, forceEmptyTable, callBack){
 
                 let layerConfig = lizMap.config.layers[layerName];
                 const typeName = layerConfig?.shortname || layerConfig?.typename || layerConfig?.name;
@@ -357,6 +358,7 @@ var lizAttributeTable = function() {
                         }));
                     }
                 }
+                if (forceEmptyTable) return buildLayerAttributeDatatable(layerName, tableSelector, [], layerConfig.aliases, layerConfig.types, allColumnsKeyValues, callBack);
 
                 document.body.style.cursor = 'progress';
                 Promise.all(fetchRequests).then(responses => {
@@ -691,7 +693,7 @@ var lizAttributeTable = function() {
                             const tableSelector = '#attribute-layer-table-'+cleanName;
                             $('#attribute-layer-main-'+cleanName+' > div.attribute-layer-content').hide();
 
-                            getDataAndFillAttributeTable(lname, null, tableSelector, () => {
+                            getDataAndFillAttributeTable(lname, null, tableSelector, false, () => {
                                 $('#attribute-layer-main-' + cleanName + ' > div.attribute-layer-content').show();
                                 refreshDatatableSize('#attribute-layer-main-' + cleanName);
                             });
@@ -815,9 +817,10 @@ var lizAttributeTable = function() {
                         var parentLayerName = attributeLayersDic[ cleanName ];
                         var parentLayerId = config.layers[parentLayerName]['id'];
                         var aName = attributeLayersDic[ $(this).val() ];
+                        var pivotId = $(this).attr("data-pivot");
                         lizMap.getLayerFeature(parentLayerName, parentFeatId, function(parentFeat) {
                             var lid = config.layers[aName]['id'];
-                            lizMap.launchEdition( lid, null, {layerId:parentLayerId,feature:parentFeat});
+                            lizMap.launchEdition( lid, null, {layerId:parentLayerId, feature:parentFeat, pivotId:pivotId});
                         });
                         return false;
                     })
@@ -937,7 +940,19 @@ var lizAttributeTable = function() {
                                     lizMap.events.triggerEvent("layerfeatureunselectall",
                                         { 'featureType': attributeLayersDic[cleanName], 'updateDrawing': true}
                                     );
-                                    // Send signal saying edition has been done on pivot
+                                    // Send signal saying edition has been done on pivot and refresh corresponding tables
+                                    var linkedId = lizMap.config.layers[attributeLayersDic[cleanName]]?.id
+                                    if (linkedId) {
+                                        var pivotCfg = lizMap.config.relations.pivot[cId];
+                                        // get layerId of related layer
+                                        var linkedKey = Object.keys(pivotCfg).filter((key)=>{
+                                            return key != linkedId
+                                        })?.[0]
+
+                                        if (linkedKey) {
+                                            cId = linkedKey;
+                                        }
+                                    }
                                     lizMap.events.triggerEvent("lizmapeditionfeaturecreated",
                                         { 'layerId': cId}
                                     );
@@ -1038,19 +1053,30 @@ var lizAttributeTable = function() {
                     var childActive = 'active';
                     for( var lid in layerRelations ) {
                         var relation = layerRelations[lid];
-                        var childLayerConfigA = lizMap.getLayerConfigById(
+                        var referencingLayerConfig = lizMap.getLayerConfigById(
                             relation.referencingLayer,
                             config.layers,
                             'id'
                         );
-                        if( childLayerConfigA
-                            &&  childLayerConfigA[0] in config.attributeLayers
-                        ){
+                        var isNToM = false;
+                        var pivotConfig = null;
+                        var mLayerConfig = null;
+
+                        if (referencingLayerConfig && referencingLayerConfig[0] in config.attributeLayers) {
+                            // check if the renferencing layer is a pivot
+                            mLayerConfig = getPivotLinkedLayerConfiguration(parentLayerId, referencingLayerConfig[1]);
+                            // if so, switch the child layer to the "n_layer" if the n_layer could be displayed in attribute table
+                            if( mLayerConfig && mLayerConfig.config && mLayerConfig.config[0] in config.attributeLayers) {
+                                // store original pivot configuration
+                                pivotConfig = referencingLayerConfig;
+                                isNToM = true;
+                            }
                             childCount+=1;
                             if( childCount > 1)
                                 childActive = '';
-                            var childLayerConfig = childLayerConfigA[1];
-                            var childLayerName = childLayerConfigA[0];
+                            // if the detected relation is n to m, then use mLayer configuration to display the child attribute table
+                            var childLayerConfig = isNToM ? mLayerConfig.config[1] : referencingLayerConfig[1];
+                            var childLayerName = isNToM ? mLayerConfig.config[0] : referencingLayerConfig[0];
                             var childAttributeLayerConfig = config.attributeLayers[childLayerName];
 
                             // Discard if the editor does not want this layer to be displayed in child table
@@ -1077,29 +1103,28 @@ var lizAttributeTable = function() {
                             // Add create child feature button
                             var canCreateChild = false;
                             if( 'editionLayers' in config ){
-                                var editionConfig = lizMap.getLayerConfigById(
-                                    relation.referencingLayer,
-                                    config.editionLayers,
-                                    'layerId'
-                                );
                                 if( childLayerName in config.editionLayers ) {
                                     var al = config.editionLayers[childLayerName];
                                     if( al.capabilities.createFeature == "True" )
                                         canCreateChild = true;
                                 }
+                                // if the m layer is displayed then check also the edition capabilities on pivot
+                                if(canCreateChild && isNToM){
+                                    // check edition capabilities for pivot table
+                                    canCreateChild = pivotConfig[0] in config.editionLayers && config.editionLayers[pivotConfig[0]] && config.editionLayers[pivotConfig[0]].capabilities.createFeature == 'True'
+                                }
                             }
-
                             if( canCreateChild ){
                                 // Add a button to create a new feature for this child layer
                                 let childButtonItem = `
-                                    <button class="btn btn-mini btn-createFeature-attributeTable" value="${lizMap.cleanName(childLayerName)}" title="${lizDict['attributeLayers.toolbar.btn.data.createFeature.title']}">
+                                    <button class="btn btn-mini btn-createFeature-attributeTable" data-pivot="${isNToM ? pivotConfig[1].id : ''}" value="${lizMap.cleanName(childLayerName)}" title="${lizDict['attributeLayers.toolbar.btn.data.createFeature.title']}">
                                     ➕ ${childLayerConfig.title}
                                     </button>
                                 `;
                                 childCreateButtonItems.push(childButtonItem);
 
                                 // Link parent with the selected features of the child
-                                layerLinkButtonItems.push('<li><a href="#' + lizMap.cleanName(childLayerName) + '" class="btn-linkFeatures-attributeTable">' + childLayerConfig.title +'</a></li>' );
+                                layerLinkButtonItems.push('<li><a href="#' + lizMap.cleanName(isNToM ? pivotConfig[0] : childLayerName) + '" class="btn-linkFeatures-attributeTable">' + (isNToM ? pivotConfig[1].title : childLayerConfig.title) +'</a></li>' );
                             }
                         }
                     }
@@ -1161,28 +1186,41 @@ var lizAttributeTable = function() {
                 if( 'relations' in config && parentLayerId in config.relations) {
                     var layerRelations = config.relations[parentLayerId];
                     for (const relation of layerRelations ) {
-                        const childLayerConfigA = lizMap.getLayerConfigById(
+                        var referencingLayerConfig = lizMap.getLayerConfigById(
                             relation.referencingLayer,
                             config.layers,
                             'id'
                         );
 
                         // Fill in attribute table for child
-                        // Discard if the editor does not want this layer to be displayed in child table
-                        if( childLayerConfigA
-                            && config.attributeLayers?.[childLayerConfigA[0]]?.['hideAsChild'] == 'False'
-                        ){
-                            const [childLayerName, childLayerConfig] = childLayerConfigA;
-                            // Generate filter
-                            let filter = '';
-                            if( relation.referencingLayer == childLayerConfig.id ){
-                                filter = '"' + relation.referencingField + '" = ' + "'" + fp[relation.referencedField] + "'";
+                        if( referencingLayerConfig ) {
+                            var isNToM = false, mLayerConfig = null;
+                            // check if the referencingLayer is a pivot table
+                            mLayerConfig = getPivotLinkedLayerConfiguration(parentLayerId, referencingLayerConfig[1]);
+                            if (mLayerConfig) {
+                                // if the realtion is n to m, switch the layer config to the mLayer
+                                referencingLayerConfig = mLayerConfig.config;
+                                isNToM = true;
                             }
-
-                            // Get child table id
-                            const childTableSelector = sourceTable.replace(' table:first', '') + '-' + lizMap.cleanName(childLayerName);
-
-                            getDataAndFillAttributeTable(childLayerName, filter, childTableSelector);
+                            // Discard if the editor does not want this layer to be displayed in child table
+                            if (config.attributeLayers?.[referencingLayerConfig[0]]?.['hideAsChild'] == 'False') {
+                                const [childLayerName, childLayerConfig] = referencingLayerConfig;
+                                // Get child table id
+                                const childTableSelector = sourceTable.replace(' table:first', '') + '-' + lizMap.cleanName(childLayerName);
+                                // Generate filter
+                                let filter = '';
+                                if ( isNToM ) {
+                                    // get feature from pivot
+                                    getPivotWFSFeatures(relation.referencingLayer, mLayerConfig.relation, fp[relation.referencedField]).then((filterString)=>{
+                                        getEditionChildData(childLayerName, filterString, childTableSelector, filterString ? false : true);
+                                    })
+                                } else {
+                                    if( relation.referencingLayer == childLayerConfig.id ){
+                                        filter = '"' + relation.referencingField + '" = ' + "'" + fp[relation.referencedField] + "'";
+                                    }
+                                    getDataAndFillAttributeTable(childLayerName, filter, childTableSelector, false);
+                                }
+                            }
                         }
                     }
                 }
@@ -1344,7 +1382,28 @@ var lizAttributeTable = function() {
                 ){
                     isPivot = true;
                 }
+                var pivotReference = null;
+                // checks if the parent and child are related via pivot
+                if (parentLayerID) {
+                    // means that the table is displayed as a child
+                    var parentLayerConfig = lizMap.getLayerConfigById(parentLayerID);
+                    var fromEditionForm = aTable.startsWith('#attribute-layer-table-') ? false : (aTable.startsWith('#edition-table-') ? true : false);
+                    var highlightedFeature = null;
+                    if (fromEditionForm) {
+                        // get fid of current layer on editing
+                        highlightedFeature = $('#edition-form-container form input[name="liz_featureId"]').val()
 
+                    } else highlightedFeature = config.layers[parentLayerConfig[1].cleanname].highlightedFeature;
+
+                    if (parentLayerConfig && parentLayerConfig[1] && parentLayerConfig[1].cleanname && highlightedFeature) {
+
+                        var childLayerId = lConfig.id;
+                        var pivotId = getPivotIdFromRelatedLayers(parentLayerID, childLayerId);
+                        if (pivotId) {
+                            pivotReference = pivotId + ":" + highlightedFeature;
+                        }
+                    }
+                }
                 // Hidden fields
                 var hiddenFields = [];
                 if( aName in config.attributeLayers
@@ -1392,8 +1451,8 @@ var lizAttributeTable = function() {
                         hiddenFields,
                         lConfig['selectedFeatures'],
                         lConfig['id'],
-                        parentLayerID
-                    );
+                        parentLayerID,
+                        pivotReference);
                     var foundFeatures = ff.foundFeatures;
                     var dataSet = ff.dataSet;
 
@@ -1533,6 +1592,7 @@ var lizAttributeTable = function() {
 
                 } else {
                     $(aTable).show();
+                    refreshDatatableSize('#'+$('#bottom-dock div.bottom-content.active div.attribute-layer-main').attr('id'))
 
                 }
 
@@ -1752,8 +1812,9 @@ var lizAttributeTable = function() {
              * @param selectedFeatures
              * @param layerId
              * @param parentLayerID
+             * @param pivotId
              */
-            function formatDatatableFeatures(atFeatures, isChild, hiddenFields, selectedFeatures, layerId, parentLayerID){
+            function formatDatatableFeatures(atFeatures, isChild, hiddenFields, selectedFeatures, layerId, parentLayerID, pivotId = null){
                 var dataSet = [];
                 var foundFeatures = {};
                 atFeatures.forEach(function(feat) {
@@ -1769,8 +1830,7 @@ var lizAttributeTable = function() {
 
                     if( selectedFeatures && $.inArray( fid, selectedFeatures ) != -1 )
                         line.lizSelected = 'a';
-
-                    line['featureToolbar'] = `<lizmap-feature-toolbar value="${layerId + '.' + fid}" ${isChild ? `parent-layer-id="${parentLayerID}"`: ''}></lizmap-feature-toolbar>`;
+                    line['featureToolbar'] = `<lizmap-feature-toolbar value="${layerId + '.' + fid}" ${isChild ? `parent-layer-id="${parentLayerID}"`: ''} ${pivotId ? `pivot-layer="${pivotId}"`: ''}></lizmap-feature-toolbar>`;
 
                     // Build table lines
                     for (var idx in feat.properties){
@@ -1848,9 +1908,10 @@ var lizAttributeTable = function() {
              * @param childLayerName
              * @param filter
              * @param childTable
+             * @param forceEmptyTable
              */
-            function getEditionChildData( childLayerName, filter, childTable ){
-                getDataAndFillAttributeTable(childLayerName, filter, childTable, () => {
+            function getEditionChildData( childLayerName, filter, childTable, forceEmptyTable = false ){
+                getDataAndFillAttributeTable(childLayerName, filter, childTable, forceEmptyTable, () => {
                     // Check edition capabilities
                     var canCreate = false;
                     var canEdit = false;
@@ -1889,7 +1950,10 @@ var lizAttributeTable = function() {
                                         lizMap.getLayerFeature(parentLayerName, parentFeatId, function (parentFeat) {
                                             var parentLayerId = config.layers[lizMap.getLayerNameByCleanName(parentLayerName)]['id'];
                                             var lid = config.layers[lizMap.getLayerNameByCleanName(layerName)]['id'];
-                                            lizMap.launchEdition(lid, null, { layerId: parentLayerId, feature: parentFeat });
+                                            // n to m relations check
+                                            var pivotId = getPivotIdFromRelatedLayers(lid, parentLayerId);
+
+                                            lizMap.launchEdition(lid, null, { layerId: parentLayerId, feature: parentFeat, pivotId: pivotId });
                                         });
                                         return false;
                                     });
@@ -2959,13 +3023,51 @@ var lizAttributeTable = function() {
                                 if ( (featureType in config.attributeLayers) && parentLayerName == getParentLayerConfig[0] ) {
                                     // get featureType layer config
                                     var featureTypeConfig = config.attributeLayers[featureType];
+
+                                    // n to m checks
+                                    var pivotId = getPivotIdFromRelatedLayers(formLayerId, featureTypeConfig.layerId)
+
                                     //get relation
                                     var relation = getRelationInfo(formLayerId,featureTypeConfig.layerId);
-                                    if( relation != null ) {
+
+                                    if( relation != null || pivotId) {
                                         lizMap.getLayerFeature(parentLayerName, formFeatureId, function(feat) {
                                             var fp = feat.properties;
-                                            filter = '"' + relation.referencingField + '" = ' + "'" + fp[relation.referencedField] + "'";
-                                            getEditionChildData( featureType, filter, zTable);
+                                            if (pivotId) {
+                                                const currentPivot = config.relations.pivot[pivotId];
+                                                const pivotConfig =  lizMap.getLayerConfigById(
+                                                    pivotId,
+                                                    config.layers,
+                                                    'id'
+                                                );
+                                                if( pivotConfig && pivotConfig[1] ){
+
+                                                    const referencedPivotField = currentPivot[formLayerId];
+                                                    const referencingPivotField = currentPivot[featureTypeConfig.layerId];
+                                                    const referencedFieldForFilter = config.relations[featureTypeConfig.layerId].filter((fil)=>{
+                                                        return fil.referencingLayer == pivotId
+                                                    })[0]?.referencedField;
+
+                                                    const childReferencedField = config.relations[featureTypeConfig.layerId].filter((rel)=>{
+                                                        return rel.referencingLayer == pivotId
+                                                    })[0]?.referencedField;
+
+                                                    if(referencedPivotField && referencingPivotField && referencedFieldForFilter && childReferencedField){
+                                                        const pWfsParam = {
+                                                            referencedPivotField : referencedPivotField,
+                                                            referencingPivotField : referencingPivotField,
+                                                            referencedFieldForFilter : referencedFieldForFilter
+                                                        }
+                                                        getPivotWFSFeatures(pivotId, pWfsParam, fp[childReferencedField]).then((filterString)=>{
+                                                            getEditionChildData(featureType, filterString, zTable, filterString ? false : true);
+                                                        })
+                                                    }
+                                                }
+                                            } else {
+                                                var filter = '"' + relation.referencingField + '" = ' + "'" + fp[relation.referencedField] + "'";
+                                                getEditionChildData( featureType, filter, zTable);
+                                            }
+
                                         });
                                     }
                                 }
@@ -2978,7 +3080,7 @@ var lizAttributeTable = function() {
                         // Else refresh main table with no filter
                         else{
                             // If not pivot
-                            getDataAndFillAttributeTable(featureType, null, zTable);
+                            getDataAndFillAttributeTable(featureType, null, zTable, false);
                         }
                     }
                 });
@@ -3007,6 +3109,144 @@ var lizAttributeTable = function() {
 
                 // Width : adapt columns size
                 dtable.DataTable().tables().columns.adjust();
+            }
+
+            /**
+             *
+             * @param nlayerId
+             * @param referencingLayerConfig
+             */           
+            function getPivotLinkedLayerConfiguration(nlayerId, referencingLayerConfig){
+                const refAttributeLayerConf = lizMap.getLayerConfigById( referencingLayerConfig.id, lizMap.config.attributeLayers, 'layerId' );
+
+                if (refAttributeLayerConf && refAttributeLayerConf[1]?.pivot == 'True' && config.relations?.pivot && referencingLayerConfig.id in config.relations.pivot && nlayerId in config.relations.pivot[referencingLayerConfig.id]){
+                    // get referenced layer for the parent layer
+                    const referencedLayer = Object.keys(config.relations.pivot[referencingLayerConfig.id]).filter((k)=>{ return k != nlayerId})
+                    var mLayerConfig = null;
+                    if (referencedLayer.length == 1) {
+                        mLayerConfig = lizMap.getLayerConfigById(
+                            referencedLayer[0],
+                            config.layers,
+                            'id'
+                        );
+
+                        if (mLayerConfig) {
+                            var currentPivot = config.relations.pivot[referencingLayerConfig.id];
+                            if (currentPivot) {
+                                const referencedPivotField = currentPivot[nlayerId];
+                                const referencingPivotField = currentPivot[referencedLayer[0]];
+                                const referencedFieldForFilter = config.relations[mLayerConfig[1].id].filter((fil)=>{
+                                    return fil.referencingLayer == referencingLayerConfig.id
+                                })[0]?.referencedField;
+
+                                if (referencedPivotField && referencingPivotField && referencedFieldForFilter) {
+                                    return {
+                                        config:mLayerConfig,
+                                        relation:{
+                                            referencedPivotField:referencedPivotField,
+                                            referencingPivotField:referencingPivotField,
+                                            referencedFieldForFilter:referencedFieldForFilter
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                return null;
+            }
+
+            /**
+             *
+             * @param nlayerId
+             * @param mLayerId
+             */ 
+            function getPivotIdFromRelatedLayers(nlayerId, mLayerId){
+                // returns the pivotId starting from the related layers
+                // this method assumes that the mLayer and nLayer is related with n to m relation via a single pivot
+                // i.e. there is not n to m relation duplication
+                if (config.relations.pivot) {
+                    var pivotId = Object.keys(config.relations.pivot).filter((key)=>{
+                        return config.relations.pivot[key][mLayerId] != null && config.relations.pivot[key][nlayerId] != null;
+                    })[0] //<--- assumes that the couple father-childs belongs to a single pivot
+
+                    if (pivotId) {
+                        const refAttributeLayerConf = lizMap.getLayerConfigById( pivotId, lizMap.config.attributeLayers, 'layerId' );
+                        if(refAttributeLayerConf && refAttributeLayerConf[1]?.pivot == 'True'){
+                            // check if pivot is in relations for both layers
+                            const validRelation = [nlayerId,mLayerId].every((layerId)=>{
+                                return config.relations[layerId] && config.relations[layerId].filter((rlayer)=>{ return rlayer.referencingLayer == pivotId}).length == 1
+                            })
+                            if (validRelation)
+                                return pivotId;
+                        }
+                    }
+                }
+                return null;
+            }
+
+            /**
+             *
+             * @param pivotId
+             * @param wfsFields
+             * @param referencedFieldValue
+             */ 
+            async function getPivotWFSFeatures(pivotId, wfsFields, referencedFieldValue){
+
+                const pivotConfig =  lizMap.getLayerConfigById(
+                    pivotId,
+                    config.layers,
+                    'id'
+                );
+
+                let filterString = "", feats = {};
+                if( pivotConfig && pivotConfig[1] ){
+                    // the field on the pivot linked to the nLayer
+                    const referencedPivotField = wfsFields.referencedPivotField;
+                    // the field on the pivot linked to the mLayer
+                    const referencingPivotField = wfsFields.referencingPivotField;
+                    // the field on the mLayer linked the the pivot
+                    const referencedFieldForFilter = wfsFields.referencedFieldForFilter;
+
+                    const typeName = pivotConfig[1].typename;
+                    const wfsParams = {
+                        TYPENAME: typeName,
+                        GEOMETRYNAME: 'extent'
+                    };
+                    wfsParams['EXP_FILTER'] = '"' + referencedPivotField + '" = ' + "'" + referencedFieldValue + "'";
+                    if (config.options?.limitDataToBbox == 'True') {
+                        wfsParams['BBOX'] = lizMap.mainLizmap.map.getView().calculateExtent();
+                        wfsParams['SRSNAME'] = lizMap.mainLizmap.map.getView().getProjection().getCode();
+                    }
+
+                    const getFeatureRequest = lizMap.mainLizmap.wfs.getFeature(wfsParams);
+
+                    let results = await getFeatureRequest;
+
+                    if(results && results.features){
+
+                        const features = results.features;
+
+                        let filArray = [];
+                        features.forEach((feat)=>{
+                            var fid = feat.id.split('.')[1];
+                            feats[fid] = feat;
+                            if (feat.properties && feat.properties[referencingPivotField]) {
+                                filArray.push(feat.properties[referencingPivotField])
+                            }
+                        })
+                        if (filArray.length) {
+                            var fil = filArray.map(function(val){
+                                return '"'+referencedFieldForFilter+'" = \''+val+'\'';
+                            })
+                            filterString = fil.join(" OR ");
+                        }
+                    }
+
+                }
+                pivotConfig[1].features = feats;
+
+                return filterString;
             }
 
             lizMap.refreshDatatableSize = function(container){
@@ -3240,9 +3480,10 @@ var lizAttributeTable = function() {
                                     }
                                     var parentLayerId = layerId;
                                     var aName = attributeLayersDic[ $(this).val() ];
+                                    var pivotId = $(this).attr("data-pivot");
                                     lizMap.getLayerFeature(featureType, fid, function(parentFeat) {
                                         var lid = config.layers[aName]['id'];
-                                        lizMap.launchEdition( lid, null, {layerId:parentLayerId, feature:parentFeat});
+                                        lizMap.launchEdition( lid, null, {layerId:parentLayerId, feature:parentFeat, pivotId: pivotId});
                                     });
                                     return false;
                                 })
@@ -3277,16 +3518,32 @@ var lizAttributeTable = function() {
                                     var rLayerId = r.referencingLayer;
                                     var rGetLayerConfig = lizMap.getLayerConfigById( rLayerId );
                                     if ( rGetLayerConfig ) {
-                                        var rLayerName = rGetLayerConfig[0];
-                                        var rConfigLayer = rGetLayerConfig[1];
-                                        var filter = '"' + r.referencingField + '" = ' + "'" + fp[r.referencedField] + "'";
-                                        // Get child table id
-                                        var parent_and_child = lizMap.cleanName(featureType) + '-' + lizMap.cleanName(rLayerName);
-                                        var childTable = '#edition-table-' + parent_and_child;
+                                        // check if relation is nToM
+                                        var isNToM = false, mLayerConfig = null;
+                                        // check if the referencingLayer is a pivot table
+                                        mLayerConfig = getPivotLinkedLayerConfiguration(layerId, rGetLayerConfig[1]);
+                                        if (mLayerConfig) {
+                                            // if the realtion is n to m, switch the layer config to the mLayer
+                                            rGetLayerConfig = mLayerConfig.config;
+                                            isNToM = true;
+                                        }
 
+                                        let rLayerName = rGetLayerConfig[0];
+                                        let rConfigLayer = rGetLayerConfig[1];
+                                        let filter = "";
+                                        // Get child table id
+                                        let parent_and_child = lizMap.cleanName(featureType) + '-' + lizMap.cleanName(rLayerName);
+                                        let childTable = '#edition-table-' + parent_and_child;
                                         // Fill in attribute table for child
-                                        if( rLayerName in config.attributeLayers ) {
-                                            getEditionChildData( rLayerName, filter, childTable );
+                                        if(rLayerName in config.attributeLayers){
+                                            if (isNToM) {
+                                                getPivotWFSFeatures(r.referencingLayer, mLayerConfig.relation, fp[r.referencedField]).then((filterString)=>{
+                                                    getEditionChildData(rLayerName, filterString, childTable, filterString ? false : true);
+                                                })
+                                            } else {
+                                                filter = '"' + r.referencingField + '" = ' + "'" + fp[r.referencedField] + "'";
+                                                getEditionChildData( rLayerName, filter, childTable );
+                                            }
                                         }
 
                                         // Try to move the tables inside the parent form
