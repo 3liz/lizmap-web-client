@@ -287,8 +287,7 @@ only screen and (                   max-device-height : 640px) {
 
   #docks-wrapper{
     left: -1px;
-    width: 80%;
-    padding-top: 45px;
+    width: 100%;
     box-sizing: border-box;
   }
 
@@ -412,8 +411,8 @@ only screen and (                   max-device-height : 640px) {
     background-image: url(images/glyphicons-halflings-white.png);
   }
 
-  #right-dock{
-    margin: 0;
+  #dock{
+    margin-top: 45px;
   }
 
   .digitizing .btn {
