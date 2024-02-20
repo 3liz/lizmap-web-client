@@ -36,7 +36,7 @@ test.describe('Viewport devicePixelRatio 1', () => {
         // Check that the WMS Max Size has been well overwrite
         expect(await page.evaluate(() => lizMap.mainLizmap.initialConfig.options.wmsMaxHeight)).toBe(950);
         expect(await page.evaluate(() => window.devicePixelRatio)).toBe(1);
-        expect(await page.evaluate(() => lizMap.mainLizmap.map.getSize())).toStrictEqual([870,575]);
+        expect(await page.evaluate(() => lizMap.mainLizmap.map.getSize())).toStrictEqual([870, 575]);
         await page.unroute('**/service/getProjectConfig*')
 
         // Catch GetMaps request;
@@ -46,7 +46,7 @@ test.describe('Viewport devicePixelRatio 1', () => {
             if (request.url().includes('GetMap')) {
                 GetMaps.push(request.url());
             }
-        }, {times: 4});
+        }, { times: 4 });
 
         // Activate world layer
         await page.getByLabel('world').check();
@@ -56,7 +56,7 @@ test.describe('Viewport devicePixelRatio 1', () => {
 
         // Check GetMap requests
         expect(GetMaps).toHaveLength(4);
-        for(const GetMap of GetMaps) {
+        for (const GetMap of GetMaps) {
             expect(GetMap).toContain('&WIDTH=790&')
             expect(GetMap).toContain('&HEIGHT=575&')
             expect(GetMap).toContain('&DPI=96&')
@@ -105,7 +105,7 @@ test.describe('Viewport devicePixelRatio 2', () => {
         // Check that the WMS Max Size has been well overwrite
         expect(await page.evaluate(() => lizMap.mainLizmap.initialConfig.options.wmsMaxHeight)).toBe(1900);
         expect(await page.evaluate(() => window.devicePixelRatio)).toBe(2);
-        expect(await page.evaluate(() => lizMap.mainLizmap.map.getSize())).toStrictEqual([870,620]);
+        expect(await page.evaluate(() => lizMap.mainLizmap.map.getSize())).toStrictEqual([870, 620]);
         await page.unroute('**/service/getProjectConfig*')
 
         // Catch GetMaps request;
@@ -115,7 +115,7 @@ test.describe('Viewport devicePixelRatio 2', () => {
             if (request.url().includes('GetMap')) {
                 GetMaps.push(request.url());
             }
-        }, {times: 4});
+        }, { times: 4 });
 
         // Activate world layer
         await page.getByLabel('world').check();
@@ -125,11 +125,63 @@ test.describe('Viewport devicePixelRatio 2', () => {
 
         // Check GetMap requests
         expect(GetMaps).toHaveLength(4);
-        for(const GetMap of GetMaps) {
+        for (const GetMap of GetMaps) {
             expect(GetMap).toContain('&WIDTH=870&')
             expect(GetMap).toContain('&HEIGHT=620&')
             expect(GetMap).toContain('&DPI=180&')
         }
         await page.unroute('**/service*')
+    })
+})
+
+test.describe('Viewport mobile', () => {
+    test.use({
+        hasTouch: true,
+        isMobile: true,
+    });
+    test('Display docks', async ({ page }) => {
+        // atlas project
+        const url = '/index.php/view/map/?repository=testsrepository&project=atlas'
+        // Go to the map
+        await page.goto(url, { waitUntil: 'networkidle' });
+
+        // Check menu and menu toggle button
+        await expect(await page.locator('#mapmenu')).not.toBeInViewport();
+        await expect(await page.locator('#menuToggle')).toBeVisible();
+        await expect(await page.locator('#menuToggle')).not.toHaveClass('opened');
+        await page.locator('#menuToggle').click();
+
+        // Open menu
+        await expect(await page.locator('#menuToggle')).toHaveClass('opened');
+        await expect(await page.locator('#mapmenu')).toBeInViewport();
+        await expect(await page.getByRole('link', { name: 'atlas' })).toBeVisible();
+
+        // Open atlas
+        await page.getByRole('link', { name: 'atlas', exact: true }).click();
+        await expect(await page.locator('#menuToggle')).not.toHaveClass('opened');
+        await expect(await page.locator('#mapmenu')).not.toBeInViewport();
+        await expect(await page.locator('#right-dock')).toBeVisible();
+        await expect(await page.locator('#right-dock')).toBeInViewport();
+
+        // Choose a feature and check getFeatureInfo
+        let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request?.postData().includes('GetFeatureInfo'));
+        await page.locator('#liz-atlas-select').selectOption('2');
+        let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        await expect(await getFeatureInfoResponse.headerValue('content-type')).toContain('text/html');
+        await expect(await page.locator('#liz-atlas-item-detail .lizmapPopupContent')).toBeInViewport();
+        await expect(await page.locator('#liz-atlas-item-detail .lizmapPopupContent')).toContainText('MOSSON');
+        // Close atlas
+        await page.locator('#right-dock-close').click();
+        await expect(await page.locator('#right-dock')).not.toBeInViewport();
+        await expect(await page.locator('#right-dock')).not.toBeVisible();
+
+        // Test permalink (mini-dock)
+        await expect(await page.locator('#permalink')).not.toBeVisible();
+        await page.locator('#menuToggle').click();
+        await page.getByRole('link', { name: 'Permalink' }).click();
+        await expect(await page.locator('#permalink')).toBeVisible();
+        await expect(await page.locator('#permalink')).toBeInViewport();
+        await expect(await page.locator('#tab-share-permalink')).toBeVisible();
     })
 })
