@@ -16,6 +16,53 @@ use Lizmap\Request\RemoteStorageRequest;
 class mediaCtrl extends jController
 {
     /**
+     * Check if cache can be used because it is impossible
+     * to use cache on other request type that GET or HEAD.
+     *
+     * @return bool
+     */
+    protected function canBeCached()
+    {
+        return in_array($_SERVER['REQUEST_METHOD'], array('GET', 'HEAD'));
+    }
+
+    /**
+     * @param jResponse $resp
+     * @param string    $etag
+     *
+     * @return jResponse the response updated
+     */
+    protected function setEtagCacheHeaders($resp, $etag)
+    {
+        if ($this->canBeCached()) {
+            $resp->addHttpHeader('ETag', $etag);
+            $resp->addHttpHeader('Cache-Control', 'no-cache');
+        }
+
+        return $resp;
+    }
+
+    protected function defaultIllustrationPath()
+    {
+        // default illustration
+        $themePath = jApp::wwwPath().'themes/'.jApp::config()->theme.'/';
+
+        return $themePath.'css/img/250x250_mappemonde.jpg';
+    }
+
+    protected function defaultIllustrationEtag()
+    {
+        if ($this->canBeCached()) {
+            $etag = 'default-illustration-';
+            $etag .= filemtime($this->defaultIllustrationPath());
+
+            return sha1($etag);
+        }
+
+        return '';
+    }
+
+    /**
      * Returns error.
      *
      * @param jResponseRedirect $message
@@ -334,7 +381,24 @@ class mediaCtrl extends jController
         }
         $rep->mimeType = $mime;
 
+        // Etag header and cache control
+        $etag = '';
+        if ($this->canBeCached()) {
+            $etag = 'illustration';
+            $etag .= '-'.$lrep->getKey().'~'.$lproj->getKey();
+            $etag .= '-'.$type;
+            $etag .= '-'.filemtime($rep->fileName);
+            $etag = sha1($etag);
+        }
+
+        if ($etag !== '' && $rep->isValidCache(null, $etag)) {
+            return $rep;
+        }
+
         $rep->setExpires('+1 days');
+        if ($etag !== '') {
+            $this->setEtagCacheHeaders($rep, $etag);
+        }
 
         return $rep;
     }
@@ -351,12 +415,18 @@ class mediaCtrl extends jController
         $rep->doDownload = false;
 
         // default illustration
-        $themePath = jApp::wwwPath().'themes/'.jApp::config()->theme.'/';
-        $rep->fileName = $themePath.'css/img/250x250_mappemonde.jpg';
+        $rep->fileName = $this->defaultIllustrationPath();
         $rep->outputFileName = 'lizmap_mappemonde.jpg';
         $rep->mimeType = 'image/jpeg';
+        $etag = $this->defaultIllustrationEtag();
+        if ($etag !== '' && $rep->isValidCache(null, $etag)) {
+            return $rep;
+        }
 
         $rep->setExpires('+7 days');
+        if ($etag !== '') {
+            $this->setEtagCacheHeaders($rep, $etag);
+        }
 
         return $rep;
     }
