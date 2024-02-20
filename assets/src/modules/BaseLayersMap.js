@@ -75,6 +75,9 @@ export default class BaseLayersMap extends olMap {
             target: 'baseLayersOlMap'
         });
 
+        // Disable High DPI for requests
+        this._hidpi = false;
+
         // Ratio between WMS single tiles and map viewport
         this._WMSRatio = 1.1;
 
@@ -84,8 +87,8 @@ export default class BaseLayersMap extends olMap {
             mainLizmap.initialConfig.options.wmsMaxHeight,
         ];
 
-        // Get pixel ratio
-        const pixelRatio = this.pixelRatio_;
+        // Get pixel ratio, if High DPI is disabled do not use device pixel ratio
+        const pixelRatio = this._hidpi ? this.pixelRatio_ : 1;
 
         const useTileWms = this.getSize().reduce(
             (r /*accumulator*/, x /*currentValue*/, i /*currentIndex*/) => r || Math.ceil(x*this._WMSRatio*pixelRatio) > wmsMaxSize[i],
@@ -200,6 +203,7 @@ export default class BaseLayersMap extends olMap {
                             url: mainLizmap.serviceURL,
                             serverType: 'qgis',
                             ratio: WMSRatio,
+                            hidpi: this._hidpi,
                             params: {
                                 LAYERS: node.wmsName,
                                 FORMAT: node.layerConfig.imageFormat,
@@ -233,7 +237,7 @@ export default class BaseLayersMap extends olMap {
                                     TILED: 'true'
                                 },
                                 wrapX: false, // do not reused across the 180° meridian.
-                                //hidpi: false, pixelRatio is used in useTileWms and customTileGrid definition
+                                hidpi: this._hidpi, // pixelRatio is used in useTileWms and customTileGrid definition
                             })
                         });
 
@@ -392,6 +396,7 @@ export default class BaseLayersMap extends olMap {
                             projection: qgisProjectProjection,
                             serverType: 'qgis',
                             ratio: this._WMSRatio,
+                            hidpi: this._hidpi,
                             params: {
                                 LAYERS: baseLayerState.itemState.wmsName,
                                 FORMAT: baseLayerState.layerConfig.imageFormat,
@@ -416,7 +421,7 @@ export default class BaseLayersMap extends olMap {
                                     TILED: 'true'
                                 },
                                 wrapX: false, // do not reused across the 180° meridian.
-                                //hidpi: false, pixelRatio is used in useTileWms and customTileGrid definition
+                                hidpi: this._hidpi, // pixelRatio is used in useTileWms and customTileGrid definition
                             })
                         });
                     }
