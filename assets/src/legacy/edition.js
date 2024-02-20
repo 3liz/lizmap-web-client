@@ -42,6 +42,8 @@ var lizEdition = function() {
         this.backToParent = false;
         /** @member {[Feature, FormData][]} new features to save on submit (features created after a split) */
         this.newfeatures = [];
+        /**@member {string} pivot tell if the parent is in n to m relation with the child*/
+        this.pivot = null;
     }
     FeatureEditionData.prototype = {
         setParentToEditAfterSave: function (parent) {
@@ -609,14 +611,38 @@ var lizEdition = function() {
      *
      * @param parentLayerId
      * @param childLayerId
+     * @param pivotId
      */
-    function getRelationInfo(parentLayerId,childLayerId){
+    function getRelationInfo(parentLayerId, childLayerId, pivotId){
         if( 'relations' in config && parentLayerId in config.relations) {
-            var layerRelations = config.relations[parentLayerId];
-            for( var lridx in layerRelations ) {
-                var relation = layerRelations[lridx];
-                if (relation.referencingLayer == childLayerId) {
-                    return relation;
+            if (pivotId) {
+                const pivotAttributeLayerConf = lizMap.getLayerConfigById( pivotId, lizMap.config.attributeLayers, 'layerId' );
+                if(pivotAttributeLayerConf && pivotAttributeLayerConf[1]?.pivot == 'True'){
+                    var pivot = config.relations.pivot[pivotId]
+                    if (pivot) {
+                        // validate pivot reference
+                        var validRelation = true;
+                        Object.keys(pivot).forEach((k)=>{
+                            if(validRelation){
+                                if(k == parentLayerId || k == childLayerId){
+                                    var pvRelation = config.relations[k] || [];
+                                    var pr = pvRelation.filter((rel)=>{
+                                        return rel.referencingLayer == pivotId;
+                                    })
+                                    if(pr.length == 0) validRelation = false;
+                                } else validRelation = false;
+                            }
+                        })
+                        if(validRelation) return pivot;
+                    }
+                }
+            } else {
+                var layerRelations = config.relations[parentLayerId];
+                for( var lridx in layerRelations ) {
+                    var relation = layerRelations[lridx];
+                    if (relation.referencingLayer == childLayerId) {
+                        return relation;
+                    }
                 }
             }
         }
@@ -1256,11 +1282,12 @@ var lizEdition = function() {
         if (aParent != null && ('layerId' in aParent) && ('feature' in aParent)) {
             var parentLayerId = aParent['layerId'];
             var parentFeat = aParent['feature'];
+            var pivotId = aParent['pivotId']
             if ('relations' in config &&
                 parentLayerId in config.relations) {
-                var relation = getRelationInfo(parentLayerId, aLayerId);
-                if (relation != null &&
-                    relation.referencingLayer == aLayerId
+                var relation = getRelationInfo(parentLayerId, aLayerId, pivotId);
+                if (relation != null && (pivotId ||
+                    relation.referencingLayer == aLayerId)
                 ) {
                     // the given parent information corresponds to a real parent
                     // of the feature we want to edit, we take care about it
@@ -1274,6 +1301,7 @@ var lizEdition = function() {
                             parentInfo = editionLayer.currentFeature;
                             parentInfo.relation = relation;
                             parentInfo.feature = parentFeat;
+                            if (pivotId) parentInfo.pivot = pivotId;
                             editedFeature.setParentToEditAfterSave(parentInfo);
                             // and clear edition context
                             finishEdition();
@@ -1283,6 +1311,7 @@ var lizEdition = function() {
                     if (!parentInfo) {
                         // let's store parent data into a FeatureEditionData
                         parentInfo = new FeatureEditionData(parentLayerId, parentFeat, relation);
+                        if (pivotId) parentInfo.pivot = pivotId;
                         editedFeature.parent = parentInfo;
                     }
                 }
@@ -1538,42 +1567,65 @@ var lizEdition = function() {
                 var relation = parentInfo['relation'];
                 var relationRefField = relation.referencingField;
                 var parentFeatProp = parentInfo['feature'].properties[relation.referencedField];
+                var pivot = parentInfo.pivot;
+                // link feature only when the user is creating a new feature (avoid duplicate associations on pivot)
+                if (pivot && editionType == 'createFeature') {
+                    // get referencing field
+                    var referencedField = config.relations[parentInfo.layerId].filter((rel) => {
+                        return rel.referencingLayer == pivot;
+                    })[0]?.referencedField
+                    if (referencedField){
+                        var parentLayerConf = lizMap.getLayerConfigById(parentInfo.layerId);
+                        if(parentLayerConf[1]){
+                            // add hidden input for manage feature link
+                            var hiddenInput = $('<input type="hidden"></input>')
+                                .attr('id', pivot+'_hidden')
+                                .attr('name', "liz_pivot")
+                                .attr('value', pivot+":"+parentInfo.layerId+":"+parentInfo['feature'].properties[referencedField]);
+                            form.find('div.jforms-hiddens').append(hiddenInput);
+                            var futureLinkInfo = '<div class="control-group"><p id="edition-link-pivot">'+lizDict['edition.link.pivot.add'].replace('%f','<b>'+parentInfo['feature'].properties[referencedField]+'</b>').replace("%l",'<b>'+parentLayerConf[1].title+'</b>')+'</p></div>';
+                            form.find(".control-group").last().append(futureLinkInfo);
+                        }
 
-                var select = form.find('select[name="'+relationRefField+'"]');
-                if( select.length == 1 ){
-                    // Disable the select, the value will be stored in an hidden input
-                    select.val(parentFeatProp)
-                        .attr('disabled','disabled');
-                    // Create hidden input to store value because the select is disabled
-                    var hiddenInput = $('<input type="hidden"></input>')
-                        .attr('id', select.attr('id')+'_hidden')
-                        .attr('name', relationRefField)
-                        .attr('value', parentFeatProp);
-                    form.find('div.jforms-hiddens').append(hiddenInput);
-                    // Disable required constraint
-                    jFormsJQ.getForm(form.attr('id'))
-                        .getControl(relationRefField)
-                        .required=false;
+                    }
                 } else {
-                    var input = form.find('input[name="'+relationRefField+'"]');
-                    if( input.length == 1 && input.attr('type') != 'hidden'){
+                    var select = form.find('select[name="'+relationRefField+'"]');
+                    if( select.length == 1 ){
                         // Disable the select, the value will be stored in an hidden input
-                        input.val(parentFeatProp)
+                        select.val(parentFeatProp)
                             .attr('disabled','disabled');
                         // Create hidden input to store value because the select is disabled
                         var hiddenInput = $('<input type="hidden"></input>')
-                            .attr('id', input.attr('id')+'_hidden')
+                            .attr('id', select.attr('id')+'_hidden')
                             .attr('name', relationRefField)
                             .attr('value', parentFeatProp);
                         form.find('div.jforms-hiddens').append(hiddenInput);
                         // Disable required constraint
-                        jFormsJQ.getForm($('#edition-form-container form').attr('id'))
+                        jFormsJQ.getForm(form.attr('id'))
                             .getControl(relationRefField)
                             .required=false;
+                    } else {
+                        var input = form.find('input[name="'+relationRefField+'"]');
+                        if( input.length == 1 && input.attr('type') != 'hidden'){
+                            // Disable the select, the value will be stored in an hidden input
+                            input.val(parentFeatProp)
+                                .attr('disabled','disabled');
+                            // Create hidden input to store value because the select is disabled
+                            var hiddenInput = $('<input type="hidden"></input>')
+                                .attr('id', input.attr('id')+'_hidden')
+                                .attr('name', relationRefField)
+                                .attr('value', parentFeatProp);
+                            form.find('div.jforms-hiddens').append(hiddenInput);
+                            // Disable required constraint
+                            jFormsJQ.getForm($('#edition-form-container form').attr('id'))
+                                .getControl(relationRefField)
+                                .required=false;
+                        }
+                        else
+                            input.val(parentFeatProp);
                     }
-                    else
-                        input.val(parentFeatProp);
                 }
+
             }
 
             // Create combobox based on RelationValue with fieldEditable
@@ -2180,9 +2232,23 @@ var lizEdition = function() {
         if ( 'shortname' in configLayer && configLayer.shortname != '' )
             typeName = configLayer.shortname;
 
+        // check if the layer has n to m relations
+        var hasNToMRelations = false, isPivot = !!lizMap.config?.relations?.pivot?.[aLayerId];
+        if(lizMap.config?.relations?.[aLayerId]){
+            hasNToMRelations = lizMap.config.relations[aLayerId].some((el)=>{
+                const pivotAttributeLayerConf = lizMap.getLayerConfigById( el.referencingLayer, lizMap.config.attributeLayers, 'layerId' );
+                return lizMap.config.relations.pivot && lizMap.config.relations.pivot[el.referencingLayer] != null && pivotAttributeLayerConf[1]?.pivot == 'True'
+            })
+        }
         var deleteConfirm = lizDict['edition.confirm.delete'];
-        if ( aMessage )
-            deleteConfirm += '\n' + aMessage;
+
+        if(aMessage){
+            if(hasNToMRelations || isPivot){
+                deleteConfirm = aMessage;
+            } else {
+                deleteConfirm += '\n' + aMessage;
+            }
+        }
 
         if ( !confirm( deleteConfirm ) )
             return false;
@@ -2190,7 +2256,8 @@ var lizEdition = function() {
         var eService = lizUrls.edition + '?' + new URLSearchParams(lizUrls.params);
         $.get(eService.replace('getFeature','deleteFeature'),{
             layerId: aLayerId,
-            featureId: aFeatureId
+            featureId: aFeatureId,
+            linkedRecords: hasNToMRelations ? 'ntom' : ''
         }, function(data){
             addEditionMessage( data, 'info', true);
 

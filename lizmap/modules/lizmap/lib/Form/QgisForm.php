@@ -1283,9 +1283,10 @@ class QgisForm implements QgisFormControlsInterface
     /**
      * Delete the feature from the database.
      *
-     * @param mixed $feature
+     * @param mixed               $feature
+     * @param null|\jDbConnection $cnx     DBConnection, passed along QGISVectorLayer deleteFeature method
      */
-    public function deleteFromDb($feature)
+    public function deleteFromDb($feature, $cnx = null)
     {
         if (!$this->dbFieldsInfo) {
             throw new \Exception('Delete from database can\'t be done for the layer "'.$this->layer->getName().'"!');
@@ -1311,7 +1312,7 @@ class QgisForm implements QgisFormControlsInterface
         if ($event->allResponsesByKeyAreFalse('cancelDelete') === false) {
             return 0;
         }
-        $result = $this->layer->deleteFeature($feature, $loginFilteredLayers);
+        $result = $this->layer->deleteFeature($feature, $loginFilteredLayers, $cnx);
         $this->appContext->eventNotify('LizmapEditionFeaturePostDelete', $eventParams);
 
         return $result;

@@ -28,6 +28,8 @@ export default class FeatureToolbar extends HTMLElement {
         super();
 
         [this._layerId, this._fid] = this.getAttribute('value').split('.');
+        [this._pivotLayerId, this._parentFeatureId] = (this.getAttribute('pivot-layer') && this.getAttribute('pivot-layer').split(':') ) || [null, null];
+        [this._pivotType, this._pivotLayerConfig] = this._pivotLayerId ? lizMap.getLayerConfigById(this._pivotLayerId) : [null, null];
         [this._featureType, this._layerConfig] = lizMap.getLayerConfigById(this.layerId);
         this._typeName = this._layerConfig?.shortname || this._layerConfig?.typename || this._layerConfig?.name;
         this._parentLayerId = this.getAttribute('parent-layer-id');
@@ -49,8 +51,8 @@ export default class FeatureToolbar extends HTMLElement {
             <button type="button" class="btn btn-mini feature-zoom ${this.getAttribute('crs') || (this.attributeTableConfig && this.hasGeometry) ? '' : 'hide'}" @click=${() => this.zoom()} title="${lizDict['attributeLayers.btn.zoom.title']}"><i class="icon-zoom-in"></i></button>
             <button type="button" class="btn btn-mini feature-center ${this.getAttribute('crs') || (this.attributeTableConfig && this.hasGeometry) ? '' : 'hide'}"  @click=${() => this.center()} title="${lizDict['attributeLayers.btn.center.title']}"><i class="icon-screenshot"></i></button>
             <button type="button" class="btn btn-mini feature-edit ${this.isLayerEditable && this._isFeatureEditable ? '' : 'hide'}" @click=${() => this.edit()} title="${lizDict['attributeLayers.btn.edit.title']}"><i class="icon-pencil"></i></button>
-            <button type="button" class="btn btn-mini feature-delete ${this.isDeletable ? '' : 'hide'}" @click=${() => this.delete()} title="${lizDict['attributeLayers.btn.delete.title']}"><i class="icon-trash"></i></button>
-            <button type="button" class="btn btn-mini feature-unlink ${this.isUnlinkable ? '' : 'hide'}" @click=${() => this.isLayerPivot ? this.delete() : this.unlink()} title="${lizDict['attributeLayers.btn.remove.link.title']}"><i class="icon-minus"></i></button>
+            <button type="button" class="btn btn-mini feature-delete ${(this.isDeletable && !this._pivotLayerId) ? '' : 'hide'}" @click=${() => this.delete()} title="${lizDict['attributeLayers.btn.delete.title']}"><i class="icon-trash"></i></button>
+            <button type="button" class="btn btn-mini feature-unlink ${this.isUnlinkable ? '' : 'hide'}" @click=${() => this.isNToMRelation ? this.deleteFromPivot() : this.unlink()} title="${lizDict['attributeLayers.btn.remove.link.title']}"><i class="icon-minus"></i></button>
 
 
             ${this.isFeatureExportable
@@ -172,6 +174,23 @@ export default class FeatureToolbar extends HTMLElement {
         return this._parentLayerId;
     }
 
+    get pivotLayerId(){
+        const pivotAttributeLayerConf = lizMap.getLayerConfigById( this._pivotLayerId, lizMap.config.attributeLayers, 'layerId' );
+        const config = lizMap.config;
+        if (pivotAttributeLayerConf 
+            && pivotAttributeLayerConf[1]?.pivot == 'True'
+            && config.relations.pivot 
+            && config.relations.pivot[this._pivotLayerId] 
+            && config.relations.pivot[this._pivotLayerId][this.layerId] 
+            && config.relations.pivot[this._pivotLayerId][this.parentLayerId]   
+        ){
+            return this._pivotLayerId;
+        }
+
+        return null;
+        
+    }
+
     get isSelected() {
         const selectedFeatures = this._layerConfig?.['selectedFeatures'];
         return selectedFeatures && selectedFeatures.includes(this.fid);
@@ -200,19 +219,70 @@ export default class FeatureToolbar extends HTMLElement {
         return lizMap.getLayerConfigById(this.layerId, lizMap.config.attributeLayers, 'layerId')?.[1];
     }
 
+    get pivotAttributeTableConfig(){
+        return lizMap.getLayerConfigById(this.pivotLayerId, lizMap.config.attributeLayers,'layerId')?.[1];
+    }
+
     get isLayerEditable(){
         return lizMap.config?.editionLayers?.[this.featureType]?.capabilities?.modifyAttribute === "True"
             || lizMap.config?.editionLayers?.[this.featureType]?.capabilities?.modifyGeometry === "True";
     }
 
-    get isLayerPivot(){
-        return this.attributeTableConfig?.['pivot'] === 'True';
+    get isNToMRelation() {
+        if (this.pivotLayerId) return true;
+        else return false;
     }
 
     get isUnlinkable(){
         return this.parentLayerId &&
-            (this.isLayerEditable && !this.isLayerPivot) ||
-            (lizMap.config?.editionLayers?.[this.featureType]?.capabilities?.deleteFeature === "True" && this.isLayerPivot);
+            (this.isLayerEditable && !this.isNToMRelation) ||
+            (lizMap.config?.editionLayers?.[this._pivotType]?.capabilities?.deleteFeature === "True" && this.isNToMRelation);
+    }
+
+    get pivotFeatureId(){
+        const pivotLayerId = this.pivotLayerId;
+        
+        if(!pivotLayerId) return null;
+
+        const parentLayerId = this.parentLayerId;
+        const config = lizMap.config;
+        
+        // parent and current layer should be configured in relations object
+        if (!(parentLayerId in config.relations) || !(this.layerId in config.relations) || !this._parentFeatureId){
+            return null;
+        }
+      
+        // pivot contains features?
+        const features = config.layers[this._pivotType]['features'];
+        if (!features || Object.keys(features).length <= 0){
+            return null;
+        }
+        // get pivot primary key
+        const primaryKey = this.pivotAttributeTableConfig?.['primaryKey'];
+        if(!primaryKey){
+            return null;
+        }
+
+        //get referencing field for the pivot
+        const layerReferencingField = config.relations[this.layerId].filter((rel)=>{
+            return rel.referencingLayer == pivotLayerId && rel.referencingField == config.relations.pivot[pivotLayerId][this.layerId]
+        })?.[0]?.referencingField;
+
+        const parentLayerReferencingField = config.relations[this.parentLayerId].filter((rel)=>{
+            return rel.referencingLayer == pivotLayerId && rel.referencingField == config.relations.pivot[pivotLayerId][this.parentLayerId]
+        })?.[0]?.referencingField;
+
+        if (!layerReferencingField || !parentLayerReferencingField) return null;
+
+        // get features from pivot corresponding to the current layer
+        const pivotFeature = Object.keys(features).filter((feat) =>{
+            const properties = features[feat].properties;
+            return properties && properties[layerReferencingField] && properties[layerReferencingField] == this.fid  && properties[parentLayerReferencingField] && properties[parentLayerReferencingField] == this._parentFeatureId
+        })
+
+        if (pivotFeature.length == 1 && features[pivotFeature[0]].properties[primaryKey]) {
+            return features[pivotFeature[0]].properties[primaryKey]
+        } else return null
     }
 
     /**
@@ -222,8 +292,8 @@ export default class FeatureToolbar extends HTMLElement {
      */
     get isDeletable(){
         return this._isFeatureEditable
-            && lizMap.config?.editionLayers?.[this.featureType]?.capabilities?.deleteFeature === "True"
-            && !this.isLayerPivot;
+            && ((lizMap.config?.editionLayers?.[this.featureType]?.capabilities?.deleteFeature === "True"
+            && !this.isNToMRelation) || (this.isNToMRelation && lizMap.config?.editionLayers?.[this.featureType]?.capabilities?.deleteFeature === "True" && lizMap.config?.editionLayers?.[this._pivotType]?.capabilities?.deleteFeature === "True"));
     }
 
     get hasEditionRestricted(){
@@ -293,7 +363,8 @@ export default class FeatureToolbar extends HTMLElement {
 
             // Check if the child layer has insert capabilities
             let [childFeatureType, childLayerConfig] = lizMap.getLayerConfigById(relation.referencingLayer);
-            if (lizMap.config?.editionLayers?.[childFeatureType]?.capabilities?.createFeature !== "True") {
+            let isPivot = !!lizMap.config?.relations?.pivot?.[relation.referencingLayer] 
+            if (isPivot || lizMap.config?.editionLayers?.[childFeatureType]?.capabilities?.createFeature !== "True") {
                 return;
             }
             editableChildrenLayers.push({
@@ -380,7 +451,46 @@ export default class FeatureToolbar extends HTMLElement {
     }
 
     delete(){
-        lizMap.deleteEditionFeature(this.layerId, this.fid);
+        // get list of tables that are linked to the pivot
+        let relations = lizMap.config?.relations?.[this.layerId], message = "";
+        if(relations && lizMap.config?.relations?.pivot){
+            
+            let pivotNames = relations.map((relation)=>{
+                return relation.referencingLayer
+            }).filter((refLayer)=>{
+                const attributeTableConf = lizMap.getLayerConfigById(refLayer, lizMap.config.attributeLayers,'layerId')
+                return attributeTableConf && attributeTableConf[1]?.pivot == 'True' && refLayer && refLayer in lizMap.config.relations.pivot && Object.keys(lizMap.config.relations.pivot[refLayer]).some((kp)=>{return kp == this.layerId})
+            }).map((key)=>{
+                let relatedLayerId = Object.keys(lizMap.config.relations.pivot[key]).filter((k)=> { return k !== this.layerId})?.[0]
+                if (relatedLayerId) {
+                    return lizMap.getLayerConfigById(relatedLayerId)?.[1]?.title || lizMap.getLayerConfigById(relatedLayerId)?.[1]?.name
+                }
+                else return "";
+            }).reduce((acc,current)=> acc+"\n" +current,"")
+
+            if (pivotNames) {
+                message = lizDict['edition.confirm.pivot.delete'].replace('%s',pivotNames);
+            }
+        }
+
+        lizMap.deleteEditionFeature(this.layerId, this.fid, message);
+    }
+
+    deleteFromPivot(){
+        let pivotFeatureId = this.pivotFeatureId;
+        if( pivotFeatureId ){
+            let unlinkMessage = lizDict['edition.confirm.pivot.unlink'].replace("%l", lizMap.getLayerConfigById(this.parentLayerId)[1].title)
+            lizMap.deleteEditionFeature(this.pivotLayerId, pivotFeatureId, unlinkMessage, ()=>{
+                // refresh mlayer
+                lizMap.events.triggerEvent("lizmapeditionfeaturedeleted",
+                {
+                    'layerId': this.layerId,
+                    'featureId': this.fid,
+                    'featureType': this.featureType,
+                    'updateDrawing': true
+                });
+            });
+        }
     }
 
     unlink(){
