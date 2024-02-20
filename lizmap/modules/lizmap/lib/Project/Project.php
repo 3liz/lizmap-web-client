@@ -2348,6 +2348,16 @@ class Project
     }
 
     /**
+     * Project warnings.
+     *
+     * @return null|object
+     */
+    public function getProjectCfgWarnings()
+    {
+        return $this->cfg->getProjectCfgWarnings();
+    }
+
+    /**
      * Check acl rights on the project.
      *
      * @return bool true if the current user as rights on the project

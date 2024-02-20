@@ -569,6 +569,22 @@ class lizMapCtrl extends jController
             $assign['googleAnalyticsID'] = $lser->googleAnalyticsID;
         }
 
+        $serverInfoAccess = (\jAcl2::check('lizmap.admin.access') || \jAcl2::check('lizmap.admin.server.information.view'));
+        if ($serverInfoAccess && count((array) $lproj->getProjectCfgWarnings()) >= 1) {
+            $message = jLocale::get('view~default.project.has.warnings');
+            $jsWarning = "
+                lizMap.events.on(
+                    {
+                    'uicreated':function(evt){
+                        lizMap.addMessage('${message}', 'warning', false).attr('id','lizmap-warning-message');
+                    }
+                }
+            );
+            ";
+            $rep->addJSCode($jsWarning);
+            \jLog::log($message);
+        }
+
         $rep->body->assign($assign);
 
         // Log
