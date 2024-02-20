@@ -22,6 +22,7 @@ class projectConfigTest extends TestCase
         $expected->filter_by_polygon = new stdClass();
         $expected->metadata = new stdClass();
         $expected->layouts = new stdClass();
+        $expected->warnings = new stdClass();
         return array(
             array($json, $expected),
         );
@@ -44,7 +45,7 @@ class projectConfigTest extends TestCase
         $file = __DIR__.'/Ressources/events.qgs.cfg';
         $data = json_decode(file_get_contents($file));
         $cachedProperties = array('layersOrder', 'locateByLayer', 'formFilterLayers', 'editionLayers',
-            'attributeLayers', 'options', 'layers', 'metadata');
+            'attributeLayers', 'options', 'layers', 'metadata', 'warnings');
         $testCfg = new Project\ProjectConfig($data);
         foreach ($cachedProperties as $prop) {
             if (property_exists($data, $prop)) {
