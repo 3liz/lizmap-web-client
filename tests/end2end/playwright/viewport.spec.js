@@ -1,3 +1,4 @@
+// @ts-check
 import { test, expect } from '@playwright/test';
 
 test.describe('Viewport devicePixelRatio 1', () => {
@@ -34,9 +35,9 @@ test.describe('Viewport devicePixelRatio 1', () => {
         await page.waitForTimeout(1000);
 
         // Check that the WMS Max Size has been well overwrite
-        expect(await page.evaluate(() => lizMap.mainLizmap.initialConfig.options.wmsMaxHeight)).toBe(950);
+        expect(await page.evaluate(() => globalThis.lizMap.mainLizmap.initialConfig.options.wmsMaxHeight)).toBe(950);
         expect(await page.evaluate(() => window.devicePixelRatio)).toBe(1);
-        expect(await page.evaluate(() => lizMap.mainLizmap.map.getSize())).toStrictEqual([870, 575]);
+        expect(await page.evaluate(() => globalThis.lizMap.mainLizmap.map.getSize())).toStrictEqual([870,575]);
         await page.unroute('**/service/getProjectConfig*')
 
         // Catch GetMaps request;
@@ -67,6 +68,7 @@ test.describe('Viewport devicePixelRatio 1', () => {
 })
 
 test.describe('Viewport devicePixelRatio 2', () => {
+    // Force device pixel ratio to 2
     test.use({
         deviceScaleFactor: 2,
     });
@@ -103,19 +105,20 @@ test.describe('Viewport devicePixelRatio 2', () => {
         await page.waitForTimeout(1000);
 
         // Check that the WMS Max Size has been well overwrite
-        expect(await page.evaluate(() => lizMap.mainLizmap.initialConfig.options.wmsMaxHeight)).toBe(1900);
+        expect(await page.evaluate(() => globalThis.lizMap.mainLizmap.initialConfig.options.wmsMaxHeight)).toBe(1900);
         expect(await page.evaluate(() => window.devicePixelRatio)).toBe(2);
-        expect(await page.evaluate(() => lizMap.mainLizmap.map.getSize())).toStrictEqual([870, 620]);
+        expect(await page.evaluate(() => globalThis.lizMap.mainLizmap.map.getSize())).toStrictEqual([870,620]);
         await page.unroute('**/service/getProjectConfig*')
 
         // Catch GetMaps request;
+        // Because we disable High DPI, the OL pixel ratio is forced to 1 even if the device pixel ratio is 2
         let GetMaps = [];
         await page.route('**/service*', async route => {
             const request = route.request();
             if (request.url().includes('GetMap')) {
                 GetMaps.push(request.url());
             }
-        }, { times: 4 });
+        }, {times: 1}); // No tiles, if High DPI is enabled we got 4 tiles
 
         // Activate world layer
         await page.getByLabel('world').check();
@@ -124,11 +127,11 @@ test.describe('Viewport devicePixelRatio 2', () => {
         await page.waitForTimeout(1000);
 
         // Check GetMap requests
-        expect(GetMaps).toHaveLength(4);
-        for (const GetMap of GetMaps) {
-            expect(GetMap).toContain('&WIDTH=870&')
-            expect(GetMap).toContain('&HEIGHT=620&')
-            expect(GetMap).toContain('&DPI=180&')
+        expect(GetMaps).toHaveLength(1); // No tiles, if High DPI is enabled we got 4 tiles
+        for(const GetMap of GetMaps) {
+            expect(GetMap).toContain('&WIDTH=957&')
+            expect(GetMap).toContain('&HEIGHT=682&')
+            expect(GetMap).toContain('&DPI=96&')
         }
         await page.unroute('**/service*')
     })
@@ -164,11 +167,11 @@ test.describe('Viewport mobile', () => {
         await expect(await page.locator('#right-dock')).toBeInViewport();
 
         // Choose a feature and check getFeatureInfo
-        let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request?.postData().includes('GetFeatureInfo'));
+        let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GetFeatureInfo'));
         await page.locator('#liz-atlas-select').selectOption('2');
         let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
         let getFeatureInfoResponse = await getFeatureInfoRequest.response();
-        await expect(await getFeatureInfoResponse.headerValue('content-type')).toContain('text/html');
+        await expect(await getFeatureInfoResponse?.headerValue('content-type')).toContain('text/html');
         await expect(await page.locator('#liz-atlas-item-detail .lizmapPopupContent')).toBeInViewport();
         await expect(await page.locator('#liz-atlas-item-detail .lizmapPopupContent')).toContainText('MOSSON');
         // Close atlas
