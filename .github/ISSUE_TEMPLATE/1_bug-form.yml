@@ -13,7 +13,7 @@ body:
   - type: textarea
     id: what
     attributes:
-      label: What is the bug?
+      label: What is the bug? (in English)
       placeholder: When clicking on button...
     validations:
       required: true
