@@ -570,13 +570,14 @@ class lizMapCtrl extends jController
         }
 
         $serverInfoAccess = (\jAcl2::check('lizmap.admin.access') || \jAcl2::check('lizmap.admin.server.information.view'));
-        if ($serverInfoAccess && count((array) $lproj->getProjectCfgWarnings()) >= 1) {
+        if ($serverInfoAccess && $lproj->projectCountCfgWarnings() >= 1) {
             $message = jLocale::get('view~default.project.has.warnings');
+            $messageLink = $message.'<br><a href="'.jUrl::get('admin~qgis_projects:index').'">'.jLocale::get('view~default.project.has.warnings.link').'</a>';
             $jsWarning = "
                 lizMap.events.on(
                     {
                     'uicreated':function(evt){
-                        lizMap.addMessage('${message}', 'warning', false).attr('id','lizmap-warning-message');
+                        lizMap.addMessage('{$messageLink}', 'warning', true).attr('id','lizmap-warning-message');
                     }
                 }
             );

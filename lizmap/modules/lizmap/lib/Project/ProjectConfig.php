@@ -74,7 +74,7 @@ class ProjectConfig
     protected $metadata;
 
     /**
-     * @var object
+     * @var mixed
      */
     protected $warnings;
 
