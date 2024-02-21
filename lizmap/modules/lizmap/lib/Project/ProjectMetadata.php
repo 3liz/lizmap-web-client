@@ -45,6 +45,7 @@ class ProjectMetadata
             'lizmapWebClientTargetVersion' => $project->getLizmapWebCLientTargetVersion(),
             'needsUpdateError' => $project->needsUpdateError(),
             'needsUpdateWarning' => $project->needsUpdateWarning(),
+            'projectCountCfgWarnings' => $project->projectCountCfgWarnings(),
             'layerCount' => $project->getLayerCount(),
             'fileTime' => $project->getFileTime(),
             'aclGroups' => '',
@@ -228,6 +229,16 @@ class ProjectMetadata
     public function needsUpdateWarning()
     {
         return $this->data['needsUpdateWarning'];
+    }
+
+    /**
+     * Returns the count of warnings in the CFG file.
+     *
+     * @return int
+     */
+    public function countProjectCfgWarnings()
+    {
+        return $this->data['projectCountCfgWarnings'];
     }
 
     /**
