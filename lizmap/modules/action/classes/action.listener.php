@@ -34,9 +34,10 @@ class actionListener extends jEventListener
             );
         }
 
-        // Warn the administrator that the action JSON configuration
+        // Warn the publisher/administrator that the action JSON configuration
         // is written in the old type
-        if (\jAcl2::check('lizmap.admin.access') && $actionConfigInstance->oldConfigConversionDone) {
+        $serverInfoAccess = (\jAcl2::check('lizmap.admin.access') || \jAcl2::check('lizmap.admin.server.information.view'));
+        if ($serverInfoAccess && $actionConfigInstance->oldConfigConversionDone) {
             $url = 'https://docs.lizmap.com/current/en/publish/lizmap_plugin/actions.html';
             $message = \jLocale::get('action~action.warning.converted.from.old.configuration',array($url));
             $jsCode[] = "
