@@ -95,10 +95,9 @@ export class Config {
                 throw new ValidationError('No `' + prop + '` in the WMS Capabilities!');
             }
         }
-
         this._theConfig = theConfig;
         this._theWmsCapabilities = theWmsCapabilities;
-        this._singleWMSLayer = theConfig._singleWMSLayer;
+        this._singleWMSLayer = theConfig.options?.wms_single_request_for_all_layers == "True" ? true : false;
 
         const optionalConfigProperties = [
             'metadata',
@@ -126,22 +125,6 @@ export class Config {
             || Object.getOwnPropertyNames(theConfig.datavizLayers.dataviz).length == 0)) {
             this._hasDatavizConfig = false;
         }
-
-         /**
-         * FIXME 
-         * only for testing purpose!
-         * 
-         * this event allows the _singleWMSLayer property to be set from external custom js 
-         * and should be removed after implementing the "singleWMSLayer option" on the QGIS lizMap plugin.
-         * This plugin option will allow to read the _singleWMSLayer property directly from qgs.cfg file
-         * 
-         * NOTE: this lines cause js-units tests to fail (config and state tests)
-         */
-        lizMap.events.on({
-            setSingeWMSLayer: (ev)=>{
-                this._singleWMSLayer = ev.singleWMSLayer
-            }
-        })     
     }
 
     /**
