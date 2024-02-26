@@ -3,7 +3,8 @@ import map from './map.js'
 import { MapLayerLoadStatus, MapLayerState } from '../modules/state/MapLayer.js';
 import Utils from './Utils.js';
 import ImageWMS from 'ol/source/ImageWMS.js';
-import {Image as ImageLayer} from 'ol/layer.js';
+import {Image as ImageLayer, Tile as TileLayer} from 'ol/layer.js';
+import TileWMS from 'ol/source/TileWMS.js';
 import { BaseLayerState } from './state/BaseLayer.js';
 import { ValidationError } from './Errors.js';
 
@@ -21,6 +22,13 @@ export default class SingleWMSLayer {
         if (!mainLizmap.initialConfig.singleWMSLayer || !mainMapInstance || !(mainMapInstance instanceof map) || mainMapInstance.statesSingleWMSLayers.size == 0) {
             throw new ValidationError('The Configuration is not valid, could not load the map as single WMS Layer');
         }
+
+        /**
+         * the map instance
+         * @type {map} 
+         */
+        this._mainMapInstance = mainMapInstance;
+
         /**
          * all the layers that should be inluded in the single ImageWMS. Contains layers names with their states sorted by layerOrder (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map)
          * @type {Map<string,MapLayerState|BaseLayerState>} 
@@ -180,24 +188,53 @@ export default class SingleWMSLayer {
      * @memberof SingleWMSLayer
      */
     initializeLayer(){
-        let minResolution =  Utils.getResolutionFromScale(this._minScale, this._metersPerUnit);
-        let maxResolution =  Utils.getResolutionFromScale(this._maxScale, this._metersPerUnit); 
+        let minResolution =  undefined; //Utils.getResolutionFromScale(this._minScale, this._metersPerUnit);
+        let maxResolution =  undefined; //Utils.getResolutionFromScale(this._maxScale, this._metersPerUnit); 
 
-        this._layer = new ImageLayer({
-            minResolution: minResolution,
-            maxResolution: maxResolution,
-            source: new ImageWMS({
-                url: mainLizmap.serviceURL,
-                serverType: 'qgis',
-                ratio: this._WMSRatio,
-                params: {
-                    LAYERS: null,
-                    FORMAT: this._format,
-                    STYLES: null,
-                    DPI: 96
-                }
-            })
-        });
+        if(this._mainMapInstance.useTileWms){
+            this._layer = new TileLayer({
+                // extent: extent,
+                minResolution: minResolution,
+                maxResolution: maxResolution,
+                source: new TileWMS({
+                    url: mainLizmap.serviceURL,
+                    serverType: 'qgis',
+                    tileGrid: this._mainMapInstance.customTileGrid,
+                    params: {
+                        LAYERS: null,
+                        FORMAT: this._format,
+                        STYLES: null,
+                        DPI: 96,
+                        TILED: 'true'
+                    },
+                    wrapX: false, // do not reused across the 180° meridian.
+                    hidpi: this._mainMapInstance.hidpi, // pixelRatio is used in useTileWms and customTileGrid definition
+                })
+            });            
+        } else {
+            this._layer = new ImageLayer({
+                minResolution: minResolution,
+                maxResolution: maxResolution,
+                source: new ImageWMS({
+                    url: mainLizmap.serviceURL,
+                    serverType: 'qgis',
+                    ratio: this._WMSRatio,
+                    hidpi: this._mainMapInstance.hidpi,
+                    params: {
+                        LAYERS: null,
+                        FORMAT: this._format,
+                        STYLES: null,
+                        DPI: 96
+                    }
+                })
+            });
+            // Force no cache w/ Firefox
+            if(navigator.userAgent.includes("Firefox")){
+                this._layer.getSource().setImageLoadFunction((image, src) => {
+                    (image.getImage()).src = src + '&ts=' + Date.now();
+                });
+            }
+        }
 
         this._layer.setVisible(false); 
 
