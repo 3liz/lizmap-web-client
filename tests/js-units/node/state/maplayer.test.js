@@ -244,7 +244,7 @@ describe('MapGroupState', function () {
         expect(root).to.be.instanceOf(MapGroupState);
 
         // map layer count and order
-        expect(root.findMapLayers().length).to.be.eq(5); 
+        expect(root.findMapLayers().length).to.be.eq(5);
 
         // map layer exploded count
         expect(root.countExplodedMapLayers()).to.be.eq(7);
@@ -2021,5 +2021,28 @@ describe('MapGroupState', function () {
         expect(fondGroupVisibilityChangedEvt).to.have.length(0)
         expect(rootLayerVisibilityChangedEvt).to.have.length(0)
         expect(rootGroupVisibilityChangedEvt).to.have.length(0)
+
+        // WMS Parameters
+        expect(fond.wmsName).to.be.eq('Fond')
+        expect(fond.wmsSelectedStyleName).to.be.eq('')
+        expect(fond.wmsStyles).to.be.instanceOf(Array)
+        expect(fond.wmsStyles).to.have.length(1)
+        expect(fond.wmsStyles[0].wmsName).to.be.eq('')
+        expect(fond.wmsStyles[0].wmsTitle).to.be.eq('')
+        expect(fond.wmsParameters).to.be.deep.eq({
+            'LAYERS': 'Fond',
+            'STYLES': '',
+            'FORMAT': 'image/png',
+            'DPI': 96
+        })
+
+        // Try get an unknown layer
+        try {
+            fond.wmsSelectedStyleName = 'default'
+        } catch (error) {
+            expect(error.name).to.be.eq('TypeError')
+            expect(error.message).to.be.eq('Cannot assign an unknown WMS style name! `default` is not in the layer `Fond` WMS styles!')
+            expect(error).to.be.instanceOf(TypeError)
+        }
     })
 })
