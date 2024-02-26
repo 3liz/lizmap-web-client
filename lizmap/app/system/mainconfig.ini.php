@@ -33,6 +33,13 @@ fallbackLocale=en_US
 qgisServer="3.22"
 ; Lizmap server QGIS plugin required minimum version
 lizmapServerPlugin="2.8.4"
+; Lizmap QGIS desktop plugin required/recommended minimum version for newly or updated project only
+; This version MUST match at least on https://plugins.qgis.org/plugins/lizmap/#plugin-versions
+; with the minimum QGIS server version supported above.
+; This is experimental for now.
+; This value is only forwarded to the plugin thanks to the server metadata. According to the age of the project, it
+; will be either recommended or required.
+lizmapDesktopPlugin="4.1.8"
 
 ; Versions written in QGIS/CFG files, for the GIS administrator
 ; Lizmap CFG files with a lower target version are not displayed in the landing page, but displayed in the administration panel to warn the GIS administrator
