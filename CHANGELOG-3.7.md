@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.7.4 - 2024-02-26
+
 ### Added
 
 * New JavaScript event when the map state is ready
@@ -33,6 +35,12 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Fix CSS issue about blank panel
 * Disable High DPI support
 * Fix print capabilities when "Group as layer" is used
+
+### Translations
+
+* Update translated strings from the Transifex website :
+  * [Lizmap Web Client](https://www.transifex.com/3liz-1/lizmap-locales/dashboard/)
+  * [Jelix](https://www.transifex.com/3liz-1/jelix/dashboard/)
 
 ### Backend
 
