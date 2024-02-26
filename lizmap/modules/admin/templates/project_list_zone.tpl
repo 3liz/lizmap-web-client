@@ -43,7 +43,7 @@ to view the hidden columns data and when there is no data for these columns -->
             {/if}
             <th>{@admin.project.list.column.qgis.desktop.version.label@}</th>
             <th>{@admin.project.list.column.target.lizmap.version.label@}</th>
-            <!-- <th class='lizmap_plugin_version'>{@admin.project.list.column.lizmap.plugin.version.label@}</th> -->
+            <th>{@admin.project.list.column.lizmap.warnings.count.label@}</th>
             <th>{@admin.project.list.column.hidden.project.label@}</th>
             <th>{@admin.project.list.column.authorized.groups.label@}</th>
             <th>{@admin.project.list.column.project.file.time.label@}</th>
@@ -79,13 +79,18 @@ to view the hidden columns data and when there is no data for these columns -->
 
             <!-- repository -->
             <td title="{if !empty($mi->title)}{$mi->title|strip_tags|eschtml}{/if}">
-                {$mi->id}
+                <a target="_blank" href="{$p['url_repository']}">{$mi->id}</a>
             </td>
 
             <!-- project - KEEP the line break after the title to improve the tooltip readability-->
             <td title="{if !empty($p['title'])}{$p['title']|strip_tags|eschtml}{/if}
-{if !empty($p['abstract'])}{$p['abstract']|strip_tags|eschtml|truncate:150}{/if}">
+            {if !empty($p['abstract'])}{$p['abstract']|strip_tags|eschtml|truncate:150}{/if}">
+            {if $p['needs_update_error']}
+                {*The project cannot be displayed, do not provide a link to open it.*}
+                {$p['id']}
+            {else}
                 <a target="_blank" href="{$p['url']}">{$p['id']}</a>
+            {/if}
             </td>
 
             <!-- Layer count -->
@@ -155,7 +160,7 @@ to view the hidden columns data and when there is no data for these columns -->
 
         {/if}
 
-            <!-- QGIS project version -->
+            <!-- QGIS desktop version -->
             {assign $class = ''}
             {assign $title = ''}
             {if $serverVersions['qgis_server_version_int'] && $serverVersions['qgis_server_version_int'] - $p['qgis_version_int'] > $oldQgisVersionDiff }
@@ -166,6 +171,11 @@ to view the hidden columns data and when there is no data for these columns -->
                 {assign $class = 'liz-error'}
                 {assign $title = @admin.project.list.column.qgis.desktop.version.above.server@ .' ('.$serverVersions['qgis_server_version'].')'}
             {/if}
+            {if $title != ''}
+                {* Append version of Lizmap plugin for QGIS Desktop in tooltip *}
+                {assign $title = $title . ' - '}
+            {/if}
+            {assign $title = $title . @admin.project.list.column.lizmap.plugin.version.label@ . ' ' .  $p['lizmap_plugin_version']}
             <td title="{$title}" class="{$class}">
                 {$p['qgis_version']}
             </td>
@@ -185,12 +195,16 @@ to view the hidden columns data and when there is no data for these columns -->
                 {$p['lizmap_web_client_target_version_display']}
             </td>
 
-
-            <!-- Version of Lizmap plugin for QGIS Desktop -->
-            <!-- <td>
-                {$p['lizmap_plugin_version']}
-            </td> -->
-
+            <!-- Warnings in CFG file -->
+            {assign $class = ''}
+            {assign $title = ''}
+            {if $p['cfg_warnings_count'] >= 1}
+                {assign $class = 'liz-warning'}
+                {assign $title = @admin.project.list.column.lizmap.warnings.explanations.label@}
+            {/if}
+            <td title="{$title}" class="{$class}">
+            {$p['cfg_warnings_count']}
+            </td>
 
             <!-- Project hidden -->
             <td>
