@@ -579,7 +579,12 @@ export class MapLayerState extends MapItemState {
      * @type {string}
      */
     get wmsSelectedStyleName() {
-        return this._layerItemState.wmsSelectedStyleName;
+        // The map layer is not a group
+        if (!this._layerItemState.groupAsLayer) {
+            return this._layerItemState.wmsSelectedStyleName;
+        }
+        // WMS Style for group as layer
+        return '';
     }
 
     /**
@@ -588,7 +593,14 @@ export class MapLayerState extends MapItemState {
      * @param {string} styleName - The WMS layer style name to select
      */
     set wmsSelectedStyleName(styleName) {
-        this._layerItemState.wmsSelectedStyleName = styleName;
+        // The map layer is not a group
+        if (!this._layerItemState.groupAsLayer) {
+            this._layerItemState.wmsSelectedStyleName = styleName;
+            return;
+        }
+        if (styleName !== '') {
+            throw TypeError('Cannot assign an unknown WMS style name! `'+styleName+'` is not in the layer `'+this.name+'` WMS styles!');
+        }
     }
 
     /**
@@ -599,6 +611,7 @@ export class MapLayerState extends MapItemState {
         if ( this._layerItemState.type == 'layer' ) {
             return this._layerItemState.wmsStyles;
         }
+        // WMS Style for group as layer
         return [new LayerStyleConfig('', '')];
     }
 
@@ -618,7 +631,16 @@ export class MapLayerState extends MapItemState {
      * @type {object}
      */
     get wmsParameters() {
-        return this._layerItemState.wmsParameters;
+        // The map layer is not a group
+        if (!this._layerItemState.groupAsLayer) {
+            return this._layerItemState.wmsParameters;
+        }
+        return {
+            'LAYERS': this.wmsName,
+            'STYLES': this.wmsSelectedStyleName,
+            'FORMAT': this.layerConfig.imageFormat,
+            'DPI': 96
+        };
     }
 
     /**
