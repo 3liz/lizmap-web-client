@@ -137,6 +137,7 @@ export default class map extends olMap {
         const pixelRatio = this._hidpi ? this.pixelRatio_ : 1;
 
         this._useTileWms = this.getSize().reduce(
+        this._useTileWms = this.getSize().reduce(
             (r /*accumulator*/, x /*currentValue*/, i /*currentIndex*/) => r || Math.ceil(x*this._WMSRatio*pixelRatio) > wmsMaxSize[i],
             false,
         );
@@ -467,8 +468,8 @@ export default class map extends olMap {
                         if (this._useTileWms) {
                             baseLayer = new TileLayer({
                                 // extent: extent,
-                                minResolution: layerMinResolution,
-                                maxResolution: layerMaxResolution,
+                                minResolution: minResolution,
+                                maxResolution: maxResolution,
                                 source: new TileWMS({
                                     url: mainLizmap.serviceURL,
                                     projection: qgisProjectProjection,
