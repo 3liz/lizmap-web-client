@@ -12,8 +12,10 @@ test.describe('Display in layer tree', () => {
         // layer not visible in layer tree
         await expect(page.getByTestId('polygons')).toHaveCount(0);
 
+        const getPrintRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData().includes('GetPrint'));
+
         // layer in print request
-        const getPrintRequest = request => {
+        const getPrintRequestContains = request => {
             const postData = request.postData();
             expect(postData).toContain('SERVICE=WMS')
             expect(postData).toContain('REQUEST=GetPrint')
@@ -22,19 +24,19 @@ test.describe('Display in layer tree', () => {
 
         await page.locator('#button-print').click();
 
-        page.once('request', getPrintRequest);
         await page.locator('#print-launch').click();
+        getPrintRequestContains(await getPrintRequestPromise);
 
         await page.getByTestId('Shapefiles').locator('input').first().uncheck();
-        page.once('request', getPrintRequest);
         await page.locator('#print-launch').click();
+        getPrintRequestContains(await getPrintRequestPromise);
 
         await page.getByTestId('townhalls_EPSG2154').locator('input').first().check();
-        page.once('request', getPrintRequest);
         await page.locator('#print-launch').click();
+        getPrintRequestContains(await getPrintRequestPromise);
 
         await page.getByTestId('Shapefiles').locator('input').first().uncheck();
-        page.once('request', getPrintRequest);
         await page.locator('#print-launch').click();
+        getPrintRequestContains(await getPrintRequestPromise);
     });
 })
