@@ -160,6 +160,11 @@ class project_listZone extends jZone
                 'view~map:index',
                 array('repository' => $projectMetadata->getRepository(), 'project' => $projectMetadata->getId())
             ),
+            'url_repository' => jUrl::get(
+                'view~default:index',
+                array('repository' => $projectMetadata->getRepository())
+            ),
+            'cfg_warnings_count' => $projectMetadata->countProjectCfgWarnings(),
             'lizmap_web_client_target_version' => $projectMetadata->getLizmapWebClientTargetVersion(),
             // convert int to string orderable
             'lizmap_plugin_version' => $this->pluginIntVersionToSortableString($projectMetadata->getLizmapPluginVersion()),
