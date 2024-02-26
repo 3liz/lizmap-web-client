@@ -30,6 +30,12 @@
                     <li class="warning">{jlocale "admin.project.rules.list.target.version.html",
                         array($minimumLizmapTargetVersionRequired)}</li>
                 </ul>
+
+                <li>{@admin.project.list.column.lizmap.warnings.count.label@}</li>
+                <ul class="rules">
+                    <li class="warning">{@admin.project.rules.list.plugin.warnings.html@}</li>
+                </ul>
+
                 <li>{@admin.project.list.column.layers.count.label.longer@}</li>
                 <ul class="rules">
                     <li class="warning">{jlocale "admin.project.rules.list.important.count.layers.html",
