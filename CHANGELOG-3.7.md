@@ -34,6 +34,12 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Disable High DPI support
 * Fix print capabilities when "Group as layer" is used
 
+### Translations
+
+* Update translated strings from the Transifex website :
+  * [Lizmap Web Client](https://www.transifex.com/3liz-1/lizmap-locales/dashboard/)
+  * [Jelix](https://www.transifex.com/3liz-1/jelix/dashboard/)
+
 ### Backend
 
 * Update Jelix to 1.8.7
