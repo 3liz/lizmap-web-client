@@ -11,6 +11,13 @@ with some extra keywords: backend, tests, test, translation, funders, important
 ### Added
 
 * New JavaScript event when the map state is ready
+* Add HTTP Etag header on the project illustration
+* Display a warning when the CFG file contains some warnings
+* Display the count of warnings in the administrator panel
+
+### Changed
+
+* Publishers can see now "legacy" syntax about actions
 
 ### Fixed
 
@@ -22,6 +29,10 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Fix display of layers when the map projection has inverted axis
 * Fix display of UI widgets about print and create child object
 * Fix error when there isn't any icon in the GetLegendGraphic from QGIS Server
+* Fix export of drawings due to the map projection
+* Fix CSS issue about blank panel
+* Disable High DPI support
+* Fix print capabilities when "Group as layer" is used
 
 ### Backend
 
