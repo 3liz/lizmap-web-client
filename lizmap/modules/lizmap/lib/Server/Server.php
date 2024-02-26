@@ -103,6 +103,19 @@ class Server
         return version_compare($currentVersion, $requiredVersion) < 0;
     }
 
+    /** Get the current recommended/required Lizmap desktop plugin.
+     * This value is only forward to the plugin thanks to the server metadata. The plugin will decide if it's
+     * recommended or required.
+     *
+     * This is experimental for now on the plugin side.
+     *
+     * @return string String containing the version
+     */
+    public function getLizmapPluginDesktopVersion()
+    {
+        return \jApp::config()->minimumRequiredVersion['lizmapDesktopPlugin'];
+    }
+
     /**
      * Get the list of groups having the given right
      * for the given repository.
@@ -258,13 +271,16 @@ class Server
             ),
         );
 
-        if (\jAcl2::check('lizmap.admin.server.information.view')) {
+        $serverInfoAccess = (\jAcl2::check('lizmap.admin.access') || \jAcl2::check('lizmap.admin.server.information.view'));
+        if ($serverInfoAccess) {
             if (isset(\jApp::config()->lizmap['hosting'])) {
                 $data['hosting'] = \jApp::config()->lizmap['hosting'];
             }
 
             // Add the list of repositories
             $data['repositories'] = $this->getLizmapRepositories();
+
+            $data['lizmap_desktop_plugin_version'] = $this->getLizmapPluginDesktopVersion();
 
             // Add the list of user groups
             $data['acl'] = array(
