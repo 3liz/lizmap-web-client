@@ -30,7 +30,7 @@ jobs:
       # For testing only
       PHP_VERSION: 8.2
       LZMPOSTGISVERSION: 15-3
-      # LZMQGSRVVERSION: 3.34
+      LZMQGSRVVERSION: 3.34
 
     steps:
 
