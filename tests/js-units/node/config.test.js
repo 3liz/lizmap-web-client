@@ -130,4 +130,17 @@ describe('Config', function () {
         expect(initialConfig.datavizOptions).to.be.instanceOf(DatavizOptionsConfig)
     })
 
+    it('SingleWMS Layer Config', function () {
+        const capabilities = JSON.parse(readFileSync('./data/single_wms_image-capabilities.json', 'utf8'));
+        expect(capabilities).to.not.be.undefined
+        expect(capabilities.Capability).to.not.be.undefined
+        const config = JSON.parse(readFileSync('./data/single_wms_image-config.json', 'utf8'));
+        expect(config).to.not.be.undefined
+
+        const initialConfig = new Config(config, capabilities);
+
+        expect(initialConfig.options).to.be.instanceOf(OptionsConfig)
+        expect(initialConfig.options.wms_single_request_for_all_layers).to.be.eq("True")
+    })
+
 })
