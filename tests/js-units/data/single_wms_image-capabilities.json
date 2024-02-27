@@ -1,0 +1,940 @@
+{
+    "version": "1.3.0",
+    "Service": {
+      "Name": "WMS",
+      "Title": "single_wms_image",
+      "KeywordList": [
+        "infoMapAccessService"
+      ],
+      "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=single_wms_image",
+      "Fees": "conditions unknown",
+      "AccessConstraints": "None",
+      "MaxWidth": 3000,
+      "MaxHeight": 3000
+    },
+    "Capability": {
+      "Request": {
+        "GetCapabilities": {
+          "Format": [
+            "text/xml"
+          ],
+          "DCPType": [
+            {
+              "HTTP": {
+                "Get": {
+                  "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=single_wms_image&"
+                }
+              }
+            }
+          ]
+        },
+        "GetMap": {
+          "Format": [
+            "image/jpeg",
+            "image/png",
+            "image/png; mode=16bit",
+            "image/png; mode=8bit",
+            "image/png; mode=1bit",
+            "application/dxf"
+          ],
+          "DCPType": [
+            {
+              "HTTP": {
+                "Get": {
+                  "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=single_wms_image&"
+                }
+              }
+            }
+          ]
+        },
+        "GetFeatureInfo": {
+          "Format": [
+            "text/plain",
+            "text/html",
+            "text/xml",
+            "application/vnd.ogc.gml",
+            "application/vnd.ogc.gml/3.1.1",
+            "application/json",
+            "application/geo+json"
+          ],
+          "DCPType": [
+            {
+              "HTTP": {
+                "Get": {
+                  "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=single_wms_image&"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "Exception": [
+        "XML"
+      ],
+      "Layer": {
+        "Name": "single_wms_image",
+        "Title": "single_wms_image",
+        "KeywordList": [
+          "infoMapAccessService"
+        ],
+        "CRS": [
+          "CRS:84",
+          "EPSG:4326",
+          "EPSG:3857"
+        ],
+        "EX_GeographicBoundingBox": [
+          3.723186,
+          43.541386,
+          4.068051,
+          43.684066
+        ],
+        "BoundingBox": [
+          {
+            "crs": "EPSG:3857",
+            "extent": [
+              414463.279,
+              5394742.823,
+              452853.337,
+              5416679.999
+            ],
+            "res": [
+              null,
+              null
+            ]
+          },
+          {
+            "crs": "EPSG:4326",
+            "extent": [
+              43.541386,
+              3.723186,
+              43.684066,
+              4.068051
+            ],
+            "res": [
+              null,
+              null
+            ]
+          }
+        ],
+        "Layer": [
+          {
+            "Name": "GroupAsLayer",
+            "Title": "GroupAsLayer",
+            "CRS": [
+              "CRS:84",
+              "EPSG:4326",
+              "EPSG:3857",
+              "CRS:84",
+              "EPSG:4326",
+              "EPSG:3857"
+            ],
+            "EX_GeographicBoundingBox": [
+              3.889605,
+              43.624573,
+              3.93494,
+              43.641649
+            ],
+            "BoundingBox": [
+              {
+                "crs": "EPSG:3857",
+                "extent": [
+                  432988.863,
+                  5407526.635,
+                  438035.444,
+                  5410152.917
+                ],
+                "res": [
+                  null,
+                  null
+                ]
+              },
+              {
+                "crs": "EPSG:4326",
+                "extent": [
+                  43.624573,
+                  3.889605,
+                  43.641649,
+                  3.93494
+                ],
+                "res": [
+                  null,
+                  null
+                ]
+              }
+            ],
+            "Layer": [
+              {
+                "Name": "single_wms_lines_group_as_layer",
+                "Title": "single_wms_lines_group_as_layer",
+                "CRS": [
+                  "CRS:84",
+                  "EPSG:4326",
+                  "EPSG:3857",
+                  "CRS:84",
+                  "EPSG:4326",
+                  "EPSG:3857"
+                ],
+                "EX_GeographicBoundingBox": [
+                  3.897469,
+                  43.624573,
+                  3.918286,
+                  43.636293
+                ],
+                "BoundingBox": [
+                  {
+                    "crs": "EPSG:3857",
+                    "extent": [
+                      433864.29,
+                      5407526.635,
+                      436181.599,
+                      5409328.986
+                    ],
+                    "res": [
+                      null,
+                      null
+                    ]
+                  },
+                  {
+                    "crs": "EPSG:4326",
+                    "extent": [
+                      43.624573,
+                      3.897469,
+                      43.636293,
+                      3.918286
+                    ],
+                    "res": [
+                      null,
+                      null
+                    ]
+                  }
+                ],
+                "Style": [
+                  {
+                    "Name": "default",
+                    "Title": "default",
+                    "LegendURL": [
+                      {
+                        "Format": "image/png",
+                        "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=single_wms_image&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=single_wms_lines_group_as_layer&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0",
+                        "size": [
+                          null,
+                          null
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "queryable": true,
+                "opaque": false,
+                "noSubsets": false
+              },
+              {
+                "Name": "single_wms_polygons_group_as_layer",
+                "Title": "single_wms_polygons_group_as_layer",
+                "CRS": [
+                  "CRS:84",
+                  "EPSG:4326",
+                  "EPSG:3857",
+                  "CRS:84",
+                  "EPSG:4326",
+                  "EPSG:3857"
+                ],
+                "EX_GeographicBoundingBox": [
+                  3.889605,
+                  43.627251,
+                  3.93494,
+                  43.641649
+                ],
+                "BoundingBox": [
+                  {
+                    "crs": "EPSG:3857",
+                    "extent": [
+                      432988.863,
+                      5407938.6,
+                      438035.444,
+                      5410152.917
+                    ],
+                    "res": [
+                      null,
+                      null
+                    ]
+                  },
+                  {
+                    "crs": "EPSG:4326",
+                    "extent": [
+                      43.627251,
+                      3.889605,
+                      43.641649,
+                      3.93494
+                    ],
+                    "res": [
+                      null,
+                      null
+                    ]
+                  }
+                ],
+                "Style": [
+                  {
+                    "Name": "default",
+                    "Title": "default",
+                    "LegendURL": [
+                      {
+                        "Format": "image/png",
+                        "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=single_wms_image&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=single_wms_polygons_group_as_layer&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0",
+                        "size": [
+                          null,
+                          null
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "queryable": true,
+                "opaque": false,
+                "noSubsets": false
+              }
+            ],
+            "queryable": true,
+            "opaque": false,
+            "noSubsets": false
+          },
+          {
+            "Name": "Group_1",
+            "Title": "Group_1",
+            "CRS": [
+              "CRS:84",
+              "EPSG:4326",
+              "EPSG:3857",
+              "CRS:84",
+              "EPSG:4326",
+              "EPSG:3857"
+            ],
+            "EX_GeographicBoundingBox": [
+              3.881741,
+              43.620052,
+              3.893769,
+              43.629094
+            ],
+            "BoundingBox": [
+              {
+                "crs": "EPSG:3857",
+                "extent": [
+                  432113.436,
+                  5406831.442,
+                  433452.326,
+                  5408221.828
+                ],
+                "res": [
+                  null,
+                  null
+                ]
+              },
+              {
+                "crs": "EPSG:4326",
+                "extent": [
+                  43.620052,
+                  3.881741,
+                  43.629094,
+                  3.893769
+                ],
+                "res": [
+                  null,
+                  null
+                ]
+              }
+            ],
+            "Layer": [
+              {
+                "Name": "single_wms_lines_group",
+                "Title": "single_wms_lines_group",
+                "CRS": [
+                  "CRS:84",
+                  "EPSG:4326",
+                  "EPSG:3857",
+                  "CRS:84",
+                  "EPSG:4326",
+                  "EPSG:3857"
+                ],
+                "EX_GeographicBoundingBox": [
+                  3.881741,
+                  43.620052,
+                  3.893769,
+                  43.629094
+                ],
+                "BoundingBox": [
+                  {
+                    "crs": "EPSG:3857",
+                    "extent": [
+                      432113.436,
+                      5406831.442,
+                      433452.326,
+                      5408221.828
+                    ],
+                    "res": [
+                      null,
+                      null
+                    ]
+                  },
+                  {
+                    "crs": "EPSG:4326",
+                    "extent": [
+                      43.620052,
+                      3.881741,
+                      43.629094,
+                      3.893769
+                    ],
+                    "res": [
+                      null,
+                      null
+                    ]
+                  }
+                ],
+                "Style": [
+                  {
+                    "Name": "default",
+                    "Title": "default",
+                    "LegendURL": [
+                      {
+                        "Format": "image/png",
+                        "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=single_wms_image&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=single_wms_lines_group&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0",
+                        "size": [
+                          null,
+                          null
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "queryable": true,
+                "opaque": false,
+                "noSubsets": false
+              },
+              {
+                "Name": "single_wms_points_group",
+                "Title": "single_wms_points_group",
+                "CRS": [
+                  "CRS:84",
+                  "EPSG:4326",
+                  "EPSG:3857",
+                  "CRS:84",
+                  "EPSG:4326",
+                  "EPSG:3857"
+                ],
+                "EX_GeographicBoundingBox": [
+                  3.885673,
+                  43.622898,
+                  3.889837,
+                  43.625578
+                ],
+                "BoundingBox": [
+                  {
+                    "crs": "EPSG:3857",
+                    "extent": [
+                      432551.15,
+                      5407269.156,
+                      433014.612,
+                      5407681.123
+                    ],
+                    "res": [
+                      null,
+                      null
+                    ]
+                  },
+                  {
+                    "crs": "EPSG:4326",
+                    "extent": [
+                      43.622898,
+                      3.885673,
+                      43.625578,
+                      3.889837
+                    ],
+                    "res": [
+                      null,
+                      null
+                    ]
+                  }
+                ],
+                "Style": [
+                  {
+                    "Name": "default",
+                    "Title": "default",
+                    "LegendURL": [
+                      {
+                        "Format": "image/png",
+                        "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=single_wms_image&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=single_wms_points_group&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0",
+                        "size": [
+                          null,
+                          null
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "queryable": true,
+                "opaque": false,
+                "noSubsets": false
+              }
+            ],
+            "queryable": true,
+            "opaque": false,
+            "noSubsets": false
+          },
+          {
+            "Name": "single_wms_points",
+            "Title": "Points",
+            "CRS": [
+              "CRS:84",
+              "EPSG:4326",
+              "EPSG:3857",
+              "CRS:84",
+              "EPSG:4326",
+              "EPSG:3857"
+            ],
+            "EX_GeographicBoundingBox": [
+              3.856645,
+              43.571055,
+              3.954022,
+              43.622983
+            ],
+            "BoundingBox": [
+              {
+                "crs": "EPSG:3857",
+                "extent": [
+                  429319.793,
+                  5399300.194,
+                  440159.643,
+                  5407282.031
+                ],
+                "res": [
+                  null,
+                  null
+                ]
+              },
+              {
+                "crs": "EPSG:4326",
+                "extent": [
+                  43.571055,
+                  3.856645,
+                  43.622983,
+                  3.954022
+                ],
+                "res": [
+                  null,
+                  null
+                ]
+              }
+            ],
+            "Style": [
+              {
+                "Name": "default",
+                "Title": "default",
+                "LegendURL": [
+                  {
+                    "Format": "image/png",
+                    "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=single_wms_image&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=single_wms_points&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0",
+                    "size": [
+                      null,
+                      null
+                    ]
+                  }
+                ]
+              },
+              {
+                "Name": "white_dots",
+                "Title": "white_dots",
+                "LegendURL": [
+                  {
+                    "Format": "image/png",
+                    "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=single_wms_image&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=single_wms_points&FORMAT=image/png&STYLE=white_dots&SLD_VERSION=1.1.0",
+                    "size": [
+                      null,
+                      null
+                    ]
+                  }
+                ]
+              }
+            ],
+            "queryable": true,
+            "opaque": false,
+            "noSubsets": false
+          },
+          {
+            "Name": "single_wms_lines",
+            "Title": "Lines",
+            "CRS": [
+              "CRS:84",
+              "EPSG:4326",
+              "EPSG:3857",
+              "CRS:84",
+              "EPSG:4326",
+              "EPSG:3857"
+            ],
+            "EX_GeographicBoundingBox": [
+              3.812698,
+              43.564016,
+              3.914007,
+              43.627504
+            ],
+            "BoundingBox": [
+              {
+                "crs": "EPSG:3857",
+                "extent": [
+                  424427.7,
+                  5398218.784,
+                  435705.263,
+                  5407977.223
+                ],
+                "res": [
+                  null,
+                  null
+                ]
+              },
+              {
+                "crs": "EPSG:4326",
+                "extent": [
+                  43.564016,
+                  3.812698,
+                  43.627504,
+                  3.914007
+                ],
+                "res": [
+                  null,
+                  null
+                ]
+              }
+            ],
+            "Style": [
+              {
+                "Name": "default",
+                "Title": "default",
+                "LegendURL": [
+                  {
+                    "Format": "image/png",
+                    "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=single_wms_image&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=single_wms_lines&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0",
+                    "size": [
+                      null,
+                      null
+                    ]
+                  }
+                ]
+              }
+            ],
+            "queryable": true,
+            "opaque": false,
+            "noSubsets": false
+          },
+          {
+            "Name": "single_wms_polygons",
+            "Title": "Polygons",
+            "CRS": [
+              "CRS:84",
+              "EPSG:4326",
+              "EPSG:3857",
+              "CRS:84",
+              "EPSG:4326",
+              "EPSG:3857"
+            ],
+            "EX_GeographicBoundingBox": [
+              3.839991,
+              43.573568,
+              3.936443,
+              43.637548
+            ],
+            "BoundingBox": [
+              {
+                "crs": "EPSG:3857",
+                "extent": [
+                  427465.947,
+                  5399686.412,
+                  438202.806,
+                  5409522.095
+                ],
+                "res": [
+                  null,
+                  null
+                ]
+              },
+              {
+                "crs": "EPSG:4326",
+                "extent": [
+                  43.573568,
+                  3.839991,
+                  43.637548,
+                  3.936443
+                ],
+                "res": [
+                  null,
+                  null
+                ]
+              }
+            ],
+            "Style": [
+              {
+                "Name": "default",
+                "Title": "default",
+                "LegendURL": [
+                  {
+                    "Format": "image/png",
+                    "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=single_wms_image&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=single_wms_polygons&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0",
+                    "size": [
+                      null,
+                      null
+                    ]
+                  }
+                ]
+              }
+            ],
+            "queryable": true,
+            "opaque": false,
+            "noSubsets": false
+          },
+          {
+            "Name": "baselayers",
+            "Title": "baselayers",
+            "CRS": [
+              "CRS:84",
+              "EPSG:4326",
+              "EPSG:3857",
+              "CRS:84",
+              "EPSG:4326",
+              "EPSG:3857"
+            ],
+            "EX_GeographicBoundingBox": [
+              -180,
+              -85.051129,
+              180,
+              85.051129
+            ],
+            "BoundingBox": [
+              {
+                "crs": "EPSG:3857",
+                "extent": [
+                  -20037508.343,
+                  -20037508.343,
+                  20037508.343,
+                  20037508.343
+                ],
+                "res": [
+                  null,
+                  null
+                ]
+              },
+              {
+                "crs": "EPSG:4326",
+                "extent": [
+                  -85.051129,
+                  -180,
+                  85.051129,
+                  180
+                ],
+                "res": [
+                  null,
+                  null
+                ]
+              }
+            ],
+            "Layer": [
+              {
+                "Name": "single_wms_baselayer",
+                "Title": "single_wms_baselayer",
+                "CRS": [
+                  "CRS:84",
+                  "EPSG:4326",
+                  "EPSG:3857",
+                  "CRS:84",
+                  "EPSG:4326",
+                  "EPSG:3857"
+                ],
+                "EX_GeographicBoundingBox": [
+                  3.802984,
+                  43.5641,
+                  3.982009,
+                  43.657046
+                ],
+                "BoundingBox": [
+                  {
+                    "crs": "EPSG:3857",
+                    "extent": [
+                      423346.29,
+                      5398231.658,
+                      443275.134,
+                      5412521.72
+                    ],
+                    "res": [
+                      null,
+                      null
+                    ]
+                  },
+                  {
+                    "crs": "EPSG:4326",
+                    "extent": [
+                      43.5641,
+                      3.802984,
+                      43.657046,
+                      3.982009
+                    ],
+                    "res": [
+                      null,
+                      null
+                    ]
+                  }
+                ],
+                "Style": [
+                  {
+                    "Name": "default",
+                    "Title": "default",
+                    "LegendURL": [
+                      {
+                        "Format": "image/png",
+                        "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=single_wms_image&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=single_wms_baselayer&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0",
+                        "size": [
+                          null,
+                          null
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "queryable": true,
+                "opaque": false,
+                "noSubsets": false
+              },
+              {
+                "Name": "single_wms_tiled_baselayer",
+                "Title": "single_wms_tiled_baselayer",
+                "CRS": [
+                  "CRS:84",
+                  "EPSG:4326",
+                  "EPSG:3857",
+                  "CRS:84",
+                  "EPSG:4326",
+                  "EPSG:3857"
+                ],
+                "EX_GeographicBoundingBox": [
+                  3.802984,
+                  43.5641,
+                  3.982009,
+                  43.657046
+                ],
+                "BoundingBox": [
+                  {
+                    "crs": "EPSG:3857",
+                    "extent": [
+                      423346.29,
+                      5398231.658,
+                      443275.134,
+                      5412521.72
+                    ],
+                    "res": [
+                      null,
+                      null
+                    ]
+                  },
+                  {
+                    "crs": "EPSG:4326",
+                    "extent": [
+                      43.5641,
+                      3.802984,
+                      43.657046,
+                      3.982009
+                    ],
+                    "res": [
+                      null,
+                      null
+                    ]
+                  }
+                ],
+                "Style": [
+                  {
+                    "Name": "default",
+                    "Title": "default",
+                    "LegendURL": [
+                      {
+                        "Format": "image/png",
+                        "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=single_wms_image&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=single_wms_tiled_baselayer&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0",
+                        "size": [
+                          null,
+                          null
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "queryable": true,
+                "opaque": false,
+                "noSubsets": false
+              },
+              {
+                "Name": "OpenStreetMap",
+                "Title": "OpenStreetMap",
+                "CRS": [
+                  "CRS:84",
+                  "EPSG:4326",
+                  "EPSG:3857",
+                  "CRS:84",
+                  "EPSG:4326",
+                  "EPSG:3857"
+                ],
+                "EX_GeographicBoundingBox": [
+                  -180,
+                  -85.051129,
+                  180,
+                  85.051129
+                ],
+                "BoundingBox": [
+                  {
+                    "crs": "EPSG:3857",
+                    "extent": [
+                      -20037508.343,
+                      -20037508.343,
+                      20037508.343,
+                      20037508.343
+                    ],
+                    "res": [
+                      null,
+                      null
+                    ]
+                  },
+                  {
+                    "crs": "EPSG:4326",
+                    "extent": [
+                      -85.051129,
+                      -180,
+                      85.051129,
+                      180
+                    ],
+                    "res": [
+                      null,
+                      null
+                    ]
+                  }
+                ],
+                "Style": [
+                  {
+                    "Name": "default",
+                    "Title": "default",
+                    "LegendURL": [
+                      {
+                        "Format": "image/png",
+                        "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=single_wms_image&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=OpenStreetMap&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0",
+                        "size": [
+                          null,
+                          null
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "queryable": true,
+                "opaque": false,
+                "noSubsets": false
+              }
+            ],
+            "queryable": true,
+            "opaque": false,
+            "noSubsets": false
+          }
+        ]
+      }
+    }
+  }

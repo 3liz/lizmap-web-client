@@ -1764,6 +1764,14 @@ CREATE TABLE tests_projects.single_wms_baselayer (
     geom public.geometry(Polygon,4326)
 );
 
+--
+-- Name: single_wms_tiled_baselayer; Type: Table; Schema: tests_projects; Owner: -
+--
+CREATE TABLE tests_projects.single_wms_tiled_baselayer (
+    id SERIAL PRIMARY KEY,
+    title text,
+    geom public.geometry(Polygon,4326)
+);
 
 --
 -- Name: tramway_stops_id_stop_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
@@ -2645,6 +2653,13 @@ COPY tests_projects.single_wms_baselayer ("title", geom) FROM stdin;
 BaseLayer	010300000001000000050000000077401A836C0E406218402DF9D34540F368B4E6EE6D0E40BE2FFD7034C84540064D1A2727DB0F40E97A89E64FC845403177BEC1E3D60F4021A5CF131AD445400077401A836C0E406218402DF9D34540
 \.
 
+--
+-- Data for Name: single_wms_tiled_baselayer; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.single_wms_tiled_baselayer ("title", geom) FROM stdin;
+TiledBaseLayer	010300000001000000050000000077401A836C0E406218402DF9D34540F368B4E6EE6D0E40BE2FFD7034C84540064D1A2727DB0F40E97A89E64FC845403177BEC1E3D60F4021A5CF131AD445400077401A836C0E406218402DF9D34540
+\.
 
 --
 -- Data for Name: quartiers; Type: TABLE DATA; Schema: tests_projects; Owner: -
