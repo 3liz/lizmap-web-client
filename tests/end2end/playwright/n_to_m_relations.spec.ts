@@ -201,7 +201,7 @@ test.describe('N to M relations', () => {
         await addBirdsRequestPromise;
 
         // check info message for link pivot
-        await expect(page.locator("#edition-link-pivot")).toHaveText("The new record will be linked to the feature id 2 of Natural areas layer")
+        await expect(page.locator("#edition-link-pivot")).toHaveText("The new record will be linked to the feature ID \"2\" of \"Natural areas\" layer")
         
         // fill the form and submit
         await page.locator("#jforms_view_edition").getByLabel('Name', { exact: true }).fill("Northern pintail");
@@ -264,7 +264,7 @@ test.describe('N to M relations', () => {
 
         // unlink area from birds, this should delete the pivot record
         page.once('dialog', dialog => {
-             expect(dialog.message()).toBe("Are you sure you want to unlink the selected feature from Birds layer?");
+             expect(dialog.message()).toBe("Are you sure you want to unlink the selected feature from \"Birds\" layer?");
              return dialog.accept();
         });
 
@@ -321,7 +321,7 @@ test.describe('N to M relations', () => {
         // unlink a bird from popup
         
         page.once('dialog', dialog => {
-            expect(dialog.message()).toBe("Are you sure you want to unlink the selected feature from Natural areas layer?");
+            expect(dialog.message()).toBe("Are you sure you want to unlink the selected feature from \"Natural areas\" layer?");
             return dialog.accept();
         });
 
@@ -342,7 +342,7 @@ test.describe('N to M relations', () => {
         await page.locator("#edition-child-tab-natural_areas-birds .attribute-layer-feature-create").nth(0).click()
         await editFeatureRequestPromise;
 
-        await expect(page.locator("#edition-link-pivot")).toHaveText("The new record will be linked to the feature id 1 of Natural areas layer")
+        await expect(page.locator("#edition-link-pivot")).toHaveText("The new record will be linked to the feature ID \"1\" of \"Natural areas\" layer")
         
         // fill the form and submit
         await page.locator("#jforms_view_edition").getByLabel('Name', { exact: true }).fill("Common snipe");
@@ -372,7 +372,7 @@ test.describe('N to M relations', () => {
         await page.locator("#edition-child-tab-natural_areas-birds .attribute-layer-feature-create").nth(0).click()
         await editFeatureRequestPromise;
 
-        await expect(page.locator("#edition-link-pivot")).toHaveText("The new record will be linked to the feature id 1 of Natural areas layer")
+        await expect(page.locator("#edition-link-pivot")).toHaveText("The new record will be linked to the feature ID \"1\" of \"Natural areas\" layer")
         
         await page.locator('#jforms_view_edition_liz_future_action').selectOption("create");
         // fill the form and submit
@@ -384,7 +384,7 @@ test.describe('N to M relations', () => {
 
         await page.waitForTimeout(500);
         await expect(page.locator(".alert-linkaddedfeature p")).toHaveText('The new feature of layer "Birds" was successfully linked to the layer "Natural areas"');
-        await expect(page.locator("#edition-link-pivot")).toHaveText("The new record will be linked to the feature id 1 of Natural areas layer")
+        await expect(page.locator("#edition-link-pivot")).toHaveText("The new record will be linked to the feature ID \"1\" of \"Natural areas\" layer")
 
         // insert new bird with option "reopen form", this should not add the pivot record in order to avoid duplication
 
