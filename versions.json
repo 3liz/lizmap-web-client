@@ -16,8 +16,8 @@
             "fr": "https://www.3liz.com/news/lizmap-web-client-3-7.html"
         },
         "first_release_date": "2023-12-13",
-        "latest_release_date": "2024-02-26",
-        "latest_release_version": "3.7.4",
+        "latest_release_date": "2024-02-27",
+        "latest_release_version": "3.7.5",
         "qgis_max_version_recommended": 39900,
         "qgis_min_version_recommended": 32200,
         "status": "stable"
