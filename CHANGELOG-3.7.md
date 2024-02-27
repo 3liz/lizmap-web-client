@@ -8,6 +8,12 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.7.5 - 2024-02-27
+
+### Fixed
+
+* Fix a JavaScript error when loading a map in some locales
+
 ## 3.7.4 - 2024-02-26
 
 ### Added
