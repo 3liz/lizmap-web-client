@@ -8,7 +8,7 @@
 Lizmap web application, by 3LIZ.
 
     begin       : 2011-11-01
-    copyright   : (C) 2011-2023 by 3liz
+    copyright   : (C) 2011-2024 by 3liz
     authors     : René-Luc D'Hont and Michaël Douchin
     email       : info@3liz.com
     website     : http://www.3liz.com

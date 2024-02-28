@@ -8,6 +8,11 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Fixed
+
+* Fix issue about rights for anonymous users
+
+
 ## 3.6.10 - 2024-02-07
 
 ### Fixed
