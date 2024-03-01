@@ -52,6 +52,16 @@ class htmlbootstrapFormWidget extends \jelix\forms\HtmlWidget\RootWidget
      */
     public function outputFooter($builder)
     {
+        // Since jelix 1.8.7, we need to add `deprecatedDeclareFormBeforeControls` builder option
+        // because in the `outputHeader` we defined `jFormsJQ.declareForm(jFormsJQ.tForm);`
+        // and we use `parent::outputFooter($builder);`
+        $builder->setOptions(
+            array(
+                'errorDecorator' => $builder->getOption('errorDecorator'),
+                'modal' => $builder->getOption('modal'),
+                'deprecatedDeclareFormBeforeControls' => true,
+            )
+        );
         if ($builder->getOption('modal')) {
             echo '</div>';
         }
