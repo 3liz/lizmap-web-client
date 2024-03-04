@@ -3348,7 +3348,9 @@ window.lizMap = function() {
             }
 
             // Handle compact-tables/explode-tables behaviour
-            $('.lizmapPopupChildren .popupAllFeaturesCompact table').DataTable();
+            $('.lizmapPopupChildren .popupAllFeaturesCompact table').DataTable({
+                language: { url:lizUrls["dataTableLanguage"] }
+            });
 
             $('.lizmapPopupChildren .compact-tables, .lizmapPopupChildren .explode-tables').tooltip();
 
