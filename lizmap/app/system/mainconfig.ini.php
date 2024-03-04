@@ -1,4 +1,4 @@
-;<?php die(''); ?>
+;<?php exit(''); ?>
 ;for security reasons , don't remove or modify the first line
 ;this file doesn't list all possible properties. See lib/jelix/core/defaultconfig.ini.php for that
 
@@ -42,17 +42,22 @@ lizmapDesktopPlugin=40314
 lizmapDesktopPluginDate="2024-05-22"
 
 ; Versions written in QGIS/CFG files, for the GIS administrator
-; Lizmap CFG files with a lower target version are not displayed in the landing page, but displayed in the administration panel to warn the GIS administrator
-; Lizmap CFG files with this target version are still displayed in the landing page, but have a warning in the administration panel
+; Lizmap CFG files with a lower target version are not displayed in the landing page,
+; but displayed in the administration panel to warn the GIS administrator
+; Lizmap CFG files with this target version are still displayed in the landing page,
+; but have a warning in the administration panel
 ; 3 versions behind the current version of LWC
 lizmapWebClientTargetVersion=30400
 
 [lizmap]
 ; CSP header for the map interface
-; Exemple value: "default-src 'self' http: https:;connect-src 'self' http: https:;script-src http: https: 'unsafe-inline' 'unsafe-eval'; style-src http: https: 'unsafe-inline';object-src 'none';font-src https:;base-uri 'self';form-action 'self' http: https:;img-src http: https: data: blob:;frame-ancestors http: https:"
+; Exemple value: "default-src 'self' http: https:;connect-src 'self' http: https:;script-src http: https:'unsafe-inline'
+; 'unsafe-eval'; style-src http: https: 'unsafe-inline';object-src 'none';font-src https:;base-uri 'self';form-action
+; 'self': http: https:;img-src http: https: data: blob:;frame-ancestors http: https:"
 ; Why these values:
 ; - some tiles servers or custom scripts may be on http instead of https servers
-; - script-src: lizmap or external modules may still have inline script code, and integrated old libraries like Plotly and openlayers2 are using eval() sometimes :-/
+; - script-src: lizmap or external modules may still have inline script code,
+; and integrated old libraries like Plotly and openlayers2 are using eval() sometimes :-/
 ; - style-src: lizmap or external modules may still have some inline CSS code
 ; - some JS code and modules may use the "data:" uri
 ; - frame-ancestors: lizmap has a specific url to be used into frames
@@ -102,6 +107,7 @@ ldapdao.installparam[noconfigfile]=on
 ldapdao.path="app:vendor/jelix/ldapdao-module/ldapdao"
 saml.installparam[localconfig]=on
 saml.installparam[authep]=admin
+presentation.enabled=on
 
 [coordplugins]
 ;name = file_ini_name or 1
@@ -219,7 +225,7 @@ sendmailPath="/usr/sbin/sendmail"
 
 ; if mailer = smtp , fill the following parameters
 
-; SMTP hosts.  All hosts must be separated by a semicolon : "smtp1.example.com:25;smtp2.example.com"
+; SMTP hosts. All hosts must be separated by a semicolon : "smtp1.example.com:25;smtp2.example.com"
 smtpHost=localhost
 ; default SMTP server port
 smtpPort=25
