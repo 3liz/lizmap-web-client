@@ -5,6 +5,8 @@
  * @license MPL-2.0
  */
 
+import Utils from './Utils.js';
+
 /**
  * @class
  * @name WMS
@@ -38,14 +40,13 @@ export default class WMS {
      * @memberof WMS
      */
     async getFeatureInfo(options) {
-        const response = await fetch(lizUrls.wms, {
+        return Utils.fetchHTML(lizUrls.wms, {
             method: "POST",
             body: new URLSearchParams({
                 ...this._defaultGetFeatureInfoParameters,
                 ...options
             })
         });
-        return response.text();
     }
 
     /**
@@ -54,16 +55,12 @@ export default class WMS {
      * @memberof WMS
      */
     async getLegendGraphic(options) {
-        const response = await fetch(lizUrls.wms, {
+        return Utils.fetchJSON(lizUrls.wms, {
             method: "POST",
             body: new URLSearchParams({
                 ...this._defaultGetLegendGraphicParameters,
                 ...options
             })
         });
-        if (response.ok) {
-            return response.json();
-        }
-        throw new Error(response.text);
     }
 }
