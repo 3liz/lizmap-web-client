@@ -564,19 +564,7 @@ export default class Digitizing {
                             return false;
                         }
 
-                        const totalOverlay = features[0].getGeometry().get('totalOverlay');
-                        if (totalOverlay) {
-                            this._measureTooltips.forEach((measureTooltip) => {
-                                if(measureTooltip[1] === totalOverlay){
-                                    mainLizmap.map.removeOverlay(measureTooltip[0]);
-                                    mainLizmap.map.removeOverlay(measureTooltip[1]);
-                                    this._measureTooltips.delete(measureTooltip);
-                                    return;
-                                }
-                            });
-                        }
-
-                        this._drawSource.removeFeature(features[0]);
+                        this._eraseFeature(features[0]);
 
                         // Stop erasing mode when no features left
                         if(this._drawSource.getFeatures().length === 0){
@@ -625,6 +613,22 @@ export default class Digitizing {
 
     set angleConstraint(angleConstraint){
         this._angleConstraint = parseInt(angleConstraint)
+    }
+
+    _eraseFeature(feature) {
+        const totalOverlay = feature.getGeometry().get('totalOverlay');
+        if (totalOverlay) {
+            this._measureTooltips.forEach((measureTooltip) => {
+                if(measureTooltip[1] === totalOverlay){
+                    mainLizmap.map.removeOverlay(measureTooltip[0]);
+                    mainLizmap.map.removeOverlay(measureTooltip[1]);
+                    this._measureTooltips.delete(measureTooltip);
+                    return;
+                }
+            });
+        }
+
+        this._drawSource.removeFeature(feature);
     }
 
     _userChangedColor(color) {
