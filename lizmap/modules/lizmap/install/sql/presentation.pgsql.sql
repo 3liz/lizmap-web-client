@@ -5,9 +5,12 @@ CREATE TABLE IF NOT EXISTS presentation (
     title text NOT NULL,
     description text,
     footer text,
-    author text NOT NULL,
     published boolean NOT NULL DEFAULT False,
-    granted_groups text
+    granted_groups text,
+    created_by text NOT NULL,
+    created_at timestamp DEFAULT now()::timestamp(0),
+    updated_by text,
+    updated_at timestamp DEFAULT now()::timestamp(0)
 );
 
 COMMENT ON TABLE presentation IS 'Stores the presentations created for Lizmap maps.';
@@ -17,9 +20,12 @@ COMMENT ON COLUMN presentation.project IS 'Lizmap project key';
 COMMENT ON COLUMN presentation.title IS 'Presentation title';
 COMMENT ON COLUMN presentation.description IS 'Description of the presentation';
 COMMENT ON COLUMN presentation.footer IS 'Optional footer visible in all pages';
-COMMENT ON COLUMN presentation.author IS 'Author (Lizmap login) of the presentation';
 COMMENT ON COLUMN presentation.published IS 'True if the presentation is published, i.e. visible for the users';
 COMMENT ON COLUMN presentation.granted_groups IS 'List of user groups that can see this presentation: a list of groups identifier separated by coma. Ex: admins, others';
+COMMENT ON COLUMN presentation.created_by IS 'Author (Lizmap login) of the presentation';
+COMMENT ON COLUMN presentation.created_at IS 'Creation timestamp';
+COMMENT ON COLUMN presentation.updated_by IS 'Last update author (Lizmap login)';
+COMMENT ON COLUMN presentation.updated_at IS 'Last update timestamp';
 
 
 CREATE TABLE IF NOT EXISTS presentation_page (

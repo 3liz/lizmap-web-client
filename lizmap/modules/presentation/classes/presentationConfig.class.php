@@ -54,18 +54,21 @@ class presentationConfig
         $this->project = $project;
         $this->lproj = $lproj;
         $this->status = true;
-        $this->config = null;
+        $this->config = $this->getPresentations();
     }
 
     /**
      * Get the presentations stored in the database
      * for the current Lizmap project.
      *
-     * @return null|array $presentations List of presentations
+     * @return null|json $presentations List of presentations
      */
     private function getPresentations()
     {
-        return null;
+        $dao = \jDao::get('presentation~presentation');
+        $getPresentations = $dao->findAll();
+
+        return $getPresentations->fetchAllAssociative();
     }
 
     /**
