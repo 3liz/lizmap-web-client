@@ -5,6 +5,8 @@
  * @license MPL-2.0
  */
 
+import Utils from './Utils.js';
+
 /**
  * @class
  * @name WFS
@@ -37,14 +39,13 @@ export default class WFS {
      * @memberof WFS
      */
     async getFeature(options) {
-        const response = await fetch(lizUrls.wms, {
+        return Utils.fetchJSON(lizUrls.wms, {
             method: "POST",
             body: new URLSearchParams({
                 ...this._defaultGetFeatureParameters,
                 ...options
             })
         });
-        return response.json();
     }
 
     /**
@@ -53,13 +54,12 @@ export default class WFS {
      * @memberof WFS
      */
     async describeFeatureType(options) {
-        const response = await fetch(lizUrls.wms, {
+        return Utils.fetchJSON(lizUrls.wms, {
             method: "POST",
             body: new URLSearchParams({
                 ...this._defaultDescribeFeatureTypeParameters,
                 ...options
             })
         });
-        return response.json();
     }
 }
