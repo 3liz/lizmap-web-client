@@ -104,21 +104,9 @@ export default class SelectionTool {
                 if(this.isActive && mainLizmap.digitizing.featureDrawn){
                     // We only handle a single drawn feature currently
                     if (mainLizmap.digitizing.featureDrawn.length > 1){
-                        const lastFeature = mainLizmap.digitizing.featureDrawn[1];
-                        mainLizmap.digitizing.drawLayer.getSource().clear();
-                        mainLizmap.digitizing.drawLayer.getSource().addFeature(lastFeature);
-
+                        // Erase the previous feature
+                        mainLizmap.digitizing._eraseFeature(mainLizmap.digitizing.featureDrawn[0]);
                         mainLizmap.digitizing.saveFeatureDrawn();
-
-                        const oldTooltips = mainLizmap.digitizing._measureTooltips[mainLizmap.digitizing._measureTooltips.length - 2];
-                        if (oldTooltips) {
-                            mainLizmap.map.removeOverlay(oldTooltips[0]);
-                            mainLizmap.map.removeOverlay(oldTooltips[1]);
-                        }
-
-                        // addFeature will provoke a new call of this callack
-                        // so we return to avoid two calls
-                        return;
                     }
 
                     let selectionFeature = mainLizmap.digitizing.featureDrawn[0];
