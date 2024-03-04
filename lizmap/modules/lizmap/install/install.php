@@ -27,7 +27,7 @@ class lizmapModuleInstaller extends jInstallerModule
             if (file_exists($localConfigDist)) {
                 copy($localConfigDist, $localConfig);
             } else {
-                file_put_contents($localConfig, ';<'.'?php die(\'\');?'.'>');
+                file_put_contents($localConfig, ';<?php die(\'\');?>');
             }
         }
         $ini = new \Jelix\IniFile\IniModifier($localConfig);
@@ -35,7 +35,6 @@ class lizmapModuleInstaller extends jInstallerModule
         $ini->save();
 
         if ($this->firstDbExec()) {
-
             // Add log table
             $this->useDbProfile('lizlog');
             $this->execSQLScript('sql/lizlog');
@@ -43,6 +42,10 @@ class lizmapModuleInstaller extends jInstallerModule
             // Add geobookmark table
             $this->useDbProfile('jauth');
             $this->execSQLScript('sql/lizgeobookmark');
+
+            // Add presentation tables
+            $this->useDbProfile('jauth');
+            $this->execSQLScript('sql/presentation');
         }
     }
 }

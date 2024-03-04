@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dao xmlns="http://jelix.org/ns/dao/1.0">
+    <datasources>
+        <primarytable name="presentation" realname="presentation" primarykey="id" />
+    </datasources>
+    <record>
+        <property name="id" fieldname="id" datatype="integer" required="true"/>
+        <property name="repository" fieldname="repository" datatype="text" required="true"/>
+        <property name="project" fieldname="project" datatype="text" required="true"/>
+        <property name="title" fieldname="title" datatype="text" required="true"/>
+        <property name="description" fieldname="description" datatype="text" required="false"/>
+        <property name="footer" fieldname="footer" datatype="text" required="false"/>
+        <property name="author" fieldname="author" datatype="text" required="true"/>
+        <property name="published" fieldname="published" datatype="boolean" required="true"/>
+        <property name="granted_groups" fieldname="granted_groups" datatype="text" required="false"/>
+        <!--<property name="" fieldname="" datatype="string/int/float/date"
+        required="yes" maxlength="" minlength="" regexp="" sequence=""
+        updatepattern="" insertpattern="" selectpattern=""/>-->
+    </record>
+    <factory>
+        <!--<method name="findByStage" type="select/selectfirst/delete/update/php">
+            <parameter name="" />
+            <values>
+                <value property="" value="" />
+            </values>
+            <conditions logic="and/or">
+                <eq property="" value="" />
+            </conditions>
+            <order>
+                <orderitem property="" way="asc/desc" />
+            </order>
+            <limit offset="" count=""/>
+            <body><![CDATA[
+            ]]></body>
+        </method>-->
+    </factory>
+</dao>
