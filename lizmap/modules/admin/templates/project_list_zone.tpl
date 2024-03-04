@@ -78,13 +78,18 @@ to view the hidden columns data and when there is no data for these columns -->
             </td>
 
             <!-- repository -->
-            <td title="{if !empty($mi->title)}{$mi->title|strip_tags|eschtml}{/if}">
+            {* Warning : KEEP the line break after the title to improve the tooltip readability *}
+            <td title="{if !empty($mi->title)}{$mi->title|strip_tags|eschtml}{/if}
+{@admin.project.list.column.path.label@ . ' : ' . $p['folder_repository']}">
+            {* End of warning *}
                 <a target="_blank" href="{$p['url_repository']}">{$mi->id}</a>
             </td>
 
-            <!-- project - KEEP the line break after the title to improve the tooltip readability-->
+            <!-- project -->
+            {* Warning : KEEP the line break after the title to improve the tooltip readability *}
             <td title="{if !empty($p['title'])}{$p['title']|strip_tags|eschtml}{/if}
-            {if !empty($p['abstract'])}{$p['abstract']|strip_tags|eschtml|truncate:150}{/if}">
+{if !empty($p['abstract'])}{$p['abstract']|strip_tags|eschtml|truncate:150}{/if}">
+            {* End of warning *}
             {if $p['needs_update_error']}
                 {*The project cannot be displayed, do not provide a link to open it.*}
                 {$p['id']}
