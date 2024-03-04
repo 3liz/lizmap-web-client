@@ -856,6 +856,7 @@ class QgisProject
      */
     public function readEditionLayers($editionLayers)
     {
+        $embeddedEditionLayers = array();
         foreach ($editionLayers as $key => $obj) {
             // Improve performance by getting provider directly from config
             // Available for lizmap plugin >= 3.3.2
@@ -866,9 +867,16 @@ class QgisProject
 
                 continue;
             }
+            // check for embedded layers
+            $qgisProject = $this->getEmbeddedQgisProject($obj, $embeddedEditionLayers);
+            if ($qgisProject) {
+                $xml = $qgisProject->getXml();
+            } else {
+                $xml = $this->xml;
+            }
 
             // Read layer property from QGIS project XML
-            $layerXml = $this->getXmlLayer2($this->xml, $obj->layerId);
+            $layerXml = $this->getXmlLayer2($xml, $obj->layerId);
             if (is_null($layerXml)) {
                 continue;
             }
@@ -886,14 +894,60 @@ class QgisProject
      */
     public function readEditionForms($editionLayers, $proj)
     {
+        $embeddedEditionLayers = array();
         foreach ($editionLayers as $key => $obj) {
-            $layerXml = $this->getXmlLayer2($this->xml, $obj->layerId);
+            // check for embedded layers
+            $qgisProject = $this->getEmbeddedQgisProject($obj, $embeddedEditionLayers);
+            if ($qgisProject) {
+                $xml = $qgisProject->getXml();
+            } else {
+                $xml = $this->xml;
+            }
+
+            $layerXml = $this->getXmlLayer2($xml, $obj->layerId);
             if (is_null($layerXml)) {
                 continue;
             }
             $formControls = $this->readFormControls($layerXml, $obj->layerId, $proj);
             $proj->getCacheHandler()->setEditableLayerFormCache($obj->layerId, $formControls);
         }
+    }
+
+    /**
+     * @param object $editionLayer
+     * @param array  $embeddedEditionLayers
+     *
+     * @return null|QgisProject
+     */
+    public function getEmbeddedQgisProject($editionLayer, &$embeddedEditionLayers = null)
+    {
+        $qgisProject = null;
+        if (is_array($embeddedEditionLayers)) {
+            $layerDefinition = $this->getLayerDefinition($editionLayer->layerId);
+            if ($layerDefinition && array_key_exists('embedded', $layerDefinition) && $layerDefinition['embedded'] == 1) {
+                if (array_key_exists($layerDefinition['projectPath'], $embeddedEditionLayers)) {
+                    // use QgisProject instance already created
+                    $qgisProject = $embeddedEditionLayers[$layerDefinition['projectPath']];
+                } else {
+                    // create new QgisProject instance or retreive it from cache, if any
+                    $path = realpath(dirname($this->path).DIRECTORY_SEPARATOR.$layerDefinition['projectPath']);
+                    $qgsMtime = filemtime($path);
+                    $qgsCfgMtime = filemtime($path.'.cfg');
+                    $cacheHandler = new ProjectCache($path, $qgsMtime, $qgsCfgMtime, $this->appContext);
+                    $data = $cacheHandler->retrieveProjectData();
+
+                    if ($data) {
+                        $qgisProject = new QgisProject($path, $this->services, $this->appContext, $data['qgis']);
+                    } else {
+                        $qgisProject = new QgisProject($path, $this->services, $this->appContext);
+                    }
+
+                    $embeddedEditionLayers[$layerDefinition['projectPath']] = $qgisProject;
+                }
+            }
+        }
+
+        return $qgisProject;
     }
 
     /**
