@@ -2137,11 +2137,11 @@ window.lizMap = function() {
           for ( const relation of relations ){
               const rLayerId = relation.referencingLayer;
               let preProcessRequest = null;
-              
+
               // prepare utilities object
               let rUtilities = {
                   rLayerId : rLayerId // pivot id or table id
-              };    
+              };
               const pivotAttributeLayerConf = lizMap.getLayerConfigById( rLayerId, lizMap.config.attributeLayers, 'layerId' );
               // check if child is a pivot table
               if (pivotAttributeLayerConf && pivotAttributeLayerConf[1]?.pivot == 'True' && config.relations.pivot && config.relations.pivot[rLayerId]) {
@@ -2188,7 +2188,7 @@ window.lizMap = function() {
                           }
                       }
                   }
-              } else {   
+              } else {
                   // one to n relation
                   const rGetLayerConfig = getLayerConfigById( rLayerId );
                   if ( rGetLayerConfig ) {
@@ -2224,7 +2224,7 @@ window.lizMap = function() {
                                       return fil.referencingLayer == utilities.rLayerId
                                   })[0]?.referencedField;
                                   let filArray = [];
-                                  const feats = {};  
+                                  const feats = {};
                                   features.forEach((feat)=>{
                                       var fid = feat.id.split('.')[1];
                                       feats[fid] = feat;
@@ -2232,10 +2232,10 @@ window.lizMap = function() {
                                           filArray.push(feat.properties[config.relations.pivot[utilities.rLayerId][utilities.mLayerConfig[1].id]])
                                       }
                                   })
-                                                     
+
                                   if (filArray.length) {
                                       let fil = filArray.map(function(val){
-                                          return '"'+referencedFieldForFilter+'" = \''+val+'\'';   
+                                          return '"'+referencedFieldForFilter+'" = \''+val+'\'';
                                       })
 
                                       wmsFilter = fil.join(" OR ");
@@ -2280,7 +2280,7 @@ window.lizMap = function() {
                                       wmsOptions['FILTER'] = rConfigLayer.request_params.filter+' AND '+wmsFilter;
                                   else
                                       wmsOptions['FILTER'] = wmsName+':'+wmsFilter;
-                           
+
                                   var parentDiv = self.parent();
                                   // Fetch queries
                                   // Keep `rConfigLayer` in array with same order that fetch queries
@@ -2300,7 +2300,7 @@ window.lizMap = function() {
                                         }
                                       })
                                   );
-                              }                                            
+                              }
                           }
                       }
                   }
@@ -2309,7 +2309,7 @@ window.lizMap = function() {
                   Promise.allSettled(popupChidrenRequests).then(popupChildrenData => {
 
                       const childPopupElements = [];
-      
+
                       for (let index = 0; index < popupChildrenData.length; index++) {
                           let popupResponse = popupChildrenData[index].value;
                           let popupChildData = popupResponse.popupChildData;
@@ -2318,9 +2318,9 @@ window.lizMap = function() {
                           if (hasPopupContent) {
                               var popupReg = new RegExp('lizmapPopupTable', 'g');
                               popupChildData = popupChildData.replace(popupReg, 'table table-condensed table-striped lizmapPopupTable');
-      
+
                               const configLayer = rConfigLayerAll[index];
-      
+
                               var clname = configLayer.cleanname;
                               if (clname === undefined) {
                                   clname = cleanName(configLayer.name);
@@ -2330,15 +2330,15 @@ window.lizMap = function() {
                               if(utilities.pivotTableId){
                                 var popupFeatureToolbarReg = new RegExp('<lizmap-feature-toolbar ', 'g');
                                 popupChildData = popupChildData.replace(popupFeatureToolbarReg,"<lizmap-feature-toolbar parent-layer-id='"+layerId+"' pivot-layer='"+utilities.pivotTableId+':'+fid+"'")
- 
+
                               }
-      
+
                               const resizeTablesButtons =
                                   '<button class="compact-tables btn btn-small" data-original-title="' + lizDict['popup.table.compact'] + '"><i class="icon-resize-small"></i></button>'+
                                   '<button class="explode-tables btn btn-small hide" data-original-title="' + lizDict['popup.table.explode'] + '"><i class="icon-resize-full"></i></button>';
 
                               var childPopup = $('<div class="lizmapPopupChildren ' + clname + '" data-layername="' + clname + '" data-title="' + configLayer.title + '">' + resizeTablesButtons + popupChildData + '</div>');
-      
+
                               // Manage if the user choose to create a table for children
                               if (['qgis', 'form'].indexOf(configLayer.popupSource) !== -1 && childPopup.find('.lizmap_merged').length != 0) {
                                   // save inputs
@@ -2356,35 +2356,35 @@ window.lizMap = function() {
                                       if (i != 0)
                                           $(e).remove();
                                   });
-      
+
                                   childPopup.find(".lizmapPopupHeader").each(function (i, e) {
                                       if (i != 0)
                                           $(e).remove();
                                   });
-     
+
                                   childPopup.find(".lizmapPopupDiv").contents().unwrap();
                                   childPopup.find(".lizmap_merged").contents().unwrap();
                                   childPopup.find(".lizmapPopupDiv").remove();
                                   childPopup.find(".lizmap_merged").remove();
-                     
+
                                   childPopup.find(".lizmapPopupHidden").hide();
-                      
+
                                   var tChildPopup = $("<table class='lizmap_merged'></table>");
                                   childPopup.append(tChildPopup);
                                   childPopup.find('tr').appendTo(tChildPopup);
-                        
+
                                   childPopup.children('tbody').remove();
                               }
-      
+
                               var oldPopupChild = parentDiv.find('div.lizmapPopupChildren.' + clname);
                               if (oldPopupChild.length != 0) {
                                   oldPopupChild.remove();
                               }
-      
+
                               parentDiv.append(childPopup);
-      
+
                               childPopupElements.push(childPopup);
-      
+
                               // Trigger event for single popup children
                               lizMap.events.triggerEvent(
                                   "lizmappopupchildrendisplayed",
@@ -2392,26 +2392,28 @@ window.lizMap = function() {
                               );
                           }
                       }
-      
+
                       // Handle compact-tables/explode-tables behaviour
-                      $('.lizmapPopupChildren .popupAllFeaturesCompact table').DataTable();
-      
+                      $('.lizmapPopupChildren .popupAllFeaturesCompact table').DataTable({
+                        language: { url:lizUrls["dataTableLanguage"] }
+                      });
+
                       $('.lizmapPopupChildren .compact-tables, .lizmapPopupChildren .explode-tables').tooltip();
-      
+
                       $('.lizmapPopupChildren .compact-tables').off('click').on('click',function() {
                           $(this)
                           .addClass('hide')
                           .siblings('.explode-tables').removeClass('hide')
                           .siblings('.popupAllFeaturesCompact, .lizmapPopupSingleFeature').toggle();
                       });
-      
+
                       $('.lizmapPopupChildren .explode-tables').off('click').on('click',function () {
                           $(this)
                           .addClass('hide')
                           .siblings('.compact-tables').removeClass('hide')
                           .siblings('.popupAllFeaturesCompact, .lizmapPopupSingleFeature').toggle();
                       });
-      
+
                       // Trigger event for all popup children
                       lizMap.events.triggerEvent(
                           "lizmappopupallchildrendisplayed",
