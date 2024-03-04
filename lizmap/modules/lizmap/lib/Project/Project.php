@@ -2187,6 +2187,37 @@ class Project
     }
 
     /**
+     * Project warnings in the CFG file.
+     *
+     * @return null|mixed
+     */
+    public function getProjectCfgWarnings()
+    {
+        // Before plugin 4.0.0, it was a array of errors :
+        // e.g ["ogc_not_valid", "invalid_field_type"] → 2
+        // Starting from 4.0.0, it's an object : with properties for each error type having value as error count :
+        // e.g  {"ogc_not_valid": 1, "invalid_field_type": 3} → 4
+        return $this->cfg->getProjectCfgWarnings();
+    }
+
+    /**
+     * Project warnings counts in the CFG file.
+     *
+     * @see getProjectCfgWarnings() for data structure
+     *
+     * @return int
+     */
+    public function projectCountCfgWarnings()
+    {
+        $warnings = $this->getProjectCfgWarnings();
+        if (is_array($warnings)) {
+            return count($warnings);
+        }
+
+        return array_sum((array) $warnings);
+    }
+
+    /**
      * Check acl rights on the project.
      *
      * @return bool true if the current user as rights on the project
