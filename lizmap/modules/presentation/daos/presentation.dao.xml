@@ -10,9 +10,12 @@
         <property name="title" fieldname="title" datatype="text" required="true"/>
         <property name="description" fieldname="description" datatype="text" required="false"/>
         <property name="footer" fieldname="footer" datatype="text" required="false"/>
-        <property name="author" fieldname="author" datatype="text" required="true"/>
         <property name="published" fieldname="published" datatype="boolean" required="true"/>
         <property name="granted_groups" fieldname="granted_groups" datatype="text" required="false"/>
+        <property name="created_by" fieldname="created_by" datatype="text" required="false"/>
+        <property name="created_at" fieldname="created_at" datatype="timestamp" required="true"/>
+        <property name="updated_by" fieldname="updated_by" datatype="text" required="true"/>
+        <property name="updated_at" fieldname="updated_at" datatype="timestamp" required="true"/>
         <!--<property name="" fieldname="" datatype="string/int/float/date"
         required="yes" maxlength="" minlength="" regexp="" sequence=""
         updatepattern="" insertpattern="" selectpattern=""/>-->

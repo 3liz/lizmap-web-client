@@ -25,6 +25,7 @@ import Legend from './Legend.js';
 import Permalink from './Permalink.js';
 import Search from './Search.js';
 import Tooltip from './Tooltip.js';
+import Presentation from './Presentation.js';
 
 import WMSCapabilities from 'ol/format/WMSCapabilities.js';
 import { Coordinate as olCoordinate } from 'ol/coordinate.js'
@@ -63,6 +64,7 @@ export default class Lizmap {
                         proj4.defs(ref, def);
                     }
                 }
+
                 // Register project projection if unknown
                 const configProj = this._initialConfig.options.projection;
                 if (configProj.ref !== "" && !proj4.defs(configProj.ref)) {
@@ -164,6 +166,7 @@ export default class Lizmap {
                 this.legend = new Legend();
                 this.search = new Search();
                 this.tooltip = new Tooltip();
+                this.presentation = new Presentation();
 
                 // Removed unusable button
                 if (!this.config['printTemplates'] || this.config.printTemplates.length == 0 ) {
