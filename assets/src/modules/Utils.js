@@ -5,6 +5,8 @@
  * @license MPL-2.0
  */
 
+import { NetworkError, HttpError, ResponseError } from './Errors.js';
+
 /**
  * @class
  * @name Utils
@@ -80,6 +82,47 @@ export default class Utils {
         };
         xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
         xhr.send($.param(parameters, true));
+    }
+
+    static fetchJSON(resource, options) {
+        return fetch(resource, options).then(response => {
+            if (response.ok) {
+                const contentType = response.headers.get('Content-Type') || '';
+
+                if (contentType.includes('application/json') ||
+                    contentType.includes('application/vnd.geo+json')) {
+                    return response.json().catch(error => {
+                        return Promise.reject(new ResponseError('Invalid JSON: ' + error.message, response, resource, options));
+                    });
+                }
+
+                return Promise.reject(new ResponseError('Invalid content type: ' + contentType, response, resource, options));
+            }
+
+            return Promise.reject(new HttpError('HTTP error: ' + response.status, response.status, resource, options));
+        }).catch(error => {
+            return Promise.reject(new NetworkError(error.message, resource, options));
+        });
+    }
+
+    static fetchHTML(resource, options) {
+        return fetch(resource, options).then(response => {
+            if (response.ok) {
+                const contentType = response.headers.get('Content-Type') || '';
+
+                if (contentType.includes('text/html')) {
+                    return response.text().catch(error => {
+                        return Promise.reject(new ResponseError('HTML error: ' + error.message, response, resource, options));
+                    });
+                }
+
+                return Promise.reject(new ResponseError('Invalid content type: ' + contentType, response, resource, options));
+            }
+
+            return Promise.reject(new HttpError('HTTP error: ' + response.status, response.status, resource, options));
+        }).catch(error => {
+            return Promise.reject(new NetworkError(error.message, resource, options));
+        });
     }
 
     // Source: https://github.com/openlayers/ol2/blob/master/lib/OpenLayers/Util.js#L1101
