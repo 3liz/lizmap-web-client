@@ -328,6 +328,16 @@ class Project
     }
 
     /**
+     * Get the last date saved in the QGIS file.
+     *
+     * @return string last saved date time of the file
+     */
+    public function getLastSaveDateTime()
+    {
+        return $this->qgis->getLastSaveDateTime();
+    }
+
+    /**
      * Get the version of the Lizmap plugin
      * used by the project editor on QGIS Desktop.
      * Default to 3.1.8 if the CFG is too old.
@@ -2357,6 +2367,17 @@ class Project
         }
 
         return false;
+    }
+
+    /**
+     * Project needs an update on plugin side.
+     * The check is done only is the QGIS file has been edited recently.
+     *
+     * @return bool true if the plugin needs to be updated
+     */
+    public function updateQgisLizmapPlugin()
+    {
+        return $this->getMetadata()->updateQgisLizmapPlugin();
     }
 
     /**

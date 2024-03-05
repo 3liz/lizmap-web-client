@@ -234,6 +234,19 @@ class QgisProjectTest extends TestCase
         }
     }
 
+    public function testReadQgisMetadata()
+    {
+        $testQgis = new qgisProjectForTests();
+        $xml = simplexml_load_file(__DIR__.'/Ressources/readLayers_316.qgs');
+        $this->assertEquals('31607', $testQgis->readQgisVersionForTests($xml));
+        $this->assertEquals('2021-06-14T11:50:51', $testQgis->readLastSaveDateTimeForTests($xml));
+
+        $testQgis = new qgisProjectForTests();
+        $xml = simplexml_load_file(__DIR__.'/Ressources/readLayers_310.qgs');
+        $this->assertEquals('31004', $testQgis->readQgisVersionForTests($xml));
+        $this->assertEquals('', $testQgis->readLastSaveDateTimeForTests($xml));
+    }
+
     public function testReadRelations()
     {
         $expectedRelations = array(

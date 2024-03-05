@@ -41,6 +41,7 @@ class ProjectMetadata
             'map' => $project->getRelativeQgisPath(),
             'acl' => $project->checkAcl(),
             'qgisProjectVersion' => $project->getQgisProjectVersion(),
+            'lastSaveDateTime' => $project->getLastSaveDateTime(),
             'lizmapPluginVersion' => $project->getLizmapPluginVersion(),
             'lizmapWebClientTargetVersion' => $project->getLizmapWebCLientTargetVersion(),
             'needsUpdateError' => $project->needsUpdateError(),
@@ -182,6 +183,16 @@ class ProjectMetadata
     }
 
     /**
+     * The last save date time of the QGIS file.
+     *
+     * @return string the last save date time
+     */
+    public function getLastSaveDateTime()
+    {
+        return $this->data['lastSaveDateTime'];
+    }
+
+    /**
      * The QGIS desktop project version.
      *
      * @return string
@@ -209,6 +220,56 @@ class ProjectMetadata
     public function getLizmapWebCLientTargetVersion()
     {
         return $this->data['lizmapWebClientTargetVersion'];
+    }
+
+    /**
+     * If the QGIS desktop needs an update of the plugin.
+     * The check is not done only if the project has been edited recently compare to the date of the Lizmap Web Client.
+     *
+     * @return bool If the plugin should be updated in QGIS Desktop
+     */
+    public function updateQgisLizmapPlugin()
+    {
+        // Not the best choice, maybe because of git for dev, dates are not correct
+        // $projectDate = date($this->getFileTime());
+        // Better to use lastSaveDateTime in the QGS file
+        $projectDate = strtotime($this->getLastSaveDateTime());
+
+        // Which date to use for reference ?
+        // LWC date is too old. For 3.8 for instance, for dev, it's currently 2023-11-24
+        // But for LWC 3.7, it's ok because we have frequent releases now.
+        // $projectInfos = \Jelix\Core\Infos\AppInfos::load();
+        // $releaseDate = $projectInfos->versionDate;
+        // So let's use a date matching the plugin version
+        $releaseDate = \jApp::config()->minimumRequiredVersion['lizmapDesktopPluginDate'];
+
+        if ($projectDate < strtotime($releaseDate)) {
+            // Project file date is older than internal release date, we do nothing
+            // Project can stay on the server without any update
+            return false;
+        }
+
+        // Project file is newer than the release date
+        // We check against the hard coded version
+        $recommendedVersion = \jApp::config()->minimumRequiredVersion['lizmapDesktopPlugin'];
+
+        $projectVersion = $this->getLizmapPluginVersion();
+        if (!is_numeric($projectVersion)) {
+            // It shouldn't happen to much, but before the version was like "master".
+            return false;
+        }
+
+        // TODO It would be nice to avoid code duplication,
+        // we have code to manage versions for sorting, display, integer comparaison...
+        $intVersion6Digit = (strlen($projectVersion) == 6 ? $projectVersion : '0'.$projectVersion);
+        list($majorVersion, $minorVersion, $patchVersion) = str_split($intVersion6Digit, 2);
+
+        if (version_compare($majorVersion.'.'.$minorVersion.'.'.$patchVersion, $recommendedVersion) >= 0) {
+            // Lizmap plugin version in the CFG file is newer than the hard coded version
+            return false;
+        }
+
+        return true;
     }
 
     /**

@@ -175,6 +175,7 @@ class project_listZone extends jZone
             'lizmap_web_client_target_version' => $projectMetadata->getLizmapWebClientTargetVersion(),
             // convert int to string orderable
             'lizmap_plugin_version' => $this->pluginIntVersionToSortableString($projectMetadata->getLizmapPluginVersion()),
+            'lizmap_plugin_update' => $projectMetadata->updateQgisLizmapPlugin(),
             'file_time' => $projectMetadata->getFileTime(),
             'layer_count' => $projectMetadata->getLayerCount(),
             'acl_groups' => $projectMetadata->getAclGroups(),

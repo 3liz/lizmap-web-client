@@ -40,6 +40,13 @@ class QgisProject
     protected $qgisProjectVersion;
 
     /**
+     * Last saved date time in the QGIS file.
+     *
+     * @var string
+     */
+    protected $lastSaveDateTime;
+
+    /**
      * @var array contains WMS info
      */
     protected $WMSInformation;
@@ -105,6 +112,7 @@ class QgisProject
         'layers',
         'data',
         'qgisProjectVersion',
+        'lastSaveDateTime',
         'customProjectVariables',
     );
 
@@ -223,6 +231,16 @@ class QgisProject
     public function getQgisProjectVersion()
     {
         return $this->qgisProjectVersion;
+    }
+
+    /**
+     * Last saved date time in the QGIS file.
+     *
+     * @return string
+     */
+    public function getLastSaveDateTime()
+    {
+        return $this->lastSaveDateTime;
     }
 
     public function getWMSInformation()
@@ -1192,6 +1210,7 @@ class QgisProject
 
         // get QGIS project version
         $this->qgisProjectVersion = $this->readQgisProjectVersion($qgsXml);
+        $this->lastSaveDateTime = $this->readLastSaveDateTime($qgsXml);
 
         $this->WMSInformation = $this->readWMSInformation($qgsXml);
         $this->canvasColor = $this->readCanvasColor($qgsXml);
@@ -1257,6 +1276,21 @@ class QgisProject
             'WMSContactPerson' => $WMSContactPerson,
             'WMSContactPhone' => $WMSContactPhone,
         );
+    }
+
+    /**
+     * Read  the last modified date of the QGS file.
+     *
+     * @param \SimpleXMLElement $xml
+     *
+     * @return string
+     */
+    protected function readLastSaveDateTime($xml)
+    {
+        $qgisRoot = $xml->xpath('//qgis');
+        $qgisRootZero = $qgisRoot[0];
+
+        return (string) $qgisRootZero->attributes()->saveDateTime;
     }
 
     /**
