@@ -26,14 +26,21 @@ import Legend from './Legend.js';
 import Permalink from './Permalink.js';
 
 import WMSCapabilities from 'ol/format/WMSCapabilities.js';
-import {intersects as extentIntersects} from 'ol/extent.js';
-import { transform as transformOL, transformExtent as transformExtentOL, get as getProjection, clearAllProjections } from 'ol/proj.js';
+import { Coordinate as olCoordinate } from 'ol/coordinate.js'
+import { Extent as olExtent, intersects as olExtentIntersects} from 'ol/extent.js';
+import { Projection as olProjection, transform as olTransform, transformExtent as olTransformExtent, get as getProjection, clearAllProjections } from 'ol/proj.js';
 import { register } from 'ol/proj/proj4.js';
 
 import proj4 from 'proj4';
 import ProxyEvents from './ProxyEvents.js';
 
 /**
+ * A projection as Projection, SRS identifier string or undefined.
+ * @typedef {olProjection|string|undefined} ProjectionLike
+ */
+
+/**
+ * The main Lizmap definition
  * @class
  * @name Lizmap
  */
@@ -47,9 +54,10 @@ export default class Lizmap {
                 // The initialConfig has been cloned because it will be freezed
                 this._initialConfig = new Config(structuredClone(configs.initialConfig), wmsCapabilities);
                 this._state = new State(this._initialConfig);
+                this._utils = Utils;
 
                 // Register projections if unknown
-                for (const [ref, def] of Object.entries(lizProj4)) {
+                for (const [ref, def] of Object.entries(window.lizProj4)) {
                     if (ref !== "" && !proj4.defs(ref)) {
                         proj4.defs(ref, def);
                     }
@@ -78,7 +86,7 @@ export default class Lizmap {
                             break;
                         }
                         // Transform geographic extent to project projection
-                        const extent = transformExtentOL(wmsCapabilities.Capability.Layer.EX_GeographicBoundingBox, 'CRS:84', bbox.crs);
+                        const extent = olTransformExtent(wmsCapabilities.Capability.Layer.EX_GeographicBoundingBox, 'CRS:84', bbox.crs);
                         // Check closest coordinates
                         if (Math.abs(extent[0] - bbox.extent[1]) < Math.abs(extent[0] - bbox.extent[0])
                             && Math.abs(extent[1] - bbox.extent[0]) < Math.abs(extent[1] - bbox.extent[1])
@@ -91,9 +99,9 @@ export default class Lizmap {
                             break;
                         }
                         // Transform extent from project projection to CRS:84
-                        const geoExtent = transformExtentOL(bbox.extent, bbox.crs, 'CRS:84');
+                        const geoExtent = olTransformExtent(bbox.extent, bbox.crs, 'CRS:84');
                         // Check intersects between transform extent and provided extent by WMS Capapbilities
-                        if (!extentIntersects(geoExtent, wmsCapabilities.Capability.Layer.EX_GeographicBoundingBox)) {
+                        if (!olExtentIntersects(geoExtent, wmsCapabilities.Capability.Layer.EX_GeographicBoundingBox)) {
                             // if extents do not intersect, we have to update the projection definition
                             proj4.defs(configProj.ref, configProj.proj4+' +axis=neu');
                             clearAllProjections();
@@ -139,7 +147,6 @@ export default class Lizmap {
                 this.proxyEvents = new ProxyEvents();
                 this.wfs = new WFS();
                 this.wms = new WMS();
-                this.utils = Utils;
                 this.action = new Action();
                 this.featureStorage = new FeatureStorage();
                 this.popup = new Popup();
@@ -154,6 +161,7 @@ export default class Lizmap {
     }
 
     /**
+     * Setting if the new OL map is on top of OL2 one
      * @param {boolean} mode - switch new OL map on top of OL2 one
      */
     set newOlMap(mode){
@@ -161,6 +169,10 @@ export default class Lizmap {
         document.getElementById('newOlMap').style.zIndex = mode ? 750 : 'auto';
     }
 
+    /**
+     * The old lizmap object
+     * @type {object}
+     */
     get lizmap3() {
         return this._lizmap3;
     }
@@ -176,47 +188,88 @@ export default class Lizmap {
 
     /**
      * The lizmap user interface state
-     * @type {Config}
+     * @type {State}
      */
     get state() {
         return this._state;
     }
 
+    /**
+     * The Utils class
+     * @type {Utils}
+     */
+    get utils() {
+        return this._utils;
+    }
+
+    /**
+     * The old lizmap config object
+     * @type {object}
+     */
     get config() {
         return this._lizmap3.config;
     }
 
+    /**
+     * The lizmap map OL2 projection
+     * @type {object}
+     */
     get projection() {
         return this._lizmap3.map.getProjection();
     }
 
+    /**
+     * The QGIS Project crs authentification id
+     * @type {string}
+     */
     get qgisProjectProjection(){
         return this.config.options.qgisProjectProjection.ref;
     }
 
+    /**
+     * The list of XML FeatureType Elements
+     * @type {Array}
+     */
     get vectorLayerFeatureTypes() {
         return this._lizmap3.getVectorLayerFeatureTypes();
     }
 
+    /**
+     * The list of format for file export
+     * @type {string[]}
+     */
     get vectorLayerResultFormat() {
         return this._lizmap3.getVectorLayerResultFormat();
     }
 
+    /**
+     * The Lizmap service URL
+     * @type {string}
+     */
     get serviceURL() {
         return lizUrls.wms + '?' + (new URLSearchParams(lizUrls.params).toString());
     }
 
+    /**
+     * The Lizmap media URL
+     * @type {string}
+     */
     get mediaURL() {
         return lizUrls.media + '?' + (new URLSearchParams(lizUrls.params).toString());
     }
 
+    /**
+     * The map center
+     * @type {number[]}
+     */
     get center() {
         const center = this._lizmap3.map.getCenter();
         return [center.lon, center.lat];
     }
 
     /**
-     * @param {Array} lonlat - lonlat to center to.
+     * Setting the map center
+     * @param {number[]} lonlat - lonlat to center to.
      */
     set center(lonlat) {
         this.map.getView().setCenter(lonlat);
@@ -224,7 +277,7 @@ export default class Lizmap {
 
     /**
      * The view extent - an array with left, bottom, right, top
-     * @type {Array<number>}
+     * @type {number[]}
      */
     get extent() {
         return this.map.getView().calculateExtent();
@@ -238,17 +291,33 @@ export default class Lizmap {
         this.map.getView().fit(bounds, {nearest: true});
     }
 
+    /**
+     * Getting the layer name from the WFS typeName
+     * @param {string} typeName - the WFS typeName
+     * @returns {string} the layer name corresponding to the WFS typeName
+     */
     getNameByTypeName(typeName) {
         return this._lizmap3.getNameByTypeName(typeName);
     }
 
+    /**
+     * Getting the layer name from the Lizmap cleanName
+     * @param {string} cleanName - the Lizmap cleanName
+     * @returns {string} the layer name corresponding to the Lizmap cleanName
+     */
     getLayerNameByCleanName(cleanName) {
         return this._lizmap3.getLayerNameByCleanName(cleanName);
     }
 
-    // Display message on screen for users
-    displayMessage(message, type, close) {
-        this._lizmap3.addMessage(message, type, close);
+    /**
+     * Display message on screen for users
+     * @param {string}  message - the message to display to the user
+     * @param {string}  type    - the message type: 'info', 'error' or 'success'; default 'info'
+     * @param {boolean} close   - add a close button; default false
+     * @param {number}  delay   - The time, in milliseconds that the message will stay on the screen
+     */
+    displayMessage(message, type, close, delay) {
+        this._lizmap3.addMessage(message, type, close, delay);
     }
 
     /**
@@ -259,25 +328,25 @@ export default class Lizmap {
      * See {@link module:ol/proj.transformExtent} for extent transformation.
      * See the transform method of {@link module:ol/geom/Geometry~Geometry} and its
      * subclasses for geometry transforms.
-     * @param {import("./coordinate.js").Coordinate} coordinate Coordinate.
-     * @param {ProjectionLike} source Source projection-like.
-     * @param {ProjectionLike} destination Destination projection-like.
-     * @returns {import("./coordinate.js").Coordinate} Coordinate.
+     * @param {olCoordinate} coordinate    - Coordinate.
+     * @param {ProjectionLike} source      - Source projection-like.
+     * @param {ProjectionLike} destination - Destination projection-like.
+     * @returns {olCoordinate} Coordinate.
      */
     transform(coordinate, source, destination) {
-        return transformOL(coordinate, source, destination);
+        return olTransform(coordinate, source, destination);
     }
 
     /**
      * Expose OpenLayers transformExtent method for external JS.
      * Transforms an extent from source projection to destination projection.  This
      * returns a new extent (and does not modify the original).
-     * @param {import("./extent.js").Extent} extent The extent to transform.
-     * @param {ProjectionLike} source Source projection-like.
-     * @param {ProjectionLike} destination Destination projection-like.
-     * @returns {import("./extent.js").Extent} The transformed extent.
+     * @param {olExtent}       extent      - The extent to transform.
+     * @param {ProjectionLike} source      - Source projection-like.
+     * @param {ProjectionLike} destination - Destination projection-like.
+     * @returns {olExtent} The transformed extent.
      */
     transformExtent(extent, source, destination){
-        return transformExtentOL(extent, source, destination);
+        return olTransformExtent(extent, source, destination);
     }
 }
