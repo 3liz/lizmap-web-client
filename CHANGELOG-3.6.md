@@ -8,10 +8,28 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Added
+
+* Show warnings if the project has some, when connected as an admin
+
+### Changed
+
+* Update the table of QGIS projects in the administration panel
+
 ### Fixed
 
 * Fix issue about rights for anonymous users
+* Fix language for compact table in a children popup
 
+### Translations
+
+* Update translated strings from the Transifex website :
+  * [Lizmap Web Client](https://www.transifex.com/3liz-1/lizmap-locales/dashboard/)
+  * [Jelix](https://www.transifex.com/3liz-1/jelix/dashboard/)
+
+### Backend
+
+* Upgrade Jelix to version 1.8.7
 
 ## 3.6.10 - 2024-02-07
 
