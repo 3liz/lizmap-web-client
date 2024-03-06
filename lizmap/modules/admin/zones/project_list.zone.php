@@ -149,6 +149,12 @@ class project_listZone extends jZone
      */
     private function getProjectListItem($inspectionDirectoryPath, $projectMetadata)
     {
+        $rootRepositories = lizmap::getServices()->getRootRepositories();
+        $repository = lizmap::getRepository($projectMetadata->getRepository())->getOriginalPath();
+        if ($rootRepositories != '' && strpos($repository, $rootRepositories) === 0) {
+            $repository = basename($repository).'/';
+        }
+
         // Build the project properties table
         $projectItem = array(
             'id' => $projectMetadata->getId(),
@@ -164,6 +170,7 @@ class project_listZone extends jZone
                 'view~default:index',
                 array('repository' => $projectMetadata->getRepository())
             ),
+            'folder_repository' => $repository,
             'cfg_warnings_count' => $projectMetadata->countProjectCfgWarnings(),
             'lizmap_web_client_target_version' => $projectMetadata->getLizmapWebClientTargetVersion(),
             // convert int to string orderable
