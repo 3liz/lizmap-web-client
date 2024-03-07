@@ -11,7 +11,8 @@
         "OpenLayers": "readonly",
         "lizMap": "readonly",
         "lizDict": "readonly",
-        "lizUrls": "readonly"
+        "lizUrls": "readonly",
+        "lizProj4": "readonly"
     },
     "parserOptions": {
         "ecmaVersion": 2020,
