@@ -8,12 +8,15 @@
 import { NetworkError, HttpError, ResponseError } from './Errors.js';
 
 /**
+ * The main utils methods
  * @class
  * @name Utils
  */
 export default class Utils {
 
     /**
+     * Download a file provided as a string
+     * @static
      * @param {string} text - file content
      * @param {string} fileType - file's MIME type
      * @param {string} fileName - file'name with extension
@@ -34,9 +37,10 @@ export default class Utils {
 
     /**
      * Send an ajax POST request to download a file
-     * @param {string} url
-     * @param {Array} parameters
-     * @param {Function} callback optionnal callback executed when download ends
+     * @static
+     * @param {string} url        - A string or any other object with a stringifier — including a URL object — that provides the URL of the resource to send the request to.
+     * @param {Array} parameters  - Parameters that will be serialize as a Query string
+     * @param {Function} callback - optional callback executed when download ends
      */
     static downloadFile(url, parameters, callback) {
         var xhr = new XMLHttpRequest();
@@ -84,48 +88,93 @@ export default class Utils {
         xhr.send($.param(parameters, true));
     }
 
+    /**
+     * Fetching a resource from the network, returning a promise that is fulfilled once the response is successful.
+     * @static
+     * @param {string} resource - This defines the resource that you wish to fetch. A string or any other object with a stringifier — including a URL object — that provides the URL of the resource you want to fetch.
+     * @param {object} options  - An object containing any custom settings you want to apply to the request.
+     * @returns {Promise} A Promise that resolves to a successful Response object (status in the range 200 – 299)
+     * @throws {HttpError} In case of not successful response (status not in the range 200 – 299)
+     * @throws {NetworkError} In case of catch exceptions
+     * @see https://developer.mozilla.org/en-US/docs/Web/API/fetch
+     * @see https://developer.mozilla.org/en-US/docs/Web/API/Response
+     */
+    static fetch(resource, options) {
+        return fetch(resource, options).then(response => {
+            if (response.ok) {
+                return response;
+            }
+
+            return Promise.reject(new HttpError('HTTP error: ' + response.status, response.status, resource, options));
+        }).catch(error => {
+            if (error instanceof NetworkError) {
+                return Promise.reject(error);
+            }
+            return Promise.reject(new NetworkError(error.message, resource, options));
+        });
+    }
+
+    /**
+     * Fetching a resource from the network, which is JSON or GeoJSON, returning a promise that resolves with the result of parsing the response body text as JSON.
+     * @static
+     * @param {string} resource - This defines the resource that you wish to fetch. A string or any other object with a stringifier — including a URL object — that provides the URL of the resource you want to fetch.
+     * @param {object} options - An object containing any custom settings you want to apply to the request.
+     * @returns {Promise} A Promise that resolves with the result of parsing the response body text as JSON.
+     * @throws {ResponseError} In case of invalid content type (not application/json or application/vnd.geo+json) or Invalid JSON
+     * @throws {HttpError} In case of not successful response (status not in the range 200 – 299)
+     * @throws {NetworkError} In case of catch exceptions
+     * @see https://developer.mozilla.org/en-US/docs/Web/API/fetch
+     * @see https://developer.mozilla.org/en-US/docs/Web/API/Response
+     */
     static fetchJSON(resource, options) {
-        return fetch(resource, options).then(response => {
-            if (response.ok) {
-                const contentType = response.headers.get('Content-Type') || '';
+        return Utils.fetch(resource, options).then(response => {
+            const contentType = response.headers.get('Content-Type') || '';
 
-                if (contentType.includes('application/json') ||
-                    contentType.includes('application/vnd.geo+json')) {
-                    return response.json().catch(error => {
-                        return Promise.reject(new ResponseError('Invalid JSON: ' + error.message, response, resource, options));
-                    });
-                }
-
-                return Promise.reject(new ResponseError('Invalid content type: ' + contentType, response, resource, options));
+            if (contentType.includes('application/json') ||
+                contentType.includes('application/vnd.geo+json')) {
+                return response.json().catch(error => {
+                    return Promise.reject(new ResponseError('Invalid JSON: ' + error.message, response, resource, options));
+                });
             }
 
-            return Promise.reject(new HttpError('HTTP error: ' + response.status, response.status, resource, options));
-        }).catch(error => {
-            return Promise.reject(new NetworkError(error.message, resource, options));
-        });
+            return Promise.reject(new ResponseError('Invalid content type: ' + contentType, response, resource, options));
+        }).catch(error => {return Promise.reject(error)});
     }
 
+    /**
+     * Fetching a resource from the network, which is HTML, returning a promise that resolves with a text representation of the response body.
+     * @static
+     * @param {string} resource - This defines the resource that you wish to fetch. A string or any other object with a stringifier — including a URL object — that provides the URL of the resource you want to fetch.
+     * @param {object} options - An object containing any custom settings you want to apply to the request.
+     * @returns {Promise} A Promise that resolves with a text representation of the response body.
+     * @throws {ResponseError} In case of invalid content type (not text/html)
+     * @throws {HttpError} In case of not successful response (status not in the range 200 – 299)
+     * @throws {NetworkError} In case of catch exceptions
+     * @see https://developer.mozilla.org/en-US/docs/Web/API/fetch
+     * @see https://developer.mozilla.org/en-US/docs/Web/API/Response
+     */
     static fetchHTML(resource, options) {
-        return fetch(resource, options).then(response => {
-            if (response.ok) {
-                const contentType = response.headers.get('Content-Type') || '';
+        return Utils.fetch(resource, options).then(response => {
+            const contentType = response.headers.get('Content-Type') || '';
 
-                if (contentType.includes('text/html')) {
-                    return response.text().catch(error => {
-                        return Promise.reject(new ResponseError('HTML error: ' + error.message, response, resource, options));
-                    });
-                }
-
-                return Promise.reject(new ResponseError('Invalid content type: ' + contentType, response, resource, options));
+            if (contentType.includes('text/html')) {
+                return response.text().catch(error => {
+                    return Promise.reject(new ResponseError('HTML error: ' + error.message, response, resource, options));
+                });
             }
 
-            return Promise.reject(new HttpError('HTTP error: ' + response.status, response.status, resource, options));
-        }).catch(error => {
-            return Promise.reject(new NetworkError(error.message, resource, options));
-        });
+            return Promise.reject(new ResponseError('Invalid content type: ' + contentType, response, resource, options));
+        }).catch(error => {return Promise.reject(error)});
     }
 
-    // Source: https://github.com/openlayers/ol2/blob/master/lib/OpenLayers/Util.js#L1101
+    /**
+     * Get the corresponding resolution for the scale with meters per unit
+     * @static
+     * @param {number} scale         - The scale
+     * @param {number} metersPerUnit - The meters per unit
+     * @returns {number} The corresponding resolution
+     * @see https://github.com/openlayers/ol2/blob/master/lib/OpenLayers/Util.js#L1101
+     */
     static getResolutionFromScale(scale, metersPerUnit) {
         const inchesPerMeter = 1000 / 25.4;
         const DPI = 96;
@@ -133,6 +182,14 @@ export default class Utils {
         return resolution;
     }
 
+    /**
+     * Get the corresponding scale for the resolution with meters per unit
+     * @static
+     * @param {number} resolution    - The scale
+     * @param {number} metersPerUnit - The meters per unit
+     * @returns {number} The corresponding scale
+     * @see getResolutionFromScale
+     */
     static getScaleFromResolution(resolution, metersPerUnit) {
         const inchesPerMeter = 1000 / 25.4;
         const DPI = 96;
