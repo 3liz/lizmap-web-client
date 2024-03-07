@@ -1352,8 +1352,9 @@ var lizAttributeTable = function() {
                         // Search while typing in text input
                         // Deactivate if too many items
                         var searchWhileTyping = true;
-                        if( dataLength > 50000 )
+                        if( dataLength > 500000 ){
                             searchWhileTyping = false;
+                        }
 
                         var myDom = '<<t>ipl>';
                         if( searchWhileTyping ) {
