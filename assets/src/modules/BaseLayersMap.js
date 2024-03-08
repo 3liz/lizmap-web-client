@@ -292,13 +292,33 @@ export default class BaseLayersMap extends olMap {
             0
         ) - 1;
 
+        const proj3857 = getProjection('EPSG:3857');
+        const max3857Resolution = getWidth(proj3857.getExtent()) / 256;
         this._hasEmptyBaseLayer = false;
         const baseLayers = [];
 
         for (const baseLayerState of mainLizmap.state.baseLayers.getBaseLayers()) {
             let baseLayer;
+            let layerMinResolution;
+            let layerMaxResolution;
+            if (baseLayerState.hasItemState && baseLayerState.hasLayerConfig) {
+                layerMinResolution = baseLayerState.itemState.wmsMinScaleDenominator <= 1 ? undefined : Utils.getResolutionFromScale(baseLayerState.layerConfig.minScale, metersPerUnit);
+                layerMaxResolution = baseLayerState.itemState.wmsMaxScaleDenominator <= 1 ? undefined : Utils.getResolutionFromScale(baseLayerState.layerConfig.maxScale, metersPerUnit);
+            }
             if (baseLayerState.type === BaseLayerTypes.XYZ) {
+                const zMinResolution = max3857Resolution / Math.pow(2, baseLayerState.zmin);
+                // Get max resolution
+                if (layerMaxResolution !== undefined || layerMaxResolution > zMinResolution) {
+                    layerMaxResolution = zMinResolution;
+                }
+                const zMaxResolution = max3857Resolution / Math.pow(2, baseLayerState.zmax);
+                // Get min resolution
+                if (layerMinResolution === undefined || layerMinResolution < zMaxResolution) {
+                    layerMinResolution = zMaxResolution;
+                }
                 baseLayer = new TileLayer({
+                    minResolution: layerMinResolution,
+                    maxResolution: layerMaxResolution,
                     source: new XYZ({
                         url: baseLayerState.url,
                         projection: baseLayerState.crs,
@@ -307,12 +327,9 @@ export default class BaseLayersMap extends olMap {
                     })
                 });
             } else if (baseLayerState.type === BaseLayerTypes.WMS) {
-                const metersPerUnit = mainLizmap.map.getView().getProjection().getMetersPerUnit();
-                let minResolution = baseLayerState.wmsMinScaleDenominator <= 1 ? undefined : Utils.getResolutionFromScale(baseLayerState.layerConfig.minScale, metersPerUnit);
-                let maxResolution = baseLayerState.wmsMaxScaleDenominator <= 1 ? undefined : Utils.getResolutionFromScale(baseLayerState.layerConfig.maxScale, metersPerUnit);
                 baseLayer = new ImageLayer({
-                    minResolution: minResolution,
-                    maxResolution: maxResolution,
+                    minResolution: layerMinResolution,
+                    maxResolution: layerMaxResolution,
                     source: new ImageWMS({
                         url: baseLayerState.url,
                         projection: baseLayerState.crs,
@@ -325,14 +342,16 @@ export default class BaseLayersMap extends olMap {
                     })
                 });
             } else if (baseLayerState.type === BaseLayerTypes.WMTS) {
-                const proj3857 = getProjection('EPSG:3857');
-                const maxResolution = getWidth(proj3857.getExtent()) / 256;
                 const resolutions = [];
                 const matrixIds = [];
 
                 for (let i = 0; i < baseLayerState.numZoomLevels; i++) {
                     matrixIds[i] = i.toString();
-                    resolutions[i] = maxResolution / Math.pow(2, i);
+                    resolutions[i] = max3857Resolution / Math.pow(2, i);
+                }
+                // Get min resolution
+                if (layerMinResolution === undefined || layerMinResolution < resolutions[resolutions.length-1]) {
+                    layerMinResolution = resolutions[resolutions.length-1];
                 }
 
                 const tileGrid = new WMTSTileGrid({
@@ -347,6 +366,8 @@ export default class BaseLayersMap extends olMap {
                 }
 
                 baseLayer = new TileLayer({
+                    minResolution: layerMinResolution,
+                    maxResolution: layerMaxResolution,
                     source: new WMTS({
                         url: url,
                         layer: baseLayerState.layer,
@@ -359,6 +380,8 @@ export default class BaseLayersMap extends olMap {
                 });
             } else if (baseLayerState.type === BaseLayerTypes.Bing) {
                 baseLayer = new TileLayer({
+                    minResolution: layerMinResolution,
+                    maxResolution: layerMaxResolution,
                     preload: Infinity,
                     source: new BingMaps({
                         key: baseLayerState.key,
@@ -369,10 +392,6 @@ export default class BaseLayersMap extends olMap {
                     }),
                 });
             } else if (baseLayerState.type === BaseLayerTypes.Lizmap) {
-                const metersPerUnit = mainLizmap.map.getView().getProjection().getMetersPerUnit();
-                let minResolution = baseLayerState.wmsMinScaleDenominator <= 1 ? undefined : Utils.getResolutionFromScale(baseLayerState.layerConfig.minScale, metersPerUnit);
-                let maxResolution = baseLayerState.wmsMaxScaleDenominator <= 1 ? undefined : Utils.getResolutionFromScale(baseLayerState.layerConfig.maxScale, metersPerUnit);
-
                 if (baseLayerState.layerConfig.cached) {
                     const parser = new WMTSCapabilities();
                     const result = parser.read(lizMap.wmtsCapabilities);
@@ -382,15 +401,15 @@ export default class BaseLayersMap extends olMap {
                     });
 
                     baseLayer = new TileLayer({
-                        minResolution: minResolution,
-                        maxResolution: maxResolution,
+                        minResolution: layerMinResolution,
+                        maxResolution: layerMaxResolution,
                         source: new WMTS(options)
                     });
                 } else {
                     baseLayer = new ImageLayer({
                         // extent: extent,
-                        minResolution: minResolution,
-                        maxResolution: maxResolution,
+                        minResolution: layerMinResolution,
+                        maxResolution: layerMaxResolution,
                         source: new ImageWMS({
                             url: mainLizmap.serviceURL,
                             projection: qgisProjectProjection,
@@ -407,8 +426,8 @@ export default class BaseLayersMap extends olMap {
                     if (useTileWms) {
                         baseLayer = new TileLayer({
                             // extent: extent,
-                            minResolution: minResolution,
-                            maxResolution: maxResolution,
+                            minResolution: layerMinResolution,
+                            maxResolution: layerMaxResolution,
                             source: new TileWMS({
                                 url: mainLizmap.serviceURL,
                                 projection: qgisProjectProjection,
