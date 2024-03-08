@@ -28,7 +28,7 @@ import Search from './Search.js';
 import WMSCapabilities from 'ol/format/WMSCapabilities.js';
 import { Coordinate as olCoordinate } from 'ol/coordinate.js'
 import { Extent as olExtent, intersects as olExtentIntersects} from 'ol/extent.js';
-import { Projection as olProjection, transform as olTransform, transformExtent as olTransformExtent, get as getProjection, clearAllProjections } from 'ol/proj.js';
+import { Projection as olProjection, transform as olTransform, transformExtent as olTransformExtent, get as getProjection, clearAllProjections, addCommon } from 'ol/proj.js';
 import { register } from 'ol/proj/proj4.js';
 
 import proj4 from 'proj4';
@@ -94,7 +94,13 @@ export default class Lizmap {
                             && Math.abs(extent[3] - bbox.extent[2]) < Math.abs(extent[3] - bbox.extent[3])) {
                             // If inverted axis are closest, we have to update the projection definition
                             proj4.defs(configProj.ref, configProj.proj4+' +axis=neu');
+                            // Clear all cached projections and transforms.
                             clearAllProjections();
+                            // Add transforms to and from EPSG:4326 and EPSG:3857.  This function should
+                            // need to be called again after `clearAllProjections()`
+                            // @see ol/proj.js#L731
+                            addCommon();
+                            // Need to register projections again
                             register(proj4);
                             break;
                         }
@@ -105,6 +111,11 @@ export default class Lizmap {
                             // if extents do not intersect, we have to update the projection definition
                             proj4.defs(configProj.ref, configProj.proj4+' +axis=neu');
                             clearAllProjections();
+                            // Add transforms to and from EPSG:4326 and EPSG:3857. This function should
+                            // need to be called again after `clearAllProjections()`
+                            // @see ol/proj.js#L731
+                            addCommon();
+                            // Need to re register projections again
                             register(proj4);
                             break;
                         }
