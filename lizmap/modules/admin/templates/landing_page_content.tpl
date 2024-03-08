@@ -3,7 +3,7 @@
   <div>
     <h2>{@admin.menu.lizmap.landingPageContent.label@}</h2>
 
-    {form $form, 'admin~landing_page_content:save'}
+    {form $form, 'admin~landing_page_content:save' , array(),  'htmlbootstrap'}
         {formcontrols}
             <h3>{ctrl_label}</h3>
             <div> {ctrl_control} </div>
