@@ -1002,8 +1002,6 @@ CREATE TABLE tests_projects.edition_layer_embed_child (
     descr text
 );
 
-
-
 --
 -- Name: form_filter_child_bus_stops_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
 --
@@ -1684,41 +1682,6 @@ CREATE TABLE tests_projects.birds_areas (
 );
 
 
---
--- Name: form_edition_snap_point; Type: TABLE; Schema: tests_projects; Owner: -
---
-
-CREATE TABLE tests_projects.form_edition_snap_point (
-    id SERIAL PRIMARY KEY,
-    geom public.geometry(Point,4326)
-);
-
---
--- Name: form_edition_snap_line; Type: TABLE; Schema: tests_projects; Owner: -
---
-
-CREATE TABLE tests_projects.form_edition_snap_line (
-    id SERIAL PRIMARY KEY,
-    geom public.geometry(LineString,4326)
-);
-
---
--- Name: form_edition_snap_polygon; Type: TABLE; Schema: tests_projects; Owner: -
---
-
-CREATE TABLE tests_projects.form_edition_snap_polygon (
-    id SERIAL PRIMARY KEY,
-    geom public.geometry(Polygon,4326)
-);
-
---
--- Name: form_edition_snap_control; Type: TABLE; Schema: tests_projects; Owner: -
---
-
-CREATE TABLE tests_projects.form_edition_snap_control (
-    id SERIAL PRIMARY KEY,
-    geom public.geometry(Point,4326)
-);
 --
 -- Name: form_edition_snap_point; Type: TABLE; Schema: tests_projects; Owner: -
 --
