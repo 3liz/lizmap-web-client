@@ -35,13 +35,14 @@ export class BaseLayerState extends EventDispatcher {
     }
 
     /**
-     * set if the base layer is loaded in a single layer ImageLayer or not
+     * Set if the base layer is loaded in a single WMS Layer or not
      * @param {boolean} val
      */
     set singleWMSLayer(val){
         this._singleWMSLayer = val;
     }
     /**
+     * The base layer is loaded in a single WMS Layer or not
      * @type {boolean}
      */
     get singleWMSLayer(){

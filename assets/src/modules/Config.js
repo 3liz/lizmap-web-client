@@ -68,7 +68,6 @@ export class Config {
         this._hasFormFilterLayers = true;
         this._hasLoginFilteredLayers = true;
         this._hasDatavizConfig = true;
-        this._singleWMSLayer = null;
 
         const theConfig = deepFreeze(cfg);
 
@@ -97,7 +96,6 @@ export class Config {
         }
         this._theConfig = theConfig;
         this._theWmsCapabilities = theWmsCapabilities;
-        this._singleWMSLayer = theConfig.options?.wms_single_request_for_all_layers == "True" ? true : false;
 
         const optionalConfigProperties = [
             'metadata',
@@ -420,13 +418,5 @@ export class Config {
             this._datavizOptions = new DatavizOptionsConfig(this._theConfig.datavizLayers.dataviz);
         }
         return this._datavizOptions;
-    }
-    /**
-     * Config singleWMSLayer
-     *
-     * @type {Boolean}
-     */
-    get singleWMSLayer(){
-        return this._singleWMSLayer;
     }
 }

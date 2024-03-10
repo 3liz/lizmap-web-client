@@ -54,9 +54,10 @@ export class MapState extends EventDispatcher {
 
     /**
      * Creating the map state
+     * @param {OptionConfig}     [options]         - main configuration options
      * @param {string|undefined} [startupFeatures] - The features to highlight at startup in GeoJSON
      */
-    constructor(startupFeatures) {
+    constructor(options, startupFeatures) {
         super();
         this._ready = false;
         // default values
@@ -68,6 +69,13 @@ export class MapState extends EventDispatcher {
         this._scaleDenominator = -1;
         this._pointResolution = -1;
         this._pointScaleDenominator = -1;
+
+        // Values from options
+        this._singleWMSLayer = false;
+        if (options) {
+            this._singleWMSLayer = options.wms_single_request_for_all_layers; // default value is defined as false
+        }
+
         this._startupFeatures = startupFeatures;
     }
 
@@ -233,5 +241,14 @@ export class MapState extends EventDispatcher {
      */
     get startupFeatures() {
         return this._startupFeatures;
+    }
+
+    /**
+     * Config singleWMSLayer
+     *
+     * @type {Boolean}
+     */
+    get singleWMSLayer(){
+        return this._singleWMSLayer;
     }
 }

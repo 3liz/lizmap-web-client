@@ -140,7 +140,7 @@ describe('Config', function () {
         const initialConfig = new Config(config, capabilities);
 
         expect(initialConfig.options).to.be.instanceOf(OptionsConfig)
-        expect(initialConfig.options.wms_single_request_for_all_layers).to.be.eq("True")
+        expect(initialConfig.options.wms_single_request_for_all_layers).to.be.eq(true)
     })
 
 })
