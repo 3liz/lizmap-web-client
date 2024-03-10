@@ -19,7 +19,7 @@ export default class SingleWMSLayer {
      */
     //constructor(singleWMSLayerList) {
     constructor(mainMapInstance) {
-        if (!mainLizmap.initialConfig.singleWMSLayer || !mainMapInstance || !(mainMapInstance instanceof map) || mainMapInstance.statesSingleWMSLayers.size == 0) {
+        if (!mainLizmap.state.map.singleWMSLayer || !mainMapInstance || !(mainMapInstance instanceof map) || mainMapInstance.statesSingleWMSLayers.size == 0) {
             throw new ValidationError('The Configuration is not valid, could not load the map as single WMS Layer');
         }
 
@@ -104,7 +104,7 @@ export default class SingleWMSLayer {
          * the WMS Ratio.
          * @type {number} 
          */
-        this._WMSRatio = 1.1;
+        this._WMSRatio = mainMapInstance._WMSRatio;
 
         /**
          * the image format
@@ -364,5 +364,4 @@ export default class SingleWMSLayer {
             }
         })
     }
-     
 }

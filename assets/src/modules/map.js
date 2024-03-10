@@ -35,6 +35,7 @@ import DragZoom from 'ol/interaction/DragZoom.js';
 import { defaults as defaultInteractions } from 'ol/interaction.js';
 import { always } from 'ol/events/condition.js';
 import SingleWMSLayer from './SingleWMSLayer.js';
+import { Tile } from 'ol';
 
 /**
  * Class initializing Openlayers Map.
@@ -136,7 +137,6 @@ export default class map extends olMap {
         // Get pixel ratio, if High DPI is disabled do not use device pixel ratio
         const pixelRatio = this._hidpi ? this.pixelRatio_ : 1;
 
-        this._useTileWms = this.getSize().reduce(
         this._useTileWms = this.getSize().reduce(
             (r /*accumulator*/, x /*currentValue*/, i /*currentIndex*/) => r || Math.ceil(x*this._WMSRatio*pixelRatio) > wmsMaxSize[i],
             false,
@@ -243,7 +243,7 @@ export default class map extends olMap {
                         });
                     }
                 } else {
-                    if(mainLizmap.initialConfig.singleWMSLayer){
+                    if(mainLizmap.state.map.singleWMSLayer){
                         this._statesSingleWMSLayers.set(node.name,node);
                         node.singleWMSLayer = true;
                         return
@@ -461,7 +461,7 @@ export default class map extends olMap {
                         source: new WMTS(options)
                     });
                 } else {
-                    if(mainLizmap.initialConfig.singleWMSLayer){
+                    if(mainLizmap.state.map.singleWMSLayer){
                         baseLayerState.singleWMSLayer = true;
                         this._statesSingleWMSLayers.set(baseLayerState.name, baseLayerState); 
                     } else {
@@ -749,19 +749,31 @@ export default class map extends olMap {
     get overlayLayersGroup(){
         return this._overlayLayersGroup;
     }
-
+    /**
+     * Key (name) / value (state) Map of layers loaded in a single WMS image
+     * @type {Map}
+     */
     get statesSingleWMSLayers(){
         return this._statesSingleWMSLayers;
     }
-
+    /**
+     * Map and base Layers are loaded as TileWMS
+     * @type {Boolean}
+     */
     get useTileWms(){
         return this._useTileWms;
     }
-
+    /**
+     * TileGrid configuration when layers is loaded as TileWMS
+     * @type {null|TileGrid}
+     */
     get customTileGrid(){
         return this._customTileGrid;
     }
-
+    /**
+     * WMS/TileWMS high dpi support
+     * @type {Boolean}
+     */
     get hidpi(){
         return this._hidpi;
     }

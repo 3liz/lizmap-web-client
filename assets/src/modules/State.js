@@ -25,7 +25,7 @@ export class State extends EventDispatcher {
     constructor(initialCfg, startupFeatures) {
         super()
         this._initialConfig = initialCfg;
-        this._map = new MapState(startupFeatures);
+        this._map = new MapState(initialCfg.options, startupFeatures);
         this._map.addListener(this.dispatch.bind(this), 'map.state.changed');
         this._baseLayers = null;
         this._collection = null;
