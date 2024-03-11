@@ -1861,7 +1861,15 @@ class QgisForm implements QgisFormControlsInterface
         $storageUrlFilePath = RemoteStorageRequest::getRemoteUrl($storageUrl, $fileName);
         if ($storageUrlFilePath) {
             // evaluate expression
-            $evaluatedStorageUrl = $this->evaluateExpression(array($fieldRef => $storageUrlFilePath));
+
+            // pass the form context for the evaluation of field based expressions
+            // geometry is passed as null, so expressions with geometry will be not evaluated
+            $form_feature = array(
+                'type' => 'Feature',
+                'geometry' => null,
+                'properties' => $this->form->getAllData(),
+            );
+            $evaluatedStorageUrl = $this->evaluateExpression(array($fieldRef => $storageUrlFilePath), $form_feature);
 
             if ($evaluatedStorageUrl && property_exists($evaluatedStorageUrl, $fieldRef)) {
                 $path = $evaluatedStorageUrl->{$fieldRef};
