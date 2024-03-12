@@ -725,6 +725,12 @@ class QgisForm implements QgisFormControlsInterface
                     continue;
                 }
                 if ($fieldName === $expByUserLoginKey) {
+                    // Do not check if the authenticated user has "loginFilterOverride"
+                    if ($this->loginFilteredOverride) {
+                        continue;
+                    }
+
+                    // If not, set an error
                     $loginFilterConfig = $project->getLoginFilteredConfig($this->layer->getName());
                     $form->setErrorOn($loginFilterConfig->filterAttribute, \jLocale::get('view~edition.message.error.feature.editable'));
 
