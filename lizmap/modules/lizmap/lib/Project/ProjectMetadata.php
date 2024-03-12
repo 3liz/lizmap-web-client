@@ -212,6 +212,57 @@ class ProjectMetadata
     }
 
     /**
+     * If the QGIS desktop needs an update of the plugin.
+     * The check is done only if the project has been edited recently compare to the date of the Lizmap Web Client.
+     *
+     * @return bool If the plugin should be updated in QGIS Desktop
+     */
+    public function qgisLizmapPluginUpdateNeeded()
+    {
+        $projectInfos = \Jelix\Core\Infos\AppInfos::load();
+        $releaseVersion = $projectInfos->version;
+        // Version of the current application Lizmap Web Client
+        if (substr_count($releaseVersion, '-') == 1 && substr_count($releaseVersion, '.') == 2) {
+            // One dash and two dots
+            // We are in dev mode : version is like "3.8.0-pre" for instance
+            // Dates on QGS files are not totally correct, due to git changing the creation date when changing branch
+            // We do not process this check for now
+            return false;
+        }
+        // Version is now either "3.6.11-pre.6402" → non official package
+        // Or stable release "3.6.11" → official package
+
+        // Later, we can maybe use the date in the XML file, reading the first 3 lines
+        $projectDate = date($this->getFileTime());
+
+        $releaseDate = \jApp::config()->minimumRequiredVersion['lizmapDesktopPluginDate'];
+
+        if ($projectDate < strtotime($releaseDate)) {
+            // Project file date is older than internal release date, we do nothing
+            // Project can stay on the server without any update
+            return false;
+        }
+
+        // Project file is newer than the release date
+
+        $lizmapProjectVersion = $this->getLizmapPluginVersion();
+        if (!is_numeric($lizmapProjectVersion)) {
+            // It shouldn't happen to much, but let's not check this version
+            // It can happen than CFG contains version=master in some circumstances
+            return false;
+        }
+
+        // We check against the hard coded version number
+        $recommendedVersion = \jApp::config()->minimumRequiredVersion['lizmapDesktopPlugin'];
+        if ($recommendedVersion <= $lizmapProjectVersion) {
+            // Lizmap plugin version in the CFG file is newer than the hard coded version
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Check if the project needs an update which is critical.
      *
      * @return bool true if the project needs an update

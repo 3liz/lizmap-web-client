@@ -556,7 +556,7 @@ class lizMapCtrl extends jController
         }
 
         $serverInfoAccess = (\jAcl2::check('lizmap.admin.access') || \jAcl2::check('lizmap.admin.server.information.view'));
-        if ($serverInfoAccess && $lproj->projectCountCfgWarnings() >= 1) {
+        if ($serverInfoAccess && ($lproj->projectCountCfgWarnings() >= 1 || $lproj->qgisLizmapPluginUpdateNeeded())) {
             $jsWarning = "
                 lizMap.events.on(
                     {
