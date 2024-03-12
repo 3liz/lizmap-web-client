@@ -2360,6 +2360,17 @@ class Project
     }
 
     /**
+     * Project needs an update on plugin side.
+     * The check is done only if the QGIS file has been edited recently.
+     *
+     * @return bool true if the plugin needs to be updated
+     */
+    public function qgisLizmapPluginUpdateNeeded()
+    {
+        return $this->getMetadata()->qgisLizmapPluginUpdateNeeded();
+    }
+
+    /**
      * Project warnings in the CFG file.
      *
      * @return null|mixed
