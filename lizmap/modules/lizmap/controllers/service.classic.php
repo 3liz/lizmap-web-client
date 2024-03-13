@@ -19,12 +19,12 @@ use Lizmap\Request\WMTSRequest;
 class serviceCtrl extends jController
 {
     /**
-     * @var Lizmap\Project\Project
+     * @var null|Lizmap\Project\Project
      */
     protected $project;
 
     /**
-     * @var lizmapRepository
+     * @var null|lizmapRepository
      */
     protected $repository;
 
@@ -236,7 +236,8 @@ class serviceCtrl extends jController
      */
     protected function setACAOHeader($resp)
     {
-        if (!$this->request->header('Origin')) {
+        // The repository does not exists or the request header does not contains Origin
+        if (!$this->repository || !$this->request->header('Origin')) {
             return;
         }
         $referer = $this->request->header('Referer');
@@ -394,9 +395,12 @@ class serviceCtrl extends jController
             return false;
         }
 
-        if ($forOptionsMethodOnly) {
-            $this->repository = $lrep;
+        // Define first class private properties
+        // because the repository exists
+        $this->services = lizmap::getServices();
+        $this->repository = $lrep;
 
+        if ($forOptionsMethodOnly) {
             return true;
         }
 
@@ -417,6 +421,10 @@ class serviceCtrl extends jController
             return false;
         }
 
+        // Define the project class private property
+        // because the project exists
+        $this->project = $lproj;
+
         // Redirect if no rights to access this repository
         if (!$lproj->checkAcl()) {
             jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
@@ -429,10 +437,7 @@ class serviceCtrl extends jController
         $pParams['map'] = $lproj->getRelativeQgisPath();
         $params = \Lizmap\Request\Proxy::normalizeParams($pParams);
 
-        // Define class private properties
-        $this->project = $lproj;
-        $this->repository = $lrep;
-        $this->services = lizmap::getServices();
+        // Define parameters class private property
         $this->params = $params;
 
         // Get the optional filter token
