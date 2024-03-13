@@ -1,3 +1,4 @@
+// @ts-check
 import { test, expect } from '@playwright/test';
 
 test.describe('Print', () => {
@@ -208,7 +209,7 @@ test.describe('Print in popup', () => {
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=print';
         await page.goto(url, { waitUntil: 'networkidle' });
-        let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData().includes('GetFeatureInfo'));
+        let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
         await page.locator('#newOlMap').click({ position: { x: 409, y: 186 } });
         let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
         expect(getFeatureInfoRequest.postData()).toMatch(/GetFeatureInfo/);
@@ -491,5 +492,126 @@ test.describe('Print 3857', () => {
         await page.locator('#button-print').click();
         await page.locator('#print-scale').selectOption('72224');
         await page.locator('#print-launch').click();
+    });
+});
+
+test.describe('Print base layers', () => {
+    test.beforeEach(async ({ page }) => {
+        const url = '/index.php/view/map/?repository=testsrepository&project=base_layers';
+        await page.goto(url, { waitUntil: 'networkidle' });
+
+        await page.locator('#button-print').click();
+
+        await page.locator('#print-scale').selectOption('72224');
+    });
+
+    test('Print requests', async ({ page }) => {
+        // Print osm-mapnik
+        let getPrintRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
+        await page.locator('#print-launch').click();
+
+        let getPrintRequest = await getPrintRequestPromise;
+        let getPrintPostData = getPrintRequest.postData();
+        expect(getPrintPostData).toContain('SERVICE=WMS')
+        expect(getPrintPostData).toContain('REQUEST=GetPrint')
+        expect(getPrintPostData).toContain('VERSION=1.3.0')
+        expect(getPrintPostData).toContain('FORMAT=pdf')
+        expect(getPrintPostData).toContain('TRANSPARENT=true')
+        expect(getPrintPostData).toContain('CRS=EPSG%3A3857')
+        expect(getPrintPostData).toContain('DPI=100')
+        expect(getPrintPostData).toContain('TEMPLATE=simple')
+        //expect(postData).toContain('map0%3AEXTENT=')
+        expect(getPrintPostData).toContain('map0%3ASCALE=72224')
+        expect(getPrintPostData).toContain('map0%3ALAYERS=osm-mapnik&')
+        expect(getPrintPostData).toContain('map0%3ASTYLES=d%C3%A9faut&')
+        expect(getPrintPostData).toContain('map0%3AOPACITIES=255')
+
+        let getPrintResponse = await getPrintRequest.response();
+        expect(getPrintResponse?.headers()['content-type']).toBe('application/pdf');
+
+        // Print osm-mapnik & quartiers
+        let getMapRequestPromise = page.waitForRequest(/REQUEST=GetMap/);
+        await page.getByLabel('quartiers').check();
+        let getMapRequest = await getMapRequestPromise;
+        await getMapRequest.response();
+
+        getPrintRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
+        await page.locator('#print-launch').click();
+
+        getPrintRequest = await getPrintRequestPromise;
+        getPrintPostData = getPrintRequest.postData();
+        expect(getPrintPostData).not.toBeNull()
+        expect(getPrintPostData).toContain('SERVICE=WMS')
+        expect(getPrintPostData).toContain('REQUEST=GetPrint')
+        expect(getPrintPostData).toContain('VERSION=1.3.0')
+        expect(getPrintPostData).toContain('FORMAT=pdf')
+        expect(getPrintPostData).toContain('TRANSPARENT=true')
+        expect(getPrintPostData).toContain('CRS=EPSG%3A3857')
+        expect(getPrintPostData).toContain('DPI=100')
+        expect(getPrintPostData).toContain('TEMPLATE=simple')
+        //expect(postData).toContain('map0%3AEXTENT=')
+        expect(getPrintPostData).toContain('map0%3ASCALE=72224')
+        expect(getPrintPostData).toContain('map0%3ALAYERS=osm-mapnik%2Cquartiers&')
+        expect(getPrintPostData).toContain('map0%3ASTYLES=d%C3%A9faut%2Cdefault&')
+        expect(getPrintPostData).toContain('map0%3AOPACITIES=255%2C255')
+
+        getPrintResponse = await getPrintRequest.response();
+        expect(getPrintResponse?.headers()['content-type']).toBe('application/pdf');
+
+        // Print quartiers not open-topo-map
+        await page.locator('#switcher-baselayer').getByRole('combobox').selectOption('open-topo-map');
+
+        await page.waitForResponse(response => response.status() === 200 && response.headers()['content-type'] === 'image/png');
+
+        getPrintRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
+        await page.locator('#print-launch').click();
+
+        getPrintRequest = await getPrintRequestPromise;
+        getPrintPostData = getPrintRequest.postData();
+        expect(getPrintPostData).not.toBeNull()
+        expect(getPrintPostData).toContain('SERVICE=WMS')
+        expect(getPrintPostData).toContain('REQUEST=GetPrint')
+        expect(getPrintPostData).toContain('VERSION=1.3.0')
+        expect(getPrintPostData).toContain('FORMAT=pdf')
+        expect(getPrintPostData).toContain('TRANSPARENT=true')
+        expect(getPrintPostData).toContain('CRS=EPSG%3A3857')
+        expect(getPrintPostData).toContain('DPI=100')
+        expect(getPrintPostData).toContain('TEMPLATE=simple')
+        //expect(postData).toContain('map0%3AEXTENT=')
+        expect(getPrintPostData).toContain('map0%3ASCALE=72224')
+        expect(getPrintPostData).toContain('map0%3ALAYERS=quartiers&')
+        expect(getPrintPostData).toContain('map0%3ASTYLES=default&')
+        expect(getPrintPostData).toContain('map0%3AOPACITIES=255')
+
+        getPrintResponse = await getPrintRequest.response();
+        expect(getPrintResponse?.headers()['content-type']).toBe('application/pdf');
+
+        // Print quartiers_baselayer & quartiers
+        await page.locator('#switcher-baselayer').getByRole('combobox').selectOption('quartiers_baselayer');
+        getMapRequest = await getMapRequestPromise;
+        await getMapRequest.response();
+
+        getPrintRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
+        await page.locator('#print-launch').click();
+
+        getPrintRequest = await getPrintRequestPromise;
+        getPrintPostData = getPrintRequest.postData();
+        expect(getPrintPostData).not.toBeNull()
+        expect(getPrintPostData).toContain('SERVICE=WMS')
+        expect(getPrintPostData).toContain('REQUEST=GetPrint')
+        expect(getPrintPostData).toContain('VERSION=1.3.0')
+        expect(getPrintPostData).toContain('FORMAT=pdf')
+        expect(getPrintPostData).toContain('TRANSPARENT=true')
+        expect(getPrintPostData).toContain('CRS=EPSG%3A3857')
+        expect(getPrintPostData).toContain('DPI=100')
+        expect(getPrintPostData).toContain('TEMPLATE=simple')
+        //expect(postData).toContain('map0%3AEXTENT=')
+        expect(getPrintPostData).toContain('map0%3ASCALE=72224')
+        expect(getPrintPostData).toContain('map0%3ALAYERS=quartiers_baselayer%2Cquartiers&')
+        expect(getPrintPostData).toContain('map0%3ASTYLES=default%2Cdefault&')
+        expect(getPrintPostData).toContain('map0%3AOPACITIES=255%2C255')
+
+        getPrintResponse = await getPrintRequest.response();
+        expect(getPrintResponse?.headers()['content-type']).toBe('application/pdf');
     });
 });
