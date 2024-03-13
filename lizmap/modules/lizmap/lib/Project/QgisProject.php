@@ -464,7 +464,7 @@ class QgisProject
     /**
      * @param string $layerId
      *
-     * @return null|array|string
+     * @return null|array
      */
     public function getLayerDefinition($layerId)
     {
