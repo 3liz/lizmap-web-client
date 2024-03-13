@@ -232,28 +232,10 @@ export default class Print extends HTMLElement {
         const styleLayers = [];
         const opacityLayers = [];
 
-        // Get active baselayer, and add the corresponding QGIS layer if needed
-        const activeBaseLayerName = mainLizmap._lizmap3.map.baseLayer.name;
-        const externalBaselayersReplacement = mainLizmap._lizmap3.getExternalBaselayersReplacement();
-        const exbl = externalBaselayersReplacement?.[activeBaseLayerName];
-        if (mainLizmap.config.layers?.[exbl]) {
-            const activeBaseLayerConfig = mainLizmap.config.layers[exbl];
-            if (activeBaseLayerConfig?.id && mainLizmap.config.options?.useLayerIDs == 'True') {
-                printLayers.push(activeBaseLayerConfig.id);
-            } else if (activeBaseLayerConfig?.shortname) {
-                printLayers.push(activeBaseLayerConfig.shortname);
-            } else {
-                printLayers.push(exbl);
-            }
-            styleLayers.push('');
-            // TODO: handle baselayers opacity
-            opacityLayers.push(255);
-        }
-
         // Add selected base layer if any
         const selectedBaseLayer = lizMap.mainLizmap.state.baseLayers.selectedBaseLayer;
-        if (selectedBaseLayer && selectedBaseLayer.layerConfig !== null) {
-            printLayers.push(selectedBaseLayer.layerConfig.shortname);
+        if (selectedBaseLayer && selectedBaseLayer.hasItemState) {
+            printLayers.push(selectedBaseLayer.itemState.wmsName);
             styleLayers.push(selectedBaseLayer.itemState.wmsSelectedStyleName);
             opacityLayers.push(parseInt(255 * selectedBaseLayer.itemState.opacity * selectedBaseLayer.layerConfig.opacity));
         }
