@@ -201,9 +201,10 @@ abstract class OGCRequest
             'X-Qgis-Service-Url' => $this->project->getOgcServiceUrl(),
         );
         // If the OGC request is provided from command line the request is null
-        if ($this->appContext->getCoord()->request) {
-            $host = $this->appContext->getCoord()->request->getDomainName();
-            $proto = $this->appContext->getCoord()->request->getProtocol();
+        $browserRequest = $this->appContext->getCoord()->request;
+        if ($browserRequest) {
+            $host = $browserRequest->getDomainName();
+            $proto = $browserRequest->getProtocol();
             $headers = array_merge(
                 $headers,
                 array(

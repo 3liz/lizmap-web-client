@@ -101,6 +101,8 @@ class serviceCtrl extends jController
         }
 
         // Standard request
+        // All requests are not possible for all services. The possibility is
+        // checked into the process() method of $ogcRequest.
         if ($request == 'GETCAPABILITIES') {
             return $this->GetCapabilities($ogcRequest);
         }
@@ -494,7 +496,7 @@ class serviceCtrl extends jController
      * @urlparam string $repository Lizmap Repository
      * @urlparam string $project Name of the project : mandatory.
      *
-     * @param mixed $ogcRequest
+     * @param WFSRequest|WMSRequest|WMTSRequest $ogcRequest
      *
      * @return jResponseBinary JSON configuration file for the specified project
      */
@@ -541,7 +543,7 @@ class serviceCtrl extends jController
      * @urlparam string $repository Lizmap Repository
      * @urlparam string $project Name of the project : mandatory.
      *
-     * @param mixed $wmsRequest
+     * @param WMSRequest $wmsRequest
      *
      * @return jResponseBinary text/xml Web Map Context
      */
@@ -562,7 +564,7 @@ class serviceCtrl extends jController
      * @urlparam string $SERVICE mandatory, has to be WMS
      * @urlparam string $REQUEST mandatory, has to be GetSchemaExtension
      *
-     * @param mixed $wmsRequest
+     * @param WMSRequest $wmsRequest
      *
      * @return jResponseBinary text/xml the WMS GetSchemaExtension 1.3.0 Schema Extension.
      */
@@ -583,7 +585,7 @@ class serviceCtrl extends jController
      * @urlparam string $repository Lizmap Repository
      * @urlparam string $project Name of the project : mandatory
      *
-     * @param WFSRequest|WMSRequest|WMTSRequest $wmsRequest
+     * @param WMSRequest $wmsRequest
      *
      * @return jResponseBinary|jResponseXml image rendered by the Map Server or Service Exception
      */
@@ -629,7 +631,7 @@ class serviceCtrl extends jController
      * @urlparam string $repository Lizmap Repository
      * @urlparam string $project Name of the project : mandatory
      *
-     * @param mixed $wmsRequest
+     * @param WMSRequest $wmsRequest
      *
      * @return jResponseBinary Image of the legend for 1 to n layers, returned by the Map Server
      */
@@ -650,7 +652,7 @@ class serviceCtrl extends jController
      * @urlparam string $repository Lizmap Repository
      * @urlparam string $project Name of the project : mandatory
      *
-     * @param mixed $wmsRequest
+     * @param WMSRequest $wmsRequest
      *
      * @return jResponseBinary feature Info
      */
@@ -680,7 +682,7 @@ class serviceCtrl extends jController
      * @urlparam string $repository Lizmap Repository
      * @urlparam string $project Name of the project : mandatory
      *
-     * @param mixed $wmsRequest
+     * @param WMSRequest $wmsRequest
      *
      * @return jResponseBinary image rendered by the Map Server
      */
@@ -713,7 +715,7 @@ class serviceCtrl extends jController
      * @urlparam string $repository Lizmap Repository
      * @urlparam string $project Name of the project : mandatory
      *
-     * @param mixed $wmsRequest
+     * @param WMSRequest $wmsRequest
      *
      * @return jResponseBinary image rendered by the Map Server
      */
@@ -748,7 +750,7 @@ class serviceCtrl extends jController
      * @urlparam string $repository Lizmap Repository
      * @urlparam string $project Name of the project : mandatory
      *
-     * @param mixed $wmsRequest
+     * @param WMSRequest $wmsRequest
      *
      * @return jResponseBinary SLD Style XML
      */
@@ -844,7 +846,7 @@ class serviceCtrl extends jController
      * @urlparam string $repository Lizmap Repository
      * @urlparam string $project Name of the project : mandatory
      *
-     * @param mixed $wfsRequest
+     * @param WFSRequest $wfsRequest
      *
      * @return jResponseBinary WFS GetFeature response
      */
@@ -905,7 +907,7 @@ class serviceCtrl extends jController
      * @urlparam string $repository Lizmap Repository
      * @urlparam string $project Name of the project : mandatory
      *
-     * @param mixed $wfsRequest
+     * @param WFSRequest $wfsRequest
      *
      * @return jResponseBinary JSON content
      */
@@ -962,7 +964,7 @@ class serviceCtrl extends jController
     }
 
     /**
-     * @param mixed $wmtsRequest
+     * @param WMTSRequest $wmtsRequest
      *
      * @return jResponseBinary
      */

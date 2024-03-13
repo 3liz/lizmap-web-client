@@ -364,7 +364,7 @@ class WFSRequest extends OGCRequest
         // but in Lizmap, the user can do a selection, based on featureid, and can request
         // a download, a WFS GetFeature request, based on this selection with a restriction
         // to map extent, so featureid and bbox parameter can be set mutually and featureid
-        // parameter needs to be transform in an expression filter.
+        // parameter needs to be transformed into an expression filter.
         // The transformation is only available if the QGIS layer has been set.
         if ($this->param('featureid')
             && $this->param('bbox')
