@@ -234,7 +234,7 @@ class QgisProjectTest extends TestCase
         }
     }
 
-    public function testReadQgisMetadata()
+    public function testReadQgisMetadataFromXml()
     {
         $testQgis = new qgisProjectForTests();
         $xml = simplexml_load_file(__DIR__.'/Ressources/readLayers_316.qgs');
@@ -243,6 +243,17 @@ class QgisProjectTest extends TestCase
         $testQgis = new qgisProjectForTests();
         $xml = simplexml_load_file(__DIR__.'/Ressources/readLayers_310.qgs');
         $this->assertEquals('31004', $testQgis->readQgisVersionForTests($xml));
+    }
+
+    public function testReadQgisMetadataFromLines()
+    {
+        $testQgis = new qgisProjectForTests();
+        $xml_path = __DIR__.'/Ressources/readLayers_316.qgs';
+        $this->assertEquals('2021-06-14T11:50:51', $testQgis->readLastSaveDateTimeForTests($xml_path));
+
+        $testQgis = new qgisProjectForTests();
+        $xml_path = __DIR__.'/Ressources/readLayers_310.qgs';
+        $this->assertEquals('', $testQgis->readLastSaveDateTimeForTests($xml_path));
     }
 
     public function testReadRelations()
