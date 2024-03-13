@@ -15,6 +15,10 @@ namespace Lizmap\Project;
 
 use Lizmap\App;
 
+/**
+ * @phpstan-import-type MapLayerDef from QgisProject
+ * @phpstan-import-type VectorLayerDef from QgisProject
+ */
 class Project
 {
     /**
@@ -385,7 +389,7 @@ class Project
     /**
      * @param string $layerId
      *
-     * @return null|array
+     * @return null|MapLayerDef|VectorLayerDef
      */
     public function getLayerDefinition($layerId)
     {
