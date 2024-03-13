@@ -58,7 +58,7 @@ export default class Snapping {
         this._setSnapLayersVisibility = () => {
             if(this._active){
                 this._snapLayers.forEach((layer)=>{
-                    this._snapEnabled[layer] = mainLizmap.state.layersAndGroupsCollection.getLayerById(layer).visibility
+                    this._snapEnabled[layer] = this.getLayerTreeVisibility(layer);
                 })
 
                 this._sortSnapLayers();
@@ -100,11 +100,11 @@ export default class Snapping {
 
                                 this._snapLayers = [...editionLayerConfig.snap_layers];
                                 this._snapLayers.forEach((layer)=>{
-                                    this._snapEnabled[layer] = mainLizmap.state.layersAndGroupsCollection.getLayerById(layer).visibility
+                                    this._snapEnabled[layer] = this.getLayerTreeVisibility(layer);
                                 })
                                 this._snapLayers.forEach((layer)=>{
                                     // on init enable snap by default on visible layers
-                                    this._snapToggled[layer] = mainLizmap.state.layersAndGroupsCollection.getLayerById(layer).visibility
+                                    this._snapToggled[layer] = this.getLayerTreeVisibility(layer);
                                 })
 
                                 // sorting of layers by name and put disabled layers on bottom of the list
@@ -213,6 +213,36 @@ export default class Snapping {
 
     toggle(){
         this.active = !this._active;
+    }
+    /**
+     * Getting the layer visibility from the layer tree state
+     * @param   {string} layerId - the layer id
+     * @returns {boolean} the layer visibility
+     */
+    getLayerTreeVisibility(layerId){
+        let visible = false;
+        let layerConfig = mainLizmap.lizmap3.getLayerConfigById(layerId);
+
+        if(layerConfig && layerConfig[0]) {
+            try {
+                visible = lizMap.mainLizmap.state.layerTree.getTreeLayerByName(layerConfig[0]).visibility
+            } catch( error){
+                visible = false
+            }
+        }
+        return visible;
+    }
+    /**
+     * Getting the layer tile or the layer name for snap layers list
+     * @param   {string} layerId - the layer id
+     * @returns {string} the layer title or layer name
+     */
+    getLayerTitle(layerId){
+        let layerConfig = mainLizmap.lizmap3.getLayerConfigById(layerId);
+        if (layerConfig) {
+            return layerConfig[1].title || layerConfig[1].name;
+        } 
+        return "";
     }
 
     get snapEnabled(){
