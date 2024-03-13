@@ -3068,9 +3068,20 @@ lizmap-treeview img.legend[src="data:image/png;base64, "]{
 }
 
 /* Snap layer list */
+.snap-panel-controls {
+    margin:10px;
+}
+
+.snap-layers-list-title {
+    font-weight: bold;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
 .snap-layers-list {
-    padding-left: 5%;
     overflow: auto;
+    display: flex;
+    flex-direction: column;
 }
 
 .snap-layer {

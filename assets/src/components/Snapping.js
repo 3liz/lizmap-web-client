@@ -36,21 +36,21 @@ export default class Snapping extends HTMLElement {
                         </button>
                     </div>
                 </div>
+                ${mainLizmap.snapping.active ?
+                    html`<div class="snap-panel-controls">
+                        <p class="snap-layers-list-title">${lizDict['snapping.list.title']}</p>
+                        <div class="snap-layers-list">
+                            ${mainLizmap.snapping?.config?.snap_layers.map((snapLayer) =>
+                                html`<div class="snap-layer">
+                                    <input id="${'snap-layer-'+snapLayer}" name="${snapLayer}" @change=${()=> mainLizmap.snapping.snapToggled = snapLayer} .disabled=${!mainLizmap.snapping?.config?.snap_enabled[snapLayer]} .checked=${mainLizmap.snapping?.config?.snap_on_layers[snapLayer]} type="checkbox"/><label data-original-title="${mainLizmap.snapping?.config?.snap_enabled[snapLayer] ? lizDict['snapping.list.toggle'] : lizDict['snapping.list.disabled']}" for="${'snap-layer-'+snapLayer}" class="${mainLizmap.snapping?.config?.snap_enabled[snapLayer] ? '' : 'snap-disabled'}">${mainLizmap.snapping?.getLayerTitle(snapLayer)}</label>
+                                </div>
+                                `
+                            )}
+                        </div>
+                    </div>`
+                    : ''
+                }
             </div>
-            ${mainLizmap.snapping.active ?
-                html`<div class="control-group">
-                    <h3>${lizDict['snapping.list.title']}</h3>
-                    <div class="snap-layers-list">
-                        ${mainLizmap.snapping?.config?.snap_layers.map((snapLayer) =>
-                            html`<div class="snap-layer">
-                                <input id="${'snap-layer-'+snapLayer}" name="${snapLayer}" @change=${()=> mainLizmap.snapping.snapToggled = snapLayer} .disabled=${!mainLizmap.snapping?.config?.snap_enabled[snapLayer]} .checked=${mainLizmap.snapping?.config?.snap_on_layers[snapLayer]} type="checkbox"/><label for="${'snap-layer-'+snapLayer}" class="${mainLizmap.snapping?.config?.snap_enabled[snapLayer] ? '' : 'snap-disabled'}">${mainLizmap.state.layersAndGroupsCollection.getLayerById(snapLayer).title}</label>
-                            </div>
-                            `
-                        )}
-                    </div>
-                </div>`
-                : ''
-            }
         <div>`;
 
         render(mainTemplate(), this);
@@ -58,6 +58,10 @@ export default class Snapping extends HTMLElement {
         mainEventDispatcher.addListener(
             () => {
                 render(mainTemplate(), this);
+                // display tooltips on rendered layer list
+                $('.snap-layer label', this).tooltip({
+                    placement: 'top'
+                });
             },
             [
                 'snapping.config',
