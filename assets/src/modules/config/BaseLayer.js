@@ -758,8 +758,9 @@ export class BaseLayersConfig {
      * @param {object} options                             - the lizmap config object for options
      * @param {LayersConfig} layers                        - the lizmap layers config
      * @param {LayerTreeGroupConfig} [baseLayersTreeGroup] - the layer tree group config which contains base layers
+     * @param {LayerTreeGroupConfig} [hiddenTreeGroup]     - the layer tree group config which contains hidden layers and in old config base layers
      */
-    constructor(cfg, options, layers, baseLayersTreeGroup) {
+    constructor(cfg, options, layers, baseLayersTreeGroup, hiddenTreeGroup) {
         if (!cfg || typeof cfg !== "object") {
             throw new ValidationError('The cfg parameter is not an Object!');
         }
@@ -799,6 +800,16 @@ export class BaseLayersConfig {
                 if (opt.hasOwnProperty('key') && options.hasOwnProperty(opt['key'])) {
                     extendedCfg[opt.name]['key'] = options[opt['key']];
                 }
+            }
+        }
+
+        // Add base layers config from hidden tree group
+        if (hiddenTreeGroup) {
+            for (const layerTreeItem of hiddenTreeGroup.getChildren()) {
+                if ( !extendedCfg.hasOwnProperty(layerTreeItem.name) ) {
+                    continue;
+                }
+                extendedCfg[layerTreeItem.name].layerConfig = layerTreeItem.layerConfig;
             }
         }
 

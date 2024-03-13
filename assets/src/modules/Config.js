@@ -180,7 +180,14 @@ export class Config {
                 break;
             }
         }
-        this._baselayers = new BaseLayersConfig(baseLayersCfg, this._theConfig.options, this.layers, baseLayerTreeItem);
+        let hiddenTreeItem = null;
+        for (const layerTreeItem of this.layerTree.getChildren()) {
+            if ( layerTreeItem.name.toLowerCase() == 'hidden') {
+                hiddenTreeItem = layerTreeItem;
+                break;
+            }
+        }
+        this._baselayers = new BaseLayersConfig(baseLayersCfg, this._theConfig.options, this.layers, baseLayerTreeItem, hiddenTreeItem);
         return this._baselayers;
     }
 
