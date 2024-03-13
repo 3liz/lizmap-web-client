@@ -15,6 +15,51 @@ namespace Lizmap\Project;
 use Lizmap\App;
 use Lizmap\Form;
 
+/**
+ * @phpstan-type MapLayerDef array{
+ *  type: string,
+ *  id: string,
+ *  name: string,
+ *  shortname: string,
+ *  title: string,
+ *  abstract: string,
+ *  proj4: string,
+ *  srid: int,
+ *  authid: int,
+ *  datasource: string,
+ *  provider: string,
+ *  keywords: array<string>,
+ *  qgsmtime?: int,
+ *  file?: string,
+ *  embedded?: int,
+ *  projectPath?: string
+ * }
+ * @phpstan-type VectorLayerDef array{
+ *  type: string,
+ *  id: string,
+ *  name: string,
+ *  shortname: string,
+ *  title: string,
+ *  abstract: string,
+ *  proj4: string,
+ *  srid: int,
+ *  authid: int,
+ *  datasource: string,
+ *  provider: string,
+ *  keywords: array<string>,
+ *  fields: array,
+ *  aliases: array,
+ *  defaults: array,
+ *  constraints: array,
+ *  wfsFields: array,
+ *  webDavFields: array,
+ *  webDavBaseUris: array,
+ *  qgsmtime?: int,
+ *  file?: string,
+ *  embedded?: int,
+ *  projectPath?: string
+ * }
+ */
 class QgisProject
 {
     /**
@@ -464,7 +509,7 @@ class QgisProject
     /**
      * @param string $layerId
      *
-     * @return null|array|string
+     * @return null|MapLayerDef|VectorLayerDef
      */
     public function getLayerDefinition($layerId)
     {
@@ -1549,7 +1594,7 @@ class QgisProject
      *
      * @throws \Exception
      *
-     * @return array[] list of layers. Each item is a list of layer properties
+     * @return array<MapLayerDef|VectorLayerDef> list of layers. Each item is a list of layer properties
      */
     protected function readLayers($xml)
     {
