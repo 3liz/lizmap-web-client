@@ -310,6 +310,32 @@ class serviceCtrl extends jController
     }
 
     /**
+     * Build an Etag based on a key and the project (key, repository key, file time and config file time)
+     * and optionally the user.
+     *
+     * @param string $key  The first element of the Etag
+     * @param bool   $user Use the user to build the Etag
+     *
+     * @return string the build Etag
+     */
+    protected function buildEtag($key, $user = true)
+    {
+        $etag = $key.'-'.$this->repository->getKey().'~'.$this->project->getKey();
+        if ($user) {
+            $appContext = $this->project->getAppContext();
+            if ($appContext->UserIsConnected()) {
+                $etag .= '-'.implode('~', $appContext->aclUserPublicGroupsId());
+            } else {
+                $etag .= '-__anonymous';
+            }
+        }
+        $cacheHandler = $this->project->getCacheHandler();
+        $etag .= '-'.$cacheHandler->getFileTime().'~'.$cacheHandler->getCfgFileTime();
+
+        return base_convert(strlen($etag), 10, 16).'-'.sha1($etag);
+    }
+
+    /**
      * @param jResponseBinary $rep
      * @param mixed           $ogcResult
      * @param mixed           $filename
@@ -505,20 +531,7 @@ class serviceCtrl extends jController
         $rep = $this->getResponse('binary');
 
         // Etag header and cache control
-        $etag = 'getcapabilities~'.strtolower($service);
-        if ($version) {
-            $etag .= '~'.$version;
-        }
-        $etag .= '-'.$this->repository->getKey().'~'.$this->project->getKey();
-        $appContext = $this->project->getAppContext();
-        if ($appContext->UserIsConnected()) {
-            $etag .= '-'.implode('~', $appContext->aclUserPublicGroupsId());
-        } else {
-            $etag .= '-__anonymous';
-        }
-        $cacheHandler = $this->project->getCacheHandler();
-        $etag .= '-'.$cacheHandler->getFileTime().'~'.$cacheHandler->getCfgFileTime();
-        $etag = sha1($etag);
+        $etag = $this->buildEtag('GetCapabilities~'.strtolower($service).($version ? '~'.$version : ''));
         if ($this->canBeCached() && $rep->isValidCache(null, $etag)) {
             $this->setACAOHeader($rep);
 
@@ -783,17 +796,7 @@ class serviceCtrl extends jController
         $rep = $this->getResponse('json');
 
         // Etag header and cache control
-        $etag = 'getprojectconfig';
-        $etag .= '-'.$this->repository->getKey().'~'.$this->project->getKey();
-        $appContext = $this->project->getAppContext();
-        if ($appContext->UserIsConnected()) {
-            $etag .= '-'.implode('~', $appContext->aclUserPublicGroupsId());
-        } else {
-            $etag .= '-__anonymous';
-        }
-        $cacheHandler = $this->project->getCacheHandler();
-        $etag .= '-'.$cacheHandler->getFileTime().'~'.$cacheHandler->getCfgFileTime();
-        $etag = sha1($etag);
+        $etag = $this->buildEtag('GetProjectConfig');
         if ($this->canBeCached() && $rep->isValidCache(null, $etag)) {
             $this->setACAOHeader($rep);
 
@@ -829,7 +832,17 @@ class serviceCtrl extends jController
 
         /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
+
+        // Etag header and cache control
+        $etag = $this->buildEtag('GetKeyValueConfig');
+        if ($this->canBeCached() && $rep->isValidCache(null, $etag)) {
+            $this->setACAOHeader($rep);
+
+            return $rep;
+        }
+
         $rep->data = $this->project->getLayersLabeledFieldsConfig();
+        $this->setEtagCacheHeaders($rep, $etag);
         $this->setACAOHeader($rep);
 
         return $rep;
@@ -936,12 +949,7 @@ class serviceCtrl extends jController
         $authid = $this->iParam('authid');
 
         // Etag header and cache control
-        $etag = 'getproj4';
-        $etag .= '-'.$this->repository->getKey().'~'.$this->project->getKey();
-        $etag .= '-'.$authid;
-        $cacheHandler = $this->project->getCacheHandler();
-        $etag .= '-'.$cacheHandler->getFileTime().'~'.$cacheHandler->getCfgFileTime();
-        $etag = sha1($etag);
+        $etag = $this->buildEtag('GetProj4-'.$authid, false);
         if ($this->canBeCached() && $rep->isValidCache(null, $etag)) {
             return $rep;
         }
