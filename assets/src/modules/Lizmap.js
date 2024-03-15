@@ -24,6 +24,7 @@ import Popup from './Popup.js';
 import Legend from './Legend.js';
 import Permalink from './Permalink.js';
 import Search from './Search.js';
+import Tooltip from './Tooltip.js';
 
 import WMSCapabilities from 'ol/format/WMSCapabilities.js';
 import { Coordinate as olCoordinate } from 'ol/coordinate.js'
@@ -162,6 +163,7 @@ export default class Lizmap {
                 this.popup = new Popup();
                 this.legend = new Legend();
                 this.search = new Search();
+                this.tooltip = new Tooltip();
 
                 // Removed unusable button
                 if (!this.config['printTemplates'] || this.config.printTemplates.length == 0 ) {
