@@ -14,9 +14,7 @@
       </tr>
       <tr>
         <td>
-            <select id="tooltip-layer-list" class="btn-tooltip-layer-list loading" disabled="">
-                <option value="">---</option>
-            </select>
+          <lizmap-tooltip></lizmap-tooltip>
         </td>
       </tr>
     </table>
