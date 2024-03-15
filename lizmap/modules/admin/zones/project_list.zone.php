@@ -175,6 +175,7 @@ class project_listZone extends jZone
             'lizmap_web_client_target_version' => $projectMetadata->getLizmapWebClientTargetVersion(),
             // convert int to string orderable
             'lizmap_plugin_version' => $this->pluginIntVersionToSortableString($projectMetadata->getLizmapPluginVersion()),
+            'lizmap_plugin_update' => $projectMetadata->qgisLizmapPluginUpdateNeeded(),
             'file_time' => $projectMetadata->getFileTime(),
             'layer_count' => $projectMetadata->getLayerCount(),
             'acl_groups' => $projectMetadata->getAclGroups(),
@@ -318,6 +319,10 @@ class project_listZone extends jZone
      */
     private function pluginIntVersionToSortableString(string $intVersion): string
     {
+        if ($intVersion == 'master' || $intVersion == 'dev') {
+            return '00.00.00';
+        }
+
         // in some old plugin the version is already human readable
         if (strpos($intVersion, '.') != false) {
             list($majorVersion, $minorVersion, $patchVersion) = explode('.', $intVersion);

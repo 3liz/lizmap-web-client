@@ -31,7 +31,7 @@ describe('Request JSON metadata', function () {
             expect(response.body.qgis_server_info.plugins.lizmap_server.version).to.match(/(\d+\.\d+|master|dev)/i)
 
             // Desktop plugin
-            expect(response.body.lizmap_desktop_plugin_version).to.match(/(\d+\.\d+|master|dev)/i)
+            expect(response.body.lizmap_desktop_plugin_version).to.match(/(\d{5,6})/i)
 
             // check the repositories
             expect(response.body.repositories.testsrepository.label).to.eq("Tests repository");
@@ -135,7 +135,7 @@ describe('Request JSON metadata', function () {
             expect(response.body.qgis_server_info.py_qgis_server.found).to.eq(true)
 
             // Desktop plugin
-            expect(response.body.lizmap_desktop_plugin_version).to.match(/(\d+\.\d+|master|dev)/i)
+            expect(response.body.lizmap_desktop_plugin_version).to.match(/(\d{5,6})/i)
 
             // check the repositories
             expect(response.body.repositories.testsrepository.label).to.eq("Tests repository");

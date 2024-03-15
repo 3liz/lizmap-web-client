@@ -66,6 +66,16 @@ class QgisProjectForTests extends QgisProject
         return $this->readLayers($xml);
     }
 
+    public function readQgisVersionForTests($xml)
+    {
+        return $this->readQgisProjectVersion($xml);
+    }
+
+    public function readLastSaveDateTimeForTests($file)
+    {
+        return $this->readLastSaveDateTime($file);
+    }
+
     public function readRelationsForTests($xml)
     {
         $this->xml = $xml;
