@@ -41,6 +41,7 @@ class ProjectMetadata
             'map' => $project->getRelativeQgisPath(),
             'acl' => $project->checkAcl(),
             'qgisProjectVersion' => $project->getQgisProjectVersion(),
+            'lastSaveDateTime' => $project->getLastSaveDateTime(),
             'lizmapPluginVersion' => $project->getLizmapPluginVersion(),
             'lizmapWebClientTargetVersion' => $project->getLizmapWebCLientTargetVersion(),
             'needsUpdateError' => $project->needsUpdateError(),
@@ -192,6 +193,16 @@ class ProjectMetadata
     }
 
     /**
+     * The last save date time of the QGIS file.
+     *
+     * @return string the last saved date contained in the QGS file
+     */
+    public function getLastSaveDateTime()
+    {
+        return $this->data['lastSaveDateTime'];
+    }
+
+    /**
      * The version of the Desktop lizmap plugin.
      *
      * @return string
@@ -209,6 +220,49 @@ class ProjectMetadata
     public function getLizmapWebCLientTargetVersion()
     {
         return $this->data['lizmapWebClientTargetVersion'];
+    }
+
+    /**
+     * If the QGIS desktop needs an update of the plugin.
+     * The check is done only if the project has been edited recently compare to the date of the Lizmap Web Client.
+     *
+     * @return bool If the plugin should be updated in QGIS Desktop
+     */
+    public function qgisLizmapPluginUpdateNeeded()
+    {
+        $projectDate = $this->getLastSaveDateTime();
+        if (empty($projectDate)) {
+            // The QGS file didn't get a date in the XML
+            // It's like QGIS < 3.16, according to unit test.
+            return true;
+        }
+
+        $projectDate = strtotime($projectDate);
+        $releaseDate = \jApp::config()->minimumRequiredVersion['lizmapDesktopPluginDate'];
+
+        if ($projectDate < strtotime($releaseDate)) {
+            // Project file date is older than internal release date, we do nothing
+            // Project can stay on the server without any update
+            return false;
+        }
+
+        // Project file is newer than the release date
+
+        $lizmapProjectVersion = $this->getLizmapPluginVersion();
+        if (!is_numeric($lizmapProjectVersion)) {
+            // It shouldn't happen to much, but let's not check this version
+            // It can happen than CFG contains version=master in some circumstances
+            return false;
+        }
+
+        // We check against the hard coded version number
+        $recommendedVersion = \jApp::config()->minimumRequiredVersion['lizmapDesktopPlugin'];
+        if ($recommendedVersion <= $lizmapProjectVersion) {
+            // Lizmap plugin version in the CFG file is newer than the hard coded version
+            return false;
+        }
+
+        return true;
     }
 
     /**
