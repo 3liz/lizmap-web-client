@@ -41,6 +41,7 @@ class ProjectMetadata
             'map' => $project->getRelativeQgisPath(),
             'acl' => $project->checkAcl(),
             'qgisProjectVersion' => $project->getQgisProjectVersion(),
+            'lastSaveDateTime' => $project->getLastSaveDateTime(),
             'lizmapPluginVersion' => $project->getLizmapPluginVersion(),
             'lizmapWebClientTargetVersion' => $project->getLizmapWebCLientTargetVersion(),
             'needsUpdateError' => $project->needsUpdateError(),
@@ -192,6 +193,16 @@ class ProjectMetadata
     }
 
     /**
+     * The last save date time of the QGIS file.
+     *
+     * @return string the last saved date contained in the QGS file
+     */
+    public function getLastSaveDateTime()
+    {
+        return $this->data['lastSaveDateTime'];
+    }
+
+    /**
      * The version of the Desktop lizmap plugin.
      *
      * @return string
@@ -219,22 +230,14 @@ class ProjectMetadata
      */
     public function qgisLizmapPluginUpdateNeeded()
     {
-        $projectInfos = \Jelix\Core\Infos\AppInfos::load();
-        $releaseVersion = $projectInfos->version;
-        // Version of the current application Lizmap Web Client
-        if (substr_count($releaseVersion, '-') == 1 && substr_count($releaseVersion, '.') == 2) {
-            // One dash and two dots
-            // We are in dev mode : version is like "3.8.0-pre" for instance
-            // Dates on QGS files are not totally correct, due to git changing the creation date when changing branch
-            // We do not process this check for now
-            return false;
+        $projectDate = $this->getLastSaveDateTime();
+        if (empty($projectDate)) {
+            // The QGS file didn't get a date in the XML
+            // It's like QGIS < 3.16, according to unit test.
+            return true;
         }
-        // Version is now either "3.6.11-pre.6402" → non official package
-        // Or stable release "3.6.11" → official package
 
-        // Later, we can maybe use the date in the XML file, reading the first 3 lines
-        $projectDate = date($this->getFileTime());
-
+        $projectDate = strtotime($projectDate);
         $releaseDate = \jApp::config()->minimumRequiredVersion['lizmapDesktopPluginDate'];
 
         if ($projectDate < strtotime($releaseDate)) {
