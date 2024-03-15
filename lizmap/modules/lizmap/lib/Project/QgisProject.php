@@ -85,6 +85,13 @@ class QgisProject
     protected $qgisProjectVersion;
 
     /**
+     * Last saved date time in the QGIS file.
+     *
+     * @var string the last saved date contained in the QGS file
+     */
+    protected $lastSaveDateTime;
+
+    /**
      * @var array contains WMS info
      */
     protected $WMSInformation;
@@ -150,6 +157,7 @@ class QgisProject
         'layers',
         'data',
         'qgisProjectVersion',
+        'lastSaveDateTime',
         'customProjectVariables',
     );
 
@@ -268,6 +276,16 @@ class QgisProject
     public function getQgisProjectVersion()
     {
         return $this->qgisProjectVersion;
+    }
+
+    /**
+     * Last saved date time in the QGIS file.
+     *
+     * @return string the last saved date contained in the QGS file
+     */
+    public function getLastSaveDateTime()
+    {
+        return $this->lastSaveDateTime;
     }
 
     public function getWMSInformation()
@@ -1237,6 +1255,7 @@ class QgisProject
 
         // get QGIS project version
         $this->qgisProjectVersion = $this->readQgisProjectVersion($qgsXml);
+        $this->lastSaveDateTime = $this->readLastSaveDateTime($qgs_path);
 
         $this->WMSInformation = $this->readWMSInformation($qgsXml);
         $this->canvasColor = $this->readCanvasColor($qgsXml);
@@ -1325,6 +1344,30 @@ class QgisProject
         }
 
         return (int) $a;
+    }
+
+    /**
+     * Read the last modified date of the QGS file.
+     *
+     * @param string $qgs_path the path to the QGS file
+     *
+     * @return string the last saved date contained in the QGS file
+     */
+    protected function readLastSaveDateTime($qgs_path)
+    {
+        $fp = fopen($qgs_path, 'r');
+        $version = '';
+        for ($i = 0; $i < 5; ++$i) {
+            $line = fgets($fp);
+            if (preg_match('/saveDateTime="(?P<date>[\S]*)"/', $line, $matches)) {
+                $version = $matches['date'];
+
+                break;
+            }
+        }
+        fclose($fp);
+
+        return $version;
     }
 
     /**

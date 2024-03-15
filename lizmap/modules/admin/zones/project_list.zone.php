@@ -319,6 +319,10 @@ class project_listZone extends jZone
      */
     private function pluginIntVersionToSortableString(string $intVersion): string
     {
+        if ($intVersion == 'master' || $intVersion == 'dev') {
+            return '00.00.00';
+        }
+
         // in some old plugin the version is already human readable
         if (strpos($intVersion, '.') != false) {
             list($majorVersion, $minorVersion, $patchVersion) = explode('.', $intVersion);
