@@ -15,9 +15,11 @@ with some extra keywords : backend, tests, test, translation, funders, important
 ### Changed
 
 * Update the table of QGIS projects in the administration panel
+* Update limit to 500 000 for the row limit in the attribute table tool
 
 ### Fixed
 
+* Fix the message "Feature not editable" if the user has the right
 * Fix issue about rights for anonymous users
 * Fix language for compact table in a children popup
 
@@ -29,7 +31,13 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ### Backend
 
+* Enhancing the way Lizmap build Etag and add an Etag to `GetKeyValueConfig`
 * Upgrade Jelix to version 1.8.7
+
+### Funders
+
+* *[PNR Haut-Jura](https://www.parc-haut-jura.fr)*
+* *[Terre de Provence Agglomération](https://www.terredeprovence-agglo.com/)*
 
 ## 3.6.10 - 2024-02-07
 
