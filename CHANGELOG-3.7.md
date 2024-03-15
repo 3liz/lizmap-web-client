@@ -8,6 +8,42 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Added
+
+* Show warnings if the project has some, when connected as an admin
+
+### Changed
+
+* Update the table of QGIS projects in the administration panel
+* Update limit to 500 000 for the row limit in the attribute table tool
+
+### Fixed
+
+* Fix printing base layers with layers in the `hidden` group
+* Fix the message "Feature not editable" if the user has the right
+* Fix issue about rights for anonymous users
+* Fix language for compact table in a children popup
+* Drag and drop form configuration is not taken into account for the embedded layers, contribution from @mind84
+* Apply minimum and maximum resolutions to base layers
+* Webdav upload was failing when evaluating expressions that uses feature fields
+
+### Translations
+
+* Update translated strings from the Transifex website :
+  * [Lizmap Web Client](https://www.transifex.com/3liz-1/lizmap-locales/dashboard/)
+  * [Jelix](https://www.transifex.com/3liz-1/jelix/dashboard/)
+
+### Backend
+
+* Enhancing the way Lizmap build Etag and add an Etag to `GetKeyValueConfig`
+* Upgrade Jelix to version 1.8.7
+
+### Funders
+
+* **[Faunalia](https://www.faunalia.eu/fr)**, contributions on source code from @mind84
+* **[PNR Haut-Jura](https://www.parc-haut-jura.fr)**
+* **[Terre de Provence Agglomération](https://www.terredeprovence-agglo.com/)**
+
 ## 3.7.5 - 2024-02-27
 
 ### Fixed
