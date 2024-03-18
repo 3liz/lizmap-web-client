@@ -8,6 +8,8 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.6.11 - 2024-03-18
+
 ### Added
 
 * Show warnings if the project has some, when connected as an admin
@@ -32,7 +34,7 @@ with some extra keywords : backend, tests, test, translation, funders, important
 ### Backend
 
 * Enhancing the way Lizmap build Etag and add an Etag to `GetKeyValueConfig`
-* Upgrade Jelix to version 1.8.7
+* Upgrade Jelix to version 1.8.8
 
 ### Funders
 
