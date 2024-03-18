@@ -304,7 +304,6 @@ test.describe('WebDAV Server',()=>{
 
                   const confReq = await request.get(getConfFile);
                   expect(confReq.status()).toBe(200);
-                  console.log(confReq.headers());
                   expect(confReq.headers()["content-type"]).toBe("application/octet-stream");
 
                   // file .txt
@@ -316,5 +315,79 @@ test.describe('WebDAV Server',()=>{
                   expect(txtFileReq.status()).toBe(200);
                   expect(txtFileReq.headers()["content-type"]).toContain("text/plain");
 
+         })
+
+         test('Inspect popupAllFeaturesCompact data table in popup', async ({ page }) => {
+            let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GetFeatureInfo'));
+
+            await page.locator('#newOlMap').click({
+              position: {
+                x: 484,
+                y: 377
+              }
+            });
+            await getFeatureInfoRequestPromise;
+
+            //time for rendering the popup
+            await page.waitForTimeout(500);
+            await expect(page.locator('.lizmapPopupContent > .lizmapPopupSingleFeature .lizmapPopupTitle').first()).toHaveText("form_edition_upload_webdav_parent_geom");
+            let children = page.locator('.lizmapPopupContent .lizmapPopupChildren');
+            await expect(children).toHaveCount(1);
+
+            // inspect distinct children tables
+            await expect(children.locator(".lizmapPopupSingleFeature")).toHaveCount(2);
+            
+            // first table
+            let firstChild = children.locator(".lizmapPopupSingleFeature").nth(0);
+            await expect(firstChild.locator(".lizmapPopupTable")).toHaveCount(1);
+
+            await expect(firstChild.locator(".lizmapPopupTable tbody tr").nth(0).locator("th")).toHaveText("Id");
+            await expect(firstChild.locator(".lizmapPopupTable tbody tr").nth(0).locator("td")).toHaveText("2");
+            await expect(firstChild.locator(".lizmapPopupTable tbody tr").nth(1).locator("th")).toHaveText("Id parent");
+            await expect(firstChild.locator(".lizmapPopupTable tbody tr").nth(1).locator("td")).toHaveText("1");
+            await expect(firstChild.locator(".lizmapPopupTable tbody tr").nth(2).locator("th")).toHaveText("remote_path");
+            const firstChildresourceUrl = await firstChild.locator(".lizmapPopupTable tbody tr").nth(2).locator("td a").getAttribute("href");
+            expect(firstChildresourceUrl).toContain("index.php/view/media/getMedia?repository=testsrepository&project=form_upload_webdav&path=dav%2Ftest_upload.conf");
+
+            // second table
+            let secondChild = children.locator(".lizmapPopupSingleFeature").nth(1);
+            await expect(secondChild.locator(".lizmapPopupTable tbody tr").nth(0).locator("th")).toHaveText("Id");
+            await expect(secondChild.locator(".lizmapPopupTable tbody tr").nth(0).locator("td")).toHaveText("1");
+            await expect(secondChild.locator(".lizmapPopupTable tbody tr").nth(1).locator("th")).toHaveText("Id parent");
+            await expect(secondChild.locator(".lizmapPopupTable tbody tr").nth(1).locator("td")).toHaveText("1");
+            await expect(secondChild.locator(".lizmapPopupTable tbody tr").nth(2).locator("th")).toHaveText("remote_path");
+            const secondChildresourceUrl = await secondChild.locator(".lizmapPopupTable tbody tr").nth(2).locator("td a").getAttribute("href");
+            expect(secondChildresourceUrl).toContain("index.php/view/media/getMedia?repository=testsrepository&project=form_upload_webdav&path=dav%2Flogo.png");
+            await expect(secondChild.locator(".lizmapPopupTable tbody tr").nth(2).locator("td a").locator("img")).toHaveCount(1)
+            const secondChildImageSrc = await secondChild.locator(".lizmapPopupTable tbody tr").nth(2).locator("td a").locator("img").getAttribute("src");
+            expect(secondChildImageSrc).toContain("index.php/view/media/getMedia?repository=testsrepository&project=form_upload_webdav&path=dav%2Flogo.png");
+            
+            // inspect popupAllFeaturesCompact table
+            await expect(children.locator(".popupAllFeaturesCompact")).toHaveCount(1);
+            await expect(children.locator(".popupAllFeaturesCompact")).not.toBeVisible();
+            await expect(children.locator('.compact-tables')).toHaveCount(1);
+
+            //click on the compact table button
+            await children.locator('.compact-tables').click();
+            await expect(children.locator(".popupAllFeaturesCompact")).toBeVisible();
+
+            await expect(children.locator(".popupAllFeaturesCompact table")).toHaveCount(1);
+
+            let allFeatureDataTable = children.locator(".popupAllFeaturesCompact table");
+            
+            // first row
+            await expect(allFeatureDataTable.locator("tbody tr").nth(0).locator("td").nth(0)).toHaveText("1");
+            await expect(allFeatureDataTable.locator("tbody tr").nth(0).locator("td").nth(1)).toHaveText("1");
+            const firstRowFilePath = await allFeatureDataTable.locator("tbody tr").nth(0).locator("td").nth(2).locator("a").getAttribute("href");
+            expect(firstRowFilePath).toContain("index.php/view/media/getMedia?repository=testsrepository&project=form_upload_webdav&path=dav%2Flogo.png");
+            const firstRowSrc = await allFeatureDataTable.locator("tbody tr").nth(0).locator("td").nth(2).locator("a").locator("img").getAttribute("src");
+            expect(firstRowSrc).toContain("index.php/view/media/getMedia?repository=testsrepository&project=form_upload_webdav&path=dav%2Flogo.png")
+            
+            // second row
+            await expect(allFeatureDataTable.locator("tbody tr").nth(1).locator("td").nth(0)).toHaveText("2");
+            await expect(allFeatureDataTable.locator("tbody tr").nth(1).locator("td").nth(1)).toHaveText("1");
+            const secondRowFilePath = await allFeatureDataTable.locator("tbody tr").nth(1).locator("td").nth(2).locator("a").getAttribute("href"); 
+            expect(secondRowFilePath).toContain("index.php/view/media/getMedia?repository=testsrepository&project=form_upload_webdav&path=dav%2Ftest_upload.conf");
+            
          })
 })

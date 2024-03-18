@@ -1623,6 +1623,26 @@ CREATE TABLE tests_projects.form_edition_upload_webdav_geom (
 );
 
 --
+-- Name: form_edition_upload_webdav_parent_geom; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.form_edition_upload_webdav_parent_geom (
+    id SERIAL PRIMARY KEY,
+    descr text,
+    geom public.geometry(Point,4326)
+);
+
+--
+-- Name: form_edition_upload_webdav_child_attachments; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.form_edition_upload_webdav_child_attachments (
+    id SERIAL PRIMARY KEY,
+    id_parent integer,
+    remote_path text
+);
+
+--
 -- Name: birds; Type: TABLE; Schema: tests_projects; Owner: -
 --
 
@@ -2248,6 +2268,25 @@ COPY tests_projects.form_edition_upload_webdav_geom (id, remote_path, local_path
 1	http://webdav/logo.png	\N	010100000006521A766BB0FC3F8A557EA334084740
 2	http://webdav/test_upload.conf	\N	0101000000E0283E5447A8E7BFA6E8291692404740
 3	http://webdav/test_upload.txt	\N	0101000000A0440C44BB0ACD3F7E59E5616BE54640
+\.
+
+
+--
+-- Data for Name: form_edition_upload_webdav_parent_geom; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.form_edition_upload_webdav_parent_geom (descr, geom) FROM stdin;
+Parent feat, has attachments	0101000000607440FCDFDBF03F8A41890489CE4640
+\.
+
+
+--
+-- Data for Name: form_edition_upload_webdav_parent_geom; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.form_edition_upload_webdav_child_attachments (id_parent, remote_path) FROM stdin;
+1	http://webdav/logo.png
+1	http://webdav/test_upload.conf
 \.
 
 --
