@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://jelix.org/ns/module/1.0">
     <info id="info@3liz.com" name="dataviz" createdate="2017-03-08">
-        <version date="2024-03-18">3.6.11</version>
+        <version date="2024-03-18">3.6.12-pre</version>
         <label lang="en_US">dataviz</label>
         <description lang="en_US"/>
         <license URL="http://www.mozilla.org/MPL/">Mozilla Public License</license>
