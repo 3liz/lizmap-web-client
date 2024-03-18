@@ -1,6 +1,16 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Permalink', () => {
+    test('Hash changes when map center is changed', async ({ page }) => {
+        await page.goto('/index.php/view/map?repository=testsrepository&project=layer_legends', { waitUntil: 'networkidle' });
+        await page.evaluate(() => lizMap.mainLizmap.map.getView().setCenter([770485,6277813]));
+
+        await page.waitForTimeout(200);
+
+        const checked_url = new URL(page.url());
+        await expect(checked_url.hash).toMatch(/#3.5148\d+,43.4213\d+,4.2324\d+,43.7692\d+|layer_legend_single_symbol,layer_legend_categorized,tramway_lines|d%C3%A9faut,d%C3%A9faut,a_single|1,1,1/);
+    });
+
     test('UI according to permalink parameters', async ({ page }) => {
         const baseUrl = '/index.php/view/map?repository=testsrepository&project=permalink'
         const bbox = '3.7980645260916805,43.59756940064654,3.904383263124536,43.672963842067254'
