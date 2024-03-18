@@ -811,6 +811,7 @@ class WMSRequest extends OGCRequest
         if (count($allFeatureAttributes) > 0) {
             $content[] = $this->getViewTpl('view~popup_all_features_table', $layerName, $layerId, $layerTitle, array(
                 'allFeatureAttributes' => array_reverse($allFeatureAttributes),
+                'remoteStorageProfile' => $remoteStorageProfile,
             ));
         }
 

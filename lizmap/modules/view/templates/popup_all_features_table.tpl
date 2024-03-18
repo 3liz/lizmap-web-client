@@ -20,7 +20,7 @@
                 <tr>
                 {foreach $featureAttributes as $attribute}
                     {if $attribute['name'] != 'geometry' && $attribute['name'] != 'maptip' && $attribute['value'] != ''}
-                        <td>{$attribute['name']|featurepopup:$attribute['value'],$repository,$project}</td>
+                        <td>{$attribute['name']|featurepopup:$attribute['value'],$repository,$project,$remoteStorageProfile}</td>
                     {/if}
                 {/foreach}
                 </tr>
