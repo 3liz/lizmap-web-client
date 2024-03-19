@@ -389,7 +389,7 @@ describe('Feature Toolbar in popup', function () {
         cy.get('#message #lizmap-action-message p').should('have.text', 'The displayed geometry represents the buffer 2000 m of the current map center')
 
         // Deactivate
-        cy.get('#lizmap-project-actions button.action-run-button').click()
+        cy.get('#lizmap-project-actions button.action-deactivate-button').click()
 
         // Check
         cy.get('#message').should('be.empty')
