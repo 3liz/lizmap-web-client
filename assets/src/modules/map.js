@@ -550,17 +550,7 @@ export default class map extends olMap {
             }
         });
 
-        // Sync OL2 view with new OL view
-        this.on('pointerdrag', () => {
-            mainLizmap.lizmap3.map.setCenter(
-                this.getView().getCenter(),
-                null,
-                true // avoid many WMS request in OL2 map and also movestart/end events.
-            );
-        });
-
         this.on('moveend', () => {
-            this.refreshOL2View();
             this._dispatchMapStateChanged();
         });
 

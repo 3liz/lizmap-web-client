@@ -1272,8 +1272,9 @@ var lizEdition = function() {
      */
     function launchEdition( aLayerId, aFid, aParent, aCallback ) {
 
-        // Put old OL2 map on top
+        // Put old OL2 map on top and synchronize position with new OL map
         document.getElementById("newOlMap").style.zIndex = 'unset';
+        lizMap.mainLizmap.map.refreshOL2View();
 
         var editedFeature = new FeatureEditionData(aLayerId, null, null);
 
