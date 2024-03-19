@@ -518,11 +518,6 @@ class lizMapCtrl extends jController
             $rep->addJSCode($jsCode);
         }
 
-        // Hide groups checkboxes
-        if ($lproj->getBooleanOption('hideGroupCheckbox')) {
-            $rep->addStyle('#switcher-layers button[name="group"]', 'display:none !important;');
-        }
-
         // Add filter
         $filterParam = $this->param('filter');
         $filter = array();
