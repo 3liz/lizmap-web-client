@@ -23,6 +23,9 @@ export default class Permalink {
         this._hash = '';
         this._extent4326 = [0, 0, 0, 0, 0];
 
+        // Don't refresh hash when map is initialized
+        this._ignoreStartupMapEvents = true;
+
         // Change `checked`, `style` states based on URL fragment
         if (window.location.hash) {
             this._runPermalink(false);
@@ -77,7 +80,7 @@ export default class Permalink {
                 event.preventDefault();
                 const bname = document.querySelector('#geobookmark-form input[name="bname"]').value;
                 if (bname == '') {
-                    mAddMessage(lizDict['geobookmark.name.required'], 'error', true);
+                    lizMap.addMessage(lizDict['geobookmark.name.required'], 'error', true);
                     return false;
                 }
                 const gbparams = {};
@@ -97,12 +100,16 @@ export default class Permalink {
             });
         }
 
-        // Refresh bbox parameter on moveend
-        lizMap.map.events.on({
-            moveend: () => {
+        // Refresh hash parameters when map state changes
+        mainLizmap.state.map.addListener(
+            () => {
+                if (this._ignoreStartupMapEvents) {
+                    this._ignoreStartupMapEvents = false;
+                    return;
+                }
                 this._writeURLFragment();
-            }
-        });
+            }, ['map.state.changed']
+        );
 
         mainLizmap.state.rootMapGroup.addListener(
             () => this._writeURLFragment(),
