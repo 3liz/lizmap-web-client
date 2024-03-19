@@ -12,7 +12,7 @@
     </div>
 
     <div class="menu-content">
-        <div id="switcher-layers"></div>
+        <lizmap-treeview></lizmap-treeview>
     </div>
 </div>
 <div id="switcher-baselayer" class="baselayer">

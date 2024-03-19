@@ -1507,10 +1507,6 @@ lizmap-print .flex {
   flex-direction: column;
 }
 
-#switcher-layers {
-  padding-left: 19px;
-}
-
 #switcher-layers-actions {
   background-color: inherit;
   margin-top: 5px;
@@ -1549,37 +1545,7 @@ lizmap-print .flex {
   background-color:#F0F0F0;
   overflow: hidden auto;
 }
-#switcher-layers ul {
-  margin-left:10px;
-}
-#switcher-layers li {
-  display:block;
-}
-#switcher-layers input[type="checkbox"] {
-  display:none;
-}
-#switcher-layers label {
-  display: inline-block;
-  width:16px;
-  height:16px;
-  min-width:16px;
-  min-height:16px;
-  padding-left:0;
-  background: none;
-  background-image : url("images/sprite_menu.png");
-}
-#switcher-layers input ~ label {
-  background-position : -32px -64px;
-}
-#switcher-layers input ~ ul {
-  display: none;
-}
-#switcher-layers input:checked ~ label {
-  background-position : -16px -48px;
-}
-#switcher-layers input:checked ~ ul {
-  display: block;
-}
+
 #switcher table {
   width : 100%;
 }

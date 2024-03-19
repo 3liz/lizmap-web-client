@@ -774,163 +774,6 @@ window.lizMap = function() {
     }
 
     /**
-     * PRIVATE function: getSwitcherLine
-     * get the html table line <tr> of a config node for the switcher
-     *
-     * Parameters:
-     * aNode - {Object} a config node
-     *
-     * Returns:
-     * {String} the <tr> html corresponding to the node
-     * @param aNode
-     * @param aParent
-     */
-    function getSwitcherLine(aNode, aParent) {
-        var html = '';
-        var nodeConfig = aNode.config;
-        var parentConfig = null;
-
-        if( aParent ){
-            parentConfig = aParent.config;
-        }
-
-        if( 'geometryType' in nodeConfig &&
-        ( nodeConfig.geometryType == "none" || nodeConfig.geometryType == "unknown" || nodeConfig.geometryType == "" )
-        ){
-            nodeConfig.displayInLegend = 'False';
-        }
-
-        html += '<tr id="'+nodeConfig.type+'-'+aNode.name+'"';
-        html += ' class="liz-'+nodeConfig.type;
-        if (aParent){
-            html += ' child-of-group-'+aParent.name;
-        }
-        if (('children' in aNode) && aNode['children'].length!=0){
-            html += ' expanded parent';
-        }
-
-        // Legend properties
-        // Read the plugin metadata to get the legend options
-        // depending on the configuration version
-        let lizmap_plugin_metadata = getLizmapDesktopPluginMetadata();
-        if (lizmap_plugin_metadata.lizmap_web_client_target_version >= 30600) {
-            var legendOption = nodeConfig.legend_image_option;
-        } else {
-            var legendOption = 'hide_at_startup';
-            if (nodeConfig.noLegendImage && nodeConfig.noLegendImage == 'True') {
-                legendOption = 'disabled';
-            }
-        }
-
-        // Expand layer legend at startup
-        if (nodeConfig.type == 'layer' && legendOption == 'expand_at_startup') {
-            html += ' expanded ';
-        }
-
-        if (('displayInLegend' in nodeConfig && nodeConfig.displayInLegend == 'False') ||
-        (parentConfig && 'displayInLegend' in parentConfig && parentConfig.displayInLegend == 'False')){
-            html += ' liz-hidden';
-        }
-        if ( parentConfig && 'mutuallyExclusive' in parentConfig && parentConfig.mutuallyExclusive == 'True' ){
-            html += ' mutually-exclusive';
-        }
-
-        html += '">';
-
-        /**
-         *
-         * @param str
-         * @param n
-         */
-        function truncateWithEllipsis(str,n){
-            return (str.length > n) ? str.substr(0,n-1)+'&hellip;' : str;
-        }
-
-        html += '<td><button class="btn checkbox" name="'+nodeConfig.type+'" value="'+aNode.name+'" title="'+lizDict['tree.button.checkbox']+'"></button>';
-        html += '<span class="label" title="'+truncateWithEllipsis($('<div>'+nodeConfig.abstract+'</div>').text(),50)+'">'+nodeConfig.title+'</span>';
-        html += '</td>';
-
-        html += '<td class="loading">';
-        if (nodeConfig.type == 'layer'){
-            html += '<span class="loading">&nbsp;</span>';
-        }
-        html += '</td>';
-
-        var legendLink = '';
-        if (nodeConfig.link){
-            legendLink = nodeConfig.link;
-        }
-        if (legendLink != '' ){
-            html += '<td><button class="btn link" name="link" title="'+lizDict['tree.button.link']+'" value="'+legendLink+'"/></td>';
-        }
-        else{
-            html += '<td></td>';
-        }
-
-        if (nodeConfig.cached && nodeConfig.cached == 'True' && nodeConfig.type == 'layer' && ('removeCache' in config.options)){
-            html += '<td><button class="btn removeCache" name="removeCache" title="'+lizDict['tree.button.removeCache']+'" value="'+aNode.name+'"/></td>';
-        }
-        else{
-            html += '<td></td>';
-        }
-
-        html += '</tr>';
-
-        if (nodeConfig.type == 'layer'
-    && (legendOption != 'disabled')
-    && ('displayInLegend' in nodeConfig && nodeConfig.displayInLegend == 'True')) {
-            var url = getLayerLegendGraphicUrl(aNode.name, false);
-            if ( url != null && url != '' ) {
-                html += '<tr id="legend-'+aNode.name+'" class="child-of-layer-'+aNode.name+' legendGraphics">';
-                html += '<td colspan="2"><div class="legendGraphics">';
-                html += '<img data-src="'+url+'" src="'+lizUrls.basepath + 'assets/css/images/download_layer.gif' + '"/>';
-                html += '</div></td>';
-                html += '</tr>';
-            }
-        }
-
-        return html;
-    }
-
-    /**
-     * PRIVATE function: getSwitcherNode
-     * get the html of a config node for the switcher
-     *
-     * Parameters:
-     * aNode - {Object} a config node
-     *
-     * Returns:
-     * {String} the html corresponding to the node
-     * @param aNode
-     * @param aLevel
-     */
-    function getSwitcherNode(aNode,aLevel) {
-        var html = '';
-        if (aLevel == 0) {
-            html += '<div class="without-blocks no-group">';
-            html += '<table class="tree">';
-        }
-
-        var children = aNode.children;
-        for (var i=0, len=children.length; i<len; i++) {
-            var child = children[i];
-            if (aLevel == 0)
-                html += getSwitcherLine(child);
-            else
-                html += getSwitcherLine(child,aNode);
-
-            if (('children' in child) && child['children'].length!=0)
-                html += getSwitcherNode(child, aLevel+1);
-        }
-
-        if (aLevel == 0) {
-            html += '</table>';
-            html += '</div>';
-        }
-        return html;
-    }
-
-    /**
      *
      * @param firstLayer
      */
@@ -1041,96 +884,6 @@ window.lizMap = function() {
                     new OpenLayers.Control.Navigation({mouseWheelOptions: {interval: 100}})
                 ]
                 ,tileManager: null // prevent bug with OL 2.13 : white tiles on panning back
-                ,eventListeners:{
-                    zoomend: function(){
-                        // private treeTable
-                        var options = {
-                            childPrefix : "child-of-"
-                        };
-
-                        /**
-                         *
-                         * @param node
-                         */
-                        function childrenOf(node) {
-                            return $(node).siblings("tr." + options.childPrefix + node[0].id);
-                        }
-
-                        /**
-                         *
-                         * @param node
-                         */
-                        function parentOf(node) {
-                            if (node.length == 0 )
-                                return null;
-
-                            var classNames = node[0].className.split(' ');
-
-                            for(var key=0; key<classNames.length; key++) {
-                                if(classNames[key].match(options.childPrefix)) {
-                                    return $(node).siblings("#" + classNames[key].substring(options.childPrefix.length));
-                                }
-                            }
-
-                            return null;
-                        }
-
-                        /**
-                         *
-                         * @param node
-                         */
-                        function ancestorsOf(node) {
-                            var ancestors = [];
-                            while(node = parentOf(node)) {
-                                ancestors[ancestors.length] = node[0];
-                            }
-                            return ancestors;
-                        }
-                        //layer visibility
-                        for (var i=0,len=layers.length; i<len; i++) {
-                            var layer = layers[i];
-                            var b = $('#switcher button[name="layer"][value="'+layer.name+'"]').first();
-
-                            if (layer.inRange && b.hasClass('disabled')) {
-                                var tr = b.parents('tr').first();
-                                tr.removeClass('disabled').find('button').removeClass('disabled');
-                                var ancestors = ancestorsOf(tr);
-                                $.each(ancestors,function(i,a) {
-                                    $(a).removeClass('disabled').find('button').removeClass('disabled');
-                                });
-                                if (tr.find('button[name="layer"]').hasClass('checked'))
-                                    layer.setVisibility(true);
-                            } else if (!layer.inRange && !b.hasClass('disabled')) {
-                                var tr = b.parents('tr').first();
-                                tr.addClass('disabled').find('button').addClass('disabled');
-                                if (tr.hasClass('liz-layer'))
-                                    tr.collapse();
-                                var ancestors = ancestorsOf(tr);
-                                $.each(ancestors,function(i,a) {
-                                    a = $(a);
-                                    var count = 0;
-                                    var checked = 0;
-                                    var aDesc = childrenOf(a);
-                                    $.each(aDesc,function(j,trd) {
-                                        $(trd).find('button.checkbox').each(function(i,b){
-                                            if ($(b).hasClass('disabled'))
-                                                checked++;
-                                            count++;
-                                        });
-                                    });
-                                    if (count == checked)
-                                        a.addClass('disabled').find('button').addClass('disabled');
-                                    else
-                                        a.removeClass('disabled').find('button').removeClass('disabled');
-                                });
-                            }
-                        }
-
-                        //pan button
-                        $('#navbar button.pan').click();
-                    }
-                }
-
                 ,maxExtent:extent
                 ,restrictedExtent: restrictedExtent
                 ,initialExtent:initialExtent
@@ -1502,230 +1255,116 @@ window.lizMap = function() {
         },'json');
     }
 
-    /**
-     * create the layer switcher
-     */
-    function createSwitcher() {
-        var projection = map.projection;
-
-        //manage WMS max width and height
-        var wmsMaxWidth = 3000;
-        var wmsMaxHeight = 3000;
-        if( ('wmsMaxWidth' in config.options) && config.options.wmsMaxWidth )
-            wmsMaxWidth = Number(config.options.wmsMaxWidth);
-        if( ('wmsMaxHeight' in config.options) && config.options.wmsMaxHeight )
-            wmsMaxHeight = Number(config.options.wmsMaxHeight);
-        var removeSingleTile = false;
-        var mapSize = map.size;
-        var replaceSingleTileSize = new OpenLayers.Size(wmsMaxWidth, wmsMaxHeight);
-        if( mapSize.w > wmsMaxWidth || mapSize.h > wmsMaxHeight ){
-            removeSingleTile = true;
-            var wmsMaxMax = Math.max(wmsMaxWidth, wmsMaxHeight);
-            var wmsMinMax = Math.min(wmsMaxWidth, wmsMaxHeight);
-            var mapMax = Math.max(mapSize.w, mapSize.h);
-            var mapMin = Math.min(mapSize.w, mapSize.h);
-            if( mapMax/2 > mapMin )
-                replaceSingleTileSize = new OpenLayers.Size(Math.round(mapMax/2), Math.round(mapMax/2));
-            else if( wmsMaxMax/2 > mapMin )
-                replaceSingleTileSize = new OpenLayers.Size(Math.round(wmsMaxMax/2), Math.round(wmsMaxMax/2));
+    function addLocateByLayer(){
+        var locateByLayerList = [];
+        for (var lname in config.locateByLayer) {
+            if ('order' in config.locateByLayer[lname])
+                locateByLayerList[config.locateByLayer[lname].order] = lname;
             else
-                replaceSingleTileSize = new OpenLayers.Size(Math.round(wmsMinMax/2), Math.round(wmsMinMax/2));
+                locateByLayerList.push(lname);
         }
-
-        // get the baselayer select content
-        // and adding baselayers to the map
-        baselayers.reverse();
-        for (const baselayer of baselayers) {
-            baselayer.units = projection.proj.units;
-            // Update singleTile layers
-            if( removeSingleTile && (baselayer instanceof OpenLayers.Layer.WMS) && baselayer.singleTile ) {
-                baselayer.addOptions({singleTile:false, tileSize: replaceSingleTileSize});
-            }
-            try{ // because google maps layer can be created but not added
-                map.addLayer(baselayer);
-                map.baseLayer.setVisibility(false);
-            } catch(e) {
-                var qgisName = baselayer.name;
-                if ( baselayer.name in cleanNameMap )
-                    qgisName = getLayerNameByCleanName(baselayer.name);
-                console.log(qgisName+" can't be added to the map!");
-            }
+        var locateContent = [];
+        for (var l in locateByLayerList) {
+            var lname = locateByLayerList[l];
+            var lConfig = config.layers[lname];
+            var html = '<div class="locate-layer">';
+            html += '<select id="locate-layer-' + cleanName(lname) + '" class="label">';
+            html += '<option>' + lConfig.title + '...</option>';
+            html += '</select>';
+            html += '</div>';
+            //constructing the select
+            locateContent.push(html);
         }
+        $('#locate .menu-content').html(locateContent.join('<hr/>'));
 
-        if (baselayers.length === 0) {
-            // hide elements for baselayers
-            map.addLayer(new OpenLayers.Layer.Vector('baselayer',{
-                maxExtent:map.maxExtent
-                ,maxScale: map.maxScale
-                ,minScale: map.minScale
-                ,numZoomLevels: map.numZoomLevels
-                ,scales: map.scales
-                ,projection: map.projection
-                ,units: map.projection.proj.units
-            }));
-        }
-
-        // adding layers to the map
-        layers.sort(function(a, b) {
-            if (a.order == b.order)
-                return 0;
-            return a.order > b.order ? 1 : -1;
-        });
-        layers.reverse();
-        for (var i=0,len=layers.length; i<len; i++) {
-            var l = layers[i];
-            l.units = projection.proj.units;
-            l.events.on({
-                loadstart: function(evt) {
-                    $('#layer-'+evt.object.name+' span.loading').addClass('loadstart');
-                },
-                loadend: function(evt) {
-                    $('#layer-'+evt.object.name+' span.loading').removeClass('loadstart');
+        var featureTypes = getVectorLayerFeatureTypes();
+        if (featureTypes.length == 0) {
+            config.locateByLayer = {};
+            $('#button-locate').parent().remove();
+            $('#locate-menu').remove();
+        } else {
+            for (const featureType of featureTypes) {
+                var typeName = featureType.getElementsByTagName('Name')[0].textContent;
+                var lname = lizMap.getNameByTypeName(typeName);
+                if (!lname) {
+                    if (typeName in config.locateByLayer)
+                        lname = typeName
+                    else if ((typeName in shortNameMap) && (shortNameMap[typeName] in config.locateByLayer))
+                        lname = shortNameMap[typeName];
+                    else {
+                        for (var lbl in config.locateByLayer) {
+                            if (lbl.split(' ').join('_') == typeName) {
+                                lname = lbl;
+                                break;
+                            }
+                        }
+                    }
                 }
-            });
-            // Add only layers with geometry
-            var qgisName = null;
-            if ( l.name in cleanNameMap )
-                qgisName = getLayerNameByCleanName(l.name);
-            var aConfig = null;
-            if ( qgisName )
-                aConfig = config.layers[qgisName];
-            if ( !aConfig )
-                aConfig = config.layers[l.params['LAYERS']];
-            if ( !aConfig )
-                aConfig = config.layers[l.name];
-            if ( !aConfig )
-                continue;
-            if( 'geometryType' in aConfig &&
-        ( aConfig.geometryType == "none" || aConfig.geometryType == "unknown" || aConfig.geometryType == "" )
-            ){
-                continue;
-            }
-            // Update singleTile layers
-            if( removeSingleTile && (l instanceof OpenLayers.Layer.WMS) && l.singleTile ) {
-                l.addOptions({singleTile:false, tileSize: replaceSingleTileSize});
-            }
-            map.addLayer(l);
 
-        }
+                if (!(lname in config.locateByLayer))
+                    continue;
 
-        // Add Locate by layer
-        if ('locateByLayer' in config) {
-            var locateByLayerList = [];
+                var locate = config.locateByLayer[lname];
+                locate['crs'] = featureType.getElementsByTagName('SRS')[0].textContent;
+                loadProjDefinition(locate.crs, function () {
+                    new OpenLayers.Projection(locate.crs);
+                });
+                var bbox = featureType.getElementsByTagName('LatLongBoundingBox')[0];
+                locate['bbox'] = [
+                    parseFloat(bbox.getAttribute('minx'))
+                    , parseFloat(bbox.getAttribute('miny'))
+                    , parseFloat(bbox.getAttribute('maxx'))
+                    , parseFloat(bbox.getAttribute('maxy'))
+                ];
+            }
+
+            // get joins
+            for (var lName in config.locateByLayer) {
+                var locate = config.locateByLayer[lName];
+                if ('vectorjoins' in locate && locate['vectorjoins'].length != 0) {
+                    var vectorjoin = locate['vectorjoins'][0];
+                    locate['joinFieldName'] = vectorjoin['targetFieldName'];
+                    for (var jName in config.locateByLayer) {
+                        var jLocate = config.locateByLayer[jName];
+                        if (jLocate.layerId == vectorjoin.joinLayerId) {
+                            vectorjoin['joinLayer'] = jName;
+                            locate['joinLayer'] = jName;
+                            jLocate['joinFieldName'] = vectorjoin['joinFieldName'];
+                            jLocate['joinLayer'] = lName;
+                            jLocate['filterjoins'] = [{
+                                'targetFieldName': vectorjoin['joinFieldName'],
+                                'joinFieldName': vectorjoin['targetFieldName'],
+                                'joinLayerId': locate.layerId,
+                                'joinLayer': lName
+                            }];
+                        }
+                    }
+                }
+            }
+
+            // get locate by layers features
             for (var lname in config.locateByLayer) {
-                if ( 'order' in config.locateByLayer[lname] )
-                    locateByLayerList[ config.locateByLayer[lname].order ] = lname;
-                else
-                    locateByLayerList.push( lname );
+                getLocateFeature(lname);
             }
-            var locateContent = [];
-            for (var l in locateByLayerList) {
-                var lname = locateByLayerList[l];
-                var lConfig = config.layers[lname];
-                var html = '<div class="locate-layer">';
-                html += '<select id="locate-layer-'+cleanName(lname)+'" class="label">';
-                html += '<option>'+lConfig.title+'...</option>';
-                html += '</select>';
-                html += '</div>';
-                //constructing the select
-                locateContent.push(html);
-            }
-            $('#locate .menu-content').html(locateContent.join('<hr/>'));
+            $('.btn-locate-clear').click(function () {
+                lizMap.mainLizmap.map.clearHighlightFeatures();
+                $('#locate select').val('-1');
+                $('div.locate-layer span > input').val('');
 
-            var featureTypes = getVectorLayerFeatureTypes();
-            if (featureTypes.length == 0 ){
-                config.locateByLayer = {};
-                $('#button-locate').parent().remove();
-                $('#locate-menu').remove();
-            } else {
-                for (const featureType of featureTypes) {
-                    var typeName = featureType.getElementsByTagName('Name')[0].textContent;
-                    var lname = lizMap.getNameByTypeName( typeName );
-                    if ( !lname ) {
-                        if (typeName in config.locateByLayer)
-                            lname = typeName
-                        else if ( (typeName in shortNameMap) && (shortNameMap[typeName] in config.locateByLayer))
-                            lname = shortNameMap[typeName];
-                        else {
-                            for (var lbl in config.locateByLayer) {
-                                if (lbl.split(' ').join('_') == typeName) {
-                                    lname = lbl;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-
-                    if ( !(lname in config.locateByLayer) )
-                        continue;
-
-                    var locate = config.locateByLayer[lname];
-                    locate['crs'] = featureType.getElementsByTagName('SRS')[0].textContent;
-                    loadProjDefinition( locate.crs, function() {
-                        new OpenLayers.Projection(locate.crs);
-                    });
-                    var bbox = featureType.getElementsByTagName('LatLongBoundingBox')[0];
-                    locate['bbox'] = [
-                        parseFloat(bbox.getAttribute('minx'))
-                        , parseFloat(bbox.getAttribute('miny'))
-                        , parseFloat(bbox.getAttribute('maxx'))
-                        , parseFloat(bbox.getAttribute('maxy'))
-                    ];
+                if (lizMap.lizmapLayerFilterActive) {
+                    lizMap.events.triggerEvent('lizmaplocatefeaturecanceled',
+                        { 'featureType': lizMap.lizmapLayerFilterActive }
+                    );
                 }
+                return false;
 
-                // get joins
-                for (var lName in config.locateByLayer) {
-                    var locate = config.locateByLayer[lName];
-                    if ('vectorjoins' in locate && locate['vectorjoins'].length != 0) {
-                        var vectorjoin = locate['vectorjoins'][0];
-                        locate['joinFieldName'] = vectorjoin['targetFieldName'];
-                        for (var jName in config.locateByLayer) {
-                            var jLocate = config.locateByLayer[jName];
-                            if (jLocate.layerId == vectorjoin.joinLayerId) {
-                                vectorjoin['joinLayer'] = jName;
-                                locate['joinLayer'] = jName;
-                                jLocate['joinFieldName'] = vectorjoin['joinFieldName'];
-                                jLocate['joinLayer'] = lName;
-                                jLocate['filterjoins'] = [{
-                                    'targetFieldName': vectorjoin['joinFieldName'],
-                                    'joinFieldName': vectorjoin['targetFieldName'],
-                                    'joinLayerId': locate.layerId,
-                                    'joinLayer': lName
-                                }];
-                            }
-                        }
-                    }
-                }
-
-                // get locate by layers features
-                for (var lname in config.locateByLayer) {
-                    getLocateFeature(lname);
-                }
-                $('.btn-locate-clear').click(function() {
-                    lizMap.mainLizmap.map.clearHighlightFeatures();
-                    $('#locate select').val('-1');
-                    $('div.locate-layer span > input').val('');
-
-                    if( lizMap.lizmapLayerFilterActive ){
-                        lizMap.events.triggerEvent('lizmaplocatefeaturecanceled',
-                            {'featureType': lizMap.lizmapLayerFilterActive}
-                        );
-                    }
-                    return false;
-
-                });
-                $('#locate-close').click(function() {
-                    $('.btn-locate-clear').click(); // deactivate locate and filter
-                    $('#button-locate').click();
-                    return false;
-                });
-            }
+            });
+            $('#locate-close').click(function () {
+                $('.btn-locate-clear').click(); // deactivate locate and filter
+                $('#button-locate').click();
+                return false;
+            });
         }
-
-        $('#switcher span.label').tooltip({
-            viewport: '#dock'
-        });
-
     }
 
     /**
@@ -4692,8 +4331,24 @@ window.lizMap = function() {
                  */
                 self.events.triggerEvent("mapcreated", self);
 
-                // create the switcher
-                createSwitcher();
+                // Add empty baselayer as needed by OL2 map
+                if (baselayers.length === 0) {
+                    // hide elements for baselayers
+                    map.addLayer(new OpenLayers.Layer.Vector('baselayer',{
+                        maxExtent:map.maxExtent
+                        ,maxScale: map.maxScale
+                        ,minScale: map.minScale
+                        ,numZoomLevels: map.numZoomLevels
+                        ,scales: map.scales
+                        ,projection: map.projection
+                        ,units: map.projection.proj.units
+                    }));
+                }
+
+                if ('locateByLayer' in config) {
+                    addLocateByLayer();
+                }
+
                 /**
                  * Event when layers have been added
                  * @event layersadded
@@ -4729,38 +4384,8 @@ window.lizMap = function() {
                 $('#navbar div.slider').slider("value", map.getZoom());
                 map.events.on({
                     zoomend: function () {
-                        // Update legends
-                        $('#switcher table.tree tr.legendGraphics.initialized').each(function () {
-                            var self = $(this);
-                            var name = self.attr('id').replace('legend-', '');
-                            var url = getLayerLegendGraphicUrl(name, true);
-                            if (url != null && url != '') {
-                                // Change image attribute data-src
-                                self.find('div.legendGraphics img').attr('data-src', url);
-                                // Only change image attribute src if legend is displayed
-                                if (self.hasClass('visible')) {
-                                    self.find('div.legendGraphics img').attr('src', url);
-                                }
-                            }
-                        });
                         // update slider position
                         $('#navbar div.slider').slider("value", this.getZoom());
-                    }
-                });
-
-                // Connect signal/slot when layer style is changed
-                lizMap.events.on({
-                    'layerstylechanged': function (evt) {
-
-                        // Change legend data-src and legend src if legend is visible
-                        var name = evt.featureType;
-                        var url = getLayerLegendGraphicUrl(name, true);
-                        if (url != null && url != '') {
-                            var lSel = '#switcher table.tree tr#legend-' + name + ' div.legendGraphics img';
-                            $(lSel).attr('data-src', url);
-                            if ($('#switcher table.tree tr#legend-' + name).hasClass('visible'))
-                                $(lSel).attr('src', url);
-                        }
                     }
                 });
 
@@ -4897,8 +4522,6 @@ window.lizMap = function() {
                 $('#headermenu .navbar-inner .nav a[rel="tooltip"]').tooltip();
                 $('#mapmenu .nav a[rel="tooltip"]').tooltip();
                 self.events.triggerEvent("uicreated", self);
-
-                document.getElementById('switcher-layers').insertAdjacentHTML('afterend', '<lizmap-treeview></lizmap-treeview>');
             })
                 .catch((error) => {
                     console.error(error);
