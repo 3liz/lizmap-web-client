@@ -460,33 +460,6 @@ lizmap-treeview input[type="checkbox"],
 #filter input[type="checkbox"] {
   accent-color: var(--color-contrasted-elements);
 }
-#switcher tr.liz-state-disabled span {
-  color:#AAA;
-}
-#switcher button{
-  background: none;
-}
-
-#switcher span.label{
-  color : rgb(51,51,51);
-  background: none;
-}
-#switcher .treeTable tr.expanded td a.expander {
-  background-image : url(images/sprite_menu.png);
-  background-position : -16px -48px;
-}
-#switcher .treeTable tr.collapsed td a.expander {
-  background-image : url(images/sprite_menu.png);
-  background-position : -32px -64px;
-}
-#switcher .treeTable span.selected {
-  background-color : rgb(153,153,153);
-  text-shadow : 0px -1px 0px rgba(0,0,0,0.25);
-  color : white;
-}
-#switcher .treeTable span.loading {
-  background-image : url(images/download_layer.gif);
-}
 
 #baselayer-select-input {
   background : none repeat scroll 0% 0% rgb(240, 240, 240);
@@ -497,7 +470,6 @@ lizmap-treeview .icon-info-sign {
   border: 1px solid var(--color-contrasted-elements-light);
   background-color: var(--color-contrasted-elements-light);
 }
-
 
 /*navbar*//* Navigation bar button color */
 #navbar button.btn {
