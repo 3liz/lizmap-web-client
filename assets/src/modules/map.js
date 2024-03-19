@@ -632,6 +632,9 @@ export default class map extends olMap {
 
         mainLizmap.state.rootMapGroup.addListener(
             evt => {
+                // if the layer is loaded ad single WMS, the visibility events are managed by the dedicated class
+                if (this.isSingleWMSLayer(evt.name)) return;
+
                 const olLayerOrGroup = this.getLayerOrGroupByName(evt.name);
                 if (olLayerOrGroup) {
                     olLayerOrGroup.setVisible(evt.visibility);
@@ -644,6 +647,9 @@ export default class map extends olMap {
 
         mainLizmap.state.layersAndGroupsCollection.addListener(
             evt => {
+                // conservative control since the opacity events should not be fired for single WMS layers
+                if (this.isSingleWMSLayer(evt.name)) return;
+
                 const activeBaseLayer = this.getActiveBaseLayer();
                 if (activeBaseLayer && activeBaseLayer.get("name") === evt.name) {
                     activeBaseLayer.setOpacity(evt.opacity);
@@ -900,5 +906,16 @@ export default class map extends olMap {
         return this.overlayLayersAndGroups.find(
             layer => layer.get('name') === name
         );
+    }
+
+    /**
+     * Return MapLayerState instance of WMS layer or group if the layer is loaded in the single WMS image, undefined if not.
+     * 
+     * @param name
+     * @returns {MapLayerState|undefined}
+     */
+    isSingleWMSLayer(name){
+
+        return this.statesSingleWMSLayers.get(name);
     }
 }
