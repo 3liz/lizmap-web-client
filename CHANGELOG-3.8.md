@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.8.0-alpha.1 - 2024-03-21
+
 ### Added
 
 * Load layers as a single WMS layer, contribution from @mind84
