@@ -113,6 +113,7 @@ export default class map extends olMap {
                 'type': 'map.state.changing',
                 'projection': projection.getCode(),
                 'center': [...view.getCenter()],
+                'zoom': view.getZoom(),
                 'size': [...this.getSize()],
                 'extent': view.calculateExtent(),
                 'resolution': resolution,
@@ -293,38 +294,37 @@ export default class map extends olMap {
                                     },
                                 })
                             });
-        
+
                             // Force no cache w/ Firefox
                             if(navigator.userAgent.includes("Firefox")){
                                 layer.getSource().setImageLoadFunction((image, src) => {
                                     (image.getImage()).src = src + '&ts=' + Date.now();
                                 });
-                            }                            
-                        }                       
-                    }                   
+                            }
+                        }
+                    }
                 }
 
                 if(layer){
                     layer.setVisible(node.visibility);
 
                     layer.setOpacity(node.opacity);
-    
+
                     layer.setProperties({
                         name: node.name
                     });
-    
+
                     layer.getSource().setProperties({
                         name: node.name
                     });
-    
+
                     // OL layers zIndex is the reverse of layer's order given by cfg
                     layer.setZIndex(layersCount - 1 - node.layerOrder);
-    
+
                     overlayLayersAndGroups.push(layer);
                     statesOlLayersandGroupsMap.set(node.name, [node, layer]);
                     return layer;
                 }
-
             }
         }
 
@@ -715,6 +715,7 @@ export default class map extends olMap {
             evt => {
                 const view = this.getView();
                 const updateCenter = ('center' in evt && view.getCenter().filter((v, i) => {return evt['center'][i] != v}).length != 0);
+                const updateZoom = ('zoom' in evt  && evt['zoom'] !== view.getZoom());
                 const updateResolution = ('resolution' in evt  && evt['resolution'] !== view.getResolution());
                 const updateExtent = ('extent' in evt && view.calculateExtent().filter((v, i) => {return evt['extent'][i] != v}).length != 0);
                 if (updateCenter && updateResolution) {
@@ -725,6 +726,8 @@ export default class map extends olMap {
                     });
                 } else if (updateCenter) {
                     view.setCenter(evt['center']);
+                } else if (updateZoom) {
+                    view.setZoom(evt['zoom']);
                 } else if (updateResolution) {
                     view.setResolution(evt['resolution']);
                 } else if (updateExtent) {
