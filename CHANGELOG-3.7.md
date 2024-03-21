@@ -26,6 +26,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Drag and drop form configuration is not taken into account for the embedded layers, contribution from @mind84
 * Apply minimum and maximum resolutions to base layers
 * Webdav upload was failing when evaluating expressions that uses feature fields
+* Fix an issue about the empty background when using QGIS Server 3.34
 
 ### Translations
 
@@ -36,7 +37,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 ### Backend
 
 * Enhancing the way Lizmap build Etag and add an Etag to `GetKeyValueConfig`
-* Upgrade Jelix to version 1.8.7
+* Upgrade Jelix to version 1.8.8
 
 ### Funders
 
