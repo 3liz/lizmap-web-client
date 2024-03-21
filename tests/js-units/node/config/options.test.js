@@ -74,6 +74,8 @@ describe('OptionsConfig', function () {
         expect(opt.hideGroupCheckbox).to.be.eq(false)
         // Default value for multiple mapScales without use_native_zoom_levels defined
         expect(opt.use_native_zoom_levels).to.be.eq(false)
+        // Default value for singleWMS option is false (option wms_single_request_for_all_layers not defined)
+        expect(opt.wms_single_request_for_all_layers).to.be.eq(false)
     })
 
     it('use_native_zoom_levels', function () {
@@ -169,6 +171,53 @@ describe('OptionsConfig', function () {
         expect(opt.hideGroupCheckbox).to.be.eq(false)
         // Default value for 2 mapScales without use_native_zoom_levels defined
         expect(opt.use_native_zoom_levels).to.be.eq(true)
+    })
+
+    it('wms_single_request_for_all_layers', function () {
+        let opt = new OptionsConfig({
+            "projection": {
+                "proj4": "+proj=merc +a=6378137 +b=6378137 +lat_ts=0 +lon_0=0 +x_0=0 +y_0=0 +k=1 +units=m +nadgrids=@null +wktext +no_defs",
+                "ref": "EPSG:3857"
+            },
+            "bbox": [
+                "414463.27939999999944121",
+                "5394742.82330000028014183",
+                "452853.33649999997578561",
+                "5416679.9988000001758337"
+            ],
+            "mapScales": [
+                1,
+                1000000000
+            ],
+            "minScale": 1,
+            "maxScale": 1000000000,
+            "use_native_zoom_levels": true,
+            "hide_numeric_scale_value": true,
+            "initialExtent": [
+                414463.2794,
+                5394742.8233,
+                452853.3365,
+                5416679.9988
+            ],
+            "popupLocation": "dock",
+            "draw": "True",
+            "measure": "True",
+            "zoomHistory": "True",
+            "pointTolerance": 25,
+            "lineTolerance": 10,
+            "polygonTolerance": 5,
+            "wms_single_request_for_all_layers": "True",
+            "tmTimeFrameSize": 10,
+            "tmTimeFrameType": "seconds",
+            "tmAnimationFrameLength": 1000,
+            "datavizLocation": "dock",
+            "theme": "dark",
+            "fixed_scale_overview_map": true,
+            "dataviz_drag_drop": []
+        })
+
+        // Load layers as a single WMS image
+        expect(opt.wms_single_request_for_all_layers).to.be.eq(true)
     })
 
     it('ValidationError', function () {

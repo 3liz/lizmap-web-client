@@ -31,6 +31,22 @@ export class BaseLayerState extends EventDispatcher {
         this._baseLayerConfig = baseLayerCfg;
         this._itemState = itemState;
         this._loadStatus = MapLayerLoadStatus.Undefined;
+        this._singleWMSLayer = false;
+    }
+
+    /**
+     * Set if the base layer is loaded in a single WMS Layer or not
+     * @param {boolean} val
+     */
+    set singleWMSLayer(val){
+        this._singleWMSLayer = val;
+    }
+    /**
+     * The base layer is loaded in a single WMS Layer or not
+     * @type {boolean}
+     */
+    get singleWMSLayer(){
+        return this._singleWMSLayer;
     }
 
     /**
