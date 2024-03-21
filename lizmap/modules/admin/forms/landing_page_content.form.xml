@@ -1,14 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form xmlns="http://jelix.org/ns/forms/1.1">
 
-    <htmleditor ref="HTMLContent" config="ckfullandmedia">
-        <label locale="admin~admin.landingPageContent.top"/>
+ <group ref='top'>
+    <label locale="admin~admin.landingPageContent.group.top"/>
+
+    <htmleditor ref="TopHTMLContent" config="ckfullandmedia">
+        <label locale="admin~admin.landingPageContent.unauthed"/>
     </htmleditor>
+
+    <htmleditor ref="TopHTMLContentForAuth" config="ckfullandmedia">
+        <label locale="admin~admin.landingPageContent.authed"/>
+    </htmleditor>
+
+    <radiobuttons ref="topUnautedContentPosition" required='true'>
+      <label locale="admin~admin.landingPageContent.unauthed.position"/>
+      <item value="before" locale='admin~admin.landingPageContent.unauthed.position.before'></item>
+      <item value="after" locale='admin~admin.landingPageContent.unauthed.position.after'></item>
+      <item value="hide" locale='admin~admin.landingPageContent.unauthed.position.no'></item>
+    </radiobuttons>
+ </group>
+
+ <group ref='bottom'>
+    <label locale="admin~admin.landingPageContent.group.bottom"/>
 
     <htmleditor ref="BottomHTMLContent" config="ckfullandmedia">
-        <label locale="admin~admin.landingPageContent.bottom"/>
+        <label locale="admin~admin.landingPageContent.unauthed"/>
     </htmleditor>
 
+    <htmleditor ref="BottomHTMLContentForAuth" config="ckfullandmedia">
+        <label locale="admin~admin.landingPageContent.authed"/>
+    </htmleditor>
+    <radiobuttons ref="bottomUnautedContentPosition" required='true'>
+      <label locale="admin~admin.landingPageContent.unauthed.position"/>
+      <item value="before" locale='admin~admin.landingPageContent.unauthed.position.before'></item>
+      <item value="after" locale='admin~admin.landingPageContent.unauthed.position.after'></item>
+      <item value="hide" locale='admin~admin.landingPageContent.unauthed.position.no'></item>
+    </radiobuttons>
+ </group>
     <submit ref="_submit">
         <label locale="admin~admin.form.admin_services.submit.label"/>
     </submit>
