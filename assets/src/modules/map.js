@@ -63,14 +63,6 @@ export default class map extends olMap {
             controls: [
                 new Attribution({ target: 'attribution-ol', collapsed: false })
             ],
-            interactions: defaultInteractions({
-                dragPan: false,
-                mouseWheelZoom: false
-            }).extend([
-                new DragPan(),
-                new MouseWheelZoom({ duration: 0 }),
-                new DoubleClickZoom({ duration: 0 })
-            ]),
             view: new View({
                 resolutions: resolutions,
                 constrainResolution: true,
@@ -727,7 +719,10 @@ export default class map extends olMap {
                 } else if (updateCenter) {
                     view.setCenter(evt['center']);
                 } else if (updateZoom) {
-                    view.setZoom(evt['zoom']);
+                    view.animate({
+                        zoom: evt['zoom'],
+                        duration: 250
+                    });
                 } else if (updateResolution) {
                     view.setResolution(evt['resolution']);
                 } else if (updateExtent) {
