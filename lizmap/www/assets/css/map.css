@@ -1658,6 +1658,12 @@ a.btn.btn-opacity-layer.active {
   background-position : -44px -120px;
 }
 
+lizmap-navbar {
+  display: flex;
+  flex-direction: column;
+  top: 350px!important;
+}
+
 #zoom-in-max-msg {
   position: absolute;
   right: 40px;
