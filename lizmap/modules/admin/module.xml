@@ -16,4 +16,7 @@
         <module name="jauthdb_admin"/>
         <module name="jacl2db_admin"/>
     </dependencies>
+    <autoload>
+     <namespacePathMap name="LizmapAdmin" dir="lib"/>
+    </autoload>
 </module>

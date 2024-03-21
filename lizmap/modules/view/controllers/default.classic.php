@@ -131,23 +131,11 @@ class defaultCtrl extends jController
         }
         $rep->body->assign('checkServerInformation', $checkServerInformation);
 
-        // Add custom HTML content at top of page
-        $HTMLContentFile = jApp::varPath('lizmap-theme-config/landing_page_content.html');
-        if (file_exists($HTMLContentFile)) {
-            $HTMLContent = jFile::read($HTMLContentFile);
-            if ($HTMLContent) {
-                $rep->body->assign('landing_page_content', $HTMLContent);
-            }
-        }
+        $landingContentService = new LizmapAdmin\LandingContent();
 
-        // Add custom HTML content at bottom of page
-        $HTMLContentFile = jApp::varPath('lizmap-theme-config/landing_page_content_bottom.html');
-        if (file_exists($HTMLContentFile)) {
-            $HTMLContent = jFile::read($HTMLContentFile);
-            if ($HTMLContent) {
-                $rep->body->assign('landing_page_content_bottom', $HTMLContent);
-            }
-        }
+        // Add custom HTML content at top of page
+        $rep->body->assign('landing_page_content_bottom', $landingContentService->getBottomContentForView());
+        $rep->body->assign('landing_page_content', $landingContentService->getTopContentForView());
 
         // Hide header if parameter h=0
         $h = $this->intParam('h', 1);

@@ -34,23 +34,9 @@ class landing_page_contentCtrl extends jController
             $form = jForms::create('admin~landing_page_content');
         }
 
-        // Get HTML content
-        $TopHTMLContentFile = jApp::varPath('lizmap-theme-config/landing_page_content.html');
-        if (file_exists($TopHTMLContentFile)) {
-            $HTMLContent = jFile::read($TopHTMLContentFile);
-            if ($HTMLContent) {
-                $form->setData('HTMLContent', $HTMLContent);
-            }
-        }
+        $landingContentService = new LizmapAdmin\LandingContent();
 
-        $BottomHTMLContentFile = jApp::varPath('lizmap-theme-config/landing_page_content_bottom.html');
-        if (file_exists($BottomHTMLContentFile)) {
-            $HTMLContent = jFile::read($BottomHTMLContentFile);
-            if ($HTMLContent) {
-                $form->setData('BottomHTMLContent', $HTMLContent);
-            }
-        }
-
+        $landingContentService->initForm($form);
         $tpl = new jTpl();
 
         $tpl->assign('form', $form);
@@ -84,16 +70,11 @@ class landing_page_contentCtrl extends jController
         }
 
         // Save HTML content
-        $fileWriteOK = jFile::write(jApp::varPath('lizmap-theme-config/landing_page_content.html'), $form->getData('HTMLContent'));
-        if (!$fileWriteOK) {
-            $form->setErrorOn('HTMLContent', jLocale::get('admin~admin.landingPageContent.error.save'));
-        }
-        $fileWriteOK2 = jFile::write(jApp::varPath('lizmap-theme-config/landing_page_content_bottom.html'), $form->getData('BottomHTMLContent'));
-        if (!$fileWriteOK2) {
-            $form->setErrorOn('BottomHTMLContent', jLocale::get('admin~admin.landingPageContent.error.save'));
-        }
-        if ($fileWriteOK && $fileWriteOK2) {
+        $landingContentService = new LizmapAdmin\LandingContent();
+        $fileWriteOK = $landingContentService->saveForm($form);
+        if ($fileWriteOK) {
             jMessage::add(jLocale::get('admin~admin.landingPageContent.saved'), 'ok');
+            jForms::destroy('admin~landing_page_content');
         }
 
         return $this->redirect('landing_page_content:index');
