@@ -94,7 +94,6 @@ export class Config {
                 throw new ValidationError('No `' + prop + '` in the WMS Capabilities!');
             }
         }
-
         this._theConfig = theConfig;
         this._theWmsCapabilities = theWmsCapabilities;
 
