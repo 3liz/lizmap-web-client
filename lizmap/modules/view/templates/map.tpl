@@ -70,6 +70,8 @@
       <span id="zoom-in-max-msg" class="ui-widget-content ui-corner-all" style="display:none;">{@view~map.message.zoominmax@}</span>
     </span>
 
+    <lizmap-navbar id="navbar"></lizmap-navbar>
+
     <div id="overview-box">
       <lizmap-overviewmap title="{@view~map.overviewmap.hover@}"></lizmap-overviewmap>
       <div id="overview-bar">
