@@ -3067,6 +3067,43 @@ lizmap-treeview img.legend[src="data:image/png;base64, "]{
   visibility: hidden;
 }
 
+/* Snap layer list */
+.snap-panel-controls {
+    margin:10px;
+}
+
+.snap-layers-list-title {
+    font-weight: bold;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.snap-layers-list {
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.snap-layer {
+    display: flex;
+    align-items: center;
+    height: 25px;
+}
+
+.snap-layer .snap-disabled {
+    color:gray;
+    font-style:italic;
+}
+
+.snap-layers-list input[type="checkbox"] {
+    margin-right: 5px;
+    align-self: baseline;
+    margin-top: 1px;
+    accent-color: #0094D6;
+    flex: 0 0 18px;
+    height: 18px;
+}
+
 /* CKEDITOR adaptations */
 .ck.ck-balloon-panel.ck-balloon-panel_visible {
   z-index: 9999;

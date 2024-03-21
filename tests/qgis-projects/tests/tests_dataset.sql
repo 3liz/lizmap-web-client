@@ -1002,8 +1002,6 @@ CREATE TABLE tests_projects.edition_layer_embed_child (
     descr text
 );
 
-
-
 --
 -- Name: form_filter_child_bus_stops_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
 --
@@ -1684,6 +1682,41 @@ CREATE TABLE tests_projects.birds_areas (
 );
 
 
+--
+-- Name: form_edition_snap_point; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.form_edition_snap_point (
+    id SERIAL PRIMARY KEY,
+    geom public.geometry(Point,4326)
+);
+
+--
+-- Name: form_edition_snap_line; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.form_edition_snap_line (
+    id SERIAL PRIMARY KEY,
+    geom public.geometry(LineString,4326)
+);
+
+--
+-- Name: form_edition_snap_polygon; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.form_edition_snap_polygon (
+    id SERIAL PRIMARY KEY,
+    geom public.geometry(Polygon,4326)
+);
+
+--
+-- Name: form_edition_snap_control; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.form_edition_snap_control (
+    id SERIAL PRIMARY KEY,
+    geom public.geometry(Point,4326)
+);
 
 --
 -- Name: tramway_stops_id_stop_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
@@ -2374,6 +2407,32 @@ COPY tests_projects.edition_layer_embed_child (descr) FROM stdin;
 External1
 External2
 \.
+--
+-- Data for Name: form_edition_snap_point; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+COPY tests_projects.form_edition_snap_point (geom) FROM stdin;
+0101000000F0AEF07A2FE90E4014D8230552CF4540
+010100000068BD055DFB290F40FBE25380D8CE4540
+0101000000A878D83735F10E4069C908F27FCC4540
+\.
+
+--
+-- Data for Name: form_edition_snap_line; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+COPY tests_projects.form_edition_snap_line (geom) FROM stdin;
+01020000000400000042D99C104AD70E4050A8CB6624CD45400A91624980D00E40F54343E87CCF4540EAB4A6511FEE0E40A6042869E9D04540140CA8B140010F4053283BC05BD14540
+0102000000030000003E6604FDD9160F4027CCC20D69CB45407DA52D023C160F40323F457C17CE4540149359C7E03B0F401DF2BCEE2CCE4540
+\.
+
+--
+-- Data for Name: form_edition_snap_polygon; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+COPY tests_projects.form_edition_snap_polygon (geom) FROM stdin;
+010300000001000000040000004CD08B4EE2CF0E40749731B8B7CB4540A9757D4CBDEE0E40AD99D2243ECB454031EE198091E80E40E044FF5B2ECA45404CD08B4EE2CF0E40749731B8B7CB4540
+0103000000010000000400000063C3BB33EB2E0F40616C3290FDCF4540465DF33A720F0F4086B6CAC58DD145400B9C6A8948430F409B656C1A00D2454063C3BB33EB2E0F40616C3290FDCF4540
+\.
+
+
 --
 -- Data for Name: form_edition_vr_dd_list; Type: TABLE DATA; Schema: tests_projects; Owner: -
 --

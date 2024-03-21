@@ -59,6 +59,24 @@
     width: 40px;
   }
 
+  /* snap panel */
+  #edition-point-coord-form-group .control-group div.snap-panel-controls {
+    display:flex;
+    flex-direction: column;
+    margin: 10px;
+    text-align: left;
+  }
+  #edition-point-coord-form-group .control-group div.snap-layers-list {
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+  }
+
+  #edition-point-coord-form-group .control-group div.snap-layer {
+    text-align: left;
+    display: flex;
+  }
 }
 @media screen and (max-device-width: 640px){
   #attributeLayers-tabs > li > a {
