@@ -924,6 +924,21 @@ export class BaseLayersConfig {
             }
         }
 
+        // Add base layer as project default background color
+        const default_background_color_index = options.hasOwnProperty('default_background_color_index') ? options.default_background_color_index : -1;
+        if (isNaN(default_background_color_index)) {
+            throw new ValidationError('The default_background_color_index parameter is not a number!');
+        }
+        if (default_background_color_index !== -1
+            && names.indexOf('empty') == -1
+            && names.indexOf('project-background-color') == -1) {
+            if (default_background_color_index < names.length) {
+                names.splice(default_background_color_index, 0, 'project-background-color');
+            } else {
+                names.push('project-background-color');
+            }
+        }
+
         this._names = [];
         this._configs = [];
         for (const key of names) {
