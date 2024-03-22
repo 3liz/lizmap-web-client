@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.7.6 - 2024-03-22
+
 ### Added
 
 * Show warnings if the project has some, when connected as an admin
