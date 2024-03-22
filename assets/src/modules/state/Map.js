@@ -67,11 +67,10 @@ export class MapState extends EventDispatcher {
         this._center = [0, 0];
         this._zoom = -1;
         this._minZoom = 0;
-        this._maxZoom = options._mapScales.length - 1;
+        this._maxZoom = -1;
         this._size = [0, 0];
         this._extent = new Extent(0, 0, 0, 0);
-        const initialExtent = options._initialExtent;
-        this._initialExtent = new Extent(initialExtent[0], initialExtent[1], initialExtent[2], initialExtent[3]);
+        this._initialExtent = new Extent(0, 0, 0, 0);
         this._resolution = -1;
         this._scaleDenominator = -1;
         this._pointResolution = -1;
@@ -81,6 +80,8 @@ export class MapState extends EventDispatcher {
         this._singleWMSLayer = false;
         if (options) {
             this._singleWMSLayer = options.wms_single_request_for_all_layers; // default value is defined as false
+            this._maxZoom = options.mapScales.length - 1;
+            this._initialExtent = options.initialExtent;
         }
 
         this._startupFeatures = startupFeatures;

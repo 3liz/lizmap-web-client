@@ -28,14 +28,9 @@ import LayerGroup from 'ol/layer/Group.js';
 import { Vector as VectorSource } from 'ol/source.js';
 import { Vector as VectorLayer } from 'ol/layer.js';
 
-import DragPan from "ol/interaction/DragPan.js";
-import MouseWheelZoom from "ol/interaction/MouseWheelZoom.js";
-import DoubleClickZoom from 'ol/interaction/DoubleClickZoom.js';
 import DragZoom from 'ol/interaction/DragZoom.js';
-import { defaults as defaultInteractions } from 'ol/interaction.js';
 import { always } from 'ol/events/condition.js';
 import SingleWMSLayer from './SingleWMSLayer.js';
-import { Tile } from 'ol';
 
 /**
  * Class initializing Openlayers Map.
@@ -78,17 +73,11 @@ export default class map extends olMap {
         this._newOlMap = true;
 
         // Zoom to box
-        const dragZoom = new DragZoom({
+        this._dragZoom = new DragZoom({
             condition: always
         });
-
-        document.querySelector('#navbar .pan').addEventListener('click', () => {
-            this.removeInteraction(dragZoom);
-        });
-
-        document.querySelector('#navbar .zoom').addEventListener('click', () => {
-            this.addInteraction(dragZoom);
-        });
+        this._dragZoom.setActive(false);
+        this.addInteraction(this._dragZoom);
 
         this._dispatchMapStateChanged = () => {
             const view = this.getView();
@@ -578,6 +567,12 @@ export default class map extends olMap {
         this.syncNewOLwithOL2View();
 
         // Listen/Dispatch events
+        this.getView().on('change', () => {
+            if (this.isDragZoomActive) {
+                this.deactivateDragZoom();
+            }
+        });
+
         this.getView().on('change:resolution', () => {
             mainEventDispatcher.dispatch('resolution.changed');
         });
@@ -782,6 +777,14 @@ export default class map extends olMap {
         return this._hidpi;
     }
     /**
+     * Is dragZoom active?
+     * @type {Boolean}
+     */
+    get isDragZoomActive(){
+        return this._dragZoom.getActive();
+    }
+
+    /**
      * Add highlight features on top of all layer
      * @param {string} features features as GeoJSON or WKT
      * @param {string} format format string as `geojson` or `wkt`
@@ -908,12 +911,28 @@ export default class map extends olMap {
 
     /**
      * Return MapLayerState instance of WMS layer or group if the layer is loaded in the single WMS image, undefined if not.
-     * 
+     *
      * @param name
      * @returns {MapLayerState|undefined}
      */
     isSingleWMSLayer(name){
 
         return this.statesSingleWMSLayers.get(name);
+    }
+
+    /**
+     * Activate DragZoom interaction
+     */
+    activateDragZoom() {
+        this._dragZoom.setActive(true);
+        mainEventDispatcher.dispatch('dragZoom.activated');
+    }
+
+    /**
+     * Deactivate DragZoom interaction
+     */
+    deactivateDragZoom() {
+        this._dragZoom.setActive(false);
+        mainEventDispatcher.dispatch('dragZoom.deactivated');
     }
 }

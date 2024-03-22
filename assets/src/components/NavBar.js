@@ -6,7 +6,7 @@
  * @license MPL-2.0
  */
 
-import { mainLizmap } from '../modules/Globals.js';
+import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import { html, render } from 'lit-html';
 
 /**
@@ -22,8 +22,8 @@ export default class NavBar extends HTMLElement {
     connectedCallback() {
         // Display
         const mainTemplate = () => html`
-            <button class="btn pan active" title="${lizDict['navbar.pan.hover']}"></button>
-            <button class="btn zoom" title="${lizDict['navbar.zoom.hover']}"></button>
+            <button class="btn pan ${mainLizmap.map.isDragZoomActive ? '' : 'active'}" title="${lizDict['navbar.pan.hover']}" @click=${ () => mainLizmap.map.deactivateDragZoom()}></button>
+            <button class="btn zoom ${mainLizmap.map.isDragZoomActive ? 'active' : ''}" title="${lizDict['navbar.zoom.hover']}" @click=${ () => mainLizmap.map.activateDragZoom()}></button>
             <button class="btn zoom-extent" title="${lizDict['navbar.zoomextent.hover']}" @click=${ () => mainLizmap.state.map.zoomToInitialExtent()}></button>
             <button class="btn zoom-in" title="${lizDict['navbar.zoomin.hover']}" ?disabled=${mainLizmap.state.map.zoom === mainLizmap.state.map.maxZoom} @click=${ () => mainLizmap.state.map.zoomIn()}></button>
             <!-- <div class="slider" title="${lizDict['navbar.slider.hover']}"></div> -->
@@ -39,6 +39,16 @@ export default class NavBar extends HTMLElement {
                 }
             },
             ['map.state.changed']
+        );
+
+        mainEventDispatcher.addListener(
+            () => {
+                render(mainTemplate(), this);
+            },
+            [
+                'dragZoom.activated',
+                'dragZoom.deactivated'
+            ]
         );
     }
 
