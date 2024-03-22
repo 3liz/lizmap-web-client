@@ -24,7 +24,7 @@ export default class NavBar extends HTMLElement {
         const mainTemplate = () => html`
             <button class="btn pan active" title="${lizDict['navbar.pan.hover']}"></button>
             <button class="btn zoom" title="${lizDict['navbar.zoom.hover']}"></button>
-            <button class="btn zoom-extent" title="${lizDict['navbar.zoomextent.hover']}"></button>
+            <button class="btn zoom-extent" title="${lizDict['navbar.zoomextent.hover']}" @click=${ () => mainLizmap.state.map.zoomToInitialExtent()}></button>
             <button class="btn zoom-in" title="${lizDict['navbar.zoomin.hover']}" ?disabled=${mainLizmap.state.map.zoom === mainLizmap.state.map.maxZoom} @click=${ () => mainLizmap.state.map.zoomIn()}></button>
             <!-- <div class="slider" title="${lizDict['navbar.slider.hover']}"></div> -->
             <button class="btn zoom-out" title="${lizDict['navbar.zoomout.hover']}" ?disabled=${mainLizmap.state.map.zoom === mainLizmap.state.map.minZoom} @click=${ () => mainLizmap.state.map.zoomOut()}></button>

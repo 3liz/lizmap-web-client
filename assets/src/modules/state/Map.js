@@ -70,6 +70,8 @@ export class MapState extends EventDispatcher {
         this._maxZoom = options._mapScales.length - 1;
         this._size = [0, 0];
         this._extent = new Extent(0, 0, 0, 0);
+        const initialExtent = options._initialExtent;
+        this._initialExtent = new Extent(initialExtent[0], initialExtent[1], initialExtent[2], initialExtent[3]);
         this._resolution = -1;
         this._scaleDenominator = -1;
         this._pointResolution = -1;
@@ -294,5 +296,9 @@ export class MapState extends EventDispatcher {
         if (newZoom >= this._minZoom) {
             this.update({ 'zoom':  newZoom});
         }
+    }
+
+    zoomToInitialExtent() {
+        this.update({ 'extent': this._initialExtent });
     }
 }
