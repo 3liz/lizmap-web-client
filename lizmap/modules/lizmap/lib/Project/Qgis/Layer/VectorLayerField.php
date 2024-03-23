@@ -12,25 +12,28 @@
 
 namespace Lizmap\Project\Qgis\Layer;
 
-use Lizmap\Project;
+use Lizmap\Project\Qgis;
 
 /**
  * QGIS Vector layer field.
  *
  * @property string                           $name
  * @property null|string                      $configurationFlags
+ * @property Qgis\Layer\VectorLayerEditWidget $editWidget
  */
-class VectorLayerField extends Project\Qgis\BaseQgisXmlObject
+class VectorLayerField extends Qgis\BaseQgisXmlObject
 {
     /** @var array<string> The instance properties */
     protected $properties = array(
         'name',
         'configurationFlags',
+        'editWidget',
     );
 
     /** @var array<string> The not null properties */
     protected $mandatoryProperties = array(
         'name',
+        'editWidget',
     );
 
     /**
@@ -67,4 +70,9 @@ class VectorLayerField extends Project\Qgis\BaseQgisXmlObject
             'configurationFlags' => $oXmlReader->getAttribute('configurationFlags'),
         );
     }
+
+    protected static $childParsers = array();
 }
+VectorLayerField::registerChildParser('editWidget', function ($oXmlReader) {
+    return VectorLayerEditWidget::fromXmlReader($oXmlReader);
+});
