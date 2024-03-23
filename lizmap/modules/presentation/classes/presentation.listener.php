@@ -12,12 +12,11 @@ class presentationListener extends jEventListener
 
         // Check config
         jClasses::inc('presentation~presentationConfig');
-        $presentationConfigInstance = new presentationConfig($event->repository, $event->project);
-        if ($presentationConfigInstance->getStatus()) {
-            $presentationConfig = $presentationConfigInstance->getConfig();
-            $presentationConfigData = array(
+        $getConfig = new presentationConfig($event->repository, $event->project);
+        if ($getConfig->getStatus()) {
+            $presentationConfig = array(
                 'url' => jUrl::get(
-                    'presentation~service:index',
+                    'presentation~presentation:index',
                     array(
                         'repository' => $event->repository,
                         'project' => $event->project,
@@ -27,7 +26,6 @@ class presentationListener extends jEventListener
 
             $jsCode = array(
                 'var presentationConfig = '.json_encode($presentationConfig),
-                'var presentationConfigData = '.json_encode($presentationConfigData),
             );
             $css = array(
                 $basePath.'assets/css/presentation.css',
