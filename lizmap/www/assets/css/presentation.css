@@ -1,0 +1,80 @@
+/* SVG credit : https://remixicon.com/ */
+#mapmenu li.presentation a .icon,
+#mini-dock #presentation div.presentation h3 span.icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='rgba(255,255,255,1)'%3E%3Cpath d='M13 18V20H17V22H7V20H11V18H3C2.44772 18 2 17.5523 2 17V4C2 3.44772 2.44772 3 3 3H21C21.5523 3 22 3.44772 22 4V17C22 17.5523 21.5523 18 21 18H13ZM4 5V16H20V5H4ZM10 7.5L15 10.5L10 13.5V7.5Z'%3E%3C/path%3E%3C/svg%3E");
+    background-size: contain;
+}
+
+#mini-dock #presentation div.presentation h3 span.icon  {
+    background-position: unset;
+}
+#mapmenu li.presentation a:hover .icon,
+#mapmenu li.presentation.active a .icon {
+    filter: invert(1);
+}
+
+/* Presentation card */
+div#presentation-introduction {
+    margin: 5px;
+    padding: 5px;
+    display: block;
+}
+
+div#presentation-container[data-display='detail'] div#presentation-introduction {
+    display: none;
+}
+button.liz-presentation-create {
+    margin: 5px;
+    width: calc(100% - 10px);
+    display: block;
+}
+div#presentation-container[data-display='detail'] button.liz-presentation-create {
+    display: none;
+}
+div.lizmap-presentation-card {
+    border: 1px solid var(--color-contrasted-elements);
+    border-radius: 5px;
+    padding: 5px;
+    margin: 10px;
+    display: block;
+}
+div.lizmap-presentation-card[data-display='normal'] {
+    display: block;
+}
+div.lizmap-presentation-card[data-display='none'] {
+    display: none;
+}
+div.lizmap-presentation-card[data-display='detail'] {
+    display: block;
+    border: none;
+    padding: 0px;
+}
+div.lizmap-presentation-card h3.lizmap-presentation-title {
+    padding: 5px;
+}
+
+div.lizmap-presentation-card p.lizmap-presentation-description {
+    padding: 5px;
+    font-size: 0.8em;
+    font-style: italic;
+    text-align: justify;
+}
+
+div.lizmap-presentation-card table.presentation-detail-table {
+    width: 100%;
+    font-size: 0.8em;
+    display: none;
+}
+div.lizmap-presentation-card[data-display='detail'] table.presentation-detail-table {
+    display: block;
+}
+
+div.lizmap-presentation-card-toolbar {
+    text-align: right;
+}
+
+/* Forms */
+#presentation-form-container {
+    padding: 10px;
+    overflow: auto;
+}
