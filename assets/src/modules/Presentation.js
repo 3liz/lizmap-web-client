@@ -10,6 +10,7 @@ import { mainLizmap } from '../modules/Globals.js';
 import { Vector as VectorSource } from 'ol/source.js';
 import { Vector as VectorLayer } from 'ol/layer.js';
 import GeoJSON from 'ol/format/GeoJSON.js';
+import Utils from './Utils.js';
 
 /**
  * @class
@@ -135,7 +136,24 @@ export default class Presentation {
      */
     getPresentations() {
 
-        return this.presentations;
+        const url = presentationConfig.url;
+        let formData = new FormData();
+        formData.append('request', 'list');
+
+        // Return promise
+        return fetch(url, {
+            method: 'POST',
+            body: formData
+        }).then(function (response) {
+            if (response.ok) {
+                return response.json();
+            }
+            return Promise.reject(response);
+        }).then(function (json) {
+            return json;
+        }).catch(function (error) {
+            console.warn(error);
+        });
     }
 
     /**
@@ -163,9 +181,7 @@ export default class Presentation {
         try {
             // Show a message
             const message = `Run presentation n° ${presentationId}`;
-            mainLizmap.lizmap3.addMessage(
-                message, 'info', true
-            ).attr('id', 'lizmap-presentation-message');
+            this.addMessage(message, 'info', 5000);
 
             /**
              * Lizmap event to allow other scripts to process the data if needed
@@ -214,7 +230,7 @@ export default class Presentation {
 
         // Remove all btn-primary classes in the target objects
         if (resetActiveInterfaceElements) {
-            let selector = '.popup-presentation.btn-primary';
+            const selector = '.popup-presentation.btn-primary';
             Array.from(document.querySelectorAll(selector)).map(element => {
                 element.classList.remove('btn-primary');
             });
@@ -251,4 +267,262 @@ export default class Presentation {
 
         return features;
     }
+
+    /**
+     * Display a lizMap message
+     *
+     * @param {string} message  Message to display
+     * @param {string} type     Type : error or info
+     * @param {number} duration Number of millisecond the message must be displayed
+     */
+    addMessage(message, type, duration) {
+
+        let previousMessage = document.getElementById('lizmap-presentation-message');
+        if (previousMessage) previousMessage.remove();
+        mainLizmap.lizmap3.addMessage(
+            message, type, true, duration
+        ).attr('id', 'lizmap-presentation-message');
+    }
+
+    /**
+     * Hide all presentation containers
+     * except the given one.
+     *
+     * Optionally replace the given container inner HTML
+     *
+     * @param {string} activeContainer Active container class
+     * @param {string} html If given, replace the active container inner HTML
+     * @param {boolean} emptyInactive If true, empty the inactive container inner HTML
+     */
+    toggleContainersDisplay(activeContainer, html = null, emptyInactive = false) {
+        const selector = '#presentation-container div.presentation-container-item';
+        Array.from(document.querySelectorAll(selector)).map(element => {
+            if (element.classList.contains(activeContainer)) {
+                if (html !== null) {
+                    element.innerHTML = html;
+                }
+                element.style.display = 'block';
+            } else {
+                element.style.display = 'none';
+                if (emptyInactive) {
+                    element.innerHTML = '';
+                }
+            }
+        });
+    }
+
+    /**
+     * Display the form to create a new presentation
+     *
+     * @param {null|number} id Id of the presentation. If null, it is a creation form.
+     */
+    async launchPresentationCreationForm(id = null) {
+        // Get the form
+        try {
+            const url = presentationConfig.url;
+            const request = (id === null) ? 'create' : 'modify';
+            let formData = new FormData();
+            formData.append('request', request);
+            formData.append('id', id);
+            const response = await fetch(url, {
+                method: "POST",
+                body: formData
+            });
+
+            // Check content type
+            const contentType = response.headers.get("content-type");
+            if (!contentType || !contentType.includes("text/plain")) {
+                throw new TypeError("Wrong content-type. HTML Expected !");
+            }
+
+            // Get the response
+            const htmlContent = await response.text();
+
+            // Display it
+            this.toggleContainersDisplay('form-container', htmlContent, false);
+
+            // Add events
+            const formContainer = document.getElementById('presentation-form-container');
+            const form = formContainer.querySelector('form');
+            this.addFormEvents(form);
+
+        } catch(error) {
+            console.log(error);
+            let previousMessage = document.getElementById('lizmap-presentation-message');
+            if (previousMessage) previousMessage.remove();
+            const message = `
+                <b>${error}</b>
+            `;
+            this.addMessage(message, 'error', 5000);
+        }
+    }
+
+    /**
+     * Trigger actions when submitting the form
+     *
+     * @param {HTMLFormElement} form
+     */
+    addFormEvents(form) {
+
+        // Detect click on the submit buttons
+        // to change the hidden input submit_button value
+        Array.from(form.querySelectorAll('input[type=submit]')).map(element => {
+            element.addEventListener('click', function(event) {
+                const button = event.currentTarget;
+                form.querySelector("input[name=submit_button]").value = button.name;
+            });
+        });
+
+        // Listen to the form submit
+        form.addEventListener('submit', function (event) {
+
+            // Prevent form from submitting to the server
+            event.preventDefault();
+
+            // Form data
+            const formData = new FormData(event.target);
+            const formDataObject = Object.fromEntries(formData)
+            const formAction = formDataObject['submit_button'];
+            // console.log(`Submit bouton = ${formAction}`);
+
+            // Return to the list of presentations if user canceled
+            if (formAction == 'cancel') {
+                // Go back to the list of presentations
+                mainLizmap.presentation.toggleContainersDisplay('list-container', null, true);
+
+                return true;
+            }
+
+            // Send the form data
+            mainLizmap.presentation.saveForm(form);
+        });
+    }
+
+    /**
+     * Save the form data
+     *
+     * @param {HTMLFormElement} form The form to save
+     */
+    saveForm(form) {
+        const url = form.getAttribute('action');
+        fetch(url, {
+            method: 'POST',
+            body: new FormData(form)
+        }).then(function (response) {
+            if (response.ok) {
+                return response.text();
+            }
+            return Promise.reject(response);
+        }).then(function (html) {
+            // Display it
+            const formContainer = document.getElementById('presentation-form-container');
+            formContainer.innerHTML = html;
+
+            // Check if the response contains a form or not
+            const form = formContainer.querySelector('form');
+            if (form) {
+                // Add form events
+                mainLizmap.presentation.addFormEvents(form);
+            } else {
+                // Display a message
+                const message = html;
+                mainLizmap.presentation.addMessage(message, 'info', 5000);
+
+                // Refresh the content of the list of presentations
+                const cardsElement = document.querySelector('#presentation-list-container lizmap-presentation-cards');
+                cardsElement.setAttribute('updated', 'done');
+
+                // Go back to the list of presentations
+                mainLizmap.presentation.toggleContainersDisplay('list-container', null, true);
+            }
+        }).catch(function (error) {
+            console.warn(error);
+        });
+    }
+
+    /**
+     * Delete the given presentation
+     *
+     * @param {number} id ID of the presentation to delete
+     */
+    deletePresentation(id) {
+        // Confirmation message
+        const areYourSure = window.confirm('Are you sure you want to delete this presentation ?');
+        if (!areYourSure) {
+            console.log('Delete aborted');
+
+            return false;
+        }
+
+        const url = presentationConfig.url;
+        const formData = new FormData();
+        formData.append('request', 'delete');
+        formData.append('id', id);
+        fetch(url, {
+            method: 'POST',
+            body: formData
+        }).then(function (response) {
+            if (response.ok) {
+                return response.text();
+            }
+            return Promise.reject(response);
+        }).then(function (html) {
+            // Display a message
+            const message = html;
+            mainLizmap.presentation.addMessage(message, 'info', 5000);
+
+            // Refresh the content of the list of presentations
+            const cardsElement = document.querySelector('#presentation-list-container lizmap-presentation-cards');
+            cardsElement.setAttribute('updated', 'done');
+
+            // Go back to the list of presentations
+            this.toggleContainersDisplay('list-container', null, true);
+        }).catch(function (error) {
+            console.warn(error);
+        });
+    }
+
+    /**
+     * Display the HTML to configure the presentation pages
+     *
+     * @param {number} id Id of the presentation.
+     */
+    async showPresentationDetail(id) {
+        // Get the form
+        try {
+            const url = presentationConfig.url;
+            const request = 'detail';
+            let formData = new FormData();
+            formData.append('request', request);
+            formData.append('id', id);
+            const response = await fetch(url, {
+                method: "POST",
+                body: formData
+            });
+
+            // Check content type
+            const contentType = response.headers.get("content-type");
+            if (!contentType || !contentType.includes("text/plain")) {
+                throw new TypeError("Wrong content-type. HTML Expected !");
+            }
+
+            // Get the response
+            const htmlContent = await response.text();
+
+            // Display it
+            this.toggleContainersDisplay('detail-container', htmlContent, false);
+
+            // Add events
+
+        } catch(error) {
+            console.log(error);
+            let previousMessage = document.getElementById('lizmap-presentation-message');
+            if (previousMessage) previousMessage.remove();
+            const message = `
+                <b>${error}</b>
+            `;
+            this.addMessage(message, 'error', 5000);
+        }
+    }
+
 };

@@ -17,18 +17,64 @@
 div#presentation-introduction {
     margin: 5px;
     padding: 5px;
+    display: block;
 }
 
+div#presentation-container[data-display='detail'] div#presentation-introduction {
+    display: none;
+}
 button.liz-presentation-create {
     margin: 5px;
     width: calc(100% - 10px);
+    display: block;
+}
+div#presentation-container[data-display='detail'] button.liz-presentation-create {
+    display: none;
 }
 div.lizmap-presentation-card {
     border: 1px solid var(--color-contrasted-elements);
     border-radius: 5px;
     padding: 5px;
     margin: 10px;
+    display: block;
 }
+div.lizmap-presentation-card[data-display='normal'] {
+    display: block;
+}
+div.lizmap-presentation-card[data-display='none'] {
+    display: none;
+}
+div.lizmap-presentation-card[data-display='detail'] {
+    display: block;
+    border: none;
+    padding: 0px;
+}
+div.lizmap-presentation-card h3.lizmap-presentation-title {
+    padding: 5px;
+}
+
+div.lizmap-presentation-card p.lizmap-presentation-description {
+    padding: 5px;
+    font-size: 0.8em;
+    font-style: italic;
+    text-align: justify;
+}
+
+div.lizmap-presentation-card table.presentation-detail-table {
+    width: 100%;
+    font-size: 0.8em;
+    display: none;
+}
+div.lizmap-presentation-card[data-display='detail'] table.presentation-detail-table {
+    display: block;
+}
+
 div.lizmap-presentation-card-toolbar {
     text-align: right;
+}
+
+/* Forms */
+#presentation-form-container {
+    padding: 10px;
+    overflow: auto;
 }

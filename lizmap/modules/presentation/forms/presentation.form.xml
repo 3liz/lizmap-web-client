@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://jelix.org/ns/forms/1.1">
+
+    <hidden ref="id"></hidden>
+    <hidden ref="repository"></hidden>
+    <hidden ref="project"></hidden>
+    <hidden ref="created_by"></hidden>
+    <hidden ref="created_at"></hidden>
+    <hidden ref="updated_by"></hidden>
+    <hidden ref="updated_at"></hidden>
+    <hidden ref="submit_button" defaultvalue="submit"></hidden>
+
+    <input ref="title" type="string" required="true">
+        <label locale="presentation~presentation.form.presentation.title.label" />
+        <hint locale="presentation~presentation.form.presentation.title.hint" />
+    </input>
+
+    <textarea ref="description" required="true" rows="5" maxlength="1000">
+        <label locale="presentation~presentation.form.presentation.description.label" />
+        <hint locale="presentation~presentation.form.presentation.description.hint" />
+    </textarea>
+
+    <textarea ref="footer" type="html" required="false" rows="5">
+        <label locale="presentation~presentation.form.presentation.footer.label" />
+        <hint locale="presentation~presentation.form.presentation.footer.hint" />
+    </textarea>
+
+    <checkbox ref="published" required="false">
+        <label locale="presentation~presentation.form.presentation.published.label" />
+        <hint locale="presentation~presentation.form.presentation.published.hint" />
+    </checkbox>
+
+    <input ref="granted_groups" type="string" required="false">
+        <label locale="presentation~presentation.form.presentation.granted_groups.label" />
+        <hint locale="presentation~presentation.form.presentation.granted_groups.hint" />
+    </input>
+
+    <reset ref="reinit">
+        <label locale="presentation~presentation.form.presentation.reinit.label" />
+    </reset>
+
+    <submit ref="cancel">
+        <label locale="presentation~presentation.form.presentation.cancel.label" />
+    </submit>
+
+    <submit ref="submit">
+        <label locale="presentation~presentation.form.presentation.submit.label" />
+    </submit>
+</form>

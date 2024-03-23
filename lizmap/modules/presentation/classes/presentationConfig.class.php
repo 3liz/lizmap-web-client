@@ -15,75 +15,64 @@ class presentationConfig
     private $errors = array();
     private $repository;
     private $project;
-    private $lproj;
-    private $config;
 
     public function __construct($repository, $project)
     {
         try {
-            $lproj = lizmap::getProject($repository.'~'.$project);
-            if (!$lproj) {
+            $lizmapProject = lizmap::getProject($repository.'~'.$project);
+            if (!$lizmapProject) {
                 $this->errors = array(
-                    'title' => 'Invalid Query Parameter',
-                    'detail' => 'The lizmap project '.strtoupper($project).' does not exist !',
+                    array(
+                        'title' => 'Invalid Query Parameter',
+                        'detail' => 'The lizmap project '.strtoupper($project).' does not exist !',
+                    ),
                 );
 
                 return false;
             }
         } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
             $this->errors = array(
-                'title' => 'Invalid Query Parameter',
-                'detail' => 'The lizmap project '.strtoupper($project).' does not exist !',
+                array(
+                    'title' => 'Invalid Query Parameter',
+                    'detail' => 'The lizmap project '.strtoupper($project).' does not exist !',
+                ),
             );
 
             return false;
         }
 
         // Check acl
-        if (!$lproj->checkAcl()) {
+        if (!$lizmapProject->checkAcl()) {
             $this->errors = array(
-                'title' => 'Access Denied',
-                'detail' => jLocale::get('view~default.repository.access.denied'),
+                array(
+                    'title' => 'Access Denied',
+                    'detail' => jLocale::get('view~default.repository.access.denied'),
+                ),
             );
 
             return false;
         }
 
-        // presentation config may be an empty array
         $this->repository = $repository;
         $this->project = $project;
-        $this->lproj = $lproj;
         $this->status = true;
-        $this->config = $this->getPresentations();
     }
 
     /**
-     * Get the presentations stored in the database
-     * for the current Lizmap project.
+     * Get the status.
      *
-     * @return null|json $presentations List of presentations
+     * @return bool Status of the configuration for the given project
      */
-    private function getPresentations()
-    {
-        $dao = \jDao::get('presentation~presentation');
-        $getPresentations = $dao->findAll();
-
-        return $getPresentations->fetchAllAssociative();
-    }
-
-    /**
-     * Get presentation configuration.
-     */
-    public function getConfig()
-    {
-        return $this->config;
-    }
-
     public function getStatus()
     {
         return $this->status;
     }
 
+    /**
+     * Get the errors.
+     *
+     * @return array
+     */
     public function getErrors()
     {
         return $this->errors;
