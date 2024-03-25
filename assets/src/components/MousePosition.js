@@ -110,13 +110,10 @@ export default class MousePosition extends HTMLElement {
                 });
             }
             mainLizmap.map.addLayer(this._MGRS);
-
-            // mainLizmap.newOlMap = true;
-        }else{
+        } else {
             if(this._MGRS){
                 mainLizmap.map.removeLayer(this._MGRS);
             }
-            // mainLizmap.newOlMap = false;
         }
     }
 

@@ -41,8 +41,6 @@ export default class Print extends HTMLElement {
         lizMap.events.on({
             minidockopened: (e) => {
                 if ( e.id == 'print' ) {
-                    // mainLizmap.newOlMap = true;
-
                     this._projectionUnit = getProjection(mainLizmap.qgisProjectProjection).getUnits();
 
                     if (this._projectionUnit === 'degrees') {
@@ -109,7 +107,6 @@ export default class Print extends HTMLElement {
             },
             minidockclosed: (e) => {
                 if ( e.id == 'print' ) {
-                    // mainLizmap.newOlMap = false;
                     mainLizmap.map.removeLayer(this._maskLayer);
                     mainLizmap.map.getView().un('change:resolution', this._onChangeResolution);
                 }

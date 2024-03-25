@@ -561,6 +561,10 @@ export default class map extends olMap {
 
         this.on('moveend', () => {
             this._dispatchMapStateChanged();
+
+            if (!mainLizmap.newOlMap) {
+                lizMap.map.setCenter(undefined,this.getView().getZoom(), false, false);
+            }
         });
 
         // Init view

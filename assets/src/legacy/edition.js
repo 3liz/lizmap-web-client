@@ -655,7 +655,7 @@ var lizEdition = function() {
     function finishEdition() {
 
         // Put old OL2 map at bottom
-        document.getElementById("newOlMap").style.zIndex = 750;
+        lizMap.mainLizmap.newOlMap = true;
 
         // Lift the constraint on edition
         lizMap.editionPending = false;
@@ -1273,8 +1273,7 @@ var lizEdition = function() {
     function launchEdition( aLayerId, aFid, aParent, aCallback ) {
 
         // Put old OL2 map on top and synchronize position with new OL map
-        document.getElementById("newOlMap").style.zIndex = 'unset';
-        lizMap.mainLizmap.map.refreshOL2View();
+        lizMap.mainLizmap.newOlMap = false;
 
         var editedFeature = new FeatureEditionData(aLayerId, null, null);
 
