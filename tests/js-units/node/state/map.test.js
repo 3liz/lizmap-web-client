@@ -14,6 +14,7 @@ describe('MapState', function () {
         // Initial state
         expect(mapState.projection).to.be.eq('EPSG:3857')
         expect(mapState.center).to.be.an('array').that.have.lengthOf(2).that.deep.equal([0, 0])
+        expect(mapState.zoom).to.be.eq(-1)
         expect(mapState.size).to.be.an('array').that.have.lengthOf(2).that.deep.equal([0, 0])
         expect(mapState.extent).to.be.instanceOf(Extent).that.have.lengthOf(4).that.deep.equal([0, 0, 0, 0])
         expect(mapState.resolution).to.be.eq(-1)
@@ -29,6 +30,7 @@ describe('MapState', function () {
               432082.33132450003,
               5404877.667855
             ],
+            "zoom": 4,
             "size": [
               1822,
               634
@@ -49,6 +51,7 @@ describe('MapState', function () {
             432082.33132450003,
             5404877.667855
         ])
+        expect(mapState.zoom).to.be.eq(4)
         expect(mapState.size).to.be.an('array').that.have.lengthOf(2).that.deep.equal([
             1822,
             634
@@ -83,6 +86,7 @@ describe('MapState', function () {
             432082.33132450003,
             5404877.667855
         ])
+        expect(mapState.zoom).to.be.eq(4)
         expect(mapState.size).to.be.an('array').that.have.lengthOf(2).that.deep.equal([
             1822,
             634
@@ -109,6 +113,7 @@ describe('MapState', function () {
             432082.33132450003,
             5404877.667855
         ])
+        expect(mapState.zoom).to.be.eq(4)
         expect(mapState.size).to.be.an('array').that.have.lengthOf(2).that.deep.equal([
             1822,
             634
@@ -144,6 +149,7 @@ describe('MapState', function () {
               432082.33132450003,
               5404877.667855
             ],
+            "zoom": 4,
             "size": [
               1822,
               634
@@ -166,6 +172,7 @@ describe('MapState', function () {
             432082.33132450003,
             5404877.667855
         ])
+        expect(mapState.zoom).to.be.eq(4)
         expect(mapStateChangedEvt.size).to.be.an('array').that.have.lengthOf(2).that.deep.equal([
             1822,
             634
@@ -205,6 +212,7 @@ describe('MapState', function () {
         expect(mapStateChangedEvt).to.not.be.null // event dispatch
         expect(mapStateChangedEvt.projection).to.be.undefined // the projection has not changed
         expect(mapStateChangedEvt.center).to.be.undefined
+        expect(mapStateChangedEvt.zoom).to.be.undefined
         expect(mapStateChangedEvt.size).to.be.undefined
         expect(mapStateChangedEvt.extent).to.be.an('array').that.have.lengthOf(4).that.deep.equal([
             414678.25685631623,
@@ -253,6 +261,7 @@ describe('MapState', function () {
         // Initial state
         expect(mapState.projection).to.be.eq('EPSG:3857')
         expect(mapState.center).to.be.an('array').that.have.lengthOf(2).that.deep.equal([0, 0])
+        expect(mapState.zoom).to.be.eq(-1)
         expect(mapState.size).to.be.an('array').that.have.lengthOf(2).that.deep.equal([0, 0])
         expect(mapState.extent).to.be.instanceOf(Extent).that.have.lengthOf(4).that.deep.equal([0, 0, 0, 0])
         expect(mapState.resolution).to.be.eq(-1)
@@ -270,6 +279,18 @@ describe('MapState', function () {
             expect(error).to.be.instanceOf(ValidationError)
         } finally {
             expect(mapState.extent).to.be.instanceOf(Extent).that.have.lengthOf(4).that.deep.equal([0, 0, 0, 0])
+        }
+
+        try {
+            mapState.update({
+                "zoom": 'foobar'
+            })
+        } catch (error) {
+            expect(error.name).to.be.eq('ConversionError')
+            expect(error.message).to.be.eq('`foobar` is not a number!')
+            expect(error).to.be.instanceOf(ConversionError)
+        } finally {
+            expect(mapState.zoom).to.be.eq(-1)
         }
 
         try {
