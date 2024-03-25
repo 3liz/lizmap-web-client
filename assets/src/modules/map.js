@@ -63,7 +63,6 @@ export default class map extends olMap {
                 constrainResolution: true,
                 center: [mainLizmap.lizmap3.map.getCenter().lon, mainLizmap.lizmap3.map.getCenter().lat],
                 projection: mapProjection,
-                enableRotation: false,
                 extent: mainLizmap.lizmap3.map.restrictedExtent.toArray(),
                 constrainOnlyCenter: true // allow view outside the restricted extent when zooming
             }),
