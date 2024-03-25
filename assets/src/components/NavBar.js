@@ -9,6 +9,8 @@
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import { html, render } from 'lit-html';
 
+import { ZoomSlider } from 'ol/control.js';
+
 /**
  * @class
  * @name NavBar
@@ -26,11 +28,16 @@ export default class NavBar extends HTMLElement {
             <button class="btn zoom ${mainLizmap.map.isDragZoomActive ? 'active' : ''}" title="${lizDict['navbar.zoom.hover']}" @click=${ () => mainLizmap.map.activateDragZoom()}></button>
             <button class="btn zoom-extent" title="${lizDict['navbar.zoomextent.hover']}" @click=${ () => mainLizmap.state.map.zoomToInitialExtent()}></button>
             <button class="btn zoom-in" title="${lizDict['navbar.zoomin.hover']}" ?disabled=${mainLizmap.state.map.zoom === mainLizmap.state.map.maxZoom} @click=${ () => mainLizmap.state.map.zoomIn()}></button>
-            <!-- <div class="slider" title="${lizDict['navbar.slider.hover']}"></div> -->
+            <div class="slider" title="${lizDict['navbar.slider.hover']}"></div>
             <button class="btn zoom-out" title="${lizDict['navbar.zoomout.hover']}" ?disabled=${mainLizmap.state.map.zoom === mainLizmap.state.map.minZoom} @click=${ () => mainLizmap.state.map.zoomOut()}></button>
         `;
 
         render(mainTemplate(), this);
+
+        const zoomslider = new ZoomSlider({
+            target: document.querySelector('lizmap-navbar .slider')
+        });
+        mainLizmap.map.addControl(zoomslider);
 
         mainLizmap.state.map.addListener(
             evt => {
