@@ -189,6 +189,7 @@ export default class Lizmap {
 
         if (!mode) {
             this.map.refreshOL2View();
+            this.map.getView().setRotation(0);
         }
     }
 
