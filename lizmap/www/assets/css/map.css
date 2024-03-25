@@ -1661,7 +1661,18 @@ a.btn.btn-opacity-layer.active {
 lizmap-navbar {
   display: flex;
   flex-direction: column;
-  top: 350px!important;
+}
+
+.ol-zoomslider {
+  position: initial;
+  height: 50px;
+}
+
+.ol-zoomslider button{
+  width: 30px;
+  height: 4px;
+  right: 15px;
+  background: var(--color-dark-gray-elements);
 }
 
 #zoom-in-max-msg {
