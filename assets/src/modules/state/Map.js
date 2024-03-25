@@ -285,20 +285,29 @@ export class MapState extends EventDispatcher {
         return this._singleWMSLayer;
     }
 
+    /**
+     * Zoom in
+     */
     zoomIn() {
         const newZoom = this._zoom + 1
         if (newZoom <= this._maxZoom) {
-            this.update({ 'zoom':  newZoom});
+            this.update({ 'zoom': newZoom });
         }
     }
 
+    /**
+     * Zoom out
+     */
     zoomOut() {
         const newZoom = this._zoom - 1
         if (newZoom >= this._minZoom) {
-            this.update({ 'zoom':  newZoom});
+            this.update({ 'zoom': newZoom });
         }
     }
 
+    /**
+     * Zoom to initial extent
+     */
     zoomToInitialExtent() {
         this.update({ 'extent': this._initialExtent });
     }
