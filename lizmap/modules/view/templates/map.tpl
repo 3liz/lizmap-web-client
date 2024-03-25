@@ -56,20 +56,6 @@
       {zone 'view~map_minidock', array('repository'=>$repository,'project'=>$project,'dockable'=>$minidockable)}
     </div>
 
-    <span id="navbar">
-      <button class="btn pan active" title="{@view~map.navbar.pan.hover@}"></button><br/>
-      <button class="btn zoom" title="{@view~map.navbar.zoom.hover@}"></button><br/>
-      <button class="btn zoom-extent" title="{@view~map.navbar.zoomextent.hover@}"></button><br/>
-      <button class="btn zoom-in" title="{@view~map.navbar.zoomin.hover@}"></button><br/>
-      <div class="slider" title="{@view~map.navbar.slider.hover@}"></div>
-      <button class="btn zoom-out" title="{@view~map.navbar.zoomout.hover@}"></button><br/>
-      <span class="history">
-        <button class="btn previous disabled" title="{@view~map.navbar.previous.hover@}"></button>
-        <button class="btn next disabled" title="{@view~map.navbar.next.hover@}"></button>
-      </span>
-      <span id="zoom-in-max-msg" class="ui-widget-content ui-corner-all" style="display:none;">{@view~map.message.zoominmax@}</span>
-    </span>
-
     <lizmap-navbar id="navbar"></lizmap-navbar>
 
     <div id="overview-box">
