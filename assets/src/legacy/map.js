@@ -2710,11 +2710,18 @@ window.lizMap = function() {
         lizMap.events.on({
             minidockopened: function(e) {
                 if ( e.id == 'measure' ) {
+                    // Put old OL2 map on top and synchronize position with new OL map
+                    document.getElementById("newOlMap").style.zIndex = 'unset';
+                    lizMap.mainLizmap.map.refreshOL2View();
+
                     $('#measure-type').change();
                 }
             },
             minidockclosed: function(e) {
                 if ( e.id == 'measure' ) {
+                    // Put old OL2 map at bottom
+                    document.getElementById("newOlMap").style.zIndex = 750;
+
                     var activeCtrl = '';
                     $('#measure-type option').each(function() {
                         var val = $( this ).attr('value');
