@@ -14,6 +14,7 @@ import { Extent } from './../utils/Extent.js';
 const mapStateProperties = {
     projection: {type: 'string'},
     center: {type: 'array'},
+    zoom: {type: 'number'},
     size: {type: 'array'},
     extent: {type: 'extent'},
     resolution: {type: 'number'},
@@ -37,6 +38,7 @@ const mapStateProperties = {
  * @property {string}   type                    - map.state.changed
  * @property {string}   [projection]            - the map projection code if it changed
  * @property {number[]} [center]                - the map center if it changed
+ * @property {number}   [zoom]                  - the map zoom if it changed
  * @property {number[]} [size]                  - the map size if it changed
  * @property {number[]} [extent]                - the map extent (calculate by the map view) if it changed
  * @property {number}   [resolution]            - the map resolution if it changed
@@ -63,8 +65,12 @@ export class MapState extends EventDispatcher {
         // default values
         this._projection = 'EPSG:3857';
         this._center = [0, 0];
+        this._zoom = -1;
+        this._minZoom = 0;
+        this._maxZoom = -1;
         this._size = [0, 0];
         this._extent = new Extent(0, 0, 0, 0);
+        this._initialExtent = new Extent(0, 0, 0, 0);
         this._resolution = -1;
         this._scaleDenominator = -1;
         this._pointResolution = -1;
@@ -74,6 +80,8 @@ export class MapState extends EventDispatcher {
         this._singleWMSLayer = false;
         if (options) {
             this._singleWMSLayer = options.wms_single_request_for_all_layers; // default value is defined as false
+            this._maxZoom = options.mapScales.length - 1;
+            this._initialExtent = options.initialExtent;
         }
 
         this._startupFeatures = startupFeatures;
@@ -84,6 +92,7 @@ export class MapState extends EventDispatcher {
      * @param {object}   evt                         - the map state changed object
      * @param {string}   [evt.projection]            - the map projection code
      * @param {number[]} [evt.center]                - the map center
+     * @param {number}   [evt.zoom]                  - the map zoom
      * @param {number[]} [evt.size]                  - the map size
      * @param {number[]} [evt.extent]                - the map extent (calculate by the map view)
      * @param {number}   [evt.resolution]            - the map resolution
@@ -188,6 +197,30 @@ export class MapState extends EventDispatcher {
     }
 
     /**
+     * Map zoom
+     * @type {number}
+     */
+    get zoom() {
+        return this._zoom;
+    }
+
+    /**
+     * Map min zoom
+     * @type {number}
+     */
+    get minZoom() {
+        return this._minZoom;
+    }
+
+    /**
+     * Map max zoom
+     * @type {number}
+     */
+    get maxZoom() {
+        return this._maxZoom;
+    }
+
+    /**
      * Map size
      * @type {number[]}
      */
@@ -250,5 +283,32 @@ export class MapState extends EventDispatcher {
      */
     get singleWMSLayer(){
         return this._singleWMSLayer;
+    }
+
+    /**
+     * Zoom in
+     */
+    zoomIn() {
+        const newZoom = this._zoom + 1
+        if (newZoom <= this._maxZoom) {
+            this.update({ 'zoom': newZoom });
+        }
+    }
+
+    /**
+     * Zoom out
+     */
+    zoomOut() {
+        const newZoom = this._zoom - 1
+        if (newZoom >= this._minZoom) {
+            this.update({ 'zoom': newZoom });
+        }
+    }
+
+    /**
+     * Zoom to initial extent
+     */
+    zoomToInitialExtent() {
+        this.update({ 'extent': this._initialExtent });
     }
 }

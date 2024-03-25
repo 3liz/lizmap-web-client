@@ -1658,6 +1658,23 @@ a.btn.btn-opacity-layer.active {
   background-position : -44px -120px;
 }
 
+lizmap-navbar {
+  display: flex;
+  flex-direction: column;
+}
+
+.ol-zoomslider {
+  position: initial;
+  height: 50px;
+}
+
+.ol-zoomslider button{
+  width: 30px;
+  height: 4px;
+  right: 15px;
+  background: var(--color-dark-gray-elements);
+}
+
 #zoom-in-max-msg {
   position: absolute;
   right: 40px;

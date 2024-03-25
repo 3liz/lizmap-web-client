@@ -22,6 +22,7 @@ import Print from './components/Print.js';
 import FullScreen from './components/FullScreen.js';
 import BaseLayers from './components/BaseLayers.js';
 import Treeview from './components/Treeview.js';
+import NavBar from './components/NavBar.js';
 
 import { mainLizmap, mainEventDispatcher } from './modules/Globals.js';
 
@@ -44,6 +45,7 @@ lizMap.events.on({
         window.customElements.define('lizmap-fullscreen', FullScreen);
         window.customElements.define('lizmap-base-layers', BaseLayers);
         window.customElements.define('lizmap-treeview', Treeview);
+        window.customElements.define('lizmap-navbar', NavBar);
 
         lizMap.mainLizmap = mainLizmap;
         lizMap.mainEventDispatcher = mainEventDispatcher;
