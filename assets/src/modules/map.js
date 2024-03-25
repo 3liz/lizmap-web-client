@@ -28,14 +28,9 @@ import LayerGroup from 'ol/layer/Group.js';
 import { Vector as VectorSource } from 'ol/source.js';
 import { Vector as VectorLayer } from 'ol/layer.js';
 
-import DragPan from "ol/interaction/DragPan.js";
-import MouseWheelZoom from "ol/interaction/MouseWheelZoom.js";
-import DoubleClickZoom from 'ol/interaction/DoubleClickZoom.js';
 import DragZoom from 'ol/interaction/DragZoom.js';
-import { defaults as defaultInteractions } from 'ol/interaction.js';
 import { always } from 'ol/events/condition.js';
 import SingleWMSLayer from './SingleWMSLayer.js';
-import { Tile } from 'ol';
 
 /**
  * Class initializing Openlayers Map.
@@ -63,14 +58,6 @@ export default class map extends olMap {
             controls: [
                 new Attribution({ target: 'attribution-ol', collapsed: false })
             ],
-            interactions: defaultInteractions({
-                dragPan: false,
-                mouseWheelZoom: false
-            }).extend([
-                new DragPan(),
-                new MouseWheelZoom({ duration: 0 }),
-                new DoubleClickZoom({ duration: 0 })
-            ]),
             view: new View({
                 resolutions: resolutions,
                 constrainResolution: true,
@@ -86,17 +73,11 @@ export default class map extends olMap {
         this._newOlMap = true;
 
         // Zoom to box
-        const dragZoom = new DragZoom({
+        this._dragZoom = new DragZoom({
             condition: always
         });
-
-        document.querySelector('#navbar .pan').addEventListener('click', () => {
-            this.removeInteraction(dragZoom);
-        });
-
-        document.querySelector('#navbar .zoom').addEventListener('click', () => {
-            this.addInteraction(dragZoom);
-        });
+        this._dragZoom.setActive(false);
+        this.addInteraction(this._dragZoom);
 
         this._dispatchMapStateChanged = () => {
             const view = this.getView();
@@ -113,6 +94,7 @@ export default class map extends olMap {
                 'type': 'map.state.changing',
                 'projection': projection.getCode(),
                 'center': [...view.getCenter()],
+                'zoom': view.getZoom(),
                 'size': [...this.getSize()],
                 'extent': view.calculateExtent(),
                 'resolution': resolution,
@@ -293,38 +275,37 @@ export default class map extends olMap {
                                     },
                                 })
                             });
-        
+
                             // Force no cache w/ Firefox
                             if(navigator.userAgent.includes("Firefox")){
                                 layer.getSource().setImageLoadFunction((image, src) => {
                                     (image.getImage()).src = src + '&ts=' + Date.now();
                                 });
-                            }                            
-                        }                       
-                    }                   
+                            }
+                        }
+                    }
                 }
 
                 if(layer){
                     layer.setVisible(node.visibility);
 
                     layer.setOpacity(node.opacity);
-    
+
                     layer.setProperties({
                         name: node.name
                     });
-    
+
                     layer.getSource().setProperties({
                         name: node.name
                     });
-    
+
                     // OL layers zIndex is the reverse of layer's order given by cfg
                     layer.setZIndex(layersCount - 1 - node.layerOrder);
-    
+
                     overlayLayersAndGroups.push(layer);
                     statesOlLayersandGroupsMap.set(node.name, [node, layer]);
                     return layer;
                 }
-
             }
         }
 
@@ -586,6 +567,12 @@ export default class map extends olMap {
         this.syncNewOLwithOL2View();
 
         // Listen/Dispatch events
+        this.getView().on('change', () => {
+            if (this.isDragZoomActive) {
+                this.deactivateDragZoom();
+            }
+        });
+
         this.getView().on('change:resolution', () => {
             mainEventDispatcher.dispatch('resolution.changed');
         });
@@ -715,6 +702,7 @@ export default class map extends olMap {
             evt => {
                 const view = this.getView();
                 const updateCenter = ('center' in evt && view.getCenter().filter((v, i) => {return evt['center'][i] != v}).length != 0);
+                const updateZoom = ('zoom' in evt  && evt['zoom'] !== view.getZoom());
                 const updateResolution = ('resolution' in evt  && evt['resolution'] !== view.getResolution());
                 const updateExtent = ('extent' in evt && view.calculateExtent().filter((v, i) => {return evt['extent'][i] != v}).length != 0);
                 if (updateCenter && updateResolution) {
@@ -725,6 +713,11 @@ export default class map extends olMap {
                     });
                 } else if (updateCenter) {
                     view.setCenter(evt['center']);
+                } else if (updateZoom) {
+                    view.animate({
+                        zoom: evt['zoom'],
+                        duration: 250
+                    });
                 } else if (updateResolution) {
                     view.setResolution(evt['resolution']);
                 } else if (updateExtent) {
@@ -783,6 +776,14 @@ export default class map extends olMap {
     get hidpi(){
         return this._hidpi;
     }
+    /**
+     * Is dragZoom active?
+     * @type {Boolean}
+     */
+    get isDragZoomActive(){
+        return this._dragZoom.getActive();
+    }
+
     /**
      * Add highlight features on top of all layer
      * @param {string} features features as GeoJSON or WKT
@@ -910,12 +911,28 @@ export default class map extends olMap {
 
     /**
      * Return MapLayerState instance of WMS layer or group if the layer is loaded in the single WMS image, undefined if not.
-     * 
+     *
      * @param name
      * @returns {MapLayerState|undefined}
      */
     isSingleWMSLayer(name){
 
         return this.statesSingleWMSLayers.get(name);
+    }
+
+    /**
+     * Activate DragZoom interaction
+     */
+    activateDragZoom() {
+        this._dragZoom.setActive(true);
+        mainEventDispatcher.dispatch('dragZoom.activated');
+    }
+
+    /**
+     * Deactivate DragZoom interaction
+     */
+    deactivateDragZoom() {
+        this._dragZoom.setActive(false);
+        mainEventDispatcher.dispatch('dragZoom.deactivated');
     }
 }
