@@ -343,7 +343,6 @@ map.js[]=assets/js/Proj4js/proj4js.min.js
 map.js[]=assets/js/jquery.combobox.js
 map.js[]=assets/js/map.js
 map.js[]=assets/js/lizmap.js
-map.css[]=assets/js/OpenLayers-2.13/theme/default/style.css
 map.css[]=assets/css/ol.css
 map.css[]=assets/css/main.css
 map.css[]=assets/css/map.css
