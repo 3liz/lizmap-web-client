@@ -1368,114 +1368,6 @@ window.lizMap = function() {
     }
 
     /**
-     * PRIVATE function: createNavbar
-     * create the navigation bar (zoom, scales, etc)
-     */
-    function createNavbar() {
-        $('#navbar div.slider').height(Math.max(50,map.numZoomLevels*5)).slider({
-            orientation:'vertical',
-            min: 0,
-            max: map.numZoomLevels-1,
-            change: function(evt,ui) {
-                if (ui.value > map.baseLayer.numZoomLevels-1) {
-                    $('#navbar div.slider').slider('value',map.getZoom())
-                    $('#zoom-in-max-msg').show('slow', function() {
-                        window.setTimeout(function(){$('#zoom-in-max-msg').hide('slow')},1000)
-                    });
-                } else if ( ui.value != map.zoom )
-                    map.zoomTo(ui.value);
-            }
-        });
-        $('#navbar button.pan').click(function(){
-            var self = $(this);
-            if (self.hasClass('active'))
-                return false;
-            $('#navbar button.zoom').removeClass('active');
-            self.addClass('active');
-            var navCtrl = map.getControlsByClass('OpenLayers.Control.Navigation')[0];
-            navCtrl.zoomBox.keyMask = navCtrl.zoomBoxKeyMask;
-            navCtrl.zoomBox.handler.keyMask = navCtrl.zoomBoxKeyMask;
-            navCtrl.zoomBox.handler.dragHandler.keyMask = navCtrl.zoomBoxKeyMask;
-            navCtrl.handlers.wheel.activate();
-        });
-        $('#navbar button.zoom').click(function(){
-            var self = $(this);
-            if (self.hasClass('active'))
-                return false;
-            $('#navbar button.pan').removeClass('active');
-            self.addClass('active');
-            var navCtrl = map.getControlsByClass('OpenLayers.Control.Navigation')[0];
-            navCtrl.handlers.wheel.deactivate();
-            navCtrl.zoomBox.keyMask = null;
-            navCtrl.zoomBox.handler.keyMask = null;
-            navCtrl.zoomBox.handler.dragHandler.keyMask = null;
-        });
-        $('#navbar button.zoom-extent')
-            .click(function(){
-                map.zoomToExtent(map.initialExtent);
-            });
-        $('#navbar button.zoom-in')
-            .click(function(){
-                if (map.getZoom() == map.baseLayer.numZoomLevels-1)
-                    $('#zoom-in-max-msg').show('slow', function() {
-                        window.setTimeout(function(){$('#zoom-in-max-msg').hide('slow')},1000)
-                    });
-                else
-                    map.zoomIn();
-            });
-        $('#navbar button.zoom-out')
-            .click(function(){
-                map.zoomOut();
-            });
-        if ( ('zoomHistory' in config.options)
-        && config.options['zoomHistory'] == "True") {
-            var hCtrl =  new OpenLayers.Control.NavigationHistory();
-            map.addControls([hCtrl]);
-            $('#navbar button.previous').click(function(){
-                var ctrl = map.getControlsByClass('OpenLayers.Control.NavigationHistory')[0];
-                if (ctrl && ctrl.previousStack.length != 0)
-                    ctrl.previousTrigger();
-                if (ctrl && ctrl.previous.active)
-                    $(this).removeClass('disabled');
-                else
-                    $(this).addClass('disabled');
-                if (ctrl && ctrl.next.active)
-                    $('#navbar button.next').removeClass('disabled');
-                else
-                    $('#navbar button.next').addClass('disabled');
-            });
-            $('#navbar button.next').click(function(){
-                var ctrl = map.getControlsByClass('OpenLayers.Control.NavigationHistory')[0];
-                if (ctrl && ctrl.nextStack.length != 0)
-                    ctrl.nextTrigger();
-                if (ctrl && ctrl.next.active)
-                    $(this).removeClass('disabled');
-                else
-                    $(this).addClass('disabled');
-                if (ctrl && ctrl.previous.active)
-                    $('#navbar button.previous').removeClass('disabled');
-                else
-                    $('#navbar button.previous').addClass('disabled');
-            });
-            map.events.on({
-                moveend : function() {
-                    var ctrl = map.getControlsByClass('OpenLayers.Control.NavigationHistory')[0];
-                    if (ctrl && ctrl.previousStack.length != 0)
-                        $('#navbar button.previous').removeClass('disabled');
-                    else
-                        $('#navbar button.previous').addClass('disabled');
-                    if (ctrl && ctrl.nextStack.length != 0)
-                        $('#navbar button.next').removeClass('disabled');
-                    else
-                        $('#navbar button.next').addClass('disabled');
-                }
-            });
-        } else {
-            $('#navbar > .history').remove();
-        }
-    }
-
-    /**
      * PRIVATE function: createToolbar
      * create the tool bar (collapse switcher, etc)
      */
@@ -4375,19 +4267,9 @@ window.lizMap = function() {
                 updateContentSize();
                 map.events.triggerEvent("zoomend", { "zoomChanged": true });
 
-                // create navigation and toolbar
-                createNavbar();
+                // create toolbar
                 createToolbar();
                 self.events.triggerEvent("toolbarcreated", self);
-
-                // finalize slider
-                $('#navbar div.slider').slider("value", map.getZoom());
-                map.events.on({
-                    zoomend: function () {
-                        // update slider position
-                        $('#navbar div.slider').slider("value", this.getZoom());
-                    }
-                });
 
                 // Toggle locate
                 $('#mapmenu ul').on('click', 'li.nav-minidock > a', function () {
