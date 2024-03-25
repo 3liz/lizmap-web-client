@@ -2711,8 +2711,7 @@ window.lizMap = function() {
             minidockopened: function(e) {
                 if ( e.id == 'measure' ) {
                     // Put old OL2 map on top and synchronize position with new OL map
-                    document.getElementById("newOlMap").style.zIndex = 'unset';
-                    lizMap.mainLizmap.map.refreshOL2View();
+                    lizMap.mainLizmap.newOlMap = false;
 
                     $('#measure-type').change();
                 }
@@ -2720,7 +2719,7 @@ window.lizMap = function() {
             minidockclosed: function(e) {
                 if ( e.id == 'measure' ) {
                     // Put old OL2 map at bottom
-                    document.getElementById("newOlMap").style.zIndex = 750;
+                    lizMap.mainLizmap.newOlMap = true;
 
                     var activeCtrl = '';
                     $('#measure-type option').each(function() {

@@ -269,13 +269,11 @@ export default class Digitizing {
                 } else if (['draw', 'selectiontool', 'print'].includes(e.id)) {
                     // Display draw for print redlining
                     this.context = e.id === 'print' ? 'draw' : e.id;
-                    // mainLizmap.newOlMap = true;
                     this.toggleVisibility(true);
                 }
             },
             minidockclosed: (e) => {
                 if (['draw', 'selectiontool', 'print'].includes(e.id)) {
-                    // mainLizmap.newOlMap = false;
                     this.toggleVisibility(false);
                 }
             }
