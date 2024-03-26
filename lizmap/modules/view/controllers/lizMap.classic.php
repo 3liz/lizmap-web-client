@@ -553,8 +553,6 @@ class lizMapCtrl extends jController
             }
         }
 
-        // $assign['auth_url_return'] = jUrl::get('view~default:index');
-
         // switcher-layers-actions javascript
         $rep->addJSLink($bp.'assets/js/switcher-layers-actions.js', array('defer' => ''));
 
@@ -566,20 +564,7 @@ class lizMapCtrl extends jController
 
         $serverInfoAccess = (\jAcl2::check('lizmap.admin.access') || \jAcl2::check('lizmap.admin.server.information.view'));
         if ($serverInfoAccess && ($lproj->projectCountCfgWarnings() >= 1 || $lproj->qgisLizmapPluginUpdateNeeded())) {
-            $jsWarning = "
-                lizMap.events.on(
-                    {
-                    'uicreated':function(evt){
-                        var message = lizDict['project.has.warnings'];
-                        message += '<br><a href=\"".jUrl::get('admin~qgis_projects:index')."\">';
-                        message += lizDict['project.has.warnings.link'];
-                        message += '</a>'
-                        lizMap.addMessage(message, 'warning', true).attr('id','lizmap-warning-message');
-                    }
-                }
-            );
-            ";
-            $rep->addJSCode($jsWarning);
+            $rep->setBodyAttributes(array('data-lizmap-plugin-warning-url' => jUrl::get('admin~qgis_projects:index')));
         }
 
         $rep->body->assign($assign);
