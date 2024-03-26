@@ -51,6 +51,7 @@ lizMap.events.on({
         lizMap.mainLizmap = mainLizmap;
         lizMap.mainEventDispatcher = mainEventDispatcher;
 
-        executeJSFromServer();
     }
 });
+
+executeJSFromServer();
