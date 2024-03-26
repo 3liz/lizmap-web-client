@@ -35,7 +35,7 @@ class htmlbootstrapFormBuilder extends \jelix\forms\Builder\HtmlBuilder
         $www = $confUrlEngine['jelixWWWPath'];
 
         $resp->addAssets('jforms_html');
-        $resp->addJSLink($www.'jquery/include/jquery.include.js');
+        $resp->addJSLink($www.'jquery/include/jquery.include.js', array('defer' => ''));
         $resp->addAssets('jforms_imageupload');
 
         // we loop on root control has they fill call the outputMetaContent recursively

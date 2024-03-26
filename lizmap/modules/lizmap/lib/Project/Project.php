@@ -2176,7 +2176,8 @@ class Project
                 $tpl->fetch('view~map_edition'),
                 3,
                 $jwp.'design/jform.css',
-                $bp.'assets/js/edition.js'
+                $bp.'assets/js/edition.js',
+                array('defer' => '')
             );
         }
 
@@ -2203,7 +2204,8 @@ class Project
                 '<lizmap-selection-tool '.$layerExport.'></lizmap-selection-tool>',
                 1,
                 '',
-                $bp.'assets/js/attributeTable.js'
+                $bp.'assets/js/attributeTable.js',
+                array('defer' => '')
             );
             $dock->icon = '<span class="icon-white icon-star" style="margin-left:2px; margin-top:2px;"></span>';
             $dockable[] = $dock;
@@ -2270,7 +2272,8 @@ class Project
                 $tpl->fetch('view~map_timemanager'),
                 7,
                 '',
-                $bp.'assets/js/timemanager.js'
+                $bp.'assets/js/timemanager.js',
+                array('defer' => '')
             );
         }
 
@@ -2344,7 +2347,8 @@ class Project
                 array('view~map_attributeLayers', $assign),
                 1,
                 '',
-                $bp.'assets/js/attributeTable.js'
+                $bp.'assets/js/attributeTable.js',
+                array('defer' => '')
             );
         }
 
