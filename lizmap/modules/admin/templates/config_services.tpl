@@ -1,4 +1,4 @@
-{meta_html js $j_basepath.'assets/js/services_configuration.js'}
+{meta_html js $j_basepath.'assets/js/services_configuration.js', ['defer' => '']}
 
 {jmessage_bootstrap}
 

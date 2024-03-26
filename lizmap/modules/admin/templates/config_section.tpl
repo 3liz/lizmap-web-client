@@ -1,4 +1,4 @@
-{meta_html js $j_basepath.'assets/js/admin/config_section.js'}
+{meta_html js $j_basepath.'assets/js/admin/config_section.js', ['defer' => '']}
 {jmessage_bootstrap}
 
 {if $form->getData('new') == 1}
