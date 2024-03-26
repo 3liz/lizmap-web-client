@@ -163,9 +163,9 @@ class lizMapCtrl extends jController
         if ($lproj->needsGoogle()) {
             $googleKey = $lproj->getGoogleKey();
             if ($googleKey != '') {
-                $rep->addJSLink('https://maps.google.com/maps/api/js?v=3&key='.$googleKey);
+                $rep->addJSLink('https://maps.google.com/maps/api/js?v=3&key='.$googleKey, array('defer' => ''));
             } else {
-                $rep->addJSLink('https://maps.google.com/maps/api/js?v=3');
+                $rep->addJSLink('https://maps.google.com/maps/api/js?v=3', array('defer' => ''));
             }
         }
 
@@ -300,6 +300,9 @@ class lizMapCtrl extends jController
         // Add dockable js
         foreach (array_merge($assign['dockable'], $assign['minidockable'], $assign['bottomdockable'], $assign['rightdockable']) as $d) {
             if ($d->js != '') {
+                if (is_array($d->jsParams)) {
+                    $d->jsParams['defer'] = '';
+                }
                 $rep->addJsLink($d->js, $d->jsParams);
             }
         }
@@ -444,12 +447,12 @@ class lizMapCtrl extends jController
                 sort($jsUrls);
                 foreach ($jsUrls as $jsUrl) {
                     // Use addHeadContent and not addJSLink to be sure it will be loaded after minified code
-                    $rep->addContent('<script type="text/javascript" src="'.$jsUrl.'" ></script>');
+                    $rep->addContent('<script type="text/javascript" defer src="'.$jsUrl.'" ></script>');
                 }
                 sort($mjsUrls);
                 foreach ($mjsUrls as $mjsUrl) {
                     // Use addHeadContent and not addJSLink to be sure it will be loaded after minified code
-                    $rep->addContent('<script type="module" src="'.$mjsUrl.'" ></script>');
+                    $rep->addContent('<script type="module" defer src="'.$mjsUrl.'" ></script>');
                 }
             }
         }
