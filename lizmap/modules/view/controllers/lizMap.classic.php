@@ -460,7 +460,6 @@ class lizMapCtrl extends jController
         // optionally hide some tools
         // header
         $jsCode = '';
-        $mapMenuCss = '';
         $h = $this->intParam('h', 1);
         if ($h == 0
             || $lproj->getBooleanOption('hideHeader')
@@ -488,16 +487,7 @@ class lizMapCtrl extends jController
             || $lproj->getBooleanOption('hideLegend')
         ) {
             $l = 0;
-            // ~ $rep->addStyle('#dock', 'display:none;');
-            $jsCode .= "
-      $( document ).ready( function() {
-        lizMap.events.on({
-          'uicreated':function(evt){
-            $('li.switcher.active #button-switcher').click();
-          }
-        });
-      });
-      ";
+            $rep->setBodyAttributes(array('data-lizmap-hide-legend' => true));
         }
 
         // navbar
