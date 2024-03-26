@@ -6,4 +6,8 @@ export default function executeJSFromServer () {
         message += '</a>'
         lizMap.addMessage(message, 'warning', true).attr('id', 'lizmap-warning-message');
     }
+
+    if (document.body.dataset.lizmapHideLegend){
+        document.querySelector('li.switcher.active #button-switcher').click();
+    }
 }
