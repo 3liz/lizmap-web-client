@@ -1,6 +1,4 @@
-{meta_html jquery_ui 'default'}
-{meta_html css $j_basepath.'assets/css/bootstrap.min.css'}
-{meta_html css $j_basepath.'assets/css/bootstrap-responsive.min.css'}
+{meta_html assets 'bootstrap'}
 
 {meta_html css $j_basepath.'assets/css/main.css'}
 {meta_html css $j_basepath.'assets/css/admin.css'}
@@ -9,8 +7,6 @@
 {meta_html csstheme 'css/main.css'}
 {meta_html csstheme 'css/admin.css'}
 {meta_html csstheme 'css/media.css'}
-
-{meta_html js $j_basepath.'assets/js/bootstrap.min.js'}
 
 <div id="header">
   <div id="logo">
