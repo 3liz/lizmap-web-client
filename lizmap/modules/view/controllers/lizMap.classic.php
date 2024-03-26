@@ -459,7 +459,6 @@ class lizMapCtrl extends jController
 
         // optionally hide some tools
         // header
-        $jsCode = '';
         $h = $this->intParam('h', 1);
         if ($h == 0
             || $lproj->getBooleanOption('hideHeader')
@@ -504,11 +503,6 @@ class lizMapCtrl extends jController
             || $lproj->getBooleanOption('hideOverview')
         ) {
             $rep->addStyle('#overview-box', 'display:none !important;');
-        }
-
-        // Apply interface modifications
-        if ($jsCode != '') {
-            $rep->addJSCode($jsCode);
         }
 
         // Add filter
