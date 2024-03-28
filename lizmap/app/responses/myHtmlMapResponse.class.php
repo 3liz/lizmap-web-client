@@ -37,8 +37,7 @@ class myHtmlMapResponse extends AbstractLizmapHtmlResponse
         $this->addAssets('datatables');
         $this->addAssets('map');
 
-        $generalJSConfig = 'Proj4js.libPath = "'.$bp.'assets/js/Proj4js/";';
-        $this->addJSCode($generalJSConfig);
+        $this->setBodyAttributes(array('data-proj4js-lib-path' => $bp.'assets/js/Proj4js/'));
     }
 
     protected function doAfterActions()

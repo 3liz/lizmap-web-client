@@ -153,7 +153,7 @@ class lizMapCtrl extends jController
         // the html response
         /** @var jResponseHtml $rep */
         $rep = $this->getResponse('htmlmap');
-        $rep->addJSLink((jUrl::get('view~translate:index')).'?lang='.jApp::config()->locale);
+        $rep->addJSLink((jUrl::get('view~translate:index')).'?lang='.jApp::config()->locale, array('defer' => ''));
 
         $this->repositoryKey = $lrep->getKey();
         $this->projectKey = $lproj->getKey();
@@ -163,9 +163,9 @@ class lizMapCtrl extends jController
         if ($lproj->needsGoogle()) {
             $googleKey = $lproj->getGoogleKey();
             if ($googleKey != '') {
-                $rep->addJSLink('https://maps.google.com/maps/api/js?v=3&key='.$googleKey);
+                $rep->addJSLink('https://maps.google.com/maps/api/js?v=3&key='.$googleKey, array('defer' => ''));
             } else {
-                $rep->addJSLink('https://maps.google.com/maps/api/js?v=3');
+                $rep->addJSLink('https://maps.google.com/maps/api/js?v=3', array('defer' => ''));
             }
         }
 
@@ -175,19 +175,19 @@ class lizMapCtrl extends jController
         if ($lproj->hasEditionLayersForCurrentUser()) {
             $www = jApp::urlJelixWWWPath();
             $rep->addAssets('jforms_html');
-            $rep->addJSLink($www.'jquery/include/jquery.include.js');
+            $rep->addJSLink($www.'jquery/include/jquery.include.js', array('defer' => ''));
             $rep->addAssets('jforms_imageupload');
             $rep->addAssets('jforms_datepicker_default');
             $rep->addAssets('jforms_datetimepicker_default');
             $rep->addAssets('jforms_htmleditor_ckdefault');
 
             // Add other js
-            $rep->addJSLink($bp.'assets/js/fileUpload/jquery.fileupload.js');
-            $rep->addJSLink($bp.'assets/js/bootstrapErrorDecoratorHtml.js');
+            $rep->addJSLink($bp.'assets/js/fileUpload/jquery.fileupload.js', array('defer' => ''));
+            $rep->addJSLink($bp.'assets/js/bootstrapErrorDecoratorHtml.js', array('defer' => ''));
         }
 
         // Add bottom dock js
-        $rep->addJSLink($bp.'assets/js/bottom-dock.js');
+        $rep->addJSLink($bp.'assets/js/bottom-dock.js', array('defer' => ''));
 
         // Pass some configuration options to the web page through javascript var
         $lizUrls = array(
@@ -248,8 +248,8 @@ class lizMapCtrl extends jController
 
         // Add moment.js for timemanager
         if ($lproj->hasTimemanagerLayers()) {
-            $rep->addJSLink($bp.'assets/js/moment.js');
-            $rep->addJSLink($bp.'assets/js/filter.js');
+            $rep->addJSLink($bp.'assets/js/moment.js', array('defer' => ''));
+            $rep->addJSLink($bp.'assets/js/filter.js', array('defer' => ''));
             $filterConfigData = array(
                 'url' => jUrl::get(
                     'filter~service:index',
@@ -265,7 +265,7 @@ class lizMapCtrl extends jController
         // Add atlas.js for atlas feature and additionnal CSS for right-dock max-width
         if ($lproj->hasAtlasEnabled()) {
             // Add JS
-            $rep->addJSLink($bp.'assets/js/atlas.js');
+            $rep->addJSLink($bp.'assets/js/atlas.js', array('defer' => ''));
 
             // Add CSS
             $atlasWidth = $lproj->getOption('atlasMaxWidth');
@@ -300,6 +300,9 @@ class lizMapCtrl extends jController
         // Add dockable js
         foreach (array_merge($assign['dockable'], $assign['minidockable'], $assign['bottomdockable'], $assign['rightdockable']) as $d) {
             if ($d->js != '') {
+                if (is_array($d->jsParams)) {
+                    $d->jsParams['defer'] = '';
+                }
                 $rep->addJsLink($d->js, $d->jsParams);
             }
         }
@@ -319,7 +322,7 @@ class lizMapCtrl extends jController
             if (is_array($addition)) {
                 if (array_key_exists('js', $addition)) {
                     foreach ($addition['js'] as $js) {
-                        $rep->addJSLink($js);
+                        $rep->addJSLink($js, array('defer' => ''));
                     }
                 }
                 if (array_key_exists('jscode', $addition)) {
@@ -444,20 +447,18 @@ class lizMapCtrl extends jController
                 sort($jsUrls);
                 foreach ($jsUrls as $jsUrl) {
                     // Use addHeadContent and not addJSLink to be sure it will be loaded after minified code
-                    $rep->addContent('<script type="text/javascript" src="'.$jsUrl.'" ></script>');
+                    $rep->addContent('<script type="text/javascript" defer src="'.$jsUrl.'" ></script>');
                 }
                 sort($mjsUrls);
                 foreach ($mjsUrls as $mjsUrl) {
                     // Use addHeadContent and not addJSLink to be sure it will be loaded after minified code
-                    $rep->addContent('<script type="module" src="'.$mjsUrl.'" ></script>');
+                    $rep->addContent('<script type="module" defer src="'.$mjsUrl.'" ></script>');
                 }
             }
         }
 
         // optionally hide some tools
         // header
-        $jsCode = '';
-        $mapMenuCss = '';
         $h = $this->intParam('h', 1);
         if ($h == 0
             || $lproj->getBooleanOption('hideHeader')
@@ -485,16 +486,7 @@ class lizMapCtrl extends jController
             || $lproj->getBooleanOption('hideLegend')
         ) {
             $l = 0;
-            // ~ $rep->addStyle('#dock', 'display:none;');
-            $jsCode .= "
-      $( document ).ready( function() {
-        lizMap.events.on({
-          'uicreated':function(evt){
-            $('li.switcher.active #button-switcher').click();
-          }
-        });
-      });
-      ";
+            $rep->setBodyAttributes(array('data-lizmap-hide-legend' => true));
         }
 
         // navbar
@@ -511,11 +503,6 @@ class lizMapCtrl extends jController
             || $lproj->getBooleanOption('hideOverview')
         ) {
             $rep->addStyle('#overview-box', 'display:none !important;');
-        }
-
-        // Apply interface modifications
-        if ($jsCode != '') {
-            $rep->addJSCode($jsCode);
         }
 
         // Add filter
@@ -550,10 +537,8 @@ class lizMapCtrl extends jController
             }
         }
 
-        // $assign['auth_url_return'] = jUrl::get('view~default:index');
-
         // switcher-layers-actions javascript
-        $rep->addJSLink($bp.'assets/js/switcher-layers-actions.js');
+        $rep->addJSLink($bp.'assets/js/switcher-layers-actions.js', array('defer' => ''));
 
         // Add Google Analytics ID
         $assign['googleAnalyticsID'] = '';
@@ -563,20 +548,7 @@ class lizMapCtrl extends jController
 
         $serverInfoAccess = (\jAcl2::check('lizmap.admin.access') || \jAcl2::check('lizmap.admin.server.information.view'));
         if ($serverInfoAccess && ($lproj->projectCountCfgWarnings() >= 1 || $lproj->qgisLizmapPluginUpdateNeeded())) {
-            $jsWarning = "
-                lizMap.events.on(
-                    {
-                    'uicreated':function(evt){
-                        var message = lizDict['project.has.warnings'];
-                        message += '<br><a href=\"".jUrl::get('admin~qgis_projects:index')."\">';
-                        message += lizDict['project.has.warnings.link'];
-                        message += '</a>'
-                        lizMap.addMessage(message, 'warning', true).attr('id','lizmap-warning-message');
-                    }
-                }
-            );
-            ";
-            $rep->addJSCode($jsWarning);
+            $rep->setBodyAttributes(array('data-lizmap-plugin-warning-url' => jUrl::get('admin~qgis_projects:index')));
         }
 
         $rep->body->assign($assign);

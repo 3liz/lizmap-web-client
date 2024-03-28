@@ -351,7 +351,6 @@ CSS Sprite positions calculated via http://instantsprite.com/ using 20px images 
 */
   right:50%;
   max-width:50%;
-  background:url('img/header-background-medium.jpg');
 }
 #dock.full {
 /*
@@ -359,7 +358,6 @@ CSS Sprite positions calculated via http://instantsprite.com/ using 20px images 
 */
   right:0px;
   max-width:100%;
-  background:url('img/header-background-medium.jpg');
 }
 
 #map-content.half, #map-content.full{
