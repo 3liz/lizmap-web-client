@@ -385,3 +385,8 @@ jforms_datepicker_default.js[]="$jelix/js/jforms/datepickers/default/init.js|def
 
 jforms_datetimepicker_default.js[]="$jelix/js/jforms/datetimepickers/default/init.js|defer"
 jforms_datetimepicker_default.js[]="$jelix/jquery/jquery-ui-timepicker-addon.js|defer"
+
+jforms_imageupload.js[]="$jelix/js/cropper.min.js|defer"
+jforms_imageupload.js[]="$jelix/js/jforms/choice.js|defer"
+jforms_imageupload.js[]="$jelix/js/jforms/imageSelector.js|defer"
+jforms_imageupload.require=jquery_ui
