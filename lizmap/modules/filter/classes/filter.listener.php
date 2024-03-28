@@ -8,7 +8,7 @@ class filterListener extends jEventListener
 
         // Add JS and CSS for module
         $js = array();
-        $jscode = array();
+        $jsVars = array();
         $css = array();
 
         // Check config
@@ -18,9 +18,8 @@ class filterListener extends jEventListener
         $filterConfigData = array(
             'url' => jUrl::get('filter~service:index', array('repository' => $event->repository, 'project' => $event->project)),
         );
-        $jscode = array(
-            'var filterConfigData = '.json_encode($filterConfigData).';',
-        );
+        $jsVars['filterConfigData'] = $filterConfigData;
+
         // Filter config may be an empty array
         // This means no layers have been set up with the filter by form tool
         // BUT : we still need to return data so that other tools can use the filter methods
@@ -36,12 +35,12 @@ class filterListener extends jEventListener
             );
 
             $filterConfig = $dv->getConfig();
-            $jscode[] = 'var filterConfig = '.json_encode($filterConfig).';';
+            $jsVars['filterConfig'] = $filterConfig;
         }
         $event->add(
             array(
                 'js' => $js,
-                'jscode' => $jscode,
+                'jsvars' => $jsVars,
                 'css' => $css,
             )
         );

@@ -50,4 +50,21 @@ class AbstractLizmapHtmlResponse extends jResponseHtml
 
         $this->addHeadContent('<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />');
     }
+
+    protected $jsVarData = array();
+
+    public function addJsVariable($name, $value)
+    {
+        $this->jsVarData[$name] = $value;
+    }
+
+    public function addJsVariables(array $variables)
+    {
+        $this->jsVarData = array_merge($this->jsVarData, $variables);
+    }
+
+    protected function doAfterActions()
+    {
+        $this->addHeadContent('<script id="lizmap-vars" type="application/json">'.json_encode($this->jsVarData).'</script>');
+    }
 }

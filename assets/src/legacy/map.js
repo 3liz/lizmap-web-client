@@ -4491,6 +4491,10 @@ $(document).ready(function () {
         .children('.ui-dialog-titlebar').removeClass('ui-corner-all');
     // configurate OpenLayers
     OpenLayers.DOTS_PER_INCH = 96;
+    const lizmapVariables = JSON.parse(document.getElementById('lizmap-vars').innerText);
+    for (const variable in lizmapVariables) {
+        window[variable] = lizmapVariables[variable];
+    }
     // initialize LizMap
     lizMap.init();
     $( "#loading" ).css('min-height','128px');

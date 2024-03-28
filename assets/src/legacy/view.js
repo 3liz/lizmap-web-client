@@ -160,12 +160,11 @@ var searchProjects = function(){
                 // Hide all keywords
                 $('#search-project-result .project-keyword').addClass('hide');
                 var visibleProjectEdges = getEdges();
-                var selectedKeywords = getSelectedKeywords();
                 var lastSelectedKeyword = selectedKeywords[selectedKeywords.length - 1];
 
                 var hiddenKeywords = $('#search-project-result .project-keyword.hide');
 
-                for (var index = 0; index < hiddenKeywords.length; index++) {
+                for (let index = 0; index < hiddenKeywords.length; index++) {
                     var hiddenKeyword = hiddenKeywords.eq(index);
 
                     for (var i = 0; i < visibleProjectEdges.length; i++) {
@@ -248,7 +247,7 @@ var searchProjects = function(){
         }
 
         var keywordsHTML = '';
-        for (var index = 0; index < uniqueKeywordList.length; index++) {
+        for (let index = 0; index < uniqueKeywordList.length; index++) {
             keywordsHTML += '<span class="project-keyword hide">' + uniqueKeywordList[index].toLowerCase() + '</span>';
         }
         $('#search-project-result').html(keywordsHTML);
@@ -281,4 +280,11 @@ var searchProjects = function(){
 
 window.addEventListener('load', function () {
     searchProjects();
+
+    // Handle description's modal
+    $('.liz-project-show-desc').click(function () {
+        const descId = $(this).data('lizmap-modal');
+        $('#liz-project-modal-' + descId).modal('show');
+        return false;
+    });
 });

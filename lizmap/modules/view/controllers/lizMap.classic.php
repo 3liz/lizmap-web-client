@@ -151,7 +151,7 @@ class lizMapCtrl extends jController
         }
 
         // the html response
-        /** @var jResponseHtml $rep */
+        /** @var AbstractLizmapHtmlResponse $rep */
         $rep = $this->getResponse('htmlmap');
         $rep->addJSLink((jUrl::get('view~translate:index')).'?lang='.jApp::config()->locale, array('defer' => ''));
 
@@ -230,8 +230,9 @@ class lizMapCtrl extends jController
             $lizUrls['resourceUrlReplacement']['webdav'] = 'dav/';
         }
 
-        $rep->addJSCode('var lizUrls = '.json_encode($lizUrls).';');
-        $rep->addJSCode('var lizProj4 = '.json_encode($lproj->getAllProj4()).';');
+        $rep->addJsVariable('lizUrls', $lizUrls);
+        $rep->addJsVariable('lizProj4', $lproj->getAllProj4());
+
         $rep->addStyle('#map', 'background-color:'.$lproj->getCanvasColor().';');
 
         // Get the WMS information
@@ -259,7 +260,7 @@ class lizMapCtrl extends jController
                     )
                 ),
             );
-            $rep->addJSCode('var filterConfigData = '.json_encode($filterConfigData));
+            $rep->addJsVariable('filterConfigData', $filterConfigData);
         }
 
         // Add atlas.js for atlas feature and additionnal CSS for right-dock max-width
@@ -325,14 +326,23 @@ class lizMapCtrl extends jController
                         $rep->addJSLink($js, array('defer' => ''));
                     }
                 }
-                if (array_key_exists('jscode', $addition)) {
+                if (array_key_exists('jsvars', $addition) && is_array($addition['jsvars'])) {
+                    $rep->addJsVariables($addition['jsvars']);
+                } elseif (array_key_exists('jscode', $addition)) {
                     foreach ($addition['jscode'] as $jscode) {
                         $rep->addJSCode($jscode);
                     }
                 }
+
                 if (array_key_exists('css', $addition)) {
                     foreach ($addition['css'] as $css) {
                         $rep->addCssLink($css);
+                    }
+                }
+
+                if (array_key_exists('bodyattr', $addition)) {
+                    foreach ($addition['bodyattr'] as $bodyattr) {
+                        $rep->setBodyAttributes($bodyattr);
                     }
                 }
             }
@@ -517,7 +527,7 @@ class lizMapCtrl extends jController
                 }
             }
             if (count($filter) > 0) {
-                $rep->addJSCode('var lizLayerFilter = '.json_encode($filter).';');
+                $rep->addJsVariable('lizLayerFilter', $filter);
             }
         }
 
@@ -533,7 +543,7 @@ class lizMapCtrl extends jController
                 }
             }
             if (count($styles) > 0) {
-                $rep->addJSCode('var lizLayerStyles = '.json_encode($styles).';');
+                $rep->addJsVariable('lizLayerStyles', $styles);
             }
         }
 

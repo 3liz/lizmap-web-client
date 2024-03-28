@@ -11,8 +11,6 @@ class viewListener extends jEventListener
 
     public function ongetMapAdditions($event)
     {
-        $bp = jApp::config()->urlengine['basePath'];
-
         /*
         Use this listener in your modules to make Lizmap
         load javascripts and css files in the map
@@ -20,21 +18,19 @@ class viewListener extends jEventListener
         $js = array(
             $bp.'js/example/example.js'
         );
-        $jscode = array(
-            ' var somevar = "something"; '
-        );
+        $jsVars['somevar'] = "something");
         $css = array(
             $bp.'css/example/example.css'
         );
         The listed files must be added by the module in lizmap/www by the installation script
         */
         $js = array();
-        $jscode = array();
+        $jsVars = array();
         $css = array();
         $event->add(
             array(
                 'js' => $js,
-                'jscode' => $jscode,
+                'jsvars' => $jsVars,
                 'css' => $css,
             )
         );
