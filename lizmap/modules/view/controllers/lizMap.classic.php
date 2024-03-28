@@ -527,7 +527,7 @@ class lizMapCtrl extends jController
                 }
             }
             if (count($filter) > 0) {
-                $rep->addJSCode('var lizLayerFilter = '.json_encode($filter).';');
+                $rep->addJsVariable('lizLayerFilter', $filter);
             }
         }
 
@@ -543,7 +543,7 @@ class lizMapCtrl extends jController
                 }
             }
             if (count($styles) > 0) {
-                $rep->addJSCode('var lizLayerStyles = '.json_encode($styles).';');
+                $rep->addJsVariable('lizLayerStyles', $styles);
             }
         }
 

@@ -6,9 +6,10 @@ class actionListener extends jEventListener
     {
         $basePath = jApp::config()->urlengine['basePath'];
 
-        // Add JS and CSS for module
-        $jsCode = array();
+        // Add JS variables, CSS and body attribute for module
+        $jsVars = array();
         $css = array();
+        $bodyattr = array();
 
         // Check config
         jClasses::inc('action~actionConfig');
@@ -25,10 +26,9 @@ class actionListener extends jEventListener
                 ),
             );
 
-            $jsCode = array(
-                'var actionConfig = '.json_encode($actionConfig),
-                'var actionConfigData = '.json_encode($actionConfigData),
-            );
+            $jsVars['actionConfig'] = $actionConfig;
+            $jsVars['actionConfigData'] = $actionConfigData;
+
             $css = array(
                 $basePath.'assets/css/action.css',
             );
@@ -40,22 +40,17 @@ class actionListener extends jEventListener
         if ($serverInfoAccess && $actionConfigInstance->oldConfigConversionDone) {
             $url = 'https://docs.lizmap.com/current/en/publish/lizmap_plugin/actions.html';
             $message = \jLocale::get('action~action.warning.converted.from.old.configuration',array($url));
-            $jsCode[] = "
-            lizMap.events.on(
-                {
-                    'uicreated':function(evt){
-                        lizMap.addMessage('$message','info',true).attr('id','lizmap-action-message');
-                    }
-                }
-            );
-            ";
+
+            $bodyattr[] = array('data-lizmap-action-warning-old' => $message);
+
             \jLog::log("$event->repository/$event->project : action module - " . strip_tags($message), 'lizmapadmin');
         }
 
         $event->add(
             array(
-                'jscode' => $jsCode,
+                'jsvars' => $jsVars,
                 'css' => $css,
+                'bodyattr' => $bodyattr,
             )
         );
     }

@@ -12,6 +12,10 @@ export default function executeJSFromServer() {
             if (document.body.dataset.lizmapHideLegend) {
                 document.querySelector('li.switcher.active #button-switcher').click();
             }
+
+            if (document.body.dataset.lizmapActionWarningOld) {
+                lizMap.addMessage(document.body.dataset.lizmapActionWarningOld,'info',true).attr('id','lizmap-action-message');
+            }
         }
     });
 
