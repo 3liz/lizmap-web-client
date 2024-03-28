@@ -5,6 +5,7 @@ parameters:
   bootstrapFiles:
     - lizmap/vendor/autoload.php
     - lizmap/vendor/jelix/jelix/lib/jelix/init.php
+    - lizmap/app/responses/AbstractLizmapHtmlResponse.php
   scanDirectories:
     - lizmap/vendor/
   level: 4
