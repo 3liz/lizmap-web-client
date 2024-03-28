@@ -298,51 +298,56 @@ openads=33
 useCollection=common
 
 [webassets_common]
-jquery.js[]="assets/js/jquery/jquery-3.5.1.min.js"
-jquery.js[]="assets/js/jquery/jquery-migrate-3.3.1.min.js"
+jquery.js[]="assets/js/jquery/jquery-3.5.1.min.js|defer"
+jquery.js[]="assets/js/jquery/jquery-migrate-3.3.1.min.js|defer"
 
-jquery_ui.js[]="assets/js/jquery/ui/jquery-ui.min.js"
+jquery_ui.js[]="assets/js/jquery/ui/jquery-ui.min.js|defer"
 jquery_ui.css[]="assets/js/jquery/ui/jquery-ui.min.css"
 
-jforms_htmleditor_default.js[]="$jelix/ckeditor5/ckeditor.js"
-jforms_htmleditor_default.js[]="$jelix/ckeditor5/translations/$lang.js"
-jforms_htmleditor_default.js[]="assets/js/ckeditor5/ckeditor_lizmap.js"
+jforms_htmleditor_default.js[]="$jelix/ckeditor5/ckeditor.js|defer"
+jforms_htmleditor_default.js[]="$jelix/ckeditor5/translations/$lang.js|defer"
+jforms_htmleditor_default.js[]="assets/js/ckeditor5/ckeditor_lizmap.js|defer"
 
-jforms_htmleditor_ckdefault.js[]="$jelix/ckeditor5/ckeditor.js"
-jforms_htmleditor_ckdefault.js[]="$jelix/ckeditor5/translations/$lang.js"
-jforms_htmleditor_ckdefault.js[]="assets/js/ckeditor5/ckeditor_lizmap.js"
+jforms_htmleditor_ckdefault.js[]="$jelix/ckeditor5/ckeditor.js|defer"
+jforms_htmleditor_ckdefault.js[]="$jelix/ckeditor5/translations/$lang.js|defer"
+jforms_htmleditor_ckdefault.js[]="assets/js/ckeditor5/ckeditor_lizmap.js|defer"
 
-jforms_htmleditor_ckfull.js[]="$jelix/ckeditor5/ckeditor.js"
-jforms_htmleditor_ckfull.js[]="$jelix/ckeditor5/translations/$lang.js"
-jforms_htmleditor_ckfull.js[]="$jelix/js/jforms/htmleditors/ckeditor_ckfull.js"
+jforms_htmleditor_ckfull.js[]="$jelix/ckeditor5/ckeditor.js|defer"
+jforms_htmleditor_ckfull.js[]="$jelix/ckeditor5/translations/$lang.js|defer"
+jforms_htmleditor_ckfull.js[]="$jelix/js/jforms/htmleditors/ckeditor_ckfull.js|defer"
 
-jforms_htmleditor_ckbasic.js[]="$jelix/ckeditor5/ckeditor.js"
-jforms_htmleditor_ckbasic.js[]="$jelix/ckeditor5/translations/$lang.js"
-jforms_htmleditor_ckbasic.js[]="$jelix/js/jforms/htmleditors/ckeditor_ckbasic.js"
+jforms_htmleditor_ckbasic.js[]="$jelix/ckeditor5/ckeditor.js|defer"
+jforms_htmleditor_ckbasic.js[]="$jelix/ckeditor5/translations/$lang.js|defer"
+jforms_htmleditor_ckbasic.js[]="$jelix/js/jforms/htmleditors/ckeditor_ckbasic.js|defer"
 
-jforms_htmleditor_ckfullandmedia.js[]="$jelix/ckeditor5/ckeditor.js"
-jforms_htmleditor_ckfullandmedia.js[]="$jelix/ckeditor5/translations/$lang.js"
-jforms_htmleditor_ckfullandmedia.js[]="assets/js/ckeditor5/ckeditor_ckfullandmedia.js"
+jforms_htmleditor_ckfullandmedia.js[]="$jelix/ckeditor5/ckeditor.js|defer"
+jforms_htmleditor_ckfullandmedia.js[]="$jelix/ckeditor5/translations/$lang.js|defer"
+jforms_htmleditor_ckfullandmedia.js[]="assets/js/ckeditor5/ckeditor_ckfullandmedia.js|defer"
 
 bootstrap.require=jquery
-bootstrap.js[]="assets/js/bootstrap.min.js"
+bootstrap.js[]="assets/js/bootstrap.min.js|defer"
 bootstrap.css[]="assets/css/bootstrap.min.css"
 bootstrap.css[]="assets/css/bootstrap-responsive.min.css"
 
 datatables.require=bootstrap
-datatables.js[]=assets/js/jquery.dataTables.min.js
-datatables.js[]=assets/js/dataTables.bootstrap.min.js
-datatables.js[]="$jelix/datatables/i18n/$locale.js"
+datatables.js[]="assets/js/jquery.dataTables.min.js|defer"
+datatables.js[]="assets/js/dataTables.bootstrap.min.js|defer"
+datatables.js[]="$jelix/datatables/i18n/$locale.js|defer"
 datatables.css[]=assets/css/jquery.dataTables.min.css
 datatables.css[]=assets/css/dataTables.bootstrap.min.css
 
+datatables_responsive.require=datatables
+datatables_responsive.js[]="assets/js/dataTables.responsive.min.js|defer"
+datatables_responsive.js[]="assets/js/admin/activate_datatable.js|defer"
+datatables_responsive.css[]="assets/css/responsive.dataTables.min.css"
+
 
 map.require=bootstrap
-map.js[]=assets/js/OpenLayers-2.13/OpenLayers.js
-map.js[]=assets/js/Proj4js/proj4js.min.js
-map.js[]=assets/js/jquery.combobox.js
-map.js[]=assets/js/map.js
-map.js[]=assets/js/lizmap.js
+map.js[]="assets/js/OpenLayers-2.13/OpenLayers.js|defer"
+map.js[]="assets/js/Proj4js/proj4js.min.js|defer"
+map.js[]="assets/js/jquery.combobox.js|defer"
+map.js[]="assets/js/map.js|defer"
+map.js[]="assets/js/lizmap.js|defer"
 map.css[]=assets/css/ol.css
 map.css[]=assets/css/main.css
 map.css[]=assets/css/map.css
@@ -357,17 +362,26 @@ normal.css[]=assets/css/main.css
 normal.css[]=assets/css/view.css
 normal.css[]=assets/css/media.css
 
-view.js[]=assets/js/view.js
+view.js[]="assets/js/view.js|defer"
 
 embed.css[]=assets/css/embed.css
 embed.css[]="$theme/css/embed.css"
 
-jauthdb_admin.js[]="$jelix/js/authdb_admin.js"
+jauthdb_admin.js[]="$jelix/js/authdb_admin.js|defer"
 jauthdb_admin.require[]=jquery_ui
 
 jacl2_admin.css[]="$jelix/design/jacl2.css"
 jacl2_admin.css[]="$jelix/design/records_list.css"
-jacl2_admin.js[]="$jelix/js/jacl2db_admin.js"
+jacl2_admin.js[]="$jelix/js/jacl2db_admin.js|defer"
 jacl2_admin.require[]=jquery_ui
 
 ;master_admin.css[]="$jelix/design/master_admin.css"
+
+jforms_html.js[]= "$jelix/js/jforms_jquery.js|defer"
+
+jforms_datepicker_default.js[]="$jelix/jquery/ui/i18n/datepicker-$lang.js|defer"
+jforms_datepicker_default.js[]="$jelix/js/jforms/datepickers/default/ui.$lang.js|defer"
+jforms_datepicker_default.js[]="$jelix/js/jforms/datepickers/default/init.js|defer"
+
+jforms_datetimepicker_default.js[]="$jelix/js/jforms/datetimepickers/default/init.js|defer"
+jforms_datetimepicker_default.js[]="$jelix/jquery/jquery-ui-timepicker-addon.js|defer"

@@ -1,9 +1,5 @@
 
-{meta_html css $basePath.'assets/css/dataTables.bootstrap.min.css'}
-{meta_html css $basePath.'assets/css/responsive.dataTables.min.css'}
-{meta_html js $basePath.'assets/js/jquery.dataTables.min.js'}
-{meta_html js $basePath.'assets/js/dataTables.responsive.min.js'}
-{meta_html js $basePath.'assets/js/admin/activate_datatable.js'}
+{meta_html assets 'datatables_responsive'}
 
 {assign $tableClass=''}
 {if $hasInspectionData}

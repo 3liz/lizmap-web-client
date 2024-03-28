@@ -1,5 +1,5 @@
 
-{meta_html js $j_basepath.'assets/js/admin/copy_to_clipboard.js'}
+{meta_html js $j_basepath.'assets/js/admin/copy_to_clipboard.js', ['defer' => '']}
 
 {ifacl2 'lizmap.admin.server.information.view'}
   <!--Services-->

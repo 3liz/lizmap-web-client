@@ -778,7 +778,13 @@ window.lizMap = function() {
      * @param firstLayer
      */
     function initProjections(firstLayer) {
-    // Insert or update projection list
+        // Set Proj4js.libPath
+        const proj4jsLibPath = document.body.dataset?.proj4jsLibPath;
+        if (proj4jsLibPath) {
+            Proj4js.libPath = proj4jsLibPath;
+        }
+
+        // Insert or update projection list
         if ( lizProj4 ) {
             for( var ref in lizProj4 ) {
                 if ( !(ref in Proj4js.defs) ) {

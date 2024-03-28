@@ -25,6 +25,7 @@ import Treeview from './components/Treeview.js';
 import NavBar from './components/NavBar.js';
 
 import { mainLizmap, mainEventDispatcher } from './modules/Globals.js';
+import executeJSFromServer from './modules/ExecuteJSFromServer.js';
 
 lizMap.events.on({
     uicreated: () => {
@@ -49,5 +50,8 @@ lizMap.events.on({
 
         lizMap.mainLizmap = mainLizmap;
         lizMap.mainEventDispatcher = mainEventDispatcher;
+
     }
 });
+
+executeJSFromServer();
