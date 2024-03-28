@@ -45,5 +45,7 @@ class myHtmlResponse extends AbstractLizmapHtmlResponse
         $this->body->assignIfNone('auth_url_return', '');
         $this->body->assignIfNone('googleAnalyticsID', '');
         $this->body->assignIfNone('showHomeLink', true);
+
+        parent::doAfterActions();
     }
 }

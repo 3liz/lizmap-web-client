@@ -48,5 +48,7 @@ class adminHtmlResponse extends AbstractLizmapHtmlResponse
         $this->body->assignIfNone('MAIN', '');
         $this->body->assignIfNone('adminTitle', '');
         $this->body->assign('user', jAuth::getUserSession());
+
+        parent::doAfterActions();
     }
 }

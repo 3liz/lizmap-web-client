@@ -48,5 +48,7 @@ class myHtmlMapResponse extends AbstractLizmapHtmlResponse
         $this->body->assignIfNone('user', jAuth::getUserSession());
         $this->body->assignIfNone('auth_url_return', '');
         $this->body->assignIfNone('googleAnalyticsID', '');
+
+        parent::doAfterActions();
     }
 }
