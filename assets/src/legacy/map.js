@@ -4005,12 +4005,24 @@ window.lizMap = function() {
             return deactivateMaplayerFilter(layername);
         },
 
-
-
         /**
          * Method: init
          */
         init: function() {
+            // Initialize global variables
+            const lizmapVariablesJSON = document.getElementById('lizmap-vars')?.innerText;
+            if (lizmapVariablesJSON) {
+                let lizmapVariables;
+                try {
+                    lizmapVariables = JSON.parse(lizmapVariablesJSON);
+                    for (const variable in lizmapVariables) {
+                        window[variable] = lizmapVariables[variable];
+                    }
+                } catch {
+                    console.warn('JSON for Lizmap global variables is not valid!');
+                }
+            }
+
             var self = this;
 
             // Get config
@@ -4491,6 +4503,7 @@ $(document).ready(function () {
         .children('.ui-dialog-titlebar').removeClass('ui-corner-all');
     // configurate OpenLayers
     OpenLayers.DOTS_PER_INCH = 96;
+
     // initialize LizMap
     lizMap.init();
     $( "#loading" ).css('min-height','128px');
