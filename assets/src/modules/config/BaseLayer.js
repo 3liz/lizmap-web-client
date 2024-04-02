@@ -804,7 +804,7 @@ export class BaseLayersConfig {
         }
 
         // Add base layers config from hidden tree group
-        if (hiddenTreeGroup) {
+        if (hiddenTreeGroup && typeof hiddenTreeGroup.getChildren == "function") {
             for (const layerTreeItem of hiddenTreeGroup.getChildren()) {
                 if ( !extendedCfg.hasOwnProperty(layerTreeItem.name) ) {
                     continue;
