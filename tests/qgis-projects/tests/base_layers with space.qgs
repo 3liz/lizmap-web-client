@@ -23,6 +23,13 @@
     <layer-tree-layer providerKey="postgres" checked="Qt::Checked" source="service='lizmapdb' sslmode=disable key='quartier' estimatedmetadata=true srid=4326 type=MultiPolygon checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;quartiers&quot; (geom)" legend_exp="" name="quartiers" id="quartiers_c253f702_37b3_42f8_8e81_8458a742ec97" expanded="1" legend_split_behavior="0" patch_size="-1,-1">
       <customproperties/>
     </layer-tree-layer>
+    <layer-tree-group groupLayer="" name="Hidden" mutually-exclusive="1" expanded="1" checked="Qt::Unchecked" mutually-exclusive-child="-1">
+      <customproperties>
+        <Option type="Map">
+          <Option value="Hidden" name="wmsShortName" type="QString"/>
+        </Option>
+      </customproperties>
+    </layer-tree-group>
     <custom-order enabled="0">
       <item>quartiers_c253f702_37b3_42f8_8e81_8458a742ec97</item>
     </custom-order>
