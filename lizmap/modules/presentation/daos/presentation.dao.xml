@@ -5,6 +5,7 @@
     </datasources>
     <record>
         <property name="id" fieldname="id" datatype="integer" autoincrement="true" sequence="lizmap.presentation_id_seq" required="true"/>
+        <property name="uuid" fieldname="uuid" datatype="text" required="true"/>
         <property name="repository" fieldname="repository" datatype="text" required="true"/>
         <property name="project" fieldname="project" datatype="text" required="true"/>
         <property name="title" fieldname="title" datatype="text" required="true"/>

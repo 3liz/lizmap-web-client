@@ -24,6 +24,9 @@ export default class PresentationCards extends HTMLElement {
         // Attribute to force the refresh of data
         // Store the last refresh timestamp
         this.updated = this.getAttribute('updated');
+
+        // Presentation which must be shown
+        this.detail = this.getAttribute('detail');
     }
 
     async load() {
@@ -42,6 +45,10 @@ export default class PresentationCards extends HTMLElement {
     }
 
     render() {
+
+        // Check if a specific presentation must be shown
+        const activePresentationId = parseInt(this.getAttribute('detail'));
+
         // Remove previous content
         this.innerHTML = '';
 
@@ -59,13 +66,27 @@ export default class PresentationCards extends HTMLElement {
             let div = document.createElement("div");
             div.classList.add('lizmap-presentation-card');
             div.dataset.id = presentation.id;
-            div.dataset.display = 'normal';
+
+            // Change display if given presentation ID is an integer
+            let cardDisplay = 'normal';
+            if (activePresentationId > 0) {
+                const currentPresentationId = parseInt(presentation.id);
+                const isDetail = (parseInt(currentPresentationId) == activePresentationId);
+                if (isDetail) {
+                    cardDisplay = 'detail';
+                } else {
+                    cardDisplay = 'none';
+                }
+            }
+            div.dataset.display = cardDisplay;
             div.innerHTML = cardTemplate.innerHTML;
 
-            // Edit the content
+            // Title
             div.querySelector('h3.lizmap-presentation-title').innerHTML = `
                 ${presentation.title}<span class="pull-right">${presentation.id}</span>
             `;
+
+            // Description
             div.querySelector('p.lizmap-presentation-description').innerHTML = presentation.description;
 
             // Detailed information
@@ -75,33 +96,69 @@ export default class PresentationCards extends HTMLElement {
                 'created_by', 'created_at', 'updated_by', 'updated_at'
             ];
             fields.forEach(field => {
-                table.querySelector(`td#presentation-detail-${field}`).innerHTML = presentation[field];
+                table.querySelector(`td.presentation-detail-${field}`).innerHTML = presentation[field];
             })
 
             // Buttons
-            div.querySelector('button.liz-presentation-detail').value = presentation.id;
+            const detailButton = div.querySelector('button.liz-presentation-detail')
+            detailButton.value = presentation.id;
+            detailButton.innerText = (cardDisplay != 'detail') ? detailButton.dataset.label : detailButton.dataset.reverseLabel;
             div.querySelector('button.liz-presentation-edit').value = presentation.id;
             div.querySelector('button.liz-presentation-delete').value = presentation.id;
             div.querySelector('button.liz-presentation-launch').value = presentation.id;
+            div.querySelector('button.liz-presentation-create.page').value = presentation.id;
+
+            // Pages
+            let pageContainer = div.querySelector('div.lizmap-presentation-card-pages');
+            const pagePreviewTemplate = document.getElementById('lizmap-presentation-page-preview-template');
+            const previewHtml = pagePreviewTemplate.innerHTML;
+            presentation.pages.forEach(page => {
+                let pageDiv = document.createElement('div');
+                pageDiv.classList.add('lizmap-presentation-page-preview');
+                pageDiv.innerHTML = previewHtml;
+                pageDiv.querySelector('h3.lizmap-presentation-page-preview-title').innerHTML = `
+                    ${page.title}<span class="pull-right">${page.page_order}</span>
+                `;
+
+                // Detailed information
+                const pageTable = pageDiv.querySelector('table.presentation-detail-table');
+                const pageFields = [
+                    'description', 'background_image'
+                ];
+                pageFields.forEach(field => {
+                    const pageTd = pageTable.querySelector(`td.presentation-page-${field}`);
+                    if (pageTd) {
+                        pageTd.innerHTML = page[field];
+                    }
+                })
+
+                pageDiv.querySelector('button.liz-presentation-edit').value = page.id;
+                pageDiv.querySelector('button.liz-presentation-delete').value = page.id;
+                pageContainer.appendChild(pageDiv);
+            })
+
 
             // Add the card to the parent
             this.appendChild(div);
         }
 
         // Add click event on the create button
-        const createButton = this.querySelector("button.liz-presentation-create");
-        createButton.addEventListener("click", this.onButtonCreateClick);
+        const createButtons = this.querySelectorAll("button.liz-presentation-create");
+        Array.from(createButtons).forEach(createButton => {
+            createButton.addEventListener("click", this.onButtonCreateClick);
+        });
 
         // Add click event on the presentation cards buttons
-        const buttons = this.querySelectorAll("div.lizmap-presentation-card-toolbar button");
+        const buttons = this.querySelectorAll("div.lizmap-presentation-card-toolbar button, div.lizmap-presentation-page-preview-toolbar button");
         Array.from(buttons).forEach(button => {
-            if (button.classList.contains('liz-presentation-edit')) {
+            const classes = button.classList;
+            if (classes.contains('liz-presentation-edit')) {
                 button.addEventListener('click', this.onButtonEditClick);
-            } else if (button.classList.contains('liz-presentation-detail')) {
-                button.addEventListener('click', this.onButtonDetailClick);
-            } else if (button.classList.contains('liz-presentation-delete')) {
+            } else if (classes.contains('liz-presentation-delete')) {
                 button.addEventListener('click', this.onButtonDeleteClick);
-            } else if (button.classList.contains('liz-presentation-launch')) {
+            } else if (classes.contains('liz-presentation-detail')) {
+                button.addEventListener('click', this.onButtonDetailClick);
+            } else if (classes.contains('liz-presentation-launch')) {
                 button.addEventListener('click', this.onButtonLaunchClick);
             }
         });
@@ -135,14 +192,21 @@ export default class PresentationCards extends HTMLElement {
     onButtonCreateClick(event) {
         // Get the host component
         const host = event.target.closest("lizmap-presentation-cards");
-        console.log('Create a new presentation');
-        mainLizmap.presentation.launchPresentationCreationForm();
+        const button = event.currentTarget;
+        const item = (button.classList.contains('presentation')) ? 'presentation' : 'page';
+        if (item == 'presentation') {
+            mainLizmap.presentation.launchPresentationCreationForm(item);
+        } else {
+            const presentation_id = button.value;
+            mainLizmap.presentation.launchPresentationCreationForm(item, null, presentation_id);
+        }
     }
 
     onButtonEditClick(event) {
         const button = event.currentTarget;
-        const presentationId = button.value;
-        mainLizmap.presentation.launchPresentationCreationForm(presentationId);
+        const item = (button.classList.contains('presentation')) ? 'presentation' : 'page';
+        const id = button.value;
+        mainLizmap.presentation.launchPresentationCreationForm(item, id);
     }
 
     onButtonDetailClick(event) {
@@ -176,8 +240,25 @@ export default class PresentationCards extends HTMLElement {
     onButtonDeleteClick(event) {
         const host = event.target.closest("lizmap-presentation-cards");
         const button = event.currentTarget;
-        const presentationId = button.value;
-        mainLizmap.presentation.deletePresentation(presentationId);
+        const item = (button.classList.contains('presentation')) ? 'presentation' : 'page';
+        const id = button.value;
+        // Confirmation message
+        const confirmMessage = button.dataset.confirm;
+        const areYourSure = window.confirm(confirmMessage);
+        if (!areYourSure) {
+            console.log('Delete aborted');
+
+            return false;
+        }
+        mainLizmap.presentation.deletePresentation(item, id);
+
+        // Set all presentations visible
+        const parentDiv = document.getElementById('presentation-container');
+        parentDiv.dataset.display = 'normal';
+        host.presentations.forEach(item => {
+            const card = host.querySelector(`[data-id='${item.id}']`);
+            card.dataset.display = 'normal';
+        })
     }
 
     onButtonLaunchClick(event) {
@@ -190,14 +271,14 @@ export default class PresentationCards extends HTMLElement {
         // Remove click events on the presentation buttons
         const createButton = this.querySelector("button.liz-presentation-create");
         createButton.removeEventListener("click", this.onButtonCreateClick);
-        const buttons = this.querySelectorAll("div.lizmap-presentation-card-toolbar button");
+        const buttons = this.querySelectorAll("div.lizmap-presentation-card-toolbar button, div.lizmap-presentation-page-preview-toolbar button");
         Array.from(buttons).forEach(button => {
             if (button.classList.contains('liz-presentation-edit')) {
                 button.removeEventListener('click', this.onButtonEditClick);
-            } else if (button.classList.contains('liz-presentation-detail')) {
-                button.removeEventListener('click', this.onButtonDetailClick);
             } else if (button.classList.contains('liz-presentation-delete')) {
                 button.removeEventListener('click', this.onButtonDeleteClick);
+            } else if (button.classList.contains('liz-presentation-detail')) {
+                button.removeEventListener('click', this.onButtonDetailClick);
             } else if (button.classList.contains('liz-presentation-launch')) {
                 button.removeEventListener('click', this.onButtonLaunchClick);
             }

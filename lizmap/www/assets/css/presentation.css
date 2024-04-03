@@ -28,7 +28,7 @@ button.liz-presentation-create {
     width: calc(100% - 10px);
     display: block;
 }
-div#presentation-container[data-display='detail'] button.liz-presentation-create {
+div#presentation-container[data-display='detail'] button.liz-presentation-create.presentation {
     display: none;
 }
 div.lizmap-presentation-card {
@@ -70,6 +70,28 @@ div.lizmap-presentation-card[data-display='detail'] table.presentation-detail-ta
 }
 
 div.lizmap-presentation-card-toolbar {
+    text-align: right;
+}
+
+/* Page preview */
+div.lizmap-presentation-card-pages {
+    display: none;
+    margin-top: 10px;
+    overflow: auto;
+}
+div.lizmap-presentation-card[data-display='detail'] div.lizmap-presentation-card-pages {
+    display: block;
+}
+h3.lizmap-presentation-card-pages-title {
+    padding-bottom: 10px;
+}
+div.lizmap-presentation-page-preview {
+    border: 1px solid var(--color-contrasted-elements);
+    border-radius: 5px;
+    padding: 5px;
+    margin-bottom: 10px;
+}
+div.lizmap-presentation-page-preview-toolbar {
     text-align: right;
 }
 

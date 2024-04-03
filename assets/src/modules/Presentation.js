@@ -285,38 +285,44 @@ export default class Presentation {
     }
 
     /**
-     * Hide all presentation containers
-     * except the given one.
+     * Show a form.
      *
-     * Optionally replace the given container inner HTML
-     *
-     * @param {string} activeContainer Active container class
-     * @param {string} html If given, replace the active container inner HTML
-     * @param {boolean} emptyInactive If true, empty the inactive container inner HTML
+     * @param {string} html HTML containing form
      */
-    toggleContainersDisplay(activeContainer, html = null, emptyInactive = false) {
-        const selector = '#presentation-container div.presentation-container-item';
-        Array.from(document.querySelectorAll(selector)).map(element => {
-            if (element.classList.contains(activeContainer)) {
-                if (html !== null) {
-                    element.innerHTML = html;
-                }
-                element.style.display = 'block';
-            } else {
-                element.style.display = 'none';
-                if (emptyInactive) {
-                    element.innerHTML = '';
-                }
-            }
-        });
+    showForm(html) {
+        // Get sub-dock
+        const subDock = document.getElementById('sub-dock');
+        subDock.style.maxWidth = '50%';
+        subDock.innerHTML = `
+            <div id="presentation-form-container" class="form-container">${html}</div>
+        `;
+        if (!subDock.checkVisibility()) {
+            subDock.style.display = 'block';
+        }
     }
 
     /**
-     * Display the form to create a new presentation
+     * Hide & empty a form.
      *
-     * @param {null|number} id Id of the presentation. If null, it is a creation form.
      */
-    async launchPresentationCreationForm(id = null) {
+    hideForm() {
+        // Get sub-dock
+        const subDock = document.getElementById('sub-dock');
+        subDock.innerHTML = '';
+        subDock.style.maxWidth = '30%';
+        if (subDock.checkVisibility()) {
+            subDock.style.display = 'none';
+        }
+    }
+
+    /**
+     * Display the form to create a new presentation or a new page
+     *
+     * @param {string} itemType Type of item to edit: presentation or page.
+     * @param {null|number} id Id of the presentation. If null, it is a creation form.
+     * @param {null|number} presentation_id Id of the parent presentation. Only for creation of page
+     */
+    async launchPresentationCreationForm(itemType = 'presentation', id = null, presentation_id = null) {
         // Get the form
         try {
             const url = presentationConfig.url;
@@ -324,6 +330,10 @@ export default class Presentation {
             let formData = new FormData();
             formData.append('request', request);
             formData.append('id', id);
+            formData.append('item_type', itemType);
+            if (itemType == 'page' && request == 'create' && presentation_id) {
+                formData.append('presentation_id', presentation_id);
+            }
             const response = await fetch(url, {
                 method: "POST",
                 body: formData
@@ -339,7 +349,7 @@ export default class Presentation {
             const htmlContent = await response.text();
 
             // Display it
-            this.toggleContainersDisplay('form-container', htmlContent, false);
+            this.showForm(htmlContent);
 
             // Add events
             const formContainer = document.getElementById('presentation-form-container');
@@ -388,7 +398,7 @@ export default class Presentation {
             // Return to the list of presentations if user canceled
             if (formAction == 'cancel') {
                 // Go back to the list of presentations
-                mainLizmap.presentation.toggleContainersDisplay('list-container', null, true);
+                mainLizmap.presentation.hideForm();
 
                 return true;
             }
@@ -405,9 +415,12 @@ export default class Presentation {
      */
     saveForm(form) {
         const url = form.getAttribute('action');
+        const formData = new FormData(form);
+        const itemType = formData.get('item_type');
+        const presentationId = (itemType == 'presentation') ? formData.get('id') : formData.get('presentation_id');
         fetch(url, {
             method: 'POST',
-            body: new FormData(form)
+            body: formData
         }).then(function (response) {
             if (response.ok) {
                 return response.text();
@@ -430,10 +443,11 @@ export default class Presentation {
 
                 // Refresh the content of the list of presentations
                 const cardsElement = document.querySelector('#presentation-list-container lizmap-presentation-cards');
+                cardsElement.setAttribute('detail', presentationId);
                 cardsElement.setAttribute('updated', 'done');
 
                 // Go back to the list of presentations
-                mainLizmap.presentation.toggleContainersDisplay('list-container', null, true);
+                mainLizmap.presentation.hideForm();
             }
         }).catch(function (error) {
             console.warn(error);
@@ -441,23 +455,18 @@ export default class Presentation {
     }
 
     /**
-     * Delete the given presentation
+     * Delete the given presentation or page by its id.
      *
+     * @param {string} itemType Type of item : presentation or page
      * @param {number} id ID of the presentation to delete
      */
-    deletePresentation(id) {
-        // Confirmation message
-        const areYourSure = window.confirm('Are you sure you want to delete this presentation ?');
-        if (!areYourSure) {
-            console.log('Delete aborted');
-
-            return false;
-        }
+    deletePresentation(itemType = 'presentation', id) {
 
         const url = presentationConfig.url;
         const formData = new FormData();
         formData.append('request', 'delete');
         formData.append('id', id);
+        formData.append('item_type', itemType);
         fetch(url, {
             method: 'POST',
             body: formData
@@ -474,55 +483,9 @@ export default class Presentation {
             // Refresh the content of the list of presentations
             const cardsElement = document.querySelector('#presentation-list-container lizmap-presentation-cards');
             cardsElement.setAttribute('updated', 'done');
-
-            // Go back to the list of presentations
-            this.toggleContainersDisplay('list-container', null, true);
         }).catch(function (error) {
             console.warn(error);
         });
-    }
-
-    /**
-     * Display the HTML to configure the presentation pages
-     *
-     * @param {number} id Id of the presentation.
-     */
-    async showPresentationDetail(id) {
-        // Get the form
-        try {
-            const url = presentationConfig.url;
-            const request = 'detail';
-            let formData = new FormData();
-            formData.append('request', request);
-            formData.append('id', id);
-            const response = await fetch(url, {
-                method: "POST",
-                body: formData
-            });
-
-            // Check content type
-            const contentType = response.headers.get("content-type");
-            if (!contentType || !contentType.includes("text/plain")) {
-                throw new TypeError("Wrong content-type. HTML Expected !");
-            }
-
-            // Get the response
-            const htmlContent = await response.text();
-
-            // Display it
-            this.toggleContainersDisplay('detail-container', htmlContent, false);
-
-            // Add events
-
-        } catch(error) {
-            console.log(error);
-            let previousMessage = document.getElementById('lizmap-presentation-message');
-            if (previousMessage) previousMessage.remove();
-            const message = `
-                <b>${error}</b>
-            `;
-            this.addMessage(message, 'error', 5000);
-        }
     }
 
 };

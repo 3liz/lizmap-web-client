@@ -2,13 +2,16 @@
 <dao xmlns="http://jelix.org/ns/dao/1.0">
     <datasources>
         <primarytable name="presentation_page" realname="presentation_page" primarykey="id" />
+        <foreigntable name="presentation" realname="presentation" primarykey="id" onforeignkey="presentation_id" />
     </datasources>
     <record>
         <property name="id" fieldname="id" datatype="integer" autoincrement="true" sequence="lizmap.presentation_page_id_seq" required="true"/>
+        <property name="uuid" fieldname="uuid" datatype="text" required="true"/>
         <property name="presentation_id" fieldname="presentation_id" datatype="integer" required="true"/>
+        <property name="presentation_uuid" fieldname="uuid" datatype="text" required="false" table="presentation"/>
         <property name="title" fieldname="title" datatype="text" required="true"/>
         <property name="description" fieldname="description" datatype="text" required="false"/>
-        <property name="order" fieldname="order" datatype="integer" required="true"/>
+        <property name="page_order" fieldname="page_order" datatype="integer" required="true"/>
         <property name="model" fieldname="model" datatype="text" required="true"/>
         <property name="background_image" fieldname="background_image" datatype="text" required="false"/>
         <property name="background_color" fieldname="background_color" datatype="text" required="false"/>
