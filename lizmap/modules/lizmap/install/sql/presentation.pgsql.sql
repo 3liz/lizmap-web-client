@@ -5,6 +5,8 @@ CREATE TABLE IF NOT EXISTS presentation (
     project text NOT NULL,
     title text NOT NULL,
     description text,
+    background_image text,
+    background_color text,
     footer text,
     published boolean NOT NULL DEFAULT False,
     granted_groups text,
@@ -16,11 +18,13 @@ CREATE TABLE IF NOT EXISTS presentation (
 
 COMMENT ON TABLE presentation IS 'Stores the presentations created for Lizmap maps.';
 COMMENT ON COLUMN presentation.id IS 'Automatic unique integer ID';
-COMMENT ON COLUMN presentation_page.uuid IS 'Automatic unique UUID';
+COMMENT ON COLUMN presentation.uuid IS 'Automatic unique UUID';
 COMMENT ON COLUMN presentation.repository IS 'Lizmap repository key';
 COMMENT ON COLUMN presentation.project IS 'Lizmap project key';
 COMMENT ON COLUMN presentation.title IS 'Presentation title';
 COMMENT ON COLUMN presentation.description IS 'Description of the presentation';
+COMMENT ON COLUMN presentation.background_image IS 'Image media URL to be used as a background for all the pages';
+COMMENT ON COLUMN presentation.background_color IS 'Background color of all presentation pages';
 COMMENT ON COLUMN presentation.footer IS 'Optional footer visible in all pages';
 COMMENT ON COLUMN presentation.published IS 'True if the presentation is published, i.e. visible for the users';
 COMMENT ON COLUMN presentation.granted_groups IS 'List of user groups that can see this presentation: a list of groups identifier separated by coma. Ex: admins, others';

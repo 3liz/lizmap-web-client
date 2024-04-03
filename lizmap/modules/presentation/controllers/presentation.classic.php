@@ -508,48 +508,49 @@ class presentationCtrl extends jController
         list($targetPath, $targetFullPath, $repositoryPath) = $this->getTargetFullPath($this->repository, $this->project, $presentationUuid);
 
         // Save files
+        $fileInputs = array('background_image');
         if ($itemType == 'page') {
-            $uuid = $form->getData('uuid');
             $fileInputs = array('background_image', 'illustration_media');
-            foreach ($fileInputs as $input) {
-                $fileName = $form->getData($input);
-                if (!$fileName) {
-                    continue;
-                }
-                $fileExtensionCheck = explode('.', $fileName);
-                $extension = end($fileExtensionCheck);
-                if ($extension === false) {
-                    $extension = 'txt';
-                }
-                $targetFileName = "{$itemType}_{$input}_{$uuid}.{$extension}";
-                $saveFile = $form->saveFile(
-                    $input,
-                    $targetFullPath,
-                    $targetFileName
-                );
-                if (!$saveFile) {
-                    $form->setErrorOn($input, 'Error while saving the file '.$input);
-
-                    /** @var \jResponseRedirect $rep */
-                    $rep = $this->getResponse('redirect');
-                    $rep->action = 'presentation~presentation:edit';
-                    $rep->params = array(
-                        'project' => $this->project,
-                        'repository' => $this->repository,
-                        'id' => $this->id,
-                        'status' => 'error',
-                        'item_type' => $itemType,
-                    );
-
-                    return $rep;
-                }
-                $form->setData($input, $targetPath.$targetFileName);
+        }
+        $uuid = $form->getData('uuid');
+        foreach ($fileInputs as $input) {
+            $fileName = $form->getData($input);
+            if (!$fileName) {
+                continue;
             }
+            $fileExtensionCheck = explode('.', $fileName);
+            $extension = end($fileExtensionCheck);
+            if ($extension === false) {
+                $extension = 'txt';
+            }
+            $targetFileName = "{$itemType}_{$input}_{$uuid}.{$extension}";
+            $saveFile = $form->saveFile(
+                $input,
+                $targetFullPath,
+                $targetFileName
+            );
+            if (!$saveFile) {
+                $form->setErrorOn($input, 'Error while saving the file '.$input);
+
+                /** @var \jResponseRedirect $rep */
+                $rep = $this->getResponse('redirect');
+                $rep->action = 'presentation~presentation:edit';
+                $rep->params = array(
+                    'project' => $this->project,
+                    'repository' => $this->repository,
+                    'id' => $this->id,
+                    'status' => 'error',
+                    'item_type' => $itemType,
+                );
+
+                return $rep;
+            }
+            $form->setData($input, $targetPath.$targetFileName);
         }
 
         // Save the data
         try {
-            $primaryKey = $form->saveToDao("presentation~{$ressourceName}", $id);
+            $form->saveToDao("presentation~{$ressourceName}", $id);
         } catch (Exception $e) {
             /** @var \jResponseRedirect $rep */
             $rep = $this->getResponse('redirect');
@@ -563,9 +564,6 @@ class presentationCtrl extends jController
             );
 
             return $rep;
-        }
-        if ($id != -999) {
-            $primaryKey = $id;
         }
 
         // Destroy the form
@@ -650,7 +648,7 @@ class presentationCtrl extends jController
                 }
             } else {
                 // Remove the presentation directory
-                jFile::removeDir($targetFullPath);
+                jFile::removeDir($targetFullPath, true);
             }
 
             /** var \jResponseHtmlFragment $rep */

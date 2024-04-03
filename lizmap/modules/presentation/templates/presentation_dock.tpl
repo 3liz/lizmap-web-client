@@ -19,34 +19,25 @@
     </div>
 </template>
 
-<!-- Template for a page -->
-<template id="lizmap-presentation-page-preview-template">
-    <h3 class="lizmap-presentation-page-preview-title"></h3>
-    <table class="presentation-detail-table table table-condensed">
-        <tr>
-            <th>{@presentation~presentation.dock.page.preview.description.label@}</th>
-            <td class="presentation-page-description"></td>
-        </tr>
-        <tr>
-            <th>{@presentation~presentation.dock.page.preview.background_image.label@}</th>
-            <td class="presentation-page-background_image"></td>
-        </tr>
-    </table>
-    <div class="lizmap-presentation-page-preview-toolbar">
-        <button class="btn liz-presentation-edit page" value=""
-            title="{@presentation~presentation.dock.page.preview.button.edit.title@}">{@presentation~presentation.dock.page.preview.button.edit.label@}</button>
-        <button class="btn liz-presentation-delete page" value=""
-            title="{@presentation~presentation.dock.page.preview.button.delete.title@}" data-confirm="{@presentation~presentation.dock.page.preview.button.delete.confirm@}">{@presentation~presentation.dock.page.preview.button.delete.label@}</button>
-    </div>
-</template>
-
-<!-- Card -->
+<!-- Template for a presentation card -->
 <template id="lizmap-presentation-card-template">
     <h3 class="lizmap-presentation-title"></h3>
     <p class="lizmap-presentation-description"></p>
 
     <!-- table with details -->
     <table class="presentation-detail-table table table-condensed">
+        <tr>
+            <th>{@presentation~presentation.form.presentation.background_color.label@}</th>
+            <td class="presentation-detail-background_color"></td>
+        </tr>
+        <tr>
+            <th>{@presentation~presentation.form.presentation.background_image.label@}</th>
+            <td class="presentation-detail-background_image"></td>
+        </tr>
+        <tr>
+            <th>{@presentation~presentation.form.presentation.footer.label@}</th>
+            <td class="presentation-detail-footer"></td>
+        </tr>
         <tr>
             <th>{@presentation~presentation.form.presentation.footer.label@}</th>
             <td class="presentation-detail-footer"></td>
@@ -101,5 +92,27 @@
 
         <button class="btn liz-presentation-create page"
             title="{@presentation~presentation.dock.card.button.create.page.title@}">{@presentation~presentation.dock.card.button.create.page.label@}</button>
+    </div>
+</template>
+
+
+<!-- Template for a presentation page card -->
+<template id="lizmap-presentation-page-preview-template">
+    <h3 class="lizmap-presentation-page-preview-title"></h3>
+    <table class="presentation-detail-table table table-condensed">
+        <tr>
+            <th>{@presentation~presentation.dock.page.preview.description.label@}</th>
+            <td class="presentation-page-description"></td>
+        </tr>
+        <tr>
+            <th>{@presentation~presentation.dock.page.preview.background_image.label@}</th>
+            <td class="presentation-page-background_image"></td>
+        </tr>
+    </table>
+    <div class="lizmap-presentation-page-preview-toolbar">
+        <button class="btn liz-presentation-edit page" value=""
+            title="{@presentation~presentation.dock.page.preview.button.edit.title@}">{@presentation~presentation.dock.page.preview.button.edit.label@}</button>
+        <button class="btn liz-presentation-delete page" value=""
+            title="{@presentation~presentation.dock.page.preview.button.delete.title@}" data-confirm="{@presentation~presentation.dock.page.preview.button.delete.confirm@}">{@presentation~presentation.dock.page.preview.button.delete.label@}</button>
     </div>
 </template>

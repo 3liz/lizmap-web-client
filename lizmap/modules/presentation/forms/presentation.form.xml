@@ -22,6 +22,16 @@
         <hint locale="presentation~presentation.form.presentation.description.hint" />
     </htmleditor>
 
+    <upload ref="background_image" mimetype="image/jpeg;image/jpg;image/png;image/webp" maxsize="2000000">
+        <label locale="presentation~presentation.form.presentation.background_image.label"/>
+        <hint locale="presentation~presentation.form.presentation.background_image.hint" />
+    </upload>
+
+    <input ref="background_color" type="string" required="false">
+        <label locale="presentation~presentation.form.presentation.background_color.label" />
+        <hint locale="presentation~presentation.form.presentation.background_color.hint" />
+    </input>
+
     <htmleditor ref="footer" required="false" rows="5">
         <label locale="presentation~presentation.form.presentation.footer.label" />
         <hint locale="presentation~presentation.form.presentation.footer.hint" />

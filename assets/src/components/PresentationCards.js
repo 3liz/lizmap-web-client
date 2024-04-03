@@ -44,6 +44,27 @@ export default class PresentationCards extends HTMLElement {
 
     }
 
+    getFieldDisplayHtml(field, fieldValue) {
+        let fieldHtml = fieldValue;
+        if (['background_image', 'illustration_media'].includes(field)) {
+            const mediaUrl = `${lizUrls.media}?repository=${lizUrls.params.repository}&project=${lizUrls.params.project}&path=`;
+            const fileExtension = fieldValue.split('.').pop().toLowerCase();
+            if (['webm', 'mp4'].includes(fileExtension)) {
+                fieldHtml = `
+                    <video controls width="200" title="${fieldValue}">
+                        <source src="${mediaUrl}${fieldValue}" type="video/${fileExtension}"/>
+                    </video>
+                `;
+            } else if (['png', 'webp', 'jpeg', 'jpg', 'gif'].includes(fileExtension)) {
+                fieldHtml = `<img src="${mediaUrl}${fieldValue}" style="width: 200px;" title="${fieldValue}">`;
+            } else {
+                fieldHtml = fieldValue;
+            }
+        }
+
+        return fieldHtml;
+    }
+
     render() {
 
         // Check if a specific presentation must be shown
@@ -92,11 +113,14 @@ export default class PresentationCards extends HTMLElement {
             // Detailed information
             const table = div.querySelector('table.presentation-detail-table');
             const fields = [
+                'background_color', 'background_image',
                 'footer', 'published', 'granted_groups',
                 'created_by', 'created_at', 'updated_by', 'updated_at'
             ];
             fields.forEach(field => {
-                table.querySelector(`td.presentation-detail-${field}`).innerHTML = presentation[field];
+                let fieldValue = (!presentation[field]) ? '' : presentation[field];
+                const fieldHtml = this.getFieldDisplayHtml(field, fieldValue);
+                table.querySelector(`td.presentation-detail-${field}`).innerHTML = fieldHtml;
             })
 
             // Buttons
@@ -128,7 +152,9 @@ export default class PresentationCards extends HTMLElement {
                 pageFields.forEach(field => {
                     const pageTd = pageTable.querySelector(`td.presentation-page-${field}`);
                     if (pageTd) {
-                        pageTd.innerHTML = page[field];
+                        let pageFieldValue = (!page[field]) ? '' : page[field];
+                        const pageFieldHtml = this.getFieldDisplayHtml(field, pageFieldValue);
+                        pageTd.innerHTML = pageFieldHtml;
                     }
                 })
 
