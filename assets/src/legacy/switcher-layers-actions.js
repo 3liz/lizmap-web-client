@@ -289,9 +289,14 @@ var lizLayerActionButtons = function() {
                                 layerOrGroup.checked = checkedGroups.includes(layerOrGroup.name);
                                 layerOrGroup.expanded = expandedGroups.includes(layerOrGroup.name);
                             } else {
-                                layerOrGroup.checked = themeSelected?.layers && Object.hasOwn(themeSelected.layers, layerOrGroup.layerConfig.id);
-                                layerOrGroup.expanded = themeSelected?.layers && Object.hasOwn(themeSelected.layers, layerOrGroup.layerConfig.id) && themeSelected.layers[layerOrGroup.layerConfig.id]?.expanded === "1";
-                                const style = themeSelected?.layers?.[layerOrGroup.layerConfig.id]?.style;
+                                const layerParams = themeSelected?.layers?.[layerOrGroup.layerConfig.id];
+                                if (!layerParams) {
+                                    layerOrGroup.checked = false;
+                                    continue;
+                                }
+                                layerOrGroup.checked = true;
+                                layerOrGroup.expanded = layerParams?.expanded === "1";
+                                const style = layerParams?.style;
                                 if (style) {
                                     layerOrGroup.wmsSelectedStyleName = style;
                                 }
