@@ -279,11 +279,15 @@ var lizLayerActionButtons = function() {
                     if (themeNameSelected in lizMap.config.themes){
                         const themeSelected = lizMap.config.themes[themeNameSelected];
 
-                        // Set checked state
-                        for(const layerOrGroup of lizMap.mainLizmap.state.layerTree.findTreeLayersAndGroups()){
-                            if(layerOrGroup.type === "group"){
-                                layerOrGroup.checked = themeSelected?.checkedGroupNode !== undefined && themeSelected.checkedGroupNode.includes(layerOrGroup.name);
-                                layerOrGroup.expanded = themeSelected?.expandedGroupNode !== undefined && themeSelected.expandedGroupNode.includes(layerOrGroup.name);
+                        // Groups and subgroups are separated by a '/'. We only keep deeper groups
+                        const checkedGroups = themeSelected?.checkedGroupNode?.map(groupNode => groupNode.split('/').slice(-1)[0]) || [];
+                        const expandedGroups = themeSelected?.expandedGroupNode?.map(groupNode => groupNode.split('/').slice(-1)[0]) || [];
+
+                        // Set checked and expanded states
+                        for (const layerOrGroup of lizMap.mainLizmap.state.layerTree.findTreeLayersAndGroups()) {
+                            if (layerOrGroup.type === "group") {
+                                layerOrGroup.checked = checkedGroups.includes(layerOrGroup.name);
+                                layerOrGroup.expanded = expandedGroups.includes(layerOrGroup.name);
                             } else {
                                 layerOrGroup.checked = themeSelected?.layers && Object.hasOwn(themeSelected.layers, layerOrGroup.layerConfig.id);
                                 layerOrGroup.expanded = themeSelected?.layers && Object.hasOwn(themeSelected.layers, layerOrGroup.layerConfig.id) && themeSelected.layers[layerOrGroup.layerConfig.id]?.expanded === "1";
