@@ -9,7 +9,7 @@
   "author": "3Liz",
   "dependencies": {
     "mocha": "^10.0.0",
-    "undici": "^6.7.0"
+    "undici": "^6.11.1"
   },
   "devDependencies": {
     "chai": "^4.3.6"
