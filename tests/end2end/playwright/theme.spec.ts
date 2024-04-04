@@ -61,4 +61,27 @@ test.describe('Theme', () => {
         await expect(url.hash).toMatch(/#3.7308\d+,43.5403\d+,4.0179\d+,43.6795\d+\|/)
         await expect(url.hash).toContain('|Les%20quartiers|style2|1')
     });
+
+    test('must display theme3 when selected', async ({ page }) => {
+        // Select theme3
+        await page.locator('#theme-selector > button').click()
+        await page.locator('#theme-selector > ul > li.theme').nth(2).click();
+
+        // Expanded
+        await expect(page.locator('lizmap-treeview > ul > li:nth-child(1) > div.expandable')).not.toHaveClass(/expanded/);
+        await expect(page.locator('lizmap-treeview > ul > li:nth-child(2) > div.expandable')).not.toHaveClass(/expanded/);
+        await expect(page.locator('lizmap-treeview > ul > li:nth-child(3) > div.expandable')).toHaveClass(/expanded/);
+        await expect(page.locator('li:nth-child(3) > ul > li > div').first()).toHaveClass(/expanded/);
+        await expect(page.locator('li:nth-child(3) > ul > li > ul > li > .expandable').first()).toHaveClass(/expanded/);
+        await expect(page.locator('li > ul > li:nth-child(2) > .expandable')).not.toHaveClass(/expanded/);
+
+        // Checked
+        await expect(page.getByLabel('group1')).not.toBeChecked();
+        await expect(page.getByLabel('Les quartiers')).not.toBeChecked();
+        await expect(page.getByLabel('group with subgroups')).toBeChecked();
+        await expect(page.getByLabel('sub-group-1')).toBeChecked();
+        await expect(page.getByLabel('sub-sub-group--1')).toBeChecked();
+        await expect(page.getByLabel('tramway_lines')).toBeChecked();
+        await expect(page.getByLabel('sub-sub-group--2')).not.toBeChecked();
+    });
 });
