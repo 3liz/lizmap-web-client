@@ -72,6 +72,7 @@ export class MapItemState extends EventDispatcher {
             layerItemState.addListener(this.dispatch.bind(this), 'layer.opacity.changed');
             layerItemState.addListener(this.dispatch.bind(this), 'layer.style.changed');
             layerItemState.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
+            layerItemState.addListener(this.dispatch.bind(this), 'layer.symbol.expanded.changed');
             layerItemState.addListener(this.dispatch.bind(this), 'layer.selection.changed');
             layerItemState.addListener(this.dispatch.bind(this), 'layer.selection.token.changed');
             layerItemState.addListener(this.dispatch.bind(this), 'layer.filter.changed');
@@ -285,6 +286,7 @@ export class MapGroupState extends MapItemState {
                     group.addListener(this.dispatch.bind(this), 'layer.load.status.changed');
                     group.addListener(this.dispatch.bind(this), 'layer.style.changed');
                     group.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
+                    group.addListener(this.dispatch.bind(this), 'layer.symbol.expanded.changed');
                     group.addListener(this.dispatch.bind(this), 'layer.selection.changed');
                     group.addListener(this.dispatch.bind(this), 'layer.selection.token.changed');
                     group.addListener(this.dispatch.bind(this), 'layer.filter.changed');
@@ -304,6 +306,7 @@ export class MapGroupState extends MapItemState {
                     layer.addListener(this.dispatch.bind(this), 'layer.load.status.changed');
                     layer.addListener(this.dispatch.bind(this), 'layer.style.changed');
                     layer.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
+                    layer.addListener(this.dispatch.bind(this), 'layer.symbol.expanded.changed');
                     layer.addListener(this.dispatch.bind(this), 'layer.selection.changed');
                     layer.addListener(this.dispatch.bind(this), 'layer.selection.token.changed');
                     layer.addListener(this.dispatch.bind(this), 'layer.filter.changed');
@@ -338,6 +341,7 @@ export class MapGroupState extends MapItemState {
                     layer.addListener(this.dispatch.bind(this), 'layer.load.status.changed');
                     layer.addListener(this.dispatch.bind(this), 'layer.style.changed');
                     layer.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
+                    layer.addListener(this.dispatch.bind(this), 'layer.symbol.expanded.changed');
                     layer.addListener(this.dispatch.bind(this), 'layer.selection.changed');
                     layer.addListener(this.dispatch.bind(this), 'layer.selection.token.changed');
                     layer.addListener(this.dispatch.bind(this), 'layer.filter.changed');
@@ -508,11 +512,6 @@ export class MapLayerState extends MapItemState {
         super('layer', layerItemState, parentMapGroup);
         // The layer is group
         if (this.itemState instanceof LayerGroupState) {
-            //layerItemState.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
-            //layerItemState.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
-            //layerItemState.addListener(this.dispatch.bind(this), 'layer.loading.changed');
-            //layerItemState.addListener(this.dispatch.bind(this), 'layer.style.changed');
-            //layerItemState.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
             this.itemState.addListener(this.dispatch.bind(this), 'layer.selection.changed');
             this.itemState.addListener(this.dispatch.bind(this), 'layer.selection.token.changed');
             this.itemState.addListener(this.dispatch.bind(this), 'layer.filter.changed');
