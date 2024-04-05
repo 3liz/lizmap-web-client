@@ -168,23 +168,23 @@ function launch() {
     if [ ! -d "$ROOTDIR/assets/node_modules/" ]; then
       (
         cd "$ROOTDIR/assets/";
-        npm install
+        su $APP_USER -c "npm install"
       )
     fi
 
     cd "$ROOTDIR/assets/";
     if [[ -z "${CYPRESS_CI}" ]]; then
       (
-        npm run build
+        su $APP_USER -c "npm run build"
       )
     else
       (
-        npm run watch
+        su $APP_USER -c "npm run watch"
       )
     fi
 
     if [ ! -d $APPDIR/lizmap-modules/lizmapdemo ]; then
-        $APPDIR/install/demo.sh install --no-installer
+        su $APP_USER -c "$APPDIR/install/demo.sh install --no-installer"
     fi
 
     launchInstaller
