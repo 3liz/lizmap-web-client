@@ -50,6 +50,7 @@ export class LayerTreeItemState extends EventDispatcher {
             mapItemState.addListener(this.dispatch.bind(this), 'layer.load.status.changed');
             mapItemState.addListener(this.dispatch.bind(this), 'layer.style.changed');
             mapItemState.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
+            mapItemState.addListener(this.dispatch.bind(this), 'layer.symbol.expanded.changed');
             mapItemState.addListener(this.dispatch.bind(this), 'layer.selection.changed');
             mapItemState.addListener(this.dispatch.bind(this), 'layer.selection.token.changed');
             mapItemState.addListener(this.dispatch.bind(this), 'layer.filter.changed');
@@ -283,6 +284,7 @@ export class LayerTreeGroupState extends LayerTreeItemState {
                 group.addListener(this.dispatch.bind(this), 'layer.load.status.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.style.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
+                group.addListener(this.dispatch.bind(this), 'layer.symbol.expanded.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.selection.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.selection.token.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.filter.changed');
@@ -302,6 +304,7 @@ export class LayerTreeGroupState extends LayerTreeItemState {
                 layer.addListener(this.dispatch.bind(this), 'layer.load.status.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.style.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
+                layer.addListener(this.dispatch.bind(this), 'layer.symbol.expanded.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.selection.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.selection.token.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.filter.changed');

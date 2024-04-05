@@ -277,7 +277,8 @@ export class SymbolRuleSymbology extends SymbolIconSymbology {
     constructor(node) {
         super(node, symbolRuleProperties, symbolRuleOptionalProperties)
         this._parentRule = null;
-        this._childrenRules = []
+        this._childrenRules = [];
+        this._expanded = false;
     }
 
     /**
@@ -351,6 +352,34 @@ export class SymbolRuleSymbology extends SymbolIconSymbology {
         for (const icon of this._childrenRules) {
             yield icon;
         }
+    }
+
+    /**
+     * Symbol item is expanded
+     * @type {boolean}
+     */
+    get expanded() {
+        return this._expanded;
+    }
+
+    /**
+     * Set symbol item is expanded
+     * @type {boolean}
+     */
+    set expanded(val) {
+        const newVal = convertBoolean(val);
+        if (this._expanded === newVal) {
+            return;
+        }
+
+        this._expanded = newVal;
+
+        this.dispatch({
+            type: 'symbol.expanded.changed',
+            title: this.title,
+            ruleKey: this.ruleKey,
+            expanded: this.expanded
+        });
     }
 }
 
@@ -455,9 +484,10 @@ export class LayerSymbolsSymbology extends BaseSymbolsSymbology {
                 if (parent === undefined) {
                     root.set(icon.ruleKey, icon);
                 } else {
-                    parent._childrenRules.push(icon)
+                    parent._childrenRules.push(icon);
                     icon._parentRule = parent;
                     icon.addListener(parent.dispatch.bind(parent), 'symbol.checked.changed');
+                    icon.addListener(parent.dispatch.bind(parent), 'symbol.expanded.changed');
                 }
             }
             this._root = root;
