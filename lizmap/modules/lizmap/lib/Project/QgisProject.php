@@ -1447,6 +1447,14 @@ class QgisProject
                         $themes[(string) $themeObj->name]['expandedGroupNode'][] = (string) $expandedGroupNodeObj->id;
                     }
                 }
+
+                // Copy expanded legend nodes
+                if (isset($theme->{'expanded-legend-nodes'}->{'expanded-legend-node'})) {
+                    foreach ($theme->{'expanded-legend-nodes'}->{'expanded-legend-node'} as $expandedLegendNode) {
+                        $expandedLegendNodeObj = $expandedLegendNode->attributes();
+                        $themes[(string) $themeObj->name]['expandedLegendNode'][] = (string) $expandedLegendNodeObj->id;
+                    }
+                }
             }
 
             return $themes;
