@@ -280,6 +280,7 @@ var lizLayerActionButtons = function() {
                         // Groups and subgroups are separated by a '/'. We only keep deeper groups
                         const checkedGroups = themeSelected?.checkedGroupNode?.map(groupNode => groupNode.split('/').slice(-1)[0]) || [];
                         const expandedGroups = themeSelected?.expandedGroupNode?.map(groupNode => groupNode.split('/').slice(-1)[0]) || [];
+                        const expandedLegendNodes = themeSelected?.expandedLegendNode || [];
 
                         // Set checked and expanded states
                         for (const layerOrGroup of lizMap.mainLizmap.state.layerTree.findTreeLayersAndGroups()) {
@@ -292,12 +293,28 @@ var lizLayerActionButtons = function() {
                                     layerOrGroup.checked = false;
                                     continue;
                                 }
-                                layerOrGroup.checked = true;
-                                layerOrGroup.expanded = layerParams?.expanded === "1";
+
                                 const style = layerParams?.style;
                                 if (style) {
                                     layerOrGroup.wmsSelectedStyleName = style;
                                 }
+
+                                layerOrGroup.checked = true;
+                                layerOrGroup.expanded = layerParams?.expanded === "1";
+
+                                // `symbologyChildren` is empty for some time if the theme switches
+                                // the layer style from simple to categorized.
+                                // TODO: avoid this hack
+                                setTimeout(() => {
+                                    // Handle expanded legend states
+                                    const symbologyChildren = layerOrGroup.symbologyChildren;
+                                    if (symbologyChildren.length) {
+                                        for (const symbol of symbologyChildren) {
+                                            symbol.expanded = expandedLegendNodes.includes(symbol.ruleKey);
+                                        }
+                                    }
+                                }, 1000);
+
                             }
                         }
 
