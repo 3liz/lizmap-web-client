@@ -1,7 +1,6 @@
 import { mainLizmap } from './Globals.js'
 import map from './map.js'
 import { MapLayerLoadStatus, MapLayerState } from '../modules/state/MapLayer.js';
-import Utils from './Utils.js';
 import ImageWMS from 'ol/source/ImageWMS.js';
 import {Image as ImageLayer, Tile as TileLayer} from 'ol/layer.js';
 import TileWMS from 'ol/source/TileWMS.js';
@@ -25,78 +24,78 @@ export default class SingleWMSLayer {
 
         /**
          * the map instance
-         * @type {map} 
+         * @type {map}
          */
         this._mainMapInstance = mainMapInstance;
 
         /**
          * all the layers that should be inluded in the single ImageWMS. Contains layers names with their states sorted by layerOrder (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map)
-         * @type {Map<string,MapLayerState|BaseLayerState>} 
+         * @type {Map<string,MapLayerState|BaseLayerState>}
          */
         this._singleWMSLayerList = mainMapInstance.statesSingleWMSLayers;
 
         /**
          * list of base layers names
-         * @type {String[]} 
+         * @type {String[]}
          */
         this._baseLayers = [];
 
         /**
          * list of all map layers names
-         * @type {String[]} 
+         * @type {String[]}
          */
         this._mapLayers = [];
 
         /**
          * list of layers names on the current single layer displayed on map
-         * @type {String[]} 
+         * @type {String[]}
          */
         this._layersName = [];
         /**
          * list of layers wms names on the current single layer displayed on map
-         * @type {String[]} 
+         * @type {String[]}
          */
         this._layersWmsName = [];
 
         /**
          * list of layers styles on the current single layer displayed on map
-         * @type {String[]} 
+         * @type {String[]}
          */
         this._layerStyles = [];
 
         /**
          * list of selection token parameter on the current single layer displayed on map
-         * @type {String[]} 
+         * @type {String[]}
          */
         this._selectionTokens = [];
 
         /**
          * list of filter token parameter on the current single layer displayed on map
-         * @type {String[]} 
+         * @type {String[]}
          */
         this._filterTokens = [];
 
         /**
          * list of legendOn parameter on the current single layer displayed on map
-         * @type {String[]} 
+         * @type {String[]}
          */
         this._legendOn = [];
 
         /**
          * list of legendOff parameter on the current single layer displayed on map
-         * @type {String[]} 
+         * @type {String[]}
          */
         this._legendOff = [];
 
         /**
          * the single WMS layer instance
-         * @type {?ImageLayer<ImageWMS>} 
+         * @type {?ImageLayer<ImageWMS>}
          */
         this._layer = null;
 
         /**
          * timeout function to manage the image layer reload
-         * @type {?function} 
+         * @type {?function}
          */
         this._timeout = null
 
@@ -154,9 +153,9 @@ export default class SingleWMSLayer {
         mainLizmap.state.rootMapGroup.addListener(
             evt => {
                 if (this._mapLayers.includes(evt.name)) {
-                    // the laeyr is included in the single WMS request
+                    // the layer is included in the single WMS request
 
-                    // wait a bit in order to reduce the amount of requests 
+                    // wait a bit in order to reduce the amount of requests
                     // e.g. when user turn on/off layers quickly
                     clearTimeout(this._timeout);
                     this._timeout = setTimeout(()=>{
@@ -169,7 +168,7 @@ export default class SingleWMSLayer {
 
         // register listener for base layers
         mainLizmap.state.baseLayers.addListener(
-            evt => {
+            () => {
                 this.updateMap();
             },
             ['baselayers.selection.changed']
@@ -210,7 +209,7 @@ export default class SingleWMSLayer {
                     wrapX: false, // do not reused across the 180° meridian.
                     hidpi: this._mainMapInstance.hidpi, // pixelRatio is used in useTileWms and customTileGrid definition
                 })
-            });            
+            });
         } else {
             this._layer = new ImageLayer({
                 minResolution: minResolution,
@@ -246,7 +245,7 @@ export default class SingleWMSLayer {
         this._layer.setZIndex(0);
 
         // manage the spinners
-        this._layer.getSource().on('imageloadstart', event => {
+        this._layer.getSource().on('imageloadstart', () => {
             for (const name of this._layersName) {
                 //add spinners on visible layers
                 const mapLayer = mainLizmap.state.rootMapGroup.getMapLayerByName(name);
@@ -254,7 +253,7 @@ export default class SingleWMSLayer {
             }
 
         });
-        this._layer.getSource().on('imageloadend', event => {
+        this._layer.getSource().on('imageloadend', () => {
             //remove spinners
             for (const name of this._mapLayers) {
                 const mapLayer = mainLizmap.state.rootMapGroup.getMapLayerByName(name);
@@ -262,7 +261,7 @@ export default class SingleWMSLayer {
             }
         });
 
-        this._layer.getSource().on('imageloaderror', event => {
+        this._layer.getSource().on('imageloaderror', () => {
             for (const name of this._mapLayers) {
                 const mapLayer = mainLizmap.state.rootMapGroup.getMapLayerByName(name);
                 mapLayer.loadStatus = MapLayerLoadStatus.Error;
@@ -317,7 +316,6 @@ export default class SingleWMSLayer {
     }
     /**
      * update class properties to construct the wms parameters used to get the single image
-     * 
      * @memberof SingleWMSLayer
      */
     prepareWMSParams(){
@@ -360,7 +358,7 @@ export default class SingleWMSLayer {
                         if(wmsParam.LEGEND_OFF)
                             this._legendOff.push(wmsParam.LEGEND_OFF);
                     }
-                }                    
+                }
             }
         })
     }
