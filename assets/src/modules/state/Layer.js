@@ -357,6 +357,16 @@ export class LayerItemState extends EventDispatcher {
                         self.calculateVisibility();
                     }
                 }, 'symbol.checked.changed');
+
+                symbol.addListener(evt => {
+                    self.dispatch({
+                        type: 'layer.symbol.expanded.changed',
+                        name: self.name,
+                        title: evt.title,
+                        ruleKey: evt.ruleKey,
+                        expanded: evt.expanded,
+                    });
+                }, 'symbol.expanded.changed');
             }
         }
         this.dispatch({
@@ -1179,6 +1189,7 @@ export class LayerGroupState extends LayerItemState {
                 group.addListener(this.dispatch.bind(this), 'layer.opacity.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.style.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
+                group.addListener(this.dispatch.bind(this), 'layer.symbol.expanded.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.selection.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.selection.token.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.filter.changed');
@@ -1201,6 +1212,7 @@ export class LayerGroupState extends LayerItemState {
                 layer.addListener(this.dispatch.bind(this), 'layer.opacity.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.style.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
+                layer.addListener(this.dispatch.bind(this), 'layer.symbol.expanded.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.selection.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.selection.token.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.filter.changed');
@@ -1401,6 +1413,7 @@ export class LayersAndGroupsCollection extends EventDispatcher {
         this._root.addListener(this.dispatch.bind(this), 'layer.opacity.changed');
         this._root.addListener(this.dispatch.bind(this), 'layer.style.changed');
         this._root.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
+        this._root.addListener(this.dispatch.bind(this), 'layer.symbol.expanded.changed');
         this._root.addListener(this.dispatch.bind(this), 'layer.selection.changed');
         this._root.addListener(this.dispatch.bind(this), 'layer.selection.token.changed');
         this._root.addListener(this.dispatch.bind(this), 'layer.filter.changed');

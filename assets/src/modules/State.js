@@ -68,6 +68,7 @@ export class State extends EventDispatcher {
             this._collection.addListener(this.dispatch.bind(this), 'layer.opacity.changed');
             this._collection.addListener(this.dispatch.bind(this), 'layer.style.changed');
             this._collection.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
+            this._collection.addListener(this.dispatch.bind(this), 'layer.symbol.expanded.changed');
             this._collection.addListener(this.dispatch.bind(this), 'layer.selection.changed');
             this._collection.addListener(this.dispatch.bind(this), 'layer.selection.token.changed');
             this._collection.addListener(this.dispatch.bind(this), 'layer.filter.changed');
