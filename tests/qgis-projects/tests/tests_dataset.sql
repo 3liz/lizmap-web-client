@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 14.9 (Debian 14.9-1.pgdg110+1)
--- Dumped by pg_dump version 14.9 (Ubuntu 14.9-1.pgdg22.04+1)
+-- Dumped from database version 14.11 (Debian 14.11-1.pgdg110+2)
+-- Dumped by pg_dump version 14.11 (Ubuntu 14.11-0ubuntu0.22.04.1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -91,6 +91,99 @@ CREATE SEQUENCE tests_projects.attribute_table_id_seq
 --
 
 ALTER SEQUENCE tests_projects.attribute_table_id_seq OWNED BY tests_projects.attribute_table.id;
+
+
+--
+-- Name: birds; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.birds (
+    id integer NOT NULL,
+    bird_name text,
+    bird_scientific_name text
+);
+
+
+--
+-- Name: birds_areas; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.birds_areas (
+    id integer NOT NULL,
+    bird_id integer NOT NULL,
+    natural_area_id integer NOT NULL
+);
+
+
+--
+-- Name: birds_areas_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
+--
+
+CREATE SEQUENCE tests_projects.birds_areas_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: birds_areas_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
+--
+
+ALTER SEQUENCE tests_projects.birds_areas_id_seq OWNED BY tests_projects.birds_areas.id;
+
+
+--
+-- Name: birds_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
+--
+
+CREATE SEQUENCE tests_projects.birds_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: birds_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
+--
+
+ALTER SEQUENCE tests_projects.birds_id_seq OWNED BY tests_projects.birds.id;
+
+
+--
+-- Name: birds_spots; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.birds_spots (
+    id integer NOT NULL,
+    area_id integer,
+    spot_name text
+);
+
+
+--
+-- Name: birds_spots_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
+--
+
+CREATE SEQUENCE tests_projects.birds_spots_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: birds_spots_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
+--
+
+ALTER SEQUENCE tests_projects.birds_spots_id_seq OWNED BY tests_projects.birds_spots.id;
 
 
 --
@@ -309,6 +402,99 @@ CREATE SEQUENCE tests_projects.dnd_popup_id_seq
 --
 
 ALTER SEQUENCE tests_projects.dnd_popup_id_seq OWNED BY tests_projects.dnd_popup.id;
+
+
+--
+-- Name: edition_layer_embed_child; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.edition_layer_embed_child (
+    id integer NOT NULL,
+    descr text
+);
+
+
+--
+-- Name: edition_layer_embed_child_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
+--
+
+CREATE SEQUENCE tests_projects.edition_layer_embed_child_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: edition_layer_embed_child_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
+--
+
+ALTER SEQUENCE tests_projects.edition_layer_embed_child_id_seq OWNED BY tests_projects.edition_layer_embed_child.id;
+
+
+--
+-- Name: edition_layer_embed_line; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.edition_layer_embed_line (
+    id integer NOT NULL,
+    descr text,
+    geom public.geometry(LineString,4326)
+);
+
+
+--
+-- Name: edition_layer_embed_line_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
+--
+
+CREATE SEQUENCE tests_projects.edition_layer_embed_line_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: edition_layer_embed_line_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
+--
+
+ALTER SEQUENCE tests_projects.edition_layer_embed_line_id_seq OWNED BY tests_projects.edition_layer_embed_line.id;
+
+
+--
+-- Name: edition_layer_embed_point; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.edition_layer_embed_point (
+    id integer NOT NULL,
+    id_ext_point integer,
+    descr text,
+    geom public.geometry(Point,4326)
+);
+
+
+--
+-- Name: edition_layer_embed_point_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
+--
+
+CREATE SEQUENCE tests_projects.edition_layer_embed_point_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: edition_layer_embed_point_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
+--
+
+ALTER SEQUENCE tests_projects.edition_layer_embed_point_id_seq OWNED BY tests_projects.edition_layer_embed_point.id;
 
 
 --
@@ -797,6 +983,36 @@ CREATE TABLE tests_projects.form_edition_snap (
 
 
 --
+-- Name: form_edition_snap_control; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.form_edition_snap_control (
+    id integer NOT NULL,
+    geom public.geometry(Point,4326)
+);
+
+
+--
+-- Name: form_edition_snap_control_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
+--
+
+CREATE SEQUENCE tests_projects.form_edition_snap_control_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: form_edition_snap_control_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
+--
+
+ALTER SEQUENCE tests_projects.form_edition_snap_control_id_seq OWNED BY tests_projects.form_edition_snap_control.id;
+
+
+--
 -- Name: form_edition_snap_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
 --
 
@@ -814,6 +1030,96 @@ CREATE SEQUENCE tests_projects.form_edition_snap_id_seq
 --
 
 ALTER SEQUENCE tests_projects.form_edition_snap_id_seq OWNED BY tests_projects.form_edition_snap.id;
+
+
+--
+-- Name: form_edition_snap_line; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.form_edition_snap_line (
+    id integer NOT NULL,
+    geom public.geometry(LineString,4326)
+);
+
+
+--
+-- Name: form_edition_snap_line_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
+--
+
+CREATE SEQUENCE tests_projects.form_edition_snap_line_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: form_edition_snap_line_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
+--
+
+ALTER SEQUENCE tests_projects.form_edition_snap_line_id_seq OWNED BY tests_projects.form_edition_snap_line.id;
+
+
+--
+-- Name: form_edition_snap_point; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.form_edition_snap_point (
+    id integer NOT NULL,
+    geom public.geometry(Point,4326)
+);
+
+
+--
+-- Name: form_edition_snap_point_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
+--
+
+CREATE SEQUENCE tests_projects.form_edition_snap_point_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: form_edition_snap_point_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
+--
+
+ALTER SEQUENCE tests_projects.form_edition_snap_point_id_seq OWNED BY tests_projects.form_edition_snap_point.id;
+
+
+--
+-- Name: form_edition_snap_polygon; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.form_edition_snap_polygon (
+    id integer NOT NULL,
+    geom public.geometry(Polygon,4326)
+);
+
+
+--
+-- Name: form_edition_snap_polygon_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
+--
+
+CREATE SEQUENCE tests_projects.form_edition_snap_polygon_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: form_edition_snap_polygon_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
+--
+
+ALTER SEQUENCE tests_projects.form_edition_snap_polygon_id_seq OWNED BY tests_projects.form_edition_snap_polygon.id;
 
 
 --
@@ -849,6 +1155,131 @@ CREATE SEQUENCE tests_projects.form_edition_upload_id_seq
 --
 
 ALTER SEQUENCE tests_projects.form_edition_upload_id_seq OWNED BY tests_projects.form_edition_upload.id;
+
+
+--
+-- Name: form_edition_upload_webdav; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.form_edition_upload_webdav (
+    id integer NOT NULL,
+    remote_path text,
+    local_path text
+);
+
+
+--
+-- Name: form_edition_upload_webdav_child_attachments; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.form_edition_upload_webdav_child_attachments (
+    id integer NOT NULL,
+    id_parent integer,
+    remote_path text
+);
+
+
+--
+-- Name: form_edition_upload_webdav_child_attachments_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
+--
+
+CREATE SEQUENCE tests_projects.form_edition_upload_webdav_child_attachments_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: form_edition_upload_webdav_child_attachments_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
+--
+
+ALTER SEQUENCE tests_projects.form_edition_upload_webdav_child_attachments_id_seq OWNED BY tests_projects.form_edition_upload_webdav_child_attachments.id;
+
+
+--
+-- Name: form_edition_upload_webdav_geom; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.form_edition_upload_webdav_geom (
+    id integer NOT NULL,
+    remote_path text,
+    local_path text,
+    geom public.geometry(Point,4326)
+);
+
+
+--
+-- Name: form_edition_upload_webdav_geom_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
+--
+
+CREATE SEQUENCE tests_projects.form_edition_upload_webdav_geom_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: form_edition_upload_webdav_geom_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
+--
+
+ALTER SEQUENCE tests_projects.form_edition_upload_webdav_geom_id_seq OWNED BY tests_projects.form_edition_upload_webdav_geom.id;
+
+
+--
+-- Name: form_edition_upload_webdav_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
+--
+
+CREATE SEQUENCE tests_projects.form_edition_upload_webdav_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: form_edition_upload_webdav_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
+--
+
+ALTER SEQUENCE tests_projects.form_edition_upload_webdav_id_seq OWNED BY tests_projects.form_edition_upload_webdav.id;
+
+
+--
+-- Name: form_edition_upload_webdav_parent_geom; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.form_edition_upload_webdav_parent_geom (
+    id integer NOT NULL,
+    descr text,
+    geom public.geometry(Point,4326)
+);
+
+
+--
+-- Name: form_edition_upload_webdav_parent_geom_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
+--
+
+CREATE SEQUENCE tests_projects.form_edition_upload_webdav_parent_geom_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: form_edition_upload_webdav_parent_geom_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
+--
+
+ALTER SEQUENCE tests_projects.form_edition_upload_webdav_parent_geom_id_seq OWNED BY tests_projects.form_edition_upload_webdav_parent_geom.id;
 
 
 --
@@ -972,35 +1403,6 @@ CREATE TABLE tests_projects.form_filter_child_bus_stops (
     geom public.geometry(Point,2154)
 );
 
---
--- Name: edition_layer_embed_point; Type: TABLE; Schema: tests_projects; Owner: -
---
-
-CREATE TABLE tests_projects.edition_layer_embed_point (
-    id SERIAL PRIMARY KEY,
-    id_ext_point integer,
-    descr text,
-    geom public.geometry(Point,4326)
-);
-
---
--- Name: edition_layer_embed_line; Type: TABLE; Schema: tests_projects; Owner: -
---
-
-CREATE TABLE tests_projects.edition_layer_embed_line (
-    id SERIAL PRIMARY KEY,
-    descr text,
-    geom public.geometry(LineString,4326)
-);
-
---
--- Name: edition_layer_embed_line; Type: TABLE; Schema: tests_projects; Owner: -
---
-
-CREATE TABLE tests_projects.edition_layer_embed_child (
-    id SERIAL PRIMARY KEY,
-    descr text
-);
 
 --
 -- Name: form_filter_child_bus_stops_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
@@ -1222,6 +1624,37 @@ ALTER SEQUENCE tests_projects.many_date_formats_id_seq OWNED BY tests_projects.m
 
 
 --
+-- Name: natural_areas; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.natural_areas (
+    id integer NOT NULL,
+    natural_area_name text,
+    geom public.geometry(Polygon,4326)
+);
+
+
+--
+-- Name: natural_areas_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
+--
+
+CREATE SEQUENCE tests_projects.natural_areas_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: natural_areas_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
+--
+
+ALTER SEQUENCE tests_projects.natural_areas_id_seq OWNED BY tests_projects.natural_areas.id;
+
+
+--
 -- Name: parent_layer; Type: TABLE; Schema: tests_projects; Owner: -
 --
 
@@ -1370,6 +1803,285 @@ CREATE SEQUENCE tests_projects.shop_bakery_id_0_seq
 --
 
 ALTER SEQUENCE tests_projects.shop_bakery_id_0_seq OWNED BY tests_projects.shop_bakery_pg.id;
+
+
+--
+-- Name: single_wms_baselayer; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.single_wms_baselayer (
+    id integer NOT NULL,
+    title text,
+    geom public.geometry(Polygon,4326)
+);
+
+
+--
+-- Name: single_wms_baselayer_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
+--
+
+CREATE SEQUENCE tests_projects.single_wms_baselayer_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: single_wms_baselayer_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
+--
+
+ALTER SEQUENCE tests_projects.single_wms_baselayer_id_seq OWNED BY tests_projects.single_wms_baselayer.id;
+
+
+--
+-- Name: single_wms_lines; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.single_wms_lines (
+    id integer NOT NULL,
+    title text,
+    geom public.geometry(LineString,4326)
+);
+
+
+--
+-- Name: single_wms_lines_group; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.single_wms_lines_group (
+    id integer NOT NULL,
+    title text,
+    geom public.geometry(LineString,4326)
+);
+
+
+--
+-- Name: single_wms_lines_group_as_layer; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.single_wms_lines_group_as_layer (
+    id integer NOT NULL,
+    title text,
+    geom public.geometry(LineString,4326)
+);
+
+
+--
+-- Name: single_wms_lines_group_as_layer_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
+--
+
+CREATE SEQUENCE tests_projects.single_wms_lines_group_as_layer_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: single_wms_lines_group_as_layer_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
+--
+
+ALTER SEQUENCE tests_projects.single_wms_lines_group_as_layer_id_seq OWNED BY tests_projects.single_wms_lines_group_as_layer.id;
+
+
+--
+-- Name: single_wms_lines_group_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
+--
+
+CREATE SEQUENCE tests_projects.single_wms_lines_group_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: single_wms_lines_group_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
+--
+
+ALTER SEQUENCE tests_projects.single_wms_lines_group_id_seq OWNED BY tests_projects.single_wms_lines_group.id;
+
+
+--
+-- Name: single_wms_lines_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
+--
+
+CREATE SEQUENCE tests_projects.single_wms_lines_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: single_wms_lines_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
+--
+
+ALTER SEQUENCE tests_projects.single_wms_lines_id_seq OWNED BY tests_projects.single_wms_lines.id;
+
+
+--
+-- Name: single_wms_points; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.single_wms_points (
+    id integer NOT NULL,
+    title text,
+    geom public.geometry(Point,4326)
+);
+
+
+--
+-- Name: single_wms_points_group; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.single_wms_points_group (
+    id integer NOT NULL,
+    title text,
+    geom public.geometry(Point,4326)
+);
+
+
+--
+-- Name: single_wms_points_group_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
+--
+
+CREATE SEQUENCE tests_projects.single_wms_points_group_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: single_wms_points_group_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
+--
+
+ALTER SEQUENCE tests_projects.single_wms_points_group_id_seq OWNED BY tests_projects.single_wms_points_group.id;
+
+
+--
+-- Name: single_wms_points_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
+--
+
+CREATE SEQUENCE tests_projects.single_wms_points_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: single_wms_points_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
+--
+
+ALTER SEQUENCE tests_projects.single_wms_points_id_seq OWNED BY tests_projects.single_wms_points.id;
+
+
+--
+-- Name: single_wms_polygons; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.single_wms_polygons (
+    id integer NOT NULL,
+    title text,
+    geom public.geometry(Polygon,4326)
+);
+
+
+--
+-- Name: single_wms_polygons_group_as_layer; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.single_wms_polygons_group_as_layer (
+    id integer NOT NULL,
+    title text,
+    geom public.geometry(Polygon,4326)
+);
+
+
+--
+-- Name: single_wms_polygons_group_as_layer_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
+--
+
+CREATE SEQUENCE tests_projects.single_wms_polygons_group_as_layer_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: single_wms_polygons_group_as_layer_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
+--
+
+ALTER SEQUENCE tests_projects.single_wms_polygons_group_as_layer_id_seq OWNED BY tests_projects.single_wms_polygons_group_as_layer.id;
+
+
+--
+-- Name: single_wms_polygons_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
+--
+
+CREATE SEQUENCE tests_projects.single_wms_polygons_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: single_wms_polygons_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
+--
+
+ALTER SEQUENCE tests_projects.single_wms_polygons_id_seq OWNED BY tests_projects.single_wms_polygons.id;
+
+
+--
+-- Name: single_wms_tiled_baselayer; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.single_wms_tiled_baselayer (
+    id integer NOT NULL,
+    title text,
+    geom public.geometry(Polygon,4326)
+);
+
+
+--
+-- Name: single_wms_tiled_baselayer_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
+--
+
+CREATE SEQUENCE tests_projects.single_wms_tiled_baselayer_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: single_wms_tiled_baselayer_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
+--
+
+ALTER SEQUENCE tests_projects.single_wms_tiled_baselayer_id_seq OWNED BY tests_projects.single_wms_tiled_baselayer.id;
 
 
 --
@@ -1598,213 +2310,6 @@ CREATE SEQUENCE tests_projects.tramway_stops_id_stop_seq
     NO MAXVALUE
     CACHE 1;
 
---
--- Name: form_edition_upload_webdav; Type: TABLE; Schema: tests_projects; Owner: -
---
-
-CREATE TABLE tests_projects.form_edition_upload_webdav (
-    id SERIAL PRIMARY KEY,
-    remote_path text,
-    local_path text
-);
-
-
---
--- Name: form_edition_upload_webdav_geom; Type: TABLE; Schema: tests_projects; Owner: -
---
-
-CREATE TABLE tests_projects.form_edition_upload_webdav_geom (
-    id SERIAL PRIMARY KEY,
-    remote_path text,
-    local_path text,
-    geom public.geometry(Point,4326)
-);
-
---
--- Name: form_edition_upload_webdav_parent_geom; Type: TABLE; Schema: tests_projects; Owner: -
---
-
-CREATE TABLE tests_projects.form_edition_upload_webdav_parent_geom (
-    id SERIAL PRIMARY KEY,
-    descr text,
-    geom public.geometry(Point,4326)
-);
-
---
--- Name: form_edition_upload_webdav_child_attachments; Type: TABLE; Schema: tests_projects; Owner: -
---
-
-CREATE TABLE tests_projects.form_edition_upload_webdav_child_attachments (
-    id SERIAL PRIMARY KEY,
-    id_parent integer,
-    remote_path text
-);
-
---
--- Name: birds; Type: TABLE; Schema: tests_projects; Owner: -
---
-
-CREATE TABLE tests_projects.birds (
-    id SERIAL PRIMARY KEY,
-    bird_name text,
-    bird_scientific_name text
-);
-
---
--- Name: birds_spots; Type: TABLE; Schema: tests_projects; Owner: -
---
-
-CREATE TABLE tests_projects.birds_spots (
-    id SERIAL PRIMARY KEY,
-    area_id integer,
-    spot_name text
-);
-
-
---
--- Name: natural_areas; Type: TABLE; Schema: tests_projects; Owner: -
---
-
-CREATE TABLE tests_projects.natural_areas (
-    id SERIAL PRIMARY KEY,
-    natural_area_name text,
-    geom public.geometry(Polygon,4326)
-);
-
---
--- Name: birds_areas; Type: TABLE; Schema: tests_projects; Owner: -
---
-
-CREATE TABLE tests_projects.birds_areas (
-    id SERIAL PRIMARY KEY,
-    bird_id integer NOT NULL,
-    natural_area_id integer NOT NULL
-);
-
-
---
--- Name: form_edition_snap_point; Type: TABLE; Schema: tests_projects; Owner: -
---
-
-CREATE TABLE tests_projects.form_edition_snap_point (
-    id SERIAL PRIMARY KEY,
-    geom public.geometry(Point,4326)
-);
-
---
--- Name: form_edition_snap_line; Type: TABLE; Schema: tests_projects; Owner: -
---
-
-CREATE TABLE tests_projects.form_edition_snap_line (
-    id SERIAL PRIMARY KEY,
-    geom public.geometry(LineString,4326)
-);
-
---
--- Name: form_edition_snap_polygon; Type: TABLE; Schema: tests_projects; Owner: -
---
-
-CREATE TABLE tests_projects.form_edition_snap_polygon (
-    id SERIAL PRIMARY KEY,
-    geom public.geometry(Polygon,4326)
-);
-
---
--- Name: form_edition_snap_control; Type: TABLE; Schema: tests_projects; Owner: -
---
-
-CREATE TABLE tests_projects.form_edition_snap_control (
-    id SERIAL PRIMARY KEY,
-    geom public.geometry(Point,4326)
-);
-
-
---
--- Name: single_wms_points; Type: Table; Schema: tests_projects; Owner: -
---
-CREATE TABLE tests_projects.single_wms_points (
-    id SERIAL PRIMARY KEY,
-    title text,
-    geom public.geometry(Point,4326)
-);
-
-
---
--- Name: single_wms_lines; Type: Table; Schema: tests_projects; Owner: -
---
-CREATE TABLE tests_projects.single_wms_lines (
-    id SERIAL PRIMARY KEY,
-    title text,
-    geom public.geometry(LineString,4326)
-);
-
-
---
--- Name: single_wms_lines; Type: Table; Schema: tests_projects; Owner: -
---
-CREATE TABLE tests_projects.single_wms_polygons (
-    id SERIAL PRIMARY KEY,
-    title text,
-    geom public.geometry(Polygon,4326)
-);
-
-
---
--- Name: single_wms_points_group; Type: Table; Schema: tests_projects; Owner: -
---
-CREATE TABLE tests_projects.single_wms_points_group (
-    id SERIAL PRIMARY KEY,
-    title text,
-    geom public.geometry(Point,4326)
-);
-
-
---
--- Name: single_wms_lines_group; Type: Table; Schema: tests_projects; Owner: -
---
-CREATE TABLE tests_projects.single_wms_lines_group (
-    id SERIAL PRIMARY KEY,
-    title text,
-    geom public.geometry(LineString,4326)
-);
-
-
---
--- Name: single_wms_lines_group_as_layer; Type: Table; Schema: tests_projects; Owner: -
---
-CREATE TABLE tests_projects.single_wms_lines_group_as_layer (
-    id SERIAL PRIMARY KEY,
-    title text,
-    geom public.geometry(LineString,4326)
-);
-
-
---
--- Name: single_wms_polygons_group_as_layer; Type: Table; Schema: tests_projects; Owner: -
---
-CREATE TABLE tests_projects.single_wms_polygons_group_as_layer (
-    id SERIAL PRIMARY KEY,
-    title text,
-    geom public.geometry(Polygon,4326)
-);
-
---
--- Name: single_wms_baselayer; Type: Table; Schema: tests_projects; Owner: -
---
-CREATE TABLE tests_projects.single_wms_baselayer (
-    id SERIAL PRIMARY KEY,
-    title text,
-    geom public.geometry(Polygon,4326)
-);
-
---
--- Name: single_wms_tiled_baselayer; Type: Table; Schema: tests_projects; Owner: -
---
-CREATE TABLE tests_projects.single_wms_tiled_baselayer (
-    id SERIAL PRIMARY KEY,
-    title text,
-    geom public.geometry(Polygon,4326)
-);
 
 --
 -- Name: tramway_stops_id_stop_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
@@ -1814,10 +2319,62 @@ ALTER SEQUENCE tests_projects.tramway_stops_id_stop_seq OWNED BY tests_projects.
 
 
 --
+-- Name: xss; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.xss (
+    id integer NOT NULL,
+    geom public.geometry(Point,2154),
+    description text
+);
+
+
+--
+-- Name: xss_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
+--
+
+CREATE SEQUENCE tests_projects.xss_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: xss_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
+--
+
+ALTER SEQUENCE tests_projects.xss_id_seq OWNED BY tests_projects.xss.id;
+
+
+--
 -- Name: attribute_table id; Type: DEFAULT; Schema: tests_projects; Owner: -
 --
 
 ALTER TABLE ONLY tests_projects.attribute_table ALTER COLUMN id SET DEFAULT nextval('tests_projects.attribute_table_id_seq'::regclass);
+
+
+--
+-- Name: birds id; Type: DEFAULT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.birds ALTER COLUMN id SET DEFAULT nextval('tests_projects.birds_id_seq'::regclass);
+
+
+--
+-- Name: birds_areas id; Type: DEFAULT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.birds_areas ALTER COLUMN id SET DEFAULT nextval('tests_projects.birds_areas_id_seq'::regclass);
+
+
+--
+-- Name: birds_spots id; Type: DEFAULT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.birds_spots ALTER COLUMN id SET DEFAULT nextval('tests_projects.birds_spots_id_seq'::regclass);
 
 
 --
@@ -1867,6 +2424,27 @@ ALTER TABLE ONLY tests_projects.dnd_form_geom ALTER COLUMN id SET DEFAULT nextva
 --
 
 ALTER TABLE ONLY tests_projects.dnd_popup ALTER COLUMN id SET DEFAULT nextval('tests_projects.dnd_popup_id_seq'::regclass);
+
+
+--
+-- Name: edition_layer_embed_child id; Type: DEFAULT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.edition_layer_embed_child ALTER COLUMN id SET DEFAULT nextval('tests_projects.edition_layer_embed_child_id_seq'::regclass);
+
+
+--
+-- Name: edition_layer_embed_line id; Type: DEFAULT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.edition_layer_embed_line ALTER COLUMN id SET DEFAULT nextval('tests_projects.edition_layer_embed_line_id_seq'::regclass);
+
+
+--
+-- Name: edition_layer_embed_point id; Type: DEFAULT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.edition_layer_embed_point ALTER COLUMN id SET DEFAULT nextval('tests_projects.edition_layer_embed_point_id_seq'::regclass);
 
 
 --
@@ -1982,10 +2560,66 @@ ALTER TABLE ONLY tests_projects.form_edition_snap ALTER COLUMN id SET DEFAULT ne
 
 
 --
+-- Name: form_edition_snap_control id; Type: DEFAULT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.form_edition_snap_control ALTER COLUMN id SET DEFAULT nextval('tests_projects.form_edition_snap_control_id_seq'::regclass);
+
+
+--
+-- Name: form_edition_snap_line id; Type: DEFAULT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.form_edition_snap_line ALTER COLUMN id SET DEFAULT nextval('tests_projects.form_edition_snap_line_id_seq'::regclass);
+
+
+--
+-- Name: form_edition_snap_point id; Type: DEFAULT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.form_edition_snap_point ALTER COLUMN id SET DEFAULT nextval('tests_projects.form_edition_snap_point_id_seq'::regclass);
+
+
+--
+-- Name: form_edition_snap_polygon id; Type: DEFAULT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.form_edition_snap_polygon ALTER COLUMN id SET DEFAULT nextval('tests_projects.form_edition_snap_polygon_id_seq'::regclass);
+
+
+--
 -- Name: form_edition_upload id; Type: DEFAULT; Schema: tests_projects; Owner: -
 --
 
 ALTER TABLE ONLY tests_projects.form_edition_upload ALTER COLUMN id SET DEFAULT nextval('tests_projects.form_edition_upload_id_seq'::regclass);
+
+
+--
+-- Name: form_edition_upload_webdav id; Type: DEFAULT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.form_edition_upload_webdav ALTER COLUMN id SET DEFAULT nextval('tests_projects.form_edition_upload_webdav_id_seq'::regclass);
+
+
+--
+-- Name: form_edition_upload_webdav_child_attachments id; Type: DEFAULT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.form_edition_upload_webdav_child_attachments ALTER COLUMN id SET DEFAULT nextval('tests_projects.form_edition_upload_webdav_child_attachments_id_seq'::regclass);
+
+
+--
+-- Name: form_edition_upload_webdav_geom id; Type: DEFAULT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.form_edition_upload_webdav_geom ALTER COLUMN id SET DEFAULT nextval('tests_projects.form_edition_upload_webdav_geom_id_seq'::regclass);
+
+
+--
+-- Name: form_edition_upload_webdav_parent_geom id; Type: DEFAULT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.form_edition_upload_webdav_parent_geom ALTER COLUMN id SET DEFAULT nextval('tests_projects.form_edition_upload_webdav_parent_geom_id_seq'::regclass);
 
 
 --
@@ -2059,6 +2693,13 @@ ALTER TABLE ONLY tests_projects.many_date_formats ALTER COLUMN id SET DEFAULT ne
 
 
 --
+-- Name: natural_areas id; Type: DEFAULT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.natural_areas ALTER COLUMN id SET DEFAULT nextval('tests_projects.natural_areas_id_seq'::regclass);
+
+
+--
 -- Name: parent_layer id; Type: DEFAULT; Schema: tests_projects; Owner: -
 --
 
@@ -2091,6 +2732,69 @@ ALTER TABLE ONLY tests_projects.selection_polygon ALTER COLUMN id SET DEFAULT ne
 --
 
 ALTER TABLE ONLY tests_projects.shop_bakery_pg ALTER COLUMN id SET DEFAULT nextval('tests_projects.shop_bakery_id_0_seq'::regclass);
+
+
+--
+-- Name: single_wms_baselayer id; Type: DEFAULT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.single_wms_baselayer ALTER COLUMN id SET DEFAULT nextval('tests_projects.single_wms_baselayer_id_seq'::regclass);
+
+
+--
+-- Name: single_wms_lines id; Type: DEFAULT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.single_wms_lines ALTER COLUMN id SET DEFAULT nextval('tests_projects.single_wms_lines_id_seq'::regclass);
+
+
+--
+-- Name: single_wms_lines_group id; Type: DEFAULT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.single_wms_lines_group ALTER COLUMN id SET DEFAULT nextval('tests_projects.single_wms_lines_group_id_seq'::regclass);
+
+
+--
+-- Name: single_wms_lines_group_as_layer id; Type: DEFAULT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.single_wms_lines_group_as_layer ALTER COLUMN id SET DEFAULT nextval('tests_projects.single_wms_lines_group_as_layer_id_seq'::regclass);
+
+
+--
+-- Name: single_wms_points id; Type: DEFAULT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.single_wms_points ALTER COLUMN id SET DEFAULT nextval('tests_projects.single_wms_points_id_seq'::regclass);
+
+
+--
+-- Name: single_wms_points_group id; Type: DEFAULT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.single_wms_points_group ALTER COLUMN id SET DEFAULT nextval('tests_projects.single_wms_points_group_id_seq'::regclass);
+
+
+--
+-- Name: single_wms_polygons id; Type: DEFAULT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.single_wms_polygons ALTER COLUMN id SET DEFAULT nextval('tests_projects.single_wms_polygons_id_seq'::regclass);
+
+
+--
+-- Name: single_wms_polygons_group_as_layer id; Type: DEFAULT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.single_wms_polygons_group_as_layer ALTER COLUMN id SET DEFAULT nextval('tests_projects.single_wms_polygons_group_as_layer_id_seq'::regclass);
+
+
+--
+-- Name: single_wms_tiled_baselayer id; Type: DEFAULT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.single_wms_tiled_baselayer ALTER COLUMN id SET DEFAULT nextval('tests_projects.single_wms_tiled_baselayer_id_seq'::regclass);
 
 
 --
@@ -2136,6 +2840,13 @@ ALTER TABLE ONLY tests_projects.tramway_stops ALTER COLUMN id_stop SET DEFAULT n
 
 
 --
+-- Name: xss id; Type: DEFAULT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.xss ALTER COLUMN id SET DEFAULT nextval('tests_projects.xss_id_seq'::regclass);
+
+
+--
 -- Data for Name: attribute_table; Type: TABLE DATA; Schema: tests_projects; Owner: -
 --
 
@@ -2144,6 +2855,57 @@ COPY tests_projects.attribute_table (id, label_from_int_value_relation, label_fr
 2	2	second	2	deux	2	second	{2}	{second}	{"second"}
 3	3	third	3	trois	3	third	{3}	{third}	{"third"}
 4	4	fourth	4	quatre	4	fourth	{1,2,3,4}	{first,second,third,fourth}	{"first","second","third","fourth"}
+\.
+
+
+--
+-- Data for Name: birds; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.birds (id, bird_name, bird_scientific_name) FROM stdin;
+1	Greater flamingo	Phoenicopterus roseus
+2	Black-winged stilt	Himantopus himantopus
+3	Purple heron	Ardea purpurea
+4	Kingfisher	Alcedo atthis
+5	Eurasian teal	Anas crecca
+6	Common tern	Sterna hirundo
+7	Black-headed gull	Chroicocephalus ridibundus
+8	Little grebe	Tachybaptus ruficollis
+\.
+
+
+--
+-- Data for Name: birds_areas; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.birds_areas (id, bird_id, natural_area_id) FROM stdin;
+1	1	1
+2	2	1
+3	6	1
+4	8	1
+5	1	2
+6	3	2
+7	5	2
+8	1	3
+9	4	3
+10	7	3
+11	2	3
+12	3	3
+13	5	3
+14	8	3
+\.
+
+
+--
+-- Data for Name: birds_spots; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.birds_spots (id, area_id, spot_name) FROM stdin;
+1	1	North tower
+2	1	South tower
+3	2	East tower
+4	2	Vignalie tower
+5	3	West tower
 \.
 
 
@@ -2226,6 +2988,37 @@ COPY tests_projects.dnd_form_geom (id, field_in_dnd_form, field_not_in_dnd_form,
 COPY tests_projects.dnd_popup (id, field_tab1, field_tab2, geom) FROM stdin;
 1	tab1_value	tab2_value	01030000206A0800000100000004000000541E93BC41682741EFF7CD63FDF6574182A712AB07682741602DE34CB7F157411AFC5F7C19AD27413F086B27A5F15741541E93BC41682741EFF7CD63FDF65741
 2	\N	\N	01030000206A08000001000000040000002AE4B62B3E6927418A4F186F3DF85741F4E1E68337AE2741A143F22A09F2574170B84E664BAE27414C64E47D33F857412AE4B62B3E6927418A4F186F3DF85741
+\.
+
+
+--
+-- Data for Name: edition_layer_embed_child; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.edition_layer_embed_child (id, descr) FROM stdin;
+1	External1
+2	External2
+\.
+
+
+--
+-- Data for Name: edition_layer_embed_line; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.edition_layer_embed_line (id, descr, geom) FROM stdin;
+1	Line1	0102000020E61000000200000094A384CD4FDF0E408076888FC4CA454093B1E7F88F540F40B9EC7E14F8CB4540
+2	Line2	0102000020E610000002000000B77CE5D938BF0E40921F2ED9AACC45401A956FEB839E0E40404F49F9E0CF4540
+\.
+
+
+--
+-- Data for Name: edition_layer_embed_point; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.edition_layer_embed_point (id, id_ext_point, descr, geom) FROM stdin;
+1	1	Point1	0101000020E61000003E7C3323ADF30E40EFCE98ADC5D04540
+2	2	Point2	0101000020E6100000132532C38BE00E405159256142CE4540
+3	\N	Point2	0101000020E6100000932A36E3EF190F40AB0239509FCE4540
 \.
 
 
@@ -2367,11 +3160,51 @@ COPY tests_projects.form_edition_snap (id, geom) FROM stdin;
 
 
 --
+-- Data for Name: form_edition_snap_control; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.form_edition_snap_control (id, geom) FROM stdin;
+\.
+
+
+--
+-- Data for Name: form_edition_snap_line; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.form_edition_snap_line (id, geom) FROM stdin;
+1	0102000020E61000000400000042D99C104AD70E4050A8CB6624CD45400A91624980D00E40F54343E87CCF4540EAB4A6511FEE0E40A6042869E9D04540140CA8B140010F4053283BC05BD14540
+2	0102000020E6100000030000003E6604FDD9160F4027CCC20D69CB45407DA52D023C160F40323F457C17CE4540149359C7E03B0F401DF2BCEE2CCE4540
+\.
+
+
+--
+-- Data for Name: form_edition_snap_point; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.form_edition_snap_point (id, geom) FROM stdin;
+1	0101000020E6100000F0AEF07A2FE90E4014D8230552CF4540
+2	0101000020E610000068BD055DFB290F40FBE25380D8CE4540
+3	0101000020E6100000A878D83735F10E4069C908F27FCC4540
+\.
+
+
+--
+-- Data for Name: form_edition_snap_polygon; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.form_edition_snap_polygon (id, geom) FROM stdin;
+1	0103000020E610000001000000040000004CD08B4EE2CF0E40749731B8B7CB4540A9757D4CBDEE0E40AD99D2243ECB454031EE198091E80E40E044FF5B2ECA45404CD08B4EE2CF0E40749731B8B7CB4540
+2	0103000020E6100000010000000400000063C3BB33EB2E0F40616C3290FDCF4540465DF33A720F0F4086B6CAC58DD145400B9C6A8948430F409B656C1A00D2454063C3BB33EB2E0F40616C3290FDCF4540
+\.
+
+
+--
 -- Data for Name: form_edition_upload; Type: TABLE DATA; Schema: tests_projects; Owner: -
 --
 
 COPY tests_projects.form_edition_upload (id, generic_file, text_file, image_file, text_file_mandatory, image_file_mandatory, image_file_specific_root_folder) FROM stdin;
 \.
+
 
 --
 -- Data for Name: form_edition_upload_webdav; Type: TABLE DATA; Schema: tests_projects; Owner: -
@@ -2382,13 +3215,23 @@ COPY tests_projects.form_edition_upload_webdav (id, remote_path, local_path) FRO
 
 
 --
+-- Data for Name: form_edition_upload_webdav_child_attachments; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.form_edition_upload_webdav_child_attachments (id, id_parent, remote_path) FROM stdin;
+1	1	http://webdav/logo.png
+2	1	http://webdav/test_upload.conf
+\.
+
+
+--
 -- Data for Name: form_edition_upload_webdav_geom; Type: TABLE DATA; Schema: tests_projects; Owner: -
 --
 
 COPY tests_projects.form_edition_upload_webdav_geom (id, remote_path, local_path, geom) FROM stdin;
-1	http://webdav/logo.png	\N	010100000006521A766BB0FC3F8A557EA334084740
-2	http://webdav/test_upload.conf	\N	0101000000E0283E5447A8E7BFA6E8291692404740
-3	http://webdav/test_upload.txt	\N	0101000000A0440C44BB0ACD3F7E59E5616BE54640
+1	http://webdav/logo.png	\N	0101000020E610000006521A766BB0FC3F8A557EA334084740
+2	http://webdav/test_upload.conf	\N	0101000020E6100000E0283E5447A8E7BFA6E8291692404740
+3	http://webdav/test_upload.txt	\N	0101000020E6100000A0440C44BB0ACD3F7E59E5616BE54640
 \.
 
 
@@ -2396,128 +3239,8 @@ COPY tests_projects.form_edition_upload_webdav_geom (id, remote_path, local_path
 -- Data for Name: form_edition_upload_webdav_parent_geom; Type: TABLE DATA; Schema: tests_projects; Owner: -
 --
 
-COPY tests_projects.form_edition_upload_webdav_parent_geom (descr, geom) FROM stdin;
-Parent feat, has attachments	0101000000607440FCDFDBF03F8A41890489CE4640
-\.
-
-
---
--- Data for Name: form_edition_upload_webdav_parent_geom; Type: TABLE DATA; Schema: tests_projects; Owner: -
---
-
-COPY tests_projects.form_edition_upload_webdav_child_attachments (id_parent, remote_path) FROM stdin;
-1	http://webdav/logo.png
-1	http://webdav/test_upload.conf
-\.
-
---
--- Data for Name: natural_areas; Type: TABLE DATA; Schema: tests_projects; Owner: -
---
-
-COPY tests_projects.natural_areas (natural_area_name, geom) FROM stdin;
-Étang du Galabert	0103000000010000006B000000966E5D1B9969124047F3918478B645403C69FAF49A651240E0328493CCB64540B54AE29B72651240533EEDB4DBB645405B36D2B5576512400B4BB784ECB64540D417BA5C2F65124067519CECF4B6454040BC7151B6641240F3535E49F8B645405F89491273641240F3535E49F8B64540736C687DFA621240347115F41EB74540736C687DFA621240A67C7E152EB74540736C687DFA6212401988E7363DB74540736C687DFA621240D194B1064EB74540DF10207281621240739CF71C58B745400F6E9F41AA6112402D9B966E56B745404D084FC323611240CFA2DC8460B74540F3F33EDD0861124058B3C95F76B74540F3F33EDD08611240C9CC5DFF97B745408BA2FE449D60124097DEAB88AFB74540AA6FD6055A601240DDDF0C37B1B7454016148EFAE05F1240DDDF0C37B1B7454035E165BB9D5F1240C7DA887DAAB7454035E165BB9D5F1240C9CC5DFF97B74540A0851DB0245F12406AD4A315A2B745409FA3772F5E571240AD828D6788B84540BB2C85531C541240EE9F4412AFB84540B8D90DF7005512404AA6297AB7B84540C2C3C64C3656124092995FAAA6B845409FA3772F5E571240D5A8EBD6BAB8454026C28F888657124031AFD03EC3B845406F46F85F3558124031AFD03EC3B8454007F5B7C7C95712402FBDFBBCD5B845400B482F24E556124017C6A281E1B8454095B9BED928561240A2C864DEE4B84540FD0AFF7194561240A73D41897FB94540D79738F8A0581240A73D41897FB94540841A6A0BA05A12407A33391672B94540319D9B1E9F5C1240201F293057B94540B5683C1BAC5D12404F1B062552B9454046710DCA095F124068125F6046B94540F746B63924601240970E3C5541B945404AB5D766086212406CF6086421B945400575392C5864124012E2F87D06B945405490E3FC20671240B8CDE897EBB845405581363D046B1240ECAD6F90C1B845401E7EC8B4A46D124034A1A5C0B0B84540AF869963026F1240EE9F4412AFB845407BD6A237BE701240DA8C95DA95B84540F16413827A711240517CA8FF7FB845403AE97B5929721240F767981965B84540AF77ECA3E57212405752278548B84540D92E7DBAD7731240B73CB6F02BB84540C89ED5AB6B741240B73CB6F02BB84540E31836100D7512408D2483FF0BB84540FF929674AE75124004149624F6B7454067E4D60C1A761240C0040AF8E1B74540EE02EF654276124095ECD606C2B74540752107BF6A7612400CDCE92BACB74540752107BF6A76124025D34267A0B74540EE02EF654276124044A01A285DB745408904262AF2741240A0A6FF8F65B745404EBDED04947412408C9350584CB7454067E4D60C1A7612409077FA5B27B74540AC15C887AD7712407E5620A6FBB64540D6CC589E9F781240C64956D6EAB645405DEB70F7C7781240244210C0E0B64540EEF341A6257A1240823ACAA9D6B64540A21C62725B7A1240F929DDCEC0B64540B3AC0981C779124014130B8CA2B645404B5BC9E85B791240B80C26249AB645406A28A1A9187912404501BD028BB64540F599305F5C78124047F3918478B64540A9C2502B9278124062DCBF415AB645404B5BC9E85B791240C0D4792B50B64540D279E14184791240F898AA2701B645404B5BC9E85B7912401574AD66D0B545400DC11967E2791240305DDB23B2B5454067D5294DFD7912401C4A2CEC98B54540834F8AB19E7A1240D83AA0BF84B545403778AA7DD47A1240F131F9FA78B5454075125AFF4D7A124039252F2B68B545402C8EF1279F791240C619C60959B5454030E16884BA7812408018655B57B54540E75C00AD0B7812408018655B57B54540603EE853E37712400E0DFC3948B5454025F7AF2E85771240F9F94C022FB5454067E4D60C1A76124029F629F729B54540E31836100D751240E3F4C84828B545407BC7F577A1741240E3F4C84828B545402859D44ABD72124007377DB47FB545407F1A6DD4BC73124007377DB47FB545408D579D860D741240A74CEE489CB54540F4A8DD1E79741240BB5F9D80B5B54540CF3517A585761240CF724CB8CEB54540AF683FE4C876124059833993E4B54540EE02EF6542761240C7AAF8B018B645406A374E69357512400ABA84DD2CB645402FF01544D774124025A3B29A0EB645408904262AF27412402795871CFCB54540E76BAD6C287412402795871CFCB54540EABE24C94373124050BBE58B2EB6454066F383CC36721240C0D4792B50B645409750039C5F711240F0D056204BB645407BD6A237BE70124049E5660666B645402BBBF866F56D12407BD3187D4EB645405C1878361E6D1240A8DD20F05BB6454043F18E2E986B12408DF4F2327AB645401A3AFE17A66A1240E9FAD79A82B64540966E5D1B9969124047F3918478B64540
-Étang de la Vignalie	01030000000100000013000000FAB787157957124009B9029C22BA45401DC92973345A1240C79B4BF1FBB94540AFB3A0A2586312404B375C2177B945405D2725F63A691240B2F7691223B94540D2A6E880DA6D1240A2C864DEE4B84540F26413827A711240D89AC058A8B84540BB61A5F91A741240B3580CED50B8454079747E1B867512409D5388334AB84540C2F8E6F2347612403DFA2B6F26B945408E394307D47B12403724ADE95DB94540928CBA63EF7A1240C1C5CC6B33BA4540C2E93933187A1240EECFD4DE40BA45400ED0C626FF751240D7CA50253ABA454068F383CC367212404AD6B94649BA45408A13D3E90E71124002E383165ABA454045E2E16E7B6F124090D71AF54ABA4540838B3EB0116B12407BC46BBD31BA4540CE8F2523325F124021B05BD716BA4540FAB787157957124009B9029C22BA4540
-Étang Saint Anne	010300000001000000260000003E0FEC76EE7C12409E03979B4DAD4540E74D53EDEE7B1240E979D4F4E9AD4540917D0DA4D27E124026B3E19B35AE4540916E60E4B582124079F172FC87AE4540188D783DDE8212404CE76A897AAE4540E82FF96DB5831240F0E0852172AE4540EED5E726EC811240B1B5A3F838AE454042440954D0831240CE90A63708AE4540A99549EC3B841240D274503BE3AD45409805A2DDCF841240D274503BE3AD4540D69F515F49841240CE90A63708AE45402D61EAE8488512409DA2F4C01FAE4540BE69BB97A686124028A5B61D23AE4540E4CDD4517D881240CAACFC332DAE4540186F1EBEA48A1240E0B180ED33AE4540F64ECFA0CC8B1240CAACFC332DAE4540E16BB035458D1240B3A7787A26AE454081B1B196F38E1240869D700719AE45407D5E3A3AD88F1240438EE4DA04AE45405B3EEB1C00911240747C9651EDAD4540D0CC5B67BC9112408D73EF8CE1AD454050458507AE93124049646360CDAD45402E2536EAD5941240ED5D7EF8C4AD454077A99EC184951240046302B2CBAD4540E9E497AF259712400655D733B9AD45405F7308FAE1971240213E05F19AAD45406CB038AC329812400C2B56B981AD45406CB038AC329812409A1FED9772AD45405F7308FAE19712406F07BAA652AD45405F7308FAE19712405AF40A6F39AD45405F7308FAE197124075DD382C1BAD454043F9A79540971240A7CBEAA203AD45408FD087C90A9712407AC1E22FF6AC45407003B0084E971240ABAF94A6DEAC4540F630752193931240F1B0F554E0AC45404C10682ACC8C124061CA89F401AD4540188D783DDE821240FEED250731AD45403E0FEC76EE7C12409E03979B4DAD4540
-\.
-
---
--- Data for Name: birds_spots; Type: TABLE DATA; Schema: tests_projects; Owner: -
---
-
-COPY tests_projects.birds_spots (area_id, spot_name) FROM stdin;
-1	North tower
-1	South tower
-2	East tower
-2	Vignalie tower
-3	West tower
-\.
-
---
--- Data for Name: birds; Type: TABLE DATA; Schema: tests_projects; Owner: -
---
-
-COPY tests_projects.birds (bird_name, bird_scientific_name) FROM stdin;
-Greater flamingo	Phoenicopterus roseus
-Black-winged stilt	Himantopus himantopus
-Purple heron	Ardea purpurea
-Kingfisher	Alcedo atthis
-Eurasian teal	Anas crecca
-Common tern	Sterna hirundo
-Black-headed gull	Chroicocephalus ridibundus
-Little grebe	Tachybaptus ruficollis
-\.
-
---
--- Data for Name: birds_areas; Type: TABLE DATA; Schema: tests_projects; Owner: -
---
-
-COPY tests_projects.birds_areas (bird_id, natural_area_id) FROM stdin;
-1	1
-2	1
-6	1
-8	1
-1	2
-3	2
-5	2
-1	3
-4	3
-7	3
-2	3
-3	3
-5	3
-8	3
-\.
-
---
--- Data for Name: edition_layer_embed_point; Type: TABLE DATA; Schema: tests_projects; Owner: -
---
-
-COPY tests_projects.edition_layer_embed_point (id_ext_point, descr, geom) FROM stdin;
-1	Point1	01010000003E7C3323ADF30E40EFCE98ADC5D04540
-2	Point2	0101000000132532C38BE00E405159256142CE4540
-\N	Point2	0101000000932A36E3EF190F40AB0239509FCE4540
-\.
-
---
--- Data for Name: edition_layer_embed_line; Type: TABLE DATA; Schema: tests_projects; Owner: -
---
-
-COPY tests_projects.edition_layer_embed_line (descr, geom) FROM stdin;
-Line1	01020000000200000094A384CD4FDF0E408076888FC4CA454093B1E7F88F540F40B9EC7E14F8CB4540
-Line2	010200000002000000B77CE5D938BF0E40921F2ED9AACC45401A956FEB839E0E40404F49F9E0CF4540
-\.
-
---
--- Data for Name: edition_layer_embed_child; Type: TABLE DATA; Schema: tests_projects; Owner: -
---
-
-COPY tests_projects.edition_layer_embed_child (descr) FROM stdin;
-External1
-External2
-\.
---
--- Data for Name: form_edition_snap_point; Type: TABLE DATA; Schema: tests_projects; Owner: -
---
-COPY tests_projects.form_edition_snap_point (geom) FROM stdin;
-0101000000F0AEF07A2FE90E4014D8230552CF4540
-010100000068BD055DFB290F40FBE25380D8CE4540
-0101000000A878D83735F10E4069C908F27FCC4540
-\.
-
---
--- Data for Name: form_edition_snap_line; Type: TABLE DATA; Schema: tests_projects; Owner: -
---
-COPY tests_projects.form_edition_snap_line (geom) FROM stdin;
-01020000000400000042D99C104AD70E4050A8CB6624CD45400A91624980D00E40F54343E87CCF4540EAB4A6511FEE0E40A6042869E9D04540140CA8B140010F4053283BC05BD14540
-0102000000030000003E6604FDD9160F4027CCC20D69CB45407DA52D023C160F40323F457C17CE4540149359C7E03B0F401DF2BCEE2CCE4540
-\.
-
---
--- Data for Name: form_edition_snap_polygon; Type: TABLE DATA; Schema: tests_projects; Owner: -
---
-COPY tests_projects.form_edition_snap_polygon (geom) FROM stdin;
-010300000001000000040000004CD08B4EE2CF0E40749731B8B7CB4540A9757D4CBDEE0E40AD99D2243ECB454031EE198091E80E40E044FF5B2ECA45404CD08B4EE2CF0E40749731B8B7CB4540
-0103000000010000000400000063C3BB33EB2E0F40616C3290FDCF4540465DF33A720F0F4086B6CAC58DD145400B9C6A8948430F409B656C1A00D2454063C3BB33EB2E0F40616C3290FDCF4540
+COPY tests_projects.form_edition_upload_webdav_parent_geom (id, descr, geom) FROM stdin;
+1	Parent feat, has attachments	0101000020E6100000607440FCDFDBF03F8A41890489CE4640
 \.
 
 
@@ -2618,6 +3341,17 @@ COPY tests_projects.many_date_formats (id, field_date, field_time, field_timesta
 
 
 --
+-- Data for Name: natural_areas; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.natural_areas (id, natural_area_name, geom) FROM stdin;
+1	Étang du Galabert	0103000020E6100000010000006B000000966E5D1B9969124047F3918478B645403C69FAF49A651240E0328493CCB64540B54AE29B72651240533EEDB4DBB645405B36D2B5576512400B4BB784ECB64540D417BA5C2F65124067519CECF4B6454040BC7151B6641240F3535E49F8B645405F89491273641240F3535E49F8B64540736C687DFA621240347115F41EB74540736C687DFA621240A67C7E152EB74540736C687DFA6212401988E7363DB74540736C687DFA621240D194B1064EB74540DF10207281621240739CF71C58B745400F6E9F41AA6112402D9B966E56B745404D084FC323611240CFA2DC8460B74540F3F33EDD0861124058B3C95F76B74540F3F33EDD08611240C9CC5DFF97B745408BA2FE449D60124097DEAB88AFB74540AA6FD6055A601240DDDF0C37B1B7454016148EFAE05F1240DDDF0C37B1B7454035E165BB9D5F1240C7DA887DAAB7454035E165BB9D5F1240C9CC5DFF97B74540A0851DB0245F12406AD4A315A2B745409FA3772F5E571240AD828D6788B84540BB2C85531C541240EE9F4412AFB84540B8D90DF7005512404AA6297AB7B84540C2C3C64C3656124092995FAAA6B845409FA3772F5E571240D5A8EBD6BAB8454026C28F888657124031AFD03EC3B845406F46F85F3558124031AFD03EC3B8454007F5B7C7C95712402FBDFBBCD5B845400B482F24E556124017C6A281E1B8454095B9BED928561240A2C864DEE4B84540FD0AFF7194561240A73D41897FB94540D79738F8A0581240A73D41897FB94540841A6A0BA05A12407A33391672B94540319D9B1E9F5C1240201F293057B94540B5683C1BAC5D12404F1B062552B9454046710DCA095F124068125F6046B94540F746B63924601240970E3C5541B945404AB5D766086212406CF6086421B945400575392C5864124012E2F87D06B945405490E3FC20671240B8CDE897EBB845405581363D046B1240ECAD6F90C1B845401E7EC8B4A46D124034A1A5C0B0B84540AF869963026F1240EE9F4412AFB845407BD6A237BE701240DA8C95DA95B84540F16413827A711240517CA8FF7FB845403AE97B5929721240F767981965B84540AF77ECA3E57212405752278548B84540D92E7DBAD7731240B73CB6F02BB84540C89ED5AB6B741240B73CB6F02BB84540E31836100D7512408D2483FF0BB84540FF929674AE75124004149624F6B7454067E4D60C1A761240C0040AF8E1B74540EE02EF654276124095ECD606C2B74540752107BF6A7612400CDCE92BACB74540752107BF6A76124025D34267A0B74540EE02EF654276124044A01A285DB745408904262AF2741240A0A6FF8F65B745404EBDED04947412408C9350584CB7454067E4D60C1A7612409077FA5B27B74540AC15C887AD7712407E5620A6FBB64540D6CC589E9F781240C64956D6EAB645405DEB70F7C7781240244210C0E0B64540EEF341A6257A1240823ACAA9D6B64540A21C62725B7A1240F929DDCEC0B64540B3AC0981C779124014130B8CA2B645404B5BC9E85B791240B80C26249AB645406A28A1A9187912404501BD028BB64540F599305F5C78124047F3918478B64540A9C2502B9278124062DCBF415AB645404B5BC9E85B791240C0D4792B50B64540D279E14184791240F898AA2701B645404B5BC9E85B7912401574AD66D0B545400DC11967E2791240305DDB23B2B5454067D5294DFD7912401C4A2CEC98B54540834F8AB19E7A1240D83AA0BF84B545403778AA7DD47A1240F131F9FA78B5454075125AFF4D7A124039252F2B68B545402C8EF1279F791240C619C60959B5454030E16884BA7812408018655B57B54540E75C00AD0B7812408018655B57B54540603EE853E37712400E0DFC3948B5454025F7AF2E85771240F9F94C022FB5454067E4D60C1A76124029F629F729B54540E31836100D751240E3F4C84828B545407BC7F577A1741240E3F4C84828B545402859D44ABD72124007377DB47FB545407F1A6DD4BC73124007377DB47FB545408D579D860D741240A74CEE489CB54540F4A8DD1E79741240BB5F9D80B5B54540CF3517A585761240CF724CB8CEB54540AF683FE4C876124059833993E4B54540EE02EF6542761240C7AAF8B018B645406A374E69357512400ABA84DD2CB645402FF01544D774124025A3B29A0EB645408904262AF27412402795871CFCB54540E76BAD6C287412402795871CFCB54540EABE24C94373124050BBE58B2EB6454066F383CC36721240C0D4792B50B645409750039C5F711240F0D056204BB645407BD6A237BE70124049E5660666B645402BBBF866F56D12407BD3187D4EB645405C1878361E6D1240A8DD20F05BB6454043F18E2E986B12408DF4F2327AB645401A3AFE17A66A1240E9FAD79A82B64540966E5D1B9969124047F3918478B64540
+2	Étang de la Vignalie	0103000020E61000000100000013000000FAB787157957124009B9029C22BA45401DC92973345A1240C79B4BF1FBB94540AFB3A0A2586312404B375C2177B945405D2725F63A691240B2F7691223B94540D2A6E880DA6D1240A2C864DEE4B84540F26413827A711240D89AC058A8B84540BB61A5F91A741240B3580CED50B8454079747E1B867512409D5388334AB84540C2F8E6F2347612403DFA2B6F26B945408E394307D47B12403724ADE95DB94540928CBA63EF7A1240C1C5CC6B33BA4540C2E93933187A1240EECFD4DE40BA45400ED0C626FF751240D7CA50253ABA454068F383CC367212404AD6B94649BA45408A13D3E90E71124002E383165ABA454045E2E16E7B6F124090D71AF54ABA4540838B3EB0116B12407BC46BBD31BA4540CE8F2523325F124021B05BD716BA4540FAB787157957124009B9029C22BA4540
+3	Étang Saint Anne	0103000020E610000001000000260000003E0FEC76EE7C12409E03979B4DAD4540E74D53EDEE7B1240E979D4F4E9AD4540917D0DA4D27E124026B3E19B35AE4540916E60E4B582124079F172FC87AE4540188D783DDE8212404CE76A897AAE4540E82FF96DB5831240F0E0852172AE4540EED5E726EC811240B1B5A3F838AE454042440954D0831240CE90A63708AE4540A99549EC3B841240D274503BE3AD45409805A2DDCF841240D274503BE3AD4540D69F515F49841240CE90A63708AE45402D61EAE8488512409DA2F4C01FAE4540BE69BB97A686124028A5B61D23AE4540E4CDD4517D881240CAACFC332DAE4540186F1EBEA48A1240E0B180ED33AE4540F64ECFA0CC8B1240CAACFC332DAE4540E16BB035458D1240B3A7787A26AE454081B1B196F38E1240869D700719AE45407D5E3A3AD88F1240438EE4DA04AE45405B3EEB1C00911240747C9651EDAD4540D0CC5B67BC9112408D73EF8CE1AD454050458507AE93124049646360CDAD45402E2536EAD5941240ED5D7EF8C4AD454077A99EC184951240046302B2CBAD4540E9E497AF259712400655D733B9AD45405F7308FAE1971240213E05F19AAD45406CB038AC329812400C2B56B981AD45406CB038AC329812409A1FED9772AD45405F7308FAE19712406F07BAA652AD45405F7308FAE19712405AF40A6F39AD45405F7308FAE197124075DD382C1BAD454043F9A79540971240A7CBEAA203AD45408FD087C90A9712407AC1E22FF6AC45407003B0084E971240ABAF94A6DEAC4540F630752193931240F1B0F554E0AC45404C10682ACC8C124061CA89F401AD4540188D783DDE821240FEED250731AD45403E0FEC76EE7C12409E03979B4DAD4540
+\.
+
+
+--
 -- Data for Name: parent_layer; Type: TABLE DATA; Schema: tests_projects; Owner: -
 --
 
@@ -2626,99 +3360,6 @@ COPY tests_projects.parent_layer (id, geom) FROM stdin;
 2	01010000206A080000DF431F18D8E027417C598F864DF45741
 \.
 
-
---
--- Data for Name: single_wms_points; Type: TABLE DATA; Schema: tests_projects; Owner: -
---
-
-COPY tests_projects.single_wms_points ("title", geom) FROM stdin;
-Point_1	0101000000D4E246DD68DA0E40F6FE852F6FCE4540
-Point_2	01010000009F4B2640BA2E0F40BC7596500ECF4540
-Point_3	010100000086E099F00A170F404BD17ACF65CC4540
-Point_4	01010000000FC4C44FC7EE0E404BD17ACF65CC4540
-Point_5	01010000005E67816DC7000F40DD6303E4BDCF4540
-Point_6	01010000003BD9D5F0D5A10F40C372465718C94540
-\.
-
-
---
--- Data for Name: single_wms_lines; Type: TABLE DATA; Schema: tests_projects; Owner: -
---
-
-COPY tests_projects.single_wms_lines ("title", geom) FROM stdin;
-Line_1	010200000003000000F9B211BC9ED60E408E3A65F50FCD4540540A8151ACE70E40CE34022A99CD4540959FB13B18FB0E408E3A65F50FCD4540
-Line_2	010200000003000000D834E225840E0F40D9FC65426DCD454033359F5F9F390F408A58458ECACD4540E7426E59180D0F40EA80A308B1CE4540
-Line_3	0102000000030000004DFF1B7EAC020F404E56A30FE0CA4540832F0ED991310F406B3AC4F516CB454059AEB7E2E24F0F40D560CC5F30CA4540
-Line_4	01020000000400000050B8E50891B30E40DBAB490552D0454043B2974868800E40FF555E11C5CD4540BACE6CE9ABA80E40EE7C290001CB4540DF96F95476D90E405E6107B231C84540
-\.
-
-
---
--- Data for Name: single_wms_polygons; Type: TABLE DATA; Schema: tests_projects; Owner: -
---
-
-COPY tests_projects.single_wms_polygons ("title", geom) FROM stdin;
-Polygon_1	01030000000100000005000000B4C30716ACC30E40483F48BDBFD04540DF96F95476D90E408FC7AF52D9CF4540353DDDD20A050F401952B198F6D0454072CFE65CE2FE0E4016AE93289BD14540B4C30716ACC30E40483F48BDBFD04540
-Polygon_2	0103000000010000000500000084D85B7D9F4B0F4016605975F6CD454091E6E7B0334A0F4093FE883C2FCF45409B925CB5D57D0F407B4B94215BCF454058FD2BCB696A0F4019537694BFCD454084D85B7D9F4B0F4016605975F6CD4540
-Polygon_3	01030000000100000006000000ECA485880AD80E404588118DE5CA4540FC5B5F60ACF00E40C7E5AC6425CA4540ADB8A242ACDE0E40E0E730B56AC94540233468B24DB80E40739AD9C084CB4540FE639DD317BC0E40EA2CE38FE7CB4540ECA485880AD80E404588118DE5CA4540
-\.
-
-
---
--- Data for Name: single_wms_points_group; Type: TABLE DATA; Schema: tests_projects; Owner: -
---
-
-COPY tests_projects.single_wms_points_group ("title", geom) FROM stdin;
-Gr_Point_1	01010000008E4139C6DB150F40C481FBED12D04540
-Gr_Point_2	01010000003CEDF090621E0F40FC92BD25BBCF4540
-\.
-
-
---
--- Data for Name: single_wms_lines_group; Type: TABLE DATA; Schema: tests_projects; Owner: -
---
-
-COPY tests_projects.single_wms_lines_group ("title", geom) FROM stdin;
-Gr_Line_1	010200000003000000ECF2811770260F40C0783E418FCF4540560909F88A1B0F40B5BD472386D04540D487F5C7C00E0F402B69E0A680D04540
-Gr_Line_2	010200000003000000DE3BA83FCE0D0F4090257F710DD04540A95D512D04130F40C0783E418FCF4540F7A6348F7D250F4084DFE2DF5DCF4540
-\.
-
-
---
--- Data for Name: single_wms_lines_group_as_layer; Type: TABLE DATA; Schema: tests_projects; Owner: -
---
-
-COPY tests_projects.single_wms_lines_group_as_layer ("title", geom) FROM stdin;
-GrL_Line_1	0102000000050000005C0C30581F350F40AE3AB89756D14540368BD96170530F402696EF0472D1454004AD824FA6580F40DA545E06B2D04540A0A160428B480F40B407A0CA49D0454075CE6E03C1320F40F8F619FFBCD04540
-GrL_Line_1	010200000003000000A152EC59042E0F40D13CCBCB09D1454094446026702F0F4020530203F2CF4540858548DB624B0F4023B1837FF7CF4540
-\.
-
-
---
--- Data for Name: single_wms_polygons_group_as_layer; Type: TABLE DATA; Schema: tests_projects; Owner: -
---
-
-COPY tests_projects.single_wms_polygons_group_as_layer ("title", geom) FROM stdin;
-GrL_Polygon_1	010300000001000000050000004047CA4CE91D0F407A324B0E1CD24540369317D5DB1E0F4095FB91B52AD145408736D4F2DB300F402472445BAED14540721DE3EB474D0F40666B678A21D245404047CA4CE91D0F407A324B0E1CD24540
-GrL_Polygon_2	01030000000100000005000000DDDCB770705C0F40B407A0CA49D04540C71A79C5CE5E0F408F1E65FD7CD145401B180F9F55700F4034D366C414D14540B75B617AC17A0F40B407A0CA49D04540DDDCB770705C0F40B407A0CA49D04540
-\.
-
-
---
--- Data for Name: single_wms_baselayer; Type: TABLE DATA; Schema: tests_projects; Owner: -
---
-
-COPY tests_projects.single_wms_baselayer ("title", geom) FROM stdin;
-BaseLayer	010300000001000000050000000077401A836C0E406218402DF9D34540F368B4E6EE6D0E40BE2FFD7034C84540064D1A2727DB0F40E97A89E64FC845403177BEC1E3D60F4021A5CF131AD445400077401A836C0E406218402DF9D34540
-\.
-
---
--- Data for Name: single_wms_tiled_baselayer; Type: TABLE DATA; Schema: tests_projects; Owner: -
---
-
-COPY tests_projects.single_wms_tiled_baselayer ("title", geom) FROM stdin;
-TiledBaseLayer	010300000001000000050000000077401A836C0E406218402DF9D34540F368B4E6EE6D0E40BE2FFD7034C84540064D1A2727DB0F40E97A89E64FC845403177BEC1E3D60F4021A5CF131AD445400077401A836C0E406218402DF9D34540
-\.
 
 --
 -- Data for Name: quartiers; Type: TABLE DATA; Schema: tests_projects; Owner: -
@@ -2786,6 +3427,101 @@ COPY tests_projects.shop_bakery_pg (id, geom, name) FROM stdin;
 23	0101000020E610000090C039CEBCBF0E40D61F124EFDCE4540	eyaqhbmuqi
 24	0101000020E610000050BB831EB8970F40DE9C63977CD24540	rlwyfwejpp
 25	0101000020E61000004683A70DB92F0F4075CCA87F2FD44540	tymcjjhqod
+\.
+
+
+--
+-- Data for Name: single_wms_baselayer; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.single_wms_baselayer (id, title, geom) FROM stdin;
+1	BaseLayer	0103000020E610000001000000050000000077401A836C0E406218402DF9D34540F368B4E6EE6D0E40BE2FFD7034C84540064D1A2727DB0F40E97A89E64FC845403177BEC1E3D60F4021A5CF131AD445400077401A836C0E406218402DF9D34540
+\.
+
+
+--
+-- Data for Name: single_wms_lines; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.single_wms_lines (id, title, geom) FROM stdin;
+1	Line_1	0102000020E610000003000000F9B211BC9ED60E408E3A65F50FCD4540540A8151ACE70E40CE34022A99CD4540959FB13B18FB0E408E3A65F50FCD4540
+2	Line_2	0102000020E610000003000000D834E225840E0F40D9FC65426DCD454033359F5F9F390F408A58458ECACD4540E7426E59180D0F40EA80A308B1CE4540
+3	Line_3	0102000020E6100000030000004DFF1B7EAC020F404E56A30FE0CA4540832F0ED991310F406B3AC4F516CB454059AEB7E2E24F0F40D560CC5F30CA4540
+4	Line_4	0102000020E61000000400000050B8E50891B30E40DBAB490552D0454043B2974868800E40FF555E11C5CD4540BACE6CE9ABA80E40EE7C290001CB4540DF96F95476D90E405E6107B231C84540
+\.
+
+
+--
+-- Data for Name: single_wms_lines_group; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.single_wms_lines_group (id, title, geom) FROM stdin;
+1	Gr_Line_1	0102000020E610000003000000ECF2811770260F40C0783E418FCF4540560909F88A1B0F40B5BD472386D04540D487F5C7C00E0F402B69E0A680D04540
+2	Gr_Line_2	0102000020E610000003000000DE3BA83FCE0D0F4090257F710DD04540A95D512D04130F40C0783E418FCF4540F7A6348F7D250F4084DFE2DF5DCF4540
+\.
+
+
+--
+-- Data for Name: single_wms_lines_group_as_layer; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.single_wms_lines_group_as_layer (id, title, geom) FROM stdin;
+1	GrL_Line_1	0102000020E6100000050000005C0C30581F350F40AE3AB89756D14540368BD96170530F402696EF0472D1454004AD824FA6580F40DA545E06B2D04540A0A160428B480F40B407A0CA49D0454075CE6E03C1320F40F8F619FFBCD04540
+2	GrL_Line_1	0102000020E610000003000000A152EC59042E0F40D13CCBCB09D1454094446026702F0F4020530203F2CF4540858548DB624B0F4023B1837FF7CF4540
+\.
+
+
+--
+-- Data for Name: single_wms_points; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.single_wms_points (id, title, geom) FROM stdin;
+1	Point_1	0101000020E6100000D4E246DD68DA0E40F6FE852F6FCE4540
+2	Point_2	0101000020E61000009F4B2640BA2E0F40BC7596500ECF4540
+3	Point_3	0101000020E610000086E099F00A170F404BD17ACF65CC4540
+4	Point_4	0101000020E61000000FC4C44FC7EE0E404BD17ACF65CC4540
+5	Point_5	0101000020E61000005E67816DC7000F40DD6303E4BDCF4540
+6	Point_6	0101000020E61000003BD9D5F0D5A10F40C372465718C94540
+\.
+
+
+--
+-- Data for Name: single_wms_points_group; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.single_wms_points_group (id, title, geom) FROM stdin;
+1	Gr_Point_1	0101000020E61000008E4139C6DB150F40C481FBED12D04540
+2	Gr_Point_2	0101000020E61000003CEDF090621E0F40FC92BD25BBCF4540
+\.
+
+
+--
+-- Data for Name: single_wms_polygons; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.single_wms_polygons (id, title, geom) FROM stdin;
+1	Polygon_1	0103000020E61000000100000005000000B4C30716ACC30E40483F48BDBFD04540DF96F95476D90E408FC7AF52D9CF4540353DDDD20A050F401952B198F6D0454072CFE65CE2FE0E4016AE93289BD14540B4C30716ACC30E40483F48BDBFD04540
+2	Polygon_2	0103000020E6100000010000000500000084D85B7D9F4B0F4016605975F6CD454091E6E7B0334A0F4093FE883C2FCF45409B925CB5D57D0F407B4B94215BCF454058FD2BCB696A0F4019537694BFCD454084D85B7D9F4B0F4016605975F6CD4540
+3	Polygon_3	0103000020E61000000100000006000000ECA485880AD80E404588118DE5CA4540FC5B5F60ACF00E40C7E5AC6425CA4540ADB8A242ACDE0E40E0E730B56AC94540233468B24DB80E40739AD9C084CB4540FE639DD317BC0E40EA2CE38FE7CB4540ECA485880AD80E404588118DE5CA4540
+\.
+
+
+--
+-- Data for Name: single_wms_polygons_group_as_layer; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.single_wms_polygons_group_as_layer (id, title, geom) FROM stdin;
+1	GrL_Polygon_1	0103000020E610000001000000050000004047CA4CE91D0F407A324B0E1CD24540369317D5DB1E0F4095FB91B52AD145408736D4F2DB300F402472445BAED14540721DE3EB474D0F40666B678A21D245404047CA4CE91D0F407A324B0E1CD24540
+2	GrL_Polygon_2	0103000020E61000000100000005000000DDDCB770705C0F40B407A0CA49D04540C71A79C5CE5E0F408F1E65FD7CD145401B180F9F55700F4034D366C414D14540B75B617AC17A0F40B407A0CA49D04540DDDCB770705C0F40B407A0CA49D04540
+\.
+
+
+--
+-- Data for Name: single_wms_tiled_baselayer; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.single_wms_tiled_baselayer (id, title, geom) FROM stdin;
+1	TiledBaseLayer	0103000020E610000001000000050000000077401A836C0E406218402DF9D34540F368B4E6EE6D0E40BE2FFD7034C84540064D1A2727DB0F40E97A89E64FC845403177BEC1E3D60F4021A5CF131AD445400077401A836C0E406218402DF9D34540
 \.
 
 
@@ -2921,10 +3657,40 @@ COPY tests_projects.tramway_stops (id_stop, geom) FROM stdin;
 
 
 --
+-- Data for Name: xss; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.xss (id, geom, description) FROM stdin;
+1	01010000206A0800000D9D9921FD822741B3C56B7B4DF45741	<script>alert('XSS')</script>
+\.
+
+
+--
 -- Name: attribute_table_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
 --
 
 SELECT pg_catalog.setval('tests_projects.attribute_table_id_seq', 4, true);
+
+
+--
+-- Name: birds_areas_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.birds_areas_id_seq', 14, true);
+
+
+--
+-- Name: birds_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.birds_id_seq', 8, true);
+
+
+--
+-- Name: birds_spots_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.birds_spots_id_seq', 5, true);
 
 
 --
@@ -2974,6 +3740,27 @@ SELECT pg_catalog.setval('tests_projects.dnd_form_id_seq', 1, true);
 --
 
 SELECT pg_catalog.setval('tests_projects.dnd_popup_id_seq', 2, true);
+
+
+--
+-- Name: edition_layer_embed_child_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.edition_layer_embed_child_id_seq', 2, true);
+
+
+--
+-- Name: edition_layer_embed_line_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.edition_layer_embed_line_id_seq', 2, true);
+
+
+--
+-- Name: edition_layer_embed_point_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.edition_layer_embed_point_id_seq', 3, true);
 
 
 --
@@ -3082,6 +3869,13 @@ SELECT pg_catalog.setval('tests_projects.form_edition_polygon_4326_id_seq', 1, f
 
 
 --
+-- Name: form_edition_snap_control_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.form_edition_snap_control_id_seq', 1, false);
+
+
+--
 -- Name: form_edition_snap_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
 --
 
@@ -3089,10 +3883,59 @@ SELECT pg_catalog.setval('tests_projects.form_edition_snap_id_seq', 2, true);
 
 
 --
+-- Name: form_edition_snap_line_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.form_edition_snap_line_id_seq', 2, true);
+
+
+--
+-- Name: form_edition_snap_point_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.form_edition_snap_point_id_seq', 3, true);
+
+
+--
+-- Name: form_edition_snap_polygon_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.form_edition_snap_polygon_id_seq', 2, true);
+
+
+--
 -- Name: form_edition_upload_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
 --
 
 SELECT pg_catalog.setval('tests_projects.form_edition_upload_id_seq', 1, true);
+
+
+--
+-- Name: form_edition_upload_webdav_child_attachments_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.form_edition_upload_webdav_child_attachments_id_seq', 2, true);
+
+
+--
+-- Name: form_edition_upload_webdav_geom_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.form_edition_upload_webdav_geom_id_seq', 1, false);
+
+
+--
+-- Name: form_edition_upload_webdav_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.form_edition_upload_webdav_id_seq', 1, false);
+
+
+--
+-- Name: form_edition_upload_webdav_parent_geom_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.form_edition_upload_webdav_parent_geom_id_seq', 1, true);
 
 
 --
@@ -3166,6 +4009,13 @@ SELECT pg_catalog.setval('tests_projects.many_date_formats_id_seq', 1, false);
 
 
 --
+-- Name: natural_areas_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.natural_areas_id_seq', 3, true);
+
+
+--
 -- Name: parent_layer_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
 --
 
@@ -3198,6 +4048,69 @@ SELECT pg_catalog.setval('tests_projects.selection_polygon_id_seq', 2, true);
 --
 
 SELECT pg_catalog.setval('tests_projects.shop_bakery_id_0_seq', 25, true);
+
+
+--
+-- Name: single_wms_baselayer_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.single_wms_baselayer_id_seq', 1, true);
+
+
+--
+-- Name: single_wms_lines_group_as_layer_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.single_wms_lines_group_as_layer_id_seq', 2, true);
+
+
+--
+-- Name: single_wms_lines_group_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.single_wms_lines_group_id_seq', 2, true);
+
+
+--
+-- Name: single_wms_lines_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.single_wms_lines_id_seq', 4, true);
+
+
+--
+-- Name: single_wms_points_group_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.single_wms_points_group_id_seq', 2, true);
+
+
+--
+-- Name: single_wms_points_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.single_wms_points_id_seq', 6, true);
+
+
+--
+-- Name: single_wms_polygons_group_as_layer_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.single_wms_polygons_group_as_layer_id_seq', 2, true);
+
+
+--
+-- Name: single_wms_polygons_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.single_wms_polygons_id_seq', 3, true);
+
+
+--
+-- Name: single_wms_tiled_baselayer_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.single_wms_tiled_baselayer_id_seq', 1, true);
 
 
 --
@@ -3257,11 +4170,42 @@ SELECT pg_catalog.setval('tests_projects.tramway_stops_id_stop_seq', 5, true);
 
 
 --
+-- Name: xss_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.xss_id_seq', 1, true);
+
+
+--
 -- Name: attribute_table attribute_table_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
 --
 
 ALTER TABLE ONLY tests_projects.attribute_table
     ADD CONSTRAINT attribute_table_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: birds_areas birds_areas_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.birds_areas
+    ADD CONSTRAINT birds_areas_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: birds birds_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.birds
+    ADD CONSTRAINT birds_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: birds_spots birds_spots_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.birds_spots
+    ADD CONSTRAINT birds_spots_pkey PRIMARY KEY (id);
 
 
 --
@@ -3318,6 +4262,30 @@ ALTER TABLE ONLY tests_projects.dnd_form
 
 ALTER TABLE ONLY tests_projects.dnd_popup
     ADD CONSTRAINT dnd_popup_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: edition_layer_embed_child edition_layer_embed_child_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.edition_layer_embed_child
+    ADD CONSTRAINT edition_layer_embed_child_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: edition_layer_embed_line edition_layer_embed_line_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.edition_layer_embed_line
+    ADD CONSTRAINT edition_layer_embed_line_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: edition_layer_embed_point edition_layer_embed_point_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.edition_layer_embed_point
+    ADD CONSTRAINT edition_layer_embed_point_pkey PRIMARY KEY (id);
 
 
 --
@@ -3441,6 +4409,22 @@ ALTER TABLE ONLY tests_projects.form_edition_polygon_4326
 
 
 --
+-- Name: form_edition_snap_control form_edition_snap_control_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.form_edition_snap_control
+    ADD CONSTRAINT form_edition_snap_control_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: form_edition_snap_line form_edition_snap_line_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.form_edition_snap_line
+    ADD CONSTRAINT form_edition_snap_line_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: form_edition_snap form_edition_snap_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
 --
 
@@ -3449,11 +4433,59 @@ ALTER TABLE ONLY tests_projects.form_edition_snap
 
 
 --
+-- Name: form_edition_snap_point form_edition_snap_point_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.form_edition_snap_point
+    ADD CONSTRAINT form_edition_snap_point_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: form_edition_snap_polygon form_edition_snap_polygon_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.form_edition_snap_polygon
+    ADD CONSTRAINT form_edition_snap_polygon_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: form_edition_upload form_edition_upload_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
 --
 
 ALTER TABLE ONLY tests_projects.form_edition_upload
     ADD CONSTRAINT form_edition_upload_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: form_edition_upload_webdav_child_attachments form_edition_upload_webdav_child_attachments_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.form_edition_upload_webdav_child_attachments
+    ADD CONSTRAINT form_edition_upload_webdav_child_attachments_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: form_edition_upload_webdav_geom form_edition_upload_webdav_geom_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.form_edition_upload_webdav_geom
+    ADD CONSTRAINT form_edition_upload_webdav_geom_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: form_edition_upload_webdav_parent_geom form_edition_upload_webdav_parent_geom_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.form_edition_upload_webdav_parent_geom
+    ADD CONSTRAINT form_edition_upload_webdav_parent_geom_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: form_edition_upload_webdav form_edition_upload_webdav_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.form_edition_upload_webdav
+    ADD CONSTRAINT form_edition_upload_webdav_pkey PRIMARY KEY (id);
 
 
 --
@@ -3553,6 +4585,14 @@ ALTER TABLE ONLY tests_projects.many_date_formats
 
 
 --
+-- Name: natural_areas natural_areas_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.natural_areas
+    ADD CONSTRAINT natural_areas_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: parent_layer parent_layer_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
 --
 
@@ -3598,6 +4638,78 @@ ALTER TABLE ONLY tests_projects.selection_polygon
 
 ALTER TABLE ONLY tests_projects.shop_bakery_pg
     ADD CONSTRAINT shop_bakery_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: single_wms_baselayer single_wms_baselayer_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.single_wms_baselayer
+    ADD CONSTRAINT single_wms_baselayer_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: single_wms_lines_group_as_layer single_wms_lines_group_as_layer_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.single_wms_lines_group_as_layer
+    ADD CONSTRAINT single_wms_lines_group_as_layer_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: single_wms_lines_group single_wms_lines_group_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.single_wms_lines_group
+    ADD CONSTRAINT single_wms_lines_group_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: single_wms_lines single_wms_lines_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.single_wms_lines
+    ADD CONSTRAINT single_wms_lines_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: single_wms_points_group single_wms_points_group_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.single_wms_points_group
+    ADD CONSTRAINT single_wms_points_group_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: single_wms_points single_wms_points_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.single_wms_points
+    ADD CONSTRAINT single_wms_points_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: single_wms_polygons_group_as_layer single_wms_polygons_group_as_layer_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.single_wms_polygons_group_as_layer
+    ADD CONSTRAINT single_wms_polygons_group_as_layer_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: single_wms_polygons single_wms_polygons_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.single_wms_polygons
+    ADD CONSTRAINT single_wms_polygons_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: single_wms_tiled_baselayer single_wms_tiled_baselayer_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.single_wms_tiled_baselayer
+    ADD CONSTRAINT single_wms_tiled_baselayer_pkey PRIMARY KEY (id);
 
 
 --
@@ -3662,6 +4774,14 @@ ALTER TABLE ONLY tests_projects.tramway_pivot
 
 ALTER TABLE ONLY tests_projects.tramway_stops
     ADD CONSTRAINT tramway_stops_pkey PRIMARY KEY (id_stop);
+
+
+--
+-- Name: xss xss_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.xss
+    ADD CONSTRAINT xss_pkey PRIMARY KEY (id);
 
 
 --
