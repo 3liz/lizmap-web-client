@@ -483,13 +483,8 @@ parameters:
 			path: lizmap/modules/lizmap/lib/Form/QgisFormControl.php
 
 		-
-			message: "#^Elseif condition is always true\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Form/QgisFormControl.php
-
-		-
 			message: "#^If condition is always true\\.$#"
-			count: 4
+			count: 3
 			path: lizmap/modules/lizmap/lib/Form/QgisFormControl.php
 
 		-
