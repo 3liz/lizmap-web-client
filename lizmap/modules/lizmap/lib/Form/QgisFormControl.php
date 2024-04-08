@@ -270,12 +270,20 @@ class QgisFormControl
                         // use precision as stepValue (will override untrustable step Value)
                         $this->ctrl->setAttribute('stepValue', pow(10, -intval($precision)));
                     }
+                } elseif (!$properties || !$properties->useHtml()) {
+                    // we don't want HTML into this input
+                    $this->ctrl->datatype->addFacet('filterHtml', true);
+                } elseif ($properties->useHtml()) {
+                    // html is accepted, but will be sanitized
+                    $this->ctrl->datatype = new \jDatatypeHtml();
                 }
 
                 break;
 
             case 'time':
                 $this->ctrl = new \jFormsControlInput($this->ref);
+                // we don't want HTML into this input
+                $this->ctrl->datatype->addFacet('filterHtml', true);
 
                 break;
 
@@ -308,12 +316,27 @@ class QgisFormControl
                     if ($this->fieldDataType === 'boolean' && $prop->notNull) {
                         $this->reworkBooleanControl($markup);
                     }
+                } elseif ($markup == 'textarea') {
+                    if ($properties && $properties->useHtml()) {
+                        // html is accepted, but will be sanitized
+                        $this->ctrl->datatype = new \jDatatypeHtml();
+                    } else {
+                        // we don't want HTML into this input
+                        $this->ctrl->datatype->addFacet('filterHtml', true);
+                    }
                 }
 
                 break;
 
             default:
                 $this->ctrl = new \jFormsControlInput($this->ref);
+                if ($properties && $properties->useHtml()) {
+                    // html is accepted, but will be sanitized
+                    $this->ctrl->datatype = new \jDatatypeHtml();
+                } else {
+                    // we don't want HTML into this input
+                    $this->ctrl->datatype->addFacet('filterHtml', true);
+                }
 
                 break;
         }
