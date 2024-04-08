@@ -194,12 +194,12 @@ class QgisFormControl
      * Create an jForms control object based on a qgis edit widget.
      * And add it to the passed form.
      *
-     * @param string                    $ref          name of the control
-     * @param QgisFormControlProperties $properties
-     * @param \jDbFieldProperties       $prop         Jelix object with field properties (datatype, required, etc.)
-     * @param array|object|string       $aliasXml     simplexml object corresponding to the QGIS alias for this field
-     * @param null|string               $defaultValue the QGIS expression of the default value
-     * @param null|array                $constraints  the QGIS constraints
+     * @param string                         $ref          name of the control
+     * @param null|QgisFormControlProperties $properties
+     * @param \jDbFieldProperties            $prop         Jelix object with field properties (datatype, required, etc.)
+     * @param array|object|string            $aliasXml     simplexml object corresponding to the QGIS alias for this field
+     * @param null|string                    $defaultValue the QGIS expression of the default value
+     * @param null|array                     $constraints  the QGIS constraints
      */
     public function __construct($ref, $properties, $prop, $defaultValue, $constraints, App\AppContextInterface $appContext)
     {
