@@ -3001,6 +3001,7 @@ lizmap-feature-toolbar button:hover > [class^="icon-"],
 .liz-filter-field-value{
   line-height: 25px;
   transform: scale(1.6);
+  margin-right: 8px!important;
 }
 
 lizmap-fullscreen {
