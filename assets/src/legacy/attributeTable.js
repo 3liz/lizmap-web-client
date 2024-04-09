@@ -5,6 +5,8 @@
  * @license MPL-2.0
  */
 
+import DOMPurify from 'dompurify';
+
 var lizAttributeTable = function() {
 
     lizMap.events.on({
@@ -384,7 +386,10 @@ var lizAttributeTable = function() {
                         layerConfig['types'] = describeFeatureTypeResponse.types;
                         layerConfig['columns'] = describeFeatureTypeResponse.columns;
                     }
-                    buildLayerAttributeDatatable(layerName, tableSelector, responses[0].features, layerConfig.aliases, layerConfig.types, allColumnsKeyValues, callBack);
+
+                    const sanitizedResponse = JSON.parse(DOMPurify.sanitize(JSON.stringify(responses[0].features)));
+
+                    buildLayerAttributeDatatable(layerName, tableSelector, sanitizedResponse, layerConfig.aliases, layerConfig.types, allColumnsKeyValues, callBack);
 
                     document.body.style.cursor = 'default';
                 }).catch(() => {
