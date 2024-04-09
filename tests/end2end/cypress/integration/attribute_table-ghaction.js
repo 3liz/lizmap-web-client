@@ -86,7 +86,7 @@ describe('Attribute table', () => {
         })
     })
 
-    it.only('should select / filter / refresh', () => {
+    it('should select / filter / refresh', () => {
 
         cy.get('#bottom-dock-window-buttons .btn-bottomdock-size').click()
 
@@ -137,7 +137,7 @@ describe('Attribute table', () => {
                 .to.contain('REQUEST=GetFeature')
                 .to.contain('TYPENAME=quartiers')
                 .to.contain('OUTPUTFORMAT=GeoJSON')
-                .to.contain('EXP_FILTER=%24id+IN+(+2+)')
+                .to.contain('EXP_FILTER=%24id+IN+%28+2+%29')
             expect(interception.response.body)
                 .to.have.property('type')
             expect(interception.response.body.type).to.be.eq('FeatureCollection')
@@ -281,7 +281,7 @@ describe('Attribute table', () => {
                 .to.contain('REQUEST=GetFeature')
                 .to.contain('TYPENAME=quartiers')
                 .to.contain('OUTPUTFORMAT=GeoJSON')
-                .to.contain('EXP_FILTER=%24id+IN+(+2+%2C+4+%2C+6+)')
+                .to.contain('EXP_FILTER=%24id+IN+%28+2+%2C+4+%2C+6+%29')
             expect(interception.response.body)
                 .to.have.property('type')
             expect(interception.response.body.type).to.be.eq('FeatureCollection')
@@ -425,7 +425,7 @@ describe('Attribute table', () => {
                 .to.contain('REQUEST=GetFeature')
                 .to.contain('TYPENAME=quartiers_shp')
                 .to.contain('OUTPUTFORMAT=GeoJSON')
-                .to.contain('EXP_FILTER=%24id+IN+(+2+)')
+                .to.contain('EXP_FILTER=%24id+IN+%28+2+%29')
             expect(interception.response.body)
                 .to.have.property('type')
             expect(interception.response.body.type).to.be.eq('FeatureCollection')
@@ -525,7 +525,7 @@ describe('Attribute table', () => {
                 .to.contain('REQUEST=GetFeature')
                 .to.contain('TYPENAME=quartiers')
                 .to.contain('OUTPUTFORMAT=GeoJSON')
-                .to.contain('EXP_FILTER=%24id+IN+(+2+%2C+4+%2C+6+)')
+                .to.contain('EXP_FILTER=%24id+IN+%28+2+%2C+4+%2C+6+%29')
             expect(interception.response.body)
                 .to.have.property('type')
             expect(interception.response.body.type).to.be.eq('FeatureCollection')
