@@ -9,6 +9,7 @@
 import { mainLizmap } from '../modules/Globals.js';
 import Overlay from 'ol/Overlay.js';
 import WMS from '../modules/WMS.js';
+import DOMPurify from 'dompurify';
 
 /**
  * @class
@@ -42,7 +43,7 @@ export default class Popup {
                 this.handleClickOnMap(evt);
             }
         });
-        
+
         var click = new OpenLayers.Control.Click();
         lizMap.map.addControl(click);
         click.activate();
@@ -149,7 +150,13 @@ export default class Popup {
         document.getElementById('newOlMap').style.cursor = 'wait';
 
         wms.getFeatureInfo(wmsParams).then(response => {
-            lizMap.displayGetFeatureInfo(response, {x: xCoord, y: yCoord});
+            const sanitizedResponse = DOMPurify.sanitize(response, {
+                CUSTOM_ELEMENT_HANDLING: {
+                    tagNameCheck: /^lizmap-/,
+                    attributeNameCheck: /crs|bbox|edition-restricted/,
+                }
+            });
+            lizMap.displayGetFeatureInfo(sanitizedResponse, { x: xCoord, y: yCoord });
         }).finally(() => {
             document.getElementById('newOlMap').style.cursor = 'auto';
         });

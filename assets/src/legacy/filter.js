@@ -5,6 +5,8 @@
  * @license MPL-2.0
  */
 
+import DOMPurify from 'dompurify';
+
 var lizLayerFilterTool = function () {
 
     lizMap.events.on({
@@ -515,7 +517,7 @@ var lizLayerFilterTool = function () {
                     }
 
                     for (const feat of result) {
-                        filterConfig[field_item.order]['items'][feat['v']] = feat['c'];
+                        filterConfig[field_item.order]['items'][DOMPurify.sanitize(feat['v'])] = feat['c'];
                     }
 
                     var dhtml = '';
@@ -533,10 +535,10 @@ var lizLayerFilterTool = function () {
                         var label = keyValues.hasOwnProperty(f_val) ? keyValues[f_val] : f_val;
 
                         if (field_item.format == 'select') {
-                            dhtml += `<option value="${lizMap.cleanName(f_val)}">&nbsp;${label}</option>`;
+                            dhtml += `<option value="${lizMap.cleanName(f_val)}">${label}</option>`;
                         } else {
                             var inputId = 'liz-filter-field-' + lizMap.cleanName(field_item.title) + '-' + lizMap.cleanName(f_val);
-                            dhtml += `<label class="checkbox"><input id="${inputId}" class="liz-filter-field-value" type="checkbox" value="${lizMap.cleanName(f_val)}">&nbsp;${label}</label>`;
+                            dhtml += `<label class="checkbox"><input id="${inputId}" class="liz-filter-field-value" type="checkbox" value="${lizMap.cleanName(f_val)}">${label}</label>`;
                         }
                     }
                     var id = 'liz-filter-box-' + lizMap.cleanName(field_item.title);
