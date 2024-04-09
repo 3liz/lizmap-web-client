@@ -8,6 +8,7 @@
 
 import { mainLizmap } from '../modules/Globals.js';
 import WMS from '../modules/WMS.js';
+import DOMPurify from 'dompurify';
 
 /**
  * @class
@@ -117,7 +118,7 @@ export default class Popup {
                 });
             }
         });
-        
+
         var click = new OpenLayers.Control.Click();
         lizMap.map.addControl(click);
         click.activate();
