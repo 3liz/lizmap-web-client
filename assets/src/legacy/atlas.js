@@ -5,6 +5,8 @@
  * @license MPL-2.0
  */
 
+import DOMPurify from 'dompurify';
+
 (function () {
 
     lizMap.events.on({
@@ -178,7 +180,7 @@
                         }
 
                         var val = $('#liz-atlas-select').val();
-                        $('#liz-atlas-select').html(options);
+                        $('#liz-atlas-select').html(DOMPurify.sanitize(options));
                         // reset val
                         $('#liz-atlas-select').val(val);
                         // get popup
@@ -377,7 +379,7 @@
                 // Get Atlas home
                 var home = getAtlasHome(lizAtlasConfig);
 
-                $("#atlas-content").html(home);
+                $("#atlas-content").html(DOMPurify.sanitize(home));
 
                 // Add events
                 activateAtlasTrigger(lizAtlasConfig);

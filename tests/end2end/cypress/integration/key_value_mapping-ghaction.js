@@ -301,6 +301,6 @@ describe('Key/value in form filter', function () {
 
     it('must display form filter with values instead of keys', function () {
 
-        cy.get('#filter-content .tree').should('have.text', 'label from int (value relation)x first second third fourthlabel from text (value relation)x premier quatrième deuxième troisièmelabel from int (value map)x one two three fourlabel from text (value map)x two four three onelabel from int (relation reference)x first second third fourthlabel from text (relation reference)x premier quatrième deuxième troisième')
+        cy.get('#filter-content .tree').should('have.text', 'label from int (value relation)xfirstsecondthirdfourthlabel from text (value relation)xpremierquatrièmedeuxièmetroisièmelabel from int (value map)xonetwothreefourlabel from text (value map)xtwofourthreeonelabel from int (relation reference)xfirstsecondthirdfourthlabel from text (relation reference)xpremierquatrièmedeuxièmetroisième')
     })
 })
