@@ -23,7 +23,7 @@ test.describe('XSS', () => {
         await page.locator('#jforms_view_edition__submit_submit').click();
 
         // Open popup
-        await page.locator('#newOlMap').click({
+        await page.locator('#map').click({
             position: {
                 x: 415,
                 y: 290
