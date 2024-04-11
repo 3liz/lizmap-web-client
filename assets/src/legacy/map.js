@@ -13,6 +13,7 @@ import {extend} from 'ol/extent.js';
 import WFS from '../modules/WFS.js';
 import WMS from '../modules/WMS.js';
 import Utils from '../modules/Utils.js';
+import DOMPurify from 'dompurify';
 
 window.lizMap = function() {
     /**
@@ -954,7 +955,7 @@ window.lizMap = function() {
         var options = '<option value="-1" label="'+placeHolder+'"></option>';
         for (var fid in features) {
             var feat = features[fid];
-            options += '<option value="'+feat.id+'">'+feat.properties[locate.fieldName]+'</option>';
+            options += '<option value="' + feat.id + '">' + DOMPurify.sanitize(feat.properties[locate.fieldName]) + '</option>';
         }
         // add option list
         $('#locate-layer-'+cleanName(aName)).html(options);
@@ -1182,7 +1183,7 @@ window.lizMap = function() {
                 var feat = features[i];
                 locate.features[feat.id.toString()] = feat;
                 if ( !('filterFieldName' in locate) )
-                    options += '<option value="'+feat.id+'">'+feat.properties[locate.fieldName]+'</option>';
+                    options += '<option value="' + feat.id + '">' + DOMPurify.sanitize(feat.properties[locate.fieldName]) + '</option>';
             }
             // listen to select changes
             $('#locate-layer-'+layerName).html(options).change(function() {
@@ -3126,8 +3127,8 @@ window.lizMap = function() {
             types: aConfig['types']
         };
 
-        $.post( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
-
+        const wfs = new WFS();
+        wfs.getFeature(getFeatureUrlData['options']).then(data => {
             aConfig['featureCrs'] = 'EPSG:4326';
 
             if (aConfig?.['alias'] && aConfig?.['types']) {
@@ -3152,8 +3153,37 @@ window.lizMap = function() {
 
                 },'json');
             }
+        });
 
-        },'json');
+        // $.post( getFeatureUrlData['url'], getFeatureUrlData['options'], function(incomingData) {
+        //     const data = DOMPurify.sanitize(incomingData);
+
+        //     aConfig['featureCrs'] = 'EPSG:4326';
+
+        //     if (aConfig?.['alias'] && aConfig?.['types']) {
+        //         callFeatureDataCallBacks(poolId, data.features);
+        //         $('body').css('cursor', 'auto');
+        //     } else {
+        //         $.post(lizUrls.service, {
+        //             'SERVICE':'WFS'
+        //             ,'VERSION':'1.0.0'
+        //             ,'REQUEST':'DescribeFeatureType'
+        //             ,'TYPENAME': ('typename' in aConfig) ? aConfig.typename : aName
+        //             ,'OUTPUTFORMAT':'JSON'
+        //         }, function(describe) {
+
+        //             aConfig['alias'] = describe.aliases;
+        //             aConfig['types'] = describe.types;
+        //             aConfig['columns'] = describe.columns;
+
+        //             callFeatureDataCallBacks(poolId, data.features);
+
+        //             $('body').css('cursor', 'auto');
+
+        //         },'json');
+        //     }
+
+        // },'json');
 
         return true;
     }
