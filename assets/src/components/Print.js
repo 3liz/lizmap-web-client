@@ -324,7 +324,10 @@ export default class Print extends HTMLElement {
 
                 highlightGeom.push(circleString);
             } else {
-                highlightGeom.push(formatWKT.writeFeature(featureDrawn));
+                highlightGeom.push(formatWKT.writeFeature(featureDrawn, {
+                    featureProjection: mainLizmap.projection,
+                    dataProjection: projectProjection
+                }));
             }
 
             highlightSymbol.push(mainLizmap.digitizing.getFeatureDrawnSLD(index));
