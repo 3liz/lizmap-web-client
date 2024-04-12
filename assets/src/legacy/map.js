@@ -378,157 +378,6 @@ window.lizMap = function() {
         if ( $('#right-dock-tabs').is(':visible') ){
             $('#right-dock-content').css( 'max-height', $('#right-dock').height() - $('#right-dock-tabs').height() );
         }
-
-        if(map){
-            updateMapSize();
-        }
-    }
-
-
-    /**
-     * PRIVATE function: updateMapSize
-     * query OpenLayers to update the map size
-     */
-    function updateMapSize(){
-    //manage WMS max width and height
-        var wmsMaxWidth = 3000;
-        var wmsMaxHeight = 3000;
-        if( ('wmsMaxWidth' in config.options) && config.options.wmsMaxWidth )
-            wmsMaxWidth = Number(config.options.wmsMaxWidth);
-        if( ('wmsMaxHeight' in config.options) && config.options.wmsMaxHeight )
-            wmsMaxHeight = Number(config.options.wmsMaxHeight);
-        var removeSingleTile = false;
-        var newMapSize = map.getCurrentSize();
-        var replaceSingleTileSize = newMapSize.clone();
-        if( newMapSize.w > wmsMaxWidth || newMapSize.h > wmsMaxHeight ){
-            removeSingleTile = true;
-            var wmsMaxMax = Math.max(wmsMaxWidth, wmsMaxHeight);
-            var wmsMinMax = Math.min(wmsMaxWidth, wmsMaxHeight);
-            var mapMax = Math.max(newMapSize.w, newMapSize.h);
-            var mapMin = Math.min(newMapSize.w, newMapSize.h);
-            if( mapMax/2 > mapMin )
-                replaceSingleTileSize = new OpenLayers.Size(Math.round(mapMax/2), Math.round(mapMax/2));
-            else if( wmsMaxMax/2 > mapMin )
-                replaceSingleTileSize = new OpenLayers.Size(Math.round(wmsMaxMax/2), Math.round(wmsMaxMax/2));
-            else
-                replaceSingleTileSize = new OpenLayers.Size(Math.round(wmsMinMax/2), Math.round(wmsMinMax/2));
-        }
-        // Update singleTile layers
-        for(var i=0, len=map.layers.length; i<len; ++i) {
-            var layer = map.layers[i];
-            if( !(layer instanceof OpenLayers.Layer.WMS) )
-                continue;
-            var qgisName = null;
-            if ( layer.name in cleanNameMap )
-                qgisName = getLayerNameByCleanName(layer.name);
-            var configLayer = null;
-            if ( qgisName )
-                configLayer = config.layers[qgisName];
-            if ( !configLayer )
-                configLayer = config.layers[layer.params['LAYERS']];
-            if ( !configLayer )
-                configLayer = config.layers[layer.name];
-            if ( !configLayer )
-                continue;
-            if( configLayer.singleTile != "True" )
-                continue;
-            if( removeSingleTile && layer.singleTile) {
-                layer.addOptions({singleTile:false, tileSize: replaceSingleTileSize});
-            } else if( !removeSingleTile && !layer.singleTile) {
-                replaceSingleTileSize.h = parseInt(replaceSingleTileSize.h * layer.ratio, 10);
-                replaceSingleTileSize.w = parseInt(replaceSingleTileSize.w * layer.ratio, 10);
-                layer.addOptions({singleTile:true, tileSize: replaceSingleTileSize});
-            }
-        }
-
-        var center = map.getCenter();
-        map.updateSize();
-        map.setCenter(center);
-        map.baseLayer.redraw();
-    }
-
-    /**
-     * PRIVATE function: getLayerLegendGraphicUrl
-     * get the layer legend graphic
-     *
-     * Parameters:
-     * name - {text} the layer name
-     * withScale - {boolean} url with scale parameter
-     *
-     * Dependencies:
-     * lizUrls.wms
-     *
-     * Returns:
-     * {text} the url
-     * @param name
-     * @param withScale
-     */
-    function getLayerLegendGraphicUrl(name, withScale) {
-        var layer = null
-        $.each(layers,function(i,l) {
-            if (layer == null && l.name == name)
-                layer = l;
-        });
-        if (layer == null )
-            return null;
-        var qgisName = null;
-        if ( name in cleanNameMap )
-            qgisName = getLayerNameByCleanName(name);
-        var layerConfig = null;
-        if ( qgisName )
-            layerConfig = config.layers[qgisName];
-        if ( !layerConfig )
-            layerConfig = config.layers[layer.params['LAYERS']];
-        if ( !layerConfig )
-            layerConfig = config.layers[layer.name];
-        if ( !layerConfig )
-            return null;
-        if ( 'externalWmsToggle' in layerConfig && layerConfig.externalWmsToggle == 'True'
-      && 'externalAccess' in layerConfig && layerConfig.externalAccess
-      && 'layers' in layerConfig.externalAccess && 'url' in layerConfig.externalAccess) {
-            var externalAccess = layerConfig.externalAccess;
-            var legendParams = {SERVICE: "WMS",
-                VERSION: "1.3.0",
-                REQUEST: "GetLegendGraphic",
-                LAYER: externalAccess.layers,
-                STYLE: externalAccess.styles,
-                SLD_VERSION: "1.1.0",
-                EXCEPTIONS: "application/vnd.ogc.se_inimage",
-                FORMAT: "image/png",
-                TRANSPARENT: "TRUE",
-                WIDTH: 150,
-                DPI: 96};
-
-            return OpenLayers.Util.urlAppend(externalAccess.url, new URLSearchParams(legendParams));
-        }
-        var legendParams = {SERVICE: "WMS",
-            VERSION: "1.3.0",
-            REQUEST: "GetLegendGraphic",
-            LAYER: layer.params['LAYERS'],
-            STYLE: layer.params['STYLES'],
-            EXCEPTIONS: "application/vnd.ogc.se_inimage",
-            FORMAT: "image/png",
-            TRANSPARENT: "TRUE",
-            WIDTH: 150,
-            LAYERFONTSIZE: 9,
-            ITEMFONTSIZE: 9,
-            SYMBOLSPACE: 1,
-            ICONLABELSPACE: 2,
-            DPI: 96,
-            RULELABEL:"AUTO"
-        };
-        if (layerConfig.id==layerConfig.name)
-            legendParams['LAYERFONTBOLD'] = "TRUE";
-        else {
-            legendParams['LAYERFONTSIZE'] = 0;
-            legendParams['LAYERSPACE'] = 0;
-            legendParams['LAYERFONTBOLD'] = "FALSE";
-            legendParams['LAYERTITLE'] = "FALSE";
-        }
-        if (withScale)
-            legendParams['SCALE'] = map.getScale();
-
-        return lizUrls.service + '&' + new URLSearchParams(legendParams);
     }
 
     /**
@@ -2010,98 +1859,6 @@ window.lizMap = function() {
 
         }
 
-        var WMSGetFeatureInfo = new OpenLayers.Control.WMSGetFeatureInfo({
-            url: lizUrls.service,
-            title: 'Identify features by clicking',
-            type:OpenLayers.Control.TYPE_TOGGLE,
-            queryVisible: true,
-            infoFormat: 'text/html',
-            vendorParams: getFeatureInfoTolerances(),
-            handlerOptions: {
-                click: {
-                    pixelTolerance: 10
-                }
-            },
-            eventListeners: {
-                getfeatureinfo: function(event) {
-                    displayGetFeatureInfo(event.text, event.xy);
-                }
-            }
-        });
-        if (lizUrls.publicUrlList && lizUrls.publicUrlList.length != 0 ) {
-            var layerUrls = [];
-            for (var j=0, jlen=lizUrls.publicUrlList.length; j<jlen; j++) {
-                layerUrls.push(
-                    OpenLayers.Util.urlAppend(
-                        lizUrls.publicUrlList[j],
-                        new URLSearchParams(lizUrls.params)
-                    )
-                );
-            }
-            WMSGetFeatureInfo.layerUrls = layerUrls;
-        }
-        WMSGetFeatureInfo.findLayers = function() {
-            var candidates = this.layers || this.map.layers;
-            var layers = [];
-            var maxFeatures = 0;
-            var layer, url;
-            const filterTokenList = [];
-            for(var i=0, len=candidates.length; i<len; ++i) {
-                layer = candidates[i];
-                if( (layer instanceof OpenLayers.Layer.WMS || layer instanceof OpenLayers.Layer.WMTS)
-             && (!this.queryVisible || (layer.getVisibility() && layer.calculateInRange())) ) {
-                    var qgisName = null;
-                    if ( layer.name in cleanNameMap )
-                        qgisName = getLayerNameByCleanName(layer.name);
-                    var configLayer = null;
-                    if ( qgisName )
-                        configLayer = config.layers[qgisName];
-                    if ( !configLayer )
-                        configLayer = config.layers[layer.params['LAYERS']];
-                    if ( !configLayer )
-                        configLayer = config.layers[layer.name];
-                    var editionLayer = null;
-                    if( 'editionLayers' in config ) {
-                        editionLayer = config.editionLayers[qgisName];
-                        if ( !editionLayer )
-                            editionLayer = config.editionLayers[layer.params['LAYERS']];
-                        if ( !editionLayer )
-                            editionLayer = config.editionLayers[layer.name];
-                    }
-                    if( (configLayer && configLayer.popup && configLayer.popup == 'True')
-                  || (editionLayer && ( editionLayer.capabilities.modifyGeometry == 'True'
-                                     || editionLayer.capabilities.modifyAttribute == 'True'
-                                     || editionLayer.capabilities.deleteFeature == 'True') ) ){
-                        url = OpenLayers.Util.isArray(layer.url) ? layer.url[0] : layer.url;
-                        // if the control was not configured with a url, set it
-                        // to the first layer url
-                        if(this.drillDown === false && !this.url) {
-                            this.url = url;
-                        }
-
-                        // Filtertoken
-                        const filterToken = configLayer?.['request_params']?.['filtertoken'];
-                        if (filterToken) {
-                            filterTokenList.push(filterToken);
-                        }
-
-                        layers.push(layer);
-
-                        if ( 'popupMaxFeatures' in configLayer && !isNaN(parseInt(configLayer.popupMaxFeatures)) )
-                            maxFeatures += parseInt(configLayer.popupMaxFeatures);
-                        else
-                            maxFeatures += 10;
-                    }
-                }
-            }
-            this.maxFeatures = maxFeatures == 0 ? 10 : maxFeatures;
-
-            if(filterTokenList.length){
-                this.vendorParams['filtertoken'] = filterTokenList.join(';');
-            }
-
-            return layers;
-        };
         /**
          *
          * @param evt
@@ -2136,7 +1893,6 @@ window.lizMap = function() {
             if ( refreshInfo  ) {
             //lastLonLatInfo = null;
                 $('#'+popupContainerId+' div.lizmapPopupContent input.lizmap-popup-layer-feature-id[value="'+evt.layerId+'.'+evt.featureId+'"]').parent().remove();
-                WMSGetFeatureInfo.request( lastPx, {} );
             }
             return;
         }
@@ -2191,9 +1947,6 @@ window.lizMap = function() {
                             // Refresh GetFeatureInfo
                             refreshGetFeatureInfo(evt);
                         });
-                    }else{
-                        WMSGetFeatureInfo.vendorParams['filtertoken'] = requestParams['filtertoken'];
-                        WMSGetFeatureInfo.vendorParams['filter'] = requestParams['filter'];
                     }
                 }
             },
@@ -2218,9 +1971,6 @@ window.lizMap = function() {
                 }
             }
         });
-        map.addControl(WMSGetFeatureInfo);
-        WMSGetFeatureInfo.activate();
-        return WMSGetFeatureInfo;
     }
 
     /**
