@@ -1297,14 +1297,14 @@ window.lizMap = function() {
             text = text.replace( popupReg, 'table table-condensed table-striped table-bordered lizmapPopupTable');
             var pcontent = '<div class="lizmapPopupContent">'+text+'</div>';
             var hasPopupContent = (!(!text || text == null || text == ''));
-            $('#popupcontent div.menu-content').html(pcontent);
+            $('#popupcontent > div.menu-content').html(pcontent);
             if ( !$('#mapmenu .nav-list > li.popupcontent').is(':visible') )
                 $('#mapmenu .nav-list > li.popupcontent').show();
 
             // Warn user no data has been found
             if( !hasPopupContent ){
                 pcontent = '<div class="lizmapPopupContent noContent"><h4>'+lizDict['popup.msg.no.result']+'</h4></div>';
-                $('#popupcontent div.menu-content').html(pcontent);
+                $('#popupcontent > div.menu-content').html(pcontent);
                 window.setTimeout(function(){
                     if ( $('#mapmenu .nav-list > li.popupcontent').hasClass('active') &&
                 $('#popupcontent .lizmapPopupContent').hasClass('noContent') &&
@@ -1853,7 +1853,7 @@ window.lizMap = function() {
                     // clear highlight layer
                     lizMap.mainLizmap.map.clearHighlightFeatures();
                     // remove information
-                    $('#popupcontent div.menu-content').html('<div class="lizmapPopupContent"><h4>'+lizDict['popup.msg.start']+'</h4></div>');
+                    $('#popupcontent > div.menu-content').html('<div class="lizmapPopupContent"><h4>'+lizDict['popup.msg.start']+'</h4></div>');
                 }
             });
 
@@ -1870,7 +1870,7 @@ window.lizMap = function() {
                 return true;
             var lastPx = map.getPixelFromLonLat(lastLonLatInfo);
             if ( $('#liz_layer_popup  div.lizmapPopupContent').length < 1
-          && $('#popupcontent div.menu-content div.lizmapPopupContent').length < 1)
+          && $('#popupcontent > div.menu-content div.lizmapPopupContent').length < 1)
                 return;
 
             var popupContainerId = "liz_layer_popup";
@@ -1962,7 +1962,7 @@ window.lizMap = function() {
 
                     if( 'popupLocation' in config.options && config.options.popupLocation != 'map' ){
                         var pcontent = '<div class="lizmapPopupContent"><h4>'+lizDict['popup.msg.no.result']+'</h4></div>';
-                        $('#popupcontent div.menu-content').html(pcontent);
+                        $('#popupcontent > div.menu-content').html(pcontent);
                         if ( $('#mapmenu .nav-list > li.popupcontent').hasClass('active') )
                             $('#button-popupcontent').click();
                         if ( !$('#mapmenu .nav-list > li.popupcontent').hasClass('active') )
