@@ -443,13 +443,13 @@ export default class map extends olMap {
                 } else {
                     if(mainLizmap.state.map.singleWMSLayer){
                         baseLayerState.singleWMSLayer = true;
-                        this._statesSingleWMSLayers.set(baseLayerState.name, baseLayerState); 
+                        this._statesSingleWMSLayers.set(baseLayerState.name, baseLayerState);
                     } else {
                         if (this._useTileWms) {
                             baseLayer = new TileLayer({
                                 // extent: extent,
-                                minResolution: minResolution,
-                                maxResolution: maxResolution,
+                                minResolution: layerMinResolution,
+                                maxResolution: layerMaxResolution,
                                 source: new TileWMS({
                                     url: mainLizmap.serviceURL,
                                     projection: qgisProjectProjection,
