@@ -32,6 +32,12 @@ class presentationListener extends jEventListener
             );
         }
 
+        // add presentation form needed JS and CSS
+        $form = jForms::create('presentation~presentation');
+        $form->getBuilder('html')->outputMetaContent(null);
+        $formPage = jForms::create('presentation~presentation_page');
+        $formPage->getBuilder('html')->outputMetaContent(null);
+
         $event->add(
             array(
                 'jscode' => $jsCode,

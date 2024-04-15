@@ -36,10 +36,10 @@
         <item locale="presentation~presentation.form.presentation_page.model.media-above-text.label" value="media-above-text" />
     </menulist>
 
-    <upload ref="background_image" mimetype="image/jpeg;image/jpg;image/png;image/webp" maxsize="2000000">
+    <image ref="background_image" mimetype="image/jpeg;image/jpg;image/png;image/webp" maxsize="2000000" maxWidth="2000" maxHeight="2000">
         <label locale="presentation~presentation.form.presentation_page.background_image.label"/>
         <hint locale="presentation~presentation.form.presentation_page.background_image.hint" />
-    </upload>
+    </image>
 
     <input ref="background_color" type="string" required="false">
         <label locale="presentation~presentation.form.presentation_page.background_color.label" />
@@ -56,10 +56,10 @@
         <item locale="presentation~presentation.form.presentation_page.illustration_type.popup.label" value="popup" />
     </menulist>
 
-    <upload ref="illustration_media" mimetype="image/jpeg;image/jpg;image/png;image/webp;video/mp4;video/webm;video/mp4" maxsize="2000000">
+    <upload2 ref="illustration_media" mimetype="image/jpeg;image/jpg;image/png;image/webp;video/mp4;video/webm;video/mp4" maxsize="2000000">
         <label locale="presentation~presentation.form.presentation_page.illustration_media.label"/>
         <hint locale="presentation~presentation.form.presentation_page.illustration_media.hint" />
-    </upload>
+    </upload2>
 
     <input ref="illustration_url" type="url" required="false">
         <label locale="presentation~presentation.form.presentation_page.illustration_url.label" />

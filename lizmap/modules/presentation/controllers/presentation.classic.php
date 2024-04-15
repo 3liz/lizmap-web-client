@@ -49,7 +49,7 @@ class presentationCtrl extends jController
         $itemType = $this->param('item_type', 'presentation');
         $setup = $this->setup($repository, $project, $itemType);
         if ($setup !== null) {
-            return $setup;
+            return $this->error($setup);
         }
 
         // Redirect to method corresponding on REQUEST param
@@ -128,7 +128,7 @@ class presentationCtrl extends jController
      *
      * @urlparam $REQUEST Request type
      *
-     * @return null|\jResponseHtmlFragment the request response
+     * @return null|array An array with errors if setup failed
      */
     private function setup($repository, $project, $itemType = 'presentation')
     {
@@ -136,7 +136,7 @@ class presentationCtrl extends jController
         jClasses::inc('presentation~presentationConfig');
         $presentationConfig = new presentationConfig($repository, $project);
         if (!$presentationConfig->getStatus()) {
-            return $this->error($presentationConfig->getErrors());
+            return $presentationConfig->getErrors();
         }
 
         $this->repository = $repository;
@@ -276,7 +276,7 @@ class presentationCtrl extends jController
         }
         $setup = $this->setup($repository, $project, $itemType);
         if ($setup !== null) {
-            return $setup;
+            return $this->error($setup);
         }
 
         // Get the form
@@ -337,7 +337,7 @@ class presentationCtrl extends jController
         $itemType = $this->param('item_type', 'presentation');
         $setup = $this->setup($repository, $project, $itemType);
         if ($setup !== null) {
-            return $setup;
+            return $this->error($setup);
         }
 
         // Check the given ID
@@ -398,7 +398,7 @@ class presentationCtrl extends jController
         $itemType = $this->param('item_type', 'presentation');
         $setup = $this->setup($repository, $project, $itemType);
         if ($setup !== null) {
-            return $setup;
+            return $this->error($setup);
         }
 
         // Check the given ID
@@ -425,6 +425,28 @@ class presentationCtrl extends jController
         // Use template to create html form content
         $tpl = new jTpl();
         $tpl->assign('form', $form);
+
+        // Configure form image & file inputs
+        $attributes = array(
+            'uriAction' => 'view~media:getMedia',
+            'uriActionParameters' => array(
+                'repository' => $this->repository,
+                'project' => $this->project,
+                'path' => '%s',
+            ),
+            'uriActionFileParameter' => 'path',
+            // maximum size of the image when displayed into the popup
+            'imgMaxWidth' => 150,
+            'imgMaxHeight' => 150,
+            // size of the dialog box where we can modify the image
+            'dialogWidth' => 'auto',
+            'dialogHeight' => 'auto',
+        );
+        $widgetsAttributes = array(
+            'background_image' => $attributes,
+        );
+        $tpl->assign('widgetsAttributes', $widgetsAttributes);
+
         $content = $tpl->fetch("presentation~{$ressourceName}_form");
 
         // Return html fragment response
@@ -448,7 +470,7 @@ class presentationCtrl extends jController
     {
         $lizmapProject = lizmap::getProject($repository.'~'.$project);
         $repositoryPath = $lizmapProject->getRepository()->getPath();
-        $targetPath = 'media/upload/presentations/'.$lizmapProject->getKey().'/'.$uuid.'/';
+        $targetPath = 'media/upload/presentations/'.$project.'/'.$uuid.'/';
         $targetFullPath = $repositoryPath.$targetPath;
         if (!is_dir($targetFullPath)) {
             \jFile::createDir($targetFullPath);
@@ -464,6 +486,10 @@ class presentationCtrl extends jController
      */
     public function save()
     {
+        // We send a specific jForms response
+        /** @var \jResponseFormJQJson $rep */
+        $rep = $this->getResponse('formjq');
+
         $id = $this->intParam('id', -999, true);
         $itemType = $this->param('item_type', 'presentation');
 
@@ -473,31 +499,30 @@ class presentationCtrl extends jController
             $ressourceName = 'presentation_page';
         }
         $form = \jForms::fill("presentation~{$ressourceName}", $id);
+        $rep->setForm($form);
 
         // Setup
         $repository = $form->getData('repository');
         $project = $form->getData('project');
         $setup = $this->setup($repository, $project, $itemType);
         if ($setup !== null) {
-            return $setup;
-        }
-
-        // Checks
-        if (!$form->check()) {
-            // Invalid form: redirect to the display action
-            /** @var \jResponseRedirect $rep */
-            $rep = $this->getResponse('redirect');
-            $rep->action = 'presentation~presentation:edit';
-            $rep->params = array(
-                'project' => $this->project,
-                'repository' => $this->repository,
-                'id' => $this->id,
-                'status' => 'error',
-                'item_type' => $itemType,
+            $rep->setError('An error occurred while saving the form');
+            $rep->setCustomData(
+                array(
+                    'status' => 'error',
+                    'errors' => $setup,
+                )
             );
 
             return $rep;
         }
+
+        // Checks
+        if (!$form->check()) {
+            // Invalid form
+            return $rep;
+        }
+        return $rep;
 
         // Uploads
         $uuid = $form->getData('uuid');
@@ -505,14 +530,17 @@ class presentationCtrl extends jController
         if ($itemType == 'page') {
             $presentationUuid = $form->getData('presentation_uuid');
         }
-        list($targetPath, $targetFullPath, $repositoryPath) = $this->getTargetFullPath($this->repository, $this->project, $presentationUuid);
+        list($targetPath, $targetFullPath, $repositoryPath) = $this->getTargetFullPath(
+            $this->repository,
+            $this->project,
+            $presentationUuid
+        );
 
         // Save files
         $fileInputs = array('background_image');
         if ($itemType == 'page') {
             $fileInputs = array('background_image', 'illustration_media');
         }
-        $uuid = $form->getData('uuid');
         foreach ($fileInputs as $input) {
             $fileName = $form->getData($input);
             if (!$fileName) {
@@ -532,17 +560,6 @@ class presentationCtrl extends jController
             if (!$saveFile) {
                 $form->setErrorOn($input, 'Error while saving the file '.$input);
 
-                /** @var \jResponseRedirect $rep */
-                $rep = $this->getResponse('redirect');
-                $rep->action = 'presentation~presentation:edit';
-                $rep->params = array(
-                    'project' => $this->project,
-                    'repository' => $this->repository,
-                    'id' => $this->id,
-                    'status' => 'error',
-                    'item_type' => $itemType,
-                );
-
                 return $rep;
             }
             $form->setData($input, $targetPath.$targetFileName);
@@ -552,15 +569,17 @@ class presentationCtrl extends jController
         try {
             $form->saveToDao("presentation~{$ressourceName}", $id);
         } catch (Exception $e) {
-            /** @var \jResponseRedirect $rep */
-            $rep = $this->getResponse('redirect');
-            $rep->action = 'presentation~presentation:edit';
-            $rep->params = array(
-                'project' => $this->project,
-                'repository' => $this->repository,
-                'id' => $this->id,
-                'status' => 'error',
-                'item_type' => $itemType,
+            $rep->setError('An error occurred while saving the form data in the database');
+            $rep->setCustomData(
+                array(
+                    'status' => 'error',
+                    'errors' => array(
+                        array(
+                            'title' => 'Error',
+                            'detail' => $e->getMessage(),
+                        )
+                    ),
+                )
             );
 
             return $rep;
@@ -571,8 +590,6 @@ class presentationCtrl extends jController
         jForms::destroy("presentation~{$ressourceName}", $id);
 
         // Display confirmation
-        /** @var \jResponseHtmlFragment $rep */
-        $rep = $this->getResponse('htmlfragment');
         $success = jLocale::get(
             'presentation~presentation.form.success.presentation.saved',
             array($title)
@@ -583,7 +600,14 @@ class presentationCtrl extends jController
                 array($title)
             );
         }
-        $rep->addContent($success);
+        $rep->setCustomData(
+            array(
+                'status' => 'success',
+                'message' => $success,
+                'id' => $id,
+                'ressource' => $ressourceName,
+            )
+        );
 
         return $rep;
     }
@@ -601,7 +625,7 @@ class presentationCtrl extends jController
         $itemType = $this->param('item_type', 'presentation');
         $setup = $this->setup($repository, $project, $itemType);
         if ($setup !== null) {
-            return $setup;
+            return $this->error($setup);
         }
 
         // Check the given ID
@@ -630,7 +654,11 @@ class presentationCtrl extends jController
         if ($itemType == 'page') {
             $presentationUuid = $item->presentation_uuid;
         }
-        list($targetPath, $targetFullPath, $repositoryPath) = $this->getTargetFullPath($this->repository, $this->project, $presentationUuid);
+        list($targetPath, $targetFullPath, $repositoryPath) = $this->getTargetFullPath(
+            $this->repository,
+            $this->project,
+            $presentationUuid
+        );
 
         try {
             $delete = $dao->delete($this->id);

@@ -22,10 +22,10 @@
         <hint locale="presentation~presentation.form.presentation.description.hint" />
     </htmleditor>
 
-    <upload ref="background_image" mimetype="image/jpeg;image/jpg;image/png;image/webp" maxsize="2000000">
+    <image ref="background_image" mimetype="image/jpeg;image/jpg;image/png;image/webp" maxsize="2000000" maxWidth="2000" maxHeight="2000">
         <label locale="presentation~presentation.form.presentation.background_image.label"/>
         <hint locale="presentation~presentation.form.presentation.background_image.hint" />
-    </upload>
+    </image>
 
     <input ref="background_color" type="string" required="false">
         <label locale="presentation~presentation.form.presentation.background_color.label" />

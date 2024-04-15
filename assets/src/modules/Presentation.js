@@ -115,17 +115,6 @@ export default class Presentation {
             return null;
         }
 
-        // Loop through the presentations
-        for (let i in presentationConfig) {
-            // Current presentations
-            let presentation = presentationConfig[i];
-
-            // Return the presentation if its uid matches
-            if (presentation.id == presentationId) {
-                return presentation;
-            }
-        }
-
         return null;
     }
 
@@ -163,13 +152,16 @@ export default class Presentation {
      */
     async runLizmapPresentation(presentationId) {
         if (!this.hasPresentations) {
+            this.addMessage('No presentation found for the current Lizmap map !', 'error', 5000);
+
             return false;
         }
 
         // Get the presentation
         let presentation = this.getPresentationById(presentationId);
         if (!presentation) {
-            console.warn('No corresponding presentation found in the configuration !');
+            this.addMessage('No corresponding presentation found in the configuration !', 'error', 5000);
+
             return false;
         }
 
@@ -200,6 +192,7 @@ export default class Presentation {
         } catch (error) {
             // Display the error
             console.warn(error);
+            this.addMessage(error, 'error', 5000);
 
             // Reset the presentation
             this.resetLizmapPresentation(true, true, true, true);
@@ -285,23 +278,6 @@ export default class Presentation {
     }
 
     /**
-     * Show a form.
-     *
-     * @param {string} html HTML containing form
-     */
-    showForm(html) {
-        // Get sub-dock
-        const subDock = document.getElementById('sub-dock');
-        subDock.style.maxWidth = '50%';
-        subDock.innerHTML = `
-            <div id="presentation-form-container" class="form-container">${html}</div>
-        `;
-        if (!subDock.checkVisibility()) {
-            subDock.style.display = 'block';
-        }
-    }
-
-    /**
      * Hide & empty a form.
      *
      */
@@ -349,9 +325,21 @@ export default class Presentation {
             const htmlContent = await response.text();
 
             // Display it
-            this.showForm(htmlContent);
+            // Get sub-dock
+            const subDock = document.getElementById('sub-dock');
+            subDock.style.maxWidth = '50%';
+            const html = `
+                <div id="presentation-form-container" class="form-container">${htmlContent}</div>
+            `;
+            // Using innerHtml or insertAdjacentHTML prevents from running jForms embedded <script>
+            // We should use jQuery html() method instead
+            // subDock.innerHTML = html;
+            $('#sub-dock').html(html);
+            if (!subDock.checkVisibility()) {
+                subDock.style.display = 'block';
+            }
 
-            // Add events
+            // Add forms events
             const formContainer = document.getElementById('presentation-form-container');
             const form = formContainer.querySelector('form');
             this.addFormEvents(form);
@@ -360,10 +348,10 @@ export default class Presentation {
             console.log(error);
             let previousMessage = document.getElementById('lizmap-presentation-message');
             if (previousMessage) previousMessage.remove();
-            const message = `
+            const errorMessage = `
                 <b>${error}</b>
             `;
-            this.addMessage(message, 'error', 5000);
+            this.addMessage(errorMessage, 'error', 5000);
         }
     }
 
@@ -383,75 +371,80 @@ export default class Presentation {
             });
         });
 
-        // Listen to the form submit
-        form.addEventListener('submit', function (event) {
-
-            // Prevent form from submitting to the server
-            event.preventDefault();
-
-            // Form data
-            const formData = new FormData(event.target);
-            const formDataObject = Object.fromEntries(formData)
-            const formAction = formDataObject['submit_button'];
-            // console.log(`Submit bouton = ${formAction}`);
-
-            // Return to the list of presentations if user canceled
-            if (formAction == 'cancel') {
-                // Go back to the list of presentations
-                mainLizmap.presentation.hideForm();
-
-                return true;
-            }
-
-            // Send the form data
-            mainLizmap.presentation.saveForm(form);
-        });
-    }
-
-    /**
-     * Save the form data
-     *
-     * @param {HTMLFormElement} form The form to save
-     */
-    saveForm(form) {
-        const url = form.getAttribute('action');
+        // Get some form data
         const formData = new FormData(form);
+        const formDataObject = Object.fromEntries(formData)
         const itemType = formData.get('item_type');
-        const presentationId = (itemType == 'presentation') ? formData.get('id') : formData.get('presentation_id');
-        fetch(url, {
-            method: 'POST',
-            body: formData
-        }).then(function (response) {
-            if (response.ok) {
-                return response.text();
+        const formId = (itemType == 'presentation') ? 'jforms_presentation_presentation' : 'jforms_presentation_presentation_page';
+
+        // Listen to the form submit
+        jFormsJQ.onFormReady(formId,
+            function(jForm) {
+                jFormsJQ.getForm(formId).addSubmitHandler(function(ev){
+                    const formElt = document.querySelector('#presentation-form-container form');
+                    const formData = new FormData(formElt);
+                    const formDataObject = Object.fromEntries(formData)
+                    const formAction = formDataObject['submit_button'];
+
+                    // Return to the list of presentations if user canceled
+                    if (formAction == 'cancel') {
+                        // Go back to the list of presentations
+                        mainLizmap.presentation.hideForm();
+
+                        return false;
+                    }
+
+                    return true;
+                });
+
+                // on active le submit avec xhr
+                jForm.submitWithXHR(
+                    // callback when the form action returns success
+                    function(result) {
+                        // console.log(result);
+                        // Success message
+                        mainLizmap.presentation.addMessage(result.customData.message, 'info', 5000);
+
+                        // Refresh the content of the list of presentations
+                        // TODO : use the data given in result.customData & avoid getting data from the form
+                        const formElt = document.querySelector('#presentation-form-container form');
+                        const formData = new FormData(formElt);
+                        const itemType = formData.get('item_type');
+                        const presentationId = (itemType == 'presentation') ? formData.get('id') : formData.get('presentation_id');
+                        const cardsElement = document.querySelector('#presentation-list-container lizmap-presentation-cards');
+                        cardsElement.setAttribute(' ', presentationId);
+                        cardsElement.setAttribute('updated', 'done');
+
+                        // Go back to the list of presentations
+                        mainLizmap.presentation.hideForm();
+                    },
+
+                    // callback when the form action returns errors
+                    function(result) {
+                        let errorMessage = 'An error occurred while saving the form';
+
+                        if (result.customData && 'message' in result.customData) {
+                            errorMessage = result.customData.message;
+                        } else if ('errorMessage' in result) {
+                            errorMessage = result.errorMessage;
+                            // Add more detail if present
+                            if (result.customData && 'errors' in result.customData) {
+                                for (const e in result.customData.errors) {
+                                    const errorItem = result.customData.errors[e];
+                                    errorMessage += `<p>${errorItem.title}: ${errorItem.detail}</p>`;
+                                }
+                            }
+                        } else if ('errors' in result) {
+                            errorMessage = '';
+                            for (const [field, message] of Object.entries(result.errors)) {
+                                errorMessage += `${field}: ${message}<br/>`;
+                            }
+                        }
+                        mainLizmap.presentation.addMessage(errorMessage, 'error', 5000);
+                    }
+                );
             }
-            return Promise.reject(response);
-        }).then(function (html) {
-            // Display it
-            const formContainer = document.getElementById('presentation-form-container');
-            formContainer.innerHTML = html;
-
-            // Check if the response contains a form or not
-            const form = formContainer.querySelector('form');
-            if (form) {
-                // Add form events
-                mainLizmap.presentation.addFormEvents(form);
-            } else {
-                // Display a message
-                const message = html;
-                mainLizmap.presentation.addMessage(message, 'info', 5000);
-
-                // Refresh the content of the list of presentations
-                const cardsElement = document.querySelector('#presentation-list-container lizmap-presentation-cards');
-                cardsElement.setAttribute('detail', presentationId);
-                cardsElement.setAttribute('updated', 'done');
-
-                // Go back to the list of presentations
-                mainLizmap.presentation.hideForm();
-            }
-        }).catch(function (error) {
-            console.warn(error);
-        });
+        );
     }
 
     /**

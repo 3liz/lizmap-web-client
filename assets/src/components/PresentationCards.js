@@ -51,12 +51,12 @@ export default class PresentationCards extends HTMLElement {
             const fileExtension = fieldValue.split('.').pop().toLowerCase();
             if (['webm', 'mp4'].includes(fileExtension)) {
                 fieldHtml = `
-                    <video controls width="200" title="${fieldValue}">
+                    <video controls width="150" title="${fieldValue}">
                         <source src="${mediaUrl}${fieldValue}" type="video/${fileExtension}"/>
                     </video>
                 `;
             } else if (['png', 'webp', 'jpeg', 'jpg', 'gif'].includes(fileExtension)) {
-                fieldHtml = `<img src="${mediaUrl}${fieldValue}" style="width: 200px;" title="${fieldValue}">`;
+                fieldHtml = `<img src="${mediaUrl}${fieldValue}" style="max-width:150px;max-height:150px;" title="${fieldValue}">`;
             } else {
                 fieldHtml = fieldValue;
             }
