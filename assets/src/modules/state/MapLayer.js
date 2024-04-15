@@ -80,8 +80,9 @@ export class MapItemState extends EventDispatcher {
             layerItemState.addListener(this.dispatch.bind(this), 'layer.filter.token.changed');
         }
     }
+
     /**
-     * Config layers
+     * Map item name
      * @type {string}
      */
     get name() {
@@ -89,7 +90,7 @@ export class MapItemState extends EventDispatcher {
     }
 
     /**
-     * Config layers
+     * Map item type
      * @type {string}
      */
     get type() {
@@ -97,7 +98,7 @@ export class MapItemState extends EventDispatcher {
     }
 
     /**
-     * the layer tree item level
+     * the layer item level
      * @type {number}
      */
     get level() {
@@ -105,7 +106,7 @@ export class MapItemState extends EventDispatcher {
     }
 
     /**
-     * WMS layer name
+     * WMS item name
      * @type {?string}
      */
     get wmsName() {
@@ -113,7 +114,7 @@ export class MapItemState extends EventDispatcher {
     }
 
     /**
-     * WMS layer title
+     * WMS item title
      * @type {string}
      */
     get wmsTitle() {
@@ -121,7 +122,7 @@ export class MapItemState extends EventDispatcher {
     }
 
     /**
-     * WMS layer Geographic Bounding Box
+     * WMS item Geographic Bounding Box
      * @type {?LayerGeographicBoundingBoxConfig}
      */
     get wmsGeographicBoundingBox() {
@@ -129,13 +130,12 @@ export class MapItemState extends EventDispatcher {
     }
 
     /**
-     * WMS layer Bounding Boxes
+     * WMS item Bounding Boxes
      * @type {LayerBoundingBoxConfig[]}
      */
     get wmsBoundingBoxes() {
         return this._layerItemState.wmsBoundingBoxes;
     }
-
 
     /**
      * WMS Minimum scale denominator
@@ -150,7 +150,7 @@ export class MapItemState extends EventDispatcher {
     }
 
     /**
-     * WMS layer maximum scale denominator
+     * WMS Maximum scale denominator
      * If the maximum scale denominator is not defined: -1 is returned
      * If the WMS layer is a group, the maximum scale denominator is the largest of the layers in the group
      * @type {number}
@@ -160,7 +160,7 @@ export class MapItemState extends EventDispatcher {
     }
 
     /**
-     * Layer tree item is checked
+     * Map item is checked
      * @type {boolean}
      */
     get checked() {
@@ -168,7 +168,7 @@ export class MapItemState extends EventDispatcher {
     }
 
     /**
-     * Set layer tree item is checked
+     * Set map item is checked
      * @type {boolean}
      */
     set checked(val) {
@@ -176,7 +176,7 @@ export class MapItemState extends EventDispatcher {
     }
 
     /**
-     * Layer tree item is visible
+     * Map item is visible
      * It depends on the parent visibility
      * @type {boolean}
      */
@@ -185,7 +185,7 @@ export class MapItemState extends EventDispatcher {
     }
 
     /**
-     * Layer tree item opacity
+     * Map item opacity
      * @type {number}
      */
     get opacity() {
@@ -193,7 +193,7 @@ export class MapItemState extends EventDispatcher {
     }
 
     /**
-     * Set layer tree item opacity
+     * Set map item opacity
      * @type {number}
      */
     set opacity(val) {
@@ -210,7 +210,7 @@ export class MapItemState extends EventDispatcher {
 
     /**
      * Lizmap layer item state
-     * @type {?LayerConfig}
+     * @type {?LayerItemState}
      */
     get itemState() {
         return this._layerItemState;
@@ -526,19 +526,19 @@ export class MapLayerState extends MapItemState {
     }
 
     /**
-     * set if the map layer is loaded in a single ImageWMS layer or not
-     * @param {boolean} val
-     */
-    set singleWMSLayer(val){
-        this._singleWMSLayer = val;
-    }
-
-    /**
      * vector layer is loaded in a single layer ImageLayer or not
      * @type {boolean}
      */
     get singleWMSLayer(){
         return this._singleWMSLayer;
+    }
+
+    /**
+     * set if the map layer is loaded in a single ImageWMS layer or not
+     * @type {boolean}
+     */
+    set singleWMSLayer(val){
+        this._singleWMSLayer = val;
     }
 
     /**
