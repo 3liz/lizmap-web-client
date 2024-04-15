@@ -8,7 +8,7 @@
 import { mainLizmap, mainEventDispatcher } from './Globals.js';
 import Utils from './Utils.js';
 import { BaseLayerTypes } from './config/BaseLayer.js';
-import { MapLayerLoadStatus } from './state/MapLayer.js';
+import { MapLayerLoadStatus, MapLayerState } from './state/MapLayer.js';
 import olMap from 'ol/Map.js';
 import View from 'ol/View.js';
 import { ADJUSTED_DPI } from '../utils/Constants.js';
@@ -760,7 +760,7 @@ export default class map extends olMap {
     }
     /**
      * Map and base Layers are loaded as TileWMS
-     * @type {Boolean}
+     * @type {boolean}
      */
     get useTileWms(){
         return this._useTileWms;
@@ -774,14 +774,14 @@ export default class map extends olMap {
     }
     /**
      * WMS/TileWMS high dpi support
-     * @type {Boolean}
+     * @type {boolean}
      */
     get hidpi(){
         return this._hidpi;
     }
     /**
      * Is dragZoom active?
-     * @type {Boolean}
+     * @type {boolean}
      */
     get isDragZoomActive(){
         return this._dragZoom.getActive();
@@ -891,8 +891,8 @@ export default class map extends olMap {
     /**
      * Return overlay layer if `name` matches.
      * `name` is unique for every layers
-     * @param name
-     * @returns {Layer|undefined}
+     * @param {string} name The layer name.
+     * @returns {ImageLayer|undefined} The OpenLayers layer or undefined
      */
     getLayerByName(name){
         return this.overlayLayers.find(
@@ -903,8 +903,8 @@ export default class map extends olMap {
     /**
      * Return overlay layer or group if `name` matches.
      * `name` is unique for every layers/groups
-     * @param name
-     * @returns {Layer|LayerGroup|undefined}
+     * @param {string} name The layer or group name.
+     * @returns {ImageLayer|LayerGroup|undefined} The OpenLayers layer or OpenLayers group or undefined
      */
     getLayerOrGroupByName(name){
         return this.overlayLayersAndGroups.find(
@@ -914,9 +914,8 @@ export default class map extends olMap {
 
     /**
      * Return MapLayerState instance of WMS layer or group if the layer is loaded in the single WMS image, undefined if not.
-     *
-     * @param name
-     * @returns {MapLayerState|undefined}
+     * @param {string} name the WMS layer or group name
+     * @returns {MapLayerState|undefined} the MapLayerState instance of WMS layer or group if the layer is loaded in the single WMS image or undefined.
      */
     isSingleWMSLayer(name){
 
