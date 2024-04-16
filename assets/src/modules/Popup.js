@@ -109,6 +109,7 @@ export default class Popup {
         }
 
         const layersWMS = candidateLayers.map(layer => layer.wmsName).join();
+        const layersStyles = candidateLayers.map(layer => layer.wmsSelectedStyleName || "").join()
 
         const wms = new WMS();
 
@@ -123,6 +124,7 @@ export default class Popup {
         const wmsParams = {
             QUERY_LAYERS: layersWMS,
             LAYERS: layersWMS,
+            STYLE: layersStyles,
             CRS: mainLizmap.projection,
             BBOX: bbox,
             FEATURE_COUNT: 10,
