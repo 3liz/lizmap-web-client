@@ -44,6 +44,16 @@ describe('WMTS command line', function () {
     })
 
     it('wmts:cache:seed --dry-run success', function () {
+        // Get tiles number for zoom level from 0 to 3 (1 for each = 4)
+        cy.exec('./../lizmap-ctl console wmts:cache:seed -v -f --dry-run testsrepository cache Quartiers EPSG:3857 0 3')
+        .its('stdout')
+        .should('contain', 'The TileMatrixSet \'EPSG:3857\'!')
+        .should('contain', '1 tiles to generate for "Quartiers" "EPSG:3857" "0"')
+        .should('contain', '1 tiles to generate for "Quartiers" "EPSG:3857" "1"')
+        .should('contain', '1 tiles to generate for "Quartiers" "EPSG:3857" "2"')
+        .should('contain', '1 tiles to generate for "Quartiers" "EPSG:3857" "3"')
+        .should('contain', '4 tiles to generate for "Quartiers" "EPSG:3857" between "0" and "3"')
+
         // Get tiles number for zoom level 10
         cy.exec('./../lizmap-ctl console wmts:cache:seed -v -f --dry-run testsrepository cache Quartiers EPSG:3857 10 10')
             .its('stdout')
