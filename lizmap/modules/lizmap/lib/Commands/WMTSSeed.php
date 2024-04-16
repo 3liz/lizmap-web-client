@@ -35,9 +35,9 @@ class WMTSSeed extends \Jelix\Scripts\ModuleCommandAbstract
 
         $fakeServer = new \Jelix\FakeServerConf\ApacheMod(\jApp::wwwPath(), '/index.php');
         $fakeServer->setHttpRequest($req->getServerURI());
-        $tileMatrixMin = $input->getArgument('TileMatrixMin');
-        $tileMatrixMax = $input->getArgument('TileMatrixMax');
-        if (!(filter_var($tileMatrixMin, FILTER_VALIDATE_INT) && filter_var($tileMatrixMax, FILTER_VALIDATE_INT))) {
+        $tileMatrixMin = filter_var($input->getArgument('TileMatrixMin'), FILTER_VALIDATE_INT);
+        $tileMatrixMax = filter_var($input->getArgument('TileMatrixMax'), FILTER_VALIDATE_INT);
+        if (($tileMatrixMin === false) || ($tileMatrixMax === false)) {
             $output->writeln('<error>TileMatrixMin and TileMatrixMax must be of type int</error>');
 
             return 1;
