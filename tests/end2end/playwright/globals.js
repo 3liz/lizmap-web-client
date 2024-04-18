@@ -1,5 +1,6 @@
 // @ts-check
 const { expect } = require('@playwright/test');
+const { subtle } = globalThis.crypto;
 
 export async function gotoMap(url, page, check = true) {
     // TODO keep this function synchronized with the Cypress equivalent
@@ -23,4 +24,13 @@ export async function gotoMap(url, page, check = true) {
     expect(page.getByText('An error occurred while loading this map. Some necessary resources may temporari')).toHaveCount(0);
     // Wait to be sure the map is ready
     await page.waitForTimeout(1000)
+}
+
+export async function digestBuffer(buff) {
+    const hashBuffer = await subtle.digest('sha-1', buff);
+    const hashArray = Array.from(new Uint8Array(hashBuffer)); // convert buffer to byte array
+    const hashHex = hashArray
+        .map((b) => b.toString(16).padStart(2, "0"))
+        .join(""); // convert bytes to hex string
+    return hashHex;
 }
