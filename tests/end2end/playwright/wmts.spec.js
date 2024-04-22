@@ -27,6 +27,7 @@ test.describe('WMTS', () => {
             route.continue();
         }, {times: 6});
         await page.getByLabel('quartiers fffffff').check();
+        await page.waitForTimeout(2000);
         expect(GetTiles).toHaveLength(6);
         expect(GetTiles[0]).toContain('TileMatrix=2')
         expect(GetTiles[0]).toContain('TileRow=5')
