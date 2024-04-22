@@ -223,7 +223,6 @@ export default class Digitizing {
         });
 
         this._drawLayer = new VectorLayer({
-            visible: false,
             source: this._drawSource,
             style: this._drawStyleFunction
         });
@@ -269,12 +268,6 @@ export default class Digitizing {
                 } else if (['draw', 'selectiontool', 'print'].includes(e.id)) {
                     // Display draw for print redlining
                     this.context = e.id === 'print' ? 'draw' : e.id;
-                    this.toggleVisibility(true);
-                }
-            },
-            minidockclosed: (e) => {
-                if (['draw', 'selectiontool', 'print'].includes(e.id)) {
-                    this.toggleVisibility(false);
                 }
             }
         });
