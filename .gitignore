@@ -42,7 +42,7 @@ lizmap/www/live/images/home/*
 # Built JS files
 lizmap/www/assets/js/lizmap.js
 lizmap/www/assets/js/lizmap.js.map
-lizmap/www/assets/js/lizmap.js.LICENSE.txt
+lizmap/www/assets/js/*.js.LICENSE.txt
 lizmap/www/assets/js/atlas.js
 lizmap/www/assets/js/atlas.js.map
 lizmap/www/assets/js/attributeTable.js
@@ -55,7 +55,6 @@ lizmap/www/assets/js/filter.js
 lizmap/www/assets/js/filter.js.map
 lizmap/www/assets/js/map.js
 lizmap/www/assets/js/map.js.map
-lizmap/www/assets/js/map.js.LICENSE.txt
 lizmap/www/assets/js/search.js
 lizmap/www/assets/js/search.js.map
 lizmap/www/assets/js/switcher-layers-actions.js
