@@ -24,6 +24,7 @@ test.describe('WMTS', () => {
             if (request.url().includes('GetTile')) {
                 GetTiles.push(request.url());
             }
+            route.continue();
         }, {times: 6});
         await page.getByLabel('quartiers fffffff').check();
         expect(GetTiles).toHaveLength(6);
