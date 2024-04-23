@@ -195,19 +195,20 @@ export default class BaseLayersMap extends olMap {
 
                 // The layer has not been yet build
                 if (!layer) {
+                    const itemState = node.itemState;
                     layer = new ImageLayer({
                         // extent: extent,
                         minResolution: minResolution,
                         maxResolution: maxResolution,
                         source: new ImageWMS({
-                            url: mainLizmap.serviceURL,
+                            url: itemState.externalWmsToggle ? itemState.externalAccess.url : mainLizmap.serviceURL,
                             serverType: 'qgis',
                             ratio: WMSRatio,
                             hidpi: this._hidpi,
                             params: {
-                                LAYERS: node.wmsName,
-                                FORMAT: node.layerConfig.imageFormat,
-                                STYLES: node.wmsSelectedStyleName,
+                                LAYERS: itemState.externalWmsToggle ? itemState.externalAccess.layers : node.wmsName,
+                                FORMAT: itemState.externalWmsToggle ? itemState.externalAccess.format : node.layerConfig.imageFormat,
+                                STYLES: itemState.externalWmsToggle ? itemState.externalAccess.styles : node.wmsSelectedStyleName,
                                 DPI: 96
                             },
                         })
@@ -226,13 +227,13 @@ export default class BaseLayersMap extends olMap {
                             minResolution: minResolution,
                             maxResolution: maxResolution,
                             source: new TileWMS({
-                                url: mainLizmap.serviceURL,
+                                url: itemState.externalWmsToggle ? itemState.externalAccess.url : mainLizmap.serviceURL,
                                 serverType: 'qgis',
                                 tileGrid: customTileGrid,
                                 params: {
-                                    LAYERS: node.wmsName,
-                                    FORMAT: node.layerConfig.imageFormat,
-                                    STYLES: node.wmsSelectedStyleName,
+                                    LAYERS: itemState.externalWmsToggle ? itemState.externalAccess.layers : node.wmsName,
+                                    FORMAT: itemState.externalWmsToggle ? itemState.externalAccess.format : node.layerConfig.imageFormat,
+                                    STYLES: itemState.externalWmsToggle ? itemState.externalAccess.styles : node.wmsSelectedStyleName,
                                     DPI: 96,
                                     TILED: 'true'
                                 },
