@@ -23,7 +23,7 @@
 
 describe('External WMS layers', function () {
 
-    it('should get correct mime type in response', function () {
+    it('should get correct mime type in response and not localhost', function () {
         // Increasing the timeout because the external server seems too slow to respond on time
         defaultCommandTimeout: 10000
 
@@ -48,7 +48,8 @@ describe('External WMS layers', function () {
         cy.get('#node-png').click()
         cy.wait('@getMap').then((interception) => {
             expect(interception.response.headers['content-type'], 'expect mime type to be image/png').to.equal('image/png')
-            console.log(interception.response)
+            expect(interception.request.headers['host'], 'expect not localhost').to.not.equal(undefined)
+            expect(interception.request.headers['host'], 'expect not localhost').to.not.equal('localhost')
         })
         cy.get('#node-png').click()
 
@@ -59,6 +60,8 @@ describe('External WMS layers', function () {
         cy.get('#node-jpeg').click()
         cy.wait('@getMap').then((interception) => {
             expect(interception.response.headers['content-type'], 'expect mime type to be image/jpeg').to.equal('image/jpeg')
+            expect(interception.request.headers['host'], 'expect not localhost').to.not.equal(undefined)
+            expect(interception.request.headers['host'], 'expect not localhost').to.not.equal('localhost')
         })
         cy.get('#node-jpeg').click()
 
