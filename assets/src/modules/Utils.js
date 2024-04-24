@@ -41,8 +41,9 @@ export default class Utils {
      * @param {string} url        - A string or any other object with a stringifier — including a URL object — that provides the URL of the resource to send the request to.
      * @param {Array} parameters  - Parameters that will be serialize as a Query string
      * @param {Function} callback - optional callback executed when download ends
+     * @param {Function} errorCallback - optional callback executed when error event occurs
      */
-    static downloadFile(url, parameters, callback) {
+    static downloadFile(url, parameters, callback, errorCallback) {
         var xhr = new XMLHttpRequest();
         xhr.open('POST', url, true);
         xhr.responseType = 'arraybuffer';
@@ -77,6 +78,11 @@ export default class Utils {
                 }
 
                 setTimeout(() => URL.revokeObjectURL(downloadUrl), 100); // cleanup
+            } else {
+                // Execute callback if any
+                if (typeof errorCallback === 'function') {
+                    errorCallback(new HttpError('HTTP error: ' + this.status, this.status, url, {method:'POST', body:$.param(parameters, true)}));
+                }
             }
 
             // Execute callback if any
@@ -84,6 +90,10 @@ export default class Utils {
                 callback();
             }
         };
+        // Add error callback if any
+        if (typeof errorCallback === 'function') {
+            xhr.addEventListener("error", errorCallback);
+        }
         xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
         xhr.send($.param(parameters, true));
     }
