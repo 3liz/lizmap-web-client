@@ -75,4 +75,40 @@ test.describe('Edition Form Validation', () => {
       await expect(page.locator("#lizmap-edition-message")).toBeVisible();
       await expect(page.locator("#message > div")).toHaveClass(/alert-error/);
   })
+
+  test('Error send feature', async ({ page }) => {
+      // display form
+      await page.locator('#button-edition').click();
+      await page.locator('a#edition-draw').click();
+
+      // add data
+      await page.locator('#jforms_view_edition input[name="integer_field"]').fill('50');
+
+      await page.route('**/edition/saveFeature*', async route => {
+          await route.fulfill({
+              status: 404,
+              contentType: 'text/plain',
+              body: 'Not Found!'
+          });
+      });
+
+      // submit form
+      await page.locator('#jforms_view_edition__submit_submit').click();
+
+      // message
+      await expect(page.locator("#lizmap-edition-message")).toBeVisible();
+      await expect(page.locator("#message > div")).toHaveClass(/alert-error/);
+
+      // form still here
+      await expect(page.locator('#edition-form-container')).toBeVisible();
+
+      // cancel edition and inspect new child attribute table
+      page.once('dialog', dialog => {
+          return dialog.accept();
+      });
+      await page.locator('#jforms_view_edition__submit_cancel').click();
+
+      // form closed
+      await expect(page.locator('#edition-form-container')).toBeHidden();
+  })
 })

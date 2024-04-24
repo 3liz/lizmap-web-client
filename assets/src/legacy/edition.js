@@ -1990,6 +1990,11 @@ var lizEdition = function() {
             var sendFormPromise = sendNewFeatureForm(url, featureData);
             sendFormPromise.then(function(data) {
                 formResult = data;
+            }).catch(e => {
+                console.error(e);
+                $('#edition-waiter').hide();
+                // Display the message
+                addEditionMessage(lizDict['edition.message.error.send.feature'], 'error', true);
             });
             editionLayer.newfeatures.forEach(function(newFeatForm) {
                 sendFormPromise = sendFormPromise.then(() => sendNewFeatureForm(newFeatureUrl, newFeatForm[1]));
@@ -2014,13 +2019,15 @@ var lizEdition = function() {
 
             var request = new XMLHttpRequest();
             request.open("POST", url);
-            request.onload = function(oEvent) {
+            request.onload = function() {
                 if (request.status == 200) {
                     resolve(request.responseText);
                 } else {
-                    reject();
+                    reject(new Error(`Nouveau message d'erreur`, { cause: request }));
                 }
             };
+            request.addEventListener("error", reject);
+            request.addEventListener("abort", reject);
             request.send(formData);
         });
     }
