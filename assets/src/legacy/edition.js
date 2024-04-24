@@ -1417,34 +1417,61 @@ var lizEdition = function() {
             originalForm.unbind('submit');
         }
 
+        // Build params
+        var params = Object.assign({}, lizUrls.params, {
+            layerId: editionLayer['id']
+        })
+        if (featureId) {
+            params['featureId'] = featureId;
+        }
+
         // Get form via web service
-        var service = lizUrls.edition + '?' + new URLSearchParams(lizUrls.params);
-        $.get(service.replace('getFeature', editionType),{
-            layerId: editionLayer['id'],
-            featureId: featureId
-        }, function(data){
-            // Activate some controls
-            if( !editCtrls )
-                return false;
-            if ( !editionLayer['id'] )
-                return false;
+        var service = lizUrls.edition + '?' + new URLSearchParams(params);
+        // TODO: replaced by Utils.fetch
+        fetch(service.replace('getFeature', editionType))
+            .then(response => {
+                if (response.ok) {
+                    return response;
+                }
+                return Promise.reject('Invalid response: '+response.status+' '+response.statusText);
+            }).then(response => {
+                const contentType = response.headers.get('Content-Type') || '';
 
-            // Hide drawfeature controls : they will go back when finishing edition or canceling
-            $('#edition-modification-msg').hide();
-            $('#edition-creation').hide();
+                if (contentType.includes('text/plain')) {
+                    return response.text();
+                }
+                return Promise.reject('Invalid response content: '+contentType);
+            }).then(data => {
+                // Activate some controls
+                if( !editCtrls )
+                    return false;
+                if ( !editionLayer['id'] )
+                    return false;
 
-            // Show edition tabs
-            $('.edition-tabs').show();
+                // Hide drawfeature controls : they will go back when finishing edition or canceling
+                $('#edition-modification-msg').hide();
+                $('#edition-creation').hide();
 
-            // Display the form: after the previous show to be sure
-            // tabs visibility test (see: ) return correct response
-            // See "Check li (tabs) visibility" in displayEditionForm method
-            displayEditionForm( data );
+                // Show edition tabs
+                $('.edition-tabs').show();
 
-            if( aCallback )
-                aCallback( editionLayer['id'], featureId );
+                // Display the form: after the previous show to be sure
+                // tabs visibility test (see: ) return correct response
+                // See "Check li (tabs) visibility" in displayEditionForm method
+                displayEditionForm( data );
 
-        });
+                if( aCallback )
+                    aCallback( editionLayer['id'], featureId );
+            })
+            .catch(e => {
+                console.error(e);
+
+                // Deactivate edition
+                finishEdition();
+
+                // Display the message
+                addEditionMessage(lizDict['edition.message.error.fetch.form'], 'error', true);
+            });
     }
 
     /*
@@ -2022,6 +2049,11 @@ var lizEdition = function() {
             var sendFormPromise = sendNewFeatureForm(url, featureData);
             sendFormPromise.then(function(data) {
                 formResult = data;
+            }).catch(e => {
+                console.error(e);
+                $('#edition-waiter').hide();
+                // Display the message
+                addEditionMessage(lizDict['edition.message.error.send.feature'], 'error', true);
             });
             editionLayer.newfeatures.forEach(function(newFeatForm) {
                 sendFormPromise = sendFormPromise.then(() => sendNewFeatureForm(newFeatureUrl, newFeatForm[1]));
@@ -2046,13 +2078,15 @@ var lizEdition = function() {
 
             var request = new XMLHttpRequest();
             request.open("POST", url);
-            request.onload = function(oEvent) {
+            request.onload = function() {
                 if (request.status == 200) {
                     resolve(request.responseText);
                 } else {
-                    reject();
+                    reject(new Error(`Nouveau message d'erreur`, { cause: request }));
                 }
             };
+            request.addEventListener("error", reject);
+            request.addEventListener("abort", reject);
             request.send(formData);
         });
     }
