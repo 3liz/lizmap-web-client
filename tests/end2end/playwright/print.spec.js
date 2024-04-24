@@ -615,3 +615,67 @@ test.describe('Print base layers', () => {
         expect(getPrintResponse?.headers()['content-type']).toBe('application/pdf');
     });
 });
+
+test.describe('Error while printing', () => {
+
+    test.beforeEach(async ({ page }) => {
+        const url = '/index.php/view/map/?repository=testsrepository&project=print';
+        await page.goto(url, { waitUntil: 'networkidle' });
+        /*
+        */
+    });
+
+    test('Print error', async ({ page }) => {
+        await page.locator('#button-print').click();
+
+        await page.locator('#print-scale').selectOption('100000');
+
+        await page.route('**/service*', async route => {
+            if (route.request()?.postData()?.includes('GetPrint'))
+                await route.fulfill({
+                    status: 404,
+                    contentType: 'text/plain',
+                    body: 'Not Found!'
+                });
+            else
+                await route.continue();
+        });
+
+        await page.locator('#print-launch').click();
+
+        await expect(page.getByText('The output is currently not available. Please contact the system administrator.')).toBeVisible();
+
+        await expect(page.locator("#message > div:last-child")).toHaveClass(/alert-error/);
+    });
+
+
+    test('Print Atlas error', async ({ page }) => {
+
+        let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
+        await page.locator('#newOlMap').click({ position: { x: 409, y: 186 } });
+        let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
+        expect(getFeatureInfoRequest.postData()).toMatch(/GetFeatureInfo/);
+
+        // Test `atlas_quartiers` print atlas request
+        const featureAtlasQuartiers = page.locator('#popupcontent lizmap-feature-toolbar[value="quartiers_cc80709a_cd4a_41de_9400_1f492b32c9f7.1"] .feature-atlas');
+
+        await page.route('**/service*', async route => {
+            if (route.request()?.postData()?.includes('GetPrint'))
+                await route.fulfill({
+                    status: 404,
+                    contentType: 'text/plain',
+                    body: 'Not Found!'
+                });
+            else
+                await route.continue();
+        });
+
+        await featureAtlasQuartiers.locator('button').click();
+
+        await expect(page.getByText('The output is currently not available. Please contact the system administrator.')).toBeVisible();
+
+        await expect(page.locator("#message > div:last-child")).toHaveClass(/alert-error/);
+    });
+
+
+});
