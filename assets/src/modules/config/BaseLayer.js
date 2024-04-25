@@ -911,12 +911,6 @@ export class BaseLayersConfig {
             extendedCfg[layerCfg.name].layerConfig = layerCfg;
         }
 
-        // Define startup base layer based on names from tree
-        this._startupBaselayer = null;
-        if (names.length != 0) {
-            this._startupBaselayer = names[0];
-        }
-
         // Add names from keys
         for (const key in extendedCfg) {
             if (names.indexOf(key) == -1) {
@@ -937,6 +931,12 @@ export class BaseLayersConfig {
             } else {
                 names.push('project-background-color');
             }
+        }
+
+        // Define startup base layer based on names from tree
+        this._startupBaselayer = null;
+        if (names.length != 0) {
+            this._startupBaselayer = names[0];
         }
 
         this._names = [];
