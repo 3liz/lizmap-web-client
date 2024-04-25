@@ -11,7 +11,6 @@ import Utils from '../modules/Utils.js';
 import { MapLayerLoadStatus } from '../modules/state/MapLayer.js';
 
 import { html, render } from 'lit-html';
-import { when } from 'lit-html/directives/when.js';
 
 /**
  * @class
@@ -27,7 +26,7 @@ export default class Treeview extends HTMLElement {
     connectedCallback() {
 
         this._onChange = () => {
-            render(this._layerTemplate(mainLizmap.state.layerTree), this);
+            render(this._rootTemplate(mainLizmap.state.layerTree), this);
         };
 
         this._symbolTemplate = symbol =>
@@ -55,58 +54,87 @@ export default class Treeview extends HTMLElement {
             }
         </li>`
 
-        this._layerTemplate = layerTreeGroupState =>
+        this._layerTemplate = (layer, parent) =>
             html`
-        <ul>
-            ${layerTreeGroupState.children.map(item => html`
-            <li data-testid="${item.name}" class="${this._isVisible(item) ? '' : 'not-visible'}">
-                ${item.type === 'group' || (item.symbologyChildrenCount && item.layerConfig.legendImageOption !== "disabled")
-                    ? html`<div class="expandable ${item.expanded ? 'expanded' : ''}" @click=${() => item.expanded = !item.expanded}></div>`
-                    : ''
-                }
-                <div class="${item.checked ? 'checked' : ''} ${item.type} ${item.name === this._itemNameSelected ? 'selected' : ''}">
-                    ${item.type === 'layer'
-                        ? html`<div class="loading ${item.loadStatus === MapLayerLoadStatus.Loading ? 'spinner' : ''}"></div>`
-                        : ''
-                    }
-                    ${item.type === 'group' && mainLizmap.initialConfig.options.hideGroupCheckbox
-                        ? ''
-                        : html`<input type="checkbox" class="${layerTreeGroupState.mutuallyExclusive ? 'rounded-checkbox' : ''}" id="node-${item.name}" .checked=${item.checked} @click=${() => item.checked = !item.checked} >`
-                    }
-                    <div class="node ${item.isFiltered ? 'filtered' : ''}">
-                        ${item.type === 'layer'
-                            ? html`<img class="legend" src="${item.icon}">`
+        <li data-testid="${layer.name}" class="${this._isVisible(layer) ? '' : 'not-visible'}">
+            ${layer.symbologyChildrenCount && layer.layerConfig.legendImageOption !== "disabled"
+                ? html`<div class="expandable ${layer.expanded ? 'expanded' : ''}" @click=${() => layer.expanded = !layer.expanded}></div>`
+                : ''
+            }
+            <div class="${layer.checked ? 'checked' : ''} ${layer.type} ${layer.name === this._itemNameSelected ? 'selected' : ''}">
+                <div class="loading ${layer.loadStatus === MapLayerLoadStatus.Loading ? 'spinner' : ''}"></div>
+                <input type="checkbox" class="${parent.mutuallyExclusive ? 'rounded-checkbox' : ''}" id="node-${layer.name}" .checked=${layer.checked} @click=${() => layer.checked = !layer.checked} >
+                <div class="node ${layer.isFiltered ? 'filtered' : ''}">
+                    <img class="legend" src="${layer.icon}">
+                    <label for="node-${layer.name}">${layer.layerConfig.title}</label>
+                    <div class="layer-actions">
+                        <a href="${this._createDocLink(layer.name)}" target="_blank" title="${lizDict['tree.button.link']}">
+                            <i class="icon-share"></i>
+                        </a>
+                        ${layer.layerConfig.cached
+                            ? html`
+                                <a href="${this._createRemoveCacheLink(layer.name)}" target="_blank">
+                                    <i class="icon-remove-sign" title="${lizDict['tree.button.removeCache']}" @click=${event => this._removeCache(event)}></i>
+                                </a>`
                             : ''
                         }
-                        <label for="node-${item.name}">${item.layerConfig.title}</label>
-                        <div class="layer-actions">
-                            <a href="${this._createDocLink(item.name)}" target="_blank" title="${lizDict['tree.button.link']}">
-                                <i class="icon-share"></i>
-                            </a>
-                            ${item.layerConfig.cached
-                                ? html`
-                                    <a href="${this._createRemoveCacheLink(item.name)}" target="_blank">
-                                        <i class="icon-remove-sign" title="${lizDict['tree.button.removeCache']}" @click=${event => this._removeCache(event)}></i>
-                                    </a>`
-                                : ''
-                            }
-                            <i class="icon-info-sign" @click=${() => this.itemNameSelected = item.name}></i>
-                        </div>
+                        <i class="icon-info-sign" @click=${() => this.itemNameSelected = layer.name}></i>
                     </div>
                 </div>
-                ${(item.symbologyChildrenCount && item.layerConfig.legendImageOption !== "disabled")
-                    ? html`
-                        <ul class="symbols">
-                            ${item.symbologyChildren.map(symbol => this._symbolTemplate(symbol))}
-                        </ul>`
-                    : ''
+            </div>
+            ${(layer.symbologyChildrenCount && layer.layerConfig.legendImageOption !== "disabled")
+                ? html`
+                    <ul class="symbols">
+                        ${layer.symbologyChildren.map(symbol => this._symbolTemplate(symbol))}
+                    </ul>`
+                : ''
+            }
+        </li>`
+
+        this._groupTemplate = (group, parent) =>
+            html`
+        <li data-testid="${group.name}" class="${this._isVisible(group) ? '' : 'not-visible'}">
+            <div class="expandable ${group.expanded ? 'expanded' : ''}" @click=${() => group.expanded = !group.expanded}></div>
+            <div class="${group.checked ? 'checked' : ''} ${group.type} ${group.name === this._itemNameSelected ? 'selected' : ''}">
+                ${mainLizmap.initialConfig.options.hideGroupCheckbox
+                    ? ''
+                    : html`<input type="checkbox" class="${parent.mutuallyExclusive ? 'rounded-checkbox' : ''}" id="node-${group.name}" .checked=${group.checked} @click=${() => group.checked = !group.checked} >`
                 }
-                ${when(item.type === 'group', () => this._layerTemplate(item))}
-            </li>`
-            )}
+                <div class="node ${group.isFiltered ? 'filtered' : ''}">
+                    <label for="node-${group.name}">${group.layerConfig.title}</label>
+                    <div class="layer-actions">
+                        <a href="${this._createDocLink(group.name)}" target="_blank" title="${lizDict['tree.button.link']}">
+                            <i class="icon-share"></i>
+                        </a>
+                        ${group.layerConfig.cached
+                            ? html`
+                                <a href="${this._createRemoveCacheLink(group.name)}" target="_blank">
+                                    <i class="icon-remove-sign" title="${lizDict['tree.button.removeCache']}" @click=${event => this._removeCache(event)}></i>
+                                </a>`
+                            : ''
+                        }
+                        <i class="icon-info-sign" @click=${() => this.itemNameSelected = group.name}></i>
+                    </div>
+                </div>
+            </div>
+            <ul>
+                ${group.children.map(item => html`
+                    ${item.type === 'group' ? html`${this._groupTemplate(item, group)}` : ''}
+                    ${item.type === 'layer' ? html`${this._layerTemplate(item, group)}` : ''}
+                `)}
+            </ul>
+        </li>`
+
+        this._rootTemplate = layerTreeRoot =>
+            html`
+        <ul>
+            ${layerTreeRoot.children.map(item => html`
+                ${item.type === 'group' ? html`${this._groupTemplate(item, layerTreeRoot)}` : ''}
+                ${item.type === 'layer' ? html`${this._layerTemplate(item, layerTreeRoot)}` : ''}
+            `)}
         </ul>`;
 
-        render(this._layerTemplate(mainLizmap.state.layerTree), this);
+        render(this._rootTemplate(mainLizmap.state.layerTree), this);
 
         mainLizmap.state.layerTree.addListener(
             this._onChange,
