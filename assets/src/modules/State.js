@@ -9,7 +9,7 @@ import EventDispatcher from './../utils/EventDispatcher.js';
 import { MapState } from './state/Map.js';
 import { BaseLayersState } from './state/BaseLayer.js';
 import { LayersAndGroupsCollection } from './state/Layer.js';
-import { MapGroupState } from './state/MapLayer.js';
+import { MapRootState } from './state/MapLayer.js';
 import { LayerTreeGroupState } from './state/LayerTree.js';
 
 /**
@@ -79,11 +79,11 @@ export class State extends EventDispatcher {
 
     /**
      * Root map group
-     * @type {MapGroupState}
+     * @type {MapRootState}
      */
     get rootMapGroup() {
         if (this._rootMapGroup == null) {
-            this._rootMapGroup = new MapGroupState(this.layersAndGroupsCollection.root);
+            this._rootMapGroup = new MapRootState(this.layersAndGroupsCollection.root);
         }
         return this._rootMapGroup;
     }

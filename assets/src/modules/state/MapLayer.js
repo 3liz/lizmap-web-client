@@ -13,6 +13,7 @@ import { AttributionConfig } from './../config/Attribution.js'
 import { LayerStyleConfig, LayerGeographicBoundingBoxConfig, LayerBoundingBoxConfig } from './../config/LayerTree.js';
 import { LayerItemState, LayerGroupState, LayerLayerState, LayerVectorState, LayerRasterState } from './Layer.js';
 import { LayerSymbolsSymbology, LayerIconSymbology, LayerGroupSymbology } from './Symbology.js';
+import { ExternalMapGroupState } from './ExternalMapLayer.js'
 
 /**
  * Enum for map layer load status
@@ -709,5 +710,57 @@ export class MapLayerState extends MapItemState {
             name: this.name,
             loadStatus: this.loadStatus,
         })
+    }
+}
+
+/**
+ * Class representing a map group state as map root
+ * @class
+ * @augments MapGroupState
+ */
+export class MapRootState extends MapGroupState {
+
+    /**
+     * Create an external map group state
+     * @param {string} name - the external map group name
+     * @returns {ExternalMapGroupState} The external map group state
+     */
+    createExternalGroup(name) {
+        // Checks that name is unknown
+        const groups = this._items
+            .map((item, index) => {return {'name': item.name, 'type': item.type,'index':index}})
+            .filter((item) => item.type == 'ext-group' && item.name == name);
+        if (groups.length != 0) {
+            throw RangeError('The group name `'+ name +'` is already used by an external group child!');
+        }
+        const extGroup = new ExternalMapGroupState(name);
+        this._items.unshift(extGroup);
+        this.dispatch({
+            type: 'ext-group.added',
+            name: name,
+        });
+        return extGroup;
+    }
+
+    /**
+     * Create an external map group state
+     * @param {string} name - the external map group name to remove
+     * @returns {ExternalMapGroupState|undefined} The removed external map group or undefined if the name is unknown
+     */
+    removeExternalGroup(name) {
+        const groups = this._items
+            .map((item, index) => {return {'name': item.name, 'type': item.type,'index':index}})
+            .filter((item) => item.type == 'ext-group' && item.name == name);
+        if (groups.length == 0) {
+            return undefined;
+        }
+        const extGroup = this._items.at(groups[0].index);
+        this._items.splice(groups[0].index, 1);
+        this.dispatch({
+            type: 'ext-group.removed',
+            name: name,
+        });
+        extGroup.clean();
+        return extGroup;
     }
 }
