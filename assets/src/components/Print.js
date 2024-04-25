@@ -99,7 +99,10 @@ export default class Print extends HTMLElement {
                         return this._printScale
                     };
 
-                    mainLizmap.map.addLayer(this._maskLayer);
+                    mainLizmap.map.addToolLayer(this._maskLayer);
+                    this._maskLayer.setProperties({
+                        name: 'LizmapPrintMaskLayer'
+                    });
 
                     mainLizmap.map.getView().on('change:resolution', this._onChangeResolution);
 
@@ -108,7 +111,7 @@ export default class Print extends HTMLElement {
             },
             minidockclosed: (e) => {
                 if ( e.id == 'print' ) {
-                    mainLizmap.map.removeLayer(this._maskLayer);
+                    mainLizmap.map.removeToolLayer(this._maskLayer);
                     mainLizmap.map.getView().un('change:resolution', this._onChangeResolution);
                 }
             }
