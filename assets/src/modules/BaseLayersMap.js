@@ -22,6 +22,7 @@ import TileGrid from 'ol/tilegrid/TileGrid.js';
 import TileWMS from 'ol/source/TileWMS.js';
 import XYZ from 'ol/source/XYZ.js';
 import BingMaps from 'ol/source/BingMaps.js';
+import {BaseLayer as LayerBase} from 'ol/layer/Base.js';
 import LayerGroup from 'ol/layer/Group.js';
 
 import DragPan from "ol/interaction/DragPan.js";
@@ -275,6 +276,7 @@ export default class BaseLayersMap extends olMap {
 
         this._overlayLayersGroup = new LayerGroup();
 
+
         const metersPerUnit = this.getView().getProjection().getMetersPerUnit();
         if(mainLizmap.state.layerTree.children.length){
             this._overlayLayersGroup = createNode(
@@ -285,6 +287,9 @@ export default class BaseLayersMap extends olMap {
                 this._WMSRatio
             );
         }
+        this._overlayLayersGroup.setProperties({
+            name: 'LizmapOverLayLayersGroup'
+        });
 
         // Get the base layers zIndex which is the layer min zIndex - 1
         // to be sure base layers are under the others layers
@@ -493,10 +498,18 @@ export default class BaseLayersMap extends olMap {
         } else {
             this._baseLayersGroup = new LayerGroup();
         }
+        this._baseLayersGroup.setProperties({
+            name: 'LizmapBaseLayersGroup'
+        });
+
+        this._toolsGroup = new LayerGroup();
+        this._toolsGroup.setProperties({
+            name: 'LizmapToolsGroup'
+        });
 
         // Add base and overlay layers to the map's main LayerGroup
         this.setLayerGroup(new LayerGroup({
-            layers: [this._baseLayersGroup, this._overlayLayersGroup]
+            layers: [this._baseLayersGroup, this._overlayLayersGroup, this._toolsGroup]
         }));
 
         // Sync new OL view with OL2 view
@@ -605,6 +618,10 @@ export default class BaseLayersMap extends olMap {
         return this._baseLayersGroup;
     }
 
+    get toolsGroup(){
+        return this._toolsGroup;
+    }
+
     get overlayLayersAndGroups(){
         return this._overlayLayersAndGroups;
     }
@@ -691,5 +708,21 @@ export default class BaseLayersMap extends olMap {
         return this.overlayLayersAndGroups.find(
             layer => layer.get('name') === name
         );
+    }
+
+    /**
+     * Adds the given layer to the top of the tools group layers.
+     * @param {LayerBase} layer Layer.
+     */
+    addToolLayer(layer) {
+        this._toolsGroup.getLayers().push(layer);
+    }
+
+    /**
+     * Removes the given layer from the tools group layers.
+     * @param {LayerBase} layer Layer.
+     */
+    removeToolLayer(layer) {
+        this._toolsGroup.getLayers().remove(layer);
     }
 }

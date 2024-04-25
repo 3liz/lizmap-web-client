@@ -68,8 +68,11 @@ export default class Draw {
                 }),
             }),
         });
+        this._drawLayer.setProperties({
+            name: 'LizmapDrawDrawLayer'
+        });
 
-        mainLizmap.map.addLayer(this._drawLayer);
+        mainLizmap.map.addToolLayer(this._drawLayer);
 
         this._drawInteraction = new olDraw({
             source: this._drawSource,
@@ -95,7 +98,7 @@ export default class Draw {
     clear() {
         this._drawSource.clear(true);
         this._drawSource.un('addfeature', this._dispatchAddFeature);
-        mainLizmap.map.removeLayer(this._drawLayer);
+        mainLizmap.map.removeToolLayer(this._drawLayer);
         mainLizmap.map.removeInteraction(this._drawInteraction);
         this._modifyInteraction.un('modifyend', this._dispatchModifyEnd);
         mainLizmap.map.removeInteraction(this._modifyInteraction);

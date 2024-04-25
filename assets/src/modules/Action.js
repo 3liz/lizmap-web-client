@@ -158,6 +158,9 @@ export default class Action {
                 strokeOpacity: 0.8
             })
         });
+        this.actionLayer.setProperties({
+            name: 'LizmapActionActionLayer'
+        });
 
         // Add the layer inside Lizmap objects
         mainLizmap.lizmap3.map.addLayer(actionLayer);
