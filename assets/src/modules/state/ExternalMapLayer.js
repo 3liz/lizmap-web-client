@@ -402,6 +402,8 @@ export class OlMapLayerState extends ExternalMapItemState {
         this._checked = true;
         this._visibility = true;
         this._opacity = 1;
+
+        this.olLayer.setVisible(this.visibility);
     }
 
     /**
@@ -487,6 +489,7 @@ export class OlMapLayerState extends ExternalMapItemState {
         }
         // Only dispatch event if visibility has changed
         if (oldVisibility !== null && oldVisibility != this.visibility) {
+            this.olLayer.setVisible(this.visibility);
             this.dispatch({
                 type: this.type+'.visibility.changed',
                 name: this.name,

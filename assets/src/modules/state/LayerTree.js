@@ -11,6 +11,7 @@ import { LayerConfig } from './../config/Layer.js';
 import { AttributionConfig } from './../config/Attribution.js'
 import { LayerStyleConfig, LayerGeographicBoundingBoxConfig, LayerBoundingBoxConfig } from './../config/LayerTree.js';
 import { MapItemState, MapGroupState, MapLayerState } from './MapLayer.js';
+import { ExternalLayerTreeGroupState } from './ExternalLayerTree.js';
 import { getDefaultLayerIcon, LayerIconSymbology, LayerSymbolsSymbology, LayerGroupSymbology, SymbolIconSymbology, BaseIconSymbology, BaseSymbolsSymbology } from './Symbology.js';
 import { convertBoolean } from './../utils/Converters.js';
 
@@ -575,5 +576,53 @@ export class LayerTreeLayerState extends LayerTreeItemState {
                 yield symbol;
             }
         }
+    }
+}
+
+/**
+ * Class representing a layer tree group as tree root
+ * @class
+ * @augments LayerTreeGroupState
+ */
+export class TreeRootState extends LayerTreeGroupState {
+
+    /**
+     * Instantiate a root layer tree group
+     * @param {MapGroupState} mapGroupState - the map layer group state
+     */
+    constructor(mapGroupState) {
+        super(mapGroupState);
+
+        mapGroupState.addListener(
+            evt => {
+                const extGroup = mapGroupState.children[0];
+                if (evt.name != extGroup.name)
+                    return;
+                const extTreeGroup = new ExternalLayerTreeGroupState(extGroup);
+                this._items.unshift(extTreeGroup);
+                extTreeGroup.addListener(this.dispatch.bind(this), 'ol-layer.added');
+                extTreeGroup.addListener(this.dispatch.bind(this), 'ol-layer.removed');
+                extTreeGroup.addListener(this.dispatch.bind(this), 'ext-group.expanded.changed');
+            }, ['ext-group.added']
+        );
+
+        mapGroupState.addListener(
+            evt => {
+                const groups = this._items
+                    .map((item, index) => {return {'name': item.name, 'type': item.type,'index':index}})
+                    .filter((item) => item.type == 'ext-group' && item.name == evt.name);
+                if (groups.length == 0) {
+                    return;
+                }
+                const extTreeGroup = this._items.at(groups[0].index);
+                this._items.splice(groups[0].index, 1);
+                extTreeGroup.addListener(this.dispatch.bind(this), 'ol-layer.added');
+                extTreeGroup.addListener(this.dispatch.bind(this), 'ol-layer.removed');
+                extTreeGroup.addListener(this.dispatch.bind(this), 'ext-group.expanded.changed');
+            }, ['ext-group.removed']
+        );
+
+        mapGroupState.addListener(this.dispatch.bind(this), 'ext-group.added');
+        mapGroupState.addListener(this.dispatch.bind(this), 'ext-group.removed');
     }
 }

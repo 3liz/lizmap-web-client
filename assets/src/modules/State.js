@@ -10,7 +10,7 @@ import { MapState } from './state/Map.js';
 import { BaseLayersState } from './state/BaseLayer.js';
 import { LayersAndGroupsCollection } from './state/Layer.js';
 import { MapRootState } from './state/MapLayer.js';
-import { LayerTreeGroupState } from './state/LayerTree.js';
+import { TreeRootState } from './state/LayerTree.js';
 
 /**
  * @class
@@ -90,11 +90,11 @@ export class State extends EventDispatcher {
 
     /**
      * Root tree layer group
-     * @type {LayerTreeGroupState}
+     * @type {TreeRootState}
      */
     get layerTree() {
         if (this._layerTree == null) {
-            this._layerTree = new LayerTreeGroupState(this.rootMapGroup);
+            this._layerTree = new TreeRootState(this.rootMapGroup);
         }
         return this._layerTree;
     }
