@@ -226,8 +226,11 @@ export default class Digitizing {
             source: this._drawSource,
             style: this._drawStyleFunction
         });
+        this._drawLayer.setProperties({
+            name: 'LizmapDigitizingDrawLayer'
+        });
 
-        mainLizmap.map.addLayer(this._drawLayer);
+        mainLizmap.map.addToolLayer(this._drawLayer);
 
         // Constraint layer
         this._constraintLayer = new VectorLayer({
@@ -251,7 +254,10 @@ export default class Digitizing {
                 }),
             })
         });
-        mainLizmap.map.addLayer(this._constraintLayer);
+        this._constraintLayer.setProperties({
+            name: 'LizmapDigitizingConstraintLayer'
+        });
+        mainLizmap.map.addToolLayer(this._constraintLayer);
 
         // Constraints values
         this._distanceConstraint = 0;

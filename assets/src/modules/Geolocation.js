@@ -37,8 +37,11 @@ export default class Geolocation {
                 'fill-color': fillColor,
             }
         });
+        this._geolocationLayer.setProperties({
+            name: 'LizmapGeolocationGeolocationDrawLayer'
+        });
 
-        mainLizmap.map.addLayer(this._geolocationLayer);
+        mainLizmap.map.addToolLayer(this._geolocationLayer);
 
         this._firstGeolocation = true;
         this._isBind = false;
