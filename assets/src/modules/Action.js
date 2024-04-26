@@ -165,9 +165,12 @@ export default class Action {
                 'fill-color': fillColor,
             }
         });
+        this.actionLayer.setProperties({
+            name: 'LizmapActionActionLayer'
+        });
 
         // Add the layer inside Lizmap objects
-        mainLizmap.map.addLayer(this.actionLayer);
+        mainLizmap.map.addToolLayer(this.actionLayer);
     }
 
     /**
