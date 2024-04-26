@@ -560,6 +560,9 @@ export default class FeatureToolbar extends HTMLElement {
             });
 
             document.querySelector('#message .print-in-progress a').click();
+        }, (errorEvent) => {
+            console.error(errorEvent)
+            mainLizmap._lizmap3.addMessage(lizDict['print.error'], 'error', true).addClass('print-error');
         });
     }
 
