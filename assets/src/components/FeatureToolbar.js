@@ -177,18 +177,18 @@ export default class FeatureToolbar extends HTMLElement {
     get pivotLayerId(){
         const pivotAttributeLayerConf = lizMap.getLayerConfigById( this._pivotLayerId, lizMap.config.attributeLayers, 'layerId' );
         const config = lizMap.config;
-        if (pivotAttributeLayerConf 
+        if (pivotAttributeLayerConf
             && pivotAttributeLayerConf[1]?.pivot == 'True'
-            && config.relations.pivot 
-            && config.relations.pivot[this._pivotLayerId] 
-            && config.relations.pivot[this._pivotLayerId][this.layerId] 
-            && config.relations.pivot[this._pivotLayerId][this.parentLayerId]   
+            && config.relations.pivot
+            && config.relations.pivot[this._pivotLayerId]
+            && config.relations.pivot[this._pivotLayerId][this.layerId]
+            && config.relations.pivot[this._pivotLayerId][this.parentLayerId]
         ){
             return this._pivotLayerId;
         }
 
         return null;
-        
+
     }
 
     get isSelected() {
@@ -241,17 +241,17 @@ export default class FeatureToolbar extends HTMLElement {
 
     get pivotFeatureId(){
         const pivotLayerId = this.pivotLayerId;
-        
+
         if(!pivotLayerId) return null;
 
         const parentLayerId = this.parentLayerId;
         const config = lizMap.config;
-        
+
         // parent and current layer should be configured in relations object
         if (!(parentLayerId in config.relations) || !(this.layerId in config.relations) || !this._parentFeatureId){
             return null;
         }
-      
+
         // pivot contains features?
         const features = config.layers[this._pivotType]['features'];
         if (!features || Object.keys(features).length <= 0){
@@ -363,7 +363,7 @@ export default class FeatureToolbar extends HTMLElement {
 
             // Check if the child layer has insert capabilities
             let [childFeatureType, childLayerConfig] = lizMap.getLayerConfigById(relation.referencingLayer);
-            let isPivot = !!lizMap.config?.relations?.pivot?.[relation.referencingLayer] 
+            let isPivot = !!lizMap.config?.relations?.pivot?.[relation.referencingLayer]
             if (isPivot || lizMap.config?.editionLayers?.[childFeatureType]?.capabilities?.createFeature !== "True") {
                 return;
             }
@@ -454,7 +454,7 @@ export default class FeatureToolbar extends HTMLElement {
         // get list of tables that are linked to the pivot
         let relations = lizMap.config?.relations?.[this.layerId], message = "";
         if(relations && lizMap.config?.relations?.pivot){
-            
+
             let pivotNames = relations.map((relation)=>{
                 return relation.referencingLayer
             }).filter((refLayer)=>{
@@ -670,6 +670,9 @@ export default class FeatureToolbar extends HTMLElement {
             });
 
             document.querySelector('#message .print-in-progress a').click();
+        }, (errorEvent) => {
+            console.error(errorEvent)
+            mainLizmap._lizmap3.addMessage(lizDict['print.error'], 'error', true).addClass('print-error');
         });
     }
 
