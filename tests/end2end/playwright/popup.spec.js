@@ -1,6 +1,101 @@
 // @ts-check
 const { test, expect } = require('@playwright/test');
 
+test.describe('Style parameter in GetFeatureInfo request', ()=>{
+    test('Click on the map to show the popup', async ({page}) => {
+
+        // the get_feature_info_style project has one layer "natural_areas" configured with two styles: default and ids
+        //
+        // "default" style: shows all the 3 features of the natural_area layer, it has QGIS Html Maptip enabled
+        // "ids" style: shows only 2 of the 3 features of the natural_area layer, drag & drop tooltip enabled. the layer with id = 3 is not show
+
+        // QGIS project is saved with the "ids" style enabled on the layer natural_areas
+        // Lizmap init the map with the first style found in the styles's list sorted alphabetically, in this case "default"
+
+
+        const url = '/index.php/view/map/?repository=testsrepository&project=get_feature_info_style';
+        await page.goto(url, { waitUntil: 'networkidle' });
+
+        await page.locator("#dock-close").click();
+
+        await page.waitForTimeout(300);
+
+
+        // get the popup of the feature with id = 3. The STYLE property (STYLE=default) should be passed in the getfeatureinfo request.
+        // Otherwise the popup would not be shown because QGIS Server query the layer natural_areas with the "ids" style
+
+        let getPopup= page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('STYLE=default'));
+
+        await  page.locator('#map').click({
+          position: {
+            x: 501,
+            y: 488
+          }
+        });
+
+        await getPopup;
+
+        // inspect feature toolbar, expect to find only one
+        const popup = page.locator("#popupcontent > div.menu-content > div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv div.container.popup_lizmap_dd")
+        await expect(popup).toHaveCount(1)
+        await expect(popup.locator(".before-tabs div.field")).toHaveCount(2);
+        await expect(popup.locator("#test-custom-tooltip")).toHaveText("Custom tooltip");
+
+        await expect(popup.locator(".before-tabs div.field").nth(0)).toHaveText("3");
+        await expect(popup.locator(".before-tabs div.field").nth(1)).toHaveText("Étang Saint Anne");
+
+
+        // change the style of the layer
+        await page.locator("#button-switcher").click()
+        await page.getByTestId('natural_areas').hover();
+        await page.getByTestId('natural_areas').locator('i').nth(1).click();
+        await page.locator('#sub-dock').getByRole('combobox').selectOption("ids")
+
+        // wait for the map
+        await page.waitForTimeout(1000)
+
+        let getPopupIds = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('STYLE=ids'));
+        // click again on the previous point
+        await  page.locator('#map').click({
+            position: {
+              x: 501,
+              y: 488
+            }
+          });
+
+        await getPopupIds;
+
+        // the popup should be empty
+        const popupIds = page.locator("#popupcontent > div.menu-content > div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv div.container.popup_lizmap_dd")
+
+        await expect(popupIds).toHaveCount(0);
+
+        // clean the map
+        await page.locator("#hide-sub-dock").click();
+
+        let getPopupIdsFeature = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('STYLE=ids'));
+        // click on a feature to get the popup (it should fallback to the default lizmap popup)
+        await  page.locator('#map').click({
+          position: {
+            x: 404,
+            y: 165
+          }
+        });
+
+        await getPopupIdsFeature;
+
+        await page.waitForTimeout(300)
+
+        const popupIdsFeat = page.locator("#popupcontent div.lizmapPopupSingleFeature")
+        await expect(popupIdsFeat).toHaveCount(1);
+
+        // expect to have the lizmap default popup ("automatic")
+        await expect(popupIdsFeat.locator("table tbody tr")).toHaveCount(2);
+        await expect(popupIdsFeat.locator("table tbody tr").nth(0).locator("td")).toHaveText("1");
+        await expect(popupIdsFeat.locator("table tbody tr").nth(1).locator("td")).toHaveText("Étang du Galabert");
+    })
+})
+
 test.describe('Popup', () => {
 
     test.beforeEach(async ({ page }) => {

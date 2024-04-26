@@ -69,11 +69,12 @@ export default class Popup {
                 if(!candidateLayers.length){
                     return;
                 }
-    
+
                 const layersWMS = candidateLayers.map(layer => layer.wmsName).join();
-    
+                const layersStyles = candidateLayers.map(layer => layer.wmsSelectedStyleName || "").join();
+
                 const wms = new WMS();
-    
+
                 const [width, height] = lizMap.mainLizmap.map.getSize();
 
                 let bbox = mainLizmap.map.getView().calculateExtent();
@@ -85,6 +86,7 @@ export default class Popup {
                 const wmsParams = {
                     QUERY_LAYERS: layersWMS,
                     LAYERS: layersWMS,
+                    STYLE: layersStyles,
                     CRS: mainLizmap.projection,
                     BBOX: bbox,
                     FEATURE_COUNT: 10,
@@ -108,9 +110,9 @@ export default class Popup {
                 if (filterTokens.length) {
                     wmsParams['FILTERTOKEN'] = filterTokens.join(';');
                 }
-    
+
                 document.getElementById('map').style.cursor = 'wait';
-    
+
                 wms.getFeatureInfo(wmsParams).then(response => {
                     lizMap.displayGetFeatureInfo(response, evt.xy);
                 }).finally(() => {
