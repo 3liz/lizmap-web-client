@@ -108,11 +108,14 @@ export default class MousePosition extends HTMLElement {
                     showLabels: true,
                     wrapX: false,
                 });
+                this._MGRS.setProperties({
+                    name: 'LizmapMousePositionMGRS'
+                });
             }
-            mainLizmap.map.addLayer(this._MGRS);
+            mainLizmap.map.addToolLayer(this._MGRS);
         } else {
             if(this._MGRS){
-                mainLizmap.map.removeLayer(this._MGRS);
+                mainLizmap.map.removeToolLayer(this._MGRS);
             }
         }
     }
@@ -162,7 +165,9 @@ export default class MousePosition extends HTMLElement {
                     mgrsCoords = forward(lonLatToDisplay);
 
                     mgrsCoords = mgrsCoords.slice(0, -12) + ' ' + mgrsCoords.slice(-12, -10) + ' ' + mgrsCoords.slice(-10, -5) + ' ' + mgrsCoords.slice(-5);
-                } catch (error) {}
+                } catch (error) {
+                    console.error(error);
+                }
 
                 render(this.mainTemplate(mgrsCoords, ''), this);
             } else {

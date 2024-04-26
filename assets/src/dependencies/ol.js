@@ -78,6 +78,18 @@ import $ol$style$Stroke from 'ol/style/Stroke.js';
 import $ol$style$Style from 'ol/style/Style.js';
 import $ol$style$Text from 'ol/style/Text.js';
 
+import $ol$tilegrid$TileGrid from 'ol/tilegrid/TileGrid.js';
+import $ol$tilegrid$WMTS from 'ol/tilegrid/WMTS.js';
+import {createFromCapabilitiesMatrixSet as _ol_tilegrid_WMTS$createFromCapabilitiesMatrixSet} from 'ol/tilegrid/WMTS.js';
+import {DEFAULT_MAX_ZOOM as _ol_tilegrid_common$DEFAULT_MAX_ZOOM} from 'ol/tilegrid/common.js';
+import {DEFAULT_TILE_SIZE as _ol_tilegrid_common$DEFAULT_TILE_SIZE} from 'ol/tilegrid/common.js';
+import {getForProjection as _ol_tilegrid$getForProjection} from 'ol/tilegrid.js';
+import {wrapX as _ol_tilegrid$wrapX} from 'ol/tilegrid.js';
+import {createForExtent as _ol_tilegrid$createForExtent} from 'ol/tilegrid.js';
+import {createXYZ as _ol_tilegrid$createXYZ} from 'ol/tilegrid.js';
+import {createForProjection as _ol_tilegrid$createForProjection} from 'ol/tilegrid.js';
+import {extentFromProjection as _ol_tilegrid$extentFromProjection} from 'ol/tilegrid.js';
+
 var ol = {};
 
 ol.Feature = $ol$Feature;
@@ -169,5 +181,19 @@ ol.style.RegularShape = $ol$style$RegularShape;
 ol.style.Stroke = $ol$style$Stroke;
 ol.style.Style = $ol$style$Style;
 ol.style.Text = $ol$style$Text;
+
+ol.tilegrid = {};
+ol.tilegrid.TileGrid = $ol$tilegrid$TileGrid;
+ol.tilegrid.WMTS = $ol$tilegrid$WMTS;
+ol.tilegrid.WMTS.createFromCapabilitiesMatrixSet = _ol_tilegrid_WMTS$createFromCapabilitiesMatrixSet;
+ol.tilegrid.common = {};
+ol.tilegrid.common.DEFAULT_MAX_ZOOM = _ol_tilegrid_common$DEFAULT_MAX_ZOOM;
+ol.tilegrid.common.DEFAULT_TILE_SIZE = _ol_tilegrid_common$DEFAULT_TILE_SIZE;
+ol.tilegrid.createForExtent = _ol_tilegrid$createForExtent;
+ol.tilegrid.createForProjection = _ol_tilegrid$createForProjection;
+ol.tilegrid.createXYZ = _ol_tilegrid$createXYZ;
+ol.tilegrid.extentFromProjection = _ol_tilegrid$extentFromProjection;
+ol.tilegrid.getForProjection = _ol_tilegrid$getForProjection;
+ol.tilegrid.wrapX = _ol_tilegrid$wrapX;
 
 export default ol;

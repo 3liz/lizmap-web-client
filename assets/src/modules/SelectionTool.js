@@ -45,8 +45,11 @@ export default class SelectionTool {
         this._bufferLayer = new VectorLayer({
             source: new VectorSource({wrapX: false}),
         });
+        this._bufferLayer.setProperties({
+            name: 'LizmapSelectionToolBufferLayer'
+        });
 
-        mainLizmap.map.addLayer(this._bufferLayer);
+        mainLizmap.map.addToolLayer(this._bufferLayer);
 
         this._geomOperator = 'intersects';
 
