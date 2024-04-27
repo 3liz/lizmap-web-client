@@ -9,7 +9,7 @@ import { buildLayersOrder } from '../../../../assets/src/modules/config/LayersOr
 import { LayerIconSymbology, LayerSymbolsSymbology, SymbolIconSymbology } from '../../../../assets/src/modules/state/Symbology.js';
 import { LayerGroupState, LayerVectorState, LayersAndGroupsCollection } from '../../../../assets/src/modules/state/Layer.js';
 
-import { MapLayerLoadStatus, MapGroupState, MapLayerState } from '../../../../assets/src/modules/state/MapLayer.js';
+import { MapLayerLoadStatus, MapGroupState, MapLayerState, MapRootState } from '../../../../assets/src/modules/state/MapLayer.js';
 
 /**
  * Returns the root MapGroupState for the project
@@ -20,7 +20,7 @@ import { MapLayerLoadStatus, MapGroupState, MapLayerState } from '../../../../as
  *
  * @param {String} name - The project name
  *
- * @return {MapGroupState}
+ * @return {MapRootState}
  **/
 function getRootMapGroupState(name) {
     const capabilities = JSON.parse(readFileSync('./data/'+ name +'-capabilities.json', 'utf8'));
@@ -38,8 +38,9 @@ function getRootMapGroupState(name) {
 
     const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
 
-    const root = new MapGroupState(collection.root);
+    const root = new MapRootState(collection.root);
     expect(root).to.be.instanceOf(MapGroupState)
+    expect(root).to.be.instanceOf(MapRootState)
     return root;
 }
 
@@ -2044,5 +2045,46 @@ describe('MapGroupState', function () {
             expect(error.message).to.be.eq('Cannot assign an unknown WMS style name! `default` is not in the layer `Fond` WMS styles!')
             expect(error).to.be.instanceOf(TypeError)
         }
+    })
+})
+
+describe('MapRootState', function () {
+    it('createExternalGroup', function () {
+        const root = getRootMapGroupState('montpellier');
+        expect(root.childrenCount).to.be.eq(4)
+
+        // Create external group
+        const extGroup = root.createExternalGroup('test');
+        expect(extGroup.name).to.be.eq('test')
+
+        // The external group has been added
+        expect(root.childrenCount).to.be.eq(5)
+        expect(root.children[0]).to.be.eq(extGroup)
+
+        // Try to create with the same name
+        try {
+            root.createExternalGroup('test');
+        } catch (error) {
+            expect(error.name).to.be.eq('RangeError')
+            expect(error.message).to.be.eq('The group name `test` is already used by an external group child!')
+            expect(error).to.be.instanceOf(RangeError)
+        }
+    })
+
+    it('removeExternalGroup', function () {
+        const root = getRootMapGroupState('montpellier');
+        expect(root.childrenCount).to.be.eq(4)
+
+        // Create external group
+        const extGroup = root.createExternalGroup('test');
+        expect(extGroup.name).to.be.eq('test')
+        expect(root.childrenCount).to.be.eq(5)
+
+        // Try to remove with unknown name
+        expect(root.removeExternalGroup('unknown')).to.be.undefined
+
+        // Remove external group
+        expect(root.removeExternalGroup('test')).to.be.eq(extGroup);
+        expect(root.childrenCount).to.be.eq(4)
     })
 })
