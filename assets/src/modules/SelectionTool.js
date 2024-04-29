@@ -4,10 +4,7 @@
  * @copyright 2023 3Liz
  * @license MPL-2.0
  */
-import {mainLizmap, mainEventDispatcher} from '../modules/Globals.js';
-
-import BufferOp from 'jsts/org/locationtech/jts/operation/buffer/BufferOp.js';
-import OLparser from 'jsts/org/locationtech/jts/io/OL3Parser.js';
+import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 
 import {
     LinearRing,
@@ -118,29 +115,34 @@ export default class SelectionTool {
                         // Handle buffer if any
                         this._bufferLayer.getSource().clear();
                         if (this._bufferValue > 0) {
-                            const parser = new OLparser();
-                            parser.inject(
-                                Point,
-                                LineString,
-                                LinearRing,
-                                Polygon,
-                                MultiPoint,
-                                MultiLineString,
-                                MultiPolygon
-                            );
+                            Promise.all([
+                                import(/* webpackChunkName: 'OLparser' */ 'jsts/org/locationtech/jts/io/OL3Parser.js'),
+                                import(/* webpackChunkName: 'BufferOp' */ 'jsts/org/locationtech/jts/operation/buffer/BufferOp.js')
+                            ]).then(([{ default: OLparser }, { default: BufferOp }]) => {
+                                const parser = new OLparser();
+                                parser.inject(
+                                    Point,
+                                    LineString,
+                                    LinearRing,
+                                    Polygon,
+                                    MultiPoint,
+                                    MultiLineString,
+                                    MultiPolygon
+                                );
 
-                            // Convert the OpenLayers geometry to a JSTS geometry
-                            const jstsGeom = parser.read(selectionFeature.getGeometry());
+                                // Convert the OpenLayers geometry to a JSTS geometry
+                                const jstsGeom = parser.read(selectionFeature.getGeometry());
 
-                            // Create a buffer
-                            const jstsbBufferedGeom = BufferOp.bufferOp(jstsGeom, this._bufferValue);
+                                // Create a buffer
+                                const jstsbBufferedGeom = BufferOp.bufferOp(jstsGeom, this._bufferValue);
 
-                            const bufferedFeature = new Feature();
-                            bufferedFeature.setGeometry(parser.write(jstsbBufferedGeom));
+                                const bufferedFeature = new Feature();
+                                bufferedFeature.setGeometry(parser.write(jstsbBufferedGeom));
 
-                            this._bufferLayer.getSource().addFeature(bufferedFeature);
+                                this._bufferLayer.getSource().addFeature(bufferedFeature);
 
-                            selectionFeature = this.featureDrawnBuffered;
+                                selectionFeature = this.featureDrawnBuffered;
+                            });
                         }
 
                         for (const featureType of this.allFeatureTypeSelected) {

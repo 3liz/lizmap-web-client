@@ -17,9 +17,10 @@ export default {
         'bottom-dock': './src/legacy/bottom-dock.js',
     },
     output: {
-        filename: '../../lizmap/www/assets/js/[name].js',
+        filename: '[name].js',
         chunkFilename: '[name].bundle.js',
-        path: resolve(__dirname, 'dist')
+        publicPath: '/assets/js/',
+        path: resolve(__dirname, '../lizmap/www/assets/js/')
     },
     module: {
         rules: [
