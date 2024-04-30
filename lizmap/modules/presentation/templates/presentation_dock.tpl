@@ -1,3 +1,4 @@
+<!-- Presentation dock container -->
 <div id="presentation-container">
     <div id="presentation-list-container" class="presentation-container-item list-container" >
         <div id="presentation-introduction">
@@ -9,8 +10,8 @@
     </div>
 </div>
 
+<!-- Templates -->
 
-<!-- Templates for the web component lizmap-presentation-cards -->
 <!-- Creation button -->
 <template id="lizmap-presentation-create-button-template">
     <div style="text-align: center;">
@@ -86,9 +87,9 @@
             title="{@presentation~presentation.dock.card.button.launch.title@}">{@presentation~presentation.dock.card.button.launch.label@}</button>
     </div>
 
-    <!-- div containing the presentation pages -->
-    <div class="lizmap-presentation-card-pages">
-        <h3 class="lizmap-presentation-card-pages-title">{@presentation~presentation.dock.card.pages.title.label@}</h3>
+    <!-- div containing the presentation pages preview -->
+    <div class="lizmap-presentation-card-pages-preview">
+        <h3 class="lizmap-presentation-card-pages-preview-title">{@presentation~presentation.dock.card.pages.title.label@}</h3>
 
         <button class="btn liz-presentation-create page"
             title="{@presentation~presentation.dock.card.button.create.page.title@}">{@presentation~presentation.dock.card.button.create.page.label@}</button>
@@ -96,17 +97,13 @@
 </template>
 
 
-<!-- Template for a presentation page card -->
+<!-- Template for a presentation page preview item -->
 <template id="lizmap-presentation-page-preview-template">
     <h3 class="lizmap-presentation-page-preview-title"></h3>
     <table class="presentation-detail-table table table-condensed">
         <tr>
-            <th>{@presentation~presentation.dock.page.preview.description.label@}</th>
+            <!-- <th>{@presentation~presentation.dock.page.preview.description.label@}</th> -->
             <td class="presentation-page-description"></td>
-        </tr>
-        <tr>
-            <th>{@presentation~presentation.dock.page.preview.background_image.label@}</th>
-            <td class="presentation-page-background_image"></td>
         </tr>
     </table>
     <div class="lizmap-presentation-page-preview-toolbar">
@@ -114,5 +111,18 @@
             title="{@presentation~presentation.dock.page.preview.button.edit.title@}">{@presentation~presentation.dock.page.preview.button.edit.label@}</button>
         <button class="btn liz-presentation-delete page" value=""
             title="{@presentation~presentation.dock.page.preview.button.delete.title@}" data-confirm="{@presentation~presentation.dock.page.preview.button.delete.confirm@}">{@presentation~presentation.dock.page.preview.button.delete.label@}</button>
+    </div>
+</template>
+
+
+
+<!-- Template for a presentation page item -->
+<template id="lizmap-presentation-page-template">
+    <h2 class="lizmap-presentation-page-title"></h2>
+    <div class="lizmap-presentation-page-content">
+        <div class="lizmap-presentation-page-text">
+        </div>
+        <div class="lizmap-presentation-page-media">
+        </div>
     </div>
 </template>

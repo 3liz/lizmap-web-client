@@ -67,6 +67,11 @@ export default class Presentation {
             // Add an OpenLayers layer to show & use the geometries returned by an presentation
             this.createPresentationMapLayer();
 
+            // Add a div which will contain the slideshow
+            const slidesDiv = document.createElement('div');
+            slidesDiv.id = 'lizmap-presentation-slides-container';
+            document.querySelector('body').appendChild(slidesDiv);
+
             // React on the main Lizmap events
             mainLizmap.lizmap3.events.on({
             });
@@ -107,12 +112,23 @@ export default class Presentation {
      *
      * @param {integer} presentationId - id of the presentation
      *
-     * @return {object} The corresponding presentation data
+     * @return {null|object} The corresponding presentation data
      */
     getPresentationById(presentationId) {
-
         if (!this.hasPresentations) {
             return null;
+        }
+
+        const presentationCards = document.querySelector('lizmap-presentation-cards');
+        if (presentationCards === null) {
+            return null;
+        }
+
+        for (const p in presentationCards.presentations) {
+            const presentation = presentationCards.presentations[p];
+            if (presentation && presentation.id == presentationId) {
+                return presentation;
+            }
         }
 
         return null;
@@ -159,7 +175,7 @@ export default class Presentation {
 
         // Get the presentation
         let presentation = this.getPresentationById(presentationId);
-        if (!presentation) {
+        if (presentation === null) {
             this.addMessage('No corresponding presentation found in the configuration !', 'error', 5000);
 
             return false;
@@ -174,6 +190,23 @@ export default class Presentation {
             // Show a message
             const message = `Run presentation n° ${presentationId}`;
             this.addMessage(message, 'info', 5000);
+
+            // Set the presentation slidedhow container visible
+            const slideshow = document.getElementById('lizmap-presentation-slides-container');
+            slideshow.innerHTML = '<button style="position: absolute; top: 0px; right: 0px;" onclick="document.getElementById(\'lizmap-presentation-slides-container\').classList.remove(\'visible\');">CLOSE</button>';
+
+            slideshow.classList.add('visible');
+
+            // Slideshow background color
+            slideshow.style.backgroundColor = presentation.background_color;
+
+            // Add the pages
+            presentation.pages.forEach(page => {
+                const presentationPage = document.createElement('lizmap-presentation-page');
+                presentationPage.dataset.uuid = page.uuid;
+                presentationPage.properties = page;
+                slideshow.appendChild(presentationPage);
+            })
 
             /**
              * Lizmap event to allow other scripts to process the data if needed
@@ -412,7 +445,9 @@ export default class Presentation {
                         const itemType = formData.get('item_type');
                         const presentationId = (itemType == 'presentation') ? formData.get('id') : formData.get('presentation_id');
                         const cardsElement = document.querySelector('#presentation-list-container lizmap-presentation-cards');
-                        cardsElement.setAttribute(' ', presentationId);
+                        console.log('itemType ' + itemType);
+                        console.log('presentationId ' + presentationId);
+                        cardsElement.setAttribute('detail', presentationId);
                         cardsElement.setAttribute('updated', 'done');
 
                         // Go back to the list of presentations

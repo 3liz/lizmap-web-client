@@ -21,6 +21,9 @@ export default class PresentationCards extends HTMLElement {
         // Id of the component
         this.id = this.getAttribute('id');
 
+        // Presentations
+        this.presentations = [];
+
         // Attribute to force the refresh of data
         // Store the last refresh timestamp
         this.updated = this.getAttribute('updated');
@@ -56,7 +59,7 @@ export default class PresentationCards extends HTMLElement {
                     </video>
                 `;
             } else if (['png', 'webp', 'jpeg', 'jpg', 'gif'].includes(fileExtension)) {
-                fieldHtml = `<img src="${mediaUrl}${fieldValue}" style="max-width:150px;max-height:150px;" title="${fieldValue}">`;
+                fieldHtml = `<img src="${mediaUrl}${fieldValue + '#' + new Date().getTime()}" style="max-width:150px;max-height:150px;" title="${fieldValue}">`;
             } else {
                 fieldHtml = fieldValue;
             }
@@ -132,37 +135,8 @@ export default class PresentationCards extends HTMLElement {
             div.querySelector('button.liz-presentation-launch').value = presentation.id;
             div.querySelector('button.liz-presentation-create.page').value = presentation.id;
 
-            // Pages
-            let pageContainer = div.querySelector('div.lizmap-presentation-card-pages');
-            const pagePreviewTemplate = document.getElementById('lizmap-presentation-page-preview-template');
-            const previewHtml = pagePreviewTemplate.innerHTML;
-            presentation.pages.forEach(page => {
-                let pageDiv = document.createElement('div');
-                pageDiv.classList.add('lizmap-presentation-page-preview');
-                pageDiv.innerHTML = previewHtml;
-                pageDiv.querySelector('h3.lizmap-presentation-page-preview-title').innerHTML = `
-                    ${page.title}<span class="pull-right">${page.page_order}</span>
-                `;
-
-                // Detailed information
-                const pageTable = pageDiv.querySelector('table.presentation-detail-table');
-                const pageFields = [
-                    'description', 'background_image'
-                ];
-                pageFields.forEach(field => {
-                    const pageTd = pageTable.querySelector(`td.presentation-page-${field}`);
-                    if (pageTd) {
-                        let pageFieldValue = (!page[field]) ? '' : page[field];
-                        const pageFieldHtml = this.getFieldDisplayHtml(field, pageFieldValue);
-                        pageTd.innerHTML = pageFieldHtml;
-                    }
-                })
-
-                pageDiv.querySelector('button.liz-presentation-edit').value = page.id;
-                pageDiv.querySelector('button.liz-presentation-delete').value = page.id;
-                pageContainer.appendChild(pageDiv);
-            })
-
+            // Add pages preview (small vertical view of mini pages)
+            this.renderPagesPreview(div, presentation);
 
             // Add the card to the parent
             this.appendChild(div);
@@ -188,6 +162,60 @@ export default class PresentationCards extends HTMLElement {
                 button.addEventListener('click', this.onButtonLaunchClick);
             }
         });
+    }
+
+    /**
+     * Render a presentation page preview
+     *
+     * @param {Object} page Presentation page object
+     *
+     * @return {HTMLDivElement} Page div to insert in the list
+     */
+    getPagePreview(page) {
+        const pagePreviewTemplate = document.getElementById('lizmap-presentation-page-preview-template');
+        const previewHtml = pagePreviewTemplate.innerHTML;
+
+        let pageDiv = document.createElement('div');
+        pageDiv.classList.add('lizmap-presentation-page-preview');
+        pageDiv.innerHTML = previewHtml;
+        pageDiv.querySelector('h3.lizmap-presentation-page-preview-title').innerHTML = `
+            ${page.title}<span class="pull-right">${page.page_order}</span>
+        `;
+
+        // Detailed information
+        const pageTable = pageDiv.querySelector('table.presentation-detail-table');
+        const pageFields = [
+            'description'
+            //, 'background_image'
+        ];
+        pageFields.forEach(field => {
+            const pageTd = pageTable.querySelector(`td.presentation-page-${field}`);
+            if (pageTd) {
+                let pageFieldValue = (!page[field]) ? '' : page[field];
+                const pageFieldHtml = this.getFieldDisplayHtml(field, pageFieldValue);
+                pageTd.innerHTML = pageFieldHtml;
+            }
+        })
+
+        pageDiv.querySelector('button.liz-presentation-edit').value = page.id;
+        pageDiv.querySelector('button.liz-presentation-delete').value = page.id;
+
+        return pageDiv;
+    }
+
+    /**
+     * Render the pages preview of the given presentation
+     * and add content in the given presentation div
+     *
+     * @param {HTMLDivElement} presentationDiv Div which must contain the pages preview
+     * @param {Object} presentation Presentation properties
+     */
+    renderPagesPreview(presentationDiv, presentation) {
+        let pageContainer = presentationDiv.querySelector('div.lizmap-presentation-card-pages-preview');
+        presentation.pages.forEach(page => {
+            const pagePreviewDiv = this.getPagePreview(page);
+            pageContainer.appendChild(pagePreviewDiv);
+        })
     }
 
     connectedCallback() {
@@ -288,10 +316,19 @@ export default class PresentationCards extends HTMLElement {
     }
 
     onButtonLaunchClick(event) {
+        const host = event.target.closest("lizmap-presentation-cards");
         const button = event.currentTarget;
         const presentationId = button.value;
+
+        // Get presentation item
+        const presentation = host.getPresentationById(presentationId);
+        if (presentation === null) {
+            return false;
+        }
+
         mainLizmap.presentation.runLizmapPresentation(presentationId);
     }
+
 
     disconnectedCallback() {
         // Remove click events on the presentation buttons

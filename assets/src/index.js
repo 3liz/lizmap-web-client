@@ -28,6 +28,8 @@ import Message from './components/Message.js';
 
 
 import PresentationCards from './components/PresentationCards.js';
+import PresentationPage from './components/PresentationPage.js';
+
 
 import { mainLizmap, mainEventDispatcher } from './modules/Globals.js';
 import executeJSFromServer from './modules/ExecuteJSFromServer.js';
@@ -63,11 +65,9 @@ lizMap.events.on({
 
 
         window.customElements.define('lizmap-presentation-cards', PresentationCards);
+        window.customElements.define('lizmap-presentation-page', PresentationPage);
 
         lizMap.mainLizmap = mainLizmap;
         lizMap.mainEventDispatcher = mainEventDispatcher;
-
     }
 });
-
-executeJSFromServer();

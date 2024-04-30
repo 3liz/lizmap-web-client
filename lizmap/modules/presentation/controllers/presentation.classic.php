@@ -433,6 +433,7 @@ class presentationCtrl extends jController
                 'repository' => $this->repository,
                 'project' => $this->project,
                 'path' => '%s',
+                'nocache' => (string) time(),
             ),
             'uriActionFileParameter' => 'path',
             // maximum size of the image when displayed into the popup
@@ -522,7 +523,6 @@ class presentationCtrl extends jController
             // Invalid form
             return $rep;
         }
-        return $rep;
 
         // Uploads
         $uuid = $form->getData('uuid');
