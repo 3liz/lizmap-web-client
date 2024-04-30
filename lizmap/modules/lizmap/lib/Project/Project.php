@@ -1115,6 +1115,14 @@ class Project
     }
 
     /**
+     * @return object
+     */
+    public function getTooltipLayers()
+    {
+        return $this->cfg->getTooltipLayers();
+    }
+
+    /**
      * Return the given edition layer if it exists and if the
      * current user can edit it.
      *

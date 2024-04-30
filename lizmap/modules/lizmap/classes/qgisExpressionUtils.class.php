@@ -239,6 +239,37 @@ class qgisExpressionUtils
     }
 
     /**
+     * Request QGIS Server and the lizmap plugin to replace QGIS expressions text.
+     *
+     * @param qgisVectorLayer $layer       A QGIS vector layer
+     * @param array           $expressions The expressions text to replace
+     *
+     * @return null|object the results of expressions text replacement
+     */
+    public static function replaceExpressionText($layer, $expressions)
+    {
+        // Evaluate the expression by qgis
+        $project = $layer->getProject();
+        $params = array(
+            'service' => 'EXPRESSION',
+            'request' => 'REPLACEEXPRESSIONTEXT',
+            'map' => $project->getRelativeQgisPath(),
+            'layer' => $layer->getName(),
+            'strings' => json_encode($expressions),
+            'features' => 'ALL',
+            'format' => 'GeoJSON',
+        );
+
+        // Request replace expression text
+        $json = self::request($params, $project);
+        if (!$json) {
+            return null;
+        }
+
+        return $json;
+    }
+
+    /**
      * Request QGIS Server to provide features with a form scope used for drilling down select.
      *
      * @param qgisVectorLayer $layer        A QGIS vector layer
@@ -431,7 +462,7 @@ class qgisExpressionUtils
         list($data, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($url, $options);
 
         // Check data from request
-        if (strpos($mime, 'text/json') === 0 || strpos($mime, 'application/json') === 0) {
+        if (strpos($mime, 'text/json') === 0 || strpos($mime, 'application/json') === 0 || strpos($mime, 'application/vnd.geo+json') === 0) {
             return json_decode($data);
         }
 
