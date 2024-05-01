@@ -2,15 +2,16 @@ import { expect } from 'chai';
 
 import { readFileSync } from 'fs';
 
-import { ValidationError, ConversionError } from '../../../../assets/src/modules/Errors.js';
+import { ConversionError } from '../../../../assets/src/modules/Errors.js';
 import { LayersConfig } from '../../../../assets/src/modules/config/Layer.js';
-import { LayerGeographicBoundingBoxConfig, LayerBoundingBoxConfig, LayerTreeGroupConfig, buildLayerTreeConfig } from '../../../../assets/src/modules/config/LayerTree.js';
+import { LayerTreeGroupConfig, buildLayerTreeConfig } from '../../../../assets/src/modules/config/LayerTree.js';
 import { base64png, base64svg, base64svgPointLayer, base64svgLineLayer, base64svgPolygonLayer, BaseIconSymbology, LayerIconSymbology, LayerSymbolsSymbology, SymbolIconSymbology } from '../../../../assets/src/modules/state/Symbology.js';
 import { buildLayersOrder } from '../../../../assets/src/modules/config/LayersOrder.js';
 import { LayersAndGroupsCollection } from '../../../../assets/src/modules/state/Layer.js';
-import { MapLayerLoadStatus, MapGroupState } from '../../../../assets/src/modules/state/MapLayer.js';
+import { MapLayerLoadStatus, MapGroupState, MapRootState } from '../../../../assets/src/modules/state/MapLayer.js';
 
-import { LayerTreeGroupState, LayerTreeLayerState } from '../../../../assets/src/modules/state/LayerTree.js';
+import { LayerTreeGroupState, LayerTreeLayerState, TreeRootState } from '../../../../assets/src/modules/state/LayerTree.js';
+import { ExternalLayerTreeGroupState } from '../../../../assets/src/modules/state/ExternalLayerTree.js';
 
 /**
  * Returns the root LayerTreeGroupState for the project
@@ -39,11 +40,12 @@ function getRootLayerTreeGroupState(name) {
 
     const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
 
-    const rootMapGroup = new MapGroupState(collection.root);
+    const rootMapGroup = new MapRootState(collection.root);
     expect(rootMapGroup).to.be.instanceOf(MapGroupState)
 
-    const root = new LayerTreeGroupState(rootMapGroup);
+    const root = new TreeRootState(rootMapGroup);
     expect(root).to.be.instanceOf(LayerTreeGroupState)
+    expect(root).to.be.instanceOf(TreeRootState)
     return root;
 }
 
@@ -1171,5 +1173,52 @@ describe('LayerTreeGroupState', function () {
             "DPI": 96,
             "FILTER": "SousQuartiers:\"QUARTMNO\" = 'HO'"
         })
+    })
+})
+
+describe('TreeRootState', function () {
+    it('createExternalGroup', function () {
+        const root = getRootLayerTreeGroupState('montpellier');
+        expect(root.childrenCount).to.be.eq(4)
+
+        const mapRoot = root.mapItemState;
+        expect(mapRoot).to.be.instanceOf(MapRootState);
+        expect(mapRoot.childrenCount).to.be.eq(4)
+
+        // Create external group
+        const extGroup = mapRoot.createExternalGroup('test');
+        expect(extGroup.name).to.be.eq('test')
+
+        // The external group has been added
+        expect(root.childrenCount).to.be.eq(5)
+
+        const extTreeGroup = root.children[0]
+        expect(extTreeGroup).to.be.instanceOf(ExternalLayerTreeGroupState)
+        expect(extTreeGroup.type).to.be.eq('ext-group')
+        expect(extTreeGroup.level).to.be.eq(1)
+        expect(extTreeGroup.name).to.be.eq('test')
+        expect(extTreeGroup.mapItemState).to.be.eq(extGroup)
+    })
+
+    it('removeExternalGroup', function () {
+        const root = getRootLayerTreeGroupState('montpellier');
+        expect(root.childrenCount).to.be.eq(4)
+
+        const mapRoot = root.mapItemState;
+        expect(mapRoot).to.be.instanceOf(MapRootState);
+        expect(mapRoot.childrenCount).to.be.eq(4)
+
+        // Create external group
+        const extGroup = mapRoot.createExternalGroup('test');
+        expect(extGroup.name).to.be.eq('test')
+
+        // The external group has been added
+        expect(mapRoot.childrenCount).to.be.eq(5)
+        expect(root.childrenCount).to.be.eq(5)
+
+        // Remove external group
+        mapRoot.removeExternalGroup('test')
+        expect(mapRoot.childrenCount).to.be.eq(4)
+        expect(root.childrenCount).to.be.eq(4)
     })
 })
