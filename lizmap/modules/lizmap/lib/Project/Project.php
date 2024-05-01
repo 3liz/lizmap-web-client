@@ -2168,6 +2168,15 @@ class Project
             );
         }
 
+        if ($this->getOption('popupLocation') === 'dock') {
+            $dockable[] = new \lizmapMapDockItem(
+                'popupcontent',
+                'Popup',
+                '<div class="menu-content"><div class="lizmapPopupContent"><h4>'.$this->appContext->getLocale('view~dictionnary.popup.msg.start').'</h4></div></div>',
+                4
+            );
+        }
+
         return $dockable;
     }
 
@@ -2181,6 +2190,15 @@ class Project
     {
         $dockable = array();
         $bp = $this->appContext->appConfig()->urlengine['basePath'];
+
+        if ($this->getOption('popupLocation') === 'mini-dock') {
+            $dockable[] = new \lizmapMapDockItem(
+                'popupcontent',
+                'Popup',
+                '<div class="menu-content"><div class="lizmapPopupContent"><h4>'.$this->appContext->getLocale('view~dictionnary.popup.msg.start').'</h4></div></div>',
+                0
+            );
+        }
 
         if ($this->hasAttributeLayers()) {
             // Add layer-export attribute to lizmap-selection-tool component if allowed
@@ -2333,6 +2351,27 @@ class Project
                 1,
                 '',
                 $bp.'assets/js/attributeTable.js'
+            );
+        }
+
+        return $dockable;
+    }
+
+    /**
+     * @throws \jExceptionSelector
+     *
+     * @return \lizmapMapDockItem[]
+     */
+    public function getDefaultRightDockable()
+    {
+        $dockable = array();
+
+        if ($this->getOption('popupLocation') === 'right-dock') {
+            $dockable[] = new \lizmapMapDockItem(
+                'popupcontent',
+                'Popup',
+                '<div class="menu-content"><div class="lizmapPopupContent"><h4>'.$this->appContext->getLocale('view~dictionnary.popup.msg.start').'</h4></div></div>',
+                0
             );
         }
 
