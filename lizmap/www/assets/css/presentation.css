@@ -130,6 +130,24 @@ lizmap-presentation-page {
     padding: 10px;
     font-size: 12px;
     font-size: 2.5vmin;
+
+    /* background properties */
+    background-repeat: no-repeat;
+    /* Full - Respect image ratio - full image will always be visible (with possible empty spaces around)*/
+    background-position: top; background-size: contain;
+}
+
+lizmap-presentation-page.background-contain {
+    /* Full - Respect image ratio - full image will always be visible (with possible empty spaces around)*/
+    background-position: top; background-size: contain;
+}
+lizmap-presentation-page.background-cover {
+    /* Zoom full width - Respect the image ratio - bottom and sides of the image can be hidden */
+    background-position: top; background-size: cover;
+}
+lizmap-presentation-page.background-stretch {
+    /* Stretched to cover all the page. It will distort the image */
+    background-position: center; background-size: 100% 100%;
 }
 
 lizmap-presentation-page h2.lizmap-presentation-page-title {
@@ -150,8 +168,7 @@ lizmap-presentation-page div.lizmap-presentation-page-content {
 
 lizmap-presentation-page div.lizmap-presentation-page-content > div {
     padding: 0px;
-    /* border: 1px solid var(--color-contrasted-elements);
-    border-radius: 5px; */
+    border: 1px solid black;
 }
 
 lizmap-presentation-page div.lizmap-presentation-page-content > div.lizmap-presentation-page-text {
@@ -159,6 +176,7 @@ lizmap-presentation-page div.lizmap-presentation-page-content > div.lizmap-prese
     font-size: 1em;
     line-height: 1em;
     text-align: justify;
+    background-color: rgba(255, 255, 255, 0.7);
     flex: 1 1;
 }
 lizmap-presentation-page div.lizmap-presentation-page-content > div.lizmap-presentation-page-media {

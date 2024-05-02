@@ -11,6 +11,7 @@
         <property name="title" fieldname="title" datatype="text" required="true"/>
         <property name="description" fieldname="description" datatype="text" required="false"/>
         <property name="background_image" fieldname="background_image" datatype="text" required="false"/>
+        <property name="background_display" fieldname="background_display" datatype="text" required="false"/>
         <property name="background_color" fieldname="background_color" datatype="text" required="false"/>
         <property name="footer" fieldname="footer" datatype="text" required="false"/>
         <property name="published" fieldname="published" datatype="boolean" required="true"/>

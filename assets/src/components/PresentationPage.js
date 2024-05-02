@@ -24,6 +24,9 @@ export default class PresentationPage extends HTMLElement {
         // Page visibility
         this.active = this.getAttribute('data-active');
 
+        // Presentation properties
+        this._presentation = null;
+
         // Properties
         this._properties = null;
     }
@@ -33,6 +36,8 @@ export default class PresentationPage extends HTMLElement {
     }
 
     render() {
+        // Base URL for media files
+        const mediaUrl = `${lizUrls.media}?repository=${lizUrls.params.repository}&project=${lizUrls.params.project}&path=`;
 
         // Remove previous content
         this.innerHTML = '';
@@ -68,7 +73,6 @@ export default class PresentationPage extends HTMLElement {
         let illustrationHtml = '';
         let illustrationValue = '';
         if (pageModel != 'text') {
-            const mediaUrl = `${lizUrls.media}?repository=${lizUrls.params.repository}&project=${lizUrls.params.project}&path=`;
             switch (this._properties['illustration_type']) {
                 case 'none':
                     break;
@@ -154,14 +158,46 @@ export default class PresentationPage extends HTMLElement {
         textDiv.style.flex = (pageModel != 'media') ? '1' : '0';
         illustrationDiv.style.flex = (pageModel != 'text') ? '1' : '0';
 
-        // Page background color
+        // Page background color from the presentation data
+        if (this._presentation['background_color']) {
+            this.style.backgroundColor = this._presentation['background_color'];
+        }
+        // override it if the page background color is also set
         if (this._properties['background_color']) {
             this.style.backgroundColor = this._properties['background_color'];
         }
 
+        // Page background image from the presentation data
+        if (this._presentation['background_image']) {
+            this.style.backgroundImage = `url(${mediaUrl}${this._presentation['background_image']})`;
+            this.classList.add(`background-${this._presentation['background_display']}`);
+        }
+        // override it if the page background color is also set
+        if (this._properties['background_image']) {
+            this.style.backgroundImage = `url(${mediaUrl}${this._properties['background_image']})`;
+        }
+
     }
 
+    /**
+     * Set the parent presentation properties
+     *
+     */
+    set presentation(value) {
+        this._presentation = value;
+    }
 
+    /**
+     * Get the page properties
+     */
+    get presentation() {
+        return this._presentation;
+    }
+
+    /**
+     * Set the page properties
+     *
+     */
     set properties(value) {
         this._properties = value;
 
@@ -169,6 +205,9 @@ export default class PresentationPage extends HTMLElement {
         this.render();
     }
 
+    /**
+     * Get the page properties
+     */
     get properties() {
         return this._properties;
     }

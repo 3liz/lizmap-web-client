@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS presentation (
     title text NOT NULL,
     description text,
     background_image text,
-    background_color text,
+    background_display text DEFAULT 'contain',
+    background_color text DEFAULT 'white',
     footer text,
     published boolean NOT NULL DEFAULT False,
     granted_groups text,
@@ -24,6 +25,7 @@ COMMENT ON COLUMN presentation.project IS 'Lizmap project key';
 COMMENT ON COLUMN presentation.title IS 'Presentation title';
 COMMENT ON COLUMN presentation.description IS 'Description of the presentation';
 COMMENT ON COLUMN presentation.background_image IS 'Image media URL to be used as a background for all the pages';
+COMMENT ON COLUMN presentation.background_display IS 'Background image position and size: contain, cover or stretched';
 COMMENT ON COLUMN presentation.background_color IS 'Background color of all presentation pages';
 COMMENT ON COLUMN presentation.footer IS 'Optional footer visible in all pages';
 COMMENT ON COLUMN presentation.published IS 'True if the presentation is published, i.e. visible for the users';

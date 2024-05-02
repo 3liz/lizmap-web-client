@@ -188,8 +188,8 @@ export default class Presentation {
 
         try {
             // Show a message
-            const message = `Run presentation n° ${presentationId}`;
-            this.addMessage(message, 'info', 5000);
+            // const message = `Run presentation n° ${presentationId}`;
+            // this.addMessage(message, 'info', 5000);
 
             // Set the presentation slidedhow container visible
             const slideshow = document.getElementById('lizmap-presentation-slides-container');
@@ -204,6 +204,7 @@ export default class Presentation {
             presentation.pages.forEach(page => {
                 const presentationPage = document.createElement('lizmap-presentation-page');
                 presentationPage.dataset.uuid = page.uuid;
+                presentationPage.presentation = presentation;
                 presentationPage.properties = page;
                 slideshow.appendChild(presentationPage);
             })
@@ -445,8 +446,6 @@ export default class Presentation {
                         const itemType = formData.get('item_type');
                         const presentationId = (itemType == 'presentation') ? formData.get('id') : formData.get('presentation_id');
                         const cardsElement = document.querySelector('#presentation-list-container lizmap-presentation-cards');
-                        console.log('itemType ' + itemType);
-                        console.log('presentationId ' + presentationId);
                         cardsElement.setAttribute('detail', presentationId);
                         cardsElement.setAttribute('updated', 'done');
 

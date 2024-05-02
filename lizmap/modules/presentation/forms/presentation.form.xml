@@ -27,6 +27,14 @@
         <hint locale="presentation~presentation.form.presentation.background_image.hint" />
     </image>
 
+    <menulist ref="background_display" required="false">
+        <label locale="presentation~presentation.form.presentation.background_display.label"/>
+        <hint locale="presentation~presentation.form.presentation.background_display.hint" />
+        <item value="contain" selected="true" locale="presentation~presentation.form.presentation.background_display.contain"/>
+        <item value="cover" locale="presentation~presentation.form.presentation.background_display.cover"/>
+        <item value="stretch" locale="presentation~presentation.form.presentation.background_display.stretch"/>
+    </menulist>
+
     <input ref="background_color" type="string" required="false">
         <label locale="presentation~presentation.form.presentation.background_color.label" />
         <hint locale="presentation~presentation.form.presentation.background_color.hint" />
