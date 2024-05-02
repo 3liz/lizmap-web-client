@@ -3792,11 +3792,10 @@ window.lizMap = function() {
             // Initialize global variables
             const lizmapVariablesJSON = document.getElementById('lizmap-vars')?.innerText;
             if (lizmapVariablesJSON) {
-                let lizmapVariables;
                 try {
-                    lizmapVariables = JSON.parse(lizmapVariablesJSON);
+                    const lizmapVariables = JSON.parse(lizmapVariablesJSON);
                     for (const variable in lizmapVariables) {
-                        window[variable] = lizmapVariables[variable];
+                        globalThis[variable] = lizmapVariables[variable];
                     }
                 } catch {
                     console.warn('JSON for Lizmap global variables is not valid!');
