@@ -88,7 +88,7 @@ var lizLayerFilterTool = function () {
 
                 // Get 1st layer found as default layer
                 var layerId = filterConfig[0]['layerId'];
-                filterConfigData.layerId = layerId;
+                globalThis['filterConfigData'].layerId = layerId;
 
                 // Activate the unfilter link
                 $('#liz-filter-unfilter').click(function () {
@@ -106,9 +106,9 @@ var lizLayerFilterTool = function () {
                 // Activate the export button
                 if (lizMap.getVectorLayerResultFormat().includes('ODS')) {
                     $('#liz-filter-export').click(function () {
-                        lizMap.config.layers[filterConfigData.layerName].request_params['filter'] = filterConfigData.filter;
-                        lizMap.exportVectorLayer(filterConfigData.layerName, 'ODS', false);
-                        delete lizMap.config.layers[filterConfigData.layerName].request_params['filter'];
+                        lizMap.config.layers[globalThis['filterConfigData'].layerName].request_params['filter'] = globalThis['filterConfigData'].filter;
+                        lizMap.exportVectorLayer(globalThis['filterConfigData'].layerName, 'ODS', false);
+                        delete lizMap.config.layers[globalThis['filterConfigData'].layerName].request_params['filter'];
                         return false;
                     });
                 }
@@ -129,7 +129,7 @@ var lizLayerFilterTool = function () {
                 if (!getConfig)
                     return false;
                 var layerName = getConfig[0];
-                filterConfigData.layerName = layerName;
+                globalThis['filterConfigData'].layerName = layerName;
 
                 // Remove previous field inputs
                 $('div.liz-filter-field-box').remove();
@@ -157,7 +157,7 @@ var lizLayerFilterTool = function () {
              *
              */
             function getLayerFilterForm() {
-                var layerId = filterConfigData.layerId;
+                var layerId = globalThis['filterConfigData'].layerId;
 
                 // Sort attribute layers as given by creation order in Lizmap plugin
                 var formFilterLayersSorted = [];
@@ -275,7 +275,7 @@ var lizLayerFilterTool = function () {
                     fieldname: field_item[start_field_property] + ',' + end_field,
                     filter: ''
                 };
-                $.get(filterConfigData.url, sdata, function (result) {
+                $.get(globalThis['filterConfigData'].url, sdata, function (result) {
                     if (!checkResult(result)) {
                         return false;
                     }
@@ -350,7 +350,7 @@ var lizLayerFilterTool = function () {
                     fieldname: fieldNames,
                     filter: ''
                 };
-                $.get(filterConfigData.url, sdata, function (result) {
+                $.get(globalThis['filterConfigData'].url, sdata, function (result) {
                     if (!checkResult(result)) {
                         return false;
                     }
@@ -398,7 +398,7 @@ var lizLayerFilterTool = function () {
                     fieldname: field,
                     filter: ''
                 };
-                $.get(filterConfigData.url, sdata, function (result) {
+                $.get(globalThis['filterConfigData'].url, sdata, function (result) {
                     if (!checkResult(result)) {
                         return false;
                     }
@@ -454,7 +454,7 @@ var lizLayerFilterTool = function () {
                 };
 
                 fetchRequests.push(
-                    fetch(filterConfigData.url + '&' + new URLSearchParams(sdata)).then(response => {
+                    fetch(globalThis['filterConfigData'].url + '&' + new URLSearchParams(sdata)).then(response => {
                         return response.json();
                     })
                 );
@@ -559,7 +559,7 @@ var lizLayerFilterTool = function () {
              * @param field_item
              */
             function setFormFieldFilter(field_item) {
-                if (filterConfigData.deactivated) {
+                if (globalThis['filterConfigData'].deactivated) {
                     return false;
                 }
 
@@ -857,7 +857,7 @@ var lizLayerFilterTool = function () {
              */
             function getFilteredFeatureIds(filter, pkField, aCallBack) {
                 filter = typeof filter !== 'undefined' ? filter : '';
-                var layerId = filterConfigData.layerId;
+                var layerId = globalThis['filterConfigData'].layerId;
                 var field = pkField;
                 var sdata = {
                     request: 'getUniqueValues',
@@ -865,7 +865,7 @@ var lizLayerFilterTool = function () {
                     fieldname: field,
                     filter: filter
                 };
-                $.get(filterConfigData.url, sdata, function (result) {
+                $.get(globalThis['filterConfigData'].url, sdata, function (result) {
                     if (!checkResult(result)) {
                         return false;
                     }
@@ -897,7 +897,7 @@ var lizLayerFilterTool = function () {
              * such as the dataviz, the attribute table, etc.
              *
              * You can force the method in the JS console with;
-             * filterConfigData.filterMethod = 'simple'
+             * globalThis['filterConfigData'].filterMethod = 'simple'
              * @returns {string} filterMethod - The method: simple or full
              */
             function getFilterMethod() {
@@ -906,15 +906,15 @@ var lizLayerFilterTool = function () {
                 var filterMethod = 'simple';
 
                 // If the filter method is already configured, use it
-                if (filterConfigData.hasOwnProperty('filterMethod')) {
-                    filterMethod = filterConfigData.filterMethod;
+                if (globalThis['filterConfigData'].hasOwnProperty('filterMethod')) {
+                    filterMethod = globalThis['filterConfigData'].filterMethod;
                     if (filterMethod == 'simple' || filterMethod == 'full') {
                         return filterMethod;
                     }
                 }
 
                 // If the layer has attribute layer configuration, use full
-                var layerName = filterConfigData.layerName;
+                var layerName = globalThis['filterConfigData'].layerName;
                 if ('attributeLayers' in lizMap.config && layerName in lizMap.config.attributeLayers) {
                     var attributeLayerConfig = lizMap.config.attributeLayers[layerName];
                     var pkField = attributeLayerConfig['primaryKey'];
@@ -933,8 +933,8 @@ var lizLayerFilterTool = function () {
              *
              */
             function activateFilter() {
-                var layerId = filterConfigData.layerId;
-                var layerName = filterConfigData.layerName;
+                var layerId = globalThis['filterConfigData'].layerId;
+                var layerName = globalThis['filterConfigData'].layerName;
 
                 var afilter = [];
                 for (var o in filterConfig) {
@@ -992,7 +992,7 @@ var lizLayerFilterTool = function () {
                 }
 
                 // Set the filter in the global variable
-                filterConfigData.filter = filter;
+                globalThis['filterConfigData'].filter = filter;
 
             }
 
@@ -1002,21 +1002,21 @@ var lizLayerFilterTool = function () {
              *
              */
             function deactivateFilter() {
-                var layerId = filterConfigData.layerId;
+                var layerId = globalThis['filterConfigData'].layerId;
 
                 // Deactivate all triggers to avoid unnecessary requests
                 // and then empty all the input values
-                filterConfigData.deactivated = true;
+                globalThis['filterConfigData'].deactivated = true;
                 for (var o in filterConfig) {
                     var field_item = filterConfig[o];
                     if ('title' in field_item && field_item.layerId == layerId) {
                         resetFormField(field_item.order);
                     }
                 }
-                filterConfigData.deactivated = false;
+                globalThis['filterConfigData'].deactivated = false;
 
                 // Remove filter on map layers
-                var layerName = filterConfigData.layerName;
+                var layerName = globalThis['filterConfigData'].layerName;
 
                 // Lizmap method to filter the data: simple or full
                 var filterMethod = getFilterMethod();
@@ -1120,11 +1120,11 @@ var lizLayerFilterTool = function () {
                     minidockclosed: function () {
                     },
                     layerfeatureremovefilter: function () {
-                        var layerId = filterConfigData.layerId;
+                        var layerId = globalThis['filterConfigData'].layerId;
 
                         // We need to reset the form
                         // Deactivate all triggers to avoid unnecessary requests
-                        filterConfigData.deactivated = true;
+                        globalThis['filterConfigData'].deactivated = true;
                         for (var o in filterConfig) {
                             var field_item = filterConfig[o];
                             if (!('title' in field_item) || field_item.layerId !== layerId) {
@@ -1132,7 +1132,7 @@ var lizLayerFilterTool = function () {
                             }
                             resetFormField(field_item.order);
                         }
-                        filterConfigData.deactivated = false;
+                        globalThis['filterConfigData'].deactivated = false;
 
                         // Get feature count
                         getFeatureCount();
@@ -1202,7 +1202,7 @@ var lizLayerFilterTool = function () {
                          * @param ui
                          */
                         function onDateChange(e, ui) {
-                            if (filterConfigData.deactivated)
+                            if (globalThis['filterConfigData'].deactivated)
                                 return false;
                             clearTimeout(timer);
                             timer = setTimeout(function () {
@@ -1276,7 +1276,7 @@ var lizLayerFilterTool = function () {
                          * @param ui
                          */
                         function onNumericChange(e, ui) {
-                            if (filterConfigData.deactivated)
+                            if (globalThis['filterConfigData'].deactivated)
                                 return false;
                             clearTimeout(timer);
                             timer = setTimeout(function () {
@@ -1350,14 +1350,14 @@ var lizLayerFilterTool = function () {
              */
             function getFeatureCount(filter) {
                 filter = typeof filter !== 'undefined' ? filter : '';
-                var layerId = filterConfigData.layerId;
+                var layerId = globalThis['filterConfigData'].layerId;
 
                 var sdata = {
                     request: 'getFeatureCount',
                     layerId: layerId,
                     filter: filter
                 };
-                $.get(filterConfigData.url, sdata, function (result) {
+                $.get(globalThis['filterConfigData'].url, sdata, function (result) {
                     if (!result)
                         return false;
                     if ('status' in result && result['status'] == 'error') {
@@ -1385,7 +1385,7 @@ var lizLayerFilterTool = function () {
             function setZoomExtent(filter) {
                 filter = typeof filter !== 'undefined' ? filter : '';
 
-                var layerId = filterConfigData.layerId;
+                var layerId = globalThis['filterConfigData'].layerId;
 
                 // Get map projection and layer extent
                 var mapProjection = lizMap.map.getProjection();
@@ -1393,7 +1393,7 @@ var lizLayerFilterTool = function () {
                     mapProjection = 'EPSG:3857';
 
                 // Get layer
-                var layerName = filterConfigData.layerName;
+                var layerName = globalThis['filterConfigData'].layerName;
 
                 if (!filter) {
                     // Use layer extent
@@ -1413,7 +1413,7 @@ var lizLayerFilterTool = function () {
                     filter: filter,
                     crs: mapProjection
                 };
-                $.get(filterConfigData.url, sdata, function (result) {
+                $.get(globalThis['filterConfigData'].url, sdata, function (result) {
                     if (!result)
                         return false;
                     if ('status' in result && result['status'] == 'error') {
@@ -1456,12 +1456,12 @@ var lizLayerFilterTool = function () {
 
             // Launch LayerFilter feature
             addLayerFilterToolInterface();
-            launchLayerFilterTool(filterConfigData.layerId);
+            launchLayerFilterTool(globalThis['filterConfigData'].layerId);
 
             // Listen to the layer selector changes
             $('#liz-filter-layer-selector').change(function () {
                 deactivateFilter();
-                filterConfigData.layerId = $(this).val();
+                globalThis['filterConfigData'].layerId = $(this).val();
                 launchLayerFilterTool($(this).val());
             });
 
