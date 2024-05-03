@@ -95,8 +95,8 @@ export default class Search {
             var labrex = this._getHighlightRegEx();
             $.get(searchConfig.url
                 , {
-                    "repository": lizUrls.params.repository,
-                    "project": lizUrls.params.project,
+                    "repository": globalThis['lizUrls'].params.repository,
+                    "project": globalThis['lizUrls'].params.project,
                     "query": $('#search-query').val(),
                     "bbox": extent.toBBOX()
                 }
@@ -162,7 +162,7 @@ export default class Search {
             case 'nominatim':
                 if ('url' in searchConfig) {
                     service = OpenLayers.Util.urlAppend(searchConfig.url
-                        , new URLSearchParams(lizUrls.params)
+                        , new URLSearchParams(globalThis['lizUrls'].params)
                     );
                 }
                 break;
@@ -350,13 +350,13 @@ export default class Search {
                     var bbox = OpenLayers.Bounds.fromString(bbox);
                     bbox.transform(wgs84, this._map.getProjectionObject());
                     this._map.zoomToExtent(bbox);
-    
+
                     var feat = new OpenLayers.Feature.Vector(bbox.toGeometry().getCentroid());
                     var geomWKT = linkClicked.getAttribute('data');
                     if (geomWKT) {
                         mainLizmap.map.setHighlightFeatures(geomWKT, "wkt", "EPSG:4326");
                     }
-    
+
                     $('#lizmap-search, #lizmap-search-close').removeClass('open');
                     // trigger event containing selected feature
                     lizMap.events.triggerEvent('lizmapexternalsearchitemselected',
@@ -367,7 +367,7 @@ export default class Search {
                     return false;
                 });
             });
-            
+
             $('#lizmap-search-close button').click(() => {
                 $('#lizmap-search, #lizmap-search-close').removeClass('open');
                 return false;

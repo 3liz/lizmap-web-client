@@ -1418,7 +1418,7 @@ var lizEdition = function() {
         }
 
         // Build params
-        var params = Object.assign({}, lizUrls.params, {
+        var params = Object.assign({}, globalThis['lizUrls'].params, {
             layerId: editionLayer['id']
         })
         if (featureId) {
@@ -1426,7 +1426,7 @@ var lizEdition = function() {
         }
 
         // Get form via web service
-        var service = lizUrls.edition + '?' + new URLSearchParams(params);
+        var service = globalThis['lizUrls'].edition + '?' + new URLSearchParams(params);
         // TODO: replaced by Utils.fetch
         fetch(service.replace('getFeature', editionType))
             .then(response => {
@@ -2287,7 +2287,7 @@ var lizEdition = function() {
         if ( !confirm( deleteConfirm ) )
             return false;
 
-        var eService = lizUrls.edition + '?' + new URLSearchParams(lizUrls.params);
+        var eService = globalThis['lizUrls'].edition + '?' + new URLSearchParams(globalThis['lizUrls'].params);
         $.get(eService.replace('getFeature','deleteFeature'),{
             layerId: aLayerId,
             featureId: aFeatureId,

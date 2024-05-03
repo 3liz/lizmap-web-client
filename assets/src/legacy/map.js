@@ -1674,7 +1674,7 @@ window.lizMap = function() {
                                   // for later user when Promise.allSettled resolves
                                   rConfigLayerAll.push(rConfigLayer);
                                   popupChidrenRequests.push(
-                                      fetch(lizUrls.service, {
+                                      fetch(globalThis['lizUrls'].service, {
                                           "method": "POST",
                                           "body": new URLSearchParams(wmsOptions)
                                       }).then(function (response) {
@@ -1782,7 +1782,7 @@ window.lizMap = function() {
 
                       // Handle compact-tables/explode-tables behaviour
                       $('.lizmapPopupChildren .popupAllFeaturesCompact table').DataTable({
-                        language: { url:lizUrls["dataTableLanguage"] }
+                        language: { url:globalThis['lizUrls']["dataTableLanguage"] }
                       });
 
                       $('.lizmapPopupChildren .compact-tables, .lizmapPopupChildren .explode-tables').tooltip();
@@ -1938,7 +1938,7 @@ window.lizMap = function() {
                             typename: lName,
                             filter: lConfig['request_params']['filter']
                         };
-                        $.post(lizUrls.service, sdata, function(result){
+                        $.post(globalThis['lizUrls'].service, sdata, function(result){
                         // Update layer state
                             lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerByName(lConfig.name).filterToken = {
                                 expressionFilter: lConfig['request_params']['exp_filter'],
@@ -2512,7 +2512,7 @@ window.lizMap = function() {
         if ( proj in Proj4js.defs ) {
             aCallback( proj );
         } else {
-            $.get( lizUrls.service, {
+            $.get( globalThis['lizUrls'].service, {
                 'REQUEST':'GetProj4'
                 ,'authid': proj
             }, function ( aText ) {
@@ -2790,7 +2790,7 @@ window.lizMap = function() {
             wfsOptions['GEOMETRYNAME'] = geometryName;
         }
 
-        getFeatureUrlData['url'] = lizUrls.service;
+        getFeatureUrlData['url'] = globalThis['lizUrls'].service;
         getFeatureUrlData['options'] = wfsOptions;
 
         return getFeatureUrlData;
@@ -2885,7 +2885,7 @@ window.lizMap = function() {
                 callFeatureDataCallBacks(poolId, data.features);
                 $('body').css('cursor', 'auto');
             } else {
-                $.post(lizUrls.service, {
+                $.post(globalThis['lizUrls'].service, {
                     'SERVICE':'WFS'
                     ,'VERSION':'1.0.0'
                     ,'REQUEST':'DescribeFeatureType'
@@ -2914,7 +2914,7 @@ window.lizMap = function() {
         //         callFeatureDataCallBacks(poolId, data.features);
         //         $('body').css('cursor', 'auto');
         //     } else {
-        //         $.post(lizUrls.service, {
+        //         $.post(globalThis['lizUrls'].service, {
         //             'SERVICE':'WFS'
         //             ,'VERSION':'1.0.0'
         //             ,'REQUEST':'DescribeFeatureType'
@@ -3135,7 +3135,7 @@ window.lizMap = function() {
         };
 
         // Query the server
-        $.post(lizUrls.service, wmsOptions, function(data) {
+        $.post(globalThis['lizUrls'].service, wmsOptions, function(data) {
             aCallback(data);
         });
 
@@ -3205,9 +3205,9 @@ window.lizMap = function() {
         };
 
         // Query the server
-        $.post(lizUrls.service, wmsOptions, function(data) {
+        $.post(globalThis['lizUrls'].service, wmsOptions, function(data) {
             if(aCallback){
-                aCallback(lizUrls.service, wmsOptions, data);
+                aCallback(globalThis['lizUrls'].service, wmsOptions, data);
             }
         });
     }
@@ -3376,7 +3376,7 @@ window.lizMap = function() {
         config.layers[layername]['request_params']['exp_filter'] = filter;
 
         // Get WMS filter token ( used via GET in GetMap or GetPrint )
-        fetch(lizUrls.service, {
+        fetch(globalThis['lizUrls'].service, {
             method: "POST",
             body: new URLSearchParams({
                 service: 'WMS',
@@ -3805,7 +3805,7 @@ window.lizMap = function() {
             var self = this;
 
             // Get config
-            const configRequest = fetch(lizUrls.config + '?' + new URLSearchParams(lizUrls.params)).then(function (response) {
+            const configRequest = fetch(globalThis['lizUrls'].config + '?' + new URLSearchParams(globalThis['lizUrls'].params)).then(function (response) {
                 if (!response.ok) {
                     throw 'Config not loaded: ' + response.status + ' ' + response.statusText
                 }
@@ -3813,7 +3813,7 @@ window.lizMap = function() {
             });
 
             // Get key/value config
-            const keyValueConfigRequest = fetch(lizUrls.keyValueConfig + '?' + new URLSearchParams(lizUrls.params)).then(function (response) {
+            const keyValueConfigRequest = fetch(globalThis['lizUrls'].keyValueConfig + '?' + new URLSearchParams(globalThis['lizUrls'].params)).then(function (response) {
                 if (!response.ok) {
                     throw 'Key/value config not loaded: ' + response.status + ' ' + response.statusText
                 }
@@ -3821,19 +3821,19 @@ window.lizMap = function() {
             });
 
             // Get WMS, WMTS, WFS capabilities
-            const WMSRequest = fetch(lizUrls.service + '&' + new URLSearchParams({ SERVICE: 'WMS', REQUEST: 'GetCapabilities', VERSION: '1.3.0' })).then(function (response) {
+            const WMSRequest = fetch(globalThis['lizUrls'].service + '&' + new URLSearchParams({ SERVICE: 'WMS', REQUEST: 'GetCapabilities', VERSION: '1.3.0' })).then(function (response) {
                 if (!response.ok) {
                     throw 'WMS GetCapabilities not loaded: ' + response.status + ' ' + response.statusText
                 }
                 return response.text()
             });
-            const WMTSRequest = fetch(lizUrls.service + '&' + new URLSearchParams({ SERVICE: 'WMTS', REQUEST: 'GetCapabilities', VERSION: '1.0.0' })).then(function (response) {
+            const WMTSRequest = fetch(globalThis['lizUrls'].service + '&' + new URLSearchParams({ SERVICE: 'WMTS', REQUEST: 'GetCapabilities', VERSION: '1.0.0' })).then(function (response) {
                 if (!response.ok) {
                     throw 'WMTS GetCapabilities not loaded: ' + response.status + ' ' + response.statusText
                 }
                 return response.text()
             });
-            const WFSRequest = fetch(lizUrls.service + '&' + new URLSearchParams({ SERVICE: 'WFS', REQUEST: 'GetCapabilities', VERSION: '1.0.0' })).then(function (response) {
+            const WFSRequest = fetch(globalThis['lizUrls'].service + '&' + new URLSearchParams({ SERVICE: 'WFS', REQUEST: 'GetCapabilities', VERSION: '1.0.0' })).then(function (response) {
                 if (!response.ok) {
                     throw 'WFS GetCapabilities not loaded: ' + response.status + ' ' + response.statusText
                 }
@@ -4212,7 +4212,7 @@ window.lizMap = function() {
                     console.error(error);
                     const errorMsg = `
           <p class="error-msg">${lizDict['startup.error']}
-          <br><a href="${lizUrls.basepath}">${lizDict['startup.goToProject']}</a></p>`;
+          <br><a href="${globalThis['lizUrls'].basepath}">${lizDict['startup.goToProject']}</a></p>`;
                     document.getElementById('header').insertAdjacentHTML('afterend', errorMsg);
                 })
                 .finally(() => {

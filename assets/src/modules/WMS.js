@@ -15,8 +15,8 @@ export default class WMS {
 
     constructor() {
         this._defaultGetFeatureInfoParameters = {
-            repository: lizUrls.params.repository,
-            project: lizUrls.params.project,
+            repository: globalThis['lizUrls'].params.repository,
+            project: globalThis['lizUrls'].params.project,
             SERVICE: 'WMS',
             REQUEST: 'GetFeatureInfo',
             VERSION: '1.3.0',
@@ -25,8 +25,8 @@ export default class WMS {
         };
 
         this._defaultGetLegendGraphicParameters = {
-            repository: lizUrls.params.repository,
-            project: lizUrls.params.project,
+            repository: globalThis['lizUrls'].params.repository,
+            project: globalThis['lizUrls'].params.project,
             SERVICE: 'WMS',
             REQUEST: 'GetLegendGraphic',
             VERSION: '1.3.0',
@@ -40,7 +40,7 @@ export default class WMS {
      * @memberof WMS
      */
     async getFeatureInfo(options) {
-        return Utils.fetchHTML(lizUrls.wms, {
+        return Utils.fetchHTML(globalThis['lizUrls'].wms, {
             method: "POST",
             body: new URLSearchParams({
                 ...this._defaultGetFeatureInfoParameters,
@@ -55,7 +55,7 @@ export default class WMS {
      * @memberof WMS
      */
     async getLegendGraphic(options) {
-        return Utils.fetchJSON(lizUrls.wms, {
+        return Utils.fetchJSON(globalThis['lizUrls'].wms, {
             method: "POST",
             body: new URLSearchParams({
                 ...this._defaultGetLegendGraphicParameters,

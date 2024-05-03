@@ -45,7 +45,7 @@ export default class Digitizing {
         this._tools = ['deactivate', 'point', 'line', 'polygon', 'box', 'circle', 'freehand', 'text'];
         this._toolSelected = this._tools[0];
 
-        this._repoAndProjectString = lizUrls.params.repository + '_' + lizUrls.params.project;
+        this._repoAndProjectString = globalThis['lizUrls'].params.repository + '_' + globalThis['lizUrls'].params.project;
 
         // Set draw color to value in local storage if any or default (red)
         this._drawColor = localStorage.getItem(this._repoAndProjectString + '_drawColor') || '#ff0000';
