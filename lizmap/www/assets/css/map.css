@@ -3101,6 +3101,12 @@ lizmap-treeview img.legend[src="data:image/png;base64, "]{
   visibility: hidden;
 }
 
+lizmap-tooltip.spinner::after {
+  border-width: 2px;
+  border-color: black transparent black transparent;
+  right: 2px;
+}
+
 /* Snap layer list */
 .snap-panel-controls {
     margin:10px;
