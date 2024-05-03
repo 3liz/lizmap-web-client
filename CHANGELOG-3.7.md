@@ -8,6 +8,34 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Added
+
+* Better handling of error message
+    * Editing capabilities, display and saving the form
+    * Printing
+
+### Fixed
+
+* Use external WMS URL when activated, not using QGIS Server
+* Fix some XSS issues into features forms
+* Check for `hidden` group when generating the Base layers group
+* Handle symbols expanded state
+* Map themes :
+    * Fix expanding sub-groups
+    * Handle case where there is no visible layers
+    * Handle symbols expanded state
+* Print :
+    * Take care of map projection for redlining
+    * Correctly select default format
+* Caching CLI tool : fix when input is 0
+* Add `STYLE` parameter in the `GetFeatureInfo`
+
+### Backend
+
+* Fix a few issues about XSS
+* Expose some OpenLayers classes in a library
+* Update OpenLayers to 9.1.0
+
 ## 3.7.6 - 2024-03-22
 
 ### Added
