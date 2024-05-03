@@ -57,7 +57,7 @@ export default class Lizmap {
                 this._utils = Utils;
 
                 // Register projections if unknown
-                for (const [ref, def] of Object.entries(lizProj4)) {
+                for (const [ref, def] of Object.entries(globalThis['lizProj4'])) {
                     if (ref !== "" && !proj4.defs(ref)) {
                         proj4.defs(ref, def);
                     }

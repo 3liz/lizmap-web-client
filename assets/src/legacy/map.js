@@ -635,10 +635,10 @@ window.lizMap = function() {
         }
 
         // Insert or update projection list
-        if ( lizProj4 ) {
-            for( var ref in lizProj4 ) {
+        if ( globalThis['lizProj4'] ) {
+            for( var ref in globalThis['lizProj4'] ) {
                 if ( !(ref in Proj4js.defs) ) {
-                    Proj4js.defs[ref]=lizProj4[ref];
+                    Proj4js.defs[ref]=globalThis['lizProj4'][ref];
                 }
             }
         }
