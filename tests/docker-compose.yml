@@ -1,4 +1,3 @@
-version: '3.4'
 services:
   pgsql:
     image: 3liz/postgis:${LZMPOSTGISVERSION}
