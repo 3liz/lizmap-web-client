@@ -299,10 +299,6 @@ window.lizMap = function() {
             if( $('#button-switcher').parent().hasClass('active') )
                 $('#button-switcher').click();
 
-            // Hide tooltip-layer
-            if( $('#button-tooltip-layer').parent().hasClass('active') )
-                $('#button-tooltip-layer').click();
-
             if( $('#menu').is(':visible'))
                 $('#menu').hide();
 
@@ -1232,10 +1228,10 @@ window.lizMap = function() {
 
         var info = addFeatureInfo();
 
-        if ( config['tooltipLayers'] && config.tooltipLayers.length != 0)
-            addTooltipControl();
-        else
-            $('#button-tooltip-layer').parent().remove();
+        // if ( config['tooltipLayers'] && config.tooltipLayers.length != 0)
+        //     addTooltipControl();
+        // else
+        //     $('#button-tooltip-layer').parent().remove();
 
         if (('geolocation' in configOptions)
       && configOptions['geolocation'] == 'True'){

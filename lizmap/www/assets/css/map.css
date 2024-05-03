@@ -255,10 +255,6 @@ CSS Sprite positions calculated via http://instantsprite.com/ using 20px images 
   background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' stroke-width='2' stroke='%23000' fill='none' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24' id='pencil'><path d='M0 0h24v24H0z' stroke='none'></path><path d='M4 20h4L18.5 9.5a1.5 1.5 0 00-4-4L4 16v4M13.5 6.5l4 4'></path></svg>");
 }
 
-#content.mobile #mapmenu li.tooltip-layer {
-  display:none;
-}
-
 /* navbar */
 .navbar-fixed-top .navbar-inner,
 .navbar-static-top .navbar-inner {
