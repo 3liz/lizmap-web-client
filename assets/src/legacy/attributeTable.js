@@ -387,9 +387,7 @@ var lizAttributeTable = function() {
                         layerConfig['columns'] = describeFeatureTypeResponse.columns;
                     }
 
-                    const sanitizedResponse = JSON.parse(DOMPurify.sanitize(JSON.stringify(responses[0].features)));
-
-                    buildLayerAttributeDatatable(layerName, tableSelector, sanitizedResponse, layerConfig.aliases, layerConfig.types, allColumnsKeyValues, callBack);
+                    buildLayerAttributeDatatable(layerName, tableSelector, responses[0].features, layerConfig.aliases, layerConfig.types, allColumnsKeyValues, callBack);
 
                     document.body.style.cursor = 'default';
                 }).catch(() => {
@@ -1843,6 +1841,9 @@ var lizAttributeTable = function() {
                         if( ($.inArray(idx, hiddenFields) > -1) )
                             continue;
                         var prop = feat.properties[idx];
+                        if (typeof prop == 'string') {
+                            prop = DOMPurify.sanitize(prop);
+                        }
                         line[idx] = prop;
                     }
 
