@@ -271,7 +271,7 @@ export default class Lizmap {
      * @type {string}
      */
     get serviceURL() {
-        return lizUrls.wms + '?' + (new URLSearchParams(lizUrls.params).toString());
+        return globalThis['lizUrls'].wms + '?' + (new URLSearchParams(globalThis['lizUrls'].params).toString());
     }
 
     /**
@@ -279,7 +279,7 @@ export default class Lizmap {
      * @type {string}
      */
     get mediaURL() {
-        return lizUrls.media + '?' + (new URLSearchParams(lizUrls.params).toString());
+        return globalThis['lizUrls'].media + '?' + (new URLSearchParams(globalThis['lizUrls'].params).toString());
     }
 
     /**
