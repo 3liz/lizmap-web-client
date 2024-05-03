@@ -1832,13 +1832,6 @@ lizmap-mouse-position > div.coords-unit > select{
   width:50px;
 }
 
-
-#tooltip-layer select.loading {
-    background-image: url("images/download_layer.gif");
-    background-repeat: no-repeat;
-    background-position: 90% center;
-}
-
 #tooltip {
   position: absolute;
   display: inline-block;
@@ -2329,18 +2322,6 @@ lizmap-mouse-position > div.coords-unit > select{
     display: none !important;
 }
 
-
-
-/* Tooltips */
-div.tooltip {
-  z-index: 2000 !important;
-  position:fixed !important;
-}
-.tooltip-inner{
-  display: inline-block;
-}
-
-
 /* only maps dock style */
 #home #projects h2 {
   color: white;
@@ -2351,8 +2332,6 @@ div.tooltip {
 #home #projects ul li div.thumbnail {
   text-align: center;
 }
-
-
 
 /* Edition style */
 #edition .nav-tabs > li > a {
