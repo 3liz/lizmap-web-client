@@ -8,6 +8,8 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+* Fix some XSS issues into features forms
+
 ## 3.6.11 - 2024-03-18
 
 ### Added
