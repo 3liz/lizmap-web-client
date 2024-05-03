@@ -163,7 +163,7 @@ var lizTimemanager = function() {
                     fieldname: fieldnameContent,
                     filter: ''
                 };
-                $.get(filterConfigData.url, sdata, function(result){
+                $.get(globalThis['filterConfigData'].url, sdata, function(result){
                     if( !result )
                         return false;
                     if( 'status' in result && result['status'] == 'error' ){
