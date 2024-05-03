@@ -13,7 +13,7 @@ var lizLayerFilterTool = function () {
         'uicreated': function () {
 
             // If filterConfig is empty, there is no filter set => hide filter tool
-            if (!filterConfig || (filterConfig.constructor === Object && Object.keys(filterConfig).length === 0)) {
+            if (!globalThis['filterConfig'] || (globalThis['filterConfig'].constructor === Object && Object.keys(globalThis['filterConfig']).length === 0)) {
                 $('#mapmenu li.filter.nav-dock').addClass('hide');
                 return true;
             }
@@ -30,8 +30,8 @@ var lizLayerFilterTool = function () {
                 // Add combo box to select the layer
                 html += '<select id="liz-filter-layer-selector">';
                 var flayers = {};
-                for (var o in filterConfig) {
-                    var conf = filterConfig[o];
+                for (var o in globalThis['filterConfig']) {
+                    var conf = globalThis['filterConfig'][o];
                     if (!(conf.layerId in flayers)) {
                         // Get layer
                         var layerId = conf.layerId;
@@ -77,7 +77,7 @@ var lizLayerFilterTool = function () {
              *
              */
             function addLayerFilterToolInterface() {
-                if (!filterConfig || (filterConfig.constructor === Object && Object.keys(filterConfig).length === 0)) {
+                if (!globalThis['filterConfig'] || (globalThis['filterConfig'].constructor === Object && Object.keys(globalThis['filterConfig']).length === 0)) {
                     return false;
                 }
 
@@ -87,7 +87,7 @@ var lizLayerFilterTool = function () {
                 $('#filter-content').html(html);
 
                 // Get 1st layer found as default layer
-                var layerId = filterConfig[0]['layerId'];
+                var layerId = globalThis['filterConfig'][0]['layerId'];
                 globalThis['filterConfigData'].layerId = layerId;
 
                 // Activate the unfilter link
@@ -161,8 +161,8 @@ var lizLayerFilterTool = function () {
 
                 // Sort attribute layers as given by creation order in Lizmap plugin
                 var formFilterLayersSorted = [];
-                for (var o in filterConfig) {
-                    var field_item = filterConfig[o];
+                for (var o in globalThis['filterConfig']) {
+                    var field_item = globalThis['filterConfig'][o];
                     if ('title' in field_item && field_item.layerId == layerId) {
                         formFilterLayersSorted.push(field_item);
                         $("#filter div.tree").append('<div id="filter-field-order' + String(field_item.order) + '"></div>');
@@ -183,7 +183,7 @@ var lizLayerFilterTool = function () {
              * @param field_item
              */
             function getFormFieldInput(field_item) {
-                var field_config = filterConfig[field_item.order];
+                var field_config = globalThis['filterConfig'][field_item.order];
 
                 // unique values
                 if (field_config['type'] == 'uniquevalues') {
@@ -291,8 +291,8 @@ var lizLayerFilterTool = function () {
                         }
                         var dmin = formatDT(new Date(feat['min']), 'yy-mm-dd');
                         var dmax = formatDT(new Date(feat['max']), 'yy-mm-dd');
-                        filterConfig[field_item.order]['min'] = dmin;
-                        filterConfig[field_item.order]['max'] = dmax;
+                        globalThis['filterConfig'][field_item.order]['min'] = dmin;
+                        globalThis['filterConfig'][field_item.order]['max'] = dmax;
                     }
 
                     var html = '';
@@ -357,8 +357,8 @@ var lizLayerFilterTool = function () {
 
                     for (var a in result) {
                         var feat = result[a];
-                        filterConfig[field_item.order]['min'] = Number(feat['min']);
-                        filterConfig[field_item.order]['max'] = Number(feat['max']);
+                        globalThis['filterConfig'][field_item.order]['min'] = Number(feat['min']);
+                        globalThis['filterConfig'][field_item.order]['max'] = Number(feat['max']);
                     }
 
                     var html = '';
@@ -512,17 +512,17 @@ var lizLayerFilterTool = function () {
 
                     $("#filter-field-order" + String(field_item.order)).append(html);
 
-                    if (!('items' in filterConfig[field_item.order])) {
-                        filterConfig[field_item.order]['items'] = {};
+                    if (!('items' in globalThis['filterConfig'][field_item.order])) {
+                        globalThis['filterConfig'][field_item.order]['items'] = {};
                     }
 
                     for (const feat of result) {
-                        filterConfig[field_item.order]['items'][DOMPurify.sanitize(feat['v'])] = feat['c'];
+                        globalThis['filterConfig'][field_item.order]['items'][DOMPurify.sanitize(feat['v'])] = feat['c'];
                     }
 
                     var dhtml = '';
                     var fkeys = Object.keys(
-                        filterConfig[field_item.order]['items']
+                        globalThis['filterConfig'][field_item.order]['items']
                     );
 
                     // Order fkeys alphabetically (which means sort checkboxes for each field)
@@ -594,18 +594,18 @@ var lizLayerFilterTool = function () {
              * @param field_item
              */
             function setUniqueValuesFilter(field_item) {
-                var field_config = filterConfig[field_item.order]
+                var field_config = globalThis['filterConfig'][field_item.order]
 
                 // First loop through each field value
                 // And check if the item (e.g checkbox) is selected or not
-                filterConfig[field_item.order]['data'] = {}
+                globalThis['filterConfig'][field_item.order]['data'] = {}
                 var allchecked = true;
                 var nonechecked = true;
                 if (field_config.format == 'select') {
                     var selectId = '#liz-filter-field-' + lizMap.cleanName(field_item.title);
                     var selectVal = $(selectId).val();
                     var clist = [];
-                    for (var f_val in filterConfig[field_item.order]['items']) {
+                    for (var f_val in globalThis['filterConfig'][field_item.order]['items']) {
                         // Get checked status
                         if (Array.isArray(selectVal)) {
                             var achecked = selectVal.includes(lizMap.cleanName(f_val));
@@ -618,12 +618,12 @@ var lizLayerFilterTool = function () {
                             nonechecked = false;
                             clist.push(f_val.replace(/'/g, "''"));
                         }
-                        filterConfig[field_item.order]['data'][f_val] = achecked;
+                        globalThis['filterConfig'][field_item.order]['data'][f_val] = achecked;
                     }
                 }
                 if (field_config.format == 'checkboxes') {
                     var clist = [];
-                    for (var f_val in filterConfig[field_item.order]['items']) {
+                    for (var f_val in globalThis['filterConfig'][field_item.order]['items']) {
                         // Get checked status
                         var inputId = '#liz-filter-field-' + lizMap.cleanName(field_item.title) + '-' + lizMap.cleanName(f_val);
                         var achecked = $(inputId).is(':checked');
@@ -633,12 +633,12 @@ var lizLayerFilterTool = function () {
                             nonechecked = false;
                             clist.push(f_val.replace(/'/g, "''"));
                         }
-                        filterConfig[field_item.order]['data'][f_val] = achecked;
+                        globalThis['filterConfig'][field_item.order]['data'][f_val] = achecked;
                     }
                 }
-                filterConfig[field_item.order]['allchecked'] = allchecked;
-                filterConfig[field_item.order]['nonechecked'] = nonechecked;
-                filterConfig[field_item.order]['selected'] = clist;
+                globalThis['filterConfig'][field_item.order]['allchecked'] = allchecked;
+                globalThis['filterConfig'][field_item.order]['nonechecked'] = nonechecked;
+                globalThis['filterConfig'][field_item.order]['selected'] = clist;
                 var filter = null;
                 var field = field_item['field'];
                 if (clist.length) {
@@ -671,7 +671,7 @@ var lizLayerFilterTool = function () {
                         filter = '"' + field + '"' + " IN ( '" + clist.join("' , '") + "' ) ";
                     }
                 }
-                filterConfig[field_item.order]['filter'] = filter;
+                globalThis['filterConfig'][field_item.order]['filter'] = filter;
 
             }
 
@@ -691,7 +691,7 @@ var lizLayerFilterTool = function () {
 
                 // Do nothing if min and max values entered equals the field min and max possible values
                 if (min_val == field_item['min'] && max_val == field_item['max']) {
-                    filterConfig[field_item.order]['filter'] = null;
+                    globalThis['filterConfig'][field_item.order]['filter'] = null;
                     return true;
                 }
 
@@ -737,11 +737,11 @@ var lizLayerFilterTool = function () {
                     filter += filters.join(' AND ');
                     filter += ' ) ';
                 }
-                filterConfig[field_item.order]['data'] = {
+                globalThis['filterConfig'][field_item.order]['data'] = {
                     'min_date': min_val,
                     'max_date': max_val
                 };
-                filterConfig[field_item.order]['filter'] = filter;
+                globalThis['filterConfig'][field_item.order]['filter'] = filter;
 
             }
 
@@ -761,7 +761,7 @@ var lizLayerFilterTool = function () {
 
                 // Do nothing if min and max values entered equals the field min and max possible values
                 if (min_val == field_item['min'] && max_val == field_item['max']) {
-                    filterConfig[field_item.order]['filter'] = null;
+                    globalThis['filterConfig'][field_item.order]['filter'] = null;
                     return true;
                 }
 
@@ -810,11 +810,11 @@ var lizLayerFilterTool = function () {
                     filter += filters.join(' AND ');
                     filter += ' ) ';
                 }
-                filterConfig[field_item.order]['data'] = {
+                globalThis['filterConfig'][field_item.order]['data'] = {
                     'min': min_val,
                     'max': max_val
                 };
-                filterConfig[field_item.order]['filter'] = filter;
+                globalThis['filterConfig'][field_item.order]['filter'] = filter;
 
             }
 
@@ -828,7 +828,7 @@ var lizLayerFilterTool = function () {
                 var id = '#liz-filter-field-text' + lizMap.cleanName(field_item.title);
                 var val = $(id).val().trim().replace(/'/g, "''");
 
-                filterConfig[field_item.order]['data'] = {
+                globalThis['filterConfig'][field_item.order]['data'] = {
                     'text': val
                 };
                 var filter = null;
@@ -841,10 +841,10 @@ var lizLayerFilterTool = function () {
                     filter = '"' + field + '"' + " " + lk + " '%" + val + "%'";
                 }
 
-                filterConfig[field_item.order]['data'] = {
+                globalThis['filterConfig'][field_item.order]['data'] = {
                     'text': val
                 };
-                filterConfig[field_item.order]['filter'] = filter;
+                globalThis['filterConfig'][field_item.order]['filter'] = filter;
             }
 
             /**
@@ -937,8 +937,8 @@ var lizLayerFilterTool = function () {
                 var layerName = globalThis['filterConfigData'].layerName;
 
                 var afilter = [];
-                for (var o in filterConfig) {
-                    var field_item = filterConfig[o];
+                for (var o in globalThis['filterConfig']) {
+                    var field_item = globalThis['filterConfig'][o];
                     if ('title' in field_item && field_item['filter'] && field_item.layerId == layerId) {
                         afilter.push(field_item['filter']);
                     }
@@ -1007,8 +1007,8 @@ var lizLayerFilterTool = function () {
                 // Deactivate all triggers to avoid unnecessary requests
                 // and then empty all the input values
                 globalThis['filterConfigData'].deactivated = true;
-                for (var o in filterConfig) {
-                    var field_item = filterConfig[o];
+                for (var o in globalThis['filterConfig']) {
+                    var field_item = globalThis['filterConfig'][o];
                     if ('title' in field_item && field_item.layerId == layerId) {
                         resetFormField(field_item.order);
                     }
@@ -1059,7 +1059,7 @@ var lizLayerFilterTool = function () {
              */
             function resetFormField(field_item_order) {
 
-                var field_item = filterConfig[field_item_order];
+                var field_item = globalThis['filterConfig'][field_item_order];
 
                 if (field_item.type == 'date') {
                     $('#liz-filter-field-min-date' + lizMap.cleanName(field_item.title)).val(field_item['min']);
@@ -1093,7 +1093,7 @@ var lizLayerFilterTool = function () {
                 }
 
                 // Remove filter in stored object
-                filterConfig[field_item.order]['filter'] = null;
+                globalThis['filterConfig'][field_item.order]['filter'] = null;
 
             }
 
@@ -1125,8 +1125,8 @@ var lizLayerFilterTool = function () {
                         // We need to reset the form
                         // Deactivate all triggers to avoid unnecessary requests
                         globalThis['filterConfigData'].deactivated = true;
-                        for (var o in filterConfig) {
-                            var field_item = filterConfig[o];
+                        for (var o in globalThis['filterConfig']) {
+                            var field_item = globalThis['filterConfig'][o];
                             if (!('title' in field_item) || field_item.layerId !== layerId) {
                                 continue;
                             }
@@ -1160,7 +1160,7 @@ var lizLayerFilterTool = function () {
              */
             function addFieldEvents(field_item) {
                 var container = 'liz-filter-box-' + lizMap.cleanName(field_item.title);
-                var field_config = filterConfig[field_item.order]
+                var field_config = globalThis['filterConfig'][field_item.order]
 
                 if (field_item.type == 'uniquevalues') {
                     if (field_item.format == 'checkboxes') {
