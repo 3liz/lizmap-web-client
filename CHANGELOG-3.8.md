@@ -8,6 +8,23 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Removed
+
+* Zoom history
+
+### Fixed
+
+* Drawing tool : keep draw visible when closing minidock
+* Dataviz in popup generate two feature toolbar in parent popup
+* Apply min and max resolutions to base layers removed by single WMS Layer
+* More fixes about XSS
+
+### Backend
+
+* Defer JavaScript scripts loading
+* Refactoring of Web Components, about OpenLayers
+* Review the way to load JavaScript
+
 ## 3.8.0-alpha.1 - 2024-03-21
 
 ### Added
