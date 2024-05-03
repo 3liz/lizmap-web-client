@@ -22,11 +22,11 @@ export default class Tooltip {
     }
 
     /**
-     * Activate tooltip for a layer name
-     * @param {string} layerName
+     * Activate tooltip for a layer order
+     * @param {number} layerOrder
      */
-    activate(layerName) {
-        if (layerName === "") {
+    activate(layerOrder) {
+        if (layerOrder === "") {
             this.deactivate();
             return;
         }
@@ -34,8 +34,10 @@ export default class Tooltip {
         // Remove previous layer if any
         mainLizmap.map.removeLayer(this._activeTooltipLayer);
 
+        const layerTooltipCfg = mainLizmap.initialConfig.tooltipLayers.layerConfigs[layerOrder];
+        const layerName = layerTooltipCfg.name;
         const tooltipLayer = this._tooltipLayers.get(layerName);
-        const layerTooltipCfg = mainLizmap.config.tooltipLayers[layerName];
+        this._displayGeom = layerTooltipCfg.displayGeom;
 
         // Styles
         const fill = new Fill({
@@ -67,7 +69,7 @@ export default class Tooltip {
         if (tooltipLayer) {
             this._activeTooltipLayer = tooltipLayer;
         } else {
-            const url = `${lizUrls.service.replace('service','tooltips')}&layerId=${layerTooltipCfg.layerId}`;
+            const url = `${lizUrls.service.replace('service','tooltips')}&layerId=${layerTooltipCfg.id}`;
 
             const vectorStyle = new Style({
                 image: new Circle({
@@ -118,8 +120,10 @@ export default class Tooltip {
                 });
 
             if (feature) {
-                // Set hover style
-                feature.setStyle(hoverStyle);
+                // Set hover style if `Display geom` is true
+                if (this._displayGeom){
+                    feature.setStyle(hoverStyle);
+                }
 
                 // Display tooltip
                 tooltip.style.left = pixel[0] + 'px';

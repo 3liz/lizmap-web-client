@@ -9,12 +9,15 @@
 import { BaseObjectLayerConfig, BaseObjectLayersConfig } from './BaseObject.js';
 
 const requiredProperties = {
-    'fields': {type: 'string'},
+    'layerId': {type: 'string'},
     'displayGeom': {type: 'boolean'},
-    'colorGeom': {type: 'string'},
+    'order': {type: 'number'},
 };
 
 const optionalProperties = {
+    'fields': {type: 'string'},
+    'template': {type: 'string'},
+    'colorGeom': {type: 'string'},
 };
 
 /**
