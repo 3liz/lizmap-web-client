@@ -26,6 +26,11 @@ export default class Tooltip {
      * @param {string} layerName
      */
     activate(layerName) {
+        if (layerName === "") {
+            this.deactivate();
+            return;
+        }
+
         // Remove previous layer if any
         mainLizmap.map.removeLayer(this._activeTooltipLayer);
 
@@ -62,10 +67,7 @@ export default class Tooltip {
         if (tooltipLayer) {
             this._activeTooltipLayer = tooltipLayer;
         } else {
-            const layerCfg = lizMap.getLayerConfigById(layerTooltipCfg.layerId);
-            const typeName = layerCfg[1].typename;
-
-            const url = `http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=tooltip&SERVICE=WFS&REQUEST=GetFeature&VERSION=1.0.0&OUTPUTFORMAT=GeoJSON&TYPENAME=${typeName}&SRSNAME=EPSG:2154`;
+            const url = `${lizUrls.service.replace('service','tooltips')}&layerId=${layerTooltipCfg.layerId}`;
 
             const vectorStyle = new Style({
                 image: new Circle({
@@ -122,9 +124,10 @@ export default class Tooltip {
                 // Display tooltip
                 tooltip.style.left = pixel[0] + 'px';
                 tooltip.style.top = pixel[1] + 'px';
-                if (feature !== currentFeature) {
+                const tooltipHTML = feature.get('tooltip');
+                if (feature !== currentFeature && tooltip) {
                     tooltip.style.visibility = 'visible';
-                    tooltip.innerHTML = feature.get(layerTooltipCfg.fields);
+                    tooltip.innerHTML = tooltipHTML;
                 }
             } else {
                 tooltip.style.visibility = 'hidden';
