@@ -19,6 +19,25 @@ export default class Tooltip extends HTMLElement {
             </select>
         `;
 
+        document.querySelector(".btn-tooltip-layer-clear").addEventListener('click', () => {
+            document.getElementById('button-tooltip-layer').click();
+        });
+
+        lizMap.events.on({
+            minidockopened: event => {
+                if ( event.id === 'tooltip-layer' ) {
+                    // Activate last selected tooltip layer
+                    mainLizmap.tooltip.activate(this.querySelector('select').value);
+                }
+            },
+            minidockclosed: event => {
+                if ( event.id === 'tooltip-layer' ) {
+                    // Deactivate tooltip on close
+                    mainLizmap.tooltip.deactivate();
+                }
+            }
+        });
+
         render(this._template(), this);
     }
 

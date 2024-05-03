@@ -154,7 +154,11 @@ export default class Tooltip {
      */
     deactivate() {
         mainLizmap.map.removeLayer(this._activeTooltipLayer);
-        mainLizmap.map.un('pointermove', this._onPointerMove);
-        mainLizmap.map.getTargetElement().removeEventListener('pointerleave', this._onPointerLeave);
+        if (this._onPointerMove) {
+            mainLizmap.map.un('pointermove', this._onPointerMove);
+        }
+        if (this._onPointerLeave) {
+            mainLizmap.map.getTargetElement().removeEventListener('pointerleave', this._onPointerLeave);
+        }
     }
 }
