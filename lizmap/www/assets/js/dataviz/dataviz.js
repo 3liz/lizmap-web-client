@@ -389,7 +389,7 @@ let lizDataviz = function () {
 
         // No cache -> get data
         try {
-            const response = await fetch(datavizConfig.url, {
+            const response = await fetch(globalThis['datavizConfig'].url, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
