@@ -443,6 +443,10 @@ only screen and (                   max-device-height : 640px) {
   lizmap-treeview .icon-info-sign {
     display: block;
   }
+
+  .tooltip-layer {
+    display: none;
+  }
 }
 
 @media (pointer: coarse) and (orientation: portrait){
