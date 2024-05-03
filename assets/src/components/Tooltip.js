@@ -1,5 +1,5 @@
 import { html, render } from 'lit-html';
-import { mainLizmap } from '../modules/Globals.js';
+import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 
 export default class Tooltip extends HTMLElement {
     constructor() {
@@ -37,6 +37,20 @@ export default class Tooltip extends HTMLElement {
                 }
             }
         });
+
+        mainEventDispatcher.addListener(
+            () => {
+                this.classList.add('spinner');
+            },
+            ['tooltip.loading']
+        );
+
+        mainEventDispatcher.addListener(
+            () => {
+                this.classList.remove('spinner');
+            },
+            ['tooltip.loaded']
+        );
 
         render(this._template(), this);
     }

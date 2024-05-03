@@ -4,7 +4,7 @@
  * @copyright 2024 3Liz
  * @license MPL-2.0
  */
-import { mainLizmap } from '../modules/Globals.js';
+import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import GeoJSON from 'ol/format/GeoJSON.js';
 import VectorLayer from 'ol/layer/Vector.js';
 import VectorSource from 'ol/source/Vector.js';
@@ -88,6 +88,18 @@ export default class Tooltip {
                 }),
                 style: vectorStyle
             });
+
+            // Load tooltip layer
+            this._activeTooltipLayer.once('sourceready', () => {
+                mainEventDispatcher.dispatch('tooltip.loaded');
+            });
+
+            this._activeTooltipLayer.on('error', () => {
+                console.log(`Tooltip layer '${layerName}' could not be loaded.`);
+            });
+
+            mainEventDispatcher.dispatch('tooltip.loading');
+
             this._tooltipLayers.set(layerName, this._activeTooltipLayer);
         }
 
