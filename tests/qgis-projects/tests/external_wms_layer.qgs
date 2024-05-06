@@ -44,7 +44,7 @@
           <Option name="wmsShortName" type="QString" value="local"></Option>
         </Option>
       </customproperties>
-      <layer-tree-layer checked="Qt::Checked" expanded="1" id="world_7121f8d0_2f6c_4f55_9a40_d1b2b1f55bf2" legend_exp="" legend_split_behavior="0" name="world" patch_size="-1,-1" providerKey="ogr" source="./world/world.geojson|geometrytype=Polygon|uniqueGeometryType=yes">
+      <layer-tree-layer checked="Qt::Checked" expanded="1" id="world_7121f8d0_2f6c_4f55_9a40_d1b2b1f55bf2" legend_exp="" legend_split_behavior="0" name="world" patch_size="-1,-1" providerKey="ogr" source="./world/world.geojson">
         <customproperties>
           <Option></Option>
         </customproperties>
@@ -966,7 +966,7 @@
         <ymax>83.64512999999999465</ymax>
       </wgs84extent>
       <id>world_7121f8d0_2f6c_4f55_9a40_d1b2b1f55bf2</id>
-      <datasource>./world/world.geojson|geometrytype=Polygon|uniqueGeometryType=yes</datasource>
+      <datasource>./world/world.geojson</datasource>
       <shortname>world</shortname>
       <keywordList>
         <value></value>
