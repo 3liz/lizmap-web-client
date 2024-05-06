@@ -682,6 +682,7 @@ class WMSRequest extends OGCRequest
         }
         $layerFeaturesCounter = 0;
         $allFeatureAttributes = array();
+        $allFeatureToolbars = array();
 
         foreach ($layer->Feature as $feature) {
             $id = (string) $feature['id'];
@@ -798,6 +799,7 @@ class WMSRequest extends OGCRequest
                 }
                 if ($configLayer->popupSource == 'auto') {
                     $allFeatureAttributes[] = $feature->Attribute;
+                    $allFeatureToolbars[] = $featureToolbar;
                 }
             }
 
@@ -812,6 +814,7 @@ class WMSRequest extends OGCRequest
             $content[] = $this->getViewTpl('view~popup_all_features_table', $layerName, $layerId, $layerTitle, array(
                 'allFeatureAttributes' => array_reverse($allFeatureAttributes),
                 'remoteStorageProfile' => $remoteStorageProfile,
+                'allFeatureToolbars' => array_reverse($allFeatureToolbars),
             ));
         }
 
