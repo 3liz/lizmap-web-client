@@ -45,26 +45,46 @@ export default class Tooltip {
         });
 
         const stroke = new Stroke({
-            color: 'transparent',
+            color: 'rgba(255, 255, 255, 0.01)', // 'transparent' doesn't work for lines. Is it a bug in OL?
         });
 
         const hoverColor = layerTooltipCfg.colorGeom;
 
-        const hoverStyle = new Style({
-            image: new Circle({
-                fill: fill,
-                stroke: new Stroke({
-                    color: hoverColor,
-                    width: 3
-                }),
-                radius: 5,
-            }),
-            fill: fill,
-            stroke: new Stroke({
-                color: hoverColor,
-                width: 3
-            }),
-        });
+        const hoverStyle = feature => {
+            if (['Polygon', 'MultiPolygon'].includes(feature.getGeometry().getType())) {
+                return new Style({
+                    fill: fill,
+                    stroke: new Stroke({
+                        color: hoverColor,
+                        width: 3
+                    }),
+                });
+            } else if (['LineString', 'MultiLineString'].includes(feature.getGeometry().getType())) {
+                return new Style({
+                    stroke: new Stroke({
+                        color: hoverColor,
+                        width: 6
+                    }),
+                });
+            } else if (['Point', 'MultiPoint'].includes(feature.getGeometry().getType())) {
+                return new Style({
+                    image: new Circle({
+                        fill: fill,
+                        stroke: new Stroke({
+                            color: hoverColor,
+                            width: 3
+                        }),
+                        radius: 5,
+                    }),
+                    fill: fill,
+                    stroke: new Stroke({
+                        color: hoverColor,
+                        width: 3
+                    }),
+                });
+            }
+            return undefined;
+        }
 
         if (tooltipLayer) {
             this._activeTooltipLayer = tooltipLayer;
@@ -128,6 +148,7 @@ export default class Tooltip {
                 : mainLizmap.map.forEachFeatureAtPixel(pixel, feature => {
                     return feature; // returning a truthy value stop detection
                 }, {
+                    hitTolerance: 5,
                     layerFilter: layerCandidate => layerCandidate == this._activeTooltipLayer
                 });
 
