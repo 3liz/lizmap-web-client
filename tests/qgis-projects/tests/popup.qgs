@@ -1,4 +1,4 @@
-<qgis projectname="" saveDateTime="2023-12-21T16:14:43" saveUser="nboisteault" saveUserFull="nboisteault" version="3.28.13-Firenze">
+<qgis projectname="" saveDateTime="2024-05-06T15:39:31" saveUser="nboisteault" saveUserFull="nboisteault" version="3.28.15-Firenze">
   <homePath path=""></homePath>
   <title></title>
   <transaction mode="Disabled"></transaction>
@@ -1081,7 +1081,7 @@ def my_form_open(dialog, layer, feature):
         <value>lizmap_user_groups</value>
       </variableNames>
       <variableValues type="QStringList">
-        <value>intranet</value>
+        <value>testsrepository</value>
         <value></value>
         <value></value>
       </variableValues>
@@ -1089,9 +1089,11 @@ def my_form_open(dialog, layer, feature):
     <WCSLayers type="QStringList"></WCSLayers>
     <WCSUrl type="QString"></WCSUrl>
     <WFSLayers type="QStringList">
+      <value>children_layer_54bd162b_36b9_478e_811a_f56e9a15c36c</value>
       <value>dnd_popup_3b9d335a_5491_45fa_8a8b_8dca1ca7ff3b</value>
     </WFSLayers>
     <WFSLayersPrecision>
+      <children_layer_54bd162b_36b9_478e_811a_f56e9a15c36c type="int">8</children_layer_54bd162b_36b9_478e_811a_f56e9a15c36c>
       <dnd_popup_3b9d335a_5491_45fa_8a8b_8dca1ca7ff3b type="int">8</dnd_popup_3b9d335a_5491_45fa_8a8b_8dca1ca7ff3b>
     </WFSLayersPrecision>
     <WFSTLayers>
@@ -1190,7 +1192,7 @@ def my_form_open(dialog, layer, feature):
   <Bookmarks></Bookmarks>
   <ProjectViewSettings UseProjectScales="0" rotation="0">
     <Scales></Scales>
-    <DefaultViewExtent xmax="782045.32394637318793684" xmin="763479.4154808419989422" ymax="6285907.31389632076025009" ymin="6274112.85009858570992947">
+    <DefaultViewExtent xmax="783155.46078914171084762" xmin="762369.27863807347603142" ymax="6285756.67271297331899405" ymin="6274263.49128193315118551">
       <spatialrefsys nativeFormat="Wkt">
         <wkt>PROJCRS["RGF93 v1 / Lambert-93",BASEGEOGCRS["RGF93 v1",DATUM["Reseau Geodesique Francais 1993 v1",ELLIPSOID["GRS 1980",6378137,298.257222101,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4171]],CONVERSION["Lambert-93",METHOD["Lambert Conic Conformal (2SP)",ID["EPSG",9802]],PARAMETER["Latitude of false origin",46.5,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8821]],PARAMETER["Longitude of false origin",3,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8822]],PARAMETER["Latitude of 1st standard parallel",49,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8823]],PARAMETER["Latitude of 2nd standard parallel",44,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8824]],PARAMETER["Easting at false origin",700000,LENGTHUNIT["metre",1],ID["EPSG",8826]],PARAMETER["Northing at false origin",6600000,LENGTHUNIT["metre",1],ID["EPSG",8827]]],CS[Cartesian,2],AXIS["easting (X)",east,ORDER[1],LENGTHUNIT["metre",1]],AXIS["northing (Y)",north,ORDER[2],LENGTHUNIT["metre",1]],USAGE[SCOPE["Engineering survey, topographic mapping."],AREA["France - onshore and offshore, mainland and Corsica."],BBOX[41.15,-9.86,51.56,10.38]],ID["EPSG",2154]]</wkt>
         <proj4>+proj=lcc +lat_0=46.5 +lon_0=3 +lat_1=49 +lat_2=44 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs</proj4>
@@ -1204,7 +1206,7 @@ def my_form_open(dialog, layer, feature):
       </spatialrefsys>
     </DefaultViewExtent>
   </ProjectViewSettings>
-  <ProjectStyleSettings DefaultSymbolOpacity="1" RandomizeDefaultSymbolColor="1" projectStyleId="attachment:///qHjYjO_styles.db">
+  <ProjectStyleSettings DefaultSymbolOpacity="1" RandomizeDefaultSymbolColor="1" projectStyleId="attachment:///vzfPfq_styles.db">
     <databases></databases>
   </ProjectStyleSettings>
   <ProjectTimeSettings cumulativeTemporalRange="0" frameRate="1" timeStep="1" timeStepUnit="h"></ProjectTimeSettings>
