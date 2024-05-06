@@ -1304,17 +1304,14 @@ var lizAttributeTable = function() {
 
                     // Datatable configuration
                     if ( $.fn.dataTable.isDataTable( aTable ) ) {
-                        var oTable = $( aTable ).dataTable();
-                        oTable.fnClearTable();
-                        oTable.fnAddData( dataSet );
+                        $( aTable ).DataTable().clear().rows.add(dataSet).draw();
                     }
                     lConfig['features'] = foundFeatures;
                 }
 
                 if ( !cFeatures || cFeatures.length == 0 ){
                     if ( $.fn.dataTable.isDataTable( aTable ) ) {
-                        var oTable = $( aTable ).dataTable();
-                        oTable.fnClearTable();
+                        $( aTable ).DataTable().clear().draw();
                     }
                     $(aTable).hide();
 
@@ -1487,9 +1484,7 @@ var lizAttributeTable = function() {
                     lConfig['alias'] = cAliases;
                     // Datatable configuration
                     if ( $.fn.dataTable.isDataTable( aTable ) ) {
-                        var oTable = $( aTable ).dataTable();
-                        oTable.fnClearTable();
-                        oTable.fnAddData( dataSet );
+                        $( aTable ).DataTable().clear().rows.add(dataSet).draw();
                     }
                     else {
                         // Search while typing in text input
@@ -1499,16 +1494,13 @@ var lizAttributeTable = function() {
                             searchWhileTyping = false;
                         }
 
-                        var myDom = '<<t>ipl>';
                         if( searchWhileTyping ) {
-                            $('#attribute-layer-search-' + cleanName).on( 'keyup', function (e){
+                            $('#attribute-layer-search-' + cleanName).on( 'keyup', function (){
                                 var searchVal = this.value;
                                 lizdelay(function(){
-                                    oTable.fnFilter( searchVal );
+                                    $( aTable ).DataTable().search( searchVal ).draw();
                                 }, 500 );
                             });
-                        }else{
-                            myDom = '<<t>ipl>';
                         }
 
                         $( aTable ).dataTable( {
@@ -1536,7 +1528,7 @@ var lizAttributeTable = function() {
                                     data.lizSelected = 'a';
                                 }
                             }
-                            ,dom: myDom
+                            ,dom: '<<t>ipl>'
                             ,pageLength: 50
                             ,scrollY: '95%'
                             ,scrollX: '100%'
@@ -1587,8 +1579,7 @@ var lizAttributeTable = function() {
 
                 if ( !cFeatures || cFeatures.length == 0 ){
                     if ( $.fn.dataTable.isDataTable( aTable ) ) {
-                        var oTable = $( aTable ).dataTable();
-                        oTable.fnClearTable();
+                        $( aTable ).DataTable().clear().draw();
                     }
                     $(aTable).hide();
 
@@ -2980,7 +2971,6 @@ var lizAttributeTable = function() {
                             ;
                         }
                     }
-
                 });
             }
 
@@ -3098,23 +3088,23 @@ var lizAttributeTable = function() {
              */
             function refreshDatatableSize(container){
 
-                var dtable = $(container).find('table.dataTable');
-                if ( dtable.length == 0 ) {
-                    return;
-                }
+                // var dtable = $(container).find('table.dataTable');
+                // if ( dtable.length == 0 ) {
+                //     return;
+                // }
 
-                // Adapt height
-                var h = $(container + ' div.attribute-layer-content').height() ? $(container + ' div.attribute-layer-content').height() : 0;
+                // // Adapt height
+                // var h = $(container + ' div.attribute-layer-content').height() ? $(container + ' div.attribute-layer-content').height() : 0;
 
-                h -= $(container + ' thead').height() ? $(container + ' thead').height() : 0;
-                h -= $(container + ' div.dataTables_paginate').height() ? $(container + ' div.dataTables_paginate').height() : 0;
-                h -= $(container + ' div.dataTables_filter').height() ? $(container + ' div.dataTables_filter').height() : 0;
-                h -= 20;
+                // h -= $(container + ' thead').height() ? $(container + ' thead').height() : 0;
+                // h -= $(container + ' div.dataTables_paginate').height() ? $(container + ' div.dataTables_paginate').height() : 0;
+                // h -= $(container + ' div.dataTables_filter').height() ? $(container + ' div.dataTables_filter').height() : 0;
+                // h -= 20;
 
-                dtable.parent('div.dataTables_scrollBody').height(h);
+                // dtable.parent('div.dataTables_scrollBody').height(h);
 
-                // Width : adapt columns size
-                dtable.DataTable().tables().columns.adjust();
+                // // Width : adapt columns size
+                // dtable.DataTable().tables().columns.adjust();
             }
 
             /**
