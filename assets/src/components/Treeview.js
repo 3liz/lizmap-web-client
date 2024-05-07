@@ -29,6 +29,39 @@ export default class Treeview extends HTMLElement {
             render(this._rootTemplate(mainLizmap.state.layerTree), this);
         };
 
+        this._olLayerTemplate = (olLayer) =>
+            html`
+        <li data-testid="ol-${olLayer.name}">
+            <div class="${olLayer.checked ? 'checked' : ''} ${olLayer.type}">
+                <div class="loading ${olLayer.loadStatus === MapLayerLoadStatus.Loading ? 'spinner' : ''}"></div>
+                <input type="checkbox" id="node-ol-${olLayer.name}" .checked=${olLayer.checked} @click=${() => olLayer.checked = !olLayer.checked} >
+                <div class="node ${olLayer.isFiltered ? 'filtered' : ''}">
+                    <img class="legend" src="${olLayer.icon}">
+                    <label for="node-ol-${olLayer.name}">${olLayer.wmsTitle}</label>
+                    <div class="layer-actions">
+                    </div>
+                </div>
+            </div>
+        </li>`
+
+        this._extGroupTemplate = (extGroup) =>
+            html`
+        <li data-testid="ext-${extGroup.name}">
+            <div class="expandable ${extGroup.expanded ? 'expanded' : ''}" @click=${() => extGroup.expanded = !extGroup.expanded}></div>
+            <div class="${extGroup.checked ? 'checked' : ''} ${extGroup.type} group">
+                <div class="node">
+                    <label for="node-ext-${extGroup.name}">${extGroup.wmsTitle}</label>
+                    <div class="layer-actions">
+                    </div>
+                </div>
+            </div>
+            <ul>
+                ${extGroup.children.map(item => html`
+                    ${this._olLayerTemplate(item)}
+                `)}
+            </ul>
+        </li>`
+
         this._symbolTemplate = symbol =>
             html`
         <li>
@@ -131,6 +164,7 @@ export default class Treeview extends HTMLElement {
             ${layerTreeRoot.children.map(item => html`
                 ${item.type === 'group' ? html`${this._groupTemplate(item, layerTreeRoot)}` : ''}
                 ${item.type === 'layer' ? html`${this._layerTemplate(item, layerTreeRoot)}` : ''}
+                ${item.type === 'ext-group' && item.childrenCount ? html`${this._extGroupTemplate(item)}` : ''}
             `)}
         </ul>`;
 
@@ -138,7 +172,12 @@ export default class Treeview extends HTMLElement {
 
         mainLizmap.state.layerTree.addListener(
             this._onChange,
-            ['layer.load.status.changed', 'layer.visibility.changed', 'group.visibility.changed', 'layer.style.changed', 'layer.symbology.changed', 'layer.filter.changed', 'layer.expanded.changed', 'group.expanded.changed', 'layer.symbol.expanded.changed']
+            [
+                'layer.load.status.changed', 'layer.visibility.changed', 'group.visibility.changed', 'layer.style.changed',
+                'layer.symbology.changed', 'layer.filter.changed', 'layer.expanded.changed', 'group.expanded.changed',
+                'layer.symbol.expanded.changed', 'ol-layer.added', 'ext-group.expanded.changed', 'ol-layer.removed', 'ext-group.removed',
+                'layer.visibility.changed', 'ol-layer.wmsTitle.changed', 'ol-layer.icon.changed', 'ext-group.wmsTitle.changed',
+            ]
         );
 
         mainEventDispatcher.addListener(
