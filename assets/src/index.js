@@ -23,6 +23,7 @@ import FullScreen from './components/FullScreen.js';
 import BaseLayers from './components/BaseLayers.js';
 import Treeview from './components/Treeview.js';
 import NavBar from './components/NavBar.js';
+import Tooltip from './components/Tooltip.js';
 
 import { mainLizmap, mainEventDispatcher } from './modules/Globals.js';
 import executeJSFromServer from './modules/ExecuteJSFromServer.js';
@@ -53,6 +54,7 @@ lizMap.events.on({
         window.customElements.define('lizmap-base-layers', BaseLayers);
         window.customElements.define('lizmap-treeview', Treeview);
         window.customElements.define('lizmap-navbar', NavBar);
+        window.customElements.define('lizmap-tooltip', Tooltip);
 
         lizMap.mainLizmap = mainLizmap;
         lizMap.mainEventDispatcher = mainEventDispatcher;
