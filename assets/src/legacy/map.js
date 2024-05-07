@@ -1834,29 +1834,36 @@ window.lizMap = function() {
                 break;
             }
         }
-        if ( !popupsAvailable )
+        if ( !popupsAvailable ) {
+            if ($('#mapmenu .nav-list > li.popupcontent > a').length ) {
+                $('#mapmenu .nav-list > li.popupcontent').remove();
+            }
             return null;
+        }
 
         // Create the dock if needed
         if( 'popupLocation' in config.options &&
-          config.options.popupLocation != 'map' &&
-          !$('#mapmenu .nav-list > li.popupcontent > a').length ) {
-            // Verifying the message
-            if ( !('popup.msg.start' in lizDict) )
-                lizDict['popup.msg.start'] = 'Click to the map to get informations.';
-            // Initialize dock
-            var popupContainerId = 'popupcontent';
-            var pcontent = '<div class="lizmapPopupContent"><h4>'+lizDict['popup.msg.start']+'</h4></div>';
-            addDock(popupContainerId, 'Popup', config.options.popupLocation, pcontent, 'icon-comment');
-            $('#button-popupcontent').click(function(){
-                if($(this).parent().hasClass('active')) {
-                    // clear highlight layer
-                    lizMap.mainLizmap.map.clearHighlightFeatures();
-                    // remove information
-                    $('#popupcontent > div.menu-content').html('<div class="lizmapPopupContent"><h4>'+lizDict['popup.msg.start']+'</h4></div>');
-                }
-            });
-
+            config.options.popupLocation != 'map' ) {
+            if ( !$('#mapmenu .nav-list > li.popupcontent > a').length ) {
+                // Verifying the message
+                if ( !('popup.msg.start' in lizDict) )
+                    lizDict['popup.msg.start'] = 'Click to the map to get informations.';
+                // Initialize dock
+                var popupContainerId = 'popupcontent';
+                var pcontent = '<div class="lizmapPopupContent"><h4>'+lizDict['popup.msg.start']+'</h4></div>';
+                addDock(popupContainerId, 'Popup', config.options.popupLocation, pcontent, 'icon-comment');
+                $('#button-popupcontent').click(function(){
+                    if($(this).parent().hasClass('active')) {
+                        // clear highlight layer
+                        lizMap.mainLizmap.map.clearHighlightFeatures();
+                        // remove information
+                        $('#popupcontent > div.menu-content').html('<div class="lizmapPopupContent"><h4>'+lizDict['popup.msg.start']+'</h4></div>');
+                    }
+                });
+            } else {
+                $('#mapmenu .nav-list > li.popupcontent > a > span.icon').append('<i class="icon-comment icon-white" style="margin-left: 4px;"></i>');
+                $('#mapmenu .nav-list > li.popupcontent > a > span.icon').css('background-image', 'none');
+            }
         }
 
         /**
