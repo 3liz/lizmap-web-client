@@ -8,7 +8,17 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.6.12 - 2024-05-07
+
+### Fixed
+
 * Fix some XSS issues into features forms
+
+### Translations
+
+* Update translated strings from the Transifex website :
+  * [Lizmap Web Client](https://www.transifex.com/3liz-1/lizmap-locales/dashboard/)
+  * [Jelix](https://www.transifex.com/3liz-1/jelix/dashboard/)
 
 ## 3.6.11 - 2024-03-18
 
