@@ -88,11 +88,11 @@ export default class Edition {
         if (Array.isArray(layerIds)){
             const fetchers = [];
             for (const layerId of layerIds) {
-                fetchers.push(fetch(lizUrls.edition.replace('getFeature', 'editableFeatures'),{
+                fetchers.push(fetch(globalThis['lizUrls'].edition.replace('getFeature', 'editableFeatures'),{
                     "method": "POST",
                     "body": new URLSearchParams({
-                        repository: lizUrls.params.repository,
-                        project: lizUrls.params.project,
+                        repository: globalThis['lizUrls'].params.repository,
+                        project: globalThis['lizUrls'].params.project,
                         layerId: layerId
                     })
                 }).then(response => {

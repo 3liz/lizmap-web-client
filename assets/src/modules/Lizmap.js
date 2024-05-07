@@ -57,7 +57,7 @@ export default class Lizmap {
                 this._utils = Utils;
 
                 // Register projections if unknown
-                for (const [ref, def] of Object.entries(lizProj4)) {
+                for (const [ref, def] of Object.entries(globalThis['lizProj4'])) {
                     if (ref !== "" && !proj4.defs(ref)) {
                         proj4.defs(ref, def);
                     }
@@ -271,7 +271,7 @@ export default class Lizmap {
      * @type {string}
      */
     get serviceURL() {
-        return lizUrls.wms + '?' + (new URLSearchParams(lizUrls.params).toString());
+        return globalThis['lizUrls'].wms + '?' + (new URLSearchParams(globalThis['lizUrls'].params).toString());
     }
 
     /**
@@ -279,7 +279,7 @@ export default class Lizmap {
      * @type {string}
      */
     get mediaURL() {
-        return lizUrls.media + '?' + (new URLSearchParams(lizUrls.params).toString());
+        return globalThis['lizUrls'].media + '?' + (new URLSearchParams(globalThis['lizUrls'].params).toString());
     }
 
     /**

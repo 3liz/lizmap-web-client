@@ -15,8 +15,8 @@ export default class WFS {
 
     constructor() {
         this._defaultGetFeatureParameters = {
-            repository: lizUrls.params.repository,
-            project: lizUrls.params.project,
+            repository: globalThis['lizUrls'].params.repository,
+            project: globalThis['lizUrls'].params.project,
             SERVICE: 'WFS',
             REQUEST: 'GetFeature',
             VERSION: '1.0.0',
@@ -24,8 +24,8 @@ export default class WFS {
         };
 
         this._defaultDescribeFeatureTypeParameters = {
-            repository: lizUrls.params.repository,
-            project: lizUrls.params.project,
+            repository: globalThis['lizUrls'].params.repository,
+            project: globalThis['lizUrls'].params.project,
             SERVICE: 'WFS',
             REQUEST: 'DescribeFeatureType',
             VERSION: '1.0.0',
@@ -39,7 +39,7 @@ export default class WFS {
      * @memberof WFS
      */
     async getFeature(options) {
-        return Utils.fetchJSON(lizUrls.wms, {
+        return Utils.fetchJSON(globalThis['lizUrls'].wms, {
             method: "POST",
             body: new URLSearchParams({
                 ...this._defaultGetFeatureParameters,
@@ -54,7 +54,7 @@ export default class WFS {
      * @memberof WFS
      */
     async describeFeatureType(options) {
-        return Utils.fetchJSON(lizUrls.wms, {
+        return Utils.fetchJSON(globalThis['lizUrls'].wms, {
             method: "POST",
             body: new URLSearchParams({
                 ...this._defaultDescribeFeatureTypeParameters,
