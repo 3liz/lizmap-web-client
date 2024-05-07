@@ -1782,6 +1782,7 @@ window.lizMap = function() {
 
                       // Handle compact-tables/explode-tables behaviour
                       $('.lizmapPopupChildren .popupAllFeaturesCompact table').DataTable({
+                        order: [[1, 'asc']],
                         language: { url:globalThis['lizUrls']["dataTableLanguage"] }
                       });
 

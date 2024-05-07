@@ -2073,9 +2073,16 @@ lizmap-mouse-position > div.coords-unit > select{
   margin-top: 5px;
 }
 
-.lizmapPopupChildren .compact-tables, .lizmapPopupChildren .explode-tables{
+.lizmapPopupChildren .compact-tables,
+.lizmapPopupChildren .explode-tables{
   margin-top: 3px;
   margin-left: 10px;
+}
+
+/* Don't display buttons when there is no table (when there is only one feature) */
+.lizmapPopupChildren .compact-tables:not(:has(~ .popupAllFeaturesCompact)),
+.lizmapPopupChildren .explode-tables:not(:has(~ .popupAllFeaturesCompact)){
+  display: none;
 }
 
 #popupcontent .popupAllFeaturesCompact .lizmapPopupTable td{

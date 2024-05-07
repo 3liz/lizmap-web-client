@@ -682,6 +682,7 @@ class WMSRequest extends OGCRequest
         }
         $layerFeaturesCounter = 0;
         $allFeatureAttributes = array();
+        $allFeatureToolbars = array();
 
         foreach ($layer->Feature as $feature) {
             $id = (string) $feature['id'];
@@ -798,6 +799,7 @@ class WMSRequest extends OGCRequest
                 }
                 if ($configLayer->popupSource == 'auto') {
                     $allFeatureAttributes[] = $feature->Attribute;
+                    $allFeatureToolbars[] = $featureToolbar;
                 }
             }
 
@@ -807,11 +809,12 @@ class WMSRequest extends OGCRequest
             ));
         } // loop features
 
-        // Build hidden table containing all features
-        if (count($allFeatureAttributes) > 0) {
+        // Build hidden table containing all features when there are more than one
+        if (count($allFeatureAttributes) > 1) {
             $content[] = $this->getViewTpl('view~popup_all_features_table', $layerName, $layerId, $layerTitle, array(
                 'allFeatureAttributes' => array_reverse($allFeatureAttributes),
                 'remoteStorageProfile' => $remoteStorageProfile,
+                'allFeatureToolbars' => array_reverse($allFeatureToolbars),
             ));
         }
 
