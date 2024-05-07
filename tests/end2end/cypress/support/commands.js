@@ -79,3 +79,23 @@ Cypress.Commands.add(
         cy.get('#map').click(x - 30, y - 75)
     }
 )
+
+Cypress.Commands.add(
+    'gotoMap', (url, check = true) => {
+        // TODO keep this function synchronized with the Playwright equivalent
+
+        cy.visit(url)
+
+        // Better way to wait for a GetCapabilities at least ?
+        cy.wait(300)
+
+        if (check) {
+            cy.get('.error-msg').should("not.exist");
+            cy.get('#dock').should("exist");
+        } else {
+            cy.get('.error-msg').should("exist");
+            cy.contains('.error-msg', "An error occurred while loading this map.")
+            cy.get('#dock').should("not.exist");
+        }
+    }
+)

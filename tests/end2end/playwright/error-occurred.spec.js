@@ -1,7 +1,19 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+const { gotoMap } = require('./globals')
 
-test.describe('Error occured', () => {
+test.describe('Error occurred', () => {
+
+//    test('Loading map with an error', async ({ page }) => {
+//        const url = '/index.php/view/map/?repository=testsrepository&project=invalid_layer';
+//        await gotoMap(url, page, false);
+//    })
+
+    test('Loading map without an error', async ({ page }) => {
+      const url = '/index.php/view/map/?repository=testsrepository&project=attribute_table';
+      await gotoMap(url, page);
+    })
+
     test('Project config', async ({ page }) => {
         await page.route('**/service/getProjectConfig*', async route => {
             await route.abort()
