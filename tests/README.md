@@ -258,7 +258,7 @@ You can then :
 - execute `npx playwright test mytest.spec.js --project=chromium --debug` to execute one test with the Chromium browser in debug mode
 - other command line : https://playwright.dev/docs/intro#command-line
 
-You can also install the handy Visual Studio Code extension : https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright
+You can also install the handy [Playwright extension](https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright) on VSCode.
 
 ### Artifacts
 
