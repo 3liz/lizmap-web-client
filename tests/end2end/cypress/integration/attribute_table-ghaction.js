@@ -45,7 +45,7 @@ describe('Attribute table', () => {
 
     it('should have correct column order', () => {
 
-        const correct_column_order = ['', 'quartier', 'quartmno', 'libquart', 'photo', 'url'];
+        const correct_column_order = ['', 'quartier', 'quartmno', 'libquart', 'photo', 'url', 'thumbnail'];
 
         // postgreSQL layer
         cy.get('button[value="Les_quartiers_a_Montpellier"].btn-open-attribute-layer').click({ force: true })
@@ -194,6 +194,12 @@ describe('Attribute table', () => {
             expect(interception.response.body)
                 .to.have.property('features')
             expect(interception.response.body.features).to.have.length(7)
+            // the virtual field exists
+            expect(interception.response.body.features[1].properties).to.have.property('thumbnail')
+            // the content of the field is ok
+            expect(interception.response.body.features[1].properties.thumbnail).to.contain('img class="data-attr-thumbnail"');
+            // the 'onload' value is here (ie whole content is here)
+            expect(interception.response.body.features[1].properties.thumbnail).to.contain("BAD_CODE");
         })
         // Check that GetMap is requested without the filter token
         cy.wait('@getMap').then((interception) => {
@@ -207,6 +213,10 @@ describe('Attribute table', () => {
 
         // Check table lines
         cy.get('#attribute-layer-table-Les_quartiers_a_Montpellier tbody tr').should('have.length', 7)
+        // the virtual field is here with good attribute (data-src)
+        cy.get('#attribute-layer-table-Les_quartiers_a_Montpellier tbody tr:nth-child(1) td:nth-child(7) img[data-src]').should('exist')
+        // the onload attribute have disappeared
+        cy.get('#attribute-layer-table-Les_quartiers_a_Montpellier tbody tr:nth-child(1) td:nth-child(7) img[onload]').should('not.exist')
 
         // select feature 2,4,6
         // click to select 2
