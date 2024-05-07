@@ -599,7 +599,7 @@ class lizMapCtrl extends jController
         $items = jEvent::notify('mapBottomDockable', array('repository' => $repository, 'project' => $project))->getResponse();
         $assign['bottomdockable'] = mapDockItemsMerge($assign['bottomdockable'], $items);
 
-        $assign['rightdockable'] = array();
+        $assign['rightdockable'] = $lproj->getDefaultRightDockable();
         $items = jEvent::notify('mapRightDockable', array('repository' => $repository, 'project' => $project))->getResponse();
         $assign['rightdockable'] = mapDockItemsMerge($assign['rightdockable'], $items);
 
