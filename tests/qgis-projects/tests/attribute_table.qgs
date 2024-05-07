@@ -197,7 +197,9 @@
       <vectorjoins></vectorjoins>
       <layerDependencies></layerDependencies>
       <dataDependencies></dataDependencies>
-      <expressionfields></expressionfields>
+      <expressionfields>
+      <field expression="concat(&#xd;&#xa;   '&lt;img class=&quot;data-attr-thumbnail&quot; data-src=&quot;',&#xd;&#xa;   &quot;photo&quot; ,&#xd;&#xa;'&quot; foo=&quot;bar&quot; src=&quot;/themes/default/css/img/logo_footer.png&quot; style=&quot;height:60px;&quot;&#xd;&#xa;   onload=&quot;BAD_CODE_TO_REMOVE&quot;>'&#xd;&#xa;   &#xd;&#xa;)" type="10" name="thumbnail" precision="0" length="0" typeName="string" subType="0" comment=""/>
+      </expressionfields>
       <map-layer-style-manager current="défaut">
         <map-layer-style name="défaut"></map-layer-style>
       </map-layer-style-manager>
@@ -313,6 +315,13 @@
             </config>
           </editWidget>
         </field>
+        <field configurationFlags="None" name="thumbnail">
+          <editWidget type="">
+            <config>
+              <Option></Option>
+            </config>
+          </editWidget>
+        </field>
       </fieldConfiguration>
       <aliases>
         <alias field="quartier" index="0" name=""></alias>
@@ -320,6 +329,7 @@
         <alias field="libquart" index="2" name=""></alias>
         <alias field="photo" index="3" name=""></alias>
         <alias field="url" index="4" name=""></alias>
+        <alias field="thumbnail" index="5" name=""></alias>
       </aliases>
       <defaults>
         <default applyOnUpdate="0" expression="" field="quartier"></default>
@@ -327,6 +337,7 @@
         <default applyOnUpdate="0" expression="" field="libquart"></default>
         <default applyOnUpdate="0" expression="" field="photo"></default>
         <default applyOnUpdate="0" expression="" field="url"></default>
+        <default applyOnUpdate="0" expression="" field="thumbnail"></default>
       </defaults>
       <constraints>
         <constraint constraints="0" exp_strength="0" field="quartier" notnull_strength="0" unique_strength="0"></constraint>
@@ -334,6 +345,7 @@
         <constraint constraints="0" exp_strength="0" field="libquart" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="photo" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="url" notnull_strength="0" unique_strength="0"></constraint>
+        <constraint constraints="0" exp_strength="0" field="thumbnail" notnull_strength="0" unique_strength="0"></constraint>
       </constraints>
       <constraintExpressions>
         <constraint desc="" exp="" field="quartier"></constraint>
@@ -341,6 +353,7 @@
         <constraint desc="" exp="" field="libquart"></constraint>
         <constraint desc="" exp="" field="photo"></constraint>
         <constraint desc="" exp="" field="url"></constraint>
+        <constraint desc="" exp="" field="thumbnail"></constraint>
       </constraintExpressions>
       <expressionfields></expressionfields>
       <attributeactions>
@@ -448,7 +461,9 @@
       <vectorjoins></vectorjoins>
       <layerDependencies></layerDependencies>
       <dataDependencies></dataDependencies>
-      <expressionfields></expressionfields>
+      <expressionfields>
+      <field expression="concat(&#xd;&#xa;   '&lt;img class=&quot;data-attr-thumbnail&quot; data-src=&quot;',&#xd;&#xa;   &quot;photo&quot; ,&#xd;&#xa;'&quot; foo=&quot;bar&quot; src=&quot;/themes/default/css/img/logo_footer.png&quot; style=&quot;height:60px;&quot;&#xd;&#xa;   onload=&quot;BAD_CODE_TO_REMOVE&quot;>'&#xd;&#xa;   &#xd;&#xa;)" type="10" name="thumbnail" precision="0" length="0" typeName="string" subType="0" comment=""/>
+      </expressionfields>
       <map-layer-style-manager current="défaut">
         <map-layer-style name="défaut"></map-layer-style>
       </map-layer-style-manager>
@@ -665,6 +680,13 @@
             </config>
           </editWidget>
         </field>
+        <field configurationFlags="None" name="thumbnail">
+          <editWidget type="TextEdit">
+            <config>
+              <Option></Option>
+            </config>
+          </editWidget>
+        </field>
       </fieldConfiguration>
       <aliases>
         <alias field="quartier" index="0" name=""></alias>
@@ -672,6 +694,7 @@
         <alias field="libquart" index="2" name=""></alias>
         <alias field="photo" index="3" name=""></alias>
         <alias field="url" index="4" name=""></alias>
+        <alias field="thumbnail" index="5" name=""></alias>
       </aliases>
       <defaults>
         <default applyOnUpdate="0" expression="" field="quartier"></default>
@@ -679,6 +702,7 @@
         <default applyOnUpdate="0" expression="" field="libquart"></default>
         <default applyOnUpdate="0" expression="" field="photo"></default>
         <default applyOnUpdate="0" expression="" field="url"></default>
+        <default applyOnUpdate="0" expression="" field="thumbnail"></default>
       </defaults>
       <constraints>
         <constraint constraints="3" exp_strength="0" field="quartier" notnull_strength="1" unique_strength="1"></constraint>
@@ -686,6 +710,7 @@
         <constraint constraints="0" exp_strength="0" field="libquart" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="photo" notnull_strength="0" unique_strength="0"></constraint>
         <constraint constraints="0" exp_strength="0" field="url" notnull_strength="0" unique_strength="0"></constraint>
+        <constraint constraints="0" exp_strength="0" field="thumbnail" notnull_strength="0" unique_strength="0"></constraint>
       </constraints>
       <constraintExpressions>
         <constraint desc="" exp="" field="quartier"></constraint>
@@ -693,6 +718,7 @@
         <constraint desc="" exp="" field="libquart"></constraint>
         <constraint desc="" exp="" field="photo"></constraint>
         <constraint desc="" exp="" field="url"></constraint>
+        <constraint desc="" exp="" field="thumbnail"></constraint>
       </constraintExpressions>
       <expressionfields></expressionfields>
       <attributeactions>
@@ -705,6 +731,7 @@
           <column hidden="0" name="libquart" type="field" width="-1"></column>
           <column hidden="0" name="photo" type="field" width="348"></column>
           <column hidden="0" name="url" type="field" width="305"></column>
+          <column hidden="0" name="thumbnail" type="field" width="348"></column>
           <column hidden="1" type="actions" width="-1"></column>
         </columns>
       </attributetableconfig>
