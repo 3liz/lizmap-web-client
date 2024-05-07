@@ -19,7 +19,7 @@ var lizAttributeTable = function() {
             var attributeLayersActive = false;
             var attributeLayersDic = {};
             var wfsTypenameMap = {};
-            var mediaLinkPrefix = lizUrls.media + '?' + new URLSearchParams(lizUrls.params);
+            var mediaLinkPrefix = globalThis['lizUrls'].media + '?' + new URLSearchParams(globalThis['lizUrls'].params);
             var startupFilter = false;
             if( !( typeof lizLayerFilter === 'undefined' ) ){
                 startupFilter = true;
@@ -928,7 +928,7 @@ var lizAttributeTable = function() {
                         }
 
                         if( doQuery ){
-                            var service = lizUrls.edition + '?' + new URLSearchParams(lizUrls.params);
+                            var service = globalThis['lizUrls'].edition + '?' + new URLSearchParams(globalThis['lizUrls'].params);
                             $.post(service.replace('getFeature','linkFeatures'),{
                                 features1: p[0]['id'] + ':' + p[0]['fkey'] + ':' + p[0]['selected'].join(),
                                 features2: p[1]['id'] + ':' + p[1]['fkey'] + ':' + p[1]['selected'].join(),
@@ -1527,7 +1527,7 @@ var lizAttributeTable = function() {
                                 );
                             }
                             ,order: [[ firstDisplayedColIndex, "asc" ]]
-                            ,language: { url:lizUrls["dataTableLanguage"] }
+                            ,language: { url:globalThis['lizUrls']["dataTableLanguage"] }
                             ,deferRender: true
                             ,createdRow: function ( row, data, dataIndex ) {
                                 if ( $.inArray( data.DT_RowId.toString(), lConfig['selectedFeatures'] ) != -1
@@ -1671,15 +1671,15 @@ var lizAttributeTable = function() {
                         }
                     } else {
                         // Check if we need to replace url or media by link
-                        let davConf = lizUrls.webDavUrl && lizUrls?.resourceUrlReplacement?.webdav && config.layers[aName]?.webDavFields && Array.isArray(config.layers[aName].webDavFields) && config.layers[aName].webDavFields.includes(columnName);
+                        let davConf = globalThis['lizUrls'].webDavUrl && globalThis['lizUrls']?.resourceUrlReplacement?.webdav && config.layers[aName]?.webDavFields && Array.isArray(config.layers[aName].webDavFields) && config.layers[aName].webDavFields.includes(columnName);
                         colConf['render'] = function (data, type, row, meta) {
                             // Replace media and URL with links
                             if (!data || !(typeof data === 'string'))
                                 return data;
                             if (davConf) {
                                 // replace the root of the url
-                                if(data.startsWith(lizUrls.webDavUrl)){
-                                    data = data.replace(lizUrls.webDavUrl, lizUrls.resourceUrlReplacement.webdav)
+                                if(data.startsWith(globalThis['lizUrls'].webDavUrl)){
+                                    data = data.replace(globalThis['lizUrls'].webDavUrl, globalThis['lizUrls'].resourceUrlReplacement.webdav)
                                 }
                             }
 
@@ -1690,7 +1690,7 @@ var lizAttributeTable = function() {
                                     rdata = data.slice(1);
                                 return '<a href="' + mediaLinkPrefix + '&path=' + rdata + '" target="_blank">' + colMeta.title + '</a>';
                             }
-                            else if (davConf && data.substring(0, 4) == lizUrls.resourceUrlReplacement.webdav) {
+                            else if (davConf && data.substring(0, 4) == globalThis['lizUrls'].resourceUrlReplacement.webdav) {
                                 var rdata = data;
                                 var colMeta = meta.settings.aoColumns[meta.col];
                                 return '<a href="' + mediaLinkPrefix + '&path=' + rdata + '" target="_blank">' + colMeta.title + '</a>';
@@ -2597,7 +2597,7 @@ var lizAttributeTable = function() {
                         // Add filter to openlayers layer
                         if( aFilter ){
                             // Get filter token
-                            fetch(lizUrls.service, {
+                            fetch(globalThis['lizUrls'].service, {
                                 method: "POST",
                                 body: new URLSearchParams({
                                     service: 'WMS',
@@ -2796,7 +2796,7 @@ var lizAttributeTable = function() {
                     lConfig['request_params']['selection'] = wmsName + ':' + lConfig['selectedFeatures'].join();
 
                     // Get selection token
-                    fetch(lizUrls.service, {
+                    fetch(globalThis['lizUrls'].service, {
                         method: "POST",
                         body: new URLSearchParams({
                             service: 'WMS',
@@ -2851,7 +2851,7 @@ var lizAttributeTable = function() {
                     lConfig.request_params['selection'] = wmsName + ':' + lConfig.selectedFeatures.join();
 
                     // Get selection token
-                    fetch(lizUrls.service, {
+                    fetch(globalThis['lizUrls'].service, {
                         method: "POST",
                         body: new URLSearchParams({
                             service: 'WMS',
@@ -3121,7 +3121,7 @@ var lizAttributeTable = function() {
              *
              * @param nlayerId
              * @param referencingLayerConfig
-             */           
+             */
             function getPivotLinkedLayerConfiguration(nlayerId, referencingLayerConfig){
                 const refAttributeLayerConf = lizMap.getLayerConfigById( referencingLayerConfig.id, lizMap.config.attributeLayers, 'layerId' );
 
@@ -3166,7 +3166,7 @@ var lizAttributeTable = function() {
              *
              * @param nlayerId
              * @param mLayerId
-             */ 
+             */
             function getPivotIdFromRelatedLayers(nlayerId, mLayerId){
                 // returns the pivotId starting from the related layers
                 // this method assumes that the mLayer and nLayer is related with n to m relation via a single pivot
@@ -3196,7 +3196,7 @@ var lizAttributeTable = function() {
              * @param pivotId
              * @param wfsFields
              * @param referencedFieldValue
-             */ 
+             */
             async function getPivotWFSFeatures(pivotId, wfsFields, referencedFieldValue){
 
                 const pivotConfig =  lizMap.getLayerConfigById(

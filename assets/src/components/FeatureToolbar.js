@@ -537,11 +537,11 @@ export default class FeatureToolbar extends HTMLElement {
             cPkeyVal = " '" + cPkeyVal + "' ";
         }
 
-        fetch(lizUrls.edition.replace('getFeature', 'unlinkChild'), {
+        fetch(globalThis['lizUrls'].edition.replace('getFeature', 'unlinkChild'), {
             method: "POST",
             body: new URLSearchParams({
-                repository: lizUrls.params.repository,
-                project: lizUrls.params.project,
+                repository: globalThis['lizUrls'].params.repository,
+                project: globalThis['lizUrls'].params.project,
                 lid: this.layerId,
                 pkey: primaryKey,
                 pkeyval: cPkeyVal,

@@ -187,17 +187,17 @@ export default class Treeview extends HTMLElement {
         // Test if the url is internal
         const mediaRegex = /^(\/)?media\//;
         if (mediaRegex.test(url)) {
-            const mediaLink = lizUrls.media + '?' + new URLSearchParams(lizUrls.params);
+            const mediaLink = globalThis['lizUrls'].media + '?' + new URLSearchParams(globalThis['lizUrls'].params);
             url = mediaLink + '&path=/' + url;
         }
         return url;
     }
 
     _createRemoveCacheLink(layerName) {
-        if(!lizUrls.removeCache){
+        if(!globalThis['lizUrls'].removeCache){
             return;
         }
-        const removeCacheServerUrl = lizUrls.removeCache + '?' + new URLSearchParams(lizUrls.params);
+        const removeCacheServerUrl = globalThis['lizUrls'].removeCache + '?' + new URLSearchParams(globalThis['lizUrls'].params);
         return removeCacheServerUrl + '&layer=' + layerName;
     }
 
