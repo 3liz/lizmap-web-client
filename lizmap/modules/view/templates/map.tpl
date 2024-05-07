@@ -50,6 +50,7 @@
       <a href="#" id="liz_layer_popup_closer" class="ol-popup-closer"></a>
       <div id="liz_layer_popup_contentDiv" class="lizmapPopupContent"></div>
     </div>
+    <div id="tooltip"></div>
     <div id="map"></div>
 
     <div id="mini-dock">

@@ -255,10 +255,6 @@ CSS Sprite positions calculated via http://instantsprite.com/ using 20px images 
   background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' stroke-width='2' stroke='%23000' fill='none' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24' id='pencil'><path d='M0 0h24v24H0z' stroke='none'></path><path d='M4 20h4L18.5 9.5a1.5 1.5 0 00-4-4L4 16v4M13.5 6.5l4 4'></path></svg>");
 }
 
-#content.mobile #mapmenu li.tooltip-layer {
-  display:none;
-}
-
 /* navbar */
 .navbar-fixed-top .navbar-inner,
 .navbar-static-top .navbar-inner {
@@ -1836,11 +1832,22 @@ lizmap-mouse-position > div.coords-unit > select{
   width:50px;
 }
 
-
-#tooltip-layer select.loading {
-    background-image: url("images/download_layer.gif");
-    background-repeat: no-repeat;
-    background-position: 90% center;
+#tooltip {
+  position: absolute;
+  display: inline-block;
+  height: auto;
+  width: auto;
+  z-index: 100;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 4px;
+  padding: 5px;
+  left: 50%;
+  transform: translateX(3%);
+  visibility: hidden;
+  pointer-events: none;
+  z-index: 750;
 }
 
 #message {
@@ -2322,18 +2329,6 @@ lizmap-mouse-position > div.coords-unit > select{
     display: none !important;
 }
 
-
-
-/* Tooltips */
-div.tooltip {
-  z-index: 2000 !important;
-  position:fixed !important;
-}
-.tooltip-inner{
-  display: inline-block;
-}
-
-
 /* only maps dock style */
 #home #projects h2 {
   color: white;
@@ -2344,8 +2339,6 @@ div.tooltip {
 #home #projects ul li div.thumbnail {
   text-align: center;
 }
-
-
 
 /* Edition style */
 #edition .nav-tabs > li > a {
@@ -3088,6 +3081,12 @@ lizmap-treeview .symbols img.legend {
 
 lizmap-treeview img.legend[src="data:image/png;base64, "]{
   visibility: hidden;
+}
+
+lizmap-tooltip.spinner::after {
+  border-width: 2px;
+  border-color: black transparent black transparent;
+  right: 2px;
 }
 
 /* Snap layer list */

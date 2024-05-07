@@ -7,8 +7,6 @@
 
 var lizLayerActionButtons = function() {
 
-    var tooltipControl = null;
-    var tooltipLayers = [];
     var featureTypes = null;
 
     /**
