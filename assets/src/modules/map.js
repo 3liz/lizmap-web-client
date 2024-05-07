@@ -327,6 +327,12 @@ export default class map extends olMap {
             name: 'LizmapOverLayLayersGroup'
         });
 
+        // Get the max layers zIndex
+        const maxZIndex = this.overlayLayers.map((layer) => layer.getZIndex()).reduce(
+            (maxValue, currentValue) => maxValue <= currentValue ? currentValue : maxValue,
+            0
+        );
+
         // Get the base layers zIndex which is the layer min zIndex - 1
         // to be sure base layers are under the others layers
         const baseLayerZIndex = this.overlayLayers.map((layer) => layer.getZIndex()).reduce(
@@ -559,6 +565,7 @@ export default class map extends olMap {
         }
 
         this._toolsGroup = new LayerGroup();
+        this._toolsGroup.setZIndex(maxZIndex+2);
         this._toolsGroup.setProperties({
             name: 'LizmapToolsGroup'
         });
@@ -692,6 +699,60 @@ export default class map extends olMap {
                 this.changeBaseLayer(evt.name);
             },
             ['baselayers.selection.changed']
+        );
+
+        mainLizmap.state.rootMapGroup.addListener(
+            evt => {
+                const extGroup = mainLizmap.state.rootMapGroup.children[0];
+                if (evt.name != extGroup.name)
+                    return;
+                const extLayerGroup = new LayerGroup({
+                    layers: []
+                });
+
+                extLayerGroup.setVisible(extGroup.visibility);
+                extLayerGroup.setZIndex(maxZIndex+1);
+                extLayerGroup.setProperties({
+                    name: extGroup.name,
+                    type: 'ext-group'
+                });
+                this._overlayLayersGroup.getLayers().push(extLayerGroup);
+                extGroup.addListener(
+                    evtLayer => {
+                        const extLayer = extGroup.children[0];
+                        if (evtLayer.childName != extLayer.name)
+                            return;
+                        extLayer.olLayer.setProperties({
+                            name: evtLayer.childName,
+                            type: 'ol-layer'
+                        });
+                        extLayerGroup.getLayers().push(extLayer.olLayer);
+                    }, ['ol-layer.added']
+                );
+                extGroup.addListener(
+                    evtLayer => {
+                        const layers = extLayerGroup
+                            .getLayers()
+                            .getArray()
+                            .filter((item) => item.get('name') == evtLayer.childName);
+                        if (layers.length == 0)
+                            return;
+                        extLayerGroup.getLayers().remove(layers[0]);
+                    }, ['ol-layer.removed']
+                );
+            }, ['ext-group.added']
+        );
+
+        mainLizmap.state.rootMapGroup.addListener(
+            evt => {
+                const groups = this._overlayLayersGroup
+                    .getLayers()
+                    .getArray()
+                    .filter((item) => item.get('name') == evt.childName && item.get('type') == 'ext-group');
+                if (groups.length == 0)
+                    return;
+                this._overlayLayersGroup.getLayers().remove(groups[0]);
+            }, ['ext-group.removed']
         );
 
         // Create the highlight layer

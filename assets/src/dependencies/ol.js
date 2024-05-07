@@ -25,6 +25,8 @@ import $ol$source$WMTS from 'ol/source/WMTS.js';
 import {optionsFromCapabilities as _ol_source_WMTS$optionsFromCapabilities} from 'ol/source/WMTS.js';
 import $ol$source$XYZ from 'ol/source/XYZ.js';
 import $ol$source$TileWMS from 'ol/source/TileWMS.js';
+import $ol$source$OGCMapTile from 'ol/source/OGCMapTile.js';
+import $ol$source$OGCVectorTile from 'ol/source/OGCVectorTile.js';
 
 import $ol$layer$Image from 'ol/layer/Image.js';
 import $ol$layer$Vector from 'ol/layer/Vector.js';
@@ -132,6 +134,8 @@ ol.layer.Layer = $ol$layer$Layer;
 ol.layer.Tile = $ol$layer$Tile;
 ol.layer.Vector = $ol$layer$Vector;
 ol.layer.VectorTile = $ol$layer$VectorTile;
+ol.source.OGCMapTile = $ol$source$OGCMapTile;
+ol.source.OGCVectorTile = $ol$source$OGCVectorTile;
 
 ol.extent = {};
 ol.extent.applyTransform = _ol_extent$applyTransform;
