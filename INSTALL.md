@@ -26,8 +26,8 @@ and [its documentation about QGIS Server](https://docs.qgis.org/3.22/en/docs/ser
   - [the release page on GitHub](https://github.com/3liz/lizmap-web-client/releases) for stable releases.
   - [3liz website](https://packages.3liz.org/pub/lizmap/unstable/) for unstable releases.
 - Copy files from the ZIP package to a directory for apache/Nginx, let's say  /var/www/mylizmap/.
-  
-**Warning**. **Do not use the source code from git**, except if you 
+
+**Warning**. **Do not use the source code from git**, except if you
 are a developer and you want to contribute on the code of Lizmap.
 Since Lizmap 3.4, **the source code in the repository is not usable directly**.
 You must build the application. Read [how to contribute](./CONTRIBUTING.md) to build your own package.
@@ -66,11 +66,11 @@ php lizmap/install/installer.php
 
 ## Additional features
 
-It's possible to add additional features in Lizmap by adding : 
+It's possible to add additional features in Lizmap by adding :
 
-* Lizmap modules, in the PHP application, the list is available on 
+* Lizmap modules, in the PHP application, the list is available on
   [https://docs.lizmap.com](https://docs.lizmap.com/next/fr/introduction.html#additional-lizmap-modules).
-* QGIS Server plugins, the list is available on 
+* QGIS Server plugins, the list is available on
   [https://docs.lizmap.com](https://docs.lizmap.com/next/fr/install/linux.html#qgis-server-plugins)
 
 ## Test
@@ -88,14 +88,14 @@ and eventually restart apache.
 If you need to re-install lizmap on the same instance, you need to remove the file `lizmap/var/config/installer.ini.php`. This file is created by the installer.
 
 If you want to test lizmap with some demo qgis projects, you should launch
-`lizmap/install/reset.sh --keep-config --demo`. You must install some 
+`lizmap/install/reset.sh --keep-config --demo`. You must install some
 tools : unzip and wget or curl.
 
 
 ### Using QGIS composer/layouts and PDF in Lizmap
 
-If you plan to print PDF from Lizmap, you need a fake X Server. 
-See `QGIS manual <https://docs.qgis.org/2.18/en/docs/training_manual/qgis_server/install.html#fa-http-server-configuration>`_ searching for `xvfb`. 
+If you plan to print PDF from Lizmap, you need a fake X Server.
+See `QGIS manual <https://docs.qgis.org/2.18/en/docs/training_manual/qgis_server/install.html#fa-http-server-configuration>`_ searching for `xvfb`.
 It works for Apache and NGINX
 
 ### Debug

@@ -11,7 +11,7 @@
 
 ## 3.3.15 - 2021-03-25
 
-- Fix database migrator: sequence should be updated 
+- Fix database migrator: sequence should be updated
 - Update Jelix to fix an issue in the installer
 - Fix 'Undefined index' notice
 

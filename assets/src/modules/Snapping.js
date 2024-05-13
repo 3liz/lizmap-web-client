@@ -241,7 +241,7 @@ export default class Snapping {
         let layerConfig = mainLizmap.lizmap3.getLayerConfigById(layerId);
         if (layerConfig) {
             return layerConfig[1].title || layerConfig[1].name;
-        } 
+        }
         return "";
     }
 

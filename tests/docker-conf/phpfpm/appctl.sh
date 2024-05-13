@@ -218,7 +218,7 @@ case $COMMAND in
     script)
         launchScript ${*:2};;
     console)
-        launchConsole ${*:2};;    
+        launchConsole ${*:2};;
     rights)
         setRights;;
     composer_install)

@@ -59,4 +59,3 @@ Last step: launch the upgrade script
 ```
 php lizmap/install/upgrade-to-3.php
 ```
-

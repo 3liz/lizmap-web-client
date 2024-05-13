@@ -8,7 +8,7 @@ test.describe('Bing Maps baselayers', () => {
         await page.goto(url);
 
         const allResponses = await Promise.all([bingRoadsInitRequestPromise,bingSatelliteInitRequestPromise])
-        
+
         let getBingRoadsInitRequest = allResponses[0];
         let getBingSatelliteInitRequest = allResponses[1];
 

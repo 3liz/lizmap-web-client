@@ -84,7 +84,7 @@ password_hash_options=
 ; name of the dao to get user data
 dao="lizmap~user"
 
-; profile to use for jDb 
+; profile to use for jDb
 profile=jauth
 
 ; name of the php function to crypt the password in the database

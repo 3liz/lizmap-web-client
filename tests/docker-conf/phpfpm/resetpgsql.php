@@ -26,4 +26,3 @@ while($tryAgain) {
 }
 
 echo "  tables deleted\n";
-

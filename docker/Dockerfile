@@ -71,7 +71,3 @@ HEALTHCHECK --interval=60s --timeout=30s CMD php-fpm-healthcheck || exit 1
 WORKDIR /www
 ENTRYPOINT ["/bin/lizmap-entrypoint.sh"]
 CMD ["/usr/sbin/php-fpm81", "-F", "-O"]
-
-
-
-
