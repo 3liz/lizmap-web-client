@@ -2201,6 +2201,7 @@ window.lizMap = function() {
                 popupMaxFeatures = parseInt(layerConfig.popupMaxFeatures);
             popupMaxFeatures == 0 ? 10 : popupMaxFeatures;
             getLayerFeature(featureType, fid, function(feat) {
+                var parentDiv = self.parent();
 
                 // Array of Promise w/ fetch to request children popup content
                 const popupChidrenRequests = [];
@@ -2241,8 +2242,6 @@ window.lizMap = function() {
                                 wmsOptions['FILTER'] = rConfigLayer.request_params.filter+' AND "'+relation.referencingField+'" = \''+feat.properties[relation.referencedField]+'\'';
                             else
                                 wmsOptions['FILTER'] = wmsName+':"'+relation.referencingField+'" = \''+feat.properties[relation.referencedField]+'\'';
-
-                            var parentDiv = self.parent();
 
                             // Fetch queries
                             // Keep `rConfigLayer` in array with same order that fetch queries
@@ -2344,20 +2343,20 @@ window.lizMap = function() {
                     }
 
                     // Handle compact-tables/explode-tables behaviour
-                    $('.lizmapPopupChildren .popupAllFeaturesCompact table').DataTable({
+                    parentDiv.find('.lizmapPopupChildren .popupAllFeaturesCompact table').DataTable({
                         language: { url:lizUrls["dataTableLanguage"] }
                     });
 
-                    $('.lizmapPopupChildren .compact-tables, .lizmapPopupChildren .explode-tables').tooltip();
+                    parentDiv.find('.lizmapPopupChildren .compact-tables, .lizmapPopupChildren .explode-tables').tooltip();
 
-                    $('.lizmapPopupChildren .compact-tables').off('click').on('click',function() {
+                    parentDiv.find('.lizmapPopupChildren .compact-tables').off('click').on('click',function() {
                         $(this)
                             .addClass('hide')
                             .siblings('.explode-tables').removeClass('hide')
                             .siblings('.popupAllFeaturesCompact, .lizmapPopupSingleFeature').toggle();
                     });
 
-                    $('.lizmapPopupChildren .explode-tables').off('click').on('click',function () {
+                    parentDiv.find('.lizmapPopupChildren .explode-tables').off('click').on('click',function () {
                         $(this)
                             .addClass('hide')
                             .siblings('.compact-tables').removeClass('hide')
