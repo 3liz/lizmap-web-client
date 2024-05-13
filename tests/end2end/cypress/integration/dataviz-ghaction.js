@@ -215,7 +215,7 @@ describe('Dataviz tests', function () {
 
         // We also test that the title in the popup is specific
         // and not the one configured for the plot
-        cy.get('#popupcontent .lizmapPopupChildren.lizdataviz > h4').should('have.text', 'Number of bakeries for this polygon')
+        cy.get('#popupcontent .lizmapPopupChildren.lizdataviz > h4').first().should('have.text', 'Number of bakeries for this polygon')
 
         cy.get('#popupcontent .lizmapPopupChildren.lizdataviz .dataviz-waiter').should('not.be.visible')
         cy.get('#popupcontent .lizmapPopupChildren.lizdataviz .plot-container')
