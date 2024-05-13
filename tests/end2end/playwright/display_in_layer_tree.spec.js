@@ -11,6 +11,7 @@ test.describe('Display in layer tree', () => {
     test('display in layer tree unchecked => layer not visible in layer tree and layer in print request', async ({ page }) => {
         // layer not visible in layer tree
         await expect(page.getByTestId('polygons')).toHaveCount(0);
+        await expect(page.getByTestId('group-without-children')).toHaveCount(0);
 
         const getPrintRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData().includes('GetPrint'));
 
@@ -19,7 +20,7 @@ test.describe('Display in layer tree', () => {
             const postData = request.postData();
             expect(postData).toContain('SERVICE=WMS')
             expect(postData).toContain('REQUEST=GetPrint')
-            expect(postData).toContain('map0%3ALAYERS=project-background-color%2Cpolygons')
+            expect(postData).toContain('map0%3ALAYERS=polygons')
         };
 
         await page.locator('#button-print').click();
