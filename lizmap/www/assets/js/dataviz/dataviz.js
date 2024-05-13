@@ -463,17 +463,25 @@ let lizDataviz = function () {
      * It is responsible for rendering the plot and
      * adding it in the document.
      *
-     * @param {integer} plotContainerId The plot container element ID
+     * @param {integer} targetId The ID of the plot HTML container element.
      * @param {object} data The plot data as given by the backend
+     * @param {integer} pid The plot integer ID
      * @param {object} layout The plot layout defined by the user
      *
      */
-    function buildHtmlPlot(plotContainerId, data, layout) {
+    function buildHtmlPlot(targetId, data, pid = null, layout = null) {
         if (!data) {
             return;
         }
-        let plot_id = parseInt(plotContainerId.replace('dataviz_plot_', ''));
-        let plot_config = dv.config.layers[plot_id];
+
+        // We need to get the plot Lizmap config from its container id
+        pid = pid != null ? pid : getPlotIdByContainerId(targetId);
+
+        // Do nothing if pid not found
+        if (pid == null) {
+            return;
+        }
+        let plot_config = dv.config.layers[pid];
         let plot = plot_config.plot;
         if (!('html_template' in plot)) {
             return;
@@ -530,13 +538,13 @@ let lizDataviz = function () {
         distinct_x.sort();
 
         // Empty previous html
-        $('#' + plotContainerId).html('');
+        $('#' + targetId).html('');
 
         // Add new built html
         for (let x in distinct_x) {
             let x_val = distinct_x[x];
             let html = '<div style="padding:5px;">' + htmls[x_val] + '</div>';
-            $('#' + plotContainerId).append(html);
+            $('#' + targetId).append(html);
         }
     }
 
@@ -595,7 +603,7 @@ let lizDataviz = function () {
 
         // Build plot with plotly or lizmap
         if (conf.data.length && conf.data[0]['type'] == 'html') {
-            buildHtmlPlot(targetId, conf.data, conf.layout);
+            buildHtmlPlot(targetId, conf.data, pid, conf.layout);
         } else {
             let plotLocale = dv.config.locale.substring(0, 2);
             let plotConfig = {
