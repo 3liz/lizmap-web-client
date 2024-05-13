@@ -101,7 +101,7 @@ export default class SingleWMSLayer {
 
         /**
          * the WMS Ratio.
-         * @type {number} 
+         * @type {number}
          */
         this._WMSRatio = mainMapInstance._WMSRatio;
 
@@ -177,18 +177,18 @@ export default class SingleWMSLayer {
     }
     /**
      * @type {ImageLayer<ImageWMS>}
-     * 
+     *
      */
     get layer(){
         return this._layer;
     }
     /**
-     * creates the layer instance and get the startup single image 
+     * creates the layer instance and get the startup single image
      * @memberof SingleWMSLayer
      */
     initializeLayer(){
         let minResolution =  undefined; //Utils.getResolutionFromScale(this._minScale, this._metersPerUnit);
-        let maxResolution =  undefined; //Utils.getResolutionFromScale(this._maxScale, this._metersPerUnit); 
+        let maxResolution =  undefined; //Utils.getResolutionFromScale(this._maxScale, this._metersPerUnit);
 
         if(this._mainMapInstance.useTileWms){
             this._layer = new TileLayer({
@@ -235,7 +235,7 @@ export default class SingleWMSLayer {
             }
         }
 
-        this._layer.setVisible(false); 
+        this._layer.setVisible(false);
 
         this._layer.setProperties({
             name: "singleWMSLayer"

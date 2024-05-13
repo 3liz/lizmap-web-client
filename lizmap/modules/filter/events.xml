@@ -6,4 +6,3 @@
        <event name="getMapAdditions" />
    </listener>
 </events>
-

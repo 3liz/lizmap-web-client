@@ -630,7 +630,7 @@ def my_form_open(dialog, layer, feature):
 
 &lt;p>
 [%'&lt;i class="icon-time">&lt;/i> ' || format_date(
-	"field_date", 
+	"field_date",
 	'd MMMM yyyy - HH:mm'
 )%]
 &lt;br/>

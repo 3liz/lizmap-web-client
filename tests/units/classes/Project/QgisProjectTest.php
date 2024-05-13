@@ -335,7 +335,7 @@ class QgisProjectTest extends TestCase
                           'previewField'=>'fid',
                           'relationName' => 'fk_father_child_relation',
                           'relationId' => 'child_laye_father_id_father_lay_ref_id_1',
-      
+
                       ),
                   ),
                   'pivot' => array(),
@@ -353,12 +353,12 @@ class QgisProjectTest extends TestCase
                       'previewField' => 'fid',
                   )
          );
-         
-         $relations = $testQgis->getRelations(); 
+
+         $relations = $testQgis->getRelations();
          $relationFields = $testQgis->getRelationsFields();
          $this->assertEquals($expectedRelationsOnEmbeddedLayers, $relations);
          $this->assertEquals($expectedFieldsOnEmbeddedLayers, $relationFields);
-         
+
          // check relations identity on main project
          $file = __DIR__.'/Ressources/relations_project.qgs';
          $testQgisParent = new qgisProjectForTests();
@@ -622,7 +622,7 @@ class QgisProjectTest extends TestCase
                         'OrderByValue' => false,
                         'UseCompleter' => false,
                         'Value' => 'descr',
-                        'filters' => 
+                        'filters' =>
                         array (
                         ),
                         'chainFilters' => false,

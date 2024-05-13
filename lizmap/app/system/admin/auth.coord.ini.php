@@ -77,7 +77,7 @@ persistant_duration = 1
 password_hash_method = 1
 
 ; options for the hash method. list of "name:value" separated by a ";"
-password_hash_options = 
+password_hash_options =
 
 
 ;=========== Parameters for drivers
@@ -87,7 +87,7 @@ password_hash_options =
 ; name of the dao to get user data
 dao = "lizmap~user"
 
-; profile to use for jDb 
+; profile to use for jDb
 profile = "jauth"
 
 ; name of the php function to crypt the password in the database
