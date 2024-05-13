@@ -1501,311 +1501,311 @@ window.lizMap = function() {
             getLayerFeature(featureType, fid, function(feat) {
                 var parentDiv = self.parent();
 
-          // Array of Promise w/ fetch to request children popup content
-          const popupChidrenRequests = [];
+                // Array of Promise w/ fetch to request children popup content
+                const popupChidrenRequests = [];
 
-          // Array of pre-processed objects for WMS popup requests
-          const preProcessedRequests = [];
+                // Array of pre-processed objects for WMS popup requests
+                const preProcessedRequests = [];
 
-          // Array of object contains utilities for each relation
-          const preProcessUtilities = [];
+                // Array of object contains utilities for each relation
+                const preProcessUtilities = [];
 
-          const rConfigLayerAll = [];
+                const rConfigLayerAll = [];
 
-          // Build POST query for every child based on QGIS relations
-          for ( const relation of relations ){
-              const rLayerId = relation.referencingLayer;
-              let preProcessRequest = null;
+                // Build POST query for every child based on QGIS relations
+                for ( const relation of relations ){
+                    const rLayerId = relation.referencingLayer;
+                    let preProcessRequest = null;
 
-              // prepare utilities object
-              let rUtilities = {
-                  rLayerId : rLayerId // pivot id or table id
-              };
-              const pivotAttributeLayerConf = lizMap.getLayerConfigById( rLayerId, lizMap.config.attributeLayers, 'layerId' );
-              // check if child is a pivot table
-              if (pivotAttributeLayerConf && pivotAttributeLayerConf[1]?.pivot == 'True' && config.relations.pivot && config.relations.pivot[rLayerId]) {
-                  // looking for related children
-                  const pivotConfig =  lizMap.getLayerConfigById(
-                      rLayerId,
-                      config.layers,
-                      'id'
-                  );
-                  if (pivotConfig) {
-                      // n to m -> get "m" layer id
-                      var mLayer = Object.keys(config.relations.pivot[rLayerId]).filter((k)=>{ return k !== layerId})
-                      if (mLayer.length == 1) {
-                          // "m" layer config
-                          const mLayerConfig = getLayerConfigById( mLayer[0] );
-                          if (mLayerConfig) {
-                              let clRefname = mLayerConfig[1]?.shortname || mLayerConfig[1]?.cleanname;
-                              if ( clRefname === undefined ) {
-                                  clRefname = cleanName(mLayerConfig[1].name);
-                                  mLayerConfig[1].cleanname = clRefname;
-                              }
-                              if (mLayerConfig[1].popup == 'True' && self.parent().find('div.lizmapPopupChildren.'+clRefname).length == 0) {
-                                  // get results from pivot table
-                                  const typeName = pivotConfig[1].typename;
-                                  const wfsParams = {
-                                      TYPENAME: typeName,
-                                      GEOMETRYNAME: 'extent'
-                                  };
+                    // prepare utilities object
+                    let rUtilities = {
+                        rLayerId : rLayerId // pivot id or table id
+                    };
+                    const pivotAttributeLayerConf = lizMap.getLayerConfigById( rLayerId, lizMap.config.attributeLayers, 'layerId' );
+                    // check if child is a pivot table
+                    if (pivotAttributeLayerConf && pivotAttributeLayerConf[1]?.pivot == 'True' && config.relations.pivot && config.relations.pivot[rLayerId]) {
+                        // looking for related children
+                        const pivotConfig =  lizMap.getLayerConfigById(
+                            rLayerId,
+                            config.layers,
+                            'id'
+                        );
+                        if (pivotConfig) {
+                            // n to m -> get "m" layer id
+                            var mLayer = Object.keys(config.relations.pivot[rLayerId]).filter((k)=>{ return k !== layerId})
+                            if (mLayer.length == 1) {
+                                // "m" layer config
+                                const mLayerConfig = getLayerConfigById( mLayer[0] );
+                                if (mLayerConfig) {
+                                    let clRefname = mLayerConfig[1]?.shortname || mLayerConfig[1]?.cleanname;
+                                    if ( clRefname === undefined ) {
+                                        clRefname = cleanName(mLayerConfig[1].name);
+                                        mLayerConfig[1].cleanname = clRefname;
+                                    }
+                                    if (mLayerConfig[1].popup == 'True' && self.parent().find('div.lizmapPopupChildren.'+clRefname).length == 0) {
+                                        // get results from pivot table
+                                        const typeName = pivotConfig[1].typename;
+                                        const wfsParams = {
+                                            TYPENAME: typeName,
+                                            GEOMETRYNAME: 'extent'
+                                        };
 
-                                  wfsParams['EXP_FILTER'] = '"' + config.relations.pivot[rLayerId][layerId] + '" = ' + "'" + feat.properties[relation.referencedField] + "'";;
-                                  // Calculate bbox
-                                  if (config.options?.limitDataToBbox == 'True') {
-                                      wfsParams['BBOX'] = lizMap.mainLizmap.map.getView().calculateExtent();
-                                      wfsParams['SRSNAME'] = lizMap.mainLizmap.map.getView().getProjection().getCode();
-                                  }
-                                  preProcessRequest = lizMap.mainLizmap.wfs.getFeature(wfsParams);
-
-                                  let ut = {
-                                      pivotTableId: rLayerId,
-                                      mLayerConfig: mLayerConfig
-                                  }
-                                  rUtilities = {...rUtilities,...ut};
-                              }
-                          }
-                      }
-                  }
-              } else {
-                  // one to n relation
-                  const rGetLayerConfig = getLayerConfigById( rLayerId );
-                  if ( rGetLayerConfig ) {
-                      preProcessRequest = {
-                          oneToN:true,
-                          layer:rGetLayerConfig[1]
-                      }
-                      let ut = {
-                          referencingField: relation.referencingField,
-                          referencedField: relation.referencedField
-                      }
-                      rUtilities = {...rUtilities, ...ut}
-                  }
-              }
-              preProcessedRequests.push(preProcessRequest);
-              preProcessUtilities.push(rUtilities)
-          }
-
-          Promise.allSettled(preProcessedRequests).then(preProcessResponses =>{
-                  for (let rr = 0; rr < preProcessResponses.length; rr++) {
-                      const resp = preProcessResponses[rr];
-                      const utilities = preProcessUtilities[rr];
-                      if (resp.value) {
-                          const respValue = resp.value;
-                          var confLayer = null, wmsFilter = null;
-                          if (respValue.oneToN && utilities.referencingField && utilities.referencedField) {
-                              confLayer = respValue.layer;
-                              wmsFilter = '"'+utilities.referencingField+'" = \''+feat.properties[utilities.referencedField]+'\'';
-                          } else {
-                              if (respValue.features) {
-                                  const features = respValue.features;
-                                  const referencedFieldForFilter = config.relations[utilities.mLayerConfig[1].id].filter((fil)=>{
-                                      return fil.referencingLayer == utilities.rLayerId
-                                  })[0]?.referencedField;
-                                  let filArray = [];
-                                  const feats = {};
-                                  features.forEach((feat)=>{
-                                      var fid = feat.id.split('.')[1];
-                                      feats[fid] = feat;
-                                      if (feat.properties && feat.properties[config.relations.pivot[utilities.rLayerId][utilities.mLayerConfig[1].id]]) {
-                                          filArray.push(feat.properties[config.relations.pivot[utilities.rLayerId][utilities.mLayerConfig[1].id]])
-                                      }
-                                  })
-
-                                  if (filArray.length) {
-                                      let fil = filArray.map(function(val){
-                                          return '"'+referencedFieldForFilter+'" = \''+val+'\'';
-                                      })
-
-                                      wmsFilter = fil.join(" OR ");
-                                  }
-                                  const pivotConfig = lizMap.getLayerConfigById(
-                                      utilities.pivotTableId,
-                                      config.layers,
-                                      'id'
-                                  );
-                                  pivotConfig[1].features = feats;
-                                  // get feature of mLayer
-                                  confLayer = utilities.mLayerConfig[1];
-                              }
-                          }
-                          if (wmsFilter && confLayer) {
-                              const rConfigLayer = confLayer;
-                              let clname = rConfigLayer?.shortname || rConfigLayer.cleanname;
-                              if ( clname === undefined ) {
-                                  clname = cleanName(rConfigLayer.name);
-                                  rConfigLayer.cleanname = clname;
-                              }
-                              if ( rConfigLayer.popup == 'True' && self.parent().find('div.lizmapPopupChildren.'+clname).length == 0) {
-                                  let wmsName = rConfigLayer?.shortname || rConfigLayer.name;
-                                  const wmsOptions = {
-                                      'LAYERS': wmsName
-                                      ,'QUERY_LAYERS': wmsName
-                                      ,'STYLES': ''
-                                      ,'SERVICE': 'WMS'
-                                      ,'VERSION': '1.3.0'
-                                      ,'CRS': (('crs' in rConfigLayer) && rConfigLayer.crs != '') ? rConfigLayer.crs : 'EPSG:4326'
-                                      ,'REQUEST': 'GetFeatureInfo'
-                                      ,'EXCEPTIONS': 'application/vnd.ogc.se_inimage'
-                                      ,'FEATURE_COUNT': popupMaxFeatures
-                                      ,'INFO_FORMAT': 'text/html'
-                                  };
-                                  if ( 'popupMaxFeatures' in rConfigLayer && !isNaN(parseInt(rConfigLayer.popupMaxFeatures)) )
-                                      wmsOptions['FEATURE_COUNT'] = parseInt(rConfigLayer.popupMaxFeatures);
-                                  if ( wmsOptions['FEATURE_COUNT'] == 0 )
-                                      wmsOptions['FEATURE_COUNT'] = popupMaxFeatures;
-                                  if ( rConfigLayer.request_params && rConfigLayer.request_params.filter &&
-                                      rConfigLayer.request_params.filter !== '' )
-                                      wmsOptions['FILTER'] = rConfigLayer.request_params.filter+' AND '+wmsFilter;
-                                  else
-                                      wmsOptions['FILTER'] = wmsName+':'+wmsFilter;
-
-                                  // Fetch queries
-                                  // Keep `rConfigLayer` in array with same order that fetch queries
-                                  // for later user when Promise.allSettled resolves
-                                  rConfigLayerAll.push(rConfigLayer);
-                                  popupChidrenRequests.push(
-                                      fetch(globalThis['lizUrls'].service, {
-                                          "method": "POST",
-                                          "body": new URLSearchParams(wmsOptions)
-                                      }).then(function (response) {
-                                        return response.text();
-                                      }).then( function (textResp) {
-                                        // add utilities object to response for further controls
-                                        return {
-                                            popupChildData:textResp,
-                                            utilities:utilities
+                                        wfsParams['EXP_FILTER'] = '"' + config.relations.pivot[rLayerId][layerId] + '" = ' + "'" + feat.properties[relation.referencedField] + "'";;
+                                        // Calculate bbox
+                                        if (config.options?.limitDataToBbox == 'True') {
+                                            wfsParams['BBOX'] = lizMap.mainLizmap.map.getView().calculateExtent();
+                                            wfsParams['SRSNAME'] = lizMap.mainLizmap.map.getView().getProjection().getCode();
                                         }
-                                      })
-                                  );
-                              }
-                          }
-                      }
-                  }
+                                        preProcessRequest = lizMap.mainLizmap.wfs.getFeature(wfsParams);
 
-                  // Fetch GetFeatureInfo query for every children popups
-                  Promise.allSettled(popupChidrenRequests).then(popupChildrenData => {
+                                        let ut = {
+                                            pivotTableId: rLayerId,
+                                            mLayerConfig: mLayerConfig
+                                        }
+                                        rUtilities = {...rUtilities,...ut};
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        // one to n relation
+                        const rGetLayerConfig = getLayerConfigById( rLayerId );
+                        if ( rGetLayerConfig ) {
+                            preProcessRequest = {
+                                oneToN:true,
+                                layer:rGetLayerConfig[1]
+                            }
+                            let ut = {
+                                referencingField: relation.referencingField,
+                                referencedField: relation.referencedField
+                            }
+                            rUtilities = {...rUtilities, ...ut}
+                        }
+                    }
+                    preProcessedRequests.push(preProcessRequest);
+                    preProcessUtilities.push(rUtilities)
+                }
 
-                      const childPopupElements = [];
+                Promise.allSettled(preProcessedRequests).then(preProcessResponses =>{
+                    for (let rr = 0; rr < preProcessResponses.length; rr++) {
+                        const resp = preProcessResponses[rr];
+                        const utilities = preProcessUtilities[rr];
+                        if (resp.value) {
+                            const respValue = resp.value;
+                            var confLayer = null, wmsFilter = null;
+                            if (respValue.oneToN && utilities.referencingField && utilities.referencedField) {
+                                confLayer = respValue.layer;
+                                wmsFilter = '"'+utilities.referencingField+'" = \''+feat.properties[utilities.referencedField]+'\'';
+                            } else {
+                                if (respValue.features) {
+                                    const features = respValue.features;
+                                    const referencedFieldForFilter = config.relations[utilities.mLayerConfig[1].id].filter((fil)=>{
+                                        return fil.referencingLayer == utilities.rLayerId
+                                    })[0]?.referencedField;
+                                    let filArray = [];
+                                    const feats = {};
+                                    features.forEach((feat)=>{
+                                        var fid = feat.id.split('.')[1];
+                                        feats[fid] = feat;
+                                        if (feat.properties && feat.properties[config.relations.pivot[utilities.rLayerId][utilities.mLayerConfig[1].id]]) {
+                                            filArray.push(feat.properties[config.relations.pivot[utilities.rLayerId][utilities.mLayerConfig[1].id]])
+                                        }
+                                    })
 
-                      for (let index = 0; index < popupChildrenData.length; index++) {
-                          let popupResponse = popupChildrenData[index].value;
-                          let popupChildData = popupResponse.popupChildData;
-                          const utilities = popupResponse.utilities;
-                          var hasPopupContent = (!(!popupChildData || popupChildData == null || popupChildData == ''))
-                          if (hasPopupContent) {
-                              var popupReg = new RegExp('lizmapPopupTable', 'g');
-                              popupChildData = popupChildData.replace(popupReg, 'table table-condensed table-striped lizmapPopupTable');
+                                    if (filArray.length) {
+                                        let fil = filArray.map(function(val){
+                                            return '"'+referencedFieldForFilter+'" = \''+val+'\'';
+                                        })
 
-                              const configLayer = rConfigLayerAll[index];
+                                        wmsFilter = fil.join(" OR ");
+                                    }
+                                    const pivotConfig = lizMap.getLayerConfigById(
+                                        utilities.pivotTableId,
+                                        config.layers,
+                                        'id'
+                                    );
+                                    pivotConfig[1].features = feats;
+                                    // get feature of mLayer
+                                    confLayer = utilities.mLayerConfig[1];
+                                }
+                            }
+                            if (wmsFilter && confLayer) {
+                                const rConfigLayer = confLayer;
+                                let clname = rConfigLayer?.shortname || rConfigLayer.cleanname;
+                                if ( clname === undefined ) {
+                                    clname = cleanName(rConfigLayer.name);
+                                    rConfigLayer.cleanname = clname;
+                                }
+                                if ( rConfigLayer.popup == 'True' && self.parent().find('div.lizmapPopupChildren.'+clname).length == 0) {
+                                    let wmsName = rConfigLayer?.shortname || rConfigLayer.name;
+                                    const wmsOptions = {
+                                        'LAYERS': wmsName
+                                        ,'QUERY_LAYERS': wmsName
+                                        ,'STYLES': ''
+                                        ,'SERVICE': 'WMS'
+                                        ,'VERSION': '1.3.0'
+                                        ,'CRS': (('crs' in rConfigLayer) && rConfigLayer.crs != '') ? rConfigLayer.crs : 'EPSG:4326'
+                                        ,'REQUEST': 'GetFeatureInfo'
+                                        ,'EXCEPTIONS': 'application/vnd.ogc.se_inimage'
+                                        ,'FEATURE_COUNT': popupMaxFeatures
+                                        ,'INFO_FORMAT': 'text/html'
+                                    };
+                                    if ( 'popupMaxFeatures' in rConfigLayer && !isNaN(parseInt(rConfigLayer.popupMaxFeatures)) )
+                                        wmsOptions['FEATURE_COUNT'] = parseInt(rConfigLayer.popupMaxFeatures);
+                                    if ( wmsOptions['FEATURE_COUNT'] == 0 )
+                                        wmsOptions['FEATURE_COUNT'] = popupMaxFeatures;
+                                    if ( rConfigLayer.request_params && rConfigLayer.request_params.filter &&
+                                        rConfigLayer.request_params.filter !== '' )
+                                        wmsOptions['FILTER'] = rConfigLayer.request_params.filter+' AND '+wmsFilter;
+                                    else
+                                        wmsOptions['FILTER'] = wmsName+':'+wmsFilter;
 
-                              var clname = configLayer.cleanname;
-                              if (clname === undefined) {
-                                  clname = cleanName(configLayer.name);
-                                  configLayer.cleanname = clname;
-                              }
+                                    // Fetch queries
+                                    // Keep `rConfigLayer` in array with same order that fetch queries
+                                    // for later user when Promise.allSettled resolves
+                                    rConfigLayerAll.push(rConfigLayer);
+                                    popupChidrenRequests.push(
+                                        fetch(globalThis['lizUrls'].service, {
+                                            "method": "POST",
+                                            "body": new URLSearchParams(wmsOptions)
+                                        }).then(function (response) {
+                                            return response.text();
+                                        }).then( function (textResp) {
+                                            // add utilities object to response for further controls
+                                            return {
+                                                popupChildData:textResp,
+                                                utilities:utilities
+                                            }
+                                        })
+                                    );
+                                }
+                            }
+                        }
+                    }
 
-                              if(utilities.pivotTableId){
-                                var popupFeatureToolbarReg = new RegExp('<lizmap-feature-toolbar ', 'g');
-                                popupChildData = popupChildData.replace(popupFeatureToolbarReg,"<lizmap-feature-toolbar parent-layer-id='"+layerId+"' pivot-layer='"+utilities.pivotTableId+':'+fid+"'")
+                    // Fetch GetFeatureInfo query for every children popups
+                    Promise.allSettled(popupChidrenRequests).then(popupChildrenData => {
 
-                              }
+                        const childPopupElements = [];
 
-                              const resizeTablesButtons =
-                                  '<button class="compact-tables btn btn-small" data-original-title="' + lizDict['popup.table.compact'] + '"><i class="icon-resize-small"></i></button>'+
-                                  '<button class="explode-tables btn btn-small hide" data-original-title="' + lizDict['popup.table.explode'] + '"><i class="icon-resize-full"></i></button>';
+                        for (let index = 0; index < popupChildrenData.length; index++) {
+                            let popupResponse = popupChildrenData[index].value;
+                            let popupChildData = popupResponse.popupChildData;
+                            const utilities = popupResponse.utilities;
+                            var hasPopupContent = (!(!popupChildData || popupChildData == null || popupChildData == ''))
+                            if (hasPopupContent) {
+                                var popupReg = new RegExp('lizmapPopupTable', 'g');
+                                popupChildData = popupChildData.replace(popupReg, 'table table-condensed table-striped lizmapPopupTable');
 
-                              var childPopup = $('<div class="lizmapPopupChildren ' + clname + '" data-layername="' + clname + '" data-title="' + configLayer.title + '">' + resizeTablesButtons + popupChildData + '</div>');
+                                const configLayer = rConfigLayerAll[index];
 
-                              // Manage if the user choose to create a table for children
-                              if (['qgis', 'form'].indexOf(configLayer.popupSource) !== -1 && childPopup.find('.lizmap_merged').length != 0) {
-                                  // save inputs
-                                  childPopup.find(".lizmapPopupDiv").each(function (i, e) {
-                                      var popupDiv = $(e);
-                                      if (popupDiv.find(".lizmapPopupHeader").prop("tagName") == 'TR') {
-                                          popupDiv.find(".lizmapPopupHeader").prepend("<th></th>");
-                                          popupDiv.find(".lizmapPopupHeader").next().prepend("<td></td>");
-                                      } else {
-                                          popupDiv.find(".lizmapPopupHeader").next().prepend("<span></span>");
-                                      }
-                                      popupDiv.find(".lizmapPopupHeader").next().children().first().append(popupDiv.find("input"));
-                                  });
-                                  childPopup.find("h4").each(function (i, e) {
-                                      if (i != 0)
-                                          $(e).remove();
-                                  });
+                                var clname = configLayer.cleanname;
+                                if (clname === undefined) {
+                                    clname = cleanName(configLayer.name);
+                                    configLayer.cleanname = clname;
+                                }
 
-                                  childPopup.find(".lizmapPopupHeader").each(function (i, e) {
-                                      if (i != 0)
-                                          $(e).remove();
-                                  });
+                                if(utilities.pivotTableId){
+                                    var popupFeatureToolbarReg = new RegExp('<lizmap-feature-toolbar ', 'g');
+                                    popupChildData = popupChildData.replace(popupFeatureToolbarReg,"<lizmap-feature-toolbar parent-layer-id='"+layerId+"' pivot-layer='"+utilities.pivotTableId+':'+fid+"'")
 
-                                  childPopup.find(".lizmapPopupDiv").contents().unwrap();
-                                  childPopup.find(".lizmap_merged").contents().unwrap();
-                                  childPopup.find(".lizmapPopupDiv").remove();
-                                  childPopup.find(".lizmap_merged").remove();
+                                }
 
-                                  childPopup.find(".lizmapPopupHidden").hide();
+                                const resizeTablesButtons =
+                                    '<button class="compact-tables btn btn-small" data-original-title="' + lizDict['popup.table.compact'] + '"><i class="icon-resize-small"></i></button>'+
+                                    '<button class="explode-tables btn btn-small hide" data-original-title="' + lizDict['popup.table.explode'] + '"><i class="icon-resize-full"></i></button>';
 
-                                  var tChildPopup = $("<table class='lizmap_merged'></table>");
-                                  childPopup.append(tChildPopup);
-                                  childPopup.find('tr').appendTo(tChildPopup);
+                                var childPopup = $('<div class="lizmapPopupChildren ' + clname + '" data-layername="' + clname + '" data-title="' + configLayer.title + '">' + resizeTablesButtons + popupChildData + '</div>');
 
-                                  childPopup.children('tbody').remove();
-                              }
+                                // Manage if the user choose to create a table for children
+                                if (['qgis', 'form'].indexOf(configLayer.popupSource) !== -1 && childPopup.find('.lizmap_merged').length != 0) {
+                                    // save inputs
+                                    childPopup.find(".lizmapPopupDiv").each(function (i, e) {
+                                        var popupDiv = $(e);
+                                        if (popupDiv.find(".lizmapPopupHeader").prop("tagName") == 'TR') {
+                                            popupDiv.find(".lizmapPopupHeader").prepend("<th></th>");
+                                            popupDiv.find(".lizmapPopupHeader").next().prepend("<td></td>");
+                                        } else {
+                                            popupDiv.find(".lizmapPopupHeader").next().prepend("<span></span>");
+                                        }
+                                        popupDiv.find(".lizmapPopupHeader").next().children().first().append(popupDiv.find("input"));
+                                    });
+                                    childPopup.find("h4").each(function (i, e) {
+                                        if (i != 0)
+                                            $(e).remove();
+                                    });
 
-                              var oldPopupChild = parentDiv.find('div.lizmapPopupChildren.' + clname);
-                              if (oldPopupChild.length != 0) {
-                                  oldPopupChild.remove();
-                              }
+                                    childPopup.find(".lizmapPopupHeader").each(function (i, e) {
+                                        if (i != 0)
+                                            $(e).remove();
+                                    });
 
-                              parentDiv.append(childPopup);
+                                    childPopup.find(".lizmapPopupDiv").contents().unwrap();
+                                    childPopup.find(".lizmap_merged").contents().unwrap();
+                                    childPopup.find(".lizmapPopupDiv").remove();
+                                    childPopup.find(".lizmap_merged").remove();
 
-                              childPopupElements.push(childPopup);
+                                    childPopup.find(".lizmapPopupHidden").hide();
 
-                              // Trigger event for single popup children
-                              lizMap.events.triggerEvent(
-                                  "lizmappopupchildrendisplayed",
-                                  { 'html': childPopup.html() }
-                              );
-                          }
-                      }
+                                    var tChildPopup = $("<table class='lizmap_merged'></table>");
+                                    childPopup.append(tChildPopup);
+                                    childPopup.find('tr').appendTo(tChildPopup);
 
-                      // Handle compact-tables/explode-tables behaviour
-                      parentDiv.find('.lizmapPopupChildren .popupAllFeaturesCompact table').DataTable({
-                        order: [[1, 'asc']],
-                        language: { url:globalThis['lizUrls']["dataTableLanguage"] }
-                      });
+                                    childPopup.children('tbody').remove();
+                                }
 
-                      parentDiv.find('.lizmapPopupChildren .compact-tables, .lizmapPopupChildren .explode-tables').tooltip();
+                                var oldPopupChild = parentDiv.find('div.lizmapPopupChildren.' + clname);
+                                if (oldPopupChild.length != 0) {
+                                    oldPopupChild.remove();
+                                }
 
-                      parentDiv.find('.lizmapPopupChildren .compact-tables').off('click').on('click',function() {
-                          $(this)
-                          .addClass('hide')
-                          .siblings('.explode-tables').removeClass('hide')
-                          .siblings('.popupAllFeaturesCompact, .lizmapPopupSingleFeature').toggle();
-                      });
+                                parentDiv.append(childPopup);
 
-                      parentDiv.find('.lizmapPopupChildren .explode-tables').off('click').on('click',function () {
-                          $(this)
-                          .addClass('hide')
-                          .siblings('.compact-tables').removeClass('hide')
-                          .siblings('.popupAllFeaturesCompact, .lizmapPopupSingleFeature').toggle();
-                      });
+                                childPopupElements.push(childPopup);
 
-                      // Trigger event for all popup children
-                      lizMap.events.triggerEvent(
-                          "lizmappopupallchildrendisplayed",
-                          {
-                              parentPopupElement: self.parents('.lizmapPopupSingleFeature'),
-                              childPopupElements: childPopupElements
-                          }
-                      );
-                  });
-              })
-          });
-      });
-  }
+                                // Trigger event for single popup children
+                                lizMap.events.triggerEvent(
+                                    "lizmappopupchildrendisplayed",
+                                    { 'html': childPopup.html() }
+                                );
+                            }
+                        }
+
+                        // Handle compact-tables/explode-tables behaviour
+                        parentDiv.find('.lizmapPopupChildren .popupAllFeaturesCompact table').DataTable({
+                            order: [[1, 'asc']],
+                            language: { url:globalThis['lizUrls']["dataTableLanguage"] }
+                        });
+
+                        parentDiv.find('.lizmapPopupChildren .compact-tables, .lizmapPopupChildren .explode-tables').tooltip();
+
+                        parentDiv.find('.lizmapPopupChildren .compact-tables').off('click').on('click',function() {
+                            $(this)
+                                .addClass('hide')
+                                .siblings('.explode-tables').removeClass('hide')
+                                .siblings('.popupAllFeaturesCompact, .lizmapPopupSingleFeature').toggle();
+                        });
+
+                        parentDiv.find('.lizmapPopupChildren .explode-tables').off('click').on('click',function () {
+                            $(this)
+                                .addClass('hide')
+                                .siblings('.compact-tables').removeClass('hide')
+                                .siblings('.popupAllFeaturesCompact, .lizmapPopupSingleFeature').toggle();
+                        });
+
+                        // Trigger event for all popup children
+                        lizMap.events.triggerEvent(
+                            "lizmappopupallchildrendisplayed",
+                            {
+                                parentPopupElement: self.parents('.lizmapPopupSingleFeature'),
+                                childPopupElements: childPopupElements
+                            }
+                        );
+                    });
+                })
+            });
+        });
+    }
 
     /**
      *
