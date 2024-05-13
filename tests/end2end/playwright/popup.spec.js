@@ -232,3 +232,57 @@ test.describe('Popup', () => {
         expect(getFeatureInfoRequest.postData()).toMatch(/FILTERTOKEN/);
     });
 });
+
+test.describe('Children in popup', () => {
+
+    test.beforeEach(async ({ page }) => {
+        const url = '/index.php/view/map/?repository=testsrepository&project=feature_toolbar';
+        await page.goto(url, { waitUntil: 'networkidle' });
+    });
+
+    test('click on the feature to show the popup and his children', async ({ page }) => {
+        // When clicking on triangle feature a popup with two tabs must appear
+        await page.locator('#newOlMap').click({
+                position: {
+                    x: 436,
+                    y: 290
+                }
+                });
+        // Default children information visible
+        await expect(page.locator('#popupcontent .lizmapPopupChildren .lizmapPopupSingleFeature')).toHaveCount(2);
+        await expect(page.locator('div').getByRole('heading', { name: 'children_layer' })).toHaveCount(2);
+        // Compact children table button visible
+        await expect(page.locator('.compact-tables')).toBeVisible();
+
+        // Click on children table button
+        await page.locator('.compact-tables').click();
+        // Children compact table is visible
+        await expect(page.locator('div').getByRole('heading', { name: 'children_layer' })).toHaveCount(1);
+    });
+
+    test('click on multiple feature to show the popup and his children', async ({ page }) => {
+        // Zoom out to click on multiple parent features
+        await page.getByRole('button', { name: 'Zoom out' }).click();
+        await page.waitForRequest(/GetMap/);
+        await page.getByRole('button', { name: 'Zoom out' }).click();
+        await page.waitForRequest(/GetMap/);
+        await page.getByRole('button', { name: 'Zoom out' }).click();
+        await page.waitForRequest(/GetMap/);
+        await page.getByRole('button', { name: 'Zoom out' }).click();
+        await page.waitForRequest(/GetMap/);
+        await page.locator('#newOlMap').click({
+            position: {
+                x: 448,
+                y: 288
+            }
+        });
+        // Default children information visible
+        await expect(page.locator('#popupcontent .lizmapPopupChildren .lizmapPopupSingleFeature')).toHaveCount(3);
+        await expect(page.locator('div').getByRole('heading', { name: 'children_layer' })).toHaveCount(3);
+        await expect(page.locator('.compact-tables')).toHaveCount(2);
+
+        // Click on children table button
+        await page.locator('.compact-tables').nth(1).click();
+        await expect(page.locator('div').getByRole('heading', { name: 'children_layer' })).toHaveCount(2);
+    });
+});
