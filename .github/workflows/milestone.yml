@@ -10,7 +10,7 @@ on:
 jobs:
   pr:
     runs-on: ubuntu-latest
-    if: github.repository == '3liz/lizmap-web-client'
+    if: github.repository == 'Gustry/lizmap-web-client'
     continue-on-error: true
     steps:
       - uses: actions/checkout@v4
@@ -33,7 +33,7 @@ jobs:
 
       - name: Get previous labels and "Funded by" if possible
         id: labels
-        run: ./.github/previous_labels.py
+        run: ./.github/previous_pr_metadata.py
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
