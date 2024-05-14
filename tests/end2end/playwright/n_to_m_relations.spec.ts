@@ -14,20 +14,20 @@ test.describe('N to M relations', () => {
         // maximize panel
         await page.getByRole('button', { name: 'Maximize' }).click();
 
-        let getFeatureRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GetFeature'));
+        let getFeatureRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeature') === true);
 
         // open main layer attribute table panel
         await page.locator('#attribute-layer-list button[value="natural_areas"]').click();
         await getFeatureRequestPromise;
 
         // open birds spots attribute table panel
-        let birdSpotRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GetFeature'));
+        let birdSpotRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeature') === true);
         await page.locator('#nav-tab-attribute-summary').click();
         await page.locator('#attribute-layer-list button[value="birds_spots"]').click();
         await getFeatureRequestPromise;
 
         // open birds attribute table panel
-        let birdsRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GetFeature'));
+        let birdsRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeature') === true);
         await page.locator('#nav-tab-attribute-summary').click();
         await page.locator('#attribute-layer-list button[value="birds"]').click();
         await getFeatureRequestPromise;
@@ -69,7 +69,7 @@ test.describe('N to M relations', () => {
         await expect(page.locator("#nav-tab-attribute-child-tab-natural_areas-birds_spots")).toHaveCount(1);
 
         // click on first row of main table and open "m" layer attribute table
-        let firstChildRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GetFeature'));
+        let firstChildRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeature') === true);
         await attrTable.locator("tbody tr").nth(0).click();
         await getFeatureRequestPromise;
 
@@ -102,7 +102,7 @@ test.describe('N to M relations', () => {
         }
 
         // change main record
-        let secondChildRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GetFeature'));
+        let secondChildRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeature') === true);
         await attrTable.locator("tbody tr").nth(1).click();
         await getFeatureRequestPromise;
 
@@ -129,7 +129,7 @@ test.describe('N to M relations', () => {
         }
 
         // back to first record
-        //let backToFirstChildRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GetFeature'));
+        //let backToFirstChildRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeature') === true);
         //await attrTable.locator("tbody tr").nth(0).click();
         //await getFeatureRequestPromise;
 
@@ -253,7 +253,7 @@ test.describe('N to M relations', () => {
         await expect(birdsTable.locator("tbody tr").nth(8).locator("td").nth(2)).toHaveText("Northern pintail");
 
         // click on last inserted record and check child attribute table
-        let naturalAreaChildPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GetFeature'));
+        let naturalAreaChildPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeature') === true);
         await birdsTable.locator("tbody tr").nth(8).click();
         await getFeatureRequestPromise;
 
@@ -268,7 +268,7 @@ test.describe('N to M relations', () => {
              return dialog.accept();
         });
 
-        let unlinkPivotFeature = page.waitForResponse(response => response.request().method() === 'POST' && response.request().postData().includes('%22bird_id%22+%3D+%279%27'))
+        let unlinkPivotFeature = page.waitForResponse(response => response.request().method() === 'POST' && response.request().postData()?.includes('%22bird_id%22+%3D+%279%27') === true)
         await childNaturalAreasTable.locator("tbody tr").nth(0).locator("td").nth(0).locator("lizmap-feature-toolbar").locator(".feature-toolbar button[data-original-title='Unlink child']").click();
         await unlinkPivotFeature;
 
@@ -284,7 +284,10 @@ test.describe('N to M relations', () => {
             return dialog.accept();
         });
 
-        let deleteBirdFeature = page.waitForResponse(response => response.request().method() === 'POST' && response.request().postData().includes('GetFeature') && response.request().postData().includes('birds') && response.request().postData().includes('extent'))
+        let deleteBirdFeature = page.waitForResponse(response => response.request().method() === 'POST'
+            && response.request().postData()?.includes('GetFeature') === true
+            && response.request().postData()?.includes('birds') === true
+            && response.request().postData()?.includes('extent') === true)
         await expect(birdsTable.locator("tbody tr").nth(6).locator("td").nth(0).locator("lizmap-feature-toolbar").locator(".feature-toolbar button[data-original-title='Delete']")).toHaveCount(1);
         await birdsTable.locator("tbody tr").nth(6).locator("td").nth(0).locator("lizmap-feature-toolbar").locator(".feature-toolbar button[data-original-title='Delete']").click();
         await deleteBirdFeature;
@@ -296,7 +299,7 @@ test.describe('N to M relations', () => {
     test('Popup behavior', async ({ page }) => {
 
         // click on map to get popup list
-        let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GetFeatureInfo'));
+        let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
         await page.locator('#newOlMap').click({
             position: {
               x: 413,
