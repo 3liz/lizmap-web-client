@@ -9,7 +9,7 @@ test.describe('Treeview', () => {
         // Wait for WMS GetCapabilities promise
         let getCapabilitiesWMSPromise = page.waitForRequest(/SERVICE=WMS&REQUEST=GetCapabilities/);
         // Wait for WMS GetLegendGraphic promise
-        const getLegendGraphicPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData().includes('GetLegendGraphic'));
+        const getLegendGraphicPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('GetLegendGraphic') === true);
         await page.goto(url);
         // Wait for WMS GetCapabilities
         await getCapabilitiesWMSPromise;

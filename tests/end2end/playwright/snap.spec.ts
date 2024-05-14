@@ -24,8 +24,8 @@ test.describe('Snap on edition', () => {
         // move to digitization panel
         await page.getByRole('link', { name: 'Digitization' }).click()
 
-        let getSnappingPointFeatureRquestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData().includes('GetFeature') && request.postData().includes('form_edition_snap_point'));
-        let getSnappingPointDescribeFeatureRquestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData().includes('DescribeFeatureType') && request.postData().includes('form_edition_snap_point'));
+        let getSnappingPointFeatureRquestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('GetFeature') === true && request.postData()?.includes('form_edition_snap_point') === true);
+        let getSnappingPointDescribeFeatureRquestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('DescribeFeatureType') === true && request.postData()?.includes('form_edition_snap_point') === true);
 
         //activate snapping
         await page.getByRole('button', { name: 'Start' }).click();
@@ -91,8 +91,8 @@ test.describe('Snap on edition', () => {
         // activate snap on line and refresh snap
         await page.locator("#edition-point-coord-form-group .snap-layers-list .snap-layer").nth(0).locator("input").check()
 
-        let getSnappingLineFeatureRquestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData().includes('GetFeature') && request.postData().includes('form_edition_snap_line'));
-        let getSnappingLineDescribeFeatureRquestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData().includes('DescribeFeatureType') && request.postData().includes('form_edition_snap_line'));
+        let getSnappingLineFeatureRquestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('GetFeature') === true && request.postData()?.includes('form_edition_snap_line') === true);
+        let getSnappingLineDescribeFeatureRquestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('DescribeFeatureType') === true && request.postData()?.includes('form_edition_snap_line') === true);
 
         await page.locator("#edition-point-coord-form-group").getByRole("button").nth(2).click()
 
@@ -140,8 +140,8 @@ test.describe('Snap on edition', () => {
         // activate snap on polygon and refresh snap
         await page.locator("#edition-point-coord-form-group .snap-layers-list .snap-layer").nth(2).locator("input").check()
 
-        let getSnappingPolygonFeatureRquestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData().includes('GetFeature') && request.postData().includes('form_edition_snap_polygon'));
-        let getSnappingPolygonDescribeFeatureRquestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData().includes('DescribeFeatureType') && request.postData().includes('form_edition_snap_polygon'));
+        let getSnappingPolygonFeatureRquestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('GetFeature') === true && request.postData()?.includes('form_edition_snap_polygon') === true);
+        let getSnappingPolygonDescribeFeatureRquestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('DescribeFeatureType') === true && request.postData()?.includes('form_edition_snap_polygon') === true);
 
         await page.locator("#edition-point-coord-form-group").getByRole("button").nth(2).click()
 
