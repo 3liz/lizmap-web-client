@@ -182,7 +182,7 @@ to view the hidden columns data and when there is no data for these columns -->
             {/if}
             {assign $title = $title . @admin.project.list.column.lizmap.plugin.version.label@ . ' ' .  $p['lizmap_plugin_version']}
             {if $p['lizmap_plugin_update'] }
-                {assign $title = $title . ' ' . @admin.project.list.column.qgis.desktop.recent.label@}
+                {assign $title = $title . ' ' . @admin.project.list.column.qgis.desktop.recent.label.html@}
             {/if}
             <td title="{$title}" class="{$class}">
                 {$p['qgis_version']}
