@@ -1199,7 +1199,7 @@ export class LayerGroupState extends LayerItemState {
                 if (group.checked) {
                     this._checked = true;
                 }
-            } else {
+            } else if (cfg.type != 'group') {
                 // layer with geometry is vector layer
                 let layer = null;
                 if (cfg.geometryType != null) {
