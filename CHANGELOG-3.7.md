@@ -16,8 +16,11 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ### Fixed
 
+* Dataviz - Fix display of HTML plots in popups
+* Fix issue in Dutch language
+* Fix children popup in compact table about DataTable
 * Use external WMS URL when activated, not using QGIS Server
-* Fix some XSS issues into features forms
+* Fix some XSS issues into features forms and attribute table
 * Check for `hidden` group when generating the Base layers group
 * Handle symbols expanded state
 * Map themes :
@@ -29,12 +32,15 @@ with some extra keywords: backend, tests, test, translation, funders, important
     * Correctly select default format
 * Caching CLI tool : fix when input is 0
 * Add `STYLE` parameter in the `GetFeatureInfo`
+* Rephrase sentence about CORS settings
+* Layer tree : fix if the group is empty (after filtering for instance)
 
 ### Backend
 
 * Fix a few issues about XSS
 * Expose some OpenLayers classes in a library
 * Update OpenLayers to 9.1.0
+* Upgrade Jelix to version 1.8.9
 
 ## 3.7.6 - 2024-03-22
 
