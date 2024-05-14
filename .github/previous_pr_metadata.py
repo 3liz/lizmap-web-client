@@ -6,7 +6,7 @@ import requests
 from typing import Optional, Tuple
 
 LOGIN = "3liz-bot"
-LOGIN = "Gustry"
+# LOGIN = "Gustry"
 
 
 def current_metadata(token: str, repo: str, ref: str) -> Tuple[bool, str, str]:
@@ -18,7 +18,6 @@ def current_metadata(token: str, repo: str, ref: str) -> Tuple[bool, str, str]:
         }
     )
     metadata = r.json()
-    print(metadata)
     is_backport = metadata.get('title').startswith('[Backport') and metadata.get('user').get('login') == LOGIN
     if not is_backport:
         return False, "", ""
@@ -38,8 +37,8 @@ def parent_metadata(token: str, repo: str, ref: str):
     )
     metadata = r.json()
     labels_info = metadata.get('labels')
-    is_sponsored = True
-    sponsor = "DEFAULT"
+    is_sponsored = False
+    sponsor = ""
     labels = []
     for label in labels_info:
         if label.get('id') == '1933297134':
@@ -47,7 +46,6 @@ def parent_metadata(token: str, repo: str, ref: str):
         labels.append(label.get("name"))
 
     body = metadata.get('body')
-    print(f"Body parent: {body}")
     body = body.split('Funded by')
     if len(body) >= 2:
         body = body[1].split('\n')
@@ -61,21 +59,20 @@ if __name__ == "__main__":
         repo = os.getenv("GITHUB_REPOSITORY")
         github_ref = os.getenv("GITHUB_PR_REF")
         is_backport, parent_ref, description = current_metadata(token=token, repo=repo, ref=github_ref)
-        print("HERE")
         if not is_backport:
             raise Exception
 
-        print("Current PR :")
-        print(f"IS backport : {is_backport}")
-        print(f"Parent ID : {parent_ref}")
-        print(f"Desc : {description}")
+        # print("Current PR :")
+        # print(f"IS backport : {is_backport}")
+        # print(f"Parent ID : {parent_ref}")
+        # print(f"Desc : {description}")
         is_sponsored, sponsor, labels = parent_metadata(token=token, repo=repo, ref=parent_ref)
         labels_str = ','.join([f'"{l}"' for l in labels])
         labels_str = f"[{labels_str}]"
-        print("Parent PR :")
-        print(f"Is sponso : {is_sponsored}")
-        print(f"Sponso : {sponsor}")
-        print(f"Labels : {labels_str}")
+        # print("Parent PR :")
+        # print(f"Is sponso : {is_sponsored}")
+        # print(f"Sponso : {sponsor}")
+        # print(f"Labels : {labels_str}")
         if os.environ['GITHUB_OUTPUT']:
             with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
                 print(f'labels={labels_str}', file=fh)
