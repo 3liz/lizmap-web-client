@@ -13,7 +13,7 @@ test.describe('Display in layer tree', () => {
         await expect(page.getByTestId('polygons')).toHaveCount(0);
         await expect(page.getByTestId('group-without-children')).toHaveCount(0);
 
-        const getPrintRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData().includes('GetPrint'));
+        const getPrintRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('GetPrint') === true);
 
         // layer in print request
         const getPrintRequestContains = request => {
