@@ -29,7 +29,7 @@ test.describe('WebDAV Server',()=>{
 
                   let id = await page.locator('#jforms_view_edition_id').inputValue();
 
-                  let getFeatureRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GetFeature'));
+                  let getFeatureRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeature') === true);
                   await page.locator("#button-attributeLayers").click();
                   await page.locator("button[value='form_edition_upload_webdav']").click();
                   await getFeatureRequestPromise;
@@ -49,7 +49,7 @@ test.describe('WebDAV Server',()=>{
 
          test('Keep same file after reopen form, inspect attribute table', async ({ page }) => {
 
-                  let getFeatureRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GetFeature'));
+                  let getFeatureRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeature') === true);
                   await page.locator("#button-attributeLayers").click();
                   await page.locator("button[value='form_edition_upload_webdav_geom']").click();
                   await getFeatureRequestPromise;
@@ -65,7 +65,7 @@ test.describe('WebDAV Server',()=>{
                   await expect(page.locator("#jforms_view_edition_remote_path_jf_action_keep")).toBeChecked()
 
                   await page.locator('#jforms_view_edition_liz_future_action').selectOption("close");
-                  let getNewFeatureRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GetFeature'));
+                  let getNewFeatureRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeature') === true);
                   await page.locator('#jforms_view_edition__submit_submit').click();
 
                   await getNewFeatureRequestPromise;
@@ -98,7 +98,7 @@ test.describe('WebDAV Server',()=>{
 
                   let id = await page.locator('#jforms_view_edition_id').inputValue();
 
-                  let getFeatureRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GetFeature'));
+                  let getFeatureRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeature') === true);
                   await page.locator("#button-attributeLayers").click();
                   await page.locator("button[value='form_edition_upload_webdav']").click();
                   await getFeatureRequestPromise;
@@ -156,7 +156,7 @@ test.describe('WebDAV Server',()=>{
 
                   let id = await page.locator('#jforms_view_edition_id').inputValue();
 
-                  let getFeatureRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GetFeature'));
+                  let getFeatureRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeature') === true);
                   await page.locator("#button-attributeLayers").click();
                   await page.locator("button[value='form_edition_upload_webdav']").click();
                   await getFeatureRequestPromise;
@@ -177,7 +177,7 @@ test.describe('WebDAV Server',()=>{
 
                   await page.locator('#jforms_view_edition_liz_future_action').selectOption("close");
 
-                  //let getNewFeatureRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GetFeature'));
+                  //let getNewFeatureRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeature') === true);
                   await page.locator('#jforms_view_edition__submit_submit').click();
 
                   await editFeatureRequestPromise;
@@ -194,7 +194,7 @@ test.describe('WebDAV Server',()=>{
 
          test("Inspect popups and attribute table for postgre layers",async ({ page }) =>{
 
-                  let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GetFeatureInfo'));
+                  let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
 
                   await page.locator('#newOlMap').click({
                     position: {
@@ -217,7 +217,7 @@ test.describe('WebDAV Server',()=>{
                   //clear screen
                   await page.locator('#dock-close').click();
 
-                  let getFeatureRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GetFeature'));
+                  let getFeatureRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeature') === true);
                   await page.locator("#button-attributeLayers").click();
                   await page.locator("button[value='form_edition_upload_webdav_geom']").click();
                   await getFeatureRequestPromise;
@@ -231,7 +231,7 @@ test.describe('WebDAV Server',()=>{
 
          test("Inspect popups and attribute table for non-postgre layers",async ({ page }) =>{
 
-                  let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GetFeatureInfo'));
+                  let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
 
                   await page.locator('#newOlMap').click({
                            position: {
@@ -258,7 +258,7 @@ test.describe('WebDAV Server',()=>{
                   //clear screen
                   await page.locator('#dock-close').click();
 
-                  let getFeatureRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GetFeature'));
+                  let getFeatureRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeature') === true);
                   await page.locator("#button-attributeLayers").click();
                   await page.locator("button[value='form_edition_upload_webdav_shape']").click();
                   await getFeatureRequestPromise;
@@ -271,7 +271,7 @@ test.describe('WebDAV Server',()=>{
          })
 
          test('GetMedia, different file type from webdav storage', async ({ page,request }) => {
-                  let getFeatureRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GetFeature'));
+                  let getFeatureRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeature') === true);
 
                   await page.locator("#button-attributeLayers").click();
                   await page.locator("button[value='form_edition_upload_webdav_geom']").click();
@@ -317,7 +317,7 @@ test.describe('WebDAV Server',()=>{
          })
 
          test('Inspect popupAllFeaturesCompact data table in popup', async ({ page }) => {
-            let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GetFeatureInfo'));
+            let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
 
             await page.locator('#newOlMap').click({
               position: {

@@ -10,7 +10,7 @@ test.describe('Dataviz in popup', ()=>{
 
         await page.waitForTimeout(300);
 
-        let getPlot= page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('getPlot'));
+        let getPlot= page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('getPlot') === true);
 
         await page.locator('#newOlMap').click({
             position: {
@@ -97,7 +97,7 @@ test.describe('Style parameter in GetFeatureInfo request', ()=>{
         // get the popup of the feature with id = 3. The STYLE property (STYLE=default) should be passed in the getfeatureinfo request.
         // Otherwise the popup would not be shown because QGIS Server query the layer natural_areas with the "ids" style
 
-        let getPopup= page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('STYLE=default'));
+        let getPopup= page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('STYLE=default') === true);
 
         await page.locator('#newOlMap').click({
           position: {
@@ -127,7 +127,7 @@ test.describe('Style parameter in GetFeatureInfo request', ()=>{
         // wait for the map
         await page.waitForTimeout(1000)
 
-        let getPopupIds = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('STYLE=ids'));
+        let getPopupIds = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('STYLE=ids') === true);
         // click again on the previous point
         await page.locator('#newOlMap').click({
             position: {
@@ -146,7 +146,7 @@ test.describe('Style parameter in GetFeatureInfo request', ()=>{
         // clean the map
         await page.locator("#hide-sub-dock").click();
 
-        let getPopupIdsFeature = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('STYLE=ids'));
+        let getPopupIdsFeature = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('STYLE=ids') === true);
         // click on a feature to get the popup (it should fallback to the default lizmap popup)
         await page.locator('#newOlMap').click({
           position: {
@@ -220,7 +220,7 @@ test.describe('Popup', () => {
         await page.locator('#liz-filter-field-test').selectOption('1');
         await getMapRequestPromise;
 
-        let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GetFeatureInfo'));
+        let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
         await page.locator('#newOlMap').click({
           position: {
             x: 486,
