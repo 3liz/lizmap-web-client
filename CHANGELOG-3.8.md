@@ -8,7 +8,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
-### Added
+### Addedd
 
 * New JavaScript API to load external layer straight in the legend tree and in the map
 * Popup: FeatureToolbar in compact table
