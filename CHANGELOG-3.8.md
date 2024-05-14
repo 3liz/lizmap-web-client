@@ -8,6 +8,11 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Added
+
+* New JavaScript API to load external layer straight in the legend tree and in the map
+* Popup: FeatureToolbar in compact table
+
 ### Removed
 
 * Zoom history
@@ -18,12 +23,18 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Dataviz in popup generate two feature toolbar in parent popup
 * Apply min and max resolutions to base layers removed by single WMS Layer
 * More fixes about XSS
+* Tooltip : 
+  * Don't show tooltip tool when device has coarse pointer
+  * Remove legacy code
+  * Handle linestring layers
 
 ### Backend
 
 * Defer JavaScript scripts loading
 * Refactoring of Web Components, about OpenLayers
 * Review the way to load JavaScript
+* Review ESLint configuration
+* Upgrade Jelix to 1.8.9
 
 ## 3.8.0-alpha.1 - 2024-03-21
 
