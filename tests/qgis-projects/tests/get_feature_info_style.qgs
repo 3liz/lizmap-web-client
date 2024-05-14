@@ -697,7 +697,7 @@ def my_form_open(dialog, layer, feature):
             <widgets/>
             <previewExpression>"natural_area_name"</previewExpression>
             <mapTip enabled="1">&lt;div class="container popup_lizmap_dd" style="width:100%;">
-    
+
 &lt;div class="before-tabs">
 				&lt;p id="test-custom-tooltip">Custom tooltip&lt;/p>
                     [% CASE
@@ -710,7 +710,7 @@ def my_form_open(dialog, layer, feature):
                         ELSE ''
                     END %]
 
-  
+
                     [% CASE
                         WHEN "natural_area_name" IS NOT NULL OR trim("natural_area_name") != ''
                         THEN concat(

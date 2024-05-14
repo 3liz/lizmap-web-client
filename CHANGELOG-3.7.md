@@ -139,7 +139,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 ### Fixed
 
 * Fix a 500 error if the folder was not existing on the file system
-* Fix the option "Display when layer is visible" in the dataviz for non-spatial layer 
+* Fix the option "Display when layer is visible" in the dataviz for non-spatial layer
 * When importing a KML :
   * Fix extent used
   * Use the correct projection
@@ -182,7 +182,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ### Fixed
 
-* Fix tile mode when `GetMap` requests are greater than the value `wmsMaxWidth` and `wmsMaxHeight` in the settings 
+* Fix tile mode when `GetMap` requests are greater than the value `wmsMaxWidth` and `wmsMaxHeight` in the settings
 
 ## 3.7.1 - 2024-01-17
 
@@ -230,7 +230,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
     layers. This will allow creating child features directly from the parent popup.
   * Add some constraints : distance, angle when adding a new geometry
   * Add a button to paste a geometry
-* Drawing tool 
+* Drawing tool
   * New display for measurements on the map
   * Set feature's color individually
   * Delete features individually
@@ -259,7 +259,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
     (for example, to get data from another table with geometries intersecting this passed WKT geometry)
   * The **JavaScript and HTML code** has been **modernized** (no more jQuery calls, usage of web components, etc.)
 * Review of the **permalink** feature
-  * The URL is now automatically updated when we pan or zoom, or check/uncheck some layers 
+  * The URL is now automatically updated when we pan or zoom, or check/uncheck some layers
 * **Print configurations**.
   * For each layout, you can:
     * enable/disable it
@@ -313,7 +313,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Do not block the loading of the map if the layer name is wrong in a permalink
 * Round the `I` and `J` parameters of WMS GetFeatureInfo service, contributions from @mind84
 * Display the reverse geometry button only for linestring and polygons, not for points
-* When creating/editing a geometry, check the spatial constraint 
+* When creating/editing a geometry, check the spatial constraint
 * Fix an error about GetFeatureInfo and GetFilterToken requests to QGIS server
 * Fix cascade layer's filter to use the parent WMS name instead of the layer name
 * Fix latest features about QGIS layouts : groups allowed, order etc
@@ -387,7 +387,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
   * add a delay of 300ms to lessen the number of requests sent to the server
   * add a minimum of 3 characters to trigger the autocompletion
   * the search is now accent-insensitive : You can type forets and it will find Forêts
-* Permalink : 
+* Permalink :
   * Opacity,style, layer with a comma in its name
   * use mini-dock
   * review the hash used
@@ -450,7 +450,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Fix permalink generation when there isn't any layer checked
 * Fix loading relations from embedded layers in a project
 * Fix home page title in the top bar of the UI
-* When creating/editing a geometry, check the spatial constraint 
+* When creating/editing a geometry, check the spatial constraint
 * Fix an error about GetFeatureInfo and GetFilterToken requests to QGIS server
 * Fix cascade layer's filter to use the parent WMS name instead of the layer name
 * Fix latest features about QGIS layouts : groups allowed, order etc
@@ -469,7 +469,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 ### Funders
 
 * [WPD](https://www.wpd.fr/)
-* [Calvados province in France](https://www.calvados.fr/) 
+* [Calvados province in France](https://www.calvados.fr/)
 * [Vaucluse province in France](https://www.vaucluse.fr/)
 * [Faunalia](https://www.faunalia.eu/fr)
 
@@ -480,7 +480,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Use the layer name defined in the Lizmap CFG file if defined instead of the one in the legend
 * Editing & Filter - Fix editing right access from popup
 * Refresh WMS layer after edition follow up
-* Fix some regressions about the new legend : 
+* Fix some regressions about the new legend :
   * Option "Group as layer"
   * External layer
   * Handle QGIS `Control rendering order`

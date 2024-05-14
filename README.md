@@ -46,7 +46,7 @@ web-browsers etc.
 * Layer tree
   * Enable and disable layers and groups
   * Change layer opacity
-  * Layer Popup 
+  * Layer Popup
 
 ## Documentation and customization
 

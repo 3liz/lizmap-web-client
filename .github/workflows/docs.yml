@@ -108,6 +108,6 @@ jobs:
         run: |
           echo "
             ### Published ! :rocket:
-          
+
             [Visit the doc](https://docs.3liz.org/lizmap-web-client/)
           " >> $GITHUB_STEP_SUMMARY

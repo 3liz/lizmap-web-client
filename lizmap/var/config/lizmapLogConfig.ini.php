@@ -43,4 +43,3 @@ logCounter=on
 logDetail=on
 logIp=off
 logEmail=off
-

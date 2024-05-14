@@ -29,13 +29,13 @@
   </div>
   <hr>
   {/foreach}
-  
+
   {if $empty}
   <div>
     <p>{@view~edition.modal.message.no.feature.found@}</p>
   </div>
   {/if}
-  
+
 </div>
 <div class="modal-footer">
 <a href="#" class="btn" data-dismiss="modal" aria-hidden="true">Close</a>
