@@ -9,7 +9,7 @@ test.describe('Display embedded relation in popup',()=>{
 
          test('Visualize popup for embedded layers', async ({ page }) => {
 
-                  let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GetFeatureInfo'));
+                  let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
 
                   //first point
                   await page.locator('#map').click({
