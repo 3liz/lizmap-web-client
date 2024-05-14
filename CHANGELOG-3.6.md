@@ -89,7 +89,7 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ### Fixed
 
-* Fix support of SSL PostgreSQL connection in PostgreSQL layers 
+* Fix support of SSL PostgreSQL connection in PostgreSQL layers
 * Fix on the Feature toolbar :
   * zoom to the feature
   * center map on the feature
@@ -119,7 +119,7 @@ with some extra keywords : backend, tests, test, translation, funders, important
 * Fix error when executing the command `jcommunity~user:create` and
   when the "multiauth" module is installed
 * Fix the auto-login feature ("remember me" checkbox)
-  The encryption key was not upgraded during upgrade from Lizmap 3.5 to 3.6 
+  The encryption key was not upgraded during upgrade from Lizmap 3.5 to 3.6
 * Fix a potential regression in the password reset feature
 * Fix getting the table for sub-queries with escaped double-quotes
 * Form filter - Date range: add a day to the max values when requesting data
@@ -149,7 +149,7 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ### Fixed
 
-* When creating/editing a geometry, check the spatial constraint 
+* When creating/editing a geometry, check the spatial constraint
 * Fix an error about GetFeatureInfo and GetFilterToken requests to QGIS server
 * Fix cascade layer's filter to use the parent WMS name instead of the layer name
 * A locale for the account registration was missing, generating a 500 error
@@ -163,7 +163,7 @@ with some extra keywords : backend, tests, test, translation, funders, important
 ### Funders
 
 * [WPD](https://www.wpd.fr/)
-* [Calvados province in France](https://www.calvados.fr/) 
+* [Calvados province in France](https://www.calvados.fr/)
 * [Vaucluse province in France](https://www.vaucluse.fr/)
 
 ## 3.6.6 - 2023-10-04
@@ -331,7 +331,7 @@ with some extra keywords : backend, tests, test, translation, funders, important
 * In a WFS request, no PostGIS features were returned if SRSNAME was different from the layer SRID
 * When you click on the zoom to feature button, from the popup or the attribute table tool, the zoom/pan could be broken
 * When you try to select features with a point, no selection were performed
-* In the administration panel, allow to edit the name for the sender email 
+* In the administration panel, allow to edit the name for the sender email
 * Fix issues in the installer, when installing external modules
 
 ### Changed
@@ -347,7 +347,7 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ### Backend
 
-* Update the way to check the validity about : 
+* Update the way to check the validity about :
   * a geometry in a Well Known Text format
   * a proj4 string in tests
 * Fix some issues with PHP 8.2

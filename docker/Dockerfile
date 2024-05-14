@@ -49,7 +49,7 @@ COPY --from=build /lizmap_web_client /www
 RUN mv /www/lizmap/var/config /www/lizmap/var/config.dist \
  && mv /www/lizmap/www /www/lizmap/www.dist \
  && mv /www/lizmap/my-packages/composer.json.dist /my-packages.composer.json.dist
- 
+
 RUN addgroup -g 1000 groupphp; \
     adduser -u 1000 -H -G groupphp -D userphp ;
 
@@ -69,7 +69,3 @@ HEALTHCHECK --interval=60s --timeout=30s CMD php-fpm-healthcheck || exit 1
 WORKDIR /www
 ENTRYPOINT ["/bin/lizmap-entrypoint.sh"]
 CMD ["/usr/sbin/php-fpm8", "-F", "-O"]
-
-
-
-

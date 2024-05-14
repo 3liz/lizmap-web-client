@@ -4,6 +4,6 @@ This PR will be harvested on changelog.lizmap.com if there is a "changelog" labe
 Funded by NAME URL
 -->
 
-Ticket : # 
+Ticket : #
 
 Funded by

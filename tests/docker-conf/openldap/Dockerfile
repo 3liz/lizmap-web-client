@@ -29,4 +29,3 @@ EXPOSE 389 636
 ENTRYPOINT ["/bin/entrypoint.sh"]
 
 CMD ["slapd", "-d", "32768", "-u", "openldap", "-g", "openldap", "-h", "ldap:/// ldapi:///"]
-

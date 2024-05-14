@@ -32,7 +32,7 @@ test.describe('QGIS Requests', () => {
         {'param' : 'layer', 'expectedvalue' : layer_name},
       ];
 
-      // check if WMS Request params are as expected 
+      // check if WMS Request params are as expected
       const urlObj = new URLSearchParams(originalUrl);
       for( let obj of expectedParamValue) {
         expect(urlObj.get(obj.param)).toBe(obj.expectedvalue);

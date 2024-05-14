@@ -89,11 +89,11 @@ echo "Set files rights"
 sh lizmap/install/set_rights.sh $LIZMAP_USER $LIZMAP_GROUP
 
 echo "Launch installer"
-# Set up Configuration  
+# Set up Configuration
 su -c "php lizmap/install/installer.php -v" $LIZMAP_USER
 
 echo "Clean temp"
-# Clean cache files in case we are 
+# Clean cache files in case we are
 # Restarting the container
 sh lizmap/install/clean_vartmp.sh
 
@@ -156,4 +156,3 @@ else
 fi
 
 exec "$@"
-

@@ -19,4 +19,3 @@ if (file_exists(jApp::appPath('app/devcommands.php'))) {
 }
 
 exit(JelixCommands::launch($application));
-

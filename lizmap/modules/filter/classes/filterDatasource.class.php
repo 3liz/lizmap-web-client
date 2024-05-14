@@ -98,9 +98,9 @@ class filterDatasource
 
         return str_replace('$geometry', '"'.$this->datasource->geocol.'"', $filter);
     }
-    
+
     /**
-     * return data as jDbResultSet or errors as array 
+     * return data as jDbResultSet or errors as array
      *
      * @param  mixed $sql
      * @return jDbResultSet|array

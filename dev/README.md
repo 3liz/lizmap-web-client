@@ -19,7 +19,7 @@ a docker image to build the package.
 
 Just follow original instruction. From the parent directory, execute:
 ```
-make docker-build 
+make docker-build
 ```
 
 You can do also `make docker-tag docker-clean` if you build the image to release it.

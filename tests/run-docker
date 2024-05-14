@@ -23,4 +23,4 @@ elif [ "$CMD" == "build" ]; then
     make build-plugins
 fi
 
-docker compose $CMD "$@"  
+docker compose $CMD "$@"

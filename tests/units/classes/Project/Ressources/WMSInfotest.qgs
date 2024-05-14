@@ -3,7 +3,7 @@
   <homePath path=""/>
   <title></title>
   <properties>
-    
+
     <WMSOnlineResource type="QString"></WMSOnlineResource>
     <WMSFees type="QString">conditions unknown</WMSFees>
     <WMSServiceCapabilities type="bool">true</WMSServiceCapabilities>

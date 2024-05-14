@@ -44,7 +44,7 @@ export default class FeatureToolbar extends HTMLElement {
                             <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu pull-right" role="menu">
-                            ${this._downloadFormats.map((format) => 
+                            ${this._downloadFormats.map((format) =>
                                 html`<li><a href="#" @click=${() => this.export(format)}>${format}</a></li>`)}
                         </ul>
                     </div>`
@@ -146,8 +146,8 @@ export default class FeatureToolbar extends HTMLElement {
     }
 
     get isUnlinkable(){
-        return this.parentLayerId && 
-            (this.isLayerEditable && !this.isLayerPivot) || 
+        return this.parentLayerId &&
+            (this.isLayerEditable && !this.isLayerPivot) ||
             (lizMap.config?.editionLayers?.[this.featureType]?.capabilities?.deleteFeature === "True" && this.isLayerPivot);
     }
 

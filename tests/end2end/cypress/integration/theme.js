@@ -1,5 +1,5 @@
 describe('Theme', () => {
-    
+
     beforeEach(() => {
         cy.visit('/index.php/view/map/?repository=testsrepository&project=theme')
     })

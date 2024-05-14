@@ -346,7 +346,7 @@ class QgisProjectTest extends TestCase
                   )
          );
 
-         $relations = $testQgis->getRelations(); 
+         $relations = $testQgis->getRelations();
          $relationFields = $testQgis->getRelationsFields();
          $this->assertEquals($expectedRelationsOnEmbeddedLayers, $relations);
          $this->assertEquals($expectedFieldsOnEmbeddedLayers, $relationFields);
