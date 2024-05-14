@@ -213,7 +213,7 @@ test.describe('Single WMS layer', () => {
         const url = '/index.php/view/map/?repository=testsrepository&project=single_wms_image';
         await page.goto(url,{waitUntil:'networkidle'});
 
-        let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GetFeatureInfo'));
+        let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
 
         await page.locator('#newOlMap').click({
             position: {
@@ -233,7 +233,7 @@ test.describe('Single WMS layer', () => {
         // click on filter button
         await expect(page.locator(".lizmapPopupContent .lizmapPopupDiv lizmap-feature-toolbar button.feature-filter")).toBeVisible();
 
-        const getFilterTokenPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GETFILTERTOKEN'));
+        const getFilterTokenPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GETFILTERTOKEN') === true);
 
         await page.locator(".lizmapPopupContent .lizmapPopupDiv lizmap-feature-toolbar button.feature-filter").click();
 
@@ -329,7 +329,7 @@ test.describe('Single WMS layer', () => {
         expect(getLegendFilterPromiseResp?.status()).toBe(200)
 
         // filter
-        let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GetFeatureInfo'));
+        let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
 
         await page.locator('#newOlMap').click({
             position: {
@@ -346,7 +346,7 @@ test.describe('Single WMS layer', () => {
         await expect(page.locator(".lizmapPopupContent .lizmapPopupDiv table tbody tr").nth(0).locator("td")).toHaveText("3");
         await expect(page.locator(".lizmapPopupContent .lizmapPopupDiv table tbody tr").nth(1).locator("td")).toHaveText("Line_3");
 
-        const getFilterTokenPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GETFILTERTOKEN'));
+        const getFilterTokenPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GETFILTERTOKEN') === true);
 
         await expect(page.locator(".lizmapPopupContent .lizmapPopupDiv lizmap-feature-toolbar button.feature-filter")).toBeVisible();
 

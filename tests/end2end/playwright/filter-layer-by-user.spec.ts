@@ -21,7 +21,7 @@ test.describe('Filter layer data by user - not connected', () => {
     });
 
     test('Popup', async ({ page }) => {
-        let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GetFeatureInfo'));
+        let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
 
         // blue_filter_layer_by_user
         // admin point
@@ -142,7 +142,7 @@ test.describe('Filter layer data by user - user in group a', () => {
     });
 
     test('Popup', async ({ page }) => {
-        let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GetFeatureInfo'));
+        let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
 
         // blue_filter_layer_by_user
         // admin point
@@ -267,7 +267,7 @@ test.describe('Filter layer data by user - admin', () => {
     });
 
     test('Popup', async ({ page }) => {
-        let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GetFeatureInfo'));
+        let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
 
         // blue_filter_layer_by_user
         // admin point
