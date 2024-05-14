@@ -910,6 +910,28 @@ describe('BaseLayersConfig', function () {
                 "WMS single internal",
                 "WMS grouped external",
             ]);
+
+        const baseLayersWithoutOptions = new BaseLayersConfig({}, {}, layers, blGroup)
+        expect(baseLayersWithoutOptions.baseLayerNames)
+            .to.have.length(11) // still 11
+            .that.be.deep.eq([
+                //"=== TMS ===",
+                "Stamen Watercolor",
+                "OSM TMS internal",
+                "OSM TMS external",
+                //"=== GROUPS ===",
+                "project-background-color",
+                //"empty group",
+                "group with many layers and shortname",
+                "group with sub",
+                //"=== LOCAL LAYERS ===",
+                "local vector layer",
+                "local raster layer",
+                //"=== WM[T]S are on demo.lizmap.com ===",
+                "WMTS single external",
+                "WMS single internal",
+                "WMS grouped external",
+            ]);
     })
 
     it('startupBaseLayer', function () {
