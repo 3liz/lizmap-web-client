@@ -18,4 +18,3 @@ while($tryAgain) {
 }
 
 echo "  schema created\n";
-

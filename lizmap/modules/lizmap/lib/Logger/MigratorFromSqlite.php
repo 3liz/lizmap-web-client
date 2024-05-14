@@ -49,7 +49,7 @@ class MigratorFromSqlite
                 $sequence = $rec->sequence_name;
                 if ($sequence) {
                     $conn->query('SELECT setval('.$conn->quote($sequence).',
-                    (SELECT max('.$conn->encloseName($idField).') 
+                    (SELECT max('.$conn->encloseName($idField).')
                     FROM '.$conn->encloseName($table).'))');
                 }
             }

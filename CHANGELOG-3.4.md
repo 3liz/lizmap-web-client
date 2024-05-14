@@ -45,7 +45,7 @@
 
 ### Fixed
 
-* Fix the download of files (layer export, PDF) depending on the web-browser (and its version) 
+* Fix the download of files (layer export, PDF) depending on the web-browser (and its version)
 * CLI tool about cache : fix an issue about the `-bbox` parameter out of the tile matrix limit
 * Provide the dataviz button in the left menu only there is at least one non filtered dataviz
 * The style was not updated when the layer has a shortname and was included in a QGIS theme

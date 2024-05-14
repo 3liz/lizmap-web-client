@@ -10,7 +10,7 @@ test.describe('Display embedded relation in popup',()=>{
          test('Visualize popup for embedded layers', async ({ page }) => {
 
                   let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GetFeatureInfo'));
-                  
+
                   //first point
                   await page.locator('#map').click({
                     position: {
@@ -23,9 +23,9 @@ test.describe('Display embedded relation in popup',()=>{
 
                   //time for rendering the popup
                   await page.waitForTimeout(500);
-                  
-                  await expect(page.locator('.lizmapPopupContent > .lizmapPopupSingleFeature .lizmapPopupTitle').first()).toHaveText("father_layer"); 
-          
+
+                  await expect(page.locator('.lizmapPopupContent > .lizmapPopupSingleFeature .lizmapPopupTitle').first()).toHaveText("father_layer");
+
                   let firstPointElements = page.locator(".container.popup_lizmap_dd .before-tabs p b");
                   await expect(firstPointElements).toHaveCount(3);
 
@@ -69,8 +69,8 @@ test.describe('Display embedded relation in popup',()=>{
                   //time for rendering the popup
                   await page.waitForTimeout(500);
 
-                  await expect(page.locator('.lizmapPopupContent > .lizmapPopupSingleFeature .lizmapPopupTitle').first()).toHaveText("father_layer"); 
-                 
+                  await expect(page.locator('.lizmapPopupContent > .lizmapPopupSingleFeature .lizmapPopupTitle').first()).toHaveText("father_layer");
+
                   let elements = page.locator(".container.popup_lizmap_dd .before-tabs p b");
                   await expect(elements).toHaveCount(3);
 

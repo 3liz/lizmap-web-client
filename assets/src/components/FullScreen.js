@@ -40,7 +40,7 @@ export default class FullScreen extends HTMLElement {
             return;
         }
 
-        this._template = () => 
+        this._template = () =>
             html`
         <button @click=${() => document.fullscreenElement ? document.exitFullscreen() : this._elementFullscreened.requestFullscreen()}>
             ${document.fullscreenElement
