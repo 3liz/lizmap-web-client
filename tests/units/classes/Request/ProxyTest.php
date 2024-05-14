@@ -82,7 +82,7 @@ class ProxyTest extends TestCase
             array($paramsBbox, $expectedBbox),
         );
     }
-    
+
     /**
      * @dataProvider getNormalizeParamsData
      */

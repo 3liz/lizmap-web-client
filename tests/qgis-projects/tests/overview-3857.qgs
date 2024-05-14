@@ -667,7 +667,7 @@ ouvert.
 
 Utilisez cette fonction pour ajouter une logique supplémentaire à vos formulaires.
 
-Entrez le nom de la fonction dans le champ 
+Entrez le nom de la fonction dans le champ
 "Fonction d'initialisation Python".
 Voici un exemple:
 """

@@ -11,8 +11,8 @@ spl_autoload_register(function($class) {
 
 // set user_agent with Lizmap Version
 $appInfos = \Jelix\Core\Infos\AppInfos::load();
-$userAgent = 'Lizmap '.$appInfos->version; 
-ini_set('user_agent', $userAgent); 
+$userAgent = 'Lizmap '.$appInfos->version;
+ini_set('user_agent', $userAgent);
 
 jApp::setEnv('lizmaptests');
 if (file_exists(jApp::tempPath())) {

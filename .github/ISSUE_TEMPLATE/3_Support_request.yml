@@ -8,7 +8,7 @@ body:
     attributes:
       value: |
         Before asking your question, please check that the response is not in the documentation: https://docs.3liz.com/
-        
+
         Questions about using or installing Lizmap. 3Liz's paid support => https://www.3liz.com/services.html#3liz-support-offer
 
   - type: textarea

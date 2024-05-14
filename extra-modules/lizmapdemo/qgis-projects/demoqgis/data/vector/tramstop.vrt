@@ -5,4 +5,4 @@
         <GeometryField encoding="WKT" field="WKT"/>
 	<LayerSRS>EPSG:4326</LayerSRS>
     </OGRVRTLayer>
-</OGRVRTDataSource> 
+</OGRVRTDataSource>

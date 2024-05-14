@@ -63,7 +63,7 @@ export class OptionsConfig  extends BaseObjectConfig {
      * @param {boolean}  [cfg.use_native_zoom_levels]             - does the map use native zoom levels ?
      * @param {boolean}  [cfg.hide_numeric_scale_value]           - does the scale line hide numeric scale value ?
      * @param {boolean}  [cfg.hideGroupCheckbox]                  - are groups checkbox hidden ?
-     * @param {boolean}  [cfg.wms_single_request_for_all_layers]  - are layers loaded as single WMS image ?  
+     * @param {boolean}  [cfg.wms_single_request_for_all_layers]  - are layers loaded as single WMS image ?
      */
     constructor(cfg) {
         if (!cfg || typeof cfg !== "object") {

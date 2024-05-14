@@ -939,7 +939,7 @@ def my_form_open(dialog, layer, feature):
       <widgets></widgets>
       <previewExpression>id</previewExpression>
       <mapTip>&lt;div class="container popup_lizmap_dd" style="width:100%;"&gt;
-    
+
 &lt;div class="before-tabs"&gt;
 &lt;/div&gt;&lt;ul class="nav nav-tabs"&gt;
 
@@ -949,7 +949,7 @@ def my_form_open(dialog, layer, feature):
 &lt;/ul&gt;
 &lt;div class="tab-content"&gt;
   &lt;div id="popup_dd_[% $id %]_tab1" class="tab-pane active"&gt;
-    
+
                     [% CASE
                         WHEN "field_tab1" IS NOT NULL OR trim("field_tab1") != ''
                         THEN concat(
@@ -962,7 +962,7 @@ def my_form_open(dialog, layer, feature):
   &lt;/div&gt;
 
   &lt;div id="popup_dd_[% $id %]_tab2" class="tab-pane "&gt;
-    
+
                     [% CASE
                         WHEN "field_tab2" IS NOT NULL OR trim("field_tab2") != ''
                         THEN concat(

@@ -1,14 +1,14 @@
 [
     {
-        "login": "admin",	
-        "_clear_password_to_be_encrypted": "admin",	
-        "status": 1,	
-        "email": "admin@localhost.localdomain",	
+        "login": "admin",
+        "_clear_password_to_be_encrypted": "admin",
+        "status": 1,
+        "email": "admin@localhost.localdomain",
         "firstname": "",
-        "lastname": "",	
-        "organization": "",	
-        "street": "",	
-        "postcode": "",	
+        "lastname": "",
+        "organization": "",
+        "street": "",
+        "postcode": "",
         "city": ""
     }
 ]

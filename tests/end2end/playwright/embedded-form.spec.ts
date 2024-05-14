@@ -18,7 +18,7 @@ test.describe('Edition of an embedded layer',()=>{
 
         // Wait a bit for the UI
         await page.waitForTimeout(300);
-        
+
         // inspect the form
         // id
         await expect(page.locator('#jforms_view_edition_id')).toBeVisible();
@@ -57,7 +57,7 @@ test.describe('Edition of an embedded layer',()=>{
 
         // Wait a bit for the UI
         await page.waitForTimeout(300);
-        
+
         // inspect the form
         // id
         await expect(page.locator('#jforms_view_edition_id')).toBeVisible();

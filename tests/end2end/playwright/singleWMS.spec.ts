@@ -7,9 +7,9 @@ test.describe('Single WMS layer', () => {
 
         // 'single_wms_polygons', 'single_wms_tiled_baselayer' and OpenStreetmaps layers should be exluded from single wms layer
         const getMapPromise = page.waitForRequest(request =>
-            request.url().includes('GetMap') && 
+            request.url().includes('GetMap') &&
             request.method() === 'GET' &&
-            // check format 
+            // check format
             request.url().includes('FORMAT=image%2Fpng') &&
             // check service
             request.url().includes('SERVICE=WMS') &&
@@ -18,17 +18,17 @@ test.describe('Single WMS layer', () => {
             // check layers
             request.url().includes('LAYERS=single_wms_baselayer%2Csingle_wms_lines%2Csingle_wms_points%2Csingle_wms_points_group%2Csingle_wms_lines_group%2CGroupAsLayer')
         );
-        
-        const getTiledSingleWMSPolygon = page.waitForRequest(request => 
-            request.url().includes('GetTile') && 
+
+        const getTiledSingleWMSPolygon = page.waitForRequest(request =>
+            request.url().includes('GetTile') &&
             request.method() === 'GET' &&
-            // check layer name 
+            // check layer name
             request.url().includes('layer=single_wms_polygons') &&
             // check styles
             request.url().includes('style=default') &&
             // check service
             request.url().includes('Service=WMTS')
-            
+
         )
 
         await page.goto(url);
@@ -49,12 +49,12 @@ test.describe('Single WMS layer', () => {
         const url = '/index.php/view/map/?repository=testsrepository&project=single_wms_image';
 
         await page.goto(url, {waitUntil:'networkidle'});
-        
+
         // click on layer tree elements to check opacity
         const lizmapTreeView = page.locator('lizmap-treeview > ul  li');
 
         const ids = ['GroupAsLayer', 'single_wms_lines_group','single_wms_points_group','single_wms_points', 'single_wms_lines','single_wms_polygons'];
-        
+
         for (const info of await lizmapTreeView.all()) {
             let className = await info.getAttribute("data-testid");
             if (ids.indexOf(className || '') > -1 ){
@@ -67,9 +67,9 @@ test.describe('Single WMS layer', () => {
                     // opacity is enabled only in the tiled layer
                     await expect(subDock.locator(".opacityLayer")).toHaveCount(1);
                 } else {
-                    await expect(subDock.locator(".opacityLayer")).toHaveCount(0);                  
+                    await expect(subDock.locator(".opacityLayer")).toHaveCount(0);
                 }
-                
+
             }
         }
 
@@ -80,9 +80,9 @@ test.describe('Single WMS layer', () => {
 
         // turn off single_wms_lines layer
         const getMapNoPointsPromise = page.waitForRequest(request =>
-            request.url().includes('GetMap') && 
+            request.url().includes('GetMap') &&
             request.method() === 'GET' &&
-            // check format 
+            // check format
             request.url().includes('FORMAT=image%2Fpng') &&
             // check service
             request.url().includes('SERVICE=WMS') &&
@@ -91,7 +91,7 @@ test.describe('Single WMS layer', () => {
             // check layers
             request.url().includes('LAYERS=single_wms_baselayer%2Csingle_wms_points%2Csingle_wms_points_group%2Csingle_wms_lines_group%2CGroupAsLayer')
         );
-        
+
         await page.goto(url,{waitUntil:'networkidle'});
 
         await page.getByTestId('single_wms_lines').locator('> div input').click();
@@ -104,9 +104,9 @@ test.describe('Single WMS layer', () => {
 
         // switch layer in a group
         const getMapNoGroupLinesPromise = page.waitForRequest(request =>
-            request.url().includes('GetMap') && 
+            request.url().includes('GetMap') &&
             request.method() === 'GET' &&
-            // check format 
+            // check format
             request.url().includes('FORMAT=image%2Fpng') &&
             // check service
             request.url().includes('SERVICE=WMS') &&
@@ -127,9 +127,9 @@ test.describe('Single WMS layer', () => {
 
         // switch Group as layer
         const getMapNoGroupAsLayerPromise = page.waitForRequest(request =>
-            request.url().includes('GetMap') && 
+            request.url().includes('GetMap') &&
             request.method() === 'GET' &&
-            // check format 
+            // check format
             request.url().includes('FORMAT=image%2Fpng') &&
             // check service
             request.url().includes('SERVICE=WMS') &&
@@ -161,7 +161,7 @@ test.describe('Single WMS layer', () => {
                 expect(searchParam.get('SERVICE') == 'WMS').toBeTruthy();
                 expect(searchParam.get('STYLES') == 'default%2Cdefault%2Cdefault%2Cdefault%2Cdefault%2C').toBeTruthy();
                 expect(searchParam.get('LAYERS') == 'single_wms_baselayer%2Csingle_wms_lines%2Csingle_wms_points%2Csingle_wms_points_group%2Csingle_wms_lines_group%2CGroupAsLayer').toBeTruthy();
-    
+
             }
         })
 
@@ -171,15 +171,15 @@ test.describe('Single WMS layer', () => {
         await page.waitForTimeout(50);
         await page.getByTestId('GroupAsLayer').locator('> div input').click();
 
-    })   
+    })
 
     test('Change layer style', async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=single_wms_image';
 
         const getMapChangeStylePromise = page.waitForRequest(request =>
-            request.url().includes('GetMap') && 
+            request.url().includes('GetMap') &&
             request.method() === 'GET' &&
-            // check format 
+            // check format
             request.url().includes('FORMAT=image%2Fpng') &&
             // check service
             request.url().includes('SERVICE=WMS') &&
@@ -188,7 +188,7 @@ test.describe('Single WMS layer', () => {
             // check layers
             request.url().includes('LAYERS=single_wms_baselayer%2Csingle_wms_lines%2Csingle_wms_points%2Csingle_wms_points_group%2Csingle_wms_lines_group%2CGroupAsLayer')
         );
-        
+
         await page.goto(url,{waitUntil:'networkidle'});
 
         // disable single_wms_lines
@@ -199,7 +199,7 @@ test.describe('Single WMS layer', () => {
 
         await icon.click();
         let styleLayer = page.locator("#sub-dock").locator("select.styleLayer");
-        
+
         await styleLayer.selectOption("white_dots");
 
         const changeStyle = await getMapChangeStylePromise;
@@ -207,7 +207,7 @@ test.describe('Single WMS layer', () => {
         const getMapChangeStylePromiseResp = await changeStyle.response();
         expect(getMapChangeStylePromiseResp?.status()).toBe(200)
 
-    }) 
+    })
 
     test('Apply filters on layer, then change layer style', async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=single_wms_image';
@@ -232,7 +232,7 @@ test.describe('Single WMS layer', () => {
 
         // click on filter button
         await expect(page.locator(".lizmapPopupContent .lizmapPopupDiv lizmap-feature-toolbar button.feature-filter")).toBeVisible();
-        
+
         const getFilterTokenPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GETFILTERTOKEN'));
 
         await page.locator(".lizmapPopupContent .lizmapPopupDiv lizmap-feature-toolbar button.feature-filter").click();
@@ -246,9 +246,9 @@ test.describe('Single WMS layer', () => {
         expect(token).not.toBeNull();
 
         const getMFilteredMapPromise = page.waitForRequest(request =>
-            request.url().includes('GetMap') && 
+            request.url().includes('GetMap') &&
             request.method() === 'GET' &&
-            // check format 
+            // check format
             request.url().includes('FORMAT=image%2Fpng') &&
             // check service
             request.url().includes('SERVICE=WMS') &&
@@ -263,12 +263,12 @@ test.describe('Single WMS layer', () => {
         const filteredMap = await getMFilteredMapPromise;
         const getMFilteredMapPromiseResp = await filteredMap.response();
         expect(getMFilteredMapPromiseResp?.status()).toBe(200)
-        
+
         // change layer style while filtering
         const getMapChangeStylePromise = page.waitForRequest(request =>
-            request.url().includes('GetMap') && 
+            request.url().includes('GetMap') &&
             request.method() === 'GET' &&
-            // check format 
+            // check format
             request.url().includes('FORMAT=image%2Fpng') &&
             // check service
             request.url().includes('SERVICE=WMS') &&
@@ -288,7 +288,7 @@ test.describe('Single WMS layer', () => {
 
         await icon.click();
         let styleLayer = page.locator("#sub-dock").locator("select.styleLayer");
-        
+
         await styleLayer.selectOption("white_dots");
 
         const changeStyle = await getMapChangeStylePromise;
@@ -296,16 +296,16 @@ test.describe('Single WMS layer', () => {
         const getMapChangeStylePromiseResp = await changeStyle.response();
         expect(getMapChangeStylePromiseResp?.status()).toBe(200)
 
-    }) 
+    })
 
     test('Filter on legend, then apply filter', async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=single_wms_image';
         await page.goto(url,{waitUntil:'networkidle'});
 
         const getLegendFilterPromise = page.waitForRequest(request =>
-            request.url().includes('GetMap') && 
+            request.url().includes('GetMap') &&
             request.method() === 'GET' &&
-            // check format 
+            // check format
             request.url().includes('FORMAT=image%2Fpng') &&
             // check service
             request.url().includes('SERVICE=WMS') &&
@@ -345,7 +345,7 @@ test.describe('Single WMS layer', () => {
         await expect(page.locator(".lizmapPopupContent .lizmapPopupDiv table tbody tr")).toHaveCount(2);
         await expect(page.locator(".lizmapPopupContent .lizmapPopupDiv table tbody tr").nth(0).locator("td")).toHaveText("3");
         await expect(page.locator(".lizmapPopupContent .lizmapPopupDiv table tbody tr").nth(1).locator("td")).toHaveText("Line_3");
-        
+
         const getFilterTokenPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GETFILTERTOKEN'));
 
         await expect(page.locator(".lizmapPopupContent .lizmapPopupDiv lizmap-feature-toolbar button.feature-filter")).toBeVisible();
@@ -362,9 +362,9 @@ test.describe('Single WMS layer', () => {
 
 
         const getLegendFilterAndFilterPromise = page.waitForRequest(request =>
-            request.url().includes('GetMap') && 
+            request.url().includes('GetMap') &&
             request.method() === 'GET' &&
-            // check format 
+            // check format
             request.url().includes('FORMAT=image%2Fpng') &&
             // check service
             request.url().includes('SERVICE=WMS') &&
@@ -391,9 +391,9 @@ test.describe('Single WMS layer', () => {
         await page.goto(url,{waitUntil:'networkidle'});
 
         const switchBaseLayersReqPromise = page.waitForRequest(request =>
-            request.url().includes('GetMap') && 
+            request.url().includes('GetMap') &&
             request.method() === 'GET' &&
-            // check format 
+            // check format
             request.url().includes('FORMAT=image%2Fpng') &&
             // check service
             request.url().includes('SERVICE=WMS') &&
@@ -402,7 +402,7 @@ test.describe('Single WMS layer', () => {
             // check layers
             request.url().includes('LAYERS=single_wms_lines%2Csingle_wms_points%2Csingle_wms_points_group%2Csingle_wms_lines_group%2CGroupAsLayer')
         );
-        
+
         await page.locator("lizmap-base-layers select").selectOption("single_wms_tiled_baselayer")
 
         const switchBaseLayer = await switchBaseLayersReqPromise;
