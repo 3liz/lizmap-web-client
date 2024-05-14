@@ -35,12 +35,24 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Rephrase sentence about CORS settings
 * Layer tree : fix if the group is empty (after filtering for instance)
 
+### Translations
+
+* Update translated strings from the Transifex website :
+  * [Lizmap Web Client](https://www.transifex.com/3liz-1/lizmap-locales/dashboard/)
+  * [Jelix](https://www.transifex.com/3liz-1/jelix/dashboard/)
+
 ### Backend
 
 * Fix a few issues about XSS
 * Expose some OpenLayers classes in a library
 * Update OpenLayers to 9.1.0
 * Upgrade Jelix to version 1.8.9
+
+### Funders
+
+* **[Faunalia](https://www.faunalia.eu/fr)**, contributions on source code from @mind84
+* **[Le Grand Narbonne](https://www.legrandnarbonne.com/)**
+* **[Terre de Provence Agglomération](https://www.terredeprovence-agglo.com/)**
 
 ## 3.7.6 - 2024-03-22
 
