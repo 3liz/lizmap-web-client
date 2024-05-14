@@ -127,15 +127,15 @@ cache_file_umask=
 ; dao used (default 'jelix~jcache')
 ;dao = ""
 ; dbprofil (optional)
-;dbprofile = "" 
+;dbprofile = ""
 
 
 ; Parameters for memcached driver :
 
-; Memcached servers. 
+; Memcached servers.
 ; Can be a list e.g
 ;servers = memcache_host1:11211,memcache_host2:11211,memcache_host3:11211 i.e HOST_NAME:PORT
-;servers = 
+;servers =
 
 [jcache:qgisprojects]
 enabled=1
@@ -161,12 +161,12 @@ ttl=0
 ;;
 ;; baseUri -> must be the root of webdav server (must end with '/')
 ;; e.g. if the QGIS store url is set as 'http(s)://webdavserver.tld/shapeData/'||file_name(@selected_file_path) baseUri should be 'http(s)://webdavserver.tld/'
-;; 
+;;
 ;; WARNING: the 'baseUri' will be exposed on the web client
-;; 
+;;
 ;; user -> same as configured in the Authentication section of External storage configuration (Attachment widget)
 ;; password -> same as configured in the Authentication section of External storage configuration (Attachment widget)
-;; 
+;;
 [webdav:default]
 ;baseUri=
 ;enabled=1

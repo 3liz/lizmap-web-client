@@ -12,8 +12,8 @@ The container deploys one Lizmap instance and may run php-fpm on the command lin
 - `LIZMAP_CACHESTORAGETYPE`: Always Use 'redis'
 - `LIZMAP_CACHEREDISHOST`: Redis host
 - `LIZMAP_CACHEREDISPORT`: Redis port (use default if not set)
-- `LIZMAP_CACHEEXPIRATION`: Lizmap cache expiration time 
-- `LIZMAP_CACHEREDISDB`:  Redis Database index used 
+- `LIZMAP_CACHEEXPIRATION`: Lizmap cache expiration time
+- `LIZMAP_CACHEREDISDB`:  Redis Database index used
 - `LIZMAP_CACHEREDISKEYPREFIX`: the Redis key prefix to use
 - `LIZMAP_USER_ID`: ID of the user used to run Lizmap
 - `LIZMAP_GROUP_ID`: ID of the group used to run Lizmap
@@ -59,11 +59,11 @@ Each directory location may be overridden with the following variables:
 ### Admin Setup
 
 During installation, an admin user will be setup with the `LIZMAP_ADMIN_*` environnement variables.
-The `LIZMAP_ADMIN_DEFAULT_PASSWORD_SOURCE` value can either be: 
-- `__reset`: It will initiate a password reset process, an email will be sent 
+The `LIZMAP_ADMIN_DEFAULT_PASSWORD_SOURCE` value can either be:
+- `__reset`: It will initiate a password reset process, an email will be sent
   to `LIZMAP_ADMIN_EMAIL` with a link to choose a new password. The web server
   should be configured properly, and the mailer configuration should be set
-  in Lizmap. See the Lizmap documentation. 
+  in Lizmap. See the Lizmap documentation.
 - `__random`: Will set a random password that will be report into the command line (see `docker logs` to access it).
 - `/path/to/pass/file`: The path to a file containing your password. The file must be used as a volume for docker to access it.
 
@@ -97,11 +97,11 @@ The following volumes are used:
 ```
 lizmap:
     image: lizmap-wps-web-client:3.6
-    command: 
+    command:
       - php-fpm
     environment:
       LIZMAP_WPS_URL: http://wps:8080/ # According to your configuration
-      LIZMAP_CACHESTORAGETYPE: redis   
+      LIZMAP_CACHESTORAGETYPE: redis
       LIZMAP_CACHEREDISDB: '1'
       LIZMAP_USER_ID: '1010'
       LIZMAP_GROUP_ID: '1010'
@@ -124,7 +124,7 @@ server {
     listen 80;
 
     server_name lizmap;
-   
+
     root /srv/lizmap/www;  # See discussion about LIZMAP_HOME above
     index index.html index.php;
 
@@ -140,7 +140,7 @@ server {
 
         try_files $fastcgi_script_name =404;
         include fastcgi_params;
-    
+
         fastcgi_index index.php;
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
         fastcgi_param SERVER_NAME $http_host;
@@ -151,12 +151,12 @@ server {
 }
 ```
 
-## Installing lizmap modules 
+## Installing lizmap modules
 
 ### Install from archive
 
 - Mount `/www/lizmap/lizmap-modules/` at a location on the host or a from a named volume.
-- Get the archive of the lizmap module and extract it in the `/www/lizmap/lizmap-module/` or 
+- Get the archive of the lizmap module and extract it in the `/www/lizmap/lizmap-module/` or
   Add the module configuration snippet in the appropriate snippets' directory (see the module documentation for  the configuration files to modify)
 - Follow module documentation on how to activate the module in lizmap.
 - Restart the container or run `php /www/lizmap/install/installer.php` from inside the container
@@ -178,4 +178,4 @@ server {
 ### Install as bundled modules
 
 You may ship preinstalled modules in your image inherited from lizmap image. Simply
-run the following command in your dockerfile: `lizmap-install-module <package-name>` 
+run the following command in your dockerfile: `lizmap-install-module <package-name>`

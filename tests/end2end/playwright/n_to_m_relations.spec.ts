@@ -5,7 +5,7 @@ test.describe('N to M relations', () => {
         const url = '/index.php/view/map/?repository=testsrepository&project=n_to_m_relations';
         await page.goto(url, { waitUntil: 'networkidle' });
     });
-    
+
     test('Attribute table behavior', async ({ page }) => {
 
         // open attribute table panel
@@ -34,7 +34,7 @@ test.describe('N to M relations', () => {
 
         //back to natural areas panel
         await page.locator('#nav-tab-attribute-layer-natural_areas').click();
-        
+
 
         let attrTable = page.locator("#attribute-layer-table-natural_areas");
         await expect(attrTable).toHaveCount(1);
@@ -75,7 +75,7 @@ test.describe('N to M relations', () => {
 
         let nRelatedAttrTable = page.locator("#attribute-layer-table-natural_areas-birds");
         await expect(attrTable).toHaveCount(1);
-        
+
         // inspect "m" layer related table
         await expect(nRelatedAttrTable.locator("tbody tr")).toHaveCount(4);
         await expect(nRelatedAttrTable.locator("tbody tr").nth(0).locator("td").nth(1)).toHaveText("1");
@@ -162,7 +162,7 @@ test.describe('N to M relations', () => {
             await expect(featToolbar.locator(".feature-toolbar button[data-original-title='Unlink child']")).toBeVisible();
             await expect(featToolbar.locator(".feature-toolbar button[data-original-title='Create feature']")).toBeHidden();
         }
-       
+
         // unlink bird spot from second natural area record
         let unlinkOneToN = page.waitForRequest(request => request.method() === 'POST' && request.url().includes('unlinkChild'));
 
@@ -175,14 +175,14 @@ test.describe('N to M relations', () => {
         await expect(page.locator("#lizmap-edition-message")).toBeVisible();
         await expect(page.locator("#lizmap-edition-message li.jelix-msg-item-success")).toHaveText("The child feature has correctly been unlinked.");
         await page.locator("#lizmap-edition-message a.close").click();
-        
-        
+
+
         // check 1:n table
         await expect(oneToNAttrTable.locator("tbody tr")).toHaveCount(1);
         await expect(oneToNAttrTable.locator("tbody tr").nth(0).locator("td").nth(1)).toHaveText("4");
         await expect(oneToNAttrTable.locator("tbody tr").nth(0).locator("td").nth(2)).toHaveText("Étang de la Vignalie");
         await expect(oneToNAttrTable.locator("tbody tr").nth(0).locator("td").nth(3)).toHaveText("Vignalie tower");
-        
+
         // go to birds spots tab and check the unlinked record
         await page.locator('#nav-tab-attribute-layer-birds_spots').click();
         let birdsSpotsTable = page.locator("#attribute-layer-table-birds_spots");
@@ -190,7 +190,7 @@ test.describe('N to M relations', () => {
         await expect(birdsSpotsTable.locator("tbody tr")).toHaveCount(5);
         await expect(birdsSpotsTable.getByRole('row', { name: '3 East tower' }).getByRole('cell').nth(2)).toHaveText("");
 
-       
+
         // insert new bird associated with first area
 
         //back to natural areas panel first
@@ -202,7 +202,7 @@ test.describe('N to M relations', () => {
 
         // check info message for link pivot
         await expect(page.locator("#edition-link-pivot")).toHaveText("The new record will be linked to the feature ID \"2\" of \"Natural areas\" layer")
-        
+
         // fill the form and submit
         await page.locator("#jforms_view_edition").getByLabel('Name', { exact: true }).fill("Northern pintail");
         await page.locator("#jforms_view_edition").getByLabel('Scientific name', { exact: true }).fill("Anas acuta");
@@ -227,7 +227,7 @@ test.describe('N to M relations', () => {
         await expect(nRelatedAttrTable.locator("tbody tr").nth(2).locator("td").nth(2)).toHaveText("Eurasian teal");
         await expect(nRelatedAttrTable.locator("tbody tr").nth(3).locator("td").nth(1)).toHaveText("9");
         await expect(nRelatedAttrTable.locator("tbody tr").nth(3).locator("td").nth(2)).toHaveText("Northern pintail");
-        
+
         // go to birds panel and look for the new inserted record
         await page.locator('#nav-tab-attribute-layer-birds').click();
 
@@ -272,7 +272,7 @@ test.describe('N to M relations', () => {
         await childNaturalAreasTable.locator("tbody tr").nth(0).locator("td").nth(0).locator("lizmap-feature-toolbar").locator(".feature-toolbar button[data-original-title='Unlink child']").click();
         await unlinkPivotFeature;
 
-        
+
         await page.waitForTimeout(300);
 
         await expect(childNaturalAreasTable.locator("tbody tr")).toHaveCount(1)
@@ -294,7 +294,7 @@ test.describe('N to M relations', () => {
     })
 
     test('Popup behavior', async ({ page }) => {
-        
+
         // click on map to get popup list
         let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData().includes('GetFeatureInfo'));
         await page.locator('#newOlMap').click({
@@ -305,7 +305,7 @@ test.describe('N to M relations', () => {
         });
 
         await getFeatureInfoRequestPromise;
-        
+
         //time for rendering the popup
         await page.waitForTimeout(500);
 
@@ -317,9 +317,9 @@ test.describe('N to M relations', () => {
         // inspect popup children
         await expect(page.locator(".lizmapPopupContent .lizmapPopupChildren")).toHaveCount(2);
         await expect(page.locator(".lizmapPopupContent .lizmapPopupChildren").nth(0).locator(".lizmapPopupSingleFeature")).toHaveCount(4);
-    
+
         // unlink a bird from popup
-        
+
         page.once('dialog', dialog => {
             expect(dialog.message()).toBe("Are you sure you want to unlink the selected feature from \"Natural areas\" layer?");
             return dialog.accept();
@@ -343,7 +343,7 @@ test.describe('N to M relations', () => {
         await editFeatureRequestPromise;
 
         await expect(page.locator("#edition-link-pivot")).toHaveText("The new record will be linked to the feature ID \"1\" of \"Natural areas\" layer")
-        
+
         // fill the form and submit
         await page.locator("#jforms_view_edition").getByLabel('Name', { exact: true }).fill("Common snipe");
         await page.locator("#jforms_view_edition").getByLabel('Scientific name', { exact: true }).fill("Gallinago gallinago");
@@ -373,7 +373,7 @@ test.describe('N to M relations', () => {
         await editFeatureRequestPromise;
 
         await expect(page.locator("#edition-link-pivot")).toHaveText("The new record will be linked to the feature ID \"1\" of \"Natural areas\" layer")
-        
+
         await page.locator('#jforms_view_edition_liz_future_action').selectOption("create");
         // fill the form and submit
         await page.locator("#jforms_view_edition").getByLabel('Name', { exact: true }).fill("Mute swan");

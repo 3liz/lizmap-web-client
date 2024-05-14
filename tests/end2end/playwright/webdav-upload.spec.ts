@@ -385,7 +385,7 @@ test.describe('WebDAV Server',()=>{
             // second row
             await expect(allFeatureDataTable.locator("tbody tr").nth(1).locator("td").nth(1)).toHaveText("2");
             await expect(allFeatureDataTable.locator("tbody tr").nth(1).locator("td").nth(2)).toHaveText("1");
-            const secondRowFilePath = await allFeatureDataTable.locator("tbody tr").nth(1).locator("td").nth(3).locator("a").getAttribute("href"); 
+            const secondRowFilePath = await allFeatureDataTable.locator("tbody tr").nth(1).locator("td").nth(3).locator("a").getAttribute("href");
             expect(secondRowFilePath).toContain("index.php/view/media/getMedia?repository=testsrepository&project=form_upload_webdav&path=dav%2Ftest_upload.conf");
          })
 })

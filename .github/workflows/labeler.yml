@@ -20,7 +20,7 @@ jobs:
         # The action is not going to conflict with manually set labels when creating the PR
         run: sleep 5m
         shell: bash
-    
+
       - uses: actions/labeler@v5
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"

@@ -23,7 +23,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Dataviz in popup generate two feature toolbar in parent popup
 * Apply min and max resolutions to base layers removed by single WMS Layer
 * More fixes about XSS
-* Tooltip : 
+* Tooltip :
   * Don't show tooltip tool when device has coarse pointer
   * Remove legacy code
   * Handle linestring layers

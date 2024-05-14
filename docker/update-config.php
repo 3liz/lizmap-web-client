@@ -14,10 +14,10 @@ function load_include_config($varname, $iniFileModifier)
     if ($includeConfigDir !== false and is_dir($includeConfigDir)) {
         echo("Checking for lizmap configuration files in ".$includeConfigDir."\n");
         foreach (glob(rtrim($includeConfigDir,"/")."/*.ini.php") as $includeFile) {
-            echo("* Loading lizmap configuration: ".$includeFile."\n"); 
+            echo("* Loading lizmap configuration: ".$includeFile."\n");
             $includeConfig = new IniModifier($includeFile);
             $iniFileModifier->import($includeConfig);
-        }  
+        }
     }
 
     // remove sections marked as deleted
@@ -32,7 +32,7 @@ function load_include_config($varname, $iniFileModifier)
  * connect to Postgresql with the given profile
  * @param array
  */
-function pgSqlConnect ($profile) 
+function pgSqlConnect ($profile)
 {
     $str = '';
 
@@ -169,7 +169,7 @@ load_include_config('LIZMAP_LIZMAPCONFIG_INCLUDE', $lizmapConfig);
 $logger_metric = getenv('LIZMAP_LOGMETRICS');
 if ($logger_metric !== false) {
     $lizmapConfig->setValue('metricsEnabled', 1, 'services');
-} 
+}
 
 $lizmapConfig->save();
 
@@ -266,6 +266,3 @@ if (!checkAndWaitPostgresql($profilesConfig, 'default', $retries, $waits)) {
 if (!checkAndWaitPostgresql($profilesConfig, 'lizlog', $retries, $waits)) {
     exit (1);
 }
-
-
-

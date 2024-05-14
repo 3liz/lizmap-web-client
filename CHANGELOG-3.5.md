@@ -132,7 +132,7 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ### Backend
 
-* Update the way to check the validity about : 
+* Update the way to check the validity about :
   * a geometry in a Well Known Text format
   * a proj4 string in tests
 

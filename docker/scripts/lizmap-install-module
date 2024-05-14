@@ -24,4 +24,3 @@ composer --working-dir=/www/lizmap/my-packages require "$package_name"
 if [ "$(id -u)" -eq "0" ]; then
     chown -R $LIZMAP_USER:$LIZMAP_GROUP /www/lizmap/my-packages
 fi
-

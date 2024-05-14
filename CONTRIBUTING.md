@@ -21,7 +21,7 @@ Only modifications on `en_US` locales are accepted in Pull Requests.
 ### For other locales
 
 All locales are translated with [Transifex](https://www.transifex.com/) with the **help of the opensource community**.
-So to help us to translate, please go on Transifex, create an account and ask to join these projects :  
+So to help us to translate, please go on Transifex, create an account and ask to join these projects :
 
 - https://www.transifex.com/3liz-1/lizmap-locales/  to translate Lizmap Web Client and Lizmap QGIS plugin strings
 - https://www.transifex.com/3liz-1/jelix/ to translate Jelix strings (the web framework used in Lizmap Web Client)
@@ -45,6 +45,16 @@ you should do a pull request in GitHub.
 * Starting from January 2021, bug fixes must land on the `master` branch. To backport to a released branch,
   either use the backport bot or do the cheery-pick manually. It's your responsibility to check the backport.
 
+### Pre-commit
+
+We are using some pre-commit hook using [pre-commit.com](https://pre-commit.com/) (to run in a venv ideally) :
+
+```bash
+pip install pre-commit
+pre-commit install
+```
+and that's it ! Hooks will run automatically.
+
 ### Commits
 
 You should create commits in a new branch based on the `master` branch.
@@ -58,9 +68,9 @@ git checkout -b fix-something master
 
 * Commit messages must be written with care. First line of the message is short and allows a quick comprehension.
   A description can be written after a line break if more text is needed.
-* Related issues must be written in the commit message. Be aware GitHub can close related issues when using 
+* Related issues must be written in the commit message. Be aware GitHub can close related issues when using
   some words: https://help.github.com/articles/closing-issues-via-commit-messages/
-* A keyword can be used to prefix the commit and describe the type of commit, between brackets like [FEATURE] 
+* A keyword can be used to prefix the commit and describe the type of commit, between brackets like [FEATURE]
   or [BUGFIX]
 
 For example :
@@ -90,7 +100,7 @@ You need some developer tools in order to build and install dependencies.
 
 * The cli version of PHP (prefered version: 7.4). Be sure that following extensions are also installed:
   json, curl, mbstring, xml.
-* [Composer](http://getcomposer.org), the package manager of PHP. You should have at least version 2.0.0 
+* [Composer](http://getcomposer.org), the package manager of PHP. You should have at least version 2.0.0
 * Nodejs (we are using 12.x or 14.x) and npm:
   * with [binaries](https://nodejs.org/en/download/)
   * or with the package manager for your Linux distribution, but prefer to install
@@ -134,7 +144,7 @@ Look at [webpack documentation](https://webpack.js.org/guides/development/) for 
 
 Run `composer install` into the `lizmap/` directory.
 
-It will download some packages and install them into `lizmap/vendor/`. 
+It will download some packages and install them into `lizmap/vendor/`.
 Don't commit this directory into the git repository!
 
 ## Coding style
@@ -165,9 +175,9 @@ Tests is highly recommended for any new commits. Tests can be provided with :
 * PHP Unit tests
 * Manual tests
 
-You can test your changes, or you can launch unit tests, by running some 
-Docker containers. Go into tests/ and read the README.md file. 
-A docker-compose.yml file is provided, launching a full stack of softwares to 
+You can test your changes, or you can launch unit tests, by running some
+Docker containers. Go into tests/ and read the README.md file.
+A docker-compose.yml file is provided, launching a full stack of softwares to
 run Lizmap (nginx, php-fpm, qgis, postgresql...).
 
 You can test with Android browsers in your Ubuntu Desktop thanks to [Anbox](https://docs.anbox.io/userguide/install.html#install-anbox).
