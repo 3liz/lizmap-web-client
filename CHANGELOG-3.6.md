@@ -8,6 +8,11 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Fixed
+
+* Fix issue in Dutch language
+* Fix children popup in compact table
+
 ## 3.6.12 - 2024-05-07
 
 ### Fixed
