@@ -403,7 +403,7 @@ export class BaseLayersState extends EventDispatcher {
         this._baseLayersMap = new Map()
         for (const blConfig of baseLayersCfg.getBaseLayerConfigs()) {
             let itemState = null;
-            if (blConfig.hasLayerConfig) {
+            if (blConfig.hasLayerConfig && blConfig.layerConfig.type != 'group') {
                 itemState = lgCollection.getLayerOrGroupByName(blConfig.name);
             }
             switch(blConfig.type) {

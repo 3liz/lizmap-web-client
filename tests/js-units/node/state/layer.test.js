@@ -1564,6 +1564,70 @@ describe('LayersAndGroupsCollection', function () {
         expect(collectionLayerVisibilityChangedEvt[2].name).to.be.eq('publicbuildings')
     })
 
+    it('Empty group as group', function () {
+        const capabilities = JSON.parse(readFileSync('./data/display-in-legend-capabilities.json', 'utf8'));
+        expect(capabilities).to.not.be.undefined
+        expect(capabilities.Capability).to.not.be.undefined
+        const config = JSON.parse(readFileSync('./data/display-in-legend-config.json', 'utf8'));
+        expect(config).to.not.be.undefined
+
+        // `group-without-children` has a config
+        const layers = new LayersConfig(config.layers);
+        expect(layers.layerNames).to.be.an('array').that.have.length(12).that.includes(
+            "group-without-children"
+        )
+
+        const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+        expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
+
+        // `group-without-children` has a layerTree config and it is a layer not a group
+        expect(rootCfg.childrenCount).to.be.eq(4)
+        expect(rootCfg.findTreeLayerConfigNames()).to.be.an('array').that.have.length(8).that.includes(
+            "group-without-children"
+        )
+
+        const layersOrder = buildLayersOrder(config, rootCfg);
+
+        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
+
+        // `group-without-children` has no state
+        expect(collection.groupNames).to.be.an('array').that.have.ordered.members([
+            "PostgreSQL",
+            "Shapefiles",
+            "POIs",
+            "baselayers",
+        ])
+
+        const root = collection.root;
+        expect(root).to.be.instanceOf(LayerGroupState)
+        expect(root.childrenCount).to.be.eq(3)
+        expect(root.children).to.have.length(3)
+
+        // `group-without-children` is not a child of root layer state
+        expect(root.children[0].type).to.be.eq('group')
+        expect(root.children[0].name).to.be.eq('PostgreSQL')
+        expect(root.children[1].type).to.be.eq('group')
+        expect(root.children[1].name).to.be.eq('Shapefiles')
+        expect(root.children[2].type).to.be.eq('group')
+        expect(root.children[2].name).to.be.eq('baselayers')
+
+        // try to get `group-without-children`
+        try {
+            collection.getGroupByName('group-without-children')
+        } catch (error) {
+            expect(error.name).to.be.eq('RangeError')
+            expect(error.message).to.be.eq('The group name `group-without-children` is unknown!')
+            expect(error).to.be.instanceOf(RangeError)
+        }
+        try {
+            collection.getLayerOrGroupByName('group-without-children')
+        } catch (error) {
+            expect(error.name).to.be.eq('RangeError')
+            expect(error.message).to.be.eq('The name `group-without-children` is unknown!')
+            expect(error).to.be.instanceOf(RangeError)
+        }
+    })
+
     it('Display in legend', function () {
         const capabilities = JSON.parse(readFileSync('./data/display-in-legend-capabilities.json', 'utf8'));
         expect(capabilities).to.not.be.undefined

@@ -358,6 +358,70 @@
                     "noSubsets": false
                 },
                 {
+                    "Name": "group-without-children",
+                    "Title": "group-without-children",
+                    "CRS": [
+                        "CRS:84",
+                        "EPSG:3857",
+                        "EPSG:4326",
+                        "EPSG:2154",
+                        "CRS:84",
+                        "EPSG:3857",
+                        "EPSG:4326",
+                        "EPSG:2154"
+                    ],
+                    "EX_GeographicBoundingBox": [
+                        -0.000001,
+                        -0.000001,
+                        0.000001,
+                        0.000001
+                    ],
+                    "BoundingBox": [
+                        {
+                            "crs": "EPSG:2154",
+                            "extent": [
+                                253531.13,
+                                909838.93,
+                                253531.131,
+                                909838.931
+                            ],
+                            "res": [
+                                null,
+                                null
+                            ]
+                        },
+                        {
+                            "crs": "EPSG:4326",
+                            "extent": [
+                                -0.000001,
+                                -0.000001,
+                                0.000001,
+                                0.000001
+                            ],
+                            "res": [
+                                null,
+                                null
+                            ]
+                        },
+                        {
+                            "crs": "EPSG:3857",
+                            "extent": [
+                                -0.001,
+                                -0.001,
+                                0.001,
+                                0.001
+                            ],
+                            "res": [
+                                null,
+                                null
+                            ]
+                        }
+                    ],
+                    "queryable": false,
+                    "opaque": false,
+                    "noSubsets": false
+                },
+                {
                     "Name": "Shapefiles",
                     "Title": "Shapefiles",
                     "CRS": [
