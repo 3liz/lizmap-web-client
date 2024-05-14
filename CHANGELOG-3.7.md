@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.7.7 - 2024-05-14
+
 ### Added
 
 * Better handling of error message
