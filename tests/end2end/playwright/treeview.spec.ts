@@ -2,9 +2,54 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Treeview', () => {
 
+    const locale = 'en-US';
+
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=treeview';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        // Wait for WMS GetCapabilities promise
+        let getCapabilitiesWMSPromise = page.waitForRequest(/SERVICE=WMS&REQUEST=GetCapabilities/);
+        // Wait for WMS GetLegendGraphic promise
+        const getLegendGraphicPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData().includes('GetLegendGraphic'));
+        await page.goto(url);
+        // Wait for WMS GetCapabilities
+        await getCapabilitiesWMSPromise;
+        // Wait for WMS GetLegendGraphic
+        let getLegendGraphicRequest = await getLegendGraphicPromise;
+
+        // Check WMS GetLegendGraphic postData
+        const getLegendGraphicRequestPostData = getLegendGraphicRequest.postData();
+        expect(getLegendGraphicRequestPostData).toContain('SERVICE=WMS')
+        expect(getLegendGraphicRequestPostData).toContain('REQUEST=GetLegendGraphic')
+        expect(getLegendGraphicRequestPostData).toContain('LAYER=sousquartiers%2Cquartiers%2Cshop_bakery_pg%2Ctramway_lines%2Cgroup_as_layer_1%2Cgroup_as_layer_2')
+
+        // Check that the map scale is the right one
+        await expect(page.locator('#overview-bar .ol-scale-text')).toHaveText('1 : ' + (100180).toLocaleString(locale))
+
+        // Wait to be sure the map is ready
+        await page.waitForTimeout(1000)
+    });
+
+    test('layer/group UI', async ({ page }) => {
+
+        await expect(page.getByTestId('group1')).toHaveCount(1)
+        await expect(page.getByTestId('group1')).toBeVisible()
+        await expect(page.getByTestId('group1').getByTestId('sub-group1')).toHaveCount(1)
+        await expect(page.getByTestId('sub-group1')).toBeVisible();
+        await expect(page.getByTestId('sub-group1').getByTestId('subdistricts')).toHaveCount(1)
+        await expect(page.getByTestId('subdistricts')).toBeVisible()
+        await expect(page.getByTestId('group with space in name and shortname defined')).toHaveCount(1)
+        await expect(page.getByTestId('group with space in name and shortname defined').getByTestId('quartiers')).toHaveCount(1)
+        await expect(page.getByTestId('group with space in name and shortname defined').getByTestId('shop_bakery_pg')).toHaveCount(1)
+        await expect(page.getByTestId('tramway_lines')).toHaveCount(1)
+        await expect(page.getByTestId('tramway_lines')).toHaveText('Tramway lines')
+        await expect(page.getByTestId('group-without-children')).toHaveCount(0)
+        await expect(page.getByTestId('mutually exclusive group with multiple groups as layer')).toHaveCount(1)
+        await expect(
+            page.getByTestId('mutually exclusive group with multiple groups as layer').getByTestId('group as layer 1')
+        ).toHaveCount(1)
+        await expect(
+            page.getByTestId('mutually exclusive group with multiple groups as layer').getByTestId('group as layer 2')
+        ).toHaveCount(1)
     });
 
     test('layer/group visibility UI', async ({ page }) => {
@@ -12,6 +57,8 @@ test.describe('Treeview', () => {
 
         // zoom to display 'subdistricts' layer defined with scale dependent visibility (minimum 1:51000)
         await page.locator('.zoom-in').click();
+        await page.waitForRequest(/REQUEST=GetMap/);
+        await expect(page.locator('#overview-bar .ol-scale-text')).toHaveText('1 : ' + (50090).toLocaleString(locale));
         await expect(page.getByTestId('subdistricts')).not.toHaveClass('not-visible');
 
         // Disable root group visibility
@@ -32,7 +79,7 @@ test.describe('Treeview', () => {
 
     test('displays mutually exclusive group', async ({ page }) => {
         await expect(page.getByText('group with space in name and shortname defined')).toHaveCount(1);
-        
+
         await expect(page.locator('#node-quartiers')).toHaveClass('rounded-checkbox');
         await expect(page.locator('#node-shop_bakery_pg')).toHaveClass('rounded-checkbox');
 
