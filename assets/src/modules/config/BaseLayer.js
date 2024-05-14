@@ -925,17 +925,48 @@ export class BaseLayersConfig {
         }
 
         // Add base layer as project default background color
+        // Get provided default background color index from options
         const default_background_color_index = options.hasOwnProperty('default_background_color_index') ? options.default_background_color_index : -1;
         if (isNaN(default_background_color_index)) {
             throw new ValidationError('The default_background_color_index parameter is not a number!');
         }
-        if (default_background_color_index !== -1
-            && names.indexOf('empty') == -1
+        // Apply default background color if it is not already defined
+        if (names.indexOf('empty') == -1
             && names.indexOf('project-background-color') == -1) {
-            if (default_background_color_index < names.length) {
-                names.splice(default_background_color_index, 0, 'project-background-color');
-            } else {
-                names.push('project-background-color');
+            let background_color_index = default_background_color_index;
+            // Calculate background color index if
+            // * it is not provided by options
+            // * baselayers and project-background-color have lizmap layer config
+            // * baselayers group is before project-background-color
+            if (background_color_index == -1
+                && layers.layerNames.indexOf('baselayers') !== -1
+                && layers.layerNames.indexOf('project-background-color') !== -1
+                && layers.layerNames.indexOf('baselayers') < layers.layerNames.indexOf('project-background-color')) {
+                const baselayersGroupIndex = layers.layerNames.indexOf('baselayers');
+                const global_background_color_index = layers.layerNames.indexOf('project-background-color');
+                // The background color index will be the number of layers before project-background-color in baselayers group
+                for (const [i, baselayerCfg] of layers.layerConfigs.entries()) {
+                    if (i <= baselayersGroupIndex) {
+                        continue;
+                    }
+                    if (baselayerCfg.type != 'group') {
+                        background_color_index += 1
+                    }
+                    if (i > global_background_color_index) {
+                        break;
+                    }
+                    if (baselayerCfg.name == 'project-background-color') {
+                        background_color_index += 1
+                    }
+                }
+            }
+            // Add base layer as project default background color
+            if (background_color_index !== -1) {
+                if (background_color_index < names.length) {
+                    names.splice(background_color_index, 0, 'project-background-color');
+                } else {
+                    names.push('project-background-color');
+                }
             }
         }
 
