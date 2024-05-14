@@ -127,15 +127,15 @@ cache_file_umask=
 ; dao used (default 'jelix~jcache')
 ;dao = ""
 ; dbprofil (optional)
-;dbprofile = "" 
+;dbprofile = ""
 
 
 ; Parameters for memcached driver :
 
-; Memcached servers. 
+; Memcached servers.
 ; Can be a list e.g
 ;servers = memcache_host1:11211,memcache_host2:11211,memcache_host3:11211 i.e HOST_NAME:PORT
-;servers = 
+;servers =
 
 [jcache:qgisprojects]
 enabled=1
@@ -154,4 +154,3 @@ ttl=0
 ;username=
 ;password=
 ;timeout=10
-

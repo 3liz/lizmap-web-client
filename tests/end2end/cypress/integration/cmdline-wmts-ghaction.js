@@ -178,21 +178,21 @@ describe('WMTS command line', function () {
                 expect(result.stderr).to.contain('repository')
                 expect(result.code).to.equal(1)
             })
-       
+
         cy.exec('./../lizmap-ctl console wmts:capabilities -v testsrepository', { failOnNonZeroExit: false })
             .then((result) => {
                 expect(result.stderr).to.contain('missing')
                 expect(result.stderr).to.contain('project')
                 expect(result.code).to.equal(1)
             })
-        
+
         // Bad parameters
         cy.exec('./../lizmap-ctl console wmts:capabilities -v norepository cache', { failOnNonZeroExit: false })
             .then((result) => {
                 expect(result.stdout).to.contain('Unknown repository!')
                 expect(result.code).to.equal(1)
             })
-       
+
         cy.exec('./../lizmap-ctl console wmts:capabilities -v testsrepository unknown', { failOnNonZeroExit: false })
             .then((result) => {
                 expect(result.stdout).to.contain('The project has not be found!')
@@ -213,7 +213,7 @@ describe('WMTS command line', function () {
             })
 
 
-          
+
         cy.exec('./../lizmap-ctl console wmts:cache:seed -v -f --dry-run testsrepository', {failOnNonZeroExit: false})
             .then((result) => {
                 expect(result.stderr).to.contain('missing')
@@ -262,7 +262,7 @@ describe('WMTS command line', function () {
                 expect(result.stdout).to.contain('The project has not be found!')
             })
 
-        
+
         // Clear errors
         cy.exec('./../lizmap-ctl docker-exec truncate -s 0 /srv/lzm/lizmap/var/log/errors.log')
 
@@ -292,13 +292,13 @@ describe('WMTS command line', function () {
                 expect(result.code).to.equal(1)
                 expect(result.stdout).to.contain("The TileMatrixSet 'EPSG:3857'!\nThe optional bbox has to contain 4 numbers separated by comma!")
             })
-        
+
         cy.exec('./../lizmap-ctl console wmts:cache:seed -v -f --dry-run testsrepository cache Quartiers EPSG:3857 BadMin 10', {failOnNonZeroExit: false})
             .then((result) => {
                 expect(result.code).to.equal(1)
                 expect(result.stdout).to.contain("TileMatrixMin and TileMatrixMax must be of type int")
             })
-        
+
         cy.exec('./../lizmap-ctl console wmts:cache:seed -v -f --dry-run testsrepository cache Quartiers EPSG:3857 10 BadMax', {failOnNonZeroExit: false})
             .then((result) => {
                 expect(result.code).to.equal(1)

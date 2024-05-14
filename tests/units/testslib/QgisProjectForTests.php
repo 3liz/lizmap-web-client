@@ -100,7 +100,7 @@ class QgisProjectForTests extends QgisProject
     {
         $this->path = $path;
     }
-    
+
     public function setLayers($layers)
     {
         $this->layers = $layers;

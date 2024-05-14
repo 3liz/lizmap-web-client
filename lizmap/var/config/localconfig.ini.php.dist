@@ -25,4 +25,3 @@
 [mailer]
 ;; to send email via SMTP, uncomment this line, and fill the section smtp:mailer into profiles.ini.php
 ;mailerType=smtp
-

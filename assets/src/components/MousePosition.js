@@ -43,7 +43,7 @@ export default class MousePosition extends HTMLElement {
                     <option selected value="m">${lizDict['mouseposition.units.m']}</option>` : ''}
                     ${ ['ft', 'us-ft'].includes(this._qgisProjectProjectionUnits) ? html`
                     <option selected value="f">${lizDict['mouseposition.units.f']}</option>` : ''}
-                
+
                     <option value="degrees">${lizDict['mouseposition.units.d']}</option>
                     <option value="dm">${lizDict['mouseposition.units.dm']}</option>
                     <option value="dms">${lizDict['mouseposition.units.dms']}</option>

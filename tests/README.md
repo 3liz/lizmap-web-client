@@ -277,7 +277,7 @@ and check the JS console for errors.
 
 ## Using LDAP
 
-Be sure there are users into the ldap: execute `./lizmap-ctl ldap-reset`. 
+Be sure there are users into the ldap: execute `./lizmap-ctl ldap-reset`.
 You can list users with `./lizmap-ctl ldap-users`.
 
 Enter into the php container:

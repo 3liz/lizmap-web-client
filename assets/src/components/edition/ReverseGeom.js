@@ -10,7 +10,7 @@ export default class reverseGeom extends HTMLElement {
     constructor() {
         super();
 
-        this.insertAdjacentHTML('afterbegin', 
+        this.insertAdjacentHTML('afterbegin',
             `<svg>
                 <use xlink:href="#mActionReverseLine"></use>
             </svg>`);

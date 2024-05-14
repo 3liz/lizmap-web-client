@@ -8,14 +8,14 @@ test.describe('Time Manager', () => {
 
     // When the Time manager is running, 2 requests are sent for each time range
     // - getFilterToken with method POST, returning a json with a token
-    // - getMap that uses this token 
+    // - getMap that uses this token
     // There are 3 time ranges in the test data: we check each one
     const timeRequest = [
       { 'start': '2007-01-01', 'end': '2011-12-31' },
       { 'start': '2012-01-01', 'end': '2016-12-31' },
       { 'start': '2017-01-01', 'end': '2021-12-31' }
     ];
-    
+
     const responseMatchGetFilterTokenFunc = function (response) {
       return (response.request().method() == 'POST' &&  response.request().postData().match(/GetFilterToken/i));
     };
@@ -66,7 +66,7 @@ test.describe('Time Manager', () => {
     // back to normal behaviour => no token in request
     // closing time manager
     await page.locator('.btn-timemanager-clear').click();
-    
+
     // We will catch GetMapRequest
     let getMapNoFiltertPromise = page.waitForRequest(/GetMap/);
 
@@ -76,7 +76,7 @@ test.describe('Time Manager', () => {
 
     // We assert no more filter token
     expect(getMapNoFilter.url()).not.toMatch(/FILTERTOKEN/i);
-   
+
   });
 
 

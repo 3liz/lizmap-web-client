@@ -24,7 +24,7 @@
 //         // Wait for the kml file to be fully loaded
 //         cy.wait(500)
 //         // Take a snapshot to compare it to the `test_kml_multilinestring` snapshot
-//         // Check that KML file is properly imported 
+//         // Check that KML file is properly imported
 //         // Check that map is zoomed and centered to exported fixtures
 //         // Clip crop the snapshot to a specific position and size
 //         // https://docs.cypress.io/api/commands/screenshot#Clip
