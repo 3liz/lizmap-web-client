@@ -43,6 +43,9 @@ def parent_metadata(token: str, repo: str, ref: str):
     for label in labels_info:
         if label.get('id') == '1933297134':
             is_sponsored = True
+        if label.get("name").startswith('backport'):
+            # We do not want backport labels
+            continue
         labels.append(label.get("name"))
 
     body = metadata.get('body')
