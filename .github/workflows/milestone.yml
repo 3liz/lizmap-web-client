@@ -1,4 +1,4 @@
-name: 🚓 Milestone
+name: 🚓 Milestone and labels
 
 on:
   pull_request_target:
@@ -18,10 +18,10 @@ jobs:
           ref: 'master'
           fetch-depth: 0
 
-      - name: Set up Python 3.10
+      - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.11'
 
       - name: Get milestone
         id: milestone
@@ -31,7 +31,15 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_BASE: ${{ github.event.pull_request.base.ref }}
 
-      - name: Update PR milestone
+      - name: Get previous labels and "Funded by" if possible
+        id: labels
+        run: ./.github/previous_labels.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_PR_REF: ${{ github.event.number }}
+
+      - name: Update PR information
         uses: octokit/request-action@v2.x
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -39,3 +47,5 @@ jobs:
           route: PATCH /repos/${{ github.repository }}/issues/${{github.event.number}}
           pull_number: ${{github.event.number}}
           milestone: ${{ steps.milestone.outputs.milestone_number }}
+          body: ${{ steps.milestone.outputs.description }}
+          labels: ${{ steps.milestone.outputs.labels }}
