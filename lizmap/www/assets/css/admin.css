@@ -191,6 +191,16 @@ table.lizmap_project_list tr td.lizmap-project-qgis-log pre {
   margin-left: -1em;
   font-size: 2.5em;
 }
+#lizmap_project_list_help .badge-warning {
+    position: absolute;
+    left: 55px;
+}
+#lizmap_project_list_help .no_symbol::before {
+    content: '';
+}
+#lizmap_project_list_help .no_symbol > li:nth-child(1) {
+    font-weight: normal;
+}
 #lizmap_project_list_help .warning::before {
     color: var(--warning-bg-color);
 }

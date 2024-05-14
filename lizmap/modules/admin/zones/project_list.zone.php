@@ -66,8 +66,13 @@ class project_listZone extends jZone
             $maps[$r] = $lizmapViewItem;
         }
         $lizmapTargetVersionInt = \jApp::config()->minimumRequiredVersion['lizmapWebClientTargetVersion'];
-        $humanLizmapTargetVersion = substr($lizmapTargetVersionInt, 0, 1);
-        $humanLizmapTargetVersion .= '.'.ltrim(substr($lizmapTargetVersionInt, 2, 1), '');
+        $humanLizmapTargetVersion = substr($lizmapTargetVersionInt, 0, 1);  // Major
+        $humanLizmapTargetVersion .= '.'.ltrim(substr($lizmapTargetVersionInt, 2, 1), ''); // Minor
+
+        $lizmapDesktopInt = \jApp::config()->minimumRequiredVersion['lizmapDesktopPlugin'];
+        $lizmapDesktopRecommended = substr($lizmapDesktopInt, 0, 1);  // Major
+        $lizmapDesktopRecommended .= '.'.ltrim(substr($lizmapDesktopInt, 2, 1), '');  // Minor
+        $lizmapDesktopRecommended .= '.'.ltrim(substr($lizmapDesktopInt, 3, 2), '');  // Bugfix
 
         $this->_tpl->assign('mapItems', $maps);
         $this->_tpl->assign('hasInspectionData', $hasInspectionData);
@@ -106,8 +111,7 @@ class project_listZone extends jZone
             $serverVersions['qgis_server_version_old'] = $this->qgisMajMinHumanVersion($qgisServerVersionInt - $oldQgisVersionDelta - 2);
             $serverVersions['qgis_server_version_next'] = $this->qgisMajMinHumanVersion($qgisServerVersionInt + 2);
             // Lizmap server plugin
-            $lizmapVersion = $data['info']['version'];
-            $serverVersions['lizmap_plugin_server_version'] = $lizmapVersion;
+            $serverVersions['lizmap_plugin_server_version'] = $data['info']['version'];
         }
         $this->_tpl->assign('serverVersions', $serverVersions);
 
@@ -133,6 +137,7 @@ class project_listZone extends jZone
         $lizmapInfo = \Jelix\Core\Infos\AppInfos::load();
         $this->_tpl->assign('lizmapVersion', $lizmapInfo->version);
         $this->_tpl->assign('oldQgisVersionDiff', $oldQgisVersionDelta);
+        $this->_tpl->assign('lizmapDesktopRecommended', $lizmapDesktopRecommended);
         // Add the application base path to let the template load the CSS and JS assets
         $basePath = jApp::urlBasePath();
         $this->_tpl->assign('basePath', $basePath);
