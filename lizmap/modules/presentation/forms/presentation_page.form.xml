@@ -40,7 +40,7 @@
         <item locale="presentation~presentation.form.presentation_page.model.media-above-text.label" value="media-above-text" />
     </menulist>
 
-    <menulist ref="illustration_type" required="true">
+    <menulist ref="illustration_type" required="false">
         <label locale="presentation~presentation.form.presentation_page.illustration_type.label" />
         <hint locale="presentation~presentation.form.presentation_page.illustration_type.hint" />
         <help locale="presentation~presentation.form.presentation_page.illustration_type.hint" />

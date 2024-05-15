@@ -445,19 +445,77 @@ export default class Presentation {
         const itemType = formData.get('item_type');
         const formId = (itemType == 'presentation') ? 'jforms_presentation_presentation' : 'jforms_presentation_presentation_page';
 
+        // Page form - Add map & bbox buttons after the model combobox
+        if (itemType == 'page') {
+            // Find model SELECT
+            const select = document.getElementById('jforms_presentation_presentation_page_model');
+
+            // Add extent button
+            const bboxButton = document.createElement('button');
+            bboxButton.classList.add('btn', 'btn-mini', 'presentation-page-add-bbox');
+            bboxButton.name = 'add-bbox';
+            bboxButton.innerText = 'bbox';
+            bboxButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                // Get bbox and store it
+                const extent = lizMap.mainLizmap.state.map.extent;
+                const extentInput = document.querySelector('#presentation-form-container form input[name="map_extent"]');
+                const extentValue = extent.join(',');
+                extentInput.value = extentValue;
+                console.log(extentValue);
+
+                return false;
+            });
+            select.insertAdjacentElement('afterend', bboxButton);
+
+            // Add tree state button
+            const treeButton = document.createElement('button');
+            treeButton.classList.add('btn', 'btn-mini', 'presentation-page-add-tree-state');
+            treeButton.name = 'add-tree-state';
+            treeButton.innerText = 'tree';
+            treeButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                // Get layer tree state and store it
+                const layers = lizMap.mainLizmap.state.layersAndGroupsCollection.layers;
+                const groups = lizMap.mainLizmap.state.layersAndGroupsCollection.groups;
+                const checkedLayers = layers.filter(l => (l.checked)).map(l => l.name);
+                const checkedGroups = groups.filter(g => (g.checked)).map(g => g.name);
+                const treeStateInput = document.querySelector('#presentation-form-container form input[name="tree_state"]');
+                const treeStateValue = JSON.stringify(
+                    {'groups': checkedGroups, 'layers': checkedLayers}
+                );
+                treeStateInput.value = treeStateValue;
+                console.log(treeStateValue);
+
+                return false;
+            });
+            select.insertAdjacentElement('afterend', treeButton);
+
+        }
+
         // Listen to the form submit
         jFormsJQ.onFormReady(formId,
             function(jForm) {
                 jFormsJQ.getForm(formId).addSubmitHandler(function(ev){
+                    // We must detect which button has been clicked
+                    // and prevent from submitting the form if it is not
                     const formElt = document.querySelector('#presentation-form-container form');
                     const formData = new FormData(formElt);
                     const formDataObject = Object.fromEntries(formData)
                     const formAction = formDataObject['submit_button'];
 
-                    // Return to the list of presentations if user canceled
-                    if (formAction == 'cancel') {
-                        // Go back to the list of presentations
-                        mainLizmap.presentation.hideForm();
+                    // Do not submit with buttons which have not the submit name
+                    console.log(formAction);
+
+                    if (formAction != 'submit') {
+                        // Return to the list of presentations if user canceled
+                        if (formAction == 'cancel') {
+                            mainLizmap.presentation.hideForm();
+                        }
 
                         return false;
                     }

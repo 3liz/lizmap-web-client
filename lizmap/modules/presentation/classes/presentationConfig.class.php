@@ -41,7 +41,7 @@ class presentationConfig
             return false;
         }
 
-        // Check acl
+        // Check acl on Lizmap project
         if (!$lizmapProject->checkAcl()) {
             $this->errors = array(
                 array(
@@ -52,6 +52,8 @@ class presentationConfig
 
             return false;
         }
+
+        // Check ACL on presentation
 
         $this->repository = $repository;
         $this->project = $project;

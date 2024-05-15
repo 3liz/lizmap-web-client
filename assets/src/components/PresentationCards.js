@@ -280,7 +280,6 @@ export default class PresentationCards extends HTMLElement {
             mainLizmap.presentation.setPresentationPagination(presentationId, pages)
             .then(data => {
                 console.log('pagination modifiée');
-                console.log(data);
             })
             .catch(err => console.log(err))
         }
