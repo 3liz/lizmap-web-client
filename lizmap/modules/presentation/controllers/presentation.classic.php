@@ -358,13 +358,33 @@ class presentationCtrl extends jController
         $form->setData('repository', $this->repository);
         $form->setData('project', $this->project);
         $form->setData('item_type', $itemType);
+
         // Create unique UUID
         $uuid = $this->generateUuid();
         $form->setData('uuid', $uuid);
 
+        // Set values for some page fields
+        // presentation_id, uuid & page_order
         if ($itemType == 'page') {
             $form->setData('presentation_id', $presentationId);
             $form->setData('presentation_uuid', $presentationUuid);
+
+            // Set page order
+            $sql = '
+                SELECT max(page_order) + 1 AS new_page_number
+                FROM presentation_page
+                WHERE presentation_id = '.$presentationId.'
+                ;
+            ';
+            $cnx = \jDb::getConnection();
+            $newNumber = null;
+            $query = $cnx->query($sql);
+            while ($record = $query->fetch()) {
+                $newNumber = $record->new_page_number;
+            }
+            if ($newNumber !== null) {
+                $form->setData('page_order', $newNumber);
+            }
         }
 
         // Get login
