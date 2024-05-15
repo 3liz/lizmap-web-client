@@ -18,6 +18,7 @@
     <input ref="title" type="string" required="true">
         <label locale="presentation~presentation.form.presentation_page.title.label" />
         <hint locale="presentation~presentation.form.presentation_page.title.hint" />
+        <help locale="presentation~presentation.form.presentation_page.title.hint" />
     </input>
 
     <htmleditor ref="description" required="true" rows="5" >
@@ -28,6 +29,9 @@
     <menulist ref="model" required="true">
         <label locale="presentation~presentation.form.presentation_page.model.label" />
         <hint locale="presentation~presentation.form.presentation_page.model.hint" />
+        <help locale="presentation~presentation.form.presentation_page.model.hint" />
+        <item locale="presentation~presentation.form.presentation_page.model.text-left-map.label" value="text-left-map" />
+        <item locale="presentation~presentation.form.presentation_page.model.map-left-text.label" value="map-left-text" />
         <item locale="presentation~presentation.form.presentation_page.model.text.label" value="text" selected="true"/>
         <item locale="presentation~presentation.form.presentation_page.model.media.label" value="media" />
         <item locale="presentation~presentation.form.presentation_page.model.text-left-media.label" value="text-left-media" />
@@ -36,20 +40,11 @@
         <item locale="presentation~presentation.form.presentation_page.model.media-above-text.label" value="media-above-text" />
     </menulist>
 
-    <image ref="background_image" mimetype="image/jpeg;image/jpg;image/png;image/webp" maxsize="2000000" maxWidth="2000" maxHeight="2000">
-        <label locale="presentation~presentation.form.presentation_page.background_image.label"/>
-        <hint locale="presentation~presentation.form.presentation_page.background_image.hint" />
-    </image>
-
-    <input ref="background_color" type="string" required="false">
-        <label locale="presentation~presentation.form.presentation_page.background_color.label" />
-        <hint locale="presentation~presentation.form.presentation_page.background_color.hint" />
-    </input>
-
-    <menulist ref="illustration_type" required="false">
+    <menulist ref="illustration_type" required="true">
         <label locale="presentation~presentation.form.presentation_page.illustration_type.label" />
         <hint locale="presentation~presentation.form.presentation_page.illustration_type.hint" />
-        <item locale="presentation~presentation.form.presentation_page.illustration_type.none.label" value="none" selected="true"/>
+        <help locale="presentation~presentation.form.presentation_page.illustration_type.hint" />
+        <item locale="presentation~presentation.form.presentation_page.illustration_type.none.label" value="none"/>
         <item locale="presentation~presentation.form.presentation_page.illustration_type.image.label" value="image" />
         <item locale="presentation~presentation.form.presentation_page.illustration_type.video.label" value="video" />
         <item locale="presentation~presentation.form.presentation_page.illustration_type.iframe.label" value="iframe" />
@@ -59,11 +54,25 @@
     <upload2 ref="illustration_media" mimetype="image/jpeg;image/jpg;image/png;image/webp;video/mp4;video/webm;video/mp4" maxsize="2000000">
         <label locale="presentation~presentation.form.presentation_page.illustration_media.label"/>
         <hint locale="presentation~presentation.form.presentation_page.illustration_media.hint" />
+        <help locale="presentation~presentation.form.presentation_page.illustration_media.hint" />
     </upload2>
 
     <input ref="illustration_url" type="url" required="false">
         <label locale="presentation~presentation.form.presentation_page.illustration_url.label" />
         <hint locale="presentation~presentation.form.presentation_page.illustration_url.hint" />
+        <help locale="presentation~presentation.form.presentation_page.illustration_url.hint" />
+    </input>
+
+    <image ref="background_image" mimetype="image/jpeg;image/jpg;image/png;image/webp" maxsize="2000000" maxWidth="2000" maxHeight="2000">
+        <label locale="presentation~presentation.form.presentation_page.background_image.label"/>
+        <hint locale="presentation~presentation.form.presentation_page.background_image.hint" />
+        <help locale="presentation~presentation.form.presentation_page.background_image.hint" />
+    </image>
+
+    <input ref="background_color" type="string" required="false">
+        <label locale="presentation~presentation.form.presentation_page.background_color.label" />
+        <hint locale="presentation~presentation.form.presentation_page.background_color.hint" />
+        <help locale="presentation~presentation.form.presentation_page.background_color.hint" />
     </input>
 
     <reset ref="reinit">

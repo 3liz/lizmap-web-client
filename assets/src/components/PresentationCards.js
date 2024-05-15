@@ -177,6 +177,9 @@ export default class PresentationCards extends HTMLElement {
 
         let pageDiv = document.createElement('div');
         pageDiv.classList.add('lizmap-presentation-page-preview');
+        pageDiv.dataset.presentationId = page.presentation_id;
+        pageDiv.dataset.pageId = page.id;
+        pageDiv.dataset.pageOrder = page.page_order;
         pageDiv.innerHTML = previewHtml;
         pageDiv.querySelector('h3.lizmap-presentation-page-preview-title').innerHTML = `
             ${page.title}<span class="pull-right">${page.page_order}</span>
@@ -185,7 +188,7 @@ export default class PresentationCards extends HTMLElement {
         // Detailed information
         const pageTable = pageDiv.querySelector('table.presentation-detail-table');
         const pageFields = [
-            'description'
+            // 'description'
             //, 'background_image'
         ];
         pageFields.forEach(field => {
@@ -214,8 +217,81 @@ export default class PresentationCards extends HTMLElement {
         let pageContainer = presentationDiv.querySelector('div.lizmap-presentation-card-pages-preview');
         presentation.pages.forEach(page => {
             const pagePreviewDiv = this.getPagePreview(page);
+            pagePreviewDiv.setAttribute('draggable', 'true');
+            pagePreviewDiv.addEventListener('dragstart', onDragStart)
+            pagePreviewDiv.addEventListener('drop', OnDropped)
+            pagePreviewDiv.addEventListener('dragenter', onDragEnter)
+            pagePreviewDiv.addEventListener('dragover', onDragOver)
             pageContainer.appendChild(pagePreviewDiv);
         })
+
+        // Utility functions for drag & drop capability
+        function onDragStart (e) {
+          const index = [].indexOf.call(e.target.parentElement.children, e.target);
+          e.dataTransfer.setData('text/plain', index)
+        }
+
+        function onDragEnter (e) {
+          cancelDefault(e);
+        }
+
+        function onDragOver (e) {
+          cancelDefault(e);
+        }
+
+        function OnDropped (e) {
+            cancelDefault(e)
+
+            // Get item
+            const item = e.currentTarget;
+
+            // Get dragged item old and new index
+            const oldIndex = e.dataTransfer.getData('text/plain');
+            const newIndex = [].indexOf.call(item.parentElement.children, item);
+
+            // Get the dropped item
+            const dropped = item.parentElement.children[oldIndex];
+
+            // Move the dropped items at new place
+            if (newIndex < oldIndex) {
+                item.before(dropped);
+            } else {
+                item.after(dropped);
+            }
+
+            // Recalculate page numbers
+            let i = 1;
+            let pages = {};
+            let presentationId = null;
+            for (const child of item.parentElement.children) {
+                if (!child.classList.contains('lizmap-presentation-page-preview')) {
+                    continue;
+                }
+                const pageOrder = i;
+                child.dataset.pageOrder = pageOrder;
+                child.querySelector('h3.lizmap-presentation-page-preview-title > span').innerText = pageOrder;
+                presentationId = child.dataset.presentationId;
+                const pageId = child.dataset.pageId;
+                pages[pageId] = pageOrder;
+                i++;
+            }
+
+            // Send new pages to the server
+            mainLizmap.presentation.setPresentationPagination(presentationId, pages)
+            .then(data => {
+                console.log('pagination modifiée');
+                console.log(data);
+            })
+            .catch(err => console.log(err))
+        }
+
+        function cancelDefault (e) {
+          e.preventDefault();
+          e.stopPropagation();
+
+          return false;
+        }
+
     }
 
     connectedCallback() {

@@ -71,6 +71,11 @@ class presentationCtrl extends jController
 
                 break;
 
+            case 'set_pagination':
+                return $this->setPresentationPagination();
+
+                break;
+
             case 'delete':
                 return $this->delete();
 
@@ -106,6 +111,7 @@ class presentationCtrl extends jController
         foreach ($presentations as &$presentation) {
             $conditions = jDao::createConditions();
             $conditions->addCondition('presentation_id', '=', $presentation['id']);
+            $conditions->addItemOrder('page_order', 'asc');
             $getPages = $daoPage->findBy($conditions);
             $pages = $getPages->fetchAllAssociative();
             $presentation['pages'] = $pages;
@@ -115,6 +121,69 @@ class presentationCtrl extends jController
         /** @var \jResponseJson $rep */
         $rep = $this->getResponse('json');
         $rep->data = $presentations;
+
+        return $rep;
+    }
+
+    /**
+     * Set the given presentations pagination.
+     *
+     * @return \jResponseJson The JSON containing an array of presentation objects
+     */
+    public function setPresentationPagination()
+    {
+        // todo return only presentations available for the given user
+        // check rights && check groups
+
+        // Check the given ID
+        $id = $this->intParam('id', -999, true);
+        $checkId = $this->checkGivenId($id, 'presentation');
+        if ($checkId !== null) {
+            return $checkId;
+        }
+
+        // Get array of page id & page order
+        $givenPages = $this->param('pages');
+        $pages = json_decode($givenPages, true);
+        if ($pages === null || !is_array($pages)) {
+            return $this->error(
+                array(
+                    array(
+                        'title' => jLocale::get('presentation~presentation.form.error.pagination.bad.json.title'),
+                        'detail' => jLocale::get(
+                            'presentation~presentation.form.error.pagination.bad.json.detail',
+                            array()
+                        ),
+                    ),
+                )
+            );
+        }
+
+        // Get and update each pages for this presentation
+        /** var \jDaoFactoryBase $daoPage */
+        $daoPage = \jDao::get('presentation~presentation_page');
+        foreach ($pages as $pageId => $pageOrder) {
+            if (!is_int($pageId) || !is_int($pageOrder)) {
+                continue;
+            }
+            $conditions = jDao::createConditions();
+            $conditions->addCondition('presentation_id', '=', $id);
+            $conditions->addCondition('id', '=', $pageId);
+            $conditions->addCondition('page_order', '!=', $pageOrder);
+            $getPage = $daoPage->findBy($conditions, 0, 1);
+            foreach ($getPage as $page) {
+                $page->page_order = $pageOrder;
+                $daoPage->update($page);
+            }
+        }
+
+        // Return html fragment response
+        /** @var \jResponseJson $rep */
+        $rep = $this->getResponse('json');
+        $rep->data = array(
+            'status' => 'success',
+            'errors' => null,
+        );
 
         return $rep;
     }
@@ -577,7 +646,7 @@ class presentationCtrl extends jController
                         array(
                             'title' => 'Error',
                             'detail' => $e->getMessage(),
-                        )
+                        ),
                     ),
                 )
             );

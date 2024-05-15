@@ -40,10 +40,6 @@
             <td class="presentation-detail-footer"></td>
         </tr>
         <tr>
-            <th>{@presentation~presentation.form.presentation.footer.label@}</th>
-            <td class="presentation-detail-footer"></td>
-        </tr>
-        <tr>
             <th>{@presentation~presentation.form.presentation.published.label@}</th>
             <td class="presentation-detail-published"></td>
         </tr>

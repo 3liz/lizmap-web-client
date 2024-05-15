@@ -137,7 +137,7 @@ export default class Presentation {
     /**
      * Get the list of presentations
      *
-     * @return {array} presentations - Array of the presentations
+     * @return {Promise} presentations - Promise with the JSON list of presentations
      */
     getPresentations() {
 
@@ -160,6 +160,40 @@ export default class Presentation {
             console.warn(error);
         });
     }
+
+    /**
+     * Set the pagination for a list of given presentation
+     *
+     * @param {integer} presentationId ID of the presentation
+     * @param {array} pages Array with the page ID as key and page number as value
+     * @return {Promise} Modified presentation - Promise with the JSON of the presentations
+     */
+    setPresentationPagination(presentationId, pages) {
+
+        const url = presentationConfig.url;
+        let formData = new FormData();
+        formData.append('request', 'set_pagination');
+        formData.append('id', presentationId);
+        formData.append('pages', JSON.stringify(pages));
+
+        // Return promise
+        return fetch(url, {
+            method: 'POST',
+            body: formData
+        }).then(function (response) {
+            if (response.ok) {
+                return response.json();
+            }
+            return Promise.reject(response);
+        }).then(function (json) {
+            return json;
+        }).catch(function (error) {
+            console.warn(error);
+        });
+    }
+
+
+
 
     /**
      * Run a Lizmap presentation.

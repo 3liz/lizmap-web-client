@@ -82,7 +82,9 @@ div.lizmap-presentation-card-pages-preview {
 div.lizmap-presentation-card[data-display='detail'] div.lizmap-presentation-card-pages-preview {
     display: block;
 }
+
 h3.lizmap-presentation-card-pages-preview-title {
+    font-size: 0.8em;
     padding-bottom: 10px;
 }
 div.lizmap-presentation-page-preview {
@@ -90,6 +92,17 @@ div.lizmap-presentation-page-preview {
     border-radius: 5px;
     padding: 5px;
     margin-bottom: 10px;
+    cursor: move;
+    &[draggable="true"] {
+        user-select: none;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+    }
+    &:hover {
+        background-color: #eee;
+    }
+
 }
 div.lizmap-presentation-page-preview-toolbar {
     text-align: right;
