@@ -231,19 +231,20 @@ export default class map extends olMap {
                         return
                     } else {
                         const itemState = node.itemState;
+                        const useExternalAccess = (itemState.externalWmsToggle && itemState.externalAccess.type !== 'wmts' && itemState.externalAccess.type !== 'xyz')
                         if (this._useTileWms) {
                             layer = new TileLayer({
                                 // extent: extent,
                                 minResolution: minResolution,
                                 maxResolution: maxResolution,
                                 source: new TileWMS({
-                                    url: itemState.externalWmsToggle ? itemState.externalAccess.url : mainLizmap.serviceURL,
+                                    url: useExternalAccess ? itemState.externalAccess.url : mainLizmap.serviceURL,
                                     serverType: 'qgis',
                                     tileGrid: this._customTileGrid,
                                     params: {
-                                        LAYERS: itemState.externalWmsToggle ? itemState.externalAccess.layers : node.wmsName,
-                                        FORMAT: itemState.externalWmsToggle ? itemState.externalAccess.format : node.layerConfig.imageFormat,
-                                        STYLES: itemState.externalWmsToggle ? itemState.externalAccess.styles : node.wmsSelectedStyleName,
+                                        LAYERS: useExternalAccess ? decodeURIComponent(itemState.externalAccess.layers) : node.wmsName,
+                                        FORMAT: useExternalAccess ? decodeURIComponent(itemState.externalAccess.format) : node.layerConfig.imageFormat,
+                                        STYLES: useExternalAccess ? decodeURIComponent(itemState.externalAccess.styles) : node.wmsSelectedStyleName,
                                         DPI: 96,
                                         TILED: 'true'
                                     },
@@ -264,14 +265,14 @@ export default class map extends olMap {
                                 minResolution: minResolution,
                                 maxResolution: maxResolution,
                                 source: new ImageWMS({
-                                    url: itemState.externalWmsToggle ? itemState.externalAccess.url : mainLizmap.serviceURL,
+                                    url: useExternalAccess ? itemState.externalAccess.url : mainLizmap.serviceURL,
                                     serverType: 'qgis',
                                     ratio: WMSRatio,
                                     hidpi: this._hidpi,
                                     params: {
-                                        LAYERS: itemState.externalWmsToggle ? itemState.externalAccess.layers : node.wmsName,
-                                        FORMAT: itemState.externalWmsToggle ? itemState.externalAccess.format : node.layerConfig.imageFormat,
-                                        STYLES: itemState.externalWmsToggle ? itemState.externalAccess.styles : node.wmsSelectedStyleName,
+                                        LAYERS: useExternalAccess ? decodeURIComponent(itemState.externalAccess.layers) : node.wmsName,
+                                        FORMAT: useExternalAccess ? decodeURIComponent(itemState.externalAccess.format) : node.layerConfig.imageFormat,
+                                        STYLES: useExternalAccess ? decodeURIComponent(itemState.externalAccess.styles) : node.wmsSelectedStyleName,
                                         DPI: 96
                                     },
                                 })
