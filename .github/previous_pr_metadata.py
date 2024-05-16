@@ -18,7 +18,8 @@ def current_metadata(token: str, repo: str, ref: str) -> Tuple[bool, str, str]:
         }
     )
     metadata = r.json()
-    is_backport = metadata.get('title').startswith('[Backport') and metadata.get('user').get('login') == LOGIN
+    # and metadata.get('user').get('login') == LOGIN Let's check for backport made by human as well
+    is_backport = metadata.get('title').startswith('[Backport')
     if not is_backport:
         return False, "", ""
     body = metadata.get('body')
