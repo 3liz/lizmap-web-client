@@ -25,6 +25,7 @@ def current_metadata(token: str, repo: str, ref: str) -> Tuple[bool, str, str]:
     body = metadata.get('body')
     parent_number = body.split('\n')[0]
     parent_number = parent_number.split('#')[1]
+    print(f"Current PR {ref} is a backport : {is_backport}")
     return is_backport, parent_number, body
 
 
@@ -54,6 +55,7 @@ def parent_metadata(token: str, repo: str, ref: str):
     if len(body) >= 2:
         body = body[1].split('\n')
         sponsor = body[0]
+    print(f"Parent PR {ref} was sponsored {is_sponsored} with {sponsor.strip()}, with labels {','.join(labels)}")
     return is_sponsored, sponsor.strip(), labels
 
 
@@ -74,8 +76,8 @@ if __name__ == "__main__":
         labels_str = ','.join([f'"{l}"' for l in labels])
         labels_str = f"[{labels_str}]"
         # print("Parent PR :")
-        # print(f"Is sponso : {is_sponsored}")
-        # print(f"Sponso : {sponsor}")
+        print(f"Is sponso : {is_sponsored}")
+        print(f"Sponsored : {sponsor}")
         # print(f"Labels : {labels_str}")
         if os.environ['GITHUB_OUTPUT']:
             with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
