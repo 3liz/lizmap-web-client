@@ -2,6 +2,7 @@
 
 import os
 import requests
+import traceback
 
 from typing import Optional, Tuple
 
@@ -91,6 +92,7 @@ if __name__ == "__main__":
 
     except Exception as e:
         print(str(e))
+        print(traceback.format_exc())
         with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
             print(f'labels=', file=fh)
         with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
