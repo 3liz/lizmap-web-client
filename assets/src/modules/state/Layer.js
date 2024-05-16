@@ -1562,12 +1562,11 @@ export class LayersAndGroupsCollection extends EventDispatcher {
     }
 
     /**
-     * Get a layer or group state by name
+     * Find a layer or group state by name
      * @param {string} name the name
-     * @returns {LayerVectorState|LayerRasterState|LayerGroupState} The layer or group state associated to the name
-     * @throws {RangeError} The name is unknown
+     * @returns {LayerVectorState|LayerRasterState|LayerGroupState|null} The layer or group state associated to the name or null
      */
-    getLayerOrGroupByName(name) {
+    findLayerOrGroupByName(name) {
         const layer = this._layersMap.get(name);
         if (layer !== undefined) {
             return layer;
@@ -1576,17 +1575,29 @@ export class LayersAndGroupsCollection extends EventDispatcher {
         if (group !== undefined) {
             return group;
         }
+        return null;
+    }
+
+    /**
+     * Get a layer or group state by name
+     * @param {string} name the name
+     * @returns {LayerVectorState|LayerRasterState|LayerGroupState} The layer or group state associated to the name
+     * @throws {RangeError} The name is unknown
+     */
+    getLayerOrGroupByName(name) {
+        const lg = this.findLayerOrGroupByName(name);
+        if (lg !== null) {
+            return lg;
+        }
         throw new RangeError('The name `'+ name +'` is unknown!');
     }
 
-
     /**
-     * Get a layer or group state by WMS Name
+     * Find a layer or group state by WMS Name
      * @param {string} wmsName the WMS Name
-     * @returns {LayerVectorState|LayerRasterState|LayerGroupState} The layer or group state associated to the WMS Name
-     * @throws {RangeError} The WMS Name is unknown
+     * @returns {LayerVectorState|LayerRasterState|LayerGroupState|null} The layer or group state associated to the WMS Name or null
      */
-    getLayerOrGroupByWmsName(wmsName) {
+    findLayerOrGroupByWmsName(wmsName) {
         for (const layer of this.getLayers()) {
             if (layer.wmsName === wmsName) {
                 return layer;
@@ -1596,6 +1607,20 @@ export class LayersAndGroupsCollection extends EventDispatcher {
             if (group.wmsName === wmsName) {
                 return group;
             }
+        }
+        return null;
+    }
+
+    /**
+     * Get a layer or group state by WMS Name
+     * @param {string} wmsName the WMS Name
+     * @returns {LayerVectorState|LayerRasterState|LayerGroupState} The layer or group state associated to the WMS Name
+     * @throws {RangeError} The WMS Name is unknown
+     */
+    getLayerOrGroupByWmsName(wmsName) {
+        const lg = this.findLayerOrGroupByWmsName(wmsName);
+        if (lg !== null) {
+            return lg;
         }
         throw new RangeError('The WMS Name `'+ wmsName +'` is unknown!');
     }
