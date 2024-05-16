@@ -66,7 +66,7 @@ if __name__ == "__main__":
         github_ref = os.getenv("GITHUB_PR_REF")
         is_backport, parent_ref, description = current_metadata(token=token, repo=repo, ref=github_ref)
         if not is_backport:
-            raise Exception
+            raise Exception("Not a backport")
 
         # print("Current PR :")
         # print(f"IS backport : {is_backport}")
@@ -89,7 +89,8 @@ if __name__ == "__main__":
                 # with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
                 #     print(f'description={description}', file=fh)
 
-    except Exception:
+    except Exception as e:
+        print(str(e))
         with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
             print(f'labels=', file=fh)
         with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
