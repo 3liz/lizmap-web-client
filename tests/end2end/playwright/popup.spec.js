@@ -245,7 +245,7 @@ test.describe('Children in popup', () => {
                     x: 436,
                     y: 290
                 }
-                });
+        });
         // Default children information visible
         await expect(page.locator('#popupcontent .lizmapPopupChildren .lizmapPopupSingleFeature')).toHaveCount(2);
         await expect(page.locator('div').getByRole('heading', { name: 'children_layer' })).toHaveCount(2);
@@ -281,5 +281,29 @@ test.describe('Children in popup', () => {
         // Click on children table button
         await page.locator('.compact-tables').nth(1).click();
         await expect(page.locator('div').getByRole('heading', { name: 'children_layer' })).toHaveCount(2);
+    });
+});
+
+test.describe('Popup config mocked with "minidock" option', () => {
+    test('Minidock is displayed with popup content', async ({ page }) => {
+        await page.route('**/service/getProjectConfig*', async route => {
+            const response = await route.fetch();
+            const json = await response.json();
+            json.options['popupLocation'] = 'minidock';
+            await route.fulfill({ response, json });
+        });
+
+        const url = '/index.php/view/map/?repository=testsrepository&project=popup';
+        await page.goto(url, { waitUntil: 'networkidle' });
+
+        // When clicking on a triangle feature a popup must appear
+        await page.locator('#newOlMap').click({
+            position: {
+                x: 436,
+                y: 290
+            }
+        });
+
+        await expect(page.locator('#mini-dock-content .lizmapPopupDiv')).toBeVisible();
     });
 });
