@@ -25,7 +25,7 @@ def current_metadata(token: str, repo: str, ref: str) -> Tuple[bool, str, str]:
         return False, "", ""
     body = metadata.get('body')
     parent_number = body.split('\n')[0]
-    parent_number = parent_number.split('#')[1]
+    parent_number = parent_number.split('/')[-1]
     print(f"Current PR {ref} is a backport : {is_backport}")
     return is_backport, parent_number, body
 
