@@ -196,19 +196,20 @@ export default class BaseLayersMap extends olMap {
                 // The layer has not been yet build
                 if (!layer) {
                     const itemState = node.itemState;
+                    const useExternalAccess = (itemState.externalWmsToggle && itemState.externalAccess.type !== 'wmts' && itemState.externalAccess.type !== 'xyz')
                     layer = new ImageLayer({
                         // extent: extent,
                         minResolution: minResolution,
                         maxResolution: maxResolution,
                         source: new ImageWMS({
-                            url: itemState.externalWmsToggle ? itemState.externalAccess.url : mainLizmap.serviceURL,
+                            url: useExternalAccess ? itemState.externalAccess.url : mainLizmap.serviceURL,
                             serverType: 'qgis',
                             ratio: WMSRatio,
                             hidpi: this._hidpi,
                             params: {
-                                LAYERS: itemState.externalWmsToggle ? itemState.externalAccess.layers : node.wmsName,
-                                FORMAT: itemState.externalWmsToggle ? itemState.externalAccess.format : node.layerConfig.imageFormat,
-                                STYLES: itemState.externalWmsToggle ? itemState.externalAccess.styles : node.wmsSelectedStyleName,
+                                LAYERS: useExternalAccess ? decodeURIComponent(itemState.externalAccess.layers) : node.wmsName,
+                                FORMAT: useExternalAccess ? decodeURIComponent(itemState.externalAccess.format) : node.layerConfig.imageFormat,
+                                STYLES: useExternalAccess ? decodeURIComponent(itemState.externalAccess.styles) : node.wmsSelectedStyleName,
                                 DPI: 96
                             },
                         })
@@ -227,13 +228,13 @@ export default class BaseLayersMap extends olMap {
                             minResolution: minResolution,
                             maxResolution: maxResolution,
                             source: new TileWMS({
-                                url: itemState.externalWmsToggle ? itemState.externalAccess.url : mainLizmap.serviceURL,
+                                url: useExternalAccess ? itemState.externalAccess.url : mainLizmap.serviceURL,
                                 serverType: 'qgis',
                                 tileGrid: customTileGrid,
                                 params: {
-                                    LAYERS: itemState.externalWmsToggle ? itemState.externalAccess.layers : node.wmsName,
-                                    FORMAT: itemState.externalWmsToggle ? itemState.externalAccess.format : node.layerConfig.imageFormat,
-                                    STYLES: itemState.externalWmsToggle ? itemState.externalAccess.styles : node.wmsSelectedStyleName,
+                                    LAYERS: useExternalAccess ? decodeURIComponent(itemState.externalAccess.layers) : node.wmsName,
+                                    FORMAT: useExternalAccess ? decodeURIComponent(itemState.externalAccess.format) : node.layerConfig.imageFormat,
+                                    STYLES: useExternalAccess ? decodeURIComponent(itemState.externalAccess.styles) : node.wmsSelectedStyleName,
                                     DPI: 96,
                                     TILED: 'true'
                                 },
