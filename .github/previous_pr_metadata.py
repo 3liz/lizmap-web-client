@@ -26,18 +26,20 @@ def current_metadata(token: str, repo: str, ref: str) -> Tuple[bool, str, str]:
     body = metadata.get('body')
     parent_number = body.split('\n')[0]
     parent_number = parent_number.split('/')[-1]
-    print(f"Current PR {ref} is a backport : {is_backport}")
+    print(f"Current PR {ref} is a backport : {is_backport}, with parent {parent_number}")
     return is_backport, parent_number, body
 
 
-def parent_metadata(token: str, repo: str, ref: str):
+def parent_metadata(token: str, repo: str, ref_pr_parent: str):
     """ Get current PR metadata. """
+    url = f"https://api.github.com/repos/{repo}/pulls/{ref_pr_parent}"
     r = requests.get(
-        f"https://api.github.com/repos/{repo}/pulls/{ref}",
+        url,
         headers={
             'Authorization': f'Bearer {token}'
         }
     )
+    print(f"Fetching {url}")
     metadata = r.json()
     labels_info = metadata.get('labels')
     is_sponsored = False
@@ -59,7 +61,7 @@ def parent_metadata(token: str, repo: str, ref: str):
     if len(body) >= 2:
         body = body[1].split('\n')
         sponsor = body[0]
-    print(f"Parent PR {ref} was sponsored {is_sponsored} with {sponsor.strip()}, with labels {','.join(labels)}")
+    print(f"Parent PR {ref_pr_parent} was sponsored {is_sponsored} with {sponsor.strip()}, with labels {','.join(labels)}")
     return is_sponsored, sponsor.strip(), labels
 
 
