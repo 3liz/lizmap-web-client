@@ -259,6 +259,38 @@ describe('BaseLayersState', function () {
                 BaseLayerTypes.Lizmap,
                 BaseLayerTypes.WMS,
             ])
+        expect(baseLayers.baseLayers.map(l => l.hasItemState))
+            .to.be.an('array')
+            .that.have.length(11)
+            .that.ordered.members([
+                true,
+                true,
+                true,
+                false,
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+            ])
+        expect(baseLayers.baseLayers.map(l => l.hasLayerConfig))
+            .to.be.an('array')
+            .that.have.length(11)
+            .that.ordered.members([
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+            ])
     });
 
     it('Tiled baselayer', function () {
