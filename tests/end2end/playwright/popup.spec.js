@@ -297,13 +297,13 @@ test.describe('Popup config mocked with "minidock" option', () => {
         await page.goto(url, { waitUntil: 'networkidle' });
 
         // When clicking on a triangle feature a popup must appear
-        await page.locator('#newOlMap').click({
+        await page.locator('#map').click({
             position: {
                 x: 436,
                 y: 290
             }
         });
 
-        await expect(page.locator('#mini-dock-content .lizmapPopupDiv')).toBeVisible();
+        await expect(page.locator('#mini-dock-content .lizmapPopupDiv').first()).toBeVisible();
     });
 });
