@@ -2415,8 +2415,7 @@ window.lizMap = function() {
                 addDock(popupContainerId, 'Popup', config.options.popupLocation, pcontent, 'icon-comment');
                 $('#button-popupcontent').click(function(){
                     if($(this).parent().hasClass('active')) {
-                        // clear highlight layer
-                        lizMap.mainLizmap.map.clearHighlightFeatures();
+                        clearDrawLayer('locatelayer');
                         // remove information
                         $('#popupcontent > div.menu-content').html('<div class="lizmapPopupContent"><h4>'+lizDict['popup.msg.start']+'</h4></div>');
                     }
