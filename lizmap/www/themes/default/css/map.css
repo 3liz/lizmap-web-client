@@ -888,11 +888,12 @@ lizmap-feature-toolbar button.btn:hover,
   display: none;
 }
 #loading {
-  background-image: url(img/loading.gif);
+  background-image: url(img/loading.svg);
   background-repeat: no-repeat;
   background-position-x: center;
   background-position-y: center;
-  filter: hue-rotate(140deg) brightness(70%);
+  background-size: contain;
+  background-origin: content-box;
 }
 
 
