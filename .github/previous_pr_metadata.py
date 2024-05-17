@@ -25,8 +25,14 @@ def current_metadata(token: str, repo: str, ref: str) -> Tuple[bool, str, str]:
         return False, "", ""
     body = metadata.get('body')
     parent_number = body.split('\n')[0]
-    parent_number = parent_number.split('/')[-1]
-    print(f"Current PR {ref} is a backport : {is_backport}, with parent {parent_number}")
+    if '#' in parent_number:
+        # PR description is "Backport #4446"
+        split = '#'
+    else:
+        # PR description is "Backport https://github.com/3liz/lizmap-web-client/pull/4446"
+        split = '/'
+    parent_number = parent_number.split(split)[-1]
+    print(f"Current PR {ref} is a backport : {is_backport}, with parent '{parent_number}'")
     return is_backport, parent_number, body
 
 

@@ -17,6 +17,7 @@ jobs:
         with:
           ref: 'master'
           fetch-depth: 0
+          token: ${{ secrets.BOT_HUB_TOKEN || github.token  }}  # Important to launch CI on a commit from a bot
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
