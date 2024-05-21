@@ -9,8 +9,8 @@
       {/if}
 
       {foreach $dockable as $dock}
-      <li class="{$dock->id} nav-dock {$dock->menuIconClasses}">
-        <a id="button-{$dock->id}" rel="tooltip" data-original-title="{$dock->title}" data-placement="right" href="#{$dock->id}" data-container="#content">
+      <li class="{$dock->id} nav-dock {$dock->menuIconClasses}{if $dock->id == "switcher"} active{/if}">
+        <a id="button-{$dock->id}" rel="tooltip" data-original-title="{$dock->title}" data-placement="right" data-dockid="{$dock->id}" href="#" data-container="#content">
           {$dock->icon}<span class="menu-title">{$dock->title}</span>
         </a>
       </li>
@@ -18,7 +18,7 @@
 
       {foreach $minidockable as $dock}
       <li class="{$dock->id} nav-minidock {$dock->menuIconClasses}">
-        <a id="button-{$dock->id}" rel="tooltip" data-original-title="{$dock->title}" data-placement="right" href="#{$dock->id}" data-container="#content">
+        <a id="button-{$dock->id}" rel="tooltip" data-original-title="{$dock->title}" data-placement="right" data-dockid="{$dock->id}" href="#" data-container="#content">
           {$dock->icon}<span class="menu-title">{$dock->title}</span>
         </a>
       </li>
