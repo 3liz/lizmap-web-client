@@ -3155,3 +3155,7 @@ lizmap-message button {
 .ck.ck-balloon-panel.ck-balloon-panel_visible {
   z-index: 9999;
 }
+
+.hide {
+  display: none;
+}
