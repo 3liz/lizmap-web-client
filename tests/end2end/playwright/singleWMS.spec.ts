@@ -411,4 +411,44 @@ test.describe('Single WMS layer', () => {
         expect(switchBaseLayersReqPromiseresp?.status()).toBe(200)
 
     })
+
+    test('Edit a layer', async ({ page }) => {
+        const url = '/index.php/view/map/?repository=testsrepository&project=single_wms_image';
+        await page.goto(url,{waitUntil:'networkidle'});
+      
+        await page.locator('#button-edition').click();
+        await page.locator('a#edition-draw').click();
+        
+        await page.waitForTimeout(300);
+
+        // edition id done on #map
+        await page.locator('#map').click({
+          position: {
+            x: 532,
+            y: 293
+          }
+        });
+
+        page.locator("#jforms_view_edition input#jforms_view_edition_title").fill("Test insert");
+
+         const reloadMapPromise = page.waitForRequest(request =>
+            request.url().includes('GetMap') &&
+            request.method() === 'GET' &&
+            // check format
+            request.url().includes('FORMAT=image%2Fpng') &&
+            // check service
+            request.url().includes('SERVICE=WMS') &&
+            // check styles
+            request.url().includes('STYLES=default%2Cdefault%2Cdefault%2Cdefault%2Cdefault%2C') &&
+            // check layers
+            request.url().includes('LAYERS=single_wms_baselayer%2Csingle_wms_lines%2Csingle_wms_points%2Csingle_wms_points_group%2Csingle_wms_lines_group%2CGroupAsLayer')
+        );
+        
+        await page.locator("#jforms_view_edition #jforms_view_edition__submit_submit").click();
+        const reloaded = await reloadMapPromise;
+
+        const reloadReqPromise = await reloaded.response();
+        expect(reloadReqPromise?.status()).toBe(200)
+
+    })
 })
