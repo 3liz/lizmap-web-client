@@ -3275,3 +3275,6 @@ div.lizmap-features-table.popup-displayed div.lizmap-features-table-container + 
 div.lizmap-features-table.popup-displayed div.lizmap-features-table-container + div.lizmap-features-table-item-popup h4.lizmapPopupTitle {
   display: none;
 }
+.hide {
+  display: none;
+}
