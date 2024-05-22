@@ -330,10 +330,10 @@ bootstrap.css[]="assets/css/bootstrap.min.css"
 bootstrap.css[]="assets/css/bootstrap-responsive.min.css"
 
 datatables.require=bootstrap
-datatables.js[]="assets/js/jquery.dataTables.min.js|defer"
+datatables.js[]="assets/js/datatables.min.js|defer"
 datatables.js[]="assets/js/dataTables.bootstrap.min.js|defer"
 datatables.js[]="$jelix/datatables/i18n/$locale.js|defer"
-datatables.css[]=assets/css/jquery.dataTables.min.css
+datatables.css[]=assets/css/datatables.min.css
 datatables.css[]=assets/css/dataTables.bootstrap.min.css
 
 datatables_responsive.require=datatables
