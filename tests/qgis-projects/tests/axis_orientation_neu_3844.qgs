@@ -291,6 +291,7 @@
       <keywordList>
         <value></value>
       </keywordList>
+      <attribution href="https://openstreetmap.org">© Contributeurs OpenStreetMap</attribution>
       <layername>județ</layername>
       <srs>
         <spatialrefsys>
