@@ -150,8 +150,9 @@
       <datasource>./world/rectangle.geojson|layername=rectangle</datasource>
       <shortname>rectangle</shortname>
       <keywordList>
-        <value></value>
+        <value>QGIS</value>
       </keywordList>
+      <attribution href="">Attribution for this layer is unknown</attribution>
       <layername>rectangle</layername>
       <srs>
         <spatialrefsys nativeFormat="Wkt">
@@ -587,8 +588,11 @@ def my_form_open(dialog, layer, feature):
       <datasource>./world/world.geojson</datasource>
       <shortname>world</shortname>
       <keywordList>
-        <value></value>
+        <value>Natural Earth</value>
+        <value>Countries</value>
+        <value>Admin 0</value>
       </keywordList>
+      <attribution href="https://www.naturalearthdata.com">Made with Natural Earth</attribution>
       <layername>world</layername>
       <srs>
         <spatialrefsys nativeFormat="Wkt">

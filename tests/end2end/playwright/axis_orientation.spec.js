@@ -1,11 +1,12 @@
 // @ts-check
 const { test, expect } = require('@playwright/test');
+const { gotoMap } = require('./globals')
 
 test.describe('Axis Orientation', () => {
 
     test('Axis Orientation NEU for EPSG:3044', async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=axis_orientation_neu_3044';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page)
 
         const getMapPromise = page.waitForRequest(/GetMap/);
         await page.getByLabel('Bundesländer').check();
@@ -53,7 +54,7 @@ test.describe('Axis Orientation', () => {
 
     test('Axis Orientation NEU for EPSG:3844', async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=axis_orientation_neu_3844';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page)
 
         const getMapPromise = page.waitForRequest(/GetMap/);
         await page.getByLabel('județ').check();
