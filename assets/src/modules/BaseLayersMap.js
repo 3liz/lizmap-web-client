@@ -268,6 +268,19 @@ export default class BaseLayersMap extends olMap {
                 // OL layers zIndex is the reverse of layer's order given by cfg
                 layer.setZIndex(layersCount - 1 - node.layerOrder);
 
+                // Add attribution
+                if (node.wmsAttribution != null) {
+                    const url = node.wmsAttribution.url;
+                    const title = node.wmsAttribution.title;
+                    let attribution = title;
+
+                    if (url) {
+                        attribution = `<a href='${url}' target='_blank'>${title}</a>`;
+                    }
+
+                    layer.getSource().setAttributions(attribution);
+                }
+
                 overlayLayersAndGroups.push(layer);
                 statesOlLayersandGroupsMap.set(node.name, [node, layer]);
                 return layer;
