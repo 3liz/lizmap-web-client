@@ -2,8 +2,8 @@
 const { test, expect } = require('@playwright/test');
 const { gotoMap } = require('./globals')
 
-test.describe('Dataviz in popup', ()=>{
-    test('Check lizmap feature toolbar', async ({page}) => {
+test.describe('Dataviz in popup', () => {
+    test('Check lizmap feature toolbar', async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=popup_bar';
         await gotoMap(url, page);
 
@@ -11,12 +11,12 @@ test.describe('Dataviz in popup', ()=>{
 
         await page.waitForTimeout(300);
 
-        let getPlot= page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('getPlot') === true);
+        let getPlot = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('getPlot') === true);
 
-        await  page.locator('#map').click({
+        await page.locator('#map').click({
             position: {
-              x: 355,
-              y: 280
+                x: 355,
+                y: 280
             }
         });
 
@@ -26,10 +26,10 @@ test.describe('Dataviz in popup', ()=>{
         await expect(page.locator("#popupcontent > div.menu-content > div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > lizmap-feature-toolbar .feature-toolbar")).toHaveCount(1)
 
         // click again on the same point
-        await  page.locator('#map').click({
+        await page.locator('#map').click({
             position: {
-              x: 355,
-              y: 280
+                x: 355,
+                y: 280
             }
         });
 
@@ -38,7 +38,7 @@ test.describe('Dataviz in popup', ()=>{
         await expect(page.locator("#popupcontent > div.menu-content > div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > lizmap-feature-toolbar .feature-toolbar")).toHaveCount(1)
 
         // click on another point
-        await  page.locator('#map').click({
+        await page.locator('#map').click({
             position: {
                 x: 410,
                 y: 216
@@ -50,7 +50,7 @@ test.describe('Dataviz in popup', ()=>{
         await expect(page.locator("#popupcontent > div.menu-content > div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > lizmap-feature-toolbar .feature-toolbar")).toHaveCount(1)
 
         // click where there is no feature
-        await  page.locator('#map').click({
+        await page.locator('#map').click({
             position: {
                 x: 410,
                 y: 300
@@ -60,7 +60,7 @@ test.describe('Dataviz in popup', ()=>{
         await page.waitForTimeout(500);
 
         // reopen previous popup
-        await  page.locator('#map').click({
+        await page.locator('#map').click({
             position: {
                 x: 410,
                 y: 216
@@ -75,8 +75,8 @@ test.describe('Dataviz in popup', ()=>{
     })
 })
 
-test.describe('Style parameter in GetFeatureInfo request', ()=>{
-    test('Click on the map to show the popup', async ({page}) => {
+test.describe('Style parameter in GetFeatureInfo request', () => {
+    test('Click on the map to show the popup', async ({ page }) => {
 
         // the get_feature_info_style project has one layer "natural_areas" configured with two styles: default and ids
         //
@@ -97,13 +97,13 @@ test.describe('Style parameter in GetFeatureInfo request', ()=>{
         // get the popup of the feature with id = 3. The STYLE property (STYLE=default) should be passed in the getfeatureinfo request.
         // Otherwise the popup would not be shown because QGIS Server query the layer natural_areas with the "ids" style
 
-        let getPopup= page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('STYLE=default') === true);
+        let getPopup = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('STYLE=default') === true);
 
-        await  page.locator('#map').click({
-          position: {
-            x: 501,
-            y: 488
-          }
+        await page.locator('#map').click({
+            position: {
+                x: 501,
+                y: 488
+            }
         });
 
         await getPopup;
@@ -129,12 +129,12 @@ test.describe('Style parameter in GetFeatureInfo request', ()=>{
 
         let getPopupIds = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('STYLE=ids') === true);
         // click again on the previous point
-        await  page.locator('#map').click({
+        await page.locator('#map').click({
             position: {
-              x: 501,
-              y: 488
+                x: 501,
+                y: 488
             }
-          });
+        });
 
         await getPopupIds;
 
@@ -148,11 +148,11 @@ test.describe('Style parameter in GetFeatureInfo request', ()=>{
 
         let getPopupIdsFeature = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('STYLE=ids') === true);
         // click on a feature to get the popup (it should fallback to the default lizmap popup)
-        await  page.locator('#map').click({
-          position: {
-            x: 404,
-            y: 165
-          }
+        await page.locator('#map').click({
+            position: {
+                x: 404,
+                y: 165
+            }
         });
 
         await getPopupIdsFeature;
@@ -221,10 +221,10 @@ test.describe('Popup', () => {
 
         let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
         await page.locator('#map').click({
-          position: {
-            x: 486,
-            y: 136
-          }
+            position: {
+                x: 486,
+                y: 136
+            }
         });
 
         let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
@@ -242,10 +242,10 @@ test.describe('Children in popup', () => {
     test('click on the feature to show the popup and his children', async ({ page }) => {
         // When clicking on triangle feature a popup with two tabs must appear
         await page.locator('#map').click({
-                position: {
-                    x: 436,
-                    y: 290
-                }
+            position: {
+                x: 436,
+                y: 290
+            }
         });
         // Default children information visible
         await expect(page.locator('#popupcontent .lizmapPopupChildren .lizmapPopupSingleFeature')).toHaveCount(2);
