@@ -108,8 +108,29 @@ export default class Popup {
             return;
         }
 
-        const layersWMS = candidateLayers.map(layer => layer.wmsName).join();
-        const layersStyles = candidateLayers.map(layer => layer.wmsSelectedStyleName || "").join()
+        //const layersWMS = candidateLayers.map(layer => layer.wmsName).join();
+        //const layersStyles = candidateLayers.map(layer => layer.wmsSelectedStyleName || "").join()
+        const layersNames = [];
+        const layersStyles = [];
+        const filterTokens = [];
+        const legendOn = [];
+        const legendOff = [];
+        for (const layer of candidateLayers) {
+            const layerWmsParams = layer.wmsParameters;
+            // Add layer to the list of layers
+            layersNames.push(layerWmsParams['LAYERS']);
+            // Optionally add layer style if needed (same order as layers )
+            layersStyles.push(layerWmsParams['STYLES']);
+            if ('FILTERTOKEN' in layerWmsParams) {
+                filterTokens.push(layerWmsParams['FILTERTOKEN']);
+            }
+            if ('LEGEND_ON' in layerWmsParams) {
+                legendOn.push(layerWmsParams['LEGEND_ON']);
+            }
+            if ('LEGEND_OFF' in layerWmsParams) {
+                legendOff.push(layerWmsParams['LEGEND_OFF']);
+            }
+        }
 
         const wms = new WMS();
 
@@ -122,9 +143,9 @@ export default class Popup {
         }
 
         const wmsParams = {
-            QUERY_LAYERS: layersWMS,
-            LAYERS: layersWMS,
-            STYLE: layersStyles,
+            QUERY_LAYERS: layersNames.join(','),
+            LAYERS: layersNames.join(','),
+            STYLE: layersStyles.join(','),
             CRS: mainLizmap.projection,
             BBOX: bbox,
             FEATURE_COUNT: 10,
@@ -137,16 +158,14 @@ export default class Popup {
             FI_POLYGON_TOLERANCE: polygonTolerance
         };
 
-        const filterTokens = [];
-        candidateLayers.forEach(layer => {
-            let filterToken = layer.wmsParameters?.FILTERTOKEN;
-            if (filterToken) {
-                filterTokens.push(filterToken);
-            }
-        });
-
         if (filterTokens.length) {
-            wmsParams['FILTERTOKEN'] = filterTokens.join(';');
+            wmsParams.FILTERTOKEN = filterTokens.join(';');
+        }
+        if (legendOn.length) {
+            wmsParams.LEGEND_ON = legendOn.join(';');
+        }
+        if (legendOff.length) {
+            wmsParams.LEGEND_OFF = legendOff.join(';');
         }
 
         document.getElementById('newOlMap').style.cursor = 'wait';
