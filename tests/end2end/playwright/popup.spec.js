@@ -1,10 +1,11 @@
 // @ts-check
 const { test, expect } = require('@playwright/test');
+const { gotoMap } = require('./globals')
 
 test.describe('Dataviz in popup', ()=>{
     test('Check lizmap feature toolbar', async ({page}) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=popup_bar';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page);
 
         await page.locator("#dock-close").click();
 
@@ -87,7 +88,7 @@ test.describe('Style parameter in GetFeatureInfo request', ()=>{
 
 
         const url = '/index.php/view/map/?repository=testsrepository&project=get_feature_info_style';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page);
 
         await page.locator("#dock-close").click();
 
@@ -173,7 +174,7 @@ test.describe('Popup', () => {
 
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=popup';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page);
     });
 
     test('click on the shape to show the popup', async ({ page }) => {
@@ -237,7 +238,7 @@ test.describe('Children in popup', () => {
 
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=feature_toolbar';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page);
     });
 
     test('click on the feature to show the popup and his children', async ({ page }) => {
