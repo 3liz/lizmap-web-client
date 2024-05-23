@@ -76,8 +76,7 @@ test.describe('Dataviz in popup', () => {
 })
 
 test.describe('Style parameter in GetFeatureInfo request', () => {
-    test('Click on the map to show the popup', async ({ page }) => {
-
+    test.beforeEach(async ({ page }) => {
         // the get_feature_info_style project has one layer "natural_areas" configured with two styles: default and ids
         //
         // "default" style: shows all the 3 features of the natural_area layer, it has QGIS Html Maptip enabled
@@ -89,7 +88,8 @@ test.describe('Style parameter in GetFeatureInfo request', () => {
 
         const url = '/index.php/view/map/?repository=testsrepository&project=get_feature_info_style';
         await gotoMap(url, page);
-
+    })
+    test('Click on the map to show the popup', async ({ page }) => {
         await page.locator("#dock-close").click();
 
         await page.waitForTimeout(300);
@@ -166,6 +166,57 @@ test.describe('Style parameter in GetFeatureInfo request', () => {
         await expect(popupIdsFeat.locator("table tbody tr")).toHaveCount(2);
         await expect(popupIdsFeat.locator("table tbody tr").nth(0).locator("td")).toHaveText("1");
         await expect(popupIdsFeat.locator("table tbody tr").nth(1).locator("td")).toHaveText("Étang du Galabert");
+    })
+
+    test('Legend On/Off', async ({ page }) => {
+        let getFeatureInfoPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
+        // click on a feature to get the popup (it should fallback to the default lizmap popup)
+        await page.locator('#map').click({
+            position: {
+                x: 404,
+                y: 165
+            }
+        });
+        let getFeatureInfoRequest = await getFeatureInfoPromise
+        expect(getFeatureInfoRequest.postData()).not.toMatch(/LEGEND_ON/);
+        expect(getFeatureInfoRequest.postData()).not.toMatch(/LEGEND_OFF/);
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response()
+        expect(getFeatureInfoResponse?.headers()['content-type']).toContain('text/html');
+        expect(getFeatureInfoResponse?.headers()['content-length']).toBe('1789');
+
+        // inspect feature toolbar, expect to find only one
+        const popup = page.locator("#popupcontent > div.menu-content > div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv div.container.popup_lizmap_dd")
+        await expect(popup).toHaveCount(1)
+        await expect(popup.locator(".before-tabs div.field")).toHaveCount(2);
+        await expect(popup.locator("#test-custom-tooltip")).toHaveText("Custom tooltip");
+
+        await expect(popup.locator(".before-tabs div.field").nth(0)).toHaveText("1");
+        await expect(popup.locator(".before-tabs div.field").nth(1)).toHaveText("Étang du Galabert");
+
+        // Uncheck
+        await page.locator('#button-switcher').click();
+        await page.getByTestId('natural_areas').locator('div').first().click();
+        await page.getByLabel('id1').uncheck();
+
+        getFeatureInfoPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
+        // click on a feature to get the popup (it should fallback to the default lizmap popup)
+        await page.locator('#map').click({
+            position: {
+                x: 404,
+                y: 165
+            }
+        });
+        getFeatureInfoRequest = await getFeatureInfoPromise
+        expect(getFeatureInfoRequest.postData()).toMatch(/LEGEND_ON=natural_areas/);
+        expect(getFeatureInfoRequest.postData()).toMatch(/LEGEND_OFF=natural_areas%3A%7B421de3e3-5286-42fa-b3ff-aff35c4078a0%7D/);
+        // Github Action CI failed
+        // Do not test QGIS Server or lizmap server plugin
+        // getFeatureInfoResponse = await getFeatureInfoRequest.response()
+        // expect(getFeatureInfoResponse?.headers()['content-type']).toContain('text/html');
+        // expect(getFeatureInfoResponse?.headers()['content-length']).toBe('0');
+        //
+        // await expect(page.locator('.lizmapPopupTitle')).toHaveCount(0);
+        // await expect(page.locator('.lizmapPopupContent h4')).toHaveText('No object has been found at this location.');
     })
 })
 
