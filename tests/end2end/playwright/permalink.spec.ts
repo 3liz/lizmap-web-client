@@ -128,18 +128,18 @@ test.describe('Permalink', () => {
         await expect(url.hash).not.toHaveLength(0);
         // The decoded hash is
         // #3.0635044037670305,43.401957103265374,4.567657653648659,43.92018105321636
-        // |layer_legend_single_symbol,layer_legend_categorized,tramway_lines,Group as layer
-        // |défaut,défaut,a_single,
-        // |1,1,1,1
+        // |layer_legend_single_symbol,layer_legend_categorized,layer_legend_ruled,tramway_lines,Group as layer
+        // |défaut,défaut,défaut,a_single,
+        // |1,1,1,1,1
         await expect(url.hash[0]).toBe('#');
         let hashContent = url.hash.split('|')
         await expect(hashContent).toHaveLength(4)
         let hashLayers = hashContent[1].split(',')
-        await expect(hashLayers).toHaveLength(4)
+        await expect(hashLayers).toHaveLength(5)
         let hashStyles = hashContent[2].split(',')
-        await expect(hashStyles).toHaveLength(4)
+        await expect(hashStyles).toHaveLength(5)
         let hashOpacities = hashContent[3].split(',')
-        await expect(hashOpacities).toHaveLength(4)
+        await expect(hashOpacities).toHaveLength(5)
 
         // layer_legend_single_symbol has défaut style
         await expect(hashLayers[0]).toBe(encodeURI('layer_legend_single_symbol'))
@@ -151,15 +151,20 @@ test.describe('Permalink', () => {
         await expect(hashStyles[1]).toBe(encodeURI('défaut'))
         await expect(hashOpacities[1]).toBe('1')
 
-        // tramway_lines has a_single style
-        await expect(hashLayers[2]).toBe(encodeURI('tramway_lines'))
-        await expect(hashStyles[2]).toBe(encodeURI('a_single'))
+        // layer_legend_ruled has défaut style
+        await expect(hashLayers[2]).toBe(encodeURI('layer_legend_ruled'))
+        await expect(hashStyles[2]).toBe(encodeURI('défaut'))
         await expect(hashOpacities[2]).toBe('1')
 
-        // Group as layer has an empty string style ''
-        await expect(hashLayers[3]).toBe(encodeURI('Group as layer'))
-        await expect(hashStyles[3]).toBe('')
+        // tramway_lines has a_single style
+        await expect(hashLayers[3]).toBe(encodeURI('tramway_lines'))
+        await expect(hashStyles[3]).toBe(encodeURI('a_single'))
         await expect(hashOpacities[3]).toBe('1')
+
+        // Group as layer has an empty string style ''
+        await expect(hashLayers[4]).toBe(encodeURI('Group as layer'))
+        await expect(hashStyles[4]).toBe('')
+        await expect(hashOpacities[4]).toBe('1')
 
         // Change the tramway_lines style to categorized
         await page.getByTestId('tramway_lines').locator('.icon-info-sign').click({force:true});
@@ -171,18 +176,18 @@ test.describe('Permalink', () => {
         await expect(url.hash).not.toHaveLength(0);
         // The decoded hash is
         // #3.0635044037670305,43.401957103265374,4.567657653648659,43.92018105321636
-        // |layer_legend_single_symbol,layer_legend_categorized,tramway_lines,Group as layer
-        // |défaut,défaut,categorized,
+        // |layer_legend_single_symbol,layer_legend_categorized,layer_legend_ruled,tramway_lines,Group as layer
+        // |défaut,défaut,défaut,categorized,
         // |1,1,1,1
         await expect(url.hash[0]).toBe('#');
         hashContent = url.hash.split('|')
         await expect(hashContent).toHaveLength(4)
         hashLayers = hashContent[1].split(',')
-        await expect(hashLayers).toHaveLength(4)
+        await expect(hashLayers).toHaveLength(5)
         hashStyles = hashContent[2].split(',')
-        await expect(hashStyles).toHaveLength(4)
+        await expect(hashStyles).toHaveLength(5)
         hashOpacities = hashContent[3].split(',')
-        await expect(hashOpacities).toHaveLength(4)
+        await expect(hashOpacities).toHaveLength(5)
 
         // layer_legend_single_symbol has défaut style
         await expect(hashLayers[0]).toBe(encodeURI('layer_legend_single_symbol'))
@@ -194,18 +199,24 @@ test.describe('Permalink', () => {
         await expect(hashStyles[1]).toBe(encodeURI('défaut'))
         await expect(hashOpacities[1]).toBe('1')
 
-        // tramway_lines has categorized style
-        await expect(hashLayers[2]).toBe(encodeURI('tramway_lines'))
-        await expect(hashStyles[2]).toBe(encodeURI('categorized'))
+        // layer_legend_ruled has défaut style
+        await expect(hashLayers[2]).toBe(encodeURI('layer_legend_ruled'))
+        await expect(hashStyles[2]).toBe(encodeURI('défaut'))
         await expect(hashOpacities[2]).toBe('1')
 
-        // Group as layer has an empty string style ''
-        await expect(hashLayers[3]).toBe(encodeURI('Group as layer'))
-        await expect(hashStyles[3]).toBe('')
+        // tramway_lines has categorized style
+        await expect(hashLayers[3]).toBe(encodeURI('tramway_lines'))
+        await expect(hashStyles[3]).toBe(encodeURI('categorized'))
         await expect(hashOpacities[3]).toBe('1')
 
-        // Deactivate layer_legend_categorized
+        // Group as layer has an empty string style ''
+        await expect(hashLayers[4]).toBe(encodeURI('Group as layer'))
+        await expect(hashStyles[4]).toBe('')
+        await expect(hashOpacities[4]).toBe('1')
+
+        // Deactivate layer_legend_categorized and layer_legend_ruled
         await page.getByLabel('layer_legend_categorized').uncheck();
+        await page.getByLabel('layer_legend_ruled').uncheck();
 
         // The url has been updated
         url = new URL(page.url());
