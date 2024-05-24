@@ -1534,6 +1534,13 @@ var lizAttributeTable = function() {
                                     data.lizSelected = 'a';
                                 }
                             }
+                            ,drawCallback: function (settings) {
+                                // rendering ok, find img with data-attr-thumbnail
+                                const thumbnailColl = document.getElementsByClassName('data-attr-thumbnail');
+                                for(let thumbnail of thumbnailColl) {
+                                    thumbnail.setAttribute('src', lizUrls.media+'?repository='+lizUrls.params.repository+'&project='+lizUrls.params.project+'&path='+thumbnail.dataset.src);
+                                }
+                            }
                             ,dom: myDom
                             ,pageLength: 50
                             ,scrollY: '95%'
