@@ -416,7 +416,7 @@ class qgisVectorLayer extends qgisMapLayer
             }
 
             // Detect geometry column
-            if (in_array(strtolower($prop->type), $this->geometryDatatypeMap)) {
+            if ($dtParams->geocol && in_array(strtolower($prop->type), $this->geometryDatatypeMap) && $fieldName == $dtParams->geocol) {
                 $dbInfo->geometryColumn = $fieldName;
                 $dbInfo->geometryType = strtolower($prop->type);
                 // If postgresql, get real geometryType from pg_attribute (jelix prop gives 'geometry')
