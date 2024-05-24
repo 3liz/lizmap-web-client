@@ -64,7 +64,7 @@ export default class Treeview extends HTMLElement {
 
         this._symbolTemplate = symbol =>
             html`
-        <li class="symbol">
+        <li class="symbol${this._isInScale(symbol) ? '' : ' not-in-scale'}">
             ${(symbol.childrenCount)
                 ? html`
                         <div class="expandable ${symbol.expanded ? 'expanded' : ''}" @click=${() => symbol.expanded = !symbol.expanded}></div>`
@@ -218,6 +218,17 @@ export default class Treeview extends HTMLElement {
         const scale = Utils.getScaleFromResolution(mainLizmap.map.getView().getResolution(), metersPerUnit);
         const visibility = item.isVisible(scale);
         return visibility;
+    }
+
+    _isInScale(symbol) {
+        if (symbol.minScaleDenominator !== undefined && symbol.maxScaleDenominator !== undefined
+            && symbol.maxScaleDenominator > symbol.minScaleDenominator){
+            const metersPerUnit = mainLizmap.map.getView().getProjection().getMetersPerUnit();
+            const scale = Utils.getScaleFromResolution(mainLizmap.map.getView().getResolution(), metersPerUnit);
+            return symbol.minScaleDenominator < scale
+            && scale < symbol.maxScaleDenominator;
+        }
+        return true;
     }
 
     _createDocLink(layerName) {

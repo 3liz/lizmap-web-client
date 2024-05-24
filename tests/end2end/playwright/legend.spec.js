@@ -1,9 +1,14 @@
+// @ts-check
 import { test, expect } from '@playwright/test';
+const { gotoMap } = require('./globals')
 
 test.describe('Legend tests', () => {
+
+    const locale = 'en-US';
+
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=layer_legends';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page)
     });
 
     test('Tests the legend display option expand/hide/disabled', async ({ page }) => {
@@ -24,7 +29,7 @@ test.describe('Legend tests', () => {
         await expect(page.getByTestId('tramway_lines').locator('.legend')).toHaveAttribute('src', 'data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADCeZ2D+T4kBTJS6YOANGAXDAgAAI0UB2Uim7V8AAAAASUVORK5CYII=');
 
         // Switch layer's style
-        await page.getByTestId('tramway_lines').locator('.icon-info-sign').click({force:true});
+        await page.getByTestId('tramway_lines').locator('.icon-info-sign').click({ force: true });
         await page.locator('#sub-dock select.styleLayer').selectOption('categorized');
 
         // Assert legend has changed
@@ -34,5 +39,35 @@ test.describe('Legend tests', () => {
 
         await expect(page.getByTestId('tramway_lines').locator('.symbols .legend').first()).toHaveAttribute('src', 'data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADAan9//nxIDmCh1wcAbMAqGBQAAu7ICyNmWVC0AAAAASUVORK5CYII=');
         await expect(page.getByTestId('tramway_lines').locator('.symbols .legend').nth(1)).toHaveAttribute('src', 'data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADC+uSbynxIDmCh1wcAbMAqGBQAA95MC3blCR58AAAAASUVORK5CYII=');
+    });
+
+    test("Layer's rule based symbologie with scales", async ({ page }) => {
+        // Display layer's rule based legend
+        await page.getByTestId('layer_legend_ruled').locator('.expandable').first().click()
+
+        // Check scale and symbology rule in scale
+        await expect(page.locator('#overview-bar .ol-scale-text')).toHaveText('1 : ' + (250000).toLocaleString(locale));
+        await expect(page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({hasText: '100k +'})).not.toHaveClass(/not-in-scale/);
+        await expect(page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({hasText: '100k -'})).toHaveClass(/not-in-scale/);
+
+        // Zoom in
+        let getMapRequestPromise = page.waitForRequest(/REQUEST=GetMap/);
+        await page.locator('#navbar button.btn.zoom-in').click();
+        await getMapRequestPromise;
+
+        // Check scale and symbology rule in scale (same)
+        await expect(page.locator('#overview-bar .ol-scale-text')).toHaveText('1 : ' + (100000).toLocaleString(locale));
+        await expect(page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({hasText: '100k +'})).not.toHaveClass(/not-in-scale/);
+        await expect(page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({hasText: '100k -'})).toHaveClass(/not-in-scale/);
+
+        // Zoom in
+        getMapRequestPromise = page.waitForRequest(/REQUEST=GetMap/);
+        await page.locator('#navbar button.btn.zoom-in').click();
+        await getMapRequestPromise;
+
+        // Check scale and symbology rule in scale (inverted)
+        await expect(page.locator('#overview-bar .ol-scale-text')).toHaveText('1 : ' + (50000).toLocaleString(locale));
+        await expect(page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({hasText: '100k +'})).toHaveClass(/not-in-scale/);
+        await expect(page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({hasText: '100k -'})).not.toHaveClass(/not-in-scale/);
     });
 });
