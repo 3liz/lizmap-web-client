@@ -992,6 +992,11 @@ export default class map extends olMap {
      * @returns {ImageLayer|undefined} The OpenLayers layer or undefined
      */
     getLayerByName(name){
+        // if the layer is included in the singleWMSLayer, return the single ImageLayer instance
+        if(this._statesSingleWMSLayers.get(name)){
+            return this._singleImageWmsGroup.getLayersArray()[0]
+        }
+
         return this.overlayLayers.find(
             layer => layer.get('name') === name
         );
