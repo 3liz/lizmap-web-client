@@ -1,11 +1,23 @@
 export default function executeJSFromServer() {
     lizMap.events.on({
         uicreated: () => {
-            if (document.body.dataset.lizmapPluginWarningUrl) {
+            if (document.body.dataset.lizmapPluginUpdateWarningUrl) {
+                var message = lizDict['project.plugin.outdated.warning'];
+                message += `<br><a href="${document.body.dataset.lizmapPluginUpdateWarningUrl}">`;
+                message += lizDict['visit.admin.panel.project.page'];
+                message += '</a>';
+                message += '<br>';
+                message += lizDict['project.admin.panel.info'];
+                // The plugin can be easily updated, the popup can not be closed
+                lizMap.addMessage(message, 'warning', false).attr('id', 'lizmap-warning-message');
+            } else if (document.body.dataset.lizmapPluginHasWarningsUrl) {
                 var message = lizDict['project.has.warnings'];
-                message += `<br><a href="${document.body.dataset.lizmapPluginWarningUrl}">`;
-                message += lizDict['project.has.warnings.link'];
-                message += '</a>'
+                message += `<br><a href="${document.body.dataset.lizmapPluginHasWarningsUrl}">`;
+                message += lizDict['visit.admin.panel.project.page'];
+                message += '</a>';
+                message += '<br>';
+                message += lizDict['project.admin.panel.info'];
+                // It can take times to fix these issues, the popup can be closed
                 lizMap.addMessage(message, 'warning', true).attr('id', 'lizmap-warning-message');
             }
 
