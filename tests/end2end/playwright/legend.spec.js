@@ -25,7 +25,7 @@ test.describe('Legend tests', () => {
         await expect(page.getByTestId('tramway_lines').locator('.legend')).toHaveAttribute('src', 'data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADCeZ2D+T4kBTJS6YOANGAXDAgAAI0UB2Uim7V8AAAAASUVORK5CYII=');
 
         // Switch layer's style
-        await page.getByTestId('tramway_lines').locator('.icon-info-sign').click({force:true});
+        await page.getByTestId('tramway_lines').locator('.icon-info-sign').click({ force: true });
         await page.locator('#sub-dock select.styleLayer').selectOption('categorized');
 
         // Assert legend has changed
