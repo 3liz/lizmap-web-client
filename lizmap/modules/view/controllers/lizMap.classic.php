@@ -555,22 +555,44 @@ class lizMapCtrl extends jController
             $assign['googleAnalyticsID'] = $lser->googleAnalyticsID;
         }
 
-        $serverInfoAccess = (\jAcl2::check('lizmap.admin.access') || \jAcl2::check('lizmap.admin.server.information.view'));
-        if ($serverInfoAccess && ($lproj->projectCountCfgWarnings() >= 1 || $lproj->qgisLizmapPluginUpdateNeeded())) {
-            $jsWarning = "
-                lizMap.events.on(
-                    {
-                    'uicreated':function(evt){
-                        var message = lizDict['project.has.warnings'];
-                        message += '<br><a href=\"".jUrl::get('admin~qgis_projects:index')."\">';
-                        message += lizDict['project.has.warnings.link'];
-                        message += '</a>'
-                        lizMap.addMessage(message, 'warning', true).attr('id','lizmap-warning-message');
+        if (\jAcl2::check('lizmap.admin.access') || \jAcl2::check('lizmap.admin.server.information.view')) {
+            if ($lproj->qgisLizmapPluginUpdateNeeded()) {
+                // The plugin can be easily updated, the popup can not be closed
+                $jsWarning = "
+                    lizMap.events.on(
+                        {
+                        'uicreated':function(evt){
+                            var message = lizDict['project.plugin.outdated.warning'];
+                            message += '<br><a href=\"".jUrl::get('admin~qgis_projects:index')."\">';
+                            message += lizDict['visit.admin.panel.project.page'];
+                            message += '</a>';
+                            message += '<br>';
+                            message += lizDict['project.admin.panel.info'];
+                            lizMap.addMessage(message, 'warning', false).attr('id','lizmap-warning-message');
+                        }
                     }
-                }
-            );
-            ";
-            $rep->addJSCode($jsWarning);
+                );
+                ";
+                $rep->addJSCode($jsWarning);
+            } elseif ($lproj->projectCountCfgWarnings() >= 1) {
+                // It can take times to fix these issues, the popup can be closed
+                $jsWarning = "
+                    lizMap.events.on(
+                        {
+                        'uicreated':function(evt){
+                            var message = lizDict['project.has.warnings'];
+                            message += '<br><a href=\"".jUrl::get('admin~qgis_projects:index')."\">';
+                            message += lizDict['visit.admin.panel.project.page'];
+                            message += '</a>';
+                            message += '<br>';
+                            message += lizDict['project.admin.panel.info'];
+                            lizMap.addMessage(message, 'warning', true).attr('id','lizmap-warning-message');
+                        }
+                    }
+                );
+                ";
+                $rep->addJSCode($jsWarning);
+            }
         }
 
         $rep->body->assign($assign);
