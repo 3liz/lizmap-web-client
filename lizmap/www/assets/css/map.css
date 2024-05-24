@@ -3129,18 +3129,24 @@ lizmap-treeview label {
   display: inline;
 }
 
-lizmap-treeview li.not-visible > div input[type="checkbox"] {
+lizmap-treeview li.not-visible > div input[type="checkbox"],
+lizmap-treeview li.not-in-scale > label input[type="checkbox"],
+lizmap-treeview li.not-in-scale > ul.symbols label input[type="checkbox"] {
   accent-color: #7F7F80;
 }
 
 lizmap-treeview li.not-visible > div label,
-lizmap-treeview li.not-visible > ul.symbols label {
+lizmap-treeview li.not-visible > ul.symbols label,
+lizmap-treeview li.not-in-scale > label,
+lizmap-treeview li.not-in-scale > ul.symbols label {
   font-style: italic;
   color: #7F7F80;
 }
 
 lizmap-treeview li.not-visible > div img,
-lizmap-treeview li.not-visible > ul.symbols img {
+lizmap-treeview li.not-visible > ul.symbols img,
+lizmap-treeview li.not-in-scale > label img,
+lizmap-treeview li.not-in-scale > ul.symbols img {
   filter: grayscale(1);
 }
 
