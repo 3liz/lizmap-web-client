@@ -556,9 +556,12 @@ class lizMapCtrl extends jController
             $assign['googleAnalyticsID'] = $lser->googleAnalyticsID;
         }
 
-        $serverInfoAccess = (\jAcl2::check('lizmap.admin.access') || \jAcl2::check('lizmap.admin.server.information.view'));
-        if ($serverInfoAccess && ($lproj->projectCountCfgWarnings() >= 1 || $lproj->qgisLizmapPluginUpdateNeeded())) {
-            $rep->setBodyAttributes(array('data-lizmap-plugin-warning-url' => jUrl::get('admin~qgis_projects:index')));
+        if (\jAcl2::check('lizmap.admin.access') || \jAcl2::check('lizmap.admin.server.information.view')) {
+            if ($lproj->qgisLizmapPluginUpdateNeeded()) {
+                $rep->setBodyAttributes(array('data-lizmap-plugin-update-warning-url' => jUrl::get('admin~qgis_projects:index')));
+            } elseif ($lproj->projectCountCfgWarnings() >= 1) {
+                $rep->setBodyAttributes(array('data-lizmap-plugin-has-warnings-url' => jUrl::get('admin~qgis_projects:index')));
+            }
         }
 
         $rep->body->assign($assign);
