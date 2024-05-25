@@ -19,7 +19,7 @@ test.describe('Theme', () => {
         await expect(page.getByLabel('Les quartiers')).toBeChecked();
 
         // Style
-        await page.locator('lizmap-treeview > ul > li:nth-child(2) > div.checked.layer > div.node > div > i').click({force:true});
+        await page.locator('lizmap-treeview > ul > li:nth-child(2) > div.checked.layer > div.node > div > i').click({ force: true });
         expect(await page.locator('#sub-dock select.styleLayer').inputValue()).toBe('style1');
 
         // The url has been updated
@@ -48,7 +48,7 @@ test.describe('Theme', () => {
         await expect(page.getByLabel('Les quartiers')).toBeChecked();
 
         // Style
-        await page.locator('lizmap-treeview > ul > li:nth-child(2) > div.checked.layer > div.node > div > i').click({force:true});
+        await page.locator('lizmap-treeview > ul > li:nth-child(2) > div.checked.layer > div.node > div > i').click({ force: true });
         expect(await page.locator('#sub-dock select.styleLayer').inputValue()).toBe('style2');
 
         // The url has been updated

@@ -1,3 +1,4 @@
+// @ts-check
 import { test, expect } from '@playwright/test';
 
 test.describe('Projects homepage', function () {
@@ -8,8 +9,6 @@ test.describe('Projects homepage', function () {
     });
 
     test('should display project metadata (cold cache)', async function ({ page }) {
-
-
 
         const allmetadata = page.locator('.liz-project-desc').filter({ hasText: 'Test tags: nature, flower' });
         await expect(allmetadata).not.toBeVisible();

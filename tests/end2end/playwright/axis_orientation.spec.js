@@ -38,7 +38,7 @@ test.describe('Axis Orientation', () => {
         await page.route('https://tile.openstreetmap.org/*/*/*.png', (route) => {
             const request = route.request();
             GetTiles.push(request.url());
-        }, {times: 6});
+        }, { times: 6 });
 
         await page.locator('#switcher-baselayer').getByRole('combobox').selectOption('OpenStreetMap');
         await page.waitForTimeout(1000);
@@ -87,7 +87,7 @@ test.describe('Axis Orientation', () => {
         await page.route('https://tile.openstreetmap.org/*/*/*.png', (route) => {
             const request = route.request();
             GetTiles.push(request.url());
-        }, {times: 6});
+        }, { times: 6 });
         await page.locator('#switcher-baselayer').getByRole('combobox').selectOption('OpenStreetMap');
         await page.waitForTimeout(1000);
         expect(GetTiles).toHaveLength(6);

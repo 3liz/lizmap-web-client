@@ -37,7 +37,7 @@ test.describe('Viewport devicePixelRatio 1', () => {
         // Check that the WMS Max Size has been well overwrite
         expect(await page.evaluate(() => globalThis.lizMap.mainLizmap.initialConfig.options.wmsMaxHeight)).toBe(950);
         expect(await page.evaluate(() => window.devicePixelRatio)).toBe(1);
-        expect(await page.evaluate(() => globalThis.lizMap.mainLizmap.map.getSize())).toStrictEqual([870,575]);
+        expect(await page.evaluate(() => globalThis.lizMap.mainLizmap.map.getSize())).toStrictEqual([870, 575]);
         await page.unroute('**/service/getProjectConfig*')
 
         // Catch GetMaps request;
@@ -107,7 +107,7 @@ test.describe('Viewport devicePixelRatio 2', () => {
         // Check that the WMS Max Size has been well overwrite
         expect(await page.evaluate(() => globalThis.lizMap.mainLizmap.initialConfig.options.wmsMaxHeight)).toBe(1900);
         expect(await page.evaluate(() => window.devicePixelRatio)).toBe(2);
-        expect(await page.evaluate(() => globalThis.lizMap.mainLizmap.map.getSize())).toStrictEqual([870,620]);
+        expect(await page.evaluate(() => globalThis.lizMap.mainLizmap.map.getSize())).toStrictEqual([870, 620]);
         await page.unroute('**/service/getProjectConfig*')
 
         // Catch GetMaps request;
@@ -118,7 +118,7 @@ test.describe('Viewport devicePixelRatio 2', () => {
             if (request.url().includes('GetMap')) {
                 GetMaps.push(request.url());
             }
-        }, {times: 1}); // No tiles, if High DPI is enabled we got 4 tiles
+        }, { times: 1 }); // No tiles, if High DPI is enabled we got 4 tiles
 
         // Activate world layer
         await page.getByLabel('world').check();
@@ -128,7 +128,7 @@ test.describe('Viewport devicePixelRatio 2', () => {
 
         // Check GetMap requests
         expect(GetMaps).toHaveLength(1); // No tiles, if High DPI is enabled we got 4 tiles
-        for(const GetMap of GetMaps) {
+        for (const GetMap of GetMaps) {
             expect(GetMap).toContain('&WIDTH=957&')
             expect(GetMap).toContain('&HEIGHT=682&')
             expect(GetMap).toContain('&DPI=96&')

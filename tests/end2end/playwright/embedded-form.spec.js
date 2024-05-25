@@ -1,7 +1,7 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 
-test.describe('Edition of an embedded layer',()=>{
+test.describe('Edition of an embedded layer', () => {
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=edition_embed';
         await page.goto(url, { waitUntil: 'networkidle' });
@@ -12,7 +12,7 @@ test.describe('Edition of an embedded layer',()=>{
         let editPointRequestPromise = page.waitForResponse(response => response.url().includes('editFeature'));
 
         await page.locator('#button-edition').click();
-        await page.locator('#edition-layer').selectOption({label: 'Embedded Point'});
+        await page.locator('#edition-layer').selectOption({ label: 'Embedded Point' });
         await page.locator('#edition-draw').click();
 
         await editPointRequestPromise;
@@ -41,7 +41,7 @@ test.describe('Edition of an embedded layer',()=>{
         page.once('dialog', dialog => {
             console.log(`Dialog message: ${dialog.message()}`);
             dialog.accept()
-          });
+        });
         //close form
         await page.locator("#jforms_view_edition__submit_cancel").click()
 
@@ -51,7 +51,7 @@ test.describe('Edition of an embedded layer',()=>{
 
 
         //await page.locator('#button-edition').click();
-        await page.locator('#edition-layer').selectOption({label: 'Embedded Line'});
+        await page.locator('#edition-layer').selectOption({ label: 'Embedded Line' });
         await page.locator('#edition-draw').click();
 
         await editLineRequestPromise;
