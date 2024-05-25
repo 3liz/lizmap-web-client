@@ -33,8 +33,8 @@ test.describe('XSS', () => {
         // Open attribute table
         await page.locator('#button-attributeLayers').click();
         await page
-        .locator('button[value="xss_layer"].btn-open-attribute-layer')
-        .click({ force: true });
+            .locator('button[value="xss_layer"].btn-open-attribute-layer')
+            .click({ force: true });
 
         expect(dialogOpens).toEqual(0);
     });

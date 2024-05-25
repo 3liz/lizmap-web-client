@@ -20,8 +20,5 @@ test.describe('Attribute table', () => {
         await expect(page.locator('#attribute-layer-table-Les_quartiers_a_Montpellier img.data-attr-thumbnail').first()).toHaveAttribute('src', new RegExp(mediaFile));
         // ensure src contain getMedia and projet URL
         await expect(page.locator('#attribute-layer-table-Les_quartiers_a_Montpellier img.data-attr-thumbnail').first()).toHaveAttribute('src', /getMedia\?repository=testsrepository&project=attribute_table&/);
-
-
-
     })
 })
