@@ -1,5 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+const { gotoMap } = require('./globals')
 
 test.describe('WMTS', () => {
     test('Check GetCapabilities', async ({ page }) => {
@@ -17,7 +18,7 @@ test.describe('WMTS', () => {
     })
     test('Check GetTile', async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=wmts_test';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page)
         // Catch GetTile request;
         let GetTiles = [];
         await page.route('**/service*', (route) => {

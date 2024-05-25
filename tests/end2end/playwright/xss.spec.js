@@ -1,5 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+const { gotoMap } = require('./globals')
 
 test.describe('XSS', () => {
     // Test that flawed data are sanitized before being displayed
@@ -12,7 +13,7 @@ test.describe('XSS', () => {
         });
 
         const url = '/index.php/view/map/?repository=testsrepository&project=xss';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page)
 
         // Edition: add XSS data
         await page.locator('#button-edition').click();

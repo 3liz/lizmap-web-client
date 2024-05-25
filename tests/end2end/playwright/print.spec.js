@@ -1,11 +1,12 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+const { gotoMap } = require('./globals')
 
 test.describe('Print', () => {
 
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=print';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page)
 
         await page.locator('#button-print').click();
 
@@ -208,7 +209,7 @@ test.describe('Print', () => {
 test.describe('Print in popup', () => {
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=print';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page)
         let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
         await page.locator('#map').click({ position: { x: 409, y: 186 } });
         let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
@@ -277,7 +278,7 @@ test.describe('Print - user in group a', () => {
 
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=print';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page)
 
         await page.locator('#button-print').click();
 
@@ -316,7 +317,7 @@ test.describe('Print - admin', () => {
 
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=print';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page)
 
         await page.locator('#button-print').click();
 
@@ -368,7 +369,7 @@ test.describe('Print 3857', () => {
 
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=print_3857';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page)
 
         await page.locator('#button-print').click();
 
@@ -498,7 +499,7 @@ test.describe('Print 3857', () => {
 test.describe('Print base layers', () => {
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=base_layers';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page)
 
         await page.locator('#button-print').click();
 
@@ -620,9 +621,7 @@ test.describe('Error while printing', () => {
 
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=print';
-        await page.goto(url, { waitUntil: 'networkidle' });
-        /*
-        */
+        await gotoMap(url, page)
     });
 
     test('Print error', async ({ page }) => {

@@ -1,10 +1,11 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+const { gotoMap } = require('./globals')
 
 test.describe('Attribute table', () => {
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=attribute_table';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page)
     });
 
     test('Thumbnail class generate img with good path', async ({ page }) => {
