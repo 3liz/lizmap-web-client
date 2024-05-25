@@ -1,3 +1,4 @@
+// @ts-check
 import { test, expect } from '@playwright/test';
 
 test.describe('N to M relations', () => {
@@ -264,8 +265,8 @@ test.describe('N to M relations', () => {
 
         // unlink area from birds, this should delete the pivot record
         page.once('dialog', dialog => {
-             expect(dialog.message()).toBe("Are you sure you want to unlink the selected feature from \"Birds\" layer?");
-             return dialog.accept();
+            expect(dialog.message()).toBe("Are you sure you want to unlink the selected feature from \"Birds\" layer?");
+            return dialog.accept();
         });
 
         let unlinkPivotFeature = page.waitForResponse(response => response.request().method() === 'POST' && response.request().postData()?.includes('%22bird_id%22+%3D+%279%27') === true)
@@ -302,8 +303,8 @@ test.describe('N to M relations', () => {
         let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
         await page.locator('#newOlMap').click({
             position: {
-              x: 413,
-              y: 232
+                x: 413,
+                y: 232
             }
         });
 

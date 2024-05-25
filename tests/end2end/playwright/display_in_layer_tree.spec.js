@@ -1,11 +1,12 @@
 // @ts-check
 const { test, expect } = require('@playwright/test');
+const { gotoMap } = require('./globals')
 
 test.describe('Display in layer tree', () => {
 
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map?repository=testsrepository&project=display_in_legend';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page)
     });
 
     test('display in layer tree unchecked => layer not visible in layer tree and layer in print request', async ({ page }) => {

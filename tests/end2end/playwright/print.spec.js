@@ -1,11 +1,12 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+const { gotoMap } = require('./globals')
 
 test.describe('Print', () => {
 
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=print';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page)
 
         await page.locator('#button-print').click();
 
@@ -113,16 +114,16 @@ test.describe('Print', () => {
         await page.locator('#draw .digitizing-buttons').click();
         await page.locator('#draw .digitizing-circle > svg').click();
         await page.locator('#newOlMap').click({
-          position: {
-            x: 610,
-            y: 302
-          }
+            position: {
+                x: 610,
+                y: 302
+            }
         });
         await page.locator('#newOlMap').click({
-          position: {
-            x: 722,
-            y: 300
-          }
+            position: {
+                x: 722,
+                y: 300
+            }
         });
 
         await page.locator('#button-print').click();
@@ -138,9 +139,9 @@ test.describe('Print', () => {
         await page.locator('#bottom-dock-window-buttons .btn-bottomdock-clear').click();
 
         page.on('request', request => {
-            if(request.method() === "POST") {
+            if (request.method() === "POST") {
                 const postData = request.postData();
-                if (postData != null && postData.includes('GetPrint')){
+                if (postData != null && postData.includes('GetPrint')) {
                     expect(postData).toContain('SERVICE=WMS')
                     expect(postData).toContain('REQUEST=GetPrint')
                     expect(postData).toContain('VERSION=1.3.0')
@@ -179,9 +180,9 @@ test.describe('Print', () => {
         await getFilterTokenPromise;
 
         page.on('request', request => {
-            if(request.method() === "POST") {
+            if (request.method() === "POST") {
                 const postData = request.postData();
-                if (postData != null && postData.includes('GetPrint')){
+                if (postData != null && postData.includes('GetPrint')) {
                     expect(postData).toContain('SERVICE=WMS')
                     expect(postData).toContain('REQUEST=GetPrint')
                     expect(postData).toContain('VERSION=1.3.0')
@@ -208,7 +209,7 @@ test.describe('Print', () => {
 test.describe('Print in popup', () => {
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=print';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page)
         let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
         await page.locator('#newOlMap').click({ position: { x: 409, y: 186 } });
         let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
@@ -242,9 +243,9 @@ test.describe('Print in popup', () => {
         const featureAtlasQuartiers = page.locator('#popupcontent lizmap-feature-toolbar[value="quartiers_cc80709a_cd4a_41de_9400_1f492b32c9f7.1"] .feature-atlas');
 
         page.on('request', request => {
-            if(request.method() === "POST") {
+            if (request.method() === "POST") {
                 const postData = request.postData();
-                if (postData != null && postData.includes('GetPrint')){
+                if (postData != null && postData.includes('GetPrint')) {
                     expect(postData).toContain('SERVICE=WMS')
                     expect(postData).toContain('REQUEST=GetPrintAtlas')
                     expect(postData).toContain('VERSION=1.3.0')
@@ -277,7 +278,7 @@ test.describe('Print - user in group a', () => {
 
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=print';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page)
 
         await page.locator('#button-print').click();
 
@@ -316,7 +317,7 @@ test.describe('Print - admin', () => {
 
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=print';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page)
 
         await page.locator('#button-print').click();
 
@@ -368,7 +369,7 @@ test.describe('Print 3857', () => {
 
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=print_3857';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page)
 
         await page.locator('#button-print').click();
 
@@ -477,16 +478,16 @@ test.describe('Print 3857', () => {
         await page.locator('#draw .digitizing-buttons').click();
         await page.locator('#draw .digitizing-circle > svg').click();
         await page.locator('#newOlMap').click({
-          position: {
-            x: 610,
-            y: 302
-          }
+            position: {
+                x: 610,
+                y: 302
+            }
         });
         await page.locator('#newOlMap').click({
-          position: {
-            x: 722,
-            y: 300
-          }
+            position: {
+                x: 722,
+                y: 300
+            }
         });
 
         await page.locator('#button-print').click();
@@ -498,7 +499,7 @@ test.describe('Print 3857', () => {
 test.describe('Print base layers', () => {
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=base_layers';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page)
 
         await page.locator('#button-print').click();
 
@@ -620,9 +621,7 @@ test.describe('Error while printing', () => {
 
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=print';
-        await page.goto(url, { waitUntil: 'networkidle' });
-        /*
-        */
+        await gotoMap(url, page)
     });
 
     test('Print error', async ({ page }) => {
