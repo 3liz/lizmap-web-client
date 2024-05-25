@@ -1,3 +1,4 @@
+// @ts-check
 import { test, expect } from '@playwright/test';
 
 test.describe('WMTS', () => {
@@ -7,7 +8,7 @@ test.describe('WMTS', () => {
         await page.goto(url);
         let getCapabilitiesWMTSRequest = await getCapabilitiesWMTSPromise;
         let getCapabilitiesWMTSResponse = await getCapabilitiesWMTSRequest.response();
-        let getCapabilitiesWMTSResponseText = await getCapabilitiesWMTSResponse.text();
+        let getCapabilitiesWMTSResponseText = await getCapabilitiesWMTSResponse?.text();
         expect(getCapabilitiesWMTSResponseText).toContain('<Layer>');
         expect(getCapabilitiesWMTSResponseText).toContain('<ows:Identifier>quartiers</ows:Identifier>');
         expect(getCapabilitiesWMTSResponseText).toContain('<ows:Title>quartiers fffffff</ows:Title>');
@@ -25,7 +26,7 @@ test.describe('WMTS', () => {
                 GetTiles.push(request.url());
             }
             route.continue();
-        }, {times: 6});
+        }, { times: 6 });
         await page.getByLabel('quartiers fffffff').check();
         await page.waitForTimeout(2000);
         expect(GetTiles).toHaveLength(6);
