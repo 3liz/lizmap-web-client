@@ -1,3 +1,4 @@
+// @ts-check
 import { test, expect } from '@playwright/test';
 
 test.describe('Filter layer data by user - not connected', () => {

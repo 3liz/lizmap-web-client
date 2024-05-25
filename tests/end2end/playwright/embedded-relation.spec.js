@@ -1,3 +1,4 @@
+// @ts-check
 import { test, expect } from '@playwright/test';
 
 test.describe('Display embedded relation in popup',()=>{
