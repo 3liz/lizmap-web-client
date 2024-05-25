@@ -1,116 +1,117 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+const { gotoMap } = require('./globals')
 
 test.describe('Edition Form Validation', () => {
 
-  test.beforeEach(async ({ page }) => {
-      const url = '/index.php/view/map/?repository=testsrepository&project=form_edition_all_field_type';
-      await page.goto(url, { waitUntil: 'networkidle' });
-  });
+    test.beforeEach(async ({ page }) => {
+        const url = '/index.php/view/map/?repository=testsrepository&project=form_edition_all_field_type';
+        await gotoMap(url, page)
+    });
 
-  test('Input type number with range and step', async ({ page }) => {
-      // display form
-      await page.locator('#button-edition').click();
-      await page.locator('a#edition-draw').click();
+    test('Input type number with range and step', async ({ page }) => {
+        // display form
+        await page.locator('#button-edition').click();
+        await page.locator('a#edition-draw').click();
 
-      // ensure input attributes match with field config defined in project
-      await expect(page.locator('#jforms_view_edition input[name="integer_field"]')).toHaveAttribute('type','number')
-      await expect(page.locator('#jforms_view_edition input[name="integer_field"]')).toHaveAttribute('step','5');
-      await expect(page.locator('#jforms_view_edition input[name="integer_field"]')).toHaveAttribute('min','-200');
-      await expect(page.locator('#jforms_view_edition input[name="integer_field"]')).toHaveAttribute('max','200');
+        // ensure input attributes match with field config defined in project
+        await expect(page.locator('#jforms_view_edition input[name="integer_field"]')).toHaveAttribute('type', 'number')
+        await expect(page.locator('#jforms_view_edition input[name="integer_field"]')).toHaveAttribute('step', '5');
+        await expect(page.locator('#jforms_view_edition input[name="integer_field"]')).toHaveAttribute('min', '-200');
+        await expect(page.locator('#jforms_view_edition input[name="integer_field"]')).toHaveAttribute('max', '200');
 
-      // add data
-      await page.locator('#jforms_view_edition input[name="integer_field"]').fill('50');
+        // add data
+        await page.locator('#jforms_view_edition input[name="integer_field"]').fill('50');
 
-      // submit form
-      await page.locator('#jforms_view_edition__submit_submit').click();
-      // will close & show message
-      await expect(page.locator('#edition-form-container')).toBeHidden();
-      await expect(page.locator('#lizmap-edition-message')).toBeVisible();
-  })
+        // submit form
+        await page.locator('#jforms_view_edition__submit_submit').click();
+        // will close & show message
+        await expect(page.locator('#edition-form-container')).toBeHidden();
+        await expect(page.locator('#lizmap-edition-message')).toBeVisible();
+    })
 
-  test('Boolean nullable w/ value map', async ({ page }) => {
+    test('Boolean nullable w/ value map', async ({ page }) => {
 
-      let editFeatureRequestPromise = page.waitForResponse(response => response.url().includes('editFeature'));
+        let editFeatureRequestPromise = page.waitForResponse(response => response.url().includes('editFeature'));
 
-      await page.locator('#button-edition').click();
-      await page.locator('#edition-layer').selectOption({label: 'many_bool_formats'});
-      await page.locator('#edition-draw').click();
-      await page.locator('#jforms_view_edition_liz_future_action').selectOption('edit');
-      await page.getByLabel('bool_simple_null_vm').selectOption('t');
-      await page.locator('#jforms_view_edition__submit_submit').click();
+        await page.locator('#button-edition').click();
+        await page.locator('#edition-layer').selectOption({ label: 'many_bool_formats' });
+        await page.locator('#edition-draw').click();
+        await page.locator('#jforms_view_edition_liz_future_action').selectOption('edit');
+        await page.getByLabel('bool_simple_null_vm').selectOption('t');
+        await page.locator('#jforms_view_edition__submit_submit').click();
 
-      await editFeatureRequestPromise;
+        await editFeatureRequestPromise;
 
-      // Wait a bit for the UI to refresh
-      await page.waitForTimeout(300);
+        // Wait a bit for the UI to refresh
+        await page.waitForTimeout(300);
 
-      await expect(page.getByLabel('bool_simple_null_vm')).toHaveValue('t');
+        await expect(page.getByLabel('bool_simple_null_vm')).toHaveValue('t');
 
-      await page.getByLabel('bool_simple_null_vm').selectOption('');
-      await page.locator('#jforms_view_edition__submit_submit').click();
+        await page.getByLabel('bool_simple_null_vm').selectOption('');
+        await page.locator('#jforms_view_edition__submit_submit').click();
 
-      await editFeatureRequestPromise;
+        await editFeatureRequestPromise;
 
-      // Wait a bit for the UI to refresh
-      await page.waitForTimeout(300);
+        // Wait a bit for the UI to refresh
+        await page.waitForTimeout(300);
 
-      await expect(page.getByLabel('bool_simple_null_vm')).toHaveValue('');
-  })
+        await expect(page.getByLabel('bool_simple_null_vm')).toHaveValue('');
+    })
 
-  test('Error fetch form', async ({ page }) => {
-      await page.route('**/edition/createFeature*', async route => {
-          await route.fulfill({
-              status: 404,
-              contentType: 'text/plain',
-              body: 'Not Found!'
-          });
-      });
+    test('Error fetch form', async ({ page }) => {
+        await page.route('**/edition/createFeature*', async route => {
+            await route.fulfill({
+                status: 404,
+                contentType: 'text/plain',
+                body: 'Not Found!'
+            });
+        });
 
-      // display form
-      await page.locator('#button-edition').click();
-      await page.locator('a#edition-draw').click();
+        // display form
+        await page.locator('#button-edition').click();
+        await page.locator('a#edition-draw').click();
 
-      // message
-      await expect(page.locator("#lizmap-edition-message")).toBeVisible();
-      await expect(page.locator("#message > div")).toHaveClass(/alert-error/);
-  })
+        // message
+        await expect(page.locator("#lizmap-edition-message")).toBeVisible();
+        await expect(page.locator("#message > div")).toHaveClass(/alert-error/);
+    })
 
-  test('Error send feature', async ({ page }) => {
-      // display form
-      await page.locator('#button-edition').click();
-      await page.locator('a#edition-draw').click();
+    test('Error send feature', async ({ page }) => {
+        // display form
+        await page.locator('#button-edition').click();
+        await page.locator('a#edition-draw').click();
 
-      // add data
-      await page.locator('#jforms_view_edition input[name="integer_field"]').fill('50');
+        // add data
+        await page.locator('#jforms_view_edition input[name="integer_field"]').fill('50');
 
-      await page.route('**/edition/saveFeature*', async route => {
-          await route.fulfill({
-              status: 404,
-              contentType: 'text/plain',
-              body: 'Not Found!'
-          });
-      });
+        await page.route('**/edition/saveFeature*', async route => {
+            await route.fulfill({
+                status: 404,
+                contentType: 'text/plain',
+                body: 'Not Found!'
+            });
+        });
 
-      // submit form
-      await page.locator('#jforms_view_edition__submit_submit').click();
+        // submit form
+        await page.locator('#jforms_view_edition__submit_submit').click();
 
-      // message
-      await expect(page.locator("#lizmap-edition-message")).toBeVisible();
-      await expect(page.locator("#message > div")).toHaveClass(/alert-error/);
+        // message
+        await expect(page.locator("#lizmap-edition-message")).toBeVisible();
+        await expect(page.locator("#message > div")).toHaveClass(/alert-error/);
 
-      // form still here
-      await expect(page.locator('#edition-form-container')).toBeVisible();
+        // form still here
+        await expect(page.locator('#edition-form-container')).toBeVisible();
 
-      // cancel edition and inspect new child attribute table
-      page.once('dialog', dialog => {
-          return dialog.accept();
-      });
-      await page.locator('#jforms_view_edition__submit_cancel').click();
+        // cancel edition and inspect new child attribute table
+        page.once('dialog', dialog => {
+            return dialog.accept();
+        });
+        await page.locator('#jforms_view_edition__submit_cancel').click();
 
-      // form closed
-      await expect(page.locator('#edition-form-container')).toBeHidden();
-  })
+        // form closed
+        await expect(page.locator('#edition-form-container')).toBeHidden();
+    })
 })
 
 
@@ -118,7 +119,7 @@ test.describe('Multiple geometry layers', () => {
 
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=multiple_geom';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page)
     });
 
     test('Double geom layer', async ({ page }) => {
@@ -136,26 +137,26 @@ test.describe('Multiple geometry layers', () => {
 
         // insert a polygon feature
         await page.locator('#map').click({
-          position: {
-            x: 608,
-            y: 260
-          }
+            position: {
+                x: 608,
+                y: 260
+            }
         });
         await page.waitForTimeout(300);
 
         await page.locator('#map').click({
-          position: {
-            x: 629,
-            y: 200
-          }
+            position: {
+                x: 629,
+                y: 200
+            }
         });
         await page.waitForTimeout(300);
 
         await page.locator('#map').dblclick({
-          position: {
-            x: 560,
-            y: 191
-          }
+            position: {
+                x: 560,
+                y: 191
+            }
         });
         await page.waitForTimeout(300);
 
@@ -169,7 +170,7 @@ test.describe('Multiple geometry layers', () => {
         await expect(page.locator('#lizmap-edition-message')).toBeVisible();
 
         // double_geom_layer editing, layer with "geom_d" column
-        await page.locator('#edition-layer').selectOption({label:'double_geom_d'});
+        await page.locator('#edition-layer').selectOption({ label: 'double_geom_d' });
 
         await page.locator('a#edition-draw').click();
 
@@ -181,26 +182,26 @@ test.describe('Multiple geometry layers', () => {
 
         // insert a polygon feature
         await page.locator('#map').click({
-          position: {
-            x: 651,
-            y: 401
-          }
+            position: {
+                x: 651,
+                y: 401
+            }
         });
         await page.waitForTimeout(300);
 
         await page.locator('#map').click({
-          position: {
-            x: 695,
-            y: 368
-          }
+            position: {
+                x: 695,
+                y: 368
+            }
         });
         await page.waitForTimeout(300);
 
         await page.locator('#map').dblclick({
-          position: {
-            x: 641,
-            y: 373
-          }
+            position: {
+                x: 641,
+                y: 373
+            }
         });
         await page.waitForTimeout(300);
 
@@ -282,7 +283,7 @@ test.describe('Multiple geometry layers', () => {
         await page.locator('#button-edition').click();
 
         // triple_geom_layer editing, layer with "geom" column
-        await page.locator('#edition-layer').selectOption({label:'triple_geom_point'})
+        await page.locator('#edition-layer').selectOption({ label: 'triple_geom_point' })
 
         await page.locator('a#edition-draw').click();
 
@@ -294,10 +295,10 @@ test.describe('Multiple geometry layers', () => {
 
         // insert a point feature
         await page.locator('#map').click({
-          position: {
-            x: 523,
-            y: 389
-          }
+            position: {
+                x: 523,
+                y: 389
+            }
         });
         await page.waitForTimeout(300);
 
@@ -311,7 +312,7 @@ test.describe('Multiple geometry layers', () => {
         await expect(page.locator('#lizmap-edition-message')).toBeVisible();
 
         // triple_geom_layer editing, layer with "geom_l" column
-        await page.locator('#edition-layer').selectOption({label:'triple_geom_line'});
+        await page.locator('#edition-layer').selectOption({ label: 'triple_geom_line' });
 
         await page.locator('a#edition-draw').click();
 
@@ -323,18 +324,18 @@ test.describe('Multiple geometry layers', () => {
 
         // insert a line feature
         await page.locator('#map').click({
-          position: {
-            x: 545,
-            y: 438
-          }
+            position: {
+                x: 545,
+                y: 438
+            }
         });
         await page.waitForTimeout(300);
 
         await page.locator('#map').dblclick({
-          position: {
-            x: 589,
-            y: 413
-          }
+            position: {
+                x: 589,
+                y: 413
+            }
         });
         await page.waitForTimeout(300)
 
@@ -348,7 +349,7 @@ test.describe('Multiple geometry layers', () => {
         await expect(page.locator('#lizmap-edition-message')).toBeVisible()
 
         // triple_geom_layer editing, layer with "geom_p" column
-        await page.locator('#edition-layer').selectOption({label:'triple_geom_polygon'})
+        await page.locator('#edition-layer').selectOption({ label: 'triple_geom_polygon' })
 
         await page.locator('a#edition-draw').click();
 
@@ -360,26 +361,26 @@ test.describe('Multiple geometry layers', () => {
 
         // insert a polygon feature
         await page.locator('#map').click({
-          position: {
-            x: 633,
-            y: 319
-          }
+            position: {
+                x: 633,
+                y: 319
+            }
         });
         await page.waitForTimeout(300);
 
         await page.locator('#map').click({
-          position: {
-            x: 645,
-            y: 280
-          }
+            position: {
+                x: 645,
+                y: 280
+            }
         });
         await page.waitForTimeout(300);
 
         await page.locator('#map').dblclick({
-          position: {
-            x: 677,
-            y: 315
-          }
+            position: {
+                x: 677,
+                y: 315
+            }
         });
         await page.waitForTimeout(300);
 
@@ -508,4 +509,4 @@ test.describe('Multiple geometry layers', () => {
         await expect(triple_geom_geom_p_attr_table.locator("tbody tr").nth(3).locator("td").nth(4)).toHaveText("");
 
     })
-  })
+})

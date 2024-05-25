@@ -349,7 +349,7 @@ test.describe('Popup config mocked with "minidock" option', () => {
         });
 
         const url = '/index.php/view/map/?repository=testsrepository&project=popup';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page)
 
         // When clicking on a triangle feature a popup must appear
         await page.locator('#newOlMap').click({

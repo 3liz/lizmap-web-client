@@ -1,5 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+const { gotoMap } = require('./globals')
 
 test.describe('Maps management', () => {
 
@@ -16,15 +17,15 @@ test.describe('Maps management', () => {
         await page.goto('index.php');
 
         const url = '/index.php/view/map/?repository=testsrepository&project=world-3857';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page)
 
-        await page.evaluate(() => {addOlLayers()})
+        await page.evaluate(() => { addOlLayers() })
         await page.waitForTimeout(1000);
         await expect(page.getByText('wms4326')).toBeVisible();
         await expect(page.getByText('states')).toBeVisible();
         await expect(page.getByText('VectorTile')).toBeVisible();
         await page.waitForTimeout(1000);
-        await page.evaluate(() => {removeOlLayers()})
+        await page.evaluate(() => { removeOlLayers() })
         await page.waitForTimeout(1000);
         await expect(page.getByText('wms4326')).not.toBeVisible();
         await expect(page.getByText('states')).not.toBeVisible();

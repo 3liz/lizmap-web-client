@@ -1,9 +1,10 @@
+// @ts-check
 import { test, expect } from '@playwright/test';
 
 test.describe('Permalink', () => {
     test('Hash changes when map center is changed', async ({ page }) => {
         await page.goto('/index.php/view/map?repository=testsrepository&project=layer_legends', { waitUntil: 'networkidle' });
-        await page.evaluate(() => lizMap.mainLizmap.map.getView().setCenter([770485,6277813]));
+        await page.evaluate(() => lizMap.mainLizmap.map.getView().setCenter([770485, 6277813]));
 
         await page.waitForTimeout(200);
 
@@ -25,11 +26,11 @@ test.describe('Permalink', () => {
         await expect(page.getByTestId('Les quartiers à Montpellier').locator('> div input')).toBeChecked();
 
         // Style and opacity
-        await page.getByTestId('sousquartiers').locator('.icon-info-sign').click({force:true});
+        await page.getByTestId('sousquartiers').locator('.icon-info-sign').click({ force: true });
         await expect(page.locator('#sub-dock select.styleLayer')).toHaveValue('red');
         await expect(page.locator('#sub-dock .btn-opacity-layer.active')).toHaveText('60');
 
-        await page.getByTestId('Les quartiers à Montpellier').locator('.icon-info-sign').click({force:true});
+        await page.getByTestId('Les quartiers à Montpellier').locator('.icon-info-sign').click({ force: true });
         await expect(page.locator('#sub-dock .btn-opacity-layer.active')).toHaveText('80');
 
         // The url does not change
@@ -68,7 +69,7 @@ test.describe('Permalink', () => {
         await expect(page.getByTestId('Group as layer').locator('> div input')).toBeChecked();
 
         // Style
-        await page.getByTestId('tramway_lines').locator('.icon-info-sign').click({force:true});
+        await page.getByTestId('tramway_lines').locator('.icon-info-sign').click({ force: true });
         await expect(page.locator('#sub-dock select.styleLayer')).toHaveValue('categorized');
 
         // Close subdock
@@ -99,7 +100,7 @@ test.describe('Permalink', () => {
         await expect(page.getByTestId('Group as layer').locator('> div input')).toBeChecked();
 
         // Style
-        await page.getByTestId('tramway_lines').locator('.icon-info-sign').click({force:true});
+        await page.getByTestId('tramway_lines').locator('.icon-info-sign').click({ force: true });
         await expect(page.locator('#sub-dock select.styleLayer')).toHaveValue('a_single');
 
         // Close subdock
@@ -125,7 +126,7 @@ test.describe('Permalink', () => {
         await expect(page.getByTestId('Group as layer').locator('> div input')).not.toBeChecked();
 
         // Style
-        await page.getByTestId('tramway_lines').locator('.icon-info-sign').click({force:true});
+        await page.getByTestId('tramway_lines').locator('.icon-info-sign').click({ force: true });
         await expect(page.locator('#sub-dock select.styleLayer')).toHaveValue('a_single');
 
         // Close subdock
@@ -177,7 +178,7 @@ test.describe('Permalink', () => {
         await expect(hashOpacities[4]).toBe('1')
 
         // Change the tramway_lines style to categorized
-        await page.getByTestId('tramway_lines').locator('.icon-info-sign').click({force:true});
+        await page.getByTestId('tramway_lines').locator('.icon-info-sign').click({ force: true });
         await page.locator('#sub-dock').getByRole('combobox').selectOption('categorized');
         await page.getByRole('button', { name: 'Close' }).click();
 
@@ -262,8 +263,8 @@ test.describe('Permalink', () => {
         await expect(hashOpacities[2]).toBe('1')
 
         // Change the layer_legend_single_symbol opacity
-        await page.getByTestId('layer_legend_single_symbol').locator('.icon-info-sign').click({force:true});
-        await page.locator('#sub-dock .btn-opacity-layer', {hasText:'60'}).click();
+        await page.getByTestId('layer_legend_single_symbol').locator('.icon-info-sign').click({ force: true });
+        await page.locator('#sub-dock .btn-opacity-layer', { hasText: '60' }).click();
         await page.getByRole('button', { name: 'Close' }).click();
 
         // The url has been updated
@@ -317,11 +318,11 @@ test.describe('Permalink', () => {
         await expect(page.getByTestId('Group as layer').locator('> div input')).toBeChecked();
 
         // Style
-        await page.getByTestId('tramway_lines').locator('.icon-info-sign').click({force:true});
+        await page.getByTestId('tramway_lines').locator('.icon-info-sign').click({ force: true });
         await expect(page.locator('#sub-dock select.styleLayer')).toHaveValue('categorized');
 
         // Opacity
-        await page.getByTestId('layer_legend_single_symbol').locator('.icon-info-sign').click({force:true});
+        await page.getByTestId('layer_legend_single_symbol').locator('.icon-info-sign').click({ force: true });
         await expect(page.locator('#sub-dock .btn-opacity-layer.active')).toHaveText('60');
 
         // Close subdock
@@ -365,11 +366,11 @@ test.describe('Permalink', () => {
         await expect(page.getByTestId('Group as layer').locator('> div input')).toBeChecked();
 
         // Style
-        await page.getByTestId('tramway_lines').locator('.icon-info-sign').click({force:true});
+        await page.getByTestId('tramway_lines').locator('.icon-info-sign').click({ force: true });
         await expect(page.locator('#sub-dock select.styleLayer')).toHaveValue('a_single');
 
         // Opacity
-        await page.getByTestId('layer_legend_single_symbol').locator('.icon-info-sign').click({force:true});
+        await page.getByTestId('layer_legend_single_symbol').locator('.icon-info-sign').click({ force: true });
         await expect(page.locator('#sub-dock .btn-opacity-layer.active')).toHaveText('100');
 
         // Close subdock
@@ -407,11 +408,11 @@ test.describe('Permalink', () => {
         await expect(page.getByTestId('Group as layer').locator('> div input')).not.toBeChecked();
 
         // Style
-        await page.getByTestId('tramway_lines').locator('.icon-info-sign').click({force:true});
+        await page.getByTestId('tramway_lines').locator('.icon-info-sign').click({ force: true });
         await expect(page.locator('#sub-dock select.styleLayer')).toHaveValue('a_single');
 
         // Opacity
-        await page.getByTestId('layer_legend_single_symbol').locator('.icon-info-sign').click({force:true});
+        await page.getByTestId('layer_legend_single_symbol').locator('.icon-info-sign').click({ force: true });
         await expect(page.locator('#sub-dock .btn-opacity-layer.active')).toHaveText('100');
 
         // Close subdock
@@ -441,11 +442,11 @@ test.describe('Permalink', () => {
         await expect(page.getByTestId('Group as layer').locator('> div input')).toBeChecked();
 
         // Style
-        await page.getByTestId('tramway_lines').locator('.icon-info-sign').click({force:true});
+        await page.getByTestId('tramway_lines').locator('.icon-info-sign').click({ force: true });
         await expect(page.locator('#sub-dock select.styleLayer')).toHaveValue('categorized');
 
         // Opacity
-        await page.getByTestId('layer_legend_single_symbol').locator('.icon-info-sign').click({force:true});
+        await page.getByTestId('layer_legend_single_symbol').locator('.icon-info-sign').click({ force: true });
         await expect(page.locator('#sub-dock .btn-opacity-layer.active')).toHaveText('60');
 
         // Close subdock
@@ -470,7 +471,7 @@ test.describe('Permalink', () => {
         await expect(page.getByTestId('Les quartiers à Montpellier').locator('> div input')).not.toBeChecked();
 
         // Style and opacity
-        await page.getByTestId('sousquartiers').locator('.icon-info-sign').click({force:true});
+        await page.getByTestId('sousquartiers').locator('.icon-info-sign').click({ force: true });
         await expect(page.locator('#sub-dock select.styleLayer')).toHaveValue('red');
         await expect(page.locator('#sub-dock .btn-opacity-layer.active')).toHaveText('60');
     });
@@ -493,7 +494,7 @@ test.describe('Permalink', () => {
         await expect(page.getByTestId('Les quartiers à Montpellier').locator('> div input')).not.toBeChecked();
 
         // Style and opacity
-        await page.getByTestId('sousquartiers').locator('.icon-info-sign').click({force:true});
+        await page.getByTestId('sousquartiers').locator('.icon-info-sign').click({ force: true });
         await expect(page.locator('#sub-dock select.styleLayer')).toHaveValue('red');
         await expect(page.locator('#sub-dock .btn-opacity-layer.active')).toHaveText('60');
     });

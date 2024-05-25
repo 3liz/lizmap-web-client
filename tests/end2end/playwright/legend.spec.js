@@ -47,8 +47,8 @@ test.describe('Legend tests', () => {
 
         // Check scale and symbology rule in scale
         await expect(page.locator('#overview-bar .ol-scale-text')).toHaveText('1 : ' + (250000).toLocaleString(locale));
-        await expect(page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({hasText: '100k +'})).not.toHaveClass(/not-in-scale/);
-        await expect(page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({hasText: '100k -'})).toHaveClass(/not-in-scale/);
+        await expect(page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({ hasText: '100k +' })).not.toHaveClass(/not-in-scale/);
+        await expect(page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({ hasText: '100k -' })).toHaveClass(/not-in-scale/);
 
         // Zoom in
         let getMapRequestPromise = page.waitForRequest(/REQUEST=GetMap/);
@@ -57,8 +57,8 @@ test.describe('Legend tests', () => {
 
         // Check scale and symbology rule in scale (same)
         await expect(page.locator('#overview-bar .ol-scale-text')).toHaveText('1 : ' + (100000).toLocaleString(locale));
-        await expect(page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({hasText: '100k +'})).not.toHaveClass(/not-in-scale/);
-        await expect(page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({hasText: '100k -'})).toHaveClass(/not-in-scale/);
+        await expect(page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({ hasText: '100k +' })).not.toHaveClass(/not-in-scale/);
+        await expect(page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({ hasText: '100k -' })).toHaveClass(/not-in-scale/);
 
         // Zoom in
         getMapRequestPromise = page.waitForRequest(/REQUEST=GetMap/);
@@ -67,20 +67,20 @@ test.describe('Legend tests', () => {
 
         // Check scale and symbology rule in scale (inverted)
         await expect(page.locator('#overview-bar .ol-scale-text')).toHaveText('1 : ' + (50000).toLocaleString(locale));
-        await expect(page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({hasText: '100k +'})).toHaveClass(/not-in-scale/);
-        await expect(page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({hasText: '100k -'})).not.toHaveClass(/not-in-scale/);
+        await expect(page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({ hasText: '100k +' })).toHaveClass(/not-in-scale/);
+        await expect(page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({ hasText: '100k -' })).not.toHaveClass(/not-in-scale/);
     });
 
     test("Layer's rule based symbologie unchecked", async ({ page }) => {
         // Display layer's rule based legend
         await page.getByTestId('layer_legend_ruled').locator('.expandable').first().click()
-        await page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({hasText: '100k +'}).locator('.expandable').first().click()
-        await expect(page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({hasText: '100k +'})).not.toHaveClass(/not-visible/);
+        await page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({ hasText: '100k +' }).locator('.expandable').first().click()
+        await expect(page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({ hasText: '100k +' })).not.toHaveClass(/not-visible/);
 
         await page.getByTestId('layer_legend_ruled').getByLabel('100k +').uncheck();
-        await expect(page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({hasText: '100k +'})).toHaveClass(/not-visible/);
+        await expect(page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({ hasText: '100k +' })).toHaveClass(/not-visible/);
         await page.getByTestId('layer_legend_ruled').getByLabel('100k +').check();
-        await expect(page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({hasText: '100k +'})).not.toHaveClass(/not-visible/);
+        await expect(page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({ hasText: '100k +' })).not.toHaveClass(/not-visible/);
 
         // Check scale and symbology rule in scale
         await expect(page.locator('#overview-bar .ol-scale-text')).toHaveText('1 : ' + (250000).toLocaleString(locale));
@@ -101,13 +101,13 @@ test.describe('Legend tests', () => {
         // Check scale and symbology rule in scale (inverted)
         await expect(page.locator('#overview-bar .ol-scale-text')).toHaveText('1 : ' + (50000).toLocaleString(locale));
 
-        await page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({hasText: '100k -'}).locator('.expandable').first().click()
-        await expect(page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({hasText: '100k -'})).not.toHaveClass(/not-visible/);
-        await expect(page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({hasText: '100k -'}).getByRole('listitem').filter({hasText: 'category 1'})).not.toHaveClass(/not-visible/);
+        await page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({ hasText: '100k -' }).locator('.expandable').first().click()
+        await expect(page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({ hasText: '100k -' })).not.toHaveClass(/not-visible/);
+        await expect(page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({ hasText: '100k -' }).getByRole('listitem').filter({ hasText: 'category 1' })).not.toHaveClass(/not-visible/);
 
         await page.getByTestId('layer_legend_ruled').getByLabel('category 1').uncheck();
-        await expect(page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({hasText: '100k -'}).getByRole('listitem').filter({hasText: 'category 1'})).toHaveClass(/not-visible/);
-        await page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({hasText: '100k -'}).getByLabel('category 1').check();
-        await expect(page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({hasText: '100k -'}).getByRole('listitem').filter({hasText: 'category 1'})).not.toHaveClass(/not-visible/);
+        await expect(page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({ hasText: '100k -' }).getByRole('listitem').filter({ hasText: 'category 1' })).toHaveClass(/not-visible/);
+        await page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({ hasText: '100k -' }).getByLabel('category 1').check();
+        await expect(page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({ hasText: '100k -' }).getByRole('listitem').filter({ hasText: 'category 1' })).not.toHaveClass(/not-visible/);
     });
 });
