@@ -1,5 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+const { gotoMap } = require('./globals')
 
 test.describe('Viewport devicePixelRatio 1', () => {
     test('Greater than WMS max size', async ({ page }) => {
@@ -25,7 +26,7 @@ test.describe('Viewport devicePixelRatio 1', () => {
         });
 
         // Go to the map
-        await page.goto(url, { waitUntil: 'load' });
+        await gotoMap(url, page)
         // Wait to let the config loaded
         await page.waitForTimeout(1000);
         // Check that the get project config has been catched
@@ -95,7 +96,7 @@ test.describe('Viewport devicePixelRatio 2', () => {
         });
 
         // Go to the map
-        await page.goto(url, { waitUntil: 'load' });
+        await gotoMap(url, page)
         // Wait to let the config loaded
         await page.waitForTimeout(1000);
         // Check that the get project config has been catched
@@ -146,7 +147,7 @@ test.describe('Viewport mobile', () => {
         // atlas project
         const url = '/index.php/view/map/?repository=testsrepository&project=atlas'
         // Go to the map
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page)
 
         // Check menu and menu toggle button
         await expect(await page.locator('#mapmenu')).not.toBeInViewport();
