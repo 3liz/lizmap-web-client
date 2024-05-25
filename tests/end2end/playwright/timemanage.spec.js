@@ -1,11 +1,12 @@
 // @ts-check
 const { test, expect } = require('@playwright/test');
+const { gotoMap } = require('./globals')
 
 test.describe('Time Manager', () => {
 
     test('Time Manager', async ({ page }) => {
         const url = '/index.php/view/map?repository=testsrepository&project=time_manager';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page)
 
         // When the Time manager is running, 2 requests are sent for each time range
         // - getFilterToken with method POST, returning a json with a token

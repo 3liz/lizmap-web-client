@@ -1,10 +1,11 @@
 // @ts-check
 const { test, expect } = require('@playwright/test');
+const { gotoMap } = require('./globals')
 
 test.describe('QGIS Requests', () => {
     test('WMS Get Legend Graphic JSON', async ({ page }) => {
         const url = '/index.php/view/map?repository=testsrepository&project=layer_legends';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page)
 
         const single = await page.evaluate(async () => {
             return await fetch("/index.php/lizmap/service?repository=testsrepository&project=layer_legends&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=layer_legend_single_symbol&STYLE=&EXCEPTIONS=application/vnd.ogc.se_inimage&FORMAT=application/json&TRANSPARENT=TRUE&DPI=96")
