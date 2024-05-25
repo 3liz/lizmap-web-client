@@ -1,3 +1,4 @@
+// @ts-check
 import { test, expect } from '@playwright/test';
 
 test.describe('Bing Maps baselayers', () => {
@@ -7,7 +8,7 @@ test.describe('Bing Maps baselayers', () => {
         let bingSatelliteInitRequestPromise = page.waitForRequest(/Aerial/);
         await page.goto(url);
 
-        const allResponses = await Promise.all([bingRoadsInitRequestPromise,bingSatelliteInitRequestPromise])
+        const allResponses = await Promise.all([bingRoadsInitRequestPromise, bingSatelliteInitRequestPromise])
 
         let getBingRoadsInitRequest = allResponses[0];
         let getBingSatelliteInitRequest = allResponses[1];

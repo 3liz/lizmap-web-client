@@ -1,5 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+const { gotoMap } = require('./globals')
 
 test.describe('Viewport devicePixelRatio 1', () => {
     test('Greater than WMS max size', async ({ page }) => {
@@ -25,7 +26,7 @@ test.describe('Viewport devicePixelRatio 1', () => {
         });
 
         // Go to the map
-        await page.goto(url, { waitUntil: 'load' });
+        await gotoMap(url, page)
         // Wait to let the config loaded
         await page.waitForTimeout(1000);
         // Check that the get project config has been catched
@@ -37,7 +38,7 @@ test.describe('Viewport devicePixelRatio 1', () => {
         // Check that the WMS Max Size has been well overwrite
         expect(await page.evaluate(() => globalThis.lizMap.mainLizmap.initialConfig.options.wmsMaxHeight)).toBe(950);
         expect(await page.evaluate(() => window.devicePixelRatio)).toBe(1);
-        expect(await page.evaluate(() => globalThis.lizMap.mainLizmap.map.getSize())).toStrictEqual([870,575]);
+        expect(await page.evaluate(() => globalThis.lizMap.mainLizmap.map.getSize())).toStrictEqual([870, 575]);
         await page.unroute('**/service/getProjectConfig*')
 
         // Catch GetMaps request;
@@ -95,7 +96,7 @@ test.describe('Viewport devicePixelRatio 2', () => {
         });
 
         // Go to the map
-        await page.goto(url, { waitUntil: 'load' });
+        await gotoMap(url, page)
         // Wait to let the config loaded
         await page.waitForTimeout(1000);
         // Check that the get project config has been catched
@@ -107,7 +108,7 @@ test.describe('Viewport devicePixelRatio 2', () => {
         // Check that the WMS Max Size has been well overwrite
         expect(await page.evaluate(() => globalThis.lizMap.mainLizmap.initialConfig.options.wmsMaxHeight)).toBe(1900);
         expect(await page.evaluate(() => window.devicePixelRatio)).toBe(2);
-        expect(await page.evaluate(() => globalThis.lizMap.mainLizmap.map.getSize())).toStrictEqual([870,620]);
+        expect(await page.evaluate(() => globalThis.lizMap.mainLizmap.map.getSize())).toStrictEqual([870, 620]);
         await page.unroute('**/service/getProjectConfig*')
 
         // Catch GetMaps request;
@@ -118,7 +119,7 @@ test.describe('Viewport devicePixelRatio 2', () => {
             if (request.url().includes('GetMap')) {
                 GetMaps.push(request.url());
             }
-        }, {times: 1}); // No tiles, if High DPI is enabled we got 4 tiles
+        }, { times: 1 }); // No tiles, if High DPI is enabled we got 4 tiles
 
         // Activate world layer
         await page.getByLabel('world').check();
@@ -128,7 +129,7 @@ test.describe('Viewport devicePixelRatio 2', () => {
 
         // Check GetMap requests
         expect(GetMaps).toHaveLength(1); // No tiles, if High DPI is enabled we got 4 tiles
-        for(const GetMap of GetMaps) {
+        for (const GetMap of GetMaps) {
             expect(GetMap).toContain('&WIDTH=957&')
             expect(GetMap).toContain('&HEIGHT=682&')
             expect(GetMap).toContain('&DPI=96&')
@@ -146,7 +147,7 @@ test.describe('Viewport mobile', () => {
         // atlas project
         const url = '/index.php/view/map/?repository=testsrepository&project=atlas'
         // Go to the map
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page)
 
         // Check menu and menu toggle button
         await expect(await page.locator('#mapmenu')).not.toBeInViewport();

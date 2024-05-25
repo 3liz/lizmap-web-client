@@ -1,5 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+const { gotoMap } = require('./globals')
 
 test.describe('XSS', () => {
     // Test that flawed data are sanitized before being displayed
@@ -12,7 +13,7 @@ test.describe('XSS', () => {
         });
 
         const url = '/index.php/view/map/?repository=testsrepository&project=xss';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page)
 
         // Edition: add XSS data
         await page.locator('#button-edition').click();
@@ -33,8 +34,8 @@ test.describe('XSS', () => {
         // Open attribute table
         await page.locator('#button-attributeLayers').click();
         await page
-        .locator('button[value="xss_layer"].btn-open-attribute-layer')
-        .click({ force: true });
+            .locator('button[value="xss_layer"].btn-open-attribute-layer')
+            .click({ force: true });
 
         expect(dialogOpens).toEqual(0);
     });

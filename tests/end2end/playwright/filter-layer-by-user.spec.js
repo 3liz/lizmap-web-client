@@ -1,3 +1,4 @@
+// @ts-check
 import { test, expect } from '@playwright/test';
 
 test.describe('Filter layer data by user - not connected', () => {
@@ -17,7 +18,7 @@ test.describe('Filter layer data by user - not connected', () => {
 
         expect(await page.locator('#baseLayersOlMap').screenshot()).toMatchSnapshot('map_not_connected.png', {
             maxDiffPixels: 500
-          });
+        });
     });
 
     test('Popup', async ({ page }) => {
@@ -138,7 +139,7 @@ test.describe('Filter layer data by user - user in group a', () => {
 
         expect(await page.locator('#baseLayersOlMap').screenshot()).toMatchSnapshot('map_connected_as_user_in_group_a.png', {
             maxDiffPixels: 500
-          });
+        });
     });
 
     test('Popup', async ({ page }) => {
@@ -263,7 +264,7 @@ test.describe('Filter layer data by user - admin', () => {
 
         expect(await page.locator('#baseLayersOlMap').screenshot()).toMatchSnapshot('map_connected_as_admin.png', {
             maxDiffPixels: 500
-          });
+        });
     });
 
     test('Popup', async ({ page }) => {
