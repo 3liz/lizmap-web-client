@@ -8,6 +8,10 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Fixed
+
+## 3.7.8 - 2024-05-27
+
 ### Funders
 
 * *[Bièvre Est](https://www.bievre-est.fr/)*
