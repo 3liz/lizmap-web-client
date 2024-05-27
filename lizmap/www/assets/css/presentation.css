@@ -159,11 +159,18 @@ button.presentation-page-add-bbox{
     z-index: 10000;
 }
 
-#lizmap-presentation-slides-container.visible.showmap.half {
+/* Dock size depends on active presentation and on active page */
+#dock.presentation-visible {
     width: 50%;
+    max-width: 50%;
 }
-#lizmap-presentation-slides-container.visible.showmap.third {
-    width: 30%;
+#dock.presentation-visible.presentation-half {
+    width: 50%;
+    max-width: 50%;
+}
+#dock.presentation-visible.presentation-full {
+    width: 100%;
+    max-width: 100%;
 }
 
 /* Slides toolbar */
@@ -183,6 +190,29 @@ div#lizmap-presentation-slides-toolbar {
     &:hover {
         opacity: 1;
     }
+}
+
+div#lizmap-presentation-slides-minified-toolbar {
+    border: 1p solid rgba(150, 150, 150, 0.8);
+    border-radius: 10px;
+    padding: 10px;
+    background-color: rgba(150, 150, 150, 0.5);
+    /* Set position in the bottom center of the whole page */
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10000;
+    /* Change opacity when hovering */
+    opacity: 0.7;
+    &:hover {
+        opacity: 1;
+    }
+    /* Show only when presentation is minified */
+    display: none;
+}
+div#lizmap-presentation-slides-minified-toolbar.visible {
+    display: block;
 }
 
 /* Slideshow page */

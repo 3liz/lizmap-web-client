@@ -143,6 +143,23 @@
             title="{@presentation~presentation.slides.toolbar.button.close.hint@}"
             onclick="lizMap.mainLizmap.presentation.resetLizmapPresentation(true, true, true, true);"
         >{@presentation~presentation.slides.toolbar.button.close.label@}</button>
+        <!-- Minify -->
+        <button class="btn"
+            id="lizmap-presentation-slides-minify"
+            title="{@presentation~presentation.slides.toolbar.button.minify.hint@}"
+            onclick="lizMap.mainLizmap.presentation.toggleLizmapPresentation(false);"
+        >{@presentation~presentation.slides.toolbar.button.minify.label@}</button>
+    </div>
+</template>
+
+<!-- Template for the div allowing to set the minified presentatino back to visibility -->
+<template id="lizmap-presentation-slides-minified-toolbar-template">
+    <div id="lizmap-presentation-slides-minified-toolbar">
+        <button class="btn"
+            id="lizmap-presentation-slides-restore"
+            title="{@presentation~presentation.slides.toolbar.button.restore.hint@}"
+            onclick="lizMap.mainLizmap.presentation.toggleLizmapPresentation(true);"
+        >{@presentation~presentation.slides.toolbar.button.restore.label@}</button>
     </div>
 </template>
 
