@@ -15,7 +15,7 @@
     "eslint-plugin-jsdoc": "^48.0.2",
     "jsts": "^2.11.0",
     "lit-html": "^3.1.1",
-    "ol": "^9.1.0",
+    "ol": "^9.2.3",
     "proj4": "^2.10.0",
     "svg-sprite-loader": "^6.0.11",
     "svgo": "^3.2.0",
