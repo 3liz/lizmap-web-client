@@ -256,17 +256,21 @@ export default class Presentation {
             // // Deactivate existing docks
             document.querySelectorAll('#mapmenu ul > li.active a').forEach(el=>el.click());
 
-            // Set the presentation slidedhow container visible
-            const slideshow = document.getElementById('lizmap-presentation-slides-container');
-            slideshow.classList.add('visible');
+            // Set the presentation slides container visible
+            const slidesContainer = document.getElementById('lizmap-presentation-slides-container');
 
-            // Slideshow background color
-            slideshow.style.backgroundColor = presentation.background_color;
+            // Reset its content from the template
+            const slidesDivTemplate = document.getElementById('lizmap-presentation-slides-container-template');
+            slidesContainer.innerHTML = slidesDivTemplate.innerHTML;
+            slidesContainer.classList.add('visible');
+
+            // slidesContainer background color
+            slidesContainer.style.backgroundColor = presentation.background_color;
 
             // Create an observer for page visibility
             let observers = {};
             let pageObserverOptions = {
-                root: slideshow,
+                root: slidesContainer,
                 rootMargin: "0px",
                 threshold: [0, 0.25, 0.5, 0.75, 1],
             };
@@ -294,7 +298,7 @@ export default class Presentation {
                 presentationPage.dataset.number = page.page_order;
                 presentationPage.presentation = presentation;
                 presentationPage.properties = page;
-                slideshow.appendChild(presentationPage);
+                slidesContainer.appendChild(presentationPage);
 
                 // Add intersection observer
                 const observer = new IntersectionObserver(
@@ -520,13 +524,13 @@ export default class Presentation {
         // Change Lizmap state only if active page has changed
         if (newPageVisible !== null || isFirst) {
             // Change Lizmap interface depending of the current page map properties
-            const slidedhow = document.getElementById('lizmap-presentation-slides-container');
+            const slidesContainer = document.getElementById('lizmap-presentation-slides-container');
             const showMap = true;
             const slideShowWidthClass = 'half';
             const oldMapDiv = document.getElementById('map');
             const mapDiv = document.getElementById('newOlMap');
             if (showMap) {
-                slidedhow.classList.add('showmap', slideShowWidthClass);
+                slidesContainer.classList.add('showmap', slideShowWidthClass);
                 let mapShiftPercentage = (slideShowWidthClass == 'half') ? '50%' : '30%';
                 if (mapDiv) {
                     mapDiv.style.width = mapShiftPercentage;
@@ -537,7 +541,7 @@ export default class Presentation {
                     oldMapDiv.style.marginLeft = mapShiftPercentage;
                 }
             } else {
-                slidedhow.classList.remove('showmap', slideShowWidthClass);
+                slidesContainer.classList.remove('showmap', slideShowWidthClass);
                 if (mapDiv) {
                     mapDiv.style.width = '100%';
                     mapDiv.style.marginLeft = this.mapLeftMargin;
