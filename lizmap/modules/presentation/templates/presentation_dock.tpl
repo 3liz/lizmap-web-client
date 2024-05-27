@@ -110,10 +110,45 @@
     </div>
 </template>
 
-
+<!-- Template for the presentation slides container -->
+<template id="lizmap-presentation-slides-container-template">
+    <div id="lizmap-presentation-slides-toolbar">
+        <!-- First page -->
+        <button class="btn"
+            id="lizmap-presentation-slides-first-page"
+            title="{@presentation~presentation.slides.toolbar.button.first.page.hint@}"
+            onclick="lizMap.mainLizmap.presentation.goToFirstPage();"
+        >{@presentation~presentation.slides.toolbar.button.first.page.label@}</button>
+        <!-- Previous page -->
+        <button class="btn"
+            id="lizmap-presentation-slides-previous-page"
+            title="{@presentation~presentation.slides.toolbar.button.previous.page.hint@}"
+            onclick="lizMap.mainLizmap.presentation.goToPreviousPage();"
+        >{@presentation~presentation.slides.toolbar.button.previous.page.label@}</button>
+        <!-- Next page -->
+        <button class="btn"
+            id="lizmap-presentation-slides-next-page"
+            title="{@presentation~presentation.slides.toolbar.button.next.page.hint@}"
+            onclick="lizMap.mainLizmap.presentation.goToNextPage();"
+        >{@presentation~presentation.slides.toolbar.button.next.page.label@}</button>
+        <!-- Last page -->
+        <button class="btn"
+            id="lizmap-presentation-slides-last-page"
+            title="{@presentation~presentation.slides.toolbar.button.last.page.hint@}"
+            onclick="lizMap.mainLizmap.presentation.goToLastPage();"
+        >{@presentation~presentation.slides.toolbar.button.last.page.label@}</button>
+        <!-- Close -->
+        <button class="btn"
+            id="lizmap-presentation-slides-close"
+            title="{@presentation~presentation.slides.toolbar.button.close.hint@}"
+            onclick="lizMap.mainLizmap.presentation.resetLizmapPresentation(true, true, true, true);"
+        >{@presentation~presentation.slides.toolbar.button.close.label@}</button>
+    </div>
+</template>
 
 <!-- Template for a presentation page item -->
 <template id="lizmap-presentation-page-template">
+    <a class="lizmap-presentation-page-anchor"></a>
     <h2 class="lizmap-presentation-page-title"></h2>
     <div class="lizmap-presentation-page-content">
         <div class="lizmap-presentation-page-text">

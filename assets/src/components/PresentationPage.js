@@ -18,8 +18,11 @@ export default class PresentationPage extends HTMLElement {
     constructor() {
         super();
 
-        // Id of the component
+        // UUID of the page
         this.uuid = this.getAttribute('data-uuid');
+
+        // Page number
+        this.number = this.getAttribute('data-page-number');
 
         // Page visibility
         this.active = this.getAttribute('data-active');
@@ -50,6 +53,10 @@ export default class PresentationPage extends HTMLElement {
         if (this._properties === null) {
             return;
         }
+
+        // Anchor
+        const pageAnchor = this.querySelector('a.lizmap-presentation-page-anchor');
+        pageAnchor.setAttribute('name', this._properties['page_order']);
 
         // title of the page
         const pageTitle = this.querySelector('h2.lizmap-presentation-page-title');

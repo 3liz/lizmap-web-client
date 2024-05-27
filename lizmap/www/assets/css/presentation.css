@@ -166,6 +166,25 @@ button.presentation-page-add-bbox{
     width: 30%;
 }
 
+/* Slides toolbar */
+div#lizmap-presentation-slides-toolbar {
+    border: 1p solid rgba(150, 150, 150, 0.8);
+    border-radius: 10px;
+    padding: 10px;
+    background-color: rgba(150, 150, 150, 0.5);
+    /* Set position in the bottom center of the whole page */
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10000;
+    /* Change opacity when hovering */
+    opacity: 0.2;
+    &:hover {
+        opacity: 1;
+    }
+}
+
 /* Slideshow page */
 lizmap-presentation-page {
     display: block;

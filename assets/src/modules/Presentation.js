@@ -40,6 +40,16 @@ export default class Presentation {
     activePageUuid = null;
 
     /**
+     * @string Active presentation number of pages
+     */
+    activePresentationPagesCount = 0;
+
+    /**
+     * @string Active page number
+     */
+    activePageNumber = 1;
+
+    /**
      * OpenLayers vector layer to draw the presentation results
      */
     presentationLayer = null;
@@ -78,6 +88,8 @@ export default class Presentation {
             // Add a div which will contain the slideshow
             const slidesDiv = document.createElement('div');
             slidesDiv.id = 'lizmap-presentation-slides-container';
+            const slidesDivTemplate = document.getElementById('lizmap-presentation-slides-container-template');
+            slidesDiv.innerHTML = slidesDivTemplate.innerHTML;
             document.getElementById('map-content').appendChild(slidesDiv);
 
             // React on the main Lizmap events
@@ -232,6 +244,9 @@ export default class Presentation {
             return false;
         }
 
+        // Set current presentation page number
+        this.activePresentationPagesCount = presentation.pages.length;
+
         // Reset the other presentations
         // We allow only one active presentation at a time
         // We do not remove the active status of the button (btn-primary)
@@ -243,8 +258,6 @@ export default class Presentation {
 
             // Set the presentation slidedhow container visible
             const slideshow = document.getElementById('lizmap-presentation-slides-container');
-            slideshow.innerHTML = '<button style="position: absolute; top: 0px; right: 0px;" onclick="lizMap.mainLizmap.presentation.resetLizmapPresentation(true, true, true, true);">CLOSE</button>';
-
             slideshow.classList.add('visible');
 
             // Slideshow background color
@@ -278,6 +291,7 @@ export default class Presentation {
             presentation.pages.forEach(page => {
                 const presentationPage = document.createElement('lizmap-presentation-page');
                 presentationPage.dataset.uuid = page.uuid;
+                presentationPage.dataset.number = page.page_order;
                 presentationPage.presentation = presentation;
                 presentationPage.properties = page;
                 slideshow.appendChild(presentationPage);
@@ -381,6 +395,46 @@ export default class Presentation {
     }
 
     /**
+     * Go to the given active presentation page
+     * @param {integer} pageNumber The page number to go to
+     */
+    goToGivenPage(pageNumber) {
+        // console.log(`from ${this.activePageNumber} to ${pageNumber}`);
+        const targetAnchor = document.querySelector(`a.lizmap-presentation-page-anchor[name="${pageNumber}"]`);
+        if (targetAnchor) {
+            targetAnchor.scrollIntoView();
+        }
+    }
+
+    // Go to the previous page
+    goToPreviousPage() {
+        const targetPage = parseInt(this.activePageNumber) - 1;
+        if (targetPage >= 1) {
+            this.goToGivenPage(targetPage);
+        }
+    }
+
+    // Go to the next page
+    goToNextPage() {
+        // Get current page
+        const targetPage = parseInt(this.activePageNumber) + 1;
+        if (targetPage <= this.activePresentationPagesCount) {
+            this.goToGivenPage(targetPage);
+        }
+    }
+
+    // Go to the first page
+    goToFirstPage() {
+        this.goToGivenPage(1);
+    }
+
+    // Go to the last page
+    goToLastPage() {
+        this.goToGivenPage(this.activePresentationPagesCount);
+    }
+
+
+    /**
      * Add the geometry features
      * to the OpenLayers layer in the map
      *
@@ -456,6 +510,9 @@ export default class Presentation {
             this.activePageUuid = uuid;
             newPageVisible = uuid;
         }
+
+        // Set the active page number
+        this.activePageNumber = page.dataset.number;
 
         // Store when the page has valid map properties (extent or tree state)
         let hasMapProperties = false;
