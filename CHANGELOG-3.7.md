@@ -8,6 +8,38 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Funders
+
+* *[Bièvre Est](https://www.bievre-est.fr/)*
+* *[Chateauroux Agglomération](https://www.chateauroux-metropole.fr)*
+* *[Drosera écologie appliquée SA](https://www.drosera-vs.ch/)*, @katagen
+* *[EPF Haut De france](https://www.epf-hdf.fr/)*
+* *[Faunalia](https://www.faunalia.eu/fr)*, contributions on source code from @mind84
+* *[Terre de Provence Agglomération](https://www.terredeprovence-agglo.com/)*
+
+### Changed
+
+* Check for the Desktop plugin version first instead of showing possible warnings from the plugin
+* Review code snipped to add thumbnail in the attribute table
+
+### Fixed
+
+* Improve detection of the geometry column when the layer has many
+* Fix attribution for layers not being in the `baselayers` group
+* Fix and improvements in the legend :
+  * Greyscale symbols when layer is not visible
+  * Italic and greyscaled uncheked symbols and their children
+  * Improve legend when symbols are out of the current map scale
+* For popup, fix the item was visible or not, `LEGEND_ON` and `LEGEND_OFF` parameters in GetFeatureInfo
+* Fix popup display in minidock
+* Group with layers can be used as baselayer
+* For XYZ or WMTS layers from QGIS, the use external access was not well-used
+* Reduce loading image size and get back previous white color on animation
+
+### Backend
+
+* Upgrade of the Dompurify Javascript library
+
 ## 3.7.7 - 2024-05-14
 
 ### Added
