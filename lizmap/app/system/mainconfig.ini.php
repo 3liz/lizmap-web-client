@@ -37,9 +37,9 @@ lizmapServerPlugin="2.9.1"
 ; This version MUST match at least on https://plugins.qgis.org/plugins/lizmap/#plugin-versions
 ; with the minimum QGIS server version supported above.
 ; This value is only forwarded to the plugin thanks to the server metadata. According to the age of the project, it
-; will be either recommended or required.
-lizmapDesktopPlugin=40207
-lizmapDesktopPluginDate="2024-03-12"
+; will be either recommended or nothing.
+lizmapDesktopPlugin=40314
+lizmapDesktopPluginDate="2024-05-22"
 
 ; Versions written in QGIS/CFG files, for the GIS administrator
 ; Lizmap CFG files with a lower target version are not displayed in the landing page, but displayed in the administration panel to warn the GIS administrator
