@@ -15,52 +15,44 @@
     <input ref="title" type="string" required="true">
         <label locale="presentation~presentation.form.presentation.title.label" />
         <hint locale="presentation~presentation.form.presentation.title.hint" />
-        <help locale="presentation~presentation.form.presentation.title.hint" />
     </input>
 
     <htmleditor ref="description" required="true" rows="5" maxlength="1000">
         <label locale="presentation~presentation.form.presentation.description.label" />
         <hint locale="presentation~presentation.form.presentation.description.hint" />
-        <help locale="presentation~presentation.form.presentation.description.hint" />
     </htmleditor>
 
     <image ref="background_image" mimetype="image/jpeg;image/jpg;image/png;image/webp" maxsize="2000000" maxWidth="2000" maxHeight="2000">
         <label locale="presentation~presentation.form.presentation.background_image.label"/>
         <hint locale="presentation~presentation.form.presentation.background_image.hint" />
-        <help locale="presentation~presentation.form.presentation.background_image.hint" />
     </image>
 
     <menulist ref="background_display" required="false">
         <label locale="presentation~presentation.form.presentation.background_display.label"/>
         <hint locale="presentation~presentation.form.presentation.background_display.hint" />
-        <help locale="presentation~presentation.form.presentation.background_display.hint" />
         <item value="contain" selected="true" locale="presentation~presentation.form.presentation.background_display.contain"/>
         <item value="cover" locale="presentation~presentation.form.presentation.background_display.cover"/>
         <item value="stretch" locale="presentation~presentation.form.presentation.background_display.stretch"/>
     </menulist>
 
-    <input ref="background_color" type="string" required="false">
+    <input ref="background_color" type="string" required="false"    >
         <label locale="presentation~presentation.form.presentation.background_color.label" />
         <hint locale="presentation~presentation.form.presentation.background_color.hint" />
-        <help locale="presentation~presentation.form.presentation.background_color.hint" />
     </input>
 
     <htmleditor ref="footer" required="false" rows="5">
         <label locale="presentation~presentation.form.presentation.footer.label" />
         <hint locale="presentation~presentation.form.presentation.footer.hint" />
-        <help locale="presentation~presentation.form.presentation.footer.hint" />
     </htmleditor>
 
     <checkbox ref="published" required="false">
         <label locale="presentation~presentation.form.presentation.published.label" />
         <hint locale="presentation~presentation.form.presentation.published.hint" />
-        <help locale="presentation~presentation.form.presentation.published.hint" />
     </checkbox>
 
     <input ref="granted_groups" type="string" required="false">
         <label locale="presentation~presentation.form.presentation.granted_groups.label" />
         <hint locale="presentation~presentation.form.presentation.granted_groups.hint" />
-        <help locale="presentation~presentation.form.presentation.granted_groups.hint" />
     </input>
 
     <reset ref="reinit">

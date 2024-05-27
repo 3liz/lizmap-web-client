@@ -114,6 +114,32 @@ div.lizmap-presentation-page-preview-toolbar {
     overflow: auto;
 }
 
+/* Map related buttons */
+/* tree state saver */
+button.presentation-page-add-tree-state{
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpath d='M10 2C10.5523 2 11 2.44772 11 3V7C11 7.55228 10.5523 8 10 8H8V10H13V9C13 8.44772 13.4477 8 14 8H20C20.5523 8 21 8.44772 21 9V13C21 13.5523 20.5523 14 20 14H14C13.4477 14 13 13.5523 13 13V12H8V18H13V17C13 16.4477 13.4477 16 14 16H20C20.5523 16 21 16.4477 21 17V21C21 21.5523 20.5523 22 20 22H14C13.4477 22 13 21.5523 13 21V20H7C6.44772 20 6 19.5523 6 19V8H4C3.44772 8 3 7.55228 3 7V3C3 2.44772 3.44772 2 4 2H10ZM19 18H15V20H19V18ZM19 10H15V12H19V10ZM9 4H5V6H9V4Z'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center !important;
+    width: 25px;
+    height: 20px;
+    &:hover, &:active, &:focus {
+        background-position: center;
+        background-color: lightgrey;
+    }
+}
+/* extent saver */
+button.presentation-page-add-bbox{
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpath d='M16.9497 11.9497C18.7347 10.1648 19.3542 7.65558 18.8081 5.36796L21.303 4.2987C21.5569 4.18992 21.8508 4.30749 21.9596 4.56131C21.9862 4.62355 22 4.69056 22 4.75827V19L15 22L9 19L2.69696 21.7013C2.44314 21.8101 2.14921 21.6925 2.04043 21.4387C2.01375 21.3765 2 21.3094 2 21.2417V7L5.12892 5.65904C4.70023 7.86632 5.34067 10.2402 7.05025 11.9497L12 16.8995L16.9497 11.9497ZM15.5355 10.5355L12 14.0711L8.46447 10.5355C6.51184 8.58291 6.51184 5.41709 8.46447 3.46447C10.4171 1.51184 13.5829 1.51184 15.5355 3.46447C17.4882 5.41709 17.4882 8.58291 15.5355 10.5355Z'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 25px;
+    height: 20px;
+    &:hover, &:active, &:focus {
+        background-position: center;
+        background-color: lightgrey;
+    }
+}
+
 
 /* Slides container */
 #lizmap-presentation-slides-container {
@@ -129,8 +155,15 @@ div.lizmap-presentation-page-preview-toolbar {
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(255, 255, 255);
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.9) 95%, transparent 100%);
     z-index: 10000;
+}
+
+#lizmap-presentation-slides-container.visible.showmap.half {
+    width: 50%;
+}
+#lizmap-presentation-slides-container.visible.showmap.third {
+    width: 30%;
 }
 
 /* Slideshow page */
@@ -141,13 +174,17 @@ lizmap-presentation-page {
     /* height: calc(100vh - 20px); */
     height: 100%;
     padding: 10px;
-    font-size: 12px;
-    font-size: 2.5vmin;
+    font-size: 1em;
 
     /* background properties */
     background-repeat: no-repeat;
     /* Full - Respect image ratio - full image will always be visible (with possible empty spaces around)*/
     background-position: top; background-size: contain;
+    opacity: 0.4;
+}
+/* active page (visible >= 50%) */
+lizmap-presentation-page.active {
+    opacity: 1;
 }
 
 lizmap-presentation-page.background-contain {
@@ -164,10 +201,12 @@ lizmap-presentation-page.background-stretch {
 }
 
 lizmap-presentation-page h2.lizmap-presentation-page-title {
-    color: var(--color-contrasted-elements);
-    background-color: var(--color-background-primary-content);
+    /* Invert the H2 text color based on the page background*/
+    color: white;
+    mix-blend-mode: difference;
     height: 40px;
     font-size: 1.5em;
+    font-weight: bold;
     line-height: 1em;
     padding: 5px;
 }
@@ -181,7 +220,6 @@ lizmap-presentation-page div.lizmap-presentation-page-content {
 
 lizmap-presentation-page div.lizmap-presentation-page-content > div {
     padding: 0px;
-    border: 1px solid black;
 }
 
 lizmap-presentation-page div.lizmap-presentation-page-content > div.lizmap-presentation-page-text {
@@ -189,7 +227,9 @@ lizmap-presentation-page div.lizmap-presentation-page-content > div.lizmap-prese
     font-size: 1em;
     line-height: 1em;
     text-align: justify;
-    background-color: rgba(255, 255, 255, 0.7);
+    color: white;
+    background-color: rgba(255, 255, 255, 0.1);
+    mix-blend-mode: difference;
     flex: 1 1;
 }
 lizmap-presentation-page div.lizmap-presentation-page-content > div.lizmap-presentation-page-media {

@@ -375,8 +375,6 @@ export default class PresentationCards extends HTMLElement {
         const confirmMessage = button.dataset.confirm;
         const areYourSure = window.confirm(confirmMessage);
         if (!areYourSure) {
-            console.log('Delete aborted');
-
             return false;
         }
         mainLizmap.presentation.deletePresentation(item, id);

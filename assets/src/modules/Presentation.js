@@ -35,9 +35,17 @@ export default class Presentation {
     ACTIVE_LIZMAP_PRESENTATION = null;
 
     /**
+     * @string Active page uuid
+     */
+    activePageUuid = null;
+
+    /**
      * OpenLayers vector layer to draw the presentation results
      */
     presentationLayer = null;
+
+    // Original map div left margin
+    mapLeftMargin = '30px';
 
     /**
      * Build the lizmap presentation instance
@@ -70,11 +78,20 @@ export default class Presentation {
             // Add a div which will contain the slideshow
             const slidesDiv = document.createElement('div');
             slidesDiv.id = 'lizmap-presentation-slides-container';
-            document.querySelector('body').appendChild(slidesDiv);
+            document.getElementById('map-content').appendChild(slidesDiv);
 
             // React on the main Lizmap events
             mainLizmap.lizmap3.events.on({
             });
+        }
+
+        // Keep the map left margin before running the presentation
+        let olMapDiv = document.getElementById('map');
+        if (!olMapDiv) {
+            olMapDiv = document.getElementById('newOlMap');
+        }
+        if (olMapDiv) {
+            this.mapLeftMargin = olMapDiv.style.marginLeft;
         }
 
     }
@@ -221,27 +238,68 @@ export default class Presentation {
         this.resetLizmapPresentation(true, true, true, false);
 
         try {
-            // Show a message
-            // const message = `Run presentation n° ${presentationId}`;
-            // this.addMessage(message, 'info', 5000);
+            // // Deactivate existing docks
+            document.querySelectorAll('#mapmenu ul > li.active a').forEach(el=>el.click());
 
             // Set the presentation slidedhow container visible
             const slideshow = document.getElementById('lizmap-presentation-slides-container');
-            slideshow.innerHTML = '<button style="position: absolute; top: 0px; right: 0px;" onclick="document.getElementById(\'lizmap-presentation-slides-container\').classList.remove(\'visible\');">CLOSE</button>';
+            slideshow.innerHTML = '<button style="position: absolute; top: 0px; right: 0px;" onclick="lizMap.mainLizmap.presentation.resetLizmapPresentation(true, true, true, true);">CLOSE</button>';
 
             slideshow.classList.add('visible');
 
             // Slideshow background color
             slideshow.style.backgroundColor = presentation.background_color;
 
+            // Create an observer for page visibility
+            let observers = {};
+            let pageObserverOptions = {
+                root: slideshow,
+                rootMargin: "0px",
+                threshold: [0, 0.25, 0.5, 0.75, 1],
+            };
+            const pageIntersectionCallback = (entries) => {
+                entries.forEach((entry) => {
+
+                    const page = entry.target;
+                    const uuid = page.dataset.uuid;
+                    const visiblePct = `${Math.floor(entry.intersectionRatio * 100)}`;
+                    if (visiblePct >= 50) {
+                        page.classList.add('active');
+                        mainLizmap.presentation.onPageVisible(page);
+                    } else {
+                        page.classList.remove('active');
+                    }
+
+                });
+            };
+
             // Add the pages
+            let firstPage = null;
             presentation.pages.forEach(page => {
                 const presentationPage = document.createElement('lizmap-presentation-page');
                 presentationPage.dataset.uuid = page.uuid;
                 presentationPage.presentation = presentation;
                 presentationPage.properties = page;
                 slideshow.appendChild(presentationPage);
+
+                // Add intersection observer
+                const observer = new IntersectionObserver(
+                    pageIntersectionCallback,
+                    pageObserverOptions,
+                );
+                observers[page.uuid] = observer;
+                observers[page.uuid].observe(presentationPage);
+
+                // Store first page component
+                if (firstPage === null) {
+                    firstPage = presentationPage;
+                }
             })
+
+            // Set first page as active
+            if (firstPage !== null) {
+                mainLizmap.presentation.onPageVisible(firstPage, true);
+            }
 
             /**
              * Lizmap event to allow other scripts to process the data if needed
@@ -277,6 +335,25 @@ export default class Presentation {
      * @param {boolean} resetActiveInterfaceElements - If we must remove the "active" interface for the buttons
      */
     resetLizmapPresentation(destroyFeatures = true, removeMessage = true, resetGlobalVariable = true, resetActiveInterfaceElements = true) {
+
+        // Hide presentation slides container
+        document.getElementById('lizmap-presentation-slides-container').classList.remove('visible');
+
+        // Reset other interface elements back to previous state
+        // Reactivate presentation dock
+        document.querySelector('#mapmenu ul > li.presentation a').click();
+
+        // Put back the map as initial
+        const oldMapDiv = document.getElementById('map');
+        const mapDiv = document.getElementById('newOlMap');
+        if (mapDiv) {
+            mapDiv.style.width = '100%';
+            mapDiv.style.marginLeft = this.mapLeftMargin;
+        }
+        if (oldMapDiv) {
+            oldMapDiv.style.width = '100%';
+            oldMapDiv.style.marginLeft = this.mapLeftMargin;
+        }
 
         // Remove the objects in the map
         if (destroyFeatures) {
@@ -358,6 +435,113 @@ export default class Presentation {
             subDock.style.display = 'none';
         }
     }
+
+
+    /**
+     * Set Lizmap interface view depending on active page
+     */
+    onPageVisible(page, isFirst = false) {
+        // Manage global uuid property
+        const uuid = page.dataset.uuid;
+        let newPageVisible = null;
+
+        // Set the global object page UUID if not set yet
+        if (this.activePageUuid === null) {
+            this.activePageUuid = uuid;
+            newPageVisible = uuid;
+        }
+
+        // Check if the active UUID is different from the given page uuid
+        if (uuid != this.activePageUuid) {
+            this.activePageUuid = uuid;
+            newPageVisible = uuid;
+        }
+
+        // Store when the page has valid map properties (extent or tree state)
+        let hasMapProperties = false;
+
+        // Change Lizmap state only if active page has changed
+        if (newPageVisible !== null || isFirst) {
+            // Change Lizmap interface depending of the current page map properties
+            const slidedhow = document.getElementById('lizmap-presentation-slides-container');
+            const showMap = true;
+            const slideShowWidthClass = 'half';
+            const oldMapDiv = document.getElementById('map');
+            const mapDiv = document.getElementById('newOlMap');
+            if (showMap) {
+                slidedhow.classList.add('showmap', slideShowWidthClass);
+                let mapShiftPercentage = (slideShowWidthClass == 'half') ? '50%' : '30%';
+                if (mapDiv) {
+                    mapDiv.style.width = mapShiftPercentage;
+                    mapDiv.style.marginLeft = mapShiftPercentage;
+                }
+                if (oldMapDiv) {
+                    oldMapDiv.style.width = mapShiftPercentage;
+                    oldMapDiv.style.marginLeft = mapShiftPercentage;
+                }
+            } else {
+                slidedhow.classList.remove('showmap', slideShowWidthClass);
+                if (mapDiv) {
+                    mapDiv.style.width = '100%';
+                    mapDiv.style.marginLeft = this.mapLeftMargin;
+                }
+                if (oldMapDiv) {
+                    oldMapDiv.style.width = '100%';
+                    oldMapDiv.style.marginLeft = this.mapLeftMargin;
+                }
+            }
+
+            // Set layer tree state if needed
+            const treeStateString = page.properties.tree_state;
+            if (treeStateString !== null) {
+                try {
+                    const treeState = JSON.parse(treeStateString);
+                    if ('groups' in treeState && 'layers' in treeState) {
+                        // Groups
+                        const groups = lizMap.mainLizmap.state.layersAndGroupsCollection.groups;
+                        if (treeState.groups.length > 0) {
+                            for (const group of groups) {
+                                group.checked = (treeState.groups.includes(group.name));
+                            }
+                        }
+
+                        // Then layers
+                        const layers = lizMap.mainLizmap.state.layersAndGroupsCollection.layers;
+                        if (treeState.layers.length > 0) {
+                            for (const layer of layers) {
+                                layer.checked = (treeState.layers.includes(layer.name));
+                            }
+                        }
+
+                        hasMapProperties = true;
+                    }
+                } catch(error) {
+                    console.log(error);
+                    console.log(`Wrong tree state for the active presentation page ${uuid}`);
+                }
+            }
+
+            // Set Map extent if needed
+            // Use OpenLayers animation
+            const mapExtent = page.properties.map_extent;
+            if (mapExtent !== null) {
+                // Set map extent
+                const newExtent = mapExtent.split(',');
+                if (newExtent.length == 4) {
+                    hasMapProperties = true;
+                    // lizMap.mainLizmap.extent = newExtent;
+                    const view = lizMap.mainLizmap.map.getView();
+                    // Animate the view to the extent
+                    view.fit(
+                        newExtent, {
+                            duration: 500
+                        }
+                    );
+                }
+            }
+        }
+    }
+
 
     /**
      * Display the form to create a new presentation or a new page
@@ -454,7 +638,6 @@ export default class Presentation {
             const bboxButton = document.createElement('button');
             bboxButton.classList.add('btn', 'btn-mini', 'presentation-page-add-bbox');
             bboxButton.name = 'add-bbox';
-            bboxButton.innerText = 'bbox';
             bboxButton.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -464,7 +647,6 @@ export default class Presentation {
                 const extentInput = document.querySelector('#presentation-form-container form input[name="map_extent"]');
                 const extentValue = extent.join(',');
                 extentInput.value = extentValue;
-                console.log(extentValue);
 
                 return false;
             });
@@ -474,7 +656,6 @@ export default class Presentation {
             const treeButton = document.createElement('button');
             treeButton.classList.add('btn', 'btn-mini', 'presentation-page-add-tree-state');
             treeButton.name = 'add-tree-state';
-            treeButton.innerText = 'tree';
             treeButton.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -489,7 +670,6 @@ export default class Presentation {
                     {'groups': checkedGroups, 'layers': checkedLayers}
                 );
                 treeStateInput.value = treeStateValue;
-                console.log(treeStateValue);
 
                 return false;
             });
@@ -509,8 +689,7 @@ export default class Presentation {
                     const formAction = formDataObject['submit_button'];
 
                     // Do not submit with buttons which have not the submit name
-                    console.log(formAction);
-
+                    // console.log(formAction);
                     if (formAction != 'submit') {
                         // Return to the list of presentations if user canceled
                         if (formAction == 'cancel') {

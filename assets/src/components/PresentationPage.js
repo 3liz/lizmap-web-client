@@ -75,6 +75,8 @@ export default class PresentationPage extends HTMLElement {
         if (pageModel != 'text') {
             switch (this._properties['illustration_type']) {
                 case 'none':
+                case '':
+                case null:
                     break;
                 case 'image':
                     illustrationValue = this._properties['illustration_media'];
@@ -84,7 +86,7 @@ export default class PresentationPage extends HTMLElement {
                         margin: 0px; padding: 0px;
                         background-image: url(${mediaUrl}${illustrationValue});
                         background-position: center;
-                        background-size: cover;
+                        background-size: contain;
                         background-repeat: no-repeat;"
                         title="${illustrationValue}"
                     >
@@ -109,6 +111,7 @@ export default class PresentationPage extends HTMLElement {
                         width: 100%; height: 100%;
                         margin: 0px; padding: 0px;"
                         src="${illustrationValue}"
+                        allowfullscreen
                     />
                     `;
                     break;
@@ -130,6 +133,7 @@ export default class PresentationPage extends HTMLElement {
         let flexDirection = 'column';
         switch (pageModel) {
             case 'text':
+            case null:
                 break;
             case 'media':
                 break;
@@ -146,17 +150,17 @@ export default class PresentationPage extends HTMLElement {
                 flexDirection = 'column-reverse';
                 break;
             default:
-                console.log(`Model ${this._properties['title']} not valid.`);
+                console.log(`Model ${pageModel} for page ${this._properties['title']}.`);
         }
         pageContent.style.flexDirection = flexDirection;
 
         // Set some properties
         // Nullify text div padding if it must not be visible
-        textDiv.style.padding = (pageModel != 'media') ? '20px' : '0px';
+        textDiv.style.margin = (pageModel != 'media') ? '20px' : '0px';
 
         // Nullify flex if object must not be visible
         textDiv.style.flex = (pageModel != 'media') ? '1' : '0';
-        illustrationDiv.style.flex = (pageModel != 'text') ? '1' : '0';
+        illustrationDiv.style.flex = !(['text'].includes(pageModel)) ? '1' : '0';
 
         // Page background color from the presentation data
         if (this._presentation['background_color']) {
@@ -175,6 +179,8 @@ export default class PresentationPage extends HTMLElement {
         // override it if the page background color is also set
         if (this._properties['background_image']) {
             this.style.backgroundImage = `url(${mediaUrl}${this._properties['background_image']})`;
+            // Force cover - TODO add a new field
+            this.classList.add(`background-cover`);
         }
 
     }
