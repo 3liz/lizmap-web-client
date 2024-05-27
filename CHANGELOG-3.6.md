@@ -8,10 +8,24 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Funders
+
+* *[Terre de Provence Agglomération](https://www.terredeprovence-agglo.com/)*
+
+### Changed
+
+* Check for the Desktop plugin version first instead of showing possible warnings from the plugin
+
 ### Fixed
 
 * Fix issue in Dutch language
 * Fix children popup in compact table
+
+### Translations
+
+* Update translated strings from the Transifex website :
+  * [Lizmap Web Client](https://www.transifex.com/3liz-1/lizmap-locales/dashboard/)
+  * [Jelix](https://www.transifex.com/3liz-1/jelix/dashboard/)
 
 ## 3.6.12 - 2024-05-07
 
