@@ -3962,14 +3962,16 @@ window.lizMap = function() {
       ) {
         // If we print in the QGIS project projection
         var project_proj = config.options.qgisProjectProjection;
-        if (!(project_proj.ref in Proj4js.defs)) {
-          Proj4js.defs[project_proj.ref]=project_proj.proj4;
-        }
-        project_projection = new OpenLayers.Projection(project_proj.ref);
-        projCode = project_projection.getCode();
+        if (project_proj.ref) {
+          if (!(project_proj.ref in Proj4js.defs)) {
+            Proj4js.defs[project_proj.ref]=project_proj.proj4;
+          }
+          project_projection = new OpenLayers.Projection(project_proj.ref);
+          projCode = project_projection.getCode();
 
-        // Reproject extent
-        extent.transform(map.projection, project_projection);
+          // Reproject extent
+          extent.transform(map.projection, project_projection);
+        }
       }
 
       var reverseAxisOrder = (OpenLayers.Projection.defaults[projCode] && OpenLayers.Projection.defaults[projCode].yx);
@@ -4050,26 +4052,31 @@ window.lizMap = function() {
 
       // Get active baselayer, and add the corresponding QGIS layer if needed
       var activeBaseLayerName = map.baseLayer.name;
+      var activeBaseLayerConfig = null;
       if ( activeBaseLayerName in externalBaselayersReplacement ) {
         var exbl = externalBaselayersReplacement[activeBaseLayerName];
         if( exbl in config.layers ) {
-            var activeBaseLayerConfig = config.layers[exbl];
-            if ( 'id' in activeBaseLayerConfig && 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' ){
-                printLayers.push(activeBaseLayerConfig.id);
-            }
-            else if ( 'shortname' in activeBaseLayerConfig ){
-                printLayers.push(activeBaseLayerConfig.shortname);
-            }
-            else{
-                printLayers.push(exbl);
-            }
-            if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion.startsWith('3.') ) {
-                styleLayers.push('');
-            } else {
-                styleLayers.push('default');
-            }
-            opacityLayers.push(255);
+            activeBaseLayerConfig = config.layers[exbl];
         }
+      } else if ( activeBaseLayerName in config.layers ) {
+          activeBaseLayerConfig = config.layers[activeBaseLayerName];
+      }
+      if ( activeBaseLayerConfig !== null ) {
+          if ( 'id' in activeBaseLayerConfig && 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' ){
+              printLayers.push(activeBaseLayerConfig.id);
+          }
+          else if ( 'shortname' in activeBaseLayerConfig ){
+              printLayers.push(activeBaseLayerConfig.shortname);
+          }
+          else{
+              printLayers.push(exbl);
+          }
+          if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion.startsWith('3.') ) {
+              styleLayers.push('');
+          } else {
+              styleLayers.push('default');
+          }
+          opacityLayers.push(255);
       }
 
       // Add table vector layer without geom
