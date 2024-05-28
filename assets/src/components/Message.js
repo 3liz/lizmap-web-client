@@ -27,7 +27,19 @@ export default class Message extends HTMLElement {
 
     connectedCallback() {
         this._template = () => html`
-            <button class="btn btn-small" @click=${() => { lizMap.addMessage(this.message, this.type, this.close, this.timeout)}} >${this.html}</button>
+            <button class="btn btn-small" @click=${() => {
+                // Remove previous message if any
+                if (this.element) {
+                    this.element.remove();
+                    this.element = undefined;
+                } else {
+                    this.element = lizMap.addMessage(this.message, this.type, this.close, this.timeout);
+                    this.element.bind('closed',  () => {
+                        this.element = undefined;
+                    });
+                }
+            }
+            }>${this.html}</button>
         `;
 
         render(this._template(), this);
