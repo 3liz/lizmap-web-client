@@ -23,6 +23,8 @@ export default class Message extends HTMLElement {
         this.type = this.getAttribute('type') || 'info';
         this.close = this.getAttribute('close') || true;
         this.timeout = this.getAttribute('timeout');
+        this.placement = this.getAttribute('placement') || 'top';
+        this.allowhtml = this.getAttribute('allowhtml') || false;
     }
 
     connectedCallback() {
@@ -43,5 +45,11 @@ export default class Message extends HTMLElement {
         `;
 
         render(this._template(), this);
+
+        $('button', this).tooltip({
+            title: this.message,
+            placement: this.placement,
+            html: this.allowhtml
+        });
     }
 }
