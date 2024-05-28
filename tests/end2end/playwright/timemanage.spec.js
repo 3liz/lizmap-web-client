@@ -56,7 +56,7 @@ test.describe('Time Manager', () => {
                 { 'param': 'service', 'expectedvalue': 'WMS' },
                 { 'param': 'format', 'expectedvalue': 'image/png' },
                 { 'param': 'request', 'expectedvalue': 'getmap' },
-                { 'param': 'filter', 'expectedvalue': 'time_manager: ( ( "test_date" >= \'' + timeObj.start + '\' ) AND ( "test_date" <= \'' + timeObj.end + '\' ) ) ' },
+                { 'param': 'filter', 'expectedvalue': 'time_manager_layer: ( ( "test_date" >= \'' + timeObj.start + '\' ) AND ( "test_date" <= \'' + timeObj.end + '\' ) ) ' },
             ];
             // Check if WMS Request params are as expected
             const urlObj = new URLSearchParams(originalUrl);
