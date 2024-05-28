@@ -3105,6 +3105,10 @@ lizmap-tooltip.spinner::after {
   right: 2px;
 }
 
+lizmap-message button {
+  font-weight: bold;
+}
+
 /* Snap layer list */
 .snap-panel-controls {
     margin:10px;
