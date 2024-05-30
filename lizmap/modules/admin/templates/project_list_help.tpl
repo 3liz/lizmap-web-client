@@ -18,19 +18,19 @@
 
             <li>{@admin.project.rules.list.warnings.html@}</li>
             <ul>
+                <li>{@admin.project.list.column.lizmap.plugin.version.label@}</li>
+                <ul class="no_symbol">
+                    <li style="list-style-type: none;">
+                        <span class='badge badge-warning'>⚠</span>
+                        {jlocale "admin.project.list.column.qgis.desktop.recent.version.label.html" , array($lizmapDesktopRecommended)}
+                    </li>
+                </ul>
                 <li>{@admin.project.list.column.qgis.desktop.version.label@}</li>
                 <ul class="rules">
                     <li class="warning">{jlocale "admin.project.rules.list.qgis.version.warning.html",
                         array($serverVersions['qgis_server_version_old'])}</li>
                     <li class="error">{jlocale "admin.project.rules.list.qgis.version.error.html", array(
                         $serverVersions['qgis_server_version_next'])}</li>
-                </ul>
-                <li>{@admin.project.list.column.lizmap.plugin.version.label@}</li>
-                <ul class="no_symbol">
-                    <li style="list-style-type: none;">
-                        <span class='badge badge-warning'>⚠</span>
-                        {jlocale "admin.project.list.column.qgis.desktop.recent.label.html" , array($lizmapDesktopRecommended)}
-                    </li>
                 </ul>
                 <li>{@admin.project.list.column.target.lizmap.version.label.longer@}</li>
                 <ul class="rules">
