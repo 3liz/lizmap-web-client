@@ -4069,7 +4069,7 @@ window.lizMap = function() {
               printLayers.push(activeBaseLayerConfig.shortname);
           }
           else{
-              printLayers.push(exbl);
+              printLayers.push(activeBaseLayerConfig.name);
           }
           if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion.startsWith('3.') ) {
               styleLayers.push('');
