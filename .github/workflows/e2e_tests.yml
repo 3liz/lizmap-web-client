@@ -145,7 +145,7 @@ jobs:
         id: test-cypress
         # Always run, even if playwright has failed
         if: always()
-        uses: cypress-io/github-action@v6.6.1
+        uses: cypress-io/github-action@v6.7.0
         with:
           browser: chrome
           working-directory: tests/end2end
