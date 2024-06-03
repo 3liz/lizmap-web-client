@@ -4,13 +4,8 @@
         "icon-resize-full icon-white"></i></button>
         <button class="btn btn-mini" id="layers-fold-all" title="{@view~map.switcher.layers.collapse.title@}"><i class=
         "icon-resize-small icon-white"></i></button>
-
-        <button class="btn btn-mini layerActionZoom disabled" title="{@view~map.switcher.layer.zoomToExtent.title@}"><i class="icon-zoom-in icon-white"></i></button>
-
         <button class="btn btn-mini pull-right" id="layerActionUnfilter" style="display:none;" title="{@view~map.switcher.layer.unfilter.title@}"><i class="icon-filter icon-white"></i></button>
-
     </div>
-
     <div class="menu-content">
         <lizmap-treeview></lizmap-treeview>
     </div>
