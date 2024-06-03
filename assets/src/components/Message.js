@@ -17,14 +17,14 @@ export default class Message extends HTMLElement {
     constructor() {
         super();
 
-        this.html = this.innerHTML;
+        this.message = this.innerHTML;
         this.innerHTML = '';
-        this.message = this.getAttribute('message') || '';
+        this.buttontext = this.getAttribute('buttontext') || '';
         this.type = this.getAttribute('type') || 'info';
         this.close = this.getAttribute('close') || true;
         this.timeout = this.getAttribute('timeout');
         this.placement = this.getAttribute('placement') || 'top';
-        this.allowhtml = this.getAttribute('allowhtml') || false;
+        this.allowhtml = this.getAttribute('allowhtml') || true;
     }
 
     connectedCallback() {
@@ -41,7 +41,7 @@ export default class Message extends HTMLElement {
                     });
                 }
             }
-            }>${this.html}</button>
+            }>${this.buttontext}</button>
         `;
 
         render(this._template(), this);
