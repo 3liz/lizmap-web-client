@@ -31,6 +31,11 @@ button.liz-presentation-create {
 div#presentation-container[data-display='detail'] button.liz-presentation-create.presentation {
     display: none;
 }
+/* Hide presentation container when presentation is running */
+#dock.presentation-visible div#presentation-container {
+    display: none;
+}
+
 div.lizmap-presentation-card {
     border: 1px solid var(--color-contrasted-elements);
     border-radius: 5px;
@@ -172,6 +177,9 @@ button.presentation-page-add-bbox{
     width: 100%;
     max-width: 100%;
 }
+#dock.presentation-visible button#dock-close {
+    display: none;
+}
 
 /* Slides toolbar */
 div#lizmap-presentation-slides-toolbar {
@@ -230,6 +238,8 @@ lizmap-presentation-page {
     /* Full - Respect image ratio - full image will always be visible (with possible empty spaces around)*/
     background-position: top; background-size: contain;
     opacity: 0.4;
+    /* Need to set position to allow having absolute positioned children (toolbar) */
+    position: relative;
 }
 /* active page (visible >= 50%) */
 lizmap-presentation-page.active {
@@ -247,6 +257,18 @@ lizmap-presentation-page.background-cover {
 lizmap-presentation-page.background-stretch {
     /* Stretched to cover all the page. It will distort the image */
     background-position: center; background-size: 100% 100%;
+}
+
+/* Page toolbar */
+lizmap-presentation-page div.lizmap-presentation-page-toolbar {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    /* Change opacity when hovering */
+    opacity: 0.1;
+    &:hover {
+        opacity: 1;
+    }
 }
 
 lizmap-presentation-page h2.lizmap-presentation-page-title {

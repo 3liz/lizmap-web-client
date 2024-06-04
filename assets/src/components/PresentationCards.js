@@ -42,6 +42,15 @@ export default class PresentationCards extends HTMLElement {
 
                 // Render
                 this.render();
+
+                // If a presentation was running, display it again
+                if (mainLizmap.presentation.ACTIVE_LIZMAP_PRESENTATION !== null) {
+                    // Get active page
+                    mainLizmap.presentation.runLizmapPresentation(
+                        mainLizmap.presentation.ACTIVE_LIZMAP_PRESENTATION,
+                        mainLizmap.presentation.LIZMAP_PRESENTATION_ACTIVE_PAGE_NUMBER
+                    );
+                }
             })
             .catch(err => console.log(err))
 
@@ -261,7 +270,8 @@ export default class PresentationCards extends HTMLElement {
 
             // Recalculate page numbers
             let i = 1;
-            let pages = {};
+            let pagesNumbers = {};
+            let pagesIds = [];
             let presentationId = null;
             for (const child of item.parentElement.children) {
                 if (!child.classList.contains('lizmap-presentation-page-preview')) {
@@ -272,16 +282,29 @@ export default class PresentationCards extends HTMLElement {
                 child.querySelector('h3.lizmap-presentation-page-preview-title > span').innerText = pageOrder;
                 presentationId = child.dataset.presentationId;
                 const pageId = child.dataset.pageId;
-                pages[pageId] = pageOrder;
+                pagesNumbers[pageId] = pageOrder;
+                pagesIds.push(pageId);
                 i++;
             }
 
-            // Send new pages to the server
-            mainLizmap.presentation.setPresentationPagination(presentationId, pages)
-            .then(data => {
-                console.log('pagination modifiée');
-            })
-            .catch(err => console.log(err))
+            if (presentationId !== null) {
+                // Set the component presentation pages object
+                const presentation = mainLizmap.presentation.getPresentationById(presentationId);
+                let newPages = [];
+                for (const i in pagesIds) {
+                    const correspondingPage = presentation.pages.find(x => x.id === pagesIds[i]);
+                    newPages.push(correspondingPage);
+                }
+                presentation.pages = newPages;
+
+                // Send new pagesNumbers to the server
+                mainLizmap.presentation.setPresentationPagination(presentationId, pagesNumbers)
+                .then(data => {
+                    console.log('pagination modifiée');
+
+                })
+                .catch(err => console.log(err))
+            }
         }
 
         function cancelDefault (e) {

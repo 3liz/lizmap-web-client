@@ -58,6 +58,16 @@ export default class PresentationPage extends HTMLElement {
         const pageAnchor = this.querySelector('a.lizmap-presentation-page-anchor');
         pageAnchor.setAttribute('name', this._properties['page_order']);
 
+        // Toolbar buttons
+        const editButton = this.querySelector('button.liz-presentation-edit.page');
+        editButton.value = this._properties['id'];
+        if (editButton) {
+            editButton.addEventListener('click', function(event) {
+                const button = event.currentTarget;
+                const id = button.value;
+                mainLizmap.presentation.launchPresentationCreationForm('page', id);
+            });
+        }
         // title of the page
         const pageTitle = this.querySelector('h2.lizmap-presentation-page-title');
         pageTitle.innerHTML = this._properties['title'];

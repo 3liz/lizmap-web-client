@@ -37,17 +37,17 @@ export default class Presentation {
     /**
      * @string Active page uuid
      */
-    activePageUuid = null;
+    LIZMAP_PRESENTATION_ACTIVE_PAGE_UUID = null;
+
+    /**
+     * @string Active page number
+     */
+    LIZMAP_PRESENTATION_ACTIVE_PAGE_NUMBER = 1;
 
     /**
      * @string Active presentation number of pages
      */
     activePresentationPagesCount = 0;
-
-    /**
-     * @string Active page number
-     */
-    activePageNumber = 1;
 
     /**
      * OpenLayers vector layer to draw the presentation results
@@ -155,11 +155,11 @@ export default class Presentation {
             return null;
         }
 
+        // Get presentation data from the PresentationCards component
         const presentationCards = document.querySelector('lizmap-presentation-cards');
         if (presentationCards === null) {
             return null;
         }
-
         for (const p in presentationCards.presentations) {
             const presentation = presentationCards.presentations[p];
             if (presentation && presentation.id == presentationId) {
@@ -235,8 +235,9 @@ export default class Presentation {
      * Run a Lizmap presentation.
      *
      * @param {integer} presentationId - The presentation id
+     * @param {integer} pageNumber - The page number to go to
      */
-    async runLizmapPresentation(presentationId) {
+    async runLizmapPresentation(presentationId, pageNumber = 0) {
         if (!this.hasPresentations) {
             this.addMessage('No presentation found for the current Lizmap map !', 'error', 5000);
 
@@ -258,7 +259,6 @@ export default class Presentation {
         // We allow only one active presentation at a time
         // We do not remove the active status of the button (btn-primary)
         this.resetLizmapPresentation(true, true, true, false);
-
         try {
             // Reset its content from the template
             const slidesContainer = document.getElementById('lizmap-presentation-slides-container');
@@ -292,7 +292,7 @@ export default class Presentation {
             };
 
             // Add the pages
-            let firstPage = null;
+            let targetPageElement = null;
             presentation.pages.forEach(page => {
                 const presentationPage = document.createElement('lizmap-presentation-page');
                 presentationPage.dataset.uuid = page.uuid;
@@ -310,8 +310,8 @@ export default class Presentation {
                 observers[page.uuid].observe(presentationPage);
 
                 // Store first page component
-                if (firstPage === null) {
-                    firstPage = presentationPage;
+                if (targetPageElement === null || page.page_order == pageNumber) {
+                    targetPageElement = presentationPage;
                 }
             })
 
@@ -322,9 +322,10 @@ export default class Presentation {
             slidesContainer.classList.add('visible');
 
             // Set first page as active
-            this.goToGivenPage(1);
-            if (firstPage !== null) {
-                mainLizmap.presentation.onPageVisible(firstPage, true);
+            let targetPageNumber = (pageNumber > 0) ? pageNumber : 1;
+            if (targetPageElement !== null) {
+            this.goToGivenPage(targetPageNumber);
+                mainLizmap.presentation.onPageVisible(targetPageElement, true);
             }
 
             /**
@@ -448,7 +449,7 @@ export default class Presentation {
             slidesContainer.classList.add('visible');
             slidesRestore.classList.remove('visible');
             // We need to run the setInterfaceFromPage method to set the page & map width
-            const page = document.querySelector(`lizmap-presentation-page[data-number="${this.activePageNumber}"]`);
+            const page = document.querySelector(`lizmap-presentation-page[data-number="${this.LIZMAP_PRESENTATION_ACTIVE_PAGE_NUMBER}"]`);
             if (page) {
                 this.setInterfaceFromPage(page);
             }
@@ -460,7 +461,7 @@ export default class Presentation {
      * @param {integer} pageNumber The page number to go to
      */
     goToGivenPage(pageNumber) {
-        // console.log(`from ${this.activePageNumber} to ${pageNumber}`);
+        // console.log(`from ${this.LIZMAP_PRESENTATION_ACTIVE_PAGE_NUMBER} to ${pageNumber}`);
         const targetAnchor = document.querySelector(`a.lizmap-presentation-page-anchor[name="${pageNumber}"]`);
         if (targetAnchor) {
             targetAnchor.scrollIntoView();
@@ -469,7 +470,7 @@ export default class Presentation {
 
     // Go to the previous page
     goToPreviousPage() {
-        const targetPage = parseInt(this.activePageNumber) - 1;
+        const targetPage = parseInt(this.LIZMAP_PRESENTATION_ACTIVE_PAGE_NUMBER) - 1;
         if (targetPage >= 1) {
             this.goToGivenPage(targetPage);
         }
@@ -478,7 +479,7 @@ export default class Presentation {
     // Go to the next page
     goToNextPage() {
         // Get current page
-        const targetPage = parseInt(this.activePageNumber) + 1;
+        const targetPage = parseInt(this.LIZMAP_PRESENTATION_ACTIVE_PAGE_NUMBER) + 1;
         if (targetPage <= this.activePresentationPagesCount) {
             this.goToGivenPage(targetPage);
         }
@@ -559,7 +560,6 @@ export default class Presentation {
      * @param {HTMLElement} page Lizmap presentation page component
      */
     setInterfaceFromPage(page) {
-        console.log('setInterfaceFromPage');
         // TODO page width must be set from page data
         const pageWidthClass = 'presentation-half';
         const dockWidth = (pageWidthClass == 'presentation-half') ? '50%' : '100%';
@@ -590,19 +590,19 @@ export default class Presentation {
         let newPageVisible = null;
 
         // Set the global object page UUID if not set yet
-        if (this.activePageUuid === null) {
-            this.activePageUuid = uuid;
+        if (this.LIZMAP_PRESENTATION_ACTIVE_PAGE_UUID === null) {
+            this.LIZMAP_PRESENTATION_ACTIVE_PAGE_UUID = uuid;
             newPageVisible = uuid;
         }
 
         // Check if the active UUID is different from the given page uuid
-        if (uuid != this.activePageUuid) {
-            this.activePageUuid = uuid;
+        if (uuid != this.LIZMAP_PRESENTATION_ACTIVE_PAGE_UUID) {
+            this.LIZMAP_PRESENTATION_ACTIVE_PAGE_UUID = uuid;
             newPageVisible = uuid;
         }
 
         // Set the active page number
-        this.activePageNumber = page.dataset.number;
+        this.LIZMAP_PRESENTATION_ACTIVE_PAGE_NUMBER = page.dataset.number;
 
         // Store when the page has valid map properties (extent or tree state)
         let hasMapProperties = false;
@@ -668,7 +668,7 @@ export default class Presentation {
      * Display the form to create a new presentation or a new page
      *
      * @param {string} itemType Type of item to edit: presentation or page.
-     * @param {null|number} id Id of the presentation. If null, it is a creation form.
+     * @param {null|number} id Id of the presentation or page. If null, it is a creation form.
      * @param {null|number} presentation_id Id of the parent presentation. Only for creation of page
      */
     async launchPresentationCreationForm(itemType = 'presentation', id = null, presentation_id = null) {
@@ -838,11 +838,20 @@ export default class Presentation {
                         const itemType = formData.get('item_type');
                         const presentationId = (itemType == 'presentation') ? formData.get('id') : formData.get('presentation_id');
                         const cardsElement = document.querySelector('#presentation-list-container lizmap-presentation-cards');
+
+                        // Setting this attribute detail to the presentation ID triggers the display of its details
                         cardsElement.setAttribute('detail', presentationId);
+
+                        // Changing this attribute triggers the refresh of the content from server
                         cardsElement.setAttribute('updated', 'done');
 
                         // Go back to the list of presentations
                         mainLizmap.presentation.hideForm();
+
+                        // If the presentation was running, refresh it
+                        // It is done by the component PresentationCards since the change of the updated attribute
+                        // triggers a request and here we cannot wait for it to finish
+
                     },
 
                     // callback when the form action returns errors

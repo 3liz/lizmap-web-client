@@ -167,6 +167,10 @@
 <template id="lizmap-presentation-page-template">
     <a class="lizmap-presentation-page-anchor"></a>
     <h2 class="lizmap-presentation-page-title"></h2>
+    <div class="lizmap-presentation-page-toolbar">
+        <button class="btn liz-presentation-edit page" value=""
+            title="{@presentation~presentation.dock.page.preview.button.edit.title@}">{@presentation~presentation.dock.page.preview.button.edit.label@}</button>
+    </div>
     <div class="lizmap-presentation-page-content">
         <div class="lizmap-presentation-page-text">
         </div>
