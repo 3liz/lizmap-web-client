@@ -797,7 +797,7 @@ describe('BaseLayersConfig', function () {
         expect(wmtsBl.style).to.be.eq('default')
         expect(wmtsBl.matrixSet).to.be.eq('EPSG:3857')
         expect(wmtsBl.crs).to.be.eq('EPSG:3857')
-        expect(wmtsBl.numZoomLevels).to.be.eq(19)
+        expect(wmtsBl.numZoomLevels).to.be.eq(22)
         expect(wmtsBl.hasLayerConfig).to.be.true
         expect(wmtsBl.layerConfig).to.not.be.null
         expect(wmtsBl.layerConfig.externalWmsToggle).to.be.true
