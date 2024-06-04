@@ -405,16 +405,13 @@ export default class map extends olMap {
                     })
                 });
             } else if (baseLayerState.type === BaseLayerTypes.WMTS) {
+                // Note: min/max resolutions are handled by OpenLayers
                 const resolutions = [];
                 const matrixIds = [];
 
                 for (let i = 0; i < baseLayerState.numZoomLevels; i++) {
                     matrixIds[i] = i.toString();
                     resolutions[i] = max3857Resolution / Math.pow(2, i);
-                }
-                // Get min resolution
-                if (layerMinResolution === undefined || layerMinResolution < resolutions[resolutions.length-1]) {
-                    layerMinResolution = resolutions[resolutions.length-1];
                 }
                 const tileGrid = new WMTSTileGrid({
                     origin: [-20037508, 20037508],
@@ -428,8 +425,6 @@ export default class map extends olMap {
                 }
 
                 baseLayer = new TileLayer({
-                    minResolution: layerMinResolution,
-                    maxResolution: layerMaxResolution,
                     source: new WMTS({
                         url: url,
                         layer: baseLayerState.layer,

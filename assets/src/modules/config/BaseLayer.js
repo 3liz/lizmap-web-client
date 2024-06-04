@@ -320,7 +320,7 @@ const wmtsProperties = {
 }
 
 const wmtsOptionalProperties = {
-    'numZoomLevels': { type: 'number', default: 19 },
+    'numZoomLevels': { type: 'number', default: 22 },
     'key': { type: 'string', nullable: true }
 }
 
