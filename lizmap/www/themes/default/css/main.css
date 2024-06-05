@@ -27,7 +27,7 @@ button.btn, a.btn, input.btn {
   box-shadow: none;
   text-shadow: none;
 }
-button.btn:focus, a.btn:focus, , input.btn:focus {
+button.btn:focus, a.btn:focus, input.btn:focus {
   background-color: var(--color-contrasted-elements-light);
   color: var(--color-text-primary);
 }

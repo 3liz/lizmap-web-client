@@ -2137,8 +2137,7 @@ lizmap-mouse-position > div.coords-unit > select{
   font-size: 1em;
   padding: 2px;
   padding-left: 5px;
-  border-bottom: 1px solid white;
-  border-bottom: 1px solid rgba(255,255,255,0.4);
+  border-bottom: 1px solid var(--color-contrasted-elements-light);
 }
 
 
