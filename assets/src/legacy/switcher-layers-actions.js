@@ -318,6 +318,18 @@ var lizLayerActionButtons = function() {
                             }
                         }
 
+                        // Set baseLayers checked state
+                        if (themeSelected?.checkedGroupNode?.includes("baselayers/project-background-color")) {
+                            lizMap.mainLizmap.state.baseLayers.selectedBaseLayerName = "project-background-color";
+                        } else {
+                            for (const baseLayer of lizMap.mainLizmap.state.baseLayers.getBaseLayers()) {
+                                if (themeSelected?.layers?.[baseLayer.layerConfig.id]) {
+                                    lizMap.mainLizmap.state.baseLayers.selectedBaseLayerName = baseLayer.name;
+                                    continue;
+                                }
+                            }
+                        }
+
                         // Trigger map theme event
                         lizMap.events.triggerEvent("mapthemechanged",
                             {
