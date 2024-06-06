@@ -270,9 +270,9 @@ class mediaCtrl extends jController
             $mime = jFile::getMimeTypeFromFilename($finalPath);
         }
 
-        // Handle JavaScript modules (.mjs)
+        // Handle JavaScript files (.js) & modules (.mjs)
         // as File::getMimeType() returns "text/x-java" for those files
-        if (strtolower($path_parts['extension']) == 'mjs') {
+        if (in_array(strtolower($path_parts['extension']), array('js', 'mjs'))) {
             $mime = 'application/javascript';
         }
 

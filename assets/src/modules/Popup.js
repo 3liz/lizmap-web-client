@@ -181,7 +181,7 @@ export default class Popup {
             const sanitizedResponse = DOMPurify.sanitize(response, {
                 CUSTOM_ELEMENT_HANDLING: {
                     tagNameCheck: /^lizmap-/,
-                    attributeNameCheck: /crs|bbox|edition-restricted/,
+                    attributeNameCheck: /crs|bbox|edition-restricted|layerid|layertitle|uniquefield|expressionfilter|withgeometry|sortingfield|sortingorder|draggable/,
                 }
             });
             lizMap.displayGetFeatureInfo(sanitizedResponse, { x: xCoord, y: yCoord }, evt?.coordinate);
