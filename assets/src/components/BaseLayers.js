@@ -6,9 +6,10 @@
  * @license MPL-2.0
  */
 
-import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
+import { mainLizmap } from '../modules/Globals.js';
 import { BaseLayerTypes } from '../modules/config/BaseLayer.js';
 import {html, render} from 'lit-html';
+import { keyed } from 'lit-html/directives/keyed.js';
 
 /**
  * @class
@@ -29,12 +30,12 @@ export default class BaseLayers extends HTMLElement {
 
         this._template = () => html`
             ${mainLizmap.state.baseLayers.baseLayers.length > 1
-                ? html`
+                ? keyed(mainLizmap.state.baseLayers.selectedBaseLayerName, html`
                 <select @change=${(event) => { mainLizmap.state.baseLayers.selectedBaseLayerName = event.target.value }}>
                     ${mainLizmap.state.baseLayers.baseLayers.map((config) =>
-                    html`<option .selected="${mainLizmap.state.baseLayers.selectedBaseLayerName === config.name}" value="${config.name}">${config.type === BaseLayerTypes.Empty ? lizDict['baselayer.empty.title'] : config.title}</option>`
+                    html`<option ?selected="${mainLizmap.state.baseLayers.selectedBaseLayerName === config.name}" value="${config.name}">${config.type === BaseLayerTypes.Empty ? lizDict['baselayer.empty.title'] : config.title}</option>`
                     )}
-                </select>`
+                </select>`)
                 :
                 html`${mainLizmap.state.baseLayers.baseLayers[0].title}`
             }
@@ -42,7 +43,7 @@ export default class BaseLayers extends HTMLElement {
 
         render(this._template(), this);
 
-        mainEventDispatcher.addListener(
+        mainLizmap.state.baseLayers.addListener(
             () => {
                 render(this._template(), this);
             }, ['baselayers.selection.changed']
@@ -50,7 +51,7 @@ export default class BaseLayers extends HTMLElement {
     }
 
     disconnectedCallback() {
-        mainEventDispatcher.removeListener(
+        mainLizmap.state.baseLayers.addListener(
             () => {
                 render(this._template(), this);
             }, ['baselayers.selection.changed']
