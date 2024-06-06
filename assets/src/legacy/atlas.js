@@ -565,7 +565,7 @@ import DOMPurify from 'dompurify';
 
                 // Display popup
                 if (lizAtlasConfig['atlasDisplayPopup']) {
-                    lizMap.getFeaturePopupContent(lizAtlasConfig.wmsName, feature, function (data) {
+                    lizMap.getFeaturePopupContent(lizAtlasConfig.layername, feature, function (data) {
                         var popupContainerId = 'liz-atlas-item-detail';
                         // Add class to table
                         var popupReg = new RegExp('lizmapPopupTable', 'g');
