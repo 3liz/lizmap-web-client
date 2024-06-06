@@ -84,5 +84,17 @@ test.describe('Theme', () => {
         await expect(page.getByLabel('sub-sub-group--1')).toBeChecked();
         await expect(page.getByLabel('tramway_lines')).toBeChecked();
         await expect(page.getByLabel('sub-sub-group--2')).not.toBeChecked();
+
+        // Baselayer
+        await expect(page.locator('lizmap-base-layers select')).toHaveValue('project-background-color');
+    });
+
+    test('must display theme4 when selected', async ({ page }) => {
+        // Select theme4
+        await page.locator('#theme-selector > button').click()
+        await page.locator('#theme-selector > ul > li.theme').nth(3).click();
+
+        // Baselayer
+        await expect(page.locator('lizmap-base-layers select')).toHaveValue('OpenStreetMap');
     });
 });
