@@ -3166,3 +3166,116 @@ lizmap-message button {
 .ck.ck-balloon-panel.ck-balloon-panel_visible {
   z-index: 9999;
 }
+
+
+
+/* lizmap-features-table web component */
+lizmap-features-table {
+  font-size: 0.8em;
+}
+lizmap-features-table h4 {
+  font-size: 1.3em;
+}
+#popupcontent .lizmapPopupContent lizmap-features-table h4 {
+  border-bottom: none;
+  margin-bottom: 5px;
+}
+div.lizmap-features-table {
+  position: relative;
+}
+div.lizmap-features-table-container {
+  border: 1px solid var(--color-contrasted-elements);
+  font-size: 0.9em;
+  margin: 0px 10px 0px 10px;
+  position: relative;
+  max-height: 30vh;
+  overflow: auto;
+}
+
+/* Feature item */
+div.lizmap-features-table-container div.lizmap-features-table-item {
+  padding: 5px;
+  border-top: 1px solid var(--color-contrasted-elements);
+  position: relative;
+  /* Invert colors on hover & focus */
+  &:hover, &:focus, &:active, &.popup-displayed {
+      background-color: var(--color-contrasted-elements);
+      color: var(--color-contrasted-text);
+  }
+  /* Do not render the top border for the first item (parent already has a border) */
+  &:first-child {
+    border-top: none;
+  }
+}
+/* Pointer cursor  */
+div.lizmap-features-table-container div.lizmap-features-table-item.has-action {
+  cursor: pointer;
+}
+
+/* Hide other children if only one child feature is active */
+div.lizmap-features-table.popup-displayed div.lizmap-features-table-container div.lizmap-features-table-item {
+  display: none;
+}
+/* In this context, display only the active child item */
+div.lizmap-features-table.popup-displayed div.lizmap-features-table-container div.lizmap-features-table-item.popup-displayed {
+  display: block;
+}
+/* Toolbar visible when popup is visible */
+div.lizmap-features-table div.lizmap-features-table-toolbar {
+  display: none;
+}
+div.lizmap-features-table.popup-displayed div.lizmap-features-table-toolbar {
+  position: absolute;
+  top: 0px;
+  right: 10px;
+  cursor: pointer;
+  display: block;
+  opacity: 0.6;
+  z-index: 1000;
+  &:hover {
+    opacity: 1;
+  }
+}
+div.lizmap-features-table-toolbar button {
+  background-color: var(--color-contrasted-elements-light);
+  color: var(--color-contrasted-elements);
+  width: 25px;
+  height: 25px;
+  &:hover, &:focus, &:active {
+    background-position: center;
+  }
+}
+/* close */
+div.lizmap-features-table-toolbar button.close-popup {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpath d='M11.9997 10.5865L16.9495 5.63672L18.3637 7.05093L13.4139 12.0007L18.3637 16.9504L16.9495 18.3646L11.9997 13.4149L7.04996 18.3646L5.63574 16.9504L10.5855 12.0007L5.63574 7.05093L7.04996 5.63672L11.9997 10.5865Z'%3E%3C/path%3E%3C/svg%3E");
+}
+/* previous */
+div.lizmap-features-table-toolbar button.previous-popup {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpath d='M10.8284 12.0007L15.7782 16.9504L14.364 18.3646L8 12.0007L14.364 5.63672L15.7782 7.05093L10.8284 12.0007Z'%3E%3C/path%3E%3C/svg%3E");
+  &.first {
+    display: none;
+  }
+}
+/* next */
+div.lizmap-features-table-toolbar button.next-popup {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpath d='M13.1717 12.0007L8.22192 7.05093L9.63614 5.63672L16.0001 12.0007L9.63614 18.3646L8.22192 16.9504L13.1717 12.0007Z'%3E%3C/path%3E%3C/svg%3E");
+  &.last {
+    display: none;
+  }
+}
+
+
+/* Popup div, visible only if popup-dsplayed class is present for it preceeding sibling */
+div.lizmap-features-table div.lizmap-features-table-container + div.lizmap-features-table-item-popup {
+  display: none;
+  min-height: 200px;
+  min-width: 200px;
+  overflow: auto;
+}
+div.lizmap-features-table.popup-displayed div.lizmap-features-table-container + div.lizmap-features-table-item-popup {
+  display: block;
+}
+/* Hide title of the popup, since it is already visible above */
+div.lizmap-features-table.popup-displayed div.lizmap-features-table-container + div.lizmap-features-table-item-popup h4.lizmapPopupTitle {
+  display: none;
+}
