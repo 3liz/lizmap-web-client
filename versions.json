@@ -1,13 +1,23 @@
 [
     {
+        "branch": "3.9",
+        "changelog": {},
+        "first_release_date": "",
+        "latest_release_date": "",
+        "latest_release_version": "3.9.0",
+        "qgis_max_version_recommended": 39900,
+        "qgis_min_version_recommended": 32800,
+        "status": "dev"
+    },
+    {
         "branch": "3.8",
         "changelog": {},
         "first_release_date": "",
         "latest_release_date": "",
         "latest_release_version": "3.8.0",
         "qgis_max_version_recommended": 39900,
-        "qgis_min_version_recommended": 32200,
-        "status": "dev"
+        "qgis_min_version_recommended": 32800,
+        "status": "feature_freeze"
     },
     {
         "branch": "3.7",
