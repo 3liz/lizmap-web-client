@@ -12,13 +12,18 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 * New JavaScript API to load external layer straight in the legend tree and in the map
 * Popup: FeatureToolbar in compact table
+* Review of the **tooltip** feature using the new version of the plugin
 
 ### Removed
 
 * Zoom history
+* Unused button about the layer extent
 
 ### Fixed
 
+* Handle baselayers visibility in theme
+* Popup was not shown in the **Atlas** container
+* Let min/max resolutions be handled by OpenLayers for WMTS
 * Drawing tool : keep draw visible when closing minidock
 * Dataviz in popup generate two feature toolbar in parent popup
 * Apply min and max resolutions to base layers removed by single WMS Layer
@@ -27,14 +32,18 @@ with some extra keywords: backend, tests, test, translation, funders, important
   * Don't show tooltip tool when device has coarse pointer
   * Remove legacy code
   * Handle linestring layers
+* Fix loading GIF about Lizmap being transformed about color
+* Refresh the layer after editing when using the "single WMS tile mode"
 
 ### Backend
 
+* New `lizmap-message` component
 * Defer JavaScript scripts loading
 * Refactoring of Web Components, about OpenLayers
 * Review the way to load JavaScript
 * Review ESLint configuration
 * Upgrade Jelix to 1.8.9
+* Upgrade OpenLayers to 9.2.3
 
 ## 3.8.0-alpha.1 - 2024-03-21
 
