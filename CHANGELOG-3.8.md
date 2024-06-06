@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.8.0-rc.1 - 2024-06-06
+
 ### Added
 
 * New JavaScript API to load external layer straight in the legend tree and in the map
