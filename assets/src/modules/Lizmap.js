@@ -8,6 +8,7 @@ import {Config} from './Config.js';
 import {State} from './State.js';
 import map from './map.js';
 import Edition from './Edition.js';
+import FeaturesTable from './FeaturesTable.js';
 import Geolocation from './Geolocation.js';
 import GeolocationSurvey from './GeolocationSurvey.js';
 import SelectionTool from './SelectionTool.js';
@@ -147,6 +148,7 @@ export default class Lizmap {
                 this.permalink = new Permalink();
                 this.map = new map();
                 this.edition = new Edition();
+                this.featuresTable = new FeaturesTable();
                 this.geolocation = new Geolocation();
                 this.geolocationSurvey = new GeolocationSurvey();
                 this.selectionTool = new SelectionTool();
