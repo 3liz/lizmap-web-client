@@ -2521,14 +2521,6 @@ lizmap-selection-invert svg {
   width: unset;
 }
 
-.digitizing-buttons .dropdown-menu{
-  min-width: unset;
-  padding: 3px;
-  position: absolute;
-  left: 60px;
-  top: -6px;
-}
-
 .digitizing svg {
   width: 24px;
   height: 24px;

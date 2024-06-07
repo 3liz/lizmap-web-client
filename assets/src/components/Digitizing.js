@@ -70,37 +70,37 @@ export default class Digitizing extends HTMLElement {
 
         const mainTemplate = () => html`
         <div class="digitizing">
-            <div class="digitizing-buttons btn-group" data-original-title="${lizDict['digitizing.toolbar.drawTools']}">
-                <a class="btn dropdown-toggle ${this.deactivate ? '' : 'active btn-primary'}" @click=${(event) => {this.toggleToolSelected(event)}} data-toggle="dropdown" href="#">
+            <div class="digitizing-buttons btn-group dropend" data-original-title="${lizDict['digitizing.toolbar.drawTools']}">
+                <button type="button" class="btn ${this.deactivate ? '' : 'active btn-primary'}" @click=${(event) => {this.toggleToolSelected(event)}}>
                     <svg>
                         <use xlink:href="#pencil"></use>
                     </svg>
                     <!-- Display selected tool -->
-                    <svg class="digitizing-selected-tool ${this.toolSelected === DigitizingTools.Point ? '' : 'hidden'}">
+                    <svg class="digitizing-selected-tool ${this.toolSelected === DigitizingTools.Point ? '' : 'visually-hidden'}">
                         <use xlink:href="#point"></use>
                     </svg>
-                    <svg class="digitizing-selected-tool ${this.toolSelected === DigitizingTools.Line ? '' : 'hidden'}">
+                    <svg class="digitizing-selected-tool ${this.toolSelected === DigitizingTools.Line ? '' : 'visually-hidden'}">
                         <use xlink:href="#line"></use>
                     </svg>
-                    <svg class="digitizing-selected-tool ${this.toolSelected === DigitizingTools.Polygon ? '' : 'hidden'}">
+                    <svg class="digitizing-selected-tool ${this.toolSelected === DigitizingTools.Polygon ? '' : 'visually-hidden'}">
                         <use xlink:href="#polygon"></use>
                     </svg>
-                    <svg class="digitizing-selected-tool ${this.toolSelected === DigitizingTools.Box ? '' : 'hidden'}">
+                    <svg class="digitizing-selected-tool ${this.toolSelected === DigitizingTools.Box ? '' : 'visually-hidden'}">
                         <use xlink:href="#box"></use>
                     </svg>
-                    <svg class="digitizing-selected-tool ${this.toolSelected === DigitizingTools.Circle ? '' : 'hidden'}">
+                    <svg class="digitizing-selected-tool ${this.toolSelected === DigitizingTools.Circle ? '' : 'visually-hidden'}">
                         <use xlink:href="#circle"></use>
                     </svg>
-                    <svg class="digitizing-selected-tool ${this.toolSelected === DigitizingTools.Freehand ? '' : 'hidden'}">
+                    <svg class="digitizing-selected-tool ${this.toolSelected === DigitizingTools.Freehand ? '' : 'visually-hidden'}">
                         <use xlink:href="#freehand"></use>
                     </svg>
-                    <svg class="digitizing-selected-tool ${this.toolSelected === DigitizingTools.Text ? '' : 'hidden'}">
+                    <svg class="digitizing-selected-tool ${this.toolSelected === DigitizingTools.Text ? '' : 'visually-hidden'}">
                         <use xlink:href="#text"></use>
                     </svg>
-                </a>
-                <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-                    <span class="caret"></span>
-                </a>
+                </button>
+                <button type="button" class="btn dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown">
+                    <span class="visually-hidden">Toggle Dropdown</span>
+                </button>
                 <ul class="dropdown-menu">
                     ${this._availableTools.includes(DigitizingTools.Point) ? html`
                     <li class="digitizing-${DigitizingTools.Point} btn ${this.toolSelected === DigitizingTools.Point ? 'active btn-primary' : ''}" @click=${() => this.toolSelected = DigitizingTools.Point} data-original-title="${lizDict['digitizing.toolbar.'+DigitizingTools.Point]}">
@@ -257,11 +257,6 @@ export default class Digitizing extends HTMLElement {
         </div>`;
 
         render(mainTemplate(), this);
-
-        // Add tooltip on buttons
-        $('.digitizing-buttons, .digitizing .btn', this).tooltip({
-            placement: 'top'
-        });
 
         mainEventDispatcher.addListener(
             () => {
