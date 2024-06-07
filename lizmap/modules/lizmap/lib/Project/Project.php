@@ -2475,6 +2475,23 @@ class Project
     }
 
     /**
+     * Project warnings in the CFG file.
+     *
+     * @see getProjectCfgWarnings() for data structure
+     *
+     * @return mixed List of warnings in the project and their counts
+     */
+    public function projectCfgWarnings()
+    {
+        $warnings = $this->getProjectCfgWarnings();
+        if (is_array($warnings)) {
+            return array_fill_keys($warnings, '≥1');
+        }
+
+        return $warnings;
+    }
+
+    /**
      * Check acl rights on the project.
      *
      * @return bool true if the current user as rights on the project

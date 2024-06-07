@@ -177,6 +177,7 @@ class project_listZone extends jZone
             ),
             'folder_repository' => $repository,
             'cfg_warnings_count' => $projectMetadata->countProjectCfgWarnings(),
+            'cfg_warnings' => $projectMetadata->projectCfgWarnings(),
             'lizmap_web_client_target_version' => $projectMetadata->getLizmapWebClientTargetVersion(),
             // convert int to string orderable
             'lizmap_plugin_version' => $this->pluginIntVersionToSortableString($projectMetadata->getLizmapPluginVersion()),
