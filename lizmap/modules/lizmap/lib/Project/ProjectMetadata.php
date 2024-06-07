@@ -47,6 +47,7 @@ class ProjectMetadata
             'needsUpdateError' => $project->needsUpdateError(),
             'needsUpdateWarning' => $project->needsUpdateWarning(),
             'projectCountCfgWarnings' => $project->projectCountCfgWarnings(),
+            'projectCfgWarnings' => $project->projectCfgWarnings(),
             'layerCount' => $project->getLayerCount(),
             'fileTime' => $project->getFileTime(),
             'aclGroups' => '',
@@ -293,6 +294,16 @@ class ProjectMetadata
     public function countProjectCfgWarnings()
     {
         return $this->data['projectCountCfgWarnings'];
+    }
+
+    /**
+     * Returns the list of warnings in the CFG file.
+     *
+     * @return object
+     */
+    public function projectCfgWarnings()
+    {
+        return $this->data['projectCfgWarnings'];
     }
 
     /**
