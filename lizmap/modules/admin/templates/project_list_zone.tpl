@@ -211,7 +211,10 @@ to view the hidden columns data and when there is no data for these columns -->
             {assign $title = ''}
             {if $p['cfg_warnings_count'] >= 1}
                 {assign $class = 'liz-warning'}
-                {assign $title = @admin.project.list.column.lizmap.warnings.explanations.label@}
+                {assign $title = @admin.project.list.column.lizmap.warnings.explanations.label@ . ' : '}
+                {foreach $p['cfg_warnings'] as $id=>$count}
+                    {assign $title = $title . ' ' . $id . ' (' . $count . '), ' }
+                {/foreach}
             {/if}
             <td title="{$title}" class="{$class}">
             {$p['cfg_warnings_count']}
