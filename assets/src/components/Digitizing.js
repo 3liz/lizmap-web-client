@@ -39,34 +39,34 @@ export default class Digitizing extends HTMLElement {
 
         const mainTemplate = () => html`
         <div class="digitizing">
-            <div class="digitizing-buttons btn-group" data-original-title="${lizDict['digitizing.toolbar.drawTools']}">
-                <a class="btn dropdown-toggle ${mainLizmap.digitizing.toolSelected !== 'deactivate' ? 'active btn-primary' : ''}" @click=${(event) => { if(mainLizmap.digitizing.toolSelected !== 'deactivate') {mainLizmap.digitizing.toolSelected = 'deactivate'; event.stopPropagation();}}} data-toggle="dropdown" href="#">
+            <div class="digitizing-buttons btn-group dropend" data-original-title="${lizDict['digitizing.toolbar.drawTools']}">
+                <button type="button" class="btn ${mainLizmap.digitizing.toolSelected !== 'deactivate' ? 'active btn-primary' : ''}" @click=${(event) => { if(mainLizmap.digitizing.toolSelected !== 'deactivate') {mainLizmap.digitizing.toolSelected = 'deactivate'; event.stopPropagation();}}}>
                     <svg>
                         <use xlink:href="#pencil"></use>
                     </svg>
                     <!-- Display selected tool -->
-                    <svg class="digitizing-selected-tool ${mainLizmap.digitizing.toolSelected === 'point' ? '' : 'hidden'}">
+                    <svg class="digitizing-selected-tool ${mainLizmap.digitizing.toolSelected === 'point' ? '' : 'visually-hidden'}">
                         <use xlink:href="#point"></use>
                     </svg>
-                    <svg class="digitizing-selected-tool ${mainLizmap.digitizing.toolSelected === 'line' ? '' : 'hidden'}">
+                    <svg class="digitizing-selected-tool ${mainLizmap.digitizing.toolSelected === 'line' ? '' : 'visually-hidden'}">
                         <use xlink:href="#line"></use>
                     </svg>
-                    <svg class="digitizing-selected-tool ${mainLizmap.digitizing.toolSelected === 'polygon' ? '' : 'hidden'}">
+                    <svg class="digitizing-selected-tool ${mainLizmap.digitizing.toolSelected === 'polygon' ? '' : 'visually-hidden'}">
                         <use xlink:href="#polygon"></use>
                     </svg>
-                    <svg class="digitizing-selected-tool ${mainLizmap.digitizing.toolSelected === 'box' ? '' : 'hidden'}">
+                    <svg class="digitizing-selected-tool ${mainLizmap.digitizing.toolSelected === 'box' ? '' : 'visually-hidden'}">
                         <use xlink:href="#box"></use>
                     </svg>
-                    <svg class="digitizing-selected-tool ${mainLizmap.digitizing.toolSelected === 'circle' ? '' : 'hidden'}">
+                    <svg class="digitizing-selected-tool ${mainLizmap.digitizing.toolSelected === 'circle' ? '' : 'visually-hidden'}">
                         <use xlink:href="#circle"></use>
                     </svg>
-                    <svg class="digitizing-selected-tool ${mainLizmap.digitizing.toolSelected === 'freehand' ? '' : 'hidden'}">
+                    <svg class="digitizing-selected-tool ${mainLizmap.digitizing.toolSelected === 'freehand' ? '' : 'visually-hidden'}">
                         <use xlink:href="#freehand"></use>
                     </svg>
-                </a>
-                <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-                    <span class="caret"></span>
-                </a>
+                </button>
+                <button type="button" class="btn dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown">
+                    <span class="visually-hidden">Toggle Dropdown</span>
+                </button>
                 <ul class="dropdown-menu">
                     <li class="digitizing-point btn ${mainLizmap.digitizing.toolSelected === 'point' ? 'active btn-primary' : ''}" @click=${() => mainLizmap.digitizing.toolSelected = 'point'} data-original-title="${lizDict['digitizing.toolbar.point']}">
                         <svg>
@@ -212,11 +212,6 @@ export default class Digitizing extends HTMLElement {
         </div>`;
 
         render(mainTemplate(), this);
-
-        // Add tooltip on buttons
-        $('.digitizing-buttons, .digitizing .btn', this).tooltip({
-            placement: 'top'
-        });
 
         mainEventDispatcher.addListener(
             () => {
