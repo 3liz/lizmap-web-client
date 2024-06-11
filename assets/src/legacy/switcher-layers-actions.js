@@ -350,7 +350,7 @@ var lizLayerActionButtons = function() {
                 );
 
                 // Activate first map theme on load
-                if ('activateFirstMapTheme' in lizMap.config.options && lizMap.config.options.activateFirstMapTheme == 'True') {
+                if (lizMap.mainLizmap.initialConfig.options.activateFirstMapTheme) {
                     $('#theme-selector li.theme:nth-child(1)').click();
                 }
             }
