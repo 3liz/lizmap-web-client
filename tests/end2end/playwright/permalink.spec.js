@@ -1,9 +1,10 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+const { gotoMap, reloadMap } = require('./globals')
 
 test.describe('Permalink', () => {
     test('Hash changes when map center is changed', async ({ page }) => {
-        await page.goto('/index.php/view/map?repository=testsrepository&project=layer_legends', { waitUntil: 'networkidle' });
+        await gotoMap('/index.php/view/map?repository=testsrepository&project=layer_legends', page);
         await page.evaluate(() => lizMap.mainLizmap.map.getView().setCenter([770485, 6277813]));
 
         await page.waitForTimeout(200);
@@ -19,7 +20,7 @@ test.describe('Permalink', () => {
         const styles = 'red,d%C3%A9faut'
         const opacities = '0.6,0.8'
         const url = baseUrl + '#' + bbox + '|' + layers + '|' + styles + '|' + opacities;
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page);
 
         // Visibility
         await expect(page.getByTestId('sousquartiers').locator('> div input')).toBeChecked();
@@ -32,6 +33,7 @@ test.describe('Permalink', () => {
 
         await page.getByTestId('Les quartiers à Montpellier').locator('.icon-info-sign').click({ force: true });
         await expect(page.locator('#sub-dock .btn-opacity-layer.active')).toHaveText('80');
+        await page.getByRole('button', { name: 'Close' }).click();
 
         // The url does not change
         const checked_url = new URL(page.url());
@@ -43,6 +45,15 @@ test.describe('Permalink', () => {
         // |0.6,0.8
         await expect(checked_url.hash).toMatch(/#3.798064\d+,43.597569\d+,3.904383\d+,43.672963\d+\|/)
         await expect(checked_url.hash).toContain('|sousquartiers,Les%20quartiers%20%C3%A0%20Montpellier|red,d%C3%A9faut|0.6,0.8')
+
+        // Check Permalink tool
+        await page.locator('#button-permaLink').click();
+        const share_value = await page.locator('#input-share-permalink').inputValue();
+        const share_url = new URL(share_value);
+        await expect(share_url.pathname).toBe('/index.php/view/map')
+        await expect(share_url.search).toBe('?repository=testsrepository&project=permalink')
+        await expect(share_url.hash).toMatch(/#3.798064\d+,43.597569\d+,3.904383\d+,43.672963\d+\|/)
+        await expect(share_url.hash).toContain('|sousquartiers,Les%20quartiers%20%C3%A0%20Montpellier|red,d%C3%A9faut|0.6,0.8')
     });
 
     test('Group as layer : UI according to permalink parameters', async ({ page }) => {
@@ -52,11 +63,7 @@ test.describe('Permalink', () => {
         const styles = 'défaut,categorized,'
         const opacities = '1,1,1,1'
         const url = baseUrl + '#' + bbox + '|' + layers + '|' + styles + '|' + opacities;
-        await page.goto(url, { waitUntil: 'networkidle' });
-
-        // No error
-        await expect(page.locator('p.error-msg')).toHaveCount(0);
-        await expect(page.locator('#switcher lizmap-treeview ul li')).not.toHaveCount(0);
+        await gotoMap(url, page);
 
         // Visibility
         await expect(page.getByTestId('layer_legend_single_symbol').locator('> div input')).toBeChecked();
@@ -83,11 +90,7 @@ test.describe('Permalink', () => {
         const styles = ',,'
         const opacities = '1,1,1'
         const url = baseUrl + '#' + bbox + '|' + layers + '|' + styles + '|' + opacities;
-        await page.goto(url, { waitUntil: 'networkidle' });
-
-        // No error
-        await expect(page.locator('p.error-msg')).toHaveCount(0);
-        await expect(page.locator('#switcher lizmap-treeview ul li')).not.toHaveCount(0);
+        await gotoMap(url, page);
 
         // Visibility
         await expect(page.getByTestId('layer_legend_single_symbol').locator('> div input')).toBeChecked();
@@ -109,7 +112,7 @@ test.describe('Permalink', () => {
 
     test('Build permalink, reload and apply one', async ({ page }) => {
         const baseUrl = '/index.php/view/map?repository=testsrepository&project=layer_legends'
-        await page.goto(baseUrl, { waitUntil: 'networkidle' });
+        await gotoMap(baseUrl, page);
 
         // Initial url has no hash
         let url = new URL(page.url());
@@ -301,11 +304,7 @@ test.describe('Permalink', () => {
         await expect(hashOpacities[2]).toBe('1')
 
         // Reload
-        await page.reload({ waitUntil: 'networkidle' });
-
-        // No error
-        await expect(page.locator('p.error-msg')).toHaveCount(0);
-        await expect(page.locator('#switcher lizmap-treeview ul li')).not.toHaveCount(0);
+        await reloadMap(page);
 
         // Visibility
         await expect(page.getByTestId('layer_legend_single_symbol').locator('> div input')).toBeChecked();
@@ -346,14 +345,10 @@ test.describe('Permalink', () => {
         const styles = ',,,'
         const opacities = '1,1,1,1'
         const newUrl = baseUrl + '#' + bbox + '|' + layers + '|' + styles + '|' + opacities;
-        //const newUrl = baseUrl + '#3.0635044037670305,43.401957103265374,4.567657653648659,43.92018105321636|layer_legend_single_symbol,layer_legend_categorized,tramway_lines,Group as layer|,,,|1,1,1,1';
+        // Goto does not reload, just set the URL without hash update event
         await page.goto(newUrl, { waitUntil: 'networkidle' });
         // Reload to force applying hash with empty string styles
-        await page.reload({ waitUntil: 'networkidle' });
-
-        // No error
-        await expect(page.locator('p.error-msg')).toHaveCount(0);
-        await expect(page.locator('#switcher lizmap-treeview ul li')).not.toHaveCount(0);
+        await reloadMap(page);
 
         // Visibility
         await expect(page.getByTestId('layer_legend_single_symbol').locator('> div input')).toBeChecked();
@@ -392,7 +387,7 @@ test.describe('Permalink', () => {
 
     test('Build permalink and change hash', async ({ page }) => {
         const baseUrl = '/index.php/view/map?repository=testsrepository&project=layer_legends'
-        await page.goto(baseUrl, { waitUntil: 'networkidle' });
+        await gotoMap(baseUrl, page);
 
         // Initial url has no hash
         let url = new URL(page.url());
@@ -461,11 +456,7 @@ test.describe('Permalink', () => {
         const styles = 'red,d%C3%A9faut'
         const opacities = '0.6'
         const url = baseUrl + '#' + bbox + '|' + layers + '|' + styles + '|' + opacities;
-        await page.goto(url, { waitUntil: 'networkidle' });
-
-        // No error
-        await expect(page.locator('p.error-msg')).toHaveCount(0);
-        await expect(page.locator('#switcher lizmap-treeview ul li')).not.toHaveCount(0);
+        await gotoMap(url, page);
 
         // Visibility
         await expect(page.getByTestId('sousquartiers').locator('> div input')).toBeChecked();
@@ -484,11 +475,7 @@ test.describe('Permalink', () => {
         const styles = 'red'
         const opacities = '0.6,0.8'
         const url = baseUrl + '#' + bbox + '|' + layers + '|' + styles + '|' + opacities;
-        await page.goto(url, { waitUntil: 'networkidle' });
-
-        // No error
-        await expect(page.locator('p.error-msg')).toHaveCount(0);
-        await expect(page.locator('#switcher lizmap-treeview ul li')).not.toHaveCount(0);
+        await gotoMap(url, page);
 
         // Visibility
         await expect(page.getByTestId('sousquartiers').locator('> div input')).toBeChecked();
@@ -507,11 +494,7 @@ test.describe('Permalink', () => {
         const styles = 'red'
         const opacities = '0.6,0.8'
         const url = baseUrl + '#' + bbox + '|' + layers + '|' + styles + '|' + opacities;
-        await page.goto(url, { waitUntil: 'networkidle' });
-
-        // Errors
-        await expect(page.locator('p.error-msg')).toHaveCount(0);
-        await expect(page.locator('#switcher lizmap-treeview ul li')).not.toHaveCount(0);
+        await gotoMap(url, page);
     });
 
     test('Permalink parameters error: not enough opacities -> No errors', async ({ page }) => {
@@ -521,10 +504,101 @@ test.describe('Permalink', () => {
         const styles = 'red,d%C3%A9faut'
         const opacities = '0.6'
         const url = baseUrl + '#' + bbox + '|' + layers + '|' + styles + '|' + opacities;
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page);
+    });
+});
 
-        // Errors
-        await expect(page.locator('p.error-msg')).toHaveCount(0);
-        await expect(page.locator('#switcher lizmap-treeview ul li')).not.toHaveCount(0);
+test.describe('BBox parameter', () => {
+
+    test('BBox only', async ({ page }) => {
+        const baseUrl = '/index.php/view/map?repository=testsrepository&project=permalink'
+        const bbox = '3.7980645260916805,43.59756940064654,3.904383263124536,43.672963842067254'
+        const url = baseUrl + '&bbox=' + bbox
+        await gotoMap(url, page);
+
+        // The url does not change
+        const checked_url = new URL(page.url());
+        // No hash
+        await expect(checked_url.hash).toHaveLength(0);
+
+        // Check Permalink tool
+        await page.locator('#button-permaLink').click();
+        const share_value = await page.locator('#input-share-permalink').inputValue();
+        const share_url = new URL(share_value);
+        await expect(share_url.pathname).toBe('/index.php/view/map')
+        await expect(share_url.search).toMatch(/\?repository=testsrepository&project=permalink&bbox=/)
+        await expect(share_url.search).toMatch(/bbox=3.798064\d+%2C43.597569\d+%2C3.904383\d+%2C43.672963\d+/)
+
+        // Check GetMap
+        const getMapPromise = page.waitForRequest(/GetMap/);
+        await page.getByLabel('sousquartiers').check();
+        const getMapRequest = await getMapPromise;
+        const getMapUrl = getMapRequest.url();
+        expect(getMapUrl).toContain('SERVICE=WMS');
+        expect(getMapUrl).toContain('VERSION=1.3.0');
+        expect(getMapUrl).toContain('REQUEST=GetMap');
+        expect(getMapUrl).toContain('FORMAT=image%2Fpng');
+        expect(getMapUrl).toContain('TRANSPARENT=true');
+        expect(getMapUrl).toContain('LAYERS=sousquartiers');
+        expect(getMapUrl).toContain('CRS=EPSG%3A2154');
+        expect(getMapUrl).toContain('STYLES=d%C3%A9faut');
+        expect(getMapUrl).toContain('WIDTH=958');
+        expect(getMapUrl).toContain('HEIGHT=633');
+        expect(getMapUrl).toMatch(/BBOX=762375.04\d+%2C6277986.97\d+%2C775048.61\d+%2C6286361.05\d+/);
+
+        // Check Permalink tool
+        const new_share_value = await page.locator('#input-share-permalink').inputValue();
+        const new_share_url = new URL(new_share_value);
+        await expect(new_share_url.pathname).toBe('/index.php/view/map')
+        await expect(new_share_url.search).toBe('?repository=testsrepository&project=permalink')
+        await expect(new_share_url.hash).toMatch(/#3.77950\d+,43.60047\d+,3.92309\d+,43.67003\d+\|/)
+        await expect(new_share_url.hash).toContain('|sousquartiers|d%C3%A9faut|1')
+    });
+
+    test('BBox and CRS', async ({ page }) => {
+        const baseUrl = '/index.php/view/map?repository=testsrepository&project=permalink'
+        const bbox = '762375.0458996765,6277986.972249089,775048.6129134771,6286361.051497247'
+        const crs = 'EPSG:2154'
+        const url = baseUrl + '&bbox=' + bbox + '&crs=' + crs;
+        await gotoMap(url, page);
+
+        // The url does not change
+        const checked_url = new URL(page.url());
+        // No hash
+        await expect(checked_url.hash).toHaveLength(0);
+
+        // Check Permalink tool
+        await page.locator('#button-permaLink').click();
+        const share_value = await page.locator('#input-share-permalink').inputValue();
+        const share_url = new URL(share_value);
+        await expect(share_url.pathname).toBe('/index.php/view/map')
+        await expect(share_url.search).toMatch(/\?repository=testsrepository&project=permalink&bbox=/)
+        await expect(share_url.search).toMatch(/bbox=762375.04\d+%2C6277986.97\d+%2C775048.61\d+%2C6286361.05\d+/)
+        await expect(share_url.search).toMatch(/&crs=EPSG%3A2154/)
+
+        // Check GetMap
+        const getMapPromise = page.waitForRequest(/GetMap/);
+        await page.getByLabel('sousquartiers').check();
+        const getMapRequest = await getMapPromise;
+        const getMapUrl = getMapRequest.url();
+        expect(getMapUrl).toContain('SERVICE=WMS');
+        expect(getMapUrl).toContain('VERSION=1.3.0');
+        expect(getMapUrl).toContain('REQUEST=GetMap');
+        expect(getMapUrl).toContain('FORMAT=image%2Fpng');
+        expect(getMapUrl).toContain('TRANSPARENT=true');
+        expect(getMapUrl).toContain('LAYERS=sousquartiers');
+        expect(getMapUrl).toContain('CRS=EPSG%3A2154');
+        expect(getMapUrl).toContain('STYLES=d%C3%A9faut');
+        expect(getMapUrl).toContain('WIDTH=958');
+        expect(getMapUrl).toContain('HEIGHT=633');
+        expect(getMapUrl).toMatch(/BBOX=762375.04\d+%2C6277986.97\d+%2C775048.61\d+%2C6286361.05\d+/);
+
+        // Check Permalink tool
+        const new_share_value = await page.locator('#input-share-permalink').inputValue();
+        const new_share_url = new URL(new_share_value);
+        await expect(new_share_url.pathname).toBe('/index.php/view/map')
+        await expect(new_share_url.search).toBe('?repository=testsrepository&project=permalink')
+        await expect(new_share_url.hash).toMatch(/#3.77950\d+,43.60047\d+,3.92309\d+,43.67003\d+\|/)
+        await expect(new_share_url.hash).toContain('|sousquartiers|d%C3%A9faut|1')
     });
 });
