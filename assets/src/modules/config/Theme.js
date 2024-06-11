@@ -61,10 +61,12 @@ export class LayerThemeConfig extends BaseObjectConfig {
 
 const themeRequiredProperties = {
     'layers': {type: 'object'},
-    'expandedGroupNode': {type: 'array'},
 }
 
 const themeOptionalProperties = {
+    'checkedGroupNode': {type: 'array', default: []},
+    'expandedGroupNode': {type: 'array', default: []},
+    'expandedLegendNode': {type: 'array', default: []},
 }
 
 /**
@@ -118,11 +120,27 @@ export class ThemeConfig extends BaseObjectConfig {
     }
 
     /**
+     * The copy of the checked group nodes list
+     * @type {string[]}
+     */
+    get checkedGroupNodes() {
+        return [...this._checkedGroupNode];
+    }
+
+    /**
      * The copy of the expanded group nodes list
      * @type {string[]}
      */
     get expandedGroupNodes() {
         return [...this._expandedGroupNode];
+    }
+
+    /**
+     * The copy of the expanded legend nodes list
+     * @type {string[]}
+     */
+    get expandedLegendNodes() {
+        return [...this._expandedLegendNode];
     }
 
     /**
@@ -148,12 +166,34 @@ export class ThemeConfig extends BaseObjectConfig {
     }
 
     /**
+     * Iterate through the checked group nodes list
+     * @generator
+     * @yields {string} The next checked group node
+     */
+    *getCheckedGroupNodes() {
+        for (const node of this._checkedGroupNode) {
+            yield node;
+        }
+    }
+
+    /**
      * Iterate through the expanded group nodes list
      * @generator
      * @yields {string} The next expanded group node
      */
     *getExpandedGroupNodes() {
         for (const node of this._expandedGroupNode) {
+            yield node;
+        }
+    }
+
+    /**
+     * Iterate through the expanded legend nodes list
+     * @generator
+     * @yields {string} The next expanded legend node
+     */
+    *getExpandedLegendNodes() {
+        for (const node of this._expandedLegendNode) {
             yield node;
         }
     }
