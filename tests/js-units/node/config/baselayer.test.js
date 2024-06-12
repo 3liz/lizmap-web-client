@@ -911,6 +911,8 @@ describe('BaseLayersConfig', function () {
                 "WMS grouped external",
             ]);
 
+        expect(baseLayers.startupBaselayerName).to.be.eq("Stamen Watercolor")
+
         const baseLayersWithoutOptions = new BaseLayersConfig({}, {}, layers, blGroup)
         expect(baseLayersWithoutOptions.baseLayerNames)
             .to.have.length(11) // still 11
@@ -932,6 +934,8 @@ describe('BaseLayersConfig', function () {
                 "WMS single internal",
                 "WMS grouped external",
             ]);
+
+        expect(baseLayers.startupBaselayerName).to.be.eq("Stamen Watercolor")
     })
 
     it('startupBaseLayer', function () {
@@ -978,6 +982,67 @@ describe('BaseLayersConfig', function () {
         const unknownStratupBl = new BaseLayersConfig({}, unknownStratupBlOpt, new LayersConfig({}))
 
         expect(unknownStratupBl.startupBaselayerName).to.be.null
+    })
+
+    it('startupBaseLayer from baselayers user defined', function () {
+        const capabilities = JSON.parse(readFileSync('./data/display_in_legend-capabilities.json', 'utf8'));
+        expect(capabilities).to.not.be.undefined
+        expect(capabilities.Capability).to.not.be.undefined
+        const config = JSON.parse(readFileSync('./data/display_in_legend-config.json', 'utf8'));
+        expect(config).to.not.be.undefined
+
+        const layers = new LayersConfig(config.layers);
+
+        // Removed empty groups from capabilities like with QGIS Server 3.34
+        for(const wmsCapaLayer of capabilities.Capability.Layer.Layer) {
+            if (!wmsCapaLayer.hasOwnProperty('Layer') || wmsCapaLayer.Layer.length === 0) {
+                continue;
+            }
+            if (wmsCapaLayer.Name != 'baselayers') {
+                continue;
+            }
+            wmsCapaLayer.Layer = wmsCapaLayer.Layer.filter((baseLayer) => {
+                const cfg = layers.getLayerConfigByWmsName(baseLayer.Name);
+                if (cfg == null) {
+                    return false;
+                }
+                if (cfg.type != 'group') {
+                    return true;
+                }
+                if (!baseLayer.hasOwnProperty('Layer') || baseLayer.Layer.length === 0) {
+                    return false;
+                }
+                return true;
+            });
+        }
+
+        const root = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+
+        expect(root).to.be.instanceOf(LayerTreeGroupConfig)
+        expect(root.name).to.be.eq('root')
+        expect(root.type).to.be.eq('group')
+        expect(root.level).to.be.eq(0)
+        expect(root.childrenCount).to.be.eq(4)
+
+        const blGroup = root.children[3];
+        expect(blGroup).to.be.instanceOf(LayerTreeGroupConfig)
+        expect(blGroup.name).to.be.eq('baselayers')
+        expect(blGroup.type).to.be.eq('group')
+        expect(blGroup.level).to.be.eq(1)
+        // project-background-color not in capabilities
+        expect(blGroup.childrenCount).to.be.eq(1)
+
+        const baseLayers = new BaseLayersConfig({}, {}, layers, blGroup)
+
+        expect(baseLayers.baseLayerNames)
+            .to.have.length(2) // still 11
+            .that.be.deep.eq([
+                "project-background-color",
+                "OpenStreetMap"
+            ])
+
+        expect(baseLayers.startupBaselayerName).to.be.eq("project-background-color")
+
     })
 
     it('ValidationError', function () {
