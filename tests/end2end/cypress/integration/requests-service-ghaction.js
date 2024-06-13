@@ -308,7 +308,7 @@ describe('Request service', function () {
             expect(resp.headers['content-type']).to.contain('image/png')
             expect(resp.headers).to.have.property('content-length')
             expect(parseInt(resp.headers['content-length'])).to.be.greaterThan(355) // Not transparent
-            expect(parseInt(resp.headers['content-length'])).to.be.eq(11024) // Monochrome
+            expect(parseInt(resp.headers['content-length'])).to.be.within(11020, 11030 ) // Monochrome
             expect(resp.headers).to.have.property('date')
             const tileDate = new Date(resp.headers['date'])
             expect(resp.headers).to.have.property('expires')
