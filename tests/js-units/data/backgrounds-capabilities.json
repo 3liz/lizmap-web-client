@@ -1269,8 +1269,8 @@
                             "noSubsets": false
                         },
                         {
-                            "Name": "WM_T_S_are_on_demo_lizmap_com",
-                            "Title": "=== WM[T]S are on demo.lizmap.com ===",
+                            "Name": "WM_T_S_are_on_liz_lizmap_com",
+                            "Title": "=== WM[T]S are on liz.lizmap.com ===",
                             "CRS": [
                                 "CRS:84",
                                 "EPSG:3857",
@@ -1318,7 +1318,7 @@
                             "noSubsets": false
                         },
                         {
-                            "Name": "WMTS_demo_lizmap_com_communes",
+                            "Name": "WMTS_liz_lizmap_com_communes",
                             "Title": "WMTS single external",
                             "CRS": [
                                 "CRS:84",
@@ -1369,7 +1369,7 @@
                                     "LegendURL": [
                                         {
                                             "Format": "image/png",
-                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=base_layers_user_defined&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=WMTS_demo_lizmap_com_communes&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0",
+                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=base_layers_user_defined&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=WMTS_liz_lizmap_com_communes&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0",
                                             "size": [
                                                 null,
                                                 null
