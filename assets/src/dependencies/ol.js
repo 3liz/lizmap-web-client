@@ -92,6 +92,13 @@ import {createXYZ as _ol_tilegrid$createXYZ} from 'ol/tilegrid.js';
 import {createForProjection as _ol_tilegrid$createForProjection} from 'ol/tilegrid.js';
 import {extentFromProjection as _ol_tilegrid$extentFromProjection} from 'ol/tilegrid.js';
 
+import $ol$interaction$Draw from 'ol/interaction/Draw.js';
+import $ol$interaction$Modify from 'ol/interaction/Modify.js';
+import $ol$interaction$Select from 'ol/interaction/Select.js';
+import {createBox as _ol_interaction_Draw$createBox} from 'ol/interaction/Draw.js';
+
+import {altKeyOnly as _ol_events_condition$altKeyOnly} from 'ol/events/condition.js';
+
 var ol = {};
 
 ol.Feature = $ol$Feature;
@@ -199,5 +206,15 @@ ol.tilegrid.createXYZ = _ol_tilegrid$createXYZ;
 ol.tilegrid.extentFromProjection = _ol_tilegrid$extentFromProjection;
 ol.tilegrid.getForProjection = _ol_tilegrid$getForProjection;
 ol.tilegrid.wrapX = _ol_tilegrid$wrapX;
+
+ol.interaction = {};
+ol.interaction.Draw = $ol$interaction$Draw;
+ol.interaction.Modify = $ol$interaction$Modify;
+ol.interaction.Select = $ol$interaction$Select;
+ol.interaction.Draw.createBox = _ol_interaction_Draw$createBox;
+
+ol.events = {};
+ol.events.condition = {};
+ol.events.condition.altKeyOnly = _ol_events_condition$altKeyOnly;
 
 export default ol;
