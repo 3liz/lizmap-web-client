@@ -18,6 +18,8 @@ test.describe('Exposed dependencies', () => {
         expect(await page.evaluate(() => globalThis.lizMap.ol)).toHaveProperty('source');
         expect(await page.evaluate(() => globalThis.lizMap.ol)).toHaveProperty('sphere');
         expect(await page.evaluate(() => globalThis.lizMap.ol)).toHaveProperty('style');
+        expect(await page.evaluate(() => globalThis.lizMap.ol)).toHaveProperty('interaction');
+        expect(await page.evaluate(() => globalThis.lizMap.ol)).toHaveProperty('events');
 
         // Proj4
         expect(await page.evaluate(() => globalThis.lizMap.proj4.defs('EPSG:2154'))).toBeDefined();
