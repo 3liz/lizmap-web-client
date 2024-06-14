@@ -696,7 +696,7 @@ describe('BaseLayersConfig', function () {
                 //"=== LOCAL LAYERS ===",
                 "local vector layer",
                 "local raster layer",
-                //"=== WM[T]S are on demo.lizmap.com ===",
+                //"=== WM[T]S are on liz.lizmap.com ===",
                 "WMTS single external",
                 "WMS single internal",
                 "WMS grouped external",
@@ -791,7 +791,7 @@ describe('BaseLayersConfig', function () {
         expect(wmtsBl).to.be.instanceOf(WmtsBaseLayerConfig)
         expect(wmtsBl.name).to.be.eq('WMTS single external')
         expect(wmtsBl.title).to.be.eq('WMTS single external')
-        expect(wmtsBl.url).to.be.eq('https://demo.lizmap.com/lizmap/index.php/lizmap/service?repository=cypress&project=wmts')
+        expect(wmtsBl.url).to.be.eq('https://liz.lizmap.com/tests/index.php/lizmap/service?repository=testse2elwc&project=wmts')
         expect(wmtsBl.layer).to.be.eq('Communes')
         expect(wmtsBl.format).to.be.eq('image/png')
         expect(wmtsBl.style).to.be.eq('default')
@@ -808,7 +808,7 @@ describe('BaseLayersConfig', function () {
             "layers": "Communes",
             "styles": "default",
             "tileMatrixSet": "EPSG:3857",
-            "url": "https://demo.lizmap.com/lizmap/index.php/lizmap/service?repository=cypress&project=wmts&SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetCapabilities",
+            "url": "https://liz.lizmap.com/tests/index.php/lizmap/service?repository=testse2elwc&project=wmts&SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetCapabilities",
             "type": "wmts"
         })
 
@@ -818,7 +818,7 @@ describe('BaseLayersConfig', function () {
         expect(wmsBl).to.be.instanceOf(WmsBaseLayerConfig)
         expect(wmsBl.name).to.be.eq('WMS grouped external')
         expect(wmsBl.title).to.be.eq('WMS grouped external')
-        expect(wmsBl.url).to.be.eq('https://demo.lizmap.com/lizmap/index.php/lizmap/service?repository=miscellaneous&project=flatgeobuf')
+        expect(wmsBl.url).to.be.eq('https://liz.lizmap.com/tests/index.php/lizmap/service?repository=miscellaneous&project=flatgeobuf')
         expect(wmsBl.layers).to.be.eq('commune')
         expect(wmsBl.format).to.be.eq('image/png; mode=8bit')
         expect(wmsBl.styles).to.be.eq('défaut')
@@ -834,7 +834,7 @@ describe('BaseLayersConfig', function () {
             "format": "image/png;%20mode%3D8bit",
             "layers": "commune",
             "styles": "d%C3%A9faut",
-            "url": "https://demo.lizmap.com/lizmap/index.php/lizmap/service?repository=miscellaneous&project=flatgeobuf&VERSION=1.3.0"
+            "url": "https://liz.lizmap.com/tests/index.php/lizmap/service?repository=miscellaneous&project=flatgeobuf&VERSION=1.3.0"
         })
     })
 
@@ -905,7 +905,7 @@ describe('BaseLayersConfig', function () {
                 //"=== LOCAL LAYERS ===",
                 "local vector layer",
                 "local raster layer",
-                //"=== WM[T]S are on demo.lizmap.com ===",
+                //"=== WM[T]S are on liz.lizmap.com ===",
                 "WMTS single external",
                 "WMS single internal",
                 "WMS grouped external",
@@ -929,7 +929,7 @@ describe('BaseLayersConfig', function () {
                 //"=== LOCAL LAYERS ===",
                 "local vector layer",
                 "local raster layer",
-                //"=== WM[T]S are on demo.lizmap.com ===",
+                //"=== WM[T]S are on liz.lizmap.com ===",
                 "WMTS single external",
                 "WMS single internal",
                 "WMS grouped external",
