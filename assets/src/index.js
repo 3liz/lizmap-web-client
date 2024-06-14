@@ -30,9 +30,11 @@ import { mainLizmap, mainEventDispatcher } from './modules/Globals.js';
 import executeJSFromServer from './modules/ExecuteJSFromServer.js';
 
 import olDep from './dependencies/ol.js';
+import litHTMLDep from './dependencies/lit-html.js';
 import proj4 from 'proj4';
 
 lizMap.ol = olDep;
+lizMap.litHTML = litHTMLDep;
 lizMap.proj4 = proj4;
 
 lizMap.events.on({
