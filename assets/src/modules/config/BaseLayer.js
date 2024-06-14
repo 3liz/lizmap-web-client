@@ -911,19 +911,6 @@ export class BaseLayersConfig {
             extendedCfg[layerCfg.name].layerConfig = layerCfg;
         }
 
-        // Define startup base layer based on names from tree
-        this._startupBaselayer = null;
-        if (names.length != 0) {
-            this._startupBaselayer = names[0];
-        }
-
-        // Add names from keys
-        for (const key in extendedCfg) {
-            if (names.indexOf(key) == -1) {
-                names.push(key);
-            }
-        }
-
         // Add base layer as project default background color
         // Get provided default background color index from options
         const default_background_color_index = options.hasOwnProperty('default_background_color_index') ? options.default_background_color_index : -1;
@@ -949,11 +936,11 @@ export class BaseLayersConfig {
                     if (i <= baselayersGroupIndex) {
                         continue;
                     }
-                    if (baselayerCfg.type != 'group') {
-                        background_color_index += 1
-                    }
                     if (i > global_background_color_index) {
                         break;
+                    }
+                    if (baselayerCfg.type != 'group') {
+                        background_color_index += 1
                     }
                     if (baselayerCfg.name == 'project-background-color') {
                         background_color_index += 1
@@ -967,6 +954,19 @@ export class BaseLayersConfig {
                 } else {
                     names.push('project-background-color');
                 }
+            }
+        }
+
+        // Define startup base layer based on names from tree
+        this._startupBaselayer = null;
+        if (names.length != 0) {
+            this._startupBaselayer = names[0];
+        }
+
+        // Add names from keys
+        for (const key in extendedCfg) {
+            if (names.indexOf(key) == -1) {
+                names.push(key);
             }
         }
 

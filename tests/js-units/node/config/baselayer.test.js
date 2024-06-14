@@ -696,7 +696,7 @@ describe('BaseLayersConfig', function () {
                 //"=== LOCAL LAYERS ===",
                 "local vector layer",
                 "local raster layer",
-                //"=== WM[T]S are on demo.lizmap.com ===",
+                //"=== WM[T]S are on liz.lizmap.com ===",
                 "WMTS single external",
                 "WMS single internal",
                 "WMS grouped external",
@@ -791,7 +791,7 @@ describe('BaseLayersConfig', function () {
         expect(wmtsBl).to.be.instanceOf(WmtsBaseLayerConfig)
         expect(wmtsBl.name).to.be.eq('WMTS single external')
         expect(wmtsBl.title).to.be.eq('WMTS single external')
-        expect(wmtsBl.url).to.be.eq('https://demo.lizmap.com/lizmap/index.php/lizmap/service?repository=cypress&project=wmts')
+        expect(wmtsBl.url).to.be.eq('https://liz.lizmap.com/tests/index.php/lizmap/service?repository=testse2elwc&project=wmts')
         expect(wmtsBl.layer).to.be.eq('Communes')
         expect(wmtsBl.format).to.be.eq('image/png')
         expect(wmtsBl.style).to.be.eq('default')
@@ -808,7 +808,7 @@ describe('BaseLayersConfig', function () {
             "layers": "Communes",
             "styles": "default",
             "tileMatrixSet": "EPSG:3857",
-            "url": "https://demo.lizmap.com/lizmap/index.php/lizmap/service?repository=cypress&project=wmts&SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetCapabilities",
+            "url": "https://liz.lizmap.com/tests/index.php/lizmap/service?repository=testse2elwc&project=wmts&SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetCapabilities",
             "type": "wmts"
         })
 
@@ -818,7 +818,7 @@ describe('BaseLayersConfig', function () {
         expect(wmsBl).to.be.instanceOf(WmsBaseLayerConfig)
         expect(wmsBl.name).to.be.eq('WMS grouped external')
         expect(wmsBl.title).to.be.eq('WMS grouped external')
-        expect(wmsBl.url).to.be.eq('https://demo.lizmap.com/lizmap/index.php/lizmap/service?repository=miscellaneous&project=flatgeobuf')
+        expect(wmsBl.url).to.be.eq('https://liz.lizmap.com/tests/index.php/lizmap/service?repository=miscellaneous&project=flatgeobuf')
         expect(wmsBl.layers).to.be.eq('commune')
         expect(wmsBl.format).to.be.eq('image/png; mode=8bit')
         expect(wmsBl.styles).to.be.eq('défaut')
@@ -834,7 +834,7 @@ describe('BaseLayersConfig', function () {
             "format": "image/png;%20mode%3D8bit",
             "layers": "commune",
             "styles": "d%C3%A9faut",
-            "url": "https://demo.lizmap.com/lizmap/index.php/lizmap/service?repository=miscellaneous&project=flatgeobuf&VERSION=1.3.0"
+            "url": "https://liz.lizmap.com/tests/index.php/lizmap/service?repository=miscellaneous&project=flatgeobuf&VERSION=1.3.0"
         })
     })
 
@@ -905,11 +905,13 @@ describe('BaseLayersConfig', function () {
                 //"=== LOCAL LAYERS ===",
                 "local vector layer",
                 "local raster layer",
-                //"=== WM[T]S are on demo.lizmap.com ===",
+                //"=== WM[T]S are on liz.lizmap.com ===",
                 "WMTS single external",
                 "WMS single internal",
                 "WMS grouped external",
             ]);
+
+        expect(baseLayers.startupBaselayerName).to.be.eq("Stamen Watercolor")
 
         const baseLayersWithoutOptions = new BaseLayersConfig({}, {}, layers, blGroup)
         expect(baseLayersWithoutOptions.baseLayerNames)
@@ -927,11 +929,13 @@ describe('BaseLayersConfig', function () {
                 //"=== LOCAL LAYERS ===",
                 "local vector layer",
                 "local raster layer",
-                //"=== WM[T]S are on demo.lizmap.com ===",
+                //"=== WM[T]S are on liz.lizmap.com ===",
                 "WMTS single external",
                 "WMS single internal",
                 "WMS grouped external",
             ]);
+
+        expect(baseLayers.startupBaselayerName).to.be.eq("Stamen Watercolor")
     })
 
     it('startupBaseLayer', function () {
@@ -978,6 +982,67 @@ describe('BaseLayersConfig', function () {
         const unknownStratupBl = new BaseLayersConfig({}, unknownStratupBlOpt, new LayersConfig({}))
 
         expect(unknownStratupBl.startupBaselayerName).to.be.null
+    })
+
+    it('startupBaseLayer from baselayers user defined', function () {
+        const capabilities = JSON.parse(readFileSync('./data/display_in_legend-capabilities.json', 'utf8'));
+        expect(capabilities).to.not.be.undefined
+        expect(capabilities.Capability).to.not.be.undefined
+        const config = JSON.parse(readFileSync('./data/display_in_legend-config.json', 'utf8'));
+        expect(config).to.not.be.undefined
+
+        const layers = new LayersConfig(config.layers);
+
+        // Removed empty groups from capabilities like with QGIS Server 3.34
+        for(const wmsCapaLayer of capabilities.Capability.Layer.Layer) {
+            if (!wmsCapaLayer.hasOwnProperty('Layer') || wmsCapaLayer.Layer.length === 0) {
+                continue;
+            }
+            if (wmsCapaLayer.Name != 'baselayers') {
+                continue;
+            }
+            wmsCapaLayer.Layer = wmsCapaLayer.Layer.filter((baseLayer) => {
+                const cfg = layers.getLayerConfigByWmsName(baseLayer.Name);
+                if (cfg == null) {
+                    return false;
+                }
+                if (cfg.type != 'group') {
+                    return true;
+                }
+                if (!baseLayer.hasOwnProperty('Layer') || baseLayer.Layer.length === 0) {
+                    return false;
+                }
+                return true;
+            });
+        }
+
+        const root = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+
+        expect(root).to.be.instanceOf(LayerTreeGroupConfig)
+        expect(root.name).to.be.eq('root')
+        expect(root.type).to.be.eq('group')
+        expect(root.level).to.be.eq(0)
+        expect(root.childrenCount).to.be.eq(4)
+
+        const blGroup = root.children[3];
+        expect(blGroup).to.be.instanceOf(LayerTreeGroupConfig)
+        expect(blGroup.name).to.be.eq('baselayers')
+        expect(blGroup.type).to.be.eq('group')
+        expect(blGroup.level).to.be.eq(1)
+        // project-background-color not in capabilities
+        expect(blGroup.childrenCount).to.be.eq(1)
+
+        const baseLayers = new BaseLayersConfig({}, {}, layers, blGroup)
+
+        expect(baseLayers.baseLayerNames)
+            .to.have.length(2) // still 11
+            .that.be.deep.eq([
+                "project-background-color",
+                "OpenStreetMap"
+            ])
+
+        expect(baseLayers.startupBaselayerName).to.be.eq("project-background-color")
+
     })
 
     it('ValidationError', function () {
