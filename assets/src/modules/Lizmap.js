@@ -13,7 +13,6 @@ import GeolocationSurvey from './GeolocationSurvey.js';
 import SelectionTool from './SelectionTool.js';
 import Digitizing from './Digitizing.js';
 import Snapping from './Snapping.js';
-import Draw from './interaction/Draw.js';
 import Layers from './Layers.js';
 import WFS from './WFS.js';
 import WMS from './WMS.js';
@@ -153,7 +152,6 @@ export default class Lizmap {
                 this.selectionTool = new SelectionTool();
                 this.digitizing = new Digitizing();
                 this.snapping = new Snapping();
-                this.draw = new Draw();
                 this.layers = new Layers();
                 this.proxyEvents = new ProxyEvents();
                 this.wfs = new WFS();
