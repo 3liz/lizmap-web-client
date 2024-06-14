@@ -644,11 +644,11 @@
             "shortname": "local_raster",
             "layerType": "raster"
         },
-        "=== WM[T]S are on demo.lizmap.com ===": {
-            "id": "=== WM[T]S are on demo.lizmap.com ===",
-            "name": "=== WM[T]S are on demo.lizmap.com ===",
+        "=== WM[T]S are on liz.lizmap.com ===": {
+            "id": "=== WM[T]S are on liz.lizmap.com ===",
+            "name": "=== WM[T]S are on liz.lizmap.com ===",
             "type": "group",
-            "title": "=== WM[T]S are on demo.lizmap.com ===",
+            "title": "=== WM[T]S are on liz.lizmap.com ===",
             "abstract": "",
             "link": "",
             "minScale": 1,
@@ -668,7 +668,7 @@
             "imageFormat": "image/png",
             "cached": "False",
             "clientCacheExpiration": 300,
-            "shortname": "WM_T_S_are_on_demo_lizmap_com"
+            "shortname": "WM_T_S_are_on_liz_lizmap_com"
         },
         "WMTS single external": {
             "id": "Communes_37a6346a_94e4_4071_8fa5_94f406319b05",
@@ -701,7 +701,7 @@
             "imageFormat": "image/png",
             "cached": "False",
             "clientCacheExpiration": 300,
-            "shortname": "WMTS_demo_lizmap_com_communes",
+            "shortname": "WMTS_liz_lizmap_com_communes",
             "layerType": "raster",
             "externalWmsToggle": "True",
             "externalAccess": {
@@ -711,7 +711,7 @@
                 "layers": "Communes",
                 "styles": "default",
                 "tileMatrixSet": "EPSG:3857",
-                "url": "https://demo.lizmap.com/lizmap/index.php/lizmap/service?repository=cypress&project=wmts&SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetCapabilities",
+                "url": "https://liz.lizmap.com/tests/index.php/lizmap/service?repository=testse2elwc&project=wmts&SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetCapabilities",
                 "type": "wmts"
             }
         },
@@ -750,7 +750,7 @@
             "layerType": "raster"
         },
         "WMS grouped external": {
-            "id": "WMS_demo_lizmap_com_communes_1d5559c6_3210_42c0_b4ee_227d19588dc2",
+            "id": "WMS_liz_lizmap_com_communes_1d5559c6_3210_42c0_b4ee_227d19588dc2",
             "name": "WMS grouped external",
             "type": "layer",
             "extent": [
@@ -789,7 +789,7 @@
                 "format": "image/png;%20mode%3D8bit",
                 "layers": "commune",
                 "styles": "d%C3%A9faut",
-                "url": "https://demo.lizmap.com/lizmap/index.php/lizmap/service?repository=miscellaneous&project=flatgeobuf&VERSION=1.3.0"
+                "url": "https://liz.lizmap.com/tests/index.php/lizmap/service?repository=miscellaneous&project=flatgeobuf&VERSION=1.3.0"
             },
             "shortname": "WMST_lizmap_com_MTP",
             "layerType": "raster"
