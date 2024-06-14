@@ -436,9 +436,9 @@ describe('buildLayerTreeConfig', function () {
 
       const wmts = baselayersGetChildren.next().value;
       expect(wmts.type).to.be.eq('layer')
-      expect(wmts.name).to.be.eq('=== WM[T]S are on demo.lizmap.com ===')
+      expect(wmts.name).to.be.eq('=== WM[T]S are on liz.lizmap.com ===')
       expect(wmts.layerConfig.type).to.be.eq('group')
-      expect(wmts.wmsName).to.be.eq('WM_T_S_are_on_demo_lizmap_com')
+      expect(wmts.wmsName).to.be.eq('WM_T_S_are_on_liz_lizmap_com')
       expect(wmts.wmsStyles).to.have.length(1)
       expect(wmts.wmsStyles[0].wmsName).to.be.eq('')
       expect(wmts.wmsStyles[0].wmsTitle).to.be.eq('Default')
@@ -447,7 +447,7 @@ describe('buildLayerTreeConfig', function () {
       expect(wmtsSingle.type).to.be.eq('layer')
       expect(wmtsSingle.name).to.be.eq('WMTS single external')
       expect(wmtsSingle.layerConfig.type).to.be.eq('layer')
-      expect(wmtsSingle.wmsName).to.be.eq('WMTS_demo_lizmap_com_communes')
+      expect(wmtsSingle.wmsName).to.be.eq('WMTS_liz_lizmap_com_communes')
       expect(wmtsSingle.wmsStyles).to.have.length(1)
       expect(wmtsSingle.wmsStyles[0].wmsName).to.be.eq('default')
       expect(wmtsSingle.wmsStyles[0].wmsTitle).to.be.eq('default')
