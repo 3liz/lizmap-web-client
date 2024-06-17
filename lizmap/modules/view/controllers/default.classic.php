@@ -3,7 +3,7 @@
  * Displays a list of project for a given repository.
  *
  * @author    3liz
- * @copyright 2012-2023 3liz
+ * @copyright 2012-2024 3liz
  *
  * @see      http://3liz.com
  *
@@ -20,8 +20,9 @@ class defaultCtrl extends jController
      */
     public function index()
     {
-        if ($this->param('theme')) {
-            jApp::config()->theme = $this->param('theme');
+        $theme = $this->param('theme');
+        if ($theme && preg_match('/^[a-zA-Z0-9\-_]+$/', $theme)) {
+            jApp::config()->theme = $theme;
         }
 
         /** @var jResponseHtml $rep */
