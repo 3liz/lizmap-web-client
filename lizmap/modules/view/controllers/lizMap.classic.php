@@ -37,10 +37,10 @@ class lizMapCtrl extends jController
      */
     public function index()
     {
-        if ($this->param('theme')) {
-            jApp::config()->theme = $this->param('theme');
+        $theme = $this->param('theme');
+        if ($theme && preg_match('/^[a-zA-Z0-9\-_]+$/', $theme)) {
+            jApp::config()->theme = $theme;
         }
-        $ok = true;
 
         // Get the project
         $project = htmlspecialchars(strip_tags($this->param('project')));
