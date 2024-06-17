@@ -17,6 +17,9 @@ import DOMPurify from 'dompurify';
  */
 export default class Popup {
     constructor() {
+        // Allow toggling of active state
+        this.active = true;
+
         // OL2
         OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             defaultHandlerOptions: {
@@ -79,7 +82,7 @@ export default class Popup {
         const lineTolerance = mainLizmap.config.options?.lineTolerance || 10;
         const polygonTolerance = mainLizmap.config.options?.polygonTolerance || 5;
 
-        if (lizMap.editionPending || mainLizmap.selectionTool.isActive || mainLizmap.digitizing.isActive) {
+        if (!this.active || lizMap.editionPending || mainLizmap.selectionTool.isActive || mainLizmap.digitizing.isActive) {
             return;
         }
 
