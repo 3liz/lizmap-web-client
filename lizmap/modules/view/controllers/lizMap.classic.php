@@ -3,7 +3,7 @@
  * Displays a full featured map based on one Qgis project.
  *
  * @author    3liz
- * @copyright 2011 3liz
+ * @copyright 2011-2024 3liz
  *
  * @see      http://3liz.com
  *
@@ -37,10 +37,10 @@ class lizMapCtrl extends jController
      */
     public function index()
     {
-        if ($this->param('theme')) {
-            jApp::config()->theme = $this->param('theme');
+        $theme = $this->param('theme');
+        if ($theme && preg_match('/^[a-zA-Z0-9\-_]+$/', $theme)) {
+            jApp::config()->theme = $theme;
         }
-        $ok = true;
 
         // Get the project
         $project = htmlspecialchars(strip_tags($this->param('project')));
