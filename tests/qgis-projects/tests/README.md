@@ -26,5 +26,5 @@ The PostgreSQL dump (schema + data) `tests_dataset.sql` contains all data to run
 ## Deploy on snap
 
 ```bash
-./deploy_snap.sh $PWD/ ${SERVICE_SNAP_3_7} lizmap_3_7
+./deploy_snap.sh $PWD/ ${SERVICE_SNAP_3_8} lizmap_3_8
 ```
