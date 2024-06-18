@@ -1,15 +1,19 @@
 name: "🚮 Close feedback issues"
 on:
   schedule:
-  - cron: "0 4 * * 2,5"
+  - cron: "0 4 * * 1,3,5"
+
+permissions:
+  contents: read
 
 jobs:
   stale:
+    permissions:
+      issues: write  # for actions/stale to close stale issues
     runs-on: ubuntu-latest
     steps:
     - uses: actions/stale@v9.0.0
       with:
-#        repo-token: ${{ secrets.BOT_HUB_TOKEN }}
         days-before-stale: 30
         days-before-close: 7
         operations-per-run: 10
