@@ -1,7 +1,7 @@
 name: "🚮 Close feedback issues"
 on:
   schedule:
-  - cron: "0 4 * * 1,3,5"
+  - cron: "0 14 * * 1,3,5"
 
 permissions:
   contents: read
@@ -16,7 +16,7 @@ jobs:
       with:
         days-before-stale: 30
         days-before-close: 7
-        operations-per-run: 10
+        operations-per-run: 30
         stale-issue-message: |
           This issue is missing some feedbacks.  👻
           Please have a look to the discussion, thanks. 🦎
