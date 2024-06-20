@@ -3085,11 +3085,6 @@ lizmap-treeview .spinner::after {
   right: 2px;
 }
 
-lizmap-treeview img.legend{
-  height: 16px;
-  width: 16px;
-}
-
 lizmap-treeview .symbols img.legend {
   margin-right: 4px;
 }
