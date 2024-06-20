@@ -362,3 +362,20 @@ test.describe('Popup config mocked with "minidock" option', () => {
         await expect(page.locator('#mini-dock-content .lizmapPopupDiv')).toBeVisible();
     });
 });
+
+test.describe('Popup max features', () => {
+    test('popupMaxFeatures param is respected', async ({ page }) => {
+        const url = '/index.php/view/map?repository=testsrepository&project=popup#-5.390390,35.762412,13.763671,50.710265|townhalls_pg|d%C3%A9faut|1';
+        await gotoMap(url, page);
+
+        await page.locator('#newOlMap').click({
+            position: {
+                x: 435,
+                y: 292
+            }
+        });
+
+        await expect(page.locator('.lizmapPopupSingleFeature')).toHaveCount(15);
+    });
+});
+
