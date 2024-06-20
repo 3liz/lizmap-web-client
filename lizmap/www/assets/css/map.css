@@ -3086,7 +3086,7 @@ lizmap-treeview .spinner::after {
 }
 
 lizmap-treeview img.legend{
-  height: 16px;
+  height: 'auto;
   width: 16px;
 }
 
