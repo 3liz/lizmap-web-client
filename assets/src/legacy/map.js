@@ -1269,14 +1269,12 @@ window.lizMap = function() {
 
     /**
      *
-     * @param text
-     * @param xy
+     * @param {string} text - text to display
+     * @param {object} xy - x and y in pixels
+     * @param {array} coordinate - coordinate in map unit
      */
-    function displayGetFeatureInfo(text, xy){
+    function displayGetFeatureInfo(text, xy, coordinate){
         var eventLonLatInfo = map.getLonLatFromPixel(xy);
-
-        if (map.popups.length != 0)
-            map.removePopup(map.popups[0]);
 
         var popup = null;
         var popupContainerId = null;
@@ -1320,12 +1318,19 @@ window.lizMap = function() {
                 $('#button-popupcontent').click();
             }
         } else {
+            // Hide previous popup
+            lizMap.mainLizmap.popup.mapPopup.setVisible(false);
+
             if (!text || text == null || text == ''){
                 return false;
             }
 
             document.getElementById('liz_layer_popup_contentDiv').innerHTML = text;
-            lizMap.mainLizmap.popup.mapPopup.setPosition([eventLonLatInfo.lon, eventLonLatInfo.lat]);
+            if (coordinate) {
+                lizMap.mainLizmap.popup.mapPopup.setPosition(coordinate);
+            } else {
+                lizMap.mainLizmap.popup.mapPopup.setPosition([eventLonLatInfo.lon, eventLonLatInfo.lat]);
+            }
 
             // Activate Boostrap 2 tabs here as they are not
             // automatically activated when created in popup anchored
@@ -3362,8 +3367,8 @@ window.lizMap = function() {
             return deactivateToolControls( evt );
         },
 
-        displayGetFeatureInfo: function( text, xy ) {
-            return displayGetFeatureInfo( text, xy );
+        displayGetFeatureInfo: function( text, xy, coordinate ) {
+            return displayGetFeatureInfo( text, xy, coordinate );
         },
 
         /**
