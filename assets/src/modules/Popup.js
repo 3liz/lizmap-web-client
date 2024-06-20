@@ -180,7 +180,7 @@ export default class Popup {
                     attributeNameCheck: /crs|bbox|edition-restricted/,
                 }
             });
-            lizMap.displayGetFeatureInfo(sanitizedResponse, { x: xCoord, y: yCoord });
+            lizMap.displayGetFeatureInfo(sanitizedResponse, { x: xCoord, y: yCoord }, evt?.coordinate);
         }).finally(() => {
             document.getElementById('newOlMap').style.cursor = 'auto';
         });
