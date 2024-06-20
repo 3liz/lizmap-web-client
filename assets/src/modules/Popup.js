@@ -115,6 +115,7 @@ export default class Popup {
         const filterTokens = [];
         const legendOn = [];
         const legendOff = [];
+        let popupMaxFeatures = 10;
         for (const layer of candidateLayers) {
             const layerWmsParams = layer.wmsParameters;
             // Add layer to the list of layers
@@ -129,6 +130,9 @@ export default class Popup {
             }
             if ('LEGEND_OFF' in layerWmsParams) {
                 legendOff.push(layerWmsParams['LEGEND_OFF']);
+            }
+            if (layer.layerConfig.popupMaxFeatures > popupMaxFeatures) {
+                popupMaxFeatures = layer.layerConfig.popupMaxFeatures;
             }
         }
 
@@ -148,9 +152,9 @@ export default class Popup {
             STYLE: layersStyles.join(','),
             CRS: mainLizmap.projection,
             BBOX: bbox,
-            FEATURE_COUNT: 10,
             WIDTH: width,
             HEIGHT: height,
+            FEATURE_COUNT: popupMaxFeatures,
             I: Math.round(xCoord),
             J: Math.round(yCoord),
             FI_POINT_TOLERANCE: pointTolerance,
