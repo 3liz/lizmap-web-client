@@ -32,15 +32,15 @@
     <div id="dock">
       {zone 'view~map_dock', array('repository'=>$repository,'project'=>$project,'dockable'=>$dockable)}
     </div>
-    
+
     <div id="sub-dock">
     </div>
-    
-    <div id="bottom-dock" style="display:none;">
+
+    <div id="bottom-dock">
       {zone 'view~map_bottomdock', array('repository'=>$repository,'project'=>$project,'dockable'=>$bottomdockable)}
     </div>
-    
-    <div id="right-dock" style="display:none;">
+
+    <div id="right-dock" class="hide">
       {zone 'view~map_rightdock', array('repository'=>$repository,'project'=>$project,'dockable'=>$rightdockable)}
     </div>
   </div>

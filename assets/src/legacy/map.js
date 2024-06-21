@@ -1302,7 +1302,7 @@ window.lizMap = function() {
                     if ( $('#mapmenu .nav-list > li.popupcontent').hasClass('active') &&
                 $('#popupcontent .lizmapPopupContent').hasClass('noContent') &&
                 config.options.popupLocation != 'right-dock'){
-                        $('#button-popupcontent').click();
+                        document.getElementById('button-popupcontent').click();
                     }
                 },2000);
             }
@@ -1313,13 +1313,13 @@ window.lizMap = function() {
           && (!mCheckMobile() || ( mCheckMobile() && hasPopupContent ) )
           && (lastLonLatInfo == null || eventLonLatInfo.lon != lastLonLatInfo.lon || eventLonLatInfo.lat != lastLonLatInfo.lat)
             ){
-                $('#button-popupcontent').click();
+                document.getElementById('button-popupcontent').click();
             }
             else if(
                 $('#mapmenu .nav-list > li.popupcontent').hasClass('active')
           && ( mCheckMobile() && hasPopupContent )
             ){
-                $('#button-popupcontent').click();
+                document.getElementById('button-popupcontent').click();
             }
         } else {
             if (!text || text == null || text == ''){
@@ -1964,10 +1964,12 @@ window.lizMap = function() {
                     if( 'popupLocation' in config.options && config.options.popupLocation != 'map' ){
                         var pcontent = '<div class="lizmapPopupContent"><h4>'+lizDict['popup.msg.no.result']+'</h4></div>';
                         $('#popupcontent > div.menu-content').html(pcontent);
-                        if ( $('#mapmenu .nav-list > li.popupcontent').hasClass('active') )
-                            $('#button-popupcontent').click();
-                        if ( !$('#mapmenu .nav-list > li.popupcontent').hasClass('active') )
+                        if ( $('#mapmenu .nav-list > li.popupcontent').hasClass('active') ){
+                            document.getElementById('button-popupcontent').click();
+                        }
+                        if ( !$('#mapmenu .nav-list > li.popupcontent').hasClass('active') ){
                             $('#mapmenu .nav-list > li.popupcontent').hide();
+                        }
                     }
                 }
             }
