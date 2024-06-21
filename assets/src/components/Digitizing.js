@@ -70,7 +70,7 @@ export default class Digitizing extends HTMLElement {
 
         const mainTemplate = () => html`
         <div class="digitizing">
-            <div class="digitizing-buttons btn-group dropend" data-original-title="${lizDict['digitizing.toolbar.drawTools']}">
+            <div class="digitizing-buttons btn-group dropend" data-bs-toggle="tooltip" data-bs-title="${lizDict['digitizing.toolbar.drawTools']}">
                 <button type="button" class="btn ${this.deactivate ? '' : 'active btn-primary'}" @click=${(event) => {this.toggleToolSelected(event)}}>
                     <svg>
                         <use xlink:href="#pencil"></use>
@@ -103,69 +103,69 @@ export default class Digitizing extends HTMLElement {
                 </button>
                 <ul class="dropdown-menu">
                     ${this._availableTools.includes(DigitizingTools.Point) ? html`
-                    <li class="digitizing-${DigitizingTools.Point} btn ${this.toolSelected === DigitizingTools.Point ? 'active btn-primary' : ''}" @click=${() => this.toolSelected = DigitizingTools.Point} data-original-title="${lizDict['digitizing.toolbar.'+DigitizingTools.Point]}">
+                    <li class="digitizing-${DigitizingTools.Point} btn ${this.toolSelected === DigitizingTools.Point ? 'active btn-primary' : ''}" @click=${() => this.toolSelected = DigitizingTools.Point} data-bs-toggle="tooltip" data-bs-title="${lizDict['digitizing.toolbar.'+DigitizingTools.Point]}">
                         <svg>
                             <use xlink:href="#point"></use>
                         </svg>
                     </li>` : ''}
                     ${this._availableTools.includes(DigitizingTools.Line) ? html`
-                    <li class="digitizing-${DigitizingTools.Line} btn ${this.toolSelected === DigitizingTools.Line ? 'active btn-primary' : ''}" @click=${() => this.toolSelected = DigitizingTools.Line} data-original-title="${lizDict['digitizing.toolbar.'+DigitizingTools.Line]}">
+                    <li class="digitizing-${DigitizingTools.Line} btn ${this.toolSelected === DigitizingTools.Line ? 'active btn-primary' : ''}" @click=${() => this.toolSelected = DigitizingTools.Line} data-bs-toggle="tooltip" data-bs-title="${lizDict['digitizing.toolbar.'+DigitizingTools.Line]}">
                         <svg>
                             <use xlink:href="#line"></use>
                         </svg>
                     </li>` : ''}
                     ${this._availableTools.includes(DigitizingTools.Polygon) ? html`
-                    <li class="digitizing-${DigitizingTools.Polygon} btn ${this.toolSelected === DigitizingTools.Polygon ? 'active btn-primary' : ''}" @click=${() => this.toolSelected = DigitizingTools.Polygon} data-original-title="${lizDict['digitizing.toolbar.'+DigitizingTools.Polygon]}">
+                    <li class="digitizing-${DigitizingTools.Polygon} btn ${this.toolSelected === DigitizingTools.Polygon ? 'active btn-primary' : ''}" @click=${() => this.toolSelected = DigitizingTools.Polygon} data-bs-toggle="tooltip" data-bs-title="${lizDict['digitizing.toolbar.'+DigitizingTools.Polygon]}">
                         <svg>
                             <use xlink:href="#polygon"></use>
                         </svg>
                     </li>` : ''}
                     ${this._availableTools.includes(DigitizingTools.Box) ? html`
-                    <li class="digitizing-${DigitizingTools.Box} btn ${this.toolSelected === DigitizingTools.Box ? 'active btn-primary' : ''}" @click=${() => this.toolSelected = DigitizingTools.Box} data-original-title="${lizDict['digitizing.toolbar.'+DigitizingTools.Box]}">
+                    <li class="digitizing-${DigitizingTools.Box} btn ${this.toolSelected === DigitizingTools.Box ? 'active btn-primary' : ''}" @click=${() => this.toolSelected = DigitizingTools.Box} data-bs-toggle="tooltip" data-bs-title="${lizDict['digitizing.toolbar.'+DigitizingTools.Box]}">
                         <svg>
                             <use xlink:href="#box"></use>
                         </svg>
                     </li>` : ''}
                     ${this._availableTools.includes(DigitizingTools.Circle) ? html`
-                    <li class="digitizing-${DigitizingTools.Circle} btn ${this.toolSelected === DigitizingTools.Circle ? 'active btn-primary' : ''}" @click=${() => this.toolSelected = DigitizingTools.Circle} data-original-title="${lizDict['digitizing.toolbar.'+DigitizingTools.Circle]}">
+                    <li class="digitizing-${DigitizingTools.Circle} btn ${this.toolSelected === DigitizingTools.Circle ? 'active btn-primary' : ''}" @click=${() => this.toolSelected = DigitizingTools.Circle} data-bs-toggle="tooltip" data-bs-title="${lizDict['digitizing.toolbar.'+DigitizingTools.Circle]}">
                         <svg>
                             <use xlink:href="#circle"></use>
                         </svg>
                     </li>` : ''}
                     ${this._availableTools.includes(DigitizingTools.Freehand) ? html`
-                    <li class="digitizing-${DigitizingTools.Freehand} btn ${this.toolSelected === DigitizingTools.Freehand ? 'active btn-primary' : ''}" @click=${() => this.toolSelected = DigitizingTools.Freehand} data-original-title="${lizDict['digitizing.toolbar.'+DigitizingTools.Freehand]}">
+                    <li class="digitizing-${DigitizingTools.Freehand} btn ${this.toolSelected === DigitizingTools.Freehand ? 'active btn-primary' : ''}" @click=${() => this.toolSelected = DigitizingTools.Freehand} data-bs-toggle="tooltip" data-bs-title="${lizDict['digitizing.toolbar.'+DigitizingTools.Freehand]}">
                         <svg>
                             <use xlink:href="#freehand"></use>
                         </svg>
                     </li>` : ''}
                     ${this._availableTools.includes(DigitizingTools.Text) ? html`
-                    <li class="digitizing-${DigitizingTools.Text} btn ${this.toolSelected === DigitizingTools.Text ? 'active btn-primary' : ''}" @click=${() => this.toolSelected = DigitizingTools.Text} data-original-title="${lizDict['digitizing.toolbar.'+DigitizingTools.Text]}">
+                    <li class="digitizing-${DigitizingTools.Text} btn ${this.toolSelected === DigitizingTools.Text ? 'active btn-primary' : ''}" @click=${() => this.toolSelected = DigitizingTools.Text} data-bs-toggle="tooltip" data-bs-title="${lizDict['digitizing.toolbar.'+DigitizingTools.Text]}">
                         <svg>
                             <use xlink:href="#text"></use>
                         </svg>
                     </li>` : ''}
                 </ul>
             </div>
-            <input type="color" class="digitizing-color btn" .value="${mainLizmap.digitizing.drawColor}" @input=${(event) => mainLizmap.digitizing._userChangedColor(event.target.value)} data-original-title="${lizDict['digitizing.toolbar.color']}">
-            <button type="button" class="digitizing-edit btn ${mainLizmap.digitizing.isEdited ? 'active btn-primary' : ''}" ?disabled=${!mainLizmap.digitizing.featureDrawn} @click=${() => mainLizmap.digitizing.toggleEdit()} data-original-title="${lizDict['digitizing.toolbar.edit']}">
+            <input type="color" class="digitizing-color btn" .value="${mainLizmap.digitizing.drawColor}" @input=${(event) => mainLizmap.digitizing._userChangedColor(event.target.value)} data-bs-toggle="tooltip" data-bs-title="${lizDict['digitizing.toolbar.color']}">
+            <button type="button" class="digitizing-edit btn ${mainLizmap.digitizing.isEdited ? 'active btn-primary' : ''}" ?disabled=${!mainLizmap.digitizing.featureDrawn} @click=${() => mainLizmap.digitizing.toggleEdit()} data-bs-toggle="tooltip" data-bs-title="${lizDict['digitizing.toolbar.edit']}">
                 <svg>
                     <use xlink:href="#edit"/>
                 </svg>
             </button>
-            <button type="button" class="digitizing-erase btn ${mainLizmap.digitizing.isErasing ? 'active btn-primary' : ''}" ?disabled=${!mainLizmap.digitizing.featureDrawn} @click=${() => mainLizmap.digitizing.toggleErasing()} data-original-title="${lizDict['digitizing.toolbar.erase']}">
+            <button type="button" class="digitizing-erase btn ${mainLizmap.digitizing.isErasing ? 'active btn-primary' : ''}" ?disabled=${!mainLizmap.digitizing.featureDrawn} @click=${() => mainLizmap.digitizing.toggleErasing()} data-bs-toggle="tooltip" data-bs-title="${lizDict['digitizing.toolbar.erase']}">
                 <svg>
                     <use xlink:href="#eraser"/>
                 </svg>
             </button>
-            <button type="button" class="digitizing-all btn" ?disabled=${!mainLizmap.digitizing.featureDrawn} @click=${() => this.eraseAll()} data-original-title="${lizDict['digitizing.toolbar.erase.all']}">
+            <button type="button" class="digitizing-all btn" ?disabled=${!mainLizmap.digitizing.featureDrawn} @click=${() => this.eraseAll()} data-bs-toggle="tooltip" data-bs-title="${lizDict['digitizing.toolbar.erase.all']}">
                 <svg>
                     <use xlink:href="#eraser-all"/>
                 </svg>
             </button>
-            <button type="button" class="digitizing-toggle-visibility btn" ?disabled=${!mainLizmap.digitizing.featureDrawn} @click=${() => mainLizmap.digitizing.toggleVisibility()} data-original-title="${lizDict['tree.button.checkbox']}">
+            <button type="button" class="digitizing-toggle-visibility btn" ?disabled=${!mainLizmap.digitizing.featureDrawn} @click=${() => mainLizmap.digitizing.toggleVisibility()} data-bs-toggle="tooltip" data-bs-title="${lizDict['tree.button.checkbox']}">
                 <i class="icon-eye-${mainLizmap.digitizing.visibility ? 'open' : 'close'}"></i>
             </button>
-            <button type="button" class="digitizing-toggle-measure btn ${mainLizmap.digitizing.hasMeasureVisible ? 'active btn-primary' : ''} ${this.measureAvailable ? '' : 'hide'}" @click=${() => mainLizmap.digitizing.toggleMeasure()} data-original-title="${lizDict['digitizing.toolbar.measure']}">
+            <button type="button" class="digitizing-toggle-measure btn ${mainLizmap.digitizing.hasMeasureVisible ? 'active btn-primary' : ''} ${this.measureAvailable ? '' : 'hide'}" @click=${() => mainLizmap.digitizing.toggleMeasure()} data-bs-toggle="tooltip" data-bs-title="${lizDict['digitizing.toolbar.measure']}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                     <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                     <path d="M17 3l4 4l-14 14l-4 -4z"></path>
@@ -175,14 +175,14 @@ export default class Digitizing extends HTMLElement {
                     <path d="M7 16l-1.5 -1.5"></path>
                 </svg>
             </button>
-            <button type="button" class="digitizing-save btn ${mainLizmap.digitizing.isSaved ? 'active btn-primary' : ''} ${this.saveAvailable ? '' : 'hide'}" @click=${()=> this.toggleSave()} data-original-title="${lizDict['digitizing.toolbar.save']}">
+            <button type="button" class="digitizing-save btn ${mainLizmap.digitizing.isSaved ? 'active btn-primary' : ''} ${this.saveAvailable ? '' : 'hide'}" @click=${()=> this.toggleSave()} data-bs-toggle="tooltip" data-bs-title="${lizDict['digitizing.toolbar.save']}">
                 <svg>
                     <use xlink:href="#save" />
                 </svg>
             </button>
             <div class="digitizing-import-export ${this.importExportAvailable ? '' : 'hide'}">
                 <div class="btn-group digitizing-export">
-                    <button class="btn dropdown-toggle" ?disabled=${!mainLizmap.digitizing.featureDrawn} data-toggle="dropdown" data-original-title="${lizDict['attributeLayers.toolbar.btn.data.export.title']}">
+                    <button class="btn dropdown-toggle" ?disabled=${!mainLizmap.digitizing.featureDrawn} data-toggle="dropdown" data-bs-toggle="tooltip" data-bs-title="${lizDict['attributeLayers.toolbar.btn.data.export.title']}">
                         <svg>
                             <use xlink:href="#file-download"></use>
                         </svg>
@@ -201,7 +201,7 @@ export default class Digitizing extends HTMLElement {
                     </ul>
                 </div>
                 <div class="digitizing-import">
-                    <label class="btn" data-original-title="${lizDict['digitizing.toolbar.import']}">
+                    <label class="btn" data-bs-toggle="tooltip" data-bs-title="${lizDict['digitizing.toolbar.import']}">
                         <svg>
                             <use xlink:href="#file-upload"></use>
                         </svg>
@@ -257,6 +257,9 @@ export default class Digitizing extends HTMLElement {
         </div>`;
 
         render(mainTemplate(), this);
+
+        const tooltipTriggerList = this.querySelectorAll('[data-bs-toggle="tooltip"]');
+        [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
 
         mainEventDispatcher.addListener(
             () => {

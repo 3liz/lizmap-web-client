@@ -14,7 +14,7 @@
       <ul class="nav pull-right">
         {if $showHomeLink}
         <li class="home">
-          <a href="{jurl 'view~default:index'}" rel="tooltip" data-original-title="{@view~default.home.title@}" data-placement="bottom">
+          <a href="{jurl 'view~default:index'}" data-bs-toggle="tooltip" data-bs-title="{@view~default.home.title@}" data-placement="bottom">
             <span class="icon"></span>
             <span class="text"><b>{@view~default.home.title@}</b></span>
           </a>
@@ -29,9 +29,9 @@
 <div id="content" class="container">
   <div id="search">
     <div class="input-prepend">
-      <button id="toggle-search" class="btn" type="button" data-toggle="tooltip"
-        title="{@view~default.header.search.toggleKeywordsTitle.title@}">T</button>
-      <input id="search-project" class="span2" data-toggle="tooltip" title="{@view~default.header.search.input.title@}"
+      <button id="toggle-search" class="btn" type="button" data-bs-toggle="tooltip"
+        data-bs-title="{@view~default.header.search.toggleKeywordsTitle.title@}">T</button>
+      <input id="search-project" class="span2" data-bs-toggle="tooltip" data-bs-title="{@view~default.header.search.input.title@}"
         placeholder="{@view~map.search.nominatim.placeholder@}" type="text">
     </div>
     <div id="search-project-keywords">
