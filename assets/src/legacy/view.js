@@ -13,7 +13,8 @@ var searchProjects = function(){
     }
 
     // Activate tooltips
-    $('#toggle-search, #search-project').tooltip();
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
 
     // Handle keywords/title toggle
     $('#toggle-search').click(function(){
