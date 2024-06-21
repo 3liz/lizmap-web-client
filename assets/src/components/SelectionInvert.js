@@ -25,7 +25,7 @@ export default class SelectionInvert extends HTMLElement {
     connectedCallback() {
 
         const mainTemplate = () => html`
-        <button type="button" class="selectiontool-invert btn btn-mini ${this.getAttribute('feature-type') && mainLizmap.config.layers[mainLizmap.getLayerNameByCleanName(this.getAttribute('feature-type'))]['selectedFeatures'].length === 0 ? 'hide' : ''}" ?disabled=${this.getAttribute('feature-type') ? mainLizmap.config.layers[mainLizmap.getLayerNameByCleanName(this.getAttribute('feature-type'))]['selectedFeatures'].length === 0 : (mainLizmap.selectionTool.selectedFeaturesCount === 0 || mainLizmap.selectionTool.allFeatureTypeSelected.length > 1)} @click=${() => mainLizmap.selectionTool.invert(mainLizmap.getLayerNameByCleanName(this.getAttribute('feature-type')))}  data-original-title="${lizDict['selectiontool.toolbar.action.invert']}">
+        <button type="button" class="selectiontool-invert btn btn-mini ${this.getAttribute('feature-type') && mainLizmap.config.layers[mainLizmap.getLayerNameByCleanName(this.getAttribute('feature-type'))]['selectedFeatures'].length === 0 ? 'hide' : ''}" ?disabled=${this.getAttribute('feature-type') ? mainLizmap.config.layers[mainLizmap.getLayerNameByCleanName(this.getAttribute('feature-type'))]['selectedFeatures'].length === 0 : (mainLizmap.selectionTool.selectedFeaturesCount === 0 || mainLizmap.selectionTool.allFeatureTypeSelected.length > 1)} @click=${() => mainLizmap.selectionTool.invert(mainLizmap.getLayerNameByCleanName(this.getAttribute('feature-type')))}  data-bs-toggle="tooltip" data-bs-title="${lizDict['selectiontool.toolbar.action.invert']}">
             <svg class="icon-">
                 <use xlink:href="#mActionInvertSelection"></use>
             </svg>
