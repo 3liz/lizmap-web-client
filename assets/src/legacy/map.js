@@ -4062,21 +4062,22 @@ window.lizMap = function() {
           activeBaseLayerConfig = config.layers[activeBaseLayerName];
       }
       if ( activeBaseLayerConfig !== null ) {
+          var activeBaseLayerWmsName = activeBaseLayerConfig.name;
           if ( 'id' in activeBaseLayerConfig && 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' ){
-              printLayers.push(activeBaseLayerConfig.id);
+            activeBaseLayerWmsName = activeBaseLayerConfig.id;
           }
           else if ( 'shortname' in activeBaseLayerConfig ){
-              printLayers.push(activeBaseLayerConfig.shortname);
+            activeBaseLayerWmsName = activeBaseLayerConfig.shortname;
           }
-          else{
-              printLayers.push(activeBaseLayerConfig.name);
+          if (printLayers.indexOf(activeBaseLayerWmsName) == -1) {
+              printLayers.push(activeBaseLayerWmsName);
+              if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion.startsWith('3.') ) {
+                  styleLayers.push('');
+              } else {
+                  styleLayers.push('default');
+              }
+              opacityLayers.push(255);
           }
-          if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion.startsWith('3.') ) {
-              styleLayers.push('');
-          } else {
-              styleLayers.push('default');
-          }
-          opacityLayers.push(255);
       }
 
       // Add table vector layer without geom
