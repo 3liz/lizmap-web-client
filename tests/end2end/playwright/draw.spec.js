@@ -13,7 +13,7 @@ test.describe('Draw', () => {
 
     test('All draw tools', async ({ page }) => {
         // Point
-        await page.locator('#draw').getByRole('link').nth(1).click();
+        await page.locator('#draw button.dropdown-toggle:nth-child(2)').click();
         await page.locator('.digitizing-point > svg').click();
         await page.locator('#newOlMap').click({
             position: {
@@ -23,7 +23,7 @@ test.describe('Draw', () => {
         });
 
         // Linestring
-        await page.locator('#draw').getByRole('link').nth(1).click();
+        await page.locator('#draw button.dropdown-toggle:nth-child(2)').click();
         await page.locator('.digitizing-line > svg').click();
         await page.locator('#newOlMap').click({
             position: {
@@ -46,7 +46,7 @@ test.describe('Draw', () => {
         });
 
         // Polygon
-        await page.locator('#draw').getByRole('link').nth(1).click();
+        await page.locator('#draw button.dropdown-toggle:nth-child(2)').click();
         await page.locator('.digitizing-polygon > svg').click();
         await page.locator('#newOlMap').click({
             position: {
@@ -69,7 +69,7 @@ test.describe('Draw', () => {
         });
 
         // Box
-        await page.locator('#draw').getByRole('link').nth(1).click();
+        await page.locator('#draw button.dropdown-toggle:nth-child(2)').click();
         await page.locator('.digitizing-box > svg').click();
         await page.locator('#newOlMap').click({
             position: {
@@ -85,7 +85,7 @@ test.describe('Draw', () => {
         });
 
         // Circle
-        await page.locator('#draw').getByRole('link').nth(1).click();
+        await page.locator('#draw button.dropdown-toggle:nth-child(2)').click();
         await page.locator('.digitizing-circle > svg').click();
         await page.locator('#newOlMap').click({
             position: {
@@ -109,7 +109,7 @@ test.describe('Draw', () => {
 
     test('Edition', async ({ page }) => {
         // Polygon
-        await page.locator('#draw').getByRole('link').nth(1).click();
+        await page.locator('#draw button.dropdown-toggle:nth-child(2)').click();
         await page.locator('.digitizing-polygon > svg').click();
         await page.locator('#newOlMap').click({
             position: {
@@ -132,7 +132,7 @@ test.describe('Draw', () => {
         });
 
         // Box
-        await page.locator('#draw').getByRole('link').nth(1).click();
+        await page.locator('#draw button.dropdown-toggle:nth-child(2)').click();
         await page.locator('.digitizing-box > svg').click();
         await page.locator('#newOlMap').click({
             position: {

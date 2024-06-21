@@ -1988,9 +1988,10 @@ window.lizMap = function() {
                     if( 'popupLocation' in config.options && config.options.popupLocation != 'map' ){
                         var pcontent = '<div class="lizmapPopupContent"><h4>'+lizDict['popup.msg.no.result']+'</h4></div>';
                         document.querySelector('#popupcontent div.menu-content').innerHTML = pcontent;
-                        if ( $('#mapmenu .nav-list > li.popupcontent').hasClass('active') )
+                        if ( $('#mapmenu .nav-list > li.popupcontent').hasClass('active') ){
                             document.getElementById('button-popupcontent').click();
-                        if ( !$('#mapmenu .nav-list > li.popupcontent').hasClass('active') )
+                        }
+                        if ( !$('#mapmenu .nav-list > li.popupcontent').hasClass('active') ){
                             $('#mapmenu .nav-list > li.popupcontent').hide();
                         }
                     }
@@ -3986,14 +3987,7 @@ window.lizMap = function() {
  * but after this file
  */
 lizMap.events.on({
-    /**
-     * Event when the map has been created
-     * @event mapcreated
-     */
-    'mapcreated':function(evt){
-    }
-    ,
-    'uicreated': function(evt){
+    uicreated: function(){
 
         // Update legend if mobile
         if( lizMap.checkMobile() ){
@@ -4002,7 +3996,7 @@ lizMap.events.on({
         }
 
         // Connect dock close button
-        $('#dock-close').click(function(){ $('#mapmenu .nav-list > li.active.nav-dock > a').click(); });
+        document.getElementById('dock-close').addEventListener('click', () => { document.querySelector('#mapmenu .nav-list > li.active.nav-dock a').click() });
         $('#right-dock-close').click(function(){ $('#mapmenu .nav-list > li.active.nav-right-dock > a').click(); });
     }
 });
