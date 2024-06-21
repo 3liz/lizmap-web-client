@@ -18,7 +18,7 @@ var bottomDockFunction = function() {
             // Close button
             $('#bottom-dock .btn-bottomdock-clear')
                 .click(function() {
-                    $('#mapmenu li.nav-bottomdock.active > a').click();
+                    document.querySelector('#mapmenu li.nav-bottomdock.active').classList.remove('active');
                     return false;
                 })
                 .hover(
@@ -87,46 +87,26 @@ var bottomDockFunction = function() {
                     }
                 );
 
-            $('#mapmenu ul').on('click', 'li.nav-bottomdock > a', function(){
-                var self = $(this);
-                var parent = self.parent();
-                var id = self.attr('href').substr(1);
-                var tab = $('#nav-tab-'+id);
-                if ( parent.hasClass('active') ) {
-                    if ( tab.hasClass('active') ) {
-                        var nextActive = tab.next(':visible');
-                        if ( nextActive.length != 0 ) {
-                            nextActive.first().children('a').first().click();
-                        } else {
-                            var prevActive = tab.prev(':visible');
-                            if ( prevActive.length != 0 )
-                                prevActive.first().children('a').first().click();
-                        }
-                    }
-                    tab.hide();
-                    tab.removeClass('active');
-                    parent.removeClass('active');
-                    lizMap.events.triggerEvent( "bottomdockclosed", {'id':id} );
-                } else {
-                    var oldActive = $('#mapmenu li.nav-bottomdock.active');
-                    if ( oldActive.length != 0 ) {
-                        oldActive.removeClass('active');
-                        lizMap.events.triggerEvent( "bottomdockclosed", {'id': oldActive.children('a').first().attr('href').substr(1) } );
-                    }
-                    tab.show()
-                    tab.children('a').first().click();
-                    parent.addClass('active');
-                    lizMap.events.triggerEvent( "bottomdockopened", {'id':id} );
-                    $('#bottom-dock').addClass('visible');
-                }
-                self.blur();
+            document.querySelectorAll('#mapmenu li.nav-bottomdock > a').forEach(link => {
+                link.addEventListener('click', evt => {
+                    evt.preventDefault();
+                    // document.getElementById('bottom-dock').classList.remove('hide');
+                    // document.getElementById('bottom-dock').classList.add('visible');
+                    const linkClicked = evt.currentTarget;
+                    const dockId = linkClicked.dataset.dockid;
+                    const parentElement = linkClicked.parentElement;
+                    const wasActive = parentElement.classList.contains('active');
 
-                var dock = $('#bottom-dock');
-                if ( $('#bottom-dock-tabs .active').length == 0 )
-                    dock.hide();
-                else if ( !dock.is(':visible') )
-                    dock.show();
-                return false;
+                    document.querySelectorAll('#mapmenu .nav-bottomdock').forEach(element => element.classList.remove('active'));
+                    // document.querySelectorAll('#bottomdock-content > div').forEach(element => element.classList.add('hide'));
+                    parentElement.classList.toggle('active', !wasActive);
+                    document.getElementById(dockId).classList.toggle('hide', wasActive);
+
+                    const lizmapEvent = wasActive ? 'bottomdockclosed' : 'bottomdockopened';
+                    lizMap.events.triggerEvent(lizmapEvent, { 'id': dockId });
+
+                    return false;
+                });
             });
 
             /**
