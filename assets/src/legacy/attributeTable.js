@@ -218,7 +218,8 @@ var lizAttributeTable = function() {
                             // Get data and fill attribute table
                             getDataAndFillAttributeTable(layerName, layerFilter, tableSelector, false);
 
-                            $('#nav-tab-attribute-layer-' + cleanName + ' a' ).tab('show');
+                            const tabElement = document.getElementById('nav-tab-attribute-layer-' + cleanName);
+                            bootstrap.Tab.getOrCreateInstance(tabElement).show();
 
                             return false;
                         })
@@ -503,10 +504,10 @@ var lizAttributeTable = function() {
                 var cleanName = lizMap.cleanName(lname);
 
                 // Add li to the tabs
-                var liHtml = '<li id="nav-tab-attribute-layer-' + cleanName + '">';
-                liHtml+= '<a href="#attribute-layer-' + cleanName + '" data-toggle="tab">' + config.layers[lname]['title'] ;
+                var liHtml = '<li class="nav-item" role="presentation">';
+                liHtml+= '<button id="nav-tab-attribute-layer-' + cleanName + '" class="nav-link" data-bs-toggle="tab" data-bs-target="#attribute-layer-' + cleanName + '" type="button" role="tab">' + config.layers[lname]['title'] ;
                 liHtml+= '&nbsp;<i class="btn-close-attribute-tab icon-remove icon-white" style="cursor:pointer"></i>';
-                liHtml+= '</a>'
+                liHtml+= '</button>'
                 liHtml+= '</li>';
 
                 $('#attributeLayers-tabs').append( liHtml );

@@ -1313,7 +1313,7 @@ window.lizMap = function() {
                     if ( $('#mapmenu .nav-list > li.popupcontent').hasClass('active') &&
                 $('#popupcontent .lizmapPopupContent').hasClass('noContent') &&
                 config.options.popupLocation != 'right-dock'){
-                        $('#button-popupcontent').click();
+                        document.getElementById('button-popupcontent').click();
                     }
                 },2000);
             }
@@ -1324,13 +1324,13 @@ window.lizMap = function() {
           && (!mCheckMobile() || ( mCheckMobile() && hasPopupContent ) )
           && (lastLonLatInfo == null || eventLonLatInfo.lon != lastLonLatInfo.lon || eventLonLatInfo.lat != lastLonLatInfo.lat)
             ){
-                $('#button-popupcontent').click();
+                document.getElementById('button-popupcontent').click();
             }
             else if(
                 $('#mapmenu .nav-list > li.popupcontent').hasClass('active')
           && ( mCheckMobile() && hasPopupContent )
             ){
-                $('#button-popupcontent').click();
+                document.getElementById('button-popupcontent').click();
             }
         } else {
             // Hide previous popup
@@ -1983,9 +1983,10 @@ window.lizMap = function() {
                         var pcontent = '<div class="lizmapPopupContent"><h4>'+lizDict['popup.msg.no.result']+'</h4></div>';
                         document.querySelector('#popupcontent div.menu-content').innerHTML = pcontent;
                         if ( $('#mapmenu .nav-list > li.popupcontent').hasClass('active') )
-                            $('#button-popupcontent').click();
+                            document.getElementById('button-popupcontent').click();
                         if ( !$('#mapmenu .nav-list > li.popupcontent').hasClass('active') )
                             $('#mapmenu .nav-list > li.popupcontent').hide();
+                        }
                     }
                 }
             }
