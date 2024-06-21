@@ -31,6 +31,7 @@ export const BaseLayerTypes = createEnum({
     'WMTS': 'wmts',
     'WMS': 'wms',
     'Lizmap': 'lizmap',
+    'Google': 'google',
 });
 
 /**
@@ -305,6 +306,52 @@ export class BingBaseLayerConfig extends BaseLayerConfig {
      */
     get imagerySet() {
         return this._imagerySet;
+    }
+
+}
+
+const googleProperties = {
+    'title': { type: 'string' },
+    'mapType': { type: 'string' }
+}
+
+const googleOptionalProperties = {
+    'key': { type: 'string', nullable: true }
+}
+
+/**
+ * Class representing a Google base layer config
+ * @class
+ * @augments BaseLayerConfig
+ */
+export class GoogleBaseLayerConfig extends BaseLayerConfig {
+    /**
+     * Create a GOOGLE base layer config based on a config object
+     * @param {string} name           - the base layer name
+     * @param {object} cfg            - the lizmap config object for GOOGLE base layer
+     * @param {string} cfg.title      - the base layer title
+     * @param {string} cfg.mapType    - the base layer mapType
+     * @param {string} [cfg.key]      - the base layer key
+     */
+    constructor(name, cfg) {
+        if (!cfg || typeof cfg !== "object") {
+            throw new ValidationError('The cfg parameter is not an Object!');
+        }
+
+        if (Object.getOwnPropertyNames(cfg).length == 0) {
+            throw new ValidationError('The cfg parameter is empty!');
+        }
+
+        super(name, cfg, googleProperties, googleOptionalProperties)
+        this._type = BaseLayerTypes.Google;
+    }
+
+    /**
+     * The Google mapType
+     * @type {string}
+     */
+    get mapType() {
+        return this._mapType;
     }
 
 }
@@ -745,6 +792,18 @@ const QMSExternalLayer = {
         "imagerySet": "Aerial",
         "key": "",
     },
+    "google-streets": {
+        "type" :"google",
+        "title": "Google Streets",
+        "mapType": "roadmap",
+        "key":""
+    },
+    "google-satellite": {
+        "type" :"google",
+        "title": "Google Satellite",
+        "mapType": "satellite",
+        "key":""
+    }
 }
 
 /**
@@ -839,7 +898,20 @@ export class BaseLayersConfig {
                                 }
                                 // add the apikey to the configuration
                                 Object.assign(extendedCfg[layerTreeItem.name],{key:options["bingKey"]})
-                            } else {
+                            } else if (externalUrl && externalUrl.includes('google.com') && options["googleKey"]){
+                                if (externalUrl.includes('lyrs=m')) {
+                                    // roads
+                                    extendedCfg[layerTreeItem.name] = structuredClone(QMSExternalLayer["google-streets"])
+                                } else if (externalUrl.includes('lyrs=s')){
+                                    // fallback on satellite map
+                                    extendedCfg[layerTreeItem.name] = structuredClone(QMSExternalLayer["google-satellite"])
+                                } else {
+                                    extendedCfg[layerTreeItem.name] = structuredClone(QMSExternalLayer["google-streets"])
+                                }
+                                // add the apikey to the configuration
+                                Object.assign(extendedCfg[layerTreeItem.name],{key:options["googleKey"]})
+                            }
+                            else {
                                 // layer could be converted to XYZ or WMTS background layers
                                 extendedCfg[layerTreeItem.name] = structuredClone(layerTreeItem.layerConfig.externalAccess);
                             }
@@ -993,6 +1065,10 @@ export class BaseLayersConfig {
                     break;
                 case BaseLayerTypes.Bing:
                     this._configs.push(new BingBaseLayerConfig(key, blCfg));
+                    this._names.push(key);
+                    break;
+                case BaseLayerTypes.Google:
+                    this._configs.push(new GoogleBaseLayerConfig(key, blCfg));
                     this._names.push(key);
                     break;
                 case BaseLayerTypes.WMTS:
