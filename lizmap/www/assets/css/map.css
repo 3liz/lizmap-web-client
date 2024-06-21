@@ -507,6 +507,7 @@ SubDock
 
 /* Bottom-dock */
 #bottom-dock {
+  display: none;
   opacity:0.5;
   position:relative;
   z-index:5000;
@@ -523,15 +524,17 @@ SubDock
   transition-duration: .4s;
 }
 
+#mapmenu:has(.nav-bottomdock.active) ~ #docks-wrapper #bottom-dock {
+  display: block;
+  height: 48%;
+}
+
 #bottom-dock-window-buttons {
-  display:none;
   position:fixed;
   bottom:0px;
   padding:2px;
 }
-#bottom-dock.visible #bottom-dock-window-buttons {
-  display:block;
-}
+
 #bottom-dock.half-transparent {
   opacity: 1;
   height: 48%;
@@ -542,10 +545,6 @@ SubDock
 
 #bottom-dock-tabs {
   display:none;
-}
-
-#bottom-dock.visible {
-  height: 48%;
 }
 
 #bottom-dock:hover {
