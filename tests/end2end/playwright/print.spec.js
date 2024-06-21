@@ -111,7 +111,7 @@ test.describe('Print', () => {
 
         await page.locator('#button-draw').click();
         await page.locator('#draw').click();
-        await page.locator('#draw .digitizing-buttons').click();
+        await page.locator('#draw .digitizing-buttons .dropdown-toggle').click();
         await page.locator('#draw .digitizing-circle > svg').click();
         await page.locator('#newOlMap').click({
             position: {
@@ -475,7 +475,7 @@ test.describe('Print 3857', () => {
 
         await page.locator('#button-draw').click();
         await page.locator('#draw').click();
-        await page.locator('#draw .digitizing-buttons').click();
+        await page.locator('#draw .digitizing-buttons .dropdown-toggle').click();
         await page.locator('#draw .digitizing-circle > svg').click();
         await page.locator('#newOlMap').click({
             position: {
