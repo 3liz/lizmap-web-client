@@ -5,7 +5,7 @@ test.describe('N to M relations', () => {
         const url = '/index.php/view/map/?repository=testsrepository&project=n_to_m_relations';
         await page.goto(url, { waitUntil: 'networkidle' });
     });
-    
+
     test('Attribute table behavior', async ({ page }) => {
 
         // open attribute table panel
@@ -34,7 +34,6 @@ test.describe('N to M relations', () => {
 
         //back to natural areas panel
         await page.locator('#nav-tab-attribute-layer-natural_areas').click();
-        
 
         let attrTable = page.locator("#attribute-layer-table-natural_areas");
         await expect(attrTable).toHaveCount(1);
@@ -61,7 +60,6 @@ test.describe('N to M relations', () => {
             await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Unlink child']")).toBeHidden();
             await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Create feature']")).toBeVisible();
             await expect(featToolbar.locator(".feature-toolbar .feature-create-child ul li a")).toHaveText("Bird sposts");
-
         }
 
         // check child layer html divs
