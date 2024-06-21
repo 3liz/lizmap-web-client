@@ -54,14 +54,14 @@ test.describe('N to M relations', () => {
         let naturalAreasTableFeatureToolbar = attrTable.locator("tbody tr").all();
         for (const tr of await naturalAreasTableFeatureToolbar) {
             const featToolbar = tr.locator("td").nth(0).locator("lizmap-feature-toolbar");
-            await expect(featToolbar.locator(".feature-toolbar button[data-original-title='Select']")).toBeVisible();
-            await expect(featToolbar.locator(".feature-toolbar button[data-original-title='Filter']")).toBeHidden();
-            await expect(featToolbar.locator(".feature-toolbar button[data-original-title='Zoom']")).toBeVisible();
-            await expect(featToolbar.locator(".feature-toolbar button[data-original-title='Center']")).toBeVisible();
-            await expect(featToolbar.locator(".feature-toolbar button[data-original-title='Edit']")).toBeVisible();
-            await expect(featToolbar.locator(".feature-toolbar button[data-original-title='Delete']")).toBeVisible();
-            await expect(featToolbar.locator(".feature-toolbar button[data-original-title='Unlink child']")).toBeHidden();
-            await expect(featToolbar.locator(".feature-toolbar button[data-original-title='Create feature']")).toBeVisible();
+            await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Select']")).toBeVisible();
+            await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Filter']")).toBeHidden();
+            await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Zoom']")).toBeVisible();
+            await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Center']")).toBeVisible();
+            await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Edit']")).toBeVisible();
+            await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Delete']")).toBeVisible();
+            await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Unlink child']")).toBeHidden();
+            await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Create feature']")).toBeVisible();
             await expect(featToolbar.locator(".feature-toolbar .feature-create-child ul li a")).toHaveText("Bird sposts");
 
         }
@@ -93,14 +93,14 @@ test.describe('N to M relations', () => {
         let mTableFeatureToolbarFirst = nRelatedAttrTable.locator("tbody tr").all();
         for (const tr of await mTableFeatureToolbarFirst) {
             const featToolbar = tr.locator("td").nth(0).locator("lizmap-feature-toolbar");
-            await expect(featToolbar.locator(".feature-toolbar button[data-original-title='Select']")).toBeVisible();
-            await expect(featToolbar.locator(".feature-toolbar button[data-original-title='Filter']")).toBeHidden();
-            await expect(featToolbar.locator(".feature-toolbar button[data-original-title='Zoom']")).toBeHidden();
-            await expect(featToolbar.locator(".feature-toolbar button[data-original-title='Center']")).toBeHidden();
-            await expect(featToolbar.locator(".feature-toolbar button[data-original-title='Edit']")).toBeVisible();
-            await expect(featToolbar.locator(".feature-toolbar button[data-original-title='Delete']")).toBeHidden();
-            await expect(featToolbar.locator(".feature-toolbar button[data-original-title='Unlink child']")).toBeVisible();
-            await expect(featToolbar.locator(".feature-toolbar button[data-original-title='Create feature']")).toBeHidden();
+            await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Select']")).toBeVisible();
+            await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Filter']")).toBeHidden();
+            await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Zoom']")).toBeHidden();
+            await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Center']")).toBeHidden();
+            await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Edit']")).toBeVisible();
+            await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Delete']")).toBeHidden();
+            await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Unlink child']")).toBeVisible();
+            await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Create feature']")).toBeHidden();
         }
 
         // change main record
@@ -120,14 +120,14 @@ test.describe('N to M relations', () => {
         let mTableFeatureToolbarSecond = nRelatedAttrTable.locator("tbody tr").all();
         for (const tr of await mTableFeatureToolbarSecond) {
             const featToolbar = tr.locator("td").nth(0).locator("lizmap-feature-toolbar");
-            await expect(featToolbar.locator(".feature-toolbar button[data-original-title='Select']")).toBeVisible();
-            await expect(featToolbar.locator(".feature-toolbar button[data-original-title='Filter']")).toBeHidden();
-            await expect(featToolbar.locator(".feature-toolbar button[data-original-title='Zoom']")).toBeHidden();
-            await expect(featToolbar.locator(".feature-toolbar button[data-original-title='Center']")).toBeHidden();
-            await expect(featToolbar.locator(".feature-toolbar button[data-original-title='Edit']")).toBeVisible();
-            await expect(featToolbar.locator(".feature-toolbar button[data-original-title='Delete']")).toBeHidden();
-            await expect(featToolbar.locator(".feature-toolbar button[data-original-title='Unlink child']")).toBeVisible();
-            await expect(featToolbar.locator(".feature-toolbar button[data-original-title='Create feature']")).toBeHidden();
+            await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Select']")).toBeVisible();
+            await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Filter']")).toBeHidden();
+            await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Zoom']")).toBeHidden();
+            await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Center']")).toBeHidden();
+            await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Edit']")).toBeVisible();
+            await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Delete']")).toBeHidden();
+            await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Unlink child']")).toBeVisible();
+            await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Create feature']")).toBeHidden();
         }
 
         // back to first record
@@ -155,20 +155,20 @@ test.describe('N to M relations', () => {
         let oneToNTableFeatureToolbar = oneToNAttrTable.locator("tbody tr").all();
         for (const tr of await oneToNTableFeatureToolbar) {
             const featToolbar = tr.locator("td").nth(0).locator("lizmap-feature-toolbar");
-            await expect(featToolbar.locator(".feature-toolbar button[data-original-title='Select']")).toBeVisible();
-            await expect(featToolbar.locator(".feature-toolbar button[data-original-title='Filter']")).toBeHidden();
-            await expect(featToolbar.locator(".feature-toolbar button[data-original-title='Zoom']")).toBeHidden();
-            await expect(featToolbar.locator(".feature-toolbar button[data-original-title='Center']")).toBeHidden();
-            await expect(featToolbar.locator(".feature-toolbar button[data-original-title='Edit']")).toBeVisible();
-            await expect(featToolbar.locator(".feature-toolbar button[data-original-title='Delete']")).toBeVisible();
-            await expect(featToolbar.locator(".feature-toolbar button[data-original-title='Unlink child']")).toBeVisible();
-            await expect(featToolbar.locator(".feature-toolbar button[data-original-title='Create feature']")).toBeHidden();
+            await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Select']")).toBeVisible();
+            await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Filter']")).toBeHidden();
+            await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Zoom']")).toBeHidden();
+            await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Center']")).toBeHidden();
+            await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Edit']")).toBeVisible();
+            await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Delete']")).toBeVisible();
+            await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Unlink child']")).toBeVisible();
+            await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Create feature']")).toBeHidden();
         }
 
         // unlink bird spot from second natural area record
         let unlinkOneToN = page.waitForRequest(request => request.method() === 'POST' && request.url().includes('unlinkChild'));
 
-        await oneToNAttrTable.locator("tbody tr").nth(0).locator("td").nth(0).locator("lizmap-feature-toolbar").locator(".feature-toolbar button[data-original-title='Unlink child']").click();
+        await oneToNAttrTable.locator("tbody tr").nth(0).locator("td").nth(0).locator("lizmap-feature-toolbar").locator(".feature-toolbar button[data-bs-title='Unlink child']").click();
         await unlinkOneToN;
 
         //wait for UI to relaod properly
@@ -271,7 +271,7 @@ test.describe('N to M relations', () => {
         });
 
         let unlinkPivotFeature = page.waitForResponse(response => response.request().method() === 'POST' && response.request().postData()?.includes('%22bird_id%22+%3D+%279%27') === true)
-        await childNaturalAreasTable.locator("tbody tr").nth(0).locator("td").nth(0).locator("lizmap-feature-toolbar").locator(".feature-toolbar button[data-original-title='Unlink child']").click();
+        await childNaturalAreasTable.locator("tbody tr").nth(0).locator("td").nth(0).locator("lizmap-feature-toolbar").locator(".feature-toolbar button[data-bs-title='Unlink child']").click();
         await unlinkPivotFeature;
 
 
@@ -290,8 +290,8 @@ test.describe('N to M relations', () => {
             && response.request().postData()?.includes('GetFeature') === true
             && response.request().postData()?.includes('birds') === true
             && response.request().postData()?.includes('extent') === true)
-        await expect(birdsTable.locator("tbody tr").nth(6).locator("td").nth(0).locator("lizmap-feature-toolbar").locator(".feature-toolbar button[data-original-title='Delete']")).toHaveCount(1);
-        await birdsTable.locator("tbody tr").nth(6).locator("td").nth(0).locator("lizmap-feature-toolbar").locator(".feature-toolbar button[data-original-title='Delete']").click();
+        await expect(birdsTable.locator("tbody tr").nth(6).locator("td").nth(0).locator("lizmap-feature-toolbar").locator(".feature-toolbar button[data-bs-title='Delete']")).toHaveCount(1);
+        await birdsTable.locator("tbody tr").nth(6).locator("td").nth(0).locator("lizmap-feature-toolbar").locator(".feature-toolbar button[data-bs-title='Delete']").click();
         await deleteBirdFeature;
 
         await expect(birdsTable.locator("tbody tr")).toHaveCount(8);
@@ -331,14 +331,14 @@ test.describe('N to M relations', () => {
         });
 
         let unlinkPivotFeature = page.waitForResponse(response => response.request().method() === 'GET' && response.request().url().includes('deleteFeature'));
-        await page.locator(".lizmapPopupContent .lizmapPopupChildren").nth(0).locator(".lizmapPopupSingleFeature").nth(0).locator(".lizmapPopupDiv lizmap-feature-toolbar .feature-toolbar button[data-original-title='Unlink child']").click();
+        await page.locator(".lizmapPopupContent .lizmapPopupChildren").nth(0).locator(".lizmapPopupSingleFeature").nth(0).locator(".lizmapPopupDiv lizmap-feature-toolbar .feature-toolbar button[data-bs-title='Unlink child']").click();
         await unlinkPivotFeature;
 
         await expect(page.locator(".lizmapPopupContent .lizmapPopupChildren").nth(0).locator(".lizmapPopupSingleFeature").nth(0).locator(".lizmapPopupDiv")).toHaveCount(0)
 
         // add a new bird from natural areas popup
         let editFeatureRequestPromise = page.waitForResponse(response => response.url().includes('editFeature'));
-        await page.locator('.lizmapPopupContent > .lizmapPopupSingleFeature').nth(0).locator("lizmap-feature-toolbar").first().locator(".feature-toolbar button[data-original-title='Edit']").click()
+        await page.locator('.lizmapPopupContent > .lizmapPopupSingleFeature').nth(0).locator("lizmap-feature-toolbar").first().locator(".feature-toolbar button[data-bs-title='Edit']").click()
         await editFeatureRequestPromise;
 
         await expect(page.locator("#edition-child-tab-natural_areas-birds")).toHaveCount(1);

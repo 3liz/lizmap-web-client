@@ -625,7 +625,7 @@ export default class Action {
 
         // Build the HTML button
         let actionButtonHtml = `
-        <button class="btn btn-mini popup-action" value="${actionUniqueId}" type="button" data-original-title="${action.title}" title="${action.title}">
+        <button class="btn btn-mini popup-action" value="${actionUniqueId}" type="button" data-bs-toggle="tooltip" data-bs-title="${action.title}">
         `;
         // The icon can be
         // * an old bootstrap 2 icon, e.g. 'icon-star'

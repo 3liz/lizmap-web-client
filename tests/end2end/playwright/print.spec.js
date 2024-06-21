@@ -250,13 +250,13 @@ test.describe('Print in popup', () => {
         // "quartiers" layer has one atlas (name "atlas_quartiers") button configured with a custom icon
         const featureAtlasQuartiers = page.locator('#popupcontent lizmap-feature-toolbar[value="quartiers_cc80709a_cd4a_41de_9400_1f492b32c9f7.1"] .feature-atlas');
         await expect(featureAtlasQuartiers).toHaveCount(1);
-        await expect(featureAtlasQuartiers.locator('button')).toHaveAttribute('data-original-title', 'atlas_quartiers');
+        await expect(featureAtlasQuartiers.locator('button')).toHaveAttribute('data-bs-title', 'atlas_quartiers');
         await expect(featureAtlasQuartiers.locator('img')).toHaveAttribute('src', '/index.php/view/media/getMedia?repository=testsrepository&project=print&path=media/svg/tree-fill.svg');
 
         // "sousquartiers" layer has one atlas (name "atlas_sousquartiers") button configured with the default icon
         const featureAtlasSousQuartiers = page.locator('#popupcontent lizmap-feature-toolbar[value="sousquartiers_e27e6af0_dcc5_4700_9730_361437f69862.2"] .feature-atlas');
         await expect(featureAtlasSousQuartiers).toHaveCount(1);
-        await expect(featureAtlasSousQuartiers.locator('button')).toHaveAttribute('data-original-title', 'atlas_sousquartiers');
+        await expect(featureAtlasSousQuartiers.locator('button')).toHaveAttribute('data-bs-title', 'atlas_sousquartiers');
         await expect(featureAtlasSousQuartiers.locator('svg use')).toHaveAttribute('xlink:href', '#map-print');
     });
 

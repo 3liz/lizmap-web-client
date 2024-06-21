@@ -305,7 +305,8 @@ window.lizMap = function() {
             $('#map-content').append($('#toolbar'));
 
             $('#toggleLegend')
-                .attr('data-original-title',$('#toggleLegendOn').attr('value'))
+                .attr('data-bs-toggle', 'tooltip')
+                .attr('data-bs-title',$('#toggleLegendOn').attr('value'))
                 .parent().attr('class','legend');
 
             // autocompletion items for locatebylayer feature
@@ -329,7 +330,8 @@ window.lizMap = function() {
             $('#toolbar').insertBefore($('#switcher-menu'));
 
             $('#toggleLegend')
-                .attr('data-original-title',$('#toggleMapOnlyOn').attr('value'))
+                .attr('data-bs-toggle', 'tooltip')
+                .attr('data-bs-title',$('#toggleMapOnlyOn').attr('value'))
                 .parent().attr('class','map');
 
             // autocompletion items for locatebylayer feature
@@ -1730,8 +1732,8 @@ window.lizMap = function() {
                                 }
 
                                 const resizeTablesButtons =
-                                    '<button class="compact-tables btn btn-small" data-original-title="' + lizDict['popup.table.compact'] + '"><i class="icon-resize-small"></i></button>'+
-                                    '<button class="explode-tables btn btn-small hide" data-original-title="' + lizDict['popup.table.explode'] + '"><i class="icon-resize-full"></i></button>';
+                                  '<button class="compact-tables btn btn-small" data-bs-toggle="tooltip" data-bs-title="' + lizDict['popup.table.compact'] + '"><i class="icon-resize-small"></i></button>'+
+                                  '<button class="explode-tables btn btn-small hide" data-bs-toggle="tooltip" data-bs-title="' + lizDict['popup.table.explode'] + '"><i class="icon-resize-full"></i></button>';
 
                                 var childPopup = $('<div class="lizmapPopupChildren ' + clname + '" data-layername="' + clname + '" data-title="' + configLayer.title + '">' + resizeTablesButtons + popupChildData + '</div>');
 
@@ -3009,7 +3011,7 @@ window.lizMap = function() {
         // Create menu icon for activating dock
         var dockli = '';
         dockli+='<li class="'+dname+' nav-'+dtype+'">';
-        dockli+='   <a id="button-'+dname+'" rel="tooltip" data-original-title="'+dlabel+'" data-placement="right" href="#'+dname+'" data-container="#content">';
+        dockli+='   <a id="button-'+dname+'" data-bs-toggle="tooltip" data-bs-title="'+dlabel+'" data-placement="right" href="#'+dname+'" data-container="#content">';
         dockli += '       <span class="icon"><i class="' + dicon + ' icon-white"></i></span><span class="menu-title">' + dname +'</span>';
         dockli+='   </a>';
         dockli+='</li>';
@@ -3937,8 +3939,6 @@ window.lizMap = function() {
                 // $('#button-switcher').click();
                 updateContentSize();
 
-                $('#headermenu .navbar-inner .nav a[rel="tooltip"]').tooltip();
-                $('#mapmenu .nav a[rel="tooltip"]').tooltip();
                 self.events.triggerEvent("uicreated", self);
             })
                 .catch((error) => {
@@ -4018,5 +4018,9 @@ $(document).ready(function () {
 
     // initialize LizMap
     lizMap.init();
+
+    // Init bootstrap tooltips
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
     $( "#loading" ).css('min-height','128px');
 });

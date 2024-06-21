@@ -60,7 +60,7 @@ test.describe('WebDAV Server', () => {
         await expect(attrTable).toHaveCount(1);
         await expect(attrTable.locator("tr").nth(1).locator("td").nth(2).locator("a")).toHaveAttribute("href", "/index.php/view/media/getMedia?repository=testsrepository&project=form_upload_webdav&path=dav/logo.png");
         let editFeatureRequestPromise = page.waitForResponse(response => response.url().includes('editFeature'));
-        await attrTable.locator("tr").nth(1).locator("td").nth(0).locator("button[data-original-title='Edit']").click();
+        await attrTable.locator("tr").nth(1).locator("td").nth(0).locator("button[data-bs-title='Edit']").click();
         await editFeatureRequestPromise;
         await page.waitForTimeout(300);
 

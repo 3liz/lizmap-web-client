@@ -264,7 +264,8 @@ var lizAttributeTable = function() {
                         let btitle = lizDict['attributeLayers.toolbar.btn.refresh.table.tooltip.changed'];
                         btitle += ' ' + lizDict['attributeLayers.toolbar.btn.refresh.table.tooltip'];
                         $('button.btn-refresh-table')
-                            .attr('data-original-title', btitle)
+                            .attr('data-bs-toggle', 'tooltip')
+                            .attr('data-bs-title', btitle)
                             .addClass('btn-warning')
                             .tooltip();
                     });
@@ -699,7 +700,8 @@ var lizAttributeTable = function() {
                         .click(function(){
                         // Reset button tooltip & style
                             $(this)
-                                .attr('data-original-title', lizDict['attributeLayers.toolbar.btn.refresh.table.tooltip'])
+                                .attr('data-bs-toggle', 'tooltip')
+                                .attr('data-bs-title', lizDict['attributeLayers.toolbar.btn.refresh.table.tooltip'])
                                 .removeClass('btn-warning');
 
                             // Disable if the layer is not visible

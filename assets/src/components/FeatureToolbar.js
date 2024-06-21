@@ -76,7 +76,7 @@ export default class FeatureToolbar extends HTMLElement {
 
             ${this.atlasLayouts.map( layout => html`
                 <div class="feature-atlas">
-                    <button type="button" class="btn btn-mini" title="${layout.title}" @click=${
+                    <button type="button" class="btn btn-mini" data-bs-toggle="tooltip" data-bs-title="${layout.title}" @click=${
                         event => layout.labels.length
                         ? event.currentTarget.parentElement.querySelector('.custom-labels').classList.toggle('hide')
                         : this.printAtlas(layout.title, layout.default_format)}>

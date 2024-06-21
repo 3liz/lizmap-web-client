@@ -64,7 +64,7 @@ export default function executeJSFromServer() {
                 if ($('#mapmenu li.switcher').hasClass('active'))
                     $('#button-switcher').click();
 
-                $('#mapmenu .nav-list > li.permaLink a').attr('data-original-title', lizDict['embed.open.map']);
+                $('#mapmenu .nav-list > li.permaLink a').attr('data-bs-toggle', 'tooltip').attr('data-bs-title', lizDict['embed.open.map']);
             },
             dockopened: () => {
                 // one tool at a time
