@@ -4062,21 +4062,22 @@ window.lizMap = function() {
           activeBaseLayerConfig = config.layers[activeBaseLayerName];
       }
       if ( activeBaseLayerConfig !== null ) {
+          var activeBaseLayerWmsName = activeBaseLayerConfig.name;
           if ( 'id' in activeBaseLayerConfig && 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' ){
-              printLayers.push(activeBaseLayerConfig.id);
+            activeBaseLayerWmsName = activeBaseLayerConfig.id;
           }
           else if ( 'shortname' in activeBaseLayerConfig ){
-              printLayers.push(activeBaseLayerConfig.shortname);
+            activeBaseLayerWmsName = activeBaseLayerConfig.shortname;
           }
-          else{
-              printLayers.push(activeBaseLayerConfig.name);
+          if (printLayers.indexOf(activeBaseLayerWmsName) == -1) {
+              printLayers.push(activeBaseLayerWmsName);
+              if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion.startsWith('3.') ) {
+                  styleLayers.push('');
+              } else {
+                  styleLayers.push('default');
+              }
+              opacityLayers.push(255);
           }
-          if ( 'qgisServerVersion' in config.options && config.options.qgisServerVersion.startsWith('3.') ) {
-              styleLayers.push('');
-          } else {
-              styleLayers.push('default');
-          }
-          opacityLayers.push(255);
       }
 
       // Add table vector layer without geom
@@ -4872,17 +4873,20 @@ window.lizMap = function() {
           // Related PR for QGIS Master https://github.com/qgis/QGIS/pull/47051
           // It should be fixed for 3.24.1 and 3.22.5
           if (this.status == 400) {
-            // Check for parenthesis inside the layer name
-            // There is a bug to be fixed in QGIS Server WFS request for this context
-            var typeName = parameters['TYPENAME'];
-            const parenthesis_regex = /[\(\)]/g;
-            const has_parenthesis = typeName.match(parenthesis_regex);
-            if (has_parenthesis) {
-              var error_message = 'The selected features cannot be exported due to a known bug in QGIS Server.';
-              error_message += '<br/>Please ask the map editor to remove the parenthesis in the layer name.';
-            } else {
-              var error_message = lizDict['layer.export.unknown.export.error'];
-            };
+            var error_message = lizDict['download.error'];
+            if ('TYPENAME' in parameters) {
+              // Check for parenthesis inside the layer name
+              // There is a bug to be fixed in QGIS Server WFS request for this context
+              var typeName = parameters['TYPENAME'];
+              const parenthesis_regex = /[\(\)]/g;
+              const has_parenthesis = typeName.match(parenthesis_regex);
+              if (has_parenthesis) {
+                error_message = 'The selected features cannot be exported due to a known bug in QGIS Server.';
+                error_message += '<br/>Please ask the map editor to remove the parenthesis in the layer name.';
+              } else {
+                error_message = lizDict['layer.export.unknown.export.error'];
+              };
+            }
 
             mAddMessage(error_message, 'error', true);
             return false;
