@@ -14,8 +14,6 @@ describe('External WMS layers', function () {
         // Increasing the timeout because the external server seems too slow to respond on time
         defaultCommandTimeout: 10000
 
-        cy.gotoMap('/index.php/view/map/?repository=testsrepository&project=external_wms_layer')
-
         cy.intercept('*REQUEST=GetMap*',
             { middleware: true },
             (req) => {
@@ -25,6 +23,10 @@ describe('External WMS layers', function () {
                     res.headers['cache-control'] = 'no-store'
                 })
             }).as('getMap')
+
+        cy.gotoMap('/index.php/view/map/?repository=testsrepository&project=external_wms_layer')
+        // Wait for OpenStreetMap layer
+        cy.wait(1000)
 
         // WMS https://liz.lizmap.com/tests/index.php/lizmap/service?repository=testse2elwc&project=base_external_layers&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities
         // URL liz.lizmap.com
@@ -39,9 +41,6 @@ describe('External WMS layers', function () {
             expect(interception.request.headers['host'], 'expect not localhost').to.not.contain('localhost')
         })
         cy.get('#node-png').click()
-
-        // Wait for all GetMap requests
-        cy.wait(4000)
 
         // As JPEG for a remote WMS
         cy.get('#node-jpeg').click()
