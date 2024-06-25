@@ -4061,7 +4061,7 @@ window.lizMap = function() {
       } else if ( activeBaseLayerName in config.layers ) {
           activeBaseLayerConfig = config.layers[activeBaseLayerName];
       }
-      if ( activeBaseLayerConfig !== null ) {
+      if ( activeBaseLayerConfig !== null && 'type' in activeBaseLayerConfig ) {
           var activeBaseLayerWmsName = activeBaseLayerConfig.name;
           if ( 'id' in activeBaseLayerConfig && 'useLayerIDs' in config.options && config.options.useLayerIDs == 'True' ){
             activeBaseLayerWmsName = activeBaseLayerConfig.id;
