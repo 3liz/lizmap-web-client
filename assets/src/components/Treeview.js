@@ -21,11 +21,13 @@ export default class Treeview extends HTMLElement {
     constructor() {
         super();
         this._itemNameSelected;
+        this._clickTimestamp;
     }
 
     connectedCallback() {
 
         this._onChange = () => {
+            if (this._freeze) return;
             render(this._rootTemplate(mainLizmap.state.layerTree), this);
         };
 
@@ -96,10 +98,14 @@ export default class Treeview extends HTMLElement {
             }
             <div class="${layer.checked ? 'checked' : ''} ${layer.type} ${layer.name === this._itemNameSelected ? 'selected' : ''}">
                 <div class="loading ${layer.loadStatus === MapLayerLoadStatus.Loading ? 'spinner' : ''}"></div>
-                <input type="checkbox" class="${parent.mutuallyExclusive ? 'rounded-checkbox' : ''}" id="node-${layer.name}" .checked=${layer.checked} @click=${() => layer.checked = !layer.checked} >
+                <input type="checkbox"
+                    class="${parent.mutuallyExclusive ? 'rounded-checkbox' : ''}"
+                    id="node-${layer.name}"
+                    .checked=${layer.checked}
+                    @click=${() => layer.checked = !layer.checked} >
                 <div class="node ${layer.isFiltered ? 'filtered' : ''}">
                     <img class="legend" src="${layer.icon}">
-                    <label for="node-${layer.name}">${layer.layerConfig.title}</label>
+                    <label for="node-${layer.name}" >${layer.layerConfig.title}</label>
                     <div class="layer-actions">
                         <a href="${this._createDocLink(layer.name)}" target="_blank" title="${lizDict['tree.button.link']}">
                             <i class="icon-share"></i>
@@ -131,10 +137,19 @@ export default class Treeview extends HTMLElement {
             <div class="${group.checked ? 'checked' : ''} ${group.type} ${group.name === this._itemNameSelected ? 'selected' : ''}">
                 ${mainLizmap.initialConfig.options.hideGroupCheckbox
                     ? ''
-                    : html`<input type="checkbox" class="${parent.mutuallyExclusive ? 'rounded-checkbox' : ''}" id="node-${group.name}" .checked=${group.checked} @click=${() => group.checked = !group.checked} >`
+                    : html`<input type="checkbox" class="${parent.mutuallyExclusive ? 'rounded-checkbox' : ''}"
+                      id="node-${group.name}"
+                      .checked=${group.checked}
+                      @click=${(evt) => this._clickItem(evt, group)}
+                      @dblclick=${() => this._dblclickItem(group)} >`
                 }
                 <div class="node ${group.isFiltered ? 'filtered' : ''}">
-                    <label for="node-${group.name}">${group.layerConfig.title}</label>
+                    ${mainLizmap.initialConfig.options.hideGroupCheckbox
+                        ? html`<label for="node-${group.name}" >${group.layerConfig.title}</label>`
+                        : html`<label
+                          for="node-${group.name}"
+                          @dblclick=${() => this._dblclickItem(group)} } >${group.layerConfig.title}</label>`
+                    }
                     <div class="layer-actions">
                         <a href="${this._createDocLink(group.name)}" target="_blank" title="${lizDict['tree.button.link']}">
                             <i class="icon-share"></i>
@@ -229,6 +244,44 @@ export default class Treeview extends HTMLElement {
             && scale < symbol.maxScaleDenominator;
         }
         return true;
+    }
+
+    _clickItem(evt, item) {
+        // Freeze or dblclick received
+        if (this._freeze || evt.detail > 1) {
+            // Force input element to keep checked status
+            evt.currentTarget.checked = item.checked;
+            return false;
+        }
+
+        // It is much more end2end test purpose
+        // a playwright dblclick is 2 clicks with detail 0
+        // and the dblclick which is a click with detail 2
+        if (this._clickTimestamp && evt.timeStamp - this._clickTimestamp < 1) {
+            // Force input element to keep checked status
+            evt.currentTarget.checked = item.checked;
+            return false;
+        }
+        this._clickTimestamp = evt.timeStamp;
+
+        item.checked = !item.checked;
+        return false;
+    }
+
+    _dblclickItem(item) {
+        if (item.type != 'group') {
+            return false;
+        }
+
+        if (this._freeze) {
+            return false;
+        }
+
+        this._freeze = true;
+        item.propagateCheckedState(item.checked);
+        this._freeze = false;
+        this._onChange();
+        return false;
     }
 
     _createDocLink(layerName) {

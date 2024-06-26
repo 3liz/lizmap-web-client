@@ -354,8 +354,28 @@ export class LayerTreeGroupState extends LayerTreeItemState {
     }
 
     /**
+     * Propagate throught tree item the new checked state
+     * @param {boolean} val The new checked state
+     * @returns {boolean} the new checked state
+     */
+    propagateCheckedState(val) {
+        for (const item of this._items) {
+            if (item.type == 'group') {
+                item.propagateCheckedState(val);
+            } else {
+                item.checked = val;
+            }
+            if (item.checked && this.mutuallyExclusive) {
+                break;
+            }
+        }
+        this.checked = val;
+        return this.checked;
+    }
+
+    /**
      * Find layer names
-     * @returns {string[]} The layer names of all tree layers
+     * @returns {string[]} List of layer names
      */
     findTreeLayerNames() {
         let names = []
@@ -371,7 +391,7 @@ export class LayerTreeGroupState extends LayerTreeItemState {
 
     /**
      * Find layer items
-     * @returns {LayerTreeLayerState[]} The tree layer states of all tree layers
+     * @returns {LayerTreeLayerState[]}  List of tree layers (not tree groups)
      */
     findTreeLayers() {
         let items = []
@@ -387,7 +407,7 @@ export class LayerTreeGroupState extends LayerTreeItemState {
 
     /**
      * Find layer and group items
-     * @returns {LayerTreeLayerState[]} All tThe tree layer and tree group states
+     * @returns {LayerTreeLayerState[]} List of tree layers and tree groups
      */
     findTreeLayersAndGroups() {
         let items = []

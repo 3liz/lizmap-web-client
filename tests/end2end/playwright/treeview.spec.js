@@ -97,6 +97,75 @@ test.describe('Treeview', () => {
     test('displays "title" defined in Lizmap plugin', async ({ page }) => {
         await expect(page.getByTestId('tramway_lines').locator('label')).toHaveText('Tramway lines');
     });
+
+    test('double clicking', async ({ page }) => {
+        // All group1 is checked
+        await expect(page.locator('#node-group1')).toBeChecked();
+        await expect(page.locator('#node-sub-group1')).toBeChecked();
+        await expect(page.locator('#node-subdistricts')).toBeChecked();
+        // Unchecked all group1 by double clicking the label
+        await page.getByText('group1', { exact: true }).dblclick();
+        // All group1 is not checked
+        await expect(page.locator('#node-group1')).not.toBeChecked();
+        await expect(page.locator('#node-sub-group1')).not.toBeChecked();
+        await expect(page.locator('#node-subdistricts')).not.toBeChecked();
+        // Checked all group1 by double clicking the input
+        await page.getByLabel('group1', { exact: true }).dblclick();
+        // All group1 is checked
+        await expect(page.locator('#node-group1')).toBeChecked();
+        await expect(page.locator('#node-sub-group1')).toBeChecked();
+        await expect(page.locator('#node-subdistricts')).toBeChecked();
+
+        // Click to uncheck group1
+        await page.getByLabel('group1', { exact: true }).click();
+        // Only group1 is not checked
+        await expect(page.locator('#node-group1')).not.toBeChecked();
+        await expect(page.locator('#node-sub-group1')).toBeChecked();
+        await expect(page.locator('#node-subdistricts')).toBeChecked();
+
+        // Double clicking sub-group1 does not change the group1 checked state
+        // Because it because unchecked and group1 is already unchecked
+        await page.getByLabel('sub-group1', { exact: true }).dblclick();
+        await expect(page.locator('#node-group1')).not.toBeChecked();
+        await expect(page.locator('#node-sub-group1')).not.toBeChecked();
+        await expect(page.locator('#node-subdistricts')).not.toBeChecked();
+
+        // Double clicking sub-group1 changes the group1 checked state
+        await page.getByLabel('sub-group1', { exact: true }).dblclick();
+        await expect(page.locator('#node-group1')).toBeChecked();
+        await expect(page.locator('#node-sub-group1')).toBeChecked();
+        await expect(page.locator('#node-subdistricts')).toBeChecked();
+
+        // Verify the status of mutually exclusive group
+        await expect(page.getByLabel('group with space in name and shortname defined')).toBeChecked();
+        await expect(page.locator('#node-quartiers')).toBeChecked();
+        await expect(page.locator('#node-shop_bakery_pg')).not.toBeChecked();
+        // Unchecked all mutually exclusive group by double clicking the label
+        await page.getByText('group with space in name and shortname defined').dblclick();
+        await expect(page.getByLabel('group with space in name and shortname defined')).not.toBeChecked();
+        await expect(page.locator('#node-quartiers')).not.toBeChecked();
+        await expect(page.locator('#node-shop_bakery_pg')).not.toBeChecked();
+        // Checked all mutually exclusive group by double clicking the label, only the first child is clicked
+        await page.getByLabel('group with space in name and shortname defined').dblclick();
+        await expect(page.getByLabel('group with space in name and shortname defined')).toBeChecked();
+        await expect(page.locator('#node-quartiers')).toBeChecked();
+        await expect(page.locator('#node-shop_bakery_pg')).not.toBeChecked();
+        // switch visibility in mutually exclusive group
+        await page.locator('#node-shop_bakery_pg').click();
+        await expect(page.getByLabel('group with space in name and shortname defined')).toBeChecked();
+        await expect(page.locator('#node-quartiers')).not.toBeChecked();
+        await expect(page.locator('#node-shop_bakery_pg')).toBeChecked();
+        // Unchecked all mutually exclusive group by double clicking the label
+        await page.getByText('group with space in name and shortname defined').dblclick();
+        await expect(page.getByLabel('group with space in name and shortname defined')).not.toBeChecked();
+        await expect(page.locator('#node-quartiers')).not.toBeChecked();
+        await expect(page.locator('#node-shop_bakery_pg')).not.toBeChecked();
+        // Checked all mutually exclusive group by double clicking the label, only the first child is clicked
+        await page.getByLabel('group with space in name and shortname defined').dblclick();
+        await expect(page.getByLabel('group with space in name and shortname defined')).toBeChecked();
+        await expect(page.locator('#node-quartiers')).toBeChecked();
+        await expect(page.locator('#node-shop_bakery_pg')).not.toBeChecked();
+    });
 });
 
 test.describe('Treeview mocked with "Hide checkboxes for groups" option', () => {

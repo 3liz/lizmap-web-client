@@ -3004,6 +3004,7 @@ lizmap-treeview input.rounded-checkbox:checked {
 
 lizmap-treeview .group label {
   font-weight: bold;
+  user-select: none;
 }
 
 lizmap-treeview label {
