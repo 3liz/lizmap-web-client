@@ -41,6 +41,7 @@ describe('Request JSON metadata', function () {
                     "__anonymous",
                     "admins",
                     "group_a",
+                    "group_b",
                     "publishers"
                 ].sort()
             );
@@ -49,6 +50,7 @@ describe('Request JSON metadata', function () {
                     "__anonymous",
                     "admins",
                     "group_a",
+                    "group_b",
                     "publishers"
                 ].sort()
             );
@@ -71,6 +73,9 @@ describe('Request JSON metadata', function () {
                     },
                     "group_a": {
                         "label": "group_a"
+                    },
+                    "group_b": {
+                        "label": "group_b"
                     },
                     "intranet": {
                         "label": "Intranet demos group"
@@ -145,6 +150,7 @@ describe('Request JSON metadata', function () {
                     "__anonymous",
                     "admins",
                     "group_a",
+                    "group_b",
                     "publishers"
                 ].sort()
             );
@@ -153,6 +159,7 @@ describe('Request JSON metadata', function () {
                     "__anonymous",
                     "admins",
                     "group_a",
+                    "group_b",
                     "publishers"
                 ].sort()
             );
@@ -166,6 +173,9 @@ describe('Request JSON metadata', function () {
                     },
                     "group_a": {
                         "label": "group_a"
+                    },
+                    "group_b": {
+                        "label": "group_b"
                     },
                     "intranet": {
                         "label": "Intranet demos group"
