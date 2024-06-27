@@ -270,8 +270,17 @@ class ProjectTest extends TestCase
         $aclData2 = array(
             'userIsConnected' => false,
         );
-        $filter1 = '"Group" IN ( \'admin\' , \'groups\' , \'lizmap\' , \'all\' )';
-        $filter2 = '"Group" = \'all\'';
+        //$filter1 = '"Group" IN ( \'admin\' , \'groups\' , \'lizmap\' , \'all\' )';
+        $filter1 = '"Group" = \'admin\' OR "Group" LIKE \'admin,%\' OR "Group" LIKE \'%,admin\' OR "Group" LIKE \'%,admin,%\'';
+        $filter1 .= ' OR ';
+        $filter1 .= '"Group" = \'groups\' OR "Group" LIKE \'groups,%\' OR "Group" LIKE \'%,groups\' OR "Group" LIKE \'%,groups,%\'';
+        $filter1 .= ' OR ';
+        $filter1 .= '"Group" = \'lizmap\' OR "Group" LIKE \'lizmap,%\' OR "Group" LIKE \'%,lizmap\' OR "Group" LIKE \'%,lizmap,%\'';
+        $filter1 .= ' OR ';
+        $filter1 .= '"Group" = \'all\' OR "Group" LIKE \'all,%\' OR "Group" LIKE \'%,all\' OR "Group" LIKE \'%,all,%\'';
+
+        //$filter2 = '"Group" = \'all\'';
+        $filter2 = '"Group" = \'all\' OR "Group" LIKE \'all,%\' OR "Group" LIKE \'%,all\' OR "Group" LIKE \'%,all,%\'';
 
         return array(
             array($aclData1, $filter1),

@@ -181,6 +181,7 @@ class ContextForTests implements AppContextInterface
 
     public function getDbConnection($profile = '')
     {
+        return new jDbConnectionForTests();
     }
 
     public function getLocale($key, $variables = array())

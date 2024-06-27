@@ -138,9 +138,9 @@ class WFSRequestTest extends TestCase
             'geometryname' => 'none'
         );
         return array(
-            array($paramsComplete, $wfsFields, array('prop', 'name', 'key', 'geom', 'test'), ' SELECT prop, name, key, geom, test, geocol AS geosource FROM table'),
-            array($paramsGeom, $wfsFields, array('prop', 'name', 'notProp', 'key', 'geom', 'test'), ' SELECT prop, name, notProp, key, geom, test, geocol AS geosource FROM table'),
-            array($paramsProp, $wfsFields, array('prop', 'name', 'key', 'geom', 'test'), ' SELECT prop, name, key, geom, test FROM table'),
+            array($paramsComplete, $wfsFields, array('"prop"', '"name"', '"key"', '"geom"', '"test"'), ' SELECT "prop", "name", "key", "geom", "test", "geocol" AS "geosource" FROM table'),
+            array($paramsGeom, $wfsFields, array('"prop"', '"name"', '"notProp"', '"key"', '"geom"', '"test"'), ' SELECT "prop", "name", "notProp", "key", "geom", "test", "geocol" AS "geosource" FROM table'),
+            array($paramsProp, $wfsFields, array('"prop"', '"name"', '"key"', '"geom"', '"test"'), ' SELECT "prop", "name", "key", "geom", "test" FROM table'),
         );
     }
 
@@ -191,8 +191,8 @@ class WFSRequestTest extends TestCase
         return array(
             array(array(), '', ''),
             array(array('exp_filter' => 'select'), '', false),
-            array(array('exp_filter' => 'filter for test'), '', ' AND filter for test'),
-            array(array('exp_filter' => 'filter for test with $id = 5'), 'key', ' AND filter for test with key = 5'),
+            array(array('exp_filter' => 'filter for test'), '', ' AND ( filter for test ) '),
+            array(array('exp_filter' => 'filter for test with $id = 5'), 'key', ' AND ( filter for test with "key" = 5 ) '),
             array(array('exp_filter' => 'filter for test with $id = 5'), 'key,otherKey', false),
         );
     }
@@ -213,9 +213,9 @@ class WFSRequestTest extends TestCase
     {
         return array(
             array('', '', '', ''),
-            array('type', 'type.test@@55', 'key,otherKey', ' AND (key = "test" AND otherKey = 55)'),
-            array('type', 'type.test@@55,you shall not pass,type.name@@42', 'key,otherKey', ' AND (key = "test" AND otherKey = 55) OR (key = "name" AND otherKey = 42)'),
-            array('', 'type.test@@55', 'key,otherKey', ' AND (key = "test" AND otherKey = 55)'),
+            array('type', 'type.test@@55', 'key,otherKey', ' AND ("key" = \'test\' AND "otherKey" = 55)'),
+            array('type', 'type.test@@55,you shall not pass,type.name@@42', 'key,otherKey', ' AND ("key" = \'test\' AND "otherKey" = 55) OR ("key" = \'name\' AND "otherKey" = 42)'),
+            array('', 'type.test@@55', 'key,otherKey', ' AND ("key" = \'test\' AND "otherKey" = 55)'),
         );
     }
 
@@ -240,7 +240,7 @@ class WFSRequestTest extends TestCase
             array(array(), array(), ''),
             array(array('sortby' => ''), array(), ''),
             array(array('sortby' => 'id a,test d,wfs a'), array(), ''),
-            array(array('sortby' => 'id a,test d,wfs a'), array('test', 'field', 'wfs'), ' ORDER BY test DESC, wfs ASC'),
+            array(array('sortby' => 'id a,test d,wfs a'), array('test', 'field', 'wfs'), ' ORDER BY "test" DESC, "wfs" ASC'),
         );
     }
 
