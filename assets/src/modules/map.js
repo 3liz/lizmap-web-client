@@ -24,6 +24,7 @@ import TileGrid from 'ol/tilegrid/TileGrid.js';
 import TileWMS from 'ol/source/TileWMS.js';
 import XYZ from 'ol/source/XYZ.js';
 import BingMaps from 'ol/source/BingMaps.js';
+import Google from 'ol/source/Google.js';
 import {BaseLayer as LayerBase} from 'ol/layer/Base.js';
 import LayerGroup from 'ol/layer/Group.js';
 import { Vector as VectorSource } from 'ol/source.js';
@@ -446,6 +447,16 @@ export default class map extends olMap {
                     // use maxZoom 19 to see stretched tiles instead of the BingMaps
                     // "no photos at this zoom level" tiles
                     // maxZoom: 19
+                    }),
+                });
+            } else if (baseLayerState.type === BaseLayerTypes.Google) {
+                baseLayer = new TileLayer({
+                    minResolution: layerMinResolution,
+                    maxResolution: layerMaxResolution,
+                    preload: Infinity,
+                    source: new Google({
+                        key: baseLayerState.key,
+                        mapType: baseLayerState.mapType,
                     }),
                 });
             } else if (baseLayerState.type === BaseLayerTypes.Lizmap) {
