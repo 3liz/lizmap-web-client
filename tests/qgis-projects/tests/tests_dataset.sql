@@ -3,7 +3,7 @@
 --
 
 -- Dumped from database version 14.11 (Debian 14.11-1.pgdg110+2)
--- Dumped by pg_dump version 14.11 (Ubuntu 14.11-0ubuntu0.22.04.1)
+-- Dumped by pg_dump version 14.12 (Ubuntu 14.12-0ubuntu0.22.04.1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -402,6 +402,38 @@ CREATE SEQUENCE tests_projects.dnd_popup_id_seq
 --
 
 ALTER SEQUENCE tests_projects.dnd_popup_id_seq OWNED BY tests_projects.dnd_popup.id;
+
+
+--
+-- Name: double_geom; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.double_geom (
+    id integer NOT NULL,
+    title text,
+    geom public.geometry(Polygon,4326),
+    geom_d public.geometry(Polygon,4326)
+);
+
+
+--
+-- Name: double_geom_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
+--
+
+CREATE SEQUENCE tests_projects.double_geom_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: double_geom_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
+--
+
+ALTER SEQUENCE tests_projects.double_geom_id_seq OWNED BY tests_projects.double_geom.id;
 
 
 --
@@ -2319,6 +2351,39 @@ ALTER SEQUENCE tests_projects.tramway_stops_id_stop_seq OWNED BY tests_projects.
 
 
 --
+-- Name: triple_geom; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.triple_geom (
+    id integer NOT NULL,
+    title text,
+    geom public.geometry(Point,4326),
+    geom_l public.geometry(LineString,4326),
+    geom_p public.geometry(Polygon,4326)
+);
+
+
+--
+-- Name: triple_geom_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
+--
+
+CREATE SEQUENCE tests_projects.triple_geom_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: triple_geom_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
+--
+
+ALTER SEQUENCE tests_projects.triple_geom_id_seq OWNED BY tests_projects.triple_geom.id;
+
+
+--
 -- Name: xss; Type: TABLE; Schema: tests_projects; Owner: -
 --
 
@@ -2347,69 +2412,6 @@ CREATE SEQUENCE tests_projects.xss_id_seq
 --
 
 ALTER SEQUENCE tests_projects.xss_id_seq OWNED BY tests_projects.xss.id;
-
---
--- Name: double_geom; Type: TABLE; Schema: tests_projects; Owner: -
---
-
-CREATE TABLE tests_projects.double_geom (
-    id integer NOT NULL,
-    title text,
-    geom public.geometry(Polygon,4326),
-    geom_d public.geometry(Polygon,4326)
-);
-
---
--- Name: double_geom; Type: SEQUENCE; Schema: tests_projects; Owner: -
---
-
-CREATE SEQUENCE tests_projects.double_geom_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: double_geom_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
---
-
-ALTER SEQUENCE tests_projects.double_geom_id_seq OWNED BY tests_projects.double_geom.id;
-
-
---
--- Name: triple_geom; Type: TABLE; Schema: tests_projects; Owner: -
---
-
-CREATE TABLE tests_projects.triple_geom (
-    id integer NOT NULL,
-    title text,
-    geom public.geometry(Point,4326),
-    geom_l public.geometry(LineString,4326),
-    geom_p public.geometry(Polygon,4326)
-
-);
-
---
--- Name: triple_geom Type: SEQUENCE; Schema: tests_projects; Owner: -
---
-
-CREATE SEQUENCE tests_projects.triple_geom_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: triple_geom_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
---
-
-ALTER SEQUENCE tests_projects.triple_geom_id_seq OWNED BY tests_projects.triple_geom.id;
 
 
 --
@@ -2487,6 +2489,13 @@ ALTER TABLE ONLY tests_projects.dnd_form_geom ALTER COLUMN id SET DEFAULT nextva
 --
 
 ALTER TABLE ONLY tests_projects.dnd_popup ALTER COLUMN id SET DEFAULT nextval('tests_projects.dnd_popup_id_seq'::regclass);
+
+
+--
+-- Name: double_geom id; Type: DEFAULT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.double_geom ALTER COLUMN id SET DEFAULT nextval('tests_projects.double_geom_id_seq'::regclass);
 
 
 --
@@ -2903,22 +2912,18 @@ ALTER TABLE ONLY tests_projects.tramway_stops ALTER COLUMN id_stop SET DEFAULT n
 
 
 --
+-- Name: triple_geom id; Type: DEFAULT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.triple_geom ALTER COLUMN id SET DEFAULT nextval('tests_projects.triple_geom_id_seq'::regclass);
+
+
+--
 -- Name: xss id; Type: DEFAULT; Schema: tests_projects; Owner: -
 --
 
 ALTER TABLE ONLY tests_projects.xss ALTER COLUMN id SET DEFAULT nextval('tests_projects.xss_id_seq'::regclass);
 
---
--- Name: double_geom id; Type: DEFAULT; Schema: tests_projects; Owner: -
---
-
-ALTER TABLE ONLY tests_projects.double_geom ALTER COLUMN id SET DEFAULT nextval('tests_projects.double_geom_id_seq'::regclass);
-
---
--- Name: triple_geom id; Type: DEFAULT; Schema: tests_projects; Owner: -
---
-
-ALTER TABLE ONLY tests_projects.triple_geom ALTER COLUMN id SET DEFAULT nextval('tests_projects.triple_geom_id_seq'::regclass);
 
 --
 -- Data for Name: attribute_table; Type: TABLE DATA; Schema: tests_projects; Owner: -
@@ -3066,6 +3071,15 @@ COPY tests_projects.dnd_popup (id, field_tab1, field_tab2, geom) FROM stdin;
 
 
 --
+-- Data for Name: double_geom; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.double_geom (id, title, geom, geom_d) FROM stdin;
+1	F2	0103000020E610000001000000060000005520F9393F8E0E4043232852C1CD454091126D1728C40E4049F9C8EAF5CB454015E1134ED2540E40190EB02B2ECC454015E1134ED2540E40190EB02B2ECC454089C25720B0490E402CE5037573CE45405520F9393F8E0E4043232852C1CD4540	0103000020E61000000100000007000000879AE9F0C7BA0E4030327583F7D1454067325F7DA79E0E404EB50AFEA5D04540FA7B2DC3A5AF0E40CC0ED2F6E3CE45408E34CC0DD0C10E40F5B479184BCF45408E34CC0DD0C10E40F5B479184BCF4540BC614BB6D4EA0E40BE84EFBB22D04540879AE9F0C7BA0E4030327583F7D14540
+\.
+
+
+--
 -- Data for Name: edition_layer_embed_child; Type: TABLE DATA; Schema: tests_projects; Owner: -
 --
 
@@ -3119,8 +3133,8 @@ COPY tests_projects.end2end_form_edition_geom (id, value, geom) FROM stdin;
 
 COPY tests_projects.filter_layer_by_user (gid, "user", "group", geom) FROM stdin;
 1	admin	\N	01010000206A08000000E08B6EAA0E744090DC4977C6372F41
-2	user_in_group_a	\N	01010000206A08000084D3086E0FDFF3404A2C05E482472F41
 3	\N	\N	01010000206A08000028B76AD632CBE540B5C59180B9102E41
+2	user_in_group_a,user_in_group_b	\N	01010000206A08000084D3086E0FDFF3404A2C05E482472F41
 \.
 
 
@@ -3731,25 +3745,20 @@ COPY tests_projects.tramway_stops (id_stop, geom) FROM stdin;
 
 
 --
+-- Data for Name: triple_geom; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.triple_geom (id, title, geom, geom_l, geom_p) FROM stdin;
+1	P2	0101000020E61000009BAFF31C24420F40B0F20C103ECD4540	0102000020E610000003000000F831609D15230F40B6C8ADA872CB45400D2267EAD5350F40CA0ED2F6E3CE4540CD98B4D8D86F0F40013F5C530CCE4540	0103000020E610000001000000040000008CEAFEE73F350F40CE5B430568D2454027CEAF4A464D0F40F4234A1D77D045405E04E2147F7E0F402E327583F7D145408CEAFEE73F350F40CE5B430568D24540
+\.
+
+
+--
 -- Data for Name: xss; Type: TABLE DATA; Schema: tests_projects; Owner: -
 --
 
 COPY tests_projects.xss (id, geom, description) FROM stdin;
 1	01010000206A0800000D9D9921FD822741B3C56B7B4DF45741	<script>alert('XSS')</script>
-\.
-
---
--- Data for Name: double_geom; Type: TABLE DATA; Schema: tests_projects; Owner: -
---
-COPY tests_projects.double_geom (id, title, geom, geom_d) FROM stdin;
-1	F2	010300000001000000060000005520F9393F8E0E4043232852C1CD454091126D1728C40E4049F9C8EAF5CB454015E1134ED2540E40190EB02B2ECC454015E1134ED2540E40190EB02B2ECC454089C25720B0490E402CE5037573CE45405520F9393F8E0E4043232852C1CD4540	01030000000100000007000000879AE9F0C7BA0E4030327583F7D1454067325F7DA79E0E404EB50AFEA5D04540FA7B2DC3A5AF0E40CC0ED2F6E3CE45408E34CC0DD0C10E40F5B479184BCF45408E34CC0DD0C10E40F5B479184BCF4540BC614BB6D4EA0E40BE84EFBB22D04540879AE9F0C7BA0E4030327583F7D14540
-\.
-
---
--- Data for Name: triple_geom; Type: TABLE DATA; Schema: tests_projects; Owner: -
---
-COPY tests_projects.triple_geom (id, title, geom, geom_l, geom_p) FROM stdin;
-1	P2	01010000009BAFF31C24420F40B0F20C103ECD4540	010200000003000000F831609D15230F40B6C8ADA872CB45400D2267EAD5350F40CA0ED2F6E3CE4540CD98B4D8D86F0F40013F5C530CCE4540	010300000001000000040000008CEAFEE73F350F40CE5B430568D2454027CEAF4A464D0F40F4234A1D77D045405E04E2147F7E0F402E327583F7D145408CEAFEE73F350F40CE5B430568D24540
 \.
 
 
@@ -3828,6 +3837,13 @@ SELECT pg_catalog.setval('tests_projects.dnd_form_id_seq', 1, true);
 --
 
 SELECT pg_catalog.setval('tests_projects.dnd_popup_id_seq', 2, true);
+
+
+--
+-- Name: double_geom_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.double_geom_id_seq', 1, true);
 
 
 --
@@ -4258,23 +4274,17 @@ SELECT pg_catalog.setval('tests_projects.tramway_stops_id_stop_seq', 5, true);
 
 
 --
--- Name: xss_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
---
-
-SELECT pg_catalog.setval('tests_projects.xss_id_seq', 1, true);
-
---
--- Name: double_geom_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
---
-
-SELECT pg_catalog.setval('tests_projects.double_geom_id_seq', 1, true);
-
---
 -- Name: triple_geom_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
 --
 
 SELECT pg_catalog.setval('tests_projects.triple_geom_id_seq', 1, true);
 
+
+--
+-- Name: xss_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.xss_id_seq', 1, true);
 
 
 --
@@ -4363,6 +4373,14 @@ ALTER TABLE ONLY tests_projects.dnd_form
 
 ALTER TABLE ONLY tests_projects.dnd_popup
     ADD CONSTRAINT dnd_popup_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: double_geom double_geom_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.double_geom
+    ADD CONSTRAINT double_geom_pkey PRIMARY KEY (id);
 
 
 --
@@ -4878,27 +4896,19 @@ ALTER TABLE ONLY tests_projects.tramway_stops
 
 
 --
+-- Name: triple_geom triple_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.triple_geom
+    ADD CONSTRAINT triple_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: xss xss_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
 --
 
 ALTER TABLE ONLY tests_projects.xss
     ADD CONSTRAINT xss_pkey PRIMARY KEY (id);
-
-
---
--- Name: double_geom double_geom_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
---
-
-ALTER TABLE ONLY tests_projects.double_geom
-    ADD CONSTRAINT double_geom_pkey PRIMARY KEY (id);
-
-
---
--- Name: triple_geom triple_geom_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
---
-
-ALTER TABLE ONLY tests_projects.triple_geom
-    ADD CONSTRAINT triple_pkey PRIMARY KEY (id);
 
 
 --
@@ -4976,3 +4986,4 @@ ALTER TABLE ONLY tests_projects.tramway_pivot
 --
 -- PostgreSQL database dump complete
 --
+
