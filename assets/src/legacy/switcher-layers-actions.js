@@ -356,6 +356,11 @@ var lizLayerActionButtons = function() {
                 if (lizMap.mainLizmap.initialConfig.options.activateFirstMapTheme) {
                     $('#theme-selector li.theme:nth-child(1)').click();
                 }
+                const urlParameters = (new URL(document.location)).searchParams;
+                if (urlParameters.has('mapTheme')) {
+                    const urlMapTheme = urlParameters.get('mapTheme');
+                    $('#theme-selector li.theme').filter((i, e) => e.textContent == urlMapTheme).click();
+                }
             }
 
             featureTypes = lizMap.getVectorLayerFeatureTypes();

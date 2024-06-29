@@ -37,6 +37,7 @@ class mapCtrl extends lizMapCtrl
             'filter',
             'layerStyles',
             'layerOpacities',
+            'mapTheme',
         );
         // Get redirection parameters
         $redirectKeyParams = jEvent::notify('getRedirectKeyParams', array('repository' => $repository, 'project' => $project))->getResponse();
