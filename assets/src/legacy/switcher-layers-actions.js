@@ -323,9 +323,12 @@ var lizLayerActionButtons = function() {
                             lizMap.mainLizmap.state.baseLayers.selectedBaseLayerName = "project-background-color";
                         } else {
                             for (const baseLayer of lizMap.mainLizmap.state.baseLayers.getBaseLayers()) {
+                                if (!baseLayer.layerConfig) {
+                                    continue;
+                                }
                                 if (themeSelected?.layers?.[baseLayer.layerConfig.id]) {
                                     lizMap.mainLizmap.state.baseLayers.selectedBaseLayerName = baseLayer.name;
-                                    continue;
+                                    break;
                                 }
                             }
                         }
