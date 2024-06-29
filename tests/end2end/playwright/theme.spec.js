@@ -1,10 +1,11 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+const { gotoMap } = require('./globals')
 
 test.describe('Theme', () => {
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=theme';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page)
     });
 
     test('must display theme1 at startup', async ({ page }) => {
@@ -101,4 +102,21 @@ test.describe('Theme', () => {
 // TODO be fixed QGIS ≥ 3.34, works with QGIS < 3.34
 //        await expect(page.locator('lizmap-base-layers select')).toHaveValue('OpenStreetMap');
     });
+
+    test('mapTheme parameter', async ({ page }) => {
+        await expect(page.locator('#theme-selector > ul > li.theme').first()).toHaveClass(/selected/);
+
+        let url = '/index.php/view/map/?repository=testsrepository&project=theme&mapTheme=theme2';
+        await gotoMap(url, page)
+        await expect(page.locator('#theme-selector > ul > li.theme').nth(1)).toHaveClass(/selected/);
+
+        url = '/index.php/view/map/?repository=testsrepository&project=theme&mapTheme=theme3';
+        await gotoMap(url, page)
+        await expect(page.locator('#theme-selector > ul > li.theme').nth(2)).toHaveClass(/selected/);
+
+        url = '/index.php/view/map/?repository=testsrepository&project=theme&mapTheme=theme4';
+        await gotoMap(url, page)
+        await expect(page.locator('#theme-selector > ul > li.theme').nth(3)).toHaveClass(/selected/);
+    });
+
 });
