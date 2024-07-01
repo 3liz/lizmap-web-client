@@ -8,6 +8,32 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Funders
+
+* **[Faunalia](https://www.faunalia.eu/fr)**, contributions on source code from @mind84
+
+### Changed
+
+* UI: Double-clicking on a group in the legend is now propagated to child items
+* Admin - Add legend about warning icon in project table
+* Admin - Display the list of warning ID in the admin panel, in the tooltip
+
+### Fixed
+
+* Popup: respect `popupMaxFeatures` parameter
+* Fix cross-site scripting issue with the `theme` parameter
+* Use proper OpenLayers class for layers issued by Google Maps, contribution from @mind84
+
+### Removed
+
+* Remove unused button zoom to layer extent
+
+### Backend
+
+* Popup: remove remaining OL2 dependencies
+* Expose more OpenLayers 9 classes
+* Expose some Lit HTML classes
+
 ## 3.8.0-rc.1 - 2024-06-06
 
 ### Added
