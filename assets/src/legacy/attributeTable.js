@@ -9,6 +9,30 @@ import DOMPurify from 'dompurify';
 
 var lizAttributeTable = function() {
 
+    const intRegex = /^[0-9]+$/;
+
+    const sqlEscapeFilter = (value, alwaysQuoteString) => {
+        if (Array.isArray(value)) {
+            // The values must be separated by comma AND spaces
+            // since QGIS controls the syntax for the FILTER parameter
+            return value.map(v => sqlEscapeFilter(v, alwaysQuoteString)).join(" , ");
+        }
+
+        if (typeof value === 'string') {
+            if (!alwaysQuoteString && intRegex.test(value) ) {
+                // value is a string but represents an integer
+                // return unquoted string
+                return value;
+            }
+
+            // surround value with simple quotes and escape existing single-quote
+            return `'${value.replaceAll("'", "''")}'`
+        }
+
+        // fallback: return value as-is
+        return value;
+    }
+
     lizMap.events.on({
         'uicreated':function(){
 
@@ -2538,17 +2562,13 @@ var lizAttributeTable = function() {
                             var fid = feat.id.split('.')[1];
                             foundFeatures[fid] = feat;
 
+                            // extract and format PK
+                            var pkTypeIsString = ('types' in layerConfig)
+                                && (typeNamePkey in layerConfig.types)
+                                && layerConfig.types[typeNamePkey] == 'string';
+                            var pk = sqlEscapeFilter(feat.properties[typeNamePkey], pkTypeIsString);
+
                             // Add primary keys values to build the WMS filter ( to be able to redraw layer)
-                            var pk = feat.properties[typeNamePkey];
-                            if( ('types' in layerConfig)
-                     && (typeNamePkey in layerConfig.types)
-                     && layerConfig.types[typeNamePkey] == 'string') {
-                                pk = " '" + pk + "' ";
-                            } else {
-                                var intRegex = /^[0-9]+$/;
-                                if( !( intRegex.test(pk) ) )
-                                    pk = " '" + pk + "' ";
-                            }
                             typeNamePkeyValues.push( pk );
 
                             // Reset filteredFeatures with found features
@@ -2794,7 +2814,7 @@ var lizAttributeTable = function() {
                 if (lConfig?.['filteredFeatures']?.length) {
                     // The values must be separated by comma AND spaces
                     // since QGIS controls the syntax for the FILTER parameter
-                    cFilter = '$id IN ( ' + lConfig['filteredFeatures'].join( ' , ' ) + ' ) ';
+                    cFilter = '$id IN ( ' + sqlEscapeFilter(lConfig['filteredFeatures']) + ' ) ';
                 }
 
                 const wmsName = lConfig?.['shortname'] || featureType;
