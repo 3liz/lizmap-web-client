@@ -8,6 +8,21 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Funders
+
+* *[WPD](https://www.wpd.fr/)*
+* *[Terre de Provence Agglomération](https://www.terredeprovence-agglo.com/)*
+
+### Changed
+
+* Admin - Add legend about warning icon in project table
+
+### Fixed
+
+* Fix printing of external base-layer
+* Improve debug about failing PDF print, especially when parenthesis are in the layer name
+* Fix cross-site scripting issue with the `theme` parameter
+
 ## 3.6.13 - 2024-05-27
 
 ### Funders
