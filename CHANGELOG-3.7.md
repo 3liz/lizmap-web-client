@@ -8,7 +8,36 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Funders
+
+* *[WPD](https://www.wpd.fr/)*
+* *[Terre de Provence Agglomération](https://www.terredeprovence-agglo.com/)*
+
+### Changed
+
+* Admin - Add legend about warning icon in project table
+* Admin - Display the list of warning ID in the admin panel, in the tooltip
+
 ### Fixed
+
+* Popup: respect `popupMaxFeatures` parameter
+* Fix: project-background-color group as startup base layer
+* Fix Popup is not shown in atlas container
+* Fix: let min/max resolutions be handled by OpenLayers for WMTS
+* Fix cross-site scripting issue with the `theme` parameter
+* Baselayers :
+    * Refresh dropdown selection on change
+    * Handle visibility in **theme**
+* Remove CSS height and width (16px) for legends, useful for raster legend, contributions from @Antoviscomi
+
+### Removed
+
+* Remove unused button zoom to layer extent
+
+### Backend
+
+* Expose more OpenLayers 9 classes
+* Expose some Lit HTML classes
 
 ## 3.7.8 - 2024-05-27
 
