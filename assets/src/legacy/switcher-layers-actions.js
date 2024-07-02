@@ -323,9 +323,12 @@ var lizLayerActionButtons = function() {
                             lizMap.mainLizmap.state.baseLayers.selectedBaseLayerName = "project-background-color";
                         } else {
                             for (const baseLayer of lizMap.mainLizmap.state.baseLayers.getBaseLayers()) {
+                                if (!baseLayer.layerConfig) {
+                                    continue;
+                                }
                                 if (themeSelected?.layers?.[baseLayer.layerConfig.id]) {
                                     lizMap.mainLizmap.state.baseLayers.selectedBaseLayerName = baseLayer.name;
-                                    continue;
+                                    break;
                                 }
                             }
                         }
@@ -350,8 +353,13 @@ var lizLayerActionButtons = function() {
                 );
 
                 // Activate first map theme on load
-                if ('activateFirstMapTheme' in lizMap.config.options && lizMap.config.options.activateFirstMapTheme == 'True') {
+                if (lizMap.mainLizmap.initialConfig.options.activateFirstMapTheme) {
                     $('#theme-selector li.theme:nth-child(1)').click();
+                }
+                const urlParameters = (new URL(document.location)).searchParams;
+                if (urlParameters.has('mapTheme')) {
+                    const urlMapTheme = urlParameters.get('mapTheme');
+                    $('#theme-selector li.theme').filter((i, e) => e.textContent == urlMapTheme).click();
                 }
             }
 
