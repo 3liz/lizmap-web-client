@@ -380,15 +380,13 @@ export default class Print extends HTMLElement {
         });
 
         // Overview map
-        if (mainLizmap.config.options.hasOverview && this._overviewMapId) {
+        if (this._overviewMapId) {
             let extent = mainLizmap.config.options.bbox;
 
             if(projectProjection != mapProjection){
                 extent = transformExtent(extent, mapProjection, projectProjection);
             }
             wmsParams[this._overviewMapId + ':EXTENT'] = extent.join(',');
-            wmsParams[this._overviewMapId + ':LAYERS'] = 'Overview';
-            wmsParams[this._overviewMapId + ':STYLES'] = '';
         }
 
         // Display spinner and message while waiting for print
