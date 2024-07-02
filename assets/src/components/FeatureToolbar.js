@@ -77,7 +77,7 @@ export default class FeatureToolbar extends HTMLElement {
                     <button type="button" class="btn btn-mini" title="${layout.title}" @click=${
                         event => layout.labels.length
                         ? event.currentTarget.parentElement.querySelector('.custom-labels').classList.toggle('hide')
-                        : this.printAtlas(layout.title)}>
+                        : this.printAtlas(layout.title, layout.default_format)}>
                         ${layout.icon
                         ? html`<img src="${mainLizmap.mediaURL}&path=${layout.icon}"/>`
                         : html`<svg>
@@ -92,7 +92,7 @@ export default class FeatureToolbar extends HTMLElement {
                                     ? html`<textarea class="input-medium custom-label" data-labelid="${label.id}" name="${label.id}" placeholder="${label.text}">${label.text}</textarea>`
                                     : html`<input class="input-medium custom-label" type="text" size="15" data-labelid="${label.id}" name="${label.id}" placeholder="${label.text}" value="${label.text}">`
                                 )}
-                                <button class="btn btn-primary btn-print-launch" @click=${() => { this.printAtlas(layout.title) }}>${lizDict['print.launch']}</button>
+                                <button class="btn btn-primary btn-print-launch" @click=${() => { this.printAtlas(layout.title, layout.default_format) }}>${lizDict['print.launch']}</button>
                             </div>`
                         : ''
                     }
@@ -266,7 +266,9 @@ export default class FeatureToolbar extends HTMLElement {
                         atlasLayouts.push({
                             title: mainLizmap.config?.layouts?.list?.[index]?.layout,
                             icon: mainLizmap.config?.layouts?.list?.[index]?.icon,
-                            labels: template?.labels
+                            labels: template?.labels,
+                            formats_available: mainLizmap.config?.layouts?.list?.[index]?.formats_available,
+                            default_format: mainLizmap.config?.layouts?.list?.[index]?.default_format,
                         });
                     }
                     // Lizmap < 3.7
@@ -524,18 +526,37 @@ export default class FeatureToolbar extends HTMLElement {
         window.print();
     }
 
-    printAtlas(templateName) {
+    printAtlas(templateName, format) {
+        const escapeFeatureId = (value) => {
+            const valueType = typeof value;
+
+            if (valueType === 'string') {
+                const intRegex = /^[0-9]+$/;
+                if( intRegex.test(value) ) {
+                    // value is a string but represents an integer
+                    // return unquoted string
+                    return value;
+                }
+
+                // surround value with simple quotes and escape existing single-quote
+                return `'${value.replaceAll("'", "''")}'`
+            }
+
+            // fallback: return value as-is
+            return value;
+        }
+
         const wmsParams = {
             SERVICE: 'WMS',
             REQUEST: 'GetPrintAtlas',
             VERSION: '1.3.0',
-            FORMAT: 'pdf',
+            FORMAT: format || 'pdf',
             EXCEPTION: 'application/vnd.ogc.se_inimage',
             TRANSPARENT: true,
             DPI: 100,
             TEMPLATE: templateName,
             LAYER: this._layerConfig?.shortname || this._layerConfig?.name,
-            EXP_FILTER: '$id IN ('+ this._fid +')',
+            EXP_FILTER: '$id IN ('+ escapeFeatureId(this._fid) +')',
         };
 
         // Custom labels
