@@ -18,7 +18,7 @@ test.describe('Print', () => {
         await expect(page.locator('#print-scale > option')).toHaveCount(6);
         await expect(page.locator('#print-scale > option')).toContainText(['500,000', '250,000', '100,000', '50,000', '25,000', '10,000']);
         // Templates
-        await expect(page.locator('#print-template > option')).toHaveCount(2);
+        await expect(page.locator('#print-template > option')).toHaveCount(3);
         await expect(page.locator('#print-template > option')).toContainText(['print_labels', 'print_map']);
 
         // Test `print_labels` template
