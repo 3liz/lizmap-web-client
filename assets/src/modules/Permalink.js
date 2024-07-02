@@ -207,10 +207,10 @@ export default class Permalink {
         const inputEmbedPermalink = document.getElementById('input-embed-permalink');
 
         if (inputSharePermalink) {
-            inputSharePermalink.value = window.location.href;
+            inputSharePermalink.value = window.location.href + this._hash;
         }
         if (permalink) {
-            permalink.href = window.location.href;
+            permalink.href = window.location.href + this._hash;
         }
         if (selectEmbedPermalink) {
             const iframeSize = selectEmbedPermalink.value;

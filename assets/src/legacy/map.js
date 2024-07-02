@@ -668,6 +668,9 @@ window.lizMap = function() {
     // get projection
         var proj = config.options.projection;
         var projection = new OpenLayers.Projection(proj.ref);
+        var proj4326 = new OpenLayers.Projection('EPSG:4326');
+        var initialExtentProj = proj4326;
+        var zoomToClosest = false;
 
         // get and define the max extent
         var bbox = config.options.bbox;
@@ -675,15 +678,29 @@ window.lizMap = function() {
 
         var restrictedExtent = extent.scale(3);
 
+        const urlParameters = (new URL(document.location)).searchParams;
+        if (urlParameters.has('bbox')) {
+            let initialExtentParam = urlParameters.get('bbox').split(',');
+            if (initialExtentParam.length === 4) {
+                initialExtent = initialExtentParam;
+            }
+            if (urlParameters.has('crs')) {
+                initialExtentProj = new OpenLayers.Projection(urlParameters.get('crs'));
+            }
+            zoomToClosest = true;
+        }
+
         let initialExtentPermalink = window.location.hash.substring(1).split('|')[0].split(',');
         if (initialExtentPermalink.length === 4) {
             initialExtent = initialExtentPermalink;
+            initialExtentProj = proj4326;
+            zoomToClosest = true;
         }
 
         if(initialExtent){
             initialExtent = new OpenLayers.Bounds(initialExtent);
-            initialExtent.transform(new OpenLayers.Projection('EPSG:4326'), projection);
-        }else{
+            initialExtent.transform(initialExtentProj, projection);
+        } else {
             initialExtent = extent.clone();
             if ( 'initialExtent' in config.options && config.options.initialExtent.length == 4 ) {
                 var initBbox = config.options.initialExtent;
@@ -739,6 +756,7 @@ window.lizMap = function() {
                 ,maxExtent:extent
                 ,restrictedExtent: restrictedExtent
                 ,initialExtent:initialExtent
+                ,zoomToClosest: zoomToClosest
                 ,maxScale: scales.length == 0 ? config.options.minScale : "auto"
                 ,minScale: scales.length == 0 ? config.options.maxScale : "auto"
                 ,numZoomLevels: scales.length == 0 ? config.options.zoomLevelNumber : scales.length
@@ -3805,8 +3823,7 @@ window.lizMap = function() {
                 // initialize the map
                 // Set map extent depending on options
                 if (!map.getCenter()) {
-                    const zoomToClosest = window.location.hash.substring(1).split('|')[0].split(',').length === 4;
-                    map.zoomToExtent(map.initialExtent, zoomToClosest);
+                    map.zoomToExtent(map.initialExtent, map.zoomToClosest);
                 }
 
                 updateContentSize();
