@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://jelix.org/ns/module/1.0">
     <info id="info@3liz.com" name="lizmap" createdate="2011-06-15">
-        <version date="2024-06-06">3.8.0-rc.2</version>
+        <version date="2024-07-03">3.8.0-rc.3</version>
         <label lang="en_US">lizmap</label>
         <description lang="en_US"/>
         <license URL="http://www.mozilla.org/MPL/">Mozilla Public License</license>
-        <copyright>2011-2023 3liz</copyright>
+        <copyright>2011-2024 3liz</copyright>
         <creator name="3liz" email="info@3liz.com" active="true"/>
         <homepageURL>http://www.3liz.com</homepageURL>
     </info>
     <dependencies>
-        <jelix minversion="1.5" maxversion="1.8.*"/>
+        <jelix minversion="1.7.0" maxversion="1.8.*"/>
         <module name="jcommunity"/>
         <module name="admin"/>
     </dependencies>
