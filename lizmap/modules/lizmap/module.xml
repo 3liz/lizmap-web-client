@@ -5,12 +5,12 @@
         <label lang="en_US">lizmap</label>
         <description lang="en_US"/>
         <license URL="http://www.mozilla.org/MPL/">Mozilla Public License</license>
-        <copyright>2011-2023 3liz</copyright>
+        <copyright>2011-2024 3liz</copyright>
         <creator name="3liz" email="info@3liz.com" active="true"/>
         <homepageURL>http://www.3liz.com</homepageURL>
     </info>
     <dependencies>
-        <jelix minversion="1.5" maxversion="1.8.*"/>
+        <jelix minversion="1.7.0" maxversion="1.8.*"/>
         <module name="jcommunity"/>
         <module name="admin"/>
     </dependencies>
