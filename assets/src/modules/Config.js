@@ -18,8 +18,9 @@ import { TooltipLayersConfig } from './config/Tooltip.js';
 import { EditionLayersConfig } from './config/Edition.js';
 import { TimeManagerLayersConfig } from './config/TimeManager.js';
 import { FormFilterConfig } from './config/FormFilter.js';
+import { ThemesConfig } from './config/Theme.js';
 import { DatavizOptionsConfig, DatavizLayersConfig } from './config/Dataviz.js';
-import { buildLayerTreeConfig } from './config/LayerTree.js';
+import { buildLayerTreeConfig, LayerTreeGroupConfig } from './config/LayerTree.js';
 import { buildLayersOrder } from './config/LayersOrder.js';
 
 /**
@@ -59,15 +60,25 @@ export class Config {
         this._hasMetadata = true;
         this._metadata = null;
         this._hasLocateByLayer = true;
+        this._locateByLayer = null;
         this._hasAttributeLayers = true;
+        this._attributeLayers = null;
         this._hasTimemanagerLayers = true;
+        this._timemanagerLayers = null;
         this._hasRelations = true;
         this._hasPrintTemplates = true;
         this._hasTooltipLayers = true;
+        this._tooltipLayers = null;
         this._hasEditionLayers = true;
+        this._editionLayers = null;
         this._hasFormFilterLayers = true;
+        this._formFilterLayers = null;
         this._hasLoginFilteredLayers = true;
+        this._hasThemes = true;
+        this._themes = null;
         this._hasDatavizConfig = true;
+        this._datavizLayers = null;
+        this._datavizOptions = null;
 
         const theConfig = deepFreeze(cfg);
 
@@ -107,7 +118,8 @@ export class Config {
             'tooltipLayers',
             'editionLayers',
             'formFilterLayers',
-            'loginFilteredLayers'
+            'loginFilteredLayers',
+            'themes'
         ];
         for (const prop of optionalConfigProperties) {
             if (!theConfig.hasOwnProperty(prop)
@@ -230,13 +242,13 @@ export class Config {
 
     /**
      * Config locateByLayer
-     * @type {LocateByLayerConfig}
+     * @type {LocateByLayerConfig|null}
      */
     get locateByLayer() {
-        if (this._locateByLayer != null) {
-            return this._locateByLayer;
-        }
         if (this._hasLocateByLayer) {
+            if (this._locateByLayer != null) {
+                return this._locateByLayer;
+            }
             this._locateByLayer = new LocateByLayerConfig(this._theConfig.locateByLayer);
         }
         return this._locateByLayer;
@@ -252,13 +264,13 @@ export class Config {
 
     /**
      * Config attribueLayers
-     * @type {AttributeLayersConfig}
+     * @type {AttributeLayersConfig|null}
      */
     get attributeLayers() {
-        if (this._attributeLayers != null) {
-            return this._attributeLayers;
-        }
         if (this._hasAttributeLayers) {
+            if (this._attributeLayers != null) {
+                return this._attributeLayers;
+            }
             this._attributeLayers = new AttributeLayersConfig(this._theConfig.attributeLayers);
         }
         return this._attributeLayers;
@@ -274,13 +286,13 @@ export class Config {
 
     /**
      * Config timemanagerLayers
-     * @type {AttributeLayersConfig}
+     * @type {AttributeLayersConfig|null}
      */
     get timemanagerLayers() {
-        if (this._timemanagerLayers != null) {
-            return this._timemanagerLayers;
-        }
         if (this._hasTimemanagerLayers) {
+            if (this._timemanagerLayers != null) {
+                return this._timemanagerLayers;
+            }
             this._timemanagerLayers = new TimeManagerLayersConfig(this._theConfig.timemanagerLayers);
         }
         return this._timemanagerLayers;
@@ -312,13 +324,13 @@ export class Config {
 
     /**
      * Config tooltipLayers
-     * @type {TooltipLayersConfig}
+     * @type {TooltipLayersConfig|null}
      */
     get tooltipLayers() {
-        if (this._tooltipLayers != null) {
-            return this._tooltipLayers;
-        }
         if (this._hasTooltipLayers) {
+            if (this._tooltipLayers != null) {
+                return this._tooltipLayers;
+            }
             this._tooltipLayers = new TooltipLayersConfig(this._theConfig.tooltipLayers);
         }
         return this._tooltipLayers;
@@ -334,13 +346,13 @@ export class Config {
 
     /**
      * Config editionLayers
-     * @type {EditionLayersConfig}
+     * @type {EditionLayersConfig|null}
      */
     get editionLayers() {
-        if (this._editionLayers != null) {
-            return this._editionLayers;
-        }
         if (this._hasEditionLayers) {
+            if (this._editionLayers != null) {
+                return this._editionLayers;
+            }
             this._editionLayers = new EditionLayersConfig(this._theConfig.editionLayers);
         }
         return this._editionLayers;
@@ -356,13 +368,13 @@ export class Config {
 
     /**
      * Config formFilterLayers
-     * @type {FormFilterConfig}
+     * @type {FormFilterConfig|null}
      */
     get formFilterLayers() {
-        if (this._formFilterLayers != null) {
-            return this._formFilterLayers;
-        }
         if (this.hasFormFilterLayers) {
+            if (this._formFilterLayers != null) {
+                return this._formFilterLayers;
+            }
             this._formFilterLayers = new FormFilterConfig(this._theConfig.formFilterLayers);
         }
         return this._formFilterLayers;
@@ -374,6 +386,28 @@ export class Config {
      */
     get hasLoginFilteredLayers() {
         return this._hasLoginFilteredLayers;
+    }
+
+    /**
+     * Themes config is defined
+     * @type {boolean}
+     */
+    get hasThemes() {
+        return this._hasThemes;
+    }
+
+    /**
+     * Config themes
+     * @type {ThemesConfig|null}
+     */
+    get themes() {
+        if (this.hasThemes) {
+            if (this._themes != null) {
+                return this._themes;
+            }
+            this._themes = new ThemesConfig(this._theConfig.themes);
+        }
+        return this._themes;
     }
 
     /**
@@ -394,13 +428,13 @@ export class Config {
 
     /**
      * Config datavizLayers
-     * @type {DatavizLayersConfig}
+     * @type {DatavizLayersConfig|null}
      */
     get datavizLayers() {
-        if (this._datavizLayers != null) {
-            return this._datavizLayers;
-        }
         if (this._hasDatavizConfig) {
+            if (this._datavizLayers != null) {
+                return this._datavizLayers;
+            }
             this._datavizLayers = new DatavizLayersConfig(this._theConfig.datavizLayers.layers);
         }
         return this._datavizLayers;
@@ -408,13 +442,13 @@ export class Config {
 
     /**
      * Config datavizOptions
-     * @type {DatavizOptionsConfig}
+     * @type {DatavizOptionsConfig|null}
      */
     get datavizOptions() {
-        if (this._datavizOptions != null) {
-            return this._datavizOptions;
-        }
         if (this._hasDatavizConfig) {
+            if (this._datavizOptions != null) {
+                return this._datavizOptions;
+            }
             this._datavizOptions = new DatavizOptionsConfig(this._theConfig.datavizLayers.dataviz);
         }
         return this._datavizOptions;

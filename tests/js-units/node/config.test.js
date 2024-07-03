@@ -12,6 +12,7 @@ import { MetadataConfig } from '../../../assets/src/modules/config/Metadata.js';
 import { LocateByLayerConfig } from '../../../assets/src/modules/config/Locate.js';
 import { AttributeLayersConfig } from '../../../assets/src/modules/config/AttributeTable.js';
 import { TooltipLayersConfig } from '../../../assets/src/modules/config/Tooltip.js';
+import { ThemesConfig } from '../../../assets/src/modules/config/Theme.js';
 import { DatavizLayersConfig, DatavizOptionsConfig } from '../../../assets/src/modules/config/Dataviz.js';
 
 
@@ -114,16 +115,18 @@ describe('Config', function () {
         expect(initialConfig.hasAttributeLayers).to.be.true
         expect(initialConfig.attributeLayers).to.be.instanceOf(AttributeLayersConfig)
         expect(initialConfig.hasTimemanagerLayers).to.be.false
-        expect(initialConfig.timemanagerLayers).to.be.undefined
+        expect(initialConfig.timemanagerLayers).to.be.null
         expect(initialConfig.hasRelations).to.be.true
         expect(initialConfig.hasPrintTemplates).to.be.true
         expect(initialConfig.hasTooltipLayers).to.be.true
         expect(initialConfig.tooltipLayers).to.be.instanceOf(TooltipLayersConfig)
         expect(initialConfig.hasEditionLayers).to.be.false
-        expect(initialConfig.editionLayers).to.be.undefined
+        expect(initialConfig.editionLayers).to.be.null
         expect(initialConfig.hasFormFilterLayers).to.be.false
-        expect(initialConfig.formFilterLayers).to.be.undefined
+        expect(initialConfig.formFilterLayers).to.be.null
         expect(initialConfig.hasLoginFilteredLayers).to.be.false
+        expect(initialConfig.hasThemes).to.be.true
+        expect(initialConfig.themes).to.be.instanceOf(ThemesConfig)
         expect(initialConfig.datavizLocale).to.be.eq('fr_FR')
         expect(initialConfig.hasDatavizConfig).to.be.true
         expect(initialConfig.datavizLayers).to.be.instanceOf(DatavizLayersConfig)
