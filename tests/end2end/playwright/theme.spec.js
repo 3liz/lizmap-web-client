@@ -1,10 +1,11 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+const { gotoMap } = require('./globals')
 
 test.describe('Theme', () => {
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=theme';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page)
     });
 
     test('must display theme1 at startup', async ({ page }) => {
@@ -53,17 +54,14 @@ test.describe('Theme', () => {
 
         // The url has been updated
         const url = new URL(page.url());
-// TODO be fixed QGIS ≥ 3.34, works with QGIS < 3.34
-//        await expect(url.hash).not.toHaveLength(0);
+        await expect(url.hash).not.toHaveLength(0);
         // The decoded hash is
         // #3.730872,43.540386,4.017985,43.679557
         // |Les%20quartiers|style2|1
         // |style2
         // |1
-// TODO be fixed QGIS ≥ 3.34, works with QGIS < 3.34
-//        await expect(url.hash).toMatch(/#3.7308\d+,43.5403\d+,4.0179\d+,43.6795\d+\|/)
-// TODO be fixed QGIS ≥ 3.34, works with QGIS < 3.34
-//        await expect(url.hash).toContain('|Les%20quartiers|style2|1')
+        await expect(url.hash).toMatch(/#3.7308\d+,43.5403\d+,4.0179\d+,43.6795\d+\|/)
+        await expect(url.hash).toContain('|Les%20quartiers|style2|1')
     });
 
     test('must display theme3 when selected', async ({ page }) => {
@@ -98,7 +96,23 @@ test.describe('Theme', () => {
         await page.locator('#theme-selector > ul > li.theme').nth(3).click();
 
         // Baselayer
-// TODO be fixed QGIS ≥ 3.34, works with QGIS < 3.34
-//        await expect(page.locator('lizmap-base-layers select')).toHaveValue('OpenStreetMap');
+        await expect(page.locator('lizmap-base-layers select')).toHaveValue('OpenStreetMap');
     });
+
+    test('mapTheme parameter', async ({ page }) => {
+        await expect(page.locator('#theme-selector > ul > li.theme').first()).toHaveClass(/selected/);
+
+        let url = '/index.php/view/map/?repository=testsrepository&project=theme&mapTheme=theme2';
+        await gotoMap(url, page)
+        await expect(page.locator('#theme-selector > ul > li.theme').nth(1)).toHaveClass(/selected/);
+
+        url = '/index.php/view/map/?repository=testsrepository&project=theme&mapTheme=theme3';
+        await gotoMap(url, page)
+        await expect(page.locator('#theme-selector > ul > li.theme').nth(2)).toHaveClass(/selected/);
+
+        url = '/index.php/view/map/?repository=testsrepository&project=theme&mapTheme=theme4';
+        await gotoMap(url, page)
+        await expect(page.locator('#theme-selector > ul > li.theme').nth(3)).toHaveClass(/selected/);
+    });
+
 });
