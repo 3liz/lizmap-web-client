@@ -3,8 +3,8 @@
 class lizmapModuleUpgrader_replyto extends jInstallerModule
 {
     public $targetVersions = array(
-        //'3.7.0-alpha.2',
-        //'3.6.5',
+        // '3.7.0-alpha.2',
+        // '3.6.5',
         '3.5.14',
         '3.6.14-rc.1',
         '3.7.9-rc.1',
