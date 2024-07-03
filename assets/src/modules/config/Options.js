@@ -32,6 +32,7 @@ const optionalProperties = {
     'use_native_zoom_levels': {type: 'boolean', nullable: true, default: null},
     'hide_numeric_scale_value': {type: 'boolean', default: false},
     'hideGroupCheckbox': { type: 'boolean', default: false },
+    'activateFirstMapTheme': { type: 'boolean', default: false }
 };
 
 /**
@@ -62,6 +63,7 @@ export class OptionsConfig  extends BaseObjectConfig {
      * @param {boolean}  [cfg.use_native_zoom_levels]   - does the map use native zoom levels ?
      * @param {boolean}  [cfg.hide_numeric_scale_value] - does the scale line hide numeric scale value ?
      * @param {boolean}  [cfg.hideGroupCheckbox]        - are groups checkbox hidden ?
+     * @param {boolean}  [cfg.activateFirstMapTheme]              - is first map theme activated ?
      */
     constructor(cfg) {
         if (!cfg || typeof cfg !== "object") {
@@ -233,5 +235,13 @@ export class OptionsConfig  extends BaseObjectConfig {
      */
     get hideGroupCheckbox() {
         return this._hideGroupCheckbox;
+    }
+
+    /**
+     * Activate first map theme
+     * @type {boolean}
+     */
+    get activateFirstMapTheme() {
+        return this._activateFirstMapTheme;
     }
 }
