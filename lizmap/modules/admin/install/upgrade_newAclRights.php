@@ -3,7 +3,7 @@
 class adminModuleUpgrader_newAclRights extends jInstallerModule
 {
     public $targetVersions = array(
-        //'3.6.1-beta.1',
+        // '3.6.1-beta.1',
         '3.6.14-rc.1',
         '3.7.9-rc.1',
         '3.8.0-rc.3',
