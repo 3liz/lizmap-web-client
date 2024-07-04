@@ -206,11 +206,31 @@ export default class Permalink {
         const selectEmbedPermalink = document.getElementById('select-embed-permalink');
         const inputEmbedPermalink = document.getElementById('input-embed-permalink');
 
+        var searchParams = {
+            repository: globalThis['lizUrls'].params.repository,
+            project: globalThis['lizUrls'].params.project
+        };
+        if (this._hash === '') {
+            const urlParameters = (new URL(window.location)).searchParams;
+            if (urlParameters.has('bbox')) {
+                searchParams['bbox'] = urlParameters.get('bbox');
+            }
+            if (urlParameters.has('crs')) {
+                searchParams['crs'] = urlParameters.get('crs');
+            }
+        }
+
+        const permalinkValue = window.location.origin
+            + window.location.pathname
+            + '?'
+            + new URLSearchParams(searchParams)
+            + this._hash;
+
         if (inputSharePermalink) {
-            inputSharePermalink.value = window.location.href;
+            inputSharePermalink.value = permalinkValue;
         }
         if (permalink) {
-            permalink.href = window.location.href;
+            permalink.href = permalinkValue;
         }
         if (selectEmbedPermalink) {
             const iframeSize = selectEmbedPermalink.value;
