@@ -15,6 +15,8 @@
 # Build
 build/
 assets/node_modules/
+assets/dist/
+*.bundle.js
 
 # Config
 lizmap/var/config/lizmapConfig.ini.php
@@ -57,7 +59,6 @@ lizmap/www/assets/js/filter.js
 lizmap/www/assets/js/filter.js.map
 lizmap/www/assets/js/map.js
 lizmap/www/assets/js/map.js.map
-lizmap/www/assets/js/map.js.LICENSE.txt
 lizmap/www/assets/js/popupQgisAtlas.js
 lizmap/www/assets/js/popupQgisAtlas.js.map
 lizmap/www/assets/js/search.js
@@ -91,13 +92,16 @@ docker/*.zip
 .venv
 venv
 
+# Files coming from QGIS
+*_attachments.zip
+*.gpkg-shm
+*.gpkg-wal
+
 # Tests
 tests/units/vendor/
 tests/units/composer.lock
 tests/units/.phpunit.result.cache
 tests/qgis-projects/*
-# Zip file coming with QGIS 3.28
-tests/qgis-projects/*/*_attachments.zip
 !tests/qgis-projects/tests
 !tests/qgis-projects/ProJets 1982*!
 tests/qgis-projects/tests/media
