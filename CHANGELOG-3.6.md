@@ -8,6 +8,8 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.6.14 - 2024-07-04
+
 ### Funders
 
 * *[WPD](https://www.wpd.fr/)*
