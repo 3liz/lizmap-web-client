@@ -1,10 +1,10 @@
-<div id="projects">
+<div id="map-projects">
   {zone 'view~main_view', array('excludedProject'=>$excludedProject)}
   <script>
   {literal}
   $(document).ready(function () {
-    $('#projects .thumbnail a.liz-project-show-desc').each(function(i,e){$(e).attr('onclick','');});
-    $('#projects .thumbnail a.liz-project-show-desc').click(function(){
+    $('#map-projects .thumbnail a.liz-project-show-desc').each(function(i,e){$(e).attr('onclick','');});
+    $('#map-projects .thumbnail a.liz-project-show-desc').click(function(){
         var self = $(this);
         var href = self.attr('href');
         href = href.replace('link-projet-','liz-project-modal-');
@@ -26,7 +26,7 @@
         });
         return false;
     });
-    $('#projects .thumbnail a.liz-project-view').click(function(){
+    $('#map-projects .thumbnail a.liz-project-view').click(function(){
         var self = $(this);
         var desc = self.parent().parent().find('.liz-project-desc');
         var proj = desc.find('span.proj').text();
