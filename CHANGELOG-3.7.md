@@ -10,8 +10,14 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ### Funders
 
-* *[WPD](https://www.wpd.fr/)*
-* *[Terre de Provence Agglomération](https://www.terredeprovence-agglo.com/)*
+* **[Conseil Départemental du Calvados](https://www.calvados.fr)**
+* **[Karum](https://www.karum.fr/)**
+* **[Terre de Provence Agglomération](https://www.terredeprovence-agglo.com/)**
+* **[WPD](https://www.wpd.fr/)**
+
+### Added
+
+* Add `mapTheme` in the URL parameter to open a map with a predefined map theme
 
 ### Changed
 
@@ -21,7 +27,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 ### Fixed
 
 * Popup: respect `popupMaxFeatures` parameter
-* Fix: project-background-color group as startup base layer
+* `default-background-color` on startup with QGIS 3.34
 * Fix Popup is not shown in atlas container
 * Fix: let min/max resolutions be handled by OpenLayers for WMTS
 * Fix cross-site scripting issue with the `theme` parameter
@@ -29,6 +35,10 @@ with some extra keywords: backend, tests, test, translation, funders, important
     * Refresh dropdown selection on change
     * Handle visibility in **theme**
 * Remove CSS height and width (16px) for legends, useful for raster legend, contributions from @Antoviscomi
+* Fix feature filtering when PK is of type string, contribution from @maxencelaurent
+* Fix installation: some upgrades were not launched when upgrading from 3.5
+* Fix activate first map theme
+* Fix printing of the overview map in a QGIS layout
 
 ### Removed
 
