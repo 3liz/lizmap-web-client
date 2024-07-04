@@ -18,7 +18,7 @@ test.describe('Print', () => {
         await expect(page.locator('#print-scale > option')).toHaveCount(6);
         await expect(page.locator('#print-scale > option')).toContainText(['500,000', '250,000', '100,000', '50,000', '25,000', '10,000']);
         // Templates
-        await expect(page.locator('#print-template > option')).toHaveCount(2);
+        await expect(page.locator('#print-template > option')).toHaveCount(3);
         await expect(page.locator('#print-template > option')).toContainText(['print_labels', 'print_map']);
 
         // Test `print_labels` template
@@ -84,6 +84,28 @@ test.describe('Print', () => {
             expect(postData).toContain('map0%3AOPACITIES=255%2C255%2C255');
         });
 
+        await page.locator('#print-launch').click();
+
+        // Test `print_overview` template
+        await page.locator('#print-template').selectOption('2');
+
+        page.once('request', request => {
+            const postData = request.postData();
+            expect(postData).toContain('SERVICE=WMS')
+            expect(postData).toContain('REQUEST=GetPrint')
+            expect(postData).toContain('VERSION=1.3.0')
+            expect(postData).toContain('FORMAT=pdf')
+            expect(postData).toContain('TRANSPARENT=true')
+            expect(postData).toContain('CRS=EPSG%3A2154')
+            expect(postData).toContain('DPI=100')
+            expect(postData).toContain('TEMPLATE=print_overview')
+            expect(postData).toMatch(/map1%3AEXTENT=757949.\d+%2C6270842.\d+%2C783249.\d+%2C6287942.\d+/)
+            expect(postData).toContain('map1%3ASCALE=100000')
+            expect(postData).toContain('map1%3ALAYERS=OpenStreetMap%2Cquartiers%2Csousquartiers')
+            expect(postData).toContain('map1%3ASTYLES=default%2Cd%C3%A9faut%2Cd%C3%A9faut')
+            expect(postData).toContain('map1%3AOPACITIES=255%2C255%2C255')
+            expect(postData).toMatch(/map0%3AEXTENT=761864.\d+%2C6274266.\d+%2C779334.\d+%2C6284518.\d+/);
+        });
         await page.locator('#print-launch').click();
 
         // Redlining with circle
@@ -287,7 +309,7 @@ test.describe('Print - user in group a', () => {
 
     test('Print UI', async ({ page }) => {
         // Templates
-        await expect(page.locator('#print-template > option')).toHaveCount(2);
+        await expect(page.locator('#print-template > option')).toHaveCount(3);
         await expect(page.locator('#print-template > option')).toContainText(['print_labels', 'print_map']);
 
         // Test `print_labels` template
@@ -326,7 +348,7 @@ test.describe('Print - admin', () => {
 
     test('Print UI', async ({ page }) => {
         // Templates
-        await expect(page.locator('#print-template > option')).toHaveCount(3);
+        await expect(page.locator('#print-template > option')).toHaveCount(4);
         await expect(page.locator('#print-template > option')).toContainText(['print_labels', 'print_map', 'print_allowed_groups']);
 
         // Test `print_labels` template
@@ -675,6 +697,4 @@ test.describe('Error while printing', () => {
 
         await expect(page.locator("#message > div:last-child")).toHaveClass(/alert-error/);
     });
-
-
 });
