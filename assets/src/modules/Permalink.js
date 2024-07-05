@@ -301,8 +301,10 @@ export default class Permalink {
         // Saved new hash
         this._hash = '#'+hash;
         // Finally override URL fragment
-        this._ignoreHashChange = true;
-        window.location.hash = hash;
+        if (mainLizmap.initialConfig.options.automatic_permalink) {
+            this._ignoreHashChange = true;
+            window.location.hash = hash;
+        }
 
         this._refreshURLsInPermalinkComponent();
     }
