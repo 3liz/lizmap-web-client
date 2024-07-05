@@ -3144,38 +3144,11 @@ img {
 }
 
 /* Theme switcher */
-#theme-selector button.dropdown-toggle{
-  width: 30px;
-}
-
 #theme-selector .mActionShowAllLayers{
   width: 18px;
   height: 18px;
   background-size: auto 18px;
   background-position: -422px -5px;
-}
-
-#theme-selector .dropdown-menu{
-  min-width: 100px;
-}
-
-#theme-selector .dropdown-menu > li > a{
-  padding: 3px 10px;
-}
-
-#theme-selector li.selected a {
-  font-weight: bold;
-}
-
-#switcher-layers-actions #theme-selector.btn-group > ul {
-  left: 0;
-}
-
-#theme-selector ul.dropdown-menu.dropdown-menu-right{
-  left: auto !important;
-  right: 0px;
-  max-height: 250px;
-  overflow-y: auto;
 }
 
 /* Geolocation */
