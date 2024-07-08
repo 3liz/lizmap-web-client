@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.8.0-rc.2 - 2024-07-08
+
 ### Funders
 
 * **[Faunalia](https://www.faunalia.eu/fr)**, contributions on source code from @mind84
