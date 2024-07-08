@@ -3,6 +3,17 @@ import { test, expect } from '@playwright/test';
 const { gotoMap, reloadMap } = require('./globals')
 
 test.describe('Permalink', () => {
+
+    test.beforeEach(async ({ page }) => {
+        // force automatic permalink
+        await page.route('**/service/getProjectConfig*', async route => {
+            const response = await route.fetch();
+            const json = await response.json();
+            json.options['automatic_permalink'] = true;
+            await route.fulfill({ response, json });
+        });
+    });
+
     test('Hash changes when map center is changed', async ({ page }) => {
         await gotoMap('/index.php/view/map?repository=testsrepository&project=layer_legends', page);
         await page.evaluate(() => lizMap.mainLizmap.map.getView().setCenter([770485, 6277813]));
@@ -10,7 +21,17 @@ test.describe('Permalink', () => {
         await page.waitForTimeout(200);
 
         const checked_url = new URL(page.url());
-        await expect(checked_url.hash).toMatch(/#3.5148\d+,43.4213\d+,4.2324\d+,43.7692\d+|layer_legend_single_symbol,layer_legend_categorized,tramway_lines|d%C3%A9faut,d%C3%A9faut,a_single|1,1,1/);
+        await expect(checked_url.hash).toMatch(/#3.5148\d+,43.4213\d+,4.2324\d+,43.7692\d+|/)
+        await expect(checked_url.hash).toContain('layer_legend_single_symbol,layer_legend_categorized,layer_legend_ruled,tramway_lines|d%C3%A9faut,d%C3%A9faut,d%C3%A9faut,a_single|1,1,1,1');
+
+        // Check Permalink tool
+        await page.locator('#button-permaLink').click();
+        const share_value = await page.locator('#input-share-permalink').inputValue();
+        const share_url = new URL(share_value);
+        await expect(share_url.pathname).toBe('/index.php/view/map')
+        await expect(share_url.search).toBe('?repository=testsrepository&project=layer_legends')
+        await expect(share_url.hash).toMatch(/#3.5148\d+,43.4213\d+,4.2324\d+,43.7692\d+|/)
+        await expect(share_url.hash).toContain('|layer_legend_single_symbol,layer_legend_categorized,layer_legend_ruled,tramway_lines|d%C3%A9faut,d%C3%A9faut,d%C3%A9faut,a_single|1,1,1,1')
     });
 
     test('UI according to permalink parameters', async ({ page }) => {
@@ -506,6 +527,128 @@ test.describe('Permalink', () => {
         const url = baseUrl + '#' + bbox + '|' + layers + '|' + styles + '|' + opacities;
         await gotoMap(url, page);
     });
+
+});
+
+test.describe('Automatic permalink disabled', () => {
+
+    test.beforeEach(async ({ page }) => {
+        // disable automatic permalink
+        await page.route('**/service/getProjectConfig*', async route => {
+            const response = await route.fetch();
+            const json = await response.json();
+            json.options['automatic_permalink'] = false;
+            await route.fulfill({ response, json });
+        });
+    });
+
+    test('Hash does not change when map center is changed', async ({ page }) => {
+        await gotoMap('/index.php/view/map?repository=testsrepository&project=layer_legends', page);
+        await page.evaluate(() => lizMap.mainLizmap.map.getView().setCenter([770485, 6277813]));
+
+        await page.waitForTimeout(200);
+
+        const checked_url = new URL(page.url());
+        await expect(checked_url.hash).toHaveLength(0);
+
+        // Check Permalink tool
+        await page.locator('#button-permaLink').click();
+        const share_value = await page.locator('#input-share-permalink').inputValue();
+        const share_url = new URL(share_value);
+        await expect(share_url.pathname).toBe('/index.php/view/map')
+        await expect(share_url.search).toBe('?repository=testsrepository&project=layer_legends')
+        await expect(share_url.hash).toMatch(/#3.5148\d+,43.4213\d+,4.2324\d+,43.7692\d+|/)
+        await expect(share_url.hash).toContain('|layer_legend_single_symbol,layer_legend_categorized,layer_legend_ruled,tramway_lines|d%C3%A9faut,d%C3%A9faut,d%C3%A9faut,a_single|1,1,1,1')
+    });
+
+    test('UI according to permalink parameters', async ({ page }) => {
+        const baseUrl = '/index.php/view/map?repository=testsrepository&project=permalink'
+        const bbox = '3.7980645260916805,43.59756940064654,3.904383263124536,43.672963842067254'
+        const layers = 'sousquartiers,Les%20quartiers%20%C3%A0%20Montpellier'
+        const styles = 'red,d%C3%A9faut'
+        const opacities = '0.6,0.8'
+        const url = baseUrl + '#' + bbox + '|' + layers + '|' + styles + '|' + opacities;
+        await gotoMap(url, page);
+
+        // Visibility
+        await expect(page.getByTestId('sousquartiers').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('Les quartiers à Montpellier').locator('> div input')).toBeChecked();
+
+        // Style and opacity
+        await page.getByTestId('sousquartiers').locator('.icon-info-sign').click({ force: true });
+        await expect(page.locator('#sub-dock select.styleLayer')).toHaveValue('red');
+        await expect(page.locator('#sub-dock .btn-opacity-layer.active')).toHaveText('60');
+
+        await page.getByTestId('Les quartiers à Montpellier').locator('.icon-info-sign').click({ force: true });
+        await expect(page.locator('#sub-dock .btn-opacity-layer.active')).toHaveText('80');
+        await page.getByRole('button', { name: 'Close' }).click();
+
+        // The url does not change
+        const checked_url = new URL(page.url());
+        await expect(checked_url.hash).not.toHaveLength(0);
+        // The decoded hash is
+        // #3.7980645260916805,43.59756940064654,3.904383263124536,43.672963842067254
+        // |sousquartiers,Les%20quartiers%20%C3%A0%20Montpellier
+        // |red,d%C3%A9faut
+        // |0.6,0.8
+        await expect(checked_url.hash).toMatch(/#3.798064\d+,43.597569\d+,3.904383\d+,43.672963\d+\|/)
+        await expect(checked_url.hash).toContain('|sousquartiers,Les%20quartiers%20%C3%A0%20Montpellier|red,d%C3%A9faut|0.6,0.8')
+
+        // Check Permalink tool
+        await page.locator('#button-permaLink').click();
+        const share_value = await page.locator('#input-share-permalink').inputValue();
+        const share_url = new URL(share_value);
+        await expect(share_url.pathname).toBe('/index.php/view/map')
+        await expect(share_url.search).toBe('?repository=testsrepository&project=permalink')
+        await expect(share_url.hash).toMatch(/#3.798064\d+,43.597569\d+,3.904383\d+,43.672963\d+\|/)
+        await expect(share_url.hash).toContain('|sousquartiers,Les%20quartiers%20%C3%A0%20Montpellier|red,d%C3%A9faut|0.6,0.8')
+    });
+
+    test('Hash does not change when changing layers', async ({ page }) => {
+        const baseUrl = '/index.php/view/map?repository=testsrepository&project=layer_legends'
+        await gotoMap(baseUrl, page);
+
+        // Initial url has no hash
+        let url = new URL(page.url());
+        await expect(url.hash).toHaveLength(0);
+
+        // Set Group as layer visibility
+        await expect(page.getByTestId('Group as layer').locator('> div input')).not.toBeChecked();
+        await page.getByLabel('Group as layer').check();
+        // The url has not been updated with an hash
+        url = new URL(page.url());
+        await expect(url.hash).toHaveLength(0);
+
+        // Change the tramway_lines style to categorized
+        await page.getByTestId('tramway_lines').locator('.icon-info-sign').click({ force: true });
+        await expect(page.locator('#sub-dock select.styleLayer')).toHaveValue('a_single');
+        await page.locator('#sub-dock').getByRole('combobox').selectOption('categorized');
+        await page.getByRole('button', { name: 'Close' }).click();
+
+        // The url has been updated
+        url = new URL(page.url());
+        await expect(url.hash).toHaveLength(0);
+
+        // Change the layer_legend_single_symbol opacity
+        await page.getByTestId('layer_legend_single_symbol').locator('.icon-info-sign').click({ force: true });
+        await expect(page.locator('#sub-dock .btn-opacity-layer.active')).toHaveText('100');
+        await page.locator('#sub-dock .btn-opacity-layer', { hasText: '60' }).click();
+        await page.getByRole('button', { name: 'Close' }).click();
+
+        // The url has been updated
+        url = new URL(page.url());
+        await expect(url.hash).toHaveLength(0);
+
+        // Check Permalink tool
+        await page.locator('#button-permaLink').click();
+        const share_value = await page.locator('#input-share-permalink').inputValue();
+        const share_url = new URL(share_value);
+        await expect(share_url.pathname).toBe('/index.php/view/map')
+        await expect(share_url.search).toBe('?repository=testsrepository&project=layer_legends')
+        await expect(share_url.hash).toMatch(/#3.45433\d+,43.48926\d+,4.17242\d+,43.8367\d+\|/)
+        await expect(share_url.hash).toContain('|layer_legend_single_symbol,layer_legend_categorized,layer_legend_ruled,tramway_lines,Group%20as%20layer|d%C3%A9faut,d%C3%A9faut,d%C3%A9faut,categorized,|0.6,1,1,1,1')
+    });
+
 });
 
 test.describe('BBox parameter', () => {
