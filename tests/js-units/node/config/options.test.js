@@ -50,6 +50,7 @@ describe('OptionsConfig', function () {
             //"hide_numeric_scale_value": false,
             //"hideGroupCheckbox": false,
             //"activateFirstMapTheme": false,
+            //"automatic_permalink": true,
         })
         expect(opt.hideProject).to.be.eq(true)
 
@@ -74,6 +75,7 @@ describe('OptionsConfig', function () {
         expect(opt.hide_numeric_scale_value).to.be.eq(false)
         expect(opt.hideGroupCheckbox).to.be.eq(false)
         expect(opt.activateFirstMapTheme).to.be.eq(false)
+        expect(opt.automatic_permalink).to.be.eq(true)
         // Default value for multiple mapScales without use_native_zoom_levels defined
         expect(opt.use_native_zoom_levels).to.be.eq(false)
     })

@@ -32,7 +32,8 @@ const optionalProperties = {
     'use_native_zoom_levels': {type: 'boolean', nullable: true, default: null},
     'hide_numeric_scale_value': {type: 'boolean', default: false},
     'hideGroupCheckbox': { type: 'boolean', default: false },
-    'activateFirstMapTheme': { type: 'boolean', default: false }
+    'activateFirstMapTheme': { type: 'boolean', default: false },
+    'automatic_permalink': { type: 'boolean', default: true }
 };
 
 /**
@@ -63,7 +64,8 @@ export class OptionsConfig  extends BaseObjectConfig {
      * @param {boolean}  [cfg.use_native_zoom_levels]   - does the map use native zoom levels ?
      * @param {boolean}  [cfg.hide_numeric_scale_value] - does the scale line hide numeric scale value ?
      * @param {boolean}  [cfg.hideGroupCheckbox]        - are groups checkbox hidden ?
-     * @param {boolean}  [cfg.activateFirstMapTheme]              - is first map theme activated ?
+     * @param {boolean}  [cfg.activateFirstMapTheme]    - is first map theme activated ?
+     * @param {boolean}  [cfg.automatic_permalink]      - is automatic permalink activated ?
      */
     constructor(cfg) {
         if (!cfg || typeof cfg !== "object") {
@@ -244,4 +246,13 @@ export class OptionsConfig  extends BaseObjectConfig {
     get activateFirstMapTheme() {
         return this._activateFirstMapTheme;
     }
+
+    /**
+     * Activate first map theme
+     * @type {boolean}
+     */
+    get automatic_permalink() {
+        return this._automatic_permalink;
+    }
+
 }
