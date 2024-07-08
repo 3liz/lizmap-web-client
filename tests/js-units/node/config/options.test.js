@@ -74,6 +74,7 @@ describe('OptionsConfig', function () {
         expect(opt.hide_numeric_scale_value).to.be.eq(false)
         expect(opt.hideGroupCheckbox).to.be.eq(false)
         expect(opt.activateFirstMapTheme).to.be.eq(false)
+        expect(opt.automatic_permalink).to.be.eq(false)
         // Default value for multiple mapScales without use_native_zoom_levels defined
         expect(opt.use_native_zoom_levels).to.be.eq(false)
         // Default value for singleWMS option is false (option wms_single_request_for_all_layers not defined)
