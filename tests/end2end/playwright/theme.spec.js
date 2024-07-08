@@ -23,16 +23,9 @@ test.describe('Theme', () => {
         await page.locator('lizmap-treeview > ul > li:nth-child(2) > div.checked.layer > div.node > div > i').click({ force: true });
         expect(await page.locator('#sub-dock select.styleLayer').inputValue()).toBe('style1');
 
-        // The url has been updated
+        // The url has not been updated
         const url = new URL(page.url());
-        await expect(url.hash).not.toHaveLength(1);
-        // The decoded hash is
-        // #3.730872,43.540386,4.017985,43.679557
-        // |group1,Les%20quartiers
-        // |,style1
-        // |1,1
-        await expect(url.hash).toMatch(/#3.7308\d+,43.5403\d+,4.0179\d+,43.6795\d+\|/)
-        await expect(url.hash).toContain('|group1,Les%20quartiers|,style1|1,1')
+        await expect(url.hash).toHaveLength(0);
     });
 
     test('must display theme2 when selected', async ({ page }) => {
@@ -52,16 +45,9 @@ test.describe('Theme', () => {
         await page.locator('lizmap-treeview > ul > li:nth-child(2) > div.checked.layer > div.node > div > i').click({ force: true });
         expect(await page.locator('#sub-dock select.styleLayer').inputValue()).toBe('style2');
 
-        // The url has been updated
+        // The url has not been updated
         const url = new URL(page.url());
-        await expect(url.hash).not.toHaveLength(0);
-        // The decoded hash is
-        // #3.730872,43.540386,4.017985,43.679557
-        // |Les%20quartiers|style2|1
-        // |style2
-        // |1
-        await expect(url.hash).toMatch(/#3.7308\d+,43.5403\d+,4.0179\d+,43.6795\d+\|/)
-        await expect(url.hash).toContain('|Les%20quartiers|style2|1')
+        await expect(url.hash).toHaveLength(0);
     });
 
     test('must display theme3 when selected', async ({ page }) => {
@@ -113,6 +99,55 @@ test.describe('Theme', () => {
         url = '/index.php/view/map/?repository=testsrepository&project=theme&mapTheme=theme4';
         await gotoMap(url, page)
         await expect(page.locator('#theme-selector > ul > li.theme').nth(3)).toHaveClass(/selected/);
+    });
+
+});
+
+test.describe('Theme and automatic permalink', () => {
+
+    test.beforeEach(async ({ page }) => {
+        // force automatic permalink
+        await page.route('**/service/getProjectConfig*', async route => {
+            const response = await route.fetch();
+            const json = await response.json();
+            json.options['automatic_permalink'] = true;
+            await route.fulfill({ response, json });
+        });
+
+        const url = '/index.php/view/map/?repository=testsrepository&project=theme';
+        await gotoMap(url, page)
+    });
+
+    test('must display theme1 at startup', async ({ page }) => {
+        await expect(page.locator('#theme-selector > ul > li.theme').first()).toHaveClass(/selected/);
+
+        // The url has been updated
+        const url = new URL(page.url());
+        await expect(url.hash).not.toHaveLength(0);
+        // The decoded hash is
+        // #3.730872,43.540386,4.017985,43.679557
+        // |group1,Les%20quartiers
+        // |,style1
+        // |1,1
+        await expect(url.hash).toMatch(/#3.7308\d+,43.5403\d+,4.0179\d+,43.6795\d+\|/)
+        await expect(url.hash).toContain('|group1,Les%20quartiers|,style1|1,1')
+    });
+
+    test('must display theme2 when selected', async ({ page }) => {
+        // Select theme2
+        await page.locator('#theme-selector > button').click()
+        await page.locator('#theme-selector > ul > li.theme').nth(1).click();
+
+        // The url has been updated
+        const url = new URL(page.url());
+        await expect(url.hash).not.toHaveLength(0);
+        // The decoded hash is
+        // #3.730872,43.540386,4.017985,43.679557
+        // |Les%20quartiers|style2|1
+        // |style2
+        // |1
+        await expect(url.hash).toMatch(/#3.7308\d+,43.5403\d+,4.0179\d+,43.6795\d+\|/)
+        await expect(url.hash).toContain('|Les%20quartiers|style2|1')
     });
 
 });
