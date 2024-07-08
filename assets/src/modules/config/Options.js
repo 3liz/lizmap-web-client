@@ -33,6 +33,7 @@ const optionalProperties = {
     'hide_numeric_scale_value': {type: 'boolean', default: false},
     'hideGroupCheckbox': { type: 'boolean', default: false },
     'activateFirstMapTheme': { type: 'boolean', default: false },
+    'automatic_permalink': { type: 'boolean', default: true },
     'wms_single_request_for_all_layers' : { type:'boolean', default: false }
 };
 
@@ -65,6 +66,7 @@ export class OptionsConfig  extends BaseObjectConfig {
      * @param {boolean}  [cfg.hide_numeric_scale_value]           - does the scale line hide numeric scale value ?
      * @param {boolean}  [cfg.hideGroupCheckbox]                  - are groups checkbox hidden ?
      * @param {boolean}  [cfg.activateFirstMapTheme]              - is first map theme activated ?
+     * @param {boolean}  [cfg.automatic_permalink]                - is automatic permalink activated ?
      * @param {boolean}  [cfg.wms_single_request_for_all_layers]  - are layers loaded as single WMS image ?
      */
     constructor(cfg) {
@@ -245,6 +247,14 @@ export class OptionsConfig  extends BaseObjectConfig {
      */
     get activateFirstMapTheme() {
         return this._activateFirstMapTheme;
+    }
+
+    /**
+     * Activate first map theme
+     * @type {boolean}
+     */
+    get automatic_permalink() {
+        return this._automatic_permalink;
     }
 
     /**
