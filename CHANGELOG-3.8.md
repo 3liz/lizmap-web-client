@@ -12,6 +12,10 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 * **[Faunalia](https://www.faunalia.eu/fr)**, contributions on source code from @mind84
 
+### Added
+
+* Option to disable the automatic permalink in the URL
+
 ### Changed
 
 * UI: Double-clicking on a group in the legend is now propagated to child items
@@ -20,6 +24,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ### Fixed
 
+* Fix feature filtering when PK is of type string, contribution from @maxencelaurent
 * Popup: respect `popupMaxFeatures` parameter
 * Fix cross-site scripting issue with the `theme` parameter
 * Use proper OpenLayers class for layers issued by Google Maps, contribution from @mind84
