@@ -33,7 +33,7 @@ const optionalProperties = {
     'hide_numeric_scale_value': {type: 'boolean', default: false},
     'hideGroupCheckbox': { type: 'boolean', default: false },
     'activateFirstMapTheme': { type: 'boolean', default: false },
-    'automatic_permalink': { type: 'boolean', default: true },
+    'automatic_permalink': { type: 'boolean', default: false },
     'wms_single_request_for_all_layers' : { type:'boolean', default: false }
 };
 
