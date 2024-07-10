@@ -1033,6 +1033,8 @@ export default class Digitizing {
             } else {
                 localStorage.removeItem(this._repoAndProjectString + '_' + this._context + '_drawLayer');
             }
+        } else {
+            localStorage.removeItem(this._repoAndProjectString + '_' + this._context + '_drawLayer');
         }
     }
 
@@ -1101,8 +1103,8 @@ export default class Digitizing {
             }
 
             // Draw features
-            this._drawSource.addFeatures(loadedFeatures);
             this._isSaved = (loadedFeatures.length > 0);
+            this._drawSource.addFeatures(loadedFeatures);
         }
     }
 

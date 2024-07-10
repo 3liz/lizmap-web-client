@@ -130,7 +130,7 @@ export default class Digitizing extends HTMLElement {
                     <path d="M7 16l-1.5 -1.5"></path>
                 </svg>
             </button>
-            <button type="button" class="digitizing-save btn ${mainLizmap.digitizing.isSaved ? 'active btn-primary' : ''} ${this.hasAttribute('save') ? '' : 'hide'}" @click=${()=> mainLizmap.digitizing.toggleSave()} data-original-title="${lizDict['digitizing.toolbar.save']}">
+            <button type="button" class="digitizing-save btn ${mainLizmap.digitizing.isSaved ? 'active btn-primary' : ''} ${this.hasAttribute('save') ? '' : 'hide'}" @click=${()=> this.toggleSave()} data-original-title="${lizDict['digitizing.toolbar.save']}">
                 <svg>
                     <use xlink:href="#save" />
                 </svg>
@@ -172,6 +172,9 @@ export default class Digitizing extends HTMLElement {
                     </label>
                     <span class="file-name"></span>
                 </div>
+            </div>
+            <div class="digitizing-state hide">
+                <div class="digitizing-save-state hide">${lizDict['digitizing.toolbar.save.state']}</div>
             </div>
             <div class="digitizing-constraints ${mainLizmap.digitizing.hasConstraintsPanelVisible ? '' : 'hide'}">
                 <details>
@@ -231,5 +234,18 @@ export default class Digitizing extends HTMLElement {
             return false;
         }
         mainLizmap.digitizing.eraseAll();
+    }
+
+    toggleSave() {
+        mainLizmap.digitizing.toggleSave();
+        if (mainLizmap.digitizing.isSaved) {
+            this.querySelector('button.digitizing-save').dataset.originalTitle = lizDict['digitizing.toolbar.save.remove'];
+            this.querySelector('div.digitizing-save-state').classList.remove('hide');
+            this.querySelector('div.digitizing-state').classList.remove('hide');
+        } else {
+            this.querySelector('button.digitizing-save').dataset.originalTitle = lizDict['digitizing.toolbar.save'];
+            this.querySelector('div.digitizing-save-state').classList.add('hide');
+            this.querySelector('div.digitizing-state').classList.add('hide');
+        }
     }
 }
