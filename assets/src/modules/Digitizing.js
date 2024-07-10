@@ -577,7 +577,7 @@ export default class Digitizing {
                         hitTolerance: 8
                     });
                     if(features.length){
-                        if (!confirm(lizDict['digitizing.confirme.erase'])) {
+                        if (!confirm(lizDict['digitizing.confirm.erase'])) {
                             return false;
                         }
 
