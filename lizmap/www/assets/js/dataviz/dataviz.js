@@ -121,8 +121,6 @@ let lizDataviz = function () {
             // initialize plot info
             dv.plots[i] = { 'json': null, 'filter': null, 'show_plot': true, 'cache': null, 'data_fetched': false };
             if (!(optionToBoolean(dv.config.layers[i]['only_show_child']))) {
-                let plotContainerId = `dataviz_plot_${i}`;
-
                 // Add plot container
                 addPlotContainer(i);
             }
@@ -143,6 +141,10 @@ let lizDataviz = function () {
             if (!(optionToBoolean(dv.config.layers[i]['only_show_child']))) {
                 // Get the plot data and display it if the container is visible
                 let elem = document.getElementById(plotContainerId);
+                // skip the element if it does not exist
+                if (elem === null) {
+                    continue;
+                }
                 if (isInViewport(elem) || getViewPercentage(elem) > 0) {
                     getPlot(i, null, plotContainerId);
                 }
