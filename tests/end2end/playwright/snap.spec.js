@@ -24,12 +24,12 @@ test.describe('Snap on edition', () => {
         await expect(page.getByLabel('id')).toBeVisible()
 
         // move to digitization panel
-        await page.getByRole('link', { name: 'Digitization' }).click()
+        await page.getByRole('tab', { name: 'Digitization' }).click()
 
         let getSnappingPointFeatureRquestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('GetFeature') === true && request.postData()?.includes('form_edition_snap_point') === true);
         let getSnappingPointDescribeFeatureRquestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('DescribeFeatureType') === true && request.postData()?.includes('form_edition_snap_point') === true);
 
-        //activate snapping
+        // activate snapping
         await page.getByRole('button', { name: 'Start' }).click();
 
         const allSnapPointResponses = await Promise.all([getSnappingPointFeatureRquestPromise, getSnappingPointDescribeFeatureRquestPromise])
