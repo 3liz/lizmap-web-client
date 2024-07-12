@@ -1844,7 +1844,7 @@ var lizEdition = function() {
         $('#edition-waiter').hide();
 
         // Activate edition dock if not yet
-        $('li.edition:not(.active) #button-edition').click();
+        document.querySelector('li.edition:not(.active) #button-edition')?.click();
 
         // Hide popup
         if( $('#liz_layer_popup_close').length )
