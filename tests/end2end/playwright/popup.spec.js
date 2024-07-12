@@ -250,7 +250,7 @@ test.describe('Popup', () => {
             }
         });
         await page.waitForTimeout(300);
-        await page.getByRole('link', { name: 'tab2' }).click({ force: true });
+        await page.getByRole('button', { name: 'tab2' }).click({ force: true });
         await expect(page.locator('#popup_dd_1_tab2')).toHaveClass(/active/);
     });
 
