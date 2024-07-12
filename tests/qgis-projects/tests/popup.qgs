@@ -1,4 +1,4 @@
-<qgis projectname="" saveDateTime="2024-06-20T15:19:18" saveUser="nboisteault" saveUserFull="nboisteault" version="3.28.15-Firenze">
+<qgis projectname="" saveDateTime="2024-07-12T12:04:28" saveUser="nboisteault" saveUserFull="nboisteault" version="3.34.8-Prizren">
   <homePath path=""></homePath>
   <title></title>
   <transaction mode="Disabled"></transaction>
@@ -16,6 +16,7 @@
       <geographicflag>false</geographicflag>
     </spatialrefsys>
   </projectCrs>
+  <elevation-shading-renderer combined-method="0" edl-distance="0.5" edl-distance-unit="0" edl-is-active="1" edl-strength="1000" hillshading-is-active="0" hillshading-is-multidirectional="0" hillshading-z-factor="1" is-active="0" light-altitude="45" light-azimuth="315"></elevation-shading-renderer>
   <layer-tree-group>
     <customproperties>
       <Option></Option>
@@ -42,8 +43,8 @@
   </layer-tree-group>
   <snapping-settings enabled="0" intersection-snapping="0" maxScale="0" minScale="0" mode="2" scaleDependencyMode="0" self-snapping="0" tolerance="12" type="1" unit="1">
     <individual-layer-settings>
-      <layer-setting enabled="0" id="dnd_popup_3b9d335a_5491_45fa_8a8b_8dca1ca7ff3b" maxScale="0" minScale="0" tolerance="12" type="1" units="1"></layer-setting>
       <layer-setting enabled="0" id="townhalls_pg_6c85c4bf_fe76_46b1_8445_0041d55d6e76" maxScale="0" minScale="0" tolerance="12" type="1" units="1"></layer-setting>
+      <layer-setting enabled="0" id="dnd_popup_3b9d335a_5491_45fa_8a8b_8dca1ca7ff3b" maxScale="0" minScale="0" tolerance="12" type="1" units="1"></layer-setting>
     </individual-layer-settings>
   </snapping-settings>
   <relations>
@@ -96,7 +97,7 @@
     </legendlayer>
   </legend>
   <mapViewDocks></mapViewDocks>
-  <main-annotation-layer autoRefreshEnabled="0" autoRefreshTime="0" legendPlaceholderImage="" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" type="annotation">
+  <main-annotation-layer autoRefreshMode="Disabled" autoRefreshTime="0" hasScaleBasedVisibilityFlag="0" legendPlaceholderImage="" maxScale="0" minScale="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" styleCategories="AllStyleCategories" type="annotation">
     <id>Annotations_d1322743_072d_4574_a36c_fc1bb48f2b81</id>
     <datasource></datasource>
     <keywordList>
@@ -124,6 +125,7 @@
       <title></title>
       <abstract></abstract>
       <links></links>
+      <dates></dates>
       <fees></fees>
       <encoding></encoding>
       <crs>
@@ -142,12 +144,21 @@
       <extent></extent>
     </resourceMetadata>
     <items></items>
+    <flags>
+      <Identifiable>1</Identifiable>
+      <Removable>1</Removable>
+      <Searchable>1</Searchable>
+      <Private>0</Private>
+    </flags>
+    <customproperties>
+      <Option></Option>
+    </customproperties>
     <layerOpacity>1</layerOpacity>
     <blendMode>0</blendMode>
     <paintEffect></paintEffect>
   </main-annotation-layer>
   <projectlayers>
-    <maplayer autoRefreshEnabled="0" autoRefreshTime="0" geometry="No geometry" hasScaleBasedVisibilityFlag="0" legendPlaceholderImage="" maxScale="0" minScale="1e+08" readOnly="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" styleCategories="AllStyleCategories" type="vector" wkbType="NoGeometry">
+    <maplayer autoRefreshMode="Disabled" autoRefreshTime="0" geometry="No geometry" hasScaleBasedVisibilityFlag="0" legendPlaceholderImage="" maxScale="0" minScale="1e+08" readOnly="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" styleCategories="AllStyleCategories" type="vector" wkbType="NoGeometry">
       <id>children_layer_54bd162b_36b9_478e_811a_f56e9a15c36c</id>
       <datasource>service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table="tests_projects"."children_layer"</datasource>
       <shortname>children_layer_shortname</shortname>
@@ -185,6 +196,7 @@
           <role></role>
         </contact>
         <links></links>
+        <dates></dates>
         <fees></fees>
         <encoding></encoding>
         <crs>
@@ -249,7 +261,7 @@
                 <Option name="type" type="QString" value="collection"></Option>
               </Option>
             </data_defined_properties>
-            <layer class="SimpleLine" enabled="1" locked="0" pass="0">
+            <layer class="SimpleLine" enabled="1" id="{28b055ef-13b3-43db-825d-02e9cf712554}" locked="0" pass="0">
               <Option type="Map">
                 <Option name="align_dash_pattern" type="QString" value="0"></Option>
                 <Option name="capstyle" type="QString" value="square"></Option>
@@ -298,7 +310,7 @@
                 <Option name="type" type="QString" value="collection"></Option>
               </Option>
             </data_defined_properties>
-            <layer class="SimpleFill" enabled="1" locked="0" pass="0">
+            <layer class="SimpleFill" enabled="1" id="{72c1a732-706c-41ee-b0ed-2dcc5c067e2c}" locked="0" pass="0">
               <Option type="Map">
                 <Option name="border_width_map_unit_scale" type="QString" value="3x:0,0,0,0,0,0"></Option>
                 <Option name="color" type="QString" value="225,89,137,255"></Option>
@@ -331,7 +343,7 @@
                 <Option name="type" type="QString" value="collection"></Option>
               </Option>
             </data_defined_properties>
-            <layer class="SimpleMarker" enabled="1" locked="0" pass="0">
+            <layer class="SimpleMarker" enabled="1" id="{3da81b7a-5ab8-40ec-91a2-8baac6de3f2e}" locked="0" pass="0">
               <Option type="Map">
                 <Option name="angle" type="QString" value="0"></Option>
                 <Option name="cap_style" type="QString" value="square"></Option>
@@ -385,21 +397,21 @@
         </relation>
       </referencedLayers>
       <fieldConfiguration>
-        <field configurationFlags="None" name="id">
+        <field configurationFlags="NoFlag" name="id">
           <editWidget type="TextEdit">
             <config>
               <Option></Option>
             </config>
           </editWidget>
         </field>
-        <field configurationFlags="None" name="parent_id">
+        <field configurationFlags="NoFlag" name="parent_id">
           <editWidget type="RelationReference">
             <config>
               <Option></Option>
             </config>
           </editWidget>
         </field>
-        <field configurationFlags="None" name="comment">
+        <field configurationFlags="NoFlag" name="comment">
           <editWidget type="TextEdit">
             <config>
               <Option></Option>
@@ -412,6 +424,11 @@
         <alias field="parent_id" index="1" name=""></alias>
         <alias field="comment" index="2" name=""></alias>
       </aliases>
+      <splitPolicies>
+        <policy field="id" policy="Duplicate"></policy>
+        <policy field="parent_id" policy="Duplicate"></policy>
+        <policy field="comment" policy="Duplicate"></policy>
+      </splitPolicies>
       <defaults>
         <default applyOnUpdate="0" expression="" field="id"></default>
         <default applyOnUpdate="0" expression="" field="parent_id"></default>
@@ -484,9 +501,9 @@ def my_form_open(dialog, layer, feature):
       <dataDefinedFieldProperties></dataDefinedFieldProperties>
       <widgets></widgets>
       <previewExpression>"comment"</previewExpression>
-      <mapTip></mapTip>
+      <mapTip enabled="1"></mapTip>
     </maplayer>
-    <maplayer autoRefreshEnabled="0" autoRefreshTime="0" geometry="Polygon" hasScaleBasedVisibilityFlag="0" labelsEnabled="0" legendPlaceholderImage="" maxScale="0" minScale="100000000" readOnly="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" simplifyAlgorithm="0" simplifyDrawingHints="1" simplifyDrawingTol="1" simplifyLocal="0" simplifyMaxScale="1" styleCategories="AllStyleCategories" symbologyReferenceScale="-1" type="vector" wkbType="Polygon">
+    <maplayer autoRefreshMode="Disabled" autoRefreshTime="0" geometry="Polygon" hasScaleBasedVisibilityFlag="0" labelsEnabled="0" legendPlaceholderImage="" maxScale="0" minScale="100000000" readOnly="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" simplifyAlgorithm="0" simplifyDrawingHints="1" simplifyDrawingTol="1" simplifyLocal="0" simplifyMaxScale="1" styleCategories="AllStyleCategories" symbologyReferenceScale="-1" type="vector" wkbType="Polygon">
       <extent>
         <xmin>766979.83412669622339308</xmin>
         <ymin>6276756.61590772774070501</ymin>
@@ -526,7 +543,17 @@ def my_form_open(dialog, layer, feature):
         <type>dataset</type>
         <title></title>
         <abstract></abstract>
+        <contact>
+          <name></name>
+          <organization></organization>
+          <position></position>
+          <voice></voice>
+          <fax></fax>
+          <email></email>
+          <role></role>
+        </contact>
         <links></links>
+        <dates></dates>
         <fees></fees>
         <encoding></encoding>
         <crs>
@@ -542,7 +569,15 @@ def my_form_open(dialog, layer, feature):
             <geographicflag>false</geographicflag>
           </spatialrefsys>
         </crs>
-        <extent></extent>
+        <extent>
+          <spatial crs="EPSG:2154" dimensions="2" maxx="-179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368" maxy="-179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368" maxz="0" minx="179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368" miny="179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368" minz="0"></spatial>
+          <temporal>
+            <period>
+              <start></start>
+              <end></end>
+            </period>
+          </temporal>
+        </extent>
       </resourceMetadata>
       <provider encoding="">postgres</provider>
       <vectorjoins></vectorjoins>
@@ -583,7 +618,7 @@ def my_form_open(dialog, layer, feature):
                 <Option name="type" type="QString" value="collection"></Option>
               </Option>
             </data_defined_properties>
-            <layer class="SimpleLine" enabled="1" locked="0" pass="0">
+            <layer class="SimpleLine" enabled="1" id="{21c381b4-3695-42fc-9534-9161cee5fb98}" locked="0" pass="0">
               <Option type="Map">
                 <Option name="align_dash_pattern" type="QString" value="0"></Option>
                 <Option name="capstyle" type="QString" value="square"></Option>
@@ -632,7 +667,7 @@ def my_form_open(dialog, layer, feature):
                 <Option name="type" type="QString" value="collection"></Option>
               </Option>
             </data_defined_properties>
-            <layer class="SimpleFill" enabled="1" locked="0" pass="0">
+            <layer class="SimpleFill" enabled="1" id="{c297256e-f107-4183-9e58-2e1c1fd38738}" locked="0" pass="0">
               <Option type="Map">
                 <Option name="border_width_map_unit_scale" type="QString" value="3x:0,0,0,0,0,0"></Option>
                 <Option name="color" type="QString" value="190,207,80,255"></Option>
@@ -665,7 +700,7 @@ def my_form_open(dialog, layer, feature):
                 <Option name="type" type="QString" value="collection"></Option>
               </Option>
             </data_defined_properties>
-            <layer class="SimpleMarker" enabled="1" locked="0" pass="0">
+            <layer class="SimpleMarker" enabled="1" id="{ef142b38-a219-4791-b300-3f12d5c206b5}" locked="0" pass="0">
               <Option type="Map">
                 <Option name="angle" type="QString" value="0"></Option>
                 <Option name="cap_style" type="QString" value="square"></Option>
@@ -708,7 +743,7 @@ def my_form_open(dialog, layer, feature):
                 <Option name="type" type="QString" value="collection"></Option>
               </Option>
             </data_defined_properties>
-            <layer class="SimpleFill" enabled="1" locked="0" pass="0">
+            <layer class="SimpleFill" enabled="1" id="{e6c24178-a61f-41bd-b63b-0968bc2f97c8}" locked="0" pass="0">
               <Option type="Map">
                 <Option name="border_width_map_unit_scale" type="QString" value="3x:0,0,0,0,0,0"></Option>
                 <Option name="color" type="QString" value="255,158,23,255"></Option>
@@ -735,14 +770,50 @@ def my_form_open(dialog, layer, feature):
         <rotation></rotation>
         <sizescale></sizescale>
       </renderer-v2>
+      <selection mode="Default">
+        <selectionColor invalid="1"></selectionColor>
+        <selectionSymbol>
+          <symbol alpha="1" clip_to_extent="1" force_rhr="0" frame_rate="10" is_animated="0" name="" type="fill">
+            <data_defined_properties>
+              <Option type="Map">
+                <Option name="name" type="QString" value=""></Option>
+                <Option name="properties"></Option>
+                <Option name="type" type="QString" value="collection"></Option>
+              </Option>
+            </data_defined_properties>
+            <layer class="SimpleFill" enabled="1" id="{535fd1c7-ecc7-41b0-8119-35ca6ef1efae}" locked="0" pass="0">
+              <Option type="Map">
+                <Option name="border_width_map_unit_scale" type="QString" value="3x:0,0,0,0,0,0"></Option>
+                <Option name="color" type="QString" value="0,0,255,255"></Option>
+                <Option name="joinstyle" type="QString" value="bevel"></Option>
+                <Option name="offset" type="QString" value="0,0"></Option>
+                <Option name="offset_map_unit_scale" type="QString" value="3x:0,0,0,0,0,0"></Option>
+                <Option name="offset_unit" type="QString" value="MM"></Option>
+                <Option name="outline_color" type="QString" value="35,35,35,255"></Option>
+                <Option name="outline_style" type="QString" value="solid"></Option>
+                <Option name="outline_width" type="QString" value="0.26"></Option>
+                <Option name="outline_width_unit" type="QString" value="MM"></Option>
+                <Option name="style" type="QString" value="solid"></Option>
+              </Option>
+              <data_defined_properties>
+                <Option type="Map">
+                  <Option name="name" type="QString" value=""></Option>
+                  <Option name="properties"></Option>
+                  <Option name="type" type="QString" value="collection"></Option>
+                </Option>
+              </data_defined_properties>
+            </layer>
+          </symbol>
+        </selectionSymbol>
+      </selection>
       <customproperties>
         <Option type="Map">
           <Option name="dualview/previewExpressions" type="List">
             <Option type="QString" value="id"></Option>
           </Option>
           <Option name="embeddedWidgets/count" type="QString" value="0"></Option>
-          <Option name="variableNames" type="invalid"></Option>
-          <Option name="variableValues" type="invalid"></Option>
+          <Option name="variableNames"></Option>
+          <Option name="variableValues"></Option>
         </Option>
       </customproperties>
       <blendMode>0</blendMode>
@@ -761,7 +832,7 @@ def my_form_open(dialog, layer, feature):
                   <Option name="type" type="QString" value="collection"></Option>
                 </Option>
               </data_defined_properties>
-              <layer class="SimpleLine" enabled="1" locked="0" pass="0">
+              <layer class="SimpleLine" enabled="1" id="{2bbc39f1-43df-4651-bb0a-a90a0757a447}" locked="0" pass="0">
                 <Option type="Map">
                   <Option name="align_dash_pattern" type="QString" value="0"></Option>
                   <Option name="capstyle" type="QString" value="square"></Option>
@@ -814,19 +885,25 @@ def my_form_open(dialog, layer, feature):
       </DiagramLayerSettings>
       <geometryOptions geometryPrecision="0" removeDuplicateNodes="0">
         <activeChecks></activeChecks>
-        <checkConfiguration></checkConfiguration>
+        <checkConfiguration type="Map">
+          <Option name="QgsGeometryGapCheck" type="Map">
+            <Option name="allowedGapsBuffer" type="double" value="0"></Option>
+            <Option name="allowedGapsEnabled" type="bool" value="false"></Option>
+            <Option name="allowedGapsLayer" type="QString" value=""></Option>
+          </Option>
+        </checkConfiguration>
       </geometryOptions>
       <legend showLabelLegend="0" type="default-vector"></legend>
       <referencedLayers></referencedLayers>
       <fieldConfiguration>
-        <field configurationFlags="None" name="id">
+        <field configurationFlags="NoFlag" name="id">
           <editWidget type="Hidden">
             <config>
               <Option></Option>
             </config>
           </editWidget>
         </field>
-        <field configurationFlags="None" name="field_tab1">
+        <field configurationFlags="NoFlag" name="field_tab1">
           <editWidget type="TextEdit">
             <config>
               <Option type="Map">
@@ -836,7 +913,7 @@ def my_form_open(dialog, layer, feature):
             </config>
           </editWidget>
         </field>
-        <field configurationFlags="None" name="field_tab2">
+        <field configurationFlags="NoFlag" name="field_tab2">
           <editWidget type="TextEdit">
             <config>
               <Option type="Map">
@@ -852,6 +929,11 @@ def my_form_open(dialog, layer, feature):
         <alias field="field_tab1" index="1" name=""></alias>
         <alias field="field_tab2" index="2" name=""></alias>
       </aliases>
+      <splitPolicies>
+        <policy field="id" policy="Duplicate"></policy>
+        <policy field="field_tab1" policy="Duplicate"></policy>
+        <policy field="field_tab2" policy="Duplicate"></policy>
+      </splitPolicies>
       <defaults>
         <default applyOnUpdate="0" expression="" field="id"></default>
         <default applyOnUpdate="0" expression="" field="field_tab1"></default>
@@ -910,26 +992,26 @@ def my_form_open(dialog, layer, feature):
         <labelStyle labelColor="0,0,0,255" overrideLabelColor="0" overrideLabelFont="0">
           <labelFont bold="0" description="Ubuntu,11,-1,5,50,0,0,0,0,0" italic="0" strikethrough="0" style="" underline="0"></labelFont>
         </labelStyle>
-        <attributeEditorField index="0" name="id" showLabel="1">
+        <attributeEditorField horizontalStretch="0" index="0" name="id" showLabel="1" verticalStretch="0">
           <labelStyle labelColor="0,0,0,255" overrideLabelColor="0" overrideLabelFont="0">
             <labelFont bold="0" description="Ubuntu,11,-1,5,50,0,0,0,0,0" italic="0" strikethrough="0" style="" underline="0"></labelFont>
           </labelStyle>
         </attributeEditorField>
-        <attributeEditorContainer collapsed="0" collapsedExpression="" collapsedExpressionEnabled="0" columnCount="1" groupBox="0" name="tab1" showLabel="1" visibilityExpression="" visibilityExpressionEnabled="0">
+        <attributeEditorContainer collapsed="0" collapsedExpression="" collapsedExpressionEnabled="0" columnCount="1" groupBox="0" horizontalStretch="0" name="tab1" showLabel="1" type="Tab" verticalStretch="0" visibilityExpression="" visibilityExpressionEnabled="0">
           <labelStyle labelColor="0,0,0,255" overrideLabelColor="0" overrideLabelFont="0">
             <labelFont bold="0" description="Ubuntu,11,-1,5,50,0,0,0,0,0" italic="0" strikethrough="0" style="" underline="0"></labelFont>
           </labelStyle>
-          <attributeEditorField index="1" name="field_tab1" showLabel="1">
+          <attributeEditorField horizontalStretch="0" index="1" name="field_tab1" showLabel="1" verticalStretch="0">
             <labelStyle labelColor="0,0,0,255" overrideLabelColor="0" overrideLabelFont="0">
               <labelFont bold="0" description="Ubuntu,11,-1,5,50,0,0,0,0,0" italic="0" strikethrough="0" style="" underline="0"></labelFont>
             </labelStyle>
           </attributeEditorField>
         </attributeEditorContainer>
-        <attributeEditorContainer collapsed="0" collapsedExpression="" collapsedExpressionEnabled="0" columnCount="1" groupBox="0" name="tab2" showLabel="1" visibilityExpression="" visibilityExpressionEnabled="0">
+        <attributeEditorContainer collapsed="0" collapsedExpression="" collapsedExpressionEnabled="0" columnCount="1" groupBox="0" horizontalStretch="0" name="tab2" showLabel="1" type="Tab" verticalStretch="0" visibilityExpression="" visibilityExpressionEnabled="0">
           <labelStyle labelColor="0,0,0,255" overrideLabelColor="0" overrideLabelFont="0">
             <labelFont bold="0" description="Ubuntu,11,-1,5,50,0,0,0,0,0" italic="0" strikethrough="0" style="" underline="0"></labelFont>
           </labelStyle>
-          <attributeEditorField index="2" name="field_tab2" showLabel="1">
+          <attributeEditorField horizontalStretch="0" index="2" name="field_tab2" showLabel="1" verticalStretch="0">
             <labelStyle labelColor="0,0,0,255" overrideLabelColor="0" overrideLabelFont="0">
               <labelFont bold="0" description="Ubuntu,11,-1,5,50,0,0,0,0,0" italic="0" strikethrough="0" style="" underline="0"></labelFont>
             </labelStyle>
@@ -946,18 +1028,22 @@ def my_form_open(dialog, layer, feature):
         <field labelOnTop="0" name="field_tab2"></field>
         <field labelOnTop="0" name="id"></field>
       </labelOnTop>
-      <reuseLastValue></reuseLastValue>
+      <reuseLastValue>
+        <field name="field_tab1" reuseLastValue="0"></field>
+        <field name="field_tab2" reuseLastValue="0"></field>
+        <field name="id" reuseLastValue="0"></field>
+      </reuseLastValue>
       <dataDefinedFieldProperties></dataDefinedFieldProperties>
       <widgets></widgets>
-      <previewExpression>id</previewExpression>
-      <mapTip>&lt;div class="container popup_lizmap_dd" style="width:100%;"&gt;
+      <previewExpression>"id"</previewExpression>
+      <mapTip enabled="1">&lt;div class="container popup_lizmap_dd" style="width:100%;"&gt;
 
 &lt;div class="before-tabs"&gt;
 &lt;/div&gt;&lt;ul class="nav nav-tabs"&gt;
 
-  &lt;li class="active"&gt;&lt;a href="#popup_dd_[% $id %]_tab1" data-toggle="tab"&gt;tab1&lt;/a&gt;&lt;/li&gt;
+  &lt;li class="nav-item active"&gt;&lt;button class="nav-link" data-bs-target="#popup_dd_[% $id %]_tab1" data-bs-toggle="tab"&gt;tab1&lt;/button&gt;&lt;/li&gt;
 
-  &lt;li class=""&gt;&lt;a href="#popup_dd_[% $id %]_tab2" data-toggle="tab"&gt;tab2&lt;/a&gt;&lt;/li&gt;
+  &lt;li class="nav-item"&gt;&lt;button class="nav-link" data-bs-target="#popup_dd_[% $id %]_tab2" data-bs-toggle="tab"&gt;tab2&lt;/button&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;div class="tab-content"&gt;
   &lt;div id="popup_dd_[% $id %]_tab1" class="tab-pane active"&gt;
@@ -1027,7 +1113,7 @@ def my_form_open(dialog, layer, feature):
 &lt;/style&gt;
 </mapTip>
     </maplayer>
-    <maplayer autoRefreshEnabled="0" autoRefreshTime="0" geometry="Point" hasScaleBasedVisibilityFlag="0" labelsEnabled="0" legendPlaceholderImage="" maxScale="0" minScale="100000000" readOnly="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" simplifyAlgorithm="0" simplifyDrawingHints="0" simplifyDrawingTol="1" simplifyLocal="0" simplifyMaxScale="1" styleCategories="AllStyleCategories" symbologyReferenceScale="-1" type="vector" wkbType="Point">
+    <maplayer autoRefreshMode="Disabled" autoRefreshTime="0" geometry="Point" hasScaleBasedVisibilityFlag="0" labelsEnabled="0" legendPlaceholderImage="" maxScale="0" minScale="100000000" readOnly="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" simplifyAlgorithm="0" simplifyDrawingHints="0" simplifyDrawingTol="1" simplifyLocal="0" simplifyMaxScale="1" styleCategories="AllStyleCategories" symbologyReferenceScale="-1" type="vector" wkbType="Point">
       <extent>
         <xmin>763818.78410616668406874</xmin>
         <ymin>6274272.6375590842217207</ymin>
@@ -1077,6 +1163,7 @@ def my_form_open(dialog, layer, feature):
           <role></role>
         </contact>
         <links></links>
+        <dates></dates>
         <fees></fees>
         <encoding></encoding>
         <crs>
@@ -1141,7 +1228,7 @@ def my_form_open(dialog, layer, feature):
                 <Option name="type" type="QString" value="collection"></Option>
               </Option>
             </data_defined_properties>
-            <layer class="SimpleLine" enabled="1" locked="0" pass="0">
+            <layer class="SimpleLine" enabled="1" id="{9e7bccb5-16b8-40d0-9f13-14e73ff0fe92}" locked="0" pass="0">
               <Option type="Map">
                 <Option name="align_dash_pattern" type="QString" value="0"></Option>
                 <Option name="capstyle" type="QString" value="square"></Option>
@@ -1190,7 +1277,7 @@ def my_form_open(dialog, layer, feature):
                 <Option name="type" type="QString" value="collection"></Option>
               </Option>
             </data_defined_properties>
-            <layer class="SimpleFill" enabled="1" locked="0" pass="0">
+            <layer class="SimpleFill" enabled="1" id="{1d14d419-de74-4843-ae84-79bd4133cc6e}" locked="0" pass="0">
               <Option type="Map">
                 <Option name="border_width_map_unit_scale" type="QString" value="3x:0,0,0,0,0,0"></Option>
                 <Option name="color" type="QString" value="183,72,75,255"></Option>
@@ -1223,7 +1310,7 @@ def my_form_open(dialog, layer, feature):
                 <Option name="type" type="QString" value="collection"></Option>
               </Option>
             </data_defined_properties>
-            <layer class="SimpleMarker" enabled="1" locked="0" pass="0">
+            <layer class="SimpleMarker" enabled="1" id="{3bcb1ed9-0415-46c1-bb70-7ad94582f94b}" locked="0" pass="0">
               <Option type="Map">
                 <Option name="angle" type="QString" value="0"></Option>
                 <Option name="cap_style" type="QString" value="square"></Option>
@@ -1266,7 +1353,7 @@ def my_form_open(dialog, layer, feature):
                 <Option name="type" type="QString" value="collection"></Option>
               </Option>
             </data_defined_properties>
-            <layer class="SimpleMarker" enabled="1" locked="0" pass="0">
+            <layer class="SimpleMarker" enabled="1" id="{801cb844-9932-4616-b50e-d7d5b2cf711d}" locked="0" pass="0">
               <Option type="Map">
                 <Option name="angle" type="QString" value="0"></Option>
                 <Option name="cap_style" type="QString" value="square"></Option>
@@ -1301,14 +1388,17 @@ def my_form_open(dialog, layer, feature):
         <rotation></rotation>
         <sizescale></sizescale>
       </renderer-v2>
+      <selection mode="Default">
+        <selectionColor invalid="1"></selectionColor>
+      </selection>
       <customproperties>
         <Option type="Map">
           <Option name="dualview/previewExpressions" type="List">
             <Option type="QString" value="&quot;name&quot;"></Option>
           </Option>
           <Option name="embeddedWidgets/count" type="int" value="0"></Option>
-          <Option name="variableNames"></Option>
-          <Option name="variableValues"></Option>
+          <Option name="variableNames" type="invalid"></Option>
+          <Option name="variableValues" type="invalid"></Option>
         </Option>
       </customproperties>
       <blendMode>0</blendMode>
@@ -1317,6 +1407,7 @@ def my_form_open(dialog, layer, feature):
       <SingleCategoryDiagramRenderer attributeLegend="1" diagramType="Histogram">
         <DiagramCategory backgroundAlpha="255" backgroundColor="#ffffff" barWidth="5" diagramOrientation="Up" direction="0" enabled="0" height="15" labelPlacementMethod="XHeight" lineSizeScale="3x:0,0,0,0,0,0" lineSizeType="MM" maxScaleDenominator="1e+08" minScaleDenominator="0" minimumSize="0" opacity="1" penAlpha="255" penColor="#000000" penWidth="0" rotationOffset="270" scaleBasedVisibility="0" scaleDependency="Area" showAxis="1" sizeScale="3x:0,0,0,0,0,0" sizeType="MM" spacing="5" spacingUnit="MM" spacingUnitScale="3x:0,0,0,0,0,0" width="15">
           <fontProperties bold="0" description="Ubuntu,11,-1,5,50,0,0,0,0,0" italic="0" strikethrough="0" style="" underline="0"></fontProperties>
+          <attribute color="#000000" colorOpacity="1" field="" label=""></attribute>
           <axisSymbol>
             <symbol alpha="1" clip_to_extent="1" force_rhr="0" frame_rate="10" is_animated="0" name="" type="line">
               <data_defined_properties>
@@ -1326,7 +1417,7 @@ def my_form_open(dialog, layer, feature):
                   <Option name="type" type="QString" value="collection"></Option>
                 </Option>
               </data_defined_properties>
-              <layer class="SimpleLine" enabled="1" locked="0" pass="0">
+              <layer class="SimpleLine" enabled="1" id="{f80f21f1-552d-41e0-91dc-18e40d8fe494}" locked="0" pass="0">
                 <Option type="Map">
                   <Option name="align_dash_pattern" type="QString" value="0"></Option>
                   <Option name="capstyle" type="QString" value="square"></Option>
@@ -1384,14 +1475,14 @@ def my_form_open(dialog, layer, feature):
       <legend showLabelLegend="0" type="default-vector"></legend>
       <referencedLayers></referencedLayers>
       <fieldConfiguration>
-        <field configurationFlags="None" name="id">
+        <field configurationFlags="NoFlag" name="id">
           <editWidget type="TextEdit">
             <config>
               <Option></Option>
             </config>
           </editWidget>
         </field>
-        <field configurationFlags="None" name="name">
+        <field configurationFlags="NoFlag" name="name">
           <editWidget type="TextEdit">
             <config>
               <Option></Option>
@@ -1403,6 +1494,10 @@ def my_form_open(dialog, layer, feature):
         <alias field="id" index="0" name=""></alias>
         <alias field="name" index="1" name=""></alias>
       </aliases>
+      <splitPolicies>
+        <policy field="id" policy="Duplicate"></policy>
+        <policy field="name" policy="Duplicate"></policy>
+      </splitPolicies>
       <defaults>
         <default applyOnUpdate="0" expression="" field="id"></default>
         <default applyOnUpdate="0" expression="" field="name"></default>
@@ -1469,7 +1564,7 @@ def my_form_open(dialog, layer, feature):
       <dataDefinedFieldProperties></dataDefinedFieldProperties>
       <widgets></widgets>
       <previewExpression>"name"</previewExpression>
-      <mapTip></mapTip>
+      <mapTip enabled="1"></mapTip>
     </maplayer>
   </projectlayers>
   <layerorder>
@@ -1509,6 +1604,7 @@ def my_form_open(dialog, layer, feature):
       <CandidatesPoint type="int">16</CandidatesPoint>
       <CandidatesPolygon type="int">30</CandidatesPolygon>
       <CandidatesPolygonPerCM type="double">2.5</CandidatesPolygonPerCM>
+      <DrawLabelMetrics type="bool">false</DrawLabelMetrics>
       <DrawRectOnly type="bool">false</DrawRectOnly>
       <DrawUnplaced type="bool">false</DrawUnplaced>
       <PlacementEngineVersion type="int">0</PlacementEngineVersion>
@@ -1538,7 +1634,7 @@ def my_form_open(dialog, layer, feature):
         <value>lizmap_user_groups</value>
       </variableNames>
       <variableValues type="QStringList">
-        <value>intranet</value>
+        <value>testsrepository</value>
         <value></value>
         <value></value>
       </variableValues>
@@ -1640,6 +1736,9 @@ def my_form_open(dialog, layer, feature):
       <role></role>
     </contact>
     <links></links>
+    <dates>
+      <date type="Created" value="2021-04-02T16:06:57"></date>
+    </dates>
     <author></author>
     <creation>2021-04-02T16:06:57</creation>
   </projectMetadata>
@@ -1647,9 +1746,10 @@ def my_form_open(dialog, layer, feature):
   <Layouts></Layouts>
   <mapViewDocks3D></mapViewDocks3D>
   <Bookmarks></Bookmarks>
+  <Sensors></Sensors>
   <ProjectViewSettings UseProjectScales="0" rotation="0">
     <Scales></Scales>
-    <DefaultViewExtent xmax="782487.36938602617010474" xmin="763037.3700411890167743" ymax="6285756.67271297331899405" ymin="6274263.49128193315118551">
+    <DefaultViewExtent xmax="782045.32394637318793684" xmin="763479.4154808419989422" ymax="6285886.84987394418567419" ymin="6274133.31412096228450537">
       <spatialrefsys nativeFormat="Wkt">
         <wkt>PROJCRS["RGF93 v1 / Lambert-93",BASEGEOGCRS["RGF93 v1",DATUM["Reseau Geodesique Francais 1993 v1",ELLIPSOID["GRS 1980",6378137,298.257222101,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4171]],CONVERSION["Lambert-93",METHOD["Lambert Conic Conformal (2SP)",ID["EPSG",9802]],PARAMETER["Latitude of false origin",46.5,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8821]],PARAMETER["Longitude of false origin",3,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8822]],PARAMETER["Latitude of 1st standard parallel",49,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8823]],PARAMETER["Latitude of 2nd standard parallel",44,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8824]],PARAMETER["Easting at false origin",700000,LENGTHUNIT["metre",1],ID["EPSG",8826]],PARAMETER["Northing at false origin",6600000,LENGTHUNIT["metre",1],ID["EPSG",8827]]],CS[Cartesian,2],AXIS["easting (X)",east,ORDER[1],LENGTHUNIT["metre",1]],AXIS["northing (Y)",north,ORDER[2],LENGTHUNIT["metre",1]],USAGE[SCOPE["Engineering survey, topographic mapping."],AREA["France - onshore and offshore, mainland and Corsica."],BBOX[41.15,-9.86,51.56,10.38]],ID["EPSG",2154]]</wkt>
         <proj4>+proj=lcc +lat_0=46.5 +lon_0=3 +lat_1=49 +lat_2=44 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs</proj4>
@@ -1714,4 +1814,7 @@ def my_form_open(dialog, layer, feature):
       </spatialrefsys>
     </CoordinateCustomCrs>
   </ProjectDisplaySettings>
+  <ProjectGpsSettings autoAddTrackVertices="0" autoCommitFeatures="0" destinationFollowsActiveLayer="1" destinationLayer="dnd_popup_3b9d335a_5491_45fa_8a8b_8dca1ca7ff3b" destinationLayerName="dnd_popup" destinationLayerProvider="postgres" destinationLayerSource="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=2154 type=Polygon checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;dnd_popup&quot; (geom)">
+    <timeStampFields></timeStampFields>
+  </ProjectGpsSettings>
 </qgis>
