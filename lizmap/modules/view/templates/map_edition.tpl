@@ -19,12 +19,16 @@
         </form>
 
         <div class="tabbable edition-tabs" style="display: none;">
-            <ul class="nav nav-pills">
-                <li class="active"><a href="#tabform" data-toggle="tab">{@view~edition.tab.form.title@}</a></li>
-                <li><a href="#tabdigitization" data-toggle="tab">{@view~edition.tab.digitization.title@}</a></li>
+            <ul class="nav nav-pills" role="tablist">
+                <li class="nav-item">
+                    <button class="nav-link active" data-bs-target="#tabform" data-bs-toggle="tab" type="button" role="tab">{@view~edition.tab.form.title@}</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-target="#tabdigitization" data-bs-toggle="tab" type="button" role="tab">{@view~edition.tab.digitization.title@}</button>
+                </li>
             </ul>
             <div class="tab-content">
-                <div class="tab-pane active" id="tabform">
+                <div class="tab-pane show active" id="tabform">
                     <div id="edition-form-container">
                     </div>
                     <div id="edition-children-container" style="display:none;">
