@@ -889,6 +889,71 @@ describe('LayerGroupState', function () {
         expect(fond.children[1].children[0].checked).to.be.true
         expect(fond.children[1].children[0].visibility).to.be.true
     })
+
+    it('Group as layer checked', function () {
+        const root = getRootLayerGroupState('layer_legends');
+        expect(root.childrenCount).to.be.eq(6)
+
+        const layer_legend_single_symbol = root.children[0]
+        expect(layer_legend_single_symbol).to.be.instanceOf(LayerVectorState)
+        expect(layer_legend_single_symbol.name).to.be.eq('layer_legend_single_symbol')
+        expect(layer_legend_single_symbol.type)
+            .to.be.eq('layer')
+            .that.be.eq(layer_legend_single_symbol.mapType)
+
+        const layer_legend_categorized = root.children[1]
+        expect(layer_legend_categorized).to.be.instanceOf(LayerVectorState)
+        expect(layer_legend_categorized.name).to.be.eq('layer_legend_categorized')
+        expect(layer_legend_categorized.type)
+            .to.be.eq('layer')
+            .that.be.eq(layer_legend_categorized.mapType)
+
+        const layer_legend_ruled = root.children[2]
+        expect(layer_legend_ruled).to.be.instanceOf(LayerVectorState)
+        expect(layer_legend_ruled.name).to.be.eq('layer_legend_ruled')
+        expect(layer_legend_ruled.type)
+            .to.be.eq('layer')
+            .that.be.eq(layer_legend_ruled.mapType)
+
+        const tramway_lines = root.children[3]
+        expect(tramway_lines).to.be.instanceOf(LayerVectorState)
+        expect(tramway_lines.name).to.be.eq('tramway_lines')
+        expect(tramway_lines.type)
+            .to.be.eq('layer')
+            .that.be.eq(tramway_lines.mapType)
+
+        // A group is checked only if at least 1 child is checked
+        const legend_option_test = root.children[4]
+        expect(legend_option_test).to.be.instanceOf(LayerGroupState)
+        expect(legend_option_test.name).to.be.eq('legend_option_test')
+        expect(legend_option_test.type)
+            .to.be.eq('group')
+            .that.be.eq(legend_option_test.mapType)
+        expect(legend_option_test.groupAsLayer).to.be.false
+        expect(legend_option_test.layerConfig).not.to.be.null
+        expect(legend_option_test.layerConfig.toggled).to.be.true
+        expect(legend_option_test.childrenCount).to.be.eq(3)
+        expect(legend_option_test.children[0]).to.be.instanceOf(LayerVectorState)
+        expect(legend_option_test.children[0].checked).to.be.false
+        expect(legend_option_test.children[1]).to.be.instanceOf(LayerVectorState)
+        expect(legend_option_test.children[1].checked).to.be.false
+        expect(legend_option_test.children[2]).to.be.instanceOf(LayerVectorState)
+        expect(legend_option_test.children[2].checked).to.be.false
+        expect(legend_option_test.checked).to.be.false
+
+        // A group as layer is checked if its config has toggled
+        const group_as_layer = root.children[5]
+        expect(group_as_layer).to.be.instanceOf(LayerGroupState)
+        expect(group_as_layer.name).to.be.eq('Group as layer')
+        expect(group_as_layer.type)
+            .to.be.eq('group')
+            .that.not.be.eq(group_as_layer.mapType)
+        expect(group_as_layer.mapType).to.be.eq('layer')
+        expect(group_as_layer.groupAsLayer).to.be.true
+        expect(group_as_layer.layerConfig).not.to.be.null
+        expect(group_as_layer.layerConfig.toggled).to.be.true
+        expect(group_as_layer.checked).to.be.true
+    })
 })
 
 describe('LayersAndGroupsCollection', function () {
