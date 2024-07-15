@@ -337,12 +337,20 @@ export default class Digitizing {
     }
 
     set context(aContext) {
+        if (this._context == aContext) {
+            return;
+        }
         if (this.featureDrawn) {
             this._contextFeatures[this._context] = this.featureDrawn;
         } else {
             this._contextFeatures[this._context] = null;
         }
         this._isSaved = false;
+        this._measureTooltips.forEach((measureTooltip) => {
+            mainLizmap.map.removeOverlay(measureTooltip[0]);
+            mainLizmap.map.removeOverlay(measureTooltip[1]);
+            this._measureTooltips.delete(measureTooltip);
+        });
         this._drawLayer.getSource().clear();
         this._context = aContext;
         if (this._contextFeatures[this._context]) {
