@@ -1,12 +1,13 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+import { gotoMap } from './globals';
 
 test.describe('Overview', () => {
     test('2154', async ({ page }) => {
         const requestPromise = page.waitForRequest(/GetMap/);
 
         const url = '/index.php/view/map/?repository=testsrepository&project=overview-2154';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page);
 
         const request = await requestPromise;
         const requestUrl = request.url();
@@ -27,7 +28,7 @@ test.describe('Overview', () => {
         const requestPromise = page.waitForRequest(/GetMap/);
 
         const url = '/index.php/view/map/?repository=testsrepository&project=overview-4326';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page);
 
         const request = await requestPromise;
         const requestUrl = request.url();
@@ -48,7 +49,7 @@ test.describe('Overview', () => {
         const requestPromise = page.waitForRequest(/GetMap/);
 
         const url = '/index.php/view/map/?repository=testsrepository&project=overview-3857';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page);
 
         const request = await requestPromise;
         const requestUrl = request.url();

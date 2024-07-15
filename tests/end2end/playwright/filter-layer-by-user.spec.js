@@ -1,11 +1,12 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+import { gotoMap } from './globals';
 
 test.describe('Filter layer data by user - not connected', () => {
 
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=filter_layer_by_user';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page);
 
         // Close dock to access all features on map
         await page.locator('#dock-close').click();
@@ -126,7 +127,7 @@ test.describe('Filter layer data by user - user in group a', () => {
 
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=filter_layer_by_user';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page);
 
         // Close dock to access all features on map
         await page.locator('#dock-close').click();
@@ -251,7 +252,7 @@ test.describe('Filter layer data by user - admin', () => {
 
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=filter_layer_by_user';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page);
 
         // Close dock to access all features on map
         await page.locator('#dock-close').click();
