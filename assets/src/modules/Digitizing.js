@@ -345,7 +345,7 @@ export default class Digitizing {
         } else {
             this._contextFeatures[this._context] = null;
         }
-        this._isSaved = false;
+        this._isSaved = (localStorage.getItem(this._repoAndProjectString + '_' + this._context + '_drawLayer') !== null);
         this._measureTooltips.forEach((measureTooltip) => {
             mainLizmap.map.removeOverlay(measureTooltip[0]);
             mainLizmap.map.removeOverlay(measureTooltip[1]);
@@ -577,7 +577,7 @@ export default class Digitizing {
                         hitTolerance: 8
                     });
                     if(features.length){
-                        if (!confirm(lizDict['digitizing.confirme.erase'])) {
+                        if (!confirm(lizDict['digitizing.confirm.erase'])) {
                             return false;
                         }
 
@@ -990,6 +990,20 @@ export default class Digitizing {
         mainEventDispatcher.dispatch('digitizing.save');
     }
 
+    eraseAll() {
+        this._measureTooltips.forEach((measureTooltip) => {
+            mainLizmap.map.removeOverlay(measureTooltip[0]);
+            mainLizmap.map.removeOverlay(measureTooltip[1]);
+            this._measureTooltips.delete(measureTooltip);
+        });
+        this._drawSource.clear();
+
+        this.saveFeatureDrawn();
+
+        mainEventDispatcher.dispatch('digitizing.erase.all');
+        mainEventDispatcher.dispatch('digitizing.erase');
+    }
+
     /**
      * Save all drawn features in local storage
      */
@@ -1019,6 +1033,8 @@ export default class Digitizing {
             } else {
                 localStorage.removeItem(this._repoAndProjectString + '_' + this._context + '_drawLayer');
             }
+        } else {
+            localStorage.removeItem(this._repoAndProjectString + '_' + this._context + '_drawLayer');
         }
     }
 
@@ -1087,6 +1103,7 @@ export default class Digitizing {
             }
 
             // Draw features
+            this._isSaved = (loadedFeatures.length > 0);
             this._drawSource.addFeatures(loadedFeatures);
         }
     }
