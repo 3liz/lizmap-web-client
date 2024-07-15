@@ -1,5 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+import { gotoMap } from './globals';
 
 test.describe('Single WMS layer', () => {
 
@@ -49,7 +50,7 @@ test.describe('Single WMS layer', () => {
     test('Check opacity', async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=single_wms_image';
 
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page);
 
         // click on layer tree elements to check opacity
         const lizmapTreeView = page.locator('lizmap-treeview > ul  li');
@@ -93,7 +94,7 @@ test.describe('Single WMS layer', () => {
             request.url().includes('LAYERS=single_wms_baselayer%2Csingle_wms_points%2Csingle_wms_points_group%2Csingle_wms_lines_group%2CGroupAsLayer')
         );
 
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page);
 
         await page.getByTestId('single_wms_lines').locator('> div input').click();
         const noPointsReq = await getMapNoPointsPromise;
@@ -190,7 +191,7 @@ test.describe('Single WMS layer', () => {
             request.url().includes('LAYERS=single_wms_baselayer%2Csingle_wms_lines%2Csingle_wms_points%2Csingle_wms_points_group%2Csingle_wms_lines_group%2CGroupAsLayer')
         );
 
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page);
 
         // disable single_wms_lines
         const points = page.getByTestId('single_wms_points')
@@ -212,7 +213,7 @@ test.describe('Single WMS layer', () => {
 
     test('Apply filters on layer, then change layer style', async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=single_wms_image';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page);
 
         let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
 
@@ -301,7 +302,7 @@ test.describe('Single WMS layer', () => {
 
     test('Filter on legend, then apply filter', async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=single_wms_image';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page);
 
         const getLegendFilterPromise = page.waitForRequest(request =>
             request.url().includes('GetMap') &&
@@ -389,7 +390,7 @@ test.describe('Single WMS layer', () => {
 
     test('Switch baselayer', async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=single_wms_image';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page);
 
         const switchBaseLayersReqPromise = page.waitForRequest(request =>
             request.url().includes('GetMap') &&
@@ -415,7 +416,7 @@ test.describe('Single WMS layer', () => {
 
     test('Edit a layer', async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=single_wms_image';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page);
 
         await page.locator('#button-edition').click();
         await page.locator('a#edition-draw').click();
