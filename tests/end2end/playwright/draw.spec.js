@@ -1,11 +1,12 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+const { gotoMap, reloadMap } = require('./globals')
 
 test.describe('Draw', () => {
 
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=draw';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page);
 
         await page.locator('#button-draw').click();
     });
@@ -240,7 +241,7 @@ test.describe('Draw', () => {
         await expect(json_stored).toEqual(the_json);
 
         // Reload
-        await page.reload({ waitUntil: 'networkidle' });
+        await reloadMap(page);
         // Display
         await page.locator('#button-draw').click();
 
@@ -280,11 +281,7 @@ test.describe('Draw', () => {
         await expect(old_stored).toEqual(wkt);
 
         // Reload
-        await page.reload({ waitUntil: 'networkidle' });
-
-        // No error
-        await expect(page.locator('p.error-msg')).toHaveCount(0);
-        await expect(page.locator('#switcher lizmap-treeview ul li')).not.toHaveCount(0);
+        await reloadMap(page);
 
         // The WKT has been drawn
         expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toHaveLength(1);
@@ -329,11 +326,7 @@ test.describe('Draw', () => {
         await expect(old_stored).toEqual(bad_wkt);
 
         // Reload
-        await page.reload({ waitUntil: 'networkidle' });
-
-        // No error
-        await expect(page.locator('p.error-msg')).toHaveCount(0);
-        await expect(page.locator('#switcher lizmap-treeview ul li')).not.toHaveCount(0);
+        await reloadMap(page);
 
         // Not well formed data has been removed
         expect(await page.evaluate(() => localStorage.getItem('testsrepository_draw_drawLayer'))).toBeNull;
