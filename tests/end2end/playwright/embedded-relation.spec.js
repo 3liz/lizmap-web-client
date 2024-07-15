@@ -1,10 +1,11 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+import { gotoMap } from './globals';
 
 test.describe('Display embedded relation in popup', () => {
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=relations_project_embed';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page);
         await page.locator('#dock-close').click();
     });
 
