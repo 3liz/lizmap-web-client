@@ -36,7 +36,7 @@ test.describe('Landing page content', () => {
         await expect(page.locator('#landingPageContentBottom')).toHaveText('Bottom for unauth 1st Bottom for auth 2nd');
 
         // check unauthenticated
-        await userPage.goto('http://localhost:8130/index.php');
+        await userPage.goto('index.php');
 
         await expect(userPage.locator('#landingPageContent')).toHaveText('Top for unauth 2nd');
         await expect(userPage.locator('#landingPageContentBottom')).toHaveText('Bottom for unauth 1st');
@@ -60,7 +60,7 @@ test.describe('Landing page content', () => {
         await expect(page.locator('#landingPageContentBottom')).toHaveText('Bottom only');
 
         // check unauthed
-        await userPage.goto('http://localhost:8130/index.php');
+        await userPage.goto('index.php');
         await expect(userPage.locator('#landingPageContent')).toHaveText('Top unauth only');
         await expect(userPage.locator('#landingPageContentBottom')).toHaveText('Bottom unauth only');
 
