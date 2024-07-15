@@ -10,6 +10,9 @@ test.describe('Permalink', () => {
             const response = await route.fetch();
             const json = await response.json();
             json.options['automatic_permalink'] = true;
+            if ('Group as layer' in json.layers) {
+                json.layers['Group as layer'].toggled = false;
+            }
             await route.fulfill({ response, json });
         });
     });
@@ -538,6 +541,9 @@ test.describe('Automatic permalink disabled', () => {
             const response = await route.fetch();
             const json = await response.json();
             json.options['automatic_permalink'] = false;
+            if ('Group as layer' in json.layers) {
+                json.layers['Group as layer'].toggled = false;
+            }
             await route.fulfill({ response, json });
         });
     });
