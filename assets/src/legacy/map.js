@@ -3013,7 +3013,7 @@ window.lizMap = function() {
         // Create menu icon for activating dock
         var dockli = '';
         dockli+='<li class="'+dname+' nav-'+dtype+'">';
-        dockli+='   <a id="button-'+dname+'" data-bs-toggle="tooltip" data-bs-title="'+dlabel+'" data-placement="right" href="#'+dname+'" data-container="#content">';
+        dockli+='   <a id="button-'+dname+'" data-bs-toggle="tooltip" data-bs-title="'+dlabel+'" data-placement="right" data-dockid="'+dname+'" href="#'+dname+'" data-container="#content">';
         dockli += '       <span class="icon"><i class="' + dicon + ' icon-white"></i></span><span class="menu-title">' + dname +'</span>';
         dockli+='   </a>';
         dockli+='</li>';
@@ -3845,7 +3845,9 @@ window.lizMap = function() {
                         document.querySelectorAll('#mapmenu .nav-minidock').forEach(element => element.classList.remove('active'));
                         document.querySelectorAll('#mini-dock-content > div').forEach(element => element.classList.add('hide'));
                         parentElement.classList.toggle('active', !wasActive);
-                        document.getElementById(dockId).classList.toggle('hide', wasActive);
+                        if (dockId) {
+                            document.getElementById(dockId).classList.toggle('hide', wasActive);
+                        }
 
                         const lizmapEvent = wasActive ? 'minidockclosed' : 'minidockopened';
                         lizMap.events.triggerEvent(lizmapEvent, { 'id': dockId });
@@ -3877,7 +3879,9 @@ window.lizMap = function() {
                         document.querySelectorAll('#mapmenu .nav-dock').forEach(element => element.classList.remove('active'));
                         document.querySelectorAll('#dock-content > div').forEach(element => element.classList.add('hide'));
                         parentElement.classList.toggle('active', !wasActive);
-                        document.getElementById(dockId).classList.toggle('hide', wasActive);
+                        if (dockId) {
+                            document.getElementById(dockId).classList.toggle('hide', wasActive);
+                        }
 
                         const lizmapEvent = wasActive ? 'dockclosed' : 'dockopened';
                         lizMap.events.triggerEvent(lizmapEvent, { 'id': dockId });
