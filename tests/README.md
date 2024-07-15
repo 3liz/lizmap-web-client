@@ -26,7 +26,7 @@ cd lizmap-web-client/tests/
 # and unzip the content in `qgis-server-plugins/` directory
 # Launch Lizmap Web Client with docker compose
 docker compose --env-file .env.windows up
-# You can now go to http://localhost:8130 and test!
+# You can now go to http://localhost:8130 and test
 
 # Later, you can get the latest changes in Lizmap Web Client with:
 git pull
