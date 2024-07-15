@@ -1,6 +1,6 @@
 // @ts-check
-const { test, expect } = require('@playwright/test');
-const { gotoMap } = require('./globals')
+import { test, expect } from '@playwright/test';
+import { gotoMap } from './globals';
 
 test.describe('Base layers', () => {
 

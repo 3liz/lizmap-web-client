@@ -1,6 +1,6 @@
 
-const { test, expect } = require('@playwright/test');
-const { gotoMap } = require('./globals');
+import { test, expect } from '@playwright/test';
+import { gotoMap } from './globals';;
 
 test.describe('Google Maps Baselayers', () => {
     test('Load map with no API Key', async ({ page }) => {

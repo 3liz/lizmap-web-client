@@ -1,6 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-const { gotoMap } = require('./globals')
+import { gotoMap } from './globals';
 
 export async function goBackHomeAfterError(page) {
     await page.getByRole('link', { name: 'Go back to the home page.' }).click();
