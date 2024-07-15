@@ -1,6 +1,6 @@
 // @ts-check
-const { test, expect } = require('@playwright/test');
-const { gotoMap } = require('./globals')
+import { test, expect } from '@playwright/test';
+import { gotoMap } from './globals';
 
 test.describe('Dataviz in popup', () => {
     test('Check lizmap feature toolbar', async ({ page }) => {
@@ -378,4 +378,3 @@ test.describe('Popup max features', () => {
         await expect(page.locator('.lizmapPopupSingleFeature')).toHaveCount(15);
     });
 });
-
