@@ -237,8 +237,8 @@ test.describe('Popup', () => {
             }
         });
         await expect(page.locator('#newOlMap #liz_layer_popup')).toBeVisible();
-        await expect(page.locator('#newOlMap #liz_layer_popup_contentDiv > div > div > div > ul > li.active > a')).toBeVisible();
-        await expect(page.locator('#newOlMap #liz_layer_popup_contentDiv > div > div > div > ul > li:nth-child(2) > a')).toBeVisible();
+        await expect(page.locator('#newOlMap #liz_layer_popup_contentDiv > div > div > div > ul > li > button.active')).toBeVisible();
+        await expect(page.locator('#newOlMap #liz_layer_popup_contentDiv > div > div > div > ul > li:nth-child(2) > button')).toBeVisible();
     });
 
     test('changes popup tab', async ({ page }) => {

@@ -1,4 +1,4 @@
-<qgis projectname="" saveDateTime="2024-07-12T12:04:28" saveUser="nboisteault" saveUserFull="nboisteault" version="3.34.8-Prizren">
+<qgis projectname="" saveDateTime="2024-07-15T10:32:53" saveUser="nboisteault" saveUserFull="nboisteault" version="3.34.8-Prizren">
   <homePath path=""></homePath>
   <title></title>
   <transaction mode="Disabled"></transaction>
@@ -43,8 +43,8 @@
   </layer-tree-group>
   <snapping-settings enabled="0" intersection-snapping="0" maxScale="0" minScale="0" mode="2" scaleDependencyMode="0" self-snapping="0" tolerance="12" type="1" unit="1">
     <individual-layer-settings>
-      <layer-setting enabled="0" id="townhalls_pg_6c85c4bf_fe76_46b1_8445_0041d55d6e76" maxScale="0" minScale="0" tolerance="12" type="1" units="1"></layer-setting>
       <layer-setting enabled="0" id="dnd_popup_3b9d335a_5491_45fa_8a8b_8dca1ca7ff3b" maxScale="0" minScale="0" tolerance="12" type="1" units="1"></layer-setting>
+      <layer-setting enabled="0" id="townhalls_pg_6c85c4bf_fe76_46b1_8445_0041d55d6e76" maxScale="0" minScale="0" tolerance="12" type="1" units="1"></layer-setting>
     </individual-layer-settings>
   </snapping-settings>
   <relations>
@@ -1041,7 +1041,7 @@ def my_form_open(dialog, layer, feature):
 &lt;div class="before-tabs"&gt;
 &lt;/div&gt;&lt;ul class="nav nav-tabs"&gt;
 
-  &lt;li class="nav-item active"&gt;&lt;button class="nav-link" data-bs-target="#popup_dd_[% $id %]_tab1" data-bs-toggle="tab"&gt;tab1&lt;/button&gt;&lt;/li&gt;
+  &lt;li class="nav-item"&gt;&lt;button class="nav-link active" data-bs-target="#popup_dd_[% $id %]_tab1" data-bs-toggle="tab"&gt;tab1&lt;/button&gt;&lt;/li&gt;
 
   &lt;li class="nav-item"&gt;&lt;button class="nav-link" data-bs-target="#popup_dd_[% $id %]_tab2" data-bs-toggle="tab"&gt;tab2&lt;/button&gt;&lt;/li&gt;
 &lt;/ul&gt;
