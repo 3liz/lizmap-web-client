@@ -19,6 +19,7 @@ import '../images/svg/freehand.svg';
 import '../images/svg/pencil.svg';
 import '../images/svg/edit.svg';
 import '../images/svg/eraser.svg';
+import '../images/svg/eraser-all.svg';
 import '../images/svg/save.svg';
 
 import '../images/svg/file-download.svg';
@@ -111,10 +112,15 @@ export default class Digitizing extends HTMLElement {
                     <use xlink:href="#eraser"/>
                 </svg>
             </button>
+            <button type="button" class="digitizing-all btn" ?disabled=${!mainLizmap.digitizing.featureDrawn} @click=${() => this.eraseAll()} data-original-title="${lizDict['digitizing.toolbar.erase.all']}">
+                <svg>
+                    <use xlink:href="#eraser-all"/>
+                </svg>
+            </button>
             <button type="button" class="digitizing-toggle-visibility btn" ?disabled=${!mainLizmap.digitizing.featureDrawn} @click=${() => mainLizmap.digitizing.toggleVisibility()} data-original-title="${lizDict['tree.button.checkbox']}">
                 <i class="icon-eye-${mainLizmap.digitizing.visibility ? 'open' : 'close'}"></i>
             </button>
-            <button type="button" class="digitizing-toggle-measure btn ${mainLizmap.digitizing.hasMeasureVisible ? 'active btn-primary' : ''}" @click=${() => mainLizmap.digitizing.toggleMeasure()} data-original-title="${lizDict['digitizing.toolbar.measure']}">
+            <button type="button" class="digitizing-toggle-measure btn ${mainLizmap.digitizing.hasMeasureVisible ? 'active btn-primary' : ''} ${this.hasAttribute('measure') ? '' : 'hide'}" @click=${() => mainLizmap.digitizing.toggleMeasure()} data-original-title="${lizDict['digitizing.toolbar.measure']}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                     <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                     <path d="M17 3l4 4l-14 14l-4 -4z"></path>
@@ -124,7 +130,7 @@ export default class Digitizing extends HTMLElement {
                     <path d="M7 16l-1.5 -1.5"></path>
                 </svg>
             </button>
-            <button type="button" class="digitizing-save btn ${mainLizmap.digitizing.isSaved ? 'active btn-primary' : ''} ${this.hasAttribute('save') ? '' : 'hide'}" @click=${()=> mainLizmap.digitizing.toggleSave()} data-original-title="${lizDict['digitizing.toolbar.save']}">
+            <button type="button" class="digitizing-save btn ${mainLizmap.digitizing.isSaved ? 'active btn-primary' : ''} ${this.hasAttribute('save') ? '' : 'hide'}" @click=${()=> this.toggleSave()} data-original-title="${lizDict['digitizing.toolbar.save']}">
                 <svg>
                     <use xlink:href="#save" />
                 </svg>
@@ -166,6 +172,9 @@ export default class Digitizing extends HTMLElement {
                     </label>
                     <span class="file-name"></span>
                 </div>
+            </div>
+            <div class="digitizing-state hide">
+                <div class="digitizing-save-state hide">${lizDict['digitizing.toolbar.save.state']}</div>
             </div>
             <div class="digitizing-constraints ${mainLizmap.digitizing.hasConstraintsPanelVisible ? '' : 'hide'}">
                 <details>
@@ -213,10 +222,30 @@ export default class Digitizing extends HTMLElement {
             () => {
                 render(mainTemplate(), this);
             },
-            ['digitizing.featureDrawn', 'digitizing.visibility', 'digitizing.toolSelected', 'digitizing.editionBegins', 'digitizing.editionEnds', 'digitizing.erasingBegins', 'digitizing.erasingEnds', 'digitizing.erase', 'digitizing.drawColor', 'digitizing.save', 'digitizing.measure', 'digitizing.editedFeatureText', 'digitizing.editedFeatureRotation', 'digitizing.editedFeatureScale']
+            ['digitizing.featureDrawn', 'digitizing.visibility', 'digitizing.toolSelected', 'digitizing.editionBegins', 'digitizing.editionEnds', 'digitizing.erasingBegins', 'digitizing.erasingEnds', 'digitizing.erase', 'digitizing.erase.all', 'digitizing.drawColor', 'digitizing.save', 'digitizing.measure', 'digitizing.editedFeatureText', 'digitizing.editedFeatureRotation', 'digitizing.editedFeatureScale']
         );
     }
 
     disconnectedCallback() {
+    }
+
+    eraseAll() {
+        if (!confirm(lizDict['digitizing.confirm.erase.all'])) {
+            return false;
+        }
+        mainLizmap.digitizing.eraseAll();
+    }
+
+    toggleSave() {
+        mainLizmap.digitizing.toggleSave();
+        if (mainLizmap.digitizing.isSaved) {
+            this.querySelector('button.digitizing-save').dataset.originalTitle = lizDict['digitizing.toolbar.save.remove'];
+            this.querySelector('div.digitizing-save-state').classList.remove('hide');
+            this.querySelector('div.digitizing-state').classList.remove('hide');
+        } else {
+            this.querySelector('button.digitizing-save').dataset.originalTitle = lizDict['digitizing.toolbar.save'];
+            this.querySelector('div.digitizing-save-state').classList.add('hide');
+            this.querySelector('div.digitizing-state').classList.add('hide');
+        }
     }
 }

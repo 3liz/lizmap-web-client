@@ -2572,6 +2572,16 @@ input[type="color"].digitizing-color{
   vertical-align: middle;
 }
 
+.digitizing-state{
+  max-height: 100px;
+  overflow: auto;
+  font-size: 0.8em;
+  padding: 5px;
+  font-style: italic;
+  background: lightgray;
+  margin-right: 5%;
+}
+
 .digitizing-constraints input{
   width: 6em;
 }
