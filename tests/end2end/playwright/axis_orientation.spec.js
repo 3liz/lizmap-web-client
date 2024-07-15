@@ -1,6 +1,6 @@
 // @ts-check
 const { test, expect } = require('@playwright/test');
-const { gotoMap } = require('./globals')
+const { gotoMap, digestBuffer } = require('./globals')
 
 test.describe('Axis Orientation', () => {
 
@@ -32,6 +32,12 @@ test.describe('Axis Orientation', () => {
         const contentLength = await getMapResponse?.headerValue('Content-Length');
         expect(parseInt(contentLength ? contentLength : '0')).toBeGreaterThan(5552);
 
+        const getMapBody = await getMapResponse?.body();
+        if (getMapBody) {
+            expect(getMapBody.length).toBeGreaterThan(5552);
+            expect(getMapBody.length).toBeLessThan(112500); // could be 112384 or 112499
+            expect(await digestBuffer(getMapBody.buffer)).toBe('225268cf035599cd66fde2970a73d0d78db63b13');
+        }
 
         // Catch GetTile request;
         let GetTiles = [];
@@ -81,6 +87,14 @@ test.describe('Axis Orientation', () => {
         expect(parseInt(contentLength ? contentLength : '0')).toBeGreaterThan(5552);
         // image size lesser than disorder axis
         expect(parseInt(contentLength ? contentLength : '0')).toBeLessThan(240115);
+
+        const getMapBody = await getMapResponse?.body();
+        if (getMapBody) {
+            expect(getMapBody.length).toBeGreaterThan(5552);
+            expect(getMapBody.length).toBeLessThan(240115);
+            expect(getMapBody.length).toBeLessThan(168650); // could be 168630 or 168641
+            expect(await digestBuffer(getMapBody.buffer)).toBe('71f81b4e902f03350116cf22783de34cf548199d');
+        }
 
         // Catch GetTile request;
         let GetTiles = [];

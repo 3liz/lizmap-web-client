@@ -1,5 +1,6 @@
 // @ts-check
 const { expect } = require('@playwright/test');
+const { subtle } = globalThis.crypto;
 
 async function NoErrors(page) {
     // No error
@@ -67,4 +68,13 @@ export async function reloadMap(page, check = true) {
         // Error
         await CatchErrors(page);
     }
+}
+
+export async function digestBuffer(buff) {
+    const hashBuffer = await subtle.digest('sha-1', buff);
+    const hashArray = Array.from(new Uint8Array(hashBuffer)); // convert buffer to byte array
+    const hashHex = hashArray
+        .map((b) => b.toString(16).padStart(2, "0"))
+        .join(""); // convert bytes to hex string
+    return hashHex;
 }
