@@ -1,5 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+const { gotoMap } = require('./globals')
 
 test.describe('Treeview', () => {
 
@@ -178,7 +179,7 @@ test.describe('Treeview mocked with "Hide checkboxes for groups" option', () => 
         });
 
         const url = '/index.php/view/map/?repository=testsrepository&project=treeview';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page);
 
         await expect(page.locator('lizmap-treeview div.group > input')).toHaveCount(0);
     });

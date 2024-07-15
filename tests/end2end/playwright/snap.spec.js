@@ -1,10 +1,11 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+const { gotoMap } = require('./globals')
 
 test.describe('Snap on edition', () => {
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=form_edition_multilayer_snap';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page);
     });
 
     test('Snap panel functionalities', async ({ page }) => {
