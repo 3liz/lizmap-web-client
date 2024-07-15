@@ -11,6 +11,18 @@ test.describe('Legend tests', () => {
         await gotoMap(url, page)
     });
 
+    test('Tests the legend toggled layers', async ({ page }) => {
+        await expect(page.getByLabel('layer_legend_single_symbol')).toBeChecked();
+        await expect(page.getByLabel('layer_legend_categorized')).toBeChecked();
+        await expect(page.getByLabel('layer_legend_ruled')).toBeChecked();
+        await expect(page.getByLabel('tramway_lines')).toBeChecked();
+        await expect(page.getByLabel('legend_option_test')).not.toBeChecked();
+        await expect(page.getByLabel('expand_at_startup')).not.toBeChecked();
+        await expect(page.getByLabel('disabled')).not.toBeChecked();
+        await expect(page.getByLabel('hide_at_startup')).not.toBeChecked();
+        await expect(page.getByLabel('Group as layer')).toBeChecked();
+    });
+
     test('Tests the legend display option expand/hide/disabled', async ({ page }) => {
         // Show image legend at startup
         await expect(page.getByTestId('expand_at_startup').locator('.expandable')).toHaveClass(/expanded/);

@@ -1224,6 +1224,9 @@ export class LayerGroupState extends LayerItemState {
                 }
             }
         }
+        if (this.groupAsLayer && this.layerConfig) {
+            this._checked = this.layerConfig.toggled;
+        }
         for (const child of this.getChildren()) {
             child.calculateVisibility();
         }
