@@ -1,10 +1,11 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+import { gotoMap } from './globals';
 
 test.describe('Edition of an embedded layer', () => {
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=edition_embed';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page);
         await page.locator('#dock-close').click();
     });
 
