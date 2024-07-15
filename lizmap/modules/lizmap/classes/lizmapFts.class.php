@@ -74,7 +74,7 @@ class lizmapFts
         }
         $sql .= ' )';
         $sql .= '
-        ORDER BY sim DESC
+        ORDER BY sim DESC, item_label
         LIMIT :lim;
         ';
         $this->sql = $sql;
