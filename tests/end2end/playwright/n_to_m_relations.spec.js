@@ -1,10 +1,11 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+import { gotoMap } from './globals';
 
 test.describe('N to M relations', () => {
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=n_to_m_relations';
-        await page.goto(url, { waitUntil: 'networkidle' });
+        await gotoMap(url, page);
     });
 
     test('Attribute table behavior', async ({ page }) => {
