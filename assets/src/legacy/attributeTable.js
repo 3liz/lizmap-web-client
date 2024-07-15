@@ -265,23 +265,14 @@ var lizAttributeTable = function() {
                 );
 
                 // Map events
-                /**
-                 *
-                 */
-                function warnExtent() {
-                    var btitle = lizDict['attributeLayers.toolbar.btn.refresh.table.tooltip.changed'];
-                    btitle += ' ' + lizDict['attributeLayers.toolbar.btn.refresh.table.tooltip'];
-                    $('button.btn-refresh-table')
-                        .attr('data-original-title', btitle)
-                        .addClass('btn-warning')
-                        .tooltip()
-                    ;
-                }
                 if (limitDataToBbox) {
-                    lizMap.map.events.on({
-                        moveend: function () {
-                            warnExtent();
-                        }
+                    lizMap.mainLizmap.map.on('moveend', () => {
+                        let btitle = lizDict['attributeLayers.toolbar.btn.refresh.table.tooltip.changed'];
+                        btitle += ' ' + lizDict['attributeLayers.toolbar.btn.refresh.table.tooltip'];
+                        $('button.btn-refresh-table')
+                            .attr('data-original-title', btitle)
+                            .addClass('btn-warning')
+                            .tooltip();
                     });
                 }
 
@@ -592,7 +583,7 @@ var lizAttributeTable = function() {
                     && config.layers[lname]['geometryType'] != 'unknown'
                 ){
                     // Add button to refresh table
-                    html+= '    <button class="btn-refresh-table btn btn-mini" value="' + cleanName + '" title="'+lizDict['attributeLayers.toolbar.btn.refresh.table.tooltip']+'">'+lizDict['attributeLayers.toolbar.btn.refresh.table.title']+'</button>';
+                    html+= '<button class="btn-refresh-table btn btn-mini" value="' + cleanName + '" title="'+lizDict['attributeLayers.toolbar.btn.refresh.table.tooltip']+'">'+lizDict['attributeLayers.toolbar.btn.refresh.table.title']+'</button>';
 
                 }
 
