@@ -232,6 +232,54 @@ test.describe('Draw', () => {
         expect(await page.locator('#newOlMap').screenshot()).toMatchSnapshot('draw-edition.png');
     });
 
+    test('Erase all', async ({ page }) => {
+        // Polygon
+        await page.locator('#draw').getByRole('link').nth(1).click();
+        await page.locator('.digitizing-polygon > svg').click();
+        await page.locator('#newOlMap').click({
+            position: {
+                x: 290,
+                y: 50
+            }
+        });
+        await page.locator('#newOlMap').click({
+            position: {
+                x: 330,
+                y: 50
+            }
+        });
+
+        await page.locator('#newOlMap').dblclick({
+            position: {
+                x: 330,
+                y: 115
+            }
+        });
+
+        // Box
+        await page.locator('#draw').getByRole('link').nth(1).click();
+        await page.locator('.digitizing-box > svg').click();
+        await page.locator('#newOlMap').click({
+            position: {
+                x: 340,
+                y: 50
+            }
+        });
+        await page.locator('#newOlMap').click({
+            position: {
+                x: 390,
+                y: 115
+            }
+        });
+
+        expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toHaveLength(2);
+
+        page.on('dialog', dialog => dialog.accept());
+        await page.locator('.digitizing-all').click();
+
+        expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toBeNull();
+    });
+
     test('From local storage', async ({ page }) => {
         const the_json = '[{"type":"Polygon","color":"#000000","coords":[[[764321.0416656,6290805.935670358],[767628.3399468632,6290805.935670358],[767628.3399468632,6295105.423436],[764321.0416656,6295105.423436],[764321.0416656,6290805.935670358],[764321.0416656,6290805.935670358]]]}]';
         await page.evaluate(token => localStorage.setItem('testsrepository_draw_draw_drawLayer', token), the_json);
@@ -242,9 +290,10 @@ test.describe('Draw', () => {
         await reloadMap(page);
         // Display
         await page.locator('#button-draw').click();
+        await expect(page.locator('.digitizing-save')).toHaveClass(/active/);
 
         // Clear local storage
-        await page.evaluate(() => localStorage.removeItem('testsrepository_draw_draw_drawLayer'));
+        await page.locator('.digitizing-save').click();
         expect(await page.evaluate(() => localStorage.getItem('testsrepository_draw_draw_drawLayer'))).toBeNull;
 
         // Check the geometry has been drawn
@@ -290,15 +339,17 @@ test.describe('Draw', () => {
 
         // The WKT has been moved to the new storage
         const new_stored = await page.evaluate(() => localStorage.getItem('testsrepository_draw_draw_drawLayer'));
-        await expect(new_stored).toEqual(wkt);
+        await expect(new_stored).not.toBeNull();
+        await expect(new_stored).not.toEqual(wkt);
         expect(await page.evaluate(() => localStorage.getItem('testsrepository_draw_drawLayer'))).toBeNull;
 
         // Save to local storage
         await page.locator('#button-draw').click();
-        await page.locator('.digitizing-save').click();
+        await expect(page.locator('.digitizing-save')).toHaveClass(/active/);
 
         // The JSON has been stored
         const json_stored = await page.evaluate(() => localStorage.getItem('testsrepository_draw_draw_drawLayer'));
+        await expect(new_stored).toEqual(json_stored);
         // '[{"type":"Point","color":"#ff0000","coords":[770737.2003016905,6279832.319974077]}]'
         await expect(json_stored).toContain('Point');
         await expect(json_stored).not.toContain('LineString');
