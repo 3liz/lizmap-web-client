@@ -1,6 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-const { gotoMap, reloadMap } = require('./globals')
+import { gotoMap, reloadMap } from './globals';
 
 test.describe('Permalink', () => {
 

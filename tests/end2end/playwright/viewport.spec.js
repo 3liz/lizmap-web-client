@@ -1,6 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-const { gotoMap } = require('./globals')
+import { gotoMap } from './globals';
 
 test.describe('Viewport devicePixelRatio 1', () => {
     test('Greater than WMS max size', async ({ page }) => {

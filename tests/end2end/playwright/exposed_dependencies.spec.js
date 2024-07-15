@@ -1,6 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-const { gotoMap } = require('./globals')
+import { gotoMap } from './globals';
 
 test.describe('Exposed dependencies', () => {
     test('Dependencies are accessible', async ({ page }) => {
