@@ -119,35 +119,34 @@ test.describe('Theme and automatic permalink', () => {
     });
 
     test('must display theme1 at startup', async ({ page }) => {
-        await expect(page.locator('#theme-selector > ul > li.theme').first()).toHaveClass(/selected/);
+        await expect(page.locator('#theme-selector .dropdown-item').first()).toHaveClass(/active/);
 
         // The url has been updated
         const url = new URL(page.url());
-        await expect(url.hash).not.toHaveLength(0);
+        expect(url.hash).not.toHaveLength(0);
         // The decoded hash is
         // #3.730872,43.540386,4.017985,43.679557
         // |group1,Les%20quartiers
         // |,style1
         // |1,1
-        await expect(url.hash).toMatch(/#3.7308\d+,43.5403\d+,4.0179\d+,43.6795\d+\|/)
-        await expect(url.hash).toContain('|group1,Les%20quartiers,sub-group-1,sub-sub-group--1,sub-sub-group--2|,style1,,,|1,1,1,1,1')
+        expect(url.hash).toMatch(/#3.7308\d+,43.5403\d+,4.0179\d+,43.6795\d+\|/)
+        expect(url.hash).toContain('|group1,Les%20quartiers,sub-group-1,sub-sub-group--1,sub-sub-group--2|,style1,,,|1,1,1,1,1')
     });
 
     test('must display theme2 when selected', async ({ page }) => {
         // Select theme2
         await page.locator('#theme-selector > button').click()
-        await page.locator('#theme-selector > ul > li.theme').nth(1).click();
+        await page.locator('#theme-selector .dropdown-item').nth(1).click();
 
         // The url has been updated
         const url = new URL(page.url());
-        await expect(url.hash).not.toHaveLength(0);
+        expect(url.hash).not.toHaveLength(0);
         // The decoded hash is
         // #3.730872,43.540386,4.017985,43.679557
         // |Les%20quartiers|style2|1
         // |style2
         // |1
-        await expect(url.hash).toMatch(/#3.7308\d+,43.5403\d+,4.0179\d+,43.6795\d+\|/)
-        await expect(url.hash).toContain('|Les%20quartiers|style2|1')
+        expect(url.hash).toMatch(/#3.7308\d+,43.5403\d+,4.0179\d+,43.6795\d+\|/)
+        expect(url.hash).toContain('|Les%20quartiers|style2|1')
     });
-
 });
