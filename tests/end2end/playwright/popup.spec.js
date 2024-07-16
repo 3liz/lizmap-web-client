@@ -493,3 +493,27 @@ test.describe('Popup max features', () => {
         await expect(page.locator('.lizmapPopupSingleFeature')).toHaveCount(15);
     });
 });
+
+test.describe('Drag and drop design with relations', () => {
+    test('Children are placed in the correct div container', async ({ page }) => {
+        const url = '/index.php/view/map?repository=testsrepository&project=children_in_relation_div';
+        await gotoMap(url, page);
+
+        let getFeatureInfoRequestBirdsPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true && request.postData()?.includes('birds') === true);
+        let getFeatureInfoRequestSpotsPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true && request.postData()?.includes('birds_spot') === true);
+        await page.locator('#newOlMap').click({
+            position: {
+                x: 358,
+                y: 248
+            }
+        });
+
+        await getFeatureInfoRequestBirdsPromise;
+        await getFeatureInfoRequestSpotsPromise;
+
+        await expect(page.locator('div.popup_lizmap_dd_relation[id="popup_relation_birds_area_natural_area_id_natural_ar_id"] > div.lizmapPopupChildren.birds')).toHaveCount(1);
+        await expect(page.locator('div.popup_lizmap_dd_relation[id="popup_relation_birds_spot_area_id_natural_ar_id"] > div.lizmapPopupChildren.birds_spots')).toHaveCount(1);
+
+    });
+});
+
