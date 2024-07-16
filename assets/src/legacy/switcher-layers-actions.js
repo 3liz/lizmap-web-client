@@ -284,7 +284,8 @@ var lizLayerActionButtons = function() {
 
                         // Set checked and expanded states
                         for (const layerOrGroup of lizMap.mainLizmap.state.layerTree.findTreeLayersAndGroups()) {
-                            if (layerOrGroup.type === "group") {
+                            // Groups in theme are based on QGIS group (so groupAsLayer is not a layer but a group)
+                            if (layerOrGroup.mapItemState.itemState.type === "group") {
                                 layerOrGroup.checked = checkedGroups.includes(layerOrGroup.name);
                                 layerOrGroup.expanded = expandedGroups.includes(layerOrGroup.name);
                             } else {
