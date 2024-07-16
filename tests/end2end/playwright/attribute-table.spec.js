@@ -37,23 +37,15 @@ test.describe('Attribute table data restricted to map extent', () => {
     });
 
     test('Data restriction, refresh button behaviour and export', async ({ page }) => {
-        const getMapPromise = page.waitForRequest(/GetMap/);
-
-        await page.locator('canvas').first().click({
-            position: {
-                x: 500,
-                y: 300
-            }
-        });
-        await page.locator('#popupcontent').getByRole('button').nth(2).click();
-        await getMapPromise;
-
         await page.locator('a#button-attributeLayers').click();
         await page.locator('#attribute-layer-list-table').locator('button[value=Les_quartiers_a_Montpellier]').click();
 
-        await expect(page.locator('#attribute-layer-table-Les_quartiers_a_Montpellier tbody tr')).toHaveCount(6);
+        await expect(page.locator('.btn-refresh-table')).not.toHaveClass(/btn-warning/);
 
-        await page.locator('.zoom-in').click();
+        const getMapPromise = page.waitForRequest(/GetMap/);
+
+        await page.locator('lizmap-feature-toolbar:nth-child(1) > div:nth-child(1) > button:nth-child(3)').first().click();
+
         await getMapPromise;
 
         await expect(page.locator('.btn-refresh-table')).toHaveClass(/btn-warning/);
@@ -61,7 +53,7 @@ test.describe('Attribute table data restricted to map extent', () => {
         // Refresh
         await page.locator('.btn-refresh-table').click();
 
-        await expect(page.locator('#attribute-layer-table-Les_quartiers_a_Montpellier tbody tr')).toHaveCount(4);
+        await expect(page.locator('#attribute-layer-table-Les_quartiers_a_Montpellier tbody tr')).toHaveCount(5);
 
         const getFeatureRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('GetFeature') === true);
         // bbox in getFeature request for export
@@ -69,7 +61,7 @@ test.describe('Attribute table data restricted to map extent', () => {
             const postData = request.postData();
             expect(postData).toContain('SERVICE=WFS');
             expect(postData).toContain('REQUEST=GetFeature');
-            expect(postData).toMatch(/BBOX=3.8797005571378\d+%2C43.592793206491\d+%2C3.951503297567\d+%2C43.62761307516\d+/);
+            expect(postData).toMatch(/BBOX=3.8258070366989356%2C43.61961486194198%2C3.897611727269447%2C43.6544002918056/);
         };
 
         await page.getByRole('button', { name: 'Export' }).click();
