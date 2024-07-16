@@ -8,7 +8,7 @@
  * @license MPL-2.0
  */
 
-import {extend} from 'ol/extent.js';
+import { extend } from 'ol/extent.js';
 
 import WFS from '../modules/WFS.js';
 import WMS from '../modules/WMS.js';
@@ -2550,11 +2550,13 @@ window.lizMap = function() {
 
         // Calculate bbox from map extent if needed
         if( restrictToMapExtent ) {
-            var extent = map.getExtent().clone();
-            var projFeat = new OpenLayers.Projection(config.layers[aName].crs);
-            extent = extent.transform( map.getProjection(), projFeat );
-            var bbox = extent.toBBOX();
-            wfsOptions['BBOX'] = bbox;
+            const mapExtent = lizMap.mainLizmap.map.getView().calculateExtent();
+            const transformedExtent = lizMap.mainLizmap.transformExtent (
+                mapExtent,
+                lizMap.mainLizmap.map.getView().getProjection().getCode(),
+                config.layers[aName].crs
+            );
+            wfsOptions['BBOX'] = transformedExtent.join();
         }
 
         // Optionnal parameter geometryname
