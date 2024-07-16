@@ -328,8 +328,14 @@ var lizAttributeTable = function() {
 
                 // Calculate bbox from map extent if needed
                 if (config.options?.limitDataToBbox == 'True') {
-                    wfsParams['BBOX'] = lizMap.mainLizmap.map.getView().calculateExtent();
-                    wfsParams['SRSNAME'] = lizMap.mainLizmap.map.getView().getProjection().getCode();
+                    const mapExtent = lizMap.mainLizmap.map.getView().calculateExtent();
+                    const mapExtent4326 = lizMap.mainLizmap.transformExtent(
+                        mapExtent,
+                        lizMap.mainLizmap.map.getView().getProjection().getCode(),
+                        'EPSG:4326'
+                    );
+                    wfsParams['BBOX'] = mapExtent4326;
+                    wfsParams['SRSNAME'] = 'EPSG:4326';
                 }
 
                 const getFeatureRequest = lizMap.mainLizmap.wfs.getFeature(wfsParams);
@@ -433,8 +439,14 @@ var lizAttributeTable = function() {
 
                 // Calculate bbox from map extent if needed
                 if (config.options?.limitDataToBbox == 'True') {
-                    wfsParams['BBOX'] = lizMap.mainLizmap.map.getView().calculateExtent();
-                    wfsParams['SRSNAME'] = lizMap.mainLizmap.map.getView().getProjection().getCode();
+                    const mapExtent = lizMap.mainLizmap.map.getView().calculateExtent();
+                    const mapExtent4326 = lizMap.mainLizmap.transformExtent(
+                        mapExtent,
+                        lizMap.mainLizmap.map.getView().getProjection().getCode(),
+                        'EPSG:4326'
+                    );
+                    wfsParams['BBOX'] = mapExtent4326;
+                    wfsParams['SRSNAME'] = 'EPSG:4326';
                 }
 
                 const getFeatureRequest = lizMap.mainLizmap.wfs.getFeature(wfsParams);
