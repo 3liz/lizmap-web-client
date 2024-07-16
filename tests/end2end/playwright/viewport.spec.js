@@ -189,3 +189,79 @@ test.describe('Viewport mobile', () => {
         await expect(await page.locator('#tab-share-permalink')).toBeVisible();
     })
 })
+
+test.describe('Viewport standard', () => {
+    test('Resize viewport', async ({ page }) => {
+        const url = '/index.php/view/map/?repository=testsrepository&project=world-3857';
+        await gotoMap(url, page)
+
+        await expect(await page.evaluate(() => lizMap.map.getZoom())).toBe(0);
+        await expect(await page.evaluate(() => lizMap.mainLizmap.map.getView().getZoom())).toBe(0);
+
+        // disable rectangle layer
+        await page.getByLabel('rectangle').uncheck();
+
+        let getMapPromise = page.waitForRequest(/GetMap/);
+        // zoom in
+        await page.getByRole('button', { name: 'Zoom in' }).click();
+        // Check GetMap request
+        let getMapRequest = await getMapPromise;
+        let getMapUrl = await getMapRequest.url();
+        await expect(getMapUrl).toContain('SERVICE=WMS');
+        await expect(getMapUrl).toContain('VERSION=1.3.0');
+        await expect(getMapUrl).toContain('REQUEST=GetMap');
+        await expect(getMapUrl).toContain('FORMAT=image%2Fpng');
+        await expect(getMapUrl).toContain('TRANSPARENT=true');
+        await expect(getMapUrl).toContain('LAYERS=world');
+        await expect(getMapUrl).toContain('CRS=EPSG%3A3857');
+        await expect(getMapUrl).toContain('STYLES=d%C3%A9faut');
+        await expect(getMapUrl).toContain('DPI=96');
+        await expect(getMapUrl).toContain('WIDTH=958');
+        await expect(getMapUrl).toContain('HEIGHT=633');
+        await expect(getMapUrl).toMatch(/BBOX=-9373014.15\d+%2C-6193233.77\d+%2C9373014.15\d+%2C6193233.77\d+/);
+        // Check zoom
+        await expect(await page.evaluate(() => lizMap.mainLizmap.map.getView().getZoom())).toBe(1);
+        await expect(await page.evaluate(() => lizMap.map.getZoom())).toBe(1);
+
+        // Get the current viewport size
+        let viewport = await page.viewportSize();
+        // check viewport size
+        await expect(viewport?.width).toBe(900)
+        await expect(viewport?.height).toBe(650)
+
+        getMapPromise = page.waitForRequest(/GetMap/);
+        // Invert viewport size
+        await page.setViewportSize({ width: viewport?.height, height: viewport?.width });
+        // Check GetMap request
+        getMapRequest = await getMapPromise;
+        getMapUrl = await getMapRequest.url();
+        await expect(getMapUrl).toContain('SERVICE=WMS');
+        await expect(getMapUrl).toContain('VERSION=1.3.0');
+        await expect(getMapUrl).toContain('REQUEST=GetMap');
+        await expect(getMapUrl).toContain('FORMAT=image%2Fpng');
+        await expect(getMapUrl).toContain('TRANSPARENT=true');
+        await expect(getMapUrl).toContain('LAYERS=world');
+        await expect(getMapUrl).toContain('CRS=EPSG%3A3857');
+        await expect(getMapUrl).toContain('STYLES=d%C3%A9faut');
+        await expect(getMapUrl).toContain('DPI=96');
+        await expect(getMapUrl).toContain('WIDTH=716');
+        await expect(getMapUrl).toContain('HEIGHT=909');
+        await expect(getMapUrl).toMatch(/BBOX=-7005300.76\d+%2C-8893601.11\d+%2C7005300.76\d+%2C8893601.11\d+/);
+        // Check zoom
+        await expect(await page.evaluate(() => lizMap.mainLizmap.map.getView().getZoom())).toBe(1);
+        await expect(await page.evaluate(() => lizMap.map.getZoom())).toBe(1);
+
+        // Get the current viewport size
+        viewport = await page.viewportSize();
+        // check viewport size
+        await expect(viewport?.width).toBe(650)
+        await expect(viewport?.height).toBe(900)
+
+        // Reset the viewport size
+        await page.setViewportSize({ width: viewport?.height, height: viewport?.width });
+        // Check zoom
+        await expect(await page.evaluate(() => lizMap.mainLizmap.map.getView().getZoom())).toBe(1);
+        await expect(await page.evaluate(() => lizMap.map.getZoom())).toBe(1);
+        // Do not check GetMap request because it is the same as the first one
+    })
+})

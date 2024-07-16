@@ -604,6 +604,7 @@ export default class map extends olMap {
         });
 
         this.on('moveend', () => {
+            this.refreshOL2View();
             this._dispatchMapStateChanged();
 
             if (!mainLizmap.newOlMap) {
@@ -937,6 +938,15 @@ export default class map extends olMap {
      * @memberof Map
      */
     syncNewOLwithOL2View(){
+        const view = this.getView();
+        const viewZoom = view.getZoom();
+        const viewCenter = view.getCenter();
+        if (mainLizmap.lizmap3.map.getZoom() === viewZoom &&
+            mainLizmap.center[0] == viewCenter[0] &&
+            mainLizmap.center[1] == viewCenter[1]) {
+            // already sync
+            return;
+        }
         this.getView().animate({
             center: mainLizmap.center,
             zoom: mainLizmap.lizmap3.map.getZoom(),
@@ -945,6 +955,15 @@ export default class map extends olMap {
     }
 
     refreshOL2View() {
+        const view = this.getView();
+        const viewZoom = view.getZoom();
+        const viewCenter = view.getCenter();
+        if (mainLizmap.lizmap3.map.getZoom() === viewZoom &&
+            mainLizmap.center[0] == viewCenter[0] &&
+            mainLizmap.center[1] == viewCenter[1]) {
+            // already sync
+            return;
+        }
         // This refresh OL2 view and layers
         mainLizmap.lizmap3.map.setCenter(
             this.getView().getCenter(),
