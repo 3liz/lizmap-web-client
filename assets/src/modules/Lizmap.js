@@ -188,8 +188,12 @@ export default class Lizmap {
         document.getElementById('newOlMap').style.zIndex = mode ? 750 : 'unset';
 
         if (!mode) {
+            this.updateOL2MapSize();
             this.map.refreshOL2View();
             this.map.getView().setRotation(0);
+            window.addEventListener('resize', this.updateOL2MapSize);
+        } else {
+            window.removeEventListener('resize', this.updateOL2MapSize);
         }
     }
 
@@ -313,6 +317,10 @@ export default class Lizmap {
      */
     set extent(bounds) {
         this.map.getView().fit(bounds, {nearest: true});
+    }
+
+    updateOL2MapSize() {
+        lizMap.map.updateSize();
     }
 
     /**
