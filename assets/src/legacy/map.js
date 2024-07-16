@@ -1817,6 +1817,38 @@ window.lizMap = function() {
                                 .siblings('.popupAllFeaturesCompact, .lizmapPopupSingleFeature').toggle();
                         });
 
+                        // place children in the right div, if any
+                        let relations = parentDiv.children('.container.popup_lizmap_dd').find(".popup_lizmap_dd_relation");
+                        relations.each((ind,relation) => {
+                            let referencingLayerId = $(relation).attr('data-referencing-layer-id');
+                            if (referencingLayerId) {
+                                let relLayerId = null;
+                                let referencingLayerConfig = lizMap.getLayerConfigById( referencingLayerId, lizMap.config.attributeLayers, 'layerId' );
+                                if (referencingLayerConfig && referencingLayerConfig[1]?.pivot == 'True' && config.relations.pivot && config.relations.pivot[referencingLayerId]) {
+                                    // relation is a pivot, search for "m" child layers
+                                    let mLayer = Object.keys(config.relations.pivot[referencingLayerId]).filter((k)=>{ return k !== layerId})
+                                    if (mLayer.length == 1) {
+                                        relLayerId = mLayer[0];
+                                    }
+                                } else {
+                                    // relation is 1:n, search for n layer
+                                    relLayerId = referencingLayerId;
+                                }
+
+                                if (relLayerId) {
+                                    let childLayer = childPopupElements.filter((child)=>{
+                                        let lName = child.attr("data-layername");
+                                        let lId = lName ? lizMap.config.layers?.[lName]?.id : '';
+                                        return relLayerId == lId;
+                                    })
+
+                                    if(childLayer.length == 1) {
+                                        $(relation).append(childLayer[0])
+                                    }
+                                }
+                            }
+                        });
+
                         // Trigger event for all popup children
                         lizMap.events.triggerEvent(
                             "lizmappopupallchildrendisplayed",
