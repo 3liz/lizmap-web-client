@@ -18,20 +18,46 @@ test.describe('Base layers', () => {
         await expect(page.locator('lizmap-base-layers select')).toHaveValue('empty');
     });
 
-    test('Scales', async ({ page }) => {
+    test('Native EPSG:3857 Scales', async ({ page }) => {
         await expect(page.locator('#overview-bar .ol-scale-text')).toHaveText('1 : ' + (144448).toLocaleString(locale));
 
         let getMapRequestPromise = page.waitForRequest(/REQUEST=GetMap/);
         await page.locator('lizmap-treeview #node-quartiers').click();
-        await getMapRequestPromise;
+        // Wait for request and response
+        let getMapRequest = await getMapRequestPromise;
+        await getMapRequest.response();
 
+        let buffer = await page.screenshot({clip:{x:950/2-380/2, y:600/2-380/2, width:380, height:380}});
+        const initialByteLength = buffer.byteLength;
+        // Greater than blank
+        await expect(initialByteLength).toBeGreaterThan(1286); // 135746
+
+        getMapRequestPromise = page.waitForRequest(/REQUEST=GetMap/);
         await page.locator('#navbar button.btn.zoom-in').click();
+        // Wait for request and response
         await getMapRequestPromise;
+        getMapRequest = await getMapRequestPromise;
+        await getMapRequest.response();
+        // Check scale
         await expect(page.locator('#overview-bar .ol-scale-text')).toHaveText('1 : ' + (72224).toLocaleString(locale));
+        buffer = await page.screenshot({clip:{x:950/2-380/2, y:600/2-380/2, width:380, height:380}});
+        // Greater than blank
+        await expect(buffer.byteLength).toBeGreaterThan(1286); // 36159
+        // Less than initial because of more red
+        await expect(buffer.byteLength).toBeLessThan(initialByteLength); // 36159
 
         await page.locator('#navbar button.btn.zoom-out').click();
-        await getMapRequestPromise;
+        // Not waiting for request and response because it is in cache
+        // Check scales
         await expect(page.locator('#overview-bar .ol-scale-text')).toHaveText('1 : ' + (144448).toLocaleString(locale));
+        // Wai for OL transition
+        await page.waitForTimeout(500);
+        buffer = await page.screenshot({clip:{x:950/2-380/2, y:600/2-380/2, width:380, height:380}});
+        // Greater than blank
+        await expect(buffer.byteLength).toBeGreaterThan(1286); // 135746
+        // Same as the initial
+        await expect(buffer.byteLength).toBe(initialByteLength); // 135746
+
     });
 })
 
