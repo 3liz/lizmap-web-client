@@ -765,6 +765,7 @@ window.lizMap = function() {
                 ,projection:projection
                 ,units:projection.proj.units !== null ? projection.proj.units : "degrees"
                 ,allOverlays:(baselayers.length == 0)
+                ,autoUpdateSize: false
             });
 
         // add handler to update the map size
