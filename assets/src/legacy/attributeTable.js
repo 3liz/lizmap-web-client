@@ -265,23 +265,14 @@ var lizAttributeTable = function() {
                 );
 
                 // Map events
-                /**
-                 *
-                 */
-                function warnExtent() {
-                    var btitle = lizDict['attributeLayers.toolbar.btn.refresh.table.tooltip.changed'];
-                    btitle += ' ' + lizDict['attributeLayers.toolbar.btn.refresh.table.tooltip'];
-                    $('button.btn-refresh-table')
-                        .attr('data-original-title', btitle)
-                        .addClass('btn-warning')
-                        .tooltip()
-                    ;
-                }
                 if (limitDataToBbox) {
-                    lizMap.map.events.on({
-                        moveend: function () {
-                            warnExtent();
-                        }
+                    lizMap.mainLizmap.map.on('moveend', () => {
+                        let btitle = lizDict['attributeLayers.toolbar.btn.refresh.table.tooltip.changed'];
+                        btitle += ' ' + lizDict['attributeLayers.toolbar.btn.refresh.table.tooltip'];
+                        $('button.btn-refresh-table')
+                            .attr('data-original-title', btitle)
+                            .addClass('btn-warning')
+                            .tooltip();
                     });
                 }
 
@@ -337,8 +328,14 @@ var lizAttributeTable = function() {
 
                 // Calculate bbox from map extent if needed
                 if (config.options?.limitDataToBbox == 'True') {
-                    wfsParams['BBOX'] = lizMap.mainLizmap.map.getView().calculateExtent();
-                    wfsParams['SRSNAME'] = lizMap.mainLizmap.map.getView().getProjection().getCode();
+                    const mapExtent = lizMap.mainLizmap.map.getView().calculateExtent();
+                    const mapExtent4326 = lizMap.mainLizmap.transformExtent(
+                        mapExtent,
+                        lizMap.mainLizmap.map.getView().getProjection().getCode(),
+                        'EPSG:4326'
+                    );
+                    wfsParams['BBOX'] = mapExtent4326;
+                    wfsParams['SRSNAME'] = 'EPSG:4326';
                 }
 
                 const getFeatureRequest = lizMap.mainLizmap.wfs.getFeature(wfsParams);
@@ -442,8 +439,14 @@ var lizAttributeTable = function() {
 
                 // Calculate bbox from map extent if needed
                 if (config.options?.limitDataToBbox == 'True') {
-                    wfsParams['BBOX'] = lizMap.mainLizmap.map.getView().calculateExtent();
-                    wfsParams['SRSNAME'] = lizMap.mainLizmap.map.getView().getProjection().getCode();
+                    const mapExtent = lizMap.mainLizmap.map.getView().calculateExtent();
+                    const mapExtent4326 = lizMap.mainLizmap.transformExtent(
+                        mapExtent,
+                        lizMap.mainLizmap.map.getView().getProjection().getCode(),
+                        'EPSG:4326'
+                    );
+                    wfsParams['BBOX'] = mapExtent4326;
+                    wfsParams['SRSNAME'] = 'EPSG:4326';
                 }
 
                 const getFeatureRequest = lizMap.mainLizmap.wfs.getFeature(wfsParams);
@@ -592,7 +595,7 @@ var lizAttributeTable = function() {
                     && config.layers[lname]['geometryType'] != 'unknown'
                 ){
                     // Add button to refresh table
-                    html+= '    <button class="btn-refresh-table btn btn-mini" value="' + cleanName + '" title="'+lizDict['attributeLayers.toolbar.btn.refresh.table.tooltip']+'">'+lizDict['attributeLayers.toolbar.btn.refresh.table.title']+'</button>';
+                    html+= '<button class="btn-refresh-table btn btn-mini" value="' + cleanName + '" title="'+lizDict['attributeLayers.toolbar.btn.refresh.table.tooltip']+'">'+lizDict['attributeLayers.toolbar.btn.refresh.table.title']+'</button>';
 
                 }
 
