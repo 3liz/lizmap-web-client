@@ -669,7 +669,7 @@ const defaultCompleteBaseLayersCfg = {
         "styles": "normal",
         "tileMatrixSet": "PM",
         "crs": "EPSG:3857",
-        "numZoomLevels": 20,
+        "numZoomLevels": 19,
         "attribution": {
             "title": "Institut national de l'information géographique et forestière",
             "url": "https://www.ign.fr/"
@@ -684,7 +684,7 @@ const defaultCompleteBaseLayersCfg = {
         "styles": "normal",
         "tileMatrixSet": "PM",
         "crs": "EPSG:3857",
-        "numZoomLevels": 22,
+        "numZoomLevels": 19,
         "attribution": {
             "title": "Institut national de l'information géographique et forestière",
             "url": "https://www.ign.fr/"
@@ -715,7 +715,7 @@ const defaultCompleteBaseLayersCfg = {
         "styles": "normal",
         "tileMatrixSet": "PM",
         "crs": "EPSG:3857",
-        "numZoomLevels": 20,
+        "numZoomLevels": 19,
         "attribution": {
             "title": "Institut national de l'information géographique et forestière",
             "url": "https://www.ign.fr/"
