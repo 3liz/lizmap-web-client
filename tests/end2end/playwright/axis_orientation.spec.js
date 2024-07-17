@@ -8,6 +8,12 @@ test.describe('Axis Orientation', () => {
         const url = '/index.php/view/map/?repository=testsrepository&project=axis_orientation_neu_3044';
         await gotoMap(url, page)
 
+        // Get blank buffer
+        let buffer = await page.screenshot({clip:{x:950/2-380/2, y:600/2-380/2, width:380, height:380}});
+        const blankByteLength = buffer.byteLength;
+        await expect(blankByteLength).toBeGreaterThan(1000); // 1286
+        await expect(blankByteLength).toBeLessThan(1500) // 1286
+
         const getMapPromise = page.waitForRequest(/GetMap/);
         await page.getByLabel('Bundesländer').check();
         const getMapRequest = await getMapPromise;
@@ -32,6 +38,9 @@ test.describe('Axis Orientation', () => {
         const contentLength = await getMapResponse?.headerValue('Content-Length');
         expect(parseInt(contentLength ? contentLength : '0')).toBeGreaterThan(5552);
 
+        buffer = await page.screenshot({clip:{x:950/2-380/2, y:600/2-380/2, width:380, height:380}});
+        const bundeslanderByteLength = buffer.byteLength;
+        await expect(bundeslanderByteLength).toBeGreaterThan(blankByteLength);
 
         // Catch GetTile request;
         let GetTiles = [];
@@ -39,9 +48,11 @@ test.describe('Axis Orientation', () => {
             const request = route.request();
             GetTiles.push(request.url());
         }, { times: 6 });
-
         await page.locator('#switcher-baselayer').getByRole('combobox').selectOption('OpenStreetMap');
-        await page.waitForTimeout(1000);
+        while (GetTiles.length < 6) {
+            await page.waitForTimeout(100);
+        }
+
         expect(GetTiles).toHaveLength(6);
         expect(GetTiles[0]).toContain('6/33/20.png')
         expect(GetTiles[1]).toContain('6/33/21.png')
@@ -50,11 +61,25 @@ test.describe('Axis Orientation', () => {
         expect(GetTiles[4]).toContain('6/33/22.png')
         expect(GetTiles[5]).toContain('6/34/22.png')
         await page.unroute('https://tile.openstreetmap.org/*/*/*.png')
+
+        // Wait for transition
+        await page.waitForTimeout(1000);
+
+        buffer = await page.screenshot({clip:{x:950/2-380/2, y:600/2-380/2, width:380, height:380}});
+        const osmByteLength = buffer.byteLength;
+        await expect(osmByteLength).toBeGreaterThan(blankByteLength);
+        await expect(osmByteLength).toBeGreaterThan(bundeslanderByteLength);
     });
 
     test('Axis Orientation NEU for EPSG:3844', async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=axis_orientation_neu_3844';
         await gotoMap(url, page)
+
+        // Get blank buffer
+        let buffer = await page.screenshot({clip:{x:950/2-380/2, y:600/2-380/2, width:380, height:380}});
+        const blankByteLength = buffer.byteLength;
+        await expect(blankByteLength).toBeGreaterThan(1000); // 1286
+        await expect(blankByteLength).toBeLessThan(1500) // 1286
 
         const getMapPromise = page.waitForRequest(/GetMap/);
         await page.getByLabel('județ').check();
@@ -82,6 +107,10 @@ test.describe('Axis Orientation', () => {
         // image size lesser than disorder axis
         expect(parseInt(contentLength ? contentLength : '0')).toBeLessThan(240115);
 
+        buffer = await page.screenshot({clip:{x:950/2-380/2, y:600/2-380/2, width:380, height:380}});
+        const judetByteLength = buffer.byteLength;
+        await expect(judetByteLength).toBeGreaterThan(blankByteLength);
+
         // Catch GetTile request;
         let GetTiles = [];
         await page.route('https://tile.openstreetmap.org/*/*/*.png', (route) => {
@@ -89,7 +118,10 @@ test.describe('Axis Orientation', () => {
             GetTiles.push(request.url());
         }, { times: 6 });
         await page.locator('#switcher-baselayer').getByRole('combobox').selectOption('OpenStreetMap');
-        await page.waitForTimeout(1000);
+        while (GetTiles.length < 6) {
+            await page.waitForTimeout(100);
+        }
+
         expect(GetTiles).toHaveLength(6);
         expect(GetTiles[0]).toContain('6/35/22.png')
         expect(GetTiles[1]).toContain('6/35/23.png')
@@ -98,5 +130,13 @@ test.describe('Axis Orientation', () => {
         expect(GetTiles[4]).toContain('6/37/22.png')
         expect(GetTiles[5]).toContain('6/37/23.png')
         await page.unroute('https://tile.openstreetmap.org/*/*/*.png')
+
+        // Wait for transition
+        await page.waitForTimeout(1000);
+
+        buffer = await page.screenshot({clip:{x:950/2-380/2, y:600/2-380/2, width:380, height:380}});
+        const osmByteLength = buffer.byteLength;
+        await expect(osmByteLength).toBeGreaterThan(blankByteLength);
+        await expect(osmByteLength).toBeGreaterThan(judetByteLength);
     });
 });
