@@ -300,7 +300,7 @@ describe('BaseLayersConfig', function () {
         expect(ignPhotoBl.style).to.be.eq('normal')
         expect(ignPhotoBl.matrixSet).to.be.eq('PM')
         expect(ignPhotoBl.crs).to.be.eq('EPSG:3857')
-        expect(ignPhotoBl.numZoomLevels).to.be.eq(22)
+        expect(ignPhotoBl.numZoomLevels).to.be.eq(19)
         expect(ignPhotoBl.hasAttribution).to.be.true
         expect(ignPhotoBl.attribution).to.be.instanceOf(AttributionConfig)
         expect(ignPhotoBl.attribution.title).to.be.eq('Institut national de l\'information géographique et forestière')
@@ -797,7 +797,7 @@ describe('BaseLayersConfig', function () {
         expect(wmtsBl.style).to.be.eq('default')
         expect(wmtsBl.matrixSet).to.be.eq('EPSG:3857')
         expect(wmtsBl.crs).to.be.eq('EPSG:3857')
-        expect(wmtsBl.numZoomLevels).to.be.eq(22)
+        expect(wmtsBl.numZoomLevels).to.be.eq(19)
         expect(wmtsBl.hasLayerConfig).to.be.true
         expect(wmtsBl.layerConfig).to.not.be.null
         expect(wmtsBl.layerConfig.externalWmsToggle).to.be.true

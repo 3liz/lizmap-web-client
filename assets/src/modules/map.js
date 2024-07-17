@@ -358,6 +358,10 @@ export default class map extends olMap {
 
         const proj3857 = getProjection('EPSG:3857');
         const max3857Resolution = getWidth(proj3857.getExtent()) / 256;
+        const map3857Resolutions = [max3857Resolution];
+        while (map3857Resolutions.at(-1) > resolutions.at(-1)) {
+            map3857Resolutions.push(max3857Resolution / Math.pow(2, map3857Resolutions.length));
+        }
         this._hasEmptyBaseLayer = false;
         const baseLayers = [];
 
@@ -370,16 +374,6 @@ export default class map extends olMap {
                 layerMaxResolution = baseLayerState.itemState.wmsMaxScaleDenominator <= 1 ? undefined : Utils.getResolutionFromScale(baseLayerState.layerConfig.maxScale, metersPerUnit);
             }
             if (baseLayerState.type === BaseLayerTypes.XYZ) {
-                const zMinResolution = max3857Resolution / Math.pow(2, baseLayerState.zmin);
-                // Get max resolution
-                if (layerMaxResolution !== undefined || layerMaxResolution > zMinResolution) {
-                    layerMaxResolution = zMinResolution;
-                }
-                const zMaxResolution = max3857Resolution / Math.pow(2, baseLayerState.zmax);
-                // Get min resolution
-                if (layerMinResolution === undefined || layerMinResolution < zMaxResolution) {
-                    layerMinResolution = zMaxResolution;
-                }
                 baseLayer = new TileLayer({
                     minResolution: layerMinResolution,
                     maxResolution: layerMaxResolution,
@@ -388,6 +382,13 @@ export default class map extends olMap {
                         projection: baseLayerState.crs,
                         minZoom: baseLayerState.zmin,
                         maxZoom: baseLayerState.zmax,
+                        tileGrid : new TileGrid({
+                            origin: [-20037508, 20037508],
+                            resolutions: map3857Resolutions,
+                            minZoom: baseLayerState.zmin,
+                            maxZoom: baseLayerState.zmax,
+                        })
+
                     })
                 });
             } else if (baseLayerState.type === BaseLayerTypes.WMS) {
@@ -406,19 +407,13 @@ export default class map extends olMap {
                     })
                 });
             } else if (baseLayerState.type === BaseLayerTypes.WMTS) {
-                // Note: min/max resolutions are handled by OpenLayers
-                const resolutions = [];
-                const matrixIds = [];
-
-                for (let i = 0; i < baseLayerState.numZoomLevels; i++) {
-                    matrixIds[i] = i.toString();
-                    resolutions[i] = max3857Resolution / Math.pow(2, i);
-                }
                 const tileGrid = new WMTSTileGrid({
                     origin: [-20037508, 20037508],
-                    resolutions: resolutions,
-                    matrixIds: matrixIds,
+                    resolutions: map3857Resolutions,
+                    matrixIds: map3857Resolutions.map((r, i) => i.toString()),
                 });
+                tileGrid.maxZoom = baseLayerState.numZoomLevels;
+
 
                 let url = baseLayerState.url;
                 if(baseLayerState.key && url.includes('{key}')){
@@ -426,6 +421,8 @@ export default class map extends olMap {
                 }
 
                 baseLayer = new TileLayer({
+                    minResolution: layerMinResolution,
+                    maxResolution: layerMaxResolution,
                     source: new WMTS({
                         url: url,
                         layer: baseLayerState.layer,

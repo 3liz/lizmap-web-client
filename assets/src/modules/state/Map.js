@@ -10,6 +10,74 @@ import { ValidationError } from './../Errors.js';
 import EventDispatcher from './../../utils/EventDispatcher.js';
 import { convertNumber, convertBoolean } from './../utils/Converters.js';
 import { Extent } from './../utils/Extent.js';
+import { OptionsConfig } from './../config/Options.js';
+import Utils from './../Utils.js';
+import { get as getProjection } from 'ol/proj.js';
+
+/**
+ * Build scales
+ * @param {OptionsConfig} [options] - main configuration options
+ * @returns {number[]} scales in descending order
+ */
+export const buildScales = (options) => {
+    let scales = Array.from(options.mapScales);
+
+    if (scales.length < 2){
+        scales = [options.maxScale, options.minScale];
+    }
+
+    scales.sort(function(a, b) {
+        return Number(b) - Number(a);
+    });
+
+    if (!options.use_native_zoom_levels) {
+        return scales;
+    }
+
+    let projRef = options.projection.ref;
+    if (!projRef || projRef == 'EPSG:3857') {
+        const proj = getProjection('EPSG:3857');
+        const metersPerUnit = proj.getMetersPerUnit();
+        const zoomLevelNumber = 24;
+        const resolutions = [];
+        let maxRes = Utils.getResolutionFromScale(scales.at(0), metersPerUnit);
+        let minRes = Utils.getResolutionFromScale(scales.at(-1), metersPerUnit);
+        let res = 156543.03390625;
+        let n = 1;
+        while ( res > minRes && n < zoomLevelNumber) {
+            if ( res < maxRes ) {
+                //Add extra scale
+                resolutions.push(res);
+            }
+            res = res/2;
+            n++;
+        }
+        scales = resolutions.map(res => Utils.getScaleFromResolution(res, metersPerUnit));
+    } else {
+        const maxScale = scales.at(0);
+        const minScale = scales.at(-1);
+        let nativeScales = [];
+        let n=1;
+        while (10*Math.pow(10,n)-1 < maxScale) {
+            nativeScales = nativeScales.concat([10, 25, 50].map((x) => Math.pow(10,n)*x));
+            n++;
+        }
+        scales = [];
+        for (const scale of nativeScales) {
+            if (scale < minScale) {
+                continue;
+            }
+            if (scale > maxScale) {
+                break;
+            }
+            scales.push(scale);
+        }
+        scales.sort(function(a, b) {
+            return Number(b) - Number(a);
+        });
+    }
+    return scales;
+}
 
 const mapStateProperties = {
     projection: {type: 'string'},
@@ -56,7 +124,7 @@ export class MapState extends EventDispatcher {
 
     /**
      * Creating the map state
-     * @param {OptionConfig}     [options]         - main configuration options
+     * @param {OptionsConfig}     [options]         - main configuration options
      * @param {string|undefined} [startupFeatures] - The features to highlight at startup in GeoJSON
      */
     constructor(options, startupFeatures) {
@@ -68,6 +136,7 @@ export class MapState extends EventDispatcher {
         this._zoom = -1;
         this._minZoom = 0;
         this._maxZoom = -1;
+        this._scales = [];
         this._size = [0, 0];
         this._extent = new Extent(0, 0, 0, 0);
         this._initialExtent = new Extent(0, 0, 0, 0);
@@ -80,7 +149,8 @@ export class MapState extends EventDispatcher {
         this._singleWMSLayer = false;
         if (options) {
             this._singleWMSLayer = options.wms_single_request_for_all_layers; // default value is defined as false
-            this._maxZoom = options.mapScales.length - 1;
+            this._scales = buildScales(options);
+            this._maxZoom = this._scales.length - 1;
             this._initialExtent = options.initialExtent;
         }
 
@@ -218,6 +288,14 @@ export class MapState extends EventDispatcher {
      */
     get maxZoom() {
         return this._maxZoom;
+    }
+
+    /**
+     * Map scales
+     * @type {number[]}
+     */
+    get scales() {
+        return this._scales;
     }
 
     /**
