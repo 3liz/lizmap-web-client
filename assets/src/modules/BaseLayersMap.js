@@ -325,6 +325,12 @@ export default class BaseLayersMap extends olMap {
                 layerMaxResolution = baseLayerState.itemState.wmsMaxScaleDenominator <= 1 ? undefined : Utils.getResolutionFromScale(baseLayerState.layerConfig.maxScale, metersPerUnit);
             }
             if (baseLayerState.type === BaseLayerTypes.XYZ) {
+                const tileGrid =new TileGrid({
+                    origin: [-20037508, 20037508],
+                    resolutions: map3857Resolutions,
+                });
+                tileGrid.minZoom = baseLayerState.zmin;
+                tileGrid.maxZoom = baseLayerState.zmax;
                 baseLayer = new TileLayer({
                     minResolution: layerMinResolution,
                     maxResolution: layerMaxResolution,
@@ -333,12 +339,7 @@ export default class BaseLayersMap extends olMap {
                         projection: baseLayerState.crs,
                         minZoom: baseLayerState.zmin,
                         maxZoom: baseLayerState.zmax,
-                        tileGrid : new TileGrid({
-                            origin: [-20037508, 20037508],
-                            resolutions: map3857Resolutions,
-                            minZoom: baseLayerState.zmin,
-                            maxZoom: baseLayerState.zmax,
-                        })
+                        tileGrid : tileGrid,
                     })
                 });
             } else if (baseLayerState.type === BaseLayerTypes.WMS) {
