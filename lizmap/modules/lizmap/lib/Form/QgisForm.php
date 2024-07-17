@@ -207,6 +207,45 @@ class QgisForm implements QgisFormControlsInterface
             $privateData['qgis_groupDependencies'] = array();
         }
 
+        // adding text widget fields to the form
+        if ($attributeEditorForm) {
+            $textWidgetFields = $attributeEditorForm->getTextWidgetFields();
+            if (count($textWidgetFields) > 0) {
+                foreach ($textWidgetFields as $textName => $textProp) {
+                    // use jFormsControlOutput instance
+                    $textCtrl = new \jFormsControlOutput($textName);
+                    $textCtrl->label = $textProp['label'];
+                    // add control into the form
+                    $form->addControl($textCtrl);
+
+                    // construct the from_feature array including geometry, if any, for geometry based expressions evaluation
+                    $geom = null;
+                    $ref = $form->getData('liz_geometryColumn');
+                    $wkt = trim($form->getData($ref));
+                    if ($wkt && \lizmapWkt::check($wkt)) {
+                        $geom = \lizmapWkt::parse($wkt);
+                        if ($geom === null) {
+                            \jLog::log('Parsing WKT failed! '.$wkt, 'error');
+                        }
+                    }
+
+                    $form_feature = array(
+                        'type' => 'Feature',
+                        'geometry' => $geom,
+                        'properties' => $form->getAllData(),
+                    );
+                    // evaluate expression
+                    $expressionT = $this->evaluateExpressionText(array($textName => $textProp['value']), $form_feature);
+                    // expecting geojson or null
+                    if ($expressionT && is_array($expressionT->features) && count($expressionT->features) == 1 && property_exists($expressionT->features[0], 'properties') && property_exists($expressionT->features[0]->properties, $textName)) {
+                        $form->setData($textName, $expressionT->features[0]->properties->{$textName});
+                    } else {
+                        $form->setData($textName, '');
+                    }
+                }
+            }
+        }
+
         $form->getContainer()->privateData = array_merge($form->getContainer()->privateData, $privateData);
     }
 
@@ -1890,5 +1929,22 @@ class QgisForm implements QgisFormControlsInterface
         }
 
         return null;
+    }
+
+    /**
+     * Returns the text evaluated from $expression.
+     *
+     * @param array      $expression   The expression to evaluate
+     * @param null|array $form_feature A feature to add to the evaluation context
+     *
+     * @return null|object
+     */
+    public function evaluateExpressionText($expression, $form_feature = null)
+    {
+        return \qgisExpressionUtils::replaceExpressionText(
+            $this->layer,
+            $expression,
+            $form_feature
+        );
     }
 }
