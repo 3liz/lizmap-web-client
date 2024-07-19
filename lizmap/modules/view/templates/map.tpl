@@ -77,7 +77,7 @@
     <div id="lizmap-search">
 
       <div id="lizmap-search-close">
-        <button class="btn btn-mini btn-primary">{@view~map.bottomdock.toolbar.btn.clear.title@}</button>
+        <button class="btn btn-sm btn-primary">{@view~map.bottomdock.toolbar.btn.clear.title@}</button>
       </div>
 
       <div>

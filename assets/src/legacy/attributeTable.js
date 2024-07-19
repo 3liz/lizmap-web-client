@@ -540,19 +540,19 @@ var lizAttributeTable = function() {
                 html+= '</div>';
 
                 // Selected searched lines button
-                html+= '<button class="btn-select-searched btn btn-mini" value="'+cleanName+'" title="'+lizDict['attributeLayers.toolbar.btn.select.searched.title']+'"><i class="icon-star"></i></button>';
+                html+= '<button class="btn-select-searched btn btn-sm" value="'+cleanName+'" title="'+lizDict['attributeLayers.toolbar.btn.select.searched.title']+'"><i class="icon-star"></i></button>';
 
                 // Unselect button
-                html+= '    <button class="btn-unselect-attributeTable btn btn-mini' + selClass + '" value="' + cleanName + '" title="'+lizDict['attributeLayers.toolbar.btn.data.unselect.title']+'"><i class="icon-star-empty"></i></button>';
+                html+= '    <button class="btn-unselect-attributeTable btn btn-sm' + selClass + '" value="' + cleanName + '" title="'+lizDict['attributeLayers.toolbar.btn.data.unselect.title']+'"><i class="icon-star-empty"></i></button>';
 
                 // 'Move selected to top' button
-                html+= '    <button class="btn-moveselectedtotop-attributeTable btn btn-mini' + selClass + '" value="' + cleanName + '" title="'+lizDict['attributeLayers.toolbar.btn.data.moveselectedtotop.title']+'"><i class="icon-arrow-up"></i></button>';
+                html+= '    <button class="btn-moveselectedtotop-attributeTable btn btn-sm' + selClass + '" value="' + cleanName + '" title="'+lizDict['attributeLayers.toolbar.btn.data.moveselectedtotop.title']+'"><i class="icon-arrow-up"></i></button>';
 
                 // Filter button : only if no filter applied at startup
                 if( !startupFilter
                     && ( !lizMap.lizmapLayerFilterActive || lizMap.lizmapLayerFilterActive == lname )
                 ){
-                    html+= '    <button class="btn-filter-attributeTable btn btn-mini' + filClass + '" value="' + cleanName + '" title="'+lizDict['attributeLayers.toolbar.btn.data.filter.title']+'"><i class="icon-filter"></i></button>';
+                    html+= '    <button class="btn-filter-attributeTable btn btn-sm' + filClass + '" value="' + cleanName + '" title="'+lizDict['attributeLayers.toolbar.btn.data.filter.title']+'"><i class="icon-filter"></i></button>';
                 }
 
                 // Invert selection
@@ -569,7 +569,7 @@ var lizAttributeTable = function() {
                     canPopup = true;
                 }
                 if( canPopup ){
-                    html+= '<button type="checkbox" class="btn-detail-attributeTable btn btn-mini" value="' + cleanName + '" title="'+lizDict['attributeLayers.toolbar.cb.data.detail.title']+'">';
+                    html+= '<button type="checkbox" class="btn-detail-attributeTable btn btn-sm" value="' + cleanName + '" title="'+lizDict['attributeLayers.toolbar.cb.data.detail.title']+'">';
                     html+= '<i class="icon-info-sign"></i>';
                     html+= '</button>';
                 }
@@ -582,7 +582,7 @@ var lizAttributeTable = function() {
                         canCreate = true;
                 }
                 if( canCreate ){
-                    html+= '    <button class="btn-createFeature-attributeTable btn btn-mini" value="' + cleanName + '" title="'+lizDict['attributeLayers.toolbar.btn.data.createFeature.title']+'"><i class="icon-plus-sign"></i></button>';
+                    html+= '    <button class="btn-createFeature-attributeTable btn btn-sm" value="' + cleanName + '" title="'+lizDict['attributeLayers.toolbar.btn.data.createFeature.title']+'"><i class="icon-plus-sign"></i></button>';
                 }
 
                 // Refresh button (if limitDataToBbox is true)
@@ -591,7 +591,7 @@ var lizAttributeTable = function() {
                     && config.layers[lname]['geometryType'] != 'unknown'
                 ){
                     // Add button to refresh table
-                    html+= '<button class="btn-refresh-table btn btn-mini" value="' + cleanName + '" title="'+lizDict['attributeLayers.toolbar.btn.refresh.table.tooltip']+'">'+lizDict['attributeLayers.toolbar.btn.refresh.table.title']+'</button>';
+                    html+= '<button class="btn-refresh-table btn btn-sm" value="' + cleanName + '" title="'+lizDict['attributeLayers.toolbar.btn.refresh.table.tooltip']+'">'+lizDict['attributeLayers.toolbar.btn.refresh.table.title']+'</button>';
 
                 }
 
@@ -602,7 +602,7 @@ var lizAttributeTable = function() {
                 // Toggle children content
                 if( childHtml ){
                     // Add button to show/hide children tables
-                    html+= '    <button class="btn-toggle-children btn btn-mini" value="' + cleanName + '" >'+lizDict['attributeLayers.toolbar.btn.toggle.children.title']+'</button>';
+                    html+= '    <button class="btn-toggle-children btn btn-sm" value="' + cleanName + '" >'+lizDict['attributeLayers.toolbar.btn.toggle.children.title']+'</button>';
 
                     // Add buttons to create new children
                     if( childHtml['childCreateButton'] )
@@ -616,7 +616,7 @@ var lizAttributeTable = function() {
                 // Export tools
                 if ( 'exportLayers' in config.options && config.options.exportLayers == 'True' ) {
                     html+= '<div class="export-formats dropdown float-end" role="group" >';
-                    html+= '    <button type="button" class="btn btn-mini dropdown-toggle exportLayer" data-bs-toggle="dropdown" aria-expanded="false">';
+                    html+= '    <button type="button" class="btn btn-sm dropdown-toggle exportLayer" data-bs-toggle="dropdown" aria-expanded="false">';
                     html+= lizDict['attributeLayers.toolbar.btn.data.export.title'];
                     html+= '    </button>';
                     html+= '    <ul class="dropdown-menu" role="menu">';
@@ -1137,7 +1137,7 @@ var lizAttributeTable = function() {
                             if( canCreateChild ){
                                 // Add a button to create a new feature for this child layer
                                 let childButtonItem = `
-                                    <button class="btn btn-mini btn-createFeature-attributeTable" data-pivot="${isNToM ? pivotConfig[1].id : ''}" value="${lizMap.cleanName(childLayerName)}" title="${lizDict['attributeLayers.toolbar.btn.data.createFeature.title']}">
+                                    <button class="btn btn-sm btn-createFeature-attributeTable" data-pivot="${isNToM ? pivotConfig[1].id : ''}" value="${lizMap.cleanName(childLayerName)}" title="${lizDict['attributeLayers.toolbar.btn.data.createFeature.title']}">
                                     ➕ ${childLayerConfig.title}
                                     </button>
                                 `;
@@ -1161,7 +1161,7 @@ var lizAttributeTable = function() {
                     }
                     if( layerLinkButtonItems.length > 0 ){
                         layerLinkButton+= '&nbsp;<div class="btn-group" role="group" >';
-                        layerLinkButton+= '    <button type="button" class="btn btn-mini dropdown-toggle" data-toggle="dropdown" aria-expanded="false">';
+                        layerLinkButton+= '    <button type="button" class="btn btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">';
                         layerLinkButton+= lizDict['attributeLayers.toolbar.btn.data.linkFeatures.title'];
                         layerLinkButton+= '      <span class="caret"></span>';
                         layerLinkButton+= '    </button>';
@@ -1970,7 +1970,7 @@ var lizAttributeTable = function() {
                             const createHeader = $($(childTable).DataTable().column(1).header());
                             if ( createHeader.find('button.attribute-layer-feature-create').length == 0 ) {
                                 createHeader
-                                    .append(`<button class="btn btn-mini attribute-layer-feature-create" value="-1" title="${lizDict['attributeLayers.toolbar.btn.data.createFeature.title']}">
+                                    .append(`<button class="btn btn-sm attribute-layer-feature-create" value="-1" title="${lizDict['attributeLayers.toolbar.btn.data.createFeature.title']}">
                                             <i class="icon-plus"></i>
                                         </button>`)
                                     .on('click', 'button.attribute-layer-feature-create',function () {
