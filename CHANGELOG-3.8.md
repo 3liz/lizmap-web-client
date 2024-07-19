@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.8.0-rc.3 - 2024-07-19
+
 ### Funders
 
 * **FM Projet**
