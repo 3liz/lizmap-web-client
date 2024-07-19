@@ -9,3 +9,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 ## Unreleased
 
 ### Added
+
+### Backend
+
+* Expose more OpenLayers and lit classes
+* Update to Bootstrap 5
