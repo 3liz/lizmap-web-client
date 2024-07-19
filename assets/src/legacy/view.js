@@ -275,7 +275,7 @@ var searchProjects = function(){
             displayKeywordChoices();
         });
     }else{
-        $('#toggle-search').hide().parent().removeClass('input-prepend');
+        $('#toggle-search').hide().parent().removeClass('input-group');
     }
 }
 

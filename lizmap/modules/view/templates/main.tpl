@@ -28,10 +28,10 @@
 
 <div id="content" class="container">
   <div id="search">
-    <div class="input-prepend">
+    <div class="input-group">
       <button id="toggle-search" class="btn" type="button" data-bs-toggle="tooltip"
         data-bs-title="{@view~default.header.search.toggleKeywordsTitle.title@}">T</button>
-      <input id="search-project" class="span2" data-bs-toggle="tooltip" data-bs-title="{@view~default.header.search.input.title@}"
+      <input id="search-project" class="form-control" data-bs-toggle="tooltip" data-bs-title="{@view~default.header.search.input.title@}"
         placeholder="{@view~map.search.nominatim.placeholder@}" type="text">
     </div>
     <div id="search-project-keywords">
