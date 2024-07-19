@@ -83,7 +83,7 @@ export default class Permalink {
                 const gbparams = {};
                 gbparams['project'] = lizUrls.params.project;
                 gbparams['repository'] = lizUrls.params.repository;
-                gbparams['hash'] = window.location.hash;
+                gbparams['hash'] = this._hash;
                 gbparams['name'] = bname;
                 gbparams['q'] = 'add';
                 fetch(lizUrls.geobookmark, {
