@@ -26,7 +26,7 @@ var lizTimemanager = function() {
             tmLayersNumber = Object.keys(lizMap.config.timemanagerLayers).length;
 
             $('#timemanager-menu button.btn-timemanager-clear').click(function() {
-                $('#button-timemanager').click();
+                document.getElementById('button-timemanager').click();
             });
 
             lizMap.events.on({

@@ -37,8 +37,12 @@ export default function executeJSFromServer() {
                 // it's an embedded content
                 $('#content').addClass('embed');
 
-                // move tooltip placement
-                $('#mapmenu .nav-list > li > a').tooltip('destroy').tooltip({ placement: 'bottom' });
+                // move tooltip placement to bottom
+                const tooltipTriggerList = document.querySelectorAll('#mapmenu .nav-list > li > a');
+                [...tooltipTriggerList].map(tooltipTriggerEl => {
+                    bootstrap.Tooltip.getInstance(tooltipTriggerEl).dispose();
+                    new bootstrap.Tooltip(tooltipTriggerEl, { placement: 'bottom' });
+                });
 
                 // move search tool
                 var search = $('#nominatim-search');
