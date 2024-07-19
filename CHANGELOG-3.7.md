@@ -8,6 +8,38 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Funders
+
+* **FM Projet**
+* **[Terre de Provence Agglomération](https://www.terredeprovence-agglo.com/)**
+* **[Valabre](https://www.valabre.com/)**
+
+### Added
+
+* New option to disable the automatic permalink in the URL when a pan or a zoom is done
+
+### Fixed
+
+* **Group as layer**
+    * checked by theme
+    * Layer group not automatically active despite corresponding setting
+* Dataviz
+    * Fix JavaScript when dataviz is not available
+* Digitizing :
+  * Fixing measure not removed from selection to draw
+* **Lizmap search**: order first by `similarity` then by `item_label`
+* Zoom to feature when `limitDataToBbox` is `true`
+* Fixing tiles resolutions
+  * Geoplateforme WMTS layers have 19 zoom levels
+  * Fix JavaScript XYZ Grid Tile
+* Permalink :
+  * If geobookmark is the same as the hash there is no hash change event. In this case we run permalink
+  * Fix permalink after location change
+
+### Tests
+
+* Improve End2End automatic tests
+
 ## 3.7.9 - 2024-07-04
 
 ### Funders
