@@ -615,19 +615,18 @@ var lizAttributeTable = function() {
 
                 // Export tools
                 if ( 'exportLayers' in config.options && config.options.exportLayers == 'True' ) {
-                    html+= '&nbsp;<div class="export-formats btn-group pull-right" role="group" >';
-                    html+= '    <button type="button" class="btn btn-mini dropdown-toggle exportLayer" data-toggle="dropdown" aria-expanded="false">';
+                    html+= '<div class="export-formats dropdown float-end" role="group" >';
+                    html+= '    <button type="button" class="btn btn-mini dropdown-toggle exportLayer" data-bs-toggle="dropdown" aria-expanded="false">';
                     html+= lizDict['attributeLayers.toolbar.btn.data.export.title'];
-                    html+= '      <span class="caret"></span>';
                     html+= '    </button>';
                     html+= '    <ul class="dropdown-menu" role="menu">';
-                    html+= '        <li><a href="#" class="btn-export-attributeTable">GeoJSON</a></li>';
-                    html+= '        <li><a href="#" class="btn-export-attributeTable">GML</a></li>';
+                    html+= '        <li><button type="button" class="dropdown-item btn-export-attributeTable">GeoJSON</button></li>';
+                    html+= '        <li><button type="button" class="dropdown-item btn-export-attributeTable">GML</button></li>';
                     var exportFormats = lizMap.mainLizmap.initialConfig.vectorLayerResultFormat;
                     for ( var i=0, len=exportFormats.length; i<len; i++ ) {
                         var format = exportFormats[i].toLowerCase();
                         if ( format != 'gml2' && format != 'gml3' && format != 'geojson' ) {
-                            html += '        <li><a href="#" class="btn-export-attributeTable">'+format+'</a></li>';
+                            html += '        <li><button type="button" class="dropdown-item btn-export-attributeTable">'+format+'</button></li>';
                         }
                     }
                     html+= '    </ul>';
@@ -673,10 +672,6 @@ var lizAttributeTable = function() {
                 html+= '</div>'; // 'attribute-layer-' + cleanName
 
                 $('#attribute-table-container').append(html);
-
-                $('#attribute-layer-' + cleanName + ' button').tooltip( {
-                    placement: 'bottom'
-                } );
 
                 $('.btn-close-attribute-tab').click(function(){
                     //there are multiple elements which has .closeTab icon so close the tab whose close icon is clicked
@@ -820,7 +815,7 @@ var lizAttributeTable = function() {
                 }
 
                 // Bind click on export buttons
-                $('#attribute-layer-'+ cleanName + ' a.btn-export-attributeTable')
+                $('#attribute-layer-'+ cleanName + ' button.btn-export-attributeTable')
                     .click(function(){
                         var eFormat = $(this).text();
                         if( eFormat == 'GML' )
@@ -828,8 +823,6 @@ var lizAttributeTable = function() {
                         var cleanName = $(this).parents('div.attribute-layer-main:first').attr('id').replace('attribute-layer-main-', '');
                         var eName = attributeLayersDic[ cleanName ];
                         lizMap.exportVectorLayer( eName, eFormat, limitDataToBbox );
-                        $(this).blur();
-                        return false;
                     });
 
                 // Bind click on createFeature button
