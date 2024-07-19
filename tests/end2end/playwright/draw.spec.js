@@ -235,7 +235,7 @@ test.describe('Draw', () => {
 
     test('Erase all', async ({ page }) => {
         // Polygon
-        await page.locator('#draw').getByRole('link').nth(1).click();
+        await page.getByRole('button', { name: 'Toggle Dropdown' }).click();
         await page.locator('.digitizing-polygon > svg').click();
         await page.locator('#newOlMap').click({
             position: {
@@ -258,7 +258,7 @@ test.describe('Draw', () => {
         });
 
         // Box
-        await page.locator('#draw').getByRole('link').nth(1).click();
+        await page.getByRole('button', { name: 'Toggle Dropdown' }).click();
         await page.locator('.digitizing-box > svg').click();
         await page.locator('#newOlMap').click({
             position: {
