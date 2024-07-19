@@ -46,18 +46,18 @@ export default class FeatureToolbar extends HTMLElement {
         // Note: Unlink button deletes the feature for pivot layer and unlinks otherwise
         this._mainTemplate = () => html`
         <div class="feature-toolbar">
-            <button type="button" class="btn btn-mini feature-select ${this.attributeTableConfig ? '' : 'hide'} ${this.isSelected ? 'btn-primary' : ''}" @click=${() => this.select()} data-bs-toggle="tooltip" data-bs-title="${lizDict['attributeLayers.btn.select.title']}"><i class="icon-ok"></i></button>
-            <button type="button" class="btn btn-mini feature-filter ${this.attributeTableConfig && this.hasFilter ? '' : 'hide'} ${this.isFiltered ? 'btn-primary' : ''}" @click=${() => this.filter()} data-bs-toggle="tooltip" data-bs-title="${lizDict['attributeLayers.toolbar.btn.data.filter.title']}"><i class="icon-filter"></i></button>
-            <button type="button" class="btn btn-mini feature-zoom ${this.getAttribute('crs') || (this.attributeTableConfig && this.hasGeometry) ? '' : 'hide'}" @click=${() => this.zoom()} data-bs-toggle="tooltip" data-bs-title="${lizDict['attributeLayers.btn.zoom.title']}"><i class="icon-zoom-in"></i></button>
-            <button type="button" class="btn btn-mini feature-center ${this.getAttribute('crs') || (this.attributeTableConfig && this.hasGeometry) ? '' : 'hide'}"  @click=${() => this.center()} data-bs-toggle="tooltip" data-bs-title="${lizDict['attributeLayers.btn.center.title']}"><i class="icon-screenshot"></i></button>
-            <button type="button" class="btn btn-mini feature-edit ${this.isLayerEditable && this._isFeatureEditable ? '' : 'hide'}" @click=${() => this.edit()} data-bs-toggle="tooltip" data-bs-title="${lizDict['attributeLayers.btn.edit.title']}"><i class="icon-pencil"></i></button>
-            <button type="button" class="btn btn-mini feature-delete ${(this.isDeletable && !this._pivotLayerId) ? '' : 'hide'}" @click=${() => this.delete()} data-bs-toggle="tooltip" data-bs-title="${lizDict['attributeLayers.btn.delete.title']}"><i class="icon-trash"></i></button>
-            <button type="button" class="btn btn-mini feature-unlink ${this.isUnlinkable ? '' : 'hide'}" @click=${() => this.isNToMRelation ? this.deleteFromPivot() : this.unlink()} data-bs-toggle="tooltip" data-bs-title="${lizDict['attributeLayers.btn.remove.link.title']}"><i class="icon-minus"></i></button>
+            <button type="button" class="btn btn-sm feature-select ${this.attributeTableConfig ? '' : 'hide'} ${this.isSelected ? 'btn-primary' : ''}" @click=${() => this.select()} data-bs-toggle="tooltip" data-bs-title="${lizDict['attributeLayers.btn.select.title']}"><i class="icon-ok"></i></button>
+            <button type="button" class="btn btn-sm feature-filter ${this.attributeTableConfig && this.hasFilter ? '' : 'hide'} ${this.isFiltered ? 'btn-primary' : ''}" @click=${() => this.filter()} data-bs-toggle="tooltip" data-bs-title="${lizDict['attributeLayers.toolbar.btn.data.filter.title']}"><i class="icon-filter"></i></button>
+            <button type="button" class="btn btn-sm feature-zoom ${this.getAttribute('crs') || (this.attributeTableConfig && this.hasGeometry) ? '' : 'hide'}" @click=${() => this.zoom()} data-bs-toggle="tooltip" data-bs-title="${lizDict['attributeLayers.btn.zoom.title']}"><i class="icon-zoom-in"></i></button>
+            <button type="button" class="btn btn-sm feature-center ${this.getAttribute('crs') || (this.attributeTableConfig && this.hasGeometry) ? '' : 'hide'}"  @click=${() => this.center()} data-bs-toggle="tooltip" data-bs-title="${lizDict['attributeLayers.btn.center.title']}"><i class="icon-screenshot"></i></button>
+            <button type="button" class="btn btn-sm feature-edit ${this.isLayerEditable && this._isFeatureEditable ? '' : 'hide'}" @click=${() => this.edit()} data-bs-toggle="tooltip" data-bs-title="${lizDict['attributeLayers.btn.edit.title']}"><i class="icon-pencil"></i></button>
+            <button type="button" class="btn btn-sm feature-delete ${(this.isDeletable && !this._pivotLayerId) ? '' : 'hide'}" @click=${() => this.delete()} data-bs-toggle="tooltip" data-bs-title="${lizDict['attributeLayers.btn.delete.title']}"><i class="icon-trash"></i></button>
+            <button type="button" class="btn btn-sm feature-unlink ${this.isUnlinkable ? '' : 'hide'}" @click=${() => this.isNToMRelation ? this.deleteFromPivot() : this.unlink()} data-bs-toggle="tooltip" data-bs-title="${lizDict['attributeLayers.btn.remove.link.title']}"><i class="icon-minus"></i></button>
 
 
             ${this.isFeatureExportable
                 ? html`<div class="btn-group feature-export">
-                        <button type="button" class="btn btn-mini dropdown-toggle" data-toggle="dropdown" data-bs-toggle="tooltip" data-bs-title="${lizDict['attributeLayers.toolbar.btn.data.export.title']}">
+                        <button type="button" class="btn btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="tooltip" data-bs-title="${lizDict['attributeLayers.toolbar.btn.data.export.title']}">
                             <i class="icon-download"></i>
                             <span class="caret"></span>
                         </button>
@@ -70,13 +70,13 @@ export default class FeatureToolbar extends HTMLElement {
             }
 
             ${this.hasDefaultPopupPrint
-            ? html`<button type="button" class="btn btn-mini feature-print" @click=${() => this.print()} data-bs-toggle="tooltip" data-bs-title="${lizDict['print.launch']}"><i class="icon-print"></i></button>`
+            ? html`<button type="button" class="btn btn-sm feature-print" @click=${() => this.print()} data-bs-toggle="tooltip" data-bs-title="${lizDict['print.launch']}"><i class="icon-print"></i></button>`
             : ''
             }
 
             ${this.atlasLayouts.map( layout => html`
                 <div class="feature-atlas">
-                    <button type="button" class="btn btn-mini" data-bs-toggle="tooltip" data-bs-title="${layout.title}" @click=${
+                    <button type="button" class="btn btn-sm" data-bs-toggle="tooltip" data-bs-title="${layout.title}" @click=${
                         event => layout.labels.length
                         ? event.currentTarget.parentElement.querySelector('.custom-labels').classList.toggle('hide')
                         : this.printAtlas(layout.title, layout.default_format)}>
@@ -104,7 +104,7 @@ export default class FeatureToolbar extends HTMLElement {
             ${this.editableChildrenLayers.length
                 ? html`
                 <div class="btn-group feature-create-child" style="margin-left: 0px;">
-                    <button type="button" class="btn btn-mini dropdown-toggle" data-toggle="dropdown" title="${lizDict['attributeLayers.toolbar.btn.data.createFeature.title']}">
+                    <button type="button" class="btn btn-sm dropdown-toggle" data-toggle="dropdown" title="${lizDict['attributeLayers.toolbar.btn.data.createFeature.title']}">
                         <i class="icon-plus-sign"></i>
                         <span class="caret"></span>
                     </button>

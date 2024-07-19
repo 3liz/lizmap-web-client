@@ -55,15 +55,15 @@ var lizLayerFilterTool = function () {
                 html += '<b><span id="liz-filter-item-layer-total-count">' + total + '</span> ' + lizDict['filter.label.features'] + '</b>';
 
                 // Add zoom link
-                html += '<br/><button id="liz-filter-zoom" class="btn btn-mini btn-primary" title="' + lizDict['filter.btn.zoom.title'] + '">' + lizDict['filter.btn.zoom.label'] + '</button>';
+                html += '<br/><button id="liz-filter-zoom" class="btn btn-sm btn-primary" title="' + lizDict['filter.btn.zoom.title'] + '">' + lizDict['filter.btn.zoom.label'] + '</button>';
 
                 // Add export button
                 if (lizMap.mainLizmap.initialConfig.vectorLayerResultFormat.includes('ODS')) {
-                    html += '&nbsp;&nbsp;<button id="liz-filter-export" class="btn btn-mini btn-primary" title="' + lizDict['filter.btn.export.title'] + '">' + lizDict['filter.btn.export.label'] + '</button>';
+                    html += '&nbsp;&nbsp;<button id="liz-filter-export" class="btn btn-sm btn-primary" title="' + lizDict['filter.btn.export.title'] + '">' + lizDict['filter.btn.export.label'] + '</button>';
                 }
 
                 // Add unfilter link
-                html += '&nbsp;&nbsp;<button id="liz-filter-unfilter" class="btn btn-mini btn-primary" title="' + lizDict['filter.btn.reset.title'] + '">' + lizDict['filter.btn.reset.label'] + '</button>';
+                html += '&nbsp;&nbsp;<button id="liz-filter-unfilter" class="btn btn-sm btn-primary" title="' + lizDict['filter.btn.reset.title'] + '">' + lizDict['filter.btn.reset.label'] + '</button>';
 
                 html += '</div>';
 
@@ -219,7 +219,7 @@ var lizLayerFilterTool = function () {
                 html += '">';
                 var flabel = field_item.title;
                 html += '<span style="font-weight:bold;">' + flabel + '</span>';
-                html += '<button class="btn btn-primary btn-mini pull-right liz-filter-reset-field" title="' + lizDict['filter.btn.reset.title'] + '" value="' + field_item.order + '">x</button>';
+                html += '<button class="btn btn-primary btn-sm pull-right liz-filter-reset-field" title="' + lizDict['filter.btn.reset.title'] + '" value="' + field_item.order + '">x</button>';
                 html += '<p>';
 
                 return html;
