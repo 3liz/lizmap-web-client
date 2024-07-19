@@ -100,6 +100,16 @@ export default class Permalink {
             });
         }
 
+        // If geobookmark is the same than the hash there is
+        // no `hashchange` event. In this case we run permalink
+        document.querySelectorAll('.btn-geobookmark-run').forEach(button => {
+            button.addEventListener('click', event => {
+                if (decodeURIComponent(window.location.hash) === event.currentTarget.getAttribute('href')) {
+                    this._runPermalink();
+                }
+            });
+        });
+
         // Refresh hash parameters when map state changes
         mainLizmap.state.map.addListener(
             () => {
