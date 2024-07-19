@@ -276,11 +276,11 @@ import DOMPurify from 'dompurify';
                 }
                 home += '</select>';
                 home += '<br><span>';
-                home += '<button class="btn btn-mini btn-primary liz-atlas-item" value="-1">' + lizDict['atlas.toolbar.prev'] + '</button>';
+                home += '<button class="btn btn-sm btn-primary liz-atlas-item" value="-1">' + lizDict['atlas.toolbar.prev'] + '</button>';
                 home += '&nbsp;';
-                home += '<button class="btn btn-mini btn-primary liz-atlas-item" value="1">' + lizDict['atlas.toolbar.next'] + '</button>';
+                home += '<button class="btn btn-sm btn-primary liz-atlas-item" value="1">' + lizDict['atlas.toolbar.next'] + '</button>';
                 home += '&nbsp;';
-                home += '<button class="btn btn-mini btn-wanrning liz-atlas-run" value="1">' + lizDict['atlas.toolbar.play'] + '</button>';
+                home += '<button class="btn btn-sm btn-wanrning liz-atlas-run" value="1">' + lizDict['atlas.toolbar.play'] + '</button>';
                 home += '&nbsp;';
                 home += '</span>';
                 home += '</span>';
