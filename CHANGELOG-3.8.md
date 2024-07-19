@@ -8,6 +8,43 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Funders
+
+* **FM Projet**
+* **[Terre de Provence Agglomération](https://www.terredeprovence-agglo.com/)**
+* **[Valabre](https://www.valabre.com/)**
+
+### Added
+
+* **Digitizing**
+    * JS Digitizing: Add erase all
+    * JS Digitizing component: measure attribute
+
+### Fixed
+
+* Refresh data button when new OL9 map moves
+* Avoid zoom to initial extent on window resize
+* **Group as layer**
+    * checked by theme
+    * Layer group not automatically active despite corresponding setting
+* Dataviz
+    * Fix JavaScript when dataviz is not available
+* Digitizing :
+  * Fixing measure not removed from selection to draw
+* **Lizmap search**: order first by `similarity` then by `item_label`
+* Zoom to feature when `limitDataToBbox` is `true`
+* Fixing tiles resolutions
+  * Geoplateforme WMTS layers have 19 zoom levels
+  * Fix JavaScript XYZ Grid Tile
+* Permalink :
+  * If geobookmark is the same as the hash there is no hash change event. In this case we run permalink
+  * Fix permalink after location change
+
+### Tests
+
+* Upgrade to Jelix 1.8.11-rc.2
+* Improve End2End automatic tests
+
 ## 3.8.0-rc.2 - 2024-07-08
 
 ### Funders
