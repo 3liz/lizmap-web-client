@@ -391,6 +391,7 @@ export class OlMapLayerState extends ExternalMapItemState {
             throw TypeError('The parent of an OpenLayers map layer state has to be an external map group!');
         }
         super();
+        const wmsTitle = olLayer.get('wmsTitle');
         this._type = 'ol-layer'
         this._name = name;
         this._olLayer = olLayer;
@@ -398,7 +399,7 @@ export class OlMapLayerState extends ExternalMapItemState {
         this._parentGroup = parentGroup;
         this._level = 2;
         this._wmsName = null;
-        this._wmsTitle = name;
+        this._wmsTitle = wmsTitle ? wmsTitle : name;
         this._checked = true;
         this._visibility = true;
         this._opacity = 1;
