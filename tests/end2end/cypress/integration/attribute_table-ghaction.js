@@ -45,27 +45,6 @@ describe('Attribute table', () => {
 
     it('should have correct column order', () => {
 
-        const correct_column_order = ['', 'quartier', 'quartmno', 'libquart', 'photo', 'url', 'thumbnail'];
-
-        // postgreSQL layer
-        cy.get('button[value="Les_quartiers_a_Montpellier"].btn-open-attribute-layer').click({ force: true })
-
-        // Wait for features
-        cy.wait('@postGetFeature').then((interception) => {
-            expect(interception.request.body)
-                .to.contain('SERVICE=WFS')
-                .to.contain('REQUEST=GetFeature')
-                .to.contain('TYPENAME=quartiers')
-                .to.contain('OUTPUTFORMAT=GeoJSON')
-        })
-
-        cy.get('#attribute-layer-table-Les_quartiers_a_Montpellier_wrapper div.dataTables_scrollHead th').then(theaders => {
-            const headers = [...theaders].map(t => t.innerText)
-
-            // Test arrays are deeply equal (eql) to test column order
-            expect(headers).to.eql(correct_column_order)
-        })
-
         // shapefile layer
         cy.get('button[value="quartiers_shp"].btn-open-attribute-layer').click({ force: true })
 
@@ -80,6 +59,28 @@ describe('Attribute table', () => {
 
         cy.get('#attribute-layer-table-quartiers_shp_wrapper div.dataTables_scrollHead th').then(theaders => {
             const headers = [...theaders].map(t => t.innerText)
+            const correct_column_order = ['', 'quartmno', 'libquart', 'photo', 'url', 'thumbnail'];
+
+            // Test arrays are deeply equal (eql) to test column order
+            expect(headers).to.eql(correct_column_order)
+        })
+
+        // attribute table config
+        // postgreSQL layer
+        cy.get('button[value="Les_quartiers_a_Montpellier"].btn-open-attribute-layer').click({ force: true })
+
+        // Wait for features
+        cy.wait('@postGetFeature').then((interception) => {
+            expect(interception.request.body)
+                .to.contain('SERVICE=WFS')
+                .to.contain('REQUEST=GetFeature')
+                .to.contain('TYPENAME=quartiers')
+                .to.contain('OUTPUTFORMAT=GeoJSON')
+        })
+
+        cy.get('#attribute-layer-table-Les_quartiers_a_Montpellier_wrapper div.dataTables_scrollHead th').then(theaders => {
+            const headers = [...theaders].map(t => t.innerText)
+            const correct_column_order = ['', 'quartier', 'quartmno', 'libquart', 'thumbnail', 'url', 'photo'];
 
             // Test arrays are deeply equal (eql) to test column order
             expect(headers).to.eql(correct_column_order)
@@ -213,10 +214,11 @@ describe('Attribute table', () => {
 
         // Check table lines
         cy.get('#attribute-layer-table-Les_quartiers_a_Montpellier tbody tr').should('have.length', 7)
+        // Attribute table config changes virtual field position form last one to 5th
         // the virtual field is here with good attribute (data-src)
-        cy.get('#attribute-layer-table-Les_quartiers_a_Montpellier tbody tr:nth-child(1) td:nth-child(7) img[data-src]').should('exist')
+        cy.get('#attribute-layer-table-Les_quartiers_a_Montpellier tbody tr:nth-child(1) td:nth-child(5) img[data-src]').should('exist')
         // the onload attribute have disappeared
-        cy.get('#attribute-layer-table-Les_quartiers_a_Montpellier tbody tr:nth-child(1) td:nth-child(7) img[onload]').should('not.exist')
+        cy.get('#attribute-layer-table-Les_quartiers_a_Montpellier tbody tr:nth-child(1) td:nth-child(5) img[onload]').should('not.exist')
 
         // select feature 2,4,6
         // click to select 2
