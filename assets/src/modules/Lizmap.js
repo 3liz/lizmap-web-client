@@ -291,16 +291,15 @@ export default class Lizmap {
      * @type {number[]}
      */
     get center() {
-        const center = this._lizmap3.map.getCenter();
-        return [center.lon, center.lat];
+        return this.state.map.center;
     }
 
     /**
      * Setting the map center
-     * @param {number[]} lonlat - lonlat to center to.
+     * @param {number[]} center - The center of the view.
      */
-    set center(lonlat) {
-        this.map.getView().setCenter(lonlat);
+    set center(center) {
+        this.map.getView().setCenter(center);
     }
 
     /**
