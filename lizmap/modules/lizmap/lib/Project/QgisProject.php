@@ -1295,10 +1295,13 @@ class QgisProject
                 $WMSKeywordList = implode(', ', $values);
             }
 
-            $WMSExtent = $qgsLoad->properties->WMSExtent->value[0];
-            $WMSExtent .= ', '.$qgsLoad->properties->WMSExtent->value[1];
-            $WMSExtent .= ', '.$qgsLoad->properties->WMSExtent->value[2];
-            $WMSExtent .= ', '.$qgsLoad->properties->WMSExtent->value[3];
+            if (property_exists($qgsLoad->properties->WMSExtent, 'value')
+                && $qgsLoad->properties->WMSExtent->value !== null) {
+                $WMSExtent = $qgsLoad->properties->WMSExtent->value[0];
+                $WMSExtent .= ', '.$qgsLoad->properties->WMSExtent->value[1];
+                $WMSExtent .= ', '.$qgsLoad->properties->WMSExtent->value[2];
+                $WMSExtent .= ', '.$qgsLoad->properties->WMSExtent->value[3];
+            }
             $WMSOnlineResource = (string) $qgsLoad->properties->WMSOnlineResource;
             $WMSContactMail = (string) $qgsLoad->properties->WMSContactMail;
             $WMSContactOrganization = (string) $qgsLoad->properties->WMSContactOrganization;
