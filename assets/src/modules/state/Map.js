@@ -151,7 +151,12 @@ export class MapState extends EventDispatcher {
             this._singleWMSLayer = options.wms_single_request_for_all_layers; // default value is defined as false
             this._scales = buildScales(options);
             this._maxZoom = this._scales.length - 1;
-            this._initialExtent = options.initialExtent;
+            this._projection = options.projection.ref;
+            this._initialExtent = new Extent(...(options.initialExtent));
+            this._center = [
+                this._initialExtent.xmin + (this._initialExtent.xmax-this._initialExtent.xmin)/2,
+                this._initialExtent.ymin + (this._initialExtent.ymax-this._initialExtent.ymin)/2
+            ];
         }
 
         this._startupFeatures = startupFeatures;
@@ -308,10 +313,18 @@ export class MapState extends EventDispatcher {
 
     /**
      * Map extent (calculate by the map view)
-     * @type {number[]}
+     * @type {Extent}
      */
     get extent() {
         return this._extent;
+    }
+
+    /**
+     * Map initial extent (provided by lizmap config)
+     * @type {Extent}
+     */
+    get initialExtent() {
+        return this._initialExtent;
     }
 
     /**
@@ -356,8 +369,7 @@ export class MapState extends EventDispatcher {
 
     /**
      * Config singleWMSLayer
-     *
-     * @type {Boolean}
+     * @type {boolean}
      */
     get singleWMSLayer(){
         return this._singleWMSLayer;
