@@ -721,6 +721,14 @@ export class MapLayerState extends MapItemState {
 export class MapRootState extends MapGroupState {
 
     /**
+     * Creating a map root state instance
+     * @param {LayerGroupState} layerGroupState  - the layer tree group config
+     */
+    constructor(layerGroupState) {
+        super(layerGroupState);
+    }
+
+    /**
      * Create an external map group state
      * @param {string} name - the external map group name
      * @returns {ExternalMapGroupState} The external map group state
@@ -734,6 +742,12 @@ export class MapRootState extends MapGroupState {
             throw RangeError('The group name `'+ name +'` is already used by an external group child!');
         }
         const extGroup = new ExternalMapGroupState(name);
+        extGroup.addListener(this.dispatch.bind(this), 'ext-group.wmsTitle.changed');
+        extGroup.addListener(this.dispatch.bind(this), 'ext-group.visibility.changed');
+        extGroup.addListener(this.dispatch.bind(this), 'ol-layer.wmsTitle.changed');
+        extGroup.addListener(this.dispatch.bind(this), 'ol-layer.icon.changed');
+        extGroup.addListener(this.dispatch.bind(this), 'ol-layer.opacity.changed');
+        extGroup.addListener(this.dispatch.bind(this), 'ol-layer.visibility.changed');
         this._items.unshift(extGroup);
         this.dispatch({
             type: 'ext-group.added',
@@ -755,6 +769,12 @@ export class MapRootState extends MapGroupState {
             return undefined;
         }
         const extGroup = this._items.at(groups[0].index);
+        extGroup.removeListener(this.dispatch.bind(this), 'ext-group.wmsTitle.changed');
+        extGroup.removeListener(this.dispatch.bind(this), 'ext-group.visibility.changed');
+        extGroup.removeListener(this.dispatch.bind(this), 'ol-layer.wmsTitle.changed');
+        extGroup.removeListener(this.dispatch.bind(this), 'ol-layer.icon.changed');
+        extGroup.removeListener(this.dispatch.bind(this), 'ol-layer.opacity.changed');
+        extGroup.removeListener(this.dispatch.bind(this), 'ol-layer.visibility.changed');
         this._items.splice(groups[0].index, 1);
         this.dispatch({
             type: 'ext-group.removed',
