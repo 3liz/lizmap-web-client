@@ -21,10 +21,13 @@ describe('MapState', function () {
         expect(mapState.scales).to.be.an('array').that.have.lengthOf(0)
         expect(mapState.size).to.be.an('array').that.have.lengthOf(2).that.deep.equal([0, 0])
         expect(mapState.extent).to.be.instanceOf(Extent).that.have.lengthOf(4).that.deep.equal([0, 0, 0, 0])
+        expect(mapState.initialExtent).to.be.instanceOf(Extent).that.have.lengthOf(4).that.deep.equal([0, 0, 0, 0])
         expect(mapState.resolution).to.be.eq(-1)
         expect(mapState.scaleDenominator).to.be.eq(-1)
         expect(mapState.pointResolution).to.be.eq(-1)
         expect(mapState.pointScaleDenominator).to.be.eq(-1)
+        expect(mapState.startupFeatures).to.be.undefined
+        expect(mapState.singleWMSLayer).to.be.false
 
         // Update all properties
         mapState.update({
@@ -530,5 +533,256 @@ describe('buildScales', function () {
         expect(scales).to.have.length(6);
         expect(scales.at(0)).to.be.eq(optScales.at(0)); // 500000
         expect(scales.at(-1)).to.be.eq(optScales.at(-1)); // 10000
+    })
+})
+
+describe('MapState with options', function () {
+    it('Default values', function () {
+        const opt = new OptionsConfig({
+            "projection": {
+                "proj4": "+proj=longlat +datum=WGS84 +no_defs",
+                "ref": "EPSG:4326"
+            },
+            "bbox": [
+                "-3.5",
+                "-1.0",
+                "3.5",
+                "1.0"
+            ],
+            "mapScales": [
+                10000,
+                25000,
+                50000,
+                100000,
+                250000,
+                500000
+            ],
+            "minScale": 10000,
+            "maxScale": 500000,
+            "initialExtent": [
+                -3.5,
+                -1.0,
+                3.5,
+                1.0
+            ],
+            "popupLocation": "dock",
+            "pointTolerance": 25,
+            "lineTolerance": 10,
+            "polygonTolerance": 5,
+            "hideProject": "True",
+            "tmTimeFrameSize": 10,
+            "tmTimeFrameType": "seconds",
+            "tmAnimationFrameLength": 1000,
+            "datavizLocation": "dock",
+            "theme": "light",
+            //"wmsMaxHeight": 3000,
+            //"wmsMaxWidth": 3000,
+            //"fixed_scale_overview_map": true,
+            //"use_native_zoom_levels": false,
+            //"hide_numeric_scale_value": false,
+            //"hideGroupCheckbox": false,
+            //"activateFirstMapTheme": false,
+        })
+        let mapState = new MapState(opt);
+        expect(mapState).to.be.instanceOf(MapState)
+        expect(mapState.projection).to.be.eq('EPSG:4326')
+        expect(mapState.center).to.be.an('array').that.have.lengthOf(2).that.deep.equal([0, 0])
+        expect(mapState.zoom).to.be.eq(-1)
+        expect(mapState.minZoom).to.be.eq(0)
+        expect(mapState.maxZoom).to.be.eq(5)
+        expect(mapState.scales).to.be.an('array').that.have.lengthOf(6)
+        expect(mapState.size).to.be.an('array').that.have.lengthOf(2).that.deep.equal([0, 0])
+        expect(mapState.extent).to.be.instanceOf(Extent).that.have.lengthOf(4).that.deep.equal([0, 0, 0, 0])
+        expect(mapState.initialExtent).to.be.instanceOf(Extent).that.have.lengthOf(4).that.deep.equal([-3.5, -1, 3.5, 1])
+        expect(mapState.resolution).to.be.eq(-1)
+        expect(mapState.scaleDenominator).to.be.eq(-1)
+        expect(mapState.pointResolution).to.be.eq(-1)
+        expect(mapState.pointScaleDenominator).to.be.eq(-1)
+        expect(mapState.startupFeatures).to.be.undefined
+        expect(mapState.singleWMSLayer).to.be.false
+    })
+
+    it('Native zoom levels', function () {
+        let opt = new OptionsConfig({
+            "projection": {
+                "proj4": "+proj=merc +a=6378137 +b=6378137 +lat_ts=0 +lon_0=0 +x_0=0 +y_0=0 +k=1 +units=m +nadgrids=@null +wktext +no_defs",
+                "ref": "EPSG:3857"
+            },
+            "bbox": [
+                "-3.5",
+                "-1.0",
+                "3.5",
+                "1.0"
+            ],
+            "mapScales": [
+                10000,
+                25000,
+                50000,
+                100000,
+                250000,
+                500000
+            ],
+            "minScale": 10000,
+            "maxScale": 500000,
+            "initialExtent": [
+                -3.5,
+                -1.0,
+                3.5,
+                1.0
+            ],
+            "popupLocation": "dock",
+            "pointTolerance": 25,
+            "lineTolerance": 10,
+            "polygonTolerance": 5,
+            "hideProject": "True",
+            "tmTimeFrameSize": 10,
+            "tmTimeFrameType": "seconds",
+            "tmAnimationFrameLength": 1000,
+            "datavizLocation": "dock",
+            "theme": "light",
+            //"wmsMaxHeight": 3000,
+            //"wmsMaxWidth": 3000,
+            //"fixed_scale_overview_map": true,
+            //"use_native_zoom_levels": true,
+            //"hide_numeric_scale_value": false,
+            //"hideGroupCheckbox": false,
+        })
+        // Default value for EPSG:3857 without use_native_zoom_levels defined
+        expect(opt.use_native_zoom_levels).to.be.eq(true)
+
+        let mapState = new MapState(opt);
+        expect(mapState).to.be.instanceOf(MapState)
+        expect(mapState.zoom).to.be.eq(-1)
+        expect(mapState.minZoom).to.be.eq(0)
+        expect(mapState.maxZoom).to.be.eq(4)
+        expect(mapState.scales).to.be.an('array').that.have.lengthOf(5)
+        expect(mapState.scales.at(0)).to.be.lessThan(opt.mapScales.at(-1)); // < 500000
+        expect(Math.round(mapState.scales.at(0))).to.be.eq(288896);
+        expect(mapState.scales.at(-1)).to.be.greaterThan(opt.mapScales.at(0)); // > 10000
+        expect(Math.round(mapState.scales.at(-1))).to.be.eq(18056);
+
+        opt = new OptionsConfig({
+            "projection": {
+                "proj4": "+proj=longlat +datum=WGS84 +no_defs",
+                "ref": "EPSG:4326"
+            },
+            "bbox": [
+                "-3.5",
+                "-1.0",
+                "3.5",
+                "1.0"
+            ],
+            "mapScales": [
+                10000,
+                500000
+            ],
+            "minScale": 10000,
+            "maxScale": 500000,
+            "initialExtent": [
+                -3.5,
+                -1.0,
+                3.5,
+                1.0
+            ],
+            "popupLocation": "dock",
+            "pointTolerance": 25,
+            "lineTolerance": 10,
+            "polygonTolerance": 5,
+            "hideProject": "True",
+            "tmTimeFrameSize": 10,
+            "tmTimeFrameType": "seconds",
+            "tmAnimationFrameLength": 1000,
+            "datavizLocation": "dock",
+            "theme": "light",
+            //"wmsMaxHeight": 3000,
+            //"wmsMaxWidth": 3000,
+            //"fixed_scale_overview_map": true,
+            //"use_native_zoom_levels": true,
+        })
+        // Default value for 2 mapScales without use_native_zoom_levels defined
+        expect(opt.use_native_zoom_levels).to.be.eq(true)
+
+        mapState = new MapState(opt);
+        expect(mapState).to.be.instanceOf(MapState)
+        expect(mapState.zoom).to.be.eq(-1)
+        expect(mapState.minZoom).to.be.eq(0)
+        expect(mapState.maxZoom).to.be.eq(5)
+        expect(mapState.scales).to.be.an('array').that.have.lengthOf(6)
+        expect(mapState.scales.at(0)).to.be.eq(opt.mapScales.at(-1)); // 500000
+        expect(mapState.scales.at(-1)).to.be.eq(opt.mapScales.at(0)); // 10000
+    })
+
+    it('Zoom to initial extent', function () {
+        const opt = new OptionsConfig({
+            "projection": {
+                "proj4": "+proj=longlat +datum=WGS84 +no_defs",
+                "ref": "EPSG:4326"
+            },
+            "bbox": [
+                "-3.5",
+                "-1.0",
+                "3.5",
+                "1.0"
+            ],
+            "mapScales": [
+                10000,
+                25000,
+                50000,
+                100000,
+                250000,
+                500000
+            ],
+            "minScale": 10000,
+            "maxScale": 500000,
+            "initialExtent": [
+                -3.5,
+                -1.0,
+                3.5,
+                1.0
+            ],
+            "popupLocation": "dock",
+            "pointTolerance": 25,
+            "lineTolerance": 10,
+            "polygonTolerance": 5,
+            "hideProject": "True",
+            "tmTimeFrameSize": 10,
+            "tmTimeFrameType": "seconds",
+            "tmAnimationFrameLength": 1000,
+            "datavizLocation": "dock",
+            "theme": "light",
+            //"wmsMaxHeight": 3000,
+            //"wmsMaxWidth": 3000,
+            //"fixed_scale_overview_map": true,
+            //"use_native_zoom_levels": false,
+            //"hide_numeric_scale_value": false,
+            //"hideGroupCheckbox": false,
+            //"activateFirstMapTheme": false,
+        })
+        let mapState = new MapState(opt);
+        expect(mapState).to.be.instanceOf(MapState)
+
+        expect(mapState.extent).to.be.instanceOf(Extent).that.have.lengthOf(4).that.deep.equal([0, 0, 0, 0])
+        expect(mapState.initialExtent).to.be.instanceOf(Extent).that.have.lengthOf(4).that.deep.equal([-3.5, -1, 3.5, 1])
+
+        mapState.zoomToInitialExtent()
+        expect(mapState.extent).to.be.instanceOf(Extent).that.have.lengthOf(4).that.deep.equal([-3.5, -1, 3.5, 1])
+        expect(mapState.initialExtent).to.be.instanceOf(Extent).that.have.lengthOf(4).that.deep.equal([-3.5, -1, 3.5, 1])
+
+        // Update extent
+        mapState.update({
+            "type": "map.state.changed",
+            "extent": [
+                -3.5,
+                -1,
+                0,
+                0
+            ],
+        });
+        expect(mapState.extent).to.be.instanceOf(Extent).that.have.lengthOf(4).that.deep.equal([-3.5, -1, 0, 0])
+        expect(mapState.initialExtent).to.be.instanceOf(Extent).that.have.lengthOf(4).that.deep.equal([-3.5, -1, 3.5, 1])
+
+        mapState.zoomToInitialExtent()
+        expect(mapState.extent).to.be.instanceOf(Extent).that.have.lengthOf(4).that.deep.equal([-3.5, -1, 3.5, 1])
+        expect(mapState.initialExtent).to.be.instanceOf(Extent).that.have.lengthOf(4).that.deep.equal([-3.5, -1, 3.5, 1])
     })
 })
