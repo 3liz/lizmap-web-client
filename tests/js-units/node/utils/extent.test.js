@@ -26,6 +26,17 @@ describe('Extent', function () {
         expect(ext.ymin).to.be.eq(-2)
         expect(ext.xmax).to.be.eq(2)
         expect(ext.ymax).to.be.eq(2)
+
+        ext = new Extent(...[-1,-1,1,1])
+        expect(ext.length).to.be.eq(4)
+        expect(ext[0]).to.be.eq(-1)
+        expect(ext[1]).to.be.eq(-1)
+        expect(ext[2]).to.be.eq(1)
+        expect(ext[3]).to.be.eq(1)
+        expect(ext.xmin).to.be.eq(-1)
+        expect(ext.ymin).to.be.eq(-1)
+        expect(ext.xmax).to.be.eq(1)
+        expect(ext.ymax).to.be.eq(1)
     })
 
     it('Equals', function () {
