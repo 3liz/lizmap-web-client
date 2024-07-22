@@ -6,7 +6,7 @@
  * @license MPL-2.0
  */
 
-import { ValidationError } from './../Errors.js';
+import { ValidationError, ConversionError } from './../Errors.js';
 import { convertNumber } from './Converters.js';
 
 /**
