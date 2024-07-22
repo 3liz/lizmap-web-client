@@ -596,13 +596,11 @@ export default class map extends olMap {
         // Sync new OL view with OL2 view
         mainLizmap.lizmap3.map.events.on({
             move: () => {
-                console.log('move');
                 this.syncNewOLwithOL2View();
             }
         });
 
         this.on('moveend', () => {
-            console.log('move');
             this._dispatchMapStateChanged();
 
             if (!mainLizmap.newOlMap) {
