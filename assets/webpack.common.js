@@ -15,6 +15,7 @@ export default {
         timemanager: './src/legacy/timemanager.js',
         view: './src/legacy/view.js',
         'bottom-dock': './src/legacy/bottom-dock.js',
+        'map-projects': './src/legacy/map-projects.js',
     },
     output: {
         filename: '[name].js',
