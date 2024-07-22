@@ -16,6 +16,7 @@ export default {
         search: './src/legacy/search.js',
         view: './src/legacy/view.js',
         'bottom-dock': './src/legacy/bottom-dock.js',
+        'map-projects': './src/legacy/map-projects.js',
     },
     output: {
         filename: '../../lizmap/www/assets/js/[name].js',
