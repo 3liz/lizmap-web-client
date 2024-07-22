@@ -106,7 +106,7 @@ describe('ExternalMapGroupState', function () {
 		const extGroup = root.createExternalGroup('test');
 		expect(extGroup.childrenCount).to.be.eq(0)
 
-		// wmsTitle changed event
+		// OL Layer added event
 		let olLayerAddedEvt;
 		extGroup.addListener(evt => {
 			olLayerAddedEvt = evt;
@@ -170,7 +170,7 @@ describe('ExternalMapGroupState', function () {
 		const extGroup = root.createExternalGroup('test');
 		expect(extGroup.childrenCount).to.be.eq(0)
 
-		// wmsTitle changed event
+		// OL layer removed event
 		let olLayerRemovedEvt;
 		extGroup.addListener(evt => {
 			olLayerRemovedEvt = evt;
