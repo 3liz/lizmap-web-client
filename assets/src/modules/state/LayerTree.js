@@ -623,6 +623,13 @@ export class TreeRootState extends LayerTreeGroupState {
                 extTreeGroup.addListener(this.dispatch.bind(this), 'ol-layer.added');
                 extTreeGroup.addListener(this.dispatch.bind(this), 'ol-layer.removed');
                 extTreeGroup.addListener(this.dispatch.bind(this), 'ext-group.expanded.changed');
+
+                extTreeGroup.addListener(this.dispatch.bind(this), 'ext-group.wmsTitle.changed');
+                extTreeGroup.addListener(this.dispatch.bind(this), 'ext-group.visibility.changed');
+                extTreeGroup.addListener(this.dispatch.bind(this), 'ol-layer.wmsTitle.changed');
+                extTreeGroup.addListener(this.dispatch.bind(this), 'ol-layer.icon.changed');
+                extTreeGroup.addListener(this.dispatch.bind(this), 'ol-layer.opacity.changed');
+                extTreeGroup.addListener(this.dispatch.bind(this), 'ol-layer.visibility.changed');
             }, ['ext-group.added']
         );
 
@@ -636,9 +643,16 @@ export class TreeRootState extends LayerTreeGroupState {
                 }
                 const extTreeGroup = this._items.at(groups[0].index);
                 this._items.splice(groups[0].index, 1);
-                extTreeGroup.addListener(this.dispatch.bind(this), 'ol-layer.added');
-                extTreeGroup.addListener(this.dispatch.bind(this), 'ol-layer.removed');
-                extTreeGroup.addListener(this.dispatch.bind(this), 'ext-group.expanded.changed');
+                extTreeGroup.removeListener(this.dispatch.bind(this), 'ol-layer.added');
+                extTreeGroup.removeListener(this.dispatch.bind(this), 'ol-layer.removed');
+                extTreeGroup.removeListener(this.dispatch.bind(this), 'ext-group.expanded.changed');
+
+                extTreeGroup.removeListener(this.dispatch.bind(this), 'ext-group.wmsTitle.changed');
+                extTreeGroup.removeListener(this.dispatch.bind(this), 'ext-group.visibility.changed');
+                extTreeGroup.removeListener(this.dispatch.bind(this), 'ol-layer.wmsTitle.changed');
+                extTreeGroup.removeListener(this.dispatch.bind(this), 'ol-layer.icon.changed');
+                extTreeGroup.removeListener(this.dispatch.bind(this), 'ol-layer.opacity.changed');
+                extTreeGroup.removeListener(this.dispatch.bind(this), 'ol-layer.visibility.changed');
             }, ['ext-group.removed']
         );
 
