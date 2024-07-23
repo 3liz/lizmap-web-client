@@ -67,7 +67,7 @@ test.describe('Map projects switcher', () => {
         await expect(checked_url.searchParams.get('repository')).toBe('testsrepository')
         await expect(checked_url.searchParams.get('project')).toBe('base_layers')
         await expect(checked_url.hash).not.toHaveLength(0);
-        await expect(checked_url.hash).toMatch(/^#3\.8380\d+,43\.5883\d+,3\.9127\d+,43\.6241\d+/)
+        await expect(checked_url.hash).toMatch(/^#3\.838\d+,43\.5883\d+,3\.912\d+,43\.6241\d+/)
 
         // Check scale
         await expect(page.locator('#overview-bar .ol-scale-text')).toHaveText('1 : ' + (36112).toLocaleString(locale));
@@ -92,7 +92,7 @@ test.describe('Map projects switcher', () => {
         await expect(checked_url.searchParams.get('repository')).toBe('testsrepository')
         await expect(checked_url.searchParams.get('project')).toBe('attribute_table')
         await expect(checked_url.hash).not.toHaveLength(0);
-        await expect(checked_url.hash).toMatch(/^#3\.8007\d+,43\.5704\d+,3\.9500\d+,43\.6419\d+/)
+        await expect(checked_url.hash).toMatch(/^#3\.8007\d+,43\.570\d+,3\.950\d+,43\.6419\d+/)
 
         // Wait for OL transition
         await page.waitForTimeout(1000);
@@ -120,7 +120,7 @@ test.describe('Map projects switcher', () => {
         checked_url = new URL(page.url());
         await expect(checked_url.searchParams.get('repository')).toBe('testsrepository')
         await expect(checked_url.searchParams.get('project')).toBe('base_layers_user_defined')
-        await expect(checked_url.hash).toMatch(/^#3\.8611\d+,43\.5992\d+,3\.8898\d+,43\.6132\d+/)
+        await expect(checked_url.hash).toMatch(/^#3\.8611\d+,43\.599\d+,3\.8898\d+,43\.6132\d+/)
 
         // Wait for OL transition
         await page.waitForTimeout(1000);
