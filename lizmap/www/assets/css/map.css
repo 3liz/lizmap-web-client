@@ -319,6 +319,12 @@ CSS Sprite positions calculated via http://instantsprite.com/ using 20px images 
   background-position: -300px 0px;
 }
 
+/* Map menu tooltip */
+#content > div.tooltip {
+  /* display over #dock */
+  z-index:1050;
+}
+
 /* Dock */
 #dock {
   position: relative;
