@@ -50,7 +50,7 @@ projectSwitcher=off
 requestProxyEnabled=0
 requestProxyType=http
 requestProxyNotForDomain="localhost,127.0.0.1"
-adminContactEmail="laurent@jelix.org"
+adminContactEmail="root@localhost.org"
 proxyHttpBackend=curl
 
 [repository:testsrepository]
