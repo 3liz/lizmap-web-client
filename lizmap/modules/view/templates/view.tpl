@@ -7,13 +7,17 @@
 {foreach $mapitems as $mi}
 {if $mi->type == 'rep'}
 <h2 class="liz-repository-title">{$mi->title}</h2>
-<ul class="liz-repository-project-list">
+<ul id="liz-repository-{$mi->id}" class="liz-repository-project-list" data-lizmap-repository="{$mi->id}">
   {foreach $mi->childItems as $p}
   {assign $idm = $idm + 1}
   <li class="liz-repository-project-item">
     <a name="link-projet-{$idm}"></a>
     <div class="thumbnail">
-      <div class="liz-project">
+      <div id="liz-project-{$mi->id}-{$p->id}" class="liz-project"
+        data-lizmap-repository="{$mi->id}"
+        data-lizmap-project="{$p->id}"
+        data-lizmap-bbox="{$p->bbox}"
+        data-lizmap-proj="{$p->proj}">
         <a class="liz-project-view" href="{$p->url}{if $hide_header}&h=0{/if}">
           <img width="250" height="250" loading="lazy" src="{$p->img}" alt="project image" class="_liz-project-img">
           <p class="liz-project-desc" >
