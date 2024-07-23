@@ -1,6 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { gotoMap } from '../globals';
+import { gotoMap } from './globals';
 
 test.describe('Map projects switcher', () => {
 
