@@ -2236,6 +2236,7 @@ lizmap-mouse-position > div.coords-unit > select{
   display: none;
 }
 
+#nav-tab-projects a::before,
 #nav-tab-switcher a::before,
 #nav-tab-metadata a::before,
 #nav-tab-edition a::before,
@@ -2335,13 +2336,17 @@ lizmap-mouse-position > div.coords-unit > select{
 }
 
 /* only maps dock style */
-#home #projects h2 {
-  color: white;
+#nav-tab-projects a::before{
+  background-position: -900px 0px;
 }
-#home #projects ul {
+#projects h2 {
+  color: var(--color-contrasted-text);;
+  background-color: var(--header-color);
+}
+#projects ul {
   margin: auto;
 }
-#home #projects ul li div.thumbnail {
+#projects ul li div.thumbnail {
   text-align: center;
 }
 

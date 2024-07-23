@@ -2133,7 +2133,10 @@ class Project
                 'projects',
                 $this->appContext->getLocale('view~default.repository.list.title'),
                 $projectsTpl->fetch('view~map_projects'),
-                0
+                0,
+                null,
+                $bp.'assets/js/map-projects.js',
+                array('defer' => '')
             );
         }
 
