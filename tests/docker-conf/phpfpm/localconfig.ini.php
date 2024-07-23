@@ -28,6 +28,8 @@ plugins = debugbar
 
 [mailer]
 mailerType = file
+webmasterEmail="root@localhost.org"
+webmasterName="root"
 
 [logger]
 default = file
@@ -43,6 +45,7 @@ echoproxy = echoproxy.log
 
 [jcommunity]
 registrationEnabled=off
+notificationReceiverEmail="root@localhost.org"
 
 [error_handling]
 messageLogFormat = "[%code%]\t%msg%\n  %file%\t%line%\n %url%\n %params%\n ref:%referer%\n%trace%\n\n"
