@@ -3191,6 +3191,7 @@ window.lizMap = function() {
             aCallback( proj );
         } else {
             $.get( lizUrls.service, {
+                'SERVICE':'WMS',
                 'REQUEST':'GetProj4'
                 ,'authid': proj
             }, function ( aText ) {
