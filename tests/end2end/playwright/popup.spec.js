@@ -301,7 +301,7 @@ test.describe('Popup', () => {
         await page.getByRole('link', { name: '✖' }).click();
         // Activate draw
         await page.locator('#selectiontool').getByRole('link').nth(1).click();
-        await page.locator('.digitizing-point > svg > use').click();
+        await page.locator('.selectiontool .digitizing-point > svg > use').click();
         // Popup disable but selection done
         let getSelectionTokenRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GETSELECTIONTOKEN') === true);
         await page.locator('#newOlMap').click({
