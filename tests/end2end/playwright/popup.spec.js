@@ -283,6 +283,93 @@ test.describe('Popup', () => {
         let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
         expect(getFeatureInfoRequest.postData()).toMatch(/FILTERTOKEN/);
     });
+
+    test('With selection tool', async ({ page }) => {
+        // Open Selection tool
+        await page.locator('#button-selectiontool').click();
+        // Popup still available
+        let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
+        await page.locator('#newOlMap').click({
+            position: {
+                x: 250,
+                y: 415
+            }
+        });
+        let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
+        await getFeatureInfoRequest.response();
+        await expect(page.locator('#newOlMap #liz_layer_popup')).toBeVisible();
+        await page.getByRole('link', { name: '✖' }).click();
+        // Activate draw
+        await page.locator('#selectiontool').getByRole('link').nth(1).click();
+        await page.locator('.digitizing-point > svg > use').click();
+        // Popup disable but selection done
+        let getSelectionTokenRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GETSELECTIONTOKEN') === true);
+        await page.locator('#newOlMap').click({
+            position: {
+                x: 510,
+                y: 415
+            }
+        });
+        let getSelectionTokenRequest = await getSelectionTokenRequestPromise;
+        await getSelectionTokenRequest.response();
+        await expect(page.locator('#newOlMap #liz_layer_popup')).not.toBeVisible();
+        // Deactivate draw
+        await page.locator('#selectiontool').getByRole('link').first().click();
+        // Popup available again
+        getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
+        await page.locator('#newOlMap').click({
+            position: {
+                x: 250,
+                y: 415
+            }
+        });
+        getFeatureInfoRequest = await getFeatureInfoRequestPromise;
+        await getFeatureInfoRequest.response();
+        await expect(page.locator('#newOlMap #liz_layer_popup')).toBeVisible();
+        await page.getByRole('link', { name: '✖' }).click();
+    });
+
+    test('With draw', async ({ page }) => {
+        // Open draw
+        await page.locator('#button-draw').click();
+        // Popup still available
+        let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
+        await page.locator('#newOlMap').click({
+            position: {
+                x: 250,
+                y: 415
+            }
+        });
+        let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
+        await getFeatureInfoRequest.response();
+        await expect(page.locator('#newOlMap #liz_layer_popup')).toBeVisible();
+        await page.getByRole('link', { name: '✖' }).click();
+        // Activate draw
+        await page.locator('#draw').getByRole('link').nth(1).click();
+        await page.locator('.draw .digitizing-point > svg > use').click();
+        // Popup disable
+        await page.locator('#newOlMap').click({
+            position: {
+                x: 510,
+                y: 415
+            }
+        });
+        await expect(page.locator('#newOlMap #liz_layer_popup')).not.toBeVisible();
+        // Deactivate draw
+        await page.locator('#draw').getByRole('link').first().click();
+        // Popup available again
+        getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
+        await page.locator('#newOlMap').click({
+            position: {
+                x: 250,
+                y: 415
+            }
+        });
+        getFeatureInfoRequest = await getFeatureInfoRequestPromise;
+        await getFeatureInfoRequest.response();
+        await expect(page.locator('#newOlMap #liz_layer_popup')).toBeVisible();
+        await page.getByRole('link', { name: '✖' }).click();
+    });
 });
 
 test.describe('Children in popup', () => {

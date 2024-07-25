@@ -82,7 +82,7 @@ export default class Popup {
         const lineTolerance = mainLizmap.config.options?.lineTolerance || 10;
         const polygonTolerance = mainLizmap.config.options?.polygonTolerance || 5;
 
-        if (!this.active || lizMap.editionPending || mainLizmap.selectionTool.isActive || mainLizmap.digitizing.isActive) {
+        if (!this.active || lizMap.editionPending || mainLizmap.digitizing.toolSelected != 'deactivate') {
             return;
         }
 
