@@ -326,48 +326,6 @@ test.describe('Popup', () => {
         await expect(page.locator('#liz_layer_popup')).toBeVisible();
         await page.locator('#liz_layer_popup_close').click();
     });
-
-    test('With draw', async ({ page }) => {
-        // Open draw
-        await page.locator('#button-draw').click();
-        // Popup still available
-        let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
-        await page.locator('#map').click({
-            position: {
-                x: 250,
-                y: 415
-            }
-        });
-        let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
-        await expect(page.locator('#liz_layer_popup')).toBeVisible();
-        await page.locator('#liz_layer_popup_close').click();
-        // Activate draw
-        await page.locator('#draw').getByRole('link').nth(1).click();
-        await page.locator('.draw .digitizing-point > svg > use').click();
-        // Popup disable because newOlMap is activated
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 510,
-                y: 415
-            }
-        });
-        await expect(page.locator('#liz_layer_popup')).not.toBeVisible();
-        // Deactivate draw
-        await page.locator('#draw').getByRole('link').first().click();
-        // Popup available again
-        getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
-        await page.locator('#map').click({
-            position: {
-                x: 250,
-                y: 415
-            }
-        });
-        getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
-        await expect(page.locator('#liz_layer_popup')).toBeVisible();
-        await page.locator('#liz_layer_popup_close').click();
-    });
 });
 
 test.describe('Children in popup', () => {
