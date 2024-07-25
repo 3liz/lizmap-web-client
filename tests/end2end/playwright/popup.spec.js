@@ -281,6 +281,51 @@ test.describe('Popup', () => {
         let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
         expect(getFeatureInfoRequest.postData()).toMatch(/FILTERTOKEN/);
     });
+
+    test('With selection tool', async ({ page }) => {
+        // Open Selection tool
+        await page.locator('#button-selectiontool').click();
+        // Popup still available
+        let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
+        await page.locator('#map').click({
+            position: {
+                x: 250,
+                y: 415
+            }
+        });
+        let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
+        await getFeatureInfoRequest.response();
+        await expect(page.locator('#liz_layer_popup')).toBeVisible();
+        await page.locator('#liz_layer_popup_close').click();
+        // Activate draw
+        await page.locator('#selectiontool').getByRole('link').nth(1).click();
+        await page.locator('.selectiontool .digitizing-point > svg > use').click();
+        // Popup disable because newOlMap is activated and selection can be done
+        let getSelectionTokenRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GETSELECTIONTOKEN') === true);
+        await page.locator('#newOlMap').click({
+            position: {
+                x: 510,
+                y: 415
+            }
+        });
+        let getSelectionTokenRequest = await getSelectionTokenRequestPromise;
+        await getSelectionTokenRequest.response();
+        await expect(page.locator('#liz_layer_popup')).not.toBeVisible();
+        // Deactivate draw
+        await page.locator('#selectiontool').getByRole('link').first().click();
+        // Popup available again
+        getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
+        await page.locator('#map').click({
+            position: {
+                x: 250,
+                y: 415
+            }
+        });
+        getFeatureInfoRequest = await getFeatureInfoRequestPromise;
+        await getFeatureInfoRequest.response();
+        await expect(page.locator('#liz_layer_popup')).toBeVisible();
+        await page.locator('#liz_layer_popup_close').click();
+    });
 });
 
 test.describe('Children in popup', () => {
