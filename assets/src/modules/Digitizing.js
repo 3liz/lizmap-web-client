@@ -269,14 +269,11 @@ export default class Digitizing {
                 } else if (['draw', 'selectiontool', 'print'].includes(e.id)) {
                     // Display draw for print redlining
                     this.context = e.id === 'print' ? 'draw' : e.id;
-                    mainLizmap.newOlMap = true;
-                    this.toggleVisibility(true);
                 }
             },
             minidockclosed: (e) => {
                 if (['draw', 'selectiontool', 'print'].includes(e.id)) {
-                    mainLizmap.newOlMap = false;
-                    this.toggleVisibility(false);
+                    this.toolSelected = this._tools[0];
                 }
             }
         });
@@ -379,7 +376,11 @@ export default class Digitizing {
             // If tool === 'deactivate' or current selected tool is selected again => deactivate
             if (tool === this._toolSelected || tool === this._tools[0]) {
                 this._toolSelected = this._tools[0];
+                mainLizmap.newOlMap = false;
+                this.toggleVisibility(false);
             } else {
+                mainLizmap.newOlMap = true;
+                this.toggleVisibility(true);
                 const drawOptions = {
                     source: this._drawLayer.getSource(),
                     style: this._drawStyleFunction
