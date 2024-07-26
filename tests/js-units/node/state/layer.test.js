@@ -10,6 +10,7 @@ import { buildLayersOrder } from '../../../../assets/src/modules/config/LayersOr
 import { Extent } from '../../../../assets/src/modules/utils/Extent.js';
 
 import { LayerGroupState, LayerVectorState, LayerRasterState, LayersAndGroupsCollection } from '../../../../assets/src/modules/state/Layer.js';
+import { OptionsConfig } from '../../../../assets/src/modules/config/Options.js';
 
 /**
  * Returns the root LayerGroupState for the project
@@ -36,7 +37,8 @@ function getRootLayerGroupState(name) {
 
     const layersOrder = buildLayersOrder(config, rootCfg);
 
-    const root = new LayerGroupState(rootCfg, layersOrder);
+    const options = new OptionsConfig(config.options);
+    const root = new LayerGroupState(rootCfg, layersOrder, options);
     expect(root).to.be.instanceOf(LayerGroupState)
     return root;
 }
@@ -66,7 +68,8 @@ function getLayersAndGroupsCollection(name) {
 
     const layersOrder = buildLayersOrder(config, rootCfg);
 
-    return new LayersAndGroupsCollection(rootCfg, layersOrder);
+    const options = new OptionsConfig(config.options);
+    return new LayersAndGroupsCollection(rootCfg, layersOrder, options);
 }
 
 describe('LayerGroupState', function () {
@@ -161,8 +164,8 @@ describe('LayerGroupState', function () {
         expect(bus.wmsBoundingBoxes[1].ymax).to.be.eq(bus.wmsGeographicBoundingBox.north)
         expect(bus.wmsMinScaleDenominator).to.be.eq(-1)
         expect(bus.wmsMaxScaleDenominator).to.be.eq(40001)
-        expect(bus.checked).to.be.false
-        expect(bus.visibility).to.be.false
+        expect(bus.checked).to.be.true
+        expect(bus.visibility).to.be.true
         expect(bus.opacity).to.be.eq(1)
         expect(bus.baseLayer).to.be.false
         expect(bus.displayInLegend).to.be.true
@@ -809,7 +812,7 @@ describe('LayerGroupState', function () {
         expect(fond.childrenCount).to.be.eq(2)
 
         expect(fond.children[0].isInGroupAsLayer).to.be.true
-        expect(fond.children[0].checked).to.be.false
+        expect(fond.children[0].checked).to.be.true
         expect(fond.children[0].visibility).to.be.true
         expect(fond.children[0].displayInLegend).to.be.false
         expect(fond.children[0]).to.be.instanceOf(LayerGroupState)
@@ -832,7 +835,7 @@ describe('LayerGroupState', function () {
         fond.checked = false;
         expect(fond.checked).to.be.false
         expect(fond.visibility).to.be.false
-        expect(fond.children[0].checked).to.be.false
+        expect(fond.children[0].checked).to.be.true
         expect(fond.children[0].visibility).to.be.false
         expect(fond.children[0].children[0].checked).to.be.false
         expect(fond.children[0].children[0].visibility).to.be.false
@@ -844,7 +847,7 @@ describe('LayerGroupState', function () {
         fond.children[1].children[0].checked = true;
         expect(fond.checked).to.be.false
         expect(fond.visibility).to.be.false
-        expect(fond.children[0].checked).to.be.false
+        expect(fond.children[0].checked).to.be.true
         expect(fond.children[0].visibility).to.be.false
         expect(fond.children[0].children[0].checked).to.be.false
         expect(fond.children[0].children[0].visibility).to.be.false
@@ -856,7 +859,7 @@ describe('LayerGroupState', function () {
         fond.children[0].children[0].checked = true;
         expect(fond.checked).to.be.false
         expect(fond.visibility).to.be.false
-        expect(fond.children[0].checked).to.be.false
+        expect(fond.children[0].checked).to.be.true
         expect(fond.children[0].visibility).to.be.false
         expect(fond.children[0].children[0].checked).to.be.true
         expect(fond.children[0].children[0].visibility).to.be.false
@@ -868,7 +871,7 @@ describe('LayerGroupState', function () {
         fond.checked = true;
         expect(fond.checked).to.be.true
         expect(fond.visibility).to.be.true
-        expect(fond.children[0].checked).to.be.false
+        expect(fond.children[0].checked).to.be.true
         expect(fond.children[0].visibility).to.be.true
         expect(fond.children[0].children[0].checked).to.be.true
         expect(fond.children[0].children[0].visibility).to.be.true
@@ -880,7 +883,7 @@ describe('LayerGroupState', function () {
         fond.children[1].checked = false;
         expect(fond.checked).to.be.true
         expect(fond.visibility).to.be.true
-        expect(fond.children[0].checked).to.be.false
+        expect(fond.children[0].checked).to.be.true
         expect(fond.children[0].visibility).to.be.true
         expect(fond.children[0].children[0].checked).to.be.true
         expect(fond.children[0].children[0].visibility).to.be.true
@@ -939,7 +942,7 @@ describe('LayerGroupState', function () {
         expect(legend_option_test.children[1].checked).to.be.false
         expect(legend_option_test.children[2]).to.be.instanceOf(LayerVectorState)
         expect(legend_option_test.children[2].checked).to.be.false
-        expect(legend_option_test.checked).to.be.false
+        expect(legend_option_test.checked).to.be.true
 
         // A group as layer is checked if its config has toggled
         const group_as_layer = root.children[5]
@@ -1225,8 +1228,8 @@ describe('LayersAndGroupsCollection', function () {
         expect(bus.wmsBoundingBoxes[1].ymax).to.be.eq(bus.wmsGeographicBoundingBox.north)
         expect(bus.wmsMinScaleDenominator).to.be.eq(-1)
         expect(bus.wmsMaxScaleDenominator).to.be.eq(40001)
-        expect(bus.checked).to.be.false
-        expect(bus.visibility).to.be.false
+        expect(bus.checked).to.be.true
+        expect(bus.visibility).to.be.true
         expect(bus.opacity).to.be.eq(1)
         expect(bus.baseLayer).to.be.false
         expect(bus.displayInLegend).to.be.true
@@ -1448,10 +1451,11 @@ describe('LayersAndGroupsCollection', function () {
         // Set all in transports not visible
         transports.checked = false
         // Events dispatched
-        expect(transportsGroupVisibilityChangedEvt).to.have.length(3)
+        expect(transportsGroupVisibilityChangedEvt).to.have.length(4)
         expect(transportsGroupVisibilityChangedEvt[0].name).to.be.eq('Buildings')
         expect(transportsGroupVisibilityChangedEvt[1].name).to.be.eq('Tramway')
-        expect(transportsGroupVisibilityChangedEvt[2].name).to.be.eq('datalayers')
+        expect(transportsGroupVisibilityChangedEvt[2].name).to.be.eq('Bus')
+        expect(transportsGroupVisibilityChangedEvt[3].name).to.be.eq('datalayers')
         expect(transportsLayerVisibilityChangedEvt).to.have.length(3)
         expect(transportsLayerVisibilityChangedEvt[0].name).to.be.eq('tramstop')
         expect(transportsLayerVisibilityChangedEvt[1].name).to.be.eq('tramway')
@@ -1475,10 +1479,11 @@ describe('LayersAndGroupsCollection', function () {
         expect(tramway.checked).to.be.true
         expect(tramway.visibility).to.be.false
         // Events dispatched at collection level
-        expect(collectionGroupVisibilityChangedEvt).to.have.length(3)
+        expect(collectionGroupVisibilityChangedEvt).to.have.length(4)
         expect(collectionGroupVisibilityChangedEvt[0].name).to.be.eq('Buildings')
         expect(collectionGroupVisibilityChangedEvt[1].name).to.be.eq('Tramway')
-        expect(collectionGroupVisibilityChangedEvt[2].name).to.be.eq('datalayers')
+        expect(collectionGroupVisibilityChangedEvt[2].name).to.be.eq('Bus')
+        expect(collectionGroupVisibilityChangedEvt[3].name).to.be.eq('datalayers')
         expect(collectionLayerVisibilityChangedEvt).to.have.length(3)
         expect(collectionLayerVisibilityChangedEvt[0].name).to.be.eq('tramstop')
         expect(collectionLayerVisibilityChangedEvt[1].name).to.be.eq('tramway')
@@ -1555,10 +1560,11 @@ describe('LayersAndGroupsCollection', function () {
         // Set tramway layer checked to true - visibilities are changed
         tramway.checked = true
         // Events dispatched
-        expect(transportsGroupVisibilityChangedEvt).to.have.length(3)
+        expect(transportsGroupVisibilityChangedEvt).to.have.length(4)
         expect(transportsGroupVisibilityChangedEvt[0].name).to.be.eq('Buildings')
         expect(transportsGroupVisibilityChangedEvt[1].name).to.be.eq('Tramway')
-        expect(transportsGroupVisibilityChangedEvt[2].name).to.be.eq('datalayers')
+        expect(transportsGroupVisibilityChangedEvt[2].name).to.be.eq('Bus')
+        expect(transportsGroupVisibilityChangedEvt[3].name).to.be.eq('datalayers')
         expect(transportsLayerVisibilityChangedEvt).to.have.length(3)
         expect(transportsLayerVisibilityChangedEvt[0].name).to.be.eq('tramstop')
         expect(transportsLayerVisibilityChangedEvt[1].name).to.be.eq('tramway')
@@ -1582,10 +1588,11 @@ describe('LayersAndGroupsCollection', function () {
         expect(tramway.checked).to.be.true
         expect(tramway.visibility).to.be.true
         // Events dispatched at collection level
-        expect(collectionGroupVisibilityChangedEvt).to.have.length(3)
+        expect(collectionGroupVisibilityChangedEvt).to.have.length(4)
         expect(collectionGroupVisibilityChangedEvt[0].name).to.be.eq('Buildings')
         expect(collectionGroupVisibilityChangedEvt[1].name).to.be.eq('Tramway')
-        expect(collectionGroupVisibilityChangedEvt[2].name).to.be.eq('datalayers')
+        expect(collectionGroupVisibilityChangedEvt[2].name).to.be.eq('Bus')
+        expect(collectionGroupVisibilityChangedEvt[3].name).to.be.eq('datalayers')
         expect(collectionLayerVisibilityChangedEvt).to.have.length(3)
         expect(collectionLayerVisibilityChangedEvt[0].name).to.be.eq('tramstop')
         expect(collectionLayerVisibilityChangedEvt[1].name).to.be.eq('tramway')
@@ -1616,7 +1623,8 @@ describe('LayersAndGroupsCollection', function () {
 
         const layersOrder = buildLayersOrder(config, rootCfg);
 
-        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
+        const options = new OptionsConfig(config.options);
+        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder, options);
 
         // `group-without-children` has no state
         expect(collection.groupNames).to.be.an('array').that.have.ordered.members([
@@ -1687,7 +1695,7 @@ describe('LayersAndGroupsCollection', function () {
         expect(poisGroup.name).to.be.eq('POIs')
         expect(poisGroup).to.be.instanceOf(LayerGroupState)
 
-        expect(poisGroup.checked).to.be.false
+        expect(poisGroup.checked).to.be.true
         expect(poisGroup.visibility).to.be.false
         expect(poisGroup.displayInLegend).to.be.true
 

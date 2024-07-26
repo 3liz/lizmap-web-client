@@ -7,6 +7,7 @@ import { LayerTreeGroupConfig, buildLayerTreeConfig } from '../../../../assets/s
 import { BaseLayerTypes, BaseLayerConfig, EmptyBaseLayerConfig, BaseLayersConfig } from '../../../../assets/src/modules/config/BaseLayer.js';
 import { buildLayersOrder } from '../../../../assets/src/modules/config/LayersOrder.js';
 import { LayersAndGroupsCollection } from '../../../../assets/src/modules/state/Layer.js';
+import { OptionsConfig } from '../../../../assets/src/modules/config/Options.js';
 
 import { BaseLayerState, EmptyBaseLayerState, BaseLayersState } from '../../../../assets/src/modules/state/BaseLayer.js';
 
@@ -43,7 +44,8 @@ function getBaseLayersState(name) {
 
     const layersOrder = buildLayersOrder(config, rootCfg);
 
-    const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
+    const options = new OptionsConfig(config.options);
+    const collection = new LayersAndGroupsCollection(rootCfg, layersOrder, options);
 
     const baseLayers = new BaseLayersState(baseLayersConfig, collection)
     expect(baseLayers).to.be.instanceOf(BaseLayersState)
@@ -168,7 +170,7 @@ describe('BaseLayersState', function () {
 
         const layersOrder = buildLayersOrder(config, rootCfg);
 
-        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
+        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder, options);
 
         const baseLayers = new BaseLayersState(baseLayersConfig, collection)
         expect(baseLayers.selectedBaseLayerName).to.be.eq('osm-mapnik')
