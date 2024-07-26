@@ -10,6 +10,7 @@ import { base64svg, base64svgOlLayer, base64svgRasterLayer } from '../../../../a
 
 import { MapGroupState, MapRootState } from '../../../../assets/src/modules/state/MapLayer.js';
 import { ExternalMapGroupState, OlMapLayerState } from '../../../../assets/src/modules/state/ExternalMapLayer.js';
+import { OptionsConfig } from '../../../../assets/src/modules/config/Options.js';
 
 import { default as ol } from '../../../../assets/src/dependencies/ol.js';
 
@@ -38,7 +39,8 @@ function getRootMapGroupState(name) {
 
 	const layersOrder = buildLayersOrder(config, rootCfg);
 
-	const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
+    const options = new OptionsConfig(config.options);
+    const collection = new LayersAndGroupsCollection(rootCfg, layersOrder, options);
 
 	const root = new MapRootState(collection.root);
 	expect(root).to.be.instanceOf(MapGroupState)

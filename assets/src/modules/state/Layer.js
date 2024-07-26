@@ -14,6 +14,7 @@ import { LayerConfig } from './../config/Layer.js';
 import { AttributionConfig } from './../config/Attribution.js'
 import { LayerStyleConfig, LayerGeographicBoundingBoxConfig, LayerBoundingBoxConfig, LayerTreeGroupConfig, LayerTreeItemConfig } from './../config/LayerTree.js';
 import { buildLayerSymbology, LayerSymbolsSymbology, LayerIconSymbology, LayerGroupSymbology } from './Symbology.js';
+import { OptionsConfig } from '../config/Options.js';
 
 /**
  * Class representing a layer item state: could be group, vector or raster layer
@@ -26,9 +27,10 @@ export class LayerItemState extends EventDispatcher {
      * Creating a layer item state
      * @param {string} type                          - the layer item type
      * @param {LayerTreeItemConfig} layerTreeItemCfg - the layer item config
+     * @param {OptionsConfig}       options          - the option instance from lizMap configuration
      * @param {LayerItemState}      [parentGroup]    - the parent layer group
      */
-    constructor(type, layerTreeItemCfg, parentGroup) {
+    constructor(type, layerTreeItemCfg, options, parentGroup) {
         super();
         this._type = type
         this._layerTreeItemCfg = layerTreeItemCfg;
@@ -44,7 +46,8 @@ export class LayerItemState extends EventDispatcher {
         this._geographicBoundingBox = null;
         this._minScaleDenominator = null;
         this._maxScaleDenominator = null;
-        this._checked = this._parentGroup == null ? true : false;
+        // prop checked is inherithed from Lizmap configuration. if checkboxes are hided for groups then they are checked by default
+        this._checked = this._parentGroup == null ? true : (type == 'group' && options.hideGroupCheckbox ? true : this._layerTreeItemCfg.layerConfig.toggled);
         this._visibility =  this._parentGroup == null ? true : null;
         this._opacity = 1;
         this._inGroupAsLayer = (this._parentGroup !== null
@@ -553,10 +556,11 @@ export class LayerLayerState extends LayerItemState {
      * Creating a layer state
      * @param {LayerTreeItemConfig} layerTreeItemCfg - the layer item config
      * @param {number[]}            layersOrder      - the layers order
+     * @param {OptionsConfig}       options          - the option instance from lizMap configuration
      * @param {LayerGroupState}     [parentMapGroup] - the parent layer group
      */
-    constructor(layerTreeItemCfg, layersOrder, parentMapGroup) {
-        super('layer', layerTreeItemCfg, parentMapGroup);
+    constructor(layerTreeItemCfg, layersOrder, options, parentMapGroup) {
+        super('layer', layerTreeItemCfg, options, parentMapGroup);
         if (this.layerConfig == null) {
             throw new TypeError('A LayerLayerState could not be build without a LayerConfig! The layer `'+ this.name +'` could not be constructed!');
         }
@@ -739,10 +743,11 @@ export class LayerVectorState extends LayerLayerState {
      * Creating a vector layer state
      * @param {LayerTreeItemConfig} layerTreeItemCfg - the layer item config
      * @param {number[]}            layersOrder      - the layers order
+     * @param {OptionsConfig}       options          - the option instance from lizMap configuration
      * @param {LayerGroupState}     [parentMapGroup] - the parent layer group
      */
-    constructor(layerTreeItemCfg, layersOrder, parentMapGroup) {
-        super(layerTreeItemCfg, layersOrder, parentMapGroup)
+    constructor(layerTreeItemCfg, layersOrder, options, parentMapGroup) {
+        super(layerTreeItemCfg, layersOrder, options, parentMapGroup)
         if (this.layerType != 'vector') {
             throw new TypeError('A LayerVectorState could not be build for `'+this.layerType+'` type ! The layer `'+ this.name +'` could not be constructed!');
         }
@@ -1128,10 +1133,11 @@ export class LayerRasterState extends LayerLayerState {
      * Creating a raster layer state
      * @param {LayerTreeItemConfig} layerTreeItemCfg - the layer item config
      * @param {string[]}            layersOrder      - the layers order
+     * @param {OptionsConfig}       options          - the option instance from lizMap configuration
      * @param {LayerGroupState}     [parentMapGroup] - the parent layer group
      */
-    constructor(layerTreeItemCfg, layersOrder, parentMapGroup) {
-        super(layerTreeItemCfg, layersOrder, parentMapGroup)
+    constructor(layerTreeItemCfg, layersOrder, options, parentMapGroup) {
+        super(layerTreeItemCfg, layersOrder, options, parentMapGroup)
         if (this.layerType == 'vector') {
             throw new TypeError('A LayerRasterState could not be build for `'+this.layerType+'` type ! The layer `'+ this.name +'` could not be constructed!');
         }
@@ -1165,10 +1171,11 @@ export class LayerGroupState extends LayerItemState {
      * Creating a layer group state
      * @param {LayerTreeGroupConfig} layerTreeGroupCfg - the layer item config
      * @param {number[]}             layersOrder       - the layers order
+     * @param {OptionsConfig}       options            - the option instance from lizMap configuration
      * @param {LayerGroupState}     [parentMapGroup]  - the parent layer group
      */
-    constructor(layerTreeGroupCfg, layersOrder, parentMapGroup) {
-        super('group', layerTreeGroupCfg, parentMapGroup);
+    constructor(layerTreeGroupCfg, layersOrder, options, parentMapGroup) {
+        super('group', layerTreeGroupCfg, options, parentMapGroup);
         this._items = [];
         this._layerOrder = -1;
         for (const layerTreeItem of layerTreeGroupCfg.getChildren()) {
@@ -1180,7 +1187,7 @@ export class LayerGroupState extends LayerItemState {
             // Group as group
             if (layerTreeItem instanceof LayerTreeGroupConfig) {
                 // Build group
-                const group = new LayerGroupState(layerTreeItem, layersOrder, this);
+                const group = new LayerGroupState(layerTreeItem, layersOrder, options, this);
                 group.addListener(this.dispatch.bind(this), 'group.visibility.changed');
                 group.addListener(this.dispatch.bind(this), 'group.symbology.changed');
                 group.addListener(this.dispatch.bind(this), 'group.opacity.changed');
@@ -1195,17 +1202,13 @@ export class LayerGroupState extends LayerItemState {
                 group.addListener(this.dispatch.bind(this), 'layer.filter.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.filter.token.changed');
                 this._items.push(group);
-                // Group is checked if one child is checked
-                if (group.checked) {
-                    this._checked = true;
-                }
             } else if (cfg.type != 'group') {
                 // layer with geometry is vector layer
                 let layer = null;
                 if (cfg.geometryType != null) {
-                    layer = new LayerVectorState(layerTreeItem, layersOrder, this);
+                    layer = new LayerVectorState(layerTreeItem, layersOrder, options, this);
                 } else {
-                    layer = new LayerRasterState(layerTreeItem, layersOrder, this);
+                    layer = new LayerRasterState(layerTreeItem, layersOrder, options, this);
                 }
                 layer.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
@@ -1218,10 +1221,6 @@ export class LayerGroupState extends LayerItemState {
                 layer.addListener(this.dispatch.bind(this), 'layer.filter.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.filter.token.changed');
                 this._items.push(layer);
-                // Group is checked if one child is checked
-                if (layer.checked) {
-                    this._checked = true;
-                }
             }
         }
         if (this.groupAsLayer && this.layerConfig) {
@@ -1399,10 +1398,11 @@ export class LayersAndGroupsCollection extends EventDispatcher {
      * Creating the collection of layers and groups state
      * @param {LayerTreeGroupConfig} layerTreeGroupCfg - the layer item config
      * @param {number[]}             layersOrder       - the layers order
+     * @param {OptionsConfig}        options           - the option instance from lizMap configuration
      */
-    constructor(layerTreeGroupCfg, layersOrder) {
+    constructor(layerTreeGroupCfg, layersOrder, options) {
         super();
-        this._root = new LayerGroupState(layerTreeGroupCfg, layersOrder);
+        this._root = new LayerGroupState(layerTreeGroupCfg, layersOrder, options);
 
         this._layersMap = new Map(this._root.findLayers().map(l => [l.name, l]));
         this._groupsMap = new Map(this._root.findGroups().map(g => [g.name, g]));
