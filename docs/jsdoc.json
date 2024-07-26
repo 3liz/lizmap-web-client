@@ -5,6 +5,7 @@
         ],
         "exclude": [
             "assets/src/legacy/edition.js",
+            "assets/src/legacy/map-projects.js",
             "assets/src/modules/Lizmap.js",
             "assets/src/modules/Layers.js",
             "assets/src/dependencies"
