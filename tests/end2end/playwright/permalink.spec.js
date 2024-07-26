@@ -25,7 +25,7 @@ test.describe('Permalink', () => {
 
         const checked_url = new URL(page.url());
         await expect(checked_url.hash).toMatch(/#3.5148\d+,43.4213\d+,4.2324\d+,43.7692\d+|/)
-        await expect(checked_url.hash).toContain('layer_legend_single_symbol,layer_legend_categorized,layer_legend_ruled,tramway_lines|d%C3%A9faut,d%C3%A9faut,d%C3%A9faut,a_single|1,1,1,1');
+        await expect(checked_url.hash).toContain('layer_legend_single_symbol,layer_legend_categorized,layer_legend_ruled,tramway_lines,legend_option_test|d%C3%A9faut,d%C3%A9faut,d%C3%A9faut,a_single,|1,1,1,1,1');
 
         // Check Permalink tool
         await page.locator('#button-permaLink').click();
@@ -34,7 +34,7 @@ test.describe('Permalink', () => {
         await expect(share_url.pathname).toBe('/index.php/view/map')
         await expect(share_url.search).toBe('?repository=testsrepository&project=layer_legends')
         await expect(share_url.hash).toMatch(/#3.5148\d+,43.4213\d+,4.2324\d+,43.7692\d+|/)
-        await expect(share_url.hash).toContain('|layer_legend_single_symbol,layer_legend_categorized,layer_legend_ruled,tramway_lines|d%C3%A9faut,d%C3%A9faut,d%C3%A9faut,a_single|1,1,1,1')
+        await expect(share_url.hash).toContain('|layer_legend_single_symbol,layer_legend_categorized,layer_legend_ruled,tramway_lines,legend_option_test|d%C3%A9faut,d%C3%A9faut,d%C3%A9faut,a_single,|1,1,1,1,1')
     });
 
     test('UI according to permalink parameters', async ({ page }) => {
@@ -146,7 +146,7 @@ test.describe('Permalink', () => {
         await expect(page.getByTestId('layer_legend_single_symbol').locator('> div input')).toBeChecked();
         await expect(page.getByTestId('layer_legend_categorized').locator('> div input')).toBeChecked();
         await expect(page.getByTestId('tramway_lines').locator('> div input')).toBeChecked();
-        await expect(page.getByTestId('legend_option_test').locator('> div input')).not.toBeChecked();
+        await expect(page.getByTestId('legend_option_test').locator('> div input')).toBeChecked();
         await expect(page.getByTestId('expand_at_startup').locator('> div input')).not.toBeChecked();
         await expect(page.getByTestId('disabled').locator('> div input')).not.toBeChecked();
         await expect(page.getByTestId('hide_at_startup').locator('> div input')).not.toBeChecked();
@@ -173,11 +173,11 @@ test.describe('Permalink', () => {
         let hashContent = url.hash.split('|')
         await expect(hashContent).toHaveLength(4)
         let hashLayers = hashContent[1].split(',')
-        await expect(hashLayers).toHaveLength(5)
+        await expect(hashLayers).toHaveLength(6)
         let hashStyles = hashContent[2].split(',')
-        await expect(hashStyles).toHaveLength(5)
+        await expect(hashStyles).toHaveLength(6)
         let hashOpacities = hashContent[3].split(',')
-        await expect(hashOpacities).toHaveLength(5)
+        await expect(hashOpacities).toHaveLength(6)
 
         // layer_legend_single_symbol has défaut style
         await expect(hashLayers[0]).toBe(encodeURI('layer_legend_single_symbol'))
@@ -199,10 +199,15 @@ test.describe('Permalink', () => {
         await expect(hashStyles[3]).toBe(encodeURI('a_single'))
         await expect(hashOpacities[3]).toBe('1')
 
-        // Group as layer has an empty string style ''
-        await expect(hashLayers[4]).toBe(encodeURI('Group as layer'))
-        await expect(hashStyles[4]).toBe('')
+        // legend_option_test is a group, it has no stile
+        await expect(hashLayers[4]).toBe(encodeURI('legend_option_test'))
+        await expect(hashStyles[4]).toBe(encodeURI(''))
         await expect(hashOpacities[4]).toBe('1')
+
+        // Group as layer has an empty string style ''
+        await expect(hashLayers[5]).toBe(encodeURI('Group as layer'))
+        await expect(hashStyles[5]).toBe('')
+        await expect(hashOpacities[5]).toBe('1')
 
         // Change the tramway_lines style to categorized
         await page.getByTestId('tramway_lines').locator('.icon-info-sign').click({ force: true });
@@ -221,11 +226,11 @@ test.describe('Permalink', () => {
         hashContent = url.hash.split('|')
         await expect(hashContent).toHaveLength(4)
         hashLayers = hashContent[1].split(',')
-        await expect(hashLayers).toHaveLength(5)
+        await expect(hashLayers).toHaveLength(6)
         hashStyles = hashContent[2].split(',')
-        await expect(hashStyles).toHaveLength(5)
+        await expect(hashStyles).toHaveLength(6)
         hashOpacities = hashContent[3].split(',')
-        await expect(hashOpacities).toHaveLength(5)
+        await expect(hashOpacities).toHaveLength(6)
 
         // layer_legend_single_symbol has défaut style
         await expect(hashLayers[0]).toBe(encodeURI('layer_legend_single_symbol'))
@@ -247,10 +252,15 @@ test.describe('Permalink', () => {
         await expect(hashStyles[3]).toBe(encodeURI('categorized'))
         await expect(hashOpacities[3]).toBe('1')
 
-        // Group as layer has an empty string style ''
-        await expect(hashLayers[4]).toBe(encodeURI('Group as layer'))
-        await expect(hashStyles[4]).toBe('')
+        // legend_option_test is a group, it has no stile
+        await expect(hashLayers[4]).toBe(encodeURI('legend_option_test'))
+        await expect(hashStyles[4]).toBe(encodeURI(''))
         await expect(hashOpacities[4]).toBe('1')
+
+        // Group as layer has an empty string style ''
+        await expect(hashLayers[5]).toBe(encodeURI('Group as layer'))
+        await expect(hashStyles[5]).toBe('')
+        await expect(hashOpacities[5]).toBe('1')
 
         // Deactivate layer_legend_categorized and layer_legend_ruled
         await page.getByLabel('layer_legend_categorized').uncheck();
@@ -268,11 +278,11 @@ test.describe('Permalink', () => {
         hashContent = url.hash.split('|')
         await expect(hashContent).toHaveLength(4)
         hashLayers = hashContent[1].split(',')
-        await expect(hashLayers).toHaveLength(3)
+        await expect(hashLayers).toHaveLength(4)
         hashStyles = hashContent[2].split(',')
-        await expect(hashStyles).toHaveLength(3)
+        await expect(hashStyles).toHaveLength(4)
         hashOpacities = hashContent[3].split(',')
-        await expect(hashOpacities).toHaveLength(3)
+        await expect(hashOpacities).toHaveLength(4)
 
         // layer_legend_single_symbol has défaut style
         await expect(hashLayers[0]).toBe(encodeURI('layer_legend_single_symbol'))
@@ -284,10 +294,15 @@ test.describe('Permalink', () => {
         await expect(hashStyles[1]).toBe(encodeURI('categorized'))
         await expect(hashOpacities[1]).toBe('1')
 
-        // Group as layer has an empty string style ''
-        await expect(hashLayers[2]).toBe(encodeURI('Group as layer'))
-        await expect(hashStyles[2]).toBe('')
+        // legend_option_test is a group, it has no stile
+        await expect(hashLayers[2]).toBe(encodeURI('legend_option_test'))
+        await expect(hashStyles[2]).toBe(encodeURI(''))
         await expect(hashOpacities[2]).toBe('1')
+
+        // Group as layer has an empty string style ''
+        await expect(hashLayers[3]).toBe(encodeURI('Group as layer'))
+        await expect(hashStyles[3]).toBe('')
+        await expect(hashOpacities[3]).toBe('1')
 
         // Change the layer_legend_single_symbol opacity
         await page.getByTestId('layer_legend_single_symbol').locator('.icon-info-sign').click({ force: true });
@@ -306,11 +321,11 @@ test.describe('Permalink', () => {
         hashContent = url.hash.split('|')
         await expect(hashContent).toHaveLength(4)
         hashLayers = hashContent[1].split(',')
-        await expect(hashLayers).toHaveLength(3)
+        await expect(hashLayers).toHaveLength(4)
         hashStyles = hashContent[2].split(',')
-        await expect(hashStyles).toHaveLength(3)
+        await expect(hashStyles).toHaveLength(4)
         hashOpacities = hashContent[3].split(',')
-        await expect(hashOpacities).toHaveLength(3)
+        await expect(hashOpacities).toHaveLength(4)
 
         // layer_legend_single_symbol has défaut style
         await expect(hashLayers[0]).toBe(encodeURI('layer_legend_single_symbol'))
@@ -322,10 +337,15 @@ test.describe('Permalink', () => {
         await expect(hashStyles[1]).toBe(encodeURI('categorized'))
         await expect(hashOpacities[1]).toBe('1')
 
-        // Group as layer has an empty string style ''
-        await expect(hashLayers[2]).toBe(encodeURI('Group as layer'))
-        await expect(hashStyles[2]).toBe('')
+        // legend_option_test is a group, it has no stile
+        await expect(hashLayers[2]).toBe(encodeURI('legend_option_test'))
+        await expect(hashStyles[2]).toBe(encodeURI(''))
         await expect(hashOpacities[2]).toBe('1')
+
+        // Group as layer has an empty string style ''
+        await expect(hashLayers[3]).toBe(encodeURI('Group as layer'))
+        await expect(hashStyles[3]).toBe('')
+        await expect(hashOpacities[3]).toBe('1')
 
         // Reload
         await reloadMap(page);
@@ -334,7 +354,7 @@ test.describe('Permalink', () => {
         await expect(page.getByTestId('layer_legend_single_symbol').locator('> div input')).toBeChecked();
         await expect(page.getByTestId('layer_legend_categorized').locator('> div input')).not.toBeChecked();
         await expect(page.getByTestId('tramway_lines').locator('> div input')).toBeChecked();
-        await expect(page.getByTestId('legend_option_test').locator('> div input')).not.toBeChecked();
+        await expect(page.getByTestId('legend_option_test').locator('> div input')).toBeChecked();
         await expect(page.getByTestId('expand_at_startup').locator('> div input')).not.toBeChecked();
         await expect(page.getByTestId('disabled').locator('> div input')).not.toBeChecked();
         await expect(page.getByTestId('hide_at_startup').locator('> div input')).not.toBeChecked();
@@ -359,8 +379,8 @@ test.describe('Permalink', () => {
         // |layer_legend_single_symbol,tramway_lines,Group%20as%20layer
         // |d%C3%A9faut,categorized,
         // |1,1,1,1
-        await expect(old_url.hash).toContain('|layer_legend_single_symbol,tramway_lines,Group%20as%20layer|')
-        await expect(old_url.hash).toContain('|d%C3%A9faut,categorized,|')
+        await expect(old_url.hash).toContain('|layer_legend_single_symbol,tramway_lines,legend_option_test,Group%20as%20layer|')
+        await expect(old_url.hash).toContain('|d%C3%A9faut,categorized,,|')
         await expect(old_url.hash).toContain('|0.6,1,1')
 
         // Test permalink with empty string styles
@@ -421,7 +441,7 @@ test.describe('Permalink', () => {
         await expect(page.getByTestId('layer_legend_single_symbol').locator('> div input')).toBeChecked();
         await expect(page.getByTestId('layer_legend_categorized').locator('> div input')).toBeChecked();
         await expect(page.getByTestId('tramway_lines').locator('> div input')).toBeChecked();
-        await expect(page.getByTestId('legend_option_test').locator('> div input')).not.toBeChecked();
+        await expect(page.getByTestId('legend_option_test').locator('> div input')).toBeChecked();
         await expect(page.getByTestId('expand_at_startup').locator('> div input')).not.toBeChecked();
         await expect(page.getByTestId('disabled').locator('> div input')).not.toBeChecked();
         await expect(page.getByTestId('hide_at_startup').locator('> div input')).not.toBeChecked();
@@ -564,7 +584,7 @@ test.describe('Automatic permalink disabled', () => {
         await expect(share_url.pathname).toBe('/index.php/view/map')
         await expect(share_url.search).toBe('?repository=testsrepository&project=layer_legends')
         await expect(share_url.hash).toMatch(/#3.5148\d+,43.4213\d+,4.2324\d+,43.7692\d+|/)
-        await expect(share_url.hash).toContain('|layer_legend_single_symbol,layer_legend_categorized,layer_legend_ruled,tramway_lines|d%C3%A9faut,d%C3%A9faut,d%C3%A9faut,a_single|1,1,1,1')
+        await expect(share_url.hash).toContain('|layer_legend_single_symbol,layer_legend_categorized,layer_legend_ruled,tramway_lines,legend_option_test|d%C3%A9faut,d%C3%A9faut,d%C3%A9faut,a_single,|1,1,1,1,1')
     });
 
     test('UI according to permalink parameters', async ({ page }) => {
@@ -652,7 +672,7 @@ test.describe('Automatic permalink disabled', () => {
         await expect(share_url.pathname).toBe('/index.php/view/map')
         await expect(share_url.search).toBe('?repository=testsrepository&project=layer_legends')
         await expect(share_url.hash).toMatch(/#3.45433\d+,43.48926\d+,4.17242\d+,43.8367\d+\|/)
-        await expect(share_url.hash).toContain('|layer_legend_single_symbol,layer_legend_categorized,layer_legend_ruled,tramway_lines,Group%20as%20layer|d%C3%A9faut,d%C3%A9faut,d%C3%A9faut,categorized,|0.6,1,1,1,1')
+        await expect(share_url.hash).toContain('|layer_legend_single_symbol,layer_legend_categorized,layer_legend_ruled,tramway_lines,legend_option_test,Group%20as%20layer|d%C3%A9faut,d%C3%A9faut,d%C3%A9faut,categorized,,|0.6,1,1,1,1,1')
     });
 
 });

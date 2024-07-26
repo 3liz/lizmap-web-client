@@ -130,7 +130,7 @@ test.describe('Theme and automatic permalink', () => {
         // |,style1
         // |1,1
         await expect(url.hash).toMatch(/#3.7308\d+,43.5403\d+,4.0179\d+,43.6795\d+\|/)
-        await expect(url.hash).toContain('|group1,Les%20quartiers|,style1|1,1')
+        await expect(url.hash).toContain('|group1,Les%20quartiers,sub-group-1,sub-sub-group--1,sub-sub-group--2|,style1,,,|1,1,1,1,1')
     });
 
     test('must display theme2 when selected', async ({ page }) => {
