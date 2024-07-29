@@ -198,6 +198,9 @@ export default class Treeview extends HTMLElement {
         mainEventDispatcher.addListener(
             this._onChange, ['resolution.changed']
         );
+
+        // layertree has been created, fire corresponding event
+        mainLizmap.lizmap3.events.triggerEvent('treecreated');
     }
 
     disconnectedCallback() {
