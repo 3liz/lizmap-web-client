@@ -10,7 +10,7 @@
     "pretest-fix": "eslint --fix src"
   },
   "devDependencies": {
-    "dompurify": "^3.1.4",
+    "dompurify": "^3.1.6",
     "eslint": "^8.56.0",
     "eslint-plugin-jsdoc": "^48.0.2",
     "jsts": "^2.11.0",
