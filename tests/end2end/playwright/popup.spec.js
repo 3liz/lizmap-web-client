@@ -354,6 +354,7 @@ test.describe('Popup', () => {
                 y: 415
             }
         });
+        await page.waitForTimeout(500);
         await expect(page.locator('#newOlMap #liz_layer_popup')).not.toBeVisible();
         // Deactivate draw
         await page.locator('#draw').getByRole('link').first().click();
@@ -369,6 +370,33 @@ test.describe('Popup', () => {
         await getFeatureInfoRequest.response();
         await expect(page.locator('#newOlMap #liz_layer_popup')).toBeVisible();
         await page.getByRole('link', { name: '✖' }).click();
+
+        // Edition
+        await page.locator('.draw > .menu-content > lizmap-digitizing > .digitizing > .digitizing-edit').click();
+        await page.waitForTimeout(500);
+        // Popup disable
+        await page.locator('#newOlMap').click({
+            position: {
+                x: 510,
+                y: 415
+            }
+        });
+        await page.waitForTimeout(500); // wait to be sure, no request sended
+        await expect(page.locator('#newOlMap #liz_layer_popup')).not.toBeVisible();
+
+        // Erasing
+        await page.locator('.draw > .menu-content > lizmap-digitizing > .digitizing > .digitizing-erase').click();
+        await page.waitForTimeout(500);
+        page.on('dialog', dialog => dialog.accept());
+        // Popup disable
+        await page.locator('#newOlMap').click({
+            position: {
+                x: 510,
+                y: 415
+            }
+        });
+        await page.waitForTimeout(500); // wait to be sure, no request sended
+        await expect(page.locator('#newOlMap #liz_layer_popup')).not.toBeVisible();
     });
 });
 
