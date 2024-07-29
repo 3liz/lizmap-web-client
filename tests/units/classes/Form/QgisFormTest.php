@@ -50,8 +50,17 @@ class dummyForm
     {
         return $this->controls[$ref];
     }
+
+    public function getErrors()
+    {
+    }
 }
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class QgisFormTest extends TestCase
 {
     protected $appContext;
@@ -70,6 +79,7 @@ class QgisFormTest extends TestCase
         $proj->setRepo(new \Lizmap\Project\Repository('key', array(), null, null, $appContext));
         $proj->setKey($projectKey);
         $layer->setProject($proj);
+
         return $layer;
     }
 
@@ -77,7 +87,7 @@ class QgisFormTest extends TestCase
     {
         $formCache = json_decode(file_get_contents($file), true);
         $properties = array();
-        foreach($formCache as $ref => $props) {
+        foreach ($formCache as $ref => $props) {
             $prop = new \Lizmap\Form\QgisFormControlProperties(
                 $ref,
                 $props['fieldEditType'],
@@ -89,10 +99,9 @@ class QgisFormTest extends TestCase
             }
             $properties[$ref] = $prop;
         }
+
         return $properties;
     }
-
-
 
     public function getConstructData()
     {
@@ -126,9 +135,9 @@ class QgisFormTest extends TestCase
         );
 
         return array(
-            array('test','date', $fields),
-            array('montpellier','line', $fields2),
-            array('not','existing', null),
+            array('test', 'date', $fields),
+            array('montpellier', 'line', $fields2),
+            array('not', 'existing', null),
         );
     }
 
@@ -137,6 +146,8 @@ class QgisFormTest extends TestCase
      *
      * @param mixed $file
      * @param mixed $fields
+     * @param mixed $projectKey
+     * @param mixed $layer
      */
     public function testConstruct($projectKey, $layer, $fields)
     {
@@ -255,6 +266,7 @@ class QgisFormTest extends TestCase
      * @param mixed $evaluateExpression
      * @param mixed $constraints
      * @param mixed $expectedResult
+     * @param mixed $allowWithoutGeom
      */
     public function testCheck($dbFieldsInfo, $check, $data, $evaluateExpression, $constraints, $allowWithoutGeom, $expectedResult)
     {
@@ -263,7 +275,7 @@ class QgisFormTest extends TestCase
         foreach ($mockFuncs as $method) {
             if ($method === 'evaluateExpression') {
                 $formMock->method($method)->willReturn($evaluateExpression);
-            } else if ($method === 'getConstraints') {
+            } elseif ($method === 'getConstraints') {
                 $formMock->method($method)->willReturn($constraints);
             } else {
                 $formMock->method($method)->willReturn(null);
@@ -275,14 +287,14 @@ class QgisFormTest extends TestCase
         $jForm->check = $check;
         $jForm->data = $data;
         $jForm->controls = array();
-        foreach(array_keys((array)$dbFieldsInfo->dataFields) as $key) {
+        foreach (array_keys((array) $dbFieldsInfo->dataFields) as $key) {
             $jForm->controls[$key] = new \jFormsControlInput($key);
         }
         $layer = new QgisLayerForTests();
         $layer->eCapabilities = (object) array('capabilities' => (object) array('modifyGeometry' => 'True', 'allow_without_geom' => $allowWithoutGeom));
         $layer->dbFieldValues = array();
 
-        $testCfg = new Project\ProjectConfig(new StdClass());
+        $testCfg = new Project\ProjectConfig(new stdClass());
 
         $proj = new ProjectForTests();
         $proj->setRepo(new \Lizmap\Project\Repository('key', array(), null, null, null));
