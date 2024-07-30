@@ -28,9 +28,20 @@ import '../images/svg/file-download.svg';
 import '../images/svg/file-upload.svg';
 
 /**
+ * Digitizing element
+ * Provides user interface for digitizing shapes and text
+ * Attributes:
+ *  context - The digitizing context to linked element to Digitizing module context
+ *  selected-tool - Start selected drawing tools one of DigitizingAvailableTools or available-tools
+ *  available-tools - List of available drawing tools based on DigitizingAvailableTools
+ *  save - Enable save capability
+ *  measure - Enable measure capability
+ *  import-export - Enable import / export capabilities
  * @class
  * @name Digitizing
  * @augments HTMLElement
+ * @example
+ * <lizmap-digitizing context="draw" selected-tool="box" available-tools="point,line,polygon,box,freehand" save import-export measure></lizmap-digitizing>
  */
 export default class Digitizing extends HTMLElement {
     constructor() {
