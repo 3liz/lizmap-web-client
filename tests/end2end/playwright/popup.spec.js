@@ -237,8 +237,8 @@ test.describe('Popup', () => {
             }
         });
         await expect(page.locator('#newOlMap #liz_layer_popup')).toBeVisible();
-        await expect(page.locator('#newOlMap #liz_layer_popup_contentDiv > div > div > div > ul > li.active > a')).toBeVisible();
-        await expect(page.locator('#newOlMap #liz_layer_popup_contentDiv > div > div > div > ul > li:nth-child(2) > a')).toBeVisible();
+        await expect(page.locator('#newOlMap #liz_layer_popup_contentDiv > div > div > div > ul > li > button.active')).toBeVisible();
+        await expect(page.locator('#newOlMap #liz_layer_popup_contentDiv > div > div > div > ul > li:nth-child(2) > button')).toBeVisible();
     });
 
     test('changes popup tab', async ({ page }) => {
@@ -250,7 +250,7 @@ test.describe('Popup', () => {
             }
         });
         await page.waitForTimeout(300);
-        await page.getByRole('link', { name: 'tab2' }).click({ force: true });
+        await page.getByRole('button', { name: 'tab2' }).click({ force: true });
         await expect(page.locator('#popup_dd_1_tab2')).toHaveClass(/active/);
     });
 

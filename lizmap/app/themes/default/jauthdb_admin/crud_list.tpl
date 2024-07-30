@@ -7,7 +7,7 @@
         <div>
             <!--<label for="user-list-filter">{@jauthdb_admin~crud.search.form.keyword.label@}</label>-->
             <input type="text" name="filter" value="{$filter|eschtml}" id="user-list-filter" />
-            <button type="submit" class="btn btn-small">{@jauthdb_admin~crud.search.button.label@}</button>
+            <button type="submit" class="btn btn-sm">{@jauthdb_admin~crud.search.button.label@}</button>
         </div>
     </form>
 {/if}
@@ -17,7 +17,7 @@
     <div>
         <label for="search-login">{@jauthdb_admin~crud.title.view@}</label>
         <input id="search-login" name="j_user_login" data-link="{jurl 'jauthdb_admin~default:autocomplete'}">
-        <button type="submit" class="btn btn-small">{@jauthdb_admin~crud.link.view.record@}</button>
+        <button type="submit" class="btn btn-sm">{@jauthdb_admin~crud.link.view.record@}</button>
     </div>
 </form>
 {/if}
@@ -35,7 +35,7 @@
     <td>{$record->login|eschtml}</td>
     <td>
         {if $canview}
-        <a href="{jurl 'jauthdb_admin~default:view',array('j_user_login'=>$record->login)}" class="btn btn-small">{@jauthdb_admin~crud.link.view.record@}</a>
+        <a href="{jurl 'jauthdb_admin~default:view',array('j_user_login'=>$record->login)}" class="btn btn-sm">{@jauthdb_admin~crud.link.view.record@}</a>
         {/if}
     </td>
 </tr>

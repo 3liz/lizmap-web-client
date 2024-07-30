@@ -11,8 +11,8 @@
           <tr>
             <td>{$gb->name}</td>
             <td>
-              <button class="btn-geobookmark-del btn btn-mini" value="{$gb->id}" title="{@view~map.permalink.geobookmark.button.del@}"><i class="icon-remove"></i></button>
-              <a class="btn-geobookmark-run btn btn-mini" href="{$gb->params|json_decode:"hash"}" title="{@view~map.permalink.geobookmark.button.run@}"><i class="icon-zoom-in"></i></a>
+              <button class="btn-geobookmark-del btn btn-sm" value="{$gb->id}" title="{@view~map.permalink.geobookmark.button.del@}"><i class="icon-remove"></i></button>
+              <a class="btn-geobookmark-run btn btn-sm" href="{$gb->params|json_decode:"hash"}" title="{@view~map.permalink.geobookmark.button.run@}"><i class="icon-zoom-in"></i></a>
             </td>
           </tr>
           {/foreach}

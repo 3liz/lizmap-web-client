@@ -23,8 +23,9 @@
 {if $container->hasTabChildren()}
 <ul id="{$container->getParentId()}-tabs" class="nav nav-tabs">
     {foreach $container->getTabChildren() as $tabChild}
-    <li{if !$groupVisibilities[$tabChild->getHtmlId()]} style="display:none;"{/if}><a href="#{$tabChild->getHtmlId()}"
-           data-toggle="tab">{$tabChild->getName()}</a></li>
+    <li class="nav-item" {if !$groupVisibilities[$tabChild->getHtmlId()]} style="display:none;"{/if}>
+        <button class="nav-link" data-bs-target="#{$tabChild->getHtmlId()}" data-bs-toggle="tab" type="button">{$tabChild->getName()}</button>
+    </li>
     {/foreach}
 </ul>
 

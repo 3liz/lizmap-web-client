@@ -65,7 +65,7 @@ test.describe('Attribute table data restricted to map extent', () => {
         };
 
         await page.getByRole('button', { name: 'Export' }).click();
-        await page.getByRole('link', { name: 'GeoJSON' }).click();
+        await page.getByRole('button', { name: 'GeoJSON' }).click();
 
         getFeatureRequestContains(await getFeatureRequestPromise);
     });

@@ -1,7 +1,7 @@
 <div class="action">
     <h3>
         <span class="title">
-            <button id="action-close" class="btn btn-stop btn-mini btn-error btn-link"
+            <button id="action-close" class="btn btn-stop btn-sm btn-error btn-link"
                 title="{@action~action.dock.close@}">×</button>
             <span class="icon"></span>&nbsp;
             <span class="text">{@action~action.dock.title@}</span>

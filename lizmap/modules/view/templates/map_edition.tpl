@@ -9,8 +9,8 @@
                 <select id="edition-layer"></select>
             </div>
 
-            <a id="edition-draw" class="btn btn-small" href="#" rel="tooltip"
-                title="{@view~edition.toolbar.draw.tooltip@}"
+            <a id="edition-draw" class="btn btn-sm" href="#"
+                data-bs-toggle="tooltip" data-bs-title="{@view~edition.toolbar.draw.tooltip@}"
                 data-placement="bottom">{@view~edition.toolbar.draw.title@}</a>
         </div>
 
@@ -19,12 +19,16 @@
         </form>
 
         <div class="tabbable edition-tabs" style="display: none;">
-            <ul class="nav nav-pills">
-                <li class="active"><a href="#tabform" data-toggle="tab">{@view~edition.tab.form.title@}</a></li>
-                <li><a href="#tabdigitization" data-toggle="tab">{@view~edition.tab.digitization.title@}</a></li>
+            <ul class="nav nav-pills" role="tablist">
+                <li class="nav-item">
+                    <button class="nav-link active" data-bs-target="#tabform" data-bs-toggle="tab" type="button" role="tab">{@view~edition.tab.form.title@}</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-target="#tabdigitization" data-bs-toggle="tab" type="button" role="tab">{@view~edition.tab.digitization.title@}</button>
+                </li>
             </ul>
             <div class="tab-content">
-                <div class="tab-pane active" id="tabform">
+                <div class="tab-pane show active" id="tabform">
                     <div id="edition-form-container">
                     </div>
                     <div id="edition-children-container" style="display:none;">
@@ -33,35 +37,35 @@
                 <div class="tab-pane" id="tabdigitization">
                     <div id="edition-geomtool-container" class="btn-group" data-toggle="buttons-radio"
                         style="display:none;">
-                        <button id="edition-geomtool-nodetool" class="btn btn-small"
-                            data-original-title="{@view~edition.geomtool.nodetool.title@}">
+                        <button id="edition-geomtool-nodetool" class="btn btn-sm"
+                            data-bs-toggle="tooltip" data-bs-title="{@view~edition.geomtool.nodetool.title@}">
                             <i class="icon-none qgis_sprite mActionNodeTool"></i>
                         </button>
-                        <button id="edition-geomtool-drag" class="btn btn-small"
-                            data-original-title="{@view~edition.geomtool.drag.title@}">
+                        <button id="edition-geomtool-drag" class="btn btn-sm"
+                            data-bs-toggle="tooltip" data-bs-title="{@view~edition.geomtool.drag.title@}">
                             <i class="icon-none qgis_sprite mActionMoveFeature"></i>
                         </button>
-                        <button id="edition-geomtool-rotate" class="btn btn-small"
-                            data-original-title="{@view~edition.geomtool.rotate.title@}">
+                        <button id="edition-geomtool-rotate" class="btn btn-sm"
+                            data-bs-toggle="tooltip" data-bs-title="{@view~edition.geomtool.rotate.title@}">
                             <i class="icon-none qgis_sprite mActionRotateFeature"></i>
                         </button>
-                        <button id="edition-geomtool-reshape" class="btn btn-small"
-                            data-original-title="{@view~edition.geomtool.reshape.title@}">
+                        <button id="edition-geomtool-reshape" class="btn btn-sm"
+                            data-bs-toggle="tooltip" data-bs-title="{@view~edition.geomtool.reshape.title@}">
                             <i class="icon-none qgis_sprite mActionReshape"></i>
                         </button>
-                        <button id="edition-geomtool-split" class="btn btn-small"
-                            data-original-title="{@view~edition.geomtool.splitfeatures.title@}">
+                        <button id="edition-geomtool-split" class="btn btn-sm"
+                            data-bs-toggle="tooltip" data-bs-title="{@view~edition.geomtool.splitfeatures.title@}">
                             <i class="icon-none qgis_sprite mActionSplitFeatures"></i>
                         </button>
-                        <lizmap-reverse-geom class="btn btn-small"
-                            data-original-title="{@view~edition.geomtool.reversegeom.title@}">
+                        <lizmap-reverse-geom class="btn btn-sm"
+                            data-bs-toggle="tooltip" data-bs-title="{@view~edition.geomtool.reversegeom.title@}">
                         </lizmap-reverse-geom>
                     </div>
-                    <button id="edition-geomtool-restart-drawing" class="btn btn-small"
-                        data-original-title="{@view~edition.geomtool.restartdrawing.title@}">
+                    <button id="edition-geomtool-restart-drawing" class="btn btn-sm"
+                        data-bs-toggle="tooltip" data-bs-title="{@view~edition.geomtool.restartdrawing.title@}">
                         <i class="icon-refresh"></i>
                     </button>
-                    <lizmap-paste-geom data-original-title="{@view~edition.geomtool.pastegeom.title@}"></lizmap-paste-geom>
+                    <lizmap-paste-geom data-bs-toggle="tooltip" data-bs-title="{@view~edition.geomtool.pastegeom.title@}"></lizmap-paste-geom>
                     <form id="edition-point-coord-form" class="form-horizontal">
                         <fieldset>
                             <div id="edition-point-coord-form-group" class="jforms-table-group">
@@ -114,9 +118,9 @@
                                     <div class="control-group">
                                         <div class="controls">
                                             <button name="submit" id="edition-point-coord-add"
-                                                class="btn btn-small">{@view~edition.point.coord.add.label@}</button>
+                                                class="btn btn-sm">{@view~edition.point.coord.add.label@}</button>
                                             <button name="submit" id="edition-point-coord-submit"
-                                                class="btn btn-small">{@view~edition.point.coord.finalize.label@}</button>
+                                                class="btn btn-sm">{@view~edition.point.coord.finalize.label@}</button>
                                         </div>
                                     </div>
                                     <div class="control-group" id="edition-point-coord-geolocation-group"
