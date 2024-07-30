@@ -4793,11 +4793,6 @@ window.lizMap = function() {
                 // Re-save the config in self
                 self.config = config;
                 self.keyValueConfig = keyValueConfig;
-                /**
-                 * Event when the tree has been created
-                 * @event treecreated
-                 */
-                self.events.triggerEvent("treecreated", self);
 
                 // create the map
                 initProjections(firstLayer);
