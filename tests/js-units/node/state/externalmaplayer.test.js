@@ -39,8 +39,8 @@ function getRootMapGroupState(name) {
 
 	const layersOrder = buildLayersOrder(config, rootCfg);
 
-    const options = new OptionsConfig(config.options);
-    const collection = new LayersAndGroupsCollection(rootCfg, layersOrder, options);
+	const options = new OptionsConfig(config.options);
+	const collection = new LayersAndGroupsCollection(rootCfg, layersOrder, options.hideGroupCheckbox);
 
 	const root = new MapRootState(collection.root);
 	expect(root).to.be.instanceOf(MapGroupState)

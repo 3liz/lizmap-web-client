@@ -60,7 +60,7 @@ export class State extends EventDispatcher {
      */
     get layersAndGroupsCollection() {
         if (this._collection == null) {
-            this._collection = new LayersAndGroupsCollection(this._initialConfig.layerTree, this._initialConfig.layersOrder, this._initialConfig.options);
+            this._collection = new LayersAndGroupsCollection(this._initialConfig.layerTree, this._initialConfig.layersOrder, this._initialConfig.options.hideGroupCheckbox);
             // Dispatch events from groups and layers
             this._collection.addListener(this.dispatch.bind(this), 'group.visibility.changed');
             this._collection.addListener(this.dispatch.bind(this), 'group.opacity.changed');
