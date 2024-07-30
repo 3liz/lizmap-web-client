@@ -6,6 +6,7 @@
  */
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import { deepFreeze } from './config/Tools.js';
+import { createEnum } from './utils/Enums.js';
 import Utils from '../modules/Utils.js';
 
 import GeoJSON from 'ol/format/GeoJSON.js';
@@ -37,6 +38,17 @@ import { transform } from 'ol/proj.js';
  * @constant {Array<string>}
  */
 export const DigitizingAvailableTools = deepFreeze(['deactivate', 'point', 'line', 'polygon', 'box', 'circle', 'freehand', 'text']);
+
+export const DigitizingTools = createEnum({
+    'Deactivate': 'deactivate',
+    'Point': 'point',
+    'Line': 'line',
+    'Polygon': 'polygon',
+    'Box': 'box',
+    'Circle': 'circle',
+    'Freehand': 'freehand',
+    'Text': 'text'
+});
 
 /**
  * @class
