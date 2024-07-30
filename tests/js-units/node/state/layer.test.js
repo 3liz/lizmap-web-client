@@ -38,7 +38,7 @@ function getRootLayerGroupState(name) {
     const layersOrder = buildLayersOrder(config, rootCfg);
 
     const options = new OptionsConfig(config.options);
-    const root = new LayerGroupState(rootCfg, layersOrder, options);
+    const root = new LayerGroupState(rootCfg, layersOrder, options.hideGroupCheckbox);
     expect(root).to.be.instanceOf(LayerGroupState)
     return root;
 }
@@ -69,7 +69,7 @@ function getLayersAndGroupsCollection(name) {
     const layersOrder = buildLayersOrder(config, rootCfg);
 
     const options = new OptionsConfig(config.options);
-    return new LayersAndGroupsCollection(rootCfg, layersOrder, options);
+    return new LayersAndGroupsCollection(rootCfg, layersOrder, options.hideGroupCheckbox);
 }
 
 describe('LayerGroupState', function () {
@@ -1624,7 +1624,7 @@ describe('LayersAndGroupsCollection', function () {
         const layersOrder = buildLayersOrder(config, rootCfg);
 
         const options = new OptionsConfig(config.options);
-        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder, options);
+        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder, options.hideGroupCheckbox);
 
         // `group-without-children` has no state
         expect(collection.groupNames).to.be.an('array').that.have.ordered.members([
