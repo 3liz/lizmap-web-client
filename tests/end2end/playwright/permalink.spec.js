@@ -199,7 +199,7 @@ test.describe('Permalink', () => {
         await expect(hashStyles[3]).toBe(encodeURI('a_single'))
         await expect(hashOpacities[3]).toBe('1')
 
-        // legend_option_test is a group, it has no stile
+        // legend_option_test is a group, it has no style
         await expect(hashLayers[4]).toBe(encodeURI('legend_option_test'))
         await expect(hashStyles[4]).toBe(encodeURI(''))
         await expect(hashOpacities[4]).toBe('1')
@@ -252,7 +252,7 @@ test.describe('Permalink', () => {
         await expect(hashStyles[3]).toBe(encodeURI('categorized'))
         await expect(hashOpacities[3]).toBe('1')
 
-        // legend_option_test is a group, it has no stile
+        // legend_option_test is a group, it has no style
         await expect(hashLayers[4]).toBe(encodeURI('legend_option_test'))
         await expect(hashStyles[4]).toBe(encodeURI(''))
         await expect(hashOpacities[4]).toBe('1')
@@ -294,7 +294,7 @@ test.describe('Permalink', () => {
         await expect(hashStyles[1]).toBe(encodeURI('categorized'))
         await expect(hashOpacities[1]).toBe('1')
 
-        // legend_option_test is a group, it has no stile
+        // legend_option_test is a group, it has no style
         await expect(hashLayers[2]).toBe(encodeURI('legend_option_test'))
         await expect(hashStyles[2]).toBe(encodeURI(''))
         await expect(hashOpacities[2]).toBe('1')
@@ -337,7 +337,7 @@ test.describe('Permalink', () => {
         await expect(hashStyles[1]).toBe(encodeURI('categorized'))
         await expect(hashOpacities[1]).toBe('1')
 
-        // legend_option_test is a group, it has no stile
+        // legend_option_test is a group, it has no style
         await expect(hashLayers[2]).toBe(encodeURI('legend_option_test'))
         await expect(hashStyles[2]).toBe(encodeURI(''))
         await expect(hashOpacities[2]).toBe('1')

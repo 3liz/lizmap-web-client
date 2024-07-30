@@ -45,7 +45,7 @@ function getBaseLayersState(name) {
     const layersOrder = buildLayersOrder(config, rootCfg);
 
     const options = new OptionsConfig(config.options);
-    const collection = new LayersAndGroupsCollection(rootCfg, layersOrder, options);
+    const collection = new LayersAndGroupsCollection(rootCfg, layersOrder, options.hideGroupCheckbox);
 
     const baseLayers = new BaseLayersState(baseLayersConfig, collection)
     expect(baseLayers).to.be.instanceOf(BaseLayersState)
@@ -170,7 +170,7 @@ describe('BaseLayersState', function () {
 
         const layersOrder = buildLayersOrder(config, rootCfg);
 
-        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder, options);
+        const collection = new LayersAndGroupsCollection(rootCfg, layersOrder, options.hideGroupCheckbox);
 
         const baseLayers = new BaseLayersState(baseLayersConfig, collection)
         expect(baseLayers.selectedBaseLayerName).to.be.eq('osm-mapnik')
