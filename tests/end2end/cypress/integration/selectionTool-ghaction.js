@@ -57,7 +57,7 @@ describe('Selection tool', function () {
         cy.get('#button-selectiontool').click()
 
         // Activate polygon tool
-        cy.get('#selectiontool .digitizing-buttons .dropdown-toggle').first().click()
+        cy.get('#selectiontool .digitizing-buttons .dropdown-toggle').eq(1).click()
         cy.get('#selectiontool .digitizing-polygon').click()
 
         // Select single layer and intersects geom operator
@@ -101,7 +101,7 @@ describe('Selection tool', function () {
         cy.get('#button-selectiontool').click()
 
         // Activate polygon tool
-        cy.get('#selectiontool .digitizing-buttons .dropdown-toggle').first().click()
+        cy.get('#selectiontool .digitizing-buttons .dropdown-toggle').eq(1).click()
         cy.get('#selectiontool .digitizing-line').click()
 
         // Select single layer and intersects geom operator
@@ -144,7 +144,7 @@ describe('Selection tool', function () {
         cy.get('#button-selectiontool').click()
 
         // Activate polygon tool
-        cy.get('#selectiontool .digitizing-buttons .dropdown-toggle').first().click()
+        cy.get('#selectiontool .digitizing-buttons .dropdown-toggle').eq(1).click()
         cy.get('#selectiontool .digitizing-point').click()
 
         // Select single layer and intersects geom operator
@@ -194,7 +194,7 @@ describe('Selection tool connected as user a', function () {
         cy.get('#button-selectiontool').click()
 
         // Activate polygon tool
-        cy.get('#selectiontool .digitizing-buttons .dropdown-toggle').first().click()
+        cy.get('#selectiontool .digitizing-buttons .dropdown-toggle').eq(1).click()
         cy.get('#selectiontool .digitizing-polygon').click()
 
         // Select single layer and intersects geom operator
@@ -243,7 +243,7 @@ describe('Selection tool connected as admin', function () {
         cy.get('#button-selectiontool').click()
 
         // Activate polygon tool
-        cy.get('#selectiontool .digitizing-buttons .dropdown-toggle').first().click()
+        cy.get('#selectiontool .digitizing-buttons .dropdown-toggle').eq(1).click()
         cy.get('#selectiontool .digitizing-polygon').click()
 
         // Select single layer and intersects geom operator

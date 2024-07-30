@@ -7,6 +7,7 @@
  */
 
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
+import { DigitizingAvailableTools } from '../modules/Digitizing.js'
 import { html, render } from 'lit-html';
 
 import '../images/svg/point.svg';
@@ -33,34 +34,39 @@ import '../images/svg/file-upload.svg';
 export default class Digitizing extends HTMLElement {
     constructor() {
         super();
+        this._toolSelected = DigitizingAvailableTools[0];
     }
 
     connectedCallback() {
 
+        if (this.hasAttribute('selected-tool')) {
+            this._toolSelected = this.getAttribute('selected-tool');
+        }
+
         const mainTemplate = () => html`
         <div class="digitizing">
             <div class="digitizing-buttons btn-group" data-original-title="${lizDict['digitizing.toolbar.drawTools']}">
-                <a class="btn dropdown-toggle ${this.deactivate ? '' : 'active btn-primary'}" @click=${(event) => { if(mainLizmap.digitizing.toolSelected !== 'deactivate') {mainLizmap.digitizing.toolSelected = 'deactivate'; event.stopPropagation();}}} data-toggle="dropdown" href="#">
+                <a class="btn dropdown-toggle ${this.deactivate ? '' : 'active btn-primary'}" @click=${(event) => {this.toggleToolSelected(event)}} data-toggle="dropdown" href="#">
                     <svg>
                         <use xlink:href="#pencil"></use>
                     </svg>
                     <!-- Display selected tool -->
-                    <svg class="digitizing-selected-tool ${mainLizmap.digitizing.toolSelected === 'point' ? '' : 'hidden'}">
+                    <svg class="digitizing-selected-tool ${this.toolSelected === 'point' ? '' : 'hidden'}">
                         <use xlink:href="#point"></use>
                     </svg>
-                    <svg class="digitizing-selected-tool ${mainLizmap.digitizing.toolSelected === 'line' ? '' : 'hidden'}">
+                    <svg class="digitizing-selected-tool ${this.toolSelected === 'line' ? '' : 'hidden'}">
                         <use xlink:href="#line"></use>
                     </svg>
-                    <svg class="digitizing-selected-tool ${mainLizmap.digitizing.toolSelected === 'polygon' ? '' : 'hidden'}">
+                    <svg class="digitizing-selected-tool ${this.toolSelected === 'polygon' ? '' : 'hidden'}">
                         <use xlink:href="#polygon"></use>
                     </svg>
-                    <svg class="digitizing-selected-tool ${mainLizmap.digitizing.toolSelected === 'box' ? '' : 'hidden'}">
+                    <svg class="digitizing-selected-tool ${this.toolSelected === 'box' ? '' : 'hidden'}">
                         <use xlink:href="#box"></use>
                     </svg>
-                    <svg class="digitizing-selected-tool ${mainLizmap.digitizing.toolSelected === 'circle' ? '' : 'hidden'}">
+                    <svg class="digitizing-selected-tool ${this.toolSelected === 'circle' ? '' : 'hidden'}">
                         <use xlink:href="#circle"></use>
                     </svg>
-                    <svg class="digitizing-selected-tool ${mainLizmap.digitizing.toolSelected === 'freehand' ? '' : 'hidden'}">
+                    <svg class="digitizing-selected-tool ${this.toolSelected === 'freehand' ? '' : 'hidden'}">
                         <use xlink:href="#freehand"></use>
                     </svg>
                 </a>
@@ -68,37 +74,37 @@ export default class Digitizing extends HTMLElement {
                     <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
-                    <li class="digitizing-point btn ${mainLizmap.digitizing.toolSelected === 'point' ? 'active btn-primary' : ''}" @click=${() => mainLizmap.digitizing.toolSelected = 'point'} data-original-title="${lizDict['digitizing.toolbar.point']}">
+                    <li class="digitizing-point btn ${this.toolSelected === 'point' ? 'active btn-primary' : ''}" @click=${() => this.toolSelected = 'point'} data-original-title="${lizDict['digitizing.toolbar.point']}">
                         <svg>
                             <use xlink:href="#point"></use>
                         </svg>
                     </li>
-                    <li class="digitizing-line btn ${mainLizmap.digitizing.toolSelected === 'line' ? 'active btn-primary' : ''}" @click=${() => mainLizmap.digitizing.toolSelected = 'line'} data-original-title="${lizDict['digitizing.toolbar.line']}">
+                    <li class="digitizing-line btn ${this.toolSelected === 'line' ? 'active btn-primary' : ''}" @click=${() => this.toolSelected = 'line'} data-original-title="${lizDict['digitizing.toolbar.line']}">
                         <svg>
                             <use xlink:href="#line"></use>
                         </svg>
                     </li>
-                    <li class="digitizing-polygon btn ${mainLizmap.digitizing.toolSelected === 'polygon' ? 'active btn-primary' : ''}" @click=${() => mainLizmap.digitizing.toolSelected = 'polygon'} data-original-title="${lizDict['digitizing.toolbar.polygon']}">
+                    <li class="digitizing-polygon btn ${this.toolSelected === 'polygon' ? 'active btn-primary' : ''}" @click=${() => this.toolSelected = 'polygon'} data-original-title="${lizDict['digitizing.toolbar.polygon']}">
                         <svg>
                             <use xlink:href="#polygon"></use>
                         </svg>
                     </li>
-                    <li class="digitizing-box btn ${mainLizmap.digitizing.toolSelected === 'box' ? 'active btn-primary' : ''}" @click=${() => mainLizmap.digitizing.toolSelected = 'box'} data-original-title="${lizDict['digitizing.toolbar.box']}">
+                    <li class="digitizing-box btn ${this.toolSelected === 'box' ? 'active btn-primary' : ''}" @click=${() => this.toolSelected = 'box'} data-original-title="${lizDict['digitizing.toolbar.box']}">
                         <svg>
                             <use xlink:href="#box"></use>
                         </svg>
                     </li>
-                    <li class="digitizing-circle btn ${mainLizmap.digitizing.toolSelected === 'circle' ? 'active btn-primary' : ''}" @click=${() => mainLizmap.digitizing.toolSelected = 'circle'} data-original-title="${lizDict['digitizing.toolbar.circle']}">
+                    <li class="digitizing-circle btn ${this.toolSelected === 'circle' ? 'active btn-primary' : ''}" @click=${() => this.toolSelected = 'circle'} data-original-title="${lizDict['digitizing.toolbar.circle']}">
                         <svg>
                             <use xlink:href="#circle"></use>
                         </svg>
                     </li>
-                    <li class="digitizing-freehand btn ${mainLizmap.digitizing.toolSelected === 'freehand' ? 'active btn-primary' : ''}" @click=${() => mainLizmap.digitizing.toolSelected = 'freehand'} data-original-title="${lizDict['digitizing.toolbar.freehand']}">
+                    <li class="digitizing-freehand btn ${this.toolSelected === 'freehand' ? 'active btn-primary' : ''}" @click=${() => this.toolSelected = 'freehand'} data-original-title="${lizDict['digitizing.toolbar.freehand']}">
                         <svg>
                             <use xlink:href="#freehand"></use>
                         </svg>
                     </li>
-                    <li class="digitizing-text btn ${mainLizmap.digitizing.toolSelected === 'text' ? 'active btn-primary' : ''}" @click=${() => mainLizmap.digitizing.toolSelected = 'text'} data-original-title="${lizDict['digitizing.toolbar.text']}">Abc</li>
+                    <li class="digitizing-text btn ${this.toolSelected === 'text' ? 'active btn-primary' : ''}" @click=${() => this.toolSelected = 'text'} data-original-title="${lizDict['digitizing.toolbar.text']}">Abc</li>
                 </ul>
             </div>
             <input type="color" class="digitizing-color btn" .value="${mainLizmap.digitizing.drawColor}" @input=${(event) => mainLizmap.digitizing._userChangedColor(event.target.value)} data-original-title="${lizDict['digitizing.toolbar.color']}">
@@ -295,6 +301,39 @@ export default class Digitizing extends HTMLElement {
      */
     get importExportAvailable() {
         return this.hasAttribute('import-export');
+    }
+
+    /**
+     * The selected tool
+     * The element attribute: selected-tool
+     * @type {string}
+     */
+    get toolSelected() {
+        return this._toolSelected;
+    }
+
+    /**
+     * Setting the selected
+     * @see DigitizingAvailableTools
+     * @param {string} tool - switch new OL map on top of OL2 one
+     */
+    set toolSelected(tool) {
+        if (DigitizingAvailableTools.includes(tool)) {
+            this._toolSelected = tool;
+            mainLizmap.digitizing.toolSelected = tool;
+        }
+    }
+
+    /**
+     * Toggle selected tool
+     * @param {MouseEvent} event - The click event on the button
+     */
+    toggleToolSelected(event) {
+        if (this.toolSelected === DigitizingAvailableTools[0]) {
+            return;
+        }
+        mainLizmap.digitizing.toolSelected = (mainLizmap.digitizing.toolSelected !== DigitizingAvailableTools[0]) ? DigitizingAvailableTools[0] : this.toolSelected;
+        event.stopPropagation();
     }
 
     eraseAll() {
