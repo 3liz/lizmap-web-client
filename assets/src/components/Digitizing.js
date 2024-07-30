@@ -40,7 +40,7 @@ export default class Digitizing extends HTMLElement {
         const mainTemplate = () => html`
         <div class="digitizing">
             <div class="digitizing-buttons btn-group" data-original-title="${lizDict['digitizing.toolbar.drawTools']}">
-                <a class="btn dropdown-toggle ${mainLizmap.digitizing.toolSelected !== 'deactivate' ? 'active btn-primary' : ''}" @click=${(event) => { if(mainLizmap.digitizing.toolSelected !== 'deactivate') {mainLizmap.digitizing.toolSelected = 'deactivate'; event.stopPropagation();}}} data-toggle="dropdown" href="#">
+                <a class="btn dropdown-toggle ${this.deactivate ? '' : 'active btn-primary'}" @click=${(event) => { if(mainLizmap.digitizing.toolSelected !== 'deactivate') {mainLizmap.digitizing.toolSelected = 'deactivate'; event.stopPropagation();}}} data-toggle="dropdown" href="#">
                     <svg>
                         <use xlink:href="#pencil"></use>
                     </svg>
@@ -220,13 +220,54 @@ export default class Digitizing extends HTMLElement {
 
         mainEventDispatcher.addListener(
             () => {
-                render(mainTemplate(), this);
+                if (!this.disabled) {
+                    render(mainTemplate(), this);
+                }
             },
             ['digitizing.featureDrawn', 'digitizing.visibility', 'digitizing.toolSelected', 'digitizing.editionBegins', 'digitizing.editionEnds', 'digitizing.erasingBegins', 'digitizing.erasingEnds', 'digitizing.erase', 'digitizing.erase.all', 'digitizing.drawColor', 'digitizing.save', 'digitizing.measure', 'digitizing.editedFeatureText', 'digitizing.editedFeatureRotation', 'digitizing.editedFeatureScale']
         );
     }
 
     disconnectedCallback() {
+    }
+
+    /**
+     * Digitizing context
+     * The element attribute: context
+     * @type {string}
+     */
+    get context() {
+        if (this.hasAttribute('context')) {
+            return this.getAttribute('context');
+        }
+        return 'draw';
+    }
+
+    /**
+     * The element is deactivated
+     * if the element is disabled
+     * or if the tool is deactivated
+     * @type {boolean}
+     */
+    get deactivate() {
+        if (mainLizmap.digitizing.context !== this.context) {
+            return true;
+        }
+        if (mainLizmap.digitizing.toolSelected === 'deactivate') {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * The element is disabled if the context is not the same as the module
+     * @type {boolean}
+     */
+    get disabled() {
+        if (mainLizmap.digitizing.context !== this.context) {
+            return true;
+        }
+        return false;
     }
 
     /**

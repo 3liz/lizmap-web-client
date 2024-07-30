@@ -43,7 +43,7 @@ export default class SelectionTool extends HTMLElement {
                         </optgroup>
                     </select>
                 </div>
-                <lizmap-digitizing import-export></lizmap-digitizing>
+                <lizmap-digitizing context="selectiontool" import-export></lizmap-digitizing>
                 <div class="selectiontool-buffer">
                     <label><span>${lizDict['selectiontool.toolbar.buffer']}</span>
                         <div class="input-append">
