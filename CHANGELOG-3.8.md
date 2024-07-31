@@ -18,9 +18,14 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ### Added
 
+* Web component `lizmap-features-table` to display a compact list of features
 * **Digitizing**
     * JS Digitizing: Add erase all
     * JS Digitizing component: measure attribute
+
+### Changed
+
+* Enable popup when digitizing is disabled
 
 ### Fixed
 
@@ -41,6 +46,17 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Permalink :
   * If geobookmark is the same as the hash there is no hash change event. In this case we run permalink
   * Fix permalink after location change
+* Fix project properties when the WMS extent is empty
+* Fix Projects switcher in maps
+
+### Backend
+
+* Fire `treecreated` event at proper time, contribution from @mind84
+* Fix JS externalLayer: default OpenLayers icon and events
+* JS: mainLizmap.center has to be provided by map state
+* Fix pacakge `map-projects.js`
+* Update dompurify to 3.1.6
+* Update OpenLayers to 10 and proj4 to 2.11.0
 
 ### Tests
 
