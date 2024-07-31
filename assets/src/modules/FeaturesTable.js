@@ -4,7 +4,7 @@
  * @copyright 2024 3Liz
  * @license MPL-2.0
  */
-import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
+import { Config } from './Config.js';
 import Utils from './Utils.js';
 
 /**
@@ -13,8 +13,14 @@ import Utils from './Utils.js';
  */
 export default class FeaturesTable {
 
-    constructor() {
-
+    /**
+     * Create a features table instance
+     * @param {Config} initialConfig - The lizmap initial config instance
+     * @param {object} lizmap3   - The old lizmap object
+     */
+    constructor(initialConfig, lizmap3) {
+        this._initialConfig = initialConfig;
+        this._lizmap3 = lizmap3;
     }
 
     /**
@@ -69,7 +75,7 @@ export default class FeaturesTable {
 
         let previousMessage = document.getElementById('lizmap-features-table-message');
         if (previousMessage) previousMessage.remove();
-        mainLizmap.lizmap3.addMessage(
+        this._lizmap3.addMessage(
             message, type, true, duration
         ).attr('id', 'lizmap-features-table-message');
     }
@@ -88,10 +94,10 @@ export default class FeaturesTable {
     openPopup(layerId, feature, uniqueField, targetElement, aCallBack) {
 
         // Get the layer name & configuration
-        if (!mainLizmap.initialConfig.layers.layerIds.includes(layerId)) {
+        if (!this._initialConfig.layers.layerIds.includes(layerId)) {
             return null;
         }
-        const layerConfig = mainLizmap.initialConfig.layers.getLayerConfigByLayerId(layerId);
+        const layerConfig = this._initialConfig.layers.getLayerConfigByLayerId(layerId);
         const layerName = layerConfig.name;
 
         // Layer WMS name
