@@ -12,7 +12,11 @@ import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 /**
  * @class
  * @name FeaturesTable
+ * @summary Allows to display a compact list of vector layer features labels
  * @augments HTMLElement
+ * @element lizmap-features-table
+ * @fires features.table.item.dragged
+ * @fires features.table.rendered
  */
 export default class FeaturesTable extends HTMLElement {
 
@@ -180,7 +184,11 @@ export default class FeaturesTable extends HTMLElement {
             this.addDragAndDropCapabilities();
         }
 
-        // Trigger rendered event
+        /**
+         * When the table has been successfully displayed. The event carries the lizmap-features-table HTML element ID
+         * @event features.table.rendered
+         * @property {string} elementId HTML element ID
+         */
         mainEventDispatcher.dispatch({
             type: 'features.table.rendered',
             elementId: this.id
@@ -346,6 +354,13 @@ export default class FeaturesTable extends HTMLElement {
             // Send event
             const movedFeatureId = dropped.dataset.featureId;
             const newItem = item.parentElement.querySelector(`div.lizmap-features-table-item[data-feature-id="${movedFeatureId}"]`);
+            /**
+             * When the user has dropped an item in a new position
+             * @event features.table.item.dragged
+             * @property {string} itemFeatureId The vector feature ID
+             * @property {string} itemOldLineId The original line ID before dropping the item
+             * @property {string} itemNewLineId The new line ID after dropping the item in a new position
+             */
             mainEventDispatcher.dispatch({
                 type: 'features.table.item.dragged',
                 itemFeatureId: movedFeatureId,
