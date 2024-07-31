@@ -11,7 +11,12 @@
     <table class="table table-striped table-bordered table-server-info table-lizmap-web-client">
         <tr>
             <th>{@admin.server.information.lizmap.info.version@}</th>
-            <td>{$data['info']['version']}</td>
+            <td>
+            {$data['info']['version']}
+            {if $currentLizmapCommitId}
+                - <a href="https://github.com/3liz/lizmap-web-client/commit/{$currentLizmapCommitId}" target="_blank">{$currentLizmapCommitId}</a>
+            {/if}
+            </td>
         </tr>
         <tr>
             <th>{@admin.server.information.lizmap.info.date@}</th>
