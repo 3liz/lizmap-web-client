@@ -154,10 +154,12 @@ class qgisExpressionUtils
      * @param qgisVectorLayer $layer         A QGIS vector layer
      * @param array           $virtualFields The expressions' list to evaluate as key
      * @param string          $filter        A filter to restrict virtual fields creation
+     * @param string          $withGeometry  'true' to get geometries of features
+     * @param string          $fields        A list of field names separated by comma. E.g. 'name,code'
      *
      * @return null|array the features with virtual fields
      */
-    public static function virtualFields($layer, $virtualFields, $filter = null)
+    public static function virtualFields($layer, $virtualFields, $filter = null, $withGeometry = 'true', $fields = '')
     {
         // Evaluate the expression by qgis
         $project = $layer->getProject();
@@ -167,7 +169,8 @@ class qgisExpressionUtils
             'map' => $project->getRelativeQgisPath(),
             'layer' => $layer->getName(),
             'virtuals' => json_encode($virtualFields),
-            'with_geometry' => 'true',
+            'with_geometry' => $withGeometry,
+            'fields' => $fields,
         );
         if ($filter) {
             $params['filter'] = $filter;
