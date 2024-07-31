@@ -18,7 +18,7 @@ jobs:
         days-before-pr-close: 14
         operations-per-run: 300
         close-pr-label: stale
-        ignore-updates: true
+        ignore-updates: false
         stale-pr-message: >
           The Lizmap project highly values your contribution and would love to see
           this work merged!
