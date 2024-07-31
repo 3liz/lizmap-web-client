@@ -83,6 +83,7 @@ class server_informationCtrl extends jController
             'lizmapPluginUpdate' => $updateLizmapPlugin,
             'minimumQgisVersion' => $qgisMinimumVersionRequired,
             'minimumLizmapServer' => $lizmapPluginMinimumVersionRequired,
+            'currentLizmapCommitId' => jApp::config()->commitSha,
         );
         $tpl->assign($assign);
         $rep->body->assign('MAIN', $tpl->fetch('server_information'));
