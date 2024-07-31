@@ -133,6 +133,7 @@ $(DIST): lizmap/www/assets/js/lizmap.js lizmap/vendor
 	cp -aR $(FILES) $(DIST)/
 	sed -i "s/\(<version date=\"\)\([^\"]*\)\(\"\)/\1$(DATE_VERSION)\3/" $(DIST)/lizmap/project.xml
 	sed -i "s/\(<version.*pre\)</\1\.$(COMMIT_NUMBER)</" $(DIST)/lizmap/project.xml
+	sed -i "s@commitSha=@commitSha=$(COMMITID)@g" $(DIST)/lizmap/app/system/mainconfig.ini.php
 	mkdir -p $(DIST)/temp/lizmap/
 	cp -a temp/.htaccess $(DIST)/temp/
 	cp -a temp/lizmap/.empty $(DIST)/temp/lizmap/
