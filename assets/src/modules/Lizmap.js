@@ -162,7 +162,7 @@ export default class Lizmap {
                 this.featureStorage = new FeatureStorage();
                 this.popup = new Popup(this.initialConfig, this.state, this.map);
                 this.legend = new Legend(this.state.layerTree);
-                this.search = new Search();
+                this.search = new Search(this.map, this.lizmap3);
                 this.tooltip = new Tooltip();
 
                 // Removed unusable button
