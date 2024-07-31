@@ -10,6 +10,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ### Funders
 
+* *[Faunalia](https://www.faunalia.eu/fr)*, contributions on source code from @mind84
 * **FM Projet**
 * **[Terre de Provence Agglomération](https://www.terredeprovence-agglo.com/)**
 * **[Valabre](https://www.valabre.com/)**
@@ -17,6 +18,10 @@ with some extra keywords: backend, tests, test, translation, funders, important
 ### Added
 
 * New option to disable the automatic permalink in the URL when a pan or a zoom is done
+
+### Changed
+
+* Enable popup when digitizing is disabled
 
 ### Fixed
 
@@ -35,10 +40,18 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Permalink :
   * If geobookmark is the same as the hash there is no hash change event. In this case we run permalink
   * Fix permalink after location change
+* Fix project properties when the WMS extent is empty
+* Fix Projects switcher in maps
 
 ### Tests
 
 * Improve End2End automatic tests
+
+### Backend
+
+* Fire `treecreated` event at proper time, contribution from @mind84
+* Fix pacakge `map-projects.js`
+* Update dompurify to 3.1.6
 
 ## 3.7.9 - 2024-07-04
 
