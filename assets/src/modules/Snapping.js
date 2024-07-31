@@ -5,7 +5,10 @@
  * @license MPL-2.0
  */
 
-import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
+import { mainEventDispatcher } from '../modules/Globals.js';
+import Edition from './Edition.js';
+import { MapRootState } from './state/MapLayer.js';
+import { TreeRootState } from './state/LayerTree.js';
 
 /**
  * @class
@@ -13,7 +16,19 @@ import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
  */
 export default class Snapping {
 
-    constructor() {
+    /**
+     * Create a snapping instance
+     * @param {Edition}       edition      - The edition module
+     * @param {MapRootState}  rootMapGroup - Root map group
+     * @param {TreeRootState} layerTree    - Root tree layer group
+     * @param {object}        lizmap3      - The old lizmap object
+     */
+    constructor(edition, rootMapGroup, layerTree, lizmap3) {
+
+        this._edition = edition;
+        this._rootMapGroup = rootMapGroup;
+        this._layerTree = layerTree;
+        this._lizmap3 = lizmap3;
 
         this._active = false;
         this._snapLayersRefreshable = false;
@@ -38,16 +53,16 @@ export default class Snapping {
             })
         });
 
-        mainLizmap.lizmap3.map.addLayer(snapLayer);
+        this._lizmap3.map.addLayer(snapLayer);
 
         const snapControl = new OpenLayers.Control.Snapping({
-            layer: mainLizmap.edition.editLayer,
+            layer: this._edition.editLayer,
             targets: [{
                 layer: snapLayer
             }]
         });
-        mainLizmap.lizmap3.map.addControls([snapControl]);
-        mainLizmap.lizmap3.controls['snapControl'] = snapControl;
+        this._lizmap3.map.addControls([snapControl]);
+        this._lizmap3.controls['snapControl'] = snapControl;
 
         this._setSnapLayersRefreshable = () => {
             if(this._active){
@@ -92,10 +107,10 @@ export default class Snapping {
         mainEventDispatcher.addListener(
             () => {
                 // Get snapping configuration for edited layer
-                for (const editionLayer in mainLizmap.config.editionLayers) {
-                    if (mainLizmap.config.editionLayers.hasOwnProperty(editionLayer)) {
-                        if (mainLizmap.config.editionLayers[editionLayer].layerId === mainLizmap.edition.layerId){
-                            const editionLayerConfig = mainLizmap.config.editionLayers[editionLayer];
+                for (const editionLayer in this._lizmap3.config.editionLayers) {
+                    if (this._lizmap3.config.editionLayers.hasOwnProperty(editionLayer)) {
+                        if (this._lizmap3.config.editionLayers[editionLayer].layerId === this._edition.layerId){
+                            const editionLayerConfig = this._lizmap3.config.editionLayers[editionLayer];
                             if (editionLayerConfig.hasOwnProperty('snap_layers') && editionLayerConfig.snap_layers.length > 0){
 
                                 this._snapLayers = [...editionLayerConfig.snap_layers];
@@ -128,10 +143,10 @@ export default class Snapping {
 
                 if (this._config !== undefined){
                     // Configure snapping
-                    const snapControl = mainLizmap.lizmap3.controls.snapControl;
+                    const snapControl = this._lizmap3.controls.snapControl;
 
                     // Set edition layer as main layer
-                    snapControl.setLayer(mainLizmap.edition.editLayer);
+                    snapControl.setLayer(this._edition.editLayer);
 
                     snapControl.targets[0].node = this._config.snap_vertices;
                     snapControl.targets[0].vertex = this._config.snap_intersections;
@@ -141,8 +156,8 @@ export default class Snapping {
                     snapControl.targets[0].edgeTolerance = this._config.snap_segments_tolerance;
 
                     // Listen to moveend event and to layers visibility changes to able data refreshing
-                    mainLizmap.lizmap3.map.events.register('moveend', this, this._setSnapLayersRefreshable);
-                    mainLizmap.state.rootMapGroup.addListener(
+                    this._lizmap3.map.events.register('moveend', this, this._setSnapLayersRefreshable);
+                    this._rootMapGroup.addListener(
                         this._setSnapLayersVisibility,
                         ['layer.visibility.changed','group.visibility.changed']
                     );
@@ -155,12 +170,12 @@ export default class Snapping {
         mainEventDispatcher.addListener(
             () => {
                 this.active = false;
-                mainLizmap.lizmap3.map.getLayersByName('snaplayer')[0].destroyFeatures();
+                this._lizmap3.map.getLayersByName('snaplayer')[0].destroyFeatures();
                 this.config = undefined;
 
                 // Remove listener to moveend event to layers visibility event
-                mainLizmap.lizmap3.map.events.unregister('moveend', this, this._setSnapLayersRefreshable);
-                mainLizmap.state.rootMapGroup.removeListener(
+                this._lizmap3.map.events.unregister('moveend', this, this._setSnapLayersRefreshable);
+                this._rootMapGroup.removeListener(
                     this._setSnapLayersVisibility,
                     ['layer.visibility.changed','group.visibility.changed']
                 )
@@ -171,7 +186,7 @@ export default class Snapping {
 
     getSnappingData () {
         // Empty snapping layer first
-        mainLizmap.lizmap3.map.getLayersByName('snaplayer')[0].destroyFeatures();
+        this._lizmap3.map.getLayersByName('snaplayer')[0].destroyFeatures();
 
         // filter only visible layers and toggled layers on the the snap list
         const currentSnapLayers = this._snapLayers.filter(
@@ -181,7 +196,7 @@ export default class Snapping {
         // TODO : group aync calls with Promises
         for (const snapLayer of currentSnapLayers) {
 
-            lizMap.getFeatureData(mainLizmap.lizmap3.getLayerConfigById(snapLayer)[0], null, null, 'geom', this._restrictToMapExtent, null, this._maxFeatures,
+            lizMap.getFeatureData(this._lizmap3.getLayerConfigById(snapLayer)[0], null, null, 'geom', this._restrictToMapExtent, null, this._maxFeatures,
                 (fName, fFilter, fFeatures) => {
 
                     // Transform features
@@ -195,7 +210,7 @@ export default class Snapping {
                     const gFormat = new OpenLayers.Format.GeoJSON({
                         ignoreExtraDims: true,
                         externalProjection: snapLayerCrs,
-                        internalProjection: mainLizmap.projection
+                        internalProjection: this._lizmap3.map.getProjection()
                     });
 
                     const tfeatures = gFormat.read({
@@ -204,7 +219,7 @@ export default class Snapping {
                     });
 
                     // Add features
-                    mainLizmap.lizmap3.map.getLayersByName('snaplayer')[0].addFeatures(tfeatures);
+                    this._lizmap3.map.getLayersByName('snaplayer')[0].addFeatures(tfeatures);
                 });
         }
 
@@ -221,11 +236,11 @@ export default class Snapping {
      */
     getLayerTreeVisibility(layerId){
         let visible = false;
-        let layerConfig = mainLizmap.lizmap3.getLayerConfigById(layerId);
+        let layerConfig = this._lizmap3.getLayerConfigById(layerId);
 
         if(layerConfig && layerConfig[0]) {
             try {
-                visible = lizMap.mainLizmap.state.layerTree.getTreeLayerByName(layerConfig[0]).visibility
+                visible = this._layerTree.getTreeLayerByName(layerConfig[0]).visibility
             } catch( error){
                 visible = false
             }
@@ -238,7 +253,7 @@ export default class Snapping {
      * @returns {string} the layer title or layer name
      */
     getLayerTitle(layerId){
-        let layerConfig = mainLizmap.lizmap3.getLayerConfigById(layerId);
+        let layerConfig = this._lizmap3.getLayerConfigById(layerId);
         if (layerConfig) {
             return layerConfig[1].title || layerConfig[1].name;
         }
@@ -278,15 +293,15 @@ export default class Snapping {
         // (de)activate snap control
         if (this._active) {
             this.getSnappingData();
-            mainLizmap.lizmap3.controls.snapControl.activate();
+            this._lizmap3.controls.snapControl.activate();
         } else {
             // Disable refresh button when snapping is inactive
             this.snapLayersRefreshable = false;
-            mainLizmap.lizmap3.controls.snapControl.deactivate();
+            this._lizmap3.controls.snapControl.deactivate();
         }
 
         // Set snap layer visibility
-        mainLizmap.lizmap3.map.getLayersByName('snaplayer')[0].setVisibility(this._active);
+        this._lizmap3.map.getLayersByName('snaplayer')[0].setVisibility(this._active);
 
         mainEventDispatcher.dispatch('snapping.active');
     }
