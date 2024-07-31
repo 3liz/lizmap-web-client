@@ -293,10 +293,6 @@ export class MapGroupState extends MapItemState {
                     group.addListener(this.dispatch.bind(this), 'layer.filter.changed');
                     group.addListener(this.dispatch.bind(this), 'layer.filter.token.changed');
                     this._items.push(group);
-                    // Group is checked if one child is checked
-                    if (group.checked) {
-                        this._checked = true;
-                    }
                 } else {
                     // Build group as layer
                     const layer = new MapLayerState(layerItem, this)
@@ -313,10 +309,6 @@ export class MapGroupState extends MapItemState {
                     layer.addListener(this.dispatch.bind(this), 'layer.filter.changed');
                     layer.addListener(this.dispatch.bind(this), 'layer.filter.token.changed');
                     this._items.push(layer);
-                    // Group is checked if one child is checked
-                    if (layer.checked) {
-                        this._checked = true;
-                    }
                 }
             } else if (layerItem instanceof LayerLayerState && !layerItem.layerConfig.baseLayer) {
                 // layer with geometry type equal to 'none' or 'unknown' cannot be displayed
@@ -347,10 +339,6 @@ export class MapGroupState extends MapItemState {
                     layer.addListener(this.dispatch.bind(this), 'layer.selection.token.changed');
                     layer.addListener(this.dispatch.bind(this), 'layer.filter.changed');
                     layer.addListener(this.dispatch.bind(this), 'layer.filter.token.changed');
-                    // Group is checked if one child is checked
-                    if (layer.checked) {
-                        this._checked = true;
-                    }
                 }
             }
         }

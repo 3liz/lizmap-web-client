@@ -16,7 +16,7 @@ test.describe('Legend tests', () => {
         await expect(page.getByLabel('layer_legend_categorized')).toBeChecked();
         await expect(page.getByLabel('layer_legend_ruled')).toBeChecked();
         await expect(page.getByLabel('tramway_lines')).toBeChecked();
-        await expect(page.getByLabel('legend_option_test')).not.toBeChecked();
+        await expect(page.getByLabel('legend_option_test')).toBeChecked();
         await expect(page.getByLabel('expand_at_startup')).not.toBeChecked();
         await expect(page.getByLabel('disabled')).not.toBeChecked();
         await expect(page.getByLabel('hide_at_startup')).not.toBeChecked();
@@ -121,5 +121,24 @@ test.describe('Legend tests', () => {
         await expect(page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({ hasText: '100k -' }).getByRole('listitem').filter({ hasText: 'category 1' })).toHaveClass(/not-visible/);
         await page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({ hasText: '100k -' }).getByLabel('category 1').check();
         await expect(page.getByTestId('layer_legend_ruled').getByRole('listitem').filter({ hasText: '100k -' }).getByRole('listitem').filter({ hasText: 'category 1' })).not.toHaveClass(/not-visible/);
+    });
+});
+
+test.describe('Checkboxes on groups', () => {
+    test('Tree initialization of checkboxes on groups', async ({ page }) => {
+        const url = '/index.php/view/map/?repository=testsrepository&project=groups_checkboxes';
+        await gotoMap(url, page)
+        // single layer, outside group
+        await expect(page.getByLabel('shop_bakery_pg')).toBeChecked();
+        // groupAsLayer group: the group is checked, the two layers under this group are unchecked
+        await expect(page.getByLabel('tramway')).toBeChecked();
+        // group buildings is checked, the underlying layer townhalls_pg is unchecked
+        await expect(page.getByLabel('buildings')).toBeChecked();
+        await expect(page.getByLabel('townhalls_pg')).not.toBeChecked();
+        // group-subgroup block: groups are unchecked, underlying layers are checked
+        await expect(page.getByLabel('qt')).not.toBeChecked();
+        await expect(page.getByLabel('sousquartiers')).toBeChecked();
+        await expect(page.getByLabel('sub-group1')).not.toBeChecked();
+        await expect(page.getByTestId('quartiers').getByLabel('quartiers')).toBeChecked();
     });
 });

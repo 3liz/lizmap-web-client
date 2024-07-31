@@ -44,7 +44,8 @@ export class LayerItemState extends EventDispatcher {
         this._geographicBoundingBox = null;
         this._minScaleDenominator = null;
         this._maxScaleDenominator = null;
-        this._checked = this._parentGroup == null ? true : false;
+        // prop checked is inherited from Lizmap configuration. If checkboxes are hidden for groups then they are checked by default
+        this._checked = this._parentGroup == null ? true : this._layerTreeItemCfg.layerConfig.toggled;
         this._visibility =  this._parentGroup == null ? true : null;
         this._opacity = 1;
         this._inGroupAsLayer = (this._parentGroup !== null
@@ -1165,10 +1166,15 @@ export class LayerGroupState extends LayerItemState {
      * Creating a layer group state
      * @param {LayerTreeGroupConfig} layerTreeGroupCfg - the layer item config
      * @param {number[]}             layersOrder       - the layers order
-     * @param {LayerGroupState}     [parentMapGroup]  - the parent layer group
+     * @param {boolean}              hideGroupCheckbox - the option instance from lizMap configuration
+     * @param {LayerGroupState}     [parentMapGroup]   - the hideGroupCheckbox option instance from lizMap configuration
      */
-    constructor(layerTreeGroupCfg, layersOrder, parentMapGroup) {
+    constructor(layerTreeGroupCfg, layersOrder, hideGroupCheckbox, parentMapGroup) {
         super('group', layerTreeGroupCfg, parentMapGroup);
+        // if checkboxes are hidden for groups then they are checked by default
+        if (hideGroupCheckbox) {
+            this._checked = true;
+        }
         this._items = [];
         this._layerOrder = -1;
         for (const layerTreeItem of layerTreeGroupCfg.getChildren()) {
@@ -1180,7 +1186,7 @@ export class LayerGroupState extends LayerItemState {
             // Group as group
             if (layerTreeItem instanceof LayerTreeGroupConfig) {
                 // Build group
-                const group = new LayerGroupState(layerTreeItem, layersOrder, this);
+                const group = new LayerGroupState(layerTreeItem, layersOrder, hideGroupCheckbox, this);
                 group.addListener(this.dispatch.bind(this), 'group.visibility.changed');
                 group.addListener(this.dispatch.bind(this), 'group.symbology.changed');
                 group.addListener(this.dispatch.bind(this), 'group.opacity.changed');
@@ -1195,10 +1201,6 @@ export class LayerGroupState extends LayerItemState {
                 group.addListener(this.dispatch.bind(this), 'layer.filter.changed');
                 group.addListener(this.dispatch.bind(this), 'layer.filter.token.changed');
                 this._items.push(group);
-                // Group is checked if one child is checked
-                if (group.checked) {
-                    this._checked = true;
-                }
             } else if (cfg.type != 'group') {
                 // layer with geometry is vector layer
                 let layer = null;
@@ -1218,10 +1220,6 @@ export class LayerGroupState extends LayerItemState {
                 layer.addListener(this.dispatch.bind(this), 'layer.filter.changed');
                 layer.addListener(this.dispatch.bind(this), 'layer.filter.token.changed');
                 this._items.push(layer);
-                // Group is checked if one child is checked
-                if (layer.checked) {
-                    this._checked = true;
-                }
             }
         }
         if (this.groupAsLayer && this.layerConfig) {
@@ -1399,10 +1397,11 @@ export class LayersAndGroupsCollection extends EventDispatcher {
      * Creating the collection of layers and groups state
      * @param {LayerTreeGroupConfig} layerTreeGroupCfg - the layer item config
      * @param {number[]}             layersOrder       - the layers order
+     * @param {boolean}              hideGroupCheckbox - the hideGroupCheckbox option instance from lizMap configuration
      */
-    constructor(layerTreeGroupCfg, layersOrder) {
+    constructor(layerTreeGroupCfg, layersOrder, hideGroupCheckbox) {
         super();
-        this._root = new LayerGroupState(layerTreeGroupCfg, layersOrder);
+        this._root = new LayerGroupState(layerTreeGroupCfg, layersOrder, hideGroupCheckbox);
 
         this._layersMap = new Map(this._root.findLayers().map(l => [l.name, l]));
         this._groupsMap = new Map(this._root.findGroups().map(g => [g.name, g]));
