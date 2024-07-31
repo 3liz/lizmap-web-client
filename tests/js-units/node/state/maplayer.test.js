@@ -8,6 +8,7 @@ import { LayerGeographicBoundingBoxConfig, LayerBoundingBoxConfig, LayerTreeGrou
 import { buildLayersOrder } from '../../../../assets/src/modules/config/LayersOrder.js';
 import { LayerIconSymbology, LayerSymbolsSymbology, SymbolIconSymbology } from '../../../../assets/src/modules/state/Symbology.js';
 import { LayerGroupState, LayerVectorState, LayersAndGroupsCollection } from '../../../../assets/src/modules/state/Layer.js';
+import { OptionsConfig } from '../../../../assets/src/modules/config/Options.js';
 
 import { MapLayerLoadStatus, MapGroupState, MapLayerState, MapRootState } from '../../../../assets/src/modules/state/MapLayer.js';
 
@@ -36,7 +37,8 @@ function getRootMapGroupState(name) {
 
     const layersOrder = buildLayersOrder(config, rootCfg);
 
-    const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
+    const options = new OptionsConfig(config.options);
+    const collection = new LayersAndGroupsCollection(rootCfg, layersOrder, options.hideGroupCheckbox);
 
     const root = new MapRootState(collection.root);
     expect(root).to.be.instanceOf(MapGroupState)
@@ -1923,7 +1925,7 @@ describe('MapGroupState', function () {
         expect(fond.itemState.groupAsLayer).to.be.true
         expect(fond.itemState.childrenCount).to.be.eq(2)
         expect(fond.itemState.children[0].isInGroupAsLayer).to.be.true
-        expect(fond.itemState.children[0].checked).to.be.false
+        expect(fond.itemState.children[0].checked).to.be.true
         expect(fond.itemState.children[0].visibility).to.be.true
         expect(fond.itemState.children[0]).to.be.instanceOf(LayerGroupState)
         expect(fond.itemState.children[0].childrenCount).to.be.eq(12)

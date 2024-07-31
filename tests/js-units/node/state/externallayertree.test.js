@@ -11,6 +11,7 @@ import { base64svg, base64svgOlLayer, base64svgRasterLayer } from '../../../../a
 
 import { LayerTreeGroupState, TreeRootState } from '../../../../assets/src/modules/state/LayerTree.js';
 import { ExternalLayerTreeGroupState, OlTreeLayerState } from '../../../../assets/src/modules/state/ExternalLayerTree.js';
+import { OptionsConfig } from '../../../../assets/src/modules/config/Options.js';
 
 import { default as ol } from '../../../../assets/src/dependencies/ol.js';
 
@@ -39,7 +40,8 @@ function getRootLayerTreeGroupState(name) {
 
     const layersOrder = buildLayersOrder(config, rootCfg);
 
-    const collection = new LayersAndGroupsCollection(rootCfg, layersOrder);
+    const options = new OptionsConfig(config.options);
+    const collection = new LayersAndGroupsCollection(rootCfg, layersOrder, options.hideGroupCheckbox);
 
     const rootMapGroup = new MapRootState(collection.root);
     expect(rootMapGroup).to.be.instanceOf(MapGroupState)
