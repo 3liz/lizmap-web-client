@@ -155,7 +155,7 @@ export default class Lizmap {
                 this.featuresTable = new FeaturesTable(this.initialConfig, this.lizmap3);
                 this.geolocation = new Geolocation(this.map, this.lizmap3);
                 this.geolocationSurvey = new GeolocationSurvey(this.geolocation, this.edition);
-                this.digitizing = new Digitizing();
+                this.digitizing = new Digitizing(this.map, this.lizmap3);
                 this.selectionTool = new SelectionTool(this.map, this.digitizing, this.initialConfig, this.lizmap3);
                 this.snapping = new Snapping();
                 this.layers = new Layers();
