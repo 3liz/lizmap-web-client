@@ -109,6 +109,8 @@ describe('Config', function () {
             "osm-mapnik",
             "osm-stamen-toner"
         ])
+        expect(initialConfig.vectorLayerResultFormat).to.be.an('array').that.be.empty
+        expect(initialConfig.vectorLayerFeatureTypeList).to.be.an('array').that.be.empty
         expect(initialConfig.metadata).to.be.instanceOf(MetadataConfig)
         expect(initialConfig.hasLocateByLayer).to.be.true
         expect(initialConfig.locateByLayer).to.be.instanceOf(LocateByLayerConfig)
@@ -131,6 +133,26 @@ describe('Config', function () {
         expect(initialConfig.hasDatavizConfig).to.be.true
         expect(initialConfig.datavizLayers).to.be.instanceOf(DatavizLayersConfig)
         expect(initialConfig.datavizOptions).to.be.instanceOf(DatavizOptionsConfig)
+    })
+
+    it('Valid with WFS', function () {
+        const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
+        expect(capabilities).to.not.be.undefined
+        expect(capabilities.Capability).to.not.be.undefined
+        const config = JSON.parse(readFileSync('./data/montpellier-config.json', 'utf8'));
+        expect(config).to.not.be.undefined
+
+        const wfsCapabilities = JSON.parse(readFileSync('./data/montpellier-capabilities-wfs.json', 'utf8'));
+        expect(wfsCapabilities).to.not.be.undefined
+        expect(wfsCapabilities.Capability).to.not.be.undefined
+
+        const initialConfig = new Config(config, capabilities, wfsCapabilities);
+        expect(initialConfig.vectorLayerResultFormat).to.be.an('array').that.have.length(13).that.include.members(['GML2', 'GeoJSON'])
+        expect(initialConfig.vectorLayerFeatureTypeList).to.be.an('array').that.have.length(16)
+        const featureType = initialConfig.vectorLayerFeatureTypeList[0];
+        expect(featureType.Name).to.be.eq('SousQuartiers')
+        expect(featureType.SRS).to.be.eq('EPSG:2154')
+        expect(featureType.LatLongBoundingBox).to.be.an('array').that.have.length(4)
     })
 
     it('SingleWMS Layer Config', function () {

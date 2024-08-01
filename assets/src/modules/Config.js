@@ -24,16 +24,26 @@ import { buildLayerTreeConfig, LayerTreeGroupConfig } from './config/LayerTree.j
 import { buildLayersOrder } from './config/LayersOrder.js';
 
 /**
+ * @typedef WfsFeatureType
+ * @type {object}
+ * @property {string} Name  - The layer typename.
+ * @property {string} Title - The layer title.
+ * @property {string} SRS   - The layer CRS code.
+ * @property {number[]} LatLongBoundingBox - The layer bounding box in the layer CRS
+ */
+
+/**
  * @class
  * @name Config
  */
 export class Config {
 
     /**
-     * @param {object} cfg - the lizmap config object
-     * @param {object} wmsCapabilities - the wms capabilities
+     * @param {object} cfg               - the lizmap config object
+     * @param {object} wmsCapabilities   - the WMS capabilities
+     * @param {object} [wfsCapabilities] - the WFS capabilities
      */
-    constructor(cfg, wmsCapabilities) {
+    constructor(cfg, wmsCapabilities, wfsCapabilities) {
         if (!cfg || typeof cfg !== "object") {
             throw new ValidationError('The config is not an Object! It\'s '+(typeof cfg));
         }
@@ -52,6 +62,7 @@ export class Config {
 
         this._theConfig = null;
         this._theWmsCapabilities = null;
+        this._theWfsCapabilities = null;
         this._options = null;
         this._layers = null;
         this._layerTree = null;
@@ -107,6 +118,9 @@ export class Config {
         }
         this._theConfig = theConfig;
         this._theWmsCapabilities = theWmsCapabilities;
+        if (wfsCapabilities) {
+            this._theWfsCapabilities = deepFreeze(wfsCapabilities);
+        }
 
         const optionalConfigProperties = [
             'metadata',
@@ -214,6 +228,42 @@ export class Config {
             this._layersOrder = buildLayersOrder(this._theConfig, this.layerTree);
         }
         return [...this._layersOrder];
+    }
+
+    /**
+     * The list of format for file export
+     * @type {string[]}
+     */
+    get vectorLayerResultFormat() {
+        const formats = [];
+        if ( this._theWfsCapabilities == null ){
+            return formats;
+        }
+
+        for (const request of this._theWfsCapabilities.Capability.Request) {
+            if (request.name != 'GetFeature') {
+                continue;
+            }
+            return request.ResultFormat
+        }
+        return formats;
+    }
+
+    /**
+     * The list of WFS feature type
+     * @type {WfsFeatureType[]}
+     */
+    get vectorLayerFeatureTypeList() {
+        const featureTypes = [];
+        if ( this._theWfsCapabilities == null ){
+            return featureTypes;
+        }
+        if ( this._theWfsCapabilities.FeatureTypeList &&
+            this._theWfsCapabilities.FeatureTypeList.FeatureType
+        ) {
+            return this._theWfsCapabilities.FeatureTypeList.FeatureType;
+        }
+        return featureTypes;
     }
 
     /**
