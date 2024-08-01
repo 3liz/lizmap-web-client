@@ -19,7 +19,13 @@ import Feature from 'ol/Feature.js';
  */
 export default class Geolocation {
 
-    constructor() {
+    /**
+     * Create a geolocation instance
+     *
+     * @param {Map}    map           - OpenLayers map
+     * @param {object}   lizmap3   - The old lizmap object
+     */
+    constructor(map, lizmap3) {
         const color = 'rgb(3, 149, 214)';
         const fillColor = 'rgba(3, 149, 214, 0.1)';
         const strokeWidth = 1;
@@ -41,20 +47,22 @@ export default class Geolocation {
             name: 'LizmapGeolocationGeolocationDrawLayer'
         });
 
-        mainLizmap.map.addToolLayer(this._geolocationLayer);
+        map.addToolLayer(this._geolocationLayer);
 
+        this._lizmap3 = lizmap3;
         this._firstGeolocation = true;
         this._isBind = false;
         this._bindIntervalID = 0;
         this._bindIntervalInSecond = 10;
         this._isLinkedToEdition = false;
 
+        const qgisProjectProjection = lizmap3.map.getProjection();
         this._geolocation = new olGeolocation({
             // `enableHighAccuracy` must be set to true to have the heading value
             trackingOptions: {
                 enableHighAccuracy: true
             },
-            projection: mainLizmap.projection
+            projection: qgisProjectProjection
         });
 
         this._geolocation.on('change:position', () => {
@@ -66,7 +74,7 @@ export default class Geolocation {
 
         this._geolocation.on('change:tracking', () => {
             // FIXME : later we'll need an object listening to 'geolocation.isTracking' event and setting visibility accordingly
-            const geolocationLayer = mainLizmap._lizmap3.map.getLayersByName('geolocation')[0];
+            const geolocationLayer = this._lizmap3.map.getLayersByName('geolocation')[0];
             if (geolocationLayer) {
                 geolocationLayer.setVisibility(this.isTracking);
             }
@@ -143,7 +151,8 @@ export default class Geolocation {
             return this.position;
         } else {
             const position = this._geolocation.getPosition();
-            return transform(position, mainLizmap.projection, crs);
+            const qgisProjectProjection = this._lizmap3.map.getProjection();
+            return transform(position, qgisProjectProjection, crs);
         }
     }
 
@@ -155,7 +164,8 @@ export default class Geolocation {
     get position() {
         const position = this._geolocation.getPosition();
         if (position) {
-            const position4326 = transform(position, mainLizmap.projection, 'EPSG:4326');
+            const qgisProjectProjection = this._lizmap3.map.getProjection();
+            const position4326 = transform(position, qgisProjectProjection, 'EPSG:4326');
             return [parseFloat(position4326[0].toFixed(6)), parseFloat(position4326[1].toFixed(6))];
         }
         return undefined;

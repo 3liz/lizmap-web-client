@@ -146,24 +146,24 @@ export default class Lizmap {
 
                 // Create Lizmap modules
                 this.permalink = new Permalink();
-                this.map = new map();
-                this.edition = new Edition();
-                this.featuresTable = new FeaturesTable();
-                this.geolocation = new Geolocation();
-                this.geolocationSurvey = new GeolocationSurvey();
-                this.selectionTool = new SelectionTool();
-                this.digitizing = new Digitizing();
-                this.snapping = new Snapping();
+                this.map = new map('newOlMap', this.initialConfig, this.serviceURL, this.state.map, this.state.baseLayers, this.state.rootMapGroup, this.lizmap3);
+                this.edition = new Edition(this.lizmap3);
+                this.featuresTable = new FeaturesTable(this.initialConfig, this.lizmap3);
+                this.geolocation = new Geolocation(this.map, this.lizmap3);
+                this.geolocationSurvey = new GeolocationSurvey(this.geolocation, this.edition);
+                this.digitizing = new Digitizing(this.map, this.lizmap3);
+                this.selectionTool = new SelectionTool(this.map, this.digitizing, this.lizmap3);
+                this.snapping = new Snapping(this.edition, this.state.rootMapGroup, this.state.layerTree, this.lizmap3);
                 this.layers = new Layers();
                 this.proxyEvents = new ProxyEvents();
                 this.wfs = new WFS();
                 this.wms = new WMS();
-                this.action = new Action();
+                this.action = new Action(this.map, this.selectionTool, this.lizmap3);
                 this.featureStorage = new FeatureStorage();
-                this.popup = new Popup();
-                this.legend = new Legend();
-                this.search = new Search();
-                this.tooltip = new Tooltip();
+                this.popup = new Popup(this.initialConfig, this.state, this.map);
+                this.legend = new Legend(this.state.layerTree);
+                this.search = new Search(this.map, this.lizmap3);
+                this.tooltip = new Tooltip(this.map, this.initialConfig.tooltipLayers);
 
                 // Removed unusable button
                 if (!this.config['printTemplates'] || this.config.printTemplates.length == 0 ) {

@@ -4,7 +4,8 @@
  * @copyright 2024 3Liz
  * @license MPL-2.0
  */
-import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
+import { mainEventDispatcher } from '../modules/Globals.js';
+import { TooltipLayersConfig } from './config/Tooltip.js';
 import GeoJSON from 'ol/format/GeoJSON.js';
 import VectorLayer from 'ol/layer/Vector.js';
 import VectorSource from 'ol/source/Vector.js';
@@ -16,7 +17,14 @@ import { Circle, Fill, Stroke, Style } from 'ol/style.js';
  */
 export default class Tooltip {
 
-    constructor() {
+    /**
+     * Create the tooltip Map
+     * @param {Map}        map        - OpenLayers map
+     * @param {TooltipLayersConfig} tooltipLayersConfig - The config tooltipLayers
+     */
+    constructor(map, tooltipLayersConfig) {
+        this._map = map;
+        this._tooltipLayersConfig = tooltipLayersConfig;
         this._activeTooltipLayer;
         this._tooltipLayers = new Map();
     }
@@ -32,9 +40,9 @@ export default class Tooltip {
         }
 
         // Remove previous layer if any
-        mainLizmap.map.removeLayer(this._activeTooltipLayer);
+        this._map.removeLayer(this._activeTooltipLayer);
 
-        const layerTooltipCfg = mainLizmap.initialConfig.tooltipLayers.layerConfigs[layerOrder];
+        const layerTooltipCfg = this._tooltipLayersConfig.layerConfigs[layerOrder];
         const layerName = layerTooltipCfg.name;
         const tooltipLayer = this._tooltipLayers.get(layerName);
         this._displayGeom = layerTooltipCfg.displayGeom;
@@ -124,14 +132,14 @@ export default class Tooltip {
             this._tooltipLayers.set(layerName, this._activeTooltipLayer);
         }
 
-        mainLizmap.map.addLayer(this._activeTooltipLayer);
+        this._map.addLayer(this._activeTooltipLayer);
 
         const tooltip = document.getElementById('tooltip');
 
         let currentFeature;
 
         this._onPointerMove = event => {
-            const pixel = mainLizmap.map.getEventPixel(event.originalEvent);
+            const pixel = this._map.getEventPixel(event.originalEvent);
             const target = event.originalEvent.target;
 
             if (currentFeature) {
@@ -146,7 +154,7 @@ export default class Tooltip {
 
             const feature = target.closest('.ol-control')
                 ? undefined
-                : mainLizmap.map.forEachFeatureAtPixel(pixel, feature => {
+                : this._map.forEachFeatureAtPixel(pixel, feature => {
                     return feature; // returning a truthy value stop detection
                 }, {
                     hitTolerance: 5,
@@ -173,26 +181,26 @@ export default class Tooltip {
             currentFeature = feature;
         };
 
-        mainLizmap.map.on('pointermove', this._onPointerMove);
+        this._map.on('pointermove', this._onPointerMove);
 
         this._onPointerLeave = () => {
             currentFeature = undefined;
             tooltip.style.visibility = 'hidden';
         };
 
-        mainLizmap.map.getTargetElement().addEventListener('pointerleave', this._onPointerLeave);
+        this._map.getTargetElement().addEventListener('pointerleave', this._onPointerLeave);
     }
 
     /**
      * Deactivate tooltip
      */
     deactivate() {
-        mainLizmap.map.removeLayer(this._activeTooltipLayer);
+        this._map.removeLayer(this._activeTooltipLayer);
         if (this._onPointerMove) {
-            mainLizmap.map.un('pointermove', this._onPointerMove);
+            this._map.un('pointermove', this._onPointerMove);
         }
         if (this._onPointerLeave) {
-            mainLizmap.map.getTargetElement().removeEventListener('pointerleave', this._onPointerLeave);
+            this._map.getTargetElement().removeEventListener('pointerleave', this._onPointerLeave);
         }
     }
 }
