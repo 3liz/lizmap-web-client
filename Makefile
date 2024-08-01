@@ -118,10 +118,12 @@ build: debug
 
 tests: debug build
 	composer update --working-dir=tests/units/ --prefer-dist --no-ansi --no-interaction --no-dev --no-suggest --no-progress
-	cd tests/units/ && php vendor/bin/phpunit -v
+	cd tests/units/ && php vendor/bin/phpunit --help
+	cd tests/units/ && php vendor/bin/phpunit
 
 quicktests: debug
-	cd tests/units/ && php vendor/bin/phpunit -v
+	cd tests/units/ && php vendor/bin/phpunit --help
+	cd tests/units/ && php vendor/bin/phpunit
 
 clean:
 	rm -rf $(STAGE)
