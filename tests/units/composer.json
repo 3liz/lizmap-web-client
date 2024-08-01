@@ -9,7 +9,7 @@
     ],
     "require": {
         "php": ">=7.3.0",
-        "phpunit/phpunit": "^9.5.7",
+        "phpunit/phpunit": "^11.2.9",
         "phpstan/phpstan": "^1.5.3"
     },
     "autoload": {
