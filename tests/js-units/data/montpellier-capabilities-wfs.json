@@ -1,0 +1,273 @@
+{
+    "version": "1.0.0",
+    "Service": {
+        "Name": "WFS",
+        "Title": "Montpellier - Transports",
+        "Abstract": "Demo project with bus and tramway lines in Montpellier, France.\nData is licensed under ODbl, OpenStreetMap contributors",
+        "OnlineResource": "http://www.3liz.com/lizmap.html",
+        "Fees": "conditions unknown",
+        "AccessConstraints": "None"
+    },
+    "Capability": {
+        "Request": [
+            {
+                "DCPType": {
+                    "HTTP": {
+                        "Get": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=montpellier",
+                        "Post": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=montpellier"
+                    }
+                },
+                "name": "GetCapabilities"
+            },
+            {
+                "SchemaDescriptionLanguage": [
+                    "XMLSCHEMA"
+                ],
+                "DCPType": {
+                    "HTTP": {
+                        "Get": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=montpellier",
+                        "Post": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=montpellier"
+                    }
+                },
+                "name": "DescribeFeatureType"
+            },
+            {
+                "ResultFormat": [
+                    "GML2",
+                    "GML3",
+                    "GeoJSON",
+                    "SHP",
+                    "TAB",
+                    "MIF",
+                    "KML",
+                    "GPKG",
+                    "GPX",
+                    "ODS",
+                    "XLSX",
+                    "CSV",
+                    "FGB"
+                ],
+                "DCPType": {
+                    "HTTP": {
+                        "Get": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=montpellier",
+                        "Post": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=montpellier"
+                    }
+                },
+                "name": "GetFeature"
+            },
+            {
+                "DCPType": {
+                    "HTTP": {
+                        "Post": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=montpellier"
+                    }
+                },
+                "name": "Transaction"
+            }
+        ]
+    },
+    "FeatureTypeList": {
+        "Operations": [
+            "Query"
+        ],
+        "FeatureType": [
+            {
+                "Name": "SousQuartiers",
+                "Title": "SousQuartiers",
+                "SRS": "EPSG:2154",
+                "LatLongBoundingBox": [
+                    765145.882,
+                    6274561.222,
+                    776031.667,
+                    6284189.521
+                ]
+            },
+            {
+                "Name": "VilleMTP_MTP_Quartiers_2011_4326",
+                "Title": "VilleMTP_MTP_Quartiers_2011_4326",
+                "SRS": "EPSG:4326",
+                "LatLongBoundingBox": [
+                    3.80707,
+                    43.566704,
+                    3.941331,
+                    43.653372
+                ]
+            },
+            {
+                "Name": "Quartiers",
+                "Title": "Quartiers",
+                "SRS": "EPSG:4326",
+                "LatLongBoundingBox": [
+                    3.80707,
+                    43.566704,
+                    3.941331,
+                    43.653372
+                ]
+            },
+            {
+                "Name": "bus",
+                "Title": "Bus lines",
+                "SRS": "EPSG:4326",
+                "LatLongBoundingBox": [
+                    3.698123,
+                    43.5265,
+                    4.081239,
+                    43.761579
+                ]
+            },
+            {
+                "Name": "bus_stops",
+                "Title": "bus_stops",
+                "SRS": "EPSG:4326",
+                "LatLongBoundingBox": [
+                    3.55326,
+                    43.526928,
+                    4.039132,
+                    43.752341
+                ]
+            },
+            {
+                "Name": "donnes_sociodemo_sous_quartiers",
+                "Title": "Repartition of owners and tenants",
+                "Abstract": "This plot shows the repartition of owners and tenants per subdistrict in Montpellier, France.",
+                "SRS": "EPSG:4326",
+                "LatLongBoundingBox": [
+                    null,
+                    null,
+                    null,
+                    null
+                ]
+            },
+            {
+                "Name": "edition_line",
+                "Title": "Bicycle rides",
+                "SRS": "EPSG:4326",
+                "LatLongBoundingBox": [
+                    3.831298,
+                    43.571914,
+                    3.907531,
+                    43.670511
+                ]
+            },
+            {
+                "Name": "points_of_interest",
+                "Title": "Points of interest",
+                "SRS": "EPSG:4326",
+                "LatLongBoundingBox": [
+                    3.845415,
+                    43.594383,
+                    3.895635,
+                    43.642037
+                ]
+            },
+            {
+                "Name": "areas_of_interest",
+                "Title": "Areas of interest",
+                "SRS": "EPSG:4326",
+                "LatLongBoundingBox": [
+                    3.862278,
+                    43.606014,
+                    3.894895,
+                    43.649006
+                ]
+            },
+            {
+                "Name": "tramway_pivot",
+                "Title": "tramway_pivot",
+                "SRS": "EPSG:4326",
+                "LatLongBoundingBox": [
+                    null,
+                    null,
+                    null,
+                    null
+                ]
+            },
+            {
+                "Name": "publicbuildings",
+                "Title": "public buildings",
+                "SRS": "EPSG:3857",
+                "LatLongBoundingBox": [
+                    431114.842,
+                    5403527.322,
+                    433783.15,
+                    5406274.452
+                ]
+            },
+            {
+                "Name": "publicbuildings_tramstop",
+                "Title": "Pivot tramstops / Buildings",
+                "SRS": "EPSG:4326",
+                "LatLongBoundingBox": [
+                    null,
+                    null,
+                    null,
+                    null
+                ]
+            },
+            {
+                "Name": "tram_stop_work",
+                "Title": "Tram stop works",
+                "SRS": "EPSG:4326",
+                "LatLongBoundingBox": [
+                    null,
+                    null,
+                    null,
+                    null
+                ]
+            },
+            {
+                "Name": "tramstop",
+                "Title": "Tram stops",
+                "SRS": "EPSG:4326",
+                "LatLongBoundingBox": [
+                    3.810105,
+                    43.557942,
+                    3.963648,
+                    43.65456
+                ]
+            },
+            {
+                "Name": "tramway",
+                "Title": "Tram lines",
+                "SRS": "EPSG:4326",
+                "LatLongBoundingBox": [
+                    3.809746,
+                    43.557609,
+                    3.963925,
+                    43.654613
+                ]
+            },
+            {
+                "Name": "tramway_ref",
+                "Title": "tramway_ref",
+                "SRS": "EPSG:4326",
+                "LatLongBoundingBox": [
+                    null,
+                    null,
+                    null,
+                    null
+                ]
+            }
+        ]
+    },
+    "Filter_Capabilities": {
+        "Spatial_Capabilities": {
+            "Spatial_Operators": [
+                "BBOX",
+                "Disjoint",
+                "Intersect",
+                "Touches",
+                "Crosses",
+                "Contains",
+                "Overlaps",
+                "Within"
+            ]
+        },
+        "Scalar_Capabilities": {
+            "Comparison_Operators": [
+                "Simple_Comparisons",
+                "Between",
+                "Like"
+            ]
+        }
+    }
+}
