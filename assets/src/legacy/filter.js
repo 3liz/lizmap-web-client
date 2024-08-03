@@ -58,7 +58,7 @@ var lizLayerFilterTool = function () {
                 html += '<br/><button id="liz-filter-zoom" class="btn btn-mini btn-primary" title="' + lizDict['filter.btn.zoom.title'] + '">' + lizDict['filter.btn.zoom.label'] + '</button>';
 
                 // Add export button
-                if (lizMap.getVectorLayerResultFormat().includes('ODS')) {
+                if (lizMap.mainLizmap.initialConfig.vectorLayerResultFormat.includes('ODS')) {
                     html += '&nbsp;&nbsp;<button id="liz-filter-export" class="btn btn-mini btn-primary" title="' + lizDict['filter.btn.export.title'] + '">' + lizDict['filter.btn.export.label'] + '</button>';
                 }
 
@@ -104,7 +104,7 @@ var lizLayerFilterTool = function () {
                 });
 
                 // Activate the export button
-                if (lizMap.getVectorLayerResultFormat().includes('ODS')) {
+                if (lizMap.mainLizmap.initialConfig.vectorLayerResultFormat.includes('ODS')) {
                     $('#liz-filter-export').click(function () {
                         lizMap.config.layers[globalThis['filterConfigData'].layerName].request_params['filter'] = globalThis['filterConfigData'].filter;
                         lizMap.exportVectorLayer(globalThis['filterConfigData'].layerName, 'ODS', false);

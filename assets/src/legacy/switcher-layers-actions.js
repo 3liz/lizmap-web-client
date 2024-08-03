@@ -174,7 +174,7 @@ var lizLayerActionButtons = function() {
                 && lizMap.config.options.exportLayers == 'True'
                 && featureTypes != null
                 && featureTypes.length != 0 ) {
-                var exportFormats = lizMap.getVectorLayerResultFormat();
+                var exportFormats = lizMap.mainLizmap.initialConfig.vectorLayerResultFormat;
                 var options = '';
                 for ( const format of exportFormats ) {
                     options += '<option value="'+format+'">'+format+'</option>';
@@ -364,7 +364,7 @@ var lizLayerActionButtons = function() {
                 }
             }
 
-            featureTypes = lizMap.getVectorLayerFeatureTypes();
+            featureTypes = lizMap.mainLizmap.initialConfig.vectorLayerFeatureTypeList;
 
             // title tooltip
             $('#switcher-layers-actions .btn, #get-baselayer-metadata').tooltip({

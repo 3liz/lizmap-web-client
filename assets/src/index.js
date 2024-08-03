@@ -39,6 +39,12 @@ lizMap.litHTML = litHTMLDep;
 lizMap.proj4 = proj4;
 
 lizMap.events.on({
+    configsloaded: () => {
+
+        lizMap.mainLizmap = mainLizmap;
+        lizMap.mainEventDispatcher = mainEventDispatcher;
+
+    },
     uicreated: () => {
         window.customElements.define('lizmap-geolocation', Geolocation);
         window.customElements.define('lizmap-geolocation-survey', GeolocationSurvey);
@@ -61,10 +67,6 @@ lizMap.events.on({
         window.customElements.define('lizmap-navbar', NavBar);
         window.customElements.define('lizmap-tooltip', Tooltip);
         window.customElements.define('lizmap-message', Message);
-
-        lizMap.mainLizmap = mainLizmap;
-        lizMap.mainEventDispatcher = mainEventDispatcher;
-
     }
 });
 

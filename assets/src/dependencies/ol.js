@@ -13,6 +13,7 @@ import $ol$format$MVT from 'ol/format/MVT.js';
 import $ol$format$WKB from 'ol/format/WKB.js';
 import $ol$format$WKT from 'ol/format/WKT.js';
 import $ol$format$WMSCapabilities from 'ol/format/WMSCapabilities.js';
+import $ol$format$WFSCapabilities from 'ol-wfs-capabilities';
 import $ol$format$WMTSCapabilities from 'ol/format/WMTSCapabilities.js';
 import $ol$format$WMSGetFeatureInfo from 'ol/format/WMSGetFeatureInfo.js';
 
@@ -118,6 +119,7 @@ ol.format.MVT = $ol$format$MVT;
 ol.format.WKB = $ol$format$WKB;
 ol.format.WKT = $ol$format$WKT;
 ol.format.WMSCapabilities = $ol$format$WMSCapabilities;
+ol.format.WFSCapabilities = $ol$format$WFSCapabilities;
 ol.format.WMTSCapabilities = $ol$format$WMTSCapabilities;
 ol.format.WMSGetFeatureInfo = $ol$format$WMSGetFeatureInfo;
 

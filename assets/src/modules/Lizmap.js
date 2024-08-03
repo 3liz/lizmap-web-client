@@ -27,6 +27,7 @@ import Search from './Search.js';
 import Tooltip from './Tooltip.js';
 
 import WMSCapabilities from 'ol/format/WMSCapabilities.js';
+import WFSCapabilities from 'ol-wfs-capabilities';
 import { Coordinate as olCoordinate } from 'ol/coordinate.js'
 import { Extent as olExtent, intersects as olExtentIntersects} from 'ol/extent.js';
 import { Projection as olProjection, transform as olTransform, transformExtent as olTransformExtent, get as getProjection, clearAllProjections, addCommon } from 'ol/proj.js';
@@ -52,8 +53,10 @@ export default class Lizmap {
             configsloaded: (configs) => {
                 const wmsParser = new WMSCapabilities();
                 const wmsCapabilities = wmsParser.read(configs.wmsCapabilities);
+                const wfsParser = new WFSCapabilities();
+                const wfsCapabilities = wfsParser.read(configs.wfsCapabilities);
                 // The initialConfig has been cloned because it will be freezed
-                this._initialConfig = new Config(structuredClone(configs.initialConfig), wmsCapabilities);
+                this._initialConfig = new Config(structuredClone(configs.initialConfig), wmsCapabilities, wfsCapabilities);
                 this._state = new State(this._initialConfig, configs.startupFeatures);
                 this._utils = Utils;
 
@@ -259,6 +262,7 @@ export default class Lizmap {
     /**
      * The list of XML FeatureType Elements
      * @type {Array}
+     * @deprecated Use initialConfig.vectorLayerFeatureTypeList
      */
     get vectorLayerFeatureTypes() {
         return this._lizmap3.getVectorLayerFeatureTypes();
@@ -269,7 +273,7 @@ export default class Lizmap {
      * @type {string[]}
      */
     get vectorLayerResultFormat() {
-        return this._lizmap3.getVectorLayerResultFormat();
+        return this._initialConfig.vectorLayerResultFormat;
     }
 
     /**

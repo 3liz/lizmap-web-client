@@ -59,7 +59,7 @@ var lizAttributeTable = function() {
                 return -1;
 
             // Verifying WFS layers
-            var featureTypes = lizMap.getVectorLayerFeatureTypes();
+            var featureTypes = lizMap.mainLizmap.initialConfig.vectorLayerFeatureTypeList;
             if (featureTypes.length == 0 )
                 return -1;
 
@@ -84,7 +84,7 @@ var lizAttributeTable = function() {
 
             for(const featureType of featureTypes) {
                 // typename
-                var typeName = featureType.getElementsByTagName('Name')[0].textContent;
+                var typeName = featureType.Name;
                 // layername
                 var layername = lizMap.getNameByTypeName( typeName );
                 if ( !layername || layername == undefined ) {
@@ -142,7 +142,7 @@ var lizAttributeTable = function() {
                         config.layers[configLayerName]['geometryType'] = 'unknown';
                     }
 
-                    config.layers[configLayerName]['crs'] = featureType.getElementsByTagName('SRS')[0].textContent;
+                    config.layers[configLayerName]['crs'] = featureType.SRS;
 
                     if (config.layers[configLayerName]['crs'] !== ""){
                         lizMap.loadProjDefinition(config.layers[configLayerName].crs, function (aProj) {
@@ -150,13 +150,7 @@ var lizAttributeTable = function() {
                         });
                     }
 
-                    var bbox = featureType.getElementsByTagName('LatLongBoundingBox')[0];
-                    atConfig['bbox'] = [
-                        parseFloat(bbox.getAttribute('minx'))
-                        , parseFloat(bbox.getAttribute('miny'))
-                        , parseFloat(bbox.getAttribute('maxx'))
-                        , parseFloat(bbox.getAttribute('maxy'))
-                    ];
+                    atConfig['bbox'] = featureType.LatLongBoundingBox;
                 }
             }
 
@@ -627,7 +621,7 @@ var lizAttributeTable = function() {
                     html+= '    <ul class="dropdown-menu" role="menu">';
                     html+= '        <li><a href="#" class="btn-export-attributeTable">GeoJSON</a></li>';
                     html+= '        <li><a href="#" class="btn-export-attributeTable">GML</a></li>';
-                    var exportFormats = lizMap.getVectorLayerResultFormat();
+                    var exportFormats = lizMap.mainLizmap.initialConfig.vectorLayerResultFormat;
                     for ( var i=0, len=exportFormats.length; i<len; i++ ) {
                         var format = exportFormats[i].toLowerCase();
                         if ( format != 'gml2' && format != 'gml3' && format != 'geojson' ) {
