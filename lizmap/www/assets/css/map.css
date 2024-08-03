@@ -2495,10 +2495,6 @@ lizmap-mouse-position > div.coords-unit > select{
   vertical-align: text-bottom;
 }
 
-#selectiontool .digitizing-circle, #selectiontool .digitizing-text{
-  display: none;
-}
-
 lizmap-selection-invert svg {
   width: 14px;
   height: 14px;

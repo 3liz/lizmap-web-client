@@ -5,6 +5,8 @@
  * @license MPL-2.0
  */
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
+import { deepFreeze } from './config/Tools.js';
+import { createEnum } from './utils/Enums.js';
 import Utils from '../modules/Utils.js';
 
 import GeoJSON from 'ol/format/GeoJSON.js';
@@ -31,10 +33,28 @@ import { unByKey } from 'ol/Observable.js';
 import { transform } from 'ol/proj.js';
 
 /**
+ * List of digitizing available tools
+ * @name DigitizingAvailableTools
+ * @constant {Array<string>}
+ */
+export const DigitizingAvailableTools = deepFreeze(['deactivate', 'point', 'line', 'polygon', 'box', 'circle', 'freehand', 'text']);
+
+export const DigitizingTools = createEnum({
+    'Deactivate': 'deactivate',
+    'Point': 'point',
+    'Line': 'line',
+    'Polygon': 'polygon',
+    'Box': 'box',
+    'Circle': 'circle',
+    'Freehand': 'freehand',
+    'Text': 'text'
+});
+
+/**
  * @class
  * @name Digitizing
  */
-export default class Digitizing {
+export class Digitizing {
 
     constructor() {
 
@@ -42,7 +62,7 @@ export default class Digitizing {
         this._context = 'draw';
         this._contextFeatures = {};
 
-        this._tools = ['deactivate', 'point', 'line', 'polygon', 'box', 'circle', 'freehand', 'text'];
+        this._tools = DigitizingAvailableTools;
         this._toolSelected = this._tools[0];
 
         this._repoAndProjectString = globalThis['lizUrls'].params.repository + '_' + globalThis['lizUrls'].params.project;

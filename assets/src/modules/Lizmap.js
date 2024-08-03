@@ -12,7 +12,7 @@ import FeaturesTable from './FeaturesTable.js';
 import Geolocation from './Geolocation.js';
 import GeolocationSurvey from './GeolocationSurvey.js';
 import SelectionTool from './SelectionTool.js';
-import Digitizing from './Digitizing.js';
+import { Digitizing } from './Digitizing.js';
 import Snapping from './Snapping.js';
 import Layers from './Layers.js';
 import WFS from './WFS.js';
