@@ -4,7 +4,7 @@ about: Suggest an idea for a new feature or an improvement. 3Liz's paid software
 title: ''
 labels:
   - 'enhancement'
-  - 'Sponsor or PR needed' 
+  - 'Sponsor or PR needed'
 assignees: ''
 
 ---
