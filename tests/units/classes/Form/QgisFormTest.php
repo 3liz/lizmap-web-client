@@ -94,7 +94,7 @@ class QgisFormTest extends TestCase
 
 
 
-    public function getConstructData()
+    public static function getConstructData()
     {
         $fields = (object) array(
             'pkuid' => (object) array(
@@ -154,7 +154,7 @@ class QgisFormTest extends TestCase
         }
     }
 
-    public function getDefaultValuesData()
+    public static function getDefaultValuesData()
     {
         return array(
             array('1231', null, '1231'),
@@ -200,7 +200,7 @@ class QgisFormTest extends TestCase
         $this->assertNull($attributeForm);
     }
 
-    public function getCheckData()
+    public static function getCheckData()
     {
         $dbFieldsInfo = (object) array(
             'dataFields' => (object) array(
@@ -370,7 +370,7 @@ class QgisFormTest extends TestCase
         $formMock->saveToDb('feature');
     }
 
-    public function getFieldListData()
+    public static function getFieldListData()
     {
         $eCaps = array(
             'modifyGeometry' => 'true',
@@ -458,7 +458,7 @@ class QgisFormTest extends TestCase
         $this->assertEquals($expectedFields, $formMock->getFieldListForTests($geometryColumn, $insert));
     }
 
-    public function getFillControlUniqueData()
+    public static function getFillControlUniqueData()
     {
         $uniqueValues = array(
             'editable' => null,

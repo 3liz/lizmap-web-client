@@ -14,7 +14,7 @@ class ItemTest extends TestCase
         }
     }
 
-    public function getConstructData()
+    public static function getConstructData()
     {
         $data1 = array(
             'label' => 'test',
@@ -51,7 +51,7 @@ class ItemTest extends TestCase
         }
     }
 
-    public function getLogDetailData()
+    public static function getLogDetailData()
     {
         $data1 = array(
             'key' => 'key',

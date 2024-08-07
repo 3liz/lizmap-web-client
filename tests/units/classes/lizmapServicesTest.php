@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
  */
 class lizmapServicesTest extends TestCase
 {
-    public function getContactEmail()
+    public static function getContactEmail()
     {
         return array(
             array('', ''),
@@ -64,7 +64,7 @@ class lizmapServicesTest extends TestCase
         unset($testLizmapServices);
     }
 
-    public function getAllowUserAccountRequestsData()
+    public static function getAllowUserAccountRequestsData()
     {
         return array(
             array(false, '', true, false),
@@ -97,7 +97,7 @@ class lizmapServicesTest extends TestCase
         unset($testLizmapServices);
     }
 
-    public function getHideSensitivePropertiesData()
+    public static function getHideSensitivePropertiesData()
     {
         return array(
             array(true, true),
@@ -122,7 +122,7 @@ class lizmapServicesTest extends TestCase
         unset($testLizmapServices);
     }
 
-    public function getRootRepositoriesData()
+    public static function getRootRepositoriesData()
     {
         $path = realpath(__DIR__.'/../../../');
 
@@ -156,7 +156,7 @@ class lizmapServicesTest extends TestCase
         unset($testLizmapServices);
     }
 
-    public function getModifyGlobalData()
+    public static function getModifyGlobalData()
     {
         $testModify1 = array(
             'jcommunity' => array('registrationEnabled' => 'off'),
@@ -208,7 +208,7 @@ class lizmapServicesTest extends TestCase
         unset($testLizmapServices);
     }
 
-    public function getModifyLocalData()
+    public static function getModifyLocalData()
     {
         $testModify1 = array(
             'services' => array(
@@ -261,7 +261,7 @@ class lizmapServicesTest extends TestCase
         unset($testLizmapServices);
     }
 
-    public function getSaveIntoIniData()
+    public static function getSaveIntoIniData()
     {
         $ini1 = array(
             'appName' => 'Lizmap',
@@ -355,7 +355,7 @@ class lizmapServicesTest extends TestCase
         unset($testLizmapServices);
     }
 
-    public function getRepoData()
+    public static function getRepoData()
     {
         $repo1 = array(
             'repository:test' => array(
@@ -424,7 +424,7 @@ class lizmapServicesTest extends TestCase
         unset($testLizmapServices, $repo);
     }
 
-    public function getMetricsEnabled()
+    public static function getMetricsEnabled()
     {
         return array(
             array(null, false),
