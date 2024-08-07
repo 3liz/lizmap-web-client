@@ -150,7 +150,7 @@ class WMSRequestTest extends TestCase
         $proj->setKey('proj');
         $proj->setRepo(new Repository('key', array(), '', null, $testContext));
         $wmsMock = $this->getMockBuilder(WMSRequestForTests::class)
-                        ->setMethods(['request'])
+                        ->onlyMethods(['request'])
                         ->setConstructorArgs([$proj, array(), null])
                         ->getMock();
         $wmsMock->method('request')->willReturn($response);
