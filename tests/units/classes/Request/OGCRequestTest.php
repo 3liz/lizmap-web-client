@@ -73,7 +73,7 @@ class OGCRequestTest extends TestCase
             'request' => 'getcapabilities'
         );
         $ogc = $this->getMockBuilder(OGCRequestForTests::class)
-            ->setMethods(['process_getcapabilities'])
+            ->onlyMethods(['process_getcapabilities'])
             ->setConstructorArgs([new ProjectForOGCForTests(), $params, null])
             ->getMock();
         $ogc->expects($this->once())->method('process_getcapabilities');
@@ -83,7 +83,7 @@ class OGCRequestTest extends TestCase
             'request' => 'not existing method'
         );
         $ogc = $this->getMockBuilder(OGCRequestForTests::class)
-            ->setMethods(['serviceException'])
+            ->onlyMethods(['serviceException'])
             ->setConstructorArgs([new ProjectForOGCForTests(), $params, null])
             ->getMock();
         $ogc->expects($this->once())->method('serviceException')->with(501);
