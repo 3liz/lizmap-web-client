@@ -36,7 +36,7 @@ class ProjectTest extends TestCase
 
     }
 
-    public function getQgisPathData()
+    public static function getQgisPathData()
     {
         return array(
             array(__DIR__.'/../../../qgis-projects/demoqgis', 'montpellier', realpath(__DIR__.'/../../../qgis-projects/demoqgis/montpellier.qgs')),
@@ -61,7 +61,7 @@ class ProjectTest extends TestCase
         $this->assertEquals($expectedPath, $proj->getQgisPath());
     }
 
-    public function getRelativeQgisPathData()
+    public static function getRelativeQgisPathData()
     {
         return array(
             array('',   null,                      '/srv/lzm/absolute/path',              '/srv/lzm/absolute/path'),
@@ -93,7 +93,7 @@ class ProjectTest extends TestCase
         $this->assertEquals($expectedPath, $path);
     }
 
-    public function getAttributeLayersData()
+    public static function getAttributeLayersData()
     {
         $aLayer1 = (object) array(
             'layer1' => (object) array('hideLayer' => 'true'),
@@ -138,7 +138,7 @@ class ProjectTest extends TestCase
         $this->assertEquals($expectedReturn, $proj->hasAttributeLayers($only));
     }
 
-    public function getEditionLayersData()
+    public static function getEditionLayersData()
     {
         $eLayers = (object) array(
             'layer1' => (object) array(
@@ -223,7 +223,7 @@ class ProjectTest extends TestCase
         }
     }
 
-    public function getLoginFilteredData()
+    public static function getLoginFilteredData()
     {
         $layers = (object) array(
             'layer1' => (object) array(
@@ -260,7 +260,7 @@ class ProjectTest extends TestCase
         $this->assertEquals($expectedLn, $proj->getLoginFilteredConfig($ln));
     }
 
-    public function getFiltersData()
+    public static function getFiltersData()
     {
         $aclData1 = array(
             'userIsConnected' => true,
@@ -303,7 +303,7 @@ class ProjectTest extends TestCase
         $this->assertEquals($expectedFilters, $filters);
     }
 
-    public function getGoogleData()
+    public static function getGoogleData()
     {
         $options1 = (object) array(
             'googleStreets' => 'False',
@@ -355,7 +355,7 @@ class ProjectTest extends TestCase
         $this->assertEquals($gKey, $proj->getGoogleKey());
     }
 
-    public function getCheckAclData()
+    public static function getCheckAclData()
     {
         $result1 = array('lizmap.repositories.view' => false);
         $result2 = array(
