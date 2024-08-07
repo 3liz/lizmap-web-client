@@ -39,7 +39,7 @@ class WMSRequestTest extends TestCase
         $this->assertEquals($expectedParams, $wms->parameters());
     }
 
-    public function getParametersWithFilterData()
+    public static function getParametersWithFilterData()
     {
         $loginFilters = array(
             'layer1' => array(
@@ -83,7 +83,7 @@ class WMSRequestTest extends TestCase
         }
     }
 
-    public function getGetContextData()
+    public static function getGetContextData()
     {
         $responseNoUrl = new OGCResponse(
             200,
@@ -160,7 +160,7 @@ class WMSRequestTest extends TestCase
         }
     }
 
-    public function getCheckMaximumWidthHeightData()
+    public static function getCheckMaximumWidthHeightData()
     {
         return array(
             array(50, 25, 50, 25, false, false),
@@ -194,7 +194,7 @@ class WMSRequestTest extends TestCase
         $this->assertEquals($expectedBool, $wms->checkMaximumWidthHeightForTests());
     }
 
-    public function getUseCacheData()
+    public static function getUseCacheData()
     {
         return array(
             array(array(), null, false, false, 'web'),

@@ -23,7 +23,7 @@ class WFSRequestTest extends TestCase
         $this->assertEquals($expectedParameters, $parameters);
     }
 
-    public function getParametersWithFiltersData()
+    public static function getParametersWithFiltersData()
     {
         $params1 = array(
             'request' => 'getfeature',
@@ -84,7 +84,7 @@ class WFSRequestTest extends TestCase
         $this->assertEquals($expectedParameters, $parameters);
     }
 
-    public function getGetFeatureIdFilterExpData()
+    public static function getGetFeatureIdFilterExpData()
     {
         return array(
             array('', '', '', array()), //nothing
@@ -123,7 +123,7 @@ class WFSRequestTest extends TestCase
         $this->assertEquals($expectedExpFilter, $expFilter);
     }
 
-    public function getBuildQueryBaseData()
+    public static function getBuildQueryBaseData()
     {
         $paramsComplete = array(
             'propertyname' => 'prop,erty,name',
@@ -161,7 +161,7 @@ class WFSRequestTest extends TestCase
         $this->assertEquals($expectedSelectFields, $wfs->selectFields);
     }
 
-    public function getGetBboxSqlData()
+    public static function getGetBboxSqlData()
     {
         return array(
             array('', array(), ''),
@@ -186,7 +186,7 @@ class WFSRequestTest extends TestCase
         $this->assertEquals($expectedSql, $sql);
     }
 
-    public function getParseExpFilterData()
+    public static function getParseExpFilterData()
     {
         return array(
             array(array(), '', ''),
@@ -209,7 +209,7 @@ class WFSRequestTest extends TestCase
         $this->assertEquals($expectedSql, $result);
     }
 
-    public function getParseFeatureData()
+    public static function getParseFeatureData()
     {
         return array(
             array('', '', '', ''),
@@ -234,7 +234,7 @@ class WFSRequestTest extends TestCase
         $this->assertEquals($expectedSql, $sql);
     }
 
-    public function getGetQueryOrderData()
+    public static function getGetQueryOrderData()
     {
         return array(
             array(array(), array(), ''),
@@ -255,7 +255,7 @@ class WFSRequestTest extends TestCase
         $this->assertEquals($expectedSql, $result);
     }
 
-    public function getValidateExpressionFilterData()
+    public static function getValidateExpressionFilterData()
     {
         return array(
             array(';', false),
@@ -294,7 +294,7 @@ class WFSRequestTest extends TestCase
         $this->assertEquals($expectedResult, $wfs->validateExpressionFilterForTests($filter));
     }
 
-    public function getValidateFilterData()
+    public static function getValidateFilterData()
     {
         return array(
             array('select', false),

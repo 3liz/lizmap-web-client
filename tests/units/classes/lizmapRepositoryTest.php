@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
  */
 class lizmapRepositoryTest extends TestCase
 {
-    public function getTestGetPathData()
+    public static function getTestGetPathData()
     {
         $repo1 = array(
             'repository:test' => array(
@@ -69,7 +69,7 @@ class lizmapRepositoryTest extends TestCase
         unset($services, $rep);
     }
 
-    public function getTestUpdateData()
+    public static function getTestUpdateData()
     {
         $data1 = array(
             'repository:test' => array(

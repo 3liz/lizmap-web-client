@@ -400,7 +400,7 @@ class QgisProjectTest extends TestCase
         $this->assertEquals($expectedLayer, $cfg->getLayers());
     }
 
-    public function getLayerData()
+    public static function getLayerData()
     {
         $layers = array(
             'montpellier' => array(
@@ -442,7 +442,7 @@ class QgisProjectTest extends TestCase
         }
     }
 
-    public function getReadEditionLayersData()
+    public static function getReadEditionLayersData()
     {
         $intraELayer = '{
             "anno_point": {
@@ -696,7 +696,7 @@ class QgisProjectTest extends TestCase
         $this->assertEquals($xml, $aLayer->montpellier_events->attributetableconfig);
     }
 
-    public function getShortNamesData()
+    public static function getShortNamesData()
     {
         $dir = __DIR__.'/Ressources/Projs/';
 
