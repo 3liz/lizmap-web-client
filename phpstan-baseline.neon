@@ -285,12 +285,6 @@ parameters:
 			path: lizmap/modules/lizmap/controllers/edition.classic.php
 
 		-
-			message: "#^Left side of \\|\\| is always false\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/edition.classic.php
-
-
-		-
 			message: "#^Negated boolean expression is always false\\.$#"
 			count: 6
 			path: lizmap/modules/lizmap/controllers/edition.classic.php
@@ -309,12 +303,6 @@ parameters:
 			message: "#^Property editionCtrl\\:\\:\\$layerXml \\(SimpleXMLElement\\) does not accept default value of type string\\.$#"
 			count: 1
 			path: lizmap/modules/lizmap/controllers/edition.classic.php
-
-		-
-			message: "#^Right side of \\|\\| is always false\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/edition.classic.php
-
 
 		-
 			message: "#^Access to an undefined property jResponse\\:\\:\\$data\\.$#"
