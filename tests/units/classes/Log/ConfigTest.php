@@ -19,7 +19,7 @@ class ConfigTest extends TestCase
         $this->context = new ContextForTests();
     }
 
-    public function getTestModifyData()
+    public static function getTestModifyData()
     {
         $data1 = array(
             'general' => array(
@@ -64,7 +64,7 @@ class ConfigTest extends TestCase
         unset($testLizmapLogConfig);
     }
 
-    public function getTestSaveData()
+    public static function getTestSaveData()
     {
         $data = array(
             'general' => array(
@@ -118,7 +118,7 @@ class ConfigTest extends TestCase
         unlink($iniFile);
     }
 
-    public function getTestGetLogItemListData()
+    public static function getTestGetLogItemListData()
     {
         $data1 = array(
             'general' => array(),
@@ -163,7 +163,7 @@ class ConfigTest extends TestCase
         $this->assertEquals($expectedList, $list);
     }
 
-    public function getTestGetLogItemData()
+    public static function getTestGetLogItemData()
     {
         $data = array(
             'general' => array(),

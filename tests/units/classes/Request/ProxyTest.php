@@ -12,7 +12,7 @@ class ProxyTest extends TestCase
         Request\Proxy::setAppContext($appContext);
     }
 
-    public function getBuildData()
+    public static function getBuildData()
     {
         $requestXmlWMS = '  <getcapabilities service="wms"></getcapabilities>';
         $requestXmlWFS = '  <getcapabilities service="wfs"></getcapabilities>';
@@ -50,7 +50,7 @@ class ProxyTest extends TestCase
         }
     }
 
-    public function getNormalizeParamsData()
+    public static function getNormalizeParamsData()
     {
         $paramsNormal = array(
             'service' => 'WMS',
@@ -92,7 +92,7 @@ class ProxyTest extends TestCase
         $this->assertEquals($expectedData, $data);
     }
 
-    public function getConstructUrlData()
+    public static function getConstructUrlData()
     {
         $paramsNormal = array(
             'service' => 'WMS',
@@ -125,7 +125,7 @@ class ProxyTest extends TestCase
         $this->assertEquals($expectedUrl, $result);
     }
 
-    public function getBuildOptionsData()
+    public static function getBuildOptionsData()
     {
         $optionsStr = 'proxyHttp';
         $options = array(
@@ -177,7 +177,7 @@ class ProxyTest extends TestCase
         $this->assertEquals($expectedResult, $result);
     }
 
-    public function getBuildHeadersData()
+    public static function getBuildHeadersData()
     {
         $options1 = array(
             'method' => 'get',
@@ -242,7 +242,7 @@ class ProxyTest extends TestCase
         }
     }
 
-    public function getUserHttpHeadersData()
+    public static function getUserHttpHeadersData()
     {
         return array(
             array(false, null, null, '', ''),
