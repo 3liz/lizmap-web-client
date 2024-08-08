@@ -94,7 +94,7 @@ class QgisFormTest extends TestCase
 
 
 
-    public function getConstructData()
+    public static function getConstructData()
     {
         $fields = (object) array(
             'pkuid' => (object) array(
@@ -154,7 +154,7 @@ class QgisFormTest extends TestCase
         }
     }
 
-    public function getDefaultValuesData()
+    public static function getDefaultValuesData()
     {
         return array(
             array('1231', null, '1231'),
@@ -174,7 +174,7 @@ class QgisFormTest extends TestCase
      */
     public function testGetDefaultValues($defaultValue, $expressionResult, $expectedResult)
     {
-        $formMock = $this->getMockBuilder(QgisFormForTests::class)->setMethods(array('evaluateExpression'))->getMock();
+        $formMock = $this->getMockBuilder(QgisFormForTests::class)->onlyMethods(array('evaluateExpression'))->getMock();
         $formMock->method('evaluateExpression')->willReturn($expressionResult);
         $layer = new QgisLayerForTests();
         $layer->setDefaultValues(array('testField' => $defaultValue));
@@ -200,7 +200,7 @@ class QgisFormTest extends TestCase
         $this->assertNull($attributeForm);
     }
 
-    public function getCheckData()
+    public static function getCheckData()
     {
         $dbFieldsInfo = (object) array(
             'dataFields' => (object) array(
@@ -259,7 +259,7 @@ class QgisFormTest extends TestCase
     public function testCheck($dbFieldsInfo, $check, $data, $evaluateExpression, $constraints, $allowWithoutGeom, $expectedResult)
     {
         $mockFuncs = array('getAttributesEditorForm', 'getFieldValue', 'getConstraints', 'evaluateExpression');
-        $formMock = $this->getMockBuilder(QgisFormForTests::class)->setMethods($mockFuncs)->getMock();
+        $formMock = $this->getMockBuilder(QgisFormForTests::class)->onlyMethods($mockFuncs)->getMock();
         foreach ($mockFuncs as $method) {
             if ($method === 'evaluateExpression') {
                 $formMock->method($method)->willReturn($evaluateExpression);
@@ -314,10 +314,10 @@ class QgisFormTest extends TestCase
             'field' => true,
             'geometry' => true,
         );
-        $formMock = $this->getMockBuilder(QgisFormForTests::class)->setMethods(array('getFieldList', 'getParsedValue', 'ProcessUploadedFile', 'filterDataByLogin'))->getMock();
+        $formMock = $this->getMockBuilder(QgisFormForTests::class)->onlyMethods(array('getFieldList', 'getParsedValue', 'ProcessUploadedFile', 'filterDataByLogin'))->getMock();
         $jForm = new dummyForm();
         $jForm->controls = $controls;
-        $layerMock = $this->getMockBuilder(QgisLayerForTests::class)->setMethods(array('getDatasourceParameters', 'updateFeature', 'insertFeature'))->getMock();
+        $layerMock = $this->getMockBuilder(QgisLayerForTests::class)->onlyMethods(array('getDatasourceParameters', 'updateFeature', 'insertFeature'))->getMock();
         $layerMock->connection = new jDbConnectionForTests();
         $layerMock->method('getDatasourceParameters')->willReturn((object) array('tablename' => null, 'schema' => null));
         $layerMock->expects($this->once())->method('insertFeature')->with($this->equalTo($values));
@@ -350,10 +350,10 @@ class QgisFormTest extends TestCase
             'field' => true,
             'geometry' => true,
         );
-        $formMock = $this->getMockBuilder(QgisFormForTests::class)->setMethods(array('getFieldList', 'getParsedValue', 'processUploadedFile', 'filterDataByLogin'))->getMock();
+        $formMock = $this->getMockBuilder(QgisFormForTests::class)->onlyMethods(array('getFieldList', 'getParsedValue', 'processUploadedFile', 'filterDataByLogin'))->getMock();
         $jForm = new dummyForm();
         $jForm->controls = $controls;
-        $layerMock = $this->getMockBuilder(QgisLayerForTests::class)->setMethods(array('getDatasourceParameters', 'getDatasourceConnection', 'updateFeature', 'insertFeature'))->getMock();
+        $layerMock = $this->getMockBuilder(QgisLayerForTests::class)->onlyMethods(array('getDatasourceParameters', 'getDatasourceConnection', 'updateFeature', 'insertFeature'))->getMock();
         $layerMock->name = 'name';
         $layerMock->method('getDatasourceParameters')->willReturn((object) array('tablename' => null, 'schema' => null));
         $layerMock->expects($this->once())->method('updateFeature')->with($this->equalTo('feature'), $this->equalTo($values), $this->anything());
@@ -370,7 +370,7 @@ class QgisFormTest extends TestCase
         $formMock->saveToDb('feature');
     }
 
-    public function getFieldListData()
+    public static function getFieldListData()
     {
         $eCaps = array(
             'modifyGeometry' => 'true',
@@ -443,8 +443,8 @@ class QgisFormTest extends TestCase
         );
         $dbFieldsInfo = (object) array('dataFields' => $dataFields);
         $geometryColumn = 'geometry';
-        $formMock = $this->getMockBuilder(QgisFormForTests::class)->setMethods(array('getAttributesEditorForm'))->getMock();
-        $attributesMock = $this->getMockBuilder(qgisAttributeEditorElement::class)->disableOriginalConstructor()->setMethods(array('getFields'))->getMock();
+        $formMock = $this->getMockBuilder(QgisFormForTests::class)->onlyMethods(array('getAttributesEditorForm'))->getMock();
+        $attributesMock = $this->getMockBuilder(qgisAttributeEditorElement::class)->disableOriginalConstructor()->onlyMethods(array('getFields'))->getMock();
         $attributesMock->method('getFields')->willReturn($formFields);
         $layer = new QgisLayerForTests();
         $layer->eCapabilities = (object) array('capabilities' => (object) $eCaps);
@@ -458,7 +458,7 @@ class QgisFormTest extends TestCase
         $this->assertEquals($expectedFields, $formMock->getFieldListForTests($geometryColumn, $insert));
     }
 
-    public function getFillControlUniqueData()
+    public static function getFillControlUniqueData()
     {
         $uniqueValues = array(
             'editable' => null,
@@ -502,7 +502,7 @@ class QgisFormTest extends TestCase
         $dbFieldValues = array('foo', 'bar');
         $form = new QgisFormForTests();
         $control = $this->getMockBuilder(QgisFormControl::class)->disableOriginalConstructor()->getMock();
-        $control->ctrl = $this->getMockBuilder(jFormsControlListbox::class)->setMethods(array('setAttribute'))->disableOriginalConstructor()->getMock();
+        $control->ctrl = $this->getMockBuilder(jFormsControlListbox::class)->onlyMethods(array('setAttribute'))->disableOriginalConstructor()->getMock();
         if ($setAttribute) {
             $control->ctrl->expects($this->once())->method('setAttribute');
         }
