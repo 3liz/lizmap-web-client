@@ -8,7 +8,7 @@ use Lizmap\Project;
  */
 class projectConfigTest extends TestCase
 {
-    public function getConstructData()
+    public static function getConstructData()
     {
         $file = __DIR__.'/Ressources/events.qgs.cfg';
         $json = json_decode(file_get_contents($file));
@@ -55,7 +55,7 @@ class projectConfigTest extends TestCase
         }
     }
 
-    public function getFindLayerData()
+    public static function getFindLayerData()
     {
         $file = __DIR__.'/Ressources/events.qgs.cfg';
         $layers = json_decode(file_get_contents($file));
@@ -90,7 +90,7 @@ class projectConfigTest extends TestCase
         }
     }
 
-    public function getEditionLayerByNameData()
+    public static function getEditionLayerByNameData()
     {
         $file = __DIR__.'/Ressources/montpellier.qgs.cfg';
         $eLayer = json_decode(file_get_contents($file));
@@ -119,7 +119,7 @@ class projectConfigTest extends TestCase
         }
     }
 
-    public function getEditionLayerByLayerIdData()
+    public static function getEditionLayerByLayerIdData()
     {
         $file = __DIR__.'/Ressources/montpellier.qgs.cfg';
         $eLayer = json_decode(file_get_contents($file));
@@ -151,7 +151,7 @@ class projectConfigTest extends TestCase
         }
     }
 
-    public function getOptionsValues()
+    public static function getOptionsValues()
     {
         return array(
             array('mapScales', [
