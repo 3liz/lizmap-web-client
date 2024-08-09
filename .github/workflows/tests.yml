@@ -16,11 +16,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-version: [
-          '8.0',
-          '8.1',
-          '8.2',
-        ]
+        include:
+          - php-version: "8.0"
+            php-unit: "9.5.7"
+          - php-version: "8.1"
+            php-unit: "10.5.29"
+          - php-version: "8.2"
+            php-unit: "11.2.9"
+          - php-version: "8.3"
+            php-unit: "11.2.9"
     steps:
 
       - name: Check out repository
@@ -31,6 +35,10 @@ jobs:
         with:
           php-version: ${{ matrix.php-version }}
           tools: php-cs-fixer, phpunit
+
+      - name: Change the version of PHPUnit
+#        working-directory: tests/units
+        run: composer require --working-dir=tests/units/ phpunit/phpunit:${{ matrix.php-unit }}
 
       - name: Running tests
         run: make tests
