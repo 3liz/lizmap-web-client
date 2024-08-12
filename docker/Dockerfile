@@ -5,7 +5,7 @@ COPY lizmap_web_client.zip .
 RUN unzip lizmap_web_client.zip
 
 FROM ${REGISTRY_PREFIX}alpine:3.17
-MAINTAINER David Marteau <david.marteau@3liz.com>
+LABEL org.opencontainers.image.authors="David Marteau <david.marteau@3liz.com>"
 LABEL Description="Lizmap web client" Vendor="3liz.org" Version="23.02.0"
 
 RUN apk update && apk upgrade && \
@@ -64,7 +64,7 @@ COPY php-fpm-healthcheck /usr/local/bin/
 
 RUN chmod 755 /bin/lizmap-entrypoint.sh /bin/update-config.php /usr/local/bin/php-fpm-healthcheck
 
-ENV PHP_INI_DIR /etc/php81
+ENV PHP_INI_DIR=/etc/php81
 
 HEALTHCHECK --interval=60s --timeout=30s CMD php-fpm-healthcheck || exit 1
 
