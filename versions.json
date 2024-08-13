@@ -43,7 +43,7 @@
         "latest_release_version": "3.6.14",
         "qgis_max_version_recommended": 39900,
         "qgis_min_version_recommended": 31000,
-        "status": "stable"
+        "status": "security_bugfix_only"
     },
     {
         "branch": "3.5",
