@@ -12,12 +12,14 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ### Funders
 
+* **[Faunalia](https://www.faunalia.eu/fr)**, contributions on source code from @mind84
 * **FM Projet**
 * **[Terre de Provence Agglomération](https://www.terredeprovence-agglo.com/)**
 * **[Valabre](https://www.valabre.com/)**
 
 ### Added
 
+* Initialization of group checkboxes based on Lizmap configuration
 * Web component `lizmap-features-table` to display a compact list of features
 * **Digitizing**
     * JS Digitizing: Add erase all
@@ -53,7 +55,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 * Fire `treecreated` event at proper time, contribution from @mind84
 * Fix JS externalLayer: default OpenLayers icon and events
-* JS: mainLizmap.center has to be provided by map state
+* JS: `mainLizmap.center` has to be provided by map state
 * Fix pacakge `map-projects.js`
 * Update dompurify to 3.1.6
 * Update OpenLayers to 10 and proj4 to 2.11.0
