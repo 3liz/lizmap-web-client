@@ -10,19 +10,14 @@ if len(sys.argv) != 2:
     print('One argument is required.')
     exit(0)
 
-tag = sys.argv[1].split('.')
-if len(tag) != 3:
-    print('Tag must be major.minor.bugfix')
+tag_name = sys.argv[1]
+tag = tag_name.split('.')
+if len(tag) > 4 or len(tag) <= 2:
+    print('Tag must be major.minor.bugfix or major.minor.bugfix-prefix.number')
     exit(0)
 
-for item in tag:
-    try:
-        int(item)
-    except ValueError:
-        print(f'The component "{item}" is not an integer, skipping the tag {sys.argv[1]}.')
-        exit(0)
-
-major, minor, bugfix = tag
+major = tag[0]
+minor = tag[1]
 
 json_file = 'versions.json'
 with open(json_file, 'r') as f:
@@ -38,16 +33,23 @@ for version in versions:
             print(f'First release for branch for {major}.{minor}')
             # 'bugfix' variable must be equal to 0
             version['first_release_date'] = date
-            version['status'] = "stable"
+            if len(tag) == 3:
+                # major.minor.bugfix
+                if version['status'] in ('dev', 'feature_freeze', 'stable') and len(tag) == 3:
+                    # We only update if the status is not retired or security_bugfix_only
+                    version['status'] = "stable"
+            elif len(tag) == 4 and 'rc' in tag[2] and version['status'] in ('dev', 'feature_freeze'):
+                # major.minor.bugfix-rc.1
+                version['status'] = "feature_freeze"
 
-        version['latest_release_version'] = f'{major}.{minor}.{bugfix}'
+        version['latest_release_version'] = f'{tag_name}'
         break
 else:
-    print(f'Branch for {major}.{minor}.{bugfix} is not found.')
+    print(f'Branch for {tag_name} is not found.')
     exit(0)
 
 with open('versions.json', 'w') as f:
     json.dump(versions, f, sort_keys=True, indent=4)
     f.write("\n")
 
-print(f"Version {sys.argv[1]} added into versions.json")
+print(f"Version {tag_name} added into versions.json")
