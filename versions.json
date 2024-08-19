@@ -12,9 +12,9 @@
     {
         "branch": "3.8",
         "changelog": {},
-        "first_release_date": "2024-03-21",
-        "latest_release_date": "2024-08-19",
-        "latest_release_version": "3.8.0-rc.4",
+        "first_release_date": "",
+        "latest_release_date": "",
+        "latest_release_version": "3.8.0",
         "qgis_max_version_recommended": 39900,
         "qgis_min_version_recommended": 32800,
         "status": "feature_freeze"
