@@ -4,10 +4,10 @@
 # from https://github.com/dinkel/docker-openldap
 # -----------------
 FROM debian:buster-slim
-MAINTAINER 3liz
+LABEL org.opencontainers.image.authors="3Liz"
 
 # properly setup debian sources
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
       slapd \
