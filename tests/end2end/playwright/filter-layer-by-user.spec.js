@@ -12,17 +12,34 @@ test.describe('Filter layer data by user - not connected', () => {
         await page.locator('#dock-close').click();
     });
 
-    test('GetMap', async ({ page }) => {
-        // Hide all elements but #newOlMap and its children
-        await page.$eval("*", el => el.style.visibility = 'hidden');
-        await page.$eval("#newOlMap, #newOlMap *", el => el.style.visibility = 'visible');
+    // DISABLED BECAUSE IT IS NOT RELIABLE, MAINTAINABLE AND CAUSES HEADACHE ;-)
+    // Instead, we use a WMS GetFeatureInfo in JSON format below
+    // test('GetMap', async ({ page }) => {
+    //     // Hide all elements but #newOlMap and its children
+    //     await page.$eval("*", el => el.style.visibility = 'hidden');
+    //     await page.$eval("#newOlMap, #newOlMap *", el => el.style.visibility = 'visible');
 
-        expect(await page.locator('#newOlMap').screenshot()).toMatchSnapshot('map_not_connected.png', {
-            maxDiffPixels: 500
-        });
+    //     expect(await page.locator('#newOlMap').screenshot()).toMatchSnapshot('map_not_connected.png', {
+    //         maxDiffPixels: 500
+    //     });
+    // });
+
+    test('WMS GetFeatureInfo JSON', async ({ page }) => {
+
+        const getFeatureInfo = await page.evaluate(async () => {
+            return await fetch("/index.php/lizmap/service?repository=testsrepository&project=filter_layer_by_user&SERVICE=WMS&REQUEST=GetFeatureInfo&VERSION=1.3.0&CRS=EPSG%3A2154&INFO_FORMAT=application%2Fjson&QUERY_LAYERS=green_filter_layer_by_user_edition_only%2Cblue_filter_layer_by_user%2Cred_layer_with_no_filter&LAYERS=green_filter_layer_by_user_edition_only%2Cblue_filter_layer_by_user%2Cred_layer_with_no_filter&STYLE=default%2Cdefault%2Cdefault&BBOX=-310600.3821764754%2C726545.2026738503%2C364617.6349262256%2C1244071.2377259205&FEATURE_COUNT=10&FILTER=green_filter_layer_by_user_edition_only:\"gid\" > 0")
+                .then(r => r.ok ? r.json() : Promise.reject(r))
+        })
+
+        // check features
+        expect(getFeatureInfo.features).toHaveLength(4)
+        // check a specific feature
+        const feature = getFeatureInfo.features[0]
+        expect(feature.id).not.toBeUndefined()
+
     });
 
-    test('Popup', async ({ page }) => {
+    test('Popup with map click', async ({ page }) => {
         let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
 
         // blue_filter_layer_by_user
@@ -133,17 +150,34 @@ test.describe('Filter layer data by user - user in group a', () => {
         await page.locator('#dock-close').click();
     });
 
-    test('GetMap', async ({ page }) => {
-        // Hide all elements but #newOlMap and its children
-        await page.$eval("*", el => el.style.visibility = 'hidden');
-        await page.$eval("#newOlMap, #newOlMap *", el => el.style.visibility = 'visible');
+    // DISABLED BECAUSE IT IS NOT RELIABLE, MAINTAINABLE AND CAUSES HEADACHE ;-)
+    // Instead, we use a WMS GetFeatureInfo in JSON format below
+    // test('GetMap', async ({ page }) => {
+    //     // Hide all elements but #newOlMap and its children
+    //     await page.$eval("*", el => el.style.visibility = 'hidden');
+    //     await page.$eval("#newOlMap, #newOlMap *", el => el.style.visibility = 'visible');
 
-        expect(await page.locator('#newOlMap').screenshot()).toMatchSnapshot('map_connected_as_user_in_group_a.png', {
-            maxDiffPixels: 500
-        });
+    //     expect(await page.locator('#newOlMap').screenshot()).toMatchSnapshot('map_connected_as_user_in_group_a.png', {
+    //         maxDiffPixels: 500
+    //     });
+    // });
+
+    test('WMS GetFeatureInfo JSON', async ({ page }) => {
+
+        const getFeatureInfo = await page.evaluate(async () => {
+            return await fetch("/index.php/lizmap/service?repository=testsrepository&project=filter_layer_by_user&SERVICE=WMS&REQUEST=GetFeatureInfo&VERSION=1.3.0&CRS=EPSG%3A2154&INFO_FORMAT=application%2Fjson&QUERY_LAYERS=green_filter_layer_by_user_edition_only%2Cblue_filter_layer_by_user%2Cred_layer_with_no_filter&LAYERS=green_filter_layer_by_user_edition_only%2Cblue_filter_layer_by_user%2Cred_layer_with_no_filter&STYLE=default%2Cdefault%2Cdefault&BBOX=-310600.3821764754%2C726545.2026738503%2C364617.6349262256%2C1244071.2377259205&FEATURE_COUNT=10&FILTER=green_filter_layer_by_user_edition_only:\"gid\" > 0")
+                .then(r => r.ok ? r.json() : Promise.reject(r))
+        })
+
+        // check features
+        expect(getFeatureInfo.features).toHaveLength(5)
+        // check a specific feature
+        const feature = getFeatureInfo.features[0]
+        expect(feature.id).not.toBeUndefined()
+
     });
 
-    test('Popup', async ({ page }) => {
+    test('Popup with map click', async ({ page }) => {
         let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
 
         // blue_filter_layer_by_user
@@ -258,17 +292,34 @@ test.describe('Filter layer data by user - admin', () => {
         await page.locator('#dock-close').click();
     });
 
-    test('GetMap', async ({ page }) => {
-        // Hide all elements but #newOlMap and its children
-        await page.$eval("*", el => el.style.visibility = 'hidden');
-        await page.$eval("#newOlMap, #newOlMap *", el => el.style.visibility = 'visible');
+    // DISABLED BECAUSE IT IS NOT RELIABLE, MAINTAINABLE AND CAUSES HEADACHE ;-)
+    // Instead, we use a WMS GetFeatureInfo in JSON format below
+    // test('GetMap', async ({ page }) => {
+    //     // Hide all elements but #newOlMap and its children
+    //     await page.$eval("*", el => el.style.visibility = 'hidden');
+    //     await page.$eval("#newOlMap, #newOlMap *", el => el.style.visibility = 'visible');
 
-        expect(await page.locator('#newOlMap').screenshot()).toMatchSnapshot('map_connected_as_admin.png', {
-            maxDiffPixels: 500
-        });
+    //     expect(await page.locator('#newOlMap').screenshot()).toMatchSnapshot('map_connected_as_admin.png', {
+    //         maxDiffPixels: 500
+    //     });
+    // });
+
+    test('WMS GetFeatureInfo JSON', async ({ page }) => {
+
+        const getFeatureInfo = await page.evaluate(async () => {
+            return await fetch("/index.php/lizmap/service?repository=testsrepository&project=filter_layer_by_user&SERVICE=WMS&REQUEST=GetFeatureInfo&VERSION=1.3.0&CRS=EPSG%3A2154&INFO_FORMAT=application%2Fjson&QUERY_LAYERS=green_filter_layer_by_user_edition_only%2Cblue_filter_layer_by_user%2Cred_layer_with_no_filter&LAYERS=green_filter_layer_by_user_edition_only%2Cblue_filter_layer_by_user%2Cred_layer_with_no_filter&STYLE=default%2Cdefault%2Cdefault&BBOX=-310600.3821764754%2C726545.2026738503%2C364617.6349262256%2C1244071.2377259205&FEATURE_COUNT=10&FILTER=green_filter_layer_by_user_edition_only:\"gid\" > 0")
+                .then(r => r.ok ? r.json() : Promise.reject(r))
+        })
+
+        // check features
+        expect(getFeatureInfo.features).toHaveLength(7)
+        // check a specific feature
+        const feature = getFeatureInfo.features[0]
+        expect(feature.id).not.toBeUndefined()
+
     });
 
-    test('Popup', async ({ page }) => {
+    test('Popup with map click', async ({ page }) => {
         let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
 
         // blue_filter_layer_by_user
