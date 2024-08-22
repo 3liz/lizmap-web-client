@@ -89,11 +89,20 @@ jobs:
         run: |
           make show-qgis-server-versions
 
+      - name: Docker status 0
+        run: docker images
+
       - name: Pull docker images
         run: ./run-docker pull
 
+      - name: Docker status 1
+        run: docker images
+
       - name: Build and start docker images
         run: ./run-docker up --build -d
+
+      - name: Docker status 2
+        run: docker images
 
       - name: Wait docker images ready and install Lizmap
         run: |
