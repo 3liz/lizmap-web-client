@@ -186,8 +186,8 @@ jobs:
       - name: Check DB diff
         run: |
           cd qgis-projects/tests/
-          pg_dump -d "service=lizmapdb" --no-owner --no-acl -n tests_projects -f tests_dataset.sql
-          git diff
+          PGPASSWORD=lizmap1234! pg_dump -h localhost -p 8132 -U lizmap -f --no-owner --no-acl -n tests_projects -f tests_dataset.sql
+#          git diff tests/qgis-projects/tests/tests_dataset.sql
 #          [[ -z $(git status --porcelain -uno) ]]
 #          exit $?
 
