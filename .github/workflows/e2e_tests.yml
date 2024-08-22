@@ -96,10 +96,14 @@ jobs:
         run: ./run-docker up --build -d
 
       - name: Wait docker images ready and install Lizmap
-        run: sleep 30 && ./lizmap-ctl install
+        run: |
+          sleep 30
+          ./lizmap-ctl install
 
       - name: Load SQL data
-        run: cd qgis-projects/tests && ./load_sql.sh
+        run: |
+          cd qgis-projects/tests
+          ./load_sql.sh
 
       - name: Add hosts to /etc/hosts
         run: |
@@ -111,14 +115,20 @@ jobs:
           node-version: 21
 
       - name: Install dependencies
-        run: cd end2end && npm ci
+        run: |
+          cd end2end
+          npm ci
 
       - name: Install Playwright
-        run: cd end2end && npx playwright install --with-deps chromium
+        run: |
+          cd end2end
+          npx playwright install --with-deps chromium
 
       - name: Run Playwright tests
         id: test-playwright
-        run: cd end2end && npx playwright test --project=end2end
+        run: |
+          cd end2end
+          npx playwright test --project=end2end
 
       - name: Notify in case of playwright failure, from mainstream branches only
         uses: peter-evans/commit-comment@v3
@@ -172,6 +182,14 @@ jobs:
           path: |
             tests/end2end/cypress/screenshots
             tests/end2end/cypress/downloads
+
+      - name: Check DB diff
+        run: |
+          cd qgis-projects/tests/
+          pg_dump -d "service=lizmapdb" --no-owner --no-acl -n tests_projects -f tests_dataset.sql
+          git diff
+#          [[ -z $(git status --porcelain -uno) ]]
+#          exit $?
 
 #  debug:
 #    name: "Debug"
