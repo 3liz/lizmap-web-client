@@ -9,12 +9,12 @@
     <h2>{$subTitle}</h2>
   </div>
 
-  <div id="headermenu" class="navbar navbar-fixed-top">
-    <div id="auth" class="navbar-inner">
-      <ul class="nav pull-right">
+  <div id="headermenu" class="navbar navbar-expand position-absolute bottom-0">
+    <div id="auth" class="container-fluid justify-content-end">
+      <ul class="navbar-nav">
         {if $showHomeLink}
-        <li class="home">
-          <a href="{jurl 'view~default:index'}" data-bs-toggle="tooltip" data-bs-title="{@view~default.home.title@}" data-placement="bottom">
+        <li class="home nav-item">
+          <a class="nav-link" href="{jurl 'view~default:index'}" data-bs-toggle="tooltip" data-bs-title="{@view~default.home.title@}" data-placement="bottom">
             <span class="icon"></span>
             <span class="text"><b>{@view~default.home.title@}</b></span>
           </a>

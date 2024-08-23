@@ -16,8 +16,8 @@
   <div id="title">
     <h1>{@admin~admin.header.admin@}</h1>
   </div>
-  <div id="headermenu" class="navbar navbar-fixed-top">
-   <div id="auth" class="navbar-inner">{$INFOBOX}</div>
+  <div id="headermenu" class="navbar navbar-expand position-absolute bottom-0">
+   <div id="auth" class="container-fluid justify-content-end">{$INFOBOX}</div>
   </div>
 </div>
 
