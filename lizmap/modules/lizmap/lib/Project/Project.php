@@ -1387,6 +1387,22 @@ class Project
         return $layer_config;
     }
 
+    /**
+     * @param object $object   The configuration
+     * @param string $property String about the property to request
+     * @param mixed  $default  Default returned if the property is not found
+     *
+     * @return mixed
+     */
+    private function getPropertyOrDefault(object $object, string $property, $default = null)
+    {
+        if (property_exists($object, $property)) {
+            return $object->{$property};
+        }
+
+        return $default;
+    }
+
     private function optionToBoolean($configString)
     {
         $ret = false;
@@ -1477,16 +1493,13 @@ class Project
             $plotConfig['only_show_child'] = $config->only_show_child;
         }
         // Since LWC 3.7
-        $plotConfig['trigger_filter'] = true;
-        if (property_exists($config, 'trigger_filter')) {
-            $plotConfig['trigger_filter'] = $config->trigger_filter;
-        }
+        $plotConfig['trigger_filter'] = $this->getPropertyOrDefault($config, 'trigger_filter', true);
 
-        $abstract = $layer->abstract;
-        if (property_exists($config, 'description')) {
-            $abstract = trim($config->description);
+        $plotConfig['abstract'] = trim($layer->abstract);
+        $description = trim($this->getPropertyOrDefault($config, 'description', ''));
+        if ($description !== '') {
+            $plotConfig['abstract'] = $description;
         }
-        $plotConfig['abstract'] = trim($abstract);
 
         $props = array(
             'display_legend' => true,
