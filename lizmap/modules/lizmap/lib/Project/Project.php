@@ -1223,10 +1223,19 @@ class Project
      * Get login filters, get expressions for layers based on login filtered
      * config.
      *
+     * NOTE: We could delegate this completely to the lizmap_server plugin
+     * for all requests. The only request needed to have the SQL filter
+     * is the WFS GetFeature request, if the layer is a PostgreSQL layer.
+     * It this particular case, we could use a similar approach
+     * that the one use with qgisVectorLayer::requestPolygonFilter
+     * which calls the server plugin with SERVICE=Lizmap&REQUEST=GetSubsetString
+     *
      * @param string[] $layers  : layers' name list
      * @param bool     $edition : get login filters for edition
      *
-     * @return array
+     * @return array Array containing layers names as key and filter configuration
+     *               and SQL filters as values. Array might be empty if no filter
+     *               is configured for the layer.
      */
     public function getLoginFilters($layers, $edition = false)
     {
@@ -1258,22 +1267,90 @@ class Project
             // attribute to filter
             $attribute = $loginFilteredConfig->filterAttribute;
 
+            // Quoted attribute with double-quotes
+            $cnx = $this->appContext->getDbConnection();
+            $quotedField = $cnx->encloseName($attribute);
+
+            // Get QGIS vector layer provider
+            /** @var null|\qgisVectorLayer $qgisLayer The QGIS vector layer instance */
+            $qgisLayer = $this->qgis->getLayer($layerByTypeName->id, $this);
+            $provider = 'unknown';
+            if ($qgisLayer) {
+                $provider = $qgisLayer->getProvider();
+            }
+
             // default no user connected
-            $filter = "\"{$attribute}\" = 'all'";
+            $filter = "{$quotedField} = 'all'";
+
+            // For PostgreSQL layers, allow multiple values in the filter field
+            // E.g. "groupe_a,other_group"
+            if ($provider == 'postgres'
+                && property_exists($loginFilteredConfig, 'allow_multiple_acl_values')
+                && $loginFilteredConfig->allow_multiple_acl_values
+            ) {
+                $filter .= " OR {$quotedField} LIKE 'all,%'";
+                $filter .= " OR {$quotedField} LIKE '%,all'";
+                $filter .= " OR {$quotedField} LIKE '%,all,%'";
+            }
 
             // A user is connected
             if ($this->appContext->userIsConnected()) {
+                // Get the user
                 $user = $this->appContext->getUserSession();
                 $login = $user->login;
+
+                // List of values for expression
+                $values = array();
                 if (property_exists($loginFilteredConfig, 'filterPrivate')
                     && $this->optionToBoolean($loginFilteredConfig->filterPrivate)
                 ) {
-                    $filter = "\"{$attribute}\" IN ( '".$login."' , 'all' )";
+                    // If filter is private use user_login
+                    $values[] = $login;
                 } else {
+                    // Else use user groups
                     $userGroups = $this->appContext->aclUserPublicGroupsId();
-                    $flatGroups = implode("' , '", $userGroups);
-                    $filter = "\"{$attribute}\" IN ( '".$flatGroups."' , 'all' )";
+                    $values = $userGroups;
                 }
+
+                // Add all to values
+                $values[] = 'all';
+                $allValuesFilters = array();
+
+                // For each value (group, all, login, etc.), create a filter
+                // combining all the possibility: equality & LIKE
+                foreach ($values as $value) {
+                    $valueFilters = array();
+                    // Quote the value with single quotes
+                    $quotedValue = $cnx->quote($value);
+
+                    // equality
+                    $valueFilters[] = "{$quotedField} = {$quotedValue}";
+
+                    // For PostgreSQL layers, allow multiple values in the filter field
+                    // E.g. "groupe_a,other_group"
+                    if ($provider == 'postgres'
+                        && property_exists($loginFilteredConfig, 'allow_multiple_acl_values')
+                        && $loginFilteredConfig->allow_multiple_acl_values
+                    ) {
+                        // begins with value & comma
+                        $quotedLikeValue = $cnx->quote("{$value},%");
+                        $valueFilters[] = "{$quotedField} LIKE {$quotedLikeValue}";
+
+                        // ends with comma & value
+                        $quotedLikeValue = $cnx->quote("%,{$value}");
+                        $valueFilters[] = "{$quotedField} LIKE {$quotedLikeValue}";
+
+                        // value between two commas
+                        $quotedLikeValue = $cnx->quote("%,{$value},%");
+                        $valueFilters[] = "{$quotedField} LIKE {$quotedLikeValue}";
+                    }
+
+                    // Build the filter for this value
+                    $allValuesFilters[] = implode(' OR ', $valueFilters);
+                }
+
+                // Build filter for all values
+                $filter = implode(' OR ', $allValuesFilters);
             }
 
             $filters[$layerName] = array_merge(
