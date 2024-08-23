@@ -1271,8 +1271,27 @@ class Project
             $cnx = $this->appContext->getDbConnection();
             $quotedField = $cnx->encloseName($attribute);
 
+            // Get QGIS vector layer provider
+            /** @var null|\qgisVectorLayer $qgisLayer The QGIS vector layer instance */
+            $qgisLayer = $this->qgis->getLayer($layerByTypeName->id, $this);
+            $provider = 'unknown';
+            if ($qgisLayer) {
+                $provider = $qgisLayer->getProvider();
+            }
+
             // default no user connected
-            $filter = "{$quotedField} = 'all' OR {$quotedField} LIKE 'all,%' OR {$quotedField} LIKE '%,all' OR {$quotedField} LIKE '%,all,%'";
+            $filter = "{$quotedField} = 'all'";
+
+            // For PostgreSQL layers, allow multiple values in the filter field
+            // E.g. "groupe_a,other_group"
+            if ($provider == 'postgres'
+                && property_exists($loginFilteredConfig, 'allow_multiple_acl_values')
+                && $loginFilteredConfig->allow_multiple_acl_values
+            ) {
+                $filter .= " OR {$quotedField} LIKE 'all,%'";
+                $filter .= " OR {$quotedField} LIKE '%,all'";
+                $filter .= " OR {$quotedField} LIKE '%,all,%'";
+            }
 
             // A user is connected
             if ($this->appContext->userIsConnected()) {
@@ -1307,17 +1326,24 @@ class Project
                     // equality
                     $valueFilters[] = "{$quotedField} = {$quotedValue}";
 
-                    // begins with value & comma
-                    $quotedLikeValue = $cnx->quote("{$value},%");
-                    $valueFilters[] = "{$quotedField} LIKE {$quotedLikeValue}";
+                    // For PostgreSQL layers, allow multiple values in the filter field
+                    // E.g. "groupe_a,other_group"
+                    if ($provider == 'postgres'
+                        && property_exists($loginFilteredConfig, 'allow_multiple_acl_values')
+                        && $loginFilteredConfig->allow_multiple_acl_values
+                    ) {
+                        // begins with value & comma
+                        $quotedLikeValue = $cnx->quote("{$value},%");
+                        $valueFilters[] = "{$quotedField} LIKE {$quotedLikeValue}";
 
-                    // ends with comma & value
-                    $quotedLikeValue = $cnx->quote("%,{$value}");
-                    $valueFilters[] = "{$quotedField} LIKE {$quotedLikeValue}";
+                        // ends with comma & value
+                        $quotedLikeValue = $cnx->quote("%,{$value}");
+                        $valueFilters[] = "{$quotedField} LIKE {$quotedLikeValue}";
 
-                    // value between two commas
-                    $quotedLikeValue = $cnx->quote("%,{$value},%");
-                    $valueFilters[] = "{$quotedField} LIKE {$quotedLikeValue}";
+                        // value between two commas
+                        $quotedLikeValue = $cnx->quote("%,{$value},%");
+                        $valueFilters[] = "{$quotedField} LIKE {$quotedLikeValue}";
+                    }
 
                     // Build the filter for this value
                     $allValuesFilters[] = implode(' OR ', $valueFilters);
