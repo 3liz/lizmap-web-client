@@ -270,17 +270,17 @@ class ProjectTest extends TestCase
         $aclData2 = array(
             'userIsConnected' => false,
         );
-        //$filter1 = '"Group" IN ( \'admin\' , \'groups\' , \'lizmap\' , \'all\' )';
-        $filter1 = '"Group" = \'admin\' OR "Group" LIKE \'admin,%\' OR "Group" LIKE \'%,admin\' OR "Group" LIKE \'%,admin,%\'';
+        //$filter1 = '"descr" IN ( \'admin\' , \'groups\' , \'lizmap\' , \'all\' )';
+        $filter1 = '"descr" = \'admin\' OR "descr" LIKE \'admin,%\' OR "descr" LIKE \'%,admin\' OR "descr" LIKE \'%,admin,%\'';
         $filter1 .= ' OR ';
-        $filter1 .= '"Group" = \'groups\' OR "Group" LIKE \'groups,%\' OR "Group" LIKE \'%,groups\' OR "Group" LIKE \'%,groups,%\'';
+        $filter1 .= '"descr" = \'groups\' OR "descr" LIKE \'groups,%\' OR "descr" LIKE \'%,groups\' OR "descr" LIKE \'%,groups,%\'';
         $filter1 .= ' OR ';
-        $filter1 .= '"Group" = \'lizmap\' OR "Group" LIKE \'lizmap,%\' OR "Group" LIKE \'%,lizmap\' OR "Group" LIKE \'%,lizmap,%\'';
+        $filter1 .= '"descr" = \'lizmap\' OR "descr" LIKE \'lizmap,%\' OR "descr" LIKE \'%,lizmap\' OR "descr" LIKE \'%,lizmap,%\'';
         $filter1 .= ' OR ';
-        $filter1 .= '"Group" = \'all\' OR "Group" LIKE \'all,%\' OR "Group" LIKE \'%,all\' OR "Group" LIKE \'%,all,%\'';
+        $filter1 .= '"descr" = \'all\' OR "descr" LIKE \'all,%\' OR "descr" LIKE \'%,all\' OR "descr" LIKE \'%,all,%\'';
 
         //$filter2 = '"Group" = \'all\'';
-        $filter2 = '"Group" = \'all\' OR "Group" LIKE \'all,%\' OR "Group" LIKE \'%,all\' OR "Group" LIKE \'%,all,%\'';
+        $filter2 = '"descr" = \'all\' OR "descr" LIKE \'all,%\' OR "descr" LIKE \'%,all\' OR "descr" LIKE \'%,all,%\'';
 
         return array(
             array($aclData1, $filter1),
@@ -296,20 +296,93 @@ class ProjectTest extends TestCase
      */
     public function testGetLoginFilters($aclData, $expectedFilters)
     {
-        $file = __DIR__.'/Ressources/montpellier_filtered.qgs.cfg';
-        $json = json_decode(file_get_contents($file));
-        $expectedFilters = array(
-            'edition_line' => array_merge((array)$json->loginFilteredLayers->edition_line,
-                                          array('layername' => 'edition_line',
-                                                'filter' => $expectedFilters)),
+        $data = array(
+            'WMSInformation' => array(),
+            'layers' => array(),
         );
-        $config = new Project\ProjectConfig($json);
+        $file = __DIR__.'/Ressources/edition_embed_parent.qgs';
         $context = new ContextForTests();
         $context->setResult($aclData);
         $proj = new ProjectForTests($context);
+        $testQgis = new QgisProjectForTests($data);
+        $rep = new Project\Repository('key', array(), null, null, null);
+        $testQgis->setPath($file);
+        $testQgis->readXMLProjectTest($file);
+
+        $cfg = json_decode(file_get_contents( __DIR__.'/Ressources/edition_embed_parent_filtered.qgs.cfg'));
+        $config = new Project\ProjectConfig($cfg);
         $proj->setCfg($config);
-        $filters = $proj->getLoginFilters(array('edition_line'));
+        $proj->setQgis($testQgis);
+        $proj->setRepo($rep);
+        $proj->setKey('test');
+
+        // Test
+        $expectedFilters = array(
+            'edition_layer_embed_point' => array_merge((array)$cfg->loginFilteredLayers->edition_layer_embed_point,
+                                          array('layername' => 'edition_layer_embed_point',
+                                                'filter' => $expectedFilters)),
+        );
+        $filters = $proj->getLoginFilters(array('edition_layer_embed_point'));
         $this->assertEquals($expectedFilters, $filters);
+
+    }
+
+    public static function getFiltersDataNotMultiple()
+    {
+        $aclData1 = array(
+            'userIsConnected' => true,
+            'userSession' => (object) array('login' => 'admin'),
+            'groups' => array('admin', 'groups', 'lizmap'),
+        );
+        $aclData2 = array(
+            'userIsConnected' => false,
+        );
+        $filter1 = '"descr" = \'admin\' OR "descr" = \'groups\' OR "descr" = \'lizmap\' OR "descr" = \'all\'';
+        $filter2 = '"descr" = \'all\'';
+
+        return array(
+            array($aclData1, $filter1),
+            array($aclData2, $filter2),
+        );
+    }
+
+    /**
+     * @dataProvider getFiltersDataNotMultiple
+     *
+     * @param mixed $aclData
+     * @param mixed $expectedFilters
+     */
+    public function testGetLoginFiltersNotMultiple($aclData, $expectedFilters)
+    {
+        $data = array(
+            'WMSInformation' => array(),
+            'layers' => array(),
+        );
+        $file = __DIR__.'/Ressources/edition_embed_parent.qgs';
+        $context = new ContextForTests();
+        $context->setResult($aclData);
+        $proj = new ProjectForTests($context);
+        $testQgis = new QgisProjectForTests($data);
+        $rep = new Project\Repository('key', array(), null, null, null);
+        $testQgis->setPath($file);
+        $testQgis->readXMLProjectTest($file);
+
+        $cfg = json_decode(file_get_contents( __DIR__.'/Ressources/edition_embed_parent_filtered.qgs.cfg'));
+        $config = new Project\ProjectConfig($cfg);
+        $proj->setCfg($config);
+        $proj->setQgis($testQgis);
+        $proj->setRepo($rep);
+        $proj->setKey('test');
+
+        // test
+        $expectedFilters = array(
+            'edition_layer_embed_line' => array_merge((array)$cfg->loginFilteredLayers->edition_layer_embed_line,
+                                          array('layername' => 'edition_layer_embed_line',
+                                                'filter' => $expectedFilters)),
+        );
+        $filters = $proj->getLoginFilters(array('edition_layer_embed_line'));
+        $this->assertEquals($expectedFilters, $filters);
+
     }
 
     public static function getGoogleData()
