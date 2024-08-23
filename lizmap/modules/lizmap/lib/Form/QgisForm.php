@@ -1794,41 +1794,30 @@ class QgisForm implements QgisFormControlsInterface
             return null;
         }
 
-        // Optionnaly add a filter parameter
-        $lproj = $this->layer->getProject();
-        $loginFilteredConfig = $lproj->getLoginFilteredConfig($layername);
+        // Optionally add a filter parameter
+        $layerProject = $this->layer->getProject();
+        $loginFilteredConfig = $layerProject->getLoginFilteredConfig($layername);
 
         if ($loginFilteredConfig) {
+            // Get filter type
             $type = 'groups';
-            $attribute = $loginFilteredConfig->filterAttribute;
-
-            // check filter type
             if (property_exists($loginFilteredConfig, 'filterPrivate')
-                 && $loginFilteredConfig->filterPrivate == 'True') {
+            && $loginFilteredConfig->filterPrivate == 'True') {
                 $type = 'login';
             }
 
-            // Check if a user is authenticated
-            $isConnected = $this->appContext->userIsConnected();
-            $cnx = $this->appContext->getDbConnection($this->layer->getId());
-            if ($isConnected) {
-                $user = $this->appContext->getUserSession();
-                $login = $user->login;
-                if ($type == 'login') {
-                    $where = ' "'.$attribute."\" IN ( '".$login."' , 'all' )";
-                } else {
-                    $userGroups = $this->appContext->aclUserPublicGroupsId();
-                    // Set XML Filter if getFeature request
-                    $flatGroups = implode("' , '", $userGroups);
-                    $where = ' "'.$attribute."\" IN ( '".$flatGroups."' , 'all' )";
-                }
-            } else {
-                // The user is not authenticated: only show data with attribute = 'all'
-                $where = ' "'.$attribute.'" = '.$cnx->quote('all');
+            // Filter attribute
+            $attribute = $loginFilteredConfig->filterAttribute;
+
+            // SQL filter
+            $layerFilter = $layerProject->getLoginFilter($layername);
+            if (empty($layerFilter)) {
+                return null;
             }
+
             // Set filter when multiple layers concerned
             return array(
-                'where' => $where,
+                'where' => $layerFilter['filter'],
                 'type' => $type,
                 'attribute' => $attribute,
             );

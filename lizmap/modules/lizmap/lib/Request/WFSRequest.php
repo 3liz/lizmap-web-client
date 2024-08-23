@@ -643,13 +643,13 @@ class WFSRequest extends OGCRequest
             if (strpos($validFilter, '$id') !== false) {
                 $key = $this->datasource->key;
                 if (count(explode(',', $key)) == 1) {
-                    return ' AND '.str_replace('$id ', $cnx->encloseName($key).' ', $validFilter);
+                    return ' AND ( '.str_replace('$id ', $cnx->encloseName($key).' ', $validFilter).' ) ';
                 }
 
                 return false;
             }
 
-            return ' AND '.$validFilter;
+            return ' AND ( '.$validFilter.' ) ';
         }
 
         return '';
