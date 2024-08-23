@@ -11,7 +11,7 @@
     </h1>
     <h2>{$repositoryLabel}</h2>
   </div>
-  <div id="headermenu" class="navbar navbar-fixed-top">
+  <div id="headermenu" class="navbar navbar-expand position-absolute bottom-0">
     {zone 'view~map_headermenu', array('repository'=>$repository,'project'=>$project,'auth_url_return'=>$auth_url_return)}
   </div>
 </div>
