@@ -2340,11 +2340,12 @@ window.lizMap = function() {
             mClose = true;
         }
 
-        var html = '<div class="alert alert-block alert-'+mType+' fade in" data-alert="alert">';
-        if ( mClose ){
-            html += '<a class="close" data-dismiss="alert" href="#">×</a>';
-        }
+        var html = '<div class="alert alert-'+mType+' alert-dismissible fade show" role="alert" data-alert="alert">';
         html += '<p>'+aMessage+'</p>';
+
+        if ( mClose ){
+            html += '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+        }
         html += '</div>';
 
         var elt = $(html);

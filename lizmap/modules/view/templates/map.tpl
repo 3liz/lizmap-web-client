@@ -71,8 +71,7 @@
       <img src="{$j_themepath.'css/img/logo_footer.png'}" alt=""/>
     </div>
 
-    <div id="message" class="span6">{jmessage_bootstrap}</div>
-
+    <div id="message">{jmessage_bootstrap}</div>
 
     <div id="lizmap-search">
 

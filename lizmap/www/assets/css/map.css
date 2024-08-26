@@ -2301,13 +2301,11 @@ lizmap-mouse-position > div.coords-unit > select{
 }
 
 #message {
+  width: 50%;
   top : 0;
-  left : 50%;
+  left : 25%; /* 50 - 50/2*/
   position : absolute;
   z-index : 6000;
-}
-#message.span6 {
-  margin-left:-285px;
 }
 #content.mobile #message{
   top: 0;
@@ -2315,7 +2313,7 @@ lizmap-mouse-position > div.coords-unit > select{
   right:0;
   z-index:6000;
 }
-#content.mobile #message.span6{
+#content.mobile #message{
   margin-left:60px;
   width: calc(100% - 60px);
 }
