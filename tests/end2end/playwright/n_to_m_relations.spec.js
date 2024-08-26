@@ -169,12 +169,12 @@ test.describe('N to M relations', () => {
         await oneToNAttrTable.locator("tbody tr").nth(0).locator("td").nth(0).locator("lizmap-feature-toolbar").locator(".feature-toolbar button[data-bs-title='Unlink child']").click();
         await unlinkOneToN;
 
-        //wait for UI to relaod properly
+        // wait for UI to reload properly
         await page.waitForTimeout(300);
 
         await expect(page.locator("#lizmap-edition-message")).toBeVisible();
         await expect(page.locator("#lizmap-edition-message li.jelix-msg-item-success")).toHaveText("The child feature has correctly been unlinked.");
-        await page.locator("#lizmap-edition-message a.close").click();
+        await page.locator("#lizmap-edition-message .btn-close").click();
 
 
         // check 1:n table
