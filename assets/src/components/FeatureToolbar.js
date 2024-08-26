@@ -104,7 +104,7 @@ export default class FeatureToolbar extends HTMLElement {
             ${this.editableChildrenLayers.length
                 ? html`
                 <div class="btn-group feature-create-child" style="margin-left: 0px;">
-                    <button type="button" class="btn btn-sm dropdown-toggle" data-toggle="dropdown" title="${lizDict['attributeLayers.toolbar.btn.data.createFeature.title']}">
+                    <button type="button" class="btn btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-title="${lizDict['attributeLayers.toolbar.btn.data.createFeature.title']}">
                         <i class="icon-plus-sign"></i>
                         <span class="caret"></span>
                     </button>

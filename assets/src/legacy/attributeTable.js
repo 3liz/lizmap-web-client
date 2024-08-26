@@ -646,7 +646,7 @@ var lizAttributeTable = function() {
                 // Add children content
                 if( childHtml ){
                     // Add children content : one tab per childlayer
-                    html+= '<div class="tabbable attribute-layer-child-content">';
+                    html+= '<div class="attribute-layer-child-content" role="tablist">';
                     // Ul content
                     html+= '    <ul class="nav nav-tabs">';
                     for( var i in childHtml['tab-li'] ){
@@ -1117,7 +1117,7 @@ var lizAttributeTable = function() {
                             childDiv.push(cDiv);
 
                             // Build li content for tab
-                            var cLi = '<li id="nav-tab-'+ tabId +'" class="'+childActive+'"><a href="#'+ tabId +'" data-toggle="tab">'+ childLayerConfig.title +'</a></li>';
+                            var cLi = '<li id="nav-tab-'+ tabId +'" class="nav-item" role="presentation"><button class="nav-link '+childActive+'" data-bs-target="#'+ tabId +'" data-bs-toggle="tab">'+ childLayerConfig.title +'</button></li>';
                             childLi.push(cLi);
 
                             // Add create child feature button
