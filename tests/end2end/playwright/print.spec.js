@@ -64,6 +64,9 @@ test.describe('Print', () => {
         });
         await page.locator('#print-launch').click();
 
+        // Close message
+        await page.locator('.btn-close').click();
+
         // Test `print_map` template
         await page.locator('#print-template').selectOption('1');
 
@@ -86,6 +89,9 @@ test.describe('Print', () => {
 
         await page.locator('#print-launch').click();
 
+        // Close message
+        await page.locator('.btn-close').click();
+
         // Test `print_overview` template
         await page.locator('#print-template').selectOption('2');
 
@@ -107,6 +113,9 @@ test.describe('Print', () => {
             expect(postData).toMatch(/map0%3AEXTENT=761864.\d+%2C6274266.\d+%2C779334.\d+%2C6284518.\d+/);
         });
         await page.locator('#print-launch').click();
+
+        // Close message
+        await page.locator('.btn-close').click();
 
         // Redlining with circle
         page.once('request', request => {
@@ -132,8 +141,7 @@ test.describe('Print', () => {
         });
 
         await page.locator('#button-draw').click();
-        await page.locator('#draw').click();
-        await page.locator('#draw .digitizing-buttons .dropdown-toggle').click();
+        await page.getByRole('button', { name: 'Toggle Dropdown' }).click();
         await page.locator('#draw .digitizing-circle > svg').click();
         await page.locator('#newOlMap').click({
             position: {
@@ -450,6 +458,9 @@ test.describe('Print 3857', () => {
         });
         await page.locator('#print-launch').click();
 
+        // Close message
+        await page.locator('.btn-close').click();
+
         // Test `print_map` template
         await page.locator('#print-template').selectOption('1');
 
@@ -471,6 +482,9 @@ test.describe('Print 3857', () => {
         });
 
         await page.locator('#print-launch').click();
+
+        // Close message
+        await page.locator('.btn-close').click();
 
         // Redlining with circle
         page.once('request', request => {
@@ -496,8 +510,7 @@ test.describe('Print 3857', () => {
         });
 
         await page.locator('#button-draw').click();
-        await page.locator('#draw').click();
-        await page.locator('#draw .digitizing-buttons .dropdown-toggle').click();
+        await page.getByRole('button', { name: 'Toggle Dropdown' }).click();
         await page.locator('#draw .digitizing-circle > svg').click();
         await page.locator('#newOlMap').click({
             position: {
