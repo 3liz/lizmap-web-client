@@ -2329,12 +2329,11 @@ lizmap-mouse-position > div.coords-unit > select{
   color : #fbfbfb;
   text-shadow : none;
 }
-.alert-info .close{
+.alert-info .btn-close{
   color : #fbfbfb;
-  text-shadow : none;
   opacity : 0.6
 }
-.alert-info .close:hover{
+.alert-info .btn-close:hover{
   opacity : 0.8
 }
 
