@@ -32,6 +32,7 @@ jobs:
 
       - name: Setup PHP with tools
         uses: shivammathur/setup-php@v2
+        # About the PHP version, do not forget to change in PHP-Stan as well
         with:
           php-version: ${{ matrix.php-version }}
           tools: php-cs-fixer, phpunit
