@@ -31,7 +31,7 @@ jobs:
         # About the PHP version, do not forget to change in PHP Unit as well
         with:
           php-version: '8.0'
-          tools: phpstan
+          tools: phpstan:1.11.11
 
       - name: Cache dependencies
         uses: actions/cache@v4
