@@ -21,8 +21,8 @@ class qgisExpressionUtils
         if ($exp === null || trim($exp) === '') {
             return array();
         }
-        preg_match_all('/"([^"]+)"/', $exp, $matches);
-        if (count($matches) < 2) {
+        $preg = preg_match_all('/"([^"]+)"/', $exp, $matches);
+        if ($preg == false) {
             return array();
         }
 
@@ -59,8 +59,8 @@ class qgisExpressionUtils
      */
     public static function getCurrentValueCriteriaFromExpression($exp)
     {
-        preg_match_all('/\\bcurrent_value\\(\\s*\'([^)]*)\'\\s*\\)/', $exp, $matches);
-        if (count($matches) == 2) {
+        $preg = preg_match_all('/\\bcurrent_value\\(\\s*\'([^)]*)\'\\s*\\)/', $exp, $matches);
+        if ($preg !== false) {
             return array_values(array_unique($matches[1]));
         }
 
