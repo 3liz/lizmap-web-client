@@ -1646,11 +1646,16 @@ transform: none !important;
 
 /* Right Dock */
 #right-dock {
+  display: none;
   height: 100%;
   margin-left: auto;
   width:30%;
   background: #4A4A4A;
   position: relative;
+}
+
+#mapmenu:has(.nav-right-dock.active) ~ #docks-wrapper #right-dock {
+  display: block;
 }
 
 #content.mobile #right-dock{
