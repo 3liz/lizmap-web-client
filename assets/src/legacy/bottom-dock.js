@@ -86,29 +86,6 @@ var bottomDockFunction = function() {
                         return false;
                     }
                 );
-
-            document.querySelectorAll('#mapmenu li.nav-bottomdock > a').forEach(link => {
-                link.addEventListener('click', evt => {
-                    evt.preventDefault();
-                    // document.getElementById('bottom-dock').classList.remove('hide');
-                    // document.getElementById('bottom-dock').classList.add('visible');
-                    const linkClicked = evt.currentTarget;
-                    const dockId = linkClicked.dataset.dockid;
-                    const parentElement = linkClicked.parentElement;
-                    const wasActive = parentElement.classList.contains('active');
-
-                    document.querySelectorAll('#mapmenu .nav-bottomdock').forEach(element => element.classList.remove('active'));
-                    // document.querySelectorAll('#bottomdock-content > div').forEach(element => element.classList.add('hide'));
-                    parentElement.classList.toggle('active', !wasActive);
-                    document.getElementById(dockId).classList.toggle('hide', wasActive);
-
-                    const lizmapEvent = wasActive ? 'bottomdockclosed' : 'bottomdockopened';
-                    lizMap.events.triggerEvent(lizmapEvent, { 'id': dockId });
-
-                    return false;
-                });
-            });
-
             /**
              *
              */

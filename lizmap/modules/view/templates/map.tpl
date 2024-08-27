@@ -40,7 +40,7 @@
       {zone 'view~map_bottomdock', array('repository'=>$repository,'project'=>$project,'dockable'=>$bottomdockable)}
     </div>
 
-    <div id="right-dock" class="hide">
+    <div id="right-dock">
       {zone 'view~map_rightdock', array('repository'=>$repository,'project'=>$project,'dockable'=>$rightdockable)}
     </div>
   </div>

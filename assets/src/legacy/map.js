@@ -3835,26 +3835,46 @@ window.lizMap = function() {
                 createToolbar();
                 self.events.triggerEvent("toolbarcreated", self);
 
-                document.querySelectorAll('#mapmenu li.nav-minidock > a').forEach(link => {
-                    link.addEventListener('click', evt => {
-                        evt.preventDefault();
-                        const linkClicked = evt.currentTarget;
-                        const dockId = linkClicked.dataset.dockid;
-                        const parentElement = linkClicked.parentElement;
-                        const wasActive = parentElement.classList.contains('active');
+                // Handle docks visibility
+                document.querySelector('#mapmenu .nav').addEventListener('click', evt => {
+                    let dockType;
+                    const liClicked = evt.target.closest('li');
+                    if (!liClicked) {
+                        return;
+                    }
 
-                        document.querySelectorAll('#mapmenu .nav-minidock').forEach(element => element.classList.remove('active'));
-                        document.querySelectorAll('#mini-dock-content > div').forEach(element => element.classList.add('hide'));
-                        parentElement.classList.toggle('active', !wasActive);
-                        if (dockId) {
-                            document.getElementById(dockId).classList.toggle('hide', wasActive);
+                    for (const className of liClicked.classList) {
+                        if (className.includes('nav-')) {
+                            dockType = className.split('nav-')[1];
                         }
+                    }
+                    
+                    if (!dockType) {
+                        return;
+                    }
+                    
+                    evt.preventDefault();
 
-                        const lizmapEvent = wasActive ? 'minidockclosed' : 'minidockopened';
-                        lizMap.events.triggerEvent(lizmapEvent, { 'id': dockId });
+                    const linkClicked = evt.target.closest('a');
+                    const dockId = linkClicked.dataset.dockid;
+                    const parentElement = linkClicked.parentElement;
+                    const wasActive = parentElement.classList.contains('active');
 
-                        return false;
-                    });
+                    const dockContentSelector = dockType == 'minidock' ? '#mini-dock-content > div' : '#' + dockType + '-content > div';
+
+                    document.querySelectorAll('#mapmenu .nav-' + dockType).forEach(element => element.classList.remove('active'));
+                    document.querySelectorAll(dockContentSelector).forEach(element => element.classList.add('hide'));
+                    parentElement.classList.toggle('active', !wasActive);
+                    if (dockId) {
+                        document.getElementById(dockId).classList.toggle('hide', wasActive);
+                    }
+
+                    const dockEvent = dockType == 'right-dock' ? 'rightdock' : dockType;
+
+                    const lizmapEvent = wasActive ? dockEvent + 'closed' : dockEvent + 'opened';
+                    lizMap.events.triggerEvent(lizmapEvent, { 'id': dockId });
+
+                    return false;
                 });
 
                 // Show locate by layer
@@ -3869,69 +3889,6 @@ window.lizMap = function() {
                     $('#mini-dock-tabs li.active').removeClass('active');
                 }
 
-                document.querySelectorAll('#mapmenu li.nav-dock > a').forEach(link => {
-                    link.addEventListener('click', evt => {
-                        evt.preventDefault();
-                        const linkClicked = evt.currentTarget;
-                        const dockId = linkClicked.dataset.dockid;
-                        const parentElement = linkClicked.parentElement;
-                        const wasActive = parentElement.classList.contains('active');
-
-                        document.querySelectorAll('#mapmenu .nav-dock').forEach(element => element.classList.remove('active'));
-                        document.querySelectorAll('#dock-content > div').forEach(element => element.classList.add('hide'));
-                        parentElement.classList.toggle('active', !wasActive);
-                        if (dockId) {
-                            document.getElementById(dockId).classList.toggle('hide', wasActive);
-                        }
-
-                        const lizmapEvent = wasActive ? 'dockclosed' : 'dockopened';
-                        lizMap.events.triggerEvent(lizmapEvent, { 'id': dockId });
-
-                        return false;
-                    });
-                });
-
-                $('#mapmenu ul').on('click', 'li.nav-right-dock > a', function () {
-                    var self = $(this);
-                    var parent = self.parent();
-                    var id = self.attr('href').substr(1);
-                    var tab = $('#nav-tab-' + id);
-                    var lizmapEvent = '';
-                    if (parent.hasClass('active')) {
-                        $('#' + id).removeClass('active');
-                        tab.removeClass('active');
-                        parent.removeClass('active');
-                        lizmapEvent = 'rightdockclosed';
-                    } else {
-                        var oldActive = $('#mapmenu li.nav-right-dock.active');
-                        if (oldActive.length != 0) {
-                            oldActive.removeClass('active');
-                            lizMap.events.triggerEvent("rightdockclosed", { 'id': oldActive.children('a').first().attr('href').substr(1) });
-                        }
-                        tab.show();
-                        tab.children('a').first().click();
-                        parent.addClass('active');
-                        lizmapEvent = 'rightdockopened';
-                    }
-                    self.blur();
-
-                    var dock = $('#right-dock');
-                    if ($('#right-dock-tabs .active').length == 0) {
-                        dock.hide();
-                        $('#content').removeClass('right-dock-visible');
-                        updateContentSize();
-                    } else if (!dock.is(':visible')) {
-                        $('#content').addClass('right-dock-visible');
-                        dock.show();
-                        updateContentSize();
-                    }
-
-                    // trigger event
-                    if (lizmapEvent != '')
-                        lizMap.events.triggerEvent(lizmapEvent, { 'id': id });
-                    return false;
-                });
-
                 // Toggle menu visibility
                 $('#menuToggle').click(function(){
                     $(this).toggleClass('opened');
@@ -3943,7 +3900,6 @@ window.lizMap = function() {
                 });
 
                 // Show layer switcher
-                // $('#button-switcher').click();
                 updateContentSize();
 
                 self.events.triggerEvent("uicreated", self);
@@ -3995,8 +3951,8 @@ lizMap.events.on({
         }
 
         // Connect dock close button
-        document.getElementById('dock-close').addEventListener('click', () => { document.querySelector('#mapmenu .nav-list > li.active.nav-dock a').click() });
-        $('#right-dock-close').click(function(){ $('#mapmenu .nav-list > li.active.nav-right-dock > a').click(); });
+        document.getElementById('dock-close').addEventListener('click', () => { document.querySelector('#mapmenu .nav-list > li.active.nav-dock a').click();});
+        document.getElementById('right-dock-close').addEventListener('click', () => { document.querySelector('#mapmenu .nav-list > li.active.nav-right-dock > a').click();});
     }
 });
 

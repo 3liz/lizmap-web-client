@@ -34,7 +34,7 @@
 
       {foreach $rightdockable as $dock}
       <li class="{$dock->id} nav-right-dock {$dock->menuIconClasses}">
-        <a id="button-{$dock->id}" data-bs-toggle="tooltip" data-bs-title="{$dock->title}" data-placement="right" href="#{$dock->id}" data-container="#content">
+        <a id="button-{$dock->id}" data-bs-toggle="tooltip" data-bs-title="{$dock->title}" data-placement="right" data-dockid="{$dock->id}" href="#" data-container="#content">
           {$dock->icon}<span class="menu-title">{$dock->title}</span>
         </a>
       </li>
