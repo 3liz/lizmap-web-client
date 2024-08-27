@@ -13,6 +13,7 @@ class adminModuleUpgrader extends \Jelix\Installer\Module\Installer
     {
         // remove some unwanted web assets that may have been set by previous installation
         // having bugs into their installers.
+        /** @var Jelix\IniFile\IniModifierInterface  $localConf */
         $localConf = $helpers->getLocalConfigIni();
         $localConf->removeValue('jauthdb_admin.js', 'webassets_common');
         $localConf->removeValue('jauthdb_admin.css', 'webassets_common');
