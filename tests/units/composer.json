@@ -10,7 +10,7 @@
     "require": {
         "php": ">=7.3.0",
         "phpunit/phpunit": "^9.5.7",
-        "phpstan/phpstan": "^1.5.3"
+        "phpstan/phpstan": "1.11.*"
     },
     "autoload": {
         "classmap": ["../../lizmap/modules/lizmap/classes/" ],

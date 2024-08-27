@@ -30,7 +30,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '7.4'
-          tools: phpstan
+          tools: phpstan:1.11.11
 
       - name: Cache dependencies
         uses: actions/cache@v3
