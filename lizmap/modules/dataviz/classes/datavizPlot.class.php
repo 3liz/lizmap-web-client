@@ -474,7 +474,7 @@ class datavizPlot
                 $matches = array();
                 $preg = preg_match_all('#"\b[^\s]+\b"#', $exp_filter, $matches);
                 $pp = '';
-                if (count($matches) > 0 and count($matches[0]) > 0) {
+                if ($preg != false && count($matches[0]) > 0) {
                     foreach ($matches[0] as $m) {
                         $pp .= ','.trim($m, '"');
                     }
