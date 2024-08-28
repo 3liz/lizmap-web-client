@@ -2931,11 +2931,15 @@ window.lizMap = function() {
         // Calculate fake bbox around the feature
         var units = lizMap.map.getUnits();
         var lConfig = lizMap.config.layers[aName];
-        if( lizMap.map.maxScale == 'auto' )
-            var scale = lConfig.minScale;
-        else
-            var scale = Math.max( lizMap.map.maxScale, lConfig.minScale );
-        scale = scale * 2;
+        var minMapScale = lizMap.config.options.mapScales.at(0);
+        var scale = Math.max( minMapScale, lConfig.minScale ) * 2;
+        var maxMapScale = lizMap.config.options.mapScales.at(-1);
+        if (maxMapScale < lConfig.maxScale && scale > maxMapScale) {
+            scale =scale/2 + (maxMapScale-scale/2)/2;
+        } else if (scale > lConfig.maxScale) {
+            scale =scale/2 + (lConfig.maxScale-scale/2)/2
+        }
+
         var res = OpenLayers.Util.getResolutionFromScale(scale, units);
 
         var geomType = feat.geometry.CLASS_NAME;
