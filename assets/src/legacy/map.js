@@ -3878,10 +3878,13 @@ window.lizMap = function() {
                 });
 
                 // Show locate by layer
-                if (!('locateByLayer' in config))
-                    $('#button-locate').parent().hide();
-                else
-                    $('#button-locate').click();
+                const locateBtn = document.getElementById('button-locate');
+                if (!('locateByLayer' in config)){
+                    locateBtn.parentNode.classList.add('hide');
+                }
+                else {
+                    locateBtn.click();
+                }
 
                 // hide mini-dock if no tool is active
                 if ($('#mapmenu ul li.nav-minidock.active').length == 0) {
