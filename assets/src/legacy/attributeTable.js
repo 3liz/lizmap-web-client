@@ -675,9 +675,9 @@ var lizAttributeTable = function() {
 
                 $('.btn-close-attribute-tab').click(function(){
                     //there are multiple elements which has .closeTab icon so close the tab whose close icon is clicked
-                    var tabContentId = $(this).parent().attr("href");
+                    var tabContentId = $(this).parent().attr("data-bs-target");
                     $(this).parent().parent().remove(); //remove li of tab
-                    $('#attributeLayers-tabs a:last').tab('show'); // Select first tab
+                    bootstrap.Tab.getInstance(document.getElementById('nav-tab-attribute-summary')).show(); // Select first tab
                     $(tabContentId).remove(); //remove respective tab content
                 });
 
