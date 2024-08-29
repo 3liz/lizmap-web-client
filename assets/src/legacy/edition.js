@@ -693,7 +693,7 @@ var lizEdition = function() {
         $('.edition-tabs').hide();
 
         // Display digitization tab back
-        $('.edition-tabs a[href="#tabdigitization"]').show();
+        $('.edition-tabs button[data-bs-target="#tabdigitization"]').show();
     }
 
     // Is there at least one layer with creation capability?
@@ -1722,7 +1722,7 @@ var lizEdition = function() {
                                 $('#edition-geomtool-container').show();
                         }
                     } else {
-                        $('.edition-tabs a[href="#tabdigitization"]').hide();
+                        $('.edition-tabs button[data-bs-target="#tabdigitization"]').hide();
                     }
                 }
                 // Modification
@@ -1742,7 +1742,7 @@ var lizEdition = function() {
                                 $('#edition-geomtool-container').show();
                         }
                     }else{
-                        $('.edition-tabs a[href="#tabdigitization"]').hide();
+                        $('.edition-tabs button[data-bs-target="#tabdigitization"]').hide();
                     }
 
                     addEditionMessage(lizDict['edition.select.modify.activate'],'info',true);
