@@ -1228,7 +1228,7 @@ window.lizMap = function() {
             });
             $('#locate-close').click(function () {
                 $('.btn-locate-clear').click(); // deactivate locate and filter
-                $('#button-locate').click();
+                document.getElementById('button-locate')?.click();
                 return false;
             });
         }
@@ -2437,7 +2437,7 @@ window.lizMap = function() {
         mAddMessage(lizDict['layer.export.started'], 'info', true).addClass('export-in-progress');
         Utils.downloadFile(getFeatureUrlData['url'], getFeatureUrlData['options'], () => {
             document.querySelectorAll('.exportLayer').forEach(el => el.disabled = false);
-            document.querySelector('#message .export-in-progress a').click();
+            document.querySelector('#message .export-in-progress button').click();
         });
 
         return false;
@@ -3880,10 +3880,10 @@ window.lizMap = function() {
                 // Show locate by layer
                 const locateBtn = document.getElementById('button-locate');
                 if (!('locateByLayer' in config)){
-                    locateBtn.parentNode.classList.add('hide');
+                    locateBtn?.parentNode.classList.add('hide');
                 }
                 else {
-                    locateBtn.click();
+                    locateBtn?.click();
                 }
 
                 // hide mini-dock if no tool is active
