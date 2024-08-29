@@ -31,7 +31,7 @@ describe('Projects homepage', function () {
         // Check that toggle search button is in the tag search state
         cy.get('#toggle-search').should('contain.text', '#')
         // Clear the search input
-        cy.get('#search-project').clear()
+        cy.get('#search-project').clear({force:true})
         // The home page displays more than 2 projects
         cy.get('.liz-repository-project-item:visible').should('have.length.greaterThan', 2)
         cy.get('.liz-repository-project-item:visible').its('length').as('totalProjects')
@@ -98,7 +98,7 @@ describe('Projects homepage', function () {
         // Check that toggle search button is in the tag search state
         cy.get('#toggle-search').should('contain.text', '#')
         // Clear the search input
-        cy.get('#search-project').clear()
+        cy.get('#search-project').clear({force:true})
         // The home page displays more than 2 projects
         cy.get('.liz-repository-project-item:visible').should('have.length.greaterThan', 2)
         cy.get('.liz-repository-project-item:visible').its('length').as('totalProjects')
