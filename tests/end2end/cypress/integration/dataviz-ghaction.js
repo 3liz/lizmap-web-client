@@ -21,7 +21,7 @@ describe('Dataviz tests', function () {
             }).as('getPlot')
     })
 
-    it('Test dataviz plots are rendered', function () {
+    it.only('Test dataviz plots are rendered', function () {
 
         cy.visit('/index.php/view/map/?repository=testsrepository&project=dataviz')
 
@@ -32,27 +32,27 @@ describe('Dataviz tests', function () {
         cy.get('#button-dataviz').click()
 
         // Check the plots are organized as configured in plugin (HTML Drag & drop layout)
-        cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(1) > a')
+        cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(1) > button')
             .should('have.text', 'First tab')
-        cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(2) > a')
+        cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(2) > button')
             .should('have.text', 'Second tab')
         cy.get('div#dataviz-dnd-0-39cdf0321d593be51760b8c205de3f3e > fieldset:nth-child(1) > legend')
             .should('have.text', 'Group A')
         cy.get('div#dataviz-dnd-0-39cdf0321d593be51760b8c205de3f3e > fieldset:nth-child(2) > legend')
             .should('have.text', 'Group B')
-        cy.get('div#dataviz-dnd-0-39cdf0321d593be51760b8c205de3f3e > fieldset:nth-child(2) > div:nth-child(2) > ul:nth-child(1) > li:nth-child(1) > a:nth-child(1)')
+        cy.get('div#dataviz-dnd-0-39cdf0321d593be51760b8c205de3f3e > fieldset:nth-child(2) > div:nth-child(2) > ul:nth-child(1) > li:nth-child(1) > button:nth-child(1)')
             .should('have.text', 'Sub-Tab X')
-        cy.get('div#dataviz-dnd-0-39cdf0321d593be51760b8c205de3f3e > fieldset:nth-child(2) > div:nth-child(2) > ul:nth-child(1) > li:nth-child(2) > a:nth-child(1)')
+        cy.get('div#dataviz-dnd-0-39cdf0321d593be51760b8c205de3f3e > fieldset:nth-child(2) > div:nth-child(2) > ul:nth-child(1) > li:nth-child(2) > button:nth-child(1)')
             .should('have.text', 'Sub-tab Y')
 
         // Click on the other tabs to make the other plots visible
         // Sub tab Y
-        cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(1) > a')
+        cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(1) > button')
         .click()
-        cy.get('div#dataviz-dnd-0-39cdf0321d593be51760b8c205de3f3e > fieldset:nth-child(2) > div:nth-child(2) > ul:nth-child(1) > li:nth-child(2) > a:nth-child(1)')
+        cy.get('div#dataviz-dnd-0-39cdf0321d593be51760b8c205de3f3e > fieldset:nth-child(2) > div:nth-child(2) > ul:nth-child(1) > li:nth-child(2) > button:nth-child(1)')
         .click()
         // Second tab
-        cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(2) > a')
+        cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(2) > button')
         .click()
 
         // Wait for graphics displayed 5 plots are displayed
@@ -119,10 +119,10 @@ describe('Dataviz tests', function () {
             .should('have.length', 10)
 
         // Click back to the first tab
-        cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(1) > a')
+        cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(1) > button')
         .click()
         // Click back to the first sub tab X
-        cy.get('div#dataviz-dnd-0-39cdf0321d593be51760b8c205de3f3e > fieldset:nth-child(2) > div:nth-child(2) > ul:nth-child(1) > li:nth-child(1) > a:nth-child(1)')
+        cy.get('div#dataviz-dnd-0-39cdf0321d593be51760b8c205de3f3e > fieldset:nth-child(2) > div:nth-child(2) > ul:nth-child(1) > li:nth-child(1) > button:nth-child(1)')
         .click()
 
         // Using locate by layer to filter layers and plots
@@ -138,7 +138,7 @@ describe('Dataviz tests', function () {
             .should('have.length', 1)
 
         // Activate the Second tab dock to update one graphic only (the other one has the trigger_filter: false
-        cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(2) > a')
+        cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(2) > button')
             .click()
 
         cy.wait(['@getPlot'])
@@ -150,10 +150,10 @@ describe('Dataviz tests', function () {
             .should('have.length', 10)
 
         // Go back to the first tab
-        cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(1) > a')
+        cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(1) > button')
         .click()
         // Click back to the first sub tab X
-        cy.get('div#dataviz-dnd-0-39cdf0321d593be51760b8c205de3f3e > fieldset:nth-child(2) > div:nth-child(2) > ul:nth-child(1) > li:nth-child(1) > a:nth-child(1)')
+        cy.get('div#dataviz-dnd-0-39cdf0321d593be51760b8c205de3f3e > fieldset:nth-child(2) > div:nth-child(2) > ul:nth-child(1) > li:nth-child(1) > button:nth-child(1)')
         .click()
 
         // Zoom and filter to an other feature
@@ -169,7 +169,7 @@ describe('Dataviz tests', function () {
             .should('have.length', 1)
 
         // Activate the Second tab dock to update one graphic
-        cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(2) > a')
+        cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(2) > button')
             .click()
 
         cy.wait(['@getPlot'])
@@ -178,10 +178,10 @@ describe('Dataviz tests', function () {
             .should('have.length', 1)
 
         // Go back to the first tab
-        cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(1) > a')
+        cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(1) > button')
         .click()
         // Click back to the first sub tab X
-        cy.get('div#dataviz-dnd-0-39cdf0321d593be51760b8c205de3f3e > fieldset:nth-child(2) > div:nth-child(2) > ul:nth-child(1) > li:nth-child(1) > a:nth-child(1)')
+        cy.get('div#dataviz-dnd-0-39cdf0321d593be51760b8c205de3f3e > fieldset:nth-child(2) > div:nth-child(2) > ul:nth-child(1) > li:nth-child(1) > button:nth-child(1)')
         .click()
 
         // Deactivate filter provided by locate by layer
@@ -195,7 +195,7 @@ describe('Dataviz tests', function () {
             .should('have.length', 10)
 
         // Activate the Second tab dock to update one graphic
-        cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(2) > a')
+        cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(2) > button')
             .click()
         cy.get('#dataviz_plot_3 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points g.point')
             .should('have.length', 10)
