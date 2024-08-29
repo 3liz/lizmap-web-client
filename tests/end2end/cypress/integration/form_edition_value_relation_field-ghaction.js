@@ -183,7 +183,7 @@ describe('Form edition all field type', function() {
 
         // restart drawing
         cy.on('window:confirm', () => true);
-        cy.get('#edition div.edition-tabs ul.nav-pills > li > a[href="#tabdigitization"]')
+        cy.get('#edition div.edition-tabs ul.nav-pills > li > button[data-bs-target="#tabdigitization"]')
             .click(true)
             .parent().should('have.class', 'active')
         cy.get('#edition-geomtool-restart-drawing').click(true)
@@ -203,7 +203,7 @@ describe('Form edition all field type', function() {
 
         // restart drawing
         cy.on('window:confirm', () => true);
-        cy.get('#edition div.edition-tabs ul.nav-pills > li > a[href="#tabdigitization"]')
+        cy.get('#edition div.edition-tabs ul.nav-pills > li > button[data-bs-target="#tabdigitization"]')
             .click(true)
             .parent().should('have.class', 'active')
         cy.get('#edition-geomtool-restart-drawing').click(true)
@@ -228,7 +228,7 @@ describe('Form edition all field type', function() {
 
         // restart drawing
         cy.on('window:confirm', () => true);
-        cy.get('#edition div.edition-tabs ul.nav-pills > li > a[href="#tabdigitization"]')
+        cy.get('#edition div.edition-tabs ul.nav-pills > li > button[data-bs-target="#tabdigitization"]')
             .click(true)
             .parent().should('have.class', 'active')
         cy.get('#edition-geomtool-restart-drawing').click(true)

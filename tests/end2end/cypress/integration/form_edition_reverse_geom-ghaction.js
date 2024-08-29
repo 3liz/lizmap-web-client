@@ -11,7 +11,7 @@ describe('Form edition reverse geom', function () {
         cy.get('#popupcontent .feature-edit').click()
 
         // Go to digitization tab
-        cy.get('#edition a[href="#tabdigitization"]').click()
+        cy.get('#edition button[data-bs-target="#tabdigitization"]').click()
 
         // Click reverse geom button
         cy.get('#tabdigitization lizmap-reverse-geom').click()
