@@ -401,7 +401,7 @@ export default class Print extends HTMLElement {
             printLaunch.disabled = false;
             printLaunch.classList.remove('spinner');
 
-            document.querySelector('#message .print-in-progress a').click();
+            document.querySelector('#message .print-in-progress button').click();
         }, (errorEvent) => {
             console.error(errorEvent)
             mainLizmap._lizmap3.addMessage(lizDict['print.error'], 'error', true).addClass('print-error');

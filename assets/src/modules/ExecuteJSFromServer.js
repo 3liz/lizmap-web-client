@@ -63,10 +63,12 @@ export default function executeJSFromServer() {
                 lizMap.config.options.popupLocation = 'map';
 
                 // Force close tools
-                if ($('#mapmenu li.locate').hasClass('active'))
-                    $('#button-locate').click();
-                if ($('#mapmenu li.switcher').hasClass('active'))
-                    $('#button-switcher').click();
+                if ($('#mapmenu li.locate').hasClass('active')){
+                    document.getElementById('button-locate')?.click();
+                }
+                if ($('#mapmenu li.switcher').hasClass('active')){
+                    document.getElementById('button-switcher')?.click();
+                }
 
                 $('#mapmenu .nav-list > li.permaLink a').attr('data-bs-toggle', 'tooltip').attr('data-bs-title', lizDict['embed.open.map']);
             },

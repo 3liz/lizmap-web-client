@@ -359,7 +359,7 @@ describe('Attribute table', () => {
         cy.get('#attribute-layer-table-Les_quartiers_a_Montpellier tbody tr').should('have.length', 3)
 
         // refresh
-        cy.get('#attribute-layer-main-Les_quartiers_a_Montpellier .attribute-layer-action-bar .btn-filter-attributeTable').click({ force: true })
+        cy.get('#attribute-layer-main-Les_quartiers_a_Montpellier .attribute-layer-action-bar .btn-filter-attributeTable').first().click({ force: true })
 
         // Wait for features
         cy.wait('@postGetFeature').then((interception) => {
