@@ -1905,7 +1905,7 @@ var lizEdition = function() {
                 if (group.hasClass('tab-pane')) {
                     // group is tab content
                     // so manage tab visibility
-                    var tab = form.children('ul.nav-tabs').find('li a[href="#' + groupId + '"]');
+                    var tab = form.children('ul.nav-tabs').find('li button[data-bs-target="#' + groupId + '"]');
                     var tabParent = tab.parent();
                     if (data[groupId]) {
                         // tab has to be visible
