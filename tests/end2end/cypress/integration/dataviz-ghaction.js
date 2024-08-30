@@ -21,7 +21,7 @@ describe('Dataviz tests', function () {
             }).as('getPlot')
     })
 
-    it.only('Test dataviz plots are rendered', function () {
+    it('Test dataviz plots are rendered', function () {
 
         cy.visit('/index.php/view/map/?repository=testsrepository&project=dataviz')
 
