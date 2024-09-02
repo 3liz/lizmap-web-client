@@ -22,7 +22,7 @@ export default function executeJSFromServer() {
             }
 
             if (document.body.dataset.lizmapHideLegend) {
-                document.querySelector('li.switcher.active #button-switcher').click();
+                document.querySelector('li.switcher.active #button-switcher')?.click();
             }
 
             if (document.body.dataset.lizmapActionWarningOld) {
