@@ -27,7 +27,7 @@ class lizMapCtrl extends jController
     protected $projectObj;
 
     // forceHiddenProjectVisible: Used to override plugin configuration hideProject
-    // (helpfull for modules which maps are based on a hidden project)
+    // (helpful for modules which maps are based on a hidden project)
     protected $forceHiddenProjectVisible = false;
 
     /**
