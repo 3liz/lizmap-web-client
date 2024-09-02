@@ -178,6 +178,6 @@ describe('Projects homepage', function () {
         // redirection to home page
         cy.url().should('eq', Cypress.config().baseUrl + '/index.php')
         // with alert error div
-        cy.get('#content div.alert.alert-block.alert-error').should('length', 1)
+        cy.get('#content div.alert.alert-danger').should('length', 1)
     })
 })

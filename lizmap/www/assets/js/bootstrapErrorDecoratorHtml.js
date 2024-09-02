@@ -22,7 +22,7 @@ bootstrapErrorDecoratorHtml.prototype = {
         if(this.message != ''){
             if (!div) {
                 div = document.createElement('div');
-                div.setAttribute('class', 'alert alert-block alert-error jforms-error-list');
+                div.setAttribute('class', 'alert alert-danger jforms-error-list');
                 div.setAttribute('id', errid);
                 this.form.element.firstChild.insertBefore(div, this.form.element.firstChild.firstChild);
             }

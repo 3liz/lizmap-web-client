@@ -40,9 +40,9 @@
   </div>
   {jmessage_bootstrap}
   {if $checkServerInformation}
-  <div class="alert alert-block alert-error fade in" data-alert="alert">
-    <a class="close" data-dismiss="alert" href="#">×</a>
-    <p>{@view~default.server.information.error.admin@} <a href="{jurl 'admin~server_information:index'}">🔗</a></p>
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <p>{@view~default.server.information.error.admin@} <a href="{jurl 'admin~server_information:index'}">🔗</a></p>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
   </div>
   {/if}
   {if isset($landing_page_content)}

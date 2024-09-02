@@ -2386,7 +2386,7 @@ lizEditionErrorDecorator.prototype = {
         if(this.message != ''){
             if (!div) {
                 div = document.createElement('div');
-                div.setAttribute('class', 'jforms-error-list alert alert-block alert-error');
+                div.setAttribute('class', 'jforms-error-list alert alert-danger');
                 div.setAttribute('id', errid);
                 $(this.form.element).first().before(div);
             }
