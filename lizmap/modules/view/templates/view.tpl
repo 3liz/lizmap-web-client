@@ -19,7 +19,7 @@
         data-lizmap-bbox="{$p->bbox}"
         data-lizmap-proj="{$p->proj}">
         <a class="liz-project-view" href="{$p->url}{if $hide_header}&h=0{/if}">
-          <img width="250" height="250" loading="lazy" src="{$p->img}" alt="project image" class="_liz-project-img">
+          <img width="250" height="250" loading="lazy" src="{$p->img}" alt="project image" class="_liz-project-img img-fluid">
           <p class="liz-project-desc" >
             <b class="title">{$p->title}</b>
             <br/>
