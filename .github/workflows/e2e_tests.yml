@@ -29,7 +29,7 @@ jobs:
       CYPRESS_CI: TRUE
       # For testing only
       PHP_VERSION: 8.3
-      # LZMPOSTGISVERSION: 16-3
+      LZMPOSTGISVERSION: 16-3
       # LZMQGSRVVERSION: 3.34
 
     steps:
