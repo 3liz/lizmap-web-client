@@ -281,11 +281,4 @@ var searchProjects = function(){
 
 window.addEventListener('load', function () {
     searchProjects();
-
-    // Handle description's modal
-    $('.liz-project-show-desc').click(function () {
-        const descId = $(this).data('lizmap-modal');
-        $('#liz-project-modal-' + descId).modal('show');
-        return false;
-    });
 });
