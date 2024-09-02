@@ -169,10 +169,8 @@ class WMSRequest extends OGCRequest
             if (!preg_match('@Service>.*?Max'.$d.'.*?</Service@si', $data)) {
                 $matches = array();
                 if (preg_match('@Service>(.*?)</Service@si', $data, $matches)) {
-                    if (count($matches) > 1) {
-                        $sUpdate = $matches[1].'<Max'.$d.'>3000</Max'.$d.">\n ";
-                        $data = str_replace($matches[1], $sUpdate, $data);
-                    }
+                    $sUpdate = $matches[1].'<Max'.$d.'>3000</Max'.$d.">\n ";
+                    $data = str_replace($matches[1], $sUpdate, $data);
                 }
             }
         }
