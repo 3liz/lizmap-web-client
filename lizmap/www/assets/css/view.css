@@ -60,12 +60,21 @@
   display: inline-block;
 }
 
-.liz-repository-project-item .thumbnail{
+.liz-repository-project-item .thumbnail {
   background-color: white;
   height: 100%;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  padding: 4px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.055);
+}
+
+.liz-repository-project-item .thumbnail h5,
+.liz-repository-project-item .thumbnail p a {
+    font-size: 14px;
 }
 
 #headermenu .input-prepend {
