@@ -27,7 +27,7 @@ test.describe('WebDAV Server', () => {
         // Wait a bit for the UI to refresh
         await page.waitForTimeout(300);
 
-        await expect(page.locator("div.alert.alert-block.alert-success")).toBeVisible();
+        await expect(page.locator("div.alert.alert-success")).toBeVisible();
 
         let id = await page.locator('#jforms_view_edition_id').inputValue();
 
@@ -96,7 +96,7 @@ test.describe('WebDAV Server', () => {
 
         await page.waitForTimeout(300);
 
-        await expect(page.locator("div.alert.alert-block.alert-success")).toBeVisible();
+        await expect(page.locator("div.alert.alert-success")).toBeVisible();
 
         let id = await page.locator('#jforms_view_edition_id').inputValue();
 
@@ -154,7 +154,7 @@ test.describe('WebDAV Server', () => {
 
         await page.waitForTimeout(300);
 
-        await expect(page.locator("div.alert.alert-block.alert-success")).toBeVisible();
+        await expect(page.locator("div.alert.alert-success")).toBeVisible();
 
         let id = await page.locator('#jforms_view_edition_id').inputValue();
 

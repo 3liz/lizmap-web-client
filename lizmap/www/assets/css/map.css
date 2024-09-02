@@ -501,7 +501,7 @@ button.btn-primary:hover > [class*=" icon-"] {
     background-image: url('images/glyphicons-halflings.png');
 }
 
-.alert-danger, .alert-error {
+.alert-danger {
   color: #F00;
   border: 1px solid #F00;
 }
@@ -2325,7 +2325,7 @@ lizmap-mouse-position > div.coords-unit > select{
 #message .alert {
   margin-bottom: 0px;
 }
-#message .alert-error {
+#message .alert-danger {
   color: #555;
 }
 .alert-info {

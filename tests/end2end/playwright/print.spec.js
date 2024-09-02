@@ -679,7 +679,7 @@ test.describe('Error while printing', () => {
 
         await expect(page.getByText('The output is currently not available. Please contact the system administrator.')).toBeVisible();
 
-        await expect(page.locator("#message > div:last-child")).toHaveClass(/alert-error/);
+        await expect(page.locator("#message > div:last-child")).toHaveClass(/alert-danger/);
     });
 
 
@@ -708,6 +708,6 @@ test.describe('Error while printing', () => {
 
         await expect(page.getByText('The output is currently not available. Please contact the system administrator.')).toBeVisible();
 
-        await expect(page.locator("#message > div:last-child")).toHaveClass(/alert-error/);
+        await expect(page.locator("#message > div:last-child")).toHaveClass(/alert-danger/);
     });
 });

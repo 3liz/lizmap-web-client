@@ -189,7 +189,7 @@ div.form-horizontal .control-label {
   font-weight: bold;
 }
 
-.alert-danger, .alert-error {
+.alert-danger{
   color: #F00;
   border: 1px solid #F00;
 }

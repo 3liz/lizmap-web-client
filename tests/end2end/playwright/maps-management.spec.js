@@ -96,8 +96,8 @@ test.describe('Maps management', () => {
         // Check URL
         await expect(page).toHaveURL(/.*admin.php\/admin\/maps/);
         // Check message
-        await expect(page.locator('div.alert.alert-block')).toHaveClass(/alert-info/);
-        await expect(page.locator('div.alert.alert-block.alert-info')).toContainText('The repository data has been saved.');
+        await expect(page.locator('div.alert')).toHaveClass(/alert-info/);
+        await expect(page.locator('div.alert.alert-info')).toContainText('The repository data has been saved.');
 
         // Check selected admin menu item
         await expect(page.locator('#menu li.active')).toHaveText('Maps management');
@@ -109,8 +109,8 @@ test.describe('Maps management', () => {
         });
         await page.locator('[href="/admin.php/admin/maps/removeSection?repository=projets1982"]').click();
         // Check message
-        await expect(page.locator('div.alert.alert-block')).toHaveClass(/alert-info/);
-        await expect(page.locator('div.alert.alert-block.alert-info')).toContainText('The repository has been removed (8 group(s) concerned)');
+        await expect(page.locator('div.alert')).toHaveClass(/alert-info/);
+        await expect(page.locator('div.alert.alert-info')).toContainText('The repository has been removed (8 group(s) concerned)');
         // Check URL
         await expect(page).toHaveURL(/.*admin.php\/admin\/maps/);
 
