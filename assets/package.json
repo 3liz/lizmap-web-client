@@ -25,5 +25,8 @@
     "webpack-merge": "^5.10.0"
   },
   "author": "3Liz",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "ol-wfs-capabilities": "^2.0.0"
+  }
 }

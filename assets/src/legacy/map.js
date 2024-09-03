@@ -1148,14 +1148,14 @@ window.lizMap = function() {
         }
         $('#locate .menu-content').html(locateContent.join('<hr/>'));
 
-        var featureTypes = getVectorLayerFeatureTypes();
+        var featureTypes = lizMap.mainLizmap.initialConfig.vectorLayerFeatureTypeList;
         if (featureTypes.length == 0) {
             config.locateByLayer = {};
             $('#button-locate').parent().remove();
             $('#locate-menu').remove();
         } else {
             for (const featureType of featureTypes) {
-                var typeName = featureType.getElementsByTagName('Name')[0].textContent;
+                var typeName = featureType.Name;
                 var lname = lizMap.getNameByTypeName(typeName);
                 if (!lname) {
                     if (typeName in config.locateByLayer)
@@ -1176,17 +1176,11 @@ window.lizMap = function() {
                     continue;
 
                 var locate = config.locateByLayer[lname];
-                locate['crs'] = featureType.getElementsByTagName('SRS')[0].textContent;
+                locate['crs'] = featureType.SRS;
                 loadProjDefinition(locate.crs, function () {
                     new OpenLayers.Projection(locate.crs);
                 });
-                var bbox = featureType.getElementsByTagName('LatLongBoundingBox')[0];
-                locate['bbox'] = [
-                    parseFloat(bbox.getAttribute('minx'))
-                    , parseFloat(bbox.getAttribute('miny'))
-                    , parseFloat(bbox.getAttribute('maxx'))
-                    , parseFloat(bbox.getAttribute('maxy'))
-                ];
+                locate['bbox'] = featureType.LatLongBoundingBox;
             }
 
             // get joins
@@ -3722,10 +3716,10 @@ window.lizMap = function() {
 
                 // Parse WFS capabilities
                 wfsCapabilities = domparser.parseFromString(wfsCapaData, "application/xml");
-                var featureTypes = getVectorLayerFeatureTypes();
+                var featureTypes = lizMap.mainLizmap.initialConfig.vectorLayerFeatureTypeList;
 
                 for (const featureType of featureTypes) {
-                    var typeName = featureType.getElementsByTagName('Name')[0].textContent;
+                    var typeName = featureType.Name;
                     var layerName = lizMap.getNameByTypeName(typeName);
                     if (!layerName) {
                         if (typeName in config.layers)
