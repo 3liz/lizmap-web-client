@@ -99,7 +99,7 @@ export default class Geolocation {
 
         // Handle geolocation error
         this._geolocation.on('error', error => {
-            mainLizmap.displayMessage(error.message, 'error', true);
+            mainLizmap.displayMessage(error.message, 'danger', true);
         });
     }
 

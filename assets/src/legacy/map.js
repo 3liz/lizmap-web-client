@@ -2329,11 +2329,16 @@ window.lizMap = function() {
      */
     function mAddMessage( aMessage, aType, aClose, aTimeout ) {
         var mType = 'info';
-        var mTypeList = ['info', 'error', 'success'];
+        var mTypeList = ['info', 'error', 'danger', 'success'];
         var mClose = false;
 
         if ( mTypeList.includes(aType) ){
             mType = aType;
+        }
+
+        // `.alert-error` does not exist in Bootstrap > 2
+        if (mType === 'error') {
+            mType = 'danger';
         }
 
         if ( aClose ){
@@ -2372,7 +2377,7 @@ window.lizMap = function() {
 
         // right not set
         if ( !('exportLayers' in lizMap.config.options) || lizMap.config.options.exportLayers != 'True' ) {
-            mAddMessage(lizDict['layer.export.right.required'],'error',true);
+            mAddMessage(lizDict['layer.export.right.required'], 'danger', true);
             return false;
         }
 
