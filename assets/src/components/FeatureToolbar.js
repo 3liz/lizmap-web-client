@@ -693,7 +693,7 @@ export default class FeatureToolbar extends HTMLElement {
             document.querySelector('#message .print-in-progress button').click();
         }, (errorEvent) => {
             console.error(errorEvent)
-            mainLizmap._lizmap3.addMessage(lizDict['print.error'], 'error', true).addClass('print-error');
+            mainLizmap._lizmap3.addMessage(lizDict['print.error'], 'danger', true).addClass('print-error');
         });
     }
 
