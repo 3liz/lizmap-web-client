@@ -54,7 +54,7 @@ export default class SelectionTool {
         this._newAddRemoveSelected = this._newAddRemove[0];
 
         // Verifying WFS layers
-        const featureTypes = mainLizmap.vectorLayerFeatureTypes;
+        const featureTypes = mainLizmap.initialConfig.vectorLayerFeatureTypeList;
         if (featureTypes.length === 0) {
             if (document.getElementById('button-selectiontool')) {
                 document.getElementById('button-selectiontool').parentNode.remove();
@@ -68,7 +68,7 @@ export default class SelectionTool {
         for (const attributeLayerName in config.attributeLayers) {
             if (config.attributeLayers.hasOwnProperty(attributeLayerName)) {
                 for (const featureType of featureTypes) {
-                    const lname = mainLizmap.getNameByTypeName(featureType.getElementsByTagName('Name')[0].textContent);
+                    const lname = mainLizmap.getNameByTypeName(featureType.Name);
 
                     if (attributeLayerName === lname
                         && lname in config.layers
@@ -308,7 +308,7 @@ export default class SelectionTool {
 
     // List of WFS format
     get exportFormats() {
-        return mainLizmap.vectorLayerResultFormat.filter(
+        return mainLizmap.initialConfig.vectorLayerResultFormat.filter(
             format => !['GML2', 'GML3', 'GEOJSON'].includes(format.toUpperCase())
         );
     }
