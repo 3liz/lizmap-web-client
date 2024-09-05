@@ -1271,10 +1271,6 @@ var lizEdition = function() {
      * @param aCallback
      */
     function launchEdition( aLayerId, aFid, aParent, aCallback ) {
-
-        // Put old OL2 map on top and synchronize position with new OL map
-        lizMap.mainLizmap.newOlMap = false;
-
         var editedFeature = new FeatureEditionData(aLayerId, null, null);
 
         // Get parent relation
@@ -1459,6 +1455,9 @@ var lizEdition = function() {
                 // tabs visibility test (see: ) return correct response
                 // See "Check li (tabs) visibility" in displayEditionForm method
                 displayEditionForm( data );
+
+                // Put old OL2 map on top and synchronize position with new OL map
+                lizMap.mainLizmap.newOlMap = false;
 
                 if( aCallback )
                     aCallback( editionLayer['id'], featureId );
