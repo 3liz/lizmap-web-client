@@ -834,7 +834,7 @@ export default class Digitizing {
      * @returns {string} The formatted length.
      */
     formatLength(geom) {
-        const length = getLength(geom);
+        const length = getLength(geom, {projection: mainLizmap.map.getView().getProjection()});
         let output;
         if (length > 100) {
             output = Math.round((length / 1000) * 100) / 100 + ' ' + 'km';
@@ -850,7 +850,7 @@ export default class Digitizing {
      * @returns {string} Formatted area.
      */
     formatArea(polygon) {
-        const area = getArea(polygon);
+        const area = getArea(polygon, {projection: mainLizmap.map.getView().getProjection()});
         let output;
         if (area > 10000) {
             output = Math.round((area / 1000000) * 100) / 100 + ' ' + 'km<sup>2</sup>';
