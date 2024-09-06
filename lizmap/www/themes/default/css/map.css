@@ -163,6 +163,10 @@
 
 /* DOCKS (PANELS) */
 
+.dock-title {
+    padding-bottom: 10px;
+}
+
 /* Background for docks */
 #dock,
 #mini-dock,
@@ -199,14 +203,14 @@ div.modal div.menu-content,
 }
 
 /* Dark text in dock, right-dock, bottom-dock main titles */
-#dock-tabs>li>a,
+.dock-title,
 #right-dock-tabs>li>a,
 #bottom-dock-tabs>li>a {
   color: var(--color-text-primary);
 }
 
 /* Dark border bottom for docks titles */
-#dock>div>ul.nav.nav-tabs,
+.dock-title,
 #mini-dock>div>ul.nav.nav-tabs,
 #right-dock>div>ul.nav.nav-tabs,
 #bottom-dock>div>ul.nav.nav-tabs,
@@ -238,15 +242,15 @@ For light theme, use the dark icons
 }
 
 /* Docks title icons must also be dark */
-#nav-tab-switcher a::before {
+#switcher .dock-title::before {
   background-position: -50px 0px;
 }
 
-#nav-tab-metadata a::before {
+#metadata .dock-title::before {
   background-position: -100px 0px;
 }
 
-#nav-tab-edition a::before {
+#edition .dock-title::before {
   background-position: -450px 0px;
 }
 
@@ -262,7 +266,7 @@ For light theme, use the dark icons
   background-position: -700px 0px !important;
 }
 
-#nav-tab-filter a::before {
+#filter .dock-title::before {
 	background-position: -400px 0px;
 }
 
