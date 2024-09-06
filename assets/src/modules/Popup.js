@@ -179,6 +179,7 @@ export default class Popup {
 
         wms.getFeatureInfo(wmsParams).then(response => {
             const sanitizedResponse = DOMPurify.sanitize(response, {
+                ADD_ATTR: ['target'],
                 CUSTOM_ELEMENT_HANDLING: {
                     tagNameCheck: /^lizmap-/,
                     attributeNameCheck: /crs|bbox|edition-restricted|layerid|layertitle|uniquefield|expressionfilter|withgeometry|sortingfield|sortingorder|draggable/,
