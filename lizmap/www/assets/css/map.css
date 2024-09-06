@@ -2682,11 +2682,7 @@ lizmap-mouse-position > div.coords-unit > select{
   display: none;
 }
 
-#nav-tab-projects a::before,
-#nav-tab-switcher a::before,
-#nav-tab-metadata a::before,
-#nav-tab-edition a::before,
-#nav-tab-filter a::before{
+.dock-title::before {
   content: " ";
   display: inline-block;
   background-image: url(images/sprite_20_tools.png);
@@ -2697,20 +2693,25 @@ lizmap-mouse-position > div.coords-unit > select{
   vertical-align: text-bottom;
 }
 
-#nav-tab-switcher a::before {
+#switcher .dock-title::before {
   background-position: -75px 0px;
 }
 
-#nav-tab-metadata a::before {
+#metadata .dock-title::before {
   background-position: -125px 0px;
 }
 
-#nav-tab-edition a::before {
+#edition .dock-title::before {
   background-position: -475px 0px;
 }
 
-#nav-tab-filter a::before {
+#filter .dock-title::before {
   background-position: -425px 0px;
+}
+
+#popupcontent .dock-title::before {
+    background-image: none;
+    width: 0px;
 }
 
 .edition-tabs .nav-pills {
