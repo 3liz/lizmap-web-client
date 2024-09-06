@@ -112,7 +112,7 @@ class htmlbootstrapFormBuilder extends \jelix\forms\Builder\HtmlBuilder
         $errors = $this->_form->getContainer()->errors;
         if (count($errors)) {
             $ctrls = $this->_form->getControls();
-            echo '<div id="'.$this->_name.'_errors" class="alert alert-block alert-error jforms-error-list">';
+            echo '<div id="'.$this->_name.'_errors" class="alert alert-danger jforms-error-list">';
             foreach ($errors as $cname => $err) {
                 if (!array_key_exists($cname, $ctrls) || !$this->_form->isActivated($ctrls[$cname]->ref)) {
                     continue;

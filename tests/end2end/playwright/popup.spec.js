@@ -237,8 +237,8 @@ test.describe('Popup', () => {
             }
         });
         await expect(page.locator('#newOlMap #liz_layer_popup')).toBeVisible();
-        await expect(page.locator('#newOlMap #liz_layer_popup_contentDiv > div > div > div > ul > li.active > a')).toBeVisible();
-        await expect(page.locator('#newOlMap #liz_layer_popup_contentDiv > div > div > div > ul > li:nth-child(2) > a')).toBeVisible();
+        await expect(page.locator('#newOlMap #liz_layer_popup_contentDiv > div > div > div > ul > li > button.active')).toBeVisible();
+        await expect(page.locator('#newOlMap #liz_layer_popup_contentDiv > div > div > div > ul > li:nth-child(2) > button')).toBeVisible();
     });
 
     test('changes popup tab', async ({ page }) => {
@@ -250,7 +250,7 @@ test.describe('Popup', () => {
             }
         });
         await page.waitForTimeout(300);
-        await page.getByRole('link', { name: 'tab2' }).click({ force: true });
+        await page.getByRole('button', { name: 'tab2' }).click({ force: true });
         await expect(page.locator('#popup_dd_1_tab2')).toHaveClass(/active/);
     });
 
@@ -300,7 +300,7 @@ test.describe('Popup', () => {
         await expect(page.locator('#newOlMap #liz_layer_popup')).toBeVisible();
         await page.getByRole('link', { name: '✖' }).click();
         // Activate draw
-        await page.locator('#selectiontool').getByRole('link').nth(1).click();
+        await page.getByRole('button', { name: 'Toggle Dropdown' }).click();
         await page.locator('.selectiontool .digitizing-point > svg > use').click();
         // Popup disable but selection done
         let getSelectionTokenRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GETSELECTIONTOKEN') === true);
@@ -314,7 +314,7 @@ test.describe('Popup', () => {
         await getSelectionTokenRequest.response();
         await expect(page.locator('#newOlMap #liz_layer_popup')).not.toBeVisible();
         // Deactivate draw
-        await page.locator('#selectiontool').getByRole('link').first().click();
+        await page.locator('.digitizing-buttons > button').first().click();
         // Popup available again
         getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
         await page.locator('#newOlMap').click({
@@ -345,7 +345,7 @@ test.describe('Popup', () => {
         await expect(page.locator('#newOlMap #liz_layer_popup')).toBeVisible();
         await page.getByRole('link', { name: '✖' }).click();
         // Activate draw
-        await page.locator('#draw').getByRole('link').nth(1).click();
+        await page.getByRole('button', { name: 'Toggle Dropdown' }).click();
         await page.locator('.draw .digitizing-point > svg > use').click();
         // Popup disable
         await page.locator('#newOlMap').click({
@@ -357,7 +357,7 @@ test.describe('Popup', () => {
         await page.waitForTimeout(500);
         await expect(page.locator('#newOlMap #liz_layer_popup')).not.toBeVisible();
         // Deactivate draw
-        await page.locator('#draw').getByRole('link').first().click();
+        await page.locator('.draw > .menu-content > lizmap-digitizing > .digitizing > .digitizing-buttons > button').first().click();
         // Popup available again
         getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
         await page.locator('#newOlMap').click({

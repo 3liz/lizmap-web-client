@@ -1173,7 +1173,7 @@ export class Digitizing {
                         OL6features = (new KML({ extractStyles: false })).readFeatures(fileContent, options);
                     }
                 } catch (error) {
-                    lizMap.addMessage(error, 'error', true)
+                    lizMap.addMessage(error, 'danger', true)
                 }
 
                 if (OL6features) {

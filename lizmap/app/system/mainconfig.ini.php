@@ -327,10 +327,8 @@ jforms_htmleditor_ckfullandmedia.js[]="$jelix/ckeditor5/ckeditor.js|defer"
 jforms_htmleditor_ckfullandmedia.js[]="$jelix/ckeditor5/translations/$lang.js|defer"
 jforms_htmleditor_ckfullandmedia.js[]="assets/js/ckeditor5/ckeditor_ckfullandmedia.js|defer"
 
-bootstrap.require=jquery
 bootstrap.js[]="assets/js/bootstrap.min.js|defer"
 bootstrap.css[]="assets/css/bootstrap.min.css"
-bootstrap.css[]="assets/css/bootstrap-responsive.min.css"
 
 datatables.require=bootstrap
 datatables.js[]="assets/js/jquery.dataTables.min.js|defer"

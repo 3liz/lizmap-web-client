@@ -27,7 +27,7 @@ test.describe('WebDAV Server', () => {
         // Wait a bit for the UI to refresh
         await page.waitForTimeout(300);
 
-        await expect(page.locator("div.alert.alert-block.alert-success")).toBeVisible();
+        await expect(page.locator("div.alert.alert-success")).toBeVisible();
 
         let id = await page.locator('#jforms_view_edition_id').inputValue();
 
@@ -60,7 +60,7 @@ test.describe('WebDAV Server', () => {
         await expect(attrTable).toHaveCount(1);
         await expect(attrTable.locator("tr").nth(1).locator("td").nth(2).locator("a")).toHaveAttribute("href", "/index.php/view/media/getMedia?repository=testsrepository&project=form_upload_webdav&path=dav/logo.png");
         let editFeatureRequestPromise = page.waitForResponse(response => response.url().includes('editFeature'));
-        await attrTable.locator("tr").nth(1).locator("td").nth(0).locator("button[data-original-title='Edit']").click();
+        await attrTable.locator("tr").nth(1).locator("td").nth(0).locator("button[data-bs-title='Edit']").click();
         await editFeatureRequestPromise;
         await page.waitForTimeout(300);
 
@@ -96,7 +96,7 @@ test.describe('WebDAV Server', () => {
 
         await page.waitForTimeout(300);
 
-        await expect(page.locator("div.alert.alert-block.alert-success")).toBeVisible();
+        await expect(page.locator("div.alert.alert-success")).toBeVisible();
 
         let id = await page.locator('#jforms_view_edition_id').inputValue();
 
@@ -154,7 +154,7 @@ test.describe('WebDAV Server', () => {
 
         await page.waitForTimeout(300);
 
-        await expect(page.locator("div.alert.alert-block.alert-success")).toBeVisible();
+        await expect(page.locator("div.alert.alert-success")).toBeVisible();
 
         let id = await page.locator('#jforms_view_edition_id').inputValue();
 

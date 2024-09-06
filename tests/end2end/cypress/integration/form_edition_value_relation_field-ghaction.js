@@ -4,7 +4,7 @@ describe('Form edition all field type', function() {
         cy.visit('/index.php/view/map/?repository=testsrepository&project=form_edition_value_relation_field')
         // Start by launching feature form
         cy.get('#button-edition').click()
-        cy.get('#edition-draw').click()
+        cy.get('#edition-draw').click({force: true})
     })
 
     it('Check initial states', function() {
@@ -183,9 +183,9 @@ describe('Form edition all field type', function() {
 
         // restart drawing
         cy.on('window:confirm', () => true);
-        cy.get('#edition div.edition-tabs ul.nav-pills > li > a[href="#tabdigitization"]')
+        cy.get('#edition div.edition-tabs ul.nav-pills > li > button[data-bs-target="#tabdigitization"]')
             .click(true)
-            .parent().should('have.class', 'active')
+            .should('have.class', 'active')
         cy.get('#edition-geomtool-restart-drawing').click(true)
 
         cy.ol2MapClick(730, 375)
@@ -203,9 +203,9 @@ describe('Form edition all field type', function() {
 
         // restart drawing
         cy.on('window:confirm', () => true);
-        cy.get('#edition div.edition-tabs ul.nav-pills > li > a[href="#tabdigitization"]')
+        cy.get('#edition div.edition-tabs ul.nav-pills > li > button[data-bs-target="#tabdigitization"]')
             .click(true)
-            .parent().should('have.class', 'active')
+            .should('have.class', 'active')
         cy.get('#edition-geomtool-restart-drawing').click(true)
         cy.get('#edition-point-coord-crs').select('EPSG:4326').should('have.value', '4326')
         cy.get('#edition-point-coord-x').clear()
@@ -228,9 +228,9 @@ describe('Form edition all field type', function() {
 
         // restart drawing
         cy.on('window:confirm', () => true);
-        cy.get('#edition div.edition-tabs ul.nav-pills > li > a[href="#tabdigitization"]')
+        cy.get('#edition div.edition-tabs ul.nav-pills > li > button[data-bs-target="#tabdigitization"]')
             .click(true)
-            .parent().should('have.class', 'active')
+            .should('have.class', 'active')
         cy.get('#edition-geomtool-restart-drawing').click(true)
         cy.get('#edition-point-coord-crs').select('3857')
         cy.get('#edition-point-coord-x').clear()

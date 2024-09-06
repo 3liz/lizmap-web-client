@@ -115,7 +115,7 @@ export default class Tooltip {
             });
 
             this._activeTooltipLayer.getSource().on('featuresloaderror', () => {
-                lizMap.addMessage(lizDict['tooltip.loading.error'], 'error', true);
+                lizMap.addMessage(lizDict['tooltip.loading.error'], 'danger', true);
                 console.log(`Tooltip layer '${layerName}' could not be loaded.`);
             });
 

@@ -119,7 +119,7 @@ var lizLayerActionButtons = function() {
 
             // Zoom
             html+= '        <dt>'+lizDict['layer.metadata.zoomToExtent.title']+'</dt>';
-            html+= '<dd><button class="btn btn-mini layerActionZoom" title="'+lizDict['layer.metadata.zoomToExtent.title']+'" value="'+aName+'"><i class="icon-zoom-in"></i></button></dd>';
+            html+= '<dd><button class="btn btn-sm layerActionZoom" title="'+lizDict['layer.metadata.zoomToExtent.title']+'" value="'+aName+'"><i class="icon-zoom-in"></i></button></dd>';
 
             // Tools
             var isBaselayer = '';
@@ -164,7 +164,7 @@ var lizLayerActionButtons = function() {
                     var oactive = '';
                     if(currentOpacity == opacities[i])
                         oactive = 'active';
-                    html+= '<a href="#" class="btn btn-mini btn-opacity-layer '+ oactive+' '+ opacities[i]*100+'">'+opacities[i]*100+'</a>';
+                    html+= '<a href="#" class="btn btn-sm btn-opacity-layer '+ oactive+' '+ opacities[i]*100+'">'+opacities[i]*100+'</a>';
                 }
                 html+= '</dd>';
             }
@@ -187,7 +187,7 @@ var lizLayerActionButtons = function() {
                     html+= '<select class="exportLayer '+isBaselayer+'">';
                     html+= options;
                     html+= '</select>';
-                    html+= '<button class="btn btn-mini exportLayer '+isBaselayer+'" title="'+lizDict['layer.metadata.export.title']+'" value="'+aName+'"><i class="icon-download"></i></button>';
+                    html+= '<button class="btn btn-sm exportLayer '+isBaselayer+'" title="'+lizDict['layer.metadata.export.title']+'" value="'+aName+'"><i class="icon-download"></i></button>';
                     html+= '</dd>';
                 }
             }
@@ -220,7 +220,7 @@ var lizLayerActionButtons = function() {
             // Style
             html+= '</div>';
             html+= '</div>';
-            html+= '<button id="hide-sub-dock" class="btn btn-mini pull-right" name="close" title="'+lizDict['generic.btn.close.title']+'" value="'+aName+'">'+lizDict['generic.btn.close.title']+'</button>';
+            html+= '<button id="hide-sub-dock" class="btn btn-sm pull-right" name="close" title="'+lizDict['generic.btn.close.title']+'" value="'+aName+'">'+lizDict['generic.btn.close.title']+'</button>';
         }
 
         return html;
@@ -253,12 +253,12 @@ var lizLayerActionButtons = function() {
             // Display theme switcher if any
             if ('themes' in lizMap.config){
                 var themes = lizMap.config.themes;
-                var themeSelector = '<div id="theme-selector" class="btn-group" role="group">';
-                themeSelector += '<button class="btn btn-mini dropdown-toggle" data-toggle="dropdown" type="button" title="' + lizDict['switcherLayersActions.themeSelector.title'] +'" href="#"><i class="icon-none qgis_sprite mActionShowAllLayers"></i><span class="caret"></span></button>';
-                themeSelector += '<ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdownMenu">';
+                var themeSelector = '<div id="theme-selector" class="btn-group">';
+                themeSelector += '<button class="btn btn-sm dropdown-toggle" data-bs-toggle="dropdown" type="button" aria-expanded="false" title="' + lizDict['switcherLayersActions.themeSelector.title'] +'"><i class="icon-none qgis_sprite mActionShowAllLayers"></i></button>';
+                themeSelector += '<ul class="dropdown-menu">';
 
                 for (var themeName in themes) {
-                    themeSelector += '<li class="theme"><a href="#">' + themeName + '</a></li>';
+                    themeSelector += '<li><button class="dropdown-item" type="button" data-theme="' + themeName + '">' + themeName + '</button></li>';
                 }
 
                 themeSelector += '</ul>';
@@ -267,10 +267,10 @@ var lizLayerActionButtons = function() {
                 $('#switcher-layers-actions').prepend(themeSelector);
 
                 // Handle theme switching
-                $('#theme-selector').on('click', '.theme', function () {
-                    // Set theme as selected
-                    $('#theme-selector .theme').removeClass('selected');
-                    $(this).addClass('selected');
+                $('#theme-selector .dropdown-menu').on('click', 'button', function () {
+                    // Set theme as active
+                    $('#theme-selector button').removeClass('active');
+                    $(this).addClass('active');
 
                     const themeNameSelected = $(this).text();
 
@@ -342,8 +342,6 @@ var lizLayerActionButtons = function() {
                             }
                         );
                     }
-                    $('#theme-selector.open').click();
-                    return false;
                 });
 
                 // Trigger event with the list of mapThemes
@@ -355,21 +353,16 @@ var lizLayerActionButtons = function() {
 
                 // Activate first map theme on load
                 if (lizMap.mainLizmap.initialConfig.options.activateFirstMapTheme) {
-                    $('#theme-selector li.theme:nth-child(1)').click();
+                    document.querySelector('#theme-selector .dropdown-menu button:nth-child(1)').click();
                 }
                 const urlParameters = (new URL(document.location)).searchParams;
                 if (urlParameters.has('mapTheme')) {
                     const urlMapTheme = urlParameters.get('mapTheme');
-                    $('#theme-selector li.theme').filter((i, e) => e.textContent == urlMapTheme).click();
+                    document.querySelector('#theme-selector button[data-theme="'+urlMapTheme+'"]').click();
                 }
             }
 
             featureTypes = lizMap.mainLizmap.initialConfig.vectorLayerFeatureTypeList;
-
-            // title tooltip
-            $('#switcher-layers-actions .btn, #get-baselayer-metadata').tooltip({
-                placement: 'bottom'
-            });
 
             // Expand all or unfold all
             document.getElementById('layers-unfold-all').addEventListener('click', () => {

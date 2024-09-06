@@ -693,7 +693,7 @@ var lizEdition = function() {
         $('.edition-tabs').hide();
 
         // Display digitization tab back
-        $('.edition-tabs a[href="#tabdigitization"]').show();
+        $('.edition-tabs button[data-bs-target="#tabdigitization"]').show();
     }
 
     // Is there at least one layer with creation capability?
@@ -1722,7 +1722,7 @@ var lizEdition = function() {
                                 $('#edition-geomtool-container').show();
                         }
                     } else {
-                        $('.edition-tabs a[href="#tabdigitization"]').hide();
+                        $('.edition-tabs button[data-bs-target="#tabdigitization"]').hide();
                     }
                 }
                 // Modification
@@ -1742,7 +1742,7 @@ var lizEdition = function() {
                                 $('#edition-geomtool-container').show();
                         }
                     }else{
-                        $('.edition-tabs a[href="#tabdigitization"]').hide();
+                        $('.edition-tabs button[data-bs-target="#tabdigitization"]').hide();
                     }
 
                     addEditionMessage(lizDict['edition.select.modify.activate'],'info',true);
@@ -1844,7 +1844,7 @@ var lizEdition = function() {
         $('#edition-waiter').hide();
 
         // Activate edition dock if not yet
-        $('li.edition:not(.active) #button-edition').click();
+        document.querySelector('li.edition:not(.active) #button-edition')?.click();
 
         // Hide popup
         if( $('#liz_layer_popup_close').length )
@@ -1905,7 +1905,7 @@ var lizEdition = function() {
                 if (group.hasClass('tab-pane')) {
                     // group is tab content
                     // so manage tab visibility
-                    var tab = form.children('ul.nav-tabs').find('li a[href="#' + groupId + '"]');
+                    var tab = form.children('ul.nav-tabs').find('li button[data-bs-target="#' + groupId + '"]');
                     var tabParent = tab.parent();
                     if (data[groupId]) {
                         // tab has to be visible
@@ -2386,7 +2386,7 @@ lizEditionErrorDecorator.prototype = {
         if(this.message != ''){
             if (!div) {
                 div = document.createElement('div');
-                div.setAttribute('class', 'jforms-error-list alert alert-block alert-error');
+                div.setAttribute('class', 'jforms-error-list alert alert-danger');
                 div.setAttribute('id', errid);
                 $(this.form.element).first().before(div);
             }
