@@ -1,7 +1,17 @@
-#menu .nav-list > li > a {
+#menu .list-group-item > a {
   background-repeat : no-repeat;
   background-position : left center;
   padding-left : 20px;
+  display: block;
+}
+
+#menu .list-group-item.active > a {
+    color: white;
+}
+
+#menu .list-group-item-secondary {
+    text-transform: uppercase;
+    font-weight: bold;
 }
 
 #content {

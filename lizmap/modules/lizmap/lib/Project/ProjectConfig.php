@@ -612,9 +612,9 @@ class ProjectConfig
                 if ($debug) {
                     \jLog::log("Node {$subNode->name} - n = {$n} ET active = {$active}");
                 }
-                $item = $prefix.'    <li class="'.$active.'">';
-                $item .= $prefix.'    <a href="#dataviz-dnd-'.$level.'-'.md5($subNode->name);
-                $item .= '" data-toggle="tab">'.$subNode->name.'</a>';
+                $item = $prefix.'    <li class="nav-item" role="presentation">';
+                $item .= $prefix.'    <button class="nav-link '.$active.'" data-bs-target="#dataviz-dnd-'.$level.'-'.md5($subNode->name);
+                $item .= '" data-bs-toggle="tab">'.$subNode->name.'</button>';
                 $item .= '</li>';
                 $tabChildren[] = $item;
                 ++$n;
@@ -622,7 +622,7 @@ class ProjectConfig
             // Add the UL only if there is at least one child
             if (!empty($tabChildren)) {
                 $html .= $prefix.'<div class="tab-content">';
-                $html .= $prefix.'<ul class="nav nav-tabs">';
+                $html .= $prefix.'<ul class="nav nav-tabs" role="tablist">';
                 $html .= implode("\n", $tabChildren);
                 $html .= $prefix.'</ul>';
             }

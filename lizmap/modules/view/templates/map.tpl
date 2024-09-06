@@ -11,7 +11,7 @@
     </h1>
     <h2>{$repositoryLabel}</h2>
   </div>
-  <div id="headermenu" class="navbar navbar-fixed-top">
+  <div id="headermenu" class="navbar navbar-expand position-absolute bottom-0">
     {zone 'view~map_headermenu', array('repository'=>$repository,'project'=>$project,'auth_url_return'=>$auth_url_return)}
   </div>
 </div>
@@ -36,11 +36,11 @@
     <div id="sub-dock">
     </div>
 
-    <div id="bottom-dock" style="display:none;">
+    <div id="bottom-dock">
       {zone 'view~map_bottomdock', array('repository'=>$repository,'project'=>$project,'dockable'=>$bottomdockable)}
     </div>
 
-    <div id="right-dock" style="display:none;">
+    <div id="right-dock">
       {zone 'view~map_rightdock', array('repository'=>$repository,'project'=>$project,'dockable'=>$rightdockable)}
     </div>
   </div>
@@ -71,13 +71,12 @@
       <img src="{$j_themepath.'css/img/logo_footer.png'}" alt=""/>
     </div>
 
-    <div id="message" class="span6">{jmessage_bootstrap}</div>
-
+    <div id="message">{jmessage_bootstrap}</div>
 
     <div id="lizmap-search">
 
       <div id="lizmap-search-close">
-        <button class="btn btn-mini btn-primary">{@view~map.bottomdock.toolbar.btn.clear.title@}</button>
+        <button class="btn btn-sm btn-primary">{@view~map.bottomdock.toolbar.btn.clear.title@}</button>
       </div>
 
       <div>

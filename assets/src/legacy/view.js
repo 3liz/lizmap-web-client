@@ -13,7 +13,8 @@ var searchProjects = function(){
     }
 
     // Activate tooltips
-    $('#toggle-search, #search-project').tooltip();
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
 
     // Handle keywords/title toggle
     $('#toggle-search').click(function(){
@@ -274,17 +275,10 @@ var searchProjects = function(){
             displayKeywordChoices();
         });
     }else{
-        $('#toggle-search').hide().parent().removeClass('input-prepend');
+        $('#toggle-search').hide().parent().removeClass('input-group');
     }
 }
 
 window.addEventListener('load', function () {
     searchProjects();
-
-    // Handle description's modal
-    $('.liz-project-show-desc').click(function () {
-        const descId = $(this).data('lizmap-modal');
-        $('#liz-project-modal-' + descId).modal('show');
-        return false;
-    });
 });

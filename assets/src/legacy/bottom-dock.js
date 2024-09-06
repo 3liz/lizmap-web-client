@@ -18,7 +18,7 @@ var bottomDockFunction = function() {
             // Close button
             $('#bottom-dock .btn-bottomdock-clear')
                 .click(function() {
-                    $('#mapmenu li.nav-bottomdock.active > a').click();
+                    document.querySelector('#mapmenu li.nav-bottomdock.active').classList.remove('active');
                     return false;
                 })
                 .hover(
@@ -86,49 +86,6 @@ var bottomDockFunction = function() {
                         return false;
                     }
                 );
-
-            $('#mapmenu ul').on('click', 'li.nav-bottomdock > a', function(){
-                var self = $(this);
-                var parent = self.parent();
-                var id = self.attr('href').substr(1);
-                var tab = $('#nav-tab-'+id);
-                if ( parent.hasClass('active') ) {
-                    if ( tab.hasClass('active') ) {
-                        var nextActive = tab.next(':visible');
-                        if ( nextActive.length != 0 ) {
-                            nextActive.first().children('a').first().click();
-                        } else {
-                            var prevActive = tab.prev(':visible');
-                            if ( prevActive.length != 0 )
-                                prevActive.first().children('a').first().click();
-                        }
-                    }
-                    tab.hide();
-                    tab.removeClass('active');
-                    parent.removeClass('active');
-                    lizMap.events.triggerEvent( "bottomdockclosed", {'id':id} );
-                } else {
-                    var oldActive = $('#mapmenu li.nav-bottomdock.active');
-                    if ( oldActive.length != 0 ) {
-                        oldActive.removeClass('active');
-                        lizMap.events.triggerEvent( "bottomdockclosed", {'id': oldActive.children('a').first().attr('href').substr(1) } );
-                    }
-                    tab.show()
-                    tab.children('a').first().click();
-                    parent.addClass('active');
-                    lizMap.events.triggerEvent( "bottomdockopened", {'id':id} );
-                    $('#bottom-dock').addClass('visible');
-                }
-                self.blur();
-
-                var dock = $('#bottom-dock');
-                if ( $('#bottom-dock-tabs .active').length == 0 )
-                    dock.hide();
-                else if ( !dock.is(':visible') )
-                    dock.show();
-                return false;
-            });
-
             /**
              *
              */

@@ -103,35 +103,35 @@ h1, h2, h3, h4, h5 {
   padding: 0px 10px;
 }
 
-.navbar .nav li {
+.navbar .navbar-nav li {
   line-height:28px;
 }
 
-.navbar .nav > li > a {
+.navbar .navbar-nav > li > a {
   padding: 0px 10px;
   text-shadow:none;
 }
-.navbar .nav .active > a,
-.navbar .nav > li > a:focus ,
-.navbar .nav > li > a:hover {
+.navbar .navbar-nav .active > a,
+.navbar .navbar-nav > li > a:focus ,
+.navbar .navbar-nav > li > a:hover {
   background-color: #eeeeee;
   text-decoration : none;
   text-shadow:none;
 }
-.navbar .nav li.dropdown.open > .dropdown-toggle,
-.navbar .nav li.dropdown.active > .dropdown-toggle,
-.navbar .nav li.dropdown.open.active > .dropdown-toggle {
+.navbar .navbar-nav li.dropdown.open > .dropdown-toggle,
+.navbar .navbar-nav li.dropdown.active > .dropdown-toggle,
+.navbar .navbar-nav li.dropdown.open.active > .dropdown-toggle {
   color : #333;
   background-color: #08C;
   text-shadow:none;
 }
-.navbar .nav > li > .dropdown-menu:after {
+.navbar .navbar-nav > li > .dropdown-menu:after {
   border-bottom: 6px solid #F5F5F5;
 }
 .dropdown-menu {
   background-color: #F5F5F5;
 }
-.navbar .navbar-inner .icon {
+.navbar .icon {
   display:inline-block;
   vertical-align:middle;
   background-image:url("images/sprite_20_tools.png");
@@ -147,33 +147,33 @@ h1, h2, h3, h4, h5 {
   display:inline-block;
   vertical-align:middle;
 }
-.navbar .nav .login .icon {
+.navbar .navbar-nav .login .icon {
   background-position: -225px 0px;
 }
-.navbar .nav .login a:hover .icon,
-.navbar .nav .login.active a .icon {
+.navbar .navbar-nav .login a:hover .icon,
+.navbar .navbar-nav .login.active a .icon {
   background-position: -200px 0px;
 }
-.navbar .nav .registered .icon {
+.navbar .navbar-nav .registered .icon {
   background-position: -825px 0px;
 }
-.navbar .nav .registered a:hover .icon,
-.navbar .nav .registered.active a .icon {
+.navbar .navbar-nav .registered a:hover .icon,
+.navbar .navbar-nav .registered.active a .icon {
   background-position: -800px 0px;
 }
-.navbar .nav .user .icon {
+.navbar .navbar-nav .user .icon {
   background-position: -575px 0px;
 }
-.navbar .nav .user a:hover .icon,
-.navbar .nav .user.active a .icon,
-.navbar .nav .user.open a .icon {
+.navbar .navbar-nav .user a:hover .icon,
+.navbar .navbar-nav .user.active a .icon,
+.navbar .navbar-nav .user.open a .icon {
   background-position: -550px 0px;
 }
-.navbar .nav .home .icon {
+.navbar .navbar-nav .home .icon {
   background-position: -25px 0px;
 }
-.navbar .nav .home a:hover .icon,
-.navbar .nav .home.active a .icon {
+.navbar .navbar-nav .home a:hover .icon,
+.navbar .navbar-nav .home.active a .icon {
   background-position: 0px 0px;
 }
 #content {
@@ -189,7 +189,7 @@ div.form-horizontal .control-label {
   font-weight: bold;
 }
 
-.alert-danger, .alert-error {
+.alert-danger{
   color: #F00;
   border: 1px solid #F00;
 }

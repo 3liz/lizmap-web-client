@@ -4,7 +4,7 @@ describe('Advanced form', function () {
         cy.visit('/index.php/view/map/?repository=testsrepository&project=form_advanced')
 
         cy.get('#button-edition').click()
-        cy.get('#edition-draw').click()
+        cy.get('#edition-draw').click({force: true})
 
         cy.wait(1500)
         // Click on map as form needs a geometry

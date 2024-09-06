@@ -1,6 +1,5 @@
 {meta_html jquery_ui 'theme'}
 {meta_html css $j_basepath.'assets/css/bootstrap.min.css'}
-{meta_html css $j_basepath.'assets/css/bootstrap-responsive.min.css'}
 
 {meta_html css $j_basepath.'assets/css/main.css'}
 {meta_html css $j_basepath.'assets/css/admin.css'}
@@ -16,21 +15,21 @@
   <div id="title">
     <h1>{@admin~admin.header.admin@}</h1>
   </div>
-  <div id="headermenu" class="navbar navbar-fixed-top">
-   <div id="auth" class="navbar-inner">{$INFOBOX}</div>
+  <div id="headermenu" class="navbar navbar-expand position-absolute bottom-0">
+   <div id="auth" class="container-fluid justify-content-end">{$INFOBOX}</div>
   </div>
 </div>
 
 <div id="content" class="container-fluid">
-  <div class="row-fluid">
-    <div id="menu" class="span2">
-      <div class="well sidebar-nav">
-        <ul class="nav nav-list">
+  <div class="row">
+    <div id="menu" class="col-sm-2">
+      <div class="sidebar-nav">
+        <ul class="list-group">
          {$MENU}
         </ul>
       </div>
     </div>
-    <div class="span10">
+    <div class="col-sm-10">
       <div class="row-fluid">
         <div id="admin-message">{jmessage_bootstrap}</div>
        {$MAIN}

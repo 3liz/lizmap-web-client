@@ -52,7 +52,7 @@ export default class MousePosition extends HTMLElement {
                     <span>${lon}</span>
                     <span>${lat}</span>
                 </div>
-                <button class="btn btn-mini" title="${lizDict['mouseposition.removeCenterPoint']}" @click=${() => this._removeCenterPoint()}><i class="icon-refresh"></i></button>
+                <button class="btn btn-sm" title="${lizDict['mouseposition.removeCenterPoint']}" @click=${() => this._removeCenterPoint()}><i class="icon-refresh"></i></button>
             </div>
             <div class="coords-unit">
                 <select title="${lizDict['mouseposition.select']}" @change=${(event) => { this.displayUnit = event.target.value }}>

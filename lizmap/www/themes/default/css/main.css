@@ -152,66 +152,70 @@ div.jforms-submit-buttons.form-actions #jforms_view_edition__submit_submit {
 #auth {
   background: transparent;
 }
-.navbar .nav > a,
-.navbar .nav > li > a ,
-.navbar .nav > li > a {
+.navbar .navbar-nav > a,
+.navbar .navbar-nav > li > a ,
+.navbar .navbar-nav > li > a {
   color: var(--color-contrasted-text);
 }
-.navbar .nav .active > a,
-.navbar .nav > li > a:focus ,
-.navbar .nav > li > a:hover {
+.navbar .navbar-nav .active > a,
+.navbar .navbar-nav > li > a:focus ,
+.navbar .navbar-nav > li > a:hover {
   background-color: var(--color-background-primary);
 }
-.navbar .nav li.dropdown.open > .dropdown-toggle,
-.navbar .nav li.dropdown.active > .dropdown-toggle,
-.navbar .nav li.dropdown.open.active > .dropdown-toggle {
+.navbar .navbar-nav li.dropdown.open > .dropdown-toggle,
+.navbar .navbar-nav li.dropdown.active > .dropdown-toggle,
+.navbar .navbar-nav li.dropdown.open.active > .dropdown-toggle {
   color : var(--color-text-primary);
   background-color: var(--color-background-primary);
 }
-.navbar .nav > li > .dropdown-menu:after {
+.navbar .navbar-nav > li > .dropdown-menu:after {
   border-bottom: 6px solid var(--color-background-primary);
 }
 .dropdown-menu {
   background-color: var(--color-background-primary);
 }
-.navbar .navbar-inner .icon {
+.navbar .icon {
   background-image:url(images/sprite_20_tools.png);
 }
 
-.navbar .nav .dashboard-item .icon {
+.navbar .dashboard-item .icon {
     background-position: -975px 0px;
 }
-.navbar .nav .dashboard-item a:hover .icon,
-.navbar .nav .dashboard-item.active a .icon {
+.navbar .navbar-nav .dashboard-item a:hover .icon,
+.navbar .navbar-nav .dashboard-item.active a .icon {
     background-position: -950px 0px;
 }
 
-.navbar .nav .login .icon {
+.navbar .navbar-nav .login .icon {
   background-position: -225px 0px;
 }
-.navbar .nav .login a:hover .icon,
-.navbar .nav .login.active a .icon {
+.navbar .navbar-nav .login a:hover .icon,
+.navbar .navbar-nav .login.active a .icon {
   background-position: -200px 0px;
 }
-.navbar .nav .registered .icon {
+.navbar .navbar-nav .registered .icon {
   background-position: -825px 0px;
 }
-.navbar .nav .registered a:hover .icon,
-.navbar .nav .registered.active a .icon {
+.navbar .navbar-nav .registered a:hover .icon,
+.navbar .navbar-nav .registered.active a .icon {
   background-position: -800px 0px;
 }
-.navbar .nav .user .icon {
+.navbar .navbar-nav .user .icon {
   background-position: -575px 0px;
 }
-.navbar .nav .user a:hover .icon,
-.navbar .nav .user.active a .icon,
-.navbar .nav .user.open a .icon    {
+.navbar .navbar-nav .user a:hover .icon,
+.navbar .navbar-nav .user.active a .icon,
+.navbar .navbar-nav .user.open a .icon    {
   background-position: -550px 0px;
 }
-.navbar .nav .home .icon {
+.navbar .navbar-nav .home .icon {
   background-position: -25px 0px;
 }
-.navbar .nav .home a:hover .icon,
-.navbar .nav .home.active a .icon {
+.navbar .navbar-nav .home a:hover .icon,
+.navbar .navbar-nav .home.active a .icon {
   background-position: 0px 0px;
+}
+
+.navbar .navbar-nav > li > a:focus, .navbar .navbar-nav > li > a:hover {
+    color: #333;
 }

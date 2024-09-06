@@ -64,6 +64,9 @@ test.describe('Print', () => {
         });
         await page.locator('#print-launch').click();
 
+        // Close message
+        await page.locator('.btn-close').click();
+
         // Test `print_map` template
         await page.locator('#print-template').selectOption('1');
 
@@ -86,6 +89,9 @@ test.describe('Print', () => {
 
         await page.locator('#print-launch').click();
 
+        // Close message
+        await page.locator('.btn-close').click();
+
         // Test `print_overview` template
         await page.locator('#print-template').selectOption('2');
 
@@ -107,6 +113,9 @@ test.describe('Print', () => {
             expect(postData).toMatch(/map0%3AEXTENT=761864.\d+%2C6274266.\d+%2C779334.\d+%2C6284518.\d+/);
         });
         await page.locator('#print-launch').click();
+
+        // Close message
+        await page.locator('.btn-close').click();
 
         // Redlining with circle
         page.once('request', request => {
@@ -132,8 +141,7 @@ test.describe('Print', () => {
         });
 
         await page.locator('#button-draw').click();
-        await page.locator('#draw').click();
-        await page.locator('#draw .digitizing-buttons').click();
+        await page.getByRole('button', { name: 'Toggle Dropdown' }).click();
         await page.locator('#draw .digitizing-circle > svg').click();
         await page.locator('#newOlMap').click({
             position: {
@@ -250,13 +258,13 @@ test.describe('Print in popup', () => {
         // "quartiers" layer has one atlas (name "atlas_quartiers") button configured with a custom icon
         const featureAtlasQuartiers = page.locator('#popupcontent lizmap-feature-toolbar[value="quartiers_cc80709a_cd4a_41de_9400_1f492b32c9f7.1"] .feature-atlas');
         await expect(featureAtlasQuartiers).toHaveCount(1);
-        await expect(featureAtlasQuartiers.locator('button')).toHaveAttribute('data-original-title', 'atlas_quartiers');
+        await expect(featureAtlasQuartiers.locator('button')).toHaveAttribute('data-bs-title', 'atlas_quartiers');
         await expect(featureAtlasQuartiers.locator('img')).toHaveAttribute('src', '/index.php/view/media/getMedia?repository=testsrepository&project=print&path=media/svg/tree-fill.svg');
 
         // "sousquartiers" layer has one atlas (name "atlas_sousquartiers") button configured with the default icon
         const featureAtlasSousQuartiers = page.locator('#popupcontent lizmap-feature-toolbar[value="sousquartiers_e27e6af0_dcc5_4700_9730_361437f69862.2"] .feature-atlas');
         await expect(featureAtlasSousQuartiers).toHaveCount(1);
-        await expect(featureAtlasSousQuartiers.locator('button')).toHaveAttribute('data-original-title', 'atlas_sousquartiers');
+        await expect(featureAtlasSousQuartiers.locator('button')).toHaveAttribute('data-bs-title', 'atlas_sousquartiers');
         await expect(featureAtlasSousQuartiers.locator('svg use')).toHaveAttribute('xlink:href', '#map-print');
     });
 
@@ -450,6 +458,9 @@ test.describe('Print 3857', () => {
         });
         await page.locator('#print-launch').click();
 
+        // Close message
+        await page.locator('.btn-close').click();
+
         // Test `print_map` template
         await page.locator('#print-template').selectOption('1');
 
@@ -471,6 +482,9 @@ test.describe('Print 3857', () => {
         });
 
         await page.locator('#print-launch').click();
+
+        // Close message
+        await page.locator('.btn-close').click();
 
         // Redlining with circle
         page.once('request', request => {
@@ -496,8 +510,7 @@ test.describe('Print 3857', () => {
         });
 
         await page.locator('#button-draw').click();
-        await page.locator('#draw').click();
-        await page.locator('#draw .digitizing-buttons').click();
+        await page.getByRole('button', { name: 'Toggle Dropdown' }).click();
         await page.locator('#draw .digitizing-circle > svg').click();
         await page.locator('#newOlMap').click({
             position: {
@@ -666,7 +679,7 @@ test.describe('Error while printing', () => {
 
         await expect(page.getByText('The output is currently not available. Please contact the system administrator.')).toBeVisible();
 
-        await expect(page.locator("#message > div:last-child")).toHaveClass(/alert-error/);
+        await expect(page.locator("#message > div:last-child")).toHaveClass(/alert-danger/);
     });
 
 
@@ -695,6 +708,6 @@ test.describe('Error while printing', () => {
 
         await expect(page.getByText('The output is currently not available. Please contact the system administrator.')).toBeVisible();
 
-        await expect(page.locator("#message > div:last-child")).toHaveClass(/alert-error/);
+        await expect(page.locator("#message > div:last-child")).toHaveClass(/alert-danger/);
     });
 });

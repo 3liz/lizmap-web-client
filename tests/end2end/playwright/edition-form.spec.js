@@ -74,7 +74,7 @@ test.describe('Edition Form Validation', () => {
 
         // message
         await expect(page.locator("#lizmap-edition-message")).toBeVisible();
-        await expect(page.locator("#message > div")).toHaveClass(/alert-error/);
+        await expect(page.locator("#message > div")).toHaveClass(/alert-danger/);
     })
 
     test('Error send feature', async ({ page }) => {
@@ -98,7 +98,7 @@ test.describe('Edition Form Validation', () => {
 
         // message
         await expect(page.locator("#lizmap-edition-message")).toBeVisible();
-        await expect(page.locator("#message > div")).toHaveClass(/alert-error/);
+        await expect(page.locator("#message > div")).toHaveClass(/alert-danger/);
 
         // form still here
         await expect(page.locator('#edition-form-container')).toBeVisible();
