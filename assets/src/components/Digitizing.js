@@ -378,9 +378,10 @@ export default class Digitizing extends HTMLElement {
      */
     toggleToolSelected(event) {
         if (this.toolSelected === DigitizingAvailableTools[0]) {
-            return;
+            bootstrap.Dropdown.getOrCreateInstance(event.currentTarget).toggle();
+        } else {
+            mainLizmap.digitizing.toolSelected = (mainLizmap.digitizing.toolSelected !== DigitizingAvailableTools[0]) ? DigitizingAvailableTools[0] : this.toolSelected;
         }
-        mainLizmap.digitizing.toolSelected = (mainLizmap.digitizing.toolSelected !== DigitizingAvailableTools[0]) ? DigitizingAvailableTools[0] : this.toolSelected;
         event.stopPropagation();
     }
 
