@@ -2975,10 +2975,6 @@ lizmap-selection-invert svg {
   width: unset;
 }
 
-.digitizing-buttons button:nth-child(1)::after {
-    display: none;
-}
-
 .digitizing svg {
   width: 24px;
   height: 24px;
