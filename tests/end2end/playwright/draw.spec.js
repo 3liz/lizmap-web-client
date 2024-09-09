@@ -12,6 +12,7 @@ test.describe('Draw', () => {
     });
 
     test('All draw tools', async ({ page }) => {
+        await page.locator('#dock-close').click();
         // Point
         await page.locator('#draw').getByRole('link').nth(1).click();
         await page.locator('.digitizing-point > svg').click();
