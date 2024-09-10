@@ -1,6 +1,7 @@
 import { test as setup } from '@playwright/test';
+import path from 'path';
 
-const user_in_group_aFile = 'playwright/.auth/user_in_group_a.json';
+const user_in_group_aFile = path.join(__dirname, './.auth/user_in_group_a.json');
 
 setup('authenticate as user_in_group_a', async ({ page }) => {
   // Perform authentication steps. Replace these actions with your own.
@@ -19,7 +20,7 @@ setup('authenticate as user_in_group_a', async ({ page }) => {
   await page.context().storageState({ path: user_in_group_aFile });
 });
 
-const adminFile = 'playwright/.auth/admin.json';
+const adminFile = path.join(__dirname, './.auth/admin.json');
 
 setup('authenticate as admin', async ({ page }) => {
   // Perform authentication steps. Replace these actions with your own.
