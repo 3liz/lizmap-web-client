@@ -562,7 +562,7 @@ test.describe('Text widget in a form', () => {
 
         // edit the feature
         let editFeatureRequestPromise = page.waitForResponse(response => response.url().includes('editFeature'));
-        await page.locator('.lizmapPopupContent > .lizmapPopupSingleFeature').nth(0).locator("lizmap-feature-toolbar").first().locator(".feature-toolbar button[data-original-title='Edit']").click();
+        await page.locator('.feature-toolbar > button:nth-child(5)').click();
         await editFeatureRequestPromise;
 
         // the text widgets in the form should be filled as in the popup
