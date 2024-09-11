@@ -205,7 +205,7 @@ export default class Digitizing extends HTMLElement {
                         <svg>
                             <use xlink:href="#file-upload"></use>
                         </svg>
-                        <input class="hide" type="file" accept=".kml, .geojson, .json, .gpx" @change=${
+                        <input class="hide" type="file" accept=".kml, .geojson, .json, .gpx, .zip" @change=${
                             (event) =>
                                     {
                                         if (event.target.files.length > 0){
