@@ -71,7 +71,7 @@ export default class Digitizing extends HTMLElement {
         const mainTemplate = () => html`
         <div class="digitizing">
             <div class="digitizing-buttons btn-group dropend" data-bs-toggle="tooltip" data-bs-title="${lizDict['digitizing.toolbar.drawTools']}">
-                <button type="button" class="btn dropdown-toggle ${this.deactivate ? '' : 'active btn-primary'}" data-bs-toggle="dropdown" @click=${(event) => {this.toggleToolSelected(event)}}>
+                <button type="button" class="btn ${this.deactivate ? '' : 'active btn-primary'}" @click=${(event) => {this.toggleToolSelected(event)}}>
                     <svg>
                         <use xlink:href="#pencil"></use>
                     </svg>
@@ -378,9 +378,10 @@ export default class Digitizing extends HTMLElement {
      */
     toggleToolSelected(event) {
         if (this.toolSelected === DigitizingAvailableTools[0]) {
-            return;
+            bootstrap.Dropdown.getOrCreateInstance(event.currentTarget).toggle();
+        } else {
+            mainLizmap.digitizing.toolSelected = (mainLizmap.digitizing.toolSelected !== DigitizingAvailableTools[0]) ? DigitizingAvailableTools[0] : this.toolSelected;
         }
-        mainLizmap.digitizing.toolSelected = (mainLizmap.digitizing.toolSelected !== DigitizingAvailableTools[0]) ? DigitizingAvailableTools[0] : this.toolSelected;
         event.stopPropagation();
     }
 
