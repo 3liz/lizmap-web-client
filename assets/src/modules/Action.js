@@ -10,6 +10,9 @@ import { mainLizmap } from '../modules/Globals.js';
 import { Vector as VectorSource } from 'ol/source.js';
 import { Vector as VectorLayer } from 'ol/layer.js';
 import GeoJSON from 'ol/format/GeoJSON.js';
+import Point from 'ol/geom/Point.js';
+import { fromExtent } from 'ol/geom/Polygon.js';
+import WKT from 'ol/format/WKT.js';
 
 /**
  * @class
@@ -388,12 +391,13 @@ export default class Action {
 
         // We add the map extent and center
         // as WKT geometries
-        let extent = mainLizmap.lizmap3.map.getExtent().clone();
-        extent = extent.transform(mainLizmap.lizmap3.map.getProjection(), 'EPSG:4326');
-        options['mapExtent'] = extent.toGeometry().toString();
-        let center = mainLizmap.lizmap3.map.getCenter().clone();
-        center = center.transform(mainLizmap.lizmap3.map.getProjection(), 'EPSG:4326');
-        options['mapCenter'] = `POINT(${center['lon']} ${center['lat']})`;
+        const WKTformat = new WKT();
+        const projOptions = {
+            featureProjection: mainLizmap.projection,
+            dataProjection: 'EPSG:4326'
+        };
+        options['mapExtent'] = WKTformat.writeGeometry(fromExtent(mainLizmap.extent), projOptions);
+        options['mapCenter'] = WKTformat.writeGeometry(new Point(mainLizmap.center), projOptions);
 
         // Request action and get data
         let url = actionConfigData.url;
