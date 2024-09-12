@@ -384,8 +384,9 @@ jforms_datepicker_default.js[]="$jelix/jquery/ui/i18n/datepicker-$lang.js|defer"
 jforms_datepicker_default.js[]="$jelix/js/jforms/datepickers/default/ui.$lang.js|defer"
 jforms_datepicker_default.js[]="$jelix/js/jforms/datepickers/default/init.js|defer"
 
-jforms_datetimepicker_default.js[]="$jelix/js/jforms/datetimepickers/default/init.js|defer"
 jforms_datetimepicker_default.js[]="$jelix/jquery/jquery-ui-timepicker-addon.js|defer"
+jforms_datetimepicker_default.js[]="$jelix/jquery/jquery-ui-timepicker-addon-i18n.min.js|defer"
+jforms_datetimepicker_default.js[]="$jelix/js/jforms/datetimepickers/default/init.js|defer"
 
 jforms_imageupload.js[]="$jelix/js/cropper.min.js|defer"
 jforms_imageupload.js[]="$jelix/js/jforms/choice.js|defer"
