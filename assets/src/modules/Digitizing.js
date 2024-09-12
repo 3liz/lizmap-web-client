@@ -32,6 +32,8 @@ import { unByKey } from 'ol/Observable.js';
 
 import { transform } from 'ol/proj.js';
 
+import shp from 'shpjs';
+
 /**
  * List of digitizing available tools
  * @name DigitizingAvailableTools
@@ -1153,8 +1155,25 @@ export class Digitizing {
         // Get file extension
         const fileExtension = file.name.split('.').pop().toLowerCase();
 
+        // if (fileExtension === 'zip') {
+        //     reader.onload = (() => {
+        //         return (e) => {
+        //             const buffershp = e.target.result;
+        //             shp(buffershp).then(response => {
+        //                 let OL6features = (new GeoJSON()).readFeatures(response, {featureProjection: mainLizmap.projection});
+
+        //                 if (OL6features) {
+        //                     // Add imported features to map and zoom to their extent
+        //                     this._drawSource.addFeatures(OL6features);
+        //                 }
+        //             });
+        //         };
+        //     })(this);
+        //     reader.readAsArrayBuffer(file);
+        // }
+
         reader.onload = (() => {
-            return (e) => {
+            return async (e) => {
                 const fileContent = e.target.result;
                 let OL6features;
 
@@ -1171,6 +1190,11 @@ export class Digitizing {
                     } else if (fileExtension === 'kml') {
                         // Remove features default style to display layer style
                         OL6features = (new KML({ extractStyles: false })).readFeatures(fileContent, options);
+                    } else if (fileExtension === 'zip') {
+                        const geojson = await shp(fileContent);
+                        if (geojson) {
+                            OL6features = (new GeoJSON()).readFeatures(geojson, options);
+                        }
                     }
                 } catch (error) {
                     lizMap.addMessage(error, 'error', true)
@@ -1189,6 +1213,10 @@ export class Digitizing {
             };
         })(this);
 
-        reader.readAsText(file);
+        if (fileExtension === 'zip'){
+            reader.readAsArrayBuffer(file);
+        } else {
+            reader.readAsText(file);
+        }
     }
 }
