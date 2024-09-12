@@ -77,9 +77,14 @@ var jelix_datetimepicker_default_Manager = {
             };
         }
 
-        if(!control.lang) {
-            params.dateFormat = 'yy-mm-dd';
-            params.timeFormat = "hh:mm";
+        // we force the format, it should correspond to the date we give to the widget
+        params.dateFormat = 'yy-mm-dd';
+        params.timeFormat = "HH:mm";
+
+        let locale = jFormsJQ.config.locale.split('_',2);
+        let lang = locale[0];
+        if (lang in $.timepicker.regional) {
+            $.timepicker.setDefaults($.timepicker.regional[lang]);
         }
 
         elt.datetimepicker(params);
