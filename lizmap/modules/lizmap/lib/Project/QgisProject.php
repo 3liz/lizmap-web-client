@@ -629,7 +629,7 @@ class QgisProject
      */
     public function xpathQuery($query)
     {
-        $ret = $this->xml->xpath($query);
+        $ret = $this->getXml()->xpath($query);
         if ($ret && is_array($ret)) {
             return $ret;
         }
@@ -683,7 +683,7 @@ class QgisProject
      */
     protected function getXml()
     {
-        if ($this->xml) {
+        if ($this->xml !== null) {
             return $this->xml;
         }
         $qgs_path = $this->path;
@@ -699,6 +699,7 @@ class QgisProject
 
             throw new \Exception('The QGIS project '.basename($qgs_path).' has invalid content!');
         }
+
         $this->xml = $xml;
 
         return $xml;
@@ -749,7 +750,7 @@ class QgisProject
     {
         // get restricted composers
         $rComposers = array();
-        $restrictedComposers = $this->xml->xpath('//properties/WMSRestrictedComposers/value');
+        $restrictedComposers = $this->getXml()->xpath('//properties/WMSRestrictedComposers/value');
         if ($restrictedComposers && is_array($restrictedComposers)) {
             foreach ($restrictedComposers as $restrictedComposer) {
                 $rComposers[] = (string) $restrictedComposer;
@@ -758,7 +759,7 @@ class QgisProject
 
         $printTemplates = array();
         // get layout qgs project version >= 3
-        $layouts = $this->xml->xpath('//Layout');
+        $layouts = $this->getXml()->xpath('//Layout');
         if ($layouts && is_array($layouts)) {
             foreach ($layouts as $layout) {
                 // test restriction
@@ -874,7 +875,7 @@ class QgisProject
         }
         // update locateByLayer with alias and filter information
         foreach ($locateByLayer as $k => $v) {
-            $xmlLayer = $this->getXmlLayer2($this->xml, $v->layerId);
+            $xmlLayer = $this->getXmlLayer2($this->getXml(), $v->layerId);
             if (is_null($xmlLayer)) {
                 continue;
             }
@@ -935,7 +936,7 @@ class QgisProject
             if ($qgisProject) {
                 $xml = $qgisProject->getXml();
             } else {
-                $xml = $this->xml;
+                $xml = $this->getXml();
             }
 
             // Read layer property from QGIS project XML
@@ -964,7 +965,7 @@ class QgisProject
             if ($qgisProject) {
                 $xml = $qgisProject->getXml();
             } else {
-                $xml = $this->xml;
+                $xml = $this->getXml();
             }
 
             $layerXml = $this->getXmlLayer2($xml, $obj->layerId);
@@ -1029,7 +1030,7 @@ class QgisProject
         // Get QGIS form fields configurations for each layer
         $layersLabeledFieldsConfig = array();
         foreach ($layerIds as $layerId) {
-            $layerXml = $this->getXmlLayer2($this->xml, $layerId);
+            $layerXml = $this->getXmlLayer2($this->getXml(), $layerId);
             if (is_null($layerXml)) {
                 continue;
             }
@@ -1095,7 +1096,7 @@ class QgisProject
             }
 
             // Read layer property from QGIS project XML
-            $layerXml = $this->getXmlLayer2($this->xml, $obj->layerId);
+            $layerXml = $this->getXmlLayer2($this->getXml(), $obj->layerId);
             if (is_null($layerXml)) {
                 continue;
             }
@@ -1122,7 +1123,7 @@ class QgisProject
     {
         $layersOrder = array();
         if ($this->qgisProjectVersion >= 30000) { // For QGIS >=3.0, custom-order is in layer-tree-group
-            $customOrder = $this->xml->xpath('layer-tree-group/custom-order');
+            $customOrder = $this->getXml()->xpath('layer-tree-group/custom-order');
             if (count($customOrder) == 0) {
                 return $layersOrder;
             }
@@ -1142,7 +1143,7 @@ class QgisProject
                 return $layersOrder;
             }
         } elseif ($this->qgisProjectVersion >= 20400) { // For QGIS >=2.4, new item layer-tree-canvas
-            $customOrder = $this->xml->xpath('//layer-tree-canvas/custom-order');
+            $customOrder = $this->getXml()->xpath('//layer-tree-canvas/custom-order');
             if (count($customOrder) == 0) {
                 return $layersOrder;
             }
@@ -1159,7 +1160,7 @@ class QgisProject
                     ++$lo;
                 }
             } else {
-                $items = $this->xml->xpath('layer-tree-group//layer-tree-layer');
+                $items = $this->getXml()->xpath('layer-tree-group//layer-tree-layer');
                 $lo = 0;
                 foreach ($items as $layerTree) {
                     // Get layer name from config instead of XML for possible embedded layers
@@ -1171,14 +1172,14 @@ class QgisProject
                 }
             }
         } else {
-            $legend = $this->xml->xpath('//legend');
+            $legend = $this->getXml()->xpath('//legend');
             if (count($legend) == 0) {
                 return $layersOrder;
             }
             $legendZero = $legend[0];
             $updateDrawingOrder = (string) $legendZero->attributes()->updateDrawingOrder;
             if ($updateDrawingOrder == 'false') {
-                $layers = $this->xml->xpath('//legendlayer');
+                $layers = $this->getXml()->xpath('//legendlayer');
                 foreach ($layers as $layer) {
                     if ($layer->attributes()->drawingOrder && intval($layer->attributes()->drawingOrder) >= 0) {
                         $layersOrder[(string) $layer->attributes()->name] = (int) $layer->attributes()->drawingOrder;

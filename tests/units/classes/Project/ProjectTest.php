@@ -16,7 +16,8 @@ class ProjectTest extends TestCase
             'layers' => array(),
         );
         $qgis_default = new QgisProjectForTests($data);
-        $qgis_default->setXml(new SimpleXMLElement('<root></root>'));
+        $qgis_default->setXmlForTest(new SimpleXMLElement('<root></root>'));
+        $this->assertNotNull($qgis_default->getXmlForTest());
         $rep = new Project\Repository('key', array(), null, null, null);
         $proj = new ProjectForTests();
         $cfg = json_decode(file_get_contents(__DIR__.'/Ressources/readProject.qgs.cfg'));
