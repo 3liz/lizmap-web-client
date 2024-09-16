@@ -8,8 +8,6 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
-## 3.7.10 - 2024-08-01
-
 ### Funders
 
 * **[Valabre](https://www.valabre.com/)**
@@ -26,6 +24,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 * Update Playwright to 1.46.0
 * Some updates on PHPUnit 10
+
+## 3.7.10 - 2024-08-01
 
 ### Funders
 
