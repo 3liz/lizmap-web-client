@@ -49,6 +49,8 @@ test.describe('Time Manager', () => {
             // Re-send the request with additionnal echo param to retrieve the WMS Request
             let echoGetMap = await page.request.get(getMapRequest.url() + '&__echo__');
             const originalUrl = decodeURIComponent(await echoGetMap.text());
+            // When the request has not been logged by echo proxy
+            expect(originalUrl).not.toContain('unfound')
 
             // expected request params
             const expectedParamValue = [
