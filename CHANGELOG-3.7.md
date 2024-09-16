@@ -8,6 +8,23 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Funders
+
+* **[Valabre](https://www.valabre.com/)**
+* Villefranche Agglomération
+
+### Fixed
+
+* In the Javascript digitizing measure, provide a map projection
+* Fix issues on datetime pickers and localization
+* Remove unwanted web assets from local configuration
+* `lizMap.getFeaturePopupContentByFeatureIntersection` according to the choosing scale
+
+### Backend
+
+* Update Playwright to 1.46.0
+* Some updates on PHPUnit 10
+
 ## 3.7.10 - 2024-08-01
 
 ### Funders
