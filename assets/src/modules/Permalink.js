@@ -175,7 +175,10 @@ export default class Permalink {
 
         this._hash = ''+window.location.hash;
 
-        const items = mainLizmap.state.layersAndGroupsCollection.layers.concat(mainLizmap.state.layersAndGroupsCollection.groups);
+        // items are layers then groups from leaf to root
+        const items = mainLizmap.state.layersAndGroupsCollection.layers.concat(
+            mainLizmap.state.layersAndGroupsCollection.groups.reverse() // reverse groups array to get from leaf to root
+        );
 
         const [extent4326, itemsInURL, stylesInURL, opacitiesInURL] = window.location.hash.substring(1).split('|').map(part => part.split(','));
 
