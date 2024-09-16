@@ -8,6 +8,29 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Funders
+
+* **[Valabre](https://www.valabre.com/)**
+* Villefranche Agglomération
+
+### Fixed
+
+* Shifted geometry during editing
+* Target `_blank` disappeared on hyperlinks in popups
+* In the Javascript digitizing measure, provide a map projection
+* Fix issues on datetime pickers and localization
+* Remove unwanted web assets from local configuration
+* `lizMap.getFeaturePopupContentByFeatureIntersection` according to the choosing scale
+
+### Changed
+
+* Use OpenLayers10 map instead of OpenLayers2 for Lizmap Actions
+
+### Backend
+
+* Update Playwright to 1.46.0
+* Some updates on PHPUnit 10
+
 ## 3.8.0 - 2024-09-02
 
 ### Added
