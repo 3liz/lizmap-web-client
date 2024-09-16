@@ -142,7 +142,13 @@ export default class Action {
                 }
             });
         }
-
+        mainLizmap.lizmap3.events.on({
+            minidockclosed: (event) => {
+                if (event.id === 'action'){
+                    mainLizmap.digitizing.toolSelected = 'deactivate';
+                }
+            }
+        });
     }
 
     /**
@@ -376,10 +382,21 @@ export default class Action {
             return false;
         }
 
+        const WKTformat = new WKT();
+        const projOptions = {
+            featureProjection: mainLizmap.projection,
+            dataProjection: 'EPSG:4326'
+        };
+
         // Reset the other actions
         // We allow only one active action at a time
         // We do not remove the active status of the button (btn-primary)
         this.resetLizmapAction(true, true, true, false);
+
+        // Take drawn geometry if any and if none exists as a parameter
+        if (!wkt && mainLizmap.digitizing.context === "action" && mainLizmap.digitizing.featureDrawn) {
+            wkt = WKTformat.writeFeatures(mainLizmap.digitizing.featureDrawn, projOptions);
+        }
 
         // Set the request parameters
         let options = {
@@ -391,11 +408,6 @@ export default class Action {
 
         // We add the map extent and center
         // as WKT geometries
-        const WKTformat = new WKT();
-        const projOptions = {
-            featureProjection: mainLizmap.projection,
-            dataProjection: 'EPSG:4326'
-        };
         options['mapExtent'] = WKTformat.writeGeometry(fromExtent(mainLizmap.extent), projOptions);
         options['mapCenter'] = WKTformat.writeGeometry(new Point(mainLizmap.center), projOptions);
 
