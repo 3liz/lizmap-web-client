@@ -134,6 +134,25 @@ test.describe('Permalink', () => {
         await page.getByRole('button', { name: 'Close' }).click();
     });
 
+    test('Groups and layers checked: UI according to permalink parameters', async ({ page }) => {
+        const baseUrl = 'http://localhost:8130/index.php/view/map?repository=testsrepository&project=treeview'
+        const bbox = '3.765504,43.559321,3.982897,43.660755'
+        const layers = 'group1,subdistricts,group%20with%20space%20in%20name%20and%20shortname%20defined,quartiers,group%20as%20layer%202'
+        const styles = ',default,,default,'
+        const opacities = '1,1,1,1,1'
+        const url = baseUrl + '#' + bbox + '|' + layers + '|' + styles + '|' + opacities;
+        await gotoMap(url, page);
+
+        // Visibility
+        await expect(page.getByTestId('subdistricts').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('sub-group1').locator('> div input')).not.toBeChecked();
+        await expect(page.getByTestId('group1').locator('> div input')).toBeChecked();
+
+        await expect(page.getByTestId('group as layer 1').locator('> div input')).not.toBeChecked();
+        await expect(page.getByTestId('group as layer 2').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('mutually exclusive group with multiple groups as layer').locator('> div input')).not.toBeChecked();
+    });
+
     test('Build permalink, reload and apply one', async ({ page }) => {
         const baseUrl = '/index.php/view/map?repository=testsrepository&project=layer_legends'
         await gotoMap(baseUrl, page);
