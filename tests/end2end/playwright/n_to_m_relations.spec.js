@@ -207,7 +207,7 @@ test.describe('N to M relations', () => {
         await page.locator("#jforms_view_edition").getByLabel('Name', { exact: true }).fill("Northern pintail");
         await page.locator("#jforms_view_edition").getByLabel('Scientific name', { exact: true }).fill("Anas acuta");
 
-        await page.locator('#jforms_view_edition__submit_submit').click();
+        await page.locator('#jforms_view_edition__submit_submit').click({force: true});
 
         await addBirdsRequestPromise;
 
