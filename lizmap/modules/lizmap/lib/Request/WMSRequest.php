@@ -1211,11 +1211,7 @@ class WMSRequest extends OGCRequest
 
         // Read config file for the current project
         $layername = $params['layers'];
-        $configLayers = $lproj->getLayers();
-        $configLayer = null;
-        if (property_exists($configLayers, $layername)) {
-            $configLayer = $configLayers->{$layername};
-        }
+        $configLayer = $lproj->findLayerByAnyName($layername);
 
         list($repository, $project) = $this->getVProfileInfos($configLayer, $repository, $project);
 
