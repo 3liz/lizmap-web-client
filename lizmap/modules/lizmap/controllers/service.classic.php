@@ -626,13 +626,10 @@ class serviceCtrl extends jController
         // HTTP browser cache expiration time
         $layername = $this->params['layers'];
         $lproj = $this->project;
-        $configLayers = $lproj->getLayers();
-        if (property_exists($configLayers, $layername)) {
-            $configLayer = $configLayers->{$layername};
-            if (property_exists($configLayer, 'clientCacheExpiration')) {
-                $clientCacheExpiration = (int) $configLayer->clientCacheExpiration;
-                $rep->setExpires('+'.$clientCacheExpiration.' seconds');
-            }
+        $configLayer = $lproj->findLayerByAnyName($layername);
+        if ($configLayer && property_exists($configLayer, 'clientCacheExpiration')) {
+            $clientCacheExpiration = (int) $configLayer->clientCacheExpiration;
+            $rep->setExpires('+'.$clientCacheExpiration.' seconds');
         }
 
         lizmap::logMetric('LIZMAP_SERVICE_GETMAP', 'WMS', array(
