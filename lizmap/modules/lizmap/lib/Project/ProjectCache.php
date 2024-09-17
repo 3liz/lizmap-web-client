@@ -90,6 +90,7 @@ class ProjectCache
         try {
             $data = $this->appContext->getCache($this->fileKey, $this->profile);
             if ($data === false
+                || is_null($data)
                 || $data['qgsmtime'] < $this->qgsMtime
                 || $data['qgscfgmtime'] < $this->qgsCfgMtime
                 || !isset($data['format_version'])
