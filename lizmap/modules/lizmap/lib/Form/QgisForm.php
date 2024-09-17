@@ -1762,9 +1762,7 @@ class QgisForm implements QgisFormControlsInterface
             }
 
             // orderByValue
-            if ($formControl->relationReferenceData['orderByValue']) {
-                asort($data);
-            }
+            asort($data);
 
             $dataSource->data = $data;
             $formControl->ctrl->datasource = $dataSource;
