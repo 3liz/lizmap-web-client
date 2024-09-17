@@ -1266,14 +1266,23 @@ class Project
 
             // attribute to filter
             $attribute = $loginFilteredConfig->filterAttribute;
+            // profile for db connection
+            $profile = null;
 
+            // get QGIS layer
+            /** @var null|\qgisVectorLayer $qgisLayer The QGIS vector layer instance */
+            $qgisLayer = $this->qgis->getLayer($layerByTypeName->id, $this);
+
+            // get datasource profile
+            if ($qgisLayer) {
+                $profile = $qgisLayer->getDatasourceProfile();
+            }
+
+            $cnx = $this->appContext->getDbConnection($profile ? $profile : '');
             // Quoted attribute with double-quotes
-            $cnx = $this->appContext->getDbConnection();
             $quotedField = $cnx->encloseName($attribute);
 
             // Get QGIS vector layer provider
-            /** @var null|\qgisVectorLayer $qgisLayer The QGIS vector layer instance */
-            $qgisLayer = $this->qgis->getLayer($layerByTypeName->id, $this);
             $provider = 'unknown';
             if ($qgisLayer) {
                 $provider = $qgisLayer->getProvider();
