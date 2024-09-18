@@ -551,6 +551,18 @@ class QgisProject
      */
     protected function setLayerShowFeatureCount(ProjectConfig $cfg)
     {
+        if ($this->path) {
+            $project = Qgis\ProjectInfo::fromQgisPath($this->path);
+            $layersShowFeatureCount = $project->layerTreeRoot->getLayersShowFeatureCount();
+            foreach ($layersShowFeatureCount as $layer) {
+                $layerCfg = $cfg->getLayer($layer);
+                if (!$layerCfg) {
+                    continue;
+                }
+                $layerCfg->showFeatureCount = 'True';
+            }
+            return;
+        }
         $layersWithShowFeatureCount = $this->xpathQuery("//layer-tree-layer/customproperties/property[@key='showFeatureCount'][@value='1']/parent::*/parent::*");
         if (!$layersWithShowFeatureCount) {
             $layersWithShowFeatureCount = $this->xpathQuery("//layer-tree-layer/customproperties/Option[@type='Map']/Option[@name='showFeatureCount'][@value='1']/parent::*/parent::*/parent::*");
