@@ -777,6 +777,10 @@ class QgisProject
      */
     public function getPrintTemplates()
     {
+        if ($this->path) {
+            $project = Qgis\ProjectInfo::fromQgisPath($this->path);
+            return $project->getLayoutsAsKeyArray();
+        }
         // get restricted composers
         $rComposers = array();
         $restrictedComposers = $this->getXml()->xpath('//properties/WMSRestrictedComposers/value');
