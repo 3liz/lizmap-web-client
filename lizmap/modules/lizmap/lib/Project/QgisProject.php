@@ -1275,7 +1275,7 @@ class QgisProject
     }
 
     /**
-     * @param \SimpleXMLElement $xml
+     * @param \SimpleXMLElement $qgsLoad
      */
     protected function readWMSInformation($qgsLoad)
     {
