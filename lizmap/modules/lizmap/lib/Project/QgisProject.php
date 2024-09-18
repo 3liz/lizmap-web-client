@@ -92,7 +92,7 @@ class QgisProject
     protected $lastSaveDateTime;
 
     /**
-     * @var array contains WMS info
+     * @var array<string, mixed> contains WMS info
      */
     protected $WMSInformation;
 
@@ -102,12 +102,12 @@ class QgisProject
     protected $canvasColor = '';
 
     /**
-     * @var array authid => proj4
+     * @var array<string, string> authid => proj4
      */
     protected $allProj4 = array();
 
     /**
-     * @var array for each referenced layer, there is an item
+     * @var array<string, array> for each referenced layer, there is an item
      *            with referencingLayer, referencedField, referencingField keys.
      *            There is also a 'pivot' key
      */
@@ -119,7 +119,7 @@ class QgisProject
     protected $relationsFields = array();
 
     /**
-     * @var array list of themes
+     * @var array<string, array> list of themes
      */
     protected $themes = array();
 
@@ -293,6 +293,11 @@ class QgisProject
         return $this->lastSaveDateTime;
     }
 
+    /**
+     * WMS informations
+     *
+     * @return array<string, mixed>
+     */
     public function getWMSInformation()
     {
         return $this->WMSInformation;
@@ -303,6 +308,13 @@ class QgisProject
         return $this->canvasColor;
     }
 
+    /**
+     * Proj4 string for proj Auth Id if is known by the project
+     *
+     * @param string $authId
+     *
+     * @return string|null
+     */
     public function getProj4($authId)
     {
         if (!array_key_exists($authId, $this->allProj4)) {
@@ -312,16 +324,31 @@ class QgisProject
         return $this->allProj4[$authId];
     }
 
+    /**
+     * All proj4
+     *
+     * @return array<string, string>
+     */
     public function getAllProj4()
     {
         return $this->allProj4;
     }
 
+    /**
+     * Relations
+     *
+     * @return array<string, array>
+     */
     public function getRelations()
     {
         return $this->relations;
     }
 
+    /**
+     * Themes of the QGIS project
+     *
+     * @return array<string, array>
+     */
     public function getThemes()
     {
         return $this->themes;
@@ -1179,74 +1206,46 @@ class QgisProject
             throw new \Exception('The QGIS project '.basename($qgs_path).' does not exist!');
         }
 
-        $qgsXml = App\XmlTools::xmlFromFile($qgs_path);
-        if (!is_object($qgsXml)) {
-            $errormsg = '\n'.basename($qgs_path).'\n'.$qgsXml;
-            $errormsg = 'An error has been raised when loading QGIS Project:'.$errormsg;
-            \jLog::log($errormsg, 'lizmapadmin');
+        $project = Qgis\ProjectInfo::fromQgisPath($qgs_path);
 
-            throw new \Exception('The QGIS project '.basename($qgs_path).' has invalid content!');
-        }
-        $this->xml = $qgsXml;
         // Build data
         $this->data = array(
+            'title' => $project->properties->WMSServiceTitle,
+            'abstract' => $project->properties->WMSServiceAbstract,
+            'keywordList' => is_array($project->properties->WMSKeywordList) ? implode(', ', $project->properties->WMSKeywordList) : '',
+            'wmsMaxWidth' => $project->properties->WMSMaxWidth,
+            'wmsMaxHeight' => $project->properties->WMSMaxHeight,
         );
 
-        // get title from WMS properties
-        if (property_exists($qgsXml->properties, 'WMSServiceTitle')) {
-            if (!empty($qgsXml->properties->WMSServiceTitle)) {
-                $this->data['title'] = (string) $qgsXml->properties->WMSServiceTitle;
-            }
-        }
-
-        // get abstract from WMS properties
-        if (property_exists($qgsXml->properties, 'WMSServiceAbstract')) {
-            $this->data['abstract'] = (string) $qgsXml->properties->WMSServiceAbstract;
-        }
-
-        // get keyword list from WMS properties
-        if (property_exists($qgsXml->properties, 'WMSKeywordList')) {
-            $values = array();
-            foreach ($qgsXml->properties->WMSKeywordList->value as $value) {
-                if ((string) $value !== '') {
-                    $values[] = (string) $value;
-                }
-            }
-            $this->data['keywordList'] = implode(', ', $values);
-        }
-
-        // get WMS max width
-        if (property_exists($qgsXml->properties, 'WMSMaxWidth')) {
-            $this->data['wmsMaxWidth'] = (int) $qgsXml->properties->WMSMaxWidth;
-        }
-        if (!array_key_exists('WMSMaxWidth', $this->data) or !$this->data['wmsMaxWidth']) {
-            unset($this->data['wmsMaxWidth']);
-        }
-
-        // get WMS max height
-        if (property_exists($qgsXml->properties, 'WMSMaxHeight')) {
-            $this->data['wmsMaxHeight'] = (int) $qgsXml->properties->WMSMaxHeight;
-        }
-        if (!array_key_exists('WMSMaxHeight', $this->data) or !$this->data['wmsMaxHeight']) {
-            unset($this->data['wmsMaxHeight']);
-        }
-
         // get QGIS project version
-        $this->qgisProjectVersion = $this->readQgisProjectVersion($qgsXml);
-        $this->lastSaveDateTime = $this->readLastSaveDateTime($qgs_path);
+        //$this->qgisProjectVersion = $this->readQgisProjectVersion($qgsXml);
+        $this->qgisProjectVersion = $this->convertQgisProjectVersion($project->version);
+        //$this->lastSaveDateTime = $this->readLastSaveDateTime($qgs_path);
+        $this->lastSaveDateTime = $project->saveDateTime;
 
-        $this->WMSInformation = $this->readWMSInformation($qgsXml);
-        $this->canvasColor = $this->readCanvasColor($qgsXml);
-        $this->allProj4 = $this->readAllProj4($qgsXml);
-        $this->themes = $this->readThemes($qgsXml);
-        $this->customProjectVariables = $this->readCustomProjectVariables($qgsXml);
-        $this->useLayerIDs = $this->readUseLayerIDs($qgsXml);
-        $this->layers = $this->readLayers($qgsXml);
-        list($this->relations, $this->relationsFields) = $this->readRelations($qgsXml);
+        //$this->WMSInformation = $this->readWMSInformation($qgsXml);
+        $this->WMSInformation = $project->getWmsInformationsAsKeyArray();
+        //$this->canvasColor = $this->readCanvasColor($qgsXml);
+        $this->canvasColor = $project->properties->Gui->getCanvasColor();
+        //$this->allProj4 = $this->readAllProj4($qgsXml);
+        $this->allProj4 = $project->getProjAsKeyArray();
+        //$this->themes = $this->readThemes($qgsXml);
+        $this->themes = $project->getVisibilityPresetsAsKeyArray();
+        //$this->customProjectVariables = $this->readCustomProjectVariables($qgsXml);
+        $this->customProjectVariables = $project->properties->Variables !== null ? $project->properties->Variables->getVariablesAsKeyArray() : array();
+        //$this->useLayerIDs = $this->readUseLayerIDs($qgsXml);
+        $this->useLayerIDs = $project->properties->WMSUseLayerIDs !== null ? $project->properties->WMSUseLayerIDs : false;
+        //$this->layers = $this->readLayers($qgsXml);
+        $this->layers = $project->getLayersAsKeyArray();
+        //list($this->relations, $this->relationsFields) = $this->readRelations($qgsXml);
+        $this->relations = $project->getRelationsAsKeyArray();
+        $this->relationsFields = $project->getRelationFieldsAsKeyArray();
     }
 
     /**
      * @param \SimpleXMLElement $qgsLoad
+     *
+     * @return array<string, mixed>
      */
     protected function readWMSInformation($qgsLoad)
     {
@@ -1308,18 +1307,17 @@ class QgisProject
     }
 
     /**
-     * @param \SimpleXMLElement $xml
+     * @param string $version
+     *
+     * @return int
      */
-    protected function readQgisProjectVersion($xml)
+    protected function convertQgisProjectVersion($version)
     {
-        $qgisRoot = $xml->xpath('//qgis');
-        $qgisRootZero = $qgisRoot[0];
-        $qgisProjectVersion = (string) $qgisRootZero->attributes()->version;
-        $qgisProjectVersion = explode('-', $qgisProjectVersion);
-        $qgisProjectVersion = $qgisProjectVersion[0];
-        $qgisProjectVersion = explode('.', $qgisProjectVersion);
+        $version = explode('-', $version);
+        $version = $version[0];
+        $version = explode('.', $version);
         $a = '';
-        foreach ($qgisProjectVersion as $k) {
+        foreach ($version as $k) {
             if (strlen($k) == 1) {
                 $a .= '0'.$k;
             } else {
@@ -1328,6 +1326,18 @@ class QgisProject
         }
 
         return (int) $a;
+    }
+
+    /**
+     * @param \SimpleXMLElement $xml
+     *
+     * @return int
+     */
+    protected function readQgisProjectVersion($xml)
+    {
+        $qgisRoot = $xml->xpath('//qgis');
+        $qgisRootZero = $qgisRoot[0];
+        return $this->convertQgisProjectVersion((string) $qgisRootZero->attributes()->version);
     }
 
     /**
@@ -1371,7 +1381,7 @@ class QgisProject
     /**
      * @param \SimpleXMLElement $xml
      *
-     * @return array
+     * @return array<string, string>
      */
     protected function readAllProj4($xml)
     {
