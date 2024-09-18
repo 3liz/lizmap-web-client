@@ -15,6 +15,9 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ### Fixed
 
+* Permalink: checked groups are not respected when hash is applied
+* Get correct connection object for fields quoting : PostgreSQL, SQLite
+* Cache : Lookup layer by any name for client and server sides, contribution from @ppetru
 * Shifted geometry during editing
 * Target `_blank` disappeared on hyperlinks in popups
 * In the Javascript digitizing measure, provide a map projection
