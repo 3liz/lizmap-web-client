@@ -1078,10 +1078,29 @@ class QgisProject
 
     /**
      * @param object  $editionLayers
-     * @param Project $proj
+     * @param Project|null $proj
      */
-    public function readEditionForms($editionLayers, $proj)
+    public function readEditionForms($editionLayers, $proj = null)
     {
+        if ($this->path) {
+            $project = Qgis\ProjectInfo::fromQgisPath($this->path);
+            foreach ($editionLayers as $key => $obj) {
+                $layer = $project->getLayerById($obj->layerId);
+                if ($layer === null) {
+                    continue;
+                }
+                if ($layer->type !== 'vector') {
+                    continue;
+                }
+                /** @var Qgis\Layer\VectorLayer $layer */
+
+                $formControls = $layer->getFormControls();
+                if ($proj) {
+                    $proj->getCacheHandler()->setEditableLayerFormCache($obj->layerId, $formControls);
+                }
+            }
+            return;
+        }
         $embeddedEditionLayers = array();
         foreach ($editionLayers as $key => $obj) {
             // check for embedded layers
