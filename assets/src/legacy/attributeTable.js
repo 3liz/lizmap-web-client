@@ -1785,6 +1785,31 @@ var lizAttributeTable = function() {
                     && config.attributeLayers[aName]['attributetableconfig']
                     && !$.isEmptyObject(config.attributeLayers[aName]['attributetableconfig']['columns'])
                 ){
+                    if (!('column' in config.attributeLayers[aName]['attributetableconfig']['columns'])) {
+                        var atc = config.attributeLayers[aName]['attributetableconfig']['columns'];
+                        if(atc.length == 0){
+                            return colToReturn;
+                        }
+                        var lizcols = columns.slice(0, firstDisplayedColIndex);
+                        var newcolumns = [];
+                        for (var x in atc) {
+                            var colx = atc[x];
+                            // Do nothing if the item does not reference a field
+                            if (colx.type != 'field') {
+                                continue;
+                            }
+                            for (const column of columns) {
+                                if (!('data' in column)) {
+                                    continue;
+                                }
+                                if (colx.name == column.data) {
+                                    newcolumns.push(column);
+                                }
+                            }
+                        }
+                        colToReturn['columns'] = lizcols.concat(newcolumns);
+                        return colToReturn;
+                    }
                     var atc = config.attributeLayers[aName]['attributetableconfig']['columns']['column'];
                     if(atc.length == 0){
                         return colToReturn;
