@@ -468,6 +468,26 @@ class QgisProject
      */
     protected function setLayerGroupData(ProjectConfig $cfg)
     {
+        if ($this->path) {
+            $project = Qgis\ProjectInfo::fromQgisPath($this->path);
+            $groupShortNames = $project->layerTreeRoot->getGroupShortNames();
+            foreach ($groupShortNames as $name => $shortName) {
+                $layerCfg = $cfg->getLayer($name);
+                if (!$layerCfg) {
+                    continue;
+                }
+                $layerCfg->shortname = $shortName;
+            }
+            $groupsMutuallyExclusive = $project->layerTreeRoot->getGroupsMutuallyExclusive();
+            foreach ($groupsMutuallyExclusive as $group) {
+                $layerCfg = $cfg->getLayer($group);
+                if (!$layerCfg) {
+                    continue;
+                }
+                $layerCfg->mutuallyExclusive = 'True';
+            }
+            return;
+        }
         $groupsWithShortName = $this->xpathQuery("//layer-tree-group/customproperties/property[@key='wmsShortName']/parent::*/parent::*");
         if ($groupsWithShortName) {
             foreach ($groupsWithShortName as $group) {
