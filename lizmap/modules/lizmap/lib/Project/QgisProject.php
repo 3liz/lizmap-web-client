@@ -1235,6 +1235,22 @@ class QgisProject
      */
     public function readAttributeLayers($attributeLayers)
     {
+        if ($this->path) {
+            $project = Qgis\ProjectInfo::fromQgisPath($this->path);
+            // Get field order & visibility
+            foreach ($attributeLayers as $key => $obj) {
+                // Improve performance by getting custom_config status directly from config
+                // Available for lizmap plugin >= 3.3.3
+                if (property_exists($obj, 'custom_config') && $obj->custom_config != 'True') {
+                    continue;
+                }
+
+                $layer = $project->getLayerById($obj->layerId);
+                $obj->attributetableconfig = $layer->attributetableconfig->toKeyArray();
+            }
+            return;
+        }
+
         // Get field order & visibility
         foreach ($attributeLayers as $key => $obj) {
             // Improve performance by getting custom_config status directly from config
