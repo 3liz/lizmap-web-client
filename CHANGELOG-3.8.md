@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.8.1 - 2024-09-18
+
 ### Funders
 
 * **[Valabre](https://www.valabre.com/)**
