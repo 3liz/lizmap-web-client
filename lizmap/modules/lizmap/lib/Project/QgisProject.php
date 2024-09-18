@@ -418,6 +418,19 @@ class QgisProject
      */
     protected function setLayerOpacity(ProjectConfig $cfg)
     {
+        if ($this->path) {
+            $project = Qgis\ProjectInfo::fromQgisPath($this->path);
+            foreach ($project->projectlayers as $layer) {
+                if (!isset($layer->layerOpacity) || $layer->layerOpacity == 1) {
+                    continue;
+                }
+                $layerCfg = $cfg->getLayer($layer->layername);
+                if ($layerCfg) {
+                    $layerCfg->opacity = $layer->layerOpacity;
+                }
+            }
+            return;
+        }
         $layerWithOpacities = $this->xpathQuery('//maplayer/layerOpacity[.!=1]/parent::*');
         if ($layerWithOpacities) {
             foreach ($layerWithOpacities as $layerWithOpacity) {
