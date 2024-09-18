@@ -925,6 +925,58 @@ class QgisProject
         foreach ($locateByLayer as $k => $v) {
             $locateLayerIds[] = $v->layerId;
         }
+
+        // update locateByLayer with project from path
+        if ($this->path) {
+            $project = Qgis\ProjectInfo::fromQgisPath($this->path);
+
+            // update locateByLayer with alias and filter information
+            foreach ($locateByLayer as $k => $v) {
+                $updateLocate = False;
+                $layer = $project->getLayerById($v->layerId);
+                // Get field alias
+                $alias = $layer->getFieldAlias($v->fieldName);
+                if ($alias !== null) {
+                    // Update locate with field alias
+                    $v->fieldAlias = $alias;
+                    $updateLocate = True;
+                }
+                if (property_exists($v, 'filterFieldName')) {
+                    // Get filter field alias
+                    $filterAlias = $layer->getFieldAlias($v->filterFieldName);
+                    if ($filterAlias !== null) {
+                        // Update locate with filter field alias
+                        $v->filterFieldAlias = $filterAlias;
+                        $updateLocate = True;
+                    }
+                }
+                // Get joins
+                if ($layer->vectorjoins !== null && count($layer->vectorjoins) > 0) {
+                    if (!property_exists($v, 'vectorjoins')) {
+                        // Add joins to locate
+                        $v->vectorjoins = array();
+                        $updateLocate = True;
+                    }
+                    foreach ($layer->vectorjoins as $vectorjoin) {
+                        if (in_array($vectorjoin->joinLayerId, $locateLayerIds)) {
+                            // Add join info to locate
+                            $v->vectorjoins[] = (object) array(
+                                'joinFieldName' => $vectorjoin->joinFieldName,
+                                'targetFieldName' => $vectorjoin->targetFieldName,
+                                'joinLayerId' => $vectorjoin->joinLayerId,
+                            );
+                            $updateLocate = True;
+                        }
+                    }
+                }
+                if ($updateLocate) {
+                    // Update locate if needed
+                    $locateByLayer->{$k} = $v;
+                }
+            }
+            return;
+        }
+
         // update locateByLayer with alias and filter information
         foreach ($locateByLayer as $k => $v) {
             $xmlLayer = $this->getXmlLayer2($this->getXml(), $v->layerId);
