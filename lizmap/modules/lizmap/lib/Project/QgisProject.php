@@ -381,6 +381,20 @@ class QgisProject
      */
     protected function setShortNames(ProjectConfig $cfg)
     {
+        if ($this->path) {
+            $project = Qgis\ProjectInfo::fromQgisPath($this->path);
+            foreach ($project->projectlayers as $layer) {
+                if (!isset($layer->shortname)) {
+                    continue;
+                }
+                $layerCfg = $cfg->getLayer($layer->layername);
+                if ($layerCfg) {
+                    $layerCfg->shortname = $layer->shortname;
+                }
+            }
+            return;
+        }
+
         $shortNames = $this->xpathQuery('//maplayer/shortname');
         if ($shortNames) {
             foreach ($shortNames as $sname) {
