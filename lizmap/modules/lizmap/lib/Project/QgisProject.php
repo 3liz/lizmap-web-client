@@ -1024,6 +1024,27 @@ class QgisProject
      */
     public function readEditionLayers($editionLayers)
     {
+        if ($this->path) {
+            $project = Qgis\ProjectInfo::fromQgisPath($this->path);
+            foreach ($editionLayers as $key => $obj) {
+                // Improve performance by getting provider directly from config
+                // Available for lizmap plugin >= 3.3.2
+                if (property_exists($obj, 'provider')) {
+                    if ($obj->provider == 'spatialite') {
+                        unset($editionLayers->{$key});
+                    }
+
+                    continue;
+                }
+                // check for embedded layers
+                $layer = $project->getLayerById($obj->layerId);
+                if ($layer->provider == 'spatialite') {
+                    unset($editionLayers->{$key});
+                }
+            }
+            return;
+        }
+
         foreach ($editionLayers as $key => $obj) {
             // Improve performance by getting provider directly from config
             // Available for lizmap plugin >= 3.3.2
