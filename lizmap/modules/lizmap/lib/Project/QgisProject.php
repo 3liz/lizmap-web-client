@@ -552,11 +552,20 @@ class QgisProject
     protected function unsetPropAfterRead(ProjectConfig $cfg)
     {
         // remove plugin layer
-        $pluginLayers = $this->xpathQuery('//maplayer[type="plugin"]');
-        if ($pluginLayers) {
-            foreach ($pluginLayers as $layer) {
-                $name = (string) $layer->layername;
-                $cfg->removeLayer($name);
+        if ($this->path) {
+            $project = Qgis\ProjectInfo::fromQgisPath($this->path);
+            foreach ($project->projectlayers as $layer) {
+                if ($layer->type === 'plugin') {
+                    $cfg->removeLayer($layer->layername);
+                }
+            }
+        } else {
+            $pluginLayers = $this->xpathQuery('//maplayer[type="plugin"]');
+            if ($pluginLayers) {
+                foreach ($pluginLayers as $layer) {
+                    $name = (string) $layer->layername;
+                    $cfg->removeLayer($name);
+                }
             }
         }
 
