@@ -259,7 +259,9 @@ export default class Digitizing extends HTMLElement {
         render(mainTemplate(), this);
 
         const tooltipTriggerList = this.querySelectorAll('[data-bs-toggle="tooltip"]');
-        [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+        [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, {
+            trigger: 'hover'
+        }));
 
         mainEventDispatcher.addListener(
             () => {

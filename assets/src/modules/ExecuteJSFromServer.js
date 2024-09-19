@@ -41,7 +41,7 @@ export default function executeJSFromServer() {
                 const tooltipTriggerList = document.querySelectorAll('#mapmenu .nav-list > li > a');
                 [...tooltipTriggerList].map(tooltipTriggerEl => {
                     bootstrap.Tooltip.getInstance(tooltipTriggerEl).dispose();
-                    new bootstrap.Tooltip(tooltipTriggerEl, { placement: 'bottom' });
+                    new bootstrap.Tooltip(tooltipTriggerEl, { placement: 'bottom', trigger: 'hover' });
                 });
 
                 // move search tool
