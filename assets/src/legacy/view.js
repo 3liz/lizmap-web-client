@@ -14,7 +14,9 @@ var searchProjects = function(){
 
     // Activate tooltips
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-    [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+    [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, {
+        trigger: 'hover'
+    }));
 
     // Handle keywords/title toggle
     $('#toggle-search').click(function(){
