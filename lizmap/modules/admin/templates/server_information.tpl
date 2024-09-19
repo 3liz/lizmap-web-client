@@ -123,7 +123,7 @@
             <td><a href="https://github.com/qgis/QGIS/commit/{$data['qgis_server_info']['metadata']['commit_id']}" target="_blank">{$data['qgis_server_info']['metadata']['commit_id']}</a></td>
         </tr>
         <tr>
-            <th>Py-QGIS-Server</th>
+            <th>Py-QGIS-Server <a href="https://docs.3liz.org/py-qgis-server" target="_blank"><span class='badge rounded-pill bg-secondary'>{@admin.server.information.qgis.plugin.help@}</span></a></th>
             <td>
                 {if $data['qgis_server_info']['py_qgis_server']['found']}
                     {if $data['qgis_server_info']['py_qgis_server']['stable']}
@@ -165,7 +165,12 @@
         <tr>
             {if $version['name']}
             {* Fixed in lizmap_server plugin 1.3.2 https://github.com/3liz/qgis-lizmap-server-plugin/commit/eb6a773ba035f877e9fa91db5ef87911a2648ee1 *}
-            <th style="width:20%;">{$version['name']}</th>
+            <th style="width:20%;">
+                {$version['name']}
+                {if $version['homepage']}
+                    <a href="{$version['homepage']}" target="_blank"><span class='badge rounded-pill bg-secondary'>{@admin.server.information.qgis.plugin.help@}</span></a>
+                {/if}
+            </th>
             {else}
             <th style="width:20%;">{$name}</th>
             {/if}
