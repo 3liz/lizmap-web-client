@@ -1728,13 +1728,11 @@ class Project
     }
 
     /**
-     * @param \SimpleXMLElement $xml
-     *
      * @return int[]
      */
     protected function readLayersOrder(QgisProject $xml)
     {
-        return $this->qgis->readLayersOrder($xml, $this->getLayers());
+        return $xml->readLayersOrder($this->cfg->getLayers());
     }
 
     /**
