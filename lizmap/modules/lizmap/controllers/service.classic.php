@@ -300,6 +300,8 @@ class serviceCtrl extends jController
                 if ($addwww) {
                     $rep->addHttpHeader('WWW-Authenticate', 'Basic realm="LizmapWebClient", charset="UTF-8"');
                 }
+            } elseif ($code == 'Forbidden') {
+                $rep->setHttpStatus(403, \Lizmap\Request\Proxy::getHttpStatusMsg(403));
             } elseif ($code == 'ProjectNotDefined'
                       || $code == 'RepositoryNotDefined') {
                 $rep->setHttpStatus(404, \Lizmap\Request\Proxy::getHttpStatusMsg(404));
@@ -429,7 +431,7 @@ class serviceCtrl extends jController
 
         // Redirect if no rights to access this repository
         if (!$lproj->checkAcl()) {
-            jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
+            jMessage::add(jLocale::get('view~default.service.access.denied'), 'AuthorizationRequired');
 
             return false;
         }
@@ -438,6 +440,21 @@ class serviceCtrl extends jController
         $pParams = jApp::coord()->request->params;
         $pParams['map'] = $lproj->getRelativeQgisPath();
         $params = \Lizmap\Request\Proxy::normalizeParams($pParams);
+
+        // Check WFS rights
+        if (strtolower($params['service']) === 'wfs'
+            && !$lproj->getAppContext()->aclCheck('lizmap.tools.layer.export', $this->repository->getKey()) ){
+            $request_headers = getallheaders();
+            if (!isset($_SESSION['html_map_token'])
+                || $_SESSION['html_map_token'] !== md5(json_encode(array(
+                    'Referer' => $request_headers['Referer'],
+                    'User-Agent' => $request_headers['User-Agent'],
+                )))) {
+                jMessage::add(jLocale::get('view~default.service.access.forbidden'), 'Forbidden');
+
+                return false;
+            }
+        }
 
         // Define parameters class private property
         $this->params = $params;

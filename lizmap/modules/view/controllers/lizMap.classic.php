@@ -538,6 +538,12 @@ class lizMapCtrl extends jController
 
         $rep->body->assign($assign);
 
+        $request_headers = getallheaders();
+        $_SESSION['html_map_token'] = md5(json_encode(array(
+            'Referer' => $request_headers['Referer'],
+            'User-Agent' => $request_headers['User-Agent'],
+        )));
+
         // Log
         $eventParams = array(
             'key' => 'viewmap',
