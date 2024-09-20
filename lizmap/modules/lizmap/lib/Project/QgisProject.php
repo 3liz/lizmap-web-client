@@ -108,8 +108,8 @@ class QgisProject
 
     /**
      * @var array<string, array> for each referenced layer, there is an item
-     *            with referencingLayer, referencedField, referencingField keys.
-     *            There is also a 'pivot' key
+     *                           with referencingLayer, referencedField, referencingField keys.
+     *                           There is also a 'pivot' key
      */
     protected $relations = array();
 
@@ -294,7 +294,7 @@ class QgisProject
     }
 
     /**
-     * WMS informations
+     * WMS informations.
      *
      * @return array<string, mixed>
      */
@@ -309,11 +309,11 @@ class QgisProject
     }
 
     /**
-     * Proj4 string for proj Auth Id if is known by the project
+     * Proj4 string for proj Auth Id if is known by the project.
      *
      * @param string $authId
      *
-     * @return string|null
+     * @return null|string
      */
     public function getProj4($authId)
     {
@@ -325,7 +325,7 @@ class QgisProject
     }
 
     /**
-     * All proj4
+     * All proj4.
      *
      * @return array<string, string>
      */
@@ -335,7 +335,7 @@ class QgisProject
     }
 
     /**
-     * Relations
+     * Relations.
      *
      * @return array<string, array>
      */
@@ -345,7 +345,7 @@ class QgisProject
     }
 
     /**
-     * Themes of the QGIS project
+     * Themes of the QGIS project.
      *
      * @return array<string, array>
      */
@@ -392,6 +392,7 @@ class QgisProject
                     $layerCfg->shortname = $layer->shortname;
                 }
             }
+
             return;
         }
 
@@ -429,6 +430,7 @@ class QgisProject
                     $layerCfg->opacity = $layer->layerOpacity;
                 }
             }
+
             return;
         }
         $layers = $this->layers;
@@ -486,6 +488,7 @@ class QgisProject
                 }
                 $layerCfg->mutuallyExclusive = 'True';
             }
+
             return;
         }
         $groupsWithShortName = $this->xpathQuery("//layer-tree-group/customproperties/property[@key='wmsShortName']/parent::*/parent::*");
@@ -561,6 +564,7 @@ class QgisProject
                 }
                 $layerCfg->showFeatureCount = 'True';
             }
+
             return;
         }
         $layersWithShowFeatureCount = $this->xpathQuery("//layer-tree-layer/customproperties/property[@key='showFeatureCount'][@value='1']/parent::*/parent::*");
@@ -866,6 +870,7 @@ class QgisProject
     {
         if ($this->path) {
             $project = Qgis\ProjectInfo::fromQgisPath($this->path);
+
             return $project->getLayoutsAsKeyArray();
         }
         // get restricted composers
@@ -1000,14 +1005,14 @@ class QgisProject
 
             // update locateByLayer with alias and filter information
             foreach ($locateByLayer as $k => $v) {
-                $updateLocate = False;
+                $updateLocate = false;
                 $layer = $project->getLayerById($v->layerId);
                 // Get field alias
                 $alias = $layer->getFieldAlias($v->fieldName);
                 if ($alias !== null) {
                     // Update locate with field alias
                     $v->fieldAlias = $alias;
-                    $updateLocate = True;
+                    $updateLocate = true;
                 }
                 if (property_exists($v, 'filterFieldName')) {
                     // Get filter field alias
@@ -1015,7 +1020,7 @@ class QgisProject
                     if ($filterAlias !== null) {
                         // Update locate with filter field alias
                         $v->filterFieldAlias = $filterAlias;
-                        $updateLocate = True;
+                        $updateLocate = true;
                     }
                 }
                 // Get joins
@@ -1023,7 +1028,7 @@ class QgisProject
                     if (!property_exists($v, 'vectorjoins')) {
                         // Add joins to locate
                         $v->vectorjoins = array();
-                        $updateLocate = True;
+                        $updateLocate = true;
                     }
                     foreach ($layer->vectorjoins as $vectorjoin) {
                         if (in_array($vectorjoin->joinLayerId, $locateLayerIds)) {
@@ -1033,7 +1038,7 @@ class QgisProject
                                 'targetFieldName' => $vectorjoin->targetFieldName,
                                 'joinLayerId' => $vectorjoin->joinLayerId,
                             );
-                            $updateLocate = True;
+                            $updateLocate = true;
                         }
                     }
                 }
@@ -1042,6 +1047,7 @@ class QgisProject
                     $locateByLayer->{$k} = $v;
                 }
             }
+
             return;
         }
 
@@ -1110,6 +1116,7 @@ class QgisProject
                     unset($editionLayers->{$key});
                 }
             }
+
             return;
         }
 
@@ -1145,8 +1152,8 @@ class QgisProject
     }
 
     /**
-     * @param object  $editionLayers
-     * @param Project|null $proj
+     * @param object       $editionLayers
+     * @param null|Project $proj
      */
     public function readEditionForms($editionLayers, $proj = null)
     {
@@ -1160,13 +1167,14 @@ class QgisProject
                 if ($layer->type !== 'vector') {
                     continue;
                 }
-                /** @var Qgis\Layer\VectorLayer $layer */
 
+                /** @var Qgis\Layer\VectorLayer $layer */
                 $formControls = $layer->getFormControls();
                 if ($proj) {
                     $proj->getCacheHandler()->setEditableLayerFormCache($obj->layerId, $formControls);
                 }
             }
+
             return;
         }
         $embeddedEditionLayers = array();
@@ -1316,6 +1324,7 @@ class QgisProject
                 $layer = $project->getLayerById($obj->layerId);
                 $obj->attributetableconfig = $layer->attributetableconfig->toKeyArray();
             }
+
             return;
         }
 
@@ -1346,29 +1355,45 @@ class QgisProject
     }
 
     /**
-     * @param \SimpleXMLElement $xml
-     * @param mixed             $layers
+     * @param mixed $layers
      *
      * @return int[]
      */
-    public function readLayersOrder($xml, $layers)
+    public function readLayersOrder($layers)
     {
         $layersOrder = array();
-        $customOrder = $this->getXml()->xpath('layer-tree-group/custom-order');
-        if (count($customOrder) == 0) {
-            return $layersOrder;
-        }
-        $customOrderZero = $customOrder[0];
-        if (intval($customOrderZero->attributes()->enabled) == 1) {
-            $items = $customOrderZero->xpath('//item');
+        if ($this->path) {
+            $project = Qgis\ProjectInfo::fromQgisPath($this->path);
+            $customOrder = $project->layerTreeRoot->customOrder;
+            if (!$customOrder->enabled) {
+                return $layersOrder;
+            }
             $lo = 0;
-            foreach ($items as $layerI) {
+            foreach ($customOrder->items as $layerI) {
                 // Get layer name from config instead of XML for possible embedded layers
                 $name = $this->getLayerNameByIdFromConfig($layerI, $layers);
                 if ($name) {
                     $layersOrder[$name] = $lo;
                 }
                 ++$lo;
+            }
+        } else {
+            $customOrder = $this->getXml()->xpath('layer-tree-group/custom-order');
+            if (count($customOrder) == 0) {
+                return $layersOrder;
+            }
+            $customOrderZero = $customOrder[0];
+            if (intval($customOrderZero->attributes()->enabled) == 1) {
+                $items = $customOrderZero->xpath('//item');
+                $lo = 0;
+                foreach ($items as $layerI) {
+                    // Get layer name from config instead of XML for possible embedded layers
+                    $name = $this->getLayerNameByIdFromConfig($layerI, $layers);
+                    if ($name) {
+                        $layersOrder[$name] = $lo;
+                    }
+                    ++$lo;
+                }
             }
         }
 
@@ -1398,26 +1423,26 @@ class QgisProject
         );
 
         // get QGIS project version
-        //$this->qgisProjectVersion = $this->readQgisProjectVersion($qgsXml);
+        // $this->qgisProjectVersion = $this->readQgisProjectVersion($qgsXml);
         $this->qgisProjectVersion = $this->convertQgisProjectVersion($project->version);
-        //$this->lastSaveDateTime = $this->readLastSaveDateTime($qgs_path);
+        // $this->lastSaveDateTime = $this->readLastSaveDateTime($qgs_path);
         $this->lastSaveDateTime = $project->saveDateTime;
 
-        //$this->WMSInformation = $this->readWMSInformation($qgsXml);
+        // $this->WMSInformation = $this->readWMSInformation($qgsXml);
         $this->WMSInformation = $project->getWmsInformationsAsKeyArray();
-        //$this->canvasColor = $this->readCanvasColor($qgsXml);
+        // $this->canvasColor = $this->readCanvasColor($qgsXml);
         $this->canvasColor = $project->properties->Gui->getCanvasColor();
-        //$this->allProj4 = $this->readAllProj4($qgsXml);
+        // $this->allProj4 = $this->readAllProj4($qgsXml);
         $this->allProj4 = $project->getProjAsKeyArray();
-        //$this->themes = $this->readThemes($qgsXml);
+        // $this->themes = $this->readThemes($qgsXml);
         $this->themes = $project->getVisibilityPresetsAsKeyArray();
-        //$this->customProjectVariables = $this->readCustomProjectVariables($qgsXml);
+        // $this->customProjectVariables = $this->readCustomProjectVariables($qgsXml);
         $this->customProjectVariables = $project->properties->Variables !== null ? $project->properties->Variables->getVariablesAsKeyArray() : array();
-        //$this->useLayerIDs = $this->readUseLayerIDs($qgsXml);
+        // $this->useLayerIDs = $this->readUseLayerIDs($qgsXml);
         $this->useLayerIDs = $project->properties->WMSUseLayerIDs !== null ? $project->properties->WMSUseLayerIDs : false;
-        //$this->layers = $this->readLayers($qgsXml);
+        // $this->layers = $this->readLayers($qgsXml);
         $this->layers = $project->getLayersAsKeyArray();
-        //list($this->relations, $this->relationsFields) = $this->readRelations($qgsXml);
+        // list($this->relations, $this->relationsFields) = $this->readRelations($qgsXml);
         $this->relations = $project->getRelationsAsKeyArray();
         $this->relationsFields = $project->getRelationFieldsAsKeyArray();
     }
@@ -1517,6 +1542,7 @@ class QgisProject
     {
         $qgisRoot = $xml->xpath('//qgis');
         $qgisRootZero = $qgisRoot[0];
+
         return $this->convertQgisProjectVersion((string) $qgisRootZero->attributes()->version);
     }
 
