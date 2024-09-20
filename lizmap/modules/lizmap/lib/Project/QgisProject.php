@@ -1321,15 +1321,29 @@ class QgisProject
     }
 
     /**
-     * @param \SimpleXMLElement $xml
      * @param mixed             $layers
      *
      * @return int[]
      */
-    public function readLayersOrder($xml, $layers)
+    public function readLayersOrder($layers)
     {
         $layersOrder = array();
-        if ($this->qgisProjectVersion >= 30000) { // For QGIS >=3.0, custom-order is in layer-tree-group
+        if ($this->path) {
+            $project = Qgis\ProjectInfo::fromQgisPath($this->path);
+            $customOrder = $project->layerTreeRoot->customOrder;
+            if (!$customOrder->enabled) {
+                return $layersOrder;
+            }
+            $lo = 0;
+            foreach ($customOrder->items as $layerI) {
+                // Get layer name from config instead of XML for possible embedded layers
+                $name = $this->getLayerNameByIdFromConfig($layerI, $layers);
+                if ($name) {
+                    $layersOrder[$name] = $lo;
+                }
+                ++$lo;
+            }
+        } else if ($this->qgisProjectVersion >= 30000) { // For QGIS >=3.0, custom-order is in layer-tree-group
             $customOrder = $this->getXml()->xpath('layer-tree-group/custom-order');
             if (count($customOrder) == 0) {
                 return $layersOrder;
