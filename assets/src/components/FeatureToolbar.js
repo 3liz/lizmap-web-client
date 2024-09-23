@@ -121,11 +121,6 @@ export default class FeatureToolbar extends HTMLElement {
 
         render(this._mainTemplate(), this);
 
-        // Add tooltip on buttons
-        $('.btn', this).tooltip({
-            placement: 'top'
-        });
-
         this._editableFeaturesCallBack = (editableFeatures) => {
             this.updateIsFeatureEditable(editableFeatures.properties);
             render(this._mainTemplate(), this);
@@ -143,6 +138,13 @@ export default class FeatureToolbar extends HTMLElement {
             this._editableFeaturesCallBack,
             'edition.editableFeatures'
         );
+
+        // Add tooltip on buttons
+        const tooltipTriggerList = this.querySelectorAll('[data-bs-toggle="tooltip"]');
+        [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, {
+            trigger: 'hover',
+            container:this
+        }));
     }
 
     disconnectedCallback() {
