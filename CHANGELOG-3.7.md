@@ -19,9 +19,12 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Fix issues on datetime pickers and localization
 * Remove unwanted web assets from local configuration
 * `lizMap.getFeaturePopupContentByFeatureIntersection` according to the choosing scale
+* Bugfix Permalink: checked groups are not respected when hash is applied
+* For cache management, lookup layer by any name for both server and desktop
 
 ### Backend
 
+* Update Jelix to 1.8.12
 * Update Playwright to 1.46.0
 * Some updates on PHPUnit 10
 
