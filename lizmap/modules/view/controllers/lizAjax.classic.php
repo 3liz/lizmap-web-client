@@ -187,6 +187,9 @@ class lizAjaxCtrl extends jController
             $lizUrls['removeCache'] = jUrl::getFull('admin~maps:removeLayerCache');
         }
 
+        if (jAcl2::check('lizmap.admin.access') || jAcl2::check('lizmap.admin.server.information.view')) {
+            $lizUrls['repositoryAdmin'] = jUrl::getFull('admin~maps:index');
+        }
         $content = '<script type="text/javascript" src="'.jUrl::getFull('view~translate:index').'"/>'."\n";
         $content .= '<script type="text/javascript">// <![CDATA['."\n";
         $content .= 'var lizUrls = '.json_encode($lizUrls).";\n";
