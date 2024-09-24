@@ -8,6 +8,10 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Backend
+
+* Update OpenLayers to 10.2.0
+
 ## 3.8.1 - 2024-09-18
 
 ### Funders
