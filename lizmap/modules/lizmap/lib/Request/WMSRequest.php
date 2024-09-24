@@ -466,6 +466,9 @@ class WMSRequest extends OGCRequest
         $this->params['with_maptip'] = 'true';
         // Always request geometry to QGIS server so we can decide if to use it later
         $this->params['with_geometry'] = 'true';
+        // Starting from LWC 3.9, we need to request the maptip with Bootstrap 5
+        // TODO, remove later when the lizmapWebClientTargetVersion=30800 because all projects will be migrated.
+        $this->params['CSS_FRAMEWORK'] = 'BOOTSTRAP5';
 
         // Get remote data
         $response = $this->request(true);
