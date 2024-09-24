@@ -3,12 +3,10 @@ import { test, expect } from '@playwright/test';
 import { gotoMap } from './globals';
 
 test.describe('N to M relations', () => {
-    test.beforeEach(async ({ page }) => {
+    test('Attribute table and popup behavior', async ({ page }) => {
+
         const url = '/index.php/view/map/?repository=testsrepository&project=n_to_m_relations';
         await gotoMap(url, page);
-    });
-
-    test('Attribute table behavior', async ({ page }) => {
 
         // open attribute table panel
         await page.locator('#button-attributeLayers').click();
@@ -294,9 +292,8 @@ test.describe('N to M relations', () => {
 
         await expect(birdsTable.locator("tbody tr")).toHaveCount(8);
 
-    })
-
-    test('Popup behavior', async ({ page }) => {
+        // popup behavior
+        await page.locator("#bottom-dock-window-buttons button.btn-bottomdock-clear").click()
 
         // click on map to get popup list
         let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
@@ -306,7 +303,6 @@ test.describe('N to M relations', () => {
                 y: 232
             }
         });
-
         await getFeatureInfoRequestPromise;
 
         //time for rendering the popup
@@ -328,9 +324,9 @@ test.describe('N to M relations', () => {
             return dialog.accept();
         });
 
-        let unlinkPivotFeature = page.waitForResponse(response => response.request().method() === 'GET' && response.request().url().includes('deleteFeature'));
+        let unlinkPopupPivotFeature = page.waitForResponse(response => response.request().method() === 'GET' && response.request().url().includes('deleteFeature'));
         await page.locator(".lizmapPopupContent .lizmapPopupChildren").nth(0).locator(".lizmapPopupSingleFeature").nth(0).locator(".lizmapPopupDiv lizmap-feature-toolbar .feature-toolbar button[data-bs-title='Unlink child']").click();
-        await unlinkPivotFeature;
+        await unlinkPopupPivotFeature;
 
         await expect(page.locator(".lizmapPopupContent .lizmapPopupChildren").nth(0).locator(".lizmapPopupSingleFeature").nth(0).locator(".lizmapPopupDiv")).toHaveCount(0)
 
