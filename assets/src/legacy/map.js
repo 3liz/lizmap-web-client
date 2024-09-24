@@ -3914,9 +3914,15 @@ window.lizMap = function() {
             })
                 .catch((error) => {
                     console.error(error);
-                    const errorMsg = `
+                    let errorMsg = `
           <p class="error-msg">${lizDict['startup.error']}
-          <br><a href="${globalThis['lizUrls'].basepath}">${lizDict['startup.goToProject']}</a></p>`;
+          <br><a href="${globalThis['lizUrls'].basepath}">${lizDict['startup.goToProject']}</a>`;
+                    if (document.body.dataset.lizmapUserDefinedJsCount > 0 && document.body.dataset.lizmapAdminUser == 1) {
+                        errorMsg += '<br>'+`${lizDict['startup.user_defined_js']}<br>
+                        <a href="${globalThis['lizUrls'].repositoryAdmin}">${lizDict['startup.goToRepositoryAdmin']}</a><br>
+                        <a href="`+ window.location+`&no_user_defined_js=1">${lizDict['startup.projectWithoutJSLink']}</a>`
+                    }
+                    errorMsg += `</p>`;
                     document.getElementById('header').insertAdjacentHTML('afterend', errorMsg);
                 })
                 .finally(() => {
