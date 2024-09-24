@@ -108,9 +108,15 @@
             <td>
                 {if $data['qgis_server_info']['py_qgis_server']['found']}
                     {if $data['qgis_server_info']['py_qgis_server']['stable']}
-                    <a href="https://github.com/3liz/py-qgis-server/releases/tag/{$data['qgis_server_info']['py_qgis_server']['version']}" target="_blank">
-                        {$data['qgis_server_info']['py_qgis_server']['version']}
-                    </a>
+                        {if $data['qgis_server_info']['py_qgis_server']['version'] == 'n/a'}
+                            {* If the value is n/a, Py-QGIS-Server failed to fetch the version *}
+                            {* https://github.com/3liz/py-qgis-server/blob/b11bba45495d32e348457c0802fe08f2bf952b8b/pyqgisserver/version.py#L17 *}
+                            {$data['qgis_server_info']['py_qgis_server']['version']}
+                        {else}
+                            <a href="https://github.com/3liz/py-qgis-server/releases/tag/{$data['qgis_server_info']['py_qgis_server']['version']}" target="_blank">
+                                {$data['qgis_server_info']['py_qgis_server']['version']}
+                            </a>
+                        {/if}
                     {else}
                     <a href="https://github.com/3liz/py-qgis-server/commit/{$data['qgis_server_info']['py_qgis_server']['commit_id']}" target="_blank">
                         {$data['qgis_server_info']['py_qgis_server']['version']} - {$data['qgis_server_info']['py_qgis_server']['commit_id']}
