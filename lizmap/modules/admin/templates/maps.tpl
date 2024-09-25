@@ -17,7 +17,7 @@
 
             <legend>{$repo->getKey()}
             {if !$repo->hasValidPath() }
-                <span class='badge badge-important'>{@admin~admin.form.admin_section.repository.path.invalid@}</span>
+                <span class='badge bg-warning'>{@admin~admin.form.admin_section.repository.path.invalid@}</span>
             {/if}
             </legend>
             <dl><dt>{@admin~admin.form.admin_section.data.label@}</dt>
