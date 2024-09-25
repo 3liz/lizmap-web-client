@@ -155,7 +155,7 @@ var lizLayerActionButtons = function() {
                 html+= '<dd>';
                 html+= '<input type="hidden" class="opacityLayer '+isBaselayer+'" value="'+aName+'">';
 
-                const currentOpacity = lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerOrGroupByName(aName).opacity;
+                const currentOpacity = lizMap.mainLizmap.state.layersAndGroupsCollection.getMapLayerOrGroupByName(aName).opacity;
                 var opacities = lizMap.config.options.layersOpacities;
                 if (typeof opacities === 'undefined') {
                     opacities = [0.2, 0.4, 0.6, 0.8, 1];
