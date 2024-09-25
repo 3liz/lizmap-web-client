@@ -160,9 +160,6 @@
         <tr>
             <th style="width:20%;">{@admin.server.information.qgis.plugin@}</th>
             <th style="width:20%;">{@admin.server.information.qgis.plugin.version@}</th>
-            {if $displayPluginActionColumn }
-                <th>{@admin.server.information.qgis.plugin.action@}</th>
-            {/if}
         </tr>
         {foreach $data['qgis_server_info']['plugins'] as $name=>$version}
         <tr>
@@ -183,14 +180,10 @@
                 {else}
                     {$version['version']}
                 {/if}
-            </td>
-            {if $displayPluginActionColumn }
                 {if $name == 'lizmap_server' && $lizmapQgisServerNeedsUpdate}
-                    <td style="background-color:lightcoral;"><strong>{$lizmapPluginUpdate}</strong></td>
-                {else}
-                <td></td>
+                    <span class='badge badge-important'>{$lizmapPluginUpdate}</span>
                 {/if}
-            {/if}
+            </td>
         </tr>
         {/foreach}
     </table>
