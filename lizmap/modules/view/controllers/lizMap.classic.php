@@ -230,6 +230,10 @@ class lizMapCtrl extends jController
             $lizUrls['resourceUrlReplacement']['webdav'] = 'dav/';
         }
 
+        if (jAcl2::check('lizmap.admin.access') || jAcl2::check('lizmap.admin.server.information.view')) {
+            $lizUrls['repositoryAdmin'] = jUrl::getFull('admin~maps:index');
+        }
+
         $rep->addJSCode('var lizUrls = '.json_encode($lizUrls).';');
         $rep->addJSCode('var lizProj4 = '.json_encode($lproj->getAllProj4()).';');
         $rep->addStyle('#map', 'background-color:'.$lproj->getCanvasColor().';');
@@ -348,12 +352,13 @@ class lizMapCtrl extends jController
             }
         }
 
+        $countUserJs = 0;
         // Override default theme by themes found in folder media/themes/...
         // Theme name can be 'default' and apply to all projects in a repository
         // or the project name and only apply to it
         // Also if media/themes/default/css is found one directory above repositorie's one
         // it will apply to all repositories
-        if ($lrep->allowUserDefinedThemes()) {
+        if ($lrep->allowUserDefinedThemes() && $this->param('no_user_defined_js') != '1') {
             $repositoryPath = $lrep->getPath();
             $cssArray = array('main', 'map', 'media');
             $themeArray = array('default', $project);
@@ -429,8 +434,10 @@ class lizMapCtrl extends jController
                                 );
                                 if ($fileExtension == 'js') {
                                     $jsUrls[] = $jsUrl;
+                                    ++$countUserJs;
                                 } elseif ($fileExtension == 'mjs') {
                                     $mjsUrls[] = $jsUrl;
+                                    ++$countUserJs;
                                 } else {
                                     $cssUrls[] = $jsUrl;
                                 }
@@ -456,6 +463,7 @@ class lizMapCtrl extends jController
                 }
             }
         }
+        $rep->setBodyAttributes(array('data-lizmap-user-defined-js-count' => $countUserJs));
 
         // optionally hide some tools
         // header
@@ -607,6 +615,8 @@ class lizMapCtrl extends jController
                 ";
                 $rep->addJSCode($jsWarning);
             }
+            // add body attribute to tell if current user is admin
+            $rep->setBodyAttributes(array('data-lizmap-admin-user' => true));
         }
 
         $rep->body->assign($assign);
