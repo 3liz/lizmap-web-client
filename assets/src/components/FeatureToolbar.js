@@ -57,7 +57,7 @@ export default class FeatureToolbar extends HTMLElement {
 
             ${this.isFeatureExportable
                 ? html`<div class="btn-group feature-export">
-                        <button type="button" class="btn btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="tooltip" data-bs-title="${lizDict['attributeLayers.toolbar.btn.data.export.title']}">
+                        <button type="button" class="btn btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-toggle="tooltip" data-bs-title="${lizDict['attributeLayers.toolbar.btn.data.export.title']}">
                             <i class="icon-download"></i>
                             <span class="caret"></span>
                         </button>
@@ -104,7 +104,7 @@ export default class FeatureToolbar extends HTMLElement {
             ${this.editableChildrenLayers.length
                 ? html`
                 <div class="btn-group feature-create-child" style="margin-left: 0px;">
-                    <button type="button" class="btn btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-title="${lizDict['attributeLayers.toolbar.btn.data.createFeature.title']}">
+                    <button type="button" class="btn btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-title="${lizDict['attributeLayers.toolbar.btn.data.createFeature.title']}">
                         <i class="icon-plus-sign"></i>
                         <span class="caret"></span>
                     </button>
