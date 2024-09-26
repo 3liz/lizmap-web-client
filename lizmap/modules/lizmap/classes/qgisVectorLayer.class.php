@@ -208,7 +208,7 @@ class qgisVectorLayer extends qgisMapLayer
         );
         $parameters = array(
             'dbname', 'service', 'host', 'port', 'user', 'password',
-            'sslmode', 'key', 'estimatedmetadata', 'selectatid',
+            'sslmode', 'authcfg', 'key', 'estimatedmetadata', 'selectatid',
             'srid', 'type', 'checkPrimaryKeyUnicity',
             'table', 'geocol', 'sql', 'schema', 'tablename',
         );
