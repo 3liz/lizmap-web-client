@@ -1161,7 +1161,7 @@ var lizAttributeTable = function() {
                     }
                     if( layerLinkButtonItems.length > 0 ){
                         layerLinkButton+= '&nbsp;<div class="btn-group" role="group" >';
-                        layerLinkButton+= '    <button type="button" class="btn btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">';
+                        layerLinkButton+= '    <button type="button" class="btn btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">';
                         layerLinkButton+= lizDict['attributeLayers.toolbar.btn.data.linkFeatures.title'];
                         layerLinkButton+= '      <span class="caret"></span>';
                         layerLinkButton+= '    </button>';
