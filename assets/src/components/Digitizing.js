@@ -98,7 +98,7 @@ export default class Digitizing extends HTMLElement {
                         <use xlink:href="#text"></use>
                     </svg>
                 </button>
-                <button type="button" class="btn dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown">
+                <button type="button" class="btn dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
                     <span class="visually-hidden">Toggle Dropdown</span>
                 </button>
                 <ul class="dropdown-menu">
@@ -182,7 +182,7 @@ export default class Digitizing extends HTMLElement {
             </button>
             <div class="digitizing-import-export ${this.importExportAvailable ? '' : 'hide'}">
                 <div class="btn-group digitizing-export">
-                    <button class="btn dropdown-toggle" ?disabled=${!mainLizmap.digitizing.featureDrawn} data-toggle="dropdown" data-bs-toggle="tooltip" data-bs-title="${lizDict['attributeLayers.toolbar.btn.data.export.title']}">
+                    <button class="btn dropdown-toggle" ?disabled=${!mainLizmap.digitizing.featureDrawn} data-bs-toggle="dropdown" aria-expanded="false" data-bs-toggle="tooltip" data-bs-title="${lizDict['attributeLayers.toolbar.btn.data.export.title']}">
                         <svg>
                             <use xlink:href="#file-download"></use>
                         </svg>

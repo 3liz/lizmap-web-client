@@ -84,7 +84,7 @@ export default class SelectionTool extends HTMLElement {
                     <lizmap-selection-invert></lizmap-selection-invert>
                     ${this.hasAttribute('layer-export') ? html`
                         <div class="btn-group dropup selectiontool-export" role="group" data-bs-toggle="tooltip" data-bs-title="${mainLizmap.selectionTool.isExportable ? '' : lizDict['switcher.layer.export.warn']}">
-                            <button type="button" class="btn btn-sm dropdown-toggle" ?disabled=${ !mainLizmap.selectionTool.isExportable } data-toggle="dropdown" aria-expanded="false">
+                            <button type="button" class="btn btn-sm dropdown-toggle" ?disabled=${ !mainLizmap.selectionTool.isExportable } data-bs-toggle="dropdown" aria-expanded="false">
                                 ${lizDict['switcher.layer.export.title']}
                             <span class="caret"></span>
                             </button>
