@@ -182,7 +182,7 @@ export default class Digitizing extends HTMLElement {
             </button>
             <div class="digitizing-import-export ${this.importExportAvailable ? '' : 'hide'}">
                 <div class="btn-group digitizing-export">
-                    <button class="btn dropdown-toggle" ?disabled=${!mainLizmap.digitizing.featureDrawn} data-toggle="dropdown" data-bs-toggle="tooltip" data-bs-title="${lizDict['attributeLayers.toolbar.btn.data.export.title']}">
+                    <button class="btn dropdown-toggle" ?disabled=${!mainLizmap.digitizing.featureDrawn} data-bs-toggle="dropdown" data-bs-toggle="tooltip" data-bs-title="${lizDict['attributeLayers.toolbar.btn.data.export.title']}">
                         <svg>
                             <use xlink:href="#file-download"></use>
                         </svg>
