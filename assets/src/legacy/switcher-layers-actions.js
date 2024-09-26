@@ -149,7 +149,7 @@ var lizLayerActionButtons = function() {
                 }
             }
             // Opacity
-            const currentLayerState = lizMap.mainLizmap.state.rootMapGroup.getMapLayerByName(aName);
+            const currentLayerState = lizMap.mainLizmap.state.rootMapGroup.getMapLayerOrGroupByName(aName);
             if (!currentLayerState.singleWMSLayer) {
                 html+= '        <dt>'+lizDict['layer.metadata.opacity.title']+'</dt>';
                 html+= '<dd>';
