@@ -15,9 +15,6 @@
     "violet/streaming-json-encoder": "^1.1.5",
     "guzzlehttp/guzzle": "^7.7.0"
   },
-  "require-dev": {
-    "gettext/gettext": "^4.6.1"
-  },
   "minimum-stability": "stable",
   "config": {
     "preferred-install": {
