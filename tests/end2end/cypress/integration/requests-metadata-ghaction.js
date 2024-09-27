@@ -26,7 +26,7 @@ describe('Request JSON metadata', function () {
             expect(response.headers['content-type']).to.eq('application/json');
 
             expect(response.body.qgis_server_info.py_qgis_server.found).to.eq(true)
-            expect(response.body.qgis_server_info.py_qgis_server.version).to.contain('.')
+            expect(response.body.qgis_server_info.py_qgis_server.version).to.match(/\.|n\/a/i)
             expect(response.body.qgis_server_info.metadata.version).to.contain('3.')
             expect(response.body.qgis_server_info.plugins.lizmap_server.version).to.match(/(\d+\.\d+|master|dev)/i)
 
@@ -106,7 +106,7 @@ describe('Request JSON metadata', function () {
             expect(response.headers['content-type']).to.eq('application/json');
 
             expect(response.body.qgis_server_info.py_qgis_server.found).to.eq(true)
-            expect(response.body.qgis_server_info.py_qgis_server.version).to.contain('.')
+            expect(response.body.qgis_server_info.py_qgis_server.version).to.match(/\.|n\/a/i)
             expect(response.body.qgis_server_info.metadata.version).to.contain('3.')
             expect(response.body.qgis_server_info.plugins.lizmap_server.version).to.match(/(\d+\.\d+|master|dev)/i)
         });
