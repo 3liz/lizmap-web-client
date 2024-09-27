@@ -1,4 +1,7 @@
 <?php
+
+use LizmapAdmin\ModulesInfo\ModulesChecker;
+
 /**
  * Lizmap administration.
  *
@@ -87,10 +90,13 @@ class configCtrl extends jController
 
         $this->prepareServicesForm($form, $services);
 
+        $modules = new ModulesChecker();
+
         $tpl = new jTpl();
         $tpl->assign('showSystem', !lizmap::getServices()->hideSensitiveProperties());
         $tpl->assign('servicesForm', $form);
         $tpl->assign('version', $version);
+        $tpl->assign('modules', $modules->getList(true));
         $rep->body->assign('MAIN', $tpl->fetch('config'));
         $rep->body->assign('selectedMenuItem', 'lizmap_configuration');
 
