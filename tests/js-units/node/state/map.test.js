@@ -261,6 +261,165 @@ describe('MapState', function () {
         expect(mapStateChangedEvt).to.be.null // event not dispatch
     })
 
+    it('Transform', function () {
+        let mapState = new MapState();
+        expect(mapState).to.be.instanceOf(MapState)
+        expect(mapState).to.be.instanceOf(EventDispatcher)
+
+        // Update all properties
+        mapState.update({
+            "type": "map.state.changing",
+            "projection": "EPSG:3857",
+            "center": [
+              432082.33132450003,
+              5404877.667855
+            ],
+            "zoom": 4,
+            "size": [
+              1822,
+              634
+            ],
+            "extent": [
+              397265.26494544884,
+              5392762.398873487,
+              466899.3977035512,
+              5416992.936836514
+            ],
+            "resolution": 38.218514137268066,
+            "scaleDenominator": 144447.63855208742,
+            "pointResolution": 27.673393466176645,
+            "pointScaleDenominator": 104592.14407328397
+        });
+
+        let mapStateChangedEvt = null
+
+        mapState.addListener(evt => {
+            mapStateChangedEvt = evt
+        }, 'map.state.changed');
+
+        // update projection
+        mapState.update({
+            "type": "map.state.changing",
+            "projection": "EPSG:4326"
+        });
+
+        expect(mapState.projection).to.be.eq('EPSG:4326')
+        expect(mapState.center).to.be.an('array').that.have.lengthOf(2).that.deep.equal([
+            3.881461622267935,
+            43.60729361373798
+        ])
+        expect(mapState.extent).to.be.instanceOf(Extent).that.have.lengthOf(4).that.deep.equal([
+            3.568694593502878,
+            43.52848921560505,
+            4.194228651032991,
+            43.68609801187091,
+        ])
+
+        expect(mapStateChangedEvt).to.not.be.null // event dispatch
+        expect(mapStateChangedEvt.projection).to.be.eq('EPSG:4326') // the projection has not changed
+        expect(mapStateChangedEvt.center).to.be.an('array').that.have.lengthOf(2).that.deep.equal([
+            3.881461622267935,
+            43.60729361373798
+        ])
+        expect(mapStateChangedEvt.extent).to.be.an('array').that.have.lengthOf(4).that.deep.equal([
+            3.568694593502878,
+            43.52848921560505,
+            4.194228651032991,
+            43.68609801187091,
+        ])
+
+
+        const opt = new OptionsConfig({
+            "projection": {
+                "proj4": "+proj=longlat +datum=WGS84 +no_defs",
+                "ref": "EPSG:4326"
+            },
+            "bbox": [
+                "-3.5",
+                "-1.0",
+                "3.5",
+                "1.0"
+            ],
+            "mapScales": [
+                10000,
+                25000,
+                50000,
+                100000,
+                250000,
+                500000
+            ],
+            "minScale": 10000,
+            "maxScale": 500000,
+            "initialExtent": [
+                -3.5,
+                -1.0,
+                3.5,
+                1.0
+            ],
+            "popupLocation": "dock",
+            "pointTolerance": 25,
+            "lineTolerance": 10,
+            "polygonTolerance": 5,
+            "hideProject": "True",
+            "tmTimeFrameSize": 10,
+            "tmTimeFrameType": "seconds",
+            "tmAnimationFrameLength": 1000,
+            "datavizLocation": "dock",
+            "theme": "light",
+            //"wmsMaxHeight": 3000,
+            //"wmsMaxWidth": 3000,
+            //"fixed_scale_overview_map": true,
+            //"use_native_zoom_levels": false,
+            //"hide_numeric_scale_value": false,
+            //"hideGroupCheckbox": false,
+            //"activateFirstMapTheme": false,
+        })
+        mapState = new MapState(opt);
+
+        // Initial state
+        expect(mapState.projection).to.be.eq('EPSG:4326')
+        expect(mapState.center).to.be.an('array').that.have.lengthOf(2).that.deep.equal([
+            0,
+            0
+        ])
+        expect(mapState.extent).to.be.instanceOf(Extent).that.have.lengthOf(4).that.deep.equal([
+            0,
+            0,
+            0,
+            0
+        ])
+        expect(mapState.initialExtent).to.be.instanceOf(Extent).that.have.lengthOf(4).that.deep.equal([
+            -3.5,
+            -1.0,
+            3.5,
+            1.0
+        ])
+
+        // update projection
+        mapState.update({
+            "type": "map.state.changing",
+            "projection": "EPSG:3857"
+        });
+
+        expect(mapState.projection).to.be.eq('EPSG:3857')
+        expect(mapState.center).to.be.an('array').that.have.lengthOf(2).that.deep.equal([
+            0,
+            0
+        ])
+        expect(mapState.extent).to.be.instanceOf(Extent).that.have.lengthOf(4).that.deep.equal([
+            0,
+            0,
+            0,
+            0
+        ])
+        expect(mapState.initialExtent).to.be.instanceOf(Extent).that.have.lengthOf(4).that.deep.equal([
+            -389618.21777645755,
+            -111325.14286638453,
+            389618.21777645755,
+            111325.14286638486,
+        ])
+    })
+
     it('ConversionError && ValidationError', function () {
         let mapState = new MapState();
         expect(mapState).to.be.instanceOf(MapState)

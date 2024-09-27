@@ -12,7 +12,7 @@ import { convertNumber, convertBoolean } from './../utils/Converters.js';
 import { Extent } from './../utils/Extent.js';
 import { OptionsConfig } from './../config/Options.js';
 import Utils from './../Utils.js';
-import { get as getProjection } from 'ol/proj.js';
+import { get as getProjection, transformExtent } from 'ol/proj.js';
 
 /**
  * Build scales
@@ -153,10 +153,7 @@ export class MapState extends EventDispatcher {
             this._maxZoom = this._scales.length - 1;
             this._projection = options.projection.ref;
             this._initialExtent = new Extent(...(options.initialExtent));
-            this._center = [
-                this._initialExtent.xmin + (this._initialExtent.xmax-this._initialExtent.xmin)/2,
-                this._initialExtent.ymin + (this._initialExtent.ymax-this._initialExtent.ymin)/2
-            ];
+            this._center = this._initialExtent.center;
         }
 
         this._startupFeatures = startupFeatures;
@@ -178,6 +175,7 @@ export class MapState extends EventDispatcher {
      * @fires MapState#map.state.changed
      */
     update(evt) {
+        const oldProjection = this._projection;
         let updatedProperties = {};
         for (const prop in mapStateProperties) {
             if (evt.hasOwnProperty(prop)) {
@@ -229,6 +227,23 @@ export class MapState extends EventDispatcher {
                 }
             }
         }
+
+        // If projection has changed some extents have to be updated
+        if (updatedProperties.hasOwnProperty('projection') && oldProjection && updatedProperties['projection']) {
+            const newProjection = updatedProperties['projection']
+            // The initial extent
+            if (this._initialExtent && !this._initialExtent.equals([0,0,0,0])) {
+                this._initialExtent = new Extent(...(transformExtent(this._initialExtent, oldProjection, newProjection)));
+            }
+            // The extent if it has not been yet updated
+            if (!updatedProperties.hasOwnProperty('extent') && this._extent && !this._extent.equals([0,0,0,0])) {
+                this._extent = new Extent(...(transformExtent(this._extent, oldProjection, newProjection)));
+                this._center = this._extent.center;
+                updatedProperties['extent'] = new Extent(...this._extent);
+                updatedProperties['center'] = [...this.center];
+            }
+        }
+
         // Dispatch event only if something have changed
         if (Object.getOwnPropertyNames(updatedProperties).length != 0) {
             const neededProperties = ['center', 'size', 'extent', 'resolution'];
