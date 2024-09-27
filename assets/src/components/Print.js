@@ -313,16 +313,18 @@ export default class Print extends HTMLElement {
 
             // Translate circle coords to WKT
             if (featureDrawn.getGeometry().getType() === 'Circle') {
-                const center = featureDrawn.getGeometry().getCenter()
-                const radius = featureDrawn.getGeometry().getRadius()
-                const circleString = `CIRCULARSTRING(
+                const geomReproj = featureDrawn.getGeometry().clone().transform(mainLizmap.projection, projectProjection);
+                const center = geomReproj.getCenter();
+                const radius = geomReproj.getRadius();
+
+                const circleWKT = `CURVEPOLYGON(CIRCULARSTRING(
                     ${center[0] - radius} ${center[1]},
                     ${center[0]} ${center[1] + radius},
                     ${center[0] + radius} ${center[1]},
                     ${center[0]} ${center[1] - radius},
-                    ${center[0] - radius} ${center[1]})`;
+                    ${center[0] - radius} ${center[1]}))`;
 
-                highlightGeom.push(circleString);
+                highlightGeom.push(circleWKT);
             } else {
                 highlightGeom.push(formatWKT.writeFeature(featureDrawn, {
                     featureProjection: mainLizmap.projection,
