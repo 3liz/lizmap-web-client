@@ -64,6 +64,16 @@ export class Extent extends Array {
     }
 
     /**
+     * @type {number[]}
+     */
+    get center() {
+        return [
+            this.xmin + (this.xmax-this.xmin)/2,
+            this.ymin + (this.ymax-this.ymin)/2
+        ];
+    }
+
+    /**
      * Checks equality with an other extent or array
      * @param {Extent|Array} anOther - An other extent or array with 4 values
      * @returns {boolean} the other extent or array as the same values
@@ -76,4 +86,5 @@ export class Extent extends Array {
             && anOther[2] == this[2]
             && anOther[3] == this[3])
     }
+
 }
