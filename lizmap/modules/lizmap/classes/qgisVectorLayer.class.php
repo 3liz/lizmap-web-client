@@ -284,15 +284,15 @@ class qgisVectorLayer extends qgisMapLayer
                     $jdbParams['authcfg'] = $dtParams->authcfg;
                     // retrieving user/password from the corresponding jdb::profile in profiles.ini.php. 
                     $ini = new \Jelix\IniFile\IniModifier(jApp::varConfigPath('profiles.ini.php'));
-        			$profiles = $ini->getSectionList();
-		            foreach($profiles as $profile) {
-	        			if ($profile == 'jdb:'.$dtParams->authcfg) {
-	        				$options = $ini->getValues($profile);
-			            	$jdbParams['user'] = $options["user"];
-			            	$jdbParams['password'] = $options["password"];
-			            	break;
-	        			}
-	        		}
+					$profiles = $ini->getSectionList();
+					foreach ($profiles as $profile) {
+						if ($profile == 'jdb:'.$dtParams->authcfg) {
+							$options = $ini->getValues($profile);
+							$jdbParams['user'] = $options['user'];
+							$jdbParams['password'] = $options['password'];
+							break;
+						}
+					}
                 }
             }
             if (!empty($dtParams->schema) && $setSearchPathFromLayer) {
