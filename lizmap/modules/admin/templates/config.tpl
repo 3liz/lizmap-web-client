@@ -123,3 +123,18 @@
     </div>
     {/ifacl2}
   {/ifacl2}
+
+<table class="table table-striped">
+    <tr>
+        <th>Module Name</th>
+        <th>Module version</th>
+        <th>Core ?</th>
+    </tr>
+    {foreach $modules as $module}
+        <tr>
+            <td style='width:30%;'> {$module->slug}</td>
+            <td style='width:30%;'>{$module->version}</td>
+            <td>{if $module->isCore}<div class="badge">Core</div>{/if}</td>
+        </tr>
+    {/foreach}
+</table>
