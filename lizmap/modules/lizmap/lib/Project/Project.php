@@ -261,36 +261,7 @@ class Project
      */
     protected function getLayersWithLabels()
     {
-        // Keep a list of layer ids for which to replace the code by labels
-        $layersWithLabeledFields = array();
-
-        // Attribute layers
-        foreach ($this->cfg->getAttributeLayers() as $key => $config) {
-            if ($config->hideLayer == 'True') {
-                continue;
-            }
-            $layersWithLabeledFields[] = $config->layerId;
-        }
-
-        // Dataviz layers
-        foreach ($this->cfg->getDatavizLayers() as $o => $config) {
-            $layerId = $config->layerId;
-            if (array_key_exists($layerId, $layersWithLabeledFields)) {
-                continue;
-            }
-            $layersWithLabeledFields[] = $config->layerId;
-        }
-
-        // Form filter layers
-        foreach ($this->cfg->getFormFilterLayers() as $o => $config) {
-            $layerId = $config->layerId;
-            if (array_key_exists($layerId, $layersWithLabeledFields)) {
-                continue;
-            }
-            $layersWithLabeledFields[] = $config->layerId;
-        }
-
-        return $layersWithLabeledFields;
+        return $this->cfg->getLayersWithLabels();
     }
 
     public function getQgisPath()
