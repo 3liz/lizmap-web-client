@@ -282,17 +282,18 @@ class qgisVectorLayer extends qgisMapLayer
                 // when qgis authentication config is used to authenticate a layer against, it requires to have preconfigured jdb::profile to align with the login credentials set in qgis authcfg
                 if (!empty($dtParams->authcfg)) {
                     $jdbParams['authcfg'] = $dtParams->authcfg;
-                    // retrieving user/password from the corresponding jdb::profile in profiles.ini.php. 
+                    // retrieving user/password from the corresponding jdb::profile in profiles.ini.php.
                     $ini = new \Jelix\IniFile\IniModifier(jApp::varConfigPath('profiles.ini.php'));
-					$profiles = $ini->getSectionList();
-					foreach ($profiles as $profile) {
-						if ($profile == 'jdb:'.$dtParams->authcfg) {
-							$options = $ini->getValues($profile);
-							$jdbParams['user'] = $options['user'];
-							$jdbParams['password'] = $options['password'];
-							break;
-						}
-					}
+                    $profiles = $ini->getSectionList();
+                    foreach ($profiles as $profile) {
+                        if ($profile == 'jdb:'.$dtParams->authcfg) {
+                            $options = $ini->getValues($profile);
+                            $jdbParams['user'] = $options['user'];
+                            $jdbParams['password'] = $options['password'];
+
+                            break;
+                        }
+                    }
                 }
             }
             if (!empty($dtParams->schema) && $setSearchPathFromLayer) {
