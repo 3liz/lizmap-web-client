@@ -1245,6 +1245,64 @@ class QgisProject
     {
         // Get QGIS form fields configurations for each layer
         $layersLabeledFieldsConfig = array();
+
+        if ($this->path) {
+            $project = Qgis\ProjectInfo::fromQgisPath($this->path);
+            foreach ($layerIds as $layerId) {
+                $layer = $project->getLayerById($layerId);
+                if ($layer === null) {
+                    continue;
+                }
+                if ($layer->type !== 'vector') {
+                    continue;
+                }
+                /** @var Qgis\Layer\VectorLayer $layer */
+
+                $formControls = $layer->getFormControls();
+
+                $fields_config = array();
+                foreach ($formControls as $fieldName => $control) {
+                    $editType = $control->getFieldEditType();
+                    if (!in_array($editType, array('ValueMap', 'ValueRelation', 'RelationReference'))) {
+                        continue;
+                    }
+                    $fields_config[$fieldName] = array(
+                        'type' => $editType,
+                    );
+                    if ($editType == 'ValueMap') {
+                        $valueMap = $control->getValueMap();
+                        if ($valueMap) {
+                            $fields_config[$fieldName]['data'] = $valueMap;
+                        }
+                    } elseif ($editType == 'ValueRelation') {
+                        $valueRelationData = $control->getValueRelationData();
+                        $fields_config[$fieldName]['source_layer_id'] = $valueRelationData['layer'];
+                        $fields_config[$fieldName]['source_layer'] = $valueRelationData['layerName'];
+                        $fields_config[$fieldName]['code_field'] = $valueRelationData['key'];
+                        $fields_config[$fieldName]['label_field'] = $valueRelationData['value'];
+                        $fields_config[$fieldName]['exp_filter'] = $valueRelationData['filterExpression'];
+                    } else {
+                        // RelationReference
+                        // We need to get the relation properties
+                        $relationReferenceData = $control->getRelationReference();
+                        $relation = $relationReferenceData['relation'];
+                        $referencedLayerId = $relationReferenceData['referencedLayerId'];
+                        if (!array_key_exists($referencedLayerId, $this->relations)) {
+                            continue;
+                        }
+                        $fields_config[$fieldName]['relation'] = $relation;
+                        $fields_config[$fieldName]['source_layer_id'] = $referencedLayerId;
+                        $fields_config[$fieldName]['source_layer'] = $relationReferenceData['referencedLayerName'];
+                        $fields_config[$fieldName]['code_field'] = $this->relations[$referencedLayerId][0]['referencedField'];
+                        $fields_config[$fieldName]['label_field'] = $this->relations[$referencedLayerId][0]['previewField'];
+                        $fields_config[$fieldName]['exp_filter'] = $relationReferenceData['filterExpression'];
+                    }
+                }
+                $layersLabeledFieldsConfig[$layer->layername] = $fields_config;
+            }
+            return $layersLabeledFieldsConfig;
+        }
+
         foreach ($layerIds as $layerId) {
             $qgisProject = $this->getEmbeddedQgisProject($layerId);
 
