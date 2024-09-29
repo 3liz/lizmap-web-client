@@ -320,6 +320,8 @@ class QgisProjectTest extends TestCase
          $testQgis->setPath($file);
          $testQgis->readXMLProjectTest($file);
 
+         $this->assertNull($testQgis->getTheXmlAttribute());
+
          //check layers
          foreach ($testQgis->getLayers() as $layers){
                   $this->assertEquals($layers["embedded"],1);
@@ -364,6 +366,8 @@ class QgisProjectTest extends TestCase
          $testQgisParent = new qgisProjectForTests();
          $testQgisParent->setPath($file);
          $testQgisParent->readXMLProjectTest($file);
+
+         $this->assertNull($testQgis->getTheXmlAttribute());
 
          $parentRelations = $testQgisParent->getRelations();
          $parentRelationFields = $testQgisParent->getRelationsFields();
@@ -540,6 +544,8 @@ class QgisProjectTest extends TestCase
         $rep = new Project\Repository('key', array(), null, null, null);
         $testQgis->setPath($file);
         $testQgis->readXMLProjectTest($file);
+
+        $this->assertNull($testQgis->getTheXmlAttribute());
 
         $cfg = json_decode(file_get_contents($file.'.cfg'));
         $config = new Project\ProjectConfig($cfg);
@@ -2261,7 +2267,52 @@ class QgisProjectTest extends TestCase
         $this->assertEquals('', $remotePath->getUploadAccept());
         $this->assertEquals(array(), $remotePath->getMimeTypes());
         $this->assertFalse($remotePath->isImageUpload());
+    }
 
+    public function testReadProject()
+    {
+        //$services = new lizmapServices(array(), (object) array(), false, '', '');
+        $testQgis = new qgisProjectForTests(array());
+        $file = __DIR__.'/Ressources/montpellier.qgs';
+        $testQgis->setPath($file);
+        $testQgis->readXMLProjectTest($file);
+
+        $this->assertNull($testQgis->getTheXmlAttribute());
+
+        $cfg = json_decode(file_get_contents($file.'.cfg'));
+        $config = new Project\ProjectConfig($cfg);
+
+        $testQgis->setPropertiesAfterRead($config);
+
+        $this->assertNull($testQgis->getTheXmlAttribute());
+
+        $testQgis->getPrintTemplates();
+
+        $this->assertNull($testQgis->getTheXmlAttribute());
+
+        $testQgis->readLocateByLayer($config->getLocateByLayer());
+
+        $this->assertNull($testQgis->getTheXmlAttribute());
+
+        $testQgis->readEditionLayers($config->getEditionLayers());
+
+        $this->assertNull($testQgis->getTheXmlAttribute());
+
+        $testQgis->readLayersOrder($config->getLayers());
+
+        $this->assertNull($testQgis->getTheXmlAttribute());
+
+        $testQgis->readAttributeLayers($config->getAttributeLayers());
+
+        $this->assertNull($testQgis->getTheXmlAttribute());
+
+        $testQgis->readEditionForms($config->getEditionLayers(), null);
+
+        $this->assertNull($testQgis->getTheXmlAttribute());
+
+        $testQgis->readLayersLabeledFieldsConfig($config->getLayersWithLabels(), null);
+
+        $this->assertNull($testQgis->getTheXmlAttribute());
 
     }
 }
