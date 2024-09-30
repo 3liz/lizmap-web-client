@@ -19,13 +19,13 @@ import WMTS, {optionsFromCapabilities} from 'ol/source/WMTS.js';
 import { WMTSCapabilities, GeoJSON, WKT } from 'ol/format.js';
 import WMTSTileGrid from 'ol/tilegrid/WMTS.js';
 import {getWidth} from 'ol/extent.js';
-import {Image as ImageLayer, Tile as TileLayer} from 'ol/layer.js';
+import { Image as ImageLayer, Tile as TileLayer } from 'ol/layer.js';
 import TileGrid from 'ol/tilegrid/TileGrid.js';
 import TileWMS from 'ol/source/TileWMS.js';
 import XYZ from 'ol/source/XYZ.js';
 import BingMaps from 'ol/source/BingMaps.js';
 import Google from 'ol/source/Google.js';
-import {BaseLayer as LayerBase} from 'ol/layer/Base.js';
+import { BaseLayer as LayerBase } from 'ol/layer/Base.js';
 import LayerGroup from 'ol/layer/Group.js';
 import { Vector as VectorSource } from 'ol/source.js';
 import { Vector as VectorLayer } from 'ol/layer.js';
@@ -120,12 +120,12 @@ export default class map extends olMap {
         // Get pixel ratio, if High DPI is disabled do not use device pixel ratio
         const pixelRatio = this._hidpi ? this.pixelRatio_ : 1;
 
-        this._useTileWms = this.getSize().reduce(
+        this._useCustomTileWms = this.getSize().reduce(
             (r /*accumulator*/, x /*currentValue*/, i /*currentIndex*/) => r || Math.ceil(x*this._WMSRatio*pixelRatio) > wmsMaxSize[i],
             false,
         );
 
-        this._customTileGrid = this._useTileWms ? new TileGrid({
+        this._customTileGrid = this._useCustomTileWms ? new TileGrid({
             extent: mainLizmap.lizmap3.map.restrictedExtent.toArray(),
             resolutions: resolutions,
             tileSize: this.getSize().map((x, i) => {
@@ -233,9 +233,8 @@ export default class map extends olMap {
                     } else {
                         const itemState = node.itemState;
                         const useExternalAccess = (itemState.externalWmsToggle && itemState.externalAccess.type !== 'wmts' && itemState.externalAccess.type !== 'xyz')
-                        if (this._useTileWms) {
+                        if (this._useCustomTileWms) {
                             layer = new TileLayer({
-                                // extent: extent,
                                 minResolution: minResolution,
                                 maxResolution: maxResolution,
                                 source: new TileWMS({
@@ -260,6 +259,22 @@ export default class map extends olMap {
                                     (image.getImage()).src = src + '&ts=' + Date.now();
                                 });
                             }
+                        } else if (!node.layerConfig.singleTile) {
+                            layer = new TileLayer({
+                                minResolution: minResolution,
+                                maxResolution: maxResolution,
+                                source: new TileWMS({
+                                    url: useExternalAccess ? itemState.externalAccess.url : mainLizmap.serviceURL,
+                                    serverType: 'qgis',
+                                    params: {
+                                        LAYERS: useExternalAccess ? decodeURIComponent(itemState.externalAccess.layers) : node.wmsName,
+                                        FORMAT: useExternalAccess ? decodeURIComponent(itemState.externalAccess.format) : node.layerConfig.imageFormat,
+                                        STYLES: useExternalAccess ? decodeURIComponent(itemState.externalAccess.styles) : node.wmsSelectedStyleName,
+                                        DPI: 96,
+                                        TILED: 'true'
+                                    },
+                                }),
+                            });
                         } else {
                             layer = new ImageLayer({
                                 // extent: extent,
@@ -475,7 +490,7 @@ export default class map extends olMap {
                         baseLayerState.singleWMSLayer = true;
                         this._statesSingleWMSLayers.set(baseLayerState.name, baseLayerState);
                     } else {
-                        if (this._useTileWms) {
+                        if (this._useCustomTileWms) {
                             baseLayer = new TileLayer({
                                 // extent: extent,
                                 minResolution: layerMinResolution,
@@ -863,7 +878,7 @@ export default class map extends olMap {
      * @type {boolean}
      */
     get useTileWms(){
-        return this._useTileWms;
+        return this._useCustomTileWms;
     }
     /**
      * TileGrid configuration when layers is loaded as TileWMS
