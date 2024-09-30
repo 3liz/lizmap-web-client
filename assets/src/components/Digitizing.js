@@ -181,22 +181,21 @@ export default class Digitizing extends HTMLElement {
                 </svg>
             </button>
             <div class="digitizing-import-export ${this.importExportAvailable ? '' : 'hide'}">
-                <div class="btn-group digitizing-export">
-                    <button class="btn dropdown-toggle" ?disabled=${!mainLizmap.digitizing.featureDrawn} data-bs-toggle="dropdown" aria-expanded="false" data-bs-toggle="tooltip" data-bs-title="${lizDict['attributeLayers.toolbar.btn.data.export.title']}">
+                <div class="btn-group dropend digitizing-export">
+                    <button type="button" class="btn dropdown-toggle" ?disabled=${!mainLizmap.digitizing.featureDrawn} data-bs-toggle="dropdown" aria-expanded="false" title="${lizDict['attributeLayers.toolbar.btn.data.export.title']}">
                         <svg>
                             <use xlink:href="#file-download"></use>
                         </svg>
-                        <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu">
                         <li>
-                            <a href="#" @click=${() => mainLizmap.digitizing.download('geojson')}>GeoJSON</a>
+                            <button class="dropdown-item" type="button" @click=${() => mainLizmap.digitizing.download('geojson')}>GeoJSON</button>
                         </li>
                         <li>
-                            <a href="#" @click=${() => mainLizmap.digitizing.download('gpx')}>GPX</a>
+                            <button class="dropdown-item" type="button" @click=${() => mainLizmap.digitizing.download('gpx')}>GPX</button>
                         </li>
                         <li>
-                            <a href="#" @click=${() => mainLizmap.digitizing.download('kml')}>KML</a>
+                            <button class="dropdown-item" type="button" @click=${() => mainLizmap.digitizing.download('kml')}>KML</button>
                         </li>
                     </ul>
                 </div>
