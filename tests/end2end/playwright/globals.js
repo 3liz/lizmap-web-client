@@ -9,17 +9,31 @@ async function NoErrors(page) {
     await expect(page.getByText('An error occurred while loading this map. Some necessary resources may temporari')).toHaveCount(0);
 }
 
-async function CatchErrors(page) {
+/**
+ * CatchErrors function
+ * Some checks when the map is on error
+ * @param page The page object
+ * @param int layersInTreeView The number of layers to find in the treeview.
+ */
+async function CatchErrors(page, layersInTreeView = 0) {
     // Error
     await expect(page.locator('p.error-msg')).toHaveCount(1);
-    await expect(page.locator('#switcher lizmap-treeview ul li')).toHaveCount(0);
+    await expect(page.locator('#switcher lizmap-treeview ul li')).toHaveCount(layersInTreeView);
     // Error message displayed
     await expect(page.getByText('An error occurred while loading this map. Some necessary resources may temporari')).toBeVisible();
     // Go back home link
     await expect(page.getByRole('link', { name: 'Go back to the home page.' })).toHaveCount(1);
 }
 
-export async function gotoMap(url, page, check = true) {
+/**
+ * gotoMap function
+ * Helper to load a map and do some basic checks
+ * @param string url The URL of the map to load
+ * @param page The page object
+ * @param boolean mapMustLoad If the loading of the map must be successful or not. Some error might be triggered when loading the map, on purpose.
+ * @param int layersInTreeView The number of layers to find in the treeview if the map is on error.
+ */
+export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 0) {
     // TODO keep this function synchronized with the Cypress equivalent
 
     // Wait for WMS GetCapabilities promise
@@ -28,7 +42,7 @@ export async function gotoMap(url, page, check = true) {
 
     // Wait for WMS GetCapabilities
     await getCapabilitiesWMSPromise;
-    if (check) {
+    if (mapMustLoad) {
         // Wait for WMS GetLegendGraphic promise
         const getLegendGraphicPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('GetLegendGraphic') === true);
         // Normal check about the map
@@ -39,8 +53,10 @@ export async function gotoMap(url, page, check = true) {
         // Wait to be sure the map is ready
         await page.waitForTimeout(1000)
     } else {
+        // Wait to be sure the map is ready
+        await page.waitForTimeout(1000)
         // Error
-        await CatchErrors(page);
+        await CatchErrors(page, layersInTreeView);
     }
 }
 
