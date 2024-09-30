@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 import { gotoMap } from './globals';
 
 export async function goBackHomeAfterError(page) {
-    await page.getByRole('link', { name: 'Go back to the home page.' }).click();
+    await page.getByRole('link', { name: 'Home' }).click();
     const checked_url = new URL(page.url());
     expect(checked_url.pathname).toBe('/');
 }
@@ -63,4 +63,15 @@ test.describe('Error occurred', () => {
         await gotoMap(url, page);
     })
 
+//    test('The map must fail because of the JavaScript file', async ({ page }) => {
+//        // Flag is inactive, JavaScript files are loaded, an error will be raised
+//        const url = '/index.php/view/map?repository=testsrepository&project=javascript_error&no_user_defined_js=0';
+//        await gotoMap(url, page, false, 1);
+//    });
+
+    test('The map must load, despite the JavaScript file having an error', async ({ page }) => {
+        // Flag is active, no JavaScript file loaded, no JavaScript error will be raised
+        const url = '/index.php/view/map?repository=testsrepository&project=javascript_error&no_user_defined_js=1';
+        await gotoMap(url, page, true);
+    });
 })
