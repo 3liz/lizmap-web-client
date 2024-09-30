@@ -1,4 +1,7 @@
 <?php
+
+use LizmapAdmin\ModulesInfo\ModulesChecker;
+
 /**
  * Lizmap administration : Server information page.
  *
@@ -71,11 +74,14 @@ class server_informationCtrl extends jController
             $displayPluginActionColumn = true;
         }
 
+        $modules = new ModulesChecker();
+
         // Set the HTML content
         $tpl = new jTpl();
         $assign = array(
             'data' => $data,
             'baseUrlApplication' => \jServer::getServerURI().\jApp::urlBasePath(),
+            'modules' => $modules->getList(false),
             'qgisServerNeedsUpdate' => $qgisServerNeedsUpdate,
             'updateQgisServer' => $updateQgisServer,
             'displayPluginActionColumn' => $displayPluginActionColumn,

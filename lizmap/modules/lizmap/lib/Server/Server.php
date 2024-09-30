@@ -12,6 +12,7 @@
  */
 
 namespace Lizmap\Server;
+
 use LizmapAdmin\ModulesInfo\ModulesChecker;
 
 class Server
@@ -222,13 +223,13 @@ class Server
         $data = array();
         $modules = new ModulesChecker();
 
-        foreach ($modules->getList(false) as $module=>$info) {
-
+        foreach ($modules->getList(false) as $module => $info) {
             $data[$info->slug] = array(
                 'version' => $info->version,
                 'core' => $info->isCore,
             );
         }
+
         return $data;
     }
 

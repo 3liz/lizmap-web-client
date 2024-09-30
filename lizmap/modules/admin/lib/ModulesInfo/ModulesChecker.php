@@ -20,7 +20,8 @@ class ModulesChecker
         'view',
         'jacl2db_admin',
         'jauthdb_admin',
-        'master_admin');
+        'master_admin',
+    );
 
     public function getList($withCore = false)
     {
@@ -31,7 +32,6 @@ class ModulesChecker
 
         $enabledModuleName = array();
         foreach ($moduleConfig as $paramName => $value) {
-
             if (preg_match('/(\w*)\.enabled/', $paramName, $matches) && $value == '1') {
                 $moduleSlug = $matches[1];
                 $coreModule = in_array($moduleSlug, self::coreModules);
