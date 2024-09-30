@@ -120,6 +120,7 @@ tests/qgis-projects/webdav/test/*
 !tests/qgis-projects/webdav/test/test_upload.conf
 !tests/qgis-projects/webdav/test/test_upload.txt
 !tests/qgis-projects/ProJets 1982*!
+tests/qgis-projects/tests/media/
 !tests/qgis-projects/tests/media/js/javascript_error/invalid_javascript.js
 tests/qgis-projects/tests/*_attachments.zip
 tests/qgis-server-plugins/*
