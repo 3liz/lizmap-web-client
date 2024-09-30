@@ -2956,6 +2956,11 @@ lizmap-selection-invert svg {
 
 /* Digitizing */
 
+lizmap-digitizing {
+    min-height: 80px;
+    display: block;
+}
+
 .digitizing{
   min-width: 260px;
 }
