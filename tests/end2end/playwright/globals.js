@@ -22,7 +22,7 @@ async function CatchErrors(page, layersInTreeView = 0) {
     // Error message displayed
     await expect(page.getByText('An error occurred while loading this map. Some necessary resources may temporari')).toBeVisible();
     // Go back home link
-    await expect(page.getByRole('link', { name: 'Go back to the home page.' })).toHaveCount(1);
+    await expect(page.getByRole('link', { name: 'Home' })).toHaveCount(1);
 }
 
 /**

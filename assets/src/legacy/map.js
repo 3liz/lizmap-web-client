@@ -3972,14 +3972,29 @@ window.lizMap = function() {
             })
                 .catch((error) => {
                     console.error(error);
+                    // Generic error message
                     let errorMsg = `
-          <p class="error-msg">${lizDict['startup.error']}
-          <br><a href="${globalThis['lizUrls'].basepath}">${lizDict['startup.goToProject']}</a>`;
-                    if (document.body.dataset.lizmapUserDefinedJsCount > 0 && document.body.dataset.lizmapAdminUser == 1) {
-                        errorMsg += '<br>'+`${lizDict['startup.user_defined_js']}<br>
-                        <a href="${globalThis['lizUrls'].repositoryAdmin}">${lizDict['startup.goToRepositoryAdmin']}</a><br>
-                        <a href="`+ window.location+`&no_user_defined_js=1">${lizDict['startup.projectWithoutJSLink']}</a>`
+          <p class="error-msg">
+          ${lizDict['startup.error']}<br>
+          `;
+                if (document.body.dataset.lizmapAdminUser == 1) {
+                    // The user is an administrator, we add more infos and buttons.
+                    if (document.body.dataset.lizmapUserDefinedJsCount > 0) {
+                         errorMsg += `${lizDict['startup.user_defined_js']}<br>
+
+                            <a href="${globalThis['lizUrls'].repositoryAdmin}"><button class="btn btn-primary" type="button">${lizDict['startup.goToRepositoryAdmin']}</button></a>
+                            <a href="`+ window.location+`&no_user_defined_js=1"><button class="btn btn-primary" type="button">${lizDict['startup.projectWithoutJSLink']}</button></a>
+                    `;
+                    } else {
+                        // No additional JavaScript, but still failing, we propose the developer tools :/
+                        errorMsg += `${lizDict['startup.error.developer.tools']}<br>`;
                     }
+                    // If the flag no_user_defined_js=1, we could give more info ?
+                } else {
+                    // The user is not an administrator, we invite the admin, and button to get back home
+                    errorMsg += `${lizDict['startup.error.administrator']}<br>`;
+                }
+                    errorMsg += `<a href="${globalThis['lizUrls'].basepath}"><button class="btn btn-primary" type="button">${lizDict['startup.goToProject']}</button></a>`;
                     errorMsg += `</p>`;
                     document.getElementById('header').insertAdjacentHTML('afterend', errorMsg);
                 })
