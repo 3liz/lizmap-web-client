@@ -30,6 +30,9 @@ describe('Request JSON metadata', function () {
             expect(response.body.qgis_server_info.metadata.version).to.contain('3.')
             expect(response.body.qgis_server_info.plugins.lizmap_server.version).to.match(/(\d+\.\d+|master|dev)/i)
 
+            // Modules
+            expect(response.body.modules.lizmapdemo.version).to.match(/\d+\.\d+/i)
+
             // Desktop plugin
             expect(response.body.lizmap_desktop_plugin_version).to.match(/(\d{5,6})/i)
 
