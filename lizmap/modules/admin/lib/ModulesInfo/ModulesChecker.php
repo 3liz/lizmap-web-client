@@ -35,10 +35,11 @@ class ModulesChecker
             if (preg_match('/(\w*)\.enabled/', $paramName, $matches) && $value == '1') {
                 $moduleSlug = $matches[1];
                 $coreModule = in_array($moduleSlug, self::coreModules);
-                if ($withCore || ((!$withCore) && !$coreModule)) {
-                    $version = $installreRadr->getValue($moduleSlug.'.version', 'modules');
-                    $enabledModuleName[] = new ModuleMetaData($moduleSlug, $version, $coreModule);
+                if ($coreModule && !$withCore) {
+                    continue;
                 }
+                $version = $installreRadr->getValue($moduleSlug.'.version', 'modules');
+                $enabledModuleName[] = new ModuleMetaData($moduleSlug, $version, $coreModule);
             }
         }
 
