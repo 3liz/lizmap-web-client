@@ -249,8 +249,23 @@ export default class BaseLayersMap extends olMap {
                                 (image.getImage()).src = src + '&ts=' + Date.now();
                             });
                         }
+                    } else if (!node.layerConfig.singleTile) {
+                        layer = new TileLayer({
+                            minResolution: minResolution,
+                            maxResolution: maxResolution,
+                            source: new TileWMS({
+                                url: useExternalAccess ? itemState.externalAccess.url : mainLizmap.serviceURL,
+                                serverType: 'qgis',
+                                params: {
+                                    LAYERS: useExternalAccess ? decodeURIComponent(itemState.externalAccess.layers) : node.wmsName,
+                                    FORMAT: useExternalAccess ? decodeURIComponent(itemState.externalAccess.format) : node.layerConfig.imageFormat,
+                                    STYLES: useExternalAccess ? decodeURIComponent(itemState.externalAccess.styles) : node.wmsSelectedStyleName,
+                                    DPI: 96,
+                                    TILED: 'true'
+                                },
+                            }),
+                        });
                     }
-
                 }
 
                 layer.setVisible(node.visibility);
