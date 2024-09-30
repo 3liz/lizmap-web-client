@@ -171,7 +171,7 @@
             {* Fixed in lizmap_server plugin 1.3.2 https://github.com/3liz/qgis-lizmap-server-plugin/commit/eb6a773ba035f877e9fa91db5ef87911a2648ee1 *}
             <th style="width:20%;">
                 {$version['name']}
-                {if array_key_exists('homepage', $version)}
+                {if array_key_exists('homepage', $version) && $version['homepage']}
                     <a href="{$version['homepage']}" target="_blank"><span class='badge rounded-pill bg-secondary'>{@admin.server.information.qgis.plugin.help@}</span></a>
                 {/if}
             </th>
