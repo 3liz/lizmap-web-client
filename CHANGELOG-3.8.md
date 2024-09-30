@@ -8,9 +8,29 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Funders
+
+* Contribution on the source code from @cfsgarcia
+
+### Added
+
+* Show the list of installed modules in the administration panel
+* Add a link to QGIS Server individual plugin help URL if available
+
+### Changed
+
+* Better user experience about a JavaScript error, possible to add `no_user_defined_js=1` in the URL
+
+### Fixed
+
+* Fix extent when clicking on the zoom to initial extent button
+* Fix opening layer group information window, contribution from @cfsgarcia
+* Fix reprojection of circle when printing and use a `CURVEPOLYGON`
+* Fix: allow tiled WMS when `singleTile=False` and the layer is not cached
+
 ### Backend
 
-* Update OpenLayers to 10.2.0
+* Update OpenLayers to 10.2.1
 
 ## 3.8.1 - 2024-09-18
 
