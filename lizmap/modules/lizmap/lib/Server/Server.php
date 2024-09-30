@@ -13,6 +13,8 @@
 
 namespace Lizmap\Server;
 
+use LizmapAdmin\ModulesInfo\ModulesChecker;
+
 class Server
 {
     /**
@@ -212,6 +214,26 @@ class Server
     }
 
     /**
+     * Get the list of modules.
+     *
+     * @return array List of modules
+     */
+    private function getModules()
+    {
+        $data = array();
+        $modules = new ModulesChecker();
+
+        foreach ($modules->getList(false) as $module => $info) {
+            $data[$info->slug] = array(
+                'version' => $info->version,
+                'core' => $info->isCore,
+            );
+        }
+
+        return $data;
+    }
+
+    /**
      * Get the data on Lizmap groups of users.
      *
      * Fetch the key and label of the user groups
@@ -279,6 +301,9 @@ class Server
 
             // Add the list of repositories
             $data['repositories'] = $this->getLizmapRepositories();
+
+            // Add the list of modules
+            $data['modules'] = $this->getModules();
 
             $data['lizmap_desktop_plugin_version'] = $this->getLizmapPluginDesktopVersion();
 

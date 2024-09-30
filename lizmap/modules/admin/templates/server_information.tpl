@@ -32,6 +32,25 @@
             </td>
         </tr>
     </table>
+
+    <h4>{@admin.server.information.modules@}</h4>
+    {if empty($modules)}
+      <p>{@admin.server.information.no.module@}</p>
+    {else}
+        <table class="table table-condensed table-striped table-bordered table-lizmap-modules">
+        <tr>
+            <th>{@admin.server.information.module@}</th>
+            <th>{@admin.server.information.module.version@}</th>
+        </tr>
+        {foreach $modules as $module}
+            <tr>
+                <th style='width:20%;'> {$module->slug}</th>
+                <td style='width:20%;'>{$module->version}</td>
+            </tr>
+        {/foreach}
+    {/if}
+</table>
+
     {hook 'LizmapServerVersion', $data['info']}
 
     <h3>{@admin.server.information.qgis.label@}</h3>
