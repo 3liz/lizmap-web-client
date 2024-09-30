@@ -121,6 +121,7 @@ tests/qgis-projects/webdav/test/*
 !tests/qgis-projects/webdav/test/test_upload.txt
 !tests/qgis-projects/ProJets 1982*!
 tests/qgis-projects/tests/media
+tests/qgis-projects/tests/*_attachments.zip
 tests/qgis-server-plugins/*
 !tests/qgis-server-plugins/upgrade_projects.py
 tests/lizmap-qgis-plugin.master.zip
