@@ -37,15 +37,15 @@
     {if empty($modules)}
       <p>{@admin.server.information.no.module@}</p>
     {else}
-        <table class="table table-condensed table-striped table-bordered">
+        <table class="table table-condensed table-striped table-bordered table-lizmap-modules">
         <tr>
             <th>{@admin.server.information.module@}</th>
             <th>{@admin.server.information.module.version@}</th>
         </tr>
         {foreach $modules as $module}
             <tr>
-                <td style='width:30%;'> {$module->slug}</td>
-                <td style='width:30%;'>{$module->version}</td>
+                <th style='width:20%;'> {$module->slug}</th>
+                <td style='width:20%;'>{$module->version}</td>
             </tr>
         {/foreach}
     {/if}
