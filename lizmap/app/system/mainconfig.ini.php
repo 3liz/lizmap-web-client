@@ -92,7 +92,6 @@ admin.enabled=on
 dataviz.enabled=on
 filter.enabled=on
 action.enabled=on
-dynamicLayers.enabled=on
 lizmap.enabled=on
 proj4php.enabled=on
 view.enabled=on
