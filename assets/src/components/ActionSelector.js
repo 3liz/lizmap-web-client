@@ -34,6 +34,7 @@ export default class ActionSelector extends HTMLElement {
 
         // Add the options from the actions object
         const select = this.querySelector('select');
+        select.classList.add('form-select');
         for (let a in this.actions) {
             let action = this.actions[a];
             let option = document.createElement("option");

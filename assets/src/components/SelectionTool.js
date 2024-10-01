@@ -33,7 +33,7 @@ export default class SelectionTool extends HTMLElement {
             <div class="menu-content">
                 <div>${lizDict['selectiontool.toolbar.layer']}</div>
                 <div>
-                    <select class="selectiontool-layer-list" @change=${ (event) => mainLizmap.selectionTool.allFeatureTypeSelected = event.target.value}>
+                    <select class="selectiontool-layer-list form-select" @change=${ (event) => mainLizmap.selectionTool.allFeatureTypeSelected = event.target.value}>
                         <optgroup label="${lizDict['selectiontool.toolbar.layers.single']}">
                             ${mainLizmap.selectionTool.layers.map((layer) => html`<option value="${layer.name}">${layer.title}</option>`)}
                         </optgroup>
@@ -52,7 +52,7 @@ export default class SelectionTool extends HTMLElement {
                     </label>
                 </div>
                 <div>
-                    <select class="selection-geom-operator" @change=${ (event) => mainLizmap.selectionTool.geomOperator = event.target.value} data-bs-toggle="tooltip" data-bs-title="${lizDict['selectiontool.toolbar.geomOperator']}">
+                    <select class="selection-geom-operator form-select" @change=${ (event) => mainLizmap.selectionTool.geomOperator = event.target.value} data-bs-toggle="tooltip" data-bs-title="${lizDict['selectiontool.toolbar.geomOperator']}">
                         <option value="intersects">${lizDict['selectiontool.toolbar.geomOperator.intersects']}</option>
                         <option value="within">${lizDict['selectiontool.toolbar.geomOperator.within']}</option>
                         <option value="overlaps">${lizDict['selectiontool.toolbar.geomOperator.overlaps']}</option>
