@@ -6,7 +6,7 @@
         </p>
         <div id="edition-creation">
             <div>
-                <select id="edition-layer"></select>
+                <select id="edition-layer" class="form-select"></select>
             </div>
 
             <a id="edition-draw" class="btn btn-sm" href="#"
@@ -76,7 +76,7 @@
                                             id="edition-point-coord-crs-label">{@view~edition.point.coord.crs.label@}</label>
                                         <div class="controls">
                                             <select name="coord-crs" id="edition-point-coord-crs"
-                                                class="jforms-ctrl-menulist">
+                                                class="jforms-ctrl-menulist form-select">
                                                 <option value="4326" selected="selected"><span>EPSG:4326</span></option>
                                                 <option id="edition-point-coord-crs-layer" value="" style="display:none;">
                                                 </option>

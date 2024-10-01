@@ -142,7 +142,7 @@ var lizLayerActionButtons = function() {
                     html+= '        <dt>'+lizDict['layer.metadata.style.title']+'</dt>';
                     html+= '<dd>';
                     html+= '<input type="hidden" class="styleLayer '+isBaselayer+'" value="'+aName+'">';
-                    html+= '<select class="styleLayer '+isBaselayer+'">';
+                    html+= '<select class="styleLayer form-select '+isBaselayer+'">';
                     html+= options;
                     html+= '</select>';
                     html+= '</dd>';
@@ -184,7 +184,7 @@ var lizLayerActionButtons = function() {
                 if( options != '' && layerConfig.typename != undefined) {
                     html+= '        <dt>'+lizDict['layer.metadata.export.title']+'</dt>';
                     html+= '<dd>';
-                    html+= '<select class="exportLayer '+isBaselayer+'">';
+                    html+= '<select class="exportLayer form-select '+isBaselayer+'">';
                     html+= options;
                     html+= '</select>';
                     html+= '<button class="btn btn-sm exportLayer '+isBaselayer+'" title="'+lizDict['layer.metadata.export.title']+'" value="'+aName+'"><i class="icon-download"></i></button>';

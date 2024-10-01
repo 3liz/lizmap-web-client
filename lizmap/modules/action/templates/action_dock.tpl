@@ -19,7 +19,7 @@
 <template id="lizmap-action-item-list">
     <!-- div containing the select and the selected item description -->
     <div class="action-selector-container">
-        <select class="action-select">
+        <select class="action-select form-select">
             <option value="">-- {@action~action.dock.form.select.emptyItem.label@} -- </option>
         </select>
         <div class="action-description" data-default-value="{@action~action.dock.action.choose@}">
