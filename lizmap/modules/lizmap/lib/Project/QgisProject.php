@@ -1256,8 +1256,8 @@ class QgisProject
                 if ($layer->type !== 'vector') {
                     continue;
                 }
-                /** @var Qgis\Layer\VectorLayer $layer */
 
+                /** @var Qgis\Layer\VectorLayer $layer */
                 $formControls = $layer->getFormControls();
 
                 $fields_config = array();
@@ -1300,6 +1300,7 @@ class QgisProject
                 }
                 $layersLabeledFieldsConfig[$layer->layername] = $fields_config;
             }
+
             return $layersLabeledFieldsConfig;
         }
 
