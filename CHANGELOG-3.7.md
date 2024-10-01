@@ -13,9 +13,15 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * **[Valabre](https://www.valabre.com/)**
 * Villefranche Agglomération
 
+### Added
+
+* Button to reload the map without additional JavaScript in case of error
+
 ### Fixed
 
 * In the Javascript digitizing measure, provide a map projection
+* Fix reprojection of circle when printing and use a `CURVEPOLYGON`
+* Fix: allow tiled WMS when `singleTile=False` and the layer is not cached
 * Fix issues on datetime pickers and localization
 * Remove unwanted web assets from local configuration
 * `lizMap.getFeaturePopupContentByFeatureIntersection` according to the choosing scale
