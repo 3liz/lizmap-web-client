@@ -18,7 +18,6 @@ DANS LE FICHIER var/config/localurls.xml
         <url module="filter"/>
         <url module="action"/>
         <url module="dataviz"/>
-        <url pathinfo="/dynamic-layers" module="dynamicLayers"/>
     </entrypoint>
     <entrypoint name="admin">
         <url pathinfo="/" module="master_admin" action="default:index"/>

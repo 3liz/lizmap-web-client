@@ -14,7 +14,6 @@ class ModulesChecker
         'dataviz',
         'filter',
         'action',
-        'dynamicLayers',
         'lizmap',
         'proj4php',
         'view',
