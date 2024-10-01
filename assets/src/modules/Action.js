@@ -456,6 +456,12 @@ export default class Action {
                     if (message) {
                         mainLizmap.lizmap3.addMessage(message, 'info', true).attr('id', 'lizmap-action-message');
                     }
+
+                    // Display the HTML message if given
+                    const message_html = featureProperties?.message_html?.trim();
+                    if (message_html) {
+                        document.getElementById('action-message-html').innerHTML = message_html;
+                    }
                 }
             }
 
