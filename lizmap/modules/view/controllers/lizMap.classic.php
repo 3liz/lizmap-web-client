@@ -189,6 +189,7 @@ class lizMapCtrl extends jController
         // Add bottom dock js
         $rep->addJSLink($bp.'assets/js/bottom-dock.js', array('defer' => ''));
 
+        // TODO : refacto, quite the same URLs are declared in lizAjax.classic.php
         // Pass some configuration options to the web page through javascript var
         $lizUrls = array(
             'params' => array('repository' => $repository, 'project' => $project),
@@ -224,6 +225,9 @@ class lizMapCtrl extends jController
             $lizUrls['removeCache'] = jUrl::get('admin~maps:removeLayerCache');
         }
 
+        if (jAcl2::check('lizmap.admin.access') || jAcl2::check('lizmap.admin.server.information.view')) {
+            $lizUrls['repositoryAdmin'] = jUrl::getFull('admin~maps:index');
+        }
         $webDavProfile = RemoteStorageRequest::getProfile('webdav');
         if ($webDavProfile) {
             $lizUrls['webDavUrl'] = $webDavProfile['baseUri'];

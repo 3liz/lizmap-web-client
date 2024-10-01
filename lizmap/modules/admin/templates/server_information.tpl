@@ -37,17 +37,21 @@
     {if empty($modules)}
       <p>{@admin.server.information.no.module@}</p>
     {else}
-        <table class="table table-condensed table-striped table-bordered table-lizmap-modules">
+        <table class="table table-condensed table-striped table-bordered table-server-info table-lizmap-modules">
+        <thead>
         <tr>
             <th>{@admin.server.information.module@}</th>
             <th>{@admin.server.information.module.version@}</th>
         </tr>
+        </thead>
+        <tbody>
         {foreach $modules as $module}
             <tr>
-                <th style='width:20%;'> {$module->slug}</th>
-                <td style='width:20%;'>{$module->version}</td>
+                <th>{$module->slug}</th>
+                <td>{$module->version}</td>
             </tr>
         {/foreach}
+        </tbody>
     {/if}
 </table>
 
@@ -167,7 +171,7 @@
             {* Fixed in lizmap_server plugin 1.3.2 https://github.com/3liz/qgis-lizmap-server-plugin/commit/eb6a773ba035f877e9fa91db5ef87911a2648ee1 *}
             <th style="width:20%;">
                 {$version['name']}
-                {if $version['homepage']}
+                {if array_key_exists('homepage', $version) && $version['homepage']}
                     <a href="{$version['homepage']}" target="_blank"><span class='badge rounded-pill bg-secondary'>{@admin.server.information.qgis.plugin.help@}</span></a>
                 {/if}
             </th>
