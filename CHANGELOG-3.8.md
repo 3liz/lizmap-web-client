@@ -8,9 +8,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
-### Funders
-
-* Contribution on the source code from @cfsgarcia
+## 3.8.2 - 2024-10-01
 
 ### Added
 
