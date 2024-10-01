@@ -63,8 +63,7 @@ export default class SelectionTool extends HTMLElement {
         const geomOperatorSelectTemplate = () => html`
         <select
             class="selectiontool-geom-operator form-select"
-            data-bs-toggle="tooltip"
-            data-bs-title="${lizDict['selectiontool.toolbar.geomOperator']}"
+            title="${lizDict['selectiontool.toolbar.geomOperator']}"
             @change=${ (event) => mainLizmap.selectionTool.geomOperator = event.target.value}
             >
             <option value="intersects">${lizDict['selectiontool.toolbar.geomOperator.intersects']}</option>
@@ -142,10 +141,10 @@ export default class SelectionTool extends HTMLElement {
                 <span class="caret"></span>
                 </button>
                 <ul class="selectiontool-export-formats dropdown-menu dropdown-menu-right" role="menu">
-                    <li><a href="#" class="btn-export-selection">GeoJSON</a></li>
-                    <li><a href="#" class="btn-export-selection">GML</a></li>
+                    <li><a href="#" class="btn-export-selection dropdown-item">GeoJSON</a></li>
+                    <li><a href="#" class="btn-export-selection dropdown-item">GML</a></li>
                     ${mainLizmap.selectionTool.exportFormats.map(
-                        (format) => html`<li><a href="#" class="btn-export-selection">${format}</a></li>`
+                        (format) => html`<li><a href="#" class="btn-export-selection dropdown-item">${format}</a></li>`
                     )}
                 </ul>
             </div>` : '';
@@ -211,6 +210,7 @@ export default class SelectionTool extends HTMLElement {
             placement: 'top',
             container: this,
         });
+        $('.selection-geom-operator, .selectiontool-actions .btn', this).tooltip();
 
         // Export
         this.querySelectorAll('.btn-export-selection').forEach(exportbtn => {
