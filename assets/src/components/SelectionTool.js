@@ -86,7 +86,6 @@ export default class SelectionTool extends HTMLElement {
                         <div class="btn-group dropup selectiontool-export" role="group" title="${mainLizmap.selectionTool.isExportable ? '' : lizDict['switcher.layer.export.warn']}">
                             <button type="button" class="btn btn-sm dropdown-toggle" ?disabled=${ !mainLizmap.selectionTool.isExportable } data-bs-toggle="dropdown" aria-expanded="false">
                                 ${lizDict['switcher.layer.export.title']}
-                            <span class="caret"></span>
                             </button>
                             <ul class="selectiontool-export-formats dropdown-menu dropdown-menu-right" role="menu">
                                 <li><a href="#" class="btn-export-selection dropdown-item">GeoJSON</a></li>

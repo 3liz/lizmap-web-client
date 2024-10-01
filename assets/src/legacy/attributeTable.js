@@ -1144,7 +1144,7 @@ var lizAttributeTable = function() {
                                 childCreateButtonItems.push(childButtonItem);
 
                                 // Link parent with the selected features of the child
-                                layerLinkButtonItems.push('<li><a href="#' + lizMap.cleanName(isNToM ? pivotConfig[0] : childLayerName) + '" class="btn-linkFeatures-attributeTable">' + (isNToM ? pivotConfig[1].title : childLayerConfig.title) +'</a></li>' );
+                                layerLinkButtonItems.push('<li><a href="#' + lizMap.cleanName(isNToM ? pivotConfig[0] : childLayerName) + '" class="btn-linkFeatures-attributeTable dropdown-item">' + (isNToM ? pivotConfig[1].title : childLayerConfig.title) +'</a></li>' );
                             }
                         }
                     }
@@ -1163,9 +1163,8 @@ var lizAttributeTable = function() {
                         layerLinkButton+= '&nbsp;<div class="btn-group" role="group" >';
                         layerLinkButton+= '    <button type="button" class="btn btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">';
                         layerLinkButton+= lizDict['attributeLayers.toolbar.btn.data.linkFeatures.title'];
-                        layerLinkButton+= '      <span class="caret"></span>';
                         layerLinkButton+= '    </button>';
-                        layerLinkButton+= '    <ul class="dropdown-menu" role="menu">';
+                        layerLinkButton+= '    <ul class="dropdown-menu">';
                         for( var i in  layerLinkButtonItems){
                             var li = layerLinkButtonItems[i];
                             layerLinkButton+= li;
