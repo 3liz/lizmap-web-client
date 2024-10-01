@@ -263,7 +263,7 @@ import DOMPurify from 'dompurify';
 
                 // Add combobox with all data
                 home += '<p style="padding:0px 10px;">';
-                home += '<select id="liz-atlas-select">';
+                home += '<select id="liz-atlas-select" class="form-select">';
                 home += '<option value="-1"> --- </option>';
                 var pkey_field = lizAtlasConfig['primaryKey'];
                 for (var i in lizAtlasConfig['features_sorted']) {
@@ -306,7 +306,7 @@ import DOMPurify from 'dompurify';
                 // Multiple atlas
                 if (lizAtlasConfigArray.length > 1){
                     // Build select to choose between atlas layers
-                    atlasHTML = '<i class="icon-globe icon-white" style="margin-right: 4px;vertical-align: baseline;"></i><select id="select-atlas-layer">';
+                    atlasHTML = '<i class="icon-globe icon-white" style="margin-right: 4px;vertical-align: baseline;"></i><select id="select-atlas-layer" class="form-select">';
                     for (let i = 0; i < lizAtlasConfigArray.length; i++) {
                         atlasHTML += '<option value="' + lizAtlasConfigArray[i].layerId + '">' + lizMap.config.layers[lizAtlasConfigArray[i].layername]['title'] + '</option>';
                     }
