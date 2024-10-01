@@ -71,7 +71,7 @@ export default class ActionSelector extends HTMLElement {
 
     onActionSelectChange(event) {
         // Remove previous digitizing tool if any
-        document.querySelector('#project-action-selector-container lizmap-digitizing')?.remove();
+        document.getElementById('action-digitizing')?.remove();
 
         // Get the host component
         let host = event.target.closest("lizmap-action-selector");
@@ -97,8 +97,8 @@ export default class ActionSelector extends HTMLElement {
                 description = action.description;
             }
             if (action?.geometry) {
-                this._digitizingElement = `<lizmap-digitizing context="action" selected-tool="${action.geometry}" available-tools="${action.geometry}"></lizmap-digitizing>`;
-                document.querySelector('.action-selector-container').insertAdjacentHTML('afterend', this._digitizingElement);
+                const actionDigitizing = `<div id="action-digitizing"><lizmap-digitizing context="action" selected-tool="${action.geometry}" available-tools="${action.geometry}"></lizmap-digitizing><div id="action-message-html"></div></div>`;
+                document.querySelector('.action-selector-container').insertAdjacentHTML('afterend', actionDigitizing);
                 mainLizmap.digitizing.context = "action";
                 mainLizmap.digitizing.toggleVisibility(true);
             } else {
