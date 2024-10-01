@@ -25,7 +25,9 @@ test.describe('Server information', () => {
             await expect(await lwcRow.locator('td').innerText()).not.toEqual('');
         }
         // Check that Lizmap modules contains 2 lines (header and 1 module lizmapdemo)
-        const modulesRows = page.locator('#lizmap_server_information table.table-lizmap-modules tr:nth-child(1n+2)')
+        const modulesHeadRows = page.locator('#lizmap_server_information table.table-lizmap-modules thead tr');
+        await expect(modulesHeadRows).toHaveCount(1);
+        const modulesRows = page.locator('#lizmap_server_information table.table-lizmap-modules tbody tr');
         await expect(modulesRows).toHaveCount(1);
         for (const row of await modulesRows.all()) {
             await modulesRows.scrollIntoViewIfNeeded();

@@ -26,9 +26,7 @@ class ModulesChecker
     public function getList($withCore = false)
     {
         $moduleConfig = \jApp::config()->modules;
-
-        // file_get_contents(\jApp::varConfigPath('installer.ini.php'));
-        $installreRadr = new IniReader(\jApp::varConfigPath('installer.ini.php'));
+        $installReader = new IniReader(\jApp::varConfigPath('installer.ini.php'));
 
         $enabledModuleName = array();
         foreach ($moduleConfig as $paramName => $value) {
@@ -38,7 +36,7 @@ class ModulesChecker
                 if ($coreModule && !$withCore) {
                     continue;
                 }
-                $version = $installreRadr->getValue($moduleSlug.'.version', 'modules');
+                $version = $installReader->getValue($moduleSlug.'.version', 'modules');
                 $enabledModuleName[] = new ModuleMetaData($moduleSlug, $version, $coreModule);
             }
         }
