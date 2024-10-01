@@ -5,7 +5,6 @@ $finder = PhpCsFixer\Finder::create()
           ->in(array(
                 __DIR__.'/lizmap/modules/admin',
                 __DIR__.'/lizmap/modules/dataviz',
-                __DIR__.'/lizmap/modules/dynamicLayers',
                 __DIR__.'/lizmap/modules/lizmap',
                 __DIR__.'/lizmap/modules/view',
                 __DIR__.'/lizmap/plugins/',
