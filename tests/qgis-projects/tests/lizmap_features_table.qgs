@@ -1305,9 +1305,6 @@ def my_form_open(dialog, layer, feature):
     <Paths>
       <Absolute type="bool">false</Absolute>
     </Paths>
-    <PluginDynamicLayers>
-      <VariableSourceLayer type="QString">sousquartiers_24ceec66_e7fe_46a2_b57a_af5c50389649</VariableSourceLayer>
-    </PluginDynamicLayers>
     <PositionPrecision>
       <Automatic type="bool">true</Automatic>
       <DecimalPlaces type="int">2</DecimalPlaces>
