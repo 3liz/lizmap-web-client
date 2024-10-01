@@ -83,15 +83,15 @@ export default class SelectionTool extends HTMLElement {
                     </button>
                     <lizmap-selection-invert></lizmap-selection-invert>
                     ${this.hasAttribute('layer-export') ? html`
-                        <div class="btn-group dropup selectiontool-export" role="group" data-bs-toggle="tooltip" data-bs-title="${mainLizmap.selectionTool.isExportable ? '' : lizDict['switcher.layer.export.warn']}">
+                        <div class="btn-group dropup selectiontool-export" role="group" title="${mainLizmap.selectionTool.isExportable ? '' : lizDict['switcher.layer.export.warn']}">
                             <button type="button" class="btn btn-sm dropdown-toggle" ?disabled=${ !mainLizmap.selectionTool.isExportable } data-bs-toggle="dropdown" aria-expanded="false">
                                 ${lizDict['switcher.layer.export.title']}
                             <span class="caret"></span>
                             </button>
                             <ul class="selectiontool-export-formats dropdown-menu dropdown-menu-right" role="menu">
-                                <li><a href="#" class="btn-export-selection">GeoJSON</a></li>
-                                <li><a href="#" class="btn-export-selection">GML</a></li>
-                                ${mainLizmap.selectionTool.exportFormats.map((format) => html`<li><a href="#" class="btn-export-selection">${format}</a></li>`)}
+                                <li><a href="#" class="btn-export-selection dropdown-item">GeoJSON</a></li>
+                                <li><a href="#" class="btn-export-selection dropdown-item">GML</a></li>
+                                ${mainLizmap.selectionTool.exportFormats.map((format) => html`<li><a href="#" class="btn-export-selection dropdown-item">${format}</a></li>`)}
                             </ul>
                         </div>` : ''
                     }
@@ -103,9 +103,7 @@ export default class SelectionTool extends HTMLElement {
 
         // Add tooltip on buttons
         // TODO allow tooltip on disabled buttons : https://stackoverflow.com/a/19938049/2000654
-        $('.menu-content button, .menu-content .selectiontool-export, .selection-geom-operator', this).tooltip({
-            placement: 'top'
-        });
+        $('.selection-geom-operator, .selectiontool-actions .btn', this).tooltip();
 
         // Export
         this.querySelectorAll('.btn-export-selection').forEach(exportbtn => {
