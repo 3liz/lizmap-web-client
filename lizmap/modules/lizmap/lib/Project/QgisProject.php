@@ -1122,69 +1122,21 @@ class QgisProject
     public function readLayersOrder($xml, $layers)
     {
         $layersOrder = array();
-        if ($this->qgisProjectVersion >= 30000) { // For QGIS >=3.0, custom-order is in layer-tree-group
-            $customOrder = $this->getXml()->xpath('layer-tree-group/custom-order');
-            if (count($customOrder) == 0) {
-                return $layersOrder;
-            }
-            $customOrderZero = $customOrder[0];
-            if (intval($customOrderZero->attributes()->enabled) == 1) {
-                $items = $customOrderZero->xpath('//item');
-                $lo = 0;
-                foreach ($items as $layerI) {
-                    // Get layer name from config instead of XML for possible embedded layers
-                    $name = $this->getLayerNameByIdFromConfig($layerI, $layers);
-                    if ($name) {
-                        $layersOrder[$name] = $lo;
-                    }
-                    ++$lo;
+        $customOrder = $this->getXml()->xpath('layer-tree-group/custom-order');
+        if (count($customOrder) == 0) {
+            return $layersOrder;
+        }
+        $customOrderZero = $customOrder[0];
+        if (intval($customOrderZero->attributes()->enabled) == 1) {
+            $items = $customOrderZero->xpath('//item');
+            $lo = 0;
+            foreach ($items as $layerI) {
+                // Get layer name from config instead of XML for possible embedded layers
+                $name = $this->getLayerNameByIdFromConfig($layerI, $layers);
+                if ($name) {
+                    $layersOrder[$name] = $lo;
                 }
-            } else {
-                return $layersOrder;
-            }
-        } elseif ($this->qgisProjectVersion >= 20400) { // For QGIS >=2.4, new item layer-tree-canvas
-            $customOrder = $this->getXml()->xpath('//layer-tree-canvas/custom-order');
-            if (count($customOrder) == 0) {
-                return $layersOrder;
-            }
-            $customOrderZero = $customOrder[0];
-            if (intval($customOrderZero->attributes()->enabled) == 1) {
-                $items = $customOrderZero->xpath('//item');
-                $lo = 0;
-                foreach ($items as $layerI) {
-                    // Get layer name from config instead of XML for possible embedded layers
-                    $name = $this->getLayerNameByIdFromConfig($layerI, $layers);
-                    if ($name) {
-                        $layersOrder[$name] = $lo;
-                    }
-                    ++$lo;
-                }
-            } else {
-                $items = $this->getXml()->xpath('layer-tree-group//layer-tree-layer');
-                $lo = 0;
-                foreach ($items as $layerTree) {
-                    // Get layer name from config instead of XML for possible embedded layers
-                    $name = $this->getLayerNameByIdFromConfig($layerTree->attributes()->id, $layers);
-                    if ($name) {
-                        $layersOrder[$name] = $lo;
-                    }
-                    ++$lo;
-                }
-            }
-        } else {
-            $legend = $this->getXml()->xpath('//legend');
-            if (count($legend) == 0) {
-                return $layersOrder;
-            }
-            $legendZero = $legend[0];
-            $updateDrawingOrder = (string) $legendZero->attributes()->updateDrawingOrder;
-            if ($updateDrawingOrder == 'false') {
-                $layers = $this->getXml()->xpath('//legendlayer');
-                foreach ($layers as $layer) {
-                    if ($layer->attributes()->drawingOrder && intval($layer->attributes()->drawingOrder) >= 0) {
-                        $layersOrder[(string) $layer->attributes()->name] = (int) $layer->attributes()->drawingOrder;
-                    }
-                }
+                ++$lo;
             }
         }
 
