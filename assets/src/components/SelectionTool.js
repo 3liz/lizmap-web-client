@@ -45,7 +45,7 @@ export default class SelectionTool extends HTMLElement {
 
         const layerListSelectTemplate = () => html`
         <select
-            class="selectiontool-layer-list"
+            class="selectiontool-layer-list form-select"
             @change=${ (event) => mainLizmap.selectionTool.allFeatureTypeSelected = event.target.value}>
             <optgroup label="${lizDict['selectiontool.toolbar.layers.single']}">
                 ${mainLizmap.selectionTool.layers.map((layer) => html`
@@ -62,7 +62,7 @@ export default class SelectionTool extends HTMLElement {
 
         const geomOperatorSelectTemplate = () => html`
         <select
-            class="selectiontool-geom-operator"
+            class="selectiontool-geom-operator form-select"
             data-bs-toggle="tooltip"
             data-bs-title="${lizDict['selectiontool.toolbar.geomOperator']}"
             @change=${ (event) => mainLizmap.selectionTool.geomOperator = event.target.value}

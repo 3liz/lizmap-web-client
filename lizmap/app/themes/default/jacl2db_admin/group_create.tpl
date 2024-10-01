@@ -15,7 +15,7 @@
     </tr>
     <tr>
         <td><label for="rights-copy">{@acl2.group.copy.label@}</label></td>
-        <td><select id="rights-copy" name="rights-copy">
+        <td><select id="rights-copy" name="rights-copy" class="form-select">
             <option value=""></option>
             {foreach $groups as $group}
                 <option value="{$group->id_aclgrp}">{$group->name}</option>
