@@ -11,7 +11,7 @@ export default class Tooltip extends HTMLElement {
         this._tooltipLayersCfgs = mainLizmap.initialConfig.tooltipLayers.layerConfigs;
 
         this._template = () => html`
-            <select @change=${ event => { mainLizmap.tooltip.activate(event.target.value) }}>
+            <select class="form-select" @change=${ event => { mainLizmap.tooltip.activate(event.target.value) }}>
                 <option value="">---</option>
                 ${this._tooltipLayersCfgs.map(tooltipLayerCfg =>
                     html`<option ?selected=${this._tooltipLayersCfgs.length === 1} value="${tooltipLayerCfg.order}">${mainLizmap.state.layersAndGroupsCollection.getLayerByName(tooltipLayerCfg.name).title}</option>`

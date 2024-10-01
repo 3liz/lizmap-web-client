@@ -31,7 +31,7 @@ export default class BaseLayers extends HTMLElement {
         this._template = () => html`
             ${mainLizmap.state.baseLayers.baseLayers.length > 1
                 ? keyed(mainLizmap.state.baseLayers.selectedBaseLayerName, html`
-                <select @change=${(event) => { mainLizmap.state.baseLayers.selectedBaseLayerName = event.target.value }}>
+                <select class="form-select" @change=${(event) => { mainLizmap.state.baseLayers.selectedBaseLayerName = event.target.value }}>
                     ${mainLizmap.state.baseLayers.baseLayers.map((config) =>
                     html`<option ?selected="${mainLizmap.state.baseLayers.selectedBaseLayerName === config.name}" value="${config.name}">${config.type === BaseLayerTypes.Empty ? lizDict['baselayer.empty.title'] : config.title}</option>`
                     )}
