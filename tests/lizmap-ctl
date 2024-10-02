@@ -126,6 +126,9 @@ case $COMMAND in
     shell-pgsql)
        docker exec -it --user postgres -e PGPASSWORD="lizmap1234!" lizmap${LZMBRANCH}_test_pgsql /bin/bash  -l
        ;;
+    dump-pgsql)
+       docker exec -it -e PGPASSWORD="lizmap1234!" lizmap${LZMBRANCH}_test_pgsql pg_dump -U lizmap --no-owner --no-acl -n tests_projects -f /srv/lzm/tests/qgis-projects/tests/tests_dataset.sql
+       ;;
     redis-cli)
       docker exec -it lizmap${LZMBRANCH}_test_redis redis-cli
       ;;
