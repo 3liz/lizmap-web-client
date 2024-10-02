@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.7.11 - 2024-10-02
+
 ### Funders
 
 * **[Valabre](https://www.valabre.com/)**
@@ -38,7 +40,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ### Funders
 
-* *[Faunalia](https://www.faunalia.eu/fr)*, contributions on source code from @mind84
+* **[Faunalia](https://www.faunalia.eu/fr)**, contributions on source code from @mind84
 * **FM Projet**
 * **[Terre de Provence Agglomération](https://www.terredeprovence-agglo.com/)**
 * **[Valabre](https://www.valabre.com/)**
