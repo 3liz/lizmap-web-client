@@ -3291,6 +3291,7 @@ COPY tests_projects.form_edition_snap_polygon (id, geom) FROM stdin;
 --
 
 COPY tests_projects.form_edition_upload (id, generic_file, text_file, image_file, text_file_mandatory, image_file_mandatory, image_file_specific_root_folder) FROM stdin;
+2	\N	\N	\N	media/upload/form_edition_all_field_type/form_edition_upload/text_file_mandatory/lorem-2.txt	media/upload/form_edition_all_field_type/form_edition_upload/image_file_mandatory/random-2.jpg	../media/specific_media_folder/random-4.jpg
 \.
 
 
@@ -4011,7 +4012,7 @@ SELECT pg_catalog.setval('tests_projects.form_edition_snap_polygon_id_seq', 2, t
 -- Name: form_edition_upload_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
 --
 
-SELECT pg_catalog.setval('tests_projects.form_edition_upload_id_seq', 1, true);
+SELECT pg_catalog.setval('tests_projects.form_edition_upload_id_seq', 2, true);
 
 
 --
