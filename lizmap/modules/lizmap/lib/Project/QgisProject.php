@@ -1117,6 +1117,12 @@ class QgisProject
         return null;
     }
 
+    /**
+     * @deprecated 3.9.0 No longer used by internal code and not recommended.
+     *
+     * @param string $fieldEditType    Field edit type
+     * @param array  $fieldEditOptions Field edit config options
+     */
     protected function readUploadOptions($fieldEditType, &$fieldEditOptions)
     {
         $mimeTypes = array();
@@ -1232,6 +1238,8 @@ class QgisProject
      * update the upload options with the property 'webDAVStorageUrl'.
      *
      * @param array $fieldEditOptions
+     *
+     * @deprecated 3.9.0 No longer used by internal code and not recommended.
      */
     protected function readWebDavStorageOptions(&$fieldEditOptions)
     {
@@ -1254,6 +1262,8 @@ class QgisProject
      * @param int               $valuesExtraction one of MAP_* const
      *
      * @return array
+     *
+     * @deprecated 3.9.0 No longer used by internal code and not recommended.
      */
     protected function getValuesFromOptions($optionList, $valuesExtraction = 0)
     {
@@ -1279,6 +1289,8 @@ class QgisProject
      * @param \SimpleXMLElement $layerXml
      *
      * @return Form\QgisFormControlProperties[]
+     *
+     * @deprecated 3.9.0 No longer used by internal code and not recommended.
      */
     protected function getFieldConfiguration($layerXml)
     {
@@ -1317,6 +1329,9 @@ class QgisProject
         return $edittypes;
     }
 
+    /**
+     * @deprecated 3.9.0 No longer used by internal code and not recommended.
+     */
     protected function getFieldConfigurationOptions(\SimpleXMLElement $options)
     {
         $fieldEditOptions = array();
@@ -1376,6 +1391,8 @@ class QgisProject
      * @param \SimpleXMLElement $layerXml
      *
      * @return Form\QgisFormControlProperties[]
+     *
+     * @deprecated 3.9.0 No longer used by internal code and not recommended.
      */
     protected function getEditType($layerXml)
     {
@@ -1517,6 +1534,8 @@ class QgisProject
      * @param string $type  the option type attribute content
      *
      * @return bool|float|int|string
+     *
+     * @deprecated 3.9.0 No longer used by internal code and not recommended.
      */
     protected function convertValueOptions($value, $type)
     {
@@ -1543,6 +1562,8 @@ class QgisProject
      * @param array      $editAttributes attributes of widgetv2config
      *
      * @return string
+     *
+     * @deprecated 3.9.0 No longer used by internal code and not recommended.
      */
     protected function getMarkup($fieldEditType, $editAttributes)
     {
@@ -1615,6 +1636,8 @@ class QgisProject
      * @param Project           $proj
      *
      * @return array
+     *
+     * @deprecated 3.9.0 No longer used by internal code and not recommended.
      */
     public function readFormControls($layerXml, $layerId, $proj)
     {
