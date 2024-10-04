@@ -112,23 +112,16 @@ class QgisProjectTest extends TestCase
     {
         $file = __DIR__.'/Ressources/simpleLayer.qgs.cfg';
         $json = json_decode(file_get_contents($file));
+//<<<<<<< HEAD
         $expectedLayer = unserialize(serialize($json->layers));
+//=======
+//        $expectedLayer = json_decode(json_encode($json->layers));
+//>>>>>>> 6352dab26 (QgisProject remove code in setPropertiesAfterRead methods)
         $expectedLayer->montpellier_events->opacity = (float) 0.85;
         $expectedLayer->local_raster_layer->opacity = (float) 0.6835;
         $cfg = new Project\ProjectConfig((object) array('layers' => $json->layers));
         $testProj = new qgisProjectForTests();
-        $testProj->setXmlForTest(simplexml_load_file(__DIR__.'/Ressources/opacity.qgs'));
-        $layers = array(
-            array (
-                'id' => 'events_4c3b47b8_3939_4c8c_8e91_55bdb13a2101',
-                'name' => 'montpellier_events',
-            ),
-            array (
-                'id' => 'raster_78572dfa_41b3_42da_a9c6_933ead8bad8f',
-                'name' => 'local_raster_layer',
-            ),
-        );
-        $testProj->setLayers($layers);
+        $testProj->setPath(__DIR__.'/Ressources/opacity.qgs');
         $testProj->setLayerOpacityForTest($cfg);
         $this->assertEquals($expectedLayer, $cfg->getLayers());
 
@@ -163,6 +156,33 @@ class QgisProjectTest extends TestCase
         $eLayerName = $emLayer->getName();
         $this->assertNotNull($config->getLayer($eLayerName));
         $this->assertEquals(0.4,$config->getLayer($eLayerName)->opacity);
+    }
+
+    public function testSetLayerGroupData()
+    {
+      $file = __DIR__.'/Ressources/hiddengrouplayer.qgs.cfg';
+      $json = json_decode(file_get_contents($file));
+      $expectedLayer = json_decode(json_encode($json->layers));
+      $expectedLayer->Hidden->shortname = 'Hidden';
+      $expectedLayer->Hidden->mutuallyExclusive = 'True';
+      $cfg = new Project\ProjectConfig((object) array('layers' => $json->layers));
+      $testProj = new qgisProjectForTests();
+      $testProj->setPath(__DIR__.'/Ressources/opacity.qgs');
+      $testProj->setLayerGroupDataForTest($cfg);
+      $this->assertEquals($expectedLayer->Hidden, $cfg->getLayers()->Hidden);
+    }
+
+    public function testSetLayerShowFeatureCount()
+    {
+        $file = __DIR__.'/Ressources/simpleLayer.qgs.cfg';
+        $json = json_decode(file_get_contents($file));
+        $expectedLayer = json_decode(json_encode($json->layers));
+        $expectedLayer->montpellier_events->showFeatureCount = 'True';
+        $cfg = new Project\ProjectConfig((object) array('layers' => $json->layers));
+        $testProj = new qgisProjectForTests();
+        $testProj->setPath(__DIR__.'/Ressources/opacity.qgs');
+        $testProj->setLayerShowFeatureCountForTest($cfg);
+        $this->assertEquals($expectedLayer, $cfg->getLayers());
     }
 
     public static function getLayerData()
@@ -491,7 +511,7 @@ class QgisProjectTest extends TestCase
             ),
         );
         $testProj = new qgisProjectForTests();
-        $testProj->setXmlForTest(simplexml_load_file($file));
+        $testProj->setPath($file);
         $cfg = new Project\ProjectConfig((object) array('layers' => (object) $layers));
         $testProj->setShortNamesForTest($cfg);
         $layer = $cfg->getLayers();
