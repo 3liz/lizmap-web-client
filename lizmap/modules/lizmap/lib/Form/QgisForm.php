@@ -1762,6 +1762,8 @@ class QgisForm implements QgisFormControlsInterface
             }
 
             // orderByValue
+            // orderByValue has been removed from XML since QGIS 3.32
+            // TODO Remove check orderByValue and keep asort when QGIS 3.32 will be the minimum version for allowing a QGIS project
             if ($formControl->relationReferenceData['orderByValue']) {
                 asort($data);
             }
