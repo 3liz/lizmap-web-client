@@ -272,16 +272,16 @@ class ProjectTest extends TestCase
             'userIsConnected' => false,
         );
         //$filter1 = '"descr" IN ( \'admin\' , \'groups\' , \'lizmap\' , \'all\' )';
-        $filter1 = '"descr" = \'admin\' OR "descr" LIKE \'admin,%\' OR "descr" LIKE \'%,admin\' OR "descr" LIKE \'%,admin,%\'';
+        $filter1 = '( "descr" = \'admin\' OR "descr" LIKE \'admin,%\' OR "descr" LIKE \'%,admin\' OR "descr" LIKE \'%,admin,%\'';
         $filter1 .= ' OR ';
         $filter1 .= '"descr" = \'groups\' OR "descr" LIKE \'groups,%\' OR "descr" LIKE \'%,groups\' OR "descr" LIKE \'%,groups,%\'';
         $filter1 .= ' OR ';
         $filter1 .= '"descr" = \'lizmap\' OR "descr" LIKE \'lizmap,%\' OR "descr" LIKE \'%,lizmap\' OR "descr" LIKE \'%,lizmap,%\'';
         $filter1 .= ' OR ';
-        $filter1 .= '"descr" = \'all\' OR "descr" LIKE \'all,%\' OR "descr" LIKE \'%,all\' OR "descr" LIKE \'%,all,%\'';
+        $filter1 .= '"descr" = \'all\' OR "descr" LIKE \'all,%\' OR "descr" LIKE \'%,all\' OR "descr" LIKE \'%,all,%\' )';
 
         //$filter2 = '"Group" = \'all\'';
-        $filter2 = '"descr" = \'all\' OR "descr" LIKE \'all,%\' OR "descr" LIKE \'%,all\' OR "descr" LIKE \'%,all,%\'';
+        $filter2 = '( "descr" = \'all\' OR "descr" LIKE \'all,%\' OR "descr" LIKE \'%,all\' OR "descr" LIKE \'%,all,%\' )';
 
         return array(
             array($aclData1, $filter1),
@@ -338,8 +338,8 @@ class ProjectTest extends TestCase
         $aclData2 = array(
             'userIsConnected' => false,
         );
-        $filter1 = '"descr" = \'admin\' OR "descr" = \'groups\' OR "descr" = \'lizmap\' OR "descr" = \'all\'';
-        $filter2 = '"descr" = \'all\'';
+        $filter1 = '( "descr" = \'admin\' OR "descr" = \'groups\' OR "descr" = \'lizmap\' OR "descr" = \'all\' )';
+        $filter2 = '( "descr" = \'all\' )';
 
         return array(
             array($aclData1, $filter1),
