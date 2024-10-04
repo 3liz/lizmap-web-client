@@ -1,10 +1,12 @@
 <?php
 
-use Lizmap\Project;
 use PHPUnit\Framework\TestCase;
 use function PHPUnit\Framework\assertContains;
 use function PHPUnit\Framework\assertCount;
 use function PHPUnit\Framework\assertEquals;
+use Lizmap\Project;
+use Lizmap\Project\Qgis;
+use Lizmap\App;
 
 /**
  * @internal
@@ -262,7 +264,7 @@ class QgisProjectTest extends TestCase
         $file = __DIR__.'/Ressources/'.$fileName.'.qgs';
         $eLayers = json_decode(file_get_contents($file.'.cfg'))->editionLayers;
         $testProj = new qgisProjectForTests();
-        $testProj->setXmlForTest(simplexml_load_file($file));
+        $testProj->setPath($file);
         $testProj->readEditionLayersForTest($eLayers);
         $this->assertEquals($expectedELayer, $eLayers);
     }
@@ -472,15 +474,15 @@ class QgisProjectTest extends TestCase
             <column type="field" hidden="0" width="-1" name="fid"/>
           </columns>
         </attributetableconfig>';
+        $xmlTable = App\XmlTools::xmlReaderFromString($table);
+        $configTable = Qgis\Layer\AttributeTableConfig::fromXmlReader($xmlTable);
 
         $file = __DIR__.'/Ressources/events.qgs';
         $aLayer = json_decode(file_get_contents($file.'.cfg'))->attributeLayers;
-        $xml = simplexml_load_string($table);
         $testProj = new qgisProjectForTests();
-        $testProj->setXmlForTest(simplexml_load_file($file));
+        $testProj->setPath($file);
         $testProj->readAttributeLayersForTest($aLayer);
-        $xml = json_decode(str_replace('@', '', json_encode($xml)));
-        $this->assertEquals($xml, $aLayer->montpellier_events->attributetableconfig);
+        $this->assertEquals($configTable->toKeyArray(), $aLayer->montpellier_events->attributetableconfig);
     }
 
     public static function getShortNamesData()
