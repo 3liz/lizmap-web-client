@@ -130,6 +130,18 @@ class QgisFormControlProperties
     /**
      * @param string $attrName
      *
+     * @return bool
+     */
+    public function hasEditAttribute($attrName)
+    {
+        $lowerName = strtolower($attrName);
+
+        return isset($this->attributes[$attrName]) || isset($this->attributeLowerNames[$lowerName]);
+    }
+
+    /**
+     * @param string $attrName
+     *
      * @return null|mixed
      */
     public function getEditAttribute($attrName)
@@ -206,9 +218,10 @@ class QgisFormControlProperties
 
     public function getRelationReference()
     {
+        // TODO Remove orderByValue when QGIS 3.32 will be the minimum version for allowing a QGIS project
         return array(
             'allowNull' => $this->getEditAttribute('AllowNull'),
-            'orderByValue' => $this->getEditAttribute('OrderByValue'),
+            'orderByValue' => $this->hasEditAttribute('OrderByValue') ? $this->getEditAttribute('OrderByValue') : true, // OrderByValue has been removed from XML since QGIS 3.32
             'relation' => $this->getEditAttribute('Relation'),
             'mapIdentification' => $this->getEditAttribute('MapIdentification'),
             'filters' => $this->getEditAttribute('filters'),
