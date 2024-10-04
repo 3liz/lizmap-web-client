@@ -744,124 +744,13 @@ class QgisProject
      */
     public function getPrintTemplates()
     {
-        if ($this->path) {
-            $project = Qgis\ProjectInfo::fromQgisPath($this->path);
-
-            return $project->getLayoutsAsKeyArray();
-        }
-        // get restricted composers
-        $rComposers = array();
-        $restrictedComposers = $this->getXml()->xpath('//properties/WMSRestrictedComposers/value');
-        if ($restrictedComposers && is_array($restrictedComposers)) {
-            foreach ($restrictedComposers as $restrictedComposer) {
-                $rComposers[] = (string) $restrictedComposer;
-            }
+        if (!$this->path) {
+            return array();
         }
 
-        $printTemplates = array();
-        // get layout qgs project version >= 3
-        $layouts = $this->getXml()->xpath('//Layout');
-        if ($layouts && is_array($layouts)) {
-            foreach ($layouts as $layout) {
-                // test restriction
-                if (in_array((string) $layout['name'], $rComposers)) {
-                    continue;
-                }
-                // get page element
-                $page = $layout->xpath('PageCollection/LayoutItem[@type="65638"]');
-                if (!$page) {
-                    continue;
-                }
-                $page = $page[0];
+        $project = Qgis\ProjectInfo::fromQgisPath($this->path);
 
-                $pageSize = explode(',', $page['size']);
-                // init print template element
-                $printTemplate = array(
-                    'title' => (string) $layout['name'],
-                    'width' => (int) $pageSize[0],
-                    'height' => (int) $pageSize[1],
-                    'maps' => array(),
-                    'labels' => array(),
-                );
-
-                // store mapping between uuid and id
-                $mapUuidId = array();
-                // get layout maps
-                $lMaps = $layout->xpath('LayoutItem[@type="65639"]');
-                if ($lMaps && is_array($lMaps)) {
-                    // Convert xml to json config
-                    foreach ($lMaps as $lMap) {
-                        $lMapSize = explode(',', $lMap['size']);
-                        $ptMap = array(
-                            'id' => 'map'.(string) count($printTemplate['maps']),
-                            'uuid' => (string) $lMap['uuid'],
-                            'width' => (int) $lMapSize[0],
-                            'height' => (int) $lMapSize[1],
-                        );
-                        // store mapping between uuid and id
-                        $mapUuidId[(string) $lMap['uuid']] = 'map'.(string) count($printTemplate['maps']);
-
-                        // Overview
-                        $cMapOverviews = $lMap->xpath('ComposerMapOverview');
-                        foreach ($cMapOverviews as $cMapOverview) {
-                            if ($cMapOverview and (string) $cMapOverview->attributes()->show !== '0' and (string) $cMapOverview->attributes()->frameMap != '-1') {
-                                // frameMap is an uuid
-                                $ptMap['overviewMap'] = (string) $cMapOverview->attributes()->frameMap;
-                            }
-                        }
-                        // Grid
-                        $cMapGrids = $lMap->xpath('ComposerMapGrid');
-                        foreach ($cMapGrids as $cMapGrid) {
-                            if ($cMapGrid and (string) $cMapGrid->attributes()->show !== '0') {
-                                $ptMap['grid'] = 'True';
-                            }
-                        }
-
-                        $printTemplate['maps'][] = $ptMap;
-                    }
-                    // Modifying overviewMap to id instead of uuid
-                    foreach ($printTemplate['maps'] as $ptMap) {
-                        if (!array_key_exists('overviewMap', $ptMap)) {
-                            continue;
-                        }
-                        if (!array_key_exists($ptMap['overviewMap'], $mapUuidId)) {
-                            unset($ptMap['overviewMap']);
-
-                            continue;
-                        }
-                        $ptMap['overviewMap'] = $mapUuidId[$ptMap['overviewMap']];
-                    }
-                }
-
-                // get layout labels
-                $lLabels = $layout->xpath('LayoutItem[@type="65641"]');
-                if ($lLabels && is_array($lLabels)) {
-                    foreach ($lLabels as $lLabel) {
-                        if ((string) $lLabel['id'] == '') {
-                            continue;
-                        }
-                        $printTemplate['labels'][] = array(
-                            'id' => (string) $lLabel['id'],
-                            'htmlState' => (int) $lLabel['htmlState'],
-                            'text' => (string) $lLabel['labelText'],
-                        );
-                    }
-                }
-
-                // Atlas
-                $atlas = $layout->xpath('Atlas');
-                if ($atlas) {
-                    $atlas = $atlas[0];
-                    $printTemplate['atlas'] = array(
-                        'enabled' => (string) $atlas['enabled'],
-                        'coverageLayer' => (string) $atlas['coverageLayer'],
-                    );
-                }
-                $printTemplates[] = $printTemplate;
-            }
-        }
-
-        return $printTemplates;
+        return $project->getLayoutsAsKeyArray();
     }
 
     /**
@@ -869,6 +758,10 @@ class QgisProject
      */
     public function readLocateByLayer($locateByLayer)
     {
+        if (!$this->path) {
+            return;
+        }
+
         // collect layerIds
         $locateLayerIds = array();
         foreach ($locateByLayer as $k => $v) {
@@ -876,94 +769,49 @@ class QgisProject
         }
 
         // update locateByLayer with project from path
-        if ($this->path) {
-            $project = Qgis\ProjectInfo::fromQgisPath($this->path);
-
-            // update locateByLayer with alias and filter information
-            foreach ($locateByLayer as $k => $v) {
-                $updateLocate = false;
-                $layer = $project->getLayerById($v->layerId);
-                // Get field alias
-                $alias = $layer->getFieldAlias($v->fieldName);
-                if ($alias !== null) {
-                    // Update locate with field alias
-                    $v->fieldAlias = $alias;
-                    $updateLocate = true;
-                }
-                if (property_exists($v, 'filterFieldName')) {
-                    // Get filter field alias
-                    $filterAlias = $layer->getFieldAlias($v->filterFieldName);
-                    if ($filterAlias !== null) {
-                        // Update locate with filter field alias
-                        $v->filterFieldAlias = $filterAlias;
-                        $updateLocate = true;
-                    }
-                }
-                // Get joins
-                if ($layer->vectorjoins !== null && count($layer->vectorjoins) > 0) {
-                    if (!property_exists($v, 'vectorjoins')) {
-                        // Add joins to locate
-                        $v->vectorjoins = array();
-                        $updateLocate = true;
-                    }
-                    foreach ($layer->vectorjoins as $vectorjoin) {
-                        if (in_array($vectorjoin->joinLayerId, $locateLayerIds)) {
-                            // Add join info to locate
-                            $v->vectorjoins[] = (object) array(
-                                'joinFieldName' => $vectorjoin->joinFieldName,
-                                'targetFieldName' => $vectorjoin->targetFieldName,
-                                'joinLayerId' => $vectorjoin->joinLayerId,
-                            );
-                            $updateLocate = true;
-                        }
-                    }
-                }
-                if ($updateLocate) {
-                    // Update locate if needed
-                    $locateByLayer->{$k} = $v;
-                }
-            }
-
-            return;
-        }
+        $project = Qgis\ProjectInfo::fromQgisPath($this->path);
 
         // update locateByLayer with alias and filter information
         foreach ($locateByLayer as $k => $v) {
-            $xmlLayer = $this->getXmlLayer2($this->getXml(), $v->layerId);
-            if (is_null($xmlLayer)) {
-                continue;
-            }
-            // aliases
-            $alias = $xmlLayer->xpath("aliases/alias[@field='".$v->fieldName."']");
-            if ($alias && is_array($alias)) {
-                $alias = $alias[0];
-                $v->fieldAlias = (string) $alias['name'];
-                $locateByLayer->{$k} = $v;
+            $updateLocate = false;
+            $layer = $project->getLayerById($v->layerId);
+            // Get field alias
+            $alias = $layer->getFieldAlias($v->fieldName);
+            if ($alias !== null) {
+                // Update locate with field alias
+                $v->fieldAlias = $alias;
+                $updateLocate = true;
             }
             if (property_exists($v, 'filterFieldName')) {
-                $alias = $xmlLayer->xpath("aliases/alias[@field='".$v->filterFieldName."']");
-                if ($alias && is_array($alias)) {
-                    $alias = $alias[0];
-                    $v->filterFieldAlias = (string) $alias['name'];
-                    $locateByLayer->{$k} = $v;
+                // Get filter field alias
+                $filterAlias = $layer->getFieldAlias($v->filterFieldName);
+                if ($filterAlias !== null) {
+                    // Update locate with filter field alias
+                    $v->filterFieldAlias = $filterAlias;
+                    $updateLocate = true;
                 }
             }
-            // vectorjoins
-            $vectorjoins = $xmlLayer->xpath('vectorjoins/join');
-            if ($vectorjoins && is_array($vectorjoins)) {
+            // Get joins
+            if ($layer->vectorjoins !== null && count($layer->vectorjoins) > 0) {
                 if (!property_exists($v, 'vectorjoins')) {
+                    // Add joins to locate
                     $v->vectorjoins = array();
+                    $updateLocate = true;
                 }
-                foreach ($vectorjoins as $vectorjoin) {
-                    $joinLayerId = (string) $vectorjoin['joinLayerId'];
-                    if (in_array($joinLayerId, $locateLayerIds)) {
+                foreach ($layer->vectorjoins as $vectorjoin) {
+                    if (in_array($vectorjoin->joinLayerId, $locateLayerIds)) {
+                        // Add join info to locate
                         $v->vectorjoins[] = (object) array(
-                            'joinFieldName' => (string) $vectorjoin['joinFieldName'],
-                            'targetFieldName' => (string) $vectorjoin['targetFieldName'],
-                            'joinLayerId' => (string) $vectorjoin['joinLayerId'],
+                            'joinFieldName' => $vectorjoin->joinFieldName,
+                            'targetFieldName' => $vectorjoin->targetFieldName,
+                            'joinLayerId' => $vectorjoin->joinLayerId,
                         );
+                        $updateLocate = true;
                     }
                 }
+            }
+            if ($updateLocate) {
+                // Update locate if needed
                 $locateByLayer->{$k} = $v;
             }
         }
@@ -974,28 +822,11 @@ class QgisProject
      */
     public function readEditionLayers($editionLayers)
     {
-        if ($this->path) {
-            $project = Qgis\ProjectInfo::fromQgisPath($this->path);
-            foreach ($editionLayers as $key => $obj) {
-                // Improve performance by getting provider directly from config
-                // Available for lizmap plugin >= 3.3.2
-                if (property_exists($obj, 'provider')) {
-                    if ($obj->provider == 'spatialite') {
-                        unset($editionLayers->{$key});
-                    }
-
-                    continue;
-                }
-                // check for embedded layers
-                $layer = $project->getLayerById($obj->layerId);
-                if ($layer->provider == 'spatialite') {
-                    unset($editionLayers->{$key});
-                }
-            }
-
+        if (!$this->path) {
             return;
         }
 
+        $project = Qgis\ProjectInfo::fromQgisPath($this->path);
         foreach ($editionLayers as $key => $obj) {
             // Improve performance by getting provider directly from config
             // Available for lizmap plugin >= 3.3.2
@@ -1007,21 +838,8 @@ class QgisProject
                 continue;
             }
             // check for embedded layers
-            $qgisProject = $this->getEmbeddedQgisProject($obj->layerId);
-            if ($qgisProject) {
-                $xml = $qgisProject->getXml();
-            } else {
-                $xml = $this->getXml();
-            }
-
-            // Read layer property from QGIS project XML
-            $layerXml = $this->getXmlLayer2($xml, $obj->layerId);
-            if (is_null($layerXml)) {
-                continue;
-            }
-            $provider = $layerXml->xpath('provider');
-            $provider = (string) $provider[0];
-            if ($provider == 'spatialite') {
+            $layer = $project->getLayerById($obj->layerId);
+            if ($layer->provider == 'spatialite') {
                 unset($editionLayers->{$key});
             }
         }
@@ -1033,42 +851,25 @@ class QgisProject
      */
     public function readEditionForms($editionLayers, $proj = null)
     {
-        if ($this->path) {
-            $project = Qgis\ProjectInfo::fromQgisPath($this->path);
-            foreach ($editionLayers as $key => $obj) {
-                $layer = $project->getLayerById($obj->layerId);
-                if ($layer === null) {
-                    continue;
-                }
-                if ($layer->type !== 'vector') {
-                    continue;
-                }
-
-                /** @var Qgis\Layer\VectorLayer $layer */
-                $formControls = $layer->getFormControls();
-                if ($proj) {
-                    $proj->getCacheHandler()->setEditableLayerFormCache($obj->layerId, $formControls);
-                }
-            }
-
+        if (!$this->path) {
             return;
         }
-        $embeddedEditionLayers = array();
-        foreach ($editionLayers as $key => $obj) {
-            // check for embedded layers
-            $qgisProject = $this->getEmbeddedQgisProject($obj->layerId);
-            if ($qgisProject) {
-                $xml = $qgisProject->getXml();
-            } else {
-                $xml = $this->getXml();
-            }
 
-            $layerXml = $this->getXmlLayer2($xml, $obj->layerId);
-            if (is_null($layerXml)) {
+        $project = Qgis\ProjectInfo::fromQgisPath($this->path);
+        foreach ($editionLayers as $key => $obj) {
+            $layer = $project->getLayerById($obj->layerId);
+            if ($layer === null) {
                 continue;
             }
-            $formControls = $this->readFormControls($layerXml, $obj->layerId, $proj);
-            $proj->getCacheHandler()->setEditableLayerFormCache($obj->layerId, $formControls);
+            if ($layer->type !== 'vector') {
+                continue;
+            }
+
+            /** @var Qgis\Layer\VectorLayer $layer */
+            $formControls = $proj->getCacheHandler()->getEditableLayerFormCache($obj->layerId);
+            if (!$formControls && $proj) {
+                $proj->getCacheHandler()->setEditableLayerFormCache($obj->layerId, $layer->getFormControls());
+            }
         }
     }
 
@@ -1114,88 +915,37 @@ class QgisProject
      *
      * This concerns fields with ValueMap, ValueRelation & RelationReference config
      *
-     * @param array   $layerIds List of layer identifiers
-     * @param Project $proj
+     * @param array        $layerIds List of layer identifiers
+     * @param null|Project $proj
      */
-    public function readLayersLabeledFieldsConfig($layerIds, $proj)
+    public function readLayersLabeledFieldsConfig($layerIds, $proj = null)
     {
         // Get QGIS form fields configurations for each layer
         $layersLabeledFieldsConfig = array();
 
-        if ($this->path) {
-            $project = Qgis\ProjectInfo::fromQgisPath($this->path);
-            foreach ($layerIds as $layerId) {
-                $layer = $project->getLayerById($layerId);
-                if ($layer === null) {
-                    continue;
-                }
-                if ($layer->type !== 'vector') {
-                    continue;
-                }
-
-                /** @var Qgis\Layer\VectorLayer $layer */
-                $formControls = $layer->getFormControls();
-
-                $fields_config = array();
-                foreach ($formControls as $fieldName => $control) {
-                    $editType = $control->getFieldEditType();
-                    if (!in_array($editType, array('ValueMap', 'ValueRelation', 'RelationReference'))) {
-                        continue;
-                    }
-                    $fields_config[$fieldName] = array(
-                        'type' => $editType,
-                    );
-                    if ($editType == 'ValueMap') {
-                        $valueMap = $control->getValueMap();
-                        if ($valueMap) {
-                            $fields_config[$fieldName]['data'] = $valueMap;
-                        }
-                    } elseif ($editType == 'ValueRelation') {
-                        $valueRelationData = $control->getValueRelationData();
-                        $fields_config[$fieldName]['source_layer_id'] = $valueRelationData['layer'];
-                        $fields_config[$fieldName]['source_layer'] = $valueRelationData['layerName'];
-                        $fields_config[$fieldName]['code_field'] = $valueRelationData['key'];
-                        $fields_config[$fieldName]['label_field'] = $valueRelationData['value'];
-                        $fields_config[$fieldName]['exp_filter'] = $valueRelationData['filterExpression'];
-                    } else {
-                        // RelationReference
-                        // We need to get the relation properties
-                        $relationReferenceData = $control->getRelationReference();
-                        $relation = $relationReferenceData['relation'];
-                        $referencedLayerId = $relationReferenceData['referencedLayerId'];
-                        if (!array_key_exists($referencedLayerId, $this->relations)) {
-                            continue;
-                        }
-                        $fields_config[$fieldName]['relation'] = $relation;
-                        $fields_config[$fieldName]['source_layer_id'] = $referencedLayerId;
-                        $fields_config[$fieldName]['source_layer'] = $relationReferenceData['referencedLayerName'];
-                        $fields_config[$fieldName]['code_field'] = $this->relations[$referencedLayerId][0]['referencedField'];
-                        $fields_config[$fieldName]['label_field'] = $this->relations[$referencedLayerId][0]['previewField'];
-                        $fields_config[$fieldName]['exp_filter'] = $relationReferenceData['filterExpression'];
-                    }
-                }
-                $layersLabeledFieldsConfig[$layer->layername] = $fields_config;
-            }
-
+        if (!$this->path) {
             return $layersLabeledFieldsConfig;
         }
 
+        $project = Qgis\ProjectInfo::fromQgisPath($this->path);
         foreach ($layerIds as $layerId) {
-            $qgisProject = $this->getEmbeddedQgisProject($layerId);
-
-            if ($qgisProject) {
-                $xml = $qgisProject->getXml();
-            } else {
-                $xml = $this->getXml();
-            }
-
-            $layerXml = $this->getXmlLayer2($xml, $layerId);
-            if (is_null($layerXml)) {
+            $layer = $project->getLayerById($layerId);
+            if ($layer === null) {
                 continue;
             }
-            $formControls = $this->readFormControls($layerXml, $layerId, $proj);
-            $getLayer = $this->getLayer($layerId, $proj);
-            $layerName = $getLayer->getName();
+            if ($layer->type !== 'vector') {
+                continue;
+            }
+
+            /** @var Qgis\Layer\VectorLayer $layer */
+            $formControls = array();
+            if ($proj) {
+                $formControls = $proj->getCacheHandler()->getEditableLayerFormCache($layerId);
+            }
+            if (!$formControls) {
+                $formControls = $layer->getFormControls();
+            }
+
             $fields_config = array();
             foreach ($formControls as $fieldName => $control) {
                 $editType = $control->getFieldEditType();
@@ -1234,8 +984,7 @@ class QgisProject
                     $fields_config[$fieldName]['exp_filter'] = $relationReferenceData['filterExpression'];
                 }
             }
-
-            $layersLabeledFieldsConfig[$layerName] = $fields_config;
+            $layersLabeledFieldsConfig[$layer->layername] = $fields_config;
         }
 
         return $layersLabeledFieldsConfig;
@@ -1246,23 +995,11 @@ class QgisProject
      */
     public function readAttributeLayers($attributeLayers)
     {
-        if ($this->path) {
-            $project = Qgis\ProjectInfo::fromQgisPath($this->path);
-            // Get field order & visibility
-            foreach ($attributeLayers as $key => $obj) {
-                // Improve performance by getting custom_config status directly from config
-                // Available for lizmap plugin >= 3.3.3
-                if (property_exists($obj, 'custom_config') && $obj->custom_config != 'True') {
-                    continue;
-                }
-
-                $layer = $project->getLayerById($obj->layerId);
-                $obj->attributetableconfig = $layer->attributetableconfig->toKeyArray();
-            }
-
+        if (!$this->path) {
             return;
         }
 
+        $project = Qgis\ProjectInfo::fromQgisPath($this->path);
         // Get field order & visibility
         foreach ($attributeLayers as $key => $obj) {
             // Improve performance by getting custom_config status directly from config
@@ -1271,21 +1008,8 @@ class QgisProject
                 continue;
             }
 
-            // Read layer property from QGIS project XML
-            $layerXml = $this->getXmlLayer2($this->getXml(), $obj->layerId);
-            if (is_null($layerXml)) {
-                continue;
-            }
-            $attributetableconfigXml = $layerXml->xpath('attributetableconfig');
-            if (count($attributetableconfigXml) == 0) {
-                continue;
-            }
-            $attributetableconfig = str_replace(
-                '@',
-                '',
-                json_encode($attributetableconfigXml[0])
-            );
-            $obj->attributetableconfig = json_decode($attributetableconfig);
+            $layer = $project->getLayerById($obj->layerId);
+            $obj->attributetableconfig = $layer->attributetableconfig->toKeyArray();
         }
     }
 
@@ -1297,39 +1021,23 @@ class QgisProject
     public function readLayersOrder($layers)
     {
         $layersOrder = array();
-        if ($this->path) {
-            $project = Qgis\ProjectInfo::fromQgisPath($this->path);
-            $customOrder = $project->layerTreeRoot->customOrder;
-            if (!$customOrder->enabled) {
-                return $layersOrder;
+        if (!$this->path) {
+            return $layersOrder;
+        }
+
+        $project = Qgis\ProjectInfo::fromQgisPath($this->path);
+        $customOrder = $project->layerTreeRoot->customOrder;
+        if (!$customOrder->enabled) {
+            return $layersOrder;
+        }
+        $lo = 0;
+        foreach ($customOrder->items as $layerI) {
+            // Get layer name from config instead of XML for possible embedded layers
+            $name = $this->getLayerNameByIdFromConfig($layerI, $layers);
+            if ($name) {
+                $layersOrder[$name] = $lo;
             }
-            $lo = 0;
-            foreach ($customOrder->items as $layerI) {
-                // Get layer name from config instead of XML for possible embedded layers
-                $name = $this->getLayerNameByIdFromConfig($layerI, $layers);
-                if ($name) {
-                    $layersOrder[$name] = $lo;
-                }
-                ++$lo;
-            }
-        } else {
-            $customOrder = $this->getXml()->xpath('layer-tree-group/custom-order');
-            if (count($customOrder) == 0) {
-                return $layersOrder;
-            }
-            $customOrderZero = $customOrder[0];
-            if (intval($customOrderZero->attributes()->enabled) == 1) {
-                $items = $customOrderZero->xpath('//item');
-                $lo = 0;
-                foreach ($items as $layerI) {
-                    // Get layer name from config instead of XML for possible embedded layers
-                    $name = $this->getLayerNameByIdFromConfig($layerI, $layers);
-                    if ($name) {
-                        $layersOrder[$name] = $lo;
-                    }
-                    ++$lo;
-                }
-            }
+            ++$lo;
         }
 
         return $layersOrder;
