@@ -39,6 +39,16 @@ class QgisProjectForTests extends QgisProject
         return $this->setLayerOpacity($cfg);
     }
 
+    public function setLayerGroupDataForTest($cfg)
+    {
+        return $this->setLayerGroupData($cfg);
+    }
+
+    public function setLayerShowFeatureCountForTest($cfg)
+    {
+        return $this->setLayerShowFeatureCount($cfg);
+    }
+
     public function getTheXmlAttribute()
     {
         return $this->xml;
