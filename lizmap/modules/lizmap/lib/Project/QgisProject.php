@@ -381,35 +381,18 @@ class QgisProject
      */
     protected function setShortNames(ProjectConfig $cfg)
     {
-        if ($this->path) {
-            $project = Qgis\ProjectInfo::fromQgisPath($this->path);
-            foreach ($project->projectlayers as $layer) {
-                if (!isset($layer->shortname)) {
-                    continue;
-                }
-                $layerCfg = $cfg->getLayer($layer->layername);
-                if ($layerCfg) {
-                    $layerCfg->shortname = $layer->shortname;
-                }
-            }
-
+        if (!$this->path) {
             return;
         }
 
-        $shortNames = $this->xpathQuery('//maplayer/shortname');
-        if ($shortNames) {
-            foreach ($shortNames as $sname) {
-                $sname = (string) $sname;
-                $xmlLayer = $this->xpathQuery("//maplayer[shortname='{$sname}']");
-                if (!$xmlLayer) {
-                    continue;
-                }
-                $xmlLayer = $xmlLayer[0];
-                $name = (string) $xmlLayer->layername;
-                $layerCfg = $cfg->getLayer($name);
-                if ($layerCfg) {
-                    $layerCfg->shortname = $sname;
-                }
+        $project = Qgis\ProjectInfo::fromQgisPath($this->path);
+        foreach ($project->projectlayers as $layer) {
+            if (!isset($layer->shortname)) {
+                continue;
+            }
+            $layerCfg = $cfg->getLayer($layer->layername);
+            if ($layerCfg) {
+                $layerCfg->shortname = $layer->shortname;
             }
         }
     }
@@ -419,48 +402,18 @@ class QgisProject
      */
     protected function setLayerOpacity(ProjectConfig $cfg)
     {
-        if ($this->path) {
-            $project = Qgis\ProjectInfo::fromQgisPath($this->path);
-            foreach ($project->projectlayers as $layer) {
-                if (!isset($layer->layerOpacity) || $layer->layerOpacity == 1) {
-                    continue;
-                }
-                $layerCfg = $cfg->getLayer($layer->layername);
-                if ($layerCfg) {
-                    $layerCfg->opacity = $layer->layerOpacity;
-                }
-            }
-
+        if (!$this->path) {
             return;
         }
-        $layers = $this->layers;
-        // loop through project layers to get embedded ones as well
-        foreach ($layers as $layer) {
-            $xpath = "//maplayer[id='{$layer['id']}']/layerOpacity[.!=1]/parent::* | //maplayer[id='{$layer['id']}']/pipe/rasterrenderer/@opacity[.!=1]/ancestor::maplayer";
-            $layerWithOpacity = null;
 
-            // check if layer is embedded or not
-            $qgisProject = $this->getEmbeddedQgisProject($layer['id']);
-
-            if ($qgisProject) {
-                $layerWithOpacity = $qgisProject->xpathQuery($xpath);
-            } else {
-                $layerWithOpacity = $this->xpathQuery($xpath);
+        $project = Qgis\ProjectInfo::fromQgisPath($this->path);
+        foreach ($project->projectlayers as $layer) {
+            if (!isset($layer->layerOpacity) || $layer->layerOpacity == 1) {
+                continue;
             }
-
-            // layerWithOpacity should have length == 1, if any
-            if ($layerWithOpacity && count($layerWithOpacity) == 1) {
-                $name = (string) $layerWithOpacity[0]->layername;
-                $layerCfg = $cfg->getLayer($name);
-                $opacity = 1;
-                if ($layerCfg) {
-                    if (isset($layerWithOpacity[0]->layerOpacity)) {
-                        $opacity = (float) $layerWithOpacity[0]->layerOpacity;
-                    } elseif (isset($layerWithOpacity[0]->pipe->rasterrenderer['opacity'])) {
-                        $opacity = (float) $layerWithOpacity[0]->pipe->rasterrenderer['opacity'];
-                    }
-                    $layerCfg->opacity = $opacity;
-                }
+            $layerCfg = $cfg->getLayer($layer->layername);
+            if ($layerCfg) {
+                $layerCfg->opacity = $layer->layerOpacity;
             }
         }
     }
@@ -470,82 +423,26 @@ class QgisProject
      */
     protected function setLayerGroupData(ProjectConfig $cfg)
     {
-        if ($this->path) {
-            $project = Qgis\ProjectInfo::fromQgisPath($this->path);
-            $groupShortNames = $project->layerTreeRoot->getGroupShortNames();
-            foreach ($groupShortNames as $name => $shortName) {
-                $layerCfg = $cfg->getLayer($name);
-                if (!$layerCfg) {
-                    continue;
-                }
-                $layerCfg->shortname = $shortName;
-            }
-            $groupsMutuallyExclusive = $project->layerTreeRoot->getGroupsMutuallyExclusive();
-            foreach ($groupsMutuallyExclusive as $group) {
-                $layerCfg = $cfg->getLayer($group);
-                if (!$layerCfg) {
-                    continue;
-                }
-                $layerCfg->mutuallyExclusive = 'True';
-            }
-
+        if (!$this->path) {
             return;
         }
-        $groupsWithShortName = $this->xpathQuery("//layer-tree-group/customproperties/property[@key='wmsShortName']/parent::*/parent::*");
-        if ($groupsWithShortName) {
-            foreach ($groupsWithShortName as $group) {
-                $name = (string) $group['name'];
-                $shortNameProperty = $group->xpath("customproperties/property[@key='wmsShortName']");
-                if (!$shortNameProperty) {
-                    continue;
-                }
 
-                $shortNameProperty = $shortNameProperty[0];
-                $sname = (string) $shortNameProperty['value'];
-                if (!$sname) {
-                    continue;
-                }
-
-                $layerCfg = $cfg->getLayer($name);
-                if (!$layerCfg) {
-                    continue;
-                }
-                $layerCfg->shortname = $sname;
+        $project = Qgis\ProjectInfo::fromQgisPath($this->path);
+        $groupShortNames = $project->layerTreeRoot->getGroupShortNames();
+        foreach ($groupShortNames as $name => $shortName) {
+            $layerCfg = $cfg->getLayer($name);
+            if (!$layerCfg) {
+                continue;
             }
-        } else {
-            $groupsWithShortName = $this->xpathQuery("//layer-tree-group/customproperties/Option[@type='Map']/Option[@name='wmsShortName']/parent::*/parent::*/parent::*");
-            if ($groupsWithShortName) {
-                foreach ($groupsWithShortName as $group) {
-                    $name = (string) $group['name'];
-                    $shortNameProperty = $group->xpath("customproperties/Option[@type='Map']/Option[@name='wmsShortName']");
-                    if (!$shortNameProperty) {
-                        continue;
-                    }
-
-                    $shortNameProperty = $shortNameProperty[0];
-                    $sname = (string) $shortNameProperty['value'];
-                    if (!$sname) {
-                        continue;
-                    }
-
-                    $layerCfg = $cfg->getLayer($name);
-                    if (!$layerCfg) {
-                        continue;
-                    }
-                    $layerCfg->shortname = $sname;
-                }
-            }
+            $layerCfg->shortname = $shortName;
         }
-
-        $groupsMutuallyExclusive = $this->xpathQuery("//layer-tree-group[@mutually-exclusive='1']");
-        if ($groupsMutuallyExclusive) {
-            foreach ($groupsMutuallyExclusive as $group) {
-                $name = (string) $group['name'];
-                $layerCfg = $cfg->getLayer($name);
-                if ($layerCfg) {
-                    $layerCfg->mutuallyExclusive = 'True';
-                }
+        $groupsMutuallyExclusive = $project->layerTreeRoot->getGroupsMutuallyExclusive();
+        foreach ($groupsMutuallyExclusive as $group) {
+            $layerCfg = $cfg->getLayer($group);
+            if (!$layerCfg) {
+                continue;
             }
+            $layerCfg->mutuallyExclusive = 'True';
         }
     }
 
@@ -554,31 +451,18 @@ class QgisProject
      */
     protected function setLayerShowFeatureCount(ProjectConfig $cfg)
     {
-        if ($this->path) {
-            $project = Qgis\ProjectInfo::fromQgisPath($this->path);
-            $layersShowFeatureCount = $project->layerTreeRoot->getLayersShowFeatureCount();
-            foreach ($layersShowFeatureCount as $layer) {
-                $layerCfg = $cfg->getLayer($layer);
-                if (!$layerCfg) {
-                    continue;
-                }
-                $layerCfg->showFeatureCount = 'True';
-            }
-
+        if (!$this->path) {
             return;
         }
-        $layersWithShowFeatureCount = $this->xpathQuery("//layer-tree-layer/customproperties/property[@key='showFeatureCount'][@value='1']/parent::*/parent::*");
-        if (!$layersWithShowFeatureCount) {
-            $layersWithShowFeatureCount = $this->xpathQuery("//layer-tree-layer/customproperties/Option[@type='Map']/Option[@name='showFeatureCount'][@value='1']/parent::*/parent::*/parent::*");
-        }
-        if ($layersWithShowFeatureCount) {
-            foreach ($layersWithShowFeatureCount as $layer) {
-                $name = (string) $layer['name'];
-                $layerCfg = $cfg->getLayer($name);
-                if ($layerCfg) {
-                    $layerCfg->showFeatureCount = 'True';
-                }
+
+        $project = Qgis\ProjectInfo::fromQgisPath($this->path);
+        $layersShowFeatureCount = $project->layerTreeRoot->getLayersShowFeatureCount();
+        foreach ($layersShowFeatureCount as $layer) {
+            $layerCfg = $cfg->getLayer($layer);
+            if (!$layerCfg) {
+                continue;
             }
+            $layerCfg->showFeatureCount = 'True';
         }
     }
 
@@ -593,14 +477,6 @@ class QgisProject
             foreach ($project->projectlayers as $layer) {
                 if ($layer->type === 'plugin') {
                     $cfg->removeLayer($layer->layername);
-                }
-            }
-        } else {
-            $pluginLayers = $this->xpathQuery('//maplayer[type="plugin"]');
-            if ($pluginLayers) {
-                foreach ($pluginLayers as $layer) {
-                    $name = (string) $layer->layername;
-                    $cfg->removeLayer($name);
                 }
             }
         }
