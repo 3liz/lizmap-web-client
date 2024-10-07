@@ -484,12 +484,12 @@ class QgisProjectTest extends TestCase
 
     public function testReadEditionFormsForEmbeddedLayers()
     {
-        $file = __DIR__.'/Ressources/edition_embed.qgs';
+        $file = __DIR__.'/Ressources/embed_child.qgs';
         $data = array(
             'WMSInformation' => array(),
             'layers' => array(),
         );
-        $file = __DIR__.'/Ressources/edition_embed.qgs';
+        $file = __DIR__.'/Ressources/embed_child.qgs';
         $testProj = new ProjectForTests();
 
         $testQgis = new QgisProjectForTests($data);
