@@ -4,7 +4,7 @@ import { gotoMap } from './globals';
 
 test.describe('Edition of an embedded layer', () => {
     test.beforeEach(async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=edition_embed';
+        const url = '/index.php/view/map/?repository=testsrepository&project=embed_child';
         await gotoMap(url, page);
         await page.locator('#dock-close').click();
     });
