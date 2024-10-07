@@ -301,7 +301,7 @@ class ProjectTest extends TestCase
             'WMSInformation' => array(),
             'layers' => array(),
         );
-        $file = __DIR__.'/Ressources/edition_embed_parent.qgs';
+        $file = __DIR__.'/Ressources/embed_parent.qgs';
         $context = new ContextForTests();
         $context->setResult($aclData);
         $proj = new ProjectForTests($context);
@@ -310,7 +310,7 @@ class ProjectTest extends TestCase
         $testQgis->setPath($file);
         $testQgis->readXMLProjectTest($file);
 
-        $cfg = json_decode(file_get_contents( __DIR__.'/Ressources/edition_embed_parent_filtered.qgs.cfg'));
+        $cfg = json_decode(file_get_contents( __DIR__.'/Ressources/embed_parent_filtered.qgs.cfg'));
         $config = new Project\ProjectConfig($cfg);
         $proj->setCfg($config);
         $proj->setQgis($testQgis);
@@ -359,7 +359,7 @@ class ProjectTest extends TestCase
             'WMSInformation' => array(),
             'layers' => array(),
         );
-        $file = __DIR__.'/Ressources/edition_embed_parent.qgs';
+        $file = __DIR__.'/Ressources/embed_parent.qgs';
         $context = new ContextForTests();
         $context->setResult($aclData);
         $proj = new ProjectForTests($context);
@@ -368,7 +368,7 @@ class ProjectTest extends TestCase
         $testQgis->setPath($file);
         $testQgis->readXMLProjectTest($file);
 
-        $cfg = json_decode(file_get_contents( __DIR__.'/Ressources/edition_embed_parent_filtered.qgs.cfg'));
+        $cfg = json_decode(file_get_contents( __DIR__.'/Ressources/embed_parent_filtered.qgs.cfg'));
         $config = new Project\ProjectConfig($cfg);
         $proj->setCfg($config);
         $proj->setQgis($testQgis);
