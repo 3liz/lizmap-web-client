@@ -130,16 +130,16 @@ jobs:
           cd end2end
           npx playwright test --project=end2end
 
-      - name: Generate PG dump from Playwright
-        if: failure()
-        run: |
-          ./lizmap-ctl dump-pgsql
-
-      - name: Check the database diff from Playwright
-        if: failure()
-        run: |
-          git diff qgis-projects/tests/tests_dataset.sql
-          git restore qgis-projects/tests/tests_dataset.sql
+#      - name: Generate PG dump from Playwright
+#        if: failure()
+#        run: |
+#          ./lizmap-ctl dump-pgsql
+#
+#      - name: Check the database diff from Playwright
+#        if: failure()
+#        run: |
+#          git diff qgis-projects/tests/tests_dataset.sql
+#          git restore qgis-projects/tests/tests_dataset.sql
 
       - name: Notify in case of playwright failure, from mainstream branches only
         uses: peter-evans/commit-comment@v3
@@ -195,16 +195,16 @@ jobs:
             tests/end2end/cypress/screenshots
             tests/end2end/cypress/downloads
 
-      - name: Generate PG dump from Cypress
-        if: failure()
-        run: |
-          ./lizmap-ctl dump-pgsql
-
-      - name: Check the database diff from Cypress
-        if: failure()
-        run: |
-          git diff qgis-projects/tests/tests_dataset.sql
-          git restore qgis-projects/tests/tests_dataset.sql
+#      - name: Generate PG dump from Cypress
+#        if: failure()
+#        run: |
+#          ./lizmap-ctl dump-pgsql
+#
+#      - name: Check the database diff from Cypress
+#        if: failure()
+#        run: |
+#          git diff qgis-projects/tests/tests_dataset.sql
+#          git restore qgis-projects/tests/tests_dataset.sql
 
 #          [[ -z $(git status --porcelain -uno) ]]
 #          exit $?
