@@ -1,5 +1,10 @@
 blank_issues_enabled: false
 contact_links:
+  - name: Additional JavaScript issue
+    url: https://docs.lizmap.com/current/en/publish/customization/javascript.html
+    about: >
+      If the issue concerns a third party JavaScript script then it is not related in Lizmap Web Client source
+      code. Please raise your issue in the dedicated bug tracker for this script.
   - name: Documentation
     url: https://github.com/3liz/lizmap-documentation/issues
     about: Please fill an issue about documentation here.
