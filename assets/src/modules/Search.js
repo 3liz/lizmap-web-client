@@ -185,10 +185,11 @@ export default class Search {
 
             // Format answers to highlight searched keywords
             var labrex = this._getHighlightRegEx();
+            const searchQuery = document.getElementById('search-query').value;
             switch (searchConfig.service) {
                 case 'nominatim':
                     $.get(service
-                        , { "query": $('#search-query').val(), "bbox": extent.toBBOX() }
+                        , { "query": searchQuery, "bbox": extent.toBBOX() }
                         , data => {
                             var text = '';
                             var count = 0;
@@ -220,8 +221,12 @@ export default class Search {
                         }, 'json');
                     break;
                 case 'ign':
+                    if (searchQuery.length < 3 || searchQuery.length > 200) {
+                        lizMap.addMessage(lizDict['externalsearch.ignlimit'], 'warning', true);
+                        break;
+                    }
                     let mapExtent4326 = transformExtent(mainLizmap.map.getView().calculateExtent(), mainLizmap.projection, 'EPSG:4326');
-                    let queryParam = '?text=' + $('#search-query').val() + '&type=StreetAddress&maximumResponses=10&bbox=' + mapExtent4326
+                    let queryParam = '?text=' + searchQuery + '&type=StreetAddress&maximumResponses=10&bbox=' + mapExtent4326
                     $.getJSON(encodeURI(service + queryParam), data => {
                         let text = '';
                         let count = 0;
@@ -238,7 +243,7 @@ export default class Search {
                     break;
                 case 'google':
                     service.geocode({
-                        'address': $('#search-query').val(),
+                        'address': searchQuery,
                         'bounds': new google.maps.LatLngBounds(
                             new google.maps.LatLng(extent.top, extent.left),
                             new google.maps.LatLng(extent.bottom, extent.right)
