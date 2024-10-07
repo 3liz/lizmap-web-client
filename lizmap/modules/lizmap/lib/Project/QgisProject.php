@@ -1027,7 +1027,15 @@ class QgisProject
         // Get QGIS form fields configurations for each layer
         $layersLabeledFieldsConfig = array();
         foreach ($layerIds as $layerId) {
-            $layerXml = $this->getXmlLayer2($this->xml, $layerId);
+            $qgisProject = $this->getEmbeddedQgisProject($layerId);
+
+            if ($qgisProject) {
+                $xml = $qgisProject->getXml();
+            } else {
+                $xml = $this->getXml();
+            }
+
+            $layerXml = $this->getXmlLayer2($xml, $layerId);
             if (is_null($layerXml)) {
                 continue;
             }
