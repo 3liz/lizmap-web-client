@@ -25,7 +25,7 @@
       <customproperties>
         <Option type="Map">
           <Option value="1" name="embedded" type="int"/>
-          <Option value="./edition_embed_parent.qgs" name="embedded_project" type="QString"/>
+          <Option value="./embed_parent.qgs" name="embedded_project" type="QString"/>
         </Option>
       </customproperties>
     </layer-tree-layer>
@@ -33,7 +33,7 @@
       <customproperties>
         <Option type="Map">
           <Option value="1" name="embedded" type="int"/>
-          <Option value="./edition_embed_parent.qgs" name="embedded_project" type="QString"/>
+          <Option value="./embed_parent.qgs" name="embedded_project" type="QString"/>
         </Option>
       </customproperties>
     </layer-tree-layer>
@@ -41,7 +41,7 @@
       <customproperties>
         <Option type="Map">
           <Option value="1" name="embedded" type="int"/>
-          <Option value="./edition_embed_parent.qgs" name="embedded_project" type="QString"/>
+          <Option value="./embed_parent.qgs" name="embedded_project" type="QString"/>
         </Option>
       </customproperties>
     </layer-tree-layer>
@@ -154,9 +154,9 @@
     <paintEffect/>
   </main-annotation-layer>
   <projectlayers>
-    <maplayer id="edition_layer_embed_child_d87f81cd_26d2_4c40_820d_676ba03ff6ab" embedded="1" project="./edition_embed_parent.qgs"/>
-    <maplayer id="edition_layer_embed_line_e74301b9_95ae_4b72_81cc_71fafb80082f" embedded="1" project="./edition_embed_parent.qgs"/>
-    <maplayer id="edition_layer_embed_point_7794e305_0e9b_40d0_bf0b_2494790d4eb3" embedded="1" project="./edition_embed_parent.qgs"/>
+    <maplayer id="edition_layer_embed_child_d87f81cd_26d2_4c40_820d_676ba03ff6ab" embedded="1" project="./embed_parent.qgs"/>
+    <maplayer id="edition_layer_embed_line_e74301b9_95ae_4b72_81cc_71fafb80082f" embedded="1" project="./embed_parent.qgs"/>
+    <maplayer id="edition_layer_embed_point_7794e305_0e9b_40d0_bf0b_2494790d4eb3" embedded="1" project="./embed_parent.qgs"/>
   </projectlayers>
   <layerorder>
     <layer id="edition_layer_embed_child_d87f81cd_26d2_4c40_820d_676ba03ff6ab"/>
@@ -266,11 +266,11 @@
     <WMSMaxAtlasFeatures type="int">1</WMSMaxAtlasFeatures>
     <WMSOnlineResource type="QString"></WMSOnlineResource>
     <WMSPrecision type="QString">8</WMSPrecision>
-    <WMSRootName type="QString">edition_embed</WMSRootName>
+    <WMSRootName type="QString">embed_child</WMSRootName>
     <WMSSegmentizeFeatureInfoGeometry type="bool">false</WMSSegmentizeFeatureInfoGeometry>
     <WMSServiceAbstract type="QString"></WMSServiceAbstract>
     <WMSServiceCapabilities type="bool">true</WMSServiceCapabilities>
-    <WMSServiceTitle type="QString">edition_embed</WMSServiceTitle>
+    <WMSServiceTitle type="QString">embed_child</WMSServiceTitle>
     <WMSTileBuffer type="int">0</WMSTileBuffer>
     <WMSUrl type="QString"></WMSUrl>
     <WMSUseLayerIDs type="bool">false</WMSUseLayerIDs>
