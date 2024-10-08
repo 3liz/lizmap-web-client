@@ -8,6 +8,10 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Fixed
+
+* Fix Relation Reference Form control order by value
+
 ## 3.7.11 - 2024-10-02
 
 ### Funders
