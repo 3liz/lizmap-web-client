@@ -149,8 +149,11 @@ var lizLayerActionButtons = function() {
                 }
             }
             // Opacity
-            const currentLayerState = lizMap.mainLizmap.state.rootMapGroup.getMapLayerOrGroupByName(aName);
-            if (!currentLayerState.singleWMSLayer) {
+            let isSingleWMSLayer = false;
+            if (!metadatas.isBaselayer) {
+                isSingleWMSLayer = lizMap.mainLizmap.state.rootMapGroup.getMapLayerOrGroupByName(aName).singleWMSLayer;
+            }
+            if (!isSingleWMSLayer) {
                 html+= '        <dt>'+lizDict['layer.metadata.opacity.title']+'</dt>';
                 html+= '<dd>';
                 html+= '<input type="hidden" class="opacityLayer '+isBaselayer+'" value="'+aName+'">';
