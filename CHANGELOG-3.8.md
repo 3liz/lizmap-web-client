@@ -8,6 +8,16 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Added
+
+* Move related child in corresponding div for **1:n** and **n:m** relations in popups
+
+### Fixed
+
+* Fix base layer (i) information button
+* IGN search string length must be between 3 and 200 chars
+* Fix Relation Reference Form control order by value
+
 ## 3.8.2 - 2024-10-01
 
 ### Added
