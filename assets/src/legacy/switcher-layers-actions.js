@@ -304,7 +304,7 @@ var lizLayerActionButtons = function() {
                                 }
 
                                 layerOrGroup.checked = true;
-                                layerOrGroup.expanded = layerParams?.expanded === "1";
+                                layerOrGroup.expanded = layerParams?.expanded === "1" || layerParams?.expanded === true;
 
                                 // `symbologyChildren` is empty for some time if the theme switches
                                 // the layer style from simple to categorized.
