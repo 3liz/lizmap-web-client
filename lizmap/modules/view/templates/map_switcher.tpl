@@ -15,7 +15,7 @@
         <span class="title">
             <span class="icon"></span>&nbsp;
             <span class="text">{@view~map.baselayermenu.title@}</span>
-            <span id="get-baselayer-metadata" class="pull-right" title="{@view~map.switcher.layer.metadata.title@}"><i class="icon-info-sign icon-white"></i></span>
+            <span id="get-baselayer-metadata" class="float-end" title="{@view~map.switcher.layer.metadata.title@}"><i class="icon-info-sign icon-white"></i></span>
         </span>
     </h3>
     <div class="menu-content">

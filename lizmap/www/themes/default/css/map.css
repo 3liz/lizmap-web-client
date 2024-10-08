@@ -474,6 +474,7 @@ lizmap-treeview input[type="checkbox"],
 lizmap-treeview .icon-info-sign {
   border: 1px solid var(--color-contrasted-elements-light);
   background-color: var(--color-contrasted-elements-light);
+  box-sizing: content-box;
 }
 
 /*navbar*//* Navigation bar button color */
