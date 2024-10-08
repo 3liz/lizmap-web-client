@@ -421,6 +421,36 @@ export class BaseSymbolsSymbology extends BaseObjectSymbology {
         for(const symbol of this._symbols) {
             this._icons.push(new iconClass(symbol));
         }
+
+        this._expanded = false;
+    }
+
+    /**
+     * Symbol item is expanded
+     * @type {boolean}
+     */
+    get expanded() {
+        return this._expanded;
+    }
+
+    /**
+     * Set symbol item is expanded
+     * @type {boolean}
+     */
+    set expanded(val) {
+        const newVal = convertBoolean(val);
+        if (this._expanded === newVal) {
+            return;
+        }
+
+        this._expanded = newVal;
+
+        this.dispatch({
+            type: 'symbol.expanded.changed',
+            title: this.title,
+            ruleKey: this.ruleKey,
+            expanded: this.expanded
+        });
     }
 
     /**
@@ -621,7 +651,9 @@ export class LayerGroupSymbology extends BaseObjectSymbology {
         this._symbologyNodes = [];
         for(const node of this._nodes) {
             if (node.hasOwnProperty('symbols')) {
-                this._symbologyNodes.push(new BaseSymbolsSymbology(node));
+                const symbol = new BaseSymbolsSymbology(node);
+                symbol.addListener(this.dispatch.bind(this), 'symbol.expanded.changed');
+                this._symbologyNodes.push(symbol);
             } else if (node.hasOwnProperty('icon')) {
                 this._symbologyNodes.push(new BaseIconSymbology(node));
             }
