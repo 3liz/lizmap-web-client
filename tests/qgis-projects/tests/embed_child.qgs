@@ -1,9 +1,8 @@
-<!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis version="3.34.11-Prizren" saveUserFull="Etienne Trimaille" saveDateTime="2024-10-07T14:28:18" projectname="" saveUser="etienne">
-  <homePath path=""/>
+<qgis projectname="" saveDateTime="2024-10-09T09:03:31" saveUser="etienne" saveUserFull="Etienne Trimaille" version="3.34.11-Prizren">
+  <homePath path=""></homePath>
   <title></title>
-  <transaction mode="Disabled"/>
-  <projectFlags set="TrustStoredLayerStatistics"/>
+  <transaction mode="Disabled"></transaction>
+  <projectFlags set="TrustStoredLayerStatistics"></projectFlags>
   <projectCrs>
     <spatialrefsys nativeFormat="Wkt">
       <wkt>GEOGCRS["WGS 84",ENSEMBLE["World Geodetic System 1984 ensemble",MEMBER["World Geodetic System 1984 (Transit)"],MEMBER["World Geodetic System 1984 (G730)"],MEMBER["World Geodetic System 1984 (G873)"],MEMBER["World Geodetic System 1984 (G1150)"],MEMBER["World Geodetic System 1984 (G1674)"],MEMBER["World Geodetic System 1984 (G1762)"],MEMBER["World Geodetic System 1984 (G2139)"],ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]],ENSEMBLEACCURACY[2.0]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],CS[ellipsoidal,2],AXIS["geodetic latitude (Lat)",north,ORDER[1],ANGLEUNIT["degree",0.0174532925199433]],AXIS["geodetic longitude (Lon)",east,ORDER[2],ANGLEUNIT["degree",0.0174532925199433]],USAGE[SCOPE["Horizontal component of 3D system."],AREA["World."],BBOX[-90,-180,90,180]],ID["EPSG",4326]]</wkt>
@@ -17,54 +16,78 @@
       <geographicflag>true</geographicflag>
     </spatialrefsys>
   </projectCrs>
-  <elevation-shading-renderer edl-is-active="1" edl-strength="1000" edl-distance="0.5" hillshading-is-multidirectional="0" is-active="0" hillshading-z-factor="1" combined-method="0" edl-distance-unit="0" light-altitude="45" hillshading-is-active="0" light-azimuth="315"/>
+  <elevation-shading-renderer combined-method="0" edl-distance="0.5" edl-distance-unit="0" edl-is-active="1" edl-strength="1000" hillshading-is-active="0" hillshading-is-multidirectional="0" hillshading-z-factor="1" is-active="0" light-altitude="45" light-azimuth="315"></elevation-shading-renderer>
   <layer-tree-group>
     <customproperties>
-      <Option/>
+      <Option></Option>
     </customproperties>
-    <layer-tree-layer source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;edition_layer_embed_point&quot; (geom)" legend_split_behavior="0" patch_size="-1,-1" id="edition_layer_embed_point_7794e305_0e9b_40d0_bf0b_2494790d4eb3" legend_exp="" expanded="1" checked="Qt::Checked" name="edition_layer_embed_point" providerKey="postgres">
+    <layer-tree-layer checked="Qt::Checked" expanded="1" id="edition_layer_embed_point_7794e305_0e9b_40d0_bf0b_2494790d4eb3" legend_exp="" legend_split_behavior="0" name="edition_layer_embed_point" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;edition_layer_embed_point&quot; (geom)">
       <customproperties>
         <Option type="Map">
-          <Option type="int" value="1" name="embedded"/>
-          <Option type="QString" value="./embed_parent.qgs" name="embedded_project"/>
+          <Option name="embedded" type="int" value="1"></Option>
+          <Option name="embedded_project" type="QString" value="./embed_parent.qgs"></Option>
         </Option>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=4326 type=LineString checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;edition_layer_embed_line&quot; (geom)" legend_split_behavior="0" patch_size="-1,-1" id="edition_layer_embed_line_e74301b9_95ae_4b72_81cc_71fafb80082f" legend_exp="" expanded="1" checked="Qt::Checked" name="edition_layer_embed_line" providerKey="postgres">
+    <layer-tree-layer checked="Qt::Checked" expanded="1" id="edition_layer_embed_line_e74301b9_95ae_4b72_81cc_71fafb80082f" legend_exp="" legend_split_behavior="0" name="edition_layer_embed_line" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=4326 type=LineString checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;edition_layer_embed_line&quot; (geom)">
       <customproperties>
         <Option type="Map">
-          <Option type="int" value="1" name="embedded"/>
-          <Option type="QString" value="./embed_parent.qgs" name="embedded_project"/>
+          <Option name="embedded" type="int" value="1"></Option>
+          <Option name="embedded_project" type="QString" value="./embed_parent.qgs"></Option>
         </Option>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer source="service='lizmapdb' sslmode=disable key='id' checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;edition_layer_embed_child&quot;" legend_split_behavior="0" patch_size="-1,-1" id="edition_layer_embed_child_d87f81cd_26d2_4c40_820d_676ba03ff6ab" legend_exp="" expanded="1" checked="Qt::Checked" name="edition_layer_embed_child" providerKey="postgres">
+    <layer-tree-layer checked="Qt::Checked" expanded="1" id="edition_layer_embed_child_d87f81cd_26d2_4c40_820d_676ba03ff6ab" legend_exp="" legend_split_behavior="0" name="edition_layer_embed_child" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='id' checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;edition_layer_embed_child&quot;">
       <customproperties>
         <Option type="Map">
-          <Option type="int" value="1" name="embedded"/>
-          <Option type="QString" value="./embed_parent.qgs" name="embedded_project"/>
+          <Option name="embedded" type="int" value="1"></Option>
+          <Option name="embedded_project" type="QString" value="./embed_parent.qgs"></Option>
         </Option>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-group groupLayer="" expanded="1" checked="Qt::Checked" name="baselayers">
+    <layer-tree-group checked="Qt::Checked" expanded="1" groupLayer="" name="baselayers">
       <customproperties>
         <Option type="Map">
-          <Option type="QString" value="baselayers" name="wmsShortName"/>
+          <Option name="wmsShortName" type="QString" value="baselayers"></Option>
         </Option>
       </customproperties>
-      <layer-tree-layer source="./filter_layer_data_by_polygon_for_groups/polygons.shp" legend_split_behavior="0" patch_size="-1,-1" id="polygons_1aca34fc_404d_4a6f_83c7_506c98de777d" legend_exp="" expanded="1" checked="Qt::Checked" name="polygons" providerKey="ogr">
+      <layer-tree-layer checked="Qt::Checked" expanded="1" id="raster_file_2bb8df34_acce_4403_b69b_c18639861d2f" legend_exp="" legend_split_behavior="0" name="r@stér fîlê" patch_size="-1,-1" providerKey="gdal" source="./media/raster.asc">
         <customproperties>
           <Option type="Map">
-            <Option type="int" value="1" name="embedded"/>
-            <Option type="QString" value="./embed_parent.qgs" name="embedded_project"/>
+            <Option name="embedded" type="int" value="1"></Option>
+            <Option name="embedded_project" type="QString" value="./embed_parent.qgs"></Option>
           </Option>
         </customproperties>
       </layer-tree-layer>
-      <layer-tree-layer source="crs=EPSG:3857&amp;format&amp;type=xyz&amp;url=https://tile.openstreetmap.org/%7Bz%7D/%7Bx%7D/%7By%7D.png" legend_split_behavior="0" patch_size="-1,-1" id="OpenStreetMap_c1bded8c_5103_40f8_a317_9a712845ddb4" legend_exp="" expanded="1" checked="Qt::Checked" name="OpenStreetMap" providerKey="wms">
+      <layer-tree-layer checked="Qt::Checked" expanded="1" id="raster_a3ff51f1_d71c_49e3_b9d4_07ce4bf267c4" legend_exp="" legend_split_behavior="0" name="raster file" patch_size="-1,-1" providerKey="gdal" source="./media/raster.asc">
         <customproperties>
           <Option type="Map">
-            <Option type="int" value="1" name="embedded"/>
-            <Option type="QString" value="./embed_parent.qgs" name="embedded_project"/>
+            <Option name="embedded" type="int" value="1"></Option>
+            <Option name="embedded_project" type="QString" value="./embed_parent.qgs"></Option>
+          </Option>
+        </customproperties>
+      </layer-tree-layer>
+      <layer-tree-layer checked="Qt::Checked" expanded="1" id="polygons_1aca34fc_404d_4a6f_83c7_506c98de777d" legend_exp="" legend_split_behavior="0" name="polygons" patch_size="-1,-1" providerKey="ogr" source="./filter_layer_data_by_polygon_for_groups/polygons.shp">
+        <customproperties>
+          <Option type="Map">
+            <Option name="embedded" type="int" value="1"></Option>
+            <Option name="embedded_project" type="QString" value="./embed_parent.qgs"></Option>
+          </Option>
+        </customproperties>
+      </layer-tree-layer>
+      <layer-tree-layer checked="Qt::Checked" expanded="0" id="Plan_IGN_159f7e6c_77ed_4a4c_bdc0_f759ffaa7cc8" legend_exp="" legend_split_behavior="0" name="Plan IGN" patch_size="-1,-1" providerKey="wms" source="crs=EPSG:3857&amp;dpiMode=7&amp;format=image/png&amp;layers=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&amp;styles=normal&amp;tileMatrixSet=PM&amp;url=https://data.geopf.fr/wmts?SERVICE%3DWMTS%26VERSION%3D1.0.0%26REQUEST%3DGetCapabilities">
+        <customproperties>
+          <Option type="Map">
+            <Option name="embedded" type="int" value="1"></Option>
+            <Option name="embedded_project" type="QString" value="./embed_parent.qgs"></Option>
+          </Option>
+        </customproperties>
+      </layer-tree-layer>
+      <layer-tree-layer checked="Qt::Checked" expanded="1" id="OpenStreetMap_c1bded8c_5103_40f8_a317_9a712845ddb4" legend_exp="" legend_split_behavior="0" name="OpenStreetMap" patch_size="-1,-1" providerKey="wms" source="crs=EPSG:3857&amp;format&amp;type=xyz&amp;url=https://tile.openstreetmap.org/%7Bz%7D/%7Bx%7D/%7By%7D.png">
+        <customproperties>
+          <Option type="Map">
+            <Option name="embedded" type="int" value="1"></Option>
+            <Option name="embedded_project" type="QString" value="./embed_parent.qgs"></Option>
           </Option>
         </customproperties>
       </layer-tree-layer>
@@ -74,17 +97,20 @@
       <item>edition_layer_embed_point_7794e305_0e9b_40d0_bf0b_2494790d4eb3</item>
       <item>OpenStreetMap_c1bded8c_5103_40f8_a317_9a712845ddb4</item>
       <item>polygons_1aca34fc_404d_4a6f_83c7_506c98de777d</item>
+      <item>raster_a3ff51f1_d71c_49e3_b9d4_07ce4bf267c4</item>
+      <item>raster_file_2bb8df34_acce_4403_b69b_c18639861d2f</item>
+      <item>Plan_IGN_159f7e6c_77ed_4a4c_bdc0_f759ffaa7cc8</item>
     </custom-order>
   </layer-tree-group>
-  <snapping-settings type="1" scaleDependencyMode="0" self-snapping="0" minScale="0" tolerance="12" mode="2" intersection-snapping="0" maxScale="0" enabled="0" unit="1">
+  <snapping-settings enabled="0" intersection-snapping="0" maxScale="0" minScale="0" mode="2" scaleDependencyMode="0" self-snapping="0" tolerance="12" type="1" unit="1">
     <individual-layer-settings>
-      <layer-setting type="1" id="edition_layer_embed_point_7794e305_0e9b_40d0_bf0b_2494790d4eb3" minScale="0" tolerance="12" units="1" maxScale="0" enabled="0"/>
-      <layer-setting type="1" id="edition_layer_embed_line_e74301b9_95ae_4b72_81cc_71fafb80082f" minScale="0" tolerance="12" units="1" maxScale="0" enabled="0"/>
-      <layer-setting type="1" id="polygons_1aca34fc_404d_4a6f_83c7_506c98de777d" minScale="0" tolerance="12" units="1" maxScale="0" enabled="0"/>
+      <layer-setting enabled="0" id="edition_layer_embed_point_7794e305_0e9b_40d0_bf0b_2494790d4eb3" maxScale="0" minScale="0" tolerance="12" type="1" units="1"></layer-setting>
+      <layer-setting enabled="0" id="polygons_1aca34fc_404d_4a6f_83c7_506c98de777d" maxScale="0" minScale="0" tolerance="12" type="1" units="1"></layer-setting>
+      <layer-setting enabled="0" id="edition_layer_embed_line_e74301b9_95ae_4b72_81cc_71fafb80082f" maxScale="0" minScale="0" tolerance="12" type="1" units="1"></layer-setting>
     </individual-layer-settings>
   </snapping-settings>
-  <relations/>
-  <polymorphicRelations/>
+  <relations></relations>
+  <polymorphicRelations></polymorphicRelations>
   <mapcanvas annotationsVisible="1" name="theMapCanvas">
     <units>degrees</units>
     <extent>
@@ -108,40 +134,55 @@
       </spatialrefsys>
     </destinationsrs>
     <rendermaptile>0</rendermaptile>
-    <expressionContextScope/>
+    <expressionContextScope></expressionContextScope>
   </mapcanvas>
-  <projectModels/>
+  <projectModels></projectModels>
   <legend updateDrawingOrder="true">
-    <legendlayer drawingOrder="-1" checked="Qt::Checked" showFeatureCount="0" name="edition_layer_embed_point" open="true">
+    <legendlayer checked="Qt::Checked" drawingOrder="-1" name="edition_layer_embed_point" open="true" showFeatureCount="0">
       <filegroup hidden="false" open="true">
-        <legendlayerfile isInOverview="0" layerid="edition_layer_embed_point_7794e305_0e9b_40d0_bf0b_2494790d4eb3" visible="1"/>
+        <legendlayerfile isInOverview="0" layerid="edition_layer_embed_point_7794e305_0e9b_40d0_bf0b_2494790d4eb3" visible="1"></legendlayerfile>
       </filegroup>
     </legendlayer>
-    <legendlayer drawingOrder="-1" checked="Qt::Checked" showFeatureCount="0" name="edition_layer_embed_line" open="true">
+    <legendlayer checked="Qt::Checked" drawingOrder="-1" name="edition_layer_embed_line" open="true" showFeatureCount="0">
       <filegroup hidden="false" open="true">
-        <legendlayerfile isInOverview="0" layerid="edition_layer_embed_line_e74301b9_95ae_4b72_81cc_71fafb80082f" visible="1"/>
+        <legendlayerfile isInOverview="0" layerid="edition_layer_embed_line_e74301b9_95ae_4b72_81cc_71fafb80082f" visible="1"></legendlayerfile>
       </filegroup>
     </legendlayer>
-    <legendlayer drawingOrder="-1" checked="Qt::Checked" showFeatureCount="0" name="edition_layer_embed_child" open="true">
+    <legendlayer checked="Qt::Checked" drawingOrder="-1" name="edition_layer_embed_child" open="true" showFeatureCount="0">
       <filegroup hidden="false" open="true">
-        <legendlayerfile isInOverview="0" layerid="edition_layer_embed_child_d87f81cd_26d2_4c40_820d_676ba03ff6ab" visible="1"/>
+        <legendlayerfile isInOverview="0" layerid="edition_layer_embed_child_d87f81cd_26d2_4c40_820d_676ba03ff6ab" visible="1"></legendlayerfile>
       </filegroup>
     </legendlayer>
     <legendgroup checked="Qt::Checked" name="baselayers" open="true">
-      <legendlayer drawingOrder="-1" checked="Qt::Checked" showFeatureCount="0" name="polygons" open="true">
+      <legendlayer checked="Qt::Checked" drawingOrder="-1" name="r@stér fîlê" open="true" showFeatureCount="0">
         <filegroup hidden="false" open="true">
-          <legendlayerfile isInOverview="0" layerid="polygons_1aca34fc_404d_4a6f_83c7_506c98de777d" visible="1"/>
+          <legendlayerfile isInOverview="0" layerid="raster_file_2bb8df34_acce_4403_b69b_c18639861d2f" visible="1"></legendlayerfile>
         </filegroup>
       </legendlayer>
-      <legendlayer drawingOrder="-1" checked="Qt::Checked" showFeatureCount="0" name="OpenStreetMap" open="true">
+      <legendlayer checked="Qt::Checked" drawingOrder="-1" name="raster file" open="true" showFeatureCount="0">
         <filegroup hidden="false" open="true">
-          <legendlayerfile isInOverview="0" layerid="OpenStreetMap_c1bded8c_5103_40f8_a317_9a712845ddb4" visible="1"/>
+          <legendlayerfile isInOverview="0" layerid="raster_a3ff51f1_d71c_49e3_b9d4_07ce4bf267c4" visible="1"></legendlayerfile>
+        </filegroup>
+      </legendlayer>
+      <legendlayer checked="Qt::Checked" drawingOrder="-1" name="polygons" open="true" showFeatureCount="0">
+        <filegroup hidden="false" open="true">
+          <legendlayerfile isInOverview="0" layerid="polygons_1aca34fc_404d_4a6f_83c7_506c98de777d" visible="1"></legendlayerfile>
+        </filegroup>
+      </legendlayer>
+      <legendlayer checked="Qt::Checked" drawingOrder="-1" name="Plan IGN" open="false" showFeatureCount="0">
+        <filegroup hidden="false" open="false">
+          <legendlayerfile isInOverview="0" layerid="Plan_IGN_159f7e6c_77ed_4a4c_bdc0_f759ffaa7cc8" visible="1"></legendlayerfile>
+        </filegroup>
+      </legendlayer>
+      <legendlayer checked="Qt::Checked" drawingOrder="-1" name="OpenStreetMap" open="true" showFeatureCount="0">
+        <filegroup hidden="false" open="true">
+          <legendlayerfile isInOverview="0" layerid="OpenStreetMap_c1bded8c_5103_40f8_a317_9a712845ddb4" visible="1"></legendlayerfile>
         </filegroup>
       </legendlayer>
     </legendgroup>
   </legend>
-  <mapViewDocks/>
-  <main-annotation-layer refreshOnNotifyEnabled="0" type="annotation" autoRefreshMode="Disabled" refreshOnNotifyMessage="" hasScaleBasedVisibilityFlag="0" autoRefreshTime="0" styleCategories="AllStyleCategories" minScale="0" legendPlaceholderImage="" maxScale="0">
+  <mapViewDocks></mapViewDocks>
+  <main-annotation-layer autoRefreshMode="Disabled" autoRefreshTime="0" hasScaleBasedVisibilityFlag="0" legendPlaceholderImage="" maxScale="0" minScale="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" styleCategories="AllStyleCategories" type="annotation">
     <id>Annotations_53e21d2e_6eb9_423b_ad44_901f0e23a8dd</id>
     <datasource></datasource>
     <keywordList>
@@ -168,8 +209,8 @@
       <type></type>
       <title></title>
       <abstract></abstract>
-      <links/>
-      <dates/>
+      <links></links>
+      <dates></dates>
       <fees></fees>
       <encoding></encoding>
       <crs>
@@ -185,9 +226,9 @@
           <geographicflag>false</geographicflag>
         </spatialrefsys>
       </crs>
-      <extent/>
+      <extent></extent>
     </resourceMetadata>
-    <items/>
+    <items></items>
     <flags>
       <Identifiable>1</Identifiable>
       <Removable>1</Removable>
@@ -195,24 +236,30 @@
       <Private>0</Private>
     </flags>
     <customproperties>
-      <Option/>
+      <Option></Option>
     </customproperties>
     <layerOpacity>1</layerOpacity>
     <blendMode>0</blendMode>
-    <paintEffect/>
+    <paintEffect></paintEffect>
   </main-annotation-layer>
   <projectlayers>
-    <maplayer project="./embed_parent.qgs" id="OpenStreetMap_c1bded8c_5103_40f8_a317_9a712845ddb4" embedded="1"/>
-    <maplayer project="./embed_parent.qgs" id="edition_layer_embed_child_d87f81cd_26d2_4c40_820d_676ba03ff6ab" embedded="1"/>
-    <maplayer project="./embed_parent.qgs" id="edition_layer_embed_line_e74301b9_95ae_4b72_81cc_71fafb80082f" embedded="1"/>
-    <maplayer project="./embed_parent.qgs" id="edition_layer_embed_point_7794e305_0e9b_40d0_bf0b_2494790d4eb3" embedded="1"/>
-    <maplayer project="./embed_parent.qgs" id="polygons_1aca34fc_404d_4a6f_83c7_506c98de777d" embedded="1"/>
+    <maplayer embedded="1" id="OpenStreetMap_c1bded8c_5103_40f8_a317_9a712845ddb4" project="./embed_parent.qgs"></maplayer>
+    <maplayer embedded="1" id="Plan_IGN_159f7e6c_77ed_4a4c_bdc0_f759ffaa7cc8" project="./embed_parent.qgs"></maplayer>
+    <maplayer embedded="1" id="edition_layer_embed_child_d87f81cd_26d2_4c40_820d_676ba03ff6ab" project="./embed_parent.qgs"></maplayer>
+    <maplayer embedded="1" id="edition_layer_embed_line_e74301b9_95ae_4b72_81cc_71fafb80082f" project="./embed_parent.qgs"></maplayer>
+    <maplayer embedded="1" id="edition_layer_embed_point_7794e305_0e9b_40d0_bf0b_2494790d4eb3" project="./embed_parent.qgs"></maplayer>
+    <maplayer embedded="1" id="polygons_1aca34fc_404d_4a6f_83c7_506c98de777d" project="./embed_parent.qgs"></maplayer>
+    <maplayer embedded="1" id="raster_a3ff51f1_d71c_49e3_b9d4_07ce4bf267c4" project="./embed_parent.qgs"></maplayer>
+    <maplayer embedded="1" id="raster_file_2bb8df34_acce_4403_b69b_c18639861d2f" project="./embed_parent.qgs"></maplayer>
   </projectlayers>
   <layerorder>
-    <layer id="edition_layer_embed_line_e74301b9_95ae_4b72_81cc_71fafb80082f"/>
-    <layer id="edition_layer_embed_point_7794e305_0e9b_40d0_bf0b_2494790d4eb3"/>
-    <layer id="OpenStreetMap_c1bded8c_5103_40f8_a317_9a712845ddb4"/>
-    <layer id="polygons_1aca34fc_404d_4a6f_83c7_506c98de777d"/>
+    <layer id="edition_layer_embed_line_e74301b9_95ae_4b72_81cc_71fafb80082f"></layer>
+    <layer id="edition_layer_embed_point_7794e305_0e9b_40d0_bf0b_2494790d4eb3"></layer>
+    <layer id="OpenStreetMap_c1bded8c_5103_40f8_a317_9a712845ddb4"></layer>
+    <layer id="polygons_1aca34fc_404d_4a6f_83c7_506c98de777d"></layer>
+    <layer id="raster_a3ff51f1_d71c_49e3_b9d4_07ce4bf267c4"></layer>
+    <layer id="raster_file_2bb8df34_acce_4403_b69b_c18639861d2f"></layer>
+    <layer id="Plan_IGN_159f7e6c_77ed_4a4c_bdc0_f759ffaa7cc8"></layer>
   </layerorder>
   <properties>
     <Digitizing>
@@ -272,12 +319,12 @@
         <value>lizmap_user_groups</value>
       </variableNames>
       <variableValues type="QStringList">
-        <value></value>
+        <value>features</value>
         <value></value>
         <value></value>
       </variableValues>
     </Variables>
-    <WCSLayers type="QStringList"/>
+    <WCSLayers type="QStringList"></WCSLayers>
     <WCSUrl type="QString"></WCSUrl>
     <WFSLayers type="QStringList">
       <value>edition_layer_embed_child_d87f81cd_26d2_4c40_820d_676ba03ff6ab</value>
@@ -290,9 +337,9 @@
       <edition_layer_embed_point_7794e305_0e9b_40d0_bf0b_2494790d4eb3 type="int">8</edition_layer_embed_point_7794e305_0e9b_40d0_bf0b_2494790d4eb3>
     </WFSLayersPrecision>
     <WFSTLayers>
-      <Delete type="QStringList"/>
-      <Insert type="QStringList"/>
-      <Update type="QStringList"/>
+      <Delete type="QStringList"></Delete>
+      <Insert type="QStringList"></Insert>
+      <Update type="QStringList"></Update>
     </WFSTLayers>
     <WFSUrl type="QString"></WFSUrl>
     <WMSAccessConstraints type="QString">None</WMSAccessConstraints>
@@ -327,36 +374,36 @@
     <WMSUrl type="QString"></WMSUrl>
     <WMSUseLayerIDs type="bool">false</WMSUseLayerIDs>
     <WMTSGrids>
-      <CRS type="QStringList"/>
-      <Config type="QStringList"/>
+      <CRS type="QStringList"></CRS>
+      <Config type="QStringList"></Config>
     </WMTSGrids>
     <WMTSJpegLayers>
-      <Group type="QStringList"/>
-      <Layer type="QStringList"/>
+      <Group type="QStringList"></Group>
+      <Layer type="QStringList"></Layer>
       <Project type="bool">false</Project>
     </WMTSJpegLayers>
     <WMTSLayers>
-      <Group type="QStringList"/>
-      <Layer type="QStringList"/>
+      <Group type="QStringList"></Group>
+      <Layer type="QStringList"></Layer>
       <Project type="bool">false</Project>
     </WMTSLayers>
     <WMTSMinScale type="int">5000</WMTSMinScale>
     <WMTSPngLayers>
-      <Group type="QStringList"/>
-      <Layer type="QStringList"/>
+      <Group type="QStringList"></Group>
+      <Layer type="QStringList"></Layer>
       <Project type="bool">false</Project>
     </WMTSPngLayers>
     <WMTSUrl type="QString"></WMTSUrl>
   </properties>
   <dataDefinedServerProperties>
     <Option type="Map">
-      <Option type="QString" value="" name="name"/>
-      <Option name="properties"/>
-      <Option type="QString" value="collection" name="type"/>
+      <Option name="name" type="QString" value=""></Option>
+      <Option name="properties"></Option>
+      <Option name="type" type="QString" value="collection"></Option>
     </Option>
   </dataDefinedServerProperties>
-  <visibility-presets/>
-  <transformContext/>
+  <visibility-presets></visibility-presets>
+  <transformContext></transformContext>
   <projectMetadata>
     <identifier></identifier>
     <parentidentifier></parentidentifier>
@@ -373,21 +420,21 @@
       <email></email>
       <role></role>
     </contact>
-    <links/>
+    <links></links>
     <dates>
-      <date type="Created" value="2024-02-13T13:07:18"/>
+      <date type="Created" value="2024-02-13T13:07:18"></date>
     </dates>
     <author>riccardo</author>
     <creation>2024-02-13T13:07:18</creation>
   </projectMetadata>
-  <Annotations/>
-  <Layouts/>
-  <mapViewDocks3D/>
-  <Bookmarks/>
-  <Sensors/>
-  <ProjectViewSettings rotation="0" UseProjectScales="0">
-    <Scales/>
-    <DefaultViewExtent xmax="3.96814270660552815" ymin="43.55416715631629643" xmin="3.78147333692816723" ymax="43.66385331407428794">
+  <Annotations></Annotations>
+  <Layouts></Layouts>
+  <mapViewDocks3D></mapViewDocks3D>
+  <Bookmarks></Bookmarks>
+  <Sensors></Sensors>
+  <ProjectViewSettings UseProjectScales="0" rotation="0">
+    <Scales></Scales>
+    <DefaultViewExtent xmax="3.96814270660552815" xmin="3.78147333692816723" ymax="43.68828433442519099" ymin="43.52973613596539337">
       <spatialrefsys nativeFormat="Wkt">
         <wkt>GEOGCRS["WGS 84",ENSEMBLE["World Geodetic System 1984 ensemble",MEMBER["World Geodetic System 1984 (Transit)"],MEMBER["World Geodetic System 1984 (G730)"],MEMBER["World Geodetic System 1984 (G873)"],MEMBER["World Geodetic System 1984 (G1150)"],MEMBER["World Geodetic System 1984 (G1674)"],MEMBER["World Geodetic System 1984 (G1762)"],MEMBER["World Geodetic System 1984 (G2139)"],ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]],ENSEMBLEACCURACY[2.0]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],CS[ellipsoidal,2],AXIS["geodetic latitude (Lat)",north,ORDER[1],ANGLEUNIT["degree",0.0174532925199433]],AXIS["geodetic longitude (Lon)",east,ORDER[2],ANGLEUNIT["degree",0.0174532925199433]],USAGE[SCOPE["Horizontal component of 3D system."],AREA["World."],BBOX[-90,-180,90,180]],ID["EPSG",4326]]</wkt>
         <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
@@ -401,41 +448,41 @@
       </spatialrefsys>
     </DefaultViewExtent>
   </ProjectViewSettings>
-  <ProjectStyleSettings RandomizeDefaultSymbolColor="1" DefaultSymbolOpacity="1" projectStyleId="attachment:///WUykma_styles.db">
-    <databases/>
+  <ProjectStyleSettings DefaultSymbolOpacity="1" RandomizeDefaultSymbolColor="1" projectStyleId="attachment:///WUykma_styles.db">
+    <databases></databases>
   </ProjectStyleSettings>
-  <ProjectTimeSettings frameRate="1" timeStep="1" timeStepUnit="h" cumulativeTemporalRange="0"/>
+  <ProjectTimeSettings cumulativeTemporalRange="0" frameRate="1" timeStep="1" timeStepUnit="h"></ProjectTimeSettings>
   <ElevationProperties>
     <terrainProvider type="flat">
-      <TerrainProvider offset="0" scale="1"/>
+      <TerrainProvider offset="0" scale="1"></TerrainProvider>
     </terrainProvider>
   </ElevationProperties>
   <ProjectDisplaySettings CoordinateAxisOrder="Default" CoordinateType="MapCrs">
     <BearingFormat id="bearing">
       <Option type="Map">
-        <Option type="invalid" name="decimal_separator"/>
-        <Option type="int" value="6" name="decimals"/>
-        <Option type="int" value="0" name="direction_format"/>
-        <Option type="int" value="0" name="rounding_type"/>
-        <Option type="bool" value="false" name="show_plus"/>
-        <Option type="bool" value="true" name="show_thousand_separator"/>
-        <Option type="bool" value="false" name="show_trailing_zeros"/>
-        <Option type="invalid" name="thousand_separator"/>
+        <Option name="decimal_separator" type="invalid"></Option>
+        <Option name="decimals" type="int" value="6"></Option>
+        <Option name="direction_format" type="int" value="0"></Option>
+        <Option name="rounding_type" type="int" value="0"></Option>
+        <Option name="show_plus" type="bool" value="false"></Option>
+        <Option name="show_thousand_separator" type="bool" value="true"></Option>
+        <Option name="show_trailing_zeros" type="bool" value="false"></Option>
+        <Option name="thousand_separator" type="invalid"></Option>
       </Option>
     </BearingFormat>
     <GeographicCoordinateFormat id="geographiccoordinate">
       <Option type="Map">
-        <Option type="QString" value="DecimalDegrees" name="angle_format"/>
-        <Option type="invalid" name="decimal_separator"/>
-        <Option type="int" value="6" name="decimals"/>
-        <Option type="int" value="0" name="rounding_type"/>
-        <Option type="bool" value="false" name="show_leading_degree_zeros"/>
-        <Option type="bool" value="false" name="show_leading_zeros"/>
-        <Option type="bool" value="false" name="show_plus"/>
-        <Option type="bool" value="false" name="show_suffix"/>
-        <Option type="bool" value="true" name="show_thousand_separator"/>
-        <Option type="bool" value="false" name="show_trailing_zeros"/>
-        <Option type="invalid" name="thousand_separator"/>
+        <Option name="angle_format" type="QString" value="DecimalDegrees"></Option>
+        <Option name="decimal_separator" type="invalid"></Option>
+        <Option name="decimals" type="int" value="6"></Option>
+        <Option name="rounding_type" type="int" value="0"></Option>
+        <Option name="show_leading_degree_zeros" type="bool" value="false"></Option>
+        <Option name="show_leading_zeros" type="bool" value="false"></Option>
+        <Option name="show_plus" type="bool" value="false"></Option>
+        <Option name="show_suffix" type="bool" value="false"></Option>
+        <Option name="show_thousand_separator" type="bool" value="true"></Option>
+        <Option name="show_trailing_zeros" type="bool" value="false"></Option>
+        <Option name="thousand_separator" type="invalid"></Option>
       </Option>
     </GeographicCoordinateFormat>
     <CoordinateCustomCrs>
@@ -452,7 +499,7 @@
       </spatialrefsys>
     </CoordinateCustomCrs>
   </ProjectDisplaySettings>
-  <ProjectGpsSettings destinationFollowsActiveLayer="1" destinationLayerName="polygons" autoAddTrackVertices="0" destinationLayer="polygons_1aca34fc_404d_4a6f_83c7_506c98de777d" destinationLayerSource="/home/etienne/dev/lizmap/lizmap-web-client/tests/qgis-projects/tests/filter_layer_data_by_polygon_for_groups/polygons.shp" autoCommitFeatures="0" destinationLayerProvider="ogr">
-    <timeStampFields/>
+  <ProjectGpsSettings autoAddTrackVertices="0" autoCommitFeatures="0" destinationFollowsActiveLayer="1" destinationLayer="edition_layer_embed_point_7794e305_0e9b_40d0_bf0b_2494790d4eb3" destinationLayerName="edition_layer_embed_point" destinationLayerProvider="postgres" destinationLayerSource="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;edition_layer_embed_point&quot; (geom)">
+    <timeStampFields></timeStampFields>
   </ProjectGpsSettings>
 </qgis>
