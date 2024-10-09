@@ -3702,3 +3702,20 @@ div.lizmap-features-table.popup-displayed div.lizmap-features-table-container + 
 .hide {
   display: none;
 }
+
+
+/* Deactivate the OLD bootstrap-2 modal
+This is needed for LWC >=3.9 and the migration to bootstrap 5
+This prevent old JS scripts to make the map unusable
+ex: https://github.com/3liz/lizmap-javascript-scripts/blob/master/library/ui/popup_metadata_info/popup.js
+
+We hide modal if it has a direct modal-header child div (Bootstrap 2)
+Bootstrap 5 needs a div.modal-dialog which itself
+contains a modal-header and modal-body
+so the new modal will not be hidden
+These lines will be removed in the future, when the minimum target version will be 3.9
+*/
+#lizmap-modal:has(> div.modal-header),
+#lizmap-modal:has(> div.modal-header) ~ div.modal-backdrop {
+    display: none !important;
+}
