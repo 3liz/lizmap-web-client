@@ -1220,12 +1220,12 @@ transform: none !important;
   margin-left: 5px;
 }
 
-#content.right-dock-visible #map-content{
+#mapmenu:has(.nav-right-dock.active) ~ #map-content{
   /* 30/100 is linked to #right-dock{width: 30%;}
   TODO : avoid use of calc() and hard value */
   margin-right: calc((100% - 30px)*30/100);
 }
-#content.mobile.right-dock-visible #map-content{
+#content.mobile #mapmenu:has(.nav-right-dock.active) ~ #map-content{
   margin-right:0px;
 }
 
