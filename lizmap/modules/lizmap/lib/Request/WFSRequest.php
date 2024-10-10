@@ -123,13 +123,13 @@ class WFSRequest extends OGCRequest
         // Get client exp_filter parameter
         $clientExpFilter = $this->param('exp_filter', '');
         if (!empty($clientExpFilter)) {
-            $expFilters[] = $clientExpFilter;
+            $expFilters[] = '( '.$clientExpFilter.' )';
         }
 
         // Merge login filter
         $attribute = '';
         foreach ($loginFilters as $typename => $lfilter) {
-            $expFilters[] = $lfilter['filter'];
+            $expFilters[] = '( '.$lfilter['filter'].' )';
             $attribute = $lfilter['filterAttribute'];
         }
 

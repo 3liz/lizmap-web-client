@@ -84,9 +84,9 @@ class WMSRequest extends OGCRequest
                 $lname = trim($b[0]);
                 $lfilter = trim($b[1]);
                 if (array_key_exists($lname, $loginFilters)) {
-                    $loginFilters[$lname]['filter'] .= ' AND '.$lfilter;
+                    $loginFilters[$lname]['filter'] .= ' AND ( '.$lfilter.' )';
                 } else {
-                    $loginFilters[$lname] = array('filter' => $lfilter, 'layername' => $lname);
+                    $loginFilters[$lname] = array('filter' => '( '.$lfilter.' )', 'layername' => $lname);
                 }
             }
         }
