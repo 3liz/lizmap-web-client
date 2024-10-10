@@ -28,7 +28,7 @@ var lizLayerFilterTool = function () {
 
                 html += '<div class="menu-content">';
                 // Add combo box to select the layer
-                html += '<select id="liz-filter-layer-selector">';
+                html += '<select id="liz-filter-layer-selector" class="form-select">';
                 var flayers = {};
                 for (var o in globalThis['filterConfig']) {
                     var conf = globalThis['filterConfig'][o];
@@ -504,7 +504,7 @@ var lizLayerFilterTool = function () {
                     html += getFormFieldHeader(field_item);
 
                     if (field_item.format == 'select') {
-                        html += '<select id="liz-filter-field-' + lizMap.cleanName(field_item.title) + '" class="liz-filter-field-select">';
+                        html += '<select id="liz-filter-field-' + lizMap.cleanName(field_item.title) + '" class="liz-filter-field-select form-select">';
                         html += '<option value=""> --- </option>';
                         html += '</select>';
                     }
