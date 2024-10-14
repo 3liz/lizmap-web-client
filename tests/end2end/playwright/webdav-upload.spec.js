@@ -1,4 +1,5 @@
 // @ts-check
+import * as path from 'path';
 import { test, expect } from '@playwright/test';
 import { gotoMap } from './globals';
 
@@ -18,7 +19,7 @@ test.describe('WebDAV Server', () => {
 
         await page.locator('#jforms_view_edition_liz_future_action').selectOption("edit");
 
-        await page.locator('#jforms_view_edition_remote_path').setInputFiles("./playwright/test_upload_file/test_upload_attribute_table.txt");
+        await page.locator('#jforms_view_edition_remote_path').setInputFiles(path.join(__dirname, "test_upload_file/test_upload_attribute_table.txt"));
         // submit the form
         await page.locator('#jforms_view_edition__submit_submit').click();
 
