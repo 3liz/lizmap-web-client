@@ -40,6 +40,7 @@ class osmCtrl extends jController
         $bbox = $this->param('bbox');
         if (preg_match('/\d+(\.\d+)?,\d+(\.\d+)?,\d+(\.\d+)?,\d+(\.\d+)?/', $bbox)) {
             $params['viewbox'] = $bbox;
+            $params['bounded'] = 1;
         }
 
         $url .= http_build_query($params);
