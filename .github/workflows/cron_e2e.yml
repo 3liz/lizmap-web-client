@@ -16,6 +16,12 @@ jobs:
           event-type: run-e2e-branches
           client-payload: '{"branch": "master"}'
 
+      - name: Branch 3.9
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          event-type: run-e2e-branches
+          client-payload: '{"branch": "release_3_9"}'
+
       - name: Branch 3.8
         uses: peter-evans/repository-dispatch@v3
         with:
