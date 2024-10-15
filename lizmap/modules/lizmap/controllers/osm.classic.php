@@ -32,7 +32,7 @@ class osmCtrl extends jController
             return $rep;
         }
 
-        $url = 'https://nominatim.openstreetmap.org/search.php?';
+        $url = 'https://nominatim.openstreetmap.org/search?';
         $params = array(
             'q' => $query,
             'format' => 'json',
