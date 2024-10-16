@@ -1258,7 +1258,7 @@ class Project
 
             $filters[$layerName] = array_merge(
                 (array) $loginFilteredConfig,
-                array('filter' => $filter, 'layername' => $lName)
+                array('filter' => '( '.$filter.' )', 'layername' => $lName)
             );
         }
 
