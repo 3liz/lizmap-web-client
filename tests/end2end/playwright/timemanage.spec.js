@@ -53,6 +53,7 @@ test.describe('Time Manager', () => {
             let echoGetMap = await page.request.get(urlMapRequest + '&__echo__');
             const originalUrl = decodeURIComponent(await echoGetMap.text());
             // When the request has not been logged by echo proxy
+            await expect(URL.canParse(originalUrl), originalUrl+' is not an URL!').toBeTruthy();
             await expect(originalUrl).not.toContain('unfound')
 
             // expected request params
