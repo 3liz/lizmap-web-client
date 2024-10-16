@@ -45,7 +45,7 @@ class WFSRequestTest extends TestCase
             'map' => null,
             'Lizmap_User' => '',
             'Lizmap_User_Groups' => '',
-            'exp_filter' => 'filter AND test',
+            'exp_filter' => '( filter ) AND ( test )',
         );
 
         $params2 = array(
@@ -60,7 +60,7 @@ class WFSRequestTest extends TestCase
             'map' => null,
             'Lizmap_User' => '',
             'Lizmap_User_Groups' => '',
-            'exp_filter' => 'testParam AND filter AND test',
+            'exp_filter' => '( testParam ) AND ( filter ) AND ( test )',
             'propertyname' => 'prop,test attr'
         );
         return array(
