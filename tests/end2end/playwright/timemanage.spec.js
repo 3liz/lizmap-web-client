@@ -40,17 +40,20 @@ test.describe('Time Manager', () => {
             let getFiltertokenResponse = await getFilterTokenPromise;
 
             // Check the json response contains token prop
-            expect((await getFiltertokenResponse.json())).toHaveProperty('token');
+            let jsonFiltertokenResponse = await getFiltertokenResponse.json();
+            await expect(jsonFiltertokenResponse).toHaveProperty('token');
             let getMapRequest = await getMapRequestPromise;
 
             // Check request is build with token
-            expect(getMapRequest.url()).toMatch(/FILTERTOKEN/);
+            let urlMapRequest = await getMapRequest.url();
+            await expect(urlMapRequest).toMatch(/FILTERTOKEN/);
+            await expect(urlMapRequest).toContain('FILTERTOKEN='+jsonFiltertokenResponse.token);
 
             // Re-send the request with additionnal echo param to retrieve the WMS Request
-            let echoGetMap = await page.request.get(getMapRequest.url() + '&__echo__');
+            let echoGetMap = await page.request.get(urlMapRequest + '&__echo__');
             const originalUrl = decodeURIComponent(await echoGetMap.text());
             // When the request has not been logged by echo proxy
-            expect(originalUrl).not.toContain('unfound')
+            await expect(originalUrl).not.toContain('unfound')
 
             // expected request params
             const expectedParamValue = [
@@ -61,9 +64,10 @@ test.describe('Time Manager', () => {
                 { 'param': 'filter', 'expectedvalue': 'time_manager_layer: ( ( "test_date" >= \'' + timeObj.start + '\' ) AND ( "test_date" <= \'' + timeObj.end + '\' ) ) ' },
             ];
             // Check if WMS Request params are as expected
-            const urlObj = new URLSearchParams(originalUrl);
+            const urlObj = new URLSearchParams((new URL(originalUrl).search));
             for (let obj of expectedParamValue) {
-                expect(urlObj.get(obj.param)).toBe(obj.expectedvalue);
+                await expect(urlObj.has(obj.param), obj.param+' not in ['+Array.from(urlObj.keys()).join(', ')+']').toBeTruthy();
+                await expect(urlObj.get(obj.param), obj.param+'='+obj.expectedvalue+' not in ['+urlObj.toString().split('&').join(', ')+']').toBe(obj.expectedvalue);
             }
         }
 
@@ -79,7 +83,7 @@ test.describe('Time Manager', () => {
         let getMapNoFilter = await getMapNoFiltertPromise;
 
         // We assert no more filter token
-        expect(getMapNoFilter.url()).not.toMatch(/FILTERTOKEN/i);
+        await expect(getMapNoFilter.url()).not.toMatch(/FILTERTOKEN/i);
 
     });
 
