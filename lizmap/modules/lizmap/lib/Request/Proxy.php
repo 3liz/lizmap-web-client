@@ -1015,23 +1015,78 @@ class Proxy
 
         $logPath = \jApp::logPath('echoproxy.log');
         if (is_file($logPath)) {
-            // Only display content if the file is small to avoid memory issues
-            if (filesize($logPath) > 512000) {
-                return 'toobig';
-            }
             // retrieve the 50 last lines
+            $nLastLines = preg_split("/\r\n|\n|\r/", self::tail($logPath, 50));
             // key : md5 , value : usefull content
-            $nLastLines = array_slice(file($logPath), -50);
             $md5Assoc = array();
             foreach ($nLastLines as $line) {
                 $words = explode("\t", $line);
-                $md5Assoc[$words[3]] = $words[4];
+                if (count($words) > 4
+                    && $md5ToSearch == $words[3]) {
+                    return $words[4];
+                }
             }
 
-            return $md5Assoc[$md5ToSearch];
+            return 'unfound '.$md5ToSearch;
         }
 
-        return 'unfound';
+        return 'unfound echoproxy.log';
+    }
+
+    /**
+     * Tail in PHP, capable of eating big files.
+     *
+     * @author  Torleif Berger
+     *
+     * @see    http://www.geekality.net/?p=1654
+     */
+    protected static function tail(string $filepath, int $lines = 10, int $buffer = 4096)
+    {
+        // Open the file
+        $f = fopen($filepath, 'rb');
+        // Jump to last character
+        fseek($f, -1, SEEK_END);
+
+        // Prepare to collect output
+        $output = '';
+        $chunk = '';
+
+        // Start reading it and adjust line number if necessary
+        // (Otherwise the result would be wrong if file doesn't end with a blank line)
+        $TAIL_NL = "\n";
+        if (fread($f, 1) != $TAIL_NL) {
+            --$lines;
+        }
+
+        // While we would like more
+        while (ftell($f) > 0 && $lines >= 0) {
+            // Figure out how far back we should jump
+            $seek = min(ftell($f), $buffer);
+
+            // Do the jump (backwards, relative to where we are)
+            fseek($f, -$seek, SEEK_CUR);
+
+            // Read a chunk and prepend it to our output
+            $output = ($chunk = fread($f, $seek)).$output;
+
+            // Jump back to where we started reading
+            fseek($f, -mb_strlen($chunk, '8bit'), SEEK_CUR);
+
+            // Decrease our line counter
+            $lines -= substr_count($chunk, $TAIL_NL);
+        }
+
+        // While we have too many lines
+        // (Because of buffer size we might have read too many)
+        while ($lines++ < 0) {
+            // Find first newline and remove all text before that
+            $output = substr($output, strpos($output, $TAIL_NL) + 1);
+        }
+
+        // Close file and return
+        fclose($f);
+
+        return $output;
     }
 }
 
