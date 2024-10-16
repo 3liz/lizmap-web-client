@@ -162,6 +162,11 @@ class QgisProject
     );
 
     /**
+     * @var array List of embedded projects
+     */
+    protected $qgisEmbeddedProjects = array();
+
+    /**
      * @var App\AppContextInterface
      */
     protected $appContext;
@@ -644,27 +649,24 @@ class QgisProject
      *
      * @deprecated
      *
-     * @param mixed      $layerId
-     * @param null|array $embeddedRelationsProjects reference to associative array path(key) - QgisProject instance (value)
+     * @param mixed $layerId
      *
      * @return \SimpleXMLElement[]
      */
-    public function getXmlLayer($layerId, &$embeddedRelationsProjects = null)
+    public function getXmlLayer($layerId)
     {
         $layer = $this->getLayerDefinition($layerId);
         if ($layer && array_key_exists('embedded', $layer) && $layer['embedded'] == 1) {
             // avoid reloading the same qgis project multiple times while reading relations by checking embeddedRelationsProjects param
             // If this array is null or does not contains the corresponding qgis project, then the function if forced to load a new qgis project
-            if ($embeddedRelationsProjects && array_key_exists($layer['projectPath'], $embeddedRelationsProjects)) {
+            if (array_key_exists($layer['projectPath'], $this->qgisEmbeddedProjects)) {
                 // use QgisProject instance already created
-                $qgsProj = $embeddedRelationsProjects[$layer['projectPath']];
+                $qgsProj = $this->qgisEmbeddedProjects[$layer['projectPath']];
             } else {
                 // create new QgisProject instance
                 $qgsProj = new QgisProject(realpath(dirname($this->path).DIRECTORY_SEPARATOR.$layer['projectPath']), $this->services, $this->appContext);
                 // update the array, if exists
-                if ($embeddedRelationsProjects) {
-                    $embeddedRelationsProjects[$layer['projectPath']] = $qgsProj;
-                }
+                $this->qgisEmbeddedProjects[$layer['projectPath']] = $qgsProj;
             }
 
             return $qgsProj->getXml()->xpath("//maplayer[id='{$layerId}']");
@@ -920,7 +922,6 @@ class QgisProject
      */
     public function readEditionLayers($editionLayers)
     {
-        $embeddedEditionLayers = array();
         foreach ($editionLayers as $key => $obj) {
             // Improve performance by getting provider directly from config
             // Available for lizmap plugin >= 3.3.2
@@ -932,7 +933,7 @@ class QgisProject
                 continue;
             }
             // check for embedded layers
-            $qgisProject = $this->getEmbeddedQgisProject($obj, $embeddedEditionLayers);
+            $qgisProject = $this->getEmbeddedQgisProject($obj->layerId);
             if ($qgisProject) {
                 $xml = $qgisProject->getXml();
             } else {
@@ -961,7 +962,7 @@ class QgisProject
         $embeddedEditionLayers = array();
         foreach ($editionLayers as $key => $obj) {
             // check for embedded layers
-            $qgisProject = $this->getEmbeddedQgisProject($obj, $embeddedEditionLayers);
+            $qgisProject = $this->getEmbeddedQgisProject($obj->layerId);
             if ($qgisProject) {
                 $xml = $qgisProject->getXml();
             } else {
@@ -978,36 +979,33 @@ class QgisProject
     }
 
     /**
-     * @param object $editionLayer
-     * @param array  $embeddedEditionLayers
+     * @param string $layer
      *
      * @return null|QgisProject
      */
-    public function getEmbeddedQgisProject($editionLayer, &$embeddedEditionLayers = null)
+    public function getEmbeddedQgisProject($layer)
     {
         $qgisProject = null;
-        if (is_array($embeddedEditionLayers)) {
-            $layerDefinition = $this->getLayerDefinition($editionLayer->layerId);
-            if ($layerDefinition && array_key_exists('embedded', $layerDefinition) && $layerDefinition['embedded'] == 1) {
-                if (array_key_exists($layerDefinition['projectPath'], $embeddedEditionLayers)) {
-                    // use QgisProject instance already created
-                    $qgisProject = $embeddedEditionLayers[$layerDefinition['projectPath']];
+        $layerDefinition = $this->getLayerDefinition($layer);
+        if ($layerDefinition && array_key_exists('embedded', $layerDefinition) && $layerDefinition['embedded'] == 1) {
+            if (array_key_exists($layerDefinition['projectPath'], $this->qgisEmbeddedProjects)) {
+                // use QgisProject instance already created
+                $qgisProject = $this->qgisEmbeddedProjects[$layerDefinition['projectPath']];
+            } else {
+                // create new QgisProject instance or retreive it from cache, if any
+                $path = realpath(dirname($this->path).DIRECTORY_SEPARATOR.$layerDefinition['projectPath']);
+                $qgsMtime = filemtime($path);
+                $qgsCfgMtime = filemtime($path.'.cfg');
+                $cacheHandler = new ProjectCache($path, $qgsMtime, $qgsCfgMtime, $this->appContext);
+                $data = $cacheHandler->retrieveProjectData();
+
+                if ($data) {
+                    $qgisProject = new QgisProject($path, $this->services, $this->appContext, $data['qgis']);
                 } else {
-                    // create new QgisProject instance or retreive it from cache, if any
-                    $path = realpath(dirname($this->path).DIRECTORY_SEPARATOR.$layerDefinition['projectPath']);
-                    $qgsMtime = filemtime($path);
-                    $qgsCfgMtime = filemtime($path.'.cfg');
-                    $cacheHandler = new ProjectCache($path, $qgsMtime, $qgsCfgMtime, $this->appContext);
-                    $data = $cacheHandler->retrieveProjectData();
-
-                    if ($data) {
-                        $qgisProject = new QgisProject($path, $this->services, $this->appContext, $data['qgis']);
-                    } else {
-                        $qgisProject = new QgisProject($path, $this->services, $this->appContext);
-                    }
-
-                    $embeddedEditionLayers[$layerDefinition['projectPath']] = $qgisProject;
+                    $qgisProject = new QgisProject($path, $this->services, $this->appContext);
                 }
+
+                $this->qgisEmbeddedProjects[$layerDefinition['projectPath']] = $qgisProject;
             }
         }
 
@@ -1030,7 +1028,15 @@ class QgisProject
         // Get QGIS form fields configurations for each layer
         $layersLabeledFieldsConfig = array();
         foreach ($layerIds as $layerId) {
-            $layerXml = $this->getXmlLayer2($this->getXml(), $layerId);
+            $qgisProject = $this->getEmbeddedQgisProject($layerId);
+
+            if ($qgisProject) {
+                $xml = $qgisProject->getXml();
+            } else {
+                $xml = $this->getXml();
+            }
+
+            $layerXml = $this->getXmlLayer2($xml, $layerId);
             if (is_null($layerXml)) {
                 continue;
             }
@@ -1505,13 +1511,11 @@ class QgisProject
         if ($xmlRelations) {
             // Store qgisProjects references in a key=>value array and pass it by reference along the methods that loads and validates relations.
             // This avoid to reload the same QgisProject instance multiple times, if there are many "embedded relations" referencing the same (embedded) qgis project
-            $embeddedRelationsProjects = array();
-
             /** @var \SimpleXMLElement $relation */
             foreach ($xmlRelations[0] as $relation) {
                 $relationObj = $relation->attributes();
 
-                $relationField = $this->readRelationField($relation, $embeddedRelationsProjects);
+                $relationField = $this->readRelationField($relation);
                 if ($relationField === null) {
                     // no corresponding layer
                     continue;
@@ -1555,13 +1559,12 @@ class QgisProject
 
     /**
      * @param \SimpleXMLElement $relationXml
-     * @param null|array        $embeddedRelationsProjects
      */
-    protected function readRelationField($relationXml, &$embeddedRelationsProjects = null)
+    protected function readRelationField($relationXml)
     {
         $referencedLayerId = $relationXml->attributes()->referencedLayer;
 
-        $_referencedLayerXml = $this->getXmlLayer($referencedLayerId, $embeddedRelationsProjects);
+        $_referencedLayerXml = $this->getXmlLayer($referencedLayerId);
         if (count($_referencedLayerXml) == 0) {
             return null;
         }
@@ -1844,6 +1847,9 @@ class QgisProject
                     $layer['embedded'] = 1;
                     $layer['projectPath'] = (string) $attributes->project;
                     $layers[] = $layer;
+                }
+                if (!array_key_exists($projectPath, $this->qgisEmbeddedProjects)) {
+                    $this->qgisEmbeddedProjects[$projectPath] = $embeddedProject;
                 }
             }
         }
