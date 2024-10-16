@@ -55,7 +55,7 @@ export default class MousePosition extends HTMLElement {
                 <button class="btn btn-sm" title="${lizDict['mouseposition.removeCenterPoint']}" @click=${() => this._removeCenterPoint()}><i class="icon-refresh"></i></button>
             </div>
             <div class="coords-unit">
-                <select title="${lizDict['mouseposition.select']}" @change=${(event) => { this.displayUnit = event.target.value }}>
+                <select class="form-select" title="${lizDict['mouseposition.select']}" @change=${(event) => { this.displayUnit = event.target.value }}>
                     ${this._qgisProjectProjectionUnits === 'm' ? html`
                     <option selected value="m">${lizDict['mouseposition.units.m']}</option>` : ''}
                     ${ ['ft', 'us-ft'].includes(this._qgisProjectProjectionUnits) ? html`
