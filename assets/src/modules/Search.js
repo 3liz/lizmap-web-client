@@ -118,7 +118,7 @@ export default class Search {
                             var bbox = ftsGeometry.getBounds();
                             if (extent.intersectsBounds(bbox)) {
                                 var lab = ftsFeat.label.replace(labrex, '<strong class="highlight">$1</strong>');
-                                text += '<li><a href="#' + bbox.toBBOX() + '" data="' + ftsGeometry.toString() + '">' + lab + '</a></li>';
+                                text += '<li><a href="#' + bbox.toBBOX() + '" data-wkt="' + ftsGeometry.toString() + '">' + lab + '</a></li>';
                                 count++;
                             }
                         }
@@ -210,7 +210,7 @@ export default class Search {
                                 bbox = new OpenLayers.Bounds(bbox);
                                 if (extent.intersectsBounds(bbox)) {
                                     var lab = address.display_name.replace(labrex, '<strong class="highlight">$1</strong>');
-                                    text += '<li><a href="#' + bbox.toBBOX() + '">' + lab + '</a></li>';
+                                    text += `<li><a href="#${bbox.toBBOX()}" data-wkt="POINT(${address.lon} ${address.lat})">${lab}</a></li>`;
                                     count++;
                                 }
                             }
@@ -232,7 +232,7 @@ export default class Search {
                         let count = 0;
                         for (const result of data.results) {
                             var lab = result.fulltext.replace(labrex, '<strong class="highlight">$1</strong>');
-                            text += '<li><a href="#' + result.x + ',' + result.y + ',' + result.x + ',' + result.y + '">' + lab + '</a></li>';
+                            text += `<li><a href="#${result.x},${result.y},${result.x},${result.y}" data-wkt="POINT(${result.x} ${result.y})">${lab}</a></li>`;
                             count++;
                         }
                         if (count == 0 || text == '') {
@@ -357,7 +357,7 @@ export default class Search {
                     this._map.zoomToExtent(bbox);
 
                     var feat = new OpenLayers.Feature.Vector(bbox.toGeometry().getCentroid());
-                    var geomWKT = linkClicked.getAttribute('data');
+                    var geomWKT = linkClicked.dataset.wkt;
                     if (geomWKT) {
                         mainLizmap.map.setHighlightFeatures(geomWKT, "wkt", "EPSG:4326");
                     }
