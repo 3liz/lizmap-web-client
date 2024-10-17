@@ -244,12 +244,13 @@ class qgisExpressionUtils
     /**
      * Request QGIS Server and the lizmap plugin to replace QGIS expressions text.
      *
-     * @param qgisVectorLayer $layer       A QGIS vector layer
-     * @param array           $expressions The expressions text to replace
+     * @param qgisVectorLayer $layer        A QGIS vector layer
+     * @param array           $expressions  The expressions text to replace
+     * @param array           $form_feature A feature to add to the evaluation context
      *
      * @return null|object the results of expressions text replacement
      */
-    public static function replaceExpressionText($layer, $expressions)
+    public static function replaceExpressionText($layer, $expressions, $form_feature = null)
     {
         // Evaluate the expression by qgis
         $project = $layer->getProject();
@@ -259,9 +260,14 @@ class qgisExpressionUtils
             'map' => $project->getRelativeQgisPath(),
             'layer' => $layer->getName(),
             'strings' => json_encode($expressions),
-            'features' => 'ALL',
             'format' => 'GeoJSON',
         );
+        if ($form_feature) {
+            $params['feature'] = json_encode($form_feature);
+            $params['form_scope'] = 'true';
+        } else {
+            $params['features'] = 'ALL';
+        }
 
         // Request replace expression text
         $json = self::request($params, $project);
