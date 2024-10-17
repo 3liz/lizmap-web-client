@@ -17,6 +17,10 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Fix base layer (i) information button
 * IGN search string length must be between 3 and 200 chars
 * Fix Relation Reference Form control order by value
+* Fix enclosing correctly `filter` when requesting QGIS Server with brackets
+* Minor refactoring of embedded projects referencing during projects loading
+* Fix the URL used for the OSM Nominatim search and use `bounded=1` to restrict results
+* Fix display of the highlight after an OSM and IGN geocoding
 
 ## 3.8.2 - 2024-10-01
 
