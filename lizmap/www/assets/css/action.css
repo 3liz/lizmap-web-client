@@ -54,3 +54,8 @@ div.action-buttons button:hover:not([disabled]) {
     color: white;
     text-shadow: none;
 }
+
+#project-action-selector-container lizmap-digitizing {
+    margin-bottom: 10px;
+    display: block;
+}

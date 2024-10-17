@@ -97,7 +97,7 @@ BEGIN
     -- selects an action in the list, then click on the button
     IF action_scope = 'project' THEN
 
-        -- Return the buffer 500m of map center point
+        -- Return the buffer 2000m of map center point
         IF action_name = 'project_map_center_buffer' AND trim(map_center) != '' THEN
             datasource:= format(
                 $$
@@ -112,6 +112,24 @@ BEGIN
                 $$,
                 lizmap_project,
                 map_center,
+                parameters->>'buffer_size'
+            );
+        -- Return the buffer 2000m of point drawn by user
+        ELSEIF action_name = 'project_map_drawn_point_buffer' AND trim(wkt) != '' THEN
+            datasource:= format(
+                $$
+                    SELECT
+                    1 AS id,
+                    '%1$s' AS project,
+                    ST_Buffer(
+                        ST_GeomFromText('%2$s', 4326)::geography,
+                        %3$s
+                    )::geometry(POLYGON, 4326) AS geom,
+                    'The displayed geometry represents the buffer %3$s m of the point drawn by the user' AS message,
+                    '<p>The displayed geometry represents the buffer <strong>%3$s m</strong> of the point drawn by the user</p>' AS message_html
+                $$,
+                lizmap_project,
+                wkt,
                 parameters->>'buffer_size'
             );
         END IF;
