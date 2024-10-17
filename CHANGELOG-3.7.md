@@ -11,6 +11,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 ### Fixed
 
 * Fix Relation Reference Form control order by value
+* Fix enclosing correctly `filter` when requesting QGIS Server with brackets
 
 ## 3.7.11 - 2024-10-02
 
