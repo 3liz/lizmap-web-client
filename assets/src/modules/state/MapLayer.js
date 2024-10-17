@@ -67,6 +67,7 @@ export class MapItemState extends EventDispatcher {
                 this.dispatch.bind(this),
                 layerItemState.mapType + '.opacity.changed'
             );
+            layerItemState.addListener(this.dispatch.bind(this), 'layer.symbol.expanded.changed');
         } else {
             layerItemState.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
             layerItemState.addListener(this.dispatch.bind(this), 'layer.symbology.changed');

@@ -89,19 +89,34 @@ export class BaseObjectSymbology extends EventDispatcher {
 
     /**
      * Create a base symbology instance based on a node object provided by QGIS Server
-     * @param {object} node                                             - the QGIS node symbology
-     * @param {string} node.title                                       - the node title
+     * @param {object} node                 - the QGIS node symbology
+     * @param {string} node.title           - the node title
+     * @param {string} [node.type]          - the node type
      * @param {object} [requiredProperties] - the required properties definition
-     * @param {object} [optionalProperties]                          - the optional properties definition
+     * @param {object} [optionalProperties] - the optional properties definition
      */
-    constructor(node, requiredProperties = { 'title': { type: 'string' } }, optionalProperties = {}) {
-
+    constructor(node, requiredProperties = { 'title': { type: 'string' } }, optionalProperties = {})
+    {
+        if (!node.hasOwnProperty('type')) {
+            node.type = 'icon';
+        }
+        if (!requiredProperties.hasOwnProperty('type')) {
+            requiredProperties['type'] = { type: 'string' };
+        }
         if (!requiredProperties.hasOwnProperty('title')) {
             requiredProperties['title'] = { type: 'string' };
         }
 
         super()
         applyConfig(this, node, requiredProperties, optionalProperties)
+    }
+
+    /**
+     * The symbology type
+     * @type {string}
+     */
+    get type() {
+        return this._type;
     }
 
     /**
@@ -121,14 +136,15 @@ export class BaseObjectSymbology extends EventDispatcher {
 export class BaseIconSymbology extends BaseObjectSymbology {
     /**
      * Create a base icon symbology instance based on a node object provided by QGIS Server
-     * @param {object} node                    - the QGIS node symbology
-     * @param {string} node.icon               - the png image in base64
-     * @param {string} node.title              - the node title
+     * @param {object} node                 - the QGIS node symbology
+     * @param {string} node.icon            - the png image in base64
+     * @param {string} node.title           - the node title
+     * @param {string} [node.type]          - the node type
      * @param {object} [requiredProperties] - the required properties definition
      * @param {object} [optionalProperties] - the optional properties definition
      */
-    constructor(node, requiredProperties={}, optionalProperties = {}) {
-
+    constructor(node, requiredProperties={}, optionalProperties = {})
+    {
         if (!requiredProperties.hasOwnProperty('icon')) {
             requiredProperties['icon'] = { type: 'string' };
         }
@@ -211,6 +227,9 @@ export class SymbolIconSymbology extends BaseIconSymbology {
      * @param {boolean} node.checked - the node is checked by default
      */
     constructor(node) {
+        if (!node.hasOwnProperty('type')) {
+            node.type = 'icon';
+        }
         super(node, symbolIconProperties, symbolIconOptionalProperties)
         this._childrenRules = []
     }
@@ -280,6 +299,9 @@ const symbolRuleOptionalProperties = Object.assign(
  */
 export class SymbolRuleSymbology extends SymbolIconSymbology {
     constructor(node) {
+        if (!node.hasOwnProperty('type')) {
+            node.type = 'rule';
+        }
         super(node, symbolRuleProperties, symbolRuleOptionalProperties)
         this._parentRule = null;
         this._childrenRules = [];
