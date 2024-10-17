@@ -227,6 +227,12 @@ export default class FeaturesTable extends HTMLElement {
                 this.uniqueField,
                 event.target.parentElement.parentElement.querySelector('div.lizmap-features-table-item-popup'),
                 function(aLayerId, aFeature, aTarget) {
+                    // Add bootstrap classes to the popup tables
+                    const popupTable = aTarget.querySelector('table.lizmapPopupTable');
+                    if (popupTable) {
+                        popupTable.classList.add('table', 'table-condensed', 'table-sm', 'table-bordered', 'table-striped');
+                    }
+                    
                     // Show popup and hide other children
                     const featuresTableDiv = aTarget.parentElement;
                     if (featuresTableDiv) {
