@@ -369,6 +369,17 @@ export class LayerItemState extends EventDispatcher {
                     });
                 }, 'symbol.expanded.changed');
             }
+        } else if (this.symbology instanceof LayerGroupSymbology) {
+            const self = this;
+            this.symbology.addListener(evt => {
+                self.dispatch({
+                    type: 'layer.symbol.expanded.changed',
+                    name: self.name,
+                    title: evt.title,
+                    ruleKey: evt.ruleKey,
+                    expanded: evt.expanded,
+                });
+            }, 'symbol.expanded.changed');
         }
         this.dispatch({
             type: this.mapType + '.symbology.changed',
