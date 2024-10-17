@@ -510,3 +510,262 @@ test.describe('Multiple geometry layers', () => {
 
     })
 })
+
+test.describe('Text widget in a form', () => {
+
+    test.beforeEach(async ({ page }) => {
+        const url = '/index.php/view/map/?repository=testsrepository&project=text_widget';
+        await gotoMap(url, page)
+    });
+
+    test('Edit form with text widget in it', async ({ page }) => {
+
+        let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
+
+        await page.locator('#newOlMap').click({
+          position: {
+            x: 354,
+            y: 370
+          }
+        });
+
+        await getFeatureInfoRequestPromise;
+
+        // checking popup
+        await page.waitForTimeout(500);
+
+        await expect(page.locator('.lizmapPopupContent > .lizmapPopupSingleFeature .lizmapPopupTitle').first()).toHaveText("Point edit");
+        await expect(page.locator('.lizmapPopupContent > .lizmapPopupSingleFeature .lizmapPopupDiv ul.nav-tabs li')).toHaveCount(3);
+        await expect(page.locator('.lizmapPopupContent > .lizmapPopupSingleFeature .lizmapPopupDiv div.tab-pane')).toHaveCount(3);
+
+        // first popup tab
+        const firstTabFields = page.locator('.lizmapPopupContent > .lizmapPopupSingleFeature .lizmapPopupDiv div.tab-pane').nth(0).locator('.field');
+
+        await expect(firstTabFields).toHaveCount(5);
+        await expect(firstTabFields.nth(0)).toHaveText('1');
+        await expect(firstTabFields.nth(1)).toHaveText('text string');
+        await expect(firstTabFields.nth(2)).toHaveText('3.8602126068661824');
+        await expect(firstTabFields.nth(3)).toHaveText('1');
+        await expect(firstTabFields.nth(4)).toHaveText('Widget_test');
+
+        // second popup tab
+        const secondTabFields = page.locator('.lizmapPopupContent > .lizmapPopupSingleFeature .lizmapPopupDiv div.tab-pane').nth(1).locator('.field');
+        
+        await expect(secondTabFields).toHaveCount(1);
+        await expect(secondTabFields.nth(0)).toHaveText('[%kk[% "ids" %]%]');
+
+        // third popup tab
+        const thirdTabFields = page.locator('.lizmapPopupContent > .lizmapPopupSingleFeature .lizmapPopupDiv div.tab-pane').nth(2).locator('.field');
+
+        await expect(thirdTabFields).toHaveCount(1);
+        await expect(thirdTabFields.nth(0)).toHaveText('Widget_test');
+
+        // edit the feature
+        let editFeatureRequestPromise = page.waitForResponse(response => response.url().includes('editFeature'));
+        await page.locator('.feature-toolbar > button:nth-child(5)').click();
+        await editFeatureRequestPromise;
+
+        // the text widgets in the form should be filled as in the popup
+        const form = page.locator('#jforms_view_edition');
+        await expect(form.locator('div.tab-pane')).toHaveCount(3);
+
+        // first tab
+        let firstFormTabFields = await form.locator('div.tab-pane').nth(0).locator('div.control-group');
+        await expect(firstFormTabFields).toHaveCount(5);
+
+        await expect(firstFormTabFields.nth(0).locator('label')).toHaveText('id');
+        await expect(firstFormTabFields.nth(0).locator('input')).toHaveValue('1');
+
+        await expect(firstFormTabFields.nth(1).locator('label')).toHaveText('Constant');
+        let trimText = (await firstFormTabFields.nth(1).locator('input').inputValue()).replace(/\s+/g,' ').trim()
+        expect(trimText).toBe('text string')
+
+        await expect(firstFormTabFields.nth(2).locator('label')).toHaveText('Geometry X');
+        trimText = (await firstFormTabFields.nth(2).locator('input').inputValue()).replace(/\s+/g,' ').trim();
+        expect(trimText).toBe('3.860212606866182');
+
+        await expect(firstFormTabFields.nth(3).locator('label')).toHaveText('id check');
+        trimText = (await firstFormTabFields.nth(3).locator('input').inputValue()).replace(/\s+/g,' ').trim();
+        expect(trimText).toBe('1');
+
+        await expect(firstFormTabFields.nth(4).locator('label')).toHaveText('Name');
+        await expect(firstFormTabFields.nth(4).locator('input')).toHaveValue('Widget_test');
+
+        // second tab
+        let secondFormTabFields = await form.locator('div.tab-pane').nth(1).locator('div.control-group');
+        await expect(secondFormTabFields).toHaveCount(1);
+
+        await expect(secondFormTabFields.nth(0).locator('label')).toHaveText('Wrong expression');
+        trimText = (await secondFormTabFields.nth(0).locator('input').inputValue()).replace(/\s+/g,' ').trim();
+        // wrong expressions should not be evaluated
+        expect(trimText).toBe('[%kk[% "ids" %]%]');
+
+        // third tab
+        let thirdFormTabFields = await form.locator('div.tab-pane').nth(2).locator('div.control-group');
+        await expect(thirdFormTabFields).toHaveCount(1);
+
+        await expect(thirdFormTabFields.nth(0).locator('label')).toHaveText('Name check');
+        trimText = (await thirdFormTabFields.nth(0).locator('input').inputValue()).replace(/\s+/g,' ').trim();
+        expect(trimText).toBe('Widget_test');
+
+        // fill and save the form
+        await firstFormTabFields.nth(4).locator('input').fill("text modified");
+
+        await page.locator('#jforms_view_edition_liz_future_action').selectOption('edit');
+        let editFeatureRequestPromiseUpdate = page.waitForResponse(response => response.url().includes('editFeature'));
+        await page.locator('#jforms_view_edition__submit_submit').click();
+
+        await editFeatureRequestPromiseUpdate;
+        await page.waitForTimeout(300);
+
+        const newForm = page.locator('#jforms_view_edition');
+        // inspect the new opened form, the only fields that should be updated are the "Name" and "Name check" fields
+        firstFormTabFields = newForm.locator('div.tab-pane').nth(0).locator('div.control-group');
+        await expect(firstFormTabFields.nth(0).locator('label')).toHaveText('id');
+        await expect(firstFormTabFields.nth(0).locator('input')).toHaveValue('1');
+
+        await expect(firstFormTabFields.nth(1).locator('label')).toHaveText('Constant');
+        trimText = (await firstFormTabFields.nth(1).locator('input').inputValue()).replace(/\s+/g,' ').trim();
+        expect(trimText).toBe('text string')
+
+        await expect(firstFormTabFields.nth(2).locator('label')).toHaveText('Geometry X');
+        trimText = (await firstFormTabFields.nth(2).locator('input').inputValue()).replace(/\s+/g,' ').trim();
+        expect(trimText).toBe('3.860212606866182')
+
+        await expect(firstFormTabFields.nth(3).locator('label')).toHaveText('id check');
+        trimText = (await firstFormTabFields.nth(3).locator('input').inputValue()).replace(/\s+/g,' ').trim();
+        expect(trimText).toBe('1')
+
+        await expect(firstFormTabFields.nth(4).locator('label')).toHaveText('Name');
+        await expect(firstFormTabFields.nth(4).locator('input')).toHaveValue('text modified');
+
+        secondFormTabFields = await newForm.locator('div.tab-pane').nth(1).locator('div.control-group');
+        await expect(secondFormTabFields.nth(0).locator('label')).toHaveText('Wrong expression');
+        trimText = (await secondFormTabFields.nth(0).locator('input').inputValue()).replace(/\s+/g,' ').trim();
+        // wrong expressions should not be evaluated
+        expect(trimText).toBe('[%kk[% "ids" %]%]');
+
+        thirdFormTabFields = await newForm.locator('div.tab-pane').nth(2).locator('div.control-group');
+        await expect(thirdFormTabFields.nth(0).locator('label')).toHaveText('Name check');
+        trimText = (await thirdFormTabFields.nth(0).locator('input').inputValue()).replace(/\s+/g,' ').trim();
+        // expression updated
+        expect(trimText).toBe('text modified');
+    })
+
+    test('Insert new feature', async ({ page }) => {
+
+        // insepct the form, all text widget should be empty except for the "Constat" and "Wrong expression" once
+        let editFeatureRequestPromise = page.waitForResponse(response => response.url().includes('editFeature'));
+        await page.locator('#button-edition').click();
+        await page.locator('a#edition-draw').click();
+        await editFeatureRequestPromise;
+
+        // the text widgets in the form should be filled as in the popup
+        const form = await page.locator('#jforms_view_edition');
+        await expect(form.locator('div.tab-pane')).toHaveCount(3);
+
+        // first tab
+        let firstFormTabFields = form.locator('div.tab-pane').nth(0).locator('div.control-group');
+        await expect(firstFormTabFields).toHaveCount(5);
+
+        await expect(firstFormTabFields.nth(0).locator('label')).toHaveText('id');
+        await expect(firstFormTabFields.nth(0).locator('input')).toHaveValue('');
+
+        await expect(firstFormTabFields.nth(1).locator('label')).toHaveText('Constant');
+        let trimText = (await firstFormTabFields.nth(1).locator('input').inputValue()).replace(/\s+/g,' ').trim();
+        expect(trimText).toBe('text string')
+
+        await expect(firstFormTabFields.nth(2).locator('label')).toHaveText('Geometry X');
+        trimText = (await firstFormTabFields.nth(2).locator('input').inputValue()).replace(/\s+/g,' ').trim();
+        expect(trimText).toBe('')
+
+        await expect(firstFormTabFields.nth(3).locator('label')).toHaveText('id check');
+        trimText = (await firstFormTabFields.nth(3).locator('input').inputValue()).replace(/\s+/g,' ').trim();
+        expect(trimText).toBe('')
+
+        await expect(firstFormTabFields.nth(4).locator('label')).toHaveText('Name');
+        await expect(firstFormTabFields.nth(4).locator('input')).toHaveValue('');
+
+        // second tab
+        let secondFormTabFields = form.locator('div.tab-pane').nth(1).locator('div.control-group');
+        await expect(secondFormTabFields).toHaveCount(1);
+
+        await expect(secondFormTabFields.nth(0).locator('label')).toHaveText('Wrong expression');
+        trimText = (await secondFormTabFields.nth(0).locator('input').inputValue()).replace(/\s+/g,' ').trim();
+        // wrong expressions should not be evaluated
+        expect(trimText).toBe('[%kk[% "ids" %]%]');
+
+        // third tab
+        let thirdFormTabFields = await form.locator('div.tab-pane').nth(2).locator('div.control-group');
+        await expect(thirdFormTabFields).toHaveCount(1);
+
+        await expect(thirdFormTabFields.nth(0).locator('label')).toHaveText('Name check');
+        trimText = (await thirdFormTabFields.nth(0).locator('input').inputValue()).replace(/\s+/g,' ').trim();
+        // wrong expressions should not be evaluated
+        expect(trimText).toBe('');
+
+        // insert a point feature
+        await page.locator('#map').click({
+            position: {
+              x: 488,
+              y: 331
+            }
+        });
+
+        // fill only the name
+        firstFormTabFields.nth(4).locator('input').fill('text insert');
+
+        // submit the form
+        await page.locator('#jforms_view_edition_liz_future_action').selectOption('edit');
+        let editFeatureRequestPromiseUpdate = page.waitForResponse(response => response.url().includes('editFeature'));
+        await page.locator('#jforms_view_edition__submit_submit').click();
+
+        await editFeatureRequestPromiseUpdate;
+        await page.waitForTimeout(300);
+
+        // inspect the form
+        // get geometry
+        const newForm = page.locator('#jforms_view_edition');
+        const geometry = await newForm.locator('#jforms_view_edition_geom').inputValue();
+
+        expect(geometry.indexOf('POINT(')).toBe(0);
+        let coords = geometry.match(/\(([^)]+)\)/) || [];
+        
+        expect(coords.length).toBe(2);
+
+        const xGeom = coords[1].split(" ")[0];
+
+        expect(xGeom).toBeTruthy();
+
+        firstFormTabFields = newForm.locator('div.tab-pane').nth(0).locator('div.control-group');
+        await expect(firstFormTabFields.nth(0).locator('label')).toHaveText('id');
+        await expect(firstFormTabFields.nth(0).locator('input')).toHaveValue('2');
+
+        await expect(firstFormTabFields.nth(1).locator('label')).toHaveText('Constant');
+        trimText = (await firstFormTabFields.nth(1).locator('input').inputValue()).replace(/\s+/g,' ').trim();
+        expect(trimText).toBe('text string');
+
+        await expect(firstFormTabFields.nth(2).locator('label')).toHaveText('Geometry X');
+        trimText = (await firstFormTabFields.nth(2).locator('input').inputValue()).replace(/\s+/g,' ').trim();
+        expect(trimText).toBe(xGeom);
+
+        await expect(firstFormTabFields.nth(3).locator('label')).toHaveText('id check');
+        trimText = (await firstFormTabFields.nth(3).locator('input').inputValue()).replace(/\s+/g,' ').trim();
+        expect(trimText).toBe('2');
+
+        await expect(firstFormTabFields.nth(4).locator('label')).toHaveText('Name');
+        await expect(firstFormTabFields.nth(4).locator('input')).toHaveValue('text insert');
+
+        secondFormTabFields = await newForm.locator('div.tab-pane').nth(1).locator('div.control-group');
+        await expect(secondFormTabFields.nth(0).locator('label')).toHaveText('Wrong expression');
+        trimText = (await secondFormTabFields.nth(0).locator('input').inputValue()).replace(/\s+/g,' ').trim();
+        // wrong expressions should not be evaluated
+        expect(trimText).toBe('[%kk[% "ids" %]%]');
+
+        thirdFormTabFields = await newForm.locator('div.tab-pane').nth(2).locator('div.control-group');
+        await expect(thirdFormTabFields.nth(0).locator('label')).toHaveText('Name check');
+        trimText = (await thirdFormTabFields.nth(0).locator('input').inputValue()).replace(/\s+/g,' ').trim();
+        // wrong expressions should not be evaluated
+        expect(trimText).toBe('text insert');
+    })
+})
