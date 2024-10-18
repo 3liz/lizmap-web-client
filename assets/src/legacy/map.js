@@ -3885,11 +3885,11 @@ window.lizMap = function() {
                             dockType = className.split('nav-')[1];
                         }
                     }
-                    
+
                     if (!dockType) {
                         return;
                     }
-                    
+
                     evt.preventDefault();
 
                     const linkClicked = evt.target.closest('a');
