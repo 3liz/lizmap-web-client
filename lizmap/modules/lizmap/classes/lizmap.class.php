@@ -137,7 +137,7 @@ class lizmap
     public static function getRepositoryProperties()
     {
         trigger_error('This method is deprecated. Please use the lizmapRepository::getProperties() method.', E_DEPRECATED);
-
+        // @phpstan-ignore deadCode.unreachable
         return lizmapRepository::$properties;
     }
 
@@ -150,7 +150,7 @@ class lizmap
     public static function getRepositoryPropertiesOptions()
     {
         trigger_error('This method is deprecated. Please use the lizmapRepository::getPropertiesOptions() method.', E_DEPRECATED);
-
+        // @phpstan-ignore deadCode.unreachable
         return lizmapRepository::$propertiesOptions;
     }
 
