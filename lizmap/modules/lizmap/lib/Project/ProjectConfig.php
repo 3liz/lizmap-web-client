@@ -522,6 +522,49 @@ class ProjectConfig
         return $this->datavizLayers;
     }
 
+    /**
+     * List of the layers configured in the tools
+     * Attribute table, form filter & dataviz.
+     *
+     * We use this list to find all the fields for which
+     * we need to replace the code by their corresponding labels
+     *
+     * @return array<string> Array of layer ids
+     */
+    public function getLayersWithLabels()
+    {
+        // Keep a list of layer ids for which to replace the code by labels
+        $layersWithLabeledFields = array();
+
+        // Attribute layers
+        foreach ($this->getAttributeLayers() as $key => $config) {
+            if ($config->hideLayer == 'True') {
+                continue;
+            }
+            $layersWithLabeledFields[] = $config->layerId;
+        }
+
+        // Dataviz layers
+        foreach ($this->getDatavizLayers() as $o => $config) {
+            $layerId = $config->layerId;
+            if (array_key_exists($layerId, $layersWithLabeledFields)) {
+                continue;
+            }
+            $layersWithLabeledFields[] = $config->layerId;
+        }
+
+        // Form filter layers
+        foreach ($this->getFormFilterLayers() as $o => $config) {
+            $layerId = $config->layerId;
+            if (array_key_exists($layerId, $layersWithLabeledFields)) {
+                continue;
+            }
+            $layersWithLabeledFields[] = $config->layerId;
+        }
+
+        return $layersWithLabeledFields;
+    }
+
     /** Get the HTML template built from the Drag and drop layout
      * and override the original datavizTemplate configuration option.
      *
