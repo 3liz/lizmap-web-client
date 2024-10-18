@@ -604,3 +604,11 @@ parameters:
 			message: "#^Inner named functions are not supported by PHPStan\\. Consider refactoring to an anonymous function, class method, or a top\\-level\\-defined function\\. See issue \\#165 \\(https\\://github\\.com/phpstan/phpstan/issues/165\\) for more details\\.$#"
 			count: 1
 			path: lizmap/modules/view/controllers/lizMap.classic.php
+		-
+			message: "#^Call to an undefined static method jLocale::getBundle\\(\\)\\.$#"
+			count: 1
+			path: lizmap/modules/lizmap/lib/App/LocalesLoader.php
+		-
+			message: "#^Unreachable statement - code above always terminates\\.$#"
+			count: 2
+			path: lizmap/modules/lizmap/classes/lizmap.class.php
