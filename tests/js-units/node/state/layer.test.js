@@ -5,7 +5,7 @@ import { readFileSync } from 'fs';
 import { ValidationError, ConversionError } from '../../../../assets/src/modules/Errors.js';
 import { LayersConfig } from '../../../../assets/src/modules/config/Layer.js';
 import { LayerGeographicBoundingBoxConfig, LayerBoundingBoxConfig, LayerTreeGroupConfig, buildLayerTreeConfig } from '../../../../assets/src/modules/config/LayerTree.js';
-import { LayerIconSymbology, LayerSymbolsSymbology, SymbolIconSymbology } from '../../../../assets/src/modules/state/Symbology.js';
+import { BaseSymbolsSymbology, LayerIconSymbology, LayerSymbolsSymbology, SymbolIconSymbology, LayerGroupSymbology } from '../../../../assets/src/modules/state/Symbology.js';
 import { buildLayersOrder } from '../../../../assets/src/modules/config/LayersOrder.js';
 import { Extent } from '../../../../assets/src/modules/utils/Extent.js';
 
@@ -953,6 +953,64 @@ describe('LayerGroupState', function () {
         expect(group_as_layer.layerConfig).not.to.be.null
         expect(group_as_layer.layerConfig.toggled).to.be.true
         expect(group_as_layer.checked).to.be.true
+    })
+
+    it('Group as layer symbology', function () {
+        const root = getRootLayerGroupState('cadastre-caen');
+        expect(root.childrenCount).to.be.eq(1)
+
+        const group = root.children[0]
+        expect(group).to.be.instanceOf(LayerGroupState)
+        expect(group.groupAsLayer).to.be.false
+        expect(group.type)
+            .to.be.eq('group')
+            .that.be.eq(group.mapType)
+        expect(group.childrenCount).to.be.eq(4)
+
+        const fond = group.children[3]
+        expect(fond).to.be.instanceOf(LayerGroupState)
+        expect(fond.groupAsLayer).to.be.true
+        expect(fond.type)
+            .to.be.eq('group')
+            .that.not.be.eq(fond.mapType)
+        expect(fond.mapType).to.be.eq('layer')
+        /*const collection = getLayersAndGroupsCollection('cadastre-caen');
+
+        const fond = collection.getLayerByName('Fond')*/
+
+        expect(fond.symbology).to.be.undefined
+
+        let fondSymbologyChangedEvt = null;
+
+        fond.addListener(evt => {
+            fondSymbologyChangedEvt = evt
+        }, 'layer.symbology.changed');
+
+        const legend = JSON.parse(readFileSync('./data/cadastre-caen-fond-legend.json', 'utf8'));
+        expect(legend).to.not.be.undefined
+
+        // Set symbology
+        fond.symbology = legend
+        expect(fond.symbology).to.be.instanceOf(LayerGroupSymbology)
+
+        // Event dispatched
+        expect(fondSymbologyChangedEvt).to.not.be.null
+        expect(fondSymbologyChangedEvt.name).to.be.eq('Fond')
+
+
+        let expandedChangedEvt = null;
+        fond.addListener(evt => {
+            expandedChangedEvt = evt
+        }, 'layer.symbol.expanded.changed');
+        const symbologyChildren = fond.symbology.children
+        expect(symbologyChildren[1]).to.be.instanceOf(BaseSymbolsSymbology)
+        expect(symbologyChildren[1].expanded).to.be.false
+        symbologyChildren[1].expanded = true;
+
+        expect(expandedChangedEvt).to.not.be.null
+        expect(expandedChangedEvt.title).to.be.eq('Objets ponctuels')
+        expect(expandedChangedEvt.symbolType).to.be.eq('layer')
+        expect(expandedChangedEvt.expanded).to.be.true
     })
 })
 

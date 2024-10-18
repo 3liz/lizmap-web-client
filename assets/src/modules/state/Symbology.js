@@ -90,13 +90,13 @@ export class BaseObjectSymbology extends EventDispatcher {
      * @param {object} [requiredProperties] - the required properties definition
      * @param {object} [optionalProperties] - the optional properties definition
      */
-    constructor(node, requiredProperties = { 'title': { type: 'string' } }, optionalProperties = {})
+    constructor(node, requiredProperties = { 'title': { type: 'string' } }, optionalProperties = { 'type': { type: 'string' } })
     {
         if (!node.hasOwnProperty('type')) {
             node.type = 'icon';
         }
-        if (!requiredProperties.hasOwnProperty('type')) {
-            requiredProperties['type'] = { type: 'string' };
+        if (!optionalProperties.hasOwnProperty('type')) {
+            optionalProperties['type'] = { type: 'string' };
         }
         if (!requiredProperties.hasOwnProperty('title')) {
             requiredProperties['title'] = { type: 'string' };
@@ -132,16 +132,19 @@ export class BaseIconSymbology extends BaseObjectSymbology {
     /**
      * Create a base icon symbology instance based on a node object provided by QGIS Server
      * @param {object} node                 - the QGIS node symbology
-     * @param {string} node.icon            - the png image in base64
      * @param {string} node.title           - the node title
+     * @param {string} [node.icon]          - the png image in base64
      * @param {string} [node.type]          - the node type
      * @param {object} [requiredProperties] - the required properties definition
      * @param {object} [optionalProperties] - the optional properties definition
      */
-    constructor(node, requiredProperties={}, optionalProperties = {})
+    constructor(node, requiredProperties = { 'title': { type: 'string' } }, optionalProperties = { 'icon': { type: 'string' } })
     {
-        if (!requiredProperties.hasOwnProperty('icon')) {
-            requiredProperties['icon'] = { type: 'string' };
+        if (!optionalProperties.hasOwnProperty('icon')) {
+            optionalProperties['icon'] = { type: 'string' };
+        }
+        if (!requiredProperties.hasOwnProperty('title')) {
+            requiredProperties['title'] = { type: 'string' };
         }
         // In case of RuleBasedRenderer the icon could be empty
         if (!node.hasOwnProperty('icon')) {
@@ -465,7 +468,7 @@ export class BaseSymbolsSymbology extends BaseObjectSymbology {
         this.dispatch({
             type: 'symbol.expanded.changed',
             title: this.title,
-            ruleKey: this.ruleKey,
+            symbolType: this.type,
             expanded: this.expanded
         });
     }
