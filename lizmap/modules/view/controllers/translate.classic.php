@@ -1,4 +1,7 @@
 <?php
+
+use Lizmap\App\LocalesLoader;
+
 /**
  * Service to provide translation dictionnary.
  *
@@ -29,22 +32,10 @@ class translateCtrl extends jController
         $lang = $this->param('lang');
 
         if (!$lang) {
-            $lang = jLocale::getCurrentLang().'_'.jLocale::getCurrentCountry();
+            $lang = jLocale::getCurrentLocale();
         }
 
-        $data = array();
-        $path = jApp::appPath().'modules/view/locales/en_US/dictionnary.UTF-8.properties';
-        if (file_exists($path)) {
-            $lines = file($path);
-            foreach ($lines as $lineNumber => $lineContent) {
-                if (!empty($lineContent) and $lineContent != '\n') {
-                    $exp = explode('=', trim($lineContent));
-                    if (!empty($exp[0])) {
-                        $data[$exp[0]] = jLocale::get('view~dictionnary.'.$exp[0], null, $lang);
-                    }
-                }
-            }
-        }
+        $data = LocalesLoader::getLocalesFrom('view~dictionnary', $lang);
         $rep->content = 'var lizDict = '.json_encode($data).';';
 
         return $rep;
@@ -68,23 +59,10 @@ class translateCtrl extends jController
         $lang = $this->param('lang');
 
         if (!$lang) {
-            $lang = jLocale::getCurrentLang().'_'.jLocale::getCurrentCountry();
+            $lang = jLocale::getCurrentLocale();
         }
 
-        $data = array();
-        $path = jApp::appPath().'modules/view/locales/'.$lang.'/'.$property.'.UTF-8.properties';
-        if (file_exists($path)) {
-            $lines = file($path);
-            foreach ($lines as $lineNumber => $lineContent) {
-                if (!empty($lineContent) and $lineContent != '\n') {
-                    $exp = explode('=', trim($lineContent));
-                    if (!empty($exp[0])) {
-                        $data[$exp[0]] = jLocale::get('view~dictionnary.'.$exp[0], null, $lang);
-                    }
-                }
-            }
-        }
-        $rep->data = $data;
+        $rep->data = LocalesLoader::getLocalesFrom('view~'.$property, $lang);
 
         return $rep;
     }

@@ -1,606 +1,623 @@
 parameters:
-	ignoreErrors:
-
-		-
-			message: "#^Comparison operation \"\\=\\=\" between 0\\|0\\.0\\|''\\|'0'\\|array\\{\\}\\|false\\|null and 0 results in an error\\.$#"
-			count: 1
-			path: lizmap/modules/dataviz/classes/datavizPlot.class.php
-
-		-
-			message: "#^Offset float does not exist on array\\{\\}\\.$#"
-			count: 2
-			path: lizmap/modules/dataviz/classes/datavizPlot.class.php
-
-		-
-			message: "#^Offset float\\|int\\<0, max\\> does not exist on array\\{\\}\\.$#"
-			count: 1
-			path: lizmap/modules/dataviz/classes/datavizPlot.class.php
-
-		-
-			message: "#^Method filterConfig\\:\\:__construct\\(\\) with return type void returns false but should not return anything\\.$#"
-			count: 3
-			path: lizmap/modules/filter/classes/filterConfig.class.php
-
-		-
-			message: "#^Property filterConfig\\:\\:\\$lproj is never read, only written\\.$#"
-			count: 1
-			path: lizmap/modules/filter/classes/filterConfig.class.php
-
-		-
-			message: "#^Property filterConfig\\:\\:\\$project is never read, only written\\.$#"
-			count: 1
-			path: lizmap/modules/filter/classes/filterConfig.class.php
-
-		-
-			message: "#^Property filterConfig\\:\\:\\$repository is never read, only written\\.$#"
-			count: 1
-			path: lizmap/modules/filter/classes/filterConfig.class.php
-
-		-
-			message: "#^Call to an undefined method qgisMapLayer\\:\\:getDatasourceConnection\\(\\)\\.$#"
-			count: 1
-			path: lizmap/modules/filter/classes/filterDatasource.class.php
-
-		-
-			message: "#^Call to an undefined method qgisMapLayer\\:\\:getDatasourceParameters\\(\\)\\.$#"
-			count: 1
-			path: lizmap/modules/filter/classes/filterDatasource.class.php
-
-		-
-			message: "#^Method filterDatasource\\:\\:__construct\\(\\) with return type void returns mixed but should not return anything\\.$#"
-			count: 2
-			path: lizmap/modules/filter/classes/filterDatasource.class.php
-
-		-
-			message: "#^Property filterDatasource\\:\\:\\$data is unused\\.$#"
-			count: 1
-			path: lizmap/modules/filter/classes/filterDatasource.class.php
-
-		-
-			message: "#^Property filterDatasource\\:\\:\\$layerId is unused\\.$#"
-			count: 1
-			path: lizmap/modules/filter/classes/filterDatasource.class.php
-
-		-
-			message: "#^Property filterDatasource\\:\\:\\$layername is never read, only written\\.$#"
-			count: 1
-			path: lizmap/modules/filter/classes/filterDatasource.class.php
-
-		-
-			message: "#^Property filterDatasource\\:\\:\\$project is never read, only written\\.$#"
-			count: 1
-			path: lizmap/modules/filter/classes/filterDatasource.class.php
-
-		-
-			message: "#^Property filterDatasource\\:\\:\\$repository is never read, only written\\.$#"
-			count: 1
-			path: lizmap/modules/filter/classes/filterDatasource.class.php
-
-		-
-			message: "#^Property serviceCtrl\\:\\:\\$config is never read, only written\\.$#"
-			count: 1
-			path: lizmap/modules/filter/controllers/service.classic.php
-
-		-
-			message: "#^Property serviceCtrl\\:\\:\\$project is never read, only written\\.$#"
-			count: 1
-			path: lizmap/modules/filter/controllers/service.classic.php
-
-		-
-			message: "#^Property serviceCtrl\\:\\:\\$repository is never read, only written\\.$#"
-			count: 1
-			path: lizmap/modules/filter/controllers/service.classic.php
-
-		-
-			message: "#^Unreachable statement \\- code above always terminates\\.$#"
-			count: 4
-			path: lizmap/modules/filter/controllers/service.classic.php
-
-		-
-			message: "#^If condition is always true\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/lizmap.class.php
-
-		-
-			message: "#^Left side of && is always true\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/lizmap.class.php
-
-		-
-			message: "#^Negated boolean expression is always false\\.$#"
-			count: 2
-			path: lizmap/modules/lizmap/classes/lizmap.class.php
-
-		-
-			message: "#^Static property lizmap\\:\\:\\$lizmapServicesInstance \\(lizmapServices\\) in isset\\(\\) is not nullable\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/lizmap.class.php
-
-		-
-			message: "#^If condition is always true\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/lizmapLog.listener.php
-
-		-
-			message: "#^Property Lizmap\\\\Request\\\\OGCRequest\\:\\:\\$project \\(Lizmap\\\\Project\\\\Project\\) does not accept lizmapProject\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/lizmapOGCRequest.class.php
-
-		-
-			message: "#^Method lizmapServices\\:\\:getLizmapRepository\\(\\) should return lizmapRepository but returns false\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/lizmapServices.class.php
-
-		-
-			message: "#^Strict comparison using \\=\\=\\= between int\\|false and '1' will always evaluate to false\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/lizmapServices.class.php
-
-		-
-			message: "#^Strict comparison using \\=\\=\\= between int\\|false and 'true' will always evaluate to false\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/lizmapServices.class.php
-
-		-
-			message: "#^Strict comparison using \\=\\=\\= between string and null will always evaluate to false\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/lizmapServices.class.php
-
-		-
-			message: "#^Variable \\$data in isset\\(\\) always exists and is not nullable\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/lizmapServices.class.php
-
-		-
-			message: "#^Result of \\|\\| is always false\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/qgisExpressionUtils.class.php
-
-		-
-			message: "#^Strict comparison using \\=\\=\\= between jFormsBase and null will always evaluate to false\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/qgisExpressionUtils.class.php
-
-		-
-			message: "#^Strict comparison using \\=\\=\\= between qgisAttributeEditorElement and null will always evaluate to false\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/qgisExpressionUtils.class.php
-
-		-
-			message: "#^Strict comparison using \\=\\=\\= between string and null will always evaluate to false\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/qgisExpressionUtils.class.php
-
-		-
-			message: "#^Cannot access property \\$geomtype on bool\\|object\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/qgisVectorLayer.class.php
-
-		-
-			message: "#^Cannot access property \\$type on object\\|true\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/qgisVectorLayer.class.php
-
-		-
-			message: "#^Cannot access property \\$v on object\\|true\\.$#"
-			count: 3
-			path: lizmap/modules/lizmap/classes/qgisVectorLayer.class.php
-
-		-
-			message: "#^Method qgisVectorLayer\\:\\:getConstraints\\(\\) should return array\\<string\\> but returns array\\<string, int\\|false\\>\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/qgisVectorLayer.class.php
-
-		-
-			message: "#^Method qgisVectorLayer\\:\\:getConstraints\\(\\) should return array\\<string\\> but returns string\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/qgisVectorLayer.class.php
-
-		-
-			message: "#^Method qgisVectorLayer\\:\\:getDatasourceConnection\\(\\) should return jDbConnection but returns null\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/qgisVectorLayer.class.php
-
-		-
-			message: "#^Negated boolean expression is always false\\.$#"
-			count: 4
-			path: lizmap/modules/lizmap/classes/qgisVectorLayer.class.php
-
-		-
-			message: "#^Unreachable statement \\- code above always terminates\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/qgisVectorLayer.class.php
-
-		-
-			message: "#^Variable \\$sql might not be defined\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/classes/qgisVectorLayer.class.php
-
-		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$content\\.$#"
-			count: 3
-			path: lizmap/modules/lizmap/controllers/ban.classic.php
-
-		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$mimeType\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/ban.classic.php
-
-		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$outputFileName\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/ban.classic.php
-
-		-
-			message: "#^Binary operation \"\\+\" between string and \\(float\\|int\\) results in an error\\.$#"
-			count: 2
-			path: lizmap/modules/lizmap/controllers/ban.classic.php
-
-		-
-			message: "#^Binary operation \"\\-\" between string and string results in an error\\.$#"
-			count: 2
-			path: lizmap/modules/lizmap/controllers/ban.classic.php
-
-		-
-			message: "#^Method banCtrl\\:\\:search\\(\\) should return jResponseBinary but returns jResponse\\.$#"
-			count: 3
-			path: lizmap/modules/lizmap/controllers/ban.classic.php
-
-
-		-
-			message: "#^Access to an undefined property jFormsControl\\:\\:\\$datasource\\.$#"
-			count: 2
-			path: lizmap/modules/lizmap/controllers/edition.classic.php
-
-
-		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$content\\.$#"
-			count: 2
-			path: lizmap/modules/lizmap/controllers/edition.classic.php
-
-		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$data\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/edition.classic.php
-
-
-		-
-			message: "#^Call to an undefined method qgisMapLayer\\:\\:getDbFieldsInfo\\(\\)\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/edition.classic.php
-
-		-
-			message: "#^Call to an undefined method qgisMapLayer\\:\\:getRealEditionCapabilities\\(\\)\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/edition.classic.php
-
-		-
-			message: "#^Call to an undefined method qgisMapLayer\\:\\:unlinkChild\\(\\)\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/edition.classic.php
-
-		-
-			message: "#^If condition is always true\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/edition.classic.php
-
-		-
-			message: "#^Negated boolean expression is always false\\.$#"
-			count: 6
-			path: lizmap/modules/lizmap/controllers/edition.classic.php
-
-		-
-			message: "#^Property editionCtrl\\:\\:\\$layer \\(qgisVectorLayer\\) does not accept default value of type string\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/edition.classic.php
-
-		-
-			message: "#^Property editionCtrl\\:\\:\\$layer \\(qgisVectorLayer\\) does not accept qgisMapLayer\\|null\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/edition.classic.php
-
-		-
-			message: "#^Property editionCtrl\\:\\:\\$layerXml \\(SimpleXMLElement\\) does not accept default value of type string\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/edition.classic.php
-
-		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$data\\.$#"
-			count: 2
-			path: lizmap/modules/lizmap/controllers/geobookmark.classic.php
-
-		-
-			message: "#^Call to an undefined method jResponse\\:\\:addContent\\(\\)\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/geobookmark.classic.php
-
-		-
-			message: "#^Variable \\$params might not be defined\\.$#"
-			count: 2
-			path: lizmap/modules/lizmap/controllers/geobookmark.classic.php
-
-		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$content\\.$#"
-			count: 2
-			path: lizmap/modules/lizmap/controllers/osm.classic.php
-
-		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$mimeType\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/osm.classic.php
-
-		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$outputFileName\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/osm.classic.php
-
-		-
-			message: "#^Method osmCtrl\\:\\:nominatim\\(\\) should return jResponseBinary but returns jResponse\\.$#"
-			count: 2
-			path: lizmap/modules/lizmap/controllers/osm.classic.php
-
-		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$content\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/search.classic.php
-
-		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$mimeType\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/search.classic.php
-
-		-
-			message: "#^Access to an undefined property jResponse\\:\\:\\$outputFileName\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/search.classic.php
-
-		-
-			message: "#^Method searchCtrl\\:\\:get\\(\\) should return jResponseBinary but returns jResponse\\.$#"
-			count: 6
-			path: lizmap/modules/lizmap/controllers/search.classic.php
-
-		-
-			message: "#^Call to an undefined method qgisMapLayer\\:\\:getWfsTypeName\\(\\)\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/service.classic.php
-
-		-
-			message: "#^Property serviceCtrl\\:\\:\\$services \\(lizmapServices\\) does not accept default value of type string\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/controllers/service.classic.php
-
-		-
-			message: "#^Access to property \\$mailer on an unknown class StdObj\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/install/upgrade_configjcommunity.php
-
-
-		-
-			message: "#^Return type \\(Iterator\\) of method Lizmap\\\\App\\\\JelixContext\\:\\:aclUserGroupsInfo\\(\\) should be compatible with return type \\(array\\) of method Lizmap\\\\App\\\\AppContextInterface\\:\\:aclUserGroupsInfo\\(\\)$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/App/JelixContext.php
-
-		-
-			message: "#^Access to an undefined property jFormsControl\\:\\:\\$datasource\\.$#"
-			count: 2
-			path: lizmap/modules/lizmap/lib/Form/QgisForm.php
-
-		-
-			message: "#^Access to an undefined property jICoordPlugin\\:\\:\\$config\\.$#"
-			count: 2
-			path: lizmap/modules/lizmap/lib/Form/QgisForm.php
-
-		-
-			message: "#^Method Lizmap\\\\Form\\\\QgisForm\\:\\:saveToDb\\(\\) should return array\\|int\\|false but returns true\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Form/QgisForm.php
-
-		-
-			message: "#^Negated boolean expression is always false\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Form/QgisForm.php
-
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$cnx$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Form/QgisForm.php
-
-		-
-			message: "#^Result of && is always false\\.$#"
-			count: 2
-			path: lizmap/modules/lizmap/lib/Form/QgisForm.php
-
-		-
-			message: "#^Right side of && is always true\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Form/QgisForm.php
-
-		-
-			message: "#^Strict comparison using \\!\\=\\= between 0 and 0 will always evaluate to false\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Form/QgisForm.php
-
-		-
-			message: "#^Strict comparison using \\!\\=\\= between 0\\.0 and 0\\.0 will always evaluate to false\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Form/QgisForm.php
-
-		-
-			message: "#^Strict comparison using \\=\\=\\= between jFormsControl and null will always evaluate to false\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Form/QgisForm.php
-
-		-
-			message: "#^Strict comparison using \\=\\=\\= between non\\-empty\\-string and null will always evaluate to false\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Form/QgisForm.php
-
-		-
-			message: "#^Unreachable statement \\- code above always terminates\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Form/QgisForm.php
-
-		-
-			message: "#^Access to an undefined property jFormsControl\\:\\:\\$datasource\\.$#"
-			count: 2
-			path: lizmap/modules/lizmap/lib/Form/QgisFormControl.php
-
-		-
-			message: "#^Access to an undefined property jFormsControl\\:\\:\\$valueOnCheck\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Form/QgisFormControl.php
-
-		-
-			message: "#^Access to an undefined property jFormsControl\\:\\:\\$valueOnUncheck\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Form/QgisFormControl.php
-
-		-
-			message: "#^If condition is always true\\.$#"
-			count: 3
-			path: lizmap/modules/lizmap/lib/Form/QgisFormControl.php
-
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$aliasXml$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Form/QgisFormControl.php
-
-		-
-			message: "#^Unreachable statement \\- code above always terminates\\.$#"
-			count: 3
-			path: lizmap/modules/lizmap/lib/Form/QgisFormControl.php
-
-		-
-			message: "#^Call to an undefined method qgisMapLayer\\:\\:getWfsTypeName\\(\\)\\.$#"
-			count: 2
-			path: lizmap/modules/lizmap/lib/Form/QgisFormValueRelationDynamicDatasource.php
-
-		-
-			message: "#^Method Lizmap\\\\Form\\\\QgisFormValueRelationDynamicDatasource\\:\\:getLabel2\\(\\) should return string but returns null\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Form/QgisFormValueRelationDynamicDatasource.php
-
-		-
-			message: "#^Result of && is always true\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Form/QgisFormValueRelationDynamicDatasource.php
-
-		-
-			message: "#^Method Lizmap\\\\Logger\\\\Config\\:\\:getLogItem\\(\\) should return Lizmap\\\\Logger\\\\Item but returns null\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Logger/Config.php
-
-		-
-			message: "#^Cannot access property \\$sequence_name on object\\|true\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Logger/MigratorFromSqlite.php
-
-		-
-			message: "#^Access to an undefined property object\\:\\:\\$id\\.$#"
-			count: 6
-			path: lizmap/modules/lizmap/lib/Project/Project.php
-
-		-
-			message: "#^Access to an undefined property object\\:\\:\\$name\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Project/Project.php
-
-		-
-			message: "#^PHPDoc tag @param for parameter \\$xml with type SimpleXMLElement is incompatible with native type Lizmap\\\\Project\\\\QgisProject\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Project/Project.php
-
-		-
-			message: "#^Property Lizmap\\\\Project\\\\Project\\:\\:\\$printCapabilities \\(object\\) does not accept default value of type array\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Project/Project.php
-
-		-
-			message: "#^PHPDoc tag @param has invalid value \\(int the life time of the cache, in seconds\\)\\: Unexpected token \"the\", expected variable at offset 153$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Project/ProjectCache.php
-
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$props$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Project/ProjectCache.php
-
-		-
-			message: "#^Left side of && is always true\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Project/ProjectConfig.php
-
-		-
-			message: "#^Negated boolean expression is always false\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Project/ProjectConfig.php
-
-		-
-			message: "#^Property Lizmap\\\\Project\\\\ProjectConfig\\:\\:\\$layers \\(object\\) in isset\\(\\) is not nullable\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Project/ProjectConfig.php
-
-		-
-			message: "#^Variable \\$layerId in empty\\(\\) always exists and is not falsy\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Project/ProjectConfig.php
-
-		-
-			message: "#^Variable \\$name in empty\\(\\) always exists and is not falsy\\.$#"
-			count: 2
-			path: lizmap/modules/lizmap/lib/Project/ProjectConfig.php
-
-		-
-			message: "#^Variable \\$shortName in empty\\(\\) always exists and is not falsy\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Project/ProjectConfig.php
-
-		-
-			message: "#^Variable \\$title in empty\\(\\) always exists and is not falsy\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Project/ProjectConfig.php
-
-		-
-			message: "#^Variable \\$typeName in empty\\(\\) always exists and is not falsy\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Project/ProjectConfig.php
-
-		-
-			message: "#^Cannot access property \\$sequence_name on object\\|true\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Users/MigratorFromSqlite.php
-
-		-
-			message: "#^If condition is always true\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Users/MigratorFromSqlite.php
-
-		-
-			message: "#^Part \\$profile \\(array\\{\\}\\) of encapsed string cannot be cast to string\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Users/MigratorFromSqlite.php
-
-		-
-			message: "#^Unreachable statement \\- code above always terminates\\.$#"
-			count: 1
-			path: lizmap/modules/lizmap/lib/Users/MigratorFromSqlite.php
-
-		-
-			message: "#^Unreachable statement \\- code above always terminates\\.$#"
-			count: 1
-			path: lizmap/modules/view/classes/lizmapMapDockItem.class.php
-
-		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$repository$#"
-			count: 1
-			path: lizmap/modules/view/controllers/default.classic.php
-
-		-
-			message: "#^Inner named functions are not supported by PHPStan\\. Consider refactoring to an anonymous function, class method, or a top\\-level\\-defined function\\. See issue \\#165 \\(https\\://github\\.com/phpstan/phpstan/issues/165\\) for more details\\.$#"
-			count: 1
-			path: lizmap/modules/view/controllers/lizAjax.classic.php
-
-		-
-			message: "#^Inner named functions are not supported by PHPStan\\. Consider refactoring to an anonymous function, class method, or a top\\-level\\-defined function\\. See issue \\#165 \\(https\\://github\\.com/phpstan/phpstan/issues/165\\) for more details\\.$#"
-			count: 1
-			path: lizmap/modules/view/controllers/lizMap.classic.php
+  bootstrapFiles:
+    - lizmap/vendor/autoload.php
+    - lizmap/vendor/jelix/jelix/lib/jelix/init.php
+    - lizmap/app/responses/AbstractLizmapHtmlResponse.php
+  scanDirectories:
+    - lizmap/vendor/
+  level: 4
+  paths:
+    - lizmap/modules
+  tmpDir: .phpstan.cache
+  universalObjectCratesClasses:
+    - jDaoRecordBase
+    - jEvent
+  ignoreErrors:
+    - '#^Call to an undefined method jDaoFactoryBase#'
+    -
+      message: "#^Comparison operation \"\\=\\=\" between 0\\|0\\.0\\|''\\|'0'\\|array\\{\\}\\|false\\|null and 0 results in an error\\.$#"
+      count: 1
+      path: lizmap/modules/dataviz/classes/datavizPlot.class.php
+
+    -
+      message: "#^Offset float does not exist on array\\{\\}\\.$#"
+      count: 2
+      path: lizmap/modules/dataviz/classes/datavizPlot.class.php
+
+    -
+      message: "#^Offset float\\|int\\<0, max\\> does not exist on array\\{\\}\\.$#"
+      count: 1
+      path: lizmap/modules/dataviz/classes/datavizPlot.class.php
+
+    -
+      message: "#^Method filterConfig\\:\\:__construct\\(\\) with return type void returns false but should not return anything\\.$#"
+      count: 3
+      path: lizmap/modules/filter/classes/filterConfig.class.php
+
+    -
+      message: "#^Property filterConfig\\:\\:\\$lproj is never read, only written\\.$#"
+      count: 1
+      path: lizmap/modules/filter/classes/filterConfig.class.php
+
+    -
+      message: "#^Property filterConfig\\:\\:\\$project is never read, only written\\.$#"
+      count: 1
+      path: lizmap/modules/filter/classes/filterConfig.class.php
+
+    -
+      message: "#^Property filterConfig\\:\\:\\$repository is never read, only written\\.$#"
+      count: 1
+      path: lizmap/modules/filter/classes/filterConfig.class.php
+
+    -
+      message: "#^Call to an undefined method qgisMapLayer\\:\\:getDatasourceConnection\\(\\)\\.$#"
+      count: 1
+      path: lizmap/modules/filter/classes/filterDatasource.class.php
+
+    -
+      message: "#^Call to an undefined method qgisMapLayer\\:\\:getDatasourceParameters\\(\\)\\.$#"
+      count: 1
+      path: lizmap/modules/filter/classes/filterDatasource.class.php
+
+    -
+      message: "#^Method filterDatasource\\:\\:__construct\\(\\) with return type void returns mixed but should not return anything\\.$#"
+      count: 2
+      path: lizmap/modules/filter/classes/filterDatasource.class.php
+
+    -
+      message: "#^Property filterDatasource\\:\\:\\$data is unused\\.$#"
+      count: 1
+      path: lizmap/modules/filter/classes/filterDatasource.class.php
+
+    -
+      message: "#^Property filterDatasource\\:\\:\\$layerId is unused\\.$#"
+      count: 1
+      path: lizmap/modules/filter/classes/filterDatasource.class.php
+
+    -
+      message: "#^Property filterDatasource\\:\\:\\$layername is never read, only written\\.$#"
+      count: 1
+      path: lizmap/modules/filter/classes/filterDatasource.class.php
+
+    -
+      message: "#^Property filterDatasource\\:\\:\\$project is never read, only written\\.$#"
+      count: 1
+      path: lizmap/modules/filter/classes/filterDatasource.class.php
+
+    -
+      message: "#^Property filterDatasource\\:\\:\\$repository is never read, only written\\.$#"
+      count: 1
+      path: lizmap/modules/filter/classes/filterDatasource.class.php
+
+    -
+      message: "#^Property serviceCtrl\\:\\:\\$config is never read, only written\\.$#"
+      count: 1
+      path: lizmap/modules/filter/controllers/service.classic.php
+
+    -
+      message: "#^Property serviceCtrl\\:\\:\\$project is never read, only written\\.$#"
+      count: 1
+      path: lizmap/modules/filter/controllers/service.classic.php
+
+    -
+      message: "#^Property serviceCtrl\\:\\:\\$repository is never read, only written\\.$#"
+      count: 1
+      path: lizmap/modules/filter/controllers/service.classic.php
+
+    -
+      message: "#^Unreachable statement \\- code above always terminates\\.$#"
+      count: 4
+      path: lizmap/modules/filter/controllers/service.classic.php
+
+    -
+      message: "#^If condition is always true\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/classes/lizmap.class.php
+
+    -
+      message: "#^Left side of && is always true\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/classes/lizmap.class.php
+
+    -
+      message: "#^Negated boolean expression is always false\\.$#"
+      count: 2
+      path: lizmap/modules/lizmap/classes/lizmap.class.php
+
+    -
+      message: "#^Static property lizmap\\:\\:\\$lizmapServicesInstance \\(lizmapServices\\) in isset\\(\\) is not nullable\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/classes/lizmap.class.php
+
+    -
+      message: "#^If condition is always true\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/classes/lizmapLog.listener.php
+
+    -
+      message: "#^Property Lizmap\\\\Request\\\\OGCRequest\\:\\:\\$project \\(Lizmap\\\\Project\\\\Project\\) does not accept lizmapProject\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/classes/lizmapOGCRequest.class.php
+
+    -
+      message: "#^Method lizmapServices\\:\\:getLizmapRepository\\(\\) should return lizmapRepository but returns false\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/classes/lizmapServices.class.php
+
+    -
+      message: "#^Strict comparison using \\=\\=\\= between int\\|false and '1' will always evaluate to false\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/classes/lizmapServices.class.php
+
+    -
+      message: "#^Strict comparison using \\=\\=\\= between int\\|false and 'true' will always evaluate to false\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/classes/lizmapServices.class.php
+
+    -
+      message: "#^Strict comparison using \\=\\=\\= between string and null will always evaluate to false\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/classes/lizmapServices.class.php
+
+    -
+      message: "#^Variable \\$data in isset\\(\\) always exists and is not nullable\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/classes/lizmapServices.class.php
+
+    -
+      message: "#^Result of \\|\\| is always false\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/classes/qgisExpressionUtils.class.php
+
+    -
+      message: "#^Strict comparison using \\=\\=\\= between jFormsBase and null will always evaluate to false\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/classes/qgisExpressionUtils.class.php
+
+    -
+      message: "#^Strict comparison using \\=\\=\\= between qgisAttributeEditorElement and null will always evaluate to false\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/classes/qgisExpressionUtils.class.php
+
+    -
+      message: "#^Strict comparison using \\=\\=\\= between string and null will always evaluate to false\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/classes/qgisExpressionUtils.class.php
+
+    -
+      message: "#^Cannot access property \\$geomtype on bool\\|object\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/classes/qgisVectorLayer.class.php
+
+    -
+      message: "#^Cannot access property \\$type on object\\|true\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/classes/qgisVectorLayer.class.php
+
+    -
+      message: "#^Cannot access property \\$v on object\\|true\\.$#"
+      count: 3
+      path: lizmap/modules/lizmap/classes/qgisVectorLayer.class.php
+
+    -
+      message: "#^Method qgisVectorLayer\\:\\:getConstraints\\(\\) should return array\\<string\\> but returns array\\<string, int\\|false\\>\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/classes/qgisVectorLayer.class.php
+
+    -
+      message: "#^Method qgisVectorLayer\\:\\:getConstraints\\(\\) should return array\\<string\\> but returns string\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/classes/qgisVectorLayer.class.php
+
+    -
+      message: "#^Method qgisVectorLayer\\:\\:getDatasourceConnection\\(\\) should return jDbConnection but returns null\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/classes/qgisVectorLayer.class.php
+
+    -
+      message: "#^Negated boolean expression is always false\\.$#"
+      count: 4
+      path: lizmap/modules/lizmap/classes/qgisVectorLayer.class.php
+
+    -
+      message: "#^Unreachable statement \\- code above always terminates\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/classes/qgisVectorLayer.class.php
+
+    -
+      message: "#^Variable \\$sql might not be defined\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/classes/qgisVectorLayer.class.php
+
+    -
+      message: "#^Access to an undefined property jResponse\\:\\:\\$content\\.$#"
+      count: 3
+      path: lizmap/modules/lizmap/controllers/ban.classic.php
+
+    -
+      message: "#^Access to an undefined property jResponse\\:\\:\\$mimeType\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/controllers/ban.classic.php
+
+    -
+      message: "#^Access to an undefined property jResponse\\:\\:\\$outputFileName\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/controllers/ban.classic.php
+
+    -
+      message: "#^Binary operation \"\\+\" between string and \\(float\\|int\\) results in an error\\.$#"
+      count: 2
+      path: lizmap/modules/lizmap/controllers/ban.classic.php
+
+    -
+      message: "#^Binary operation \"\\-\" between string and string results in an error\\.$#"
+      count: 2
+      path: lizmap/modules/lizmap/controllers/ban.classic.php
+
+    -
+      message: "#^Method banCtrl\\:\\:search\\(\\) should return jResponseBinary but returns jResponse\\.$#"
+      count: 3
+      path: lizmap/modules/lizmap/controllers/ban.classic.php
+
+
+    -
+      message: "#^Access to an undefined property jFormsControl\\:\\:\\$datasource\\.$#"
+      count: 2
+      path: lizmap/modules/lizmap/controllers/edition.classic.php
+
+
+    -
+      message: "#^Access to an undefined property jResponse\\:\\:\\$content\\.$#"
+      count: 2
+      path: lizmap/modules/lizmap/controllers/edition.classic.php
+
+    -
+      message: "#^Access to an undefined property jResponse\\:\\:\\$data\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/controllers/edition.classic.php
+
+
+    -
+      message: "#^Call to an undefined method qgisMapLayer\\:\\:getDbFieldsInfo\\(\\)\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/controllers/edition.classic.php
+
+    -
+      message: "#^Call to an undefined method qgisMapLayer\\:\\:getRealEditionCapabilities\\(\\)\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/controllers/edition.classic.php
+
+    -
+      message: "#^Call to an undefined method qgisMapLayer\\:\\:unlinkChild\\(\\)\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/controllers/edition.classic.php
+
+    -
+      message: "#^If condition is always true\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/controllers/edition.classic.php
+
+    -
+      message: "#^Negated boolean expression is always false\\.$#"
+      count: 6
+      path: lizmap/modules/lizmap/controllers/edition.classic.php
+
+    -
+      message: "#^Property editionCtrl\\:\\:\\$layer \\(qgisVectorLayer\\) does not accept default value of type string\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/controllers/edition.classic.php
+
+    -
+      message: "#^Property editionCtrl\\:\\:\\$layer \\(qgisVectorLayer\\) does not accept qgisMapLayer\\|null\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/controllers/edition.classic.php
+
+    -
+      message: "#^Property editionCtrl\\:\\:\\$layerXml \\(SimpleXMLElement\\) does not accept default value of type string\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/controllers/edition.classic.php
+
+    -
+      message: "#^Access to an undefined property jResponse\\:\\:\\$data\\.$#"
+      count: 2
+      path: lizmap/modules/lizmap/controllers/geobookmark.classic.php
+
+    -
+      message: "#^Call to an undefined method jResponse\\:\\:addContent\\(\\)\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/controllers/geobookmark.classic.php
+
+    -
+      message: "#^Variable \\$params might not be defined\\.$#"
+      count: 2
+      path: lizmap/modules/lizmap/controllers/geobookmark.classic.php
+
+    -
+      message: "#^Access to an undefined property jResponse\\:\\:\\$content\\.$#"
+      count: 2
+      path: lizmap/modules/lizmap/controllers/osm.classic.php
+
+    -
+      message: "#^Access to an undefined property jResponse\\:\\:\\$mimeType\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/controllers/osm.classic.php
+
+    -
+      message: "#^Access to an undefined property jResponse\\:\\:\\$outputFileName\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/controllers/osm.classic.php
+
+    -
+      message: "#^Method osmCtrl\\:\\:nominatim\\(\\) should return jResponseBinary but returns jResponse\\.$#"
+      count: 2
+      path: lizmap/modules/lizmap/controllers/osm.classic.php
+
+    -
+      message: "#^Access to an undefined property jResponse\\:\\:\\$content\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/controllers/search.classic.php
+
+    -
+      message: "#^Access to an undefined property jResponse\\:\\:\\$mimeType\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/controllers/search.classic.php
+
+    -
+      message: "#^Access to an undefined property jResponse\\:\\:\\$outputFileName\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/controllers/search.classic.php
+
+    -
+      message: "#^Method searchCtrl\\:\\:get\\(\\) should return jResponseBinary but returns jResponse\\.$#"
+      count: 6
+      path: lizmap/modules/lizmap/controllers/search.classic.php
+
+    -
+      message: "#^Call to an undefined method qgisMapLayer\\:\\:getWfsTypeName\\(\\)\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/controllers/service.classic.php
+
+    -
+      message: "#^Property serviceCtrl\\:\\:\\$services \\(lizmapServices\\) does not accept default value of type string\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/controllers/service.classic.php
+
+    -
+      message: "#^Access to property \\$mailer on an unknown class StdObj\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/install/upgrade_configjcommunity.php
+
+
+    -
+      message: "#^Return type \\(Iterator\\) of method Lizmap\\\\App\\\\JelixContext\\:\\:aclUserGroupsInfo\\(\\) should be compatible with return type \\(array\\) of method Lizmap\\\\App\\\\AppContextInterface\\:\\:aclUserGroupsInfo\\(\\)$#"
+      count: 1
+      path: lizmap/modules/lizmap/lib/App/JelixContext.php
+
+    -
+      message: "#^Access to an undefined property jFormsControl\\:\\:\\$datasource\\.$#"
+      count: 2
+      path: lizmap/modules/lizmap/lib/Form/QgisForm.php
+
+    -
+      message: "#^Access to an undefined property jICoordPlugin\\:\\:\\$config\\.$#"
+      count: 2
+      path: lizmap/modules/lizmap/lib/Form/QgisForm.php
+
+    -
+      message: "#^Method Lizmap\\\\Form\\\\QgisForm\\:\\:saveToDb\\(\\) should return array\\|int\\|false but returns true\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/lib/Form/QgisForm.php
+
+    -
+      message: "#^Negated boolean expression is always false\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/lib/Form/QgisForm.php
+
+    -
+      message: "#^PHPDoc tag @param references unknown parameter\\: \\$cnx$#"
+      count: 1
+      path: lizmap/modules/lizmap/lib/Form/QgisForm.php
+
+    -
+      message: "#^Result of && is always false\\.$#"
+      count: 2
+      path: lizmap/modules/lizmap/lib/Form/QgisForm.php
+
+    -
+      message: "#^Right side of && is always true\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/lib/Form/QgisForm.php
+
+    -
+      message: "#^Strict comparison using \\!\\=\\= between 0 and 0 will always evaluate to false\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/lib/Form/QgisForm.php
+
+    -
+      message: "#^Strict comparison using \\!\\=\\= between 0\\.0 and 0\\.0 will always evaluate to false\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/lib/Form/QgisForm.php
+
+    -
+      message: "#^Strict comparison using \\=\\=\\= between jFormsControl and null will always evaluate to false\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/lib/Form/QgisForm.php
+
+    -
+      message: "#^Strict comparison using \\=\\=\\= between non\\-empty\\-string and null will always evaluate to false\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/lib/Form/QgisForm.php
+
+    -
+      message: "#^Unreachable statement \\- code above always terminates\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/lib/Form/QgisForm.php
+
+    -
+      message: "#^Access to an undefined property jFormsControl\\:\\:\\$datasource\\.$#"
+      count: 2
+      path: lizmap/modules/lizmap/lib/Form/QgisFormControl.php
+
+    -
+      message: "#^Access to an undefined property jFormsControl\\:\\:\\$valueOnCheck\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/lib/Form/QgisFormControl.php
+
+    -
+      message: "#^Access to an undefined property jFormsControl\\:\\:\\$valueOnUncheck\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/lib/Form/QgisFormControl.php
+
+    -
+      message: "#^If condition is always true\\.$#"
+      count: 3
+      path: lizmap/modules/lizmap/lib/Form/QgisFormControl.php
+
+    -
+      message: "#^PHPDoc tag @param references unknown parameter\\: \\$aliasXml$#"
+      count: 1
+      path: lizmap/modules/lizmap/lib/Form/QgisFormControl.php
+
+    -
+      message: "#^Unreachable statement \\- code above always terminates\\.$#"
+      count: 3
+      path: lizmap/modules/lizmap/lib/Form/QgisFormControl.php
+
+    -
+      message: "#^Call to an undefined method qgisMapLayer\\:\\:getWfsTypeName\\(\\)\\.$#"
+      count: 2
+      path: lizmap/modules/lizmap/lib/Form/QgisFormValueRelationDynamicDatasource.php
+
+    -
+      message: "#^Method Lizmap\\\\Form\\\\QgisFormValueRelationDynamicDatasource\\:\\:getLabel2\\(\\) should return string but returns null\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/lib/Form/QgisFormValueRelationDynamicDatasource.php
+
+    -
+      message: "#^Result of && is always true\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/lib/Form/QgisFormValueRelationDynamicDatasource.php
+
+    -
+      message: "#^Method Lizmap\\\\Logger\\\\Config\\:\\:getLogItem\\(\\) should return Lizmap\\\\Logger\\\\Item but returns null\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/lib/Logger/Config.php
+
+    -
+      message: "#^Cannot access property \\$sequence_name on object\\|true\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/lib/Logger/MigratorFromSqlite.php
+
+    -
+      message: "#^Access to an undefined property object\\:\\:\\$id\\.$#"
+      count: 6
+      path: lizmap/modules/lizmap/lib/Project/Project.php
+
+    -
+      message: "#^Access to an undefined property object\\:\\:\\$name\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/lib/Project/Project.php
+
+    -
+      message: "#^PHPDoc tag @param for parameter \\$xml with type SimpleXMLElement is incompatible with native type Lizmap\\\\Project\\\\QgisProject\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/lib/Project/Project.php
+
+    -
+      message: "#^Property Lizmap\\\\Project\\\\Project\\:\\:\\$printCapabilities \\(object\\) does not accept default value of type array\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/lib/Project/Project.php
+
+    -
+      message: "#^PHPDoc tag @param has invalid value \\(int the life time of the cache, in seconds\\)\\: Unexpected token \"the\", expected variable at offset 153$#"
+      count: 1
+      path: lizmap/modules/lizmap/lib/Project/ProjectCache.php
+
+    -
+      message: "#^PHPDoc tag @param references unknown parameter\\: \\$props$#"
+      count: 1
+      path: lizmap/modules/lizmap/lib/Project/ProjectCache.php
+
+    -
+      message: "#^Left side of && is always true\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/lib/Project/ProjectConfig.php
+
+    -
+      message: "#^Negated boolean expression is always false\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/lib/Project/ProjectConfig.php
+
+    -
+      message: "#^Property Lizmap\\\\Project\\\\ProjectConfig\\:\\:\\$layers \\(object\\) in isset\\(\\) is not nullable\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/lib/Project/ProjectConfig.php
+
+    -
+      message: "#^Variable \\$layerId in empty\\(\\) always exists and is not falsy\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/lib/Project/ProjectConfig.php
+
+    -
+      message: "#^Variable \\$name in empty\\(\\) always exists and is not falsy\\.$#"
+      count: 2
+      path: lizmap/modules/lizmap/lib/Project/ProjectConfig.php
+
+    -
+      message: "#^Variable \\$shortName in empty\\(\\) always exists and is not falsy\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/lib/Project/ProjectConfig.php
+
+    -
+      message: "#^Variable \\$title in empty\\(\\) always exists and is not falsy\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/lib/Project/ProjectConfig.php
+
+    -
+      message: "#^Variable \\$typeName in empty\\(\\) always exists and is not falsy\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/lib/Project/ProjectConfig.php
+
+    -
+      message: "#^Cannot access property \\$sequence_name on object\\|true\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/lib/Users/MigratorFromSqlite.php
+
+    -
+      message: "#^If condition is always true\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/lib/Users/MigratorFromSqlite.php
+
+    -
+      message: "#^Part \\$profile \\(array\\{\\}\\) of encapsed string cannot be cast to string\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/lib/Users/MigratorFromSqlite.php
+
+    -
+      message: "#^Unreachable statement \\- code above always terminates\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/lib/Users/MigratorFromSqlite.php
+
+    -
+      message: "#^Unreachable statement \\- code above always terminates\\.$#"
+      count: 1
+      path: lizmap/modules/view/classes/lizmapMapDockItem.class.php
+
+    -
+      message: "#^PHPDoc tag @param references unknown parameter\\: \\$repository$#"
+      count: 1
+      path: lizmap/modules/view/controllers/default.classic.php
+
+    -
+      message: "#^Inner named functions are not supported by PHPStan\\. Consider refactoring to an anonymous function, class method, or a top\\-level\\-defined function\\. See issue \\#165 \\(https\\://github\\.com/phpstan/phpstan/issues/165\\) for more details\\.$#"
+      count: 1
+      path: lizmap/modules/view/controllers/lizAjax.classic.php
+
+    -
+      message: "#^Inner named functions are not supported by PHPStan\\. Consider refactoring to an anonymous function, class method, or a top\\-level\\-defined function\\. See issue \\#165 \\(https\\://github\\.com/phpstan/phpstan/issues/165\\) for more details\\.$#"
+      count: 1
+      path: lizmap/modules/view/controllers/lizMap.classic.php
+    -
+      message: "#^Call to an undefined static method jLocale::getBundle\\(\\)\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/lib/App/LocalesLoader.php
