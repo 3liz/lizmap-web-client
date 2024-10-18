@@ -364,11 +364,22 @@ export class LayerItemState extends EventDispatcher {
                         type: 'layer.symbol.expanded.changed',
                         name: self.name,
                         title: evt.title,
-                        ruleKey: evt.ruleKey,
+                        symbolType: evt.symbolType,
                         expanded: evt.expanded,
                     });
                 }, 'symbol.expanded.changed');
             }
+        } else if (this.symbology instanceof LayerGroupSymbology) {
+            const self = this;
+            this.symbology.addListener(evt => {
+                self.dispatch({
+                    type: 'layer.symbol.expanded.changed',
+                    name: self.name,
+                    title: evt.title,
+                    symbolType: evt.symbolType,
+                    expanded: evt.expanded,
+                });
+            }, 'symbol.expanded.changed');
         }
         this.dispatch({
             type: this.mapType + '.symbology.changed',
