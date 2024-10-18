@@ -516,4 +516,3 @@ test.describe('Drag and drop design with relations', () => {
 
     });
 });
-

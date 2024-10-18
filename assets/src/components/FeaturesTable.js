@@ -232,7 +232,7 @@ export default class FeaturesTable extends HTMLElement {
                     if (popupTable) {
                         popupTable.classList.add('table', 'table-condensed', 'table-sm', 'table-bordered', 'table-striped');
                     }
-                    
+
                     // Show popup and hide other children
                     const featuresTableDiv = aTarget.parentElement;
                     if (featuresTableDiv) {

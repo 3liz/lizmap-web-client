@@ -550,7 +550,7 @@ test.describe('Text widget in a form', () => {
 
         // second popup tab
         const secondTabFields = page.locator('.lizmapPopupContent > .lizmapPopupSingleFeature .lizmapPopupDiv div.tab-pane').nth(1).locator('.field');
-        
+
         await expect(secondTabFields).toHaveCount(1);
         await expect(secondTabFields.nth(0)).toHaveText('[%kk[% "ids" %]%]');
 
@@ -730,7 +730,7 @@ test.describe('Text widget in a form', () => {
 
         expect(geometry.indexOf('POINT(')).toBe(0);
         let coords = geometry.match(/\(([^)]+)\)/) || [];
-        
+
         expect(coords.length).toBe(2);
 
         const xGeom = coords[1].split(" ")[0];
