@@ -364,7 +364,7 @@ export class LayerItemState extends EventDispatcher {
                         type: 'layer.symbol.expanded.changed',
                         name: self.name,
                         title: evt.title,
-                        ruleKey: evt.ruleKey,
+                        symbolType: evt.symbolType,
                         expanded: evt.expanded,
                     });
                 }, 'symbol.expanded.changed');
@@ -376,7 +376,7 @@ export class LayerItemState extends EventDispatcher {
                     type: 'layer.symbol.expanded.changed',
                     name: self.name,
                     title: evt.title,
-                    ruleKey: evt.ruleKey,
+                    symbolType: evt.symbolType,
                     expanded: evt.expanded,
                 });
             }, 'symbol.expanded.changed');
