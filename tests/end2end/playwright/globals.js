@@ -1,10 +1,12 @@
 // @ts-check
 const { expect } = require('@playwright/test');
 
-async function NoErrors(page) {
+async function NoErrors(page, checkLayerTreeView = true) {
     // No error
     await expect(page.locator('p.error-msg')).toHaveCount(0);
-    await expect(page.locator('#switcher lizmap-treeview ul li')).not.toHaveCount(0);
+    if (checkLayerTreeView) {
+        await expect(page.locator('#switcher lizmap-treeview ul li')).not.toHaveCount(0);
+    }
     // Check no error message displayed
     await expect(page.getByText('An error occurred while loading this map. Some necessary resources may temporari')).toHaveCount(0);
 }
@@ -32,8 +34,9 @@ async function CatchErrors(page, layersInTreeView = 0) {
  * @param page The page object
  * @param boolean mapMustLoad If the loading of the map must be successful or not. Some error might be triggered when loading the map, on purpose.
  * @param int layersInTreeView The number of layers to find in the treeview if the map is on error.
+ * @param boolean waitForGetLegendGraphics
  */
-export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 0) {
+export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 0, waitForGetLegendGraphics = true) {
     // TODO keep this function synchronized with the Cypress equivalent
 
     // Wait for WMS GetCapabilities promise
@@ -43,13 +46,15 @@ export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 
     // Wait for WMS GetCapabilities
     await getCapabilitiesWMSPromise;
     if (mapMustLoad) {
-        // Wait for WMS GetLegendGraphic promise
-        const getLegendGraphicPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('GetLegendGraphic') === true);
-        // Normal check about the map
-        // Wait for WMS GetLegendGraphic
-        await getLegendGraphicPromise;
+        if (waitForGetLegendGraphics) {
+            // Wait for WMS GetLegendGraphic promise
+            const getLegendGraphicPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('GetLegendGraphic') === true);
+            // Normal check about the map
+            // Wait for WMS GetLegendGraphic
+            await getLegendGraphicPromise;
+        }
         // No error
-        await NoErrors(page);
+        await NoErrors(page, waitForGetLegendGraphics);
         // Wait to be sure the map is ready
         await page.waitForTimeout(1000)
     } else {
