@@ -294,7 +294,7 @@ export default class Permalink {
         for (const item of mainLizmap.state.rootMapGroup.findMapLayersAndGroups()) {
             if (item.checked){
                 itemsVisibility.push(encodeURIComponent(item.name));
-                itemsStyle.push(item.wmsSelectedStyleName);
+                itemsStyle.push(item.wmsSelectedStyleName ? encodeURIComponent(item.wmsSelectedStyleName) : item.wmsSelectedStyleName);
                 itemsOpacity.push(item.opacity);
             }
         }
