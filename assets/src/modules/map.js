@@ -1074,4 +1074,13 @@ export default class map extends olMap {
     removeToolLayer(layer) {
         this._toolsGroup.getLayers().remove(layer);
     }
+
+    /**
+     * Zoom to given geometry or extent
+     * @param {import("ol/geom/SimpleGeometry.js").default|import("ol/extent.js").Extent} geometryOrExtent The geometry or extent to zoom to.
+     * @param {object} [options] Options.
+     */
+    zoomToGeometryOrExtent(geometryOrExtent, options) {
+        this.getView().fit(geometryOrExtent, options);
+    }
 }
