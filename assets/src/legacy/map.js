@@ -773,59 +773,6 @@ window.lizMap = function() {
     }
 
     /**
-     * Get features for locate by layer tool
-     * @param aName
-     */
-    function updateLocateFeatureList(aName) {
-        var locate = config.locateByLayer[aName];
-        // clone features reference
-        var features = {};
-        for ( var fid in locate.features ) {
-            features[fid] = locate.features[fid];
-        }
-        // filter by filter field name
-        if ('filterFieldName' in locate) {
-            var filterValue = $('#locate-layer-'+cleanName(aName)+'-'+locate.filterFieldName).val();
-            if ( filterValue != '-1' ) {
-                for (var fid in features) {
-                    var feat = features[fid];
-                    if (feat.properties[locate.filterFieldName] != filterValue)
-                        delete features[fid];
-                }
-            } else
-                features = {}
-        }
-        // filter by vector joins
-        if ( 'vectorjoins' in locate && locate.vectorjoins.length != 0 ) {
-            var vectorjoins = locate.vectorjoins;
-            for ( var i=0, len =vectorjoins.length; i< len; i++) {
-                var vectorjoin = vectorjoins[i];
-                var jName = vectorjoin.joinLayer;
-                if ( jName in config.locateByLayer ) {
-                    var jLocate = config.locateByLayer[jName];
-                    var jVal = $('#locate-layer-'+cleanName(jName)).val();
-                    if ( jVal == '-1' ) continue;
-                    var jFeat = jLocate.features[jVal];
-                    for (var fid in features) {
-                        var feat = features[fid];
-                        if ( feat.properties[vectorjoin.targetFieldName] != jFeat.properties[vectorjoin.joinFieldName] )
-                            delete features[fid];
-                    }
-                }
-            }
-        }
-        // create the option list
-        const placeHolder = config.layers[aName].title;
-        var options = '<option value="-1" label="'+placeHolder+'"></option>';
-        for (var fid in features) {
-            var feat = features[fid];
-            options += '<option value="' + feat.id + '">' + DOMPurify.sanitize(feat.properties[locate.fieldName]) + '</option>';
-        }
-        // add option list
-        $('#locate-layer-'+cleanName(aName)).html(options);
-    }
-
-    /**
      *
      * @param layer_name
      */
@@ -838,6 +785,7 @@ window.lizMap = function() {
     }
 
     /**
+<<<<<<< HEAD
      * Zoom to locate feature
      * @param aName
      */
@@ -1233,6 +1181,8 @@ window.lizMap = function() {
     }
 
     /**
+=======
+>>>>>>> bfaafbae2 (Refactor LocateByLayer in a module)
      * PRIVATE function: createToolbar
      * create the tool bar (collapse switcher, etc)
      */
@@ -3828,10 +3778,6 @@ window.lizMap = function() {
                     }));
                 }
 
-                if ('locateByLayer' in config) {
-                    addLocateByLayer();
-                }
-
                 /**
                  * Event when layers have been added
                  * @event layersadded
@@ -3886,12 +3832,6 @@ window.lizMap = function() {
 
                     return false;
                 });
-
-                // Show locate by layer
-                if (!('locateByLayer' in config))
-                    $('#button-locate').parent().hide();
-                else
-                    $('#button-locate').click();
 
                 // hide mini-dock if no tool is active
                 if ($('#mapmenu ul li.nav-minidock.active').length == 0) {

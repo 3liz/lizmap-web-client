@@ -25,6 +25,7 @@ import Legend from './Legend.js';
 import Permalink from './Permalink.js';
 import Search from './Search.js';
 import Tooltip from './Tooltip.js';
+import LocateByLayer from './LocateByLayer.js';
 
 import WMSCapabilities from 'ol/format/WMSCapabilities.js';
 import WFSCapabilities from 'ol-wfs-capabilities';
@@ -167,6 +168,7 @@ export default class Lizmap {
                 this.legend = new Legend(this.state.layerTree);
                 this.search = new Search(this.map, this.lizmap3);
                 this.tooltip = new Tooltip();
+                this.locateByLayer = new LocateByLayer();
 
                 // Removed unusable button
                 if (!this.config['printTemplates'] || this.config.printTemplates.length == 0 ) {
