@@ -10,6 +10,7 @@
         <label locale="admin~admin.form.admin_services.onlyMaps.label"/>
         <item value="off" selected="true" locale="admin~admin.form.admin_services.off.label"/>
         <item value="on" locale="admin~admin.form.admin_services.on.label"/>
+        <help locale="admin~admin.form.admin_services.onlyMaps.help"/>
     </menulist>
 
     <menulist ref="projectSwitcher" required="true">
