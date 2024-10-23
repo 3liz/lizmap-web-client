@@ -1077,10 +1077,50 @@ export default class map extends olMap {
 
     /**
      * Zoom to given geometry or extent
-     * @param {import("ol/geom/SimpleGeometry.js").default|import("ol/extent.js").Extent} geometryOrExtent The geometry or extent to zoom to.
+     * @param {geometry|extent} geometryOrExtent The geometry or extent to zoom to.
      * @param {object} [options] Options.
      */
     zoomToGeometryOrExtent(geometryOrExtent, options) {
+        const geometryType = geometryOrExtent.getType?.();
+        if (geometryType && (mainLizmap.initialConfig.options.max_scale_lines_polygons || mainLizmap.initialConfig.options.max_scale_lines_polygons)) {
+            let maxScale;
+            if (['Polygon', 'Linestring'].includes(geometryType)){
+                maxScale = mainLizmap.initialConfig.options.max_scale_lines_polygons;
+            } else if (geometryType === 'Point'){
+                maxScale = mainLizmap.initialConfig.options.max_scale_points;
+            }
+            const resolution = mainLizmap.utils.getResolutionFromScale(
+                maxScale,
+                mainLizmap.map.getView().getProjection().getMetersPerUnit()
+            );
+            if (!options?.minResolution) {
+                if (!options) {
+                    options = { minResolution: resolution };
+                } else {
+                    options.minResolution = resolution;
+                }
+            }
+        }
         this.getView().fit(geometryOrExtent, options);
+    }
+
+    /**
+     * Zoom to given feature id
+     * @param {string} featureTypeDotId The string as `featureType.fid` to zoom to.
+     * @param {object} [options] Options.
+     */
+    zoomToFid(featureTypeDotId, options) {
+        const [featureType, fid] = featureTypeDotId.split('.');
+        if (!featureType || !fid) {
+            console.log('Wrong string for featureType.fid');
+            return;
+        }
+        lizMap.getLayerFeature(featureType, fid, feat => {
+            const olFeature = (new GeoJSON()).readFeature(feat, {
+                dataProjection: 'EPSG:4326',
+                featureProjection: mainLizmap.projection
+            });
+            this.zoomToGeometryOrExtent(olFeature.getGeometry(), options);
+        });
     }
 }
