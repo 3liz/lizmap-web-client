@@ -1004,6 +1004,8 @@ var lizLayerFilterTool = function () {
             function deactivateFilter() {
                 var layerId = globalThis['filterConfigData'].layerId;
 
+                globalThis['filterConfigData'].filter = undefined;
+
                 // Deactivate all triggers to avoid unnecessary requests
                 // and then empty all the input values
                 globalThis['filterConfigData'].deactivated = true;
@@ -1121,6 +1123,8 @@ var lizLayerFilterTool = function () {
                     },
                     layerfeatureremovefilter: function () {
                         var layerId = globalThis['filterConfigData'].layerId;
+
+                        globalThis['filterConfigData'].filter = undefined;
 
                         // We need to reset the form
                         // Deactivate all triggers to avoid unnecessary requests
