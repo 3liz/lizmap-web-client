@@ -66,7 +66,7 @@ export default class Treeview extends HTMLElement {
 
         this._symbolTemplate = symbol =>
             html`
-        <li class="symbol${this._isInScale(symbol) ? '' : ' not-in-scale'}${symbol.ruleKey && !symbol.checked ? ' not-visible' : ''}">
+        <li class="symbol ${symbol.type}${this._isInScale(symbol) ? '' : ' not-in-scale'}${symbol.ruleKey && !symbol.checked ? ' not-visible' : ''}">
             ${(symbol.childrenCount)
                 ? html`
                         <div class="expandable ${symbol.expanded ? 'expanded' : ''}" @click=${() => symbol.expanded = !symbol.expanded}></div>`
