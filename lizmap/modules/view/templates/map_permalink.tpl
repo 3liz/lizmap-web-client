@@ -24,7 +24,7 @@
             </div>
             <div id="tab-embed-permalink" class="permalink-tab-pane-embed tab-pane" role="tabpanel">
                 <a href="{jfullurl 'view~embed:index', array('repository'=>$repository,'project'=>$project)}" target="_blank" id="permalink-embed" style="display:none;"></a>
-                <select id="select-embed-permalink" class="permalink-embed-select" style="width:auto;">
+                <select id="select-embed-permalink" class="permalink-embed-select form-select" style="width:auto;">
                     <option value="s">{@view~map.permalink.embed.size.small@}</option>
                     <option value="m">{@view~map.permalink.embed.size.medium@}</option>
                     <option value="l">{@view~map.permalink.embed.size.large@}</option>
