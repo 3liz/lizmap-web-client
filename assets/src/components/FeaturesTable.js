@@ -53,7 +53,7 @@ export default class FeaturesTable extends HTMLElement {
         // Sorting attribute and direction
         this.sortingField = this.getAttribute('sortingField');
         const sortingOrder = this.getAttribute('sortingOrder');
-        this.sortingOrder = (sortingOrder !== null && ['asc', 'desc'].includes(sortingOrder)) ? this.sortingField : 'asc';
+        this.sortingOrder = (sortingOrder !== null && ['asc', 'desc'].includes(sortingOrder)) ? sortingOrder : 'asc';
 
         // open popup ?
         this.openPopup = (this.layerConfig && this.layerConfig.popup);
