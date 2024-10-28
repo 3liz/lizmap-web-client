@@ -33,7 +33,7 @@ import { Extent as olExtent, intersects as olExtentIntersects} from 'ol/extent.j
 import { Projection as olProjection, transform as olTransform, transformExtent as olTransformExtent, get as getProjection, clearAllProjections, addCommon } from 'ol/proj.js';
 import { register } from 'ol/proj/proj4.js';
 
-import proj4 from 'proj4';
+import {proj4} from 'proj4rs/proj4.js';
 import ProxyEvents from './ProxyEvents.js';
 
 /**
