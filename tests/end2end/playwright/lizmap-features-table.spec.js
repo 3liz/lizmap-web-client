@@ -34,10 +34,10 @@ test.describe('Display lizmap-features-table component in popup from QGIS toolti
         await expect(lizmapFeaturesTable.locator("h4")).toHaveText("child sub-districts");
 
         // Check items count
-        await expect(lizmapFeaturesTable.locator("div.lizmap-features-table-container div.lizmap-features-table-item")).toHaveCount(10);
+        await expect(lizmapFeaturesTable.locator("table.lizmap-features-table-container tr.lizmap-features-table-item")).toHaveCount(10);
 
         // Get first item and check it
-        let firstItem = lizmapFeaturesTable.locator("div.lizmap-features-table-container div.lizmap-features-table-item").first();
+        let firstItem = lizmapFeaturesTable.locator("table.lizmap-features-table-container tr.lizmap-features-table-item").first();
         await expect(firstItem).toHaveAttribute('data-line-id', '1');
         await expect(firstItem).toHaveAttribute('data-feature-id', '17');
 
@@ -62,6 +62,15 @@ test.describe('Display lizmap-features-table component in popup from QGIS toolti
         await expect(lizmapFeaturesTable.locator('div.lizmap-features-table')).not.toHaveClass(/popup-displayed/);
         await expect(firstItem).not.toHaveClass(/popup-displayed/);
 
+        // Drag and Drop Item
+        await page.locator('.lizmap-features-table-container > tbody > tr:nth-child(2)').dragTo(page.locator('.lizmap-features-table-container > tbody > tr:first-child'));
+
+        await expect(firstItem).toHaveAttribute('data-line-id', '1');
+        await expect(firstItem).toHaveAttribute('data-feature-id', '9');
+
+        let secondItem = lizmapFeaturesTable.locator(".lizmap-features-table-container > tbody > tr:nth-child(2)");
+        await expect(secondItem).toHaveAttribute('data-line-id', '2');
+        await expect(secondItem).toHaveAttribute('data-feature-id', '17');
 
 
         //clear screen
