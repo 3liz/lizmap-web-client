@@ -3603,8 +3603,7 @@ lizmap-features-table h4 {
 div.lizmap-features-table {
   position: relative;
 }
-div.lizmap-features-table-container {
-  border: 1px solid var(--color-contrasted-elements);
+table.lizmap-features-table-container {
   font-size: 0.9em;
   margin: 0px 10px 0px 10px;
   position: relative;
@@ -3612,35 +3611,20 @@ div.lizmap-features-table-container {
   overflow: auto;
 }
 
-/* Feature item */
-div.lizmap-features-table-container div.lizmap-features-table-item {
-  padding: 5px;
-  border-top: 1px solid var(--color-contrasted-elements);
-  position: relative;
-  /* Invert colors on hover & focus */
-  &:hover, &:focus, &:active, &.popup-displayed {
-      background-color: var(--color-contrasted-elements);
-      color: var(--color-contrasted-text);
-  }
-  /* Do not render the top border for the first item (parent already has a border) */
-  &:first-child {
-    border-top: none;
-  }
-}
 /* Pointer cursor  */
-div.lizmap-features-table-container div.lizmap-features-table-item.has-action {
+table.lizmap-features-table-container tr.lizmap-features-table-item.has-action {
   cursor: pointer;
 }
 
+
 /* Hide other children if only one child feature is active */
-div.lizmap-features-table.popup-displayed div.lizmap-features-table-container div.lizmap-features-table-item {
+div.lizmap-features-table.popup-displayed table.lizmap-features-table-container tr.lizmap-features-table-item {
   display: none;
 }
 /* In this context, display only the active child item */
-div.lizmap-features-table.popup-displayed div.lizmap-features-table-container div.lizmap-features-table-item.popup-displayed {
-  display: block;
-}
-/* Toolbar visible when popup is visible */
+div.lizmap-features-table.popup-displayed table.lizmap-features-table-container tr.lizmap-features-table-item.popup-displayed {
+  display: revert;
+}/* Toolbar visible when popup is visible */
 div.lizmap-features-table div.lizmap-features-table-toolbar {
   display: none;
 }
@@ -3686,17 +3670,17 @@ div.lizmap-features-table-toolbar button.next-popup {
 
 
 /* Popup div, visible only if popup-dsplayed class is present for it preceeding sibling */
-div.lizmap-features-table div.lizmap-features-table-container + div.lizmap-features-table-item-popup {
+div.lizmap-features-table table.lizmap-features-table-container + div.lizmap-features-table-item-popup {
   display: none;
   min-height: 200px;
   min-width: 200px;
   overflow: auto;
 }
-div.lizmap-features-table.popup-displayed div.lizmap-features-table-container + div.lizmap-features-table-item-popup {
+div.lizmap-features-table.popup-displayed table.lizmap-features-table-container + div.lizmap-features-table-item-popup {
   display: block;
 }
 /* Hide title of the popup, since it is already visible above */
-div.lizmap-features-table.popup-displayed div.lizmap-features-table-container + div.lizmap-features-table-item-popup h4.lizmapPopupTitle {
+div.lizmap-features-table.popup-displayed table.lizmap-features-table-container + div.lizmap-features-table-item-popup h4.lizmapPopupTitle {
   display: none;
 }
 .hide {
