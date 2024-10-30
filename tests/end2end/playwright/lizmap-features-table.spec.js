@@ -39,7 +39,7 @@ test.describe('Display lizmap-features-table component in popup from QGIS toolti
         // Get first item and check it
         let firstItem = lizmapFeaturesTable.locator("div.lizmap-features-table-container div.lizmap-features-table-item").first();
         await expect(firstItem).toHaveAttribute('data-line-id', '1');
-        await expect(firstItem).toHaveAttribute('data-feature-id', '10');
+        await expect(firstItem).toHaveAttribute('data-feature-id', '17');
 
         // Click on first item and check sub-popup
         firstItem.click();
@@ -47,13 +47,13 @@ test.describe('Display lizmap-features-table component in popup from QGIS toolti
         await expect(firstItem).toHaveClass(/popup-displayed/);
         let popupContainer = lizmapFeaturesTable.locator('div.lizmap-features-table-item-popup');
         await expect(popupContainer).toBeVisible();
-        await expect(popupContainer.locator('table.lizmapPopupTable tbody tr:first-child td')).toHaveText('10');
+        await expect(popupContainer.locator('table.lizmapPopupTable tbody tr:first-child td')).toHaveText('17');
 
         // Next item
         let nextItemButton = lizmapFeaturesTable.locator('div.lizmap-features-table-toolbar button.next-popup');
         nextItemButton.click();
         await expect(popupContainer).toBeVisible();
-        await expect(popupContainer.locator('table.lizmapPopupTable tbody tr:first-child td')).toHaveText('8');
+        await expect(popupContainer.locator('table.lizmapPopupTable tbody tr:first-child td')).toHaveText('9');
 
         // Close Item
         let closeItemButton = lizmapFeaturesTable.locator('div.lizmap-features-table-toolbar button.close-popup');
