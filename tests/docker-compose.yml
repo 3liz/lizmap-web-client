@@ -16,7 +16,7 @@ services:
         aliases:
           - db.lizmap.local
   redis:
-    image: redis:5
+    image: redis:7.4
     container_name: "lizmap${LZMBRANCH}_test_redis"
   openldap:
     build: ./docker-conf/openldap
