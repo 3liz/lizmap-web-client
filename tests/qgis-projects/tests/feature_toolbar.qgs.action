@@ -53,6 +53,23 @@
         "callbacks": []
     },
     {
+        "name": "project_map_drawn_point_buffer",
+        "title": "Get the buffer of the point drawn by the user",
+        "description": "This is an example action which returns a buffer around a point drawn by the user",
+        "scope": "project",
+        "icon": "icon-star",
+        "geometry": "point",
+        "options": {
+            "buffer_size": 2000
+        },
+        "style": {
+            "fill-color": "rgba(255,165,0,0.3)",
+            "stroke-width": 4,
+            "stroke-color": "rgba(255,0,0,0.8)"
+        },
+        "callbacks": []
+    },
+    {
         "name": "layer_spatial_extent",
         "title": "Get the contour of all the layer features",
         "description": "This action will draw a polygon which represents the contour of all the features",
