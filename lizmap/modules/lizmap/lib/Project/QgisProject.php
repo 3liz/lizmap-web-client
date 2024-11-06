@@ -377,13 +377,18 @@ class QgisProject
      */
     protected function setLayerOpacity(ProjectConfig $cfg)
     {
-        $layerWithOpacities = $this->xpathQuery('//maplayer/layerOpacity[.!=1]/parent::*');
+        $layerWithOpacities = $this->xpathQuery('//maplayer/layerOpacity[.!=1]/parent::* | //maplayer/pipe/rasterrenderer/@opacity[.!=1]/ancestor::maplayer');
         if ($layerWithOpacities) {
             foreach ($layerWithOpacities as $layerWithOpacity) {
                 $name = (string) $layerWithOpacity->layername;
                 $layerCfg = $cfg->getLayer($name);
+                $opacity = 1;
                 if ($layerCfg) {
-                    $opacity = (float) $layerWithOpacity->layerOpacity;
+                    if (isset($layerWithOpacity->layerOpacity)) {
+                        $opacity = (float) $layerWithOpacity->layerOpacity;
+                    } elseif (isset($layerWithOpacity->pipe->rasterrenderer['opacity'])) {
+                        $opacity = (float) $layerWithOpacity->pipe->rasterrenderer['opacity'];
+                    }
                     $layerCfg->opacity = $opacity;
                 }
             }

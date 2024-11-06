@@ -391,8 +391,9 @@ class QgisProjectTest extends TestCase
     {
         $file = __DIR__.'/Ressources/simpleLayer.qgs.cfg';
         $json = json_decode(file_get_contents($file));
-        $expectedLayer = clone $json->layers;
+        $expectedLayer = unserialize(serialize($json->layers));
         $expectedLayer->montpellier_events->opacity = (float) 0.85;
+        $expectedLayer->local_raster_layer->opacity = (float) 0.6835;
         $cfg = new Project\ProjectConfig((object) array('layers' => $json->layers));
         $testProj = new qgisProjectForTests();
         $testProj->setXmlForTest(simplexml_load_file(__DIR__.'/Ressources/opacity.qgs'));
