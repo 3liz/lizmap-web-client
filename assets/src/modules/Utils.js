@@ -6,6 +6,7 @@
  */
 
 import { NetworkError, HttpError, ResponseError } from './Errors.js';
+import DOMPurify from 'dompurify';
 
 /**
  * The main utils methods
@@ -205,5 +206,21 @@ export default class Utils {
         const DPI = 96;
         const scale = resolution * inchesPerMeter * DPI * metersPerUnit;
         return scale;
+    }
+
+    static sanitizeGFIContent(content) {
+        DOMPurify.addHook('afterSanitizeAttributes', node => {
+            if (node.nodeName === 'IFRAME') {
+                node.setAttribute('sandbox','allow-scripts allow-forms');
+            }
+        });
+        return DOMPurify.sanitize(content, {
+            ADD_TAGS: ['iframe'],
+            ADD_ATTR: ['target'],
+            CUSTOM_ELEMENT_HANDLING: {
+                tagNameCheck: /^lizmap-/,
+                attributeNameCheck: /crs|bbox|edition-restricted|layerid|layertitle|uniquefield|expressionfilter|withgeometry|sortingfield|sortingorder|draggable/,
+            }
+        });
     }
 }
