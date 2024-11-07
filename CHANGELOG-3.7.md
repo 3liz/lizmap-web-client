@@ -10,8 +10,16 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ### Fixed
 
+* Fix expanded for categorized symbology in group as layer
+* Encode layer style in hash, contribution from @mind84
 * Fix Relation Reference Form control order by value
 * Fix enclosing correctly `filter` when requesting QGIS Server with brackets
+* Fix: reinit form filter
+
+### Funders
+
+* **[AUDRNA](https://www.audrna.com/)**
+* **[Faunalia](https://www.faunalia.eu/fr)**, contributions on source code from @mind84
 
 ## 3.7.11 - 2024-10-02
 
