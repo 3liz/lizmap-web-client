@@ -9,7 +9,7 @@
 import { mainLizmap } from '../modules/Globals.js';
 import Overlay from 'ol/Overlay.js';
 import WMS from '../modules/WMS.js';
-import DOMPurify from 'dompurify';
+import Utils from '../modules/Utils.js';
 
 /**
  * @class
@@ -178,20 +178,7 @@ export default class Popup {
         document.getElementById('newOlMap').style.cursor = 'wait';
 
         wms.getFeatureInfo(wmsParams).then(response => {
-            DOMPurify.addHook('afterSanitizeAttributes', node => {
-                if (node.nodeName === 'IFRAME') {
-                    node.setAttribute('sandbox','allow-scripts allow-forms');
-                }
-            });
-            const sanitizedResponse = DOMPurify.sanitize(response, {
-                ADD_TAGS: ['iframe'],
-                ADD_ATTR: ['target'],
-                CUSTOM_ELEMENT_HANDLING: {
-                    tagNameCheck: /^lizmap-/,
-                    attributeNameCheck: /crs|bbox|edition-restricted|layerid|layertitle|uniquefield|expressionfilter|withgeometry|sortingfield|sortingorder|draggable/,
-                }
-            });
-            lizMap.displayGetFeatureInfo(sanitizedResponse, { x: xCoord, y: yCoord }, evt?.coordinate);
+            lizMap.displayGetFeatureInfo(Utils.sanitizeGFIContent(response), { x: xCoord, y: yCoord }, evt?.coordinate);
         }).finally(() => {
             document.getElementById('newOlMap').style.cursor = 'auto';
         });
