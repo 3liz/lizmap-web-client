@@ -8,6 +8,13 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.7.12 - 2024-11-07
+
+### Funders
+
+* **[AUDRNA](https://www.audrna.com/)**
+* **[Faunalia](https://www.faunalia.eu/fr)**, contributions on source code from @mind84
+
 ### Fixed
 
 * Fix expanded for categorized symbology in group as layer
@@ -15,11 +22,6 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Fix Relation Reference Form control order by value
 * Fix enclosing correctly `filter` when requesting QGIS Server with brackets
 * Fix: reinit form filter
-
-### Funders
-
-* **[AUDRNA](https://www.audrna.com/)**
-* **[Faunalia](https://www.faunalia.eu/fr)**, contributions on source code from @mind84
 
 ## 3.7.11 - 2024-10-02
 
