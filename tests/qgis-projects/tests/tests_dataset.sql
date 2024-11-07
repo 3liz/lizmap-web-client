@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 14.11 (Debian 14.11-1.pgdg110+2)
--- Dumped by pg_dump version 14.12 (Ubuntu 14.12-0ubuntu0.22.04.1)
+-- Dumped from database version 14.13 (Debian 14.13-1.pgdg110+1)
+-- Dumped by pg_dump version 14.13 (Ubuntu 14.13-0ubuntu0.22.04.1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -2200,6 +2200,37 @@ ALTER SEQUENCE tests_projects.table_for_relationnal_value_gid_seq OWNED BY tests
 
 
 --
+-- Name: text_widget_point_edit; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.text_widget_point_edit (
+    id integer NOT NULL,
+    point_name text,
+    geom public.geometry(Point,4326)
+);
+
+
+--
+-- Name: text_widget_point_edit_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
+--
+
+CREATE SEQUENCE tests_projects.text_widget_point_edit_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: text_widget_point_edit_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
+--
+
+ALTER SEQUENCE tests_projects.text_widget_point_edit_id_seq OWNED BY tests_projects.text_widget_point_edit.id;
+
+
+--
 -- Name: time_manager; Type: TABLE; Schema: tests_projects; Owner: -
 --
 
@@ -2874,6 +2905,13 @@ ALTER TABLE ONLY tests_projects.single_wms_tiled_baselayer ALTER COLUMN id SET D
 --
 
 ALTER TABLE ONLY tests_projects.sousquartiers ALTER COLUMN id SET DEFAULT nextval('tests_projects.sousquartiers_id_seq'::regclass);
+
+
+--
+-- Name: text_widget_point_edit id; Type: DEFAULT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.text_widget_point_edit ALTER COLUMN id SET DEFAULT nextval('tests_projects.text_widget_point_edit_id_seq'::regclass);
 
 
 --
@@ -3674,6 +3712,15 @@ COPY tests_projects.table_for_relationnal_value (gid, code, label) FROM stdin;
 
 
 --
+-- Data for Name: text_widget_point_edit; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.text_widget_point_edit (id, point_name, geom) FROM stdin;
+1	Widget_test	0101000020E6100000FBC6B025B7E10E4098DF5229E9CC4540
+\.
+
+
+--
 -- Data for Name: time_manager; Type: TABLE DATA; Schema: tests_projects; Owner: -
 --
 
@@ -3760,6 +3807,7 @@ COPY tests_projects.triple_geom (id, title, geom, geom_l, geom_p) FROM stdin;
 
 COPY tests_projects.xss (id, geom, description) FROM stdin;
 1	01010000206A0800000D9D9921FD822741B3C56B7B4DF45741	<script>alert('XSS')</script>
+2	01010000206A0800003C971843589327416B44F41A5BF45741	<iframe width="300" height="200" src="https://www.openstreetmap.org/export/embed.html?bbox=-0.004017949104309083%2C51.47612752641776%2C0.00030577182769775396%2C51.478569861898606&layer=mapnik"></iframe>
 \.
 
 
@@ -4240,6 +4288,13 @@ SELECT pg_catalog.setval('tests_projects.table_for_relationnal_value_gid_seq', 3
 
 
 --
+-- Name: text_widget_point_edit_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.text_widget_point_edit_id_seq', 1, true);
+
+
+--
 -- Name: time_manager_gid_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
 --
 
@@ -4285,7 +4340,7 @@ SELECT pg_catalog.setval('tests_projects.triple_geom_id_seq', 1, true);
 -- Name: xss_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
 --
 
-SELECT pg_catalog.setval('tests_projects.xss_id_seq', 1, true);
+SELECT pg_catalog.setval('tests_projects.xss_id_seq', 2, true);
 
 
 --
@@ -4857,6 +4912,14 @@ ALTER TABLE ONLY tests_projects.table_for_relationnal_value
 
 
 --
+-- Name: text_widget_point_edit text_widget_point_edit_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.text_widget_point_edit
+    ADD CONSTRAINT text_widget_point_edit_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: time_manager time_manager_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
 --
 
@@ -4987,3 +5050,4 @@ ALTER TABLE ONLY tests_projects.tramway_pivot
 --
 -- PostgreSQL database dump complete
 --
+
