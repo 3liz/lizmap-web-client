@@ -178,7 +178,13 @@ export default class Popup {
         document.getElementById('newOlMap').style.cursor = 'wait';
 
         wms.getFeatureInfo(wmsParams).then(response => {
+            DOMPurify.addHook('afterSanitizeAttributes', node => {
+                if (node.nodeName === 'IFRAME') {
+                    node.setAttribute('sandbox','allow-scripts allow-forms');
+                }
+            });
             const sanitizedResponse = DOMPurify.sanitize(response, {
+                ADD_TAGS: ['iframe'],
                 ADD_ATTR: ['target'],
                 CUSTOM_ELEMENT_HANDLING: {
                     tagNameCheck: /^lizmap-/,
