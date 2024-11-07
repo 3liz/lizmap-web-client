@@ -2940,9 +2940,8 @@ window.lizMap = function() {
 
         // Query the server
         $.post(globalThis['lizUrls'].service, wmsOptions, function(data) {
-            aCallback(data);
+            aCallback(Utils.sanitizeGFIContent(data));
         });
-
     }
 
     // Get the popup content for a layer given a feature
@@ -3014,8 +3013,8 @@ window.lizMap = function() {
 
         // Query the server
         $.post(globalThis['lizUrls'].service, wmsOptions, function(data) {
-            if(aCallback){
-                aCallback(globalThis['lizUrls'].service, wmsOptions, data);
+            if (aCallback) {
+                aCallback(globalThis['lizUrls'].service, wmsOptions, Utils.sanitizeGFIContent(data));
             }
         });
     }
