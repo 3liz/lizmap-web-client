@@ -39,4 +39,10 @@ test.describe('XSS', () => {
 
         expect(dialogOpens).toEqual(0);
     });
+
+    test('Iframe in a popup', async ({ page }) => {
+        const url = '/index.php/view/map/?repository=testsrepository&project=xss&layer=xss_layer&filter=%22id%22%20%3D%20\'2\'&popup=true';
+        await gotoMap(url, page)
+        await expect(page.frameLocator('iframe').locator('#map')).toHaveCount(1);
+    });
 });
