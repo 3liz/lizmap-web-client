@@ -3,6 +3,11 @@ import { test, expect } from '@playwright/test';
 import { gotoMap } from './globals';
 
 test.describe('XSS', () => {
+    test.beforeEach(async ({ page }) => {
+        const url = '/index.php/view/map/?repository=testsrepository&project=xss';
+        await gotoMap(url, page);
+    });
+
     // Test that flawed data are sanitized before being displayed
     test('No dialog from inline JS alert() appears', async ({ page }) => {
 
@@ -11,9 +16,6 @@ test.describe('XSS', () => {
             dialog.accept();
             dialogOpens++;
         });
-
-        const url = '/index.php/view/map/?repository=testsrepository&project=xss';
-        await gotoMap(url, page)
 
         // Edition: add XSS data
         await page.locator('#button-edition').click();
@@ -38,5 +40,21 @@ test.describe('XSS', () => {
             .click({ force: true });
 
         expect(dialogOpens).toEqual(0);
+    });
+
+    test('Sanitized iframe in popup', async ({ page }) => {
+        let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
+
+        // Open popup
+        await page.locator('#newOlMap').click({
+            position: {
+                x: 500,
+                y: 285
+            }
+        });
+
+        await getFeatureInfoRequestPromise;
+
+        await expect(page.locator('#popupcontent iframe')).toHaveAttribute('sandbox', 'allow-scripts allow-forms');
     });
 });
