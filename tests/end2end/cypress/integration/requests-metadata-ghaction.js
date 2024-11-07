@@ -25,6 +25,12 @@ describe('Request JSON metadata', function () {
             expect(response.status).to.eq(200);
             expect(response.headers['content-type']).to.eq('application/json');
 
+            // LWC Metadata
+            expect(response.body.info.version).to.exist;
+            expect(response.body.info.date).to.exist;
+            expect(response.body.info.commit).to.exist;
+
+            // QGIS Server info
             expect(response.body.qgis_server_info.py_qgis_server.found).to.eq(true)
             expect(response.body.qgis_server_info.py_qgis_server.version).to.match(/\.|n\/a/i)
             expect(response.body.qgis_server_info.metadata.version).to.contain('3.')

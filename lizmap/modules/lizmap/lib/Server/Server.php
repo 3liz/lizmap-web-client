@@ -248,6 +248,7 @@ class Server
         $data['info'] = array();
         $data['info']['version'] = $projectInfos->version;
         $data['info']['date'] = $projectInfos->versionDate;
+        $data['info']['commit'] = \jApp::config()->commitSha;
 
         $jelixVersion = \jFramework::version();
 
