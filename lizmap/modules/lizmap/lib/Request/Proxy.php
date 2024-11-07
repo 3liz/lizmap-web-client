@@ -484,6 +484,22 @@ class Proxy
     }
 
     /**
+     * Log if the HTTP code is a 4XX or 5XX error code.
+     *
+     * @param int    $httpCode The HTTP code of the request
+     * @param string $url      The URL of the request, for logging
+     */
+    public static function logRequestIfError($httpCode, $url)
+    {
+        $httpCodeClass = substr($httpCode, 0, 1);
+        // Change to str_starts_with when PHP 8.1 will be minimum version for all maintained version
+        if ($httpCodeClass == '4' || $httpCodeClass == '5') {
+            \jLog::log('An HTTP request ended with an error, please check the main error log. Code '.$httpCode, 'lizmapadmin');
+            \jLog::log('The HTTP request below ended with an error. Code '.$httpCode.' → '.$url, 'error');
+        }
+    }
+
+    /**
      * Get remote data from URL, with curl or internal php functions.
      *
      * @param string            $url     url of the remote data to fetch
@@ -526,10 +542,16 @@ class Proxy
         // Proxy http backend : use curl or file_get_contents
         if (extension_loaded('curl') && $options['proxyHttpBackend'] != 'php') {
             // With curl
-            return self::curlProxy($url, $options);
+            $curlRequest = self::curlProxy($url, $options);
+            self::logRequestIfError($curlRequest[2], $url);
+
+            return $curlRequest;
         }
         // With file_get_contents
-        return self::fileProxy($url, $options);
+        $request = self::fileProxy($url, $options);
+        self::logRequestIfError($request[2], $url);
+
+        return $request;
     }
 
     /**
@@ -610,6 +632,7 @@ class Proxy
         }
 
         $response = $client->send($request, $reqOptions);
+        self::logRequestIfError($response->getStatusCode(), $url);
 
         return new ProxyResponse(
             $response->getStatusCode(),
