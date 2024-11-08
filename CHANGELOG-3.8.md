@@ -8,6 +8,14 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.8.3 - 2024-11-08
+
+### Funders
+
+* **[AUDRNA](https://www.audrna.com/)**
+* **[Faunalia](https://www.faunalia.eu/fr)**, contributions on source code from @mind84
+* **[Valabre](https://www.valabre.com/)**
+
 ### Added
 
 * Move related child in corresponding div for **1:n** and **n:m** relations in popups
@@ -33,12 +41,6 @@ with some extra keywords: backend, tests, test, translation, funders, important
   * Improve popup table style
   * Fix ordering of rows in the table, contribution from @neo-garaix
 * Reset the form filter when changing the dropdown menu
-
-### Funders
-
-* **[AUDRNA](https://www.audrna.com/)**
-* **[Faunalia](https://www.faunalia.eu/fr)**, contributions on source code from @mind84
-* **[Valabre](https://www.valabre.com/)**
 
 ## 3.8.2 - 2024-10-01
 
