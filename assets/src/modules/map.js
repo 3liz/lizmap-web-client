@@ -1077,14 +1077,14 @@ export default class map extends olMap {
 
     /**
      * Zoom to given geometry or extent
-     * @param {geometry|extent} geometryOrExtent The geometry or extent to zoom to.
+     * @param {geometry|extent} geometryOrExtent The geometry or extent to zoom to. CRS is 4326 by default.
      * @param {object} [options] Options.
      */
     zoomToGeometryOrExtent(geometryOrExtent, options) {
         const geometryType = geometryOrExtent.getType?.();
         if (geometryType && (mainLizmap.initialConfig.options.max_scale_lines_polygons || mainLizmap.initialConfig.options.max_scale_lines_polygons)) {
             let maxScale;
-            if (['Polygon', 'Linestring'].includes(geometryType)){
+            if (['Polygon', 'Linestring', 'MultiPolygon', 'MultiLinestring'].includes(geometryType)){
                 maxScale = mainLizmap.initialConfig.options.max_scale_lines_polygons;
             } else if (geometryType === 'Point'){
                 maxScale = mainLizmap.initialConfig.options.max_scale_points;
