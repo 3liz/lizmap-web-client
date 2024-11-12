@@ -21,7 +21,8 @@ export default class LocateByLayer {
         const locateBtn = document.getElementById('button-locate');
         if (mainLizmap.initialConfig.locateByLayer) {
             this.addLocateByLayer();
-            locateBtn?.click();
+            document.querySelector('#mapmenu .locate').classList.add('active') 
+            document.getElementById('locate').classList.remove('hide') 
         } else {
             locateBtn?.parentNode.classList.add('hide');
         }
@@ -387,7 +388,7 @@ export default class LocateByLayer {
                 });
                 // Show geometry if asked
                 if (locate.displayGeom == 'True') {
-                    var getFeatureUrlData = getVectorLayerWfsUrl( aName, null, null, null );
+                    var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( aName, null, null, null );
                     getFeatureUrlData['options']['PROPERTYNAME'] = ['geometry',locate.fieldName].join(',');
                     getFeatureUrlData['options']['FEATUREID'] = val;
                     // Get data
