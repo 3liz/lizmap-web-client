@@ -2270,37 +2270,6 @@ window.lizMap = function() {
                 },'json');
             }
         });
-
-        // $.post( getFeatureUrlData['url'], getFeatureUrlData['options'], function(incomingData) {
-        //     const data = DOMPurify.sanitize(incomingData);
-
-        //     aConfig['featureCrs'] = 'EPSG:4326';
-
-        //     if (aConfig?.['alias'] && aConfig?.['types']) {
-        //         callFeatureDataCallBacks(poolId, data.features);
-        //         $('body').css('cursor', 'auto');
-        //     } else {
-        //         $.post(globalThis['lizUrls'].service, {
-        //             'SERVICE':'WFS'
-        //             ,'VERSION':'1.0.0'
-        //             ,'REQUEST':'DescribeFeatureType'
-        //             ,'TYPENAME': ('typename' in aConfig) ? aConfig.typename : aName
-        //             ,'OUTPUTFORMAT':'JSON'
-        //         }, function(describe) {
-
-        //             aConfig['alias'] = describe.aliases;
-        //             aConfig['types'] = describe.types;
-        //             aConfig['columns'] = describe.columns;
-
-        //             callFeatureDataCallBacks(poolId, data.features);
-
-        //             $('body').css('cursor', 'auto');
-
-        //         },'json');
-        //     }
-
-        // },'json');
-
         return true;
     }
 
@@ -2427,10 +2396,6 @@ window.lizMap = function() {
         // Only use when feat is set
         if( !feat )
             return false;
-
-        // Remove map popup to avoid confusion
-        if (lizMap.map.popups.length != 0)
-            lizMap.map.removePopup( lizMap.map.popups[0] );
 
         // Get popup content by FILTER and not with virtual click on map
         var filter = '';
