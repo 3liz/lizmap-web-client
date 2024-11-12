@@ -377,17 +377,31 @@ class QgisProject
      */
     protected function setLayerOpacity(ProjectConfig $cfg)
     {
-        $layerWithOpacities = $this->xpathQuery('//maplayer/layerOpacity[.!=1]/parent::* | //maplayer/pipe/rasterrenderer/@opacity[.!=1]/ancestor::maplayer');
-        if ($layerWithOpacities) {
-            foreach ($layerWithOpacities as $layerWithOpacity) {
-                $name = (string) $layerWithOpacity->layername;
+        $layers = $this->layers;
+        // loop through project layers to get embedded ones as well
+        foreach ($layers as $layer) {
+            $xpath = "//maplayer[id='{$layer['id']}']/layerOpacity[.!=1]/parent::* | //maplayer[id='{$layer['id']}']/pipe/rasterrenderer/@opacity[.!=1]/ancestor::maplayer";
+            $layerWithOpacity = null;
+
+            // check if layer is embedded or not
+            $qgisProject = $this->getEmbeddedQgisProject($layer['id']);
+
+            if ($qgisProject) {
+                $layerWithOpacity = $qgisProject->xpathQuery($xpath);
+            } else {
+                $layerWithOpacity = $this->xpathQuery($xpath);
+            }
+
+            // layerWithOpacity should have length == 1, if any
+            if ($layerWithOpacity && count($layerWithOpacity) == 1) {
+                $name = (string) $layerWithOpacity[0]->layername;
                 $layerCfg = $cfg->getLayer($name);
                 $opacity = 1;
                 if ($layerCfg) {
-                    if (isset($layerWithOpacity->layerOpacity)) {
-                        $opacity = (float) $layerWithOpacity->layerOpacity;
-                    } elseif (isset($layerWithOpacity->pipe->rasterrenderer['opacity'])) {
-                        $opacity = (float) $layerWithOpacity->pipe->rasterrenderer['opacity'];
+                    if (isset($layerWithOpacity[0]->layerOpacity)) {
+                        $opacity = (float) $layerWithOpacity[0]->layerOpacity;
+                    } elseif (isset($layerWithOpacity[0]->pipe->rasterrenderer['opacity'])) {
+                        $opacity = (float) $layerWithOpacity[0]->pipe->rasterrenderer['opacity'];
                     }
                     $layerCfg->opacity = $opacity;
                 }
