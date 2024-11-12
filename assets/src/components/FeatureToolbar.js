@@ -15,6 +15,8 @@ import { getCenter } from 'ol/extent.js';
 import GeoJSON from 'ol/format/GeoJSON.js';
 import GPX from 'ol/format/GPX.js';
 import KML from 'ol/format/KML.js';
+import Point from 'ol/geom/Point.js';
+import {fromExtent} from 'ol/geom/Polygon.js';
 
 import '../images/svg/map-print.svg';
 
@@ -397,12 +399,6 @@ export default class FeatureToolbar extends HTMLElement {
     }
 
     zoom() {
-        // FIXME: necessary?
-        // Remove map popup to avoid confusion
-        if (lizMap.map.popups.length != 0){
-            lizMap.map.removePopup(lizMap.map.popups[0]);
-        }
-
         if (this.getAttribute('crs')){
             const featureExtent = [
                 parseFloat(this.getAttribute('bbox-minx')),
@@ -415,9 +411,18 @@ export default class FeatureToolbar extends HTMLElement {
                 this.getAttribute('crs'),
                 lizMap.mainLizmap.projection
             );
-            lizMap.mainLizmap.extent = targetMapExtent;
-        }else{
-            lizMap.zoomToFeature(this.featureType, this.fid, 'zoom');
+
+            let geom;
+            // The geom is a Point
+            if (targetMapExtent[0] == targetMapExtent[2] && targetMapExtent[1] == targetMapExtent[3]) {
+                geom = new Point([targetMapExtent[0], targetMapExtent[1]])
+            } else {
+                geom = fromExtent(targetMapExtent);
+            }
+
+            mainLizmap.map.zoomToGeometryOrExtent(geom);
+        } else {
+            mainLizmap.map.zoomToFid(this.featureType + '.' + this.fid);
         }
     }
 
