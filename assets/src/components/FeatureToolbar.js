@@ -367,7 +367,7 @@ export default class FeatureToolbar extends HTMLElement {
 
             // Check if the child layer has insert capabilities
             let [childFeatureType, childLayerConfig] = lizMap.getLayerConfigById(relation.referencingLayer);
-            let isPivot = !!lizMap.config?.relations?.pivot?.[relation.referencingLayer]
+            let isPivot = lizMap.config?.attributeLayers?.[childFeatureType]?.pivot === "True" && !!lizMap.config?.relations?.pivot?.[relation.referencingLayer]
             if (isPivot || lizMap.config?.editionLayers?.[childFeatureType]?.capabilities?.createFeature !== "True") {
                 return;
             }
