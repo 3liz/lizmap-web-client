@@ -804,7 +804,7 @@ export default class map extends olMap {
                 'stroke-width': styleWidth,
             }
         });
-        this.addLayer(this._highlightLayer);
+        this.addToolLayer(this._highlightLayer);
 
         // Add startup features to map if any
         const startupFeatures = mainLizmap.state.map.startupFeatures;
