@@ -15,6 +15,10 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * **[Golfe du Morbihan Vannes agglomération](https://www.golfedumorbihan-vannesagglomeration.bzh/)**
 * **[VSB Energy](https://www.vsb.energy/)**
 
+### Important
+
+* PHP 8.1 minimum is required
+
 ### Added
 
 * Circular geometry measurement on draw
@@ -33,3 +37,4 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 * Expose more OpenLayers and lit classes
 * Reduce `mainLizmap` dependencies in all JavaScript code
+* Raise PHP to version 8.1
