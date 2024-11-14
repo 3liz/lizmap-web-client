@@ -105,7 +105,7 @@ docker-image-unstable:
   except:
     - tags
   tags:
-    - infrav3
+    - factory-dind
 
 docker-image-release:
   stage: docker-image
@@ -121,7 +121,7 @@ docker-image-release:
   only:
     - tags
   tags:
-    - infrav3
+    - factory-dind
 
 deploy-package-unstable:
   stage: deploy
@@ -141,9 +141,10 @@ deploy-package-unstable:
     - fabric
 
 deploy-docker-unstable:
+  image: ${REGISTRY_URL}/factory-ci-runner:build-package
   stage: deploy
   script:
-    - $FACTORY_SCRIPTS/update-service lizmap
+    - update-service lizmap
   environment:
     name: snap
   dependencies:
@@ -154,7 +155,7 @@ deploy-docker-unstable:
   except:
     - tags
   tags:
-    - infrav3
+    - factory-dind
 
 deploy-quick-release:
   stage: release
@@ -200,7 +201,7 @@ docker-release:
   only:
     - tags
   tags:
-    - infrav3
+    - factory-dind
 
 tickets:
   stage: release
