@@ -13,7 +13,6 @@ import { extend } from 'ol/extent.js';
 import WFS from '../modules/WFS.js';
 import WMS from '../modules/WMS.js';
 import Utils from '../modules/Utils.js';
-import DOMPurify from 'dompurify';
 
 window.lizMap = function() {
     /**
@@ -2667,8 +2666,7 @@ window.lizMap = function() {
      * @param proj
      * @param zoomAction
      */
-    function zoomToOlFeature( feature, proj, zoomAction ){
-        zoomAction = typeof zoomAction !== 'undefined' ?  zoomAction : 'zoom';
+    function zoomToOlFeature( feature, proj, zoomAction = 'action' ){
         var format = new OpenLayers.Format.GeoJSON({
             ignoreExtraDims: true
         });
@@ -2677,11 +2675,11 @@ window.lizMap = function() {
             feat.geometry.transform( proj, lizMap.map.getProjection() );
 
             // Zoom or center to selected feature
-            if( zoomAction == 'zoom' )
-                map.zoomToExtent(feat.geometry.getBounds());
-            if( zoomAction == 'center' ){
-                var lonlat = feat.geometry.getBounds().getCenterLonLat()
-                map.setCenter(lonlat);
+            if( zoomAction == 'zoom' ){
+                lizMap.mainLizmap.map.zoomToGeometryOrExtent(feat.geometry.getBounds().toArray());
+            } else if( zoomAction == 'center' ){
+                const lonlat = feat.geometry.getBounds().getCenterLonLat();
+                lizMap.mainLizmap.map.getView().setCenter([lonlat.lon, lonlat.lat]);
             }
         }
     }
@@ -2692,9 +2690,7 @@ window.lizMap = function() {
      * @param fid
      * @param zoomAction
      */
-    function zoomToFeature( featureType, fid, zoomAction ){
-        zoomAction = typeof zoomAction !== 'undefined' ?  zoomAction : 'zoom';
-
+    function zoomToFeature( featureType, fid, zoomAction = 'zoom' ){
         getLayerFeature(featureType, fid, function(feat) {
             var proj = new OpenLayers.Projection(config.layers[featureType].crs);
             if( config.layers[featureType].featureCrs )
