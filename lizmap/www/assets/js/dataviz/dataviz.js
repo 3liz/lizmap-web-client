@@ -39,7 +39,7 @@ let lizDataviz = function () {
      * Get the percentage of an element covering the viewport
      *
      * @param {HTMLElement} element The element to test
-     * @return {integer} Percentage
+     * @return {int} Percentage
      */
     function getViewPercentage(element) {
         const viewport = {
@@ -311,7 +311,7 @@ let lizDataviz = function () {
      * or in a user-defined plot container if the HTML template
      * has been configured inside Lizmap plugin
      *
-     * @param {integer} plot_id The plot id
+     * @param {int} plot_id The plot id
      */
     function addPlotContainer(plot_id) {
         let dataviz_plot_id = 'dataviz_plot_' + plot_id;
@@ -340,7 +340,7 @@ let lizDataviz = function () {
      * Get the plot data from the backend
      * and draw the plot with the buildPlot method
      *
-     * @param {integer} plot_id The id of the plot.
+     * @param {int} plot_id The id of the plot.
      * @param {string} exp_filter The optional data filter.
      * @param {string} target_id The ID of the target dom element.
      *
@@ -465,9 +465,9 @@ let lizDataviz = function () {
      * It is responsible for rendering the plot and
      * adding it in the document.
      *
-     * @param {integer} targetId The ID of the plot HTML container element.
+     * @param {int} targetId The ID of the plot HTML container element.
      * @param {object} data The plot data as given by the backend
-     * @param {integer} pid The plot integer ID
+     * @param {int} pid The plot integer ID
      * @param {object} layout The plot layout defined by the user
      *
      */
@@ -567,7 +567,7 @@ let lizDataviz = function () {
      * Return the plot integer ID by passing the plot element container ID?
      *
      * @param {string} id The plot integer ID
-     * @return {integer} The container HTML element ID
+     * @return {int} The container HTML element ID
      */
     function getPlotIdByContainerId(id) {
         let pid = null;
@@ -599,7 +599,7 @@ let lizDataviz = function () {
      *
      * @param {string} targetId The ID of the plot HTML container element.
      * @param {object} conf The plot configuration with data and layout properties.
-     * @param {integer} pid The plot integer ID
+     * @param {int} pid The plot integer ID
      */
     function buildPlot(targetId, conf, pid = null) {
 
@@ -719,7 +719,7 @@ let lizDataviz = function () {
      * based on the source OpenLayers layer visibility
      * depending on the parameter display_when_layer_visible
      *
-     * @param {integer} plotId The plot integer ID
+     * @param {int} plotId The plot integer ID
      * @return {boolean} True if the plot must be visible
      */
     function setPlotContainerVisibilityFromLayerVisibility(plotId) {

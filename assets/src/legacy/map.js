@@ -432,7 +432,7 @@ window.lizMap = function() {
      * config
      *
      * Returns:
-     * {Integer} the layer's order
+     * {int} the layer's order
      * @param nested
      */
     function getLayerOrder(nested) {
@@ -1568,7 +1568,7 @@ window.lizMap = function() {
                                             GEOMETRYNAME: 'extent'
                                         };
 
-                                        wfsParams['EXP_FILTER'] = '"' + config.relations.pivot[rLayerId][layerId] + '" = ' + "'" + feat.properties[relation.referencedField] + "'";;
+                                        wfsParams['EXP_FILTER'] = '"' + config.relations.pivot[rLayerId][layerId] + '" = ' + "'" + feat.properties[relation.referencedField] + "'";
                                         // Calculate bbox
                                         if (config.options?.limitDataToBbox == 'True') {
                                             wfsParams['BBOX'] = lizMap.mainLizmap.map.getView().calculateExtent();

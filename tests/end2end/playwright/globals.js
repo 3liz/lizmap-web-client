@@ -15,7 +15,7 @@ async function NoErrors(page, checkLayerTreeView = true) {
  * CatchErrors function
  * Some checks when the map is on error
  * @param page The page object
- * @param int layersInTreeView The number of layers to find in the treeview.
+ * @param {int} layersInTreeView The number of layers to find in the treeview.
  */
 async function CatchErrors(page, layersInTreeView = 0) {
     // Error
@@ -30,11 +30,11 @@ async function CatchErrors(page, layersInTreeView = 0) {
 /**
  * gotoMap function
  * Helper to load a map and do some basic checks
- * @param string url The URL of the map to load
- * @param page The page object
- * @param boolean mapMustLoad If the loading of the map must be successful or not. Some error might be triggered when loading the map, on purpose.
- * @param int layersInTreeView The number of layers to find in the treeview if the map is on error.
- * @param boolean waitForGetLegendGraphics
+ * @param {string} url The URL of the map to load
+ * @param {page} page The page object
+ * @param {boolean} mapMustLoad If the loading of the map must be successful or not. Some error might be triggered when loading the map, on purpose.
+ * @param {int} layersInTreeView The number of layers to find in the treeview if the map is on error.
+ * @param {boolean} waitForGetLegendGraphics
  */
 export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 0, waitForGetLegendGraphics = true) {
     // TODO keep this function synchronized with the Cypress equivalent

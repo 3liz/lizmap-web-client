@@ -420,7 +420,7 @@ function buildLayerTreeGroupConfigItems(wmsCapaLayerGroup, layersCfg, level) {
             const groupItems = buildLayerTreeGroupConfigItems(wmsCapaLayer, layersCfg, level+1);
             items.push(new LayerTreeGroupConfig(cfg.name, level+1, groupItems, wmsCapaLayer, cfg));
         } else {
-            // avoid to add the baseLayers group to the map if doesn't contains any layer.
+            // avoid to add the baseLayers group to the map if it doesn't contain any layer.
             if(wmsName.toLowerCase() != 'baselayers') {
                 items.push(new LayerTreeLayerConfig(cfg.name, level+1, wmsCapaLayer, cfg));
             }
