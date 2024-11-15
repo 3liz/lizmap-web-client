@@ -638,7 +638,7 @@ export default class Action {
      * @param {object} action - The action configuration object
      * @param {string} layerId - The layer ID
      * @param {string} featureId - The feature ID
-     * @param {string} popupItem - The popup item HTML element
+     * @param {string} popupContainerId - The popup container ID
      */
     addPopupActionButton(action, layerId, featureId, popupContainerId) {
 

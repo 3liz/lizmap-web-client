@@ -34,9 +34,9 @@ export default class FeaturesTable {
      * @param {string|null} fields List of field names separated by comma
      *
      * @returns — A Promise that resolves with the result of parsing the response body text as JSON.
-     * @throws — {ResponseError} In case of invalid content type (not application/json or application/vnd.geo+json) or Invalid JSON
-     * @throws — {HttpError} In case of not successful response (status not in the range 200 – 299)
-     * @throws — {NetworkError} In case of catch exceptions
+     * @throws {ResponseError} In case of invalid content type (not application/json or application/vnd.geo+json) or Invalid JSON
+     * @throws {HttpError} In case of not successful response (status not in the range 200 – 299)
+     * @throws {NetworkError} In case of catch exceptions
      */
     getFeatures(layerId, filter = null, withGeometry = false, fields = 'null') {
 
@@ -83,7 +83,7 @@ export default class FeaturesTable {
      * @param {object} feature       WFS Feature
      * @param {string} uniqueField   Field containing unique values (used to set the filter for the WMS request)
      * @param {HTMLElement} targetElement Target HTML element to display the popup content for the given feature
-     * @param {callBack} callBack Callback function
+     * @param {requestCallback} aCallBack Callback function
      */
     openPopup(layerId, feature, uniqueField, targetElement, aCallBack) {
 

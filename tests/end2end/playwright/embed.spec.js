@@ -1,5 +1,5 @@
 // @ts-check
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 import { gotoMap } from './globals';
 
 test.describe('Embed', () => {
