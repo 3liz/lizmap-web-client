@@ -14,6 +14,7 @@ cache:
     - assets/node_modules/
 
 build:
+  image: ${REGISTRY_URL}/factory-ci-runner:fabric-ci
   stage: build
   script:
     - make build
@@ -54,6 +55,7 @@ build:
     - fabric
 
 tests:
+  image: ${REGISTRY_URL}/factory-ci-runner:fabric-ci
   stage: tests
   script:
     - make tests
@@ -70,6 +72,7 @@ tests:
     - fabric
 
 package:
+  image: ${REGISTRY_URL}/factory-ci-runner:fabric-ci
   stage: package
   script:
     - make clean ci_package
@@ -128,6 +131,7 @@ docker-image-release:
     - factory-dind
 
 deploy-package-unstable:
+  image: ${REGISTRY_URL}/factory-ci-runner:fabric-ci
   stage: deploy
   script:
     - make deploy_download
@@ -162,6 +166,7 @@ deploy-docker-unstable:
     - factory-dind
 
 deploy-quick-release:
+  image: ${REGISTRY_URL}/factory-ci-runner:fabric-ci
   stage: release
   script:
     - make saas_release DO_RELEASE=y
@@ -179,6 +184,7 @@ deploy-quick-release:
 
 
 deploy-release:
+  image: ${REGISTRY_URL}/factory-ci-runner:fabric-ci
   stage: release
   script:
     - make deploy_download_stable
