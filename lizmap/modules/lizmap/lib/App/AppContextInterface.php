@@ -269,8 +269,9 @@ interface AppContextInterface
      * Returns the URL corresponding to the Jelix Selector.
      *
      * @param string $selector The Jelix selector
+     * @param mixed  $params   action params
      */
-    public function getUrl($selector);
+    public function getUrl($selector, $params = array());
 
     /**
      * Returns the absolute Url.
