@@ -127,7 +127,7 @@ class MapLayerTest extends TestCase
         $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
         $layer = Qgis\Layer\MapLayer::fromXmlReader($oXml);
         $this->assertFalse($layer->embedded);
-        $this->assertInstanceOf(Qgis\Layer\MapLayer::class, $layer);
+        $this->assertInstanceOf(Qgis\Layer\RasterLayer::class, $layer);
 
         $data = array(
             'id' => 'osm_mapnik20180315181738526',
