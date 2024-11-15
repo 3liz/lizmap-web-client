@@ -133,7 +133,7 @@ class MapLayer extends Qgis\BaseQgisXmlObject
      *
      * @param array $data the instance data
      *
-     * @return EmbeddedLayer|MapLayer|VectorLayer the instance
+     * @return EmbeddedLayer|MapLayer|RasterLayer|VectorLayer the instance
      */
     protected static function buildInstance($data)
     {
@@ -155,6 +155,10 @@ class MapLayer extends Qgis\BaseQgisXmlObject
         if (array_key_exists('type', $data)
             && $data['type'] === 'vector') {
             return new VectorLayer($data);
+        }
+        if (array_key_exists('type', $data)
+            && $data['type'] === 'raster') {
+            return new RasterLayer($data);
         }
 
         return new MapLayer($data);
@@ -405,4 +409,7 @@ MapLayer::registerChildParser('excludeAttributesWMS', function ($oXmlReader) {
 });
 MapLayer::registerChildParser('renderer-v2', function ($oXmlReader) {
     return RendererV2::fromXmlReader($oXmlReader);
+});
+MapLayer::registerChildParser('pipe', function ($oXmlReader) {
+    return RasterLayerPipe::fromXmlReader($oXmlReader);
 });
