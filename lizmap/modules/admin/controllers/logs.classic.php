@@ -46,18 +46,7 @@ class logsCtrl extends jController
         $detailNumber = $dao->countBy($conditions);
 
         // Get last error log
-        $logPath = jApp::logPath('lizmap-admin.log');
-        $errorLog = '';
-        $lines = 50;
-        if (is_file($logPath)) {
-            // Only display content if the file is small to avoid memory issues
-            if (filesize($logPath) > 512000) {
-                $errorLog = 'toobig';
-            } else {
-                $errorLog = trim(implode('', array_slice(file($logPath), -$lines)));
-                $errorLog = htmlentities($errorLog);
-            }
-        }
+        $errorLog = \Lizmap\App\FileTools::tail(jApp::logPath('lizmap-admin.log'), 50);
 
         // Display content via templates
         $tpl = new jTpl();
