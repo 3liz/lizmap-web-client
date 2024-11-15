@@ -1,6 +1,6 @@
 
 import { test, expect } from '@playwright/test';
-import { gotoMap } from './globals';;
+import { gotoMap } from './globals';
 
 test.describe('Google Maps Baselayers', () => {
     test('Load map with no API Key', async ({ page }) => {
@@ -16,7 +16,7 @@ test.describe('Google Maps Baselayers', () => {
         // listen to the requests to intercept failing ones
         let initGoogleRequestsCount = 0;
         page.on('response', response => {
-            if(response.url().includes('createSession?key=dummy') && response.status() != 200) {
+            if(response.url().includes('createSession?key=dummy') && response.status() !== 200) {
                 initGoogleRequestsCount++;
             }
         });
@@ -29,7 +29,7 @@ test.describe('Google Maps Baselayers', () => {
         // baselayers group should be visible...
         await expect(page.locator('#switcher-baselayer')).toBeVisible();
 
-        //.. and should contains the three Google base layers (not loaded)
+        //.. and should contain the three Google base layers (not loaded)
         let options = page.locator('#switcher-baselayer').getByRole('combobox').locator('option');
         await expect(options).toHaveCount(3);
         expect(await options.nth(0).getAttribute('value')).toBe('Google Streets');

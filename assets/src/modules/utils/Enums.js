@@ -25,7 +25,7 @@
  *      'Undefined': undefined,
  *  });
  * @param {object} structure - The enum structure
- * @throws {TypeError} Will throws an error if the structure is not an oject and the values
+ * @throws {TypeError} Will throws an error if the structure is not an object and the values
  * associated to the structure keys are not 'number', 'string', 'boolean' or 'undefined'.
  * @returns {Proxy} The enum based on the structure
  */

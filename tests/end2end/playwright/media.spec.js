@@ -5,15 +5,15 @@ import { gotoMap } from './globals';
 test.describe('Media', () => {
     test('Tests media are deleted', async ({ page }) => {
 
-        var baseUrl = 'index.php/view/media/getMedia?repository=testsrepository&project=form_edition_all_field_type&path=';
+        const baseUrl = 'index.php/view/media/getMedia?repository=testsrepository&project=form_edition_all_field_type&path=';
         // on the feature from the "form_edition_upload" layer
-        var response = await page.request.get(baseUrl + 'media/upload/form_edition_all_field_type/form_edition_upload/text_file_mandatory/lorem-2.txt');
+        let response = await page.request.get(baseUrl + 'media/upload/form_edition_all_field_type/form_edition_upload/text_file_mandatory/lorem-2.txt');
         await expect(response).toBeOK();
 
-        var response = await page.request.get(baseUrl + 'media/upload/form_edition_all_field_type/form_edition_upload/image_file_mandatory/random-2.jpg');
+        response = await page.request.get(baseUrl + 'media/upload/form_edition_all_field_type/form_edition_upload/image_file_mandatory/random-2.jpg');
         await expect(response).toBeOK();
 
-        var response = await page.request.get(baseUrl + '../media/specific_media_folder/random-4.jpg');
+        response = await page.request.get(baseUrl + '../media/specific_media_folder/random-4.jpg');
         await expect(response).toBeOK();
 
         // Open the attribute table
