@@ -163,7 +163,7 @@ test.describe('Draw', () => {
         // Change color
         await page.locator('input[type="color"]').evaluate(input => {
             input.value = '#000'; // Cast input to HTMLInputElement for TypeScript
-            var event = new Event('input', {
+            let event = new Event('input', {
                 bubbles: true,
                 cancelable: true,
             });
