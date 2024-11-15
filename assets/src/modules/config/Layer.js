@@ -345,7 +345,7 @@ export class LayerConfig extends BaseObjectConfig {
     }
 
     /**
-     * The layer layer external access (layer only)
+     * The layer external access (layer only)
      * @type {?object}
      */
     get externalAccess() {

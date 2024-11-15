@@ -446,7 +446,7 @@ export default class Print extends HTMLElement {
      * @param {string | number} index
      */
     set printTemplate(index){
-        // No print templats defined do nothing
+        // No print templates defined do nothing
         if (this._printTemplates.length == 0) {
             return;
         }
