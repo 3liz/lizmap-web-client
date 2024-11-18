@@ -62,7 +62,7 @@ show-qgis-server-versions:
 	docker run \
 	    -u $(LIZMAP_USER_ID):$(LIZMAP_GROUP_ID) \
 	    --rm -i \
-	    -e QGSRV_SERVER_PLUGINPATH=/srv/plugins \
+	    -e QGIS_PLUGINPATH=/srv/plugins \
 	    -e QGIS_PLUGIN_MANAGER_SKIP_SOURCES_FILE=True \
 	    -v $(shell pwd)/qgis-server-plugins:/srv/plugins \
 	    -v $(shell pwd)/:/src \
@@ -82,11 +82,11 @@ upgrade-projects:
 	    3liz/qjazz:${LZMQGSRVVERSION} \
 
 up: env
-	docker compose up  -V --force-recreate -d
+	docker compose --profile=swagger --profile=webdav up  -V --force-recreate -d
 
 stop:
-	docker compose stop
+	docker compose --profile=swagger --profile=webdav  stop
 
 reset:
-	docker compose down -v --remove-orphans
+	docker compose --profile=swagger --profile=webdav  down -v --remove-orphans
 	./lizmap-ctl clean

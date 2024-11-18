@@ -36,5 +36,5 @@ route = "/"
 
 [[backends.root.api]]
 endpoint = "lizmap"
-name = "Lizmap api"
+name = "Lizmap"
 
