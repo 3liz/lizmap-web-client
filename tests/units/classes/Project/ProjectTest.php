@@ -1,6 +1,7 @@
 <?php
 
 use Lizmap\Project;
+use Lizmap\Project\ProjectFilesFinder;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -493,5 +494,67 @@ class ProjectTest extends TestCase
         $proj->setRepo($rep);
         $proj->setCfg($config);
         $this->assertEquals($expectedRet, $proj->checkAcl());
+    }
+
+    public static function userFiles4Projets() {
+        $eventsBaseURL = 'view~media:getMedia?repository=repo1&project=events&';
+        return array(
+            array(
+                'montpellier',
+                'montpellier',
+                array('path' => __DIR__.'/../../../qgis-projects/demoqgis'),
+                array(
+                    'css'=> array(),
+                    'mjs' => array(),
+                    'js' => array()
+                    ),
+                ),
+            array(
+                'events',
+                'repo1',
+                array('path' => __DIR__.'/Ressources/root4Repository/repo1'),
+                array('css'=> array(
+                    'view~media:getCssFile?repository=repo1&project=events&path=media/js/events/style1.css'
+                    ),
+                    'mjs' => array(
+                    'view~media:getMedia?repository=repo1&project=events&path=media/js/events/mjs.mjs'
+                    ),
+                    'js' => array(
+                    $eventsBaseURL.'path=media/js/default/jsdefaultinrepo.js',
+                    $eventsBaseURL.'path=../media/js/default/jsdefaultinroot.js',
+                    $eventsBaseURL.'path=media/js/events/subfolder/jsinsubfolder.js',
+                    $eventsBaseURL.'path=media/js/events/jsprojetinrepo.js',
+                    $eventsBaseURL.'path=../media/js/events/jsprojetinroot.js',
+                    )
+                    )
+                )
+               ,
+        );
+    }
+
+    /**
+     * @dataProvider userFiles4Projets
+     */
+    public function testFinder(string $projectName, $repoName, array $projectData, array $expectedFiles) {
+        $repo = new Project\Repository($repoName, $projectData
+           , null, null, null
+        );
+
+        $project = new ProjectForTests();
+        $project->setRepo($repo);
+        $project->setKey($projectName);
+        $finder = new ProjectFilesFinder();
+        $listFiles = $finder->listFileURLS($project, true);
+        foreach($listFiles as $fileExt => $list) {
+            // remove mtime=XXX From URLs
+            $urlsWithoutMtime = array_map( function ($url) {
+                $urlok = preg_replace('/&mtime=[0-9]*/', '', $url);
+                return $urlok;
+            }, $list);
+            // sorting to ensure list are in same order
+            sort($urlsWithoutMtime);
+            sort($expectedFiles[$fileExt]);
+            $this->assertEquals($urlsWithoutMtime, $expectedFiles[$fileExt]);
+        }
     }
 }
