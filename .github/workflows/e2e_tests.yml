@@ -30,12 +30,12 @@ jobs:
           - name: "LEGACY"
             php: "8.2"
             pg-postgis: "14-3"
-            qgis-server: "3.40"
+            qgis-server: "qgis-ltr-eager"
             update-projects: "FALSE"
           - name: "BLEEDING_EDGE"
             php: "8.3"
             pg-postgis: "17-3"
-            qgis-server: "3.40"
+            qgis-server: "qgis-release-eager"
             update-projects: "TRUE"
     env:
       CYPRESS_CI: TRUE
