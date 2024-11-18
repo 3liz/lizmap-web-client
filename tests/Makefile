@@ -13,9 +13,10 @@ PREFIX:=lizmap-$(LZMBRANCH)-tests
 LIZMAP_USER_ID ?= $(shell id -u)
 LIZMAP_GROUP_ID ?= $(shell id -g)
 LZMPOSTGISVERSION ?= 14-3
-LZMQGSRVVERSION ?= 3.34
+LZMQGSRVVERSION ?= qgis-ltr-eager
 LZMPGPORT ?= 8132
 LZMQGSRVPORT ?= 8131
+LZMQGSADMINPORT ?= 9876
 LZMWEBPORT ?= 8130
 LIZMAP_ADMIN_LOGIN ?= admin
 LIZMAP_ADMIN_EMAIL ?= admin@localhost.local
@@ -33,6 +34,7 @@ env:
 	LZMBRANCH=$(LZMBRANCH)
 	LZMPGPORT=$(LZMPGPORT)
 	LZMQGSRVPORT=$(LZMQGSRVPORT)
+	LZMQGSADMINPORT=$(LZMQGSADMINPORT)
 	LZMWEBPORT=$(LZMWEBPORT)
 	LIZMAP_ADMIN_LOGIN=$(LIZMAP_ADMIN_LOGIN)
 	LIZMAP_ADMIN_EMAIL=$(LIZMAP_ADMIN_EMAIL)
@@ -44,23 +46,14 @@ env:
 
 
 build-plugins:
-	docker run \
-	    -u $(LIZMAP_USER_ID):$(LIZMAP_GROUP_ID) \
-	    --rm -i \
-	    -e QGSRV_SERVER_PLUGINPATH=/srv/plugins \
-	    -e QGIS_PLUGIN_MANAGER_SOURCES_FILE=/tmp/sources-plugin-manager.list \
-	    -e QGIS_PLUGIN_MANAGER_CACHE_DIR=/tmp/cache-plugin-manager \
-	    -v $(shell pwd)/qgis-server-plugins:/srv/plugins \
-	    -v $(shell pwd)/:/src \
-        --entrypoint /src/add_server_plugins.sh \
-	    3liz/qgis-map-server:${LZMQGSRVVERSION} \
+	echo "Plugins are auto installed at qgis worker startup"
 
 show-qgis-server-versions:
 	docker run \
 	    --rm -i \
-	    --entrypoint qgisserver \
-	    3liz/qgis-map-server:${LZMQGSRVVERSION} \
-	    --version
+	    --entrypoint qgis-server-rpc \
+	    3liz/qgis-services:${LZMQGSRVVERSION} \
+	    version
 	docker run \
 	    -u $(LIZMAP_USER_ID):$(LIZMAP_GROUP_ID) \
 	    --rm -i \
@@ -68,8 +61,9 @@ show-qgis-server-versions:
 	    -e QGIS_PLUGIN_MANAGER_SKIP_SOURCES_FILE=True \
 	    -v $(shell pwd)/qgis-server-plugins:/srv/plugins \
 	    -v $(shell pwd)/:/src \
+	    --workdir /srv/plugins \
 	    --entrypoint qgis-plugin-manager \
-	    3liz/qgis-map-server:${LZMQGSRVVERSION} \
+	    3liz/qgis-services:${LZMQGSRVVERSION} \
 	    list
 
 upgrade-projects:
