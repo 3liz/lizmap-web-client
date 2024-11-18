@@ -24,15 +24,15 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: "LEGACY"
+          - name: "LTR"
             php: "8.2"
             pg-postgis: "14-3"
-            qgis-server: "qgis-3.40"
+            qgis-server: "qgis-ltr-eager"
             update-projects: "FALSE"
-          - name: "BLEEDING_EDGE"
+          - name: "RELEASE"
             php: "8.4"
             pg-postgis: "17-3"
-            qgis-server: "qgis-3.44"
+            qgis-server: "qgis-release-eager"
             update-projects: "TRUE"
     env:
       PLAYWRIGHT_FORCE_TTY: true

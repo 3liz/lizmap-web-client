@@ -100,7 +100,7 @@ services:
       - { type: bind, source: ./docker-conf/pg_service.conf, target: /srv/etc/pg_service.conf }
       - { type: bind, source: ./docker-conf/qgis-server.toml, target: /srv/etc/qgis-server.toml }
       - type: bind
-        source: ./docker-conf/stable-plugin-sources.list
+        source: ./docker-conf/plugin-sources.list
         target: /srv/etc/plugin-sources.list
   # QGIS workers frontend
   map:
