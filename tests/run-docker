@@ -18,9 +18,7 @@ if [ "$CMD" == "reset" ]; then
     exit 0
 elif [ "$CMD" == "build" ]; then
     # install or update base images, to be sure we have the latest images
-    docker compose pull
-    # install or update plugins, to be sure we have the latest plugins
-    make build-plugins
+    docker compose --profile=webdav --profile=swagger pull
 fi
 
-docker compose $CMD "$@"
+docker compose --profile=webdav --profile=swagger $CMD "$@"
