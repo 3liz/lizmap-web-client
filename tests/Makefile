@@ -15,10 +15,11 @@ LIZMAP_GROUP_ID ?= $(shell id -g)
 # Note that GH Action E2E has its own version config for PHP, PG and QGIS
 PHP_VERSION ?= 8.2
 LZMPOSTGISVERSION ?= 14-3
-LZMQGSRVVERSION ?= 3.40
+LZMQGSRVVERSION ?= qgis-ltr-eager
 QGSRVAPIPORT ?= 8134
 LZMPGPORT ?= 8132
 LZMQGSRVPORT ?= 8131
+LZMQGSADMINPORT ?= 9876
 LZMWEBPORT ?= 8130
 LZMWEBSPORT ?= 8135
 LIZMAP_ADMIN_LOGIN ?= admin
@@ -55,35 +56,12 @@ env:
 	SWAGGER_PORT=$(SWAGGER_UI_PORT)
 	EOF
 
-build-plugins:
-	docker run -q \
-	    -u $(LIZMAP_USER_ID):$(LIZMAP_GROUP_ID) \
-	    --rm -i \
-	    -e QGSRV_SERVER_PLUGINPATH=/srv/plugins \
-	    -e QGIS_PLUGIN_MANAGER_SOURCES_FILE=/src/docker-conf/plugin-sources.list \
-	    -e QGIS_PLUGIN_MANAGER_CACHE_DIR=/tmp/cache-plugin-manager \
-	    -e QGIS_PLUGIN_MANAGER_INCLUDE_PRERELEASE=$(QGIS_PLUGIN_MANAGER_INCLUDE_PRERELEASE) \
-	    -v $(shell pwd)/qgis-server-plugins:/srv/plugins \
-	    -v $(shell pwd)/:/src \
-        --entrypoint /src/add_server_plugins.sh \
-	    3liz/qgis-map-server:${LZMQGSRVVERSION} \
-
 show-qgis-server-versions:
 	@docker run -q \
 	    --rm -i \
-	    --entrypoint qgisserver \
-	    3liz/qgis-map-server:${LZMQGSRVVERSION} \
-	    --version
-	@docker run -q \
-	    -u $(LIZMAP_USER_ID):$(LIZMAP_GROUP_ID) \
-	    --rm -i \
-	    -e QGSRV_SERVER_PLUGINPATH=/srv/plugins \
-	    -e QGIS_PLUGIN_MANAGER_SKIP_SOURCES_FILE=True \
-	    -v $(shell pwd)/qgis-server-plugins:/srv/plugins \
-	    -v $(shell pwd)/:/src \
-	    --entrypoint qgis-plugin-manager \
-	    3liz/qgis-map-server:${LZMQGSRVVERSION} \
-	    list
+	    --entrypoint qjazz-config \
+	    3liz/qjazz:${LZMQGSRVVERSION} \
+	    version
 
 upgrade-projects:
 	@echo "Upgrading all projects in qgis-projects/tests to ${LZMQGSRVVERSION}"
@@ -93,10 +71,10 @@ upgrade-projects:
 	    -v $(shell pwd)/qgis-server-plugins:/srv/plugins \
 	    -v $(shell pwd)/qgis-projects/tests:/tmp/qgis-projects \
 	    --entrypoint /srv/plugins/upgrade_projects.py \
-	    3liz/qgis-map-server:${LZMQGSRVVERSION} \
+	    3liz/qjazz:${LZMQGSRVVERSION} \
 
 up: env
-	docker compose up  -V --force-recreate -d
+	docker compose --profile=dev up  -V --force-recreate -d
 
 up-tail: env
 	docker compose up  -V --force-recreate
@@ -105,10 +83,10 @@ up-tail: env
 run: up
 
 stop:
-	docker compose stop
+	docker compose --profile=dev  stop
 
 reset:
-	docker compose down -v --remove-orphans
+	docker compose --profile=dev down -v --remove-orphans
 	./lizmap-ctl clean
 
 # install or update base images, to be sure we have the latest images
@@ -121,6 +99,13 @@ build:: build-plugins
 
 clean:
 	./lizmap-ctl clean
+
+clean-plugins:
+	rm -rf \
+	./qgis-server-plugins/.cache_plugin_manager \
+	./qgis-server-plugins/atlasprint \
+	./qgis-server-plugins/lizmap_server \
+	./qgis-server-plugins/wfsOutputExtension 
 
 # run docker
 # prepare lizmap
