@@ -53,14 +53,14 @@ export default class FeaturesTable extends HTMLElement {
         // Sorting attribute and direction
         this.sortingField = this.getAttribute('sortingField');
         const sortingOrder = this.getAttribute('sortingOrder');
-        this.sortingOrder = (sortingOrder !== null && ['asc', 'desc'].includes(sortingOrder)) ? sortingOrder : 'asc';
+        this.sortingOrder = (sortingOrder !== null && ['asc', 'desc'].includes(sortingOrder.toLowerCase())) ? sortingOrder : 'asc';
 
         // open popup ?
         this.openPopup = (this.layerConfig && this.layerConfig.popup);
 
         // Add drag&drop capability ?
         const draggable = this.getAttribute('draggable');
-        this.itemsDraggable = (draggable !== null && ['yes', 'no'].includes(draggable)) ? draggable : 'no';
+        this.itemsDraggable = (draggable !== null && ['yes', 'no'].includes(draggable.toLowerCase())) ? draggable : 'no';
 
         // Features
         this.features = [];
