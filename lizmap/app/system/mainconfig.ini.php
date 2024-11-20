@@ -122,7 +122,7 @@ urlParamNameLanguage=lang
 useDefaultLanguageBrowser=on
 
 [tplplugins]
-defaultJformsBuilder=html
+defaultJformsBuilder=htmlbootstrap
 
 [responses]
 html=myHtmlResponse
