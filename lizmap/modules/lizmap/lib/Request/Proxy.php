@@ -489,11 +489,9 @@ class Proxy
      * @param int    $httpCode The HTTP code of the request
      * @param string $url      The URL of the request, for logging
      */
-    public static function logRequestIfError($httpCode, $url)
+    protected static function logRequestIfError($httpCode, $url)
     {
-        $httpCodeClass = substr($httpCode, 0, 1);
-        // Change to str_starts_with when PHP 8.1 will be minimum version for all maintained version
-        if ($httpCodeClass == '4' || $httpCodeClass == '5') {
+        if ($httpCode >= 400) {
             \jLog::log('An HTTP request ended with an error, please check the main error log. Code '.$httpCode, 'lizmapadmin');
             \jLog::log('The HTTP request below ended with an error. Code '.$httpCode.' → '.$url, 'error');
         }

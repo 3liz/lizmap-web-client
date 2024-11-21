@@ -186,6 +186,26 @@ abstract class OGCRequest
     }
 
     /**
+     * Log if the HTTP code is a 4XX or 5XX error code.
+     *
+     * @param int $code The HTTP code of the request
+     */
+    protected function logRequestIfError($code)
+    {
+        if ($code > 400) {
+            // The master error with map parameter
+            $params = $this->parameters();
+            \jLog::log('The OGC request to QGIS Server below ended with an error. Code '.$code.' → '.json_encode($params), 'error');
+
+            // The admin error with map parameter replaced by repository and project parameters
+            unset($params['map']);
+            $params['repository'] = $this->project->getRepository()->getKey();
+            $params['project'] = $this->project->getKey();
+            \jLog::log('An HTTP request ended with an error, please check the main error log. Code '.$code.' → '.json_encode($params), 'lizmapadmin');
+        }
+    }
+
+    /**
      * Request QGIS Server.
      *
      * @param bool $post   Force to use POST request
@@ -236,10 +256,14 @@ abstract class OGCRequest
         if ($stream) {
             $response = \Lizmap\Request\Proxy::getRemoteDataAsStream($querystring, $options);
 
+            $this->logRequestIfError($response->getCode());
+
             return new OGCResponse($response->getCode(), $response->getMime(), $response->getBodyAsStream());
         }
 
         list($data, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($querystring, $options);
+
+        $this->logRequestIfError($code);
 
         return new OGCResponse($code, $mime, $data);
     }
