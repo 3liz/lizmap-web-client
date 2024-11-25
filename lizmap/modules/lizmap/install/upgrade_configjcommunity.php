@@ -20,7 +20,7 @@ class lizmapModuleUpgrader_configjcommunity extends jInstallerModule
             } else {
                 $lzmIni->removeValue('allowUserAccountRequests', 'services');
             }
-            $liveIni->setValue('registrationEnabled', ($val ? 'on' : 'off'), 'jcommunity');
+            $liveIni->setValue('registrationEnabled', $val ? 'on' : 'off', 'jcommunity');
 
             $adminSenderEmail = $this->entryPoint->config->mailer['webmasterEmail'];
             if ($adminSenderEmail == 'root@localhost' || $adminSenderEmail == 'root@localhost.localdomain') {

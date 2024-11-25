@@ -454,9 +454,9 @@ class serviceCtrl extends jController
                 if ($data) {
                     $data = json_decode($data);
                     if (
-                  property_exists($data, 'filter')
-                  and trim($data->filter) != ''
-                ) {
+                        property_exists($data, 'filter')
+                        and trim($data->filter) != ''
+                    ) {
                         $filters[] = $data->filter;
                     }
                 }

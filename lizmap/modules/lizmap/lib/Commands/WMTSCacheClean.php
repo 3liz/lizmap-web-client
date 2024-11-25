@@ -17,7 +17,6 @@ class WMTSCacheClean extends \Jelix\Scripts\ModuleCommandAbstract
             ->addArgument('repository', InputArgument::REQUIRED, 'The repository ID')
             ->addArgument('project', InputArgument::REQUIRED, 'The project name')
             ->addArgument('layer', InputArgument::OPTIONAL, 'The layer name for which you want to clear cache')
-
         ;
     }
 

@@ -12,8 +12,6 @@
 
 namespace Lizmap\App;
 
-use jLocale;
-
 /**
  * Allow to load all locales from a locales file.
  */
@@ -30,9 +28,9 @@ class LocalesLoader
      * @param string $key    a locale key. Only module and file prefix filename is required
      * @param string $locale
      *
-     * @throws \jExceptionSelector
-     *
      * @return array all translations
+     *
+     * @throws \jExceptionSelector
      */
     public static function getLocalesFrom($key, $locale = null)
     {
@@ -41,7 +39,7 @@ class LocalesLoader
 
         // With Jelix 1.9+
         if (method_exists('jLocale', 'getBundle')) {
-            return jLocale::getBundle($key, $locale)->getAllKeys();
+            return \jLocale::getBundle($key, $locale)->getAllKeys();
         }
 
         // with Jelix 1.8

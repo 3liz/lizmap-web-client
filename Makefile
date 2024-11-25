@@ -257,10 +257,14 @@ php-cs-fixer-test:
 	php-cs-fixer fix --config=.php-cs-fixer.dist.php --allow-risky=yes --dry-run --diff
 
 php-cs-fixer-test-docker:
-	docker run --rm -w=/app -v ${PWD}:/app oskarstark/php-cs-fixer-ga:3.8.0 --allow-risky=yes --config=.php-cs-fixer.dist.php  --dry-run --diff
+	# TODO Switch to PHP-CS-Fixer official image, which are more up to date (3.65.0)
+	# Current 3.26.0 tag is 3.40.0 inside the docker image... :/
+	docker run --rm -w=/app -v ${PWD}:/app oskarstark/php-cs-fixer-ga:3.26.0 --allow-risky=yes --config=.php-cs-fixer.dist.php  --dry-run --diff
 
 php-cs-fixer-apply:
 	php-cs-fixer fix --config=.php-cs-fixer.dist.php --allow-risky=yes
 
 php-cs-fixer-apply-docker:
-	docker run --rm -it -w=/app -v ${PWD}:/app oskarstark/php-cs-fixer-ga:3.8.0 --allow-risky=yes --config=.php-cs-fixer.dist.php
+	# TODO Switch to PHP-CS-Fixer official image, which are more up to date (3.65.0)
+	# Current 3.26.0 tag is 3.40.0 inside the docker image... :/
+	docker run --rm -it -w=/app -v ${PWD}:/app oskarstark/php-cs-fixer-ga:3.26.0 --allow-risky=yes --config=.php-cs-fixer.dist.php

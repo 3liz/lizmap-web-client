@@ -528,6 +528,7 @@ class Proxy
             // did the request has to be echoed ?
             if (self::hasEchoInBody($options['body'])) {
                 $content = self::getEchoFromRequest($url, $options['body']);
+
                 // We do not perform the request, but return the content previously logged
                 return array(
                     $content,
