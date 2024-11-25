@@ -26,7 +26,7 @@
 <form action="{formurl 'admin~acl:addgroup', array('user'=>$user)}" method="post">
     {formurlparam}
     <label for="user-add-group">{@admin~user.acl.form.add.to.group@}</label>
-    <select name="grpid" id="user-add-group">
+    <select name="grpid" id="user-add-group" class="form-select">
         {foreach $groups as $group}
             <option value="{$group->id_aclgrp}">{$group->name}</option>
         {/foreach}

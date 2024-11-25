@@ -57,13 +57,12 @@ export default class FeatureToolbar extends HTMLElement {
 
             ${this.isFeatureExportable
                 ? html`<div class="btn-group feature-export">
-                        <button type="button" class="btn btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-toggle="tooltip" data-bs-title="${lizDict['attributeLayers.toolbar.btn.data.export.title']}">
+                        <button type="button" class="btn btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" title="${lizDict['attributeLayers.toolbar.btn.data.export.title']}">
                             <i class="icon-download"></i>
-                            <span class="caret"></span>
                         </button>
-                        <ul class="dropdown-menu pull-right" role="menu">
+                        <ul class="dropdown-menu">
                             ${this._downloadFormats.map((format) =>
-                                html`<li><a href="#" @click=${() => this.export(format)}>${format}</a></li>`)}
+                                html`<li><a class="dropdown-item" href="#" @click=${() => this.export(format)}>${format}</a></li>`)}
                         </ul>
                     </div>`
                 : ''
@@ -104,13 +103,12 @@ export default class FeatureToolbar extends HTMLElement {
             ${this.editableChildrenLayers.length
                 ? html`
                 <div class="btn-group feature-create-child" style="margin-left: 0px;">
-                    <button type="button" class="btn btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-title="${lizDict['attributeLayers.toolbar.btn.data.createFeature.title']}">
+                    <button type="button" class="btn btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" title="${lizDict['attributeLayers.toolbar.btn.data.createFeature.title']}">
                         <i class="icon-plus-sign"></i>
-                        <span class="caret"></span>
                     </button>
-                    <ul class="dropdown-menu" role="menu">
+                    <ul class="dropdown-menu">
                         ${this.editableChildrenLayers.map((child) =>
-                            html`<li><a data-child-layer-id="${child.layerId}" @click=${() => this.createChild(child)}>${child.title}</a></li>`)}
+                            html`<li><a class="dropdown-item" href="#" data-child-layer-id="${child.layerId}" @click=${() => this.createChild(child)}>${child.title}</a></li>`)}
                     </ul>
                 </div>
                 `

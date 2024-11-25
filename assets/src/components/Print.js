@@ -129,12 +129,12 @@ export default class Print extends HTMLElement {
                 </tr>
                 <tr>
                     <td>
-                        <select id="print-template" @change=${(event) => { this.printTemplate = event.target.value }}>
+                        <select id="print-template" class="form-select" @change=${(event) => { this.printTemplate = event.target.value }}>
                             ${this._printTemplates.map((template, index) => html`<option value=${index}>${template.title}</option>`)}
                         </select>
                     </td>
                     <td>
-                        <select id="print-scale" class="btn-print-scales" .value=${this._printScale} @change=${(event) => { this.printScale = parseInt(event.target.value) }}>
+                        <select id="print-scale" class="btn-print-scales form-select" .value=${this._printScale} @change=${(event) => { this.printScale = parseInt(event.target.value) }}>
                             ${this._printScales.map( scale => html`<option .selected=${scale === this._printScale} value=${scale}>${scale.toLocaleString()}</option>`)}
                         </select>
                     </td>
@@ -157,7 +157,7 @@ export default class Print extends HTMLElement {
                 ${this.printDPIs.length > 1 ? keyed(this.defaultDPI, html`
                 <div class="print-dpi">
                     <span>${lizDict['print.toolbar.dpi']}</span>
-                    <select class="btn-print-dpis" .value=${this.defaultDPI} @change=${(event) => { this._printDPI = event.target.value }}>
+                    <select class="btn-print-dpis form-select" .value=${this.defaultDPI} @change=${(event) => { this._printDPI = event.target.value }}>
                         ${this.printDPIs.map( dpi => html`<option ?selected=${dpi === this.defaultDPI} value=${dpi}>${dpi}</option>`)}
                     </select>
                 </div>`) : ''}
@@ -184,7 +184,7 @@ export default class Print extends HTMLElement {
             </details>
             <div class="flex">
                 ${this.printFormats.length > 1 ? keyed(this.defaultFormat, html`
-                <select id="print-format" title="${lizDict['print.toolbar.format']}" class="btn-print-format" .value=${this.defaultFormat} @change=${(event) => { this._printFormat = event.target.value }}>
+                <select id="print-format" title="${lizDict['print.toolbar.format']}" class="btn-print-format form-select" .value=${this.defaultFormat} @change=${(event) => { this._printFormat = event.target.value }}>
                     ${this.printFormats.map( format => html`<option ?selected=${format === this.defaultFormat} value="${format}">${format.toUpperCase()}</option>`)}
                 </select>`) : ''}
                 <button id="print-launch" class="btn-print-launch btn btn-primary flex-grow-1" @click=${() => { this._launch() }}>${lizDict['print.launch']}</button>

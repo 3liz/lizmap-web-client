@@ -986,7 +986,7 @@ window.lizMap = function() {
 
 
                 // add filter values list
-                $('#locate-layer-'+layerName).parent().before('<div class="locate-layer"><select id="locate-layer-'+layerName+'-'+locate.filterFieldName+'">'+fOptions+'</select></div><br/>');
+                $('#locate-layer-'+layerName).parent().before('<div class="locate-layer"><select class="form-select" id="locate-layer-'+layerName+'-'+locate.filterFieldName+'">'+fOptions+'</select></div><br/>');
                 // listen to filter select changes
                 $('#locate-layer-'+layerName+'-'+locate.filterFieldName).change(function(){
                     var filterValue = $(this).children(':selected').val();
@@ -1141,7 +1141,7 @@ window.lizMap = function() {
             var lname = locateByLayerList[l];
             var lConfig = config.layers[lname];
             var html = '<div class="locate-layer">';
-            html += '<select id="locate-layer-' + cleanName(lname) + '" class="label">';
+            html += '<select id="locate-layer-' + cleanName(lname) + '" class="label form-select">';
             html += '<option>' + lConfig.title + '...</option>';
             html += '</select>';
             html += '</div>';
