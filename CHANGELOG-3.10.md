@@ -10,6 +10,11 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ### Funders
 
+### Important
+
+* Update to Bootstrap 5, QGIS projects containing HTML must be updated
+* PHP 8.1 minimum is required
+
 ### Added
 
 ### Changed
@@ -17,3 +22,4 @@ with some extra keywords: backend, tests, test, translation, funders, important
 ### Backend
 
 * Update to Bootstrap 5
+* Update to PHP 8.1 minimum
