@@ -1427,11 +1427,12 @@ class Project
      * and we are not in an editing context we return null
      * to tell there is no filter in this context.
      *
-     * @param string $layerName : the layer name
+     * @param string $layerName      : the layer name
+     * @param bool   $editingContext : we are in editing context
      *
      * @return null|array the configuration for the polygon filter the given layer
      */
-    public function getLayerPolygonFilterConfig($layerName, $editing_context = false)
+    public function getLayerPolygonFilterConfig($layerName, $editingContext = false)
     {
         if (!$this->hasPolygonFilteredLayers()) {
             return null;
@@ -1466,7 +1467,7 @@ class Project
         // If the polygon filter is configured for editing only
         // and we are not in an editing context
         // No need to return the filter config
-        if (!$editing_context && $layer_config['filter_mode'] == 'editing_only') {
+        if (!$editingContext && $layer_config['filter_mode'] == 'editing_only') {
             return null;
         }
 
