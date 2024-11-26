@@ -1167,7 +1167,7 @@ export class Digitizing {
          */
         function handleHeaderMeta(headerMeta) {
             const crsFGB = headerMeta.crs;
-            projFGB = "EPSG:" + crsFGB.code;
+            projFGB = (crsFGB ? "EPSG:" + crsFGB.code : null);
         }
 
         /**
@@ -1234,18 +1234,26 @@ export class Digitizing {
                             features.push(feature);
                         }
 
-                        const projCode = projFGB.split(":")[1];
+                        if (projFGB !== null) {
+                            const projCode = projFGB.split(":")[1];
 
-                        // We need a reprojection to be done because flatgeobuf files doessn't have a precise projection
-                        // We neither used wkt located in headers due to some errors to define it with proj4.
-                        // Nor 'fromEPSGcode()' because it returns a 'Projection' object that sometimes throws errors.
-                        let descriptor = await fetch('https://epsg.io/' + projCode + '.proj4');
-                        descriptor =  await descriptor.text();
+                            // We need a reprojection to be done because flatgeobuf files doessn't have a precise projection
+                            // We neither used wkt located in headers due to some errors to define it with proj4.
+                            // Nor 'fromEPSGcode()' because it returns a 'Projection' object that sometimes throws errors.
+                            let descriptor = await fetch('https://epsg.io/' + projCode + '.proj4');
+                            descriptor =  await descriptor.text();
 
-                        proj4.defs(projFGB, descriptor);
-                        register(proj4);
+                            proj4.defs(projFGB, descriptor);
+                            register(proj4);
 
-                        features = reprojAll(features, projFGB, mainLizmap.projection);
+                            features = reprojAll(features, projFGB, mainLizmap.projection);
+                        } else {
+                            lizMap.addMessage("No metadata found. Make sure the projection of the fgb " +
+                                                        "file is the same as the current project : " +
+                                                        mainLizmap.projection
+                            , 'info'
+                            , true)
+                        }
 
                         OL6features = features;
                     }
