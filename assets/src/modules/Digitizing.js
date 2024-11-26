@@ -33,6 +33,9 @@ import { unByKey } from 'ol/Observable.js';
 import { transform } from 'ol/proj.js';
 
 import shp from 'shpjs';
+import * as flatgeobuf from 'flatgeobuf';
+import { register } from "ol/proj/proj4.js";
+import proj4 from "proj4";
 
 /**
  * List of digitizing available tools
@@ -1155,6 +1158,32 @@ export class Digitizing {
         // Get file extension
         const fileExtension = file.name.split('.').pop().toLowerCase();
 
+        // Prepare for flatgeobuf
+        let projFGB;
+
+        /**
+         * Handle meta data of the FlatGeobuf file
+         * @param {object} headerMeta - Meta data of the FlatGeobuf file
+         */
+        function handleHeaderMeta(headerMeta) {
+            const crsFGB = headerMeta.crs;
+            projFGB = "EPSG:" + crsFGB.code;
+        }
+
+        /**
+         * Reproject all features from a sourceProj to a targetProj
+         * @param {Feature} features - Features to reproject
+         * @param {string} sourceProj - Source projection
+         * @param {string} targetProj - Target projection
+         * @returns {Feature} - Reprojected features
+         */
+        function reprojAll(features, sourceProj, targetProj) {
+            for (let i = 0; i < features.length; i++) {
+                features[i].getGeometry().transform(sourceProj, targetProj);
+            }
+            return features;
+        }
+
         // if (fileExtension === 'zip') {
         //     reader.onload = (() => {
         //         return (e) => {
@@ -1195,6 +1224,27 @@ export class Digitizing {
                         if (geojson) {
                             OL6features = (new GeoJSON()).readFeatures(geojson, options);
                         }
+                    } else if (fileExtension === 'fgb') {
+                        let features = [];
+
+                        const blob = new Blob([fileContent]);
+                        const stream = blob.stream();
+
+                        for await (const feature of flatgeobuf.ol.deserialize(stream, null, handleHeaderMeta)) {
+                            features.push(feature);
+                        }
+
+                        const projCode = projFGB.split(":")[1];
+
+                        let descriptor = await fetch('https://epsg.io/' + projCode + '.proj4');
+                        descriptor =  await descriptor.text();
+
+                        proj4.defs(projFGB, descriptor);
+                        register(proj4);
+
+                        features = reprojAll(features, projFGB, mainLizmap.projection);
+
+                        OL6features = features;
                     }
                 } catch (error) {
                     lizMap.addMessage(error, 'error', true)
@@ -1214,6 +1264,8 @@ export class Digitizing {
         })(this);
 
         if (fileExtension === 'zip'){
+            reader.readAsArrayBuffer(file);
+        } else if (fileExtension === 'fgb'){
             reader.readAsArrayBuffer(file);
         } else {
             reader.readAsText(file);
