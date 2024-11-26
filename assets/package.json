@@ -28,6 +28,7 @@
   "author": "3Liz",
   "license": "ISC",
   "dependencies": {
+    "flatgeobuf": "^3.36.0",
     "ol-wfs-capabilities": "^2.0.0"
   }
 }
