@@ -107,14 +107,14 @@ export default class Action {
                     // Add action buttons if needed
                     let popupContainerId = popup.containerId;
                     let popupContainer = document.getElementById(popupContainerId);
-                    if (!popupContainer) return false;
-                    let featureIdInputSelector = 'div.lizmapPopupContent input.lizmap-popup-layer-feature-id';
-                    Array.from(popupContainer.querySelectorAll(featureIdInputSelector)).map(element => {
 
-                        // Get layer id and feature id
-                        let val = element.value;
-                        let featureId = val.split('.').pop();
-                        let layerId = val.replace('.' + featureId, '');
+                    if (!popupContainer) return false;
+
+                    Array.from(popupContainer.querySelectorAll('div.lizmapPopupContent .lizmapPopupSingleFeature')).map(element => {
+
+                        // Get layer ID and feature ID
+                        const featureId = element.dataset.featureId;
+                        const layerId = element.dataset.layerId;
 
                         // Get layer lizmap config
                         let getLayerConfig = mainLizmap.lizmap3.getLayerConfigById(layerId);

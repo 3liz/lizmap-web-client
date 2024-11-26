@@ -698,6 +698,8 @@ class WMSRequest extends OGCRequest
             ++$layerFeaturesCounter;
 
             // Hidden input containing layer id and feature id
+            // TODO Deprecated, it will be removed later
+            // Use data-attributes in the parent div instead
             $hiddenFeatureId = '<input type="hidden" value="'.$layerId.'.'.$id.'" class="lizmap-popup-layer-feature-id"/>'.PHP_EOL;
 
             $popupFeatureContent = $this->getViewTpl('view~popupDefaultContent', $layerName, $layerId, $layerTitle, array(
