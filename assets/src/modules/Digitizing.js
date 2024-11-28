@@ -1237,14 +1237,26 @@ export class Digitizing {
                         if (projFGB !== null) {
                             const projCode = projFGB.split(":")[1];
 
-                            // We need a reprojection to be done because flatgeobuf files doessn't have a precise projection
-                            // We neither used wkt located in headers due to some errors to define it with proj4.
-                            // Nor 'fromEPSGcode()' because it returns a 'Projection' object that sometimes throws errors.
-                            let descriptor = await fetch('https://epsg.io/' + projCode + '.proj4');
-                            descriptor =  await descriptor.text();
+                            const nameProjs = Object.keys(proj4.defs);
+                            let isIncluded = false;
 
-                            proj4.defs(projFGB, descriptor);
-                            register(proj4);
+                            for (let i = 0; i < nameProjs.length; i++) {
+                                if (nameProjs[i].includes(projFGB)) {
+                                    isIncluded = true;
+                                    break;
+                                }
+                            }
+
+                            if (!isIncluded) {
+                                // We need a reprojection to be done because flatgeobuf files doessn't have a precise projection
+                                // We neither used wkt located in headers due to some errors to define it with proj4.
+                                // Nor 'fromEPSGcode()' because it returns a 'Projection' object that sometimes throws errors.
+                                let descriptor = await fetch('https://epsg.io/' + projCode + '.proj4');
+                                descriptor = await descriptor.text();
+
+                                proj4.defs(projFGB, descriptor);
+                                register(proj4);
+                            }
 
                             features = reprojAll(features, projFGB, mainLizmap.projection);
                         } else {
