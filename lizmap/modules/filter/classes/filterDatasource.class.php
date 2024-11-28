@@ -100,10 +100,11 @@ class filterDatasource
     }
 
     /**
-     * return data as jDbResultSet or errors as array
+     * return data as jDbResultSet or errors as array.
      *
-     * @param  mixed $sql
-     * @return jDbResultSet|array
+     * @param mixed $sql
+     *
+     * @return array|jDbResultSet
      */
     protected function getData($sql)
     {
