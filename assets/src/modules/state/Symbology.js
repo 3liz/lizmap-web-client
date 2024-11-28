@@ -109,6 +109,20 @@ export class BaseObjectSymbology extends EventDispatcher {
 
         super()
         applyConfig(this, node, requiredProperties, optionalProperties)
+
+        /**
+         * The private symbology type
+         * @type {string}
+         * @private
+         */
+        this._type;
+
+        /**
+         * The private symbology title
+         * @type {string}
+         * @private
+         */
+        this._title;
     }
 
     /**
@@ -157,6 +171,13 @@ export class BaseIconSymbology extends BaseObjectSymbology {
         }
 
         super(node, requiredProperties, optionalProperties)
+
+        /**
+         * The private base64 icon
+         * @type {string}
+         * @private
+         */
+        this._icon;
     }
 
     /**
@@ -195,6 +216,13 @@ export class LayerIconSymbology extends BaseIconSymbology {
         }
 
         super(node, layerIconProperties, {})
+
+        /**
+         * The private layer name
+         * @type {string}
+         * @private
+         */
+        this._name;
     }
 
     /**
@@ -234,6 +262,26 @@ export class SymbolIconSymbology extends BaseIconSymbology {
             node.type = 'icon';
         }
         super(node, symbolIconProperties, symbolIconOptionalProperties)
+
+        /**
+         * The private rule key
+         * @type {string}
+         * @private
+         */
+        this._ruleKey;
+
+        /**
+         * The private is rule checked
+         * @type {boolean}
+         * @private
+         */
+        this._checked;
+
+        /**
+         * The private children rules
+         * @type {BaseIconSymbology[]}
+         * @private
+         */
         this._childrenRules = []
     }
 
@@ -306,8 +354,26 @@ export class SymbolRuleSymbology extends SymbolIconSymbology {
             node.type = 'rule';
         }
         super(node, symbolRuleProperties, symbolRuleOptionalProperties)
+
+        /**
+         * The private parent rule key
+         * @type {string}
+         * @private
+         */
+        this._parentRuleKey;
+
+        /**
+         * The private parent rule
+         * @type {?SymbolRuleSymbology}
+         * @private
+         */
         this._parentRule = null;
-        this._childrenRules = [];
+
+        /**
+         * The private is symbol item expanded ?
+         * @type {boolean}
+         * @private
+         */
         this._expanded = false;
     }
 
@@ -442,11 +508,21 @@ export class BaseSymbolsSymbology extends BaseObjectSymbology {
 
         super(node, requiredProperties, optionalProperties)
 
+        /**
+         * The private children icons
+         * @type {BaseIconSymbology[]}
+         * @private
+         */
         this._icons = [];
         for(const symbol of this._symbols) {
             this._icons.push(new iconClass(symbol));
         }
 
+        /**
+         * The private symbol is expanded ?
+         * @type {boolean}
+         * @private
+         */
         this._expanded = false;
     }
 
@@ -540,6 +616,12 @@ export class LayerSymbolsSymbology extends BaseSymbolsSymbology {
             this._ruleMap = new Map(this._icons.map(i => [i.ruleKey, i]));
             let root = new Map();
             for (const icon of this._icons) {
+                if (icon.parentRuleKey === '') {
+                    // The parentRuleKey could be null
+                    // it is an empty symbol defined in
+                    // JSON GetLegendGraphic
+                    continue;
+                }
                 const parent = this._ruleMap.get(icon.parentRuleKey);
                 if (parent === undefined) {
                     root.set(icon.ruleKey, icon);
@@ -553,8 +635,37 @@ export class LayerSymbolsSymbology extends BaseSymbolsSymbology {
             this._root = root;
         } else {
             super(node, layerSymbolsProperties, {}, SymbolIconSymbology)
+            this._ruleMap = null;
             this._root = null;
         }
+
+        /**
+         * The private layer name
+         * @type {string}
+         * @private
+         */
+        this._name;
+
+        /**
+         * The private children icons
+         * @type {SymbolIconSymbology[]|SymbolRuleSymbology[]}
+         * @private
+         */
+        this._icons;
+
+        /**
+         * The private rule map that contains rule symbology ruleKey:Symbol associations
+         * @type {?Map<string, SymbolRuleSymbology>}
+         * @private
+         */
+        this._ruleMap;
+
+        /**
+         * The private legend root that contains first level rule symbology ruleKey:Symbol associations
+         * @type {?Map<string, SymbolRuleSymbology>}
+         * @private
+         */
+        this._root;
     }
 
     /**
@@ -571,7 +682,7 @@ export class LayerSymbolsSymbology extends BaseSymbolsSymbology {
      */
     get legendOn() {
         for (const symbol of this._icons) {
-            if (symbol.rulekey === '') {
+            if (symbol.ruleKey === '') {
                 return true;
             }
             if (symbol.legendOn) {
@@ -625,7 +736,7 @@ export class LayerSymbolsSymbology extends BaseSymbolsSymbology {
         let keyChecked = [];
         let keyUnchecked = [];
         for (const symbol of this._icons) {
-            if (symbol.rulekey === '') {
+            if (symbol.ruleKey === '') {
                 keyChecked = [];
                 keyUnchecked = [];
                 break;

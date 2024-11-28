@@ -489,6 +489,9 @@ describe('LayerSymbolsSymbology', function () {
         expect(symbologyChildren[1].legendOn).to.be.true
         expect(symbologyChildren[2].legendOn).to.be.true
         expect(symbology.legendOn).to.be.true
+        // No legend parameter because every legend is ON
+        expect(symbology.wmsParameters('road').LEGEND_ON).to.be.undefined
+        expect(symbology.wmsParameters('road').LEGEND_OFF).to.be.undefined
         expect(symbology.wmsParameters('road')).to.be.an('object').that.be.deep.eq({})
 
         symbologyChildrenFirstChildren[0].checked = false
@@ -585,6 +588,57 @@ describe('LayerSymbolsSymbology', function () {
             "{245c23be-e45f-4f80-9ea4-f1676315f178}",
         ]), symbology.wmsParameters('road').LEGEND_ON)
         .and.to.not.contains("{a9fac601-7bc7-4150-9783-19d7827b2ef8}")
+    })
+
+    it('RuleRenderer mixed', function () {
+        // It is a RuleRenderer with only one rule in the QGIS User interface
+        const symbology = new LayerSymbolsSymbology({
+            "symbols": [
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAASklEQVQ4jWNgGAWEACM2QWVl5f/4NN29exdDH4YAIUNwGcaCS+GdO3e2YBNXUVHxwSbORIztxIBRgwgDnLGGK3ZwAaolyFFAGAAAD9sQzpjSF7wAAAAASUVORK5CYII=",
+                    "title": "Covoiturage",
+                    "ruleKey": "{8457ada1-6ca6-4fc0-b47b-7597a8084cbf}",
+                    "checked": true,
+                    "parentRuleKey": "{c335718f-d733-41bf-bccd-d85f5f37f135}",
+                    "expression": " \"dess_regul\" = 'st1' "
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAADElEQVQImWNgIB0AAAA0AAEjQ4N1AAAAAElFTkSuQmCC",
+                    "title": ""
+                }
+            ],
+            "title": "Arrêts star't",
+            "type": "layer",
+            "name": "arrets_start",
+            "layerName": "Arrêts star't"
+        })
+        expect(symbology).to.be.instanceOf(BaseSymbolsSymbology)
+        expect(symbology).to.be.instanceOf(LayerSymbolsSymbology)
+        expect(symbology.title).to.be.eq('Arrêts star\'t')
+        expect(symbology.name).to.be.eq('arrets_start')
+        expect(symbology.type).to.be.eq('layer')
+        expect(symbology.expanded).to.be.false
+        expect(symbology.legendOn).to.be.true
+        // Only 1 available children like in QGIS User Interface
+        expect(symbology.childrenCount).to.be.eq(1)
+        expect(symbology.children).to.be.an('array').that.have.lengthOf(1)
+        // No legend parameter because every legend is ON or OFF
+        expect(symbology.wmsParameters('arrets_start').LEGEND_ON).to.be.undefined
+        expect(symbology.wmsParameters('arrets_start').LEGEND_OFF).to.be.undefined
+        expect(symbology.wmsParameters('arrets_start')).to.be.an('object').that.be.deep.eq({})
+
+        // We found 2 private icons like in the JSON
+        expect(symbology._icons).to.be.an('array').that.have.lengthOf(2)
+        // The first is the available child
+        expect(symbology._icons[0].ruleKey).to.be.eq('{8457ada1-6ca6-4fc0-b47b-7597a8084cbf}')
+        expect(symbology._icons[0].title).to.be.eq('Covoiturage')
+        expect(symbology._icons[0].parentRuleKey).to.be.eq('{c335718f-d733-41bf-bccd-d85f5f37f135}')
+        expect(symbology._icons[0].parentRule).to.be.null
+        // The second is the unavailable child
+        expect(symbology._icons[1].ruleKey).to.be.eq('')
+        expect(symbology._icons[1].title).to.be.eq('')
+        expect(symbology._icons[1].parentRuleKey).to.be.eq('')
+        expect(symbology._icons[1].parentRule).to.be.null
     })
 
     it('Failing required properties', function () {
