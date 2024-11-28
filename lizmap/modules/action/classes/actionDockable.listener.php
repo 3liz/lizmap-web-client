@@ -20,7 +20,7 @@ class actionDockableListener extends jEventListener
             $layerActions = $actionConfig->getActionsByScope('layer');
             if (count($projectActions) > 0 || count($layerActions) > 0) {
                 $assign['actions'] = $projectActions;
-                $content = array('action~action_' . $dock, $assign);
+                $content = array('action~action_'.$dock, $assign);
                 $dock = new lizmapMapDockItem(
                     'action',
                     jLocale::get('action~action.dock.title'),

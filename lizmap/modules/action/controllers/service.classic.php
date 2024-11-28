@@ -78,7 +78,7 @@ class serviceCtrl extends jController
         if (!$action) {
             $errors = array(
                 'title' => 'Action unknown',
-                'detail' => 'The action named '.$actionName.' does not exist in the config file for this layer: '.$layerId .' !',
+                'detail' => 'The action named '.$actionName.' does not exist in the config file for this layer: '.$layerId.' !',
             );
 
             return $this->error($errors);
@@ -102,7 +102,6 @@ class serviceCtrl extends jController
 
             return $this->error($errors);
         }
-
 
         // Check the layer does exists in the given project
         // If we find a layer, we override the PostgreSQL database connexion
@@ -140,7 +139,7 @@ class serviceCtrl extends jController
         // Check also the map center and extent (must be valid WKT)
         $wktParameters = array('wkt', 'mapCenter', 'mapExtent');
         $wkt = $mapCenter = $mapExtent = '';
-        foreach($wktParameters as $paramName) {
+        foreach ($wktParameters as $paramName) {
             $value = trim($this->param($paramName, ''));
             ${$paramName} = $value;
             if (!empty($value) && \lizmapWkt::check($value)) {
@@ -148,8 +147,8 @@ class serviceCtrl extends jController
                 if ($geom === null) {
                     ${$paramName} = '';
                     $errors = array(
-                        'title' => 'This given parameter ' . $value . ' is invalid !',
-                        'detail' => 'Please check the value of the ' . $value . ' parameter is either empty or valid.',
+                        'title' => 'This given parameter '.$value.' is invalid !',
+                        'detail' => 'Please check the value of the '.$value.' parameter is either empty or valid.',
                     );
 
                     return $this->error($errors);
@@ -195,13 +194,14 @@ class serviceCtrl extends jController
         $sql = "SELECT lizmap_get_data('";
         $sql .= json_encode($action_params);
         $sql .= "') AS data";
+
         try {
             $res = $cnx->query($sql);
             foreach ($res as $r) {
                 $data = json_decode($r->data);
             }
         } catch (Exception $e) {
-            jLog::log('Error in project '.$repository. '/'.$project.', layer '.$layerId.', while running the query : '.$sql, 'lizmapadmin');
+            jLog::log('Error in project '.$repository.'/'.$project.', layer '.$layerId.', while running the query : '.$sql, 'lizmapadmin');
             $errors = array(
                 'title' => 'An error occurred while running the PostgreSQL query !',
                 'detail' => $e->getMessage(),
