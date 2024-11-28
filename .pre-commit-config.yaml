@@ -10,3 +10,9 @@ repos:
         exclude: ^lizmap/app/overloads|lizmap/app/themes|lizmap/www/assets/
     -   id: check-yaml
     -   id: check-added-large-files
+#-  repo: local
+#   hooks:
+#      - id: php-cs-fixer
+#        name: PHP CS Fixer
+#        entry: oskarstark/php-cs-fixer-ga:3.8.0 --allow-risky=yes --config=.php-cs-fixer.dist.php
+#        language: docker_image

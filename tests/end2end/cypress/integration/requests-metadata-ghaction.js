@@ -2,7 +2,7 @@ describe('Request JSON metadata', function () {
     it('As anonymous', function () {
         cy.logout();
 
-        var metadata = cy.request({
+        const metadata = cy.request({
             url: 'index.php/view/app/metadata',
             failOnStatusCode: false,
         }).then((response) => {
@@ -15,7 +15,7 @@ describe('Request JSON metadata', function () {
     it('As admin using basic auth', function () {
         cy.logout()
 
-        var request = cy.request({
+        const request = cy.request({
             url: 'index.php/view/app/metadata',
             headers: {
                 authorization: 'Basic YWRtaW46YWRtaW4=',
@@ -25,6 +25,12 @@ describe('Request JSON metadata', function () {
             expect(response.status).to.eq(200);
             expect(response.headers['content-type']).to.eq('application/json');
 
+            // LWC Metadata
+            expect(response.body.info.version).to.exist;
+            expect(response.body.info.date).to.exist;
+            expect(response.body.info.commit).to.exist;
+
+            // QGIS Server info
             expect(response.body.qgis_server_info.py_qgis_server.found).to.eq(true)
             expect(response.body.qgis_server_info.py_qgis_server.version).to.match(/\.|n\/a/i)
             expect(response.body.qgis_server_info.metadata.version).to.contain('3.')
@@ -101,7 +107,7 @@ describe('Request JSON metadata', function () {
     it('As admin after login using the UI', function () {
         cy.loginAsAdmin()
 
-        var request = cy.request({
+        const request = cy.request({
             url: 'index.php/view/app/metadata',
             failOnStatusCode: false,
         }).then((response) => {
@@ -118,7 +124,7 @@ describe('Request JSON metadata', function () {
     it('As normal user using UI', function () {
         cy.loginAsUserA()
 
-        var request = cy.request({
+        const request = cy.request({
             url: 'index.php/view/app/metadata',
             failOnStatusCode: false,
         }).then((response) => {
@@ -134,7 +140,7 @@ describe('Request JSON metadata', function () {
     it('As publisher user using UI', function () {
         cy.loginAsPublisher()
 
-        var request = cy.request({
+        const request = cy.request({
             url: 'index.php/view/app/metadata',
             failOnStatusCode: false,
         }).then((response) => {
@@ -199,7 +205,7 @@ describe('Request JSON metadata', function () {
     })
 
     it('As publisher using BASIC Auth with wrong credentials', function () {
-        var request = cy.request({
+        const request = cy.request({
             url: 'index.php/view/app/metadata',
             headers: {
                 authorization: 'Basic dXNlcl9pbl9ncm91cF9hOm1hdXZhaXM=',

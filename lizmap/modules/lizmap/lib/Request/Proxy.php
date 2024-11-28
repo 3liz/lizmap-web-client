@@ -484,6 +484,22 @@ class Proxy
     }
 
     /**
+     * Log if the HTTP code is a 4XX or 5XX error code.
+     *
+     * @param int    $httpCode The HTTP code of the request
+     * @param string $url      The URL of the request, for logging
+     */
+    public static function logRequestIfError($httpCode, $url)
+    {
+        $httpCodeClass = substr($httpCode, 0, 1);
+        // Change to str_starts_with when PHP 8.1 will be minimum version for all maintained version
+        if ($httpCodeClass == '4' || $httpCodeClass == '5') {
+            \jLog::log('An HTTP request ended with an error, please check the main error log. Code '.$httpCode, 'lizmapadmin');
+            \jLog::log('The HTTP request below ended with an error. Code '.$httpCode.' → '.$url, 'error');
+        }
+    }
+
+    /**
      * Get remote data from URL, with curl or internal php functions.
      *
      * @param string            $url     url of the remote data to fetch
@@ -526,10 +542,16 @@ class Proxy
         // Proxy http backend : use curl or file_get_contents
         if (extension_loaded('curl') && $options['proxyHttpBackend'] != 'php') {
             // With curl
-            return self::curlProxy($url, $options);
+            $curlRequest = self::curlProxy($url, $options);
+            self::logRequestIfError($curlRequest[2], $url);
+
+            return $curlRequest;
         }
         // With file_get_contents
-        return self::fileProxy($url, $options);
+        $request = self::fileProxy($url, $options);
+        self::logRequestIfError($request[2], $url);
+
+        return $request;
     }
 
     /**
@@ -610,6 +632,7 @@ class Proxy
         }
 
         $response = $client->send($request, $reqOptions);
+        self::logRequestIfError($response->getStatusCode(), $url);
 
         return new ProxyResponse(
             $response->getStatusCode(),
@@ -1016,7 +1039,7 @@ class Proxy
         $logPath = \jApp::logPath('echoproxy.log');
         if (is_file($logPath)) {
             // retrieve the 50 last lines
-            $nLastLines = preg_split("/\r\n|\n|\r/", self::tail($logPath, 50));
+            $nLastLines = preg_split("/\r\n|\n|\r/", App\FileTools::tail($logPath, 50));
             // key : md5 , value : usefull content
             $md5Assoc = array();
             foreach ($nLastLines as $line) {
@@ -1031,62 +1054,6 @@ class Proxy
         }
 
         return 'unfound echoproxy.log';
-    }
-
-    /**
-     * Tail in PHP, capable of eating big files.
-     *
-     * @author  Torleif Berger
-     *
-     * @see    http://www.geekality.net/?p=1654
-     */
-    protected static function tail(string $filepath, int $lines = 10, int $buffer = 4096)
-    {
-        // Open the file
-        $f = fopen($filepath, 'rb');
-        // Jump to last character
-        fseek($f, -1, SEEK_END);
-
-        // Prepare to collect output
-        $output = '';
-        $chunk = '';
-
-        // Start reading it and adjust line number if necessary
-        // (Otherwise the result would be wrong if file doesn't end with a blank line)
-        $TAIL_NL = "\n";
-        if (fread($f, 1) != $TAIL_NL) {
-            --$lines;
-        }
-
-        // While we would like more
-        while (ftell($f) > 0 && $lines >= 0) {
-            // Figure out how far back we should jump
-            $seek = min(ftell($f), $buffer);
-
-            // Do the jump (backwards, relative to where we are)
-            fseek($f, -$seek, SEEK_CUR);
-
-            // Read a chunk and prepend it to our output
-            $output = ($chunk = fread($f, $seek)).$output;
-
-            // Jump back to where we started reading
-            fseek($f, -mb_strlen($chunk, '8bit'), SEEK_CUR);
-
-            // Decrease our line counter
-            $lines -= substr_count($chunk, $TAIL_NL);
-        }
-
-        // While we have too many lines
-        // (Because of buffer size we might have read too many)
-        while ($lines++ < 0) {
-            // Find first newline and remove all text before that
-            $output = substr($output, strpos($output, $TAIL_NL) + 1);
-        }
-
-        // Close file and return
-        fclose($f);
-
-        return $output;
     }
 }
 

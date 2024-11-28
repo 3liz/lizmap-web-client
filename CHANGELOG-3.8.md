@@ -8,12 +8,28 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.8.3 - 2024-11-08
+
+### Funders
+
+* **[AUDRNA](https://www.audrna.com/)**
+* **[Faunalia](https://www.faunalia.eu/fr)**, contributions on source code from @mind84
+* **[Valabre](https://www.valabre.com/)**
+
 ### Added
 
 * Move related child in corresponding div for **1:n** and **n:m** relations in popups
 
+### Changed
+
+* Rename "only maps" to "Disable landing page"
+
 ### Fixed
 
+* Loading of `iframe` into a popup
+* Fix expanded for categorized symbology in group as layer
+* Encode layer style in hash, contribution from @mind84
+* Set raster layers opacity, contribution from @mind84
 * Fix base layer (i) information button
 * IGN search string length must be between 3 and 200 chars
 * Fix Relation Reference Form control order by value
@@ -21,6 +37,10 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Minor refactoring of embedded projects referencing during projects loading
 * Fix the URL used for the OSM Nominatim search and use `bounded=1` to restrict results
 * Fix display of the highlight after an OSM and IGN geocoding
+* `lizmap-features-table` :
+  * Improve popup table style
+  * Fix ordering of rows in the table, contribution from @neo-garaix
+* Reset the form filter when changing the dropdown menu
 
 ## 3.8.2 - 2024-10-01
 

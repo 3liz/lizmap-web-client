@@ -95,8 +95,8 @@ test.describe('Style parameter in GetFeatureInfo request', () => {
         await page.waitForTimeout(300);
 
 
-        // get the popup of the feature with id = 3. The STYLE property (STYLE=default) should be passed in the getfeatureinfo request.
-        // Otherwise the popup would not be shown because QGIS Server query the layer natural_areas with the "ids" style
+        // get the popup of the feature with id = 3. The STYLE property (STYLE=default) should be passed in the GetFeatureInfo request.
+        // Otherwise, the popup would not be shown because QGIS Server query the layer natural_areas with the "ids" style
 
         let getPopup = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('STYLE=default') === true);
 
@@ -108,6 +108,10 @@ test.describe('Style parameter in GetFeatureInfo request', () => {
         });
 
         await getPopup;
+
+        const mainPopup = page.locator("#popupcontent div.lizmapPopupContent div.lizmapPopupSingleFeature")
+        await expect(mainPopup).toHaveAttribute("data-layer-id", "natural_areas_d4a1a538_3bff_4998_a186_38237507ac1e")
+        await expect(mainPopup).toHaveAttribute("data-feature-id")
 
         // inspect feature toolbar, expect to find only one
         const popup = page.locator("#popupcontent > div.menu-content > div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv div.container.popup_lizmap_dd")
@@ -183,7 +187,7 @@ test.describe('Style parameter in GetFeatureInfo request', () => {
         expect(getFeatureInfoRequest.postData()).not.toMatch(/LEGEND_OFF/);
         let getFeatureInfoResponse = await getFeatureInfoRequest.response()
         expect(getFeatureInfoResponse?.headers()['content-type']).toContain('text/html');
-        expect(getFeatureInfoResponse?.headers()['content-length']).toBe('1789');
+        expect(getFeatureInfoResponse?.headers()['content-length']).toBe('1875');
 
         // inspect feature toolbar, expect to find only one
         const popup = page.locator("#popupcontent > div.menu-content > div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv div.container.popup_lizmap_dd")
@@ -220,6 +224,26 @@ test.describe('Style parameter in GetFeatureInfo request', () => {
         // await expect(page.locator('.lizmapPopupContent h4')).toHaveText('No object has been found at this location.');
     })
 })
+
+test.describe('Raster identify', () => {
+
+    test('Raster identify check with data-attributes', async ({ page }) => {
+        const url = '/index.php/view/map/?repository=testsrepository&project=rasters';
+        await gotoMap(url, page);
+
+        let getFeatureInfoPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
+        await page.locator('#newOlMap').click({
+            position: {
+                x: 510,
+                y: 415
+            }
+        });
+        let getFeatureInfoRequest = await getFeatureInfoPromise
+        const popup = page.locator("#popupcontent div.lizmapPopupContent div.lizmapPopupSingleFeature")
+        await expect(popup).toHaveAttribute("data-layer-id", "local_raster_layer_c4c2ec5e_7567_476b_bf78_2b7c64f32615")
+        await expect(popup).not.toHaveAttribute("data-feature-id", )
+    });
+});
 
 test.describe('Popup', () => {
 
@@ -381,7 +405,7 @@ test.describe('Popup', () => {
                 y: 415
             }
         });
-        await page.waitForTimeout(500); // wait to be sure, no request sended
+        await page.waitForTimeout(500); // wait to be sure, no request sent
         await expect(page.locator('#newOlMap #liz_layer_popup')).not.toBeVisible();
 
         // Erasing
@@ -395,7 +419,7 @@ test.describe('Popup', () => {
                 y: 415
             }
         });
-        await page.waitForTimeout(500); // wait to be sure, no request sended
+        await page.waitForTimeout(500); // wait to be sure, no request sent
         await expect(page.locator('#newOlMap #liz_layer_popup')).not.toBeVisible();
     });
 });

@@ -1,4 +1,4 @@
-<qgis projectname="" saveDateTime="2024-04-11T10:31:45" saveUser="nboisteault" saveUserFull="nboisteault" version="3.28.15-Firenze">
+<qgis projectname="" saveDateTime="2024-11-07T11:03:09" saveUser="nboisteault" saveUserFull="nboisteault" version="3.34.12-Prizren">
   <homePath path=""></homePath>
   <title></title>
   <transaction mode="Disabled"></transaction>
@@ -16,6 +16,7 @@
       <geographicflag>false</geographicflag>
     </spatialrefsys>
   </projectCrs>
+  <elevation-shading-renderer combined-method="0" edl-distance="0.5" edl-distance-unit="0" edl-is-active="1" edl-strength="1000" hillshading-is-active="0" hillshading-is-multidirectional="0" hillshading-z-factor="1" is-active="0" light-altitude="45" light-azimuth="315"></elevation-shading-renderer>
   <layer-tree-group>
     <customproperties>
       <Option></Option>
@@ -70,7 +71,7 @@
     </legendlayer>
   </legend>
   <mapViewDocks></mapViewDocks>
-  <main-annotation-layer autoRefreshEnabled="0" autoRefreshTime="0" legendPlaceholderImage="" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" type="annotation">
+  <main-annotation-layer autoRefreshMode="Disabled" autoRefreshTime="0" hasScaleBasedVisibilityFlag="0" legendPlaceholderImage="" maxScale="0" minScale="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" styleCategories="AllStyleCategories" type="annotation">
     <id>Annotations_7a15088a_18b7_4dc9_9f76_e3284776451f</id>
     <datasource></datasource>
     <keywordList>
@@ -98,6 +99,7 @@
       <title></title>
       <abstract></abstract>
       <links></links>
+      <dates></dates>
       <fees></fees>
       <encoding></encoding>
       <crs>
@@ -116,12 +118,21 @@
       <extent></extent>
     </resourceMetadata>
     <items></items>
+    <flags>
+      <Identifiable>1</Identifiable>
+      <Removable>1</Removable>
+      <Searchable>1</Searchable>
+      <Private>0</Private>
+    </flags>
+    <customproperties>
+      <Option></Option>
+    </customproperties>
     <layerOpacity>1</layerOpacity>
     <blendMode>0</blendMode>
     <paintEffect></paintEffect>
   </main-annotation-layer>
   <projectlayers>
-    <maplayer autoRefreshEnabled="0" autoRefreshTime="0" geometry="Point" hasScaleBasedVisibilityFlag="0" labelsEnabled="0" legendPlaceholderImage="" maxScale="0" minScale="100000000" readOnly="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" simplifyAlgorithm="0" simplifyDrawingHints="0" simplifyDrawingTol="1" simplifyLocal="0" simplifyMaxScale="1" styleCategories="AllStyleCategories" symbologyReferenceScale="-1" type="vector" wkbType="Point">
+    <maplayer autoRefreshMode="Disabled" autoRefreshTime="0" geometry="Point" hasScaleBasedVisibilityFlag="0" labelsEnabled="0" legendPlaceholderImage="" maxScale="0" minScale="100000000" readOnly="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" simplifyAlgorithm="0" simplifyDrawingHints="0" simplifyDrawingTol="1" simplifyLocal="0" simplifyMaxScale="1" styleCategories="AllStyleCategories" symbologyReferenceScale="-1" type="vector" wkbType="Point">
       <extent>
         <xmin>770430.5656251028412953</xmin>
         <ymin>6279477.92845289688557386</ymin>
@@ -171,6 +182,7 @@
           <role></role>
         </contact>
         <links></links>
+        <dates></dates>
         <fees></fees>
         <encoding></encoding>
         <crs>
@@ -235,7 +247,7 @@
                 <Option name="type" type="QString" value="collection"></Option>
               </Option>
             </data_defined_properties>
-            <layer class="SimpleLine" enabled="1" locked="0" pass="0">
+            <layer class="SimpleLine" enabled="1" id="{90f36108-09f9-48b8-9e76-cfef654f2706}" locked="0" pass="0">
               <Option type="Map">
                 <Option name="align_dash_pattern" type="QString" value="0"></Option>
                 <Option name="capstyle" type="QString" value="square"></Option>
@@ -284,7 +296,7 @@
                 <Option name="type" type="QString" value="collection"></Option>
               </Option>
             </data_defined_properties>
-            <layer class="SimpleFill" enabled="1" locked="0" pass="0">
+            <layer class="SimpleFill" enabled="1" id="{4f2a4d0d-e570-4cc2-b4a3-470db31f7322}" locked="0" pass="0">
               <Option type="Map">
                 <Option name="border_width_map_unit_scale" type="QString" value="3x:0,0,0,0,0,0"></Option>
                 <Option name="color" type="QString" value="243,166,178,255"></Option>
@@ -317,7 +329,7 @@
                 <Option name="type" type="QString" value="collection"></Option>
               </Option>
             </data_defined_properties>
-            <layer class="SimpleMarker" enabled="1" locked="0" pass="0">
+            <layer class="SimpleMarker" enabled="1" id="{7d5eb992-cb4d-46e1-95df-18418d4baad4}" locked="0" pass="0">
               <Option type="Map">
                 <Option name="angle" type="QString" value="0"></Option>
                 <Option name="cap_style" type="QString" value="square"></Option>
@@ -360,7 +372,7 @@
                 <Option name="type" type="QString" value="collection"></Option>
               </Option>
             </data_defined_properties>
-            <layer class="SimpleMarker" enabled="1" locked="0" pass="0">
+            <layer class="SimpleMarker" enabled="1" id="{b0f32751-2a8b-4748-92a5-a89f612c885e}" locked="0" pass="0">
               <Option type="Map">
                 <Option name="angle" type="QString" value="0"></Option>
                 <Option name="cap_style" type="QString" value="square"></Option>
@@ -395,6 +407,9 @@
         <rotation></rotation>
         <sizescale></sizescale>
       </renderer-v2>
+      <selection mode="Default">
+        <selectionColor invalid="1"></selectionColor>
+      </selection>
       <customproperties>
         <Option type="Map">
           <Option name="dualview/previewExpressions" type="List">
@@ -421,7 +436,7 @@
                   <Option name="type" type="QString" value="collection"></Option>
                 </Option>
               </data_defined_properties>
-              <layer class="SimpleLine" enabled="1" locked="0" pass="0">
+              <layer class="SimpleLine" enabled="1" id="{600d35dd-1fea-49dd-98eb-324f47ec2f27}" locked="0" pass="0">
                 <Option type="Map">
                   <Option name="align_dash_pattern" type="QString" value="0"></Option>
                   <Option name="capstyle" type="QString" value="square"></Option>
@@ -479,14 +494,14 @@
       <legend showLabelLegend="0" type="default-vector"></legend>
       <referencedLayers></referencedLayers>
       <fieldConfiguration>
-        <field configurationFlags="None" name="id">
+        <field configurationFlags="NoFlag" name="id">
           <editWidget type="TextEdit">
             <config>
               <Option></Option>
             </config>
           </editWidget>
         </field>
-        <field configurationFlags="None" name="description">
+        <field configurationFlags="NoFlag" name="description">
           <editWidget type="TextEdit">
             <config>
               <Option></Option>
@@ -498,6 +513,10 @@
         <alias field="id" index="0" name=""></alias>
         <alias field="description" index="1" name=""></alias>
       </aliases>
+      <splitPolicies>
+        <policy field="id" policy="Duplicate"></policy>
+        <policy field="description" policy="Duplicate"></policy>
+      </splitPolicies>
       <defaults>
         <default applyOnUpdate="0" expression="" field="id"></default>
         <default applyOnUpdate="0" expression="" field="description"></default>
@@ -517,7 +536,7 @@
       <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
         <columns>
           <column hidden="0" name="id" type="field" width="-1"></column>
-          <column hidden="0" name="description" type="field" width="507"></column>
+          <column hidden="0" name="description" type="field" width="984"></column>
           <column hidden="1" type="actions" width="-1"></column>
         </columns>
       </attributetableconfig>
@@ -564,7 +583,7 @@ def my_form_open(dialog, layer, feature):
       <dataDefinedFieldProperties></dataDefinedFieldProperties>
       <widgets></widgets>
       <previewExpression>"description"</previewExpression>
-      <mapTip></mapTip>
+      <mapTip enabled="1"></mapTip>
     </maplayer>
   </projectlayers>
   <layerorder>
@@ -599,6 +618,7 @@ def my_form_open(dialog, layer, feature):
     <PAL>
       <CandidatesLinePerCM type="double">5</CandidatesLinePerCM>
       <CandidatesPolygonPerCM type="double">2.5</CandidatesPolygonPerCM>
+      <DrawLabelMetrics type="bool">false</DrawLabelMetrics>
       <DrawRectOnly type="bool">false</DrawRectOnly>
       <DrawUnplaced type="bool">false</DrawUnplaced>
       <PlacementEngineVersion type="int">1</PlacementEngineVersion>
@@ -627,7 +647,7 @@ def my_form_open(dialog, layer, feature):
         <value>lizmap_user_groups</value>
       </variableNames>
       <variableValues type="QStringList">
-        <value>intranet</value>
+        <value>testsrepository</value>
         <value></value>
         <value></value>
       </variableValues>
@@ -726,6 +746,9 @@ def my_form_open(dialog, layer, feature):
       <role></role>
     </contact>
     <links></links>
+    <dates>
+      <date type="Created" value="2024-03-29T14:34:53"></date>
+    </dates>
     <author>nboisteault</author>
     <creation>2024-03-29T14:34:53</creation>
   </projectMetadata>
@@ -733,9 +756,10 @@ def my_form_open(dialog, layer, feature):
   <Layouts></Layouts>
   <mapViewDocks3D></mapViewDocks3D>
   <Bookmarks></Bookmarks>
+  <Sensors></Sensors>
   <ProjectViewSettings UseProjectScales="0" rotation="0">
     <Scales></Scales>
-    <DefaultViewExtent xmax="777588.72749240905977786" xmin="764197.91654895828105509" ymax="6283173.50750012323260307" ymin="6275769.40517082996666431">
+    <DefaultViewExtent xmax="777330.19129273109138012" xmin="764456.45274863624945283" ymax="6285997.61383197829127312" ymin="6272945.29883897490799427">
       <spatialrefsys nativeFormat="Wkt">
         <wkt>PROJCRS["RGF93 v1 / Lambert-93",BASEGEOGCRS["RGF93 v1",DATUM["Reseau Geodesique Francais 1993 v1",ELLIPSOID["GRS 1980",6378137,298.257222101,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4171]],CONVERSION["Lambert-93",METHOD["Lambert Conic Conformal (2SP)",ID["EPSG",9802]],PARAMETER["Latitude of false origin",46.5,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8821]],PARAMETER["Longitude of false origin",3,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8822]],PARAMETER["Latitude of 1st standard parallel",49,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8823]],PARAMETER["Latitude of 2nd standard parallel",44,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8824]],PARAMETER["Easting at false origin",700000,LENGTHUNIT["metre",1],ID["EPSG",8826]],PARAMETER["Northing at false origin",6600000,LENGTHUNIT["metre",1],ID["EPSG",8827]]],CS[Cartesian,2],AXIS["easting (X)",east,ORDER[1],LENGTHUNIT["metre",1]],AXIS["northing (Y)",north,ORDER[2],LENGTHUNIT["metre",1]],USAGE[SCOPE["Engineering survey, topographic mapping."],AREA["France - onshore and offshore, mainland and Corsica."],BBOX[41.15,-9.86,51.56,10.38]],ID["EPSG",2154]]</wkt>
         <proj4>+proj=lcc +lat_0=46.5 +lon_0=3 +lat_1=49 +lat_2=44 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs</proj4>
@@ -749,7 +773,7 @@ def my_form_open(dialog, layer, feature):
       </spatialrefsys>
     </DefaultViewExtent>
   </ProjectViewSettings>
-  <ProjectStyleSettings DefaultSymbolOpacity="1" RandomizeDefaultSymbolColor="1" projectStyleId="attachment:///ZgYsKj_styles.db">
+  <ProjectStyleSettings DefaultSymbolOpacity="1" RandomizeDefaultSymbolColor="1" projectStyleId="attachment:///PDDJZU_styles.db">
     <databases></databases>
   </ProjectStyleSettings>
   <ProjectTimeSettings cumulativeTemporalRange="0" frameRate="1" timeStep="1" timeStepUnit="h"></ProjectTimeSettings>
@@ -800,4 +824,7 @@ def my_form_open(dialog, layer, feature):
       </spatialrefsys>
     </CoordinateCustomCrs>
   </ProjectDisplaySettings>
+  <ProjectGpsSettings autoAddTrackVertices="0" autoCommitFeatures="0" destinationFollowsActiveLayer="1" destinationLayer="xss_3334b2fd_75f9_4301_a075_402f6dbed37b" destinationLayerName="xss_layer" destinationLayerProvider="postgres" destinationLayerSource="service='lizmapdb' key='id' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;xss&quot; (geom)">
+    <timeStampFields></timeStampFields>
+  </ProjectGpsSettings>
 </qgis>

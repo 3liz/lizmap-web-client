@@ -107,14 +107,14 @@ export default class Action {
                     // Add action buttons if needed
                     let popupContainerId = popup.containerId;
                     let popupContainer = document.getElementById(popupContainerId);
-                    if (!popupContainer) return false;
-                    let featureIdInputSelector = 'div.lizmapPopupContent input.lizmap-popup-layer-feature-id';
-                    Array.from(popupContainer.querySelectorAll(featureIdInputSelector)).map(element => {
 
-                        // Get layer id and feature id
-                        let val = element.value;
-                        let featureId = val.split('.').pop();
-                        let layerId = val.replace('.' + featureId, '');
+                    if (!popupContainer) return false;
+
+                    Array.from(popupContainer.querySelectorAll('div.lizmapPopupContent .lizmapPopupSingleFeature')).map(element => {
+
+                        // Get layer ID and feature ID
+                        const featureId = element.dataset.featureId;
+                        const layerId = element.dataset.layerId;
 
                         // Get layer lizmap config
                         let getLayerConfig = mainLizmap.lizmap3.getLayerConfigById(layerId);
@@ -142,7 +142,13 @@ export default class Action {
                 }
             });
         }
-
+        mainLizmap.lizmap3.events.on({
+            minidockclosed: (event) => {
+                if (event.id === 'action'){
+                    mainLizmap.digitizing.toolSelected = 'deactivate';
+                }
+            }
+        });
     }
 
     /**
@@ -376,10 +382,21 @@ export default class Action {
             return false;
         }
 
+        const WKTformat = new WKT();
+        const projOptions = {
+            featureProjection: mainLizmap.projection,
+            dataProjection: 'EPSG:4326'
+        };
+
         // Reset the other actions
         // We allow only one active action at a time
         // We do not remove the active status of the button (btn-primary)
         this.resetLizmapAction(true, true, true, false);
+
+        // Take drawn geometry if any and if none exists as a parameter
+        if (!wkt && mainLizmap.digitizing.context === "action" && mainLizmap.digitizing.featureDrawn) {
+            wkt = WKTformat.writeFeatures(mainLizmap.digitizing.featureDrawn, projOptions);
+        }
 
         // Set the request parameters
         let options = {
@@ -391,11 +408,6 @@ export default class Action {
 
         // We add the map extent and center
         // as WKT geometries
-        const WKTformat = new WKT();
-        const projOptions = {
-            featureProjection: mainLizmap.projection,
-            dataProjection: 'EPSG:4326'
-        };
         options['mapExtent'] = WKTformat.writeGeometry(fromExtent(mainLizmap.extent), projOptions);
         options['mapCenter'] = WKTformat.writeGeometry(new Point(mainLizmap.center), projOptions);
 
@@ -443,6 +455,12 @@ export default class Action {
                     const message = featureProperties[message_field].trim();
                     if (message) {
                         mainLizmap.lizmap3.addMessage(message, 'info', true).attr('id', 'lizmap-action-message');
+                    }
+
+                    // Display the HTML message if given
+                    const message_html = featureProperties?.message_html?.trim();
+                    if (message_html) {
+                        document.getElementById('action-message-html').innerHTML = message_html;
                     }
                 }
             }
@@ -620,7 +638,7 @@ export default class Action {
      * @param {object} action - The action configuration object
      * @param {string} layerId - The layer ID
      * @param {string} featureId - The feature ID
-     * @param {string} popupItem - The popup item HTML element
+     * @param {string} popupContainerId - The popup container ID
      */
     addPopupActionButton(action, layerId, featureId, popupContainerId) {
 

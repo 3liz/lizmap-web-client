@@ -69,7 +69,7 @@ export default class FeaturesTable extends HTMLElement {
 
         // Add drag&drop capability ?
         const draggable = this.getAttribute('draggable');
-        this.itemsDraggable = (draggable !== null && ['yes', 'no'].includes(draggable)) ? draggable : 'no';
+        this.itemsDraggable = (draggable !== null && ['yes', 'no'].includes(draggable.toLowerCase())) ? draggable : 'no';
 
         // Features
         this.features = [];
@@ -223,7 +223,6 @@ export default class FeaturesTable extends HTMLElement {
      *
      * @param {Event} event Click event on a feature item
      * @param {Object} feature WFS feature
-     * @param {number} lineId Line number of the item in the features table
      */
     onItemClick(event, feature) {
 

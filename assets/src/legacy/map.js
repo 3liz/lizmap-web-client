@@ -434,7 +434,7 @@ window.lizMap = function() {
      * config
      *
      * Returns:
-     * {Integer} the layer's order
+     * {int} the layer's order
      * @param nested
      */
     function getLayerOrder(nested) {
@@ -1570,7 +1570,7 @@ window.lizMap = function() {
                                             GEOMETRYNAME: 'extent'
                                         };
 
-                                        wfsParams['EXP_FILTER'] = '"' + config.relations.pivot[rLayerId][layerId] + '" = ' + "'" + feat.properties[relation.referencedField] + "'";;
+                                        wfsParams['EXP_FILTER'] = '"' + config.relations.pivot[rLayerId][layerId] + '" = ' + "'" + feat.properties[relation.referencedField] + "'";
                                         // Calculate bbox
                                         if (config.options?.limitDataToBbox == 'True') {
                                             wfsParams['BBOX'] = lizMap.mainLizmap.map.getView().calculateExtent();
@@ -2950,9 +2950,8 @@ window.lizMap = function() {
 
         // Query the server
         $.post(globalThis['lizUrls'].service, wmsOptions, function(data) {
-            aCallback(data);
+            aCallback(Utils.sanitizeGFIContent(data));
         });
-
     }
 
     // Get the popup content for a layer given a feature
@@ -3024,8 +3023,8 @@ window.lizMap = function() {
 
         // Query the server
         $.post(globalThis['lizUrls'].service, wmsOptions, function(data) {
-            if(aCallback){
-                aCallback(globalThis['lizUrls'].service, wmsOptions, data);
+            if (aCallback) {
+                aCallback(globalThis['lizUrls'].service, wmsOptions, Utils.sanitizeGFIContent(data));
             }
         });
     }
