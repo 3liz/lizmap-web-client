@@ -12,6 +12,6 @@ class actionModuleUpgrader extends jInstallerModule
     public function install()
     {
         // Copy CSS and JS assets
-        //$this->copyDirectoryContent('www', jApp::wwwPath());
+        // $this->copyDirectoryContent('www', jApp::wwwPath());
     }
 }
