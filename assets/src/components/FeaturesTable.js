@@ -62,8 +62,10 @@ export default class FeaturesTable extends HTMLElement {
         // Get the geometry or NetworkError
         this.withGeometry = this.hasAttribute('withGeometry');
 
-        // Sorting attribute and direction
+        // Sorting attribute
         this.sortingField = this.getAttribute('sortingField');
+
+        // Sorting order
         const sortingOrder = this.getAttribute('sortingOrder');
         this.sortingOrder = (sortingOrder !== null && ['asc', 'desc'].includes(sortingOrder.toLowerCase())) ? sortingOrder : 'asc';
 
@@ -85,6 +87,9 @@ export default class FeaturesTable extends HTMLElement {
 
         // Clicked item line number
         this.activeItemLineNumber = null;
+
+        // Limit
+        this.limit = 1000;
     }
 
     /**
@@ -113,7 +118,7 @@ export default class FeaturesTable extends HTMLElement {
             });
         }
         // Get the features corresponding to the given parameters from attributes
-        mainLizmap.featuresTable.getFeatures(this.layerId, this.expressionFilter, this.withGeometry, fields, uniqueAdditionalFields)
+        mainLizmap.featuresTable.getFeatures(this.layerId, this.expressionFilter, this.withGeometry, fields, uniqueAdditionalFields, this.limit, this.sortingField, this.sortingOrder)
             .then(displayExpressions => {
                 // Check for errors
                 if (!('status' in displayExpressions)) return;
@@ -121,14 +126,8 @@ export default class FeaturesTable extends HTMLElement {
                 if (displayExpressions.status != 'success') {
                     console.error(displayExpressions.error);
                 } else {
-
                     // Set component data property
                     this.features = displayExpressions.data;
-
-                    // Sort data if needed
-                    if (this.features.length > 1) {
-                        this.sortFeatures();
-                    }
                 }
 
                 // Render
@@ -146,54 +145,6 @@ export default class FeaturesTable extends HTMLElement {
                 console.warn(err.message);
                 this.innerHTML = `<p style="padding: 3px;">${err.message}</p>`;
             })
-    }
-
-    /**
-     * Sort the features array property
-     * depending on the options
-     */
-    sortFeatures() {
-        // Order data by given fields or fallback to descending order by id
-        let sortingField = 'display_expression';
-        let sortingOrder = 'asc';
-        let sortingType = 'string';
-
-        // Get first line to check if needed fields are present
-        const first = this.features[0];
-        if (first && this.sortingField && this.sortingField in first.properties) {
-            sortingField = this.sortingField;
-            sortingOrder = this.sortingOrder;
-            if (!isNaN(first.properties[sortingField])) {
-                sortingType = 'number';
-            }
-        }
-
-        // Reorder the array of data
-        if (sortingType == 'number') {
-            if (sortingOrder == 'asc') {
-                this.features.sort((a, b) => (a.properties[sortingField] || 0) - (b.properties[sortingField] || 0));
-            } else {
-                this.features.sort((a, b) => (b.properties[sortingField] || 0) - (a.properties[sortingField] || 0));
-            }
-        } else {
-            if (sortingOrder == 'asc') {
-                this.features.sort(
-                    (a, b) => (a.properties[sortingField] || '').localeCompare(
-                        b.properties[sortingField] || '',
-                        navigator.language,
-                        {sensitivity: 'accent'}
-                    )
-                );
-            } else {
-                this.features.sort(
-                    (a, b) => (b.properties[sortingField] || '').localeCompare(
-                        a.properties[sortingField] || '',
-                        navigator.language,
-                        {sensitivity: 'accent'}
-                    )
-                );
-            }
-        }
     }
 
     /**
