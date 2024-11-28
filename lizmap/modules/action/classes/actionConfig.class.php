@@ -1,8 +1,5 @@
 <?php
 
-use phpDocumentor\Reflection\PseudoTypes\False_;
-use phpDocumentor\Reflection\Types\Null_;
-
 /**
  * Manage and give access to lizmap configuration.
  *
@@ -25,11 +22,11 @@ class actionConfig
         $this->status = false;
 
         try {
-            $lproj = lizmap::getProject($repository . '~' . $project);
+            $lproj = lizmap::getProject($repository.'~'.$project);
             if (!$lproj) {
                 $this->errors = array(
                     'title' => 'Invalid Query Parameter',
-                    'detail' => 'The lizmap project ' . strtoupper($project) . ' does not exist !',
+                    'detail' => 'The lizmap project '.strtoupper($project).' does not exist !',
                 );
 
                 return;
@@ -37,7 +34,7 @@ class actionConfig
         } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
             $this->errors = array(
                 'title' => 'Invalid Query Parameter',
-                'detail' => 'The lizmap project ' . strtoupper($project) . ' does not exist !',
+                'detail' => 'The lizmap project '.strtoupper($project).' does not exist !',
             );
 
             return;
@@ -54,7 +51,7 @@ class actionConfig
         }
 
         // Test if action file is found
-        $action_path = $lproj->getQgisPath() . '.action';
+        $action_path = $lproj->getQgisPath().'.action';
         if (!file_exists($action_path)) {
             return;
         }
@@ -78,17 +75,16 @@ class actionConfig
 
     /**
      * Convert an old "action" configuration (generated for LWC < 3.7)
-     * into the new format (array of actions instead of array of layers)
+     * into the new format (array of actions instead of array of layers).
      *
      * @return array The new configuration
      */
-    function convertOldConfig()
+    public function convertOldConfig()
     {
         $config = $this->config;
-        $newConfig = [];
+        $newConfig = array();
         foreach ($config as $layerId => $actions) {
             foreach ($actions as $action) {
-
                 $action->scope = 'feature';
                 $action->layers = array($layerId);
                 $newConfig[] = $action;
@@ -108,9 +104,9 @@ class actionConfig
      * Get an action from the configuration.
      *
      * @param string $actionName The action short name
-     * @param string $layerId The Layer ID (optional)
+     * @param string $layerId    The Layer ID (optional)
      *
-     * @return object|null The action for this layer
+     * @return null|object The action for this layer
      */
     public function getAction($actionName, $layerId = null)
     {
@@ -152,7 +148,8 @@ class actionConfig
      *
      * @return array $actions - The corresponding actions
      */
-    public function getActionsByScope($scope = 'project') {
+    public function getActionsByScope($scope = 'project')
+    {
         $actions = array();
         foreach ($this->config as $action) {
             if ($action->scope == $scope) {

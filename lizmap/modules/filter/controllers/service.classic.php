@@ -126,6 +126,7 @@ class serviceCtrl extends jController
         jClasses::inc('filter~filterDatasource');
         $f = new filterDatasource($repository, $project, $layerId);
         $streamedData = $f->getFeatureCount($filter);
+
         return $this->streamResponse($streamedData);
     }
 
@@ -147,6 +148,7 @@ class serviceCtrl extends jController
         jClasses::inc('filter~filterDatasource');
         $f = new filterDatasource($repository, $project, $layerId);
         $streamedData = $f->getUniqueValues($fieldname, $filter);
+
         return $this->streamResponse($streamedData);
     }
 
@@ -168,6 +170,7 @@ class serviceCtrl extends jController
         jClasses::inc('filter~filterDatasource');
         $f = new filterDatasource($repository, $project, $layerId);
         $streamedData = $f->getMinAndMaxValues($fieldname, $filter);
+
         return $this->streamResponse($streamedData);
     }
 
@@ -189,6 +192,7 @@ class serviceCtrl extends jController
         jClasses::inc('filter~filterDatasource');
         $f = new filterDatasource($repository, $project, $layerId);
         $streamedData = $f->getExtent($crs, $filter);
+
         return $this->streamResponse($streamedData);
     }
 
@@ -199,7 +203,7 @@ class serviceCtrl extends jController
      *
      * @param mixed $streamedData
      *
-     * @return jResponseJson|jResponseBinary response
+     * @return jResponseBinary|jResponseJson response
      */
     protected function streamResponse($streamedData)
     {
@@ -227,6 +231,7 @@ class serviceCtrl extends jController
             $response = $this->getResponse('json');
             $response->data = $streamedData;
         }
+
         return $response;
     }
 }

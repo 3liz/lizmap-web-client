@@ -3,9 +3,10 @@
 $finder = PhpCsFixer\Finder::create()
           //->notPath('src/Symfony/Component/Translation/Tests/fixtures/resources.php')
           ->in(array(
+                __DIR__.'/lizmap/modules/action',
                 __DIR__.'/lizmap/modules/admin',
                 __DIR__.'/lizmap/modules/dataviz',
-                __DIR__.'/lizmap/modules/dynamicLayers',
+                __DIR__.'/lizmap/modules/filter',
                 __DIR__.'/lizmap/modules/lizmap',
                 __DIR__.'/lizmap/modules/view',
                 __DIR__.'/lizmap/plugins/',
