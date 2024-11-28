@@ -156,10 +156,13 @@ class qgisExpressionUtils
      * @param string          $filter        A filter to restrict virtual fields creation
      * @param string          $withGeometry  'true' to get geometries of features
      * @param string          $fields        A list of field names separated by comma. E.g. 'name,code'
+     * @param int             $limit         The maximum number of features to return
+     * @param null|string     $sortingField  The field to sort by E.g. 'desc'
+     * @param null|string     $sortingOrder  The order to sort by E.g. 'name'
      *
      * @return null|array the features with virtual fields
      */
-    public static function virtualFields($layer, $virtualFields, $filter = null, $withGeometry = 'true', $fields = '')
+    public static function virtualFields($layer, $virtualFields, $filter = null, $withGeometry = 'true', $fields = '', $limit = 1000, $sortingField = null, $sortingOrder = 'asc')
     {
         // Evaluate the expression by qgis
         $project = $layer->getProject();
@@ -171,9 +174,14 @@ class qgisExpressionUtils
             'virtuals' => json_encode($virtualFields),
             'with_geometry' => $withGeometry,
             'fields' => $fields,
+            'limit' => $limit,
         );
         if ($filter) {
             $params['filter'] = $filter;
+        }
+        if ($sortingField) {
+            $params['sorting_field'] = $sortingField;
+            $params['sorting_order'] = in_array(strtolower($sortingOrder), array('asc', 'desc')) ? $sortingOrder : 'asc';
         }
 
         // Request virtual fields
