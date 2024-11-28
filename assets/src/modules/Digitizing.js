@@ -1147,7 +1147,7 @@ export class Digitizing {
                 const kml = (new KML()).writeFeatures(this.featureDrawn, options);
                 Utils.downloadFileFromString(kml, 'application/vnd.google-earth.kml+xml', 'export.kml');
             } else if (format === 'fgb') {
-                // We create a temp GeoJSOn in order to fill the metadata with the projection code
+                // We create a temp GeoJSON in order to fill the metadata with the projection code
                 const tempGeoJSON = (new GeoJSON()).writeFeaturesObject(this.featureDrawn);
 
                 let projCode = options.featureProjection.split(":")[1];
