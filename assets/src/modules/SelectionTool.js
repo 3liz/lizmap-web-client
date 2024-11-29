@@ -4,7 +4,9 @@
  * @copyright 2023 3Liz
  * @license MPL-2.0
  */
-import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
+import { mainEventDispatcher } from '../modules/Globals.js';
+import Digitizing from './Digitizing.js';
+import {Config} from './Config.js';
 
 import {
     LinearRing,
@@ -32,7 +34,19 @@ import { Feature } from 'ol';
  */
 export default class SelectionTool {
 
-    constructor() {
+    /**
+     * Create a selection tool instance
+     * @param {Map}        map        - OpenLayers map
+     * @param {Digitizing} digitizing - The digitizing module
+     * @param {Config}     initialConfig - The Lizmap initial config
+     * @param {object}     lizmap3    - The old lizmap object
+     */
+    constructor(map, digitizing, initialConfig, lizmap3) {
+
+        this._map = map;
+        this._digitizing = digitizing;
+        this._initialConfig = initialConfig;
+        this._lizmap3 = lizmap3;
 
         this._layers = [];
         this._allFeatureTypeSelected = [];
@@ -46,7 +60,7 @@ export default class SelectionTool {
             name: 'LizmapSelectionToolBufferLayer'
         });
 
-        mainLizmap.map.addToolLayer(this._bufferLayer);
+        this._map.addToolLayer(this._bufferLayer);
 
         this._geomOperator = 'intersects';
 
@@ -54,7 +68,7 @@ export default class SelectionTool {
         this._newAddRemoveSelected = this._newAddRemove[0];
 
         // Verifying WFS layers
-        const featureTypes = mainLizmap.initialConfig.vectorLayerFeatureTypeList;
+        const featureTypes = initialConfig.vectorLayerFeatureTypeList;
         if (featureTypes.length === 0) {
             if (document.getElementById('button-selectiontool')) {
                 document.getElementById('button-selectiontool').parentNode.remove();
@@ -62,13 +76,13 @@ export default class SelectionTool {
             return false;
         }
 
-        const config = mainLizmap.config;
+        const config = this._lizmap3.config;
         const layersSorted = [];
 
         for (const attributeLayerName in config.attributeLayers) {
             if (config.attributeLayers.hasOwnProperty(attributeLayerName)) {
                 for (const featureType of featureTypes) {
-                    const lname = mainLizmap.getNameByTypeName(featureType.Name);
+                    const lname = this._lizmap3.getNameByTypeName(featureType.Name);
 
                     if (attributeLayerName === lname
                         && lname in config.layers
@@ -101,15 +115,15 @@ export default class SelectionTool {
         // Listen to digitizing tool to query a selection when tool is active and a feature (buffered or not) is drawn
         mainEventDispatcher.addListener(
             () => {
-                if(this.isActive && mainLizmap.digitizing.featureDrawn){
+                if(this.isActive && this._digitizing.featureDrawn){
                     // We only handle a single drawn feature currently
-                    if (mainLizmap.digitizing.featureDrawn.length > 1){
+                    if (this._digitizing.featureDrawn.length > 1){
                         // Erase the previous feature
-                        mainLizmap.digitizing._eraseFeature(mainLizmap.digitizing.featureDrawn[0]);
-                        mainLizmap.digitizing.saveFeatureDrawn();
+                        this._digitizing._eraseFeature(this._digitizing.featureDrawn[0]);
+                        this._digitizing.saveFeatureDrawn();
                     }
 
-                    let selectionFeature = mainLizmap.digitizing.featureDrawn[0];
+                    let selectionFeature = this._digitizing.featureDrawn[0];
 
                     if (selectionFeature) {
                         // Handle buffer if any
@@ -146,7 +160,7 @@ export default class SelectionTool {
                         }
 
                         for (const featureType of this.allFeatureTypeSelected) {
-                            const lConfig = mainLizmap.config.layers[featureType];
+                            const lConfig = this._lizmap3.config.layers[featureType];
                             let typeName = featureType;
                             if ('typename' in lConfig) {
                                 typeName = lConfig.typename;
@@ -164,7 +178,7 @@ export default class SelectionTool {
 
                             // Get the geometry in the layer projection
                             let geom = selectionFeature.getGeometry().clone();
-                            geom.transform(mainLizmap.map.getView().getProjection().getCode(), lConfig.crs);
+                            geom.transform(this._map.getView().getProjection().getCode(), lConfig.crs);
 
                             // TODO create a geometry collection from the selection draw?
                             const gmlNode = gml.writeGeometryNode(geom);
@@ -195,9 +209,9 @@ export default class SelectionTool {
                             };
 
                             // Apply limit to bounding box config
-                            if (mainLizmap.config?.limitDataToBbox === 'True') {
-                                wfsParams['BBOX'] = mainLizmap.map.getView().calculateExtent();
-                                wfsParams['SRSNAME'] = mainLizmap.map.getView().getProjection().getCode();
+                            if (this._lizmap3.config?.limitDataToBbox === 'True') {
+                                wfsParams['BBOX'] = this._map.getView().calculateExtent();
+                                wfsParams['SRSNAME'] = this._map.getView().getProjection().getCode();
                             }
 
                             // Restrict to current geometry extent for performance
@@ -226,11 +240,11 @@ export default class SelectionTool {
                                     featureIds = config.layers[featureType]['selectedFeatures'].filter( x => !toRemove.has(x) );
                                 }
 
-                                mainLizmap.config.layers[featureType]['selectedFeatures'] = featureIds;
+                                this._lizmap3.config.layers[featureType]['selectedFeatures'] = featureIds;
                                 lizMap.events.triggerEvent("layerSelectionChanged",
                                     {
                                         'featureType': featureType,
-                                        'featureIds': mainLizmap.config.layers[featureType]['selectedFeatures'],
+                                        'featureIds': this._lizmap3.config.layers[featureType]['selectedFeatures'],
                                         'updateDrawing': true
                                     }
                                 );
@@ -246,7 +260,7 @@ export default class SelectionTool {
         // Change buffer visibility on digitizing.visibility event
         mainEventDispatcher.addListener(
             () => {
-                this._bufferLayer.setVisible(mainLizmap.digitizing.visibility);
+                this._bufferLayer.setVisible(this._digitizing.visibility);
             },
             ['digitizing.visibility']
         );
@@ -259,10 +273,10 @@ export default class SelectionTool {
             ['digitizing.erase']
         );
 
-        mainLizmap.lizmap3.events.on({
+        this._lizmap3.events.on({
             minidockclosed: (event) => {
                 if (event.id === 'selectiontool'){
-                    mainLizmap.digitizing.toolSelected = 'deactivate';
+                    this._digitizing.toolSelected = 'deactivate';
                 }
             }
         });
@@ -308,7 +322,7 @@ export default class SelectionTool {
 
     // List of WFS format
     get exportFormats() {
-        return mainLizmap.initialConfig.vectorLayerResultFormat.filter(
+        return this._initialConfig.vectorLayerResultFormat.filter(
             format => !['GML2', 'GML3', 'GEOJSON'].includes(format.toUpperCase())
         );
     }
@@ -324,10 +338,10 @@ export default class SelectionTool {
         let count = 0;
 
         for (const featureType of this.allFeatureTypeSelected) {
-            if (featureType in mainLizmap.config.layers &&
-                'selectedFeatures' in mainLizmap.config.layers[featureType]
-                && mainLizmap.config.layers[featureType]['selectedFeatures'].length) {
-                count += mainLizmap.config.layers[featureType]['selectedFeatures'].length;
+            if (featureType in this._lizmap3.config.layers &&
+              'selectedFeatures' in this._lizmap3.config.layers[featureType]
+              && this._lizmap3.config.layers[featureType]['selectedFeatures'].length) {
+                count += this._lizmap3.config.layers[featureType]['selectedFeatures'].length;
             }
         }
 
@@ -335,20 +349,20 @@ export default class SelectionTool {
     }
 
     get filterActive() {
-        return mainLizmap.lizmap3.lizmapLayerFilterActive;
+        return this._lizmap3.lizmapLayerFilterActive;
     }
 
     set filterActive(active) {
-        mainLizmap.lizmap3.lizmapLayerFilterActive = active;
+        this._lizmap3.lizmapLayerFilterActive = active;
     }
 
     get filteredFeaturesCount() {
         let count = 0;
 
         for (const featureType of this.allFeatureTypeSelected) {
-            if (featureType in mainLizmap.config.layers &&
-                'filteredFeatures' in mainLizmap.config.layers[featureType]) {
-                count += mainLizmap.config.layers[featureType]['filteredFeatures'].length;
+            if (featureType in this._lizmap3.config.layers &&
+              'filteredFeatures' in this._lizmap3.config.layers[featureType]) {
+                count += this._lizmap3.config.layers[featureType]['filteredFeatures'].length;
             }
         }
 
@@ -365,9 +379,9 @@ export default class SelectionTool {
                 this._allFeatureTypeSelected = this.layers.map(layer => layer.name);
             } else if (featureType === 'selectable-visible-layers') {
                 this._allFeatureTypeSelected = this.layers.map(layer => layer.name).filter(layerName => {
-                    for (let index = 0; index < mainLizmap.lizmap3.map.layers.length; index++) {
-                        if (mainLizmap.lizmap3.map.layers[index].visibility
-                            && mainLizmap.lizmap3.map.layers[index].name === layerName) {
+                    for (let index = 0; index < this._lizmap3.map.layers.length; index++) {
+                        if (this._lizmap3.map.layers[index].visibility
+                          && this._lizmap3.map.layers[index].name === layerName) {
                             return true;
                         }
                     }
@@ -406,30 +420,30 @@ export default class SelectionTool {
 
     unselect() {
         for (const featureType of this.allFeatureTypeSelected) {
-            mainLizmap.lizmap3.events.triggerEvent('layerfeatureunselectall',
+            this._lizmap3.events.triggerEvent('layerfeatureunselectall',
                 {'featureType': featureType, 'updateDrawing': true}
             );
         }
-        mainLizmap.digitizing.drawLayer.getSource().clear();
+        this._digitizing.drawLayer.getSource().clear();
         this._bufferLayer.getSource().clear();
     }
 
     filter() {
         if (this.filteredFeaturesCount) {
             for (const featureType of this.allFeatureTypeSelected) {
-                mainLizmap.lizmap3.events.triggerEvent('layerfeatureremovefilter',
+                this._lizmap3.events.triggerEvent('layerfeatureremovefilter',
                     {'featureType': featureType}
                 );
             }
             this.filterActive = null;
         } else {
             for (const featureType of this.allFeatureTypeSelected) {
-                if (featureType in mainLizmap.config.layers &&
-                    'selectedFeatures' in mainLizmap.config.layers[featureType]
-                    && mainLizmap.config.layers[featureType]['selectedFeatures'].length) {
+                if (featureType in this._lizmap3.config.layers &&
+                    'selectedFeatures' in this._lizmap3.config.layers[featureType]
+                    && this._lizmap3.config.layers[featureType]['selectedFeatures'].length) {
                     this.filterActive = featureType;
 
-                    mainLizmap.lizmap3.events.triggerEvent('layerfeaturefilterselected',
+                    this._lizmap3.events.triggerEvent('layerfeaturefilterselected',
                         {'featureType': featureType}
                     );
                 }
@@ -441,28 +455,28 @@ export default class SelectionTool {
     invert(mfeatureType) {
         const featureType = mfeatureType ? mfeatureType : this.allFeatureTypeSelected[0];
 
-        if (featureType in mainLizmap.config.layers &&
-            'selectedFeatures' in mainLizmap.config.layers[featureType]
-            && mainLizmap.config.layers[featureType]['selectedFeatures'].length) {
+        if (featureType in this._lizmap3.config.layers &&
+            'selectedFeatures' in this._lizmap3.config.layers[featureType]
+            && this._lizmap3.config.layers[featureType]['selectedFeatures'].length) {
 
             // Get all features
-            mainLizmap.lizmap3.getFeatureData(featureType, null, null, 'extent', false, null, null,
+            this._lizmap3.getFeatureData(featureType, null, null, 'extent', false, null, null,
                 (aName, aFilter, cFeatures) => {
                     const invertSelectionIds = [];
                     for (const feat of cFeatures) {
                         const fid = feat.id.split('.')[1];
 
-                        if (!mainLizmap.config.layers[aName]['selectedFeatures'].includes(fid)) {
+                        if (!this._lizmap3.config.layers[aName]['selectedFeatures'].includes(fid)) {
                             invertSelectionIds.push(fid);
                         }
                     }
 
-                    mainLizmap.config.layers[featureType]['selectedFeatures'] = invertSelectionIds;
+                    this._lizmap3.config.layers[featureType]['selectedFeatures'] = invertSelectionIds;
 
-                    mainLizmap.lizmap3.events.triggerEvent('layerSelectionChanged',
+                    this._lizmap3.lizmap3.events.triggerEvent('layerSelectionChanged',
                         {
                             'featureType': featureType,
-                            'featureIds': mainLizmap.config.layers[featureType]['selectedFeatures'],
+                            'featureIds': this._lizmap3.config.layers[featureType]['selectedFeatures'],
                             'updateDrawing': true
                         }
                     );
@@ -474,7 +488,7 @@ export default class SelectionTool {
         if (format === 'GML') {
             format = 'GML3';
         }
-        mainLizmap.lizmap3.exportVectorLayer(this._allFeatureTypeSelected[0], format, false);
+        this._lizmap3.exportVectorLayer(this._allFeatureTypeSelected[0], format, false);
     }
 
     /**
@@ -487,7 +501,7 @@ export default class SelectionTool {
 
         const lConfig = lizMap.config.layers[targetFeatureType];
 
-        const GML3Format = new GML3({srsName: mainLizmap.projection});
+        const GML3Format = new GML3({srsName: this._lizmap3.map.getProjection()});
 
         const geomAsGML = GML3Format.writeGeometryNode( selectionFeature.getGeometry());
 
@@ -529,7 +543,7 @@ export default class SelectionTool {
             return response.json();
         }).then(result => {
             const features = (new GeoJSON()).readFeatures(result, {
-                featureProjection: mainLizmap.projection
+                featureProjection: this._lizmap3.map.getProjection()
             });
 
             let sfIds = features.map(feat => feat.getId().split('.')[1]);
