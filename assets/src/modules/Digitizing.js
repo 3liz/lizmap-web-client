@@ -1148,6 +1148,16 @@ export class Digitizing {
             } else if (format === 'kml') {
                 const kml = (new KML()).writeFeatures(this.featureDrawn, options);
                 Utils.downloadFileFromString(kml, 'application/vnd.google-earth.kml+xml', 'export.kml');
+            } else if (format === 'fgb') {
+                // We create a temp GeoJSON in order to fill the metadata with the projection code
+                const tempGeoJSON = (new GeoJSON()).writeFeaturesObject(this.featureDrawn);
+
+                let projCode = options.featureProjection.split(":")[1];
+                projCode = parseInt(projCode);
+
+                // The 'serialize' func from GeoJSON allows us to add a projection code
+                const fgb = flatgeobuf.geojson.serialize(tempGeoJSON, projCode);
+                Utils.downloadFileFromString(fgb, 'application/octet-stream', 'export.fgb');
             }
         }
     }
