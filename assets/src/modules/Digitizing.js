@@ -34,6 +34,8 @@ import { transform } from 'ol/proj.js';
 
 import shp from 'shpjs';
 import * as flatgeobuf from 'flatgeobuf';
+import { register } from "ol/proj/proj4.js";
+import proj4 from "proj4";
 
 /**
  * List of digitizing available tools
@@ -1166,6 +1168,32 @@ export class Digitizing {
         // Get file extension
         const fileExtension = file.name.split('.').pop().toLowerCase();
 
+        // Prepare for flatgeobuf
+        let projFGB;
+
+        /**
+         * Handle meta data of the FlatGeobuf file
+         * @param {object} headerMeta - Meta data of the FlatGeobuf file
+         */
+        function handleHeaderMeta(headerMeta) {
+            const crsFGB = headerMeta.crs;
+            projFGB = (crsFGB ? "EPSG:" + crsFGB.code : null);
+        }
+
+        /**
+         * Reproject all features from a sourceProj to a targetProj
+         * @param {Feature} features - Features to reproject
+         * @param {string} sourceProj - Source projection
+         * @param {string} targetProj - Target projection
+         * @returns {Feature} - Reprojected features
+         */
+        function reprojAll(features, sourceProj, targetProj) {
+            for (let i = 0; i < features.length; i++) {
+                features[i].getGeometry().transform(sourceProj, targetProj);
+            }
+            return features;
+        }
+
         // if (fileExtension === 'zip') {
         //     reader.onload = (() => {
         //         return (e) => {
@@ -1206,6 +1234,43 @@ export class Digitizing {
                         if (geojson) {
                             OL6features = (new GeoJSON()).readFeatures(geojson, options);
                         }
+                    } else if (fileExtension === 'fgb') {
+                        let features = [];
+
+                        const blob = new Blob([fileContent]);
+                        const stream = blob.stream();
+
+                        for await (const feature of flatgeobuf.ol.deserialize(stream, null, handleHeaderMeta)) {
+                            features.push(feature);
+                        }
+
+                        if (projFGB !== null) {
+                            const projCode = projFGB.split(":")[1];
+
+                            // Verifiy if the projection is already included in proj4
+                            if (Object.keys(proj4.defs).filter((name) => name.includes(projFGB)).length === 0) {
+                                // We need a reprojection to be done because flatgeobuf files doessn't have a precise projection
+                                // We neither used wkt located in headers due to some errors to define it with proj4.
+                                // Nor 'fromEPSGcode()' because it returns a 'Projection' object that sometimes throws errors.
+                                let descriptor = await Utils.fetch('https://epsg.io/' + projCode + '.proj4')
+                                    .then((res) => res.text())
+                                    .catch((error) => {
+                                        throw new Error(lizDict["digitizing.import.fetch.error"] + " : " + error.message);
+                                    });
+
+                                proj4.defs(projFGB, descriptor);
+                                register(proj4);
+                            }
+
+                            features = reprojAll(features, projFGB, mainLizmap.projection);
+                        } else {
+                            lizMap.addMessage(lizDict["digitizing.import.metadata.error"] + " : " +
+                                                        mainLizmap.projection
+                            , 'info'
+                            , true)
+                        }
+
+                        OL6features = features;
                     }
                 } catch (error) {
                     lizMap.addMessage(error, 'danger', true)
@@ -1225,6 +1290,8 @@ export class Digitizing {
         })(this);
 
         if (fileExtension === 'zip'){
+            reader.readAsArrayBuffer(file);
+        } else if (fileExtension === 'fgb'){
             reader.readAsArrayBuffer(file);
         } else {
             reader.readAsText(file);
