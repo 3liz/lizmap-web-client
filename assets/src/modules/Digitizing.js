@@ -1237,17 +1237,8 @@ export class Digitizing {
                         if (projFGB !== null) {
                             const projCode = projFGB.split(":")[1];
 
-                            const nameProjs = Object.keys(proj4.defs);
-                            let isIncluded = false;
-
-                            for (let i = 0; i < nameProjs.length; i++) {
-                                if (nameProjs[i].includes(projFGB)) {
-                                    isIncluded = true;
-                                    break;
-                                }
-                            }
-
-                            if (!isIncluded) {
+                            // Verifiy if the projection is already included in proj4
+                            if (Object.keys(proj4.defs).filter((name) => name.includes(projFGB)).length === 0) {
                                 // We need a reprojection to be done because flatgeobuf files doessn't have a precise projection
                                 // We neither used wkt located in headers due to some errors to define it with proj4.
                                 // Nor 'fromEPSGcode()' because it returns a 'Projection' object that sometimes throws errors.
