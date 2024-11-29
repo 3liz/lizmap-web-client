@@ -163,7 +163,7 @@ export default class Lizmap {
                 this.wms = new WMS();
                 this.action = new Action();
                 this.featureStorage = new FeatureStorage();
-                this.popup = new Popup();
+                this.popup = new Popup(this.initialConfig, this.state, this.map, this.digitizing);
                 this.legend = new Legend(this.state.layerTree);
                 this.search = new Search();
                 this.tooltip = new Tooltip();
