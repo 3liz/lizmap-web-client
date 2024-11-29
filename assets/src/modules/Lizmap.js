@@ -150,7 +150,7 @@ export default class Lizmap {
                 // Create Lizmap modules
                 this.permalink = new Permalink();
                 this.map = new map();
-                this.edition = new Edition();
+                this.edition = new Edition(this._lizmap3);
                 this.featuresTable = new FeaturesTable();
                 this.geolocation = new Geolocation();
                 this.geolocationSurvey = new GeolocationSurvey();
