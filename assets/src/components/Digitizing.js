@@ -198,6 +198,9 @@ export default class Digitizing extends HTMLElement {
                         <li>
                             <a href="#" @click=${() => mainLizmap.digitizing.download('kml')}>KML</a>
                         </li>
+                        <li>
+                            <button class="dropdown-item" type="button" @click=${() => mainLizmap.digitizing.download('fgb')}>FlatGeobuf</button>
+                        </li>
                     </ul>
                 </div>
                 <div class="digitizing-import">
