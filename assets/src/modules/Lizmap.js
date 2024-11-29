@@ -155,7 +155,7 @@ export default class Lizmap {
                 this.geolocation = new Geolocation();
                 this.geolocationSurvey = new GeolocationSurvey();
                 this.selectionTool = new SelectionTool();
-                this.digitizing = new Digitizing();
+                this.digitizing = new Digitizing(this.map, this.lizmap3);
                 this.snapping = new Snapping();
                 this.layers = new Layers();
                 this.proxyEvents = new ProxyEvents();
