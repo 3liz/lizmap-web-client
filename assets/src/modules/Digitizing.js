@@ -1251,8 +1251,11 @@ export class Digitizing {
                                 // We need a reprojection to be done because flatgeobuf files doessn't have a precise projection
                                 // We neither used wkt located in headers due to some errors to define it with proj4.
                                 // Nor 'fromEPSGcode()' because it returns a 'Projection' object that sometimes throws errors.
-                                let descriptor = await fetch('https://epsg.io/' + projCode + '.proj4');
-                                descriptor = await descriptor.text();
+                                let descriptor = await Utils.fetch('https://epsg.io/' + projCode + '.proj4')
+                                    .then((res) => res.text())
+                                    .catch((error) => {
+                                        throw new Error(lizDict["digitizing.import.fetch.error"] + " : " + error.message);
+                                    });
 
                                 proj4.defs(projFGB, descriptor);
                                 register(proj4);
@@ -1260,8 +1263,7 @@ export class Digitizing {
 
                             features = reprojAll(features, projFGB, mainLizmap.projection);
                         } else {
-                            lizMap.addMessage("No metadata found. Make sure the projection of the fgb " +
-                                                        "file is the same as the current project : " +
+                            lizMap.addMessage(lizDict["digitizing.import.metadata.error"] + " : " +
                                                         mainLizmap.projection
                             , 'info'
                             , true)
