@@ -15,6 +15,4 @@
  * @see \Lizmap\Request\Proxy
  * @deprecated
  */
-class lizmapProxy extends \Lizmap\Request\Proxy
-{
-}
+class lizmapProxy extends \Lizmap\Request\Proxy {}
