@@ -75,7 +75,7 @@ class XmlTools
 
                     break;
 
-                 case LIBXML_ERR_ERROR:
+                case LIBXML_ERR_ERROR:
                     $msg .= 'Error '.$error->code.': ';
 
                     break;

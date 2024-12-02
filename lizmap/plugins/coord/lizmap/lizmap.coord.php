@@ -15,15 +15,9 @@ class lizmapCoordPlugin implements jICoordPlugin
         }
     }
 
-    public function beforeAction($params)
-    {
-    }
+    public function beforeAction($params) {}
 
-    public function beforeOutput()
-    {
-    }
+    public function beforeOutput() {}
 
-    public function afterProcess()
-    {
-    }
+    public function afterProcess() {}
 }

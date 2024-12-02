@@ -96,7 +96,7 @@ class WMTSCache
                 if ($verbose) {
                     foreach ($tileMatrixSetLink->tileMatrixLimits as $tileMatrixLimit) {
                         $tmCount = ($tileMatrixLimit->maxRow - $tileMatrixLimit->minRow + 1) * ($tileMatrixLimit->maxCol - $tileMatrixLimit->minCol + 1);
-                        $outputCallback('For "'.$layer->name.'" and "'.$tileMatrixSetLink->ref.'" the TileMatrix '.$tileMatrixLimit->id.' has '.$tmCount.' tiles'.'');
+                        $outputCallback('For "'.$layer->name.'" and "'.$tileMatrixSetLink->ref.'" the TileMatrix '.$tileMatrixLimit->id.' has '.$tmCount.' tiles');
                     }
                 } else {
                     $tmls = array();
@@ -275,7 +275,7 @@ class WMTSCache
 
                         $tmCount = ($tileMatrix->maxRow - $tileMatrix->minRow + 1) * ($tileMatrix->maxCol - $tileMatrix->minCol + 1);
                         if ($verbose || $dryRun) {
-                            $outputCallback($tmCount.' tiles to generate for "'.$layer->name.'" "'.$tileMatrixSetId.'" "'.$tileMatrixLimit->id.'" "'.implode(',', $bbox).'"'.'');
+                            $outputCallback($tmCount.' tiles to generate for "'.$layer->name.'" "'.$tileMatrixSetId.'" "'.$tileMatrixLimit->id.'" "'.implode(',', $bbox).'"');
                         }
                         $tileCount += $tmCount;
                     } else {
@@ -283,14 +283,14 @@ class WMTSCache
 
                         $tmCount = ($tileMatrixLimit->maxRow - $tileMatrixLimit->minRow + 1) * ($tileMatrixLimit->maxCol - $tileMatrixLimit->minCol + 1);
                         if ($verbose || $dryRun) {
-                            $outputCallback($tmCount.' tiles to generate for "'.$layer->name.'" "'.$tileMatrixSetId.'" "'.$tileMatrixLimit->id.'"'.'');
+                            $outputCallback($tmCount.' tiles to generate for "'.$layer->name.'" "'.$tileMatrixSetId.'" "'.$tileMatrixLimit->id.'"');
                         }
                         $tileCount += $tmCount;
                     }
                 }
             }
             if ($verbose || $dryRun) {
-                $outputCallback($tileCount.' tiles to generate for "'.$layer->name.'" "'.$tileMatrixSetId.'" between "'.$tileMatrixMin.'" and "'.$tileMatrixMax.'"'.'');
+                $outputCallback($tileCount.' tiles to generate for "'.$layer->name.'" "'.$tileMatrixSetId.'" between "'.$tileMatrixMin.'" and "'.$tileMatrixMax.'"');
             }
             if ($dryRun) {
                 return 0;
@@ -339,7 +339,7 @@ class WMTSCache
                             ++$tileProgress;
                             if ($verbose && $tileProgress * 100 / $tileCount >= $tileStep) {
                                 $tileStep = floor($tileProgress * 100 / $tileCount);
-                                $outputCallback('Progression: '.$tileStep.'%, '.$tileProgress.' tiles generated on '.$tileCount.' tiles'.'');
+                                $outputCallback('Progression: '.$tileStep.'%, '.$tileProgress.' tiles generated on '.$tileCount.' tiles');
                                 $tileStep = $tileStep + $tileStepHeight;
                             }
                         }
