@@ -326,9 +326,9 @@ class JelixContext implements AppContextInterface
         return \jForms::create($formSel, $formId);
     }
 
-    public function getUrl($selector)
+    public function getUrl($selector, $params = array())
     {
-        return \jUrl::get($selector);
+        return \jUrl::get($selector, $params);
     }
 
     public function getFullUrl($selector, $params = array())
