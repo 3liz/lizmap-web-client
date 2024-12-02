@@ -1,6 +1,10 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 import { gotoMap } from './globals';
+import { FeatureToolbar } from '../../../assets/src/components/FeatureToolbar.js';
+
+// import Vue from 'vue'
+// Vue.Component('lizmap-feature-toolbar', FeatureToolbar)
 
 test.describe('Filter layer data by user - not connected', () => {
 
