@@ -27,7 +27,22 @@ test.describe('Filter layer data by user - not connected', () => {
     test('WMS GetFeatureInfo JSON', async ({ page }) => {
 
         const getFeatureInfo = await page.evaluate(async () => {
-            return await fetch("/index.php/lizmap/service?repository=testsrepository&project=filter_layer_by_user&SERVICE=WMS&REQUEST=GetFeatureInfo&VERSION=1.3.0&CRS=EPSG%3A2154&INFO_FORMAT=application%2Fjson&QUERY_LAYERS=green_filter_layer_by_user_edition_only%2Cblue_filter_layer_by_user%2Cred_layer_with_no_filter&LAYERS=green_filter_layer_by_user_edition_only%2Cblue_filter_layer_by_user%2Cred_layer_with_no_filter&STYLE=default%2Cdefault%2Cdefault&FEATURE_COUNT=10&FILTER=green_filter_layer_by_user_edition_only:\"gid\" > 0")
+            const params = {
+                repository: "testsrepository",
+                project: "filter_layer_by_user",
+                SERVICE: "WMS",
+                REQUEST: "GetFeatureInfo",
+                VERSION: "1.3.0",
+                CRS: "EPSG:2154",
+                INFO_FORMAT:  "application/json",
+                QUERY_LAYERS: "green_filter_layer_by_user_edition_only,blue_filter_layer_by_user,red_layer_with_no_filter",
+                LAYERS: "green_filter_layer_by_user_edition_only,blue_filter_layer_by_user,red_layer_with_no_filter",
+                STYLE: "default,default,default",
+                FEATURE_COUNT: "10",
+                FILTER: 'green_filter_layer_by_user_edition_only:"gid" > 0'
+            };
+            const query = new URLSearchParams(params);
+            return await fetch("/index.php/lizmap/service?" + query.toString())
                 .then(r => r.ok ? r.json() : Promise.reject(r))
         })
 
@@ -42,7 +57,17 @@ test.describe('Filter layer data by user - not connected', () => {
     test('WFS GetFeature', async ({ page }) => {
 
         let getFeature = await page.evaluate(async () => {
-            return await fetch("/index.php/lizmap/service?repository=testsrepository&project=filter_layer_by_user&SERVICE=WFS&REQUEST=GetFeature&VERSION=1.0.0&OUTPUTFORMAT=GeoJSON&TYPENAME=blue_filter_layer_by_user")
+            const params = {
+                repository: "testsrepository",
+                project: "filter_layer_by_user",
+                SERVICE: "WFS",
+                REQUEST: "GetFeature",
+                VERSION: "1.0.0",
+                OUTPUTFORMAT: "GeoJSON",
+                TYPENAME: "blue_filter_layer_by_user"
+            };
+            const query = new URLSearchParams(params);
+            return await fetch("/index.php/lizmap/service?" + query.toString())
                 .then(r => r.ok ? r.json() : Promise.reject(r))
         })
 
@@ -191,7 +216,17 @@ test.describe('Filter layer data by user - user in group a', () => {
     test('WFS GetFeature', async ({ page }) => {
 
         let getFeature = await page.evaluate(async () => {
-            return await fetch("/index.php/lizmap/service?repository=testsrepository&project=filter_layer_by_user&SERVICE=WFS&REQUEST=GetFeature&VERSION=1.0.0&OUTPUTFORMAT=GeoJSON&TYPENAME=blue_filter_layer_by_user")
+            const params = {
+                repository: "testsrepository",
+                project: "filter_layer_by_user",
+                SERVICE: "WFS",
+                REQUEST: "GetFeature",
+                VERSION: "1.0.0",
+                OUTPUTFORMAT: "GeoJSON",
+                TYPENAME: "blue_filter_layer_by_user"
+            };
+            const query = new URLSearchParams(params);
+            return await fetch("/index.php/lizmap/service?" + query.toString())
                 .then(r => r.ok ? r.json() : Promise.reject(r))
         })
 
@@ -202,7 +237,18 @@ test.describe('Filter layer data by user - user in group a', () => {
         expect(feature.id).not.toBeUndefined()
 
         getFeature = await page.evaluate(async () => {
-            return await fetch("/index.php/lizmap/service?repository=testsrepository&project=filter_layer_by_user&SERVICE=WFS&REQUEST=GetFeature&VERSION=1.0.0&OUTPUTFORMAT=GeoJSON&TYPENAME=blue_filter_layer_by_user&EXP_Filter=%22gid%22%20=%203")
+            const params = {
+                repository: "testsrepository",
+                project: "filter_layer_by_user",
+                SERVICE: "WFS",
+                REQUEST: "GetFeature",
+                VERSION: "1.0.0",
+                OUTPUTFORMAT: "GeoJSON",
+                TYPENAME: "blue_filter_layer_by_user",
+                EXP_Filter: '"gid" = 3'
+            };
+            const query = new URLSearchParams(params);
+            return await fetch("/index.php/lizmap/service?" + query.toString())
                 .then(r => r.ok ? r.json() : Promise.reject(r))
         })
 
@@ -355,7 +401,17 @@ test.describe('Filter layer data by user - admin', () => {
     test('WFS GetFeature', async ({ page }) => {
 
         let getFeature = await page.evaluate(async () => {
-            return await fetch("/index.php/lizmap/service?repository=testsrepository&project=filter_layer_by_user&SERVICE=WFS&REQUEST=GetFeature&VERSION=1.0.0&OUTPUTFORMAT=GeoJSON&TYPENAME=blue_filter_layer_by_user")
+            const params = {
+                repository: "testsrepository",
+                project: "filter_layer_by_user",
+                SERVICE: "WFS",
+                REQUEST: "GetFeature",
+                VERSION: "1.0.0",
+                OUTPUTFORMAT: "GeoJSON",
+                TYPENAME: "blue_filter_layer_by_user"
+            };
+            const query = new URLSearchParams(params);
+            return await fetch("/index.php/lizmap/service?" + query.toString())
                 .then(r => r.ok ? r.json() : Promise.reject(r))
         })
 
@@ -366,7 +422,18 @@ test.describe('Filter layer data by user - admin', () => {
         expect(feature.id).not.toBeUndefined()
 
         getFeature = await page.evaluate(async () => {
-            return await fetch("/index.php/lizmap/service?repository=testsrepository&project=filter_layer_by_user&SERVICE=WFS&REQUEST=GetFeature&VERSION=1.0.0&OUTPUTFORMAT=GeoJSON&TYPENAME=blue_filter_layer_by_user&EXP_Filter=%22gid%22%20=%203")
+            const params = {
+                repository: "testsrepository",
+                project: "filter_layer_by_user",
+                SERVICE: "WFS",
+                REQUEST: "GetFeature",
+                VERSION: "1.0.0",
+                OUTPUTFORMAT: "GeoJSON",
+                TYPENAME: "blue_filter_layer_by_user",
+                EXP_Filter: '"gid" = 3'
+            };
+            const query = new URLSearchParams(params);
+            return await fetch("/index.php/lizmap/service?" + query.toString())
                 .then(r => r.ok ? r.json() : Promise.reject(r))
         })
 
