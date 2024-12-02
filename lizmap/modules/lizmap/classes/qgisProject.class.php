@@ -737,9 +737,9 @@ class qgisProject
     /**
      * @param SimpleXMLElement $xml
      *
-     * @throws Exception
-     *
      * @return array[] list of layers. Each item is a list of layer properties
+     *
+     * @throws Exception
      */
     protected function readLayers($xml)
     {

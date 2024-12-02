@@ -12,9 +12,7 @@ namespace Lizmap\Logger;
 
 class MigratorFromSqlite
 {
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     public const MIGRATE_RES_OK = 1;
     public const MIGRATE_RES_ALREADY_MIGRATED = 2;

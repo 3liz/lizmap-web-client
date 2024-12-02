@@ -140,7 +140,7 @@ class Repository
     /**
      * Return the value of the Access-Control-Allow-Origin HTTP header.
      *
-     * @param $referer
+     * @param $referer The referer
      *
      * @return string the value of the ACAO header. If empty, the header should not be set.
      */

@@ -13,7 +13,5 @@ class map_bottomdockZone extends jZone
 {
     protected $_tplname = 'map_bottomdock';
 
-    protected function _prepareTpl()
-    {
-    }
+    protected function _prepareTpl() {}
 }
