@@ -6,7 +6,7 @@
  * @license MPL-2.0
  */
 
-import {mainLizmap, mainEventDispatcher} from '../modules/Globals.js';
+import { mainEventDispatcher } from '../modules/Globals.js';
 
 /**
  * @class
@@ -14,14 +14,20 @@ import {mainLizmap, mainEventDispatcher} from '../modules/Globals.js';
  */
 export default class Edition {
 
-    constructor() {
+    /**
+     * Create an edition instance
+     * @param {object}   lizmap3   - The old lizmap object
+     */
+    constructor(lizmap3) {
+        this._lizmap3 = lizmap3;
+
         this.drawFeatureActivated = false;
         this._layerId = undefined;
         this.layerGeometry = undefined;
         this.drawControl = undefined;
         this._lastSegmentLength = undefined;
 
-        lizMap.events.on({
+        lizmap3.events.on({
             lizmapeditiondrawfeatureactivated: (properties) => {
                 this.drawFeatureActivated = true;
                 this.layerGeometry = properties.editionConfig.geometryType;
@@ -50,11 +56,11 @@ export default class Edition {
     }
 
     get hasEditionLayers() {
-        return 'editionLayers' in mainLizmap.lizmap3.config;
+        return 'editionLayers' in this._lizmap3.config;
     }
 
     get editLayer() {
-        const editLayer = mainLizmap.lizmap3.map.getLayersByName('editLayer');
+        const editLayer = this._lizmap3.map.getLayersByName('editLayer');
         if (editLayer.length === 1) {
             return editLayer[0];
         } else {
@@ -63,7 +69,7 @@ export default class Edition {
     }
 
     get modifyFeatureControl(){
-        const modifyFeatureCtrls = mainLizmap.lizmap3.map.getControlsByClass('OpenLayers.Control.ModifyFeature');
+        const modifyFeatureCtrls = this._lizmap3.map.getControlsByClass('OpenLayers.Control.ModifyFeature');
         return (modifyFeatureCtrls.filter(ctrl => ctrl.layer.name === "editLayer"))[0];
     }
 
