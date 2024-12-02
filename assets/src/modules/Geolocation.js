@@ -4,7 +4,7 @@
  * @copyright 2023 3Liz
  * @license MPL-2.0
  */
-import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
+import { mainEventDispatcher } from '../modules/Globals.js';
 import olGeolocation from 'ol/Geolocation.js';
 import { transform } from 'ol/proj.js';
 import { Vector as VectorSource } from 'ol/source.js';
@@ -50,6 +50,7 @@ export default class Geolocation {
         map.addToolLayer(this._geolocationLayer);
 
         this._lizmap3 = lizmap3;
+        this._map = map;
         this._firstGeolocation = true;
         this._isBind = false;
         this._bindIntervalID = 0;
@@ -97,7 +98,8 @@ export default class Geolocation {
         this._geolocation.on('change:accuracyGeometry', () => {
             // Zoom on accuracy geometry extent when geolocation is activated for the first time
             if (this._firstGeolocation) {
-                mainLizmap.extent = this._geolocation.getAccuracyGeometry().getExtent();
+                const bounds = this._geolocation.getAccuracyGeometry().getExtent();
+                map.getView().fit(bounds, {nearest: true});
                 this.center();
                 this._firstGeolocation = false;
 
@@ -107,12 +109,13 @@ export default class Geolocation {
 
         // Handle geolocation error
         this._geolocation.on('error', error => {
-            mainLizmap.displayMessage(error.message, 'danger', true);
+            this._lizmap3.addMessage(error.message, 'danger', true);
         });
     }
 
     center() {
-        mainLizmap.center = this._geolocation.getPosition();
+        const center = this._geolocation.getPosition();
+        this._map.getView().setCenter(center);
     }
 
     toggleBind() {
