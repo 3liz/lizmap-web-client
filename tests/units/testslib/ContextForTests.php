@@ -210,8 +210,12 @@ class ContextForTests implements AppContextInterface
     {
     }
 
-    public function getUrl($selector)
+    public function getUrl($selector, $params = array())
     {
+        // simple url build
+        $keyWithVal4QueryString = array();
+        array_walk($params, function($v ,$key) use (&$keyWithVal4QueryString) {$keyWithVal4QueryString[]=$key.'='.$v;});
+        return $selector.'?'.implode("&", $keyWithVal4QueryString);
     }
 
     public function getFullUrl($selector, $params = array())
