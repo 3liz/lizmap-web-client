@@ -11,6 +11,7 @@ require JELIX_LIB_CORE_PATH.'request/jClassicRequest.class.php';
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 class jCoordinatorForTest extends jCoordinator

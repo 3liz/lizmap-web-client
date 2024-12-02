@@ -379,9 +379,9 @@ class lizmapProject
     }
 
     /**
-     * @throws jExceptionSelector
-     *
      * @return lizmapMapDockItem[]
+     *
+     * @throws jExceptionSelector
      */
     public function getDefaultDockable()
     {
@@ -389,10 +389,10 @@ class lizmapProject
     }
 
     /**
+     * @return lizmapMapDockItem[]
+     *
      * @throws jException
      * @throws jExceptionSelector
-     *
-     * @return lizmapMapDockItem[]
      */
     public function getDefaultMiniDockable()
     {
@@ -400,9 +400,9 @@ class lizmapProject
     }
 
     /**
-     * @throws jExceptionSelector
-     *
      * @return lizmapMapDockItem[]
+     *
+     * @throws jExceptionSelector
      */
     public function getDefaultBottomDockable()
     {

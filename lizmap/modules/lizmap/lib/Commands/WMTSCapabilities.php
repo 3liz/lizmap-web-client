@@ -19,7 +19,6 @@ class WMTSCapabilities extends \Jelix\Scripts\ModuleCommandAbstract
             ->addArgument('project', InputArgument::REQUIRED, 'The project name')
             ->addArgument('layer', InputArgument::OPTIONAL, 'The layer name for which you want to know capabilities')
             ->addArgument('TileMatrixSet', InputArgument::OPTIONAL, 'the TileMatrixSet (CRS) for which you want to know capabilites')
-
         ;
     }
 

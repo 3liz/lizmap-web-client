@@ -25,7 +25,6 @@ class WMTSSeed extends \Jelix\Scripts\ModuleCommandAbstract
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'will not generate the cache, only output statistics')
             ->addOption('bbox', null, InputOption::VALUE_REQUIRED, 'bounding box to restrict generation (4 comma separated values)')
             ->addOption('force', 'f', InputOption::VALUE_NONE, 'force cache generation even if cache exists')
-
         ;
     }
 

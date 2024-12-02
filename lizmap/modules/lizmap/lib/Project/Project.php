@@ -371,6 +371,7 @@ class Project
         if (!is_null($pluginMetadata)) {
             return $pluginMetadata->lizmap_web_client_target_version;
         }
+
         // The CFG is very old, at least older than QGIS plugin 3.2
         // Same value as in lizmap/www/assets/js/map.js
         return 30200;
@@ -1426,12 +1427,12 @@ class Project
      * and we are not in an editing context we return null
      * to tell there is no filter in this context.
      *
-     * @param string $layerName        : the layer name
-     * @param bool   $editing_context: we are in editing context
+     * @param string $layerName      : the layer name
+     * @param bool   $editingContext : we are in editing context
      *
      * @return null|array the configuration for the polygon filter the given layer
      */
-    public function getLayerPolygonFilterConfig($layerName, $editing_context = false)
+    public function getLayerPolygonFilterConfig($layerName, $editingContext = false)
     {
         if (!$this->hasPolygonFilteredLayers()) {
             return null;
@@ -1466,7 +1467,7 @@ class Project
         // If the polygon filter is configured for editing only
         // and we are not in an editing context
         // No need to return the filter config
-        if (!$editing_context && $layer_config['filter_mode'] == 'editing_only') {
+        if (!$editingContext && $layer_config['filter_mode'] == 'editing_only') {
             return null;
         }
 
@@ -2211,9 +2212,9 @@ class Project
     }
 
     /**
-     * @throws \jExceptionSelector
-     *
      * @return \lizmapMapDockItem[]
+     *
+     * @throws \jExceptionSelector
      */
     public function getDefaultDockable()
     {
@@ -2304,10 +2305,10 @@ class Project
     }
 
     /**
+     * @return \lizmapMapDockItem[]
+     *
      * @throws \jException
      * @throws \jExceptionSelector
-     *
-     * @return \lizmapMapDockItem[]
      */
     public function getDefaultMiniDockable()
     {
@@ -2457,9 +2458,9 @@ class Project
     }
 
     /**
-     * @throws \jExceptionSelector
-     *
      * @return \lizmapMapDockItem[]
+     *
+     * @throws \jExceptionSelector
      */
     public function getDefaultBottomDockable()
     {
@@ -2484,9 +2485,9 @@ class Project
     }
 
     /**
-     * @throws \jExceptionSelector
-     *
      * @return \lizmapMapDockItem[]
+     *
+     * @throws \jExceptionSelector
      */
     public function getDefaultRightDockable()
     {

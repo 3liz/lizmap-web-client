@@ -13,7 +13,5 @@ class map_dockZone extends jZone
 {
     protected $_tplname = 'map_dock';
 
-    protected function _prepareTpl()
-    {
-    }
+    protected function _prepareTpl() {}
 }

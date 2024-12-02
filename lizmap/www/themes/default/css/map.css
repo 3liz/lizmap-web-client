@@ -4,12 +4,12 @@
   --header-background-image: none;
   --color-background-primary: #ffffffdb;
   --color-background-primary-content: #ffffffdb;
-  --color-text-primary: rgb(51, 51, 51);
-  --color-text-primary-content: rgb(51, 51, 51);
+  --color-text-primary: rgb(51 51 51);
+  --color-text-primary-content: rgb(51 51 51);
   --color-contrasted-elements: #43718c;
   --color-contrasted-elements-light: #c3dceb;
   --color-contrasted-text: white;
-  --color-dark-gray-elements: rgb(51, 51, 51);
+  --color-dark-gray-elements: rgb(51 51 51);
 }
 
 
@@ -33,6 +33,7 @@
 #title h1 {
   color : var(--color-contrasted-text);
 }
+
 #title h2 {
   color : var(--color-contrasted-text);
 }
@@ -40,39 +41,46 @@
 /* HEADER NAVBAR */
 #headermenu .navbar-search .icon {
   background-color: transparent;
-  background-position: -400px 0px;
+  background-position: -400px 0;
 }
+
 #header-clear {
-  background-position: -875px 0px !important;
+  background-position: -875px 0 !important;
 }
 
 #headermenu .dropdown-menu > li > a
 
 #headermenu .btn-locate-clear.icon {
   background-color: transparent;
-  background-position: -875px 0px;
+  background-position: -875px 0;
   margin-top: 5px;
 }
+
 #headermenu .dropdown-menu {
   background-color: var(--color-background-primary);
 }
-#headermenu .dropdown-menu:after {
-  border-bottom: 6px solid rgba(0,0,0,0.5);
+
+#headermenu .dropdown-menu::after {
+  border-bottom: 6px solid rgb(0 0 0 / 50%);
 }
+
 #headermenu .dropdown-caret .caret-inner {
   border-left: 6px solid transparent;
   border-right: 6px solid transparent;
-  border-bottom: 6px solid rgba(0,0,0,0.5);
+  border-bottom: 6px solid rgb(0 0 0 / 50%);
 }
+
 #headermenu .dropdown-caret .caret-outer {
   border-left: 7px solid transparent;
   border-right: 7px solid transparent;
-  border-bottom: 7px solid rgba(0,0,0,0.2);
+  border-bottom: 7px solid rgb(0 0 0 / 20%);
 }
+
 #headermenu .dropdown-inner .items li > a,
 #headermenu .dropdown-menu > li > a {
   color: var(--color-text-primary);
 }
+
 #headermenu .dropdown-inner .items li > a:hover,
 #headermenu .dropdown-menu > li > a:hover,
 #headermenu .dropdown-inner .items li > a:focus,
@@ -83,81 +91,98 @@
 
 /* HEADER NAVBAR  */
 .navbar .nav .metadata .icon {
-  background-position: -125px 0px;
+  background-position: -125px 0;
 }
+
 .navbar .nav .metadata a:hover .icon,
 .navbar .nav .metadata.active a .icon {
-  background-position: -100px 0px;
+  background-position: -100px 0;
 }
 
 .navbar .nav .map .icon {
-  background-position: -75px 0px;
+  background-position: -75px 0;
 }
+
 .navbar .nav .map a:hover .icon,
 .navbar .nav .map.active a .icon {
-  background-position: -50px 0px;
+  background-position: -50px 0;
 }
+
 .navbar .nav .legend .icon {
-  background-position: -75px 0px;
+  background-position: -75px 0;
 }
+
 .navbar .nav .legend a:hover .icon,
 .navbar .nav .legend.active a .icon {
-  background-position: -50px 0px;
+  background-position: -50px 0;
 }
+
 .navbar .nav .locate .icon {
-  background-position: -175px 0px;
+  background-position: -175px 0;
 }
+
 .navbar .nav .locate a:hover .icon,
 .navbar .nav .locate.active a .icon {
-  background-position: -150px 0px;
+  background-position: -150px 0;
 }
+
 .navbar .nav .print .icon {
-  background-position: -375px 0px;
+  background-position: -375px 0;
 }
+
 .navbar .nav .print a:hover .icon,
 .navbar .nav .print.active a .icon {
-  background-position: -350px 0px;
+  background-position: -350px 0;
 }
+
 .navbar .nav .edition .icon {
-  background-position: -475px 0px;
+  background-position: -475px 0;
 }
+
 .navbar .nav .edition a:hover .icon,
 .navbar .nav .edition.active a .icon {
-  background-position: -450px 0px;
+  background-position: -450px 0;
 }
+
 .navbar .nav .measure .icon {
-  background-position: -275px 0px;
+  background-position: -275px 0;
 }
+
 .navbar .nav .measure a:hover .icon,
 .navbar .nav .measure.active a .icon {
-  background-position: -250px 0px;
+  background-position: -250px 0;
 }
+
 .navbar .nav .geolocation .icon {
-  background-position: -325px 0px;
+  background-position: -325px 0;
 }
+
 .navbar .nav .geolocation a:hover .icon,
 .navbar .nav .geolocation.active a .icon {
-  background-position: -300px 0px;
+  background-position: -300px 0;
 }
 
 /* MAP MENU (VERTICAL MENU ON THE LEFT) */
 #mapmenu {
   background: var(--color-dark-gray-elements);
 }
+
 #mapmenu .nav-list > li.edition.edition-pending:not(.active) #button-edition {
 	background-color: var(--color-contrasted-elements-light);
 }
 
 /* ICONS */
 #content .ui-icon {
-  background-image : url(images/sprite_menu.png);
+  background-image : url("images/sprite_menu.png");
 }
+
 #content .ui-icon-open-menu {
   background-position : -16px -80px;
   background-color : #F0F0F0;
 }
+
 #content .ui-icon-close-menu {
-  background-position : 0px -96px;
+  background-position : 0 -96px;
 }
 
 
@@ -227,6 +252,7 @@ div.modal h3,
 .dock-subtitle {
   color: var(--color-contrasted-elements);
 }
+
 /* Icons from glyphicons
 For light theme, use the dark icons
 */
@@ -239,70 +265,74 @@ For light theme, use the dark icons
 
 /* Docks title icons must also be dark */
 #nav-tab-switcher a::before {
-  background-position: -50px 0px;
+  background-position: -50px 0;
 }
 
 #nav-tab-metadata a::before {
-  background-position: -100px 0px;
+  background-position: -100px 0;
 }
 
 #nav-tab-edition a::before {
-  background-position: -450px 0px;
+  background-position: -450px 0;
 }
 
 #mini-dock .locate .icon {
-  background-position: -150px 0px !important;
+  background-position: -150px 0 !important;
 }
 
 #mini-dock .btn.btn-locate-clear {
-  background-position: -850px 0px !important;
+  background-position: -850px 0 !important;
 }
 
 #dock .baselayer .icon {
-  background-position: -700px 0px !important;
+  background-position: -700px 0 !important;
 }
 
 #nav-tab-filter a::before {
-	background-position: -400px 0px;
+	background-position: -400px 0;
 }
 
 #mini-dock .measure .icon {
-  background-position: -250px 0px !important;
+  background-position: -250px 0 !important;
 }
 
 #mini-dock .geolocation .icon {
-  background-position: -300px 0px !important;
+  background-position: -300px 0 !important;
 }
 
 #mini-dock .tooltip-layer .icon {
-  background-position: -750px 0px !important;
+  background-position: -750px 0 !important;
 }
 
 #mini-dock .print .icon {
-  background-position: -350px 0px !important;
+  background-position: -350px 0 !important;
 }
 
 #mini-dock .permaLink .icon {
-  background-position: -650px 0px !important;
+  background-position: -650px 0 !important;
 }
+
 #mini-dock #action div.action h3 span.icon {
   filter: invert(0);
 }
+
 #sub-dock .sub-metadata h3 .icon {
-  background-position: -100px 0px;
+  background-position: -100px 0;
 }
 
 #dock #cadastre h3 .icon {
-  background-image: url(images/cadastre-icon-dark.png) !important;
+  background-image: url("images/cadastre-icon-dark.png") !important;
   background-position: 0 0;
 }
 
 
 /* BOTTOM DOCK */
+
 /* bottom-dock top border to separate from the map */
 #bottom-dock {
   border-top: 1px solid var(--color-contrasted-elements-light);
 }
+
 /* Bottom-dock content : remove borders
 & add a line under the bottom dock main title */
 #bottom-dock div.bottom-content {
@@ -318,37 +348,45 @@ For light theme, use the dark icons
 #menu .ui-icon-locate-open {
   background-position : -16px -16px;
 }
+
 #toolbar h3 .icon,
 #menu h3 .icon {
-  background-image : url(images/sprite_20_tools.png);
+  background-image : url("images/sprite_20_tools.png");
 }
+
 #toolbar .baselayer h3 .icon,
 #menu .baselayer h3 .icon {
-  background-position : -725px 0px;
+  background-position : -725px 0;
 }
+
 #toolbar .switcher h3 .icon,
 #menu .switcher h3 .icon {
-  background-position : -75px 0px;
+  background-position : -75px 0;
 }
+
 #toolbar .locate h3 .icon,
 #menu .locate h3 .icon {
-  background-position : -175px 0px;
+  background-position : -175px 0;
 }
+
 #toolbar .geolocation h3 .icon,
 #menu .geolocation h3 .icon {
-  background-position: -325px 0px;
+  background-position: -325px 0;
 }
+
 #toolbar .print h3 .icon,
 #menu .print h3 .icon {
-  background-position: -375px 0px;
+  background-position: -375px 0;
 }
+
 #toolbar .measure h3 .icon,
 #menu .measure h3 .icon {
-  background-position: -275px 0px;
+  background-position: -275px 0;
 }
+
 #toolbar .edition h3 .icon,
 #menu .edition h3 .icon {
-  background-position : -675px 0px;
+  background-position : -675px 0;
 }
 
 /*
@@ -356,22 +394,27 @@ Timemanager
 */
 #toolbar #timemanager-menu h3 .icon,
 #menu #timemanager-menu h3 .icon {
-  background-image : url(images/sprite_timemanager.png);
+  background-image : url("images/sprite_timemanager.png");
 }
+
 .navbar .navbar-inner .timemanager .icon {
-  background-image:url(images/sprite_timemanager.png);
+  background-image:url("images/sprite_timemanager.png");
 }
+
 .navbar .nav .timemanager .icon {
-  background-position: 0px 0px;
+  background-position: 0 0;
 }
+
 .navbar .nav .timemanager a:hover .icon,
 .navbar .nav .timemanager.active a .icon {
-  background-position: -20px 0px;
+  background-position: -20px 0;
 }
+
 #toolbar .timemanager h3 .icon,
 #menu .timemanager h3 .icon {
-  background-position: -20px 0px;
+  background-position: -20px 0;
 }
+
 #tmCurrentValue, #tmNextValue {
   font-size: 8pt;
   font-weight: bold;
@@ -383,7 +426,7 @@ Timemanager
 }
 
 #close-menu {
-  border-bottom : solid 1px #DDDDDD;
+  border-bottom : solid 1px #DDD;
 }
 
 #content.mobile #toolbar{
@@ -391,59 +434,70 @@ Timemanager
 }
 
 #toolbar .title .btn, #menu .title .btn {
-  background : url(images/sprite_menu_tools.png) no-repeat right;
+  background : url("images/sprite_menu_tools.png") no-repeat right;
 }
+
 #toolbar .title .btn.btn-error {
   background:none;
   color:#DA4F49;
 }
+
 #toolbar .title .btn.btn-locate-clear {
-  background-position : 0px 0px;
+  background-position : 0 0;
 }
+
 #toolbar .title .btn.btn-locate-clear:hover {
-  background-position : -20px 0px;
+  background-position : -20px 0;
 }
+
 #toolbar .title .btn.btn-print-clear {
   background-position : -20px -100px;
 }
+
 #toolbar .title .btn.btn-print-clear:hover {
-  background-position : 0px -100px;
+  background-position : 0 -100px;
 }
+
 #toolbar .title .btn.btn-stop {
-  background-position : 0px -20px;
+  background-position : 0 -20px;
 }
+
 #toolbar .title .btn.btn-stop:hover {
   background-position : -20px -20px;
 }
+
 #toolbar .menu-content .btn.btn-success{
   background-color: #93C01F;
-  background-image: -moz-linear-gradient(center top, #9BC144, #93C01F);
+  background-image: linear-gradient(center top, #9BC144, #93C01F);
 }
 
 #baselayer-menu div.baselayer-select,
 #switcher div.baselayer-select,
 #locate div.locate-layer {
   border : solid 1px #606060;
-  background: url(images/123_click.png) no-repeat right;
+  background: url("images/123_click.png") no-repeat right;
 }
 
 #baselayer-menu div.baselayer-select select,
 #locate div.locate-layer select {
   background: transparent;
-  color : rgb(51,51,51);
+  color : rgb(51 51 51);
 }
 
 #locate div.locate-layer .custom-combobox-toggle {
-  background: url(images/123_click.png) no-repeat right -5px;
+  background: url("images/123_click.png") no-repeat right -5px;
 }
+
 #locate div.locate-layer .custom-combobox-input {
   background: none;
-  color : rgb(51,51,51);
+  color : rgb(51 51 51);
 }
+
 .ui-autocomplete.ui-menu .ui-menu-item a {
   background: none;
-  color : rgb(51,51,51);
+  color : rgb(51 51 51);
 }
+
 .ui-autocomplete.ui-menu .ui-menu-item a.ui-state-hover,
 .ui-autocomplete.ui-menu .ui-menu-item a.ui-state-active,
 .ui-autocomplete.ui-menu .ui-menu-item a.ui-state-focus {
@@ -452,7 +506,7 @@ Timemanager
 
 #menu .ui-accordion-content {
   background-color : white;
-  border : solid 1px rgb(251,216,80);
+  border : solid 1px rgb(251 216 80);
 }
 
 /* LAYER TREE aka SWITCHER */
@@ -462,109 +516,133 @@ lizmap-treeview input[type="checkbox"],
 }
 
 #baselayer-select-input {
-  background : none repeat scroll 0% 0% rgb(240, 240, 240);
+  background : none repeat scroll 0% 0% rgb(240 240 240);
   border : solid 1px #DDD;
   border-left : none;
 }
+
 lizmap-treeview .icon-info-sign {
   border: 1px solid var(--color-contrasted-elements-light);
   background-color: var(--color-contrasted-elements-light);
 }
 
-/*navbar*//* Navigation bar button color */
+/* navbar */
+
+/* Navigation bar button color */
 #navbar button.btn {
   background-color: var(--color-contrasted-elements);
 }
+
 /* Navigation bar active button color */
 #navbar button.btn.active {
   background-color: var(--color-dark-gray-elements);
 }
+
 #navbar div.slider {
   background: var(--color-dark-gray-elements);
 }
+
 #navbar div.slider span {
   background: var(--color-dark-gray-elements);
   border: solid 1px var(--color-dark-gray-elements);
 }
+
 #navbar button.ui-button-icon-only{
   background : var(--color-contrasted-elements);
   border : solid 1px white;
 }
+
 #navbar button.ui-state-select{
   background-color : var(--color-dark-gray-elements);
 }
+
 #navbar .ui-state-default .ui-icon {
-  background-image : url(images/sprite_20.png);
+  background-image : url("images/sprite_20.png");
 }
+
 #navbar .ui-button-icon-only .ui-icon-pan {
-  background-position : 0px -20px;
+  background-position : 0 -20px;
 }
+
 #navbar .ui-button-icon-only .ui-icon-zoom {
   background-position : -20px -20px;
 }
+
 #navbar .ui-button-icon-only .ui-icon-zoom-extent {
   background-position : -20px -40px;
 }
+
 #navbar .ui-button-icon-only .ui-icon-zoom-out {
-  background-position : -20px 0px;
+  background-position : -20px 0;
 }
+
 #navbar .ui-button-icon-only .ui-icon-zoom-in {
-  background-position : 0px 0px;
+  background-position : 0 0;
 }
+
 #navbar .ui-button-icon-only.ui-state-usable .ui-icon-previous {
-  background-position : 0px -80px;
+  background-position : 0 -80px;
 }
+
 #navbar .ui-button-icon-only .ui-icon-next {
   background-position : -25px -60px;
 }
+
 #navbar .ui-button-icon-only.ui-state-usable .ui-icon-next {
   background-position : -25px -80px;
 }
 
-/*Overview map*/
+/* Overview map */
 #overview-bar {
-  background : none repeat scroll 0% 0% rgb(240, 240, 240);
+  background : none repeat scroll 0% 0% rgb(240 240 240);
 }
 
 #overview-bar .label {
-  color : rgb(51,51,51);
+  color : rgb(51 51 51);
   background: none;
 }
 
 #overview-bar .button {
   border-left : solid 1px #606060;
-  /*background : #DDD;*/
+
+  /* background : #DDD; */
   background : url('images/123_click.png') no-repeat scroll right center #DDD;
 }
+
 #overview-bar .ui-icon {
-  background-image : url(images/sprite_menu.png);
+  background-image : url("images/sprite_menu.png");
 }
 
 #overview-bar .button .ui-icon-triangle-1-s {
-  background-position : -16px 0px;
+  background-position : -16px 0;
 }
+
 #overview-bar .button .ui-icon-triangle-1-n {
-  background-position : 0px 0px;
+  background-position : 0 0;
 }
 
 #overviewmap{
-  background : none repeat scroll 0% 0% rgb(240, 240, 240);
+  background : none repeat scroll 0% 0% rgb(240 240 240);
   border : solid 1px #606060;
   border-bottom : none;
 }
+
 .olControlOverviewMapElement {
-  background-color: rgb(240,240,240);
+  background-color: rgb(240 240 240);
 }
+
 .olControlOverviewMapExtentRectangle {
   border: 2px solid #59B4D4;
 }
+
 .olControlOverviewMapRectReplacement {
-  background-image:url(img/overview_replacement.gif);
+  background-image:url("img/overview_replacement.gif");
 }
 
 #attribution-box {
-  background-color : rgba(255,255,255,0.7);
+  background-color : rgb(255 255 255 / 70%);
 }
+
 /* Overview map rectangle */
 .ol-overviewmap-box {
   border: 2px dotted var(--color-contrasted-elements);
@@ -577,19 +655,23 @@ lizmap-treeview .icon-info-sign {
   width:65%;
   background-color:#F0F0F0;
 }
+
 #attribute-table-panel.visible {
   opacity: 1;
   height: 50%;
 }
+
 #attribute-table-panel.fullsize {
   height: 100%;
   width:100%;
 }
+
 /* ATTRIBUTE DOCK TABS (AT THE TOP) */
 #attributeLayers-tabs > li > a {
   padding: 5px;
   margin: 5px;
 }
+
 #attributeLayers-tabs > li.active > a,
 #attributeLayers-tabs > li > a:hover {
   border: 1px solid transparent;
@@ -597,6 +679,7 @@ lizmap-treeview .icon-info-sign {
   background-color: var(--color-contrasted-elements);
   color: var(--color-contrasted-text);
 }
+
 /* The first "Data" tab must not be displayed as a button */
 #nav-tab-attribute-summary a,
 #nav-tab-attribute-summary a:hover,
@@ -615,39 +698,48 @@ lizmap-treeview .icon-info-sign {
 }
 
 #attribute-table-panel h3 .icon {
-  background-image : url(images/sprite_20_tools.png);
+  background-image : url("images/sprite_20_tools.png");
 }
+
 .navbar .navbar-inner .attributeLayers .icon {
   background-image: url("images/sprite_20_tools.png");
 }
+
 .navbar .nav .attributeLayers .icon {
   background-position: -120px -100px;
 }
+
 .navbar .nav .attributeLayers a:hover .icon,
 .navbar .nav .attributeLayers.active a .icon {
   background-position: -120px -80px;
 }
+
 #attribute-table-panel h3 .icon {
   background-position: -120px -80px;
-  background-image : url(images/sprite_20_tools.png);
+  background-image : url("images/sprite_20_tools.png");
   width:20px;
   height:20px;
 }
+
 .attributeLayers-layer-div span.attribute-layer-msg {
   text-decoration:italic;
   font-size:0.8em;
 }
+
 .attributeLayers-layer-div span.attribute-layer-msg.success {
   color:green;
 }
+
 .attributeLayers-layer-div span.attribute-layer-msg.failure {
   color:red;
 }
+
 /* Child attribute tables tabs buttons */
 .tabbable.attribute-layer-child-content ul li a {
   cursor: pointer;
   padding: 5px;
   margin: 5px;
+
   /* font-size: 1em; */
   border: 1px solid transparent;
   border-radius: 5px;
@@ -656,6 +748,7 @@ lizmap-treeview .icon-info-sign {
   box-shadow: none;
   text-shadow: none;
 }
+
 .tabbable.attribute-layer-child-content ul li a:hover,
 .tabbable.attribute-layer-child-content ul li.active a {
   background-color: var(--color-contrasted-elements);
@@ -673,6 +766,7 @@ lizmap-treeview .icon-info-sign {
   border-color : #fbfbfb;
   color : #fbfbfb;
 }
+
 .alert-info .close{
   color : #fbfbfb;
 }
@@ -685,26 +779,33 @@ lizmap-treeview .icon-info-sign {
   background-position : -48px -80px;
   background-color : #0094D6;
 }
+
 .liz-icon-partial-check {
   /* sprite de 16x16 mais button de 14x14 */
   background-position: -32px -80px;
   background-color : #0094D6;
 }
+
 .liz-state-disabled .liz-icon-check {
   background-color : #B3B3B3;
 }
+
 .liz-state-disabled .liz-icon-partial-check {
   background-color : #B3B3B3;
 }
+
 .liz-icon-legend-collapsed {
   background-position: -32px -16px;
 }
+
 .liz-icon-legend-open {
   background-position: -64px -16px;
 }
+
 .liz-icon-info {
-  background-position: 0px -80px;
+  background-position: 0 -80px;
 }
+
 .liz-remove-cache {
   background-position: -48px -100px;
 }
@@ -712,9 +813,11 @@ lizmap-treeview .icon-info-sign {
 .liz-icon-overview {
   background-position: -208px -128px;
 }
+
 .liz-icon-switcher-open {
   background-position: -16px -96px;
 }
+
 .liz-icon-switcher-collapsed {
   background-position: 0 -96px;
 }
@@ -722,6 +825,7 @@ lizmap-treeview .icon-info-sign {
 
 
 /* POPUP */
+
 /* Background of the popup div */
 #dock div.lizmapPopupDiv,
 #mini-dock div.lizmapPopupDiv,
@@ -729,15 +833,18 @@ lizmap-treeview .icon-info-sign {
 #bottom-dock div.lizmapPopupDiv {
   background-color: var(--color-background-primary-content) !important;
 }
+
 /* Popup layer title */
 h4.lizmapPopupTitle {
   color: var(--color-text-primary-content) !important;
 }
+
 .lizmapPopup.olPopup .lizmapPopupContent h4,
 #map-content .lizmapPopupContent h4,
 #popupcontent .lizmapPopupContent h4 {
   color: var(--color-text-primary-content) !important;
 }
+
 /* Popup content */
 .lizmapPopup.olPopup .lizmapPopupTable,
 #map-content .lizmapPopupTable,
@@ -745,6 +852,7 @@ h4.lizmapPopupTitle {
 #liz-atlas-item-detail .lizmapPopupTable {
   width: 100%;
 }
+
 #dock div.lizmapPopupDiv,
 #mini-dock div.lizmapPopupDiv,
 #right-dock div.lizmapPopupDiv,
@@ -752,7 +860,7 @@ h4.lizmapPopupTitle {
 	padding: inherit;
 }
 
-/*Popup OpenLayers*/
+/* Popup OpenLayers */
 .lizmapPopup.olPopup,
 #map-content .lizmapPopup{
   background-color: var(--color-background-primary) !important;
@@ -765,6 +873,7 @@ h4.lizmapPopupTitle {
   color: var(--color-text-primary-content) !important;
   border-bottom: 1px solid var(--color-contrasted-elements);
 }
+
 /*
 .lizmapPopup.olPopup .lizmapPopupTable,
 #map-content .lizmapPopupTable{
@@ -776,10 +885,12 @@ h4.lizmapPopupTitle {
   color: black;
   background-color: lightgrey;
 }
+
 .lizmapPopup.olPopup .lizmapPopupTable th.left,
 #map-content .lizmapPopupTable th.left{
   border-right: 1px solid #C9C9C9 !important;
 }
+
 /* Popup title of children popup & dataviz plots */
 .lizmapPopup.olPopup .lizmapPopupDiv .lizmapPopupChildren h4,
 #map-content .lizmapPopupDiv .lizmapPopupChildren h4,
@@ -788,7 +899,7 @@ h4.lizmapPopupTitle {
 {
   border-bottom: 1px solid lightgray;
   color: var(--color-text-primary-content) !important;
-  margin: 0px;
+  margin: 0;
   font-size: 0.9em;
   padding: 5px
 }
@@ -834,33 +945,39 @@ div.attribute-layer-feature-panel .lizmapPopupTable td
 lizmap-feature-toolbar div.feature-toolbar {
   margin-bottom: 3px;
 }
+
 lizmap-feature-toolbar button.btn:hover,
 .attribute-layer-action-bar button.btn:not(.dropdown-toggle):hover {
   background-image: none;
   background-color: var(--color-contrasted-elements);
 }
 
-/*dialog wait*/
+/* dialog wait */
 .liz-dialog-wait {
   background: #F6F6F6;
   border: 1px solid #606060;
 }
+
 .liz-dialog-wait .ui-dialog-titlebar{
   background : #2B2B2B;
   color : #FBFBFB;
 }
+
 .liz-dialog-wait .ui-dialog-titlebar-close{
   display:none;
 }
+
 .ui-widget-overlay {
   opacity : 0.8;
   background : black;
 }
+
 #loading p {
   display: none;
 }
+
 #loading {
-  background-image: url(img/loading.svg);
+  background-image: url("img/loading.svg");
   background-repeat: no-repeat;
   background-position-x: center;
   background-position-y: center;
@@ -878,14 +995,17 @@ lizmap-feature-toolbar button.btn:hover,
 #edition-modal form {
   margin: 0;
 }
+
 edition-form-container > div > h3 {
   font-size: 1.5em;
 }
+
 .edition-tabs .nav-pills > li > a {
   background-image: none;
   background-color: var(--color-contrasted-elements-light);
   color: var(--color-text-primary);
 }
+
 .edition-tabs .nav-pills > li > a:hover,
 .edition-tabs .nav-pills > li.active > a,
 .edition-tabs .nav-pills > .active > a,
@@ -899,15 +1019,18 @@ edition-form-container > div > h3 {
 #edition ul.nav-tabs {
   border-bottom: 1px solid var(--color-contrasted-elements);
 }
+
 #edition .nav-tabs > li > a {
   color: var(--color-text-primary);
   padding: 5px;
   border: none;
 }
+
 #edition .nav > li > a:hover,
 #edition .nav > li > a:focus {
   text-decoration: none;
 }
+
 #edition .nav-tabs > li > a:hover,
 #edition .nav-tabs > li > a:focus {
   background: none;
@@ -926,6 +1049,7 @@ edition-form-container > div > h3 {
   color: var(--color-text-primary);
   cursor: auto;
 }
+
 #edition div.tab-pane {
   border-left: 1px solid var(--color-contrasted-elements);
   border-right: 1px solid var(--color-contrasted-elements);
@@ -934,9 +1058,11 @@ edition-form-container > div > h3 {
   padding-bottom: 10px;
   margin-bottom: 5px;
 }
+
 #edition div.tab-pane.attribute-layer-child-content {
   border: none;
 }
+
 #edition #tabform {
   border: none;
 }
@@ -947,25 +1073,27 @@ edition-form-container > div > h3 {
   padding: 5px;
   width: unset;
   max-width: 100%;
-  margin-bottom: 0px;
+  margin-bottom: 0;
 }
 
 #edition fieldset {
   padding: 10px;
-  padding-top: 0px;
-  margin: 0px 5px;
+  padding-top: 0;
+  margin: 0 5px;
   border: 1px solid var(--color-contrasted-elements-light);
   border-radius: 5px;
-  background: rgba(255, 255, 255, 0.2);
+  background: rgb(255 255 255 / 20%);
 }
 
 
 /* ATLAS */
+
 /* White background for Atlas content */
 #liz-atlas-item-detail {
   background-color: var(--color-background-primary-content);
   color: var(--color-text-primary-content)
 }
+
 /* Atlas tool layer abstract */
 #liz-atlas-item-layer-abstract {
   color: var(--color-text-primary-content);
@@ -973,7 +1101,9 @@ edition-form-container > div > h3 {
 
 
 /* DATAVIZ */
+
 /* MUST BE SET IN DATAVIZ.CSS FILE */
+
 /* Dataviz plot title */
 #dataviz .text {
   color: var(--color-text-primary);

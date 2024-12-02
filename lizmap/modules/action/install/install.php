@@ -16,7 +16,7 @@ class actionModuleInstaller extends jInstallerModule
         // $this->copyDirectoryContent('www', jApp::wwwPath());
 
         // if ($this->firstDbExec())
-            // $this->execSQLScript('sql/install');
+        // $this->execSQLScript('sql/install');
 
         /*if ($this->firstExec('acl2')) {
             jAcl2DbManager::addSubject('my.subject', 'action~acl.my.subject', 'subject.group.id');

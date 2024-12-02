@@ -130,7 +130,7 @@ class lizmapLogListener extends jEventListener
                     }
                 }
             } else {
-                $body .= "\r\n"."  * {$k} = {$v}";
+                $body .= "\r\n  * {$k} = {$v}";
             }
         }
 

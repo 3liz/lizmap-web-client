@@ -14,8 +14,6 @@ class defaultCtrl extends jController
     /**
      * Displays a list of project for a given repository.
      *
-     * @param string $repository. Name of the repository.
-     *
      * @return jResponseHtml|jResponseRedirect|jResponseRedirectUrl page with a list of projects
      */
     public function index()
@@ -50,6 +48,7 @@ class defaultCtrl extends jController
                                     return $rep;
                                 }
                             }
+
                             // redirection to default controller
                             /** @var jResponseRedirect $rep */
                             $rep = $this->getResponse('redirect');
