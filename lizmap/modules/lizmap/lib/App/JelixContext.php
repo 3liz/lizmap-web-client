@@ -321,9 +321,6 @@ class JelixContext implements AppContextInterface
         return \jDao::createRecord($dao, $profile);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function createJelixForm($formSel, $formId = null)
     {
         return \jForms::create($formSel, $formId);

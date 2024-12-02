@@ -13,7 +13,5 @@ class map_rightdockZone extends jZone
 {
     protected $_tplname = 'map_rightdock';
 
-    protected function _prepareTpl()
-    {
-    }
+    protected function _prepareTpl() {}
 }

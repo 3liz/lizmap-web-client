@@ -1133,8 +1133,8 @@ class WMSRequest extends OGCRequest
         $original = imagecreatefromstring($data);
 
         // crop parameters
-        $newWidth = (int) ($originalParams['width']); // px
-        $newHeight = (int) ($originalParams['height']); // px
+        $newWidth = (int) $originalParams['width']; // px
+        $newHeight = (int) $originalParams['height']; // px
         $positionX = (int) ($xFactor * $originalParams['width']) + $metatileBuffer; // left translation of 30px
         $positionY = (int) ($yFactor * $originalParams['height']) + $metatileBuffer; // top translation of 20px
 

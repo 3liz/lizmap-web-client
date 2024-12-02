@@ -881,6 +881,7 @@ class QgisForm implements QgisFormControlsInterface
                 // FIXME missing context
                 $this->appContext->logMessage('Error in form, SQL cannot be constructed: no fields available for insert !', 'lizmapadmin');
                 $this->form->setErrorOn($geometryColumn, \jLocale::get('view~edition.message.error.save').' '.\jLocale::get('view~edition.message.error.save.fields'));
+
                 // do not throw an exception to let the user update the form
                 throw new \Exception($this->appContext->getLocale('view~edition.link.error.sql'));
             }
@@ -1162,10 +1163,9 @@ class QgisForm implements QgisFormControlsInterface
      * It compute the storage path based on the field definition
      * It tries to store the file on disk
      *
-     * @param \jFormsBase    $form   Editing form
-     * @param string         $ref    Control field name
-     * @param \jDbConnection $cnx    Database connection
-     * @param array          $values Form controls values (without the upload fields)
+     * @param \jFormsBase $form   Editing form
+     * @param string      $ref    Control field name
+     * @param array       $values Form controls values (without the upload fields)
      */
     protected function processUploadedFile($form, $ref, $values)
     {
@@ -1216,9 +1216,9 @@ class QgisForm implements QgisFormControlsInterface
      * @param \jFormsBase $form
      * @param string      $ref
      *
-     * @throws \Exception
-     *
      * @return string
+     *
+     * @throws \Exception
      */
     protected function processWebDavUploadFile($form, $ref)
     {
@@ -1882,6 +1882,7 @@ class QgisForm implements QgisFormControlsInterface
 
                             return implode('/', $uri_parts).'/';
                         }
+
                         // if the fileName is NOT null it means that a new upload is required, so return entire path
                         return $path;
                     }

@@ -4,12 +4,12 @@
   --header-background-image: none;
   --color-background-primary: #ffffffdb;
   --color-background-primary-content: #ffffffdb;
-  --color-text-primary: rgb(51, 51, 51);
-  --color-text-primary-content: rgb(51, 51, 51);
+  --color-text-primary: rgb(51 51 51);
+  --color-text-primary-content: rgb(51 51 51);
   --color-contrasted-elements: #43718c;
   --color-contrasted-elements-light: #c3dceb;
   --color-contrasted-text: white;
-  --color-dark-gray-elements: rgb(51, 51, 51);
+  --color-dark-gray-elements: rgb(51 51 51);
 }
 
 /* BODY */
@@ -26,10 +26,12 @@ button.btn, a.btn, input.btn {
   box-shadow: none;
   text-shadow: none;
 }
+
 button.btn:focus, a.btn:focus, input.btn:focus {
   background-color: var(--color-contrasted-elements-light);
   color: var(--color-text-primary);
 }
+
 button.btn:hover,
 button.btn.active,
 a.btn:hover,
@@ -39,45 +41,56 @@ input.btn.active {
   background-color: var(--color-contrasted-elements);
   color: var(--color-contrasted-text);
 }
+
 /* button types (bootstrap) */
+
 /* button types */
 .btn.btn-primary, .btn.btn-primary:focus {
   background-color: #43718c;
   color: white;
 }
+
 .btn.btn-info, .btn.btn-info:focus {
   background-color: #57bcda;
   color: white;
 }
+
 .btn.btn-success, .btn.btn-success:focus {
   background-color: #95c02a;
   color: white;
 }
+
 .btn.btn-warning, .btn.btn-warning:focus {
   background-color: #f9a227;
   color: white;
 }
+
 .btn.btn-danger, .btn.btn-danger:focus {
   background-color: #da4f49;
   color: white;
 }
+
 /* hover & active */
 .btn.btn-primary:hover, .btn.btn-primary.active {
   background-color: #43718c;
     filter:brightness(110%);
 }
+
 .btn.btn-info:hover, .btn.btn-info.active {
   background-color: #57bcda;
     filter:brightness(110%);
 }
+
 .btn.btn-success:hover, .btn.btn-success.active {
   background-color: #95c02a;
     filter:brightness(110%);
 }
+
 .btn.btn-warning:hover, .btn.btn-warning.active {
   background-color: #f9a227;
     filter:brightness(110%);
 }
+
 .btn.btn-danger:hover, .btn.btn-danger.active {
   background-color: #da4f49;
     filter:brightness(110%);
@@ -92,12 +105,14 @@ input.btn.active {
   background-color: var(--color-contrasted-elements);
   color: var(--color-contrasted-text);
 }
+
 .btn-group.open .btn.dropdown-toggle {
   background-color: var(--color-contrasted-elements);
   color: var(--color-contrasted-text);
 }
 
 /* FORMS */
+
 /* Form submit button container */
 div.jforms-submit-buttons {
   padding: 5px;
@@ -124,9 +139,11 @@ div.jforms-submit-buttons.form-actions .btn:focus
 div.jforms-submit-buttons.form-actions .btn.jforms-ctrl-reset {
   background-color: lightgrey;
 }
+
 div.jforms-submit-buttons.form-actions #jforms_view_edition__submit_cancel {
   background-color: #fd8c62;
 }
+
 div.jforms-submit-buttons.form-actions #jforms_view_edition__submit_submit {
   background-color: #aedb6a;
 }
@@ -141,7 +158,7 @@ div.jforms-submit-buttons.form-actions #jforms_view_edition__submit_submit {
 }
 
 #logo {
-  background : url(img/logo.png) no-repeat;
+  background : url("img/logo.png") no-repeat;
   background-size:contain;
 }
 
@@ -152,66 +169,80 @@ div.jforms-submit-buttons.form-actions #jforms_view_edition__submit_submit {
 #auth {
   background: transparent;
 }
+
 .navbar .nav > a,
 .navbar .nav > li > a ,
 .navbar .nav > li > a {
   color: var(--color-contrasted-text);
 }
+
 .navbar .nav .active > a,
 .navbar .nav > li > a:focus ,
 .navbar .nav > li > a:hover {
   background-color: var(--color-background-primary);
 }
+
 .navbar .nav li.dropdown.open > .dropdown-toggle,
 .navbar .nav li.dropdown.active > .dropdown-toggle,
 .navbar .nav li.dropdown.open.active > .dropdown-toggle {
   color : var(--color-text-primary);
   background-color: var(--color-background-primary);
 }
-.navbar .nav > li > .dropdown-menu:after {
+
+.navbar .nav > li > .dropdown-menu::after {
   border-bottom: 6px solid var(--color-background-primary);
 }
+
 .dropdown-menu {
   background-color: var(--color-background-primary);
 }
+
 .navbar .navbar-inner .icon {
-  background-image:url(images/sprite_20_tools.png);
+  background-image:url("images/sprite_20_tools.png");
 }
 
 .navbar .nav .dashboard-item .icon {
-    background-position: -975px 0px;
+    background-position: -975px 0;
 }
+
 .navbar .nav .dashboard-item a:hover .icon,
 .navbar .nav .dashboard-item.active a .icon {
-    background-position: -950px 0px;
+    background-position: -950px 0;
 }
 
 .navbar .nav .login .icon {
-  background-position: -225px 0px;
+  background-position: -225px 0;
 }
+
 .navbar .nav .login a:hover .icon,
 .navbar .nav .login.active a .icon {
-  background-position: -200px 0px;
+  background-position: -200px 0;
 }
+
 .navbar .nav .registered .icon {
-  background-position: -825px 0px;
+  background-position: -825px 0;
 }
+
 .navbar .nav .registered a:hover .icon,
 .navbar .nav .registered.active a .icon {
-  background-position: -800px 0px;
+  background-position: -800px 0;
 }
+
 .navbar .nav .user .icon {
-  background-position: -575px 0px;
+  background-position: -575px 0;
 }
+
 .navbar .nav .user a:hover .icon,
 .navbar .nav .user.active a .icon,
 .navbar .nav .user.open a .icon    {
-  background-position: -550px 0px;
+  background-position: -550px 0;
 }
+
 .navbar .nav .home .icon {
-  background-position: -25px 0px;
+  background-position: -25px 0;
 }
+
 .navbar .nav .home a:hover .icon,
 .navbar .nav .home.active a .icon {
-  background-position: 0px 0px;
+  background-position: 0 0;
 }

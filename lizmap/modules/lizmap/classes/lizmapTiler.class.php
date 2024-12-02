@@ -35,9 +35,7 @@ class lizmapTiler
     /**
      * this is a static class, so private constructor.
      */
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 
     /**
      * Get tile capabililities.

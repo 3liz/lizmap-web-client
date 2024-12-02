@@ -10,7 +10,7 @@
  * @license    Mozilla Public License : http://www.mozilla.org/MPL/
  */
 
- use Lizmap\Request\RemoteStorageRequest;
+use Lizmap\Request\RemoteStorageRequest;
 
 class popup
 {
@@ -156,6 +156,7 @@ class popup
                 $popupFeatureContent
             );
         }
+
         // Return the modified attributeValue
         return $attributeValue;
     }
