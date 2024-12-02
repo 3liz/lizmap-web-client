@@ -390,7 +390,6 @@ var lizLayerFilterTool = function () {
              * @param field_item
              */
             function textFormInput(field_item) {
-                // Ajout des données d'autocompletion
                 var field = field_item['field'];
                 var sdata = {
                     request: 'getUniqueValues',
@@ -399,17 +398,17 @@ var lizLayerFilterTool = function () {
                     filter: ''
                 };
 
-                    var html = '';
-                    html += getFormFieldHeader(field_item);
-                    html += '<div style="width: 100%;">'
-                    html += '<input id="liz-filter-field-text' + lizMap.cleanName(field_item.title) + '" class="liz-filter-field-text" value="" title="' + lizDict['filter.input.text.title'] + '" placeholder="' + lizDict['filter.input.text.placeholder'] + '">';
-                    html += '</div>'
-                    html += getFormFieldFooter(field_item);
+                var html = '';
+                html += getFormFieldHeader(field_item);
+                html += '<div style="width: 100%;">'
+                html += '<input id="liz-filter-field-text' + lizMap.cleanName(field_item.title) + '" class="liz-filter-field-text" value="" title="' + lizDict['filter.input.text.title'] + '" placeholder="' + lizDict['filter.input.text.placeholder'] + '">';
+                html += '</div>'
+                html += getFormFieldFooter(field_item);
 
-                    $("#filter-field-order" + String(field_item.order)).append(html);
-                    addFieldEvents(field_item);
+                $("#filter-field-order" + String(field_item.order)).append(html);
+                addFieldEvents(field_item);
 
-                    $("#liz-filter-field-text" + lizMap.cleanName(field_item.title)).autocomplete({
+                $("#liz-filter-field-text" + lizMap.cleanName(field_item.title)).autocomplete({
                     source: function (request, response) {
                         const autocompleteFilter = `"${field}" ILIKE '%${request.term}%' `;
                         if (!globalThis['filterConfigData'].filter) {
@@ -434,14 +433,14 @@ var lizLayerFilterTool = function () {
                             response(autocompleteData);
                         });
                     },
-                        autoFocus: false, // do not autofocus, because this prevents from searching with LIKE
-                        delay: 200,
-                        minLength: 2,
-                        select: function (event, ui) {
-                            $(this).val(ui.item.value);
-                            $(this).change();
-                        }
-                    });
+                    autoFocus: false, // do not autofocus, because this prevents from searching with LIKE
+                    delay: 500,
+                    minLength: 3,
+                    select: function (event, ui) {
+                        $(this).val(ui.item.value);
+                        $(this).blur();
+                    }
+                });
             }
 
             // Get the HTML form element for the uniqueValues field type
