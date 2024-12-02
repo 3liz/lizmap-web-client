@@ -2,6 +2,4 @@
 
 namespace Lizmap\Project;
 
-class UnknownLizmapProjectException extends \Exception
-{
-}
+class UnknownLizmapProjectException extends \Exception {}

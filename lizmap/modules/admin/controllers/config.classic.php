@@ -25,26 +25,27 @@ class configCtrl extends jController
         // Set form data values
         foreach ($services->getProperties() as $ser) {
             switch ($ser) {
-              case 'allowUserAccountRequests':
-                  $form->setReadOnly('allowUserAccountRequests', $services->isLdapEnabled());
-                  // no break
-              case 'onlyMaps':
-                  $form->setData($ser, $services->{$ser} ? 'on' : 'off');
+                case 'allowUserAccountRequests':
+                    $form->setReadOnly('allowUserAccountRequests', $services->isLdapEnabled());
 
-                  break;
+                    // no break
+                case 'onlyMaps':
+                    $form->setData($ser, $services->{$ser} ? 'on' : 'off');
 
-              case 'projectSwitcher':
-                  $form->setData($ser, $services->{$ser} ? 'on' : 'off');
+                    break;
 
-                  break;
+                case 'projectSwitcher':
+                    $form->setData($ser, $services->{$ser} ? 'on' : 'off');
 
-              default:
-                  /** @var null|jFormsControl $ctrl */
-                  $ctrl = $form->getControl($ser);
-                  if ($ctrl) {
-                      $form->setData($ser, $services->{$ser});
-                  }
-          }
+                    break;
+
+                default:
+                    /** @var null|jFormsControl $ctrl */
+                    $ctrl = $form->getControl($ser);
+                    if ($ctrl) {
+                        $form->setData($ser, $services->{$ser});
+                    }
+            }
         }
 
         // hide sensitive services properties

@@ -21,9 +21,7 @@ class lizmapconfigConfigCompilerPlugin implements \jelix\core\ConfigCompilerPlug
         return 20;
     }
 
-    public function atStart($config)
-    {
-    }
+    public function atStart($config) {}
 
     public function onModule($config, $moduleName, $modulePath, $xml)
     {
@@ -36,7 +34,5 @@ class lizmapconfigConfigCompilerPlugin implements \jelix\core\ConfigCompilerPlug
         }
     }
 
-    public function atEnd($config)
-    {
-    }
+    public function atEnd($config) {}
 }

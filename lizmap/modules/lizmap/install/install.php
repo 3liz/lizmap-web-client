@@ -27,7 +27,7 @@ class lizmapModuleInstaller extends jInstallerModule
             if (file_exists($localConfigDist)) {
                 copy($localConfigDist, $localConfig);
             } else {
-                file_put_contents($localConfig, ';<'.'?php die(\'\');?'.'>');
+                file_put_contents($localConfig, ';<?php die(\'\');?>');
             }
         }
         $ini = new \Jelix\IniFile\IniModifier($localConfig);

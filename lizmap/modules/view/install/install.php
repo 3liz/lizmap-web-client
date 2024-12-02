@@ -13,8 +13,8 @@ class viewModuleInstaller extends jInstallerModule
     {
 
         // if ($this->firstDbExec()) {
-            // $this->useDbProfile('auth');
-            // $this->execSQLScript('sql/install');
+        // $this->useDbProfile('auth');
+        // $this->execSQLScript('sql/install');
         // }
     }
 }
