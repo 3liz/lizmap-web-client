@@ -18,17 +18,17 @@ use Lizmap\Project;
 /**
  * QGIS Project info class.
  *
- * @property string                                      $version
- * @property string                                      $projectname
- * @property string                                      $title
- * @property null|string                                 $saveDateTime
- * @property SpatialRefSys                               $projectCrs
- * @property ProjectProperties                           $properties
- * @property LayerTreeRoot                               $layerTreeRoot
- * @property array<Project\Qgis\ProjectVisibilityPreset> $visibilityPresets
- * @property array<Project\Qgis\ProjectRelation>         $relations
- * @property array<Project\Qgis\Layer\MapLayer>          $projectlayers
- * @property array<Project\Qgis\Layout\Layout>           $Layouts
+ * @property string                                    $version
+ * @property string                                    $projectname
+ * @property string                                    $title
+ * @property null|string                               $saveDateTime
+ * @property SpatialRefSys                             $projectCrs
+ * @property ProjectProperties                         $properties
+ * @property LayerTreeRoot                             $layerTreeRoot
+ * @property array<ProjectVisibilityPreset>            $visibilityPresets
+ * @property array<ProjectRelation>                    $relations
+ * @property array<Layer\EmbeddedLayer|Layer\MapLayer> $projectlayers
+ * @property array<Layout\Layout>                      $Layouts
  */
 class ProjectInfo extends BaseQgisXmlObject
 {
@@ -192,6 +192,14 @@ class ProjectInfo extends BaseQgisXmlObject
         $data[$this->projectCrs->authid] = $this->projectCrs->proj4;
         foreach ($this->projectlayers as $layer) {
             if ($layer->embedded) {
+                try {
+                    /** @var Layer\EmbeddedLayer $layer */
+                    $embeddedLayer = $layer->getEmbeddedLayer($this->getPath());
+                } catch (\Exception $e) {
+                    continue;
+                }
+                $data[$embeddedLayer->srs->authid] = $embeddedLayer->srs->proj4;
+
                 continue;
             }
             $data[$layer->srs->authid] = $layer->srs->proj4;
@@ -205,31 +213,34 @@ class ProjectInfo extends BaseQgisXmlObject
      *
      * @param string $layerId The layer id
      *
-     * @return null|Layer\MapLayer|Layer\VectorLayer
+     * @return null|Layer\MapLayer|Layer\RasterLayer|Layer\VectorLayer
      */
     public function getLayerById($layerId)
     {
-        foreach ($this->projectlayers as $layer) {
-            if ($layer->id !== $layerId) {
-                continue;
-            }
-            if ($layer->embedded) {
-                /** @var Project\Qgis\Layer\EmbeddedLayer $layer */
-                $embeddedPath = realpath(dirname($this->getPath()).DIRECTORY_SEPARATOR.$layer->project);
-                $embeddedProject = ProjectInfo::fromQgisPath($embeddedPath);
-                foreach ($embeddedProject->projectlayers as $embeddedLayer) {
-                    if ($embeddedLayer->id !== $layer->id) {
-                        continue;
-                    }
+        // Get layer by layerId
+        $layers = array_values(
+            array_filter($this->projectlayers, function ($player) use ($layerId) {
+                return $player->id === $layerId;
+            })
+        );
 
-                    return $embeddedLayer;
-                }
-            }
+        // The layerId is not known return null
+        if (count($layers) == 0) {
+            return null;
+        }
+        $layer = $layers[0];
 
-            return $layer;
+        // The layer is embedded, get the layer from the embedded project
+        if ($layer->embedded) {
+            try {
+                return $layer->getEmbeddedLayer($this->getPath());
+            } catch (\Exception $e) {
+                return null;
+            }
         }
 
-        return null;
+        // return the found layer
+        return $layer;
     }
 
     /**
@@ -242,9 +253,13 @@ class ProjectInfo extends BaseQgisXmlObject
         $data = array();
         foreach ($this->projectlayers as $layer) {
             if ($layer->embedded) {
-                /** @var Project\Qgis\Layer\EmbeddedLayer $layer */
-                $embeddedLayer = $this->getLayerById($layer->id);
-                $embeddedPath = realpath(dirname($this->getPath()).DIRECTORY_SEPARATOR.$layer->project);
+                try {
+                    /** @var Layer\EmbeddedLayer $layer */
+                    $embeddedLayer = $layer->getEmbeddedLayer($this->getPath());
+                } catch (\Exception $e) {
+                    continue;
+                }
+                $embeddedPath = $layer->getEmbeddedProjectFullPath($this->getPath());
 
                 $layerKeyArray = $embeddedLayer->toKeyArray();
                 $layerKeyArray['qgsmtime'] = filemtime($embeddedPath);
