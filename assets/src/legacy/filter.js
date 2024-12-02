@@ -398,18 +398,6 @@ var lizLayerFilterTool = function () {
                     fieldname: field,
                     filter: ''
                 };
-                $.get(globalThis['filterConfigData'].url, sdata, function (result) {
-                    if (!checkResult(result)) {
-                        return false;
-                    }
-
-                    var autocompleteData = [];
-                    for (var a in result) {
-                        var feat = result[a];
-                        if (feat['v'] === null || !feat['v'] || (typeof feat['v'] === 'string' && feat['v'].trim() === ''))
-                            continue;
-                        autocompleteData.push(feat['v']);
-                    }
 
                     var html = '';
                     html += getFormFieldHeader(field_item);
@@ -422,7 +410,30 @@ var lizLayerFilterTool = function () {
                     addFieldEvents(field_item);
 
                     $("#liz-filter-field-text" + lizMap.cleanName(field_item.title)).autocomplete({
-                        source: autocompleteData,
+                    source: function (request, response) {
+                        const autocompleteFilter = `"${field}" ILIKE '%${request.term}%' `;
+                        if (!globalThis['filterConfigData'].filter) {
+                            sdata.filter = autocompleteFilter;
+                        } else {
+                            sdata.filter = globalThis['filterConfigData'].filter + ' AND ' + autocompleteFilter;
+                        }
+                        fetch(globalThis['filterConfigData'].url, {
+                            method: "POST",
+                            body: new URLSearchParams(sdata)
+                        }).then(response => {
+                            return response.json();
+                        }).then(result => {
+                            var autocompleteData = [];
+                            for (var a in result) {
+                                var feat = result[a];
+                                if (feat['v'] === null || !feat['v'] || (typeof feat['v'] === 'string' && feat['v'].trim() === '')) {
+                                    continue;
+                                }
+                                autocompleteData.push(feat['v']);
+                            }
+                            response(autocompleteData);
+                        });
+                    },
                         autoFocus: false, // do not autofocus, because this prevents from searching with LIKE
                         delay: 200,
                         minLength: 2,
@@ -431,7 +442,6 @@ var lizLayerFilterTool = function () {
                             $(this).change();
                         }
                     });
-                }, 'json');
             }
 
             // Get the HTML form element for the uniqueValues field type
