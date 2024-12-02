@@ -1,5 +1,6 @@
 // @ts-check
 const { expect } = require('@playwright/test');
+import { Page } from '@playwright/test';
 
 async function NoErrors(page, checkLayerTreeView = true) {
     // No error
@@ -14,13 +15,13 @@ async function NoErrors(page, checkLayerTreeView = true) {
 /**
  * CatchErrors function
  * Some checks when the map is on error
- * @param page The page object
+ * @param {Page} page The page object
  * @param {int} layersInTreeView The number of layers to find in the treeview.
  */
 async function CatchErrors(page, layersInTreeView = 0) {
     // Error
     await expect(page.locator('p.error-msg')).toHaveCount(1);
-    await expect(page.locator('#switcher lizmap-treeview ul li')).toHaveCount(layersInTreeView);
+    await expect(page.locator('#switcher .lizmap-treeview ul li')).toHaveCount(layersInTreeView);
     // Error message displayed
     await expect(page.getByText('An error occurred while loading this map. Some necessary resources may temporari')).toBeVisible();
     // Go back home link
@@ -31,7 +32,7 @@ async function CatchErrors(page, layersInTreeView = 0) {
  * gotoMap function
  * Helper to load a map and do some basic checks
  * @param {string} url The URL of the map to load
- * @param {page} page The page object
+ * @param {Page} page The page object
  * @param {boolean} mapMustLoad If the loading of the map must be successful or not. Some error might be triggered when loading the map, on purpose.
  * @param {int} layersInTreeView The number of layers to find in the treeview if the map is on error.
  * @param {boolean} waitForGetLegendGraphics
@@ -65,6 +66,12 @@ export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 
     }
 }
 
+/**
+ * reloadMap function
+ * Helper to reload a map and do some basic checks
+ * @param {Page} page The page object
+ * @param {boolean} check If some basic checks must be done.
+ */
 export async function reloadMap(page, check = true) {
     // TODO keep this function synchronized with the Cypress equivalent
 
