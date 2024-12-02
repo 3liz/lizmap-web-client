@@ -3208,9 +3208,9 @@ div.lizmap-features-table-container div.lizmap-features-table-item.has-action {
   cursor: pointer;
 }
 
-/* Hide other children if only one child feature is active */
-div.lizmap-features-table.popup-displayed div.lizmap-features-table-container div.lizmap-features-table-item {
-  display: none;
+/* Hide other children of the table if only one child feature is active */
+div.lizmap-features-table.popup-displayed > div.lizmap-features-table-container > div.lizmap-features-table-item:not(.popup-displayed) {
+    display: none;
 }
 /* In this context, display only the active child item */
 div.lizmap-features-table.popup-displayed div.lizmap-features-table-container div.lizmap-features-table-item.popup-displayed {
