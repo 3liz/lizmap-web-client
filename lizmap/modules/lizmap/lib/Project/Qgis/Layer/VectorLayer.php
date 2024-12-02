@@ -94,6 +94,16 @@ class VectorLayer extends Qgis\BaseQgisObject
     );
 
     /**
+     * Get layer opacity.
+     *
+     * @return float
+     */
+    public function getLayerOpacity()
+    {
+        return $this->layerOpacity;
+    }
+
+    /**
      * Get preview field.
      *
      * @return string

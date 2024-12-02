@@ -408,19 +408,27 @@ class QgisProject
 
         $project = Qgis\ProjectInfo::fromQgisPath($this->path);
         foreach ($project->projectlayers as $layer) {
+            $layername = '';
+            $opacity = 1;
+
             /** @var Qgis\Layer\MapLayer $layer */
             if ($layer->embedded) {
+                try {
+                    /** @var Qgis\Layer\EmbeddedLayer $layer */
+                    $embeddedLayer = $layer->getEmbeddedLayer($this->path);
+                } catch (\Exception $e) {
+                    continue;
+                }
+                $layername = $embeddedLayer->layername;
+                $opacity = $embeddedLayer->getLayerOpacity();
+            } else {
+                $layername = $layer->layername;
+                $opacity = $layer->getLayerOpacity();
+            }
+            if ($layername == '' || $opacity == 1) {
                 continue;
             }
-
-            $opacity = 1;
-            if ($layer->type == 'raster') {
-                /** @var Qgis\Layer\RasterLayer $layer */
-                $opacity = $layer->pipe->renderer->opacity;
-            } elseif (isset($layer->layerOpacity) && $layer->layerOpacity != 1) {
-                $opacity = $layer->layerOpacity;
-            }
-            $layerCfg = $cfg->getLayer($layer->layername);
+            $layerCfg = $cfg->getLayer($layername);
             if ($layerCfg) {
                 $layerCfg->opacity = $opacity;
             }

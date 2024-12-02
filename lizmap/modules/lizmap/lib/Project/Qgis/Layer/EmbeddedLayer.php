@@ -59,4 +59,52 @@ class EmbeddedLayer extends Qgis\BaseQgisObject
             'project' => $this->project,
         );
     }
+
+    /**
+     * Get embedded project path relative from parent project path.
+     *
+     * @param string $parentProjectPath The parent project path
+     *
+     * @return string The embedded project path
+     */
+    public function getEmbeddedProjectFullPath(string $parentProjectPath)
+    {
+        return realpath(dirname($parentProjectPath).DIRECTORY_SEPARATOR.$this->project);
+    }
+
+    /**
+     * Get embedded project from parent project path.
+     *
+     * @param string $parentProjectPath The parent project path
+     *
+     * @return Qgis\ProjectInfo The embedded project
+     */
+    public function getEmbeddedProject(string $parentProjectPath)
+    {
+        $embeddedPath = $this->getEmbeddedProjectFullPath($parentProjectPath);
+
+        return Qgis\ProjectInfo::fromQgisPath($embeddedPath);
+    }
+
+    /**
+     * Get embedded layer from parent project path.
+     *
+     * @param string $parentProjectPath The parent project path
+     *
+     * @return null|Qgis\Layer\MapLayer|Qgis\Layer\RasterLayer|Qgis\Layer\VectorLayer The embedded layer
+     */
+    public function getEmbeddedLayer(string $parentProjectPath)
+    {
+        $embeddedProject = $this->getEmbeddedProject($parentProjectPath);
+        foreach ($embeddedProject->projectlayers as $embeddedLayer) {
+            /** @var Qgis\Layer\MapLayer $embeddedLayer */
+            if ($embeddedLayer->id !== $this->id) {
+                continue;
+            }
+
+            return $embeddedLayer;
+        }
+
+        return null;
+    }
 }
