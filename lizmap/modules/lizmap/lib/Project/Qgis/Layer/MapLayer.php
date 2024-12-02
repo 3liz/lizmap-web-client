@@ -68,6 +68,16 @@ class MapLayer extends Qgis\BaseQgisXmlObject
     );
 
     /**
+     * Get layer opacity.
+     *
+     * @return float
+     */
+    public function getLayerOpacity()
+    {
+        return $this->layerOpacity;
+    }
+
+    /**
      * Get map layer as key array.
      *
      * @return array
