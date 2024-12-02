@@ -65,6 +65,16 @@ class RasterLayer extends Qgis\BaseQgisObject
     );
 
     /**
+     * Get layer opacity.
+     *
+     * @return float
+     */
+    public function getLayerOpacity()
+    {
+        return $this->pipe->renderer->opacity;
+    }
+
+    /**
      * Get map layer as key array.
      *
      * @return array
