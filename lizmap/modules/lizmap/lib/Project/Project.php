@@ -1321,7 +1321,8 @@ class Project
      * and we are not in an editing context we return null
      * to tell there is no filter in this context.
      *
-     * @param string $layerName : the layer name
+     * @param string $layerName      : the layer name
+     * @param mixed  $editingContext : we are in editing context
      *
      * @return null|array the configuration for the polygon filter the given layer
      */
