@@ -747,6 +747,7 @@ class WFSRequest extends OGCRequest
         $cnx = $this->qgisLayer->getDatasourceConnection();
         // Get datasource
         $this->datasource = $this->qgisLayer->getDatasourceParameters();
+
         // Get Db fields
         try {
             $dbFields = $this->qgisLayer->getDbFieldList();
@@ -836,6 +837,7 @@ class WFSRequest extends OGCRequest
         // $this->appContext->logMessage($sql);
         // Use PostgreSQL method to export geojson
         $sql = $this->setGeojsonSql($sql, $cnx, $typename, $geometryname);
+
         // $this->appContext->logMessage($sql);
         // Run query
         try {

@@ -153,7 +153,7 @@ class lizMapCtrl extends jController
         // the html response
         /** @var jResponseHtml $rep */
         $rep = $this->getResponse('htmlmap');
-        $rep->addJSLink((jUrl::get('view~translate:index')).'?lang='.jApp::config()->locale);
+        $rep->addJSLink(jUrl::get('view~translate:index').'?lang='.jApp::config()->locale);
 
         $this->repositoryKey = $lrep->getKey();
         $this->projectKey = $lproj->getKey();

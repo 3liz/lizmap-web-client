@@ -15,9 +15,7 @@ use Lizmap\Logger as Log;
 /**
  * @deprecated
  */
-class UnknownLizmapProjectException extends Exception
-{
-}
+class UnknownLizmapProjectException extends Exception {}
 
 class lizmap
 {
@@ -53,9 +51,7 @@ class lizmap
     /**
      * this is a static class, so private constructor.
      */
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 
     /**
      * @return lizmapServices
@@ -361,9 +357,10 @@ class lizmap
      *
      * @param string $key the project name
      *
+     * @return null|Lizmap\Project\Project null if it does not exist
+     *
      * @throws \Lizmap\Project\UnknownLizmapProjectException
      *
-     * @return null|Lizmap\Project\Project null if it does not exist
      * @FIXME all calls to getProject construct $key. Why not to
      * deliver directly $rep and $project? It could avoid
      * a preg_match

@@ -77,8 +77,6 @@ class ProjectCache
     /**
      * Returns the Project data stored in Cache.
      *
-     * @param array $props The properties to get from the cache
-     *
      * @return array|bool
      */
     public function retrieveProjectData()
@@ -162,9 +160,9 @@ class ProjectCache
      *
      * @param string $layerId
      *
-     * @throws \Exception
-     *
      * @return QgisFormControlProperties[]
+     *
+     * @throws \Exception
      */
     public function getEditableLayerFormCache($layerId)
     {

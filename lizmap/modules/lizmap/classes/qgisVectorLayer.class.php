@@ -233,9 +233,9 @@ class qgisVectorLayer extends qgisMapLayer
      * @param bool $setSearchPathFromLayer If true, the layer schema is used to set the search_path.
      *                                     Default to True to keep the same behavior as did the previous version of this method.
      *
-     * @throws jException
-     *
      * @return null|string null if there is an issue or no connection parameters
+     *
+     * @throws jException
      */
     public function getDatasourceProfile($timeout = 30, $setSearchPathFromLayer = true)
     {
@@ -324,9 +324,9 @@ class qgisVectorLayer extends qgisMapLayer
     }
 
     /**
-     * @throws jException
-     *
      * @return jDbConnection
+     *
+     * @throws jException
      */
     public function getDatasourceConnection()
     {
@@ -644,9 +644,9 @@ class qgisVectorLayer extends qgisMapLayer
      *
      * @param array $values values computed from the form
      *
-     * @throws Exception
-     *
      * @return bool false when there is a filter by polygon and the geometry is outside the polygon(s)
+     *
+     * @throws Exception
      */
     public function checkFeatureAgainstPolygonFilter($values)
     {
@@ -738,9 +738,9 @@ class qgisVectorLayer extends qgisMapLayer
     /**
      * @param array $values
      *
-     * @throws Exception
-     *
      * @return array list of primary keys with their values
+     *
+     * @throws Exception
      */
     public function insertFeature($values)
     {
@@ -844,9 +844,9 @@ class qgisVectorLayer extends qgisMapLayer
      *                                        - type: 'groups' or 'login'
      *                                        - attribute: filter attribute from the layer
      *
-     * @throws Exception
-     *
      * @return array list of primary keys with their values
+     *
+     * @throws Exception
      */
     public function updateFeature($feature, $values, $loginFilteredLayers)
     {
@@ -955,9 +955,9 @@ class qgisVectorLayer extends qgisMapLayer
      *                                        - type: 'groups' or 'login'
      *                                        - attribute: filter attribute from the layer
      *
-     * @throws Exception
-     *
      * @return int
+     *
+     * @throws Exception
      */
     public function deleteFeature($feature, $loginFilteredLayers)
     {

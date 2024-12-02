@@ -204,9 +204,9 @@ class datavizPlot
      * @param string $repository
      * @param string $project
      *
-     * @throws jExceptionSelector
-     *
      * @return null|bool|Lizmap\Project\Project
+     *
+     * @throws jExceptionSelector
      */
     public function getProject($repository, $project)
     {
@@ -638,7 +638,7 @@ class datavizPlot
                         // Fill in feature colors
                         if (property_exists($feat->properties, $featcolor)
                             and !empty($feat->properties->{$featcolor})
-                            ) {
+                        ) {
                             $featcolors[] = $feat->properties->{$featcolor};
                         }
                     } else {

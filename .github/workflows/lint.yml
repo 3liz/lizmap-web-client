@@ -17,6 +17,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: "PHP-CS-Fixer"
-      uses: docker://oskarstark/php-cs-fixer-ga:3.8.0
+      # Version must match the one from the Makefile
+      uses: docker://oskarstark/php-cs-fixer-ga:3.26.0
       with:
         args: --config=.php-cs-fixer.dist.php --allow-risky=yes --dry-run --diff

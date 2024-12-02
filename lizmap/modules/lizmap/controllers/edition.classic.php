@@ -1286,6 +1286,7 @@ class editionCtrl extends jController
 
                 return $this->serviceAnswer();
             }
+
             // Update the child features to add the parent id
             try {
                 $foreign_key_column = $key2;

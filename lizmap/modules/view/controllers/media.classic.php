@@ -236,6 +236,7 @@ class mediaCtrl extends jController
             }
             $finalPath = $abspath;
         }
+
         // Prepare the file to return
         /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
@@ -561,8 +562,6 @@ class mediaCtrl extends jController
 
     /**
      * Get logo or background image defined in lizmap admin theme configuration.
-     *
-     * @param $key : type of image. Can be 'headerLogo' or 'headerBackgroundImage'
      *
      * @return jResponseBinary|jResponseJson configured theme logo
      */

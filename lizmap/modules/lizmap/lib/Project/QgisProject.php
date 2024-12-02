@@ -1646,9 +1646,9 @@ class QgisProject
     /**
      * @param \SimpleXMLElement $xml
      *
-     * @throws \Exception
-     *
      * @return array<MapLayerDef|VectorLayerDef> list of layers. Each item is a list of layer properties
+     *
+     * @throws \Exception
      */
     protected function readLayers($xml)
     {
@@ -2096,7 +2096,7 @@ class QgisProject
                         }
                     }
                 }
-                // Simple option
+            // Simple option
             } else {
                 $fieldEditOptions[$optionName] = $this->convertValueOptions((string) $option->attributes()->value, (string) $option->attributes()->type);
             }

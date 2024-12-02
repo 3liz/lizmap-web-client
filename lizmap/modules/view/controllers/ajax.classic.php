@@ -11,6 +11,4 @@
  */
 include jApp::getModulePath('view').'controllers/lizAjax.classic.php';
 
-class ajaxCtrl extends lizAjaxCtrl
-{
-}
+class ajaxCtrl extends lizAjaxCtrl {}
