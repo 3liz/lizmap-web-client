@@ -1,5 +1,6 @@
 <?php
 
+use Lizmap\Project\ProjectFilesFinder;
 use Lizmap\Request\RemoteStorageRequest;
 
 /**
@@ -411,66 +412,27 @@ class lizMapCtrl extends jController
                 }
             }
 
-            // Add JS files found in media/js
-            $jsDirArray = array('default', $project);
-            foreach ($jsDirArray as $dir) {
-                $jsUrls = array();
-                $mjsUrls = array();
-                $cssUrls = array();
-                $items = array(
-                    'media/js/',
-                    '../media/js/',
-                );
-                foreach ($items as $item) {
-                    $jsPathRoot = realpath($repositoryPath.$item.$dir);
-                    if (is_dir($jsPathRoot)) {
-                        foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($jsPathRoot)) as $filename) {
-                            $fileExtension = pathinfo($filename, PATHINFO_EXTENSION);
-                            if ($fileExtension == 'js' || $fileExtension == 'mjs' || $fileExtension == 'css') {
-                                $jsPath = realpath($filename);
-                                $jsRelPath = $item.$dir.str_replace($jsPathRoot, '', $jsPath);
-                                $url = 'view~media:getMedia';
-                                if ($fileExtension == 'css') {
-                                    $url = 'view~media:getCssFile';
-                                }
-                                $jsUrl = jUrl::get(
-                                    $url,
-                                    array(
-                                        'repository' => $lrep->getKey(),
-                                        'project' => $project,
-                                        'mtime' => filemtime($filename),
-                                        'path' => $jsRelPath,
-                                    )
-                                );
-                                if ($fileExtension == 'js') {
-                                    $jsUrls[] = $jsUrl;
-                                    ++$countUserJs;
-                                } elseif ($fileExtension == 'mjs') {
-                                    $mjsUrls[] = $jsUrl;
-                                    ++$countUserJs;
-                                } else {
-                                    $cssUrls[] = $jsUrl;
-                                }
-                            }
-                        }
-                    }
-                }
+            $fileFinder = new ProjectFilesFinder();
+            $allURLS = $fileFinder->listFileURLS($lproj);
 
-                // Add CSS, MJS and JS files ordered by name
-                sort($cssUrls);
-                foreach ($cssUrls as $cssUrl) {
-                    $rep->addCSSLink($cssUrl);
-                }
-                sort($jsUrls);
-                foreach ($jsUrls as $jsUrl) {
-                    // Use addHeadContent and not addJSLink to be sure it will be loaded after minified code
-                    $rep->addContent('<script type="text/javascript" defer src="'.$jsUrl.'" ></script>');
-                }
-                sort($mjsUrls);
-                foreach ($mjsUrls as $mjsUrl) {
-                    // Use addHeadContent and not addJSLink to be sure it will be loaded after minified code
-                    $rep->addContent('<script type="module" defer src="'.$mjsUrl.'" ></script>');
-                }
+            $cssUrls = $allURLS['css'];
+            $jsUrls = $allURLS['js'];
+            $mjsUrls = $allURLS['mjs'];
+            $countUserJs = count($jsUrls) + count($mjsUrls);
+            // Add CSS, MJS and JS files ordered by name
+            sort($cssUrls);
+            foreach ($cssUrls as $cssUrl) {
+                $rep->addCSSLink($cssUrl);
+            }
+            sort($jsUrls);
+            foreach ($jsUrls as $jsUrl) {
+                // Use addHeadContent and not addJSLink to be sure it will be loaded after minified code
+                $rep->addContent('<script type="text/javascript" defer src="'.$jsUrl.'" ></script>');
+            }
+            sort($mjsUrls);
+            foreach ($mjsUrls as $mjsUrl) {
+                // Use addHeadContent and not addJSLink to be sure it will be loaded after minified code
+                $rep->addContent('<script type="module" defer src="'.$mjsUrl.'" ></script>');
             }
         }
         $rep->setBodyAttributes(array('data-lizmap-user-defined-js-count' => $countUserJs));
