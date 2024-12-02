@@ -114,7 +114,9 @@ var lizLayerFilterTool = function () {
                 }
 
                 // Add tooltip
-                $('#filter-content [title]').tooltip();
+                $('#filter-content [title]').tooltip({
+                    trigger: 'hover'
+                });
             }
 
             // Launch the form filter feature
@@ -1344,7 +1346,9 @@ var lizLayerFilterTool = function () {
                 });
 
                 // Add tooltip
-                $('#liz-filter-box-' + lizMap.cleanName(field_item.title) + ' [title]').tooltip();
+                $('#liz-filter-box-' + lizMap.cleanName(field_item.title) + ' [title]').tooltip({
+                    trigger: 'hover'
+                });
 
             }
 
