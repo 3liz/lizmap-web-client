@@ -39,6 +39,17 @@ test.describe('Filter layer data by user - not connected', () => {
 
     });
 
+    test('WFS GetFeature', async ({ page }) => {
+
+        let getFeature = await page.evaluate(async () => {
+            return await fetch("/index.php/lizmap/service?repository=testsrepository&project=filter_layer_by_user&SERVICE=WFS&REQUEST=GetFeature&VERSION=1.0.0&OUTPUTFORMAT=GeoJSON&TYPENAME=blue_filter_layer_by_user")
+                .then(r => r.ok ? r.json() : Promise.reject(r))
+        })
+
+        // check features
+        expect(getFeature.features).toHaveLength(0)
+    });
+
     test('Popup with map click', async ({ page }) => {
         let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
 
@@ -175,6 +186,28 @@ test.describe('Filter layer data by user - user in group a', () => {
         const feature = getFeatureInfo.features[0]
         expect(feature.id).not.toBeUndefined()
 
+    });
+
+    test('WFS GetFeature', async ({ page }) => {
+
+        let getFeature = await page.evaluate(async () => {
+            return await fetch("/index.php/lizmap/service?repository=testsrepository&project=filter_layer_by_user&SERVICE=WFS&REQUEST=GetFeature&VERSION=1.0.0&OUTPUTFORMAT=GeoJSON&TYPENAME=blue_filter_layer_by_user")
+                .then(r => r.ok ? r.json() : Promise.reject(r))
+        })
+
+        // check features
+        expect(getFeature.features).toHaveLength(1)
+        // check a specific feature
+        let feature = getFeature.features[0]
+        expect(feature.id).not.toBeUndefined()
+
+        getFeature = await page.evaluate(async () => {
+            return await fetch("/index.php/lizmap/service?repository=testsrepository&project=filter_layer_by_user&SERVICE=WFS&REQUEST=GetFeature&VERSION=1.0.0&OUTPUTFORMAT=GeoJSON&TYPENAME=blue_filter_layer_by_user&EXP_Filter=%22gid%22%20=%203")
+                .then(r => r.ok ? r.json() : Promise.reject(r))
+        })
+
+        // check features
+        expect(getFeature.features).toHaveLength(0)
     });
 
     test('Popup with map click', async ({ page }) => {
@@ -315,6 +348,32 @@ test.describe('Filter layer data by user - admin', () => {
         expect(getFeatureInfo.features).toHaveLength(7)
         // check a specific feature
         const feature = getFeatureInfo.features[0]
+        expect(feature.id).not.toBeUndefined()
+
+    });
+
+    test('WFS GetFeature', async ({ page }) => {
+
+        let getFeature = await page.evaluate(async () => {
+            return await fetch("/index.php/lizmap/service?repository=testsrepository&project=filter_layer_by_user&SERVICE=WFS&REQUEST=GetFeature&VERSION=1.0.0&OUTPUTFORMAT=GeoJSON&TYPENAME=blue_filter_layer_by_user")
+                .then(r => r.ok ? r.json() : Promise.reject(r))
+        })
+
+        // check features
+        expect(getFeature.features).toHaveLength(3)
+        // check a specific feature
+        let feature = getFeature.features[0]
+        expect(feature.id).not.toBeUndefined()
+
+        getFeature = await page.evaluate(async () => {
+            return await fetch("/index.php/lizmap/service?repository=testsrepository&project=filter_layer_by_user&SERVICE=WFS&REQUEST=GetFeature&VERSION=1.0.0&OUTPUTFORMAT=GeoJSON&TYPENAME=blue_filter_layer_by_user&EXP_Filter=%22gid%22%20=%203")
+                .then(r => r.ok ? r.json() : Promise.reject(r))
+        })
+
+        // check features
+        expect(getFeature.features).toHaveLength(1)
+        // check a specific feature
+        feature = getFeature.features[0]
         expect(feature.id).not.toBeUndefined()
 
     });
