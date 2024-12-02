@@ -1,10 +1,12 @@
 .thumbnail {
   background-color: white;
 }
+
 .liz-project-desc {
   color: white;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgb(0 0 0 / 50%);
 }
+
 .tab-pane .liz-project-desc {
   display: none;
 }
