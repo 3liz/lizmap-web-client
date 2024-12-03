@@ -10,7 +10,7 @@ test.describe('Attribute table', () => {
     });
 
     test('Form filter with combobox', async ({ page }) => {
-        const getMapPromise = page.waitForRequest(/GetMap/);
+        let getMapPromise = page.waitForRequest(/GetMap/);
 
         const combo = '#liz-filter-field-test_filter';
         const countFeature = '#liz-filter-item-layer-total-count';
@@ -29,7 +29,13 @@ test.describe('Attribute table', () => {
         await page.locator(combo).selectOption('_uvres_d_art_et_monuments_de_l_espace_urbain');
         await expect(page.locator(countFeature)).toHaveText('1');
 
-        await getMapPromise;
+        let getMapRequest = await getMapPromise;
+        // Re-send the request with additionnal echo param to retrieve the WMS Request
+        let echoGetMap = await page.request.get(getMapRequest.url() + '&__echo__');
+        let originalUrl = decodeURIComponent(await echoGetMap.text());
+        let urlObj = new URLSearchParams((new URL(originalUrl).search));
+
+        expect(urlObj.get('filter')).toBe('form_filter_layer:"id" IN ( 2 ) ');
 
         // Check the attribute table shows only one line
         await page.locator('#nav-tab-attribute-layer-form_filter__a_').click({ force: true });
@@ -40,10 +46,18 @@ test.describe('Attribute table', () => {
         await expect(page.locator('#attribute-layer-table-form_filter_child_bus_stops tbody tr')).toHaveCount(3);
 
         // Reset
+        getMapPromise = page.waitForRequest(/GetMap/);
         page.locator('#liz-filter-unfilter').click();
         await expect(page.locator(countFeature)).toHaveText('4');
 
-        await getMapPromise;
+        getMapRequest = await getMapPromise;
+
+        // Re-send the request with additionnal echo param to retrieve the WMS Request
+        echoGetMap = await page.request.get(getMapRequest.url() + '&__echo__');
+        originalUrl = decodeURIComponent(await echoGetMap.text());
+        urlObj = new URLSearchParams((new URL(originalUrl).search));
+
+        expect(urlObj.get('filter')).toBeNull();
 
         // Select the second one
         await page.locator(combo).selectOption('simple_label');
