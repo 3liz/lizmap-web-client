@@ -107,6 +107,9 @@ export default class Print extends HTMLElement {
                     mainLizmap.map.getView().on('change:resolution', this._onChangeResolution);
 
                     render(this._template(), this);
+                } else if (e.navElements.includes('print nav-minidock active')) { // Remove print overlay when clicking on another minidock
+                    mainLizmap.map.removeToolLayer(this._maskLayer);
+                    mainLizmap.map.getView().un('change:resolution', this._onChangeResolution);
                 }
             },
             minidockclosed: (e) => {
