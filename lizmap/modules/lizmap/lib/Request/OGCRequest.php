@@ -186,6 +186,57 @@ abstract class OGCRequest
     }
 
     /**
+     * Generate a string to identify the target of the HTTP request.
+     *
+     * @param array $params The list of HTTP params
+     * @param int   $code   The HTTP code of the request
+     *
+     * @return string The string to identify the HTTP request, with main OGC parameters first such as MAP, SERVICE...
+     */
+    private function formatHttpErrorString($params, $code)
+    {
+        $message = '';
+
+        $paramsToLog = array('map', 'repository', 'project', 'service', 'request');
+        foreach ($paramsToLog as $paramName) {
+            if (array_key_exists($paramName, $params)) {
+                $message .= strtoupper($paramName)." '".$params[$paramName]."', ";
+            }
+        }
+
+        $message = rtrim($message, ', ');
+
+        return 'HTTP code '.$code.' on '.$message;
+    }
+
+    /**
+     * Log if the HTTP code is a 4XX or 5XX error code.
+     *
+     * @param int $code The HTTP code of the request
+     */
+    protected function logRequestIfError($code)
+    {
+        if ($code < 400) {
+            return;
+        }
+
+        $message = 'The HTTP OGC request to QGIS Server ended with an error.';
+
+        // The master error with MAP parameter
+        // This user must have an access to QGIS Server logs
+        $params = $this->parameters();
+        \jLog::log($message.' Check logs on QGIS Server. '.$this->formatHttpErrorString($params, $code).' : '.json_encode($params), 'error');
+
+        // The admin error without the MAP parameter
+        // but replaced by REPOSITORY and PROJECT parameters
+        // This user might not have an access to QGIS Server logs
+        unset($params['map']);
+        $params['repository'] = $this->project->getRepository()->getKey();
+        $params['project'] = $this->project->getKey();
+        \jLog::log($message.' '.$this->formatHttpErrorString($params, $code).' : '.json_encode($params), 'lizmapadmin');
+    }
+
+    /**
      * Request QGIS Server.
      *
      * @param bool $post   Force to use POST request
@@ -236,10 +287,14 @@ abstract class OGCRequest
         if ($stream) {
             $response = \Lizmap\Request\Proxy::getRemoteDataAsStream($querystring, $options);
 
+            $this->logRequestIfError($response->getCode());
+
             return new OGCResponse($response->getCode(), $response->getMime(), $response->getBodyAsStream());
         }
 
         list($data, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($querystring, $options);
+
+        $this->logRequestIfError($code);
 
         return new OGCResponse($code, $mime, $data);
     }
