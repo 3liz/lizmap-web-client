@@ -188,25 +188,44 @@ abstract class OGCRequest
     /**
      * Generate a string to identify the target of the HTTP request.
      *
-     * @param array $params The list of HTTP params
-     * @param int   $code   The HTTP code of the request
+     * @param array $parameters The list of HTTP parameters in the query
+     * @param int   $code       The HTTP code of the request
      *
      * @return string The string to identify the HTTP request, with main OGC parameters first such as MAP, SERVICE...
      */
-    private function formatHttpErrorString($params, $code)
+    private function formatHttpErrorString($parameters, $code)
     {
+        // Clone parameters array to perform unset without modify it
+        $params = array_merge(array(), $parameters);
+
+        // Ordered list of params to fetch first
         $mainParamsToLog = array('map', 'repository', 'project', 'service', 'request');
-        $mainParamValues = array();
-        $otherParamValues = array();
+
+        $output = array();
         foreach ($mainParamsToLog as $paramName) {
             if (array_key_exists($paramName, $params)) {
-                $mainParamValues[] = '"'.strtoupper($paramName).'"'. ' = ' ."'".$params[$paramName]."'";
-            } else {
-                $otherParamValues[] = '"'.strtoupper($paramName).'"'. ' = ' ."'".$params[$paramName]."'";
+                $output[] = '"'.strtoupper($paramName).'" = '."'".$params[$paramName]."'";
+                unset($params[$paramName]);
             }
         }
 
-        $message = implode(' & ', $mainParamvalues) .'\n'. implode(' & ', $otherParamvalues);
+        // First implode with main parameters
+        $message = implode(' & ', $output);
+
+        if ($params) {
+            // Ideally, we want two lines, one with main parameters, the second one with secondary parameters
+            // It does not work in jLog
+            // $message .= '\n';
+            $message .= ' & ';
+        }
+
+        // For remaining parameters in the array, which are not in the main list
+        $output = array();
+        foreach ($params as $key => $value) {
+            $output[] = '"'.strtoupper($key).'" = '."'".$value."'";
+        }
+
+        $message .= implode(' & ', $output);
 
         return 'HTTP code '.$code.' on '.$message;
     }
