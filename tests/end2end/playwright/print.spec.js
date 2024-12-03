@@ -710,4 +710,14 @@ test.describe('Error while printing', () => {
 
         await expect(page.locator("#message > div:last-child")).toHaveClass(/alert-danger/);
     });
+
+    test('Remove print overlay when switching to another minidock', async ({ page }) => {
+        await page.locator('#button-print').click();
+
+        await page.locator('#button-selectiontool').click();
+
+        await page.waitForTimeout(200); // wait to be sure tooltip is fully shown
+
+        expect(await page.locator('#newOlMap').screenshot()).toMatchSnapshot('print-selection.png');
+    });
 });
