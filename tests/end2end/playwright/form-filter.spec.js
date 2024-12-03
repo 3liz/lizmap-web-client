@@ -62,5 +62,31 @@ test.describe('Attribute table', () => {
         await page.locator('div#liz-filter-box-test_filter button.btn-primary:nth-child(2)').click();
         await expect(page.locator(countFeature)).toHaveText('4');
     });
+
+    test('Form filter with autocomplete', async ({ page }) => {
+        await page.locator('#liz-filter-field-textautocomplete').fill('mon');
+
+        // Assert autocomplete list has 3 values
+        await expect(page.locator('#ui-id-2 .ui-menu-item')).toHaveCount(3);
+
+        await page.locator('#liz-filter-field-textautocomplete').fill('');
+
+        // Filter by ID then assert autocomplete list has now 2 values
+        // when filling 'mon' in the autocomplete field
+        await page.locator('#liz-filter-field-max-numericIDs').fill('3');
+        await page.locator('#liz-filter-field-textautocomplete').fill('mon');
+        await expect(page.locator('#ui-id-2 .ui-menu-item')).toHaveCount(2);
+
+        // Reset
+        await page.locator('#liz-filter-field-textautocomplete').fill('');
+        await page.locator('#liz-filter-unfilter').click();
+
+        // Filter by combobox then assert autocomplete list has now 1 value
+        // when filling 'mon' in the autocomplete field
+        await page.locator('#liz-filter-field-test_filter').selectOption('monuments');
+        await page.locator('#liz-filter-field-textautocomplete').fill('mon');
+        await expect(page.locator('#ui-id-2 .ui-menu-item')).toHaveCount(1);
+        await expect(page.locator('#ui-id-2 .ui-menu-item div')).toHaveText('monuments');
+    }); 
 });
 
