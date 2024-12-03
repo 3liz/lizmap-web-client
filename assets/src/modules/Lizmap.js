@@ -166,7 +166,7 @@ export default class Lizmap {
                 this.popup = new Popup(this.initialConfig, this.state, this.map, this.digitizing);
                 this.legend = new Legend(this.state.layerTree);
                 this.search = new Search();
-                this.tooltip = new Tooltip();
+                this.tooltip = new Tooltip(this.map, this.initialConfig.tooltipLayers);
 
                 // Removed unusable button
                 if (!this.config['printTemplates'] || this.config.printTemplates.length == 0 ) {
