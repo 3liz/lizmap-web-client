@@ -195,16 +195,18 @@ abstract class OGCRequest
      */
     private function formatHttpErrorString($params, $code)
     {
-        $message = '';
-
-        $paramsToLog = array('map', 'repository', 'project', 'service', 'request');
-        foreach ($paramsToLog as $paramName) {
+        $mainParamsToLog = array('map', 'repository', 'project', 'service', 'request');
+        $mainParamValues = array();
+        $otherParamValues = array();
+        foreach ($mainParamsToLog as $paramName) {
             if (array_key_exists($paramName, $params)) {
-                $message .= strtoupper($paramName)." '".$params[$paramName]."', ";
+                $mainParamValues[] = '"'.strtoupper($paramName).'"'. ' = ' ."'".$params[$paramName]."'";
+            } else {
+                $otherParamValues[] = '"'.strtoupper($paramName).'"'. ' = ' ."'".$params[$paramName]."'";
             }
         }
 
-        $message = rtrim($message, ', ');
+        $message = implode(' & ', $mainParamvalues) .'\n'. implode(' & ', $otherParamvalues);
 
         return 'HTTP code '.$code.' on '.$message;
     }
@@ -225,7 +227,7 @@ abstract class OGCRequest
         // The master error with MAP parameter
         // This user must have an access to QGIS Server logs
         $params = $this->parameters();
-        \jLog::log($message.' Check logs on QGIS Server. '.$this->formatHttpErrorString($params, $code).' : '.json_encode($params), 'error');
+        \jLog::log($message.' Check logs on QGIS Server. '.$this->formatHttpErrorString($params, $code), 'error');
 
         // The admin error without the MAP parameter
         // but replaced by REPOSITORY and PROJECT parameters
@@ -233,7 +235,7 @@ abstract class OGCRequest
         unset($params['map']);
         $params['repository'] = $this->project->getRepository()->getKey();
         $params['project'] = $this->project->getKey();
-        \jLog::log($message.' '.$this->formatHttpErrorString($params, $code).' : '.json_encode($params), 'lizmapadmin');
+        \jLog::log($message.' '.$this->formatHttpErrorString($params, $code), 'lizmapadmin');
     }
 
     /**
