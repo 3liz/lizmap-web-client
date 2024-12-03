@@ -161,7 +161,7 @@ export default class Lizmap {
                 this.proxyEvents = new ProxyEvents();
                 this.wfs = new WFS();
                 this.wms = new WMS();
-                this.action = new Action();
+                this.action = new Action(this.map, this.selectionTool, this.digitizing, this.lizmap3);
                 this.featureStorage = new FeatureStorage();
                 this.popup = new Popup(this.initialConfig, this.state, this.map, this.digitizing);
                 this.legend = new Legend(this.state.layerTree);
