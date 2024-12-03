@@ -2,7 +2,7 @@
 import { test, expect } from '@playwright/test';
 import { gotoMap } from './globals';
 
-test.describe('Attribute table', () => {
+test.describe('Form filter', () => {
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=form_filter';
         await gotoMap(url, page);
