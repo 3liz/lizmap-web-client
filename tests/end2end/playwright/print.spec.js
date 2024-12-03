@@ -710,4 +710,12 @@ test.describe('Error while printing', () => {
 
         await expect(page.locator("#message > div:last-child")).toHaveClass(/alert-danger/);
     });
+
+    test('Remove print overlay when switching to another minidock', async ({ page }) => {
+        await page.locator('#button-print').click();
+
+        await page.locator('#button-selectiontool').click();
+
+        await expect(page.locator('.ol-unselectable > canvas')).toHaveCount(0);
+    });
 });
