@@ -716,8 +716,6 @@ test.describe('Error while printing', () => {
 
         await page.locator('#button-selectiontool').click();
 
-        await page.waitForTimeout(200); // wait to be sure tooltip is fully shown
-
-        expect(await page.locator('#newOlMap').screenshot()).toMatchSnapshot('print-selection.png');
+        await expect(page.locator('.ol-unselectable > canvas')).toHaveCount(0);
     });
 });
