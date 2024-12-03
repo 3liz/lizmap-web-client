@@ -186,6 +186,78 @@ abstract class OGCRequest
     }
 
     /**
+     * Generate a string to identify the target of the HTTP request.
+     *
+     * @param array $parameters The list of HTTP parameters in the query
+     * @param int   $code       The HTTP code of the request
+     *
+     * @return string The string to identify the HTTP request, with main OGC parameters first such as MAP, SERVICE...
+     */
+    private function formatHttpErrorString($parameters, $code)
+    {
+        // Clone parameters array to perform unset without modify it
+        $params = array_merge(array(), $parameters);
+
+        // Ordered list of params to fetch first
+        $mainParamsToLog = array('map', 'repository', 'project', 'service', 'request');
+
+        $output = array();
+        foreach ($mainParamsToLog as $paramName) {
+            if (array_key_exists($paramName, $params)) {
+                $output[] = '"'.strtoupper($paramName).'" = '."'".$params[$paramName]."'";
+                unset($params[$paramName]);
+            }
+        }
+
+        // First implode with main parameters
+        $message = implode(' & ', $output);
+
+        if ($params) {
+            // Ideally, we want two lines, one with main parameters, the second one with secondary parameters
+            // It does not work in jLog
+            // $message .= '\n';
+            $message .= ' & ';
+        }
+
+        // For remaining parameters in the array, which are not in the main list
+        $output = array();
+        foreach ($params as $key => $value) {
+            $output[] = '"'.strtoupper($key).'" = '."'".$value."'";
+        }
+
+        $message .= implode(' & ', $output);
+
+        return 'HTTP code '.$code.' on '.$message;
+    }
+
+    /**
+     * Log if the HTTP code is a 4XX or 5XX error code.
+     *
+     * @param int $code The HTTP code of the request
+     */
+    protected function logRequestIfError($code)
+    {
+        if ($code < 400) {
+            return;
+        }
+
+        $message = 'The HTTP OGC request to QGIS Server ended with an error.';
+
+        // The master error with MAP parameter
+        // This user must have an access to QGIS Server logs
+        $params = $this->parameters();
+        \jLog::log($message.' Check logs on QGIS Server. '.$this->formatHttpErrorString($params, $code), 'error');
+
+        // The admin error without the MAP parameter
+        // but replaced by REPOSITORY and PROJECT parameters
+        // This user might not have an access to QGIS Server logs
+        unset($params['map']);
+        $params['repository'] = $this->project->getRepository()->getKey();
+        $params['project'] = $this->project->getKey();
+        \jLog::log($message.' '.$this->formatHttpErrorString($params, $code), 'lizmapadmin');
+    }
+
+    /**
      * Request QGIS Server.
      *
      * @param bool $post   Force to use POST request
@@ -236,10 +308,14 @@ abstract class OGCRequest
         if ($stream) {
             $response = \Lizmap\Request\Proxy::getRemoteDataAsStream($querystring, $options);
 
+            $this->logRequestIfError($response->getCode());
+
             return new OGCResponse($response->getCode(), $response->getMime(), $response->getBodyAsStream());
         }
 
         list($data, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($querystring, $options);
+
+        $this->logRequestIfError($code);
 
         return new OGCResponse($code, $mime, $data);
     }
