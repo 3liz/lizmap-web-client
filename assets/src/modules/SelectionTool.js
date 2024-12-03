@@ -82,7 +82,7 @@ export default class SelectionTool {
         for (const attributeLayerName in config.attributeLayers) {
             if (config.attributeLayers.hasOwnProperty(attributeLayerName)) {
                 for (const featureType of featureTypes) {
-                    const lname = mainLizmap.getNameByTypeName(featureType.Name);
+                    const lname = this._lizmap3.getNameByTypeName(featureType.Name);
 
                     if (attributeLayerName === lname
                         && lname in config.layers
