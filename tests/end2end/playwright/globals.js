@@ -15,13 +15,13 @@ async function NoErrors(page, checkLayerTreeView = true) {
 /**
  * CatchErrors function
  * Some checks when the map is on error
- * * @param {Page} page The page object
- * * @param {int} layersInTreeView The number of layers to find in the treeview.
+ * @param {Page} page The page object
+ * @param {int} layersInTreeView The number of layers to find in the treeview.
  */
 async function CatchErrors(page, layersInTreeView = 0) {
     // Error
     await expect(page.locator('p.error-msg')).toHaveCount(1);
-    await expect(page.locator('#switcher lizmap-treeview ul li')).toHaveCount(layersInTreeView);
+    await expect(page.locator('#switcher .lizmap-treeview ul li')).toHaveCount(layersInTreeView);
     // Error message displayed
     await expect(page.getByText('An error occurred while loading this map. Some necessary resources may temporari')).toBeVisible();
     // Go back home link
