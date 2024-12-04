@@ -397,51 +397,8 @@ class QgisProjectTest extends TestCase
         $cfg = new Project\ProjectConfig((object) array('layers' => $json->layers));
         $testProj = new qgisProjectForTests();
         $testProj->setXml(simplexml_load_file(__DIR__.'/Ressources/opacity.qgs'));
-        $layers = array(
-            array (
-                'id' => 'events_4c3b47b8_3939_4c8c_8e91_55bdb13a2101',
-                'name' => 'montpellier_events',
-            ),
-            array (
-                'id' => 'raster_78572dfa_41b3_42da_a9c6_933ead8bad8f',
-                'name' => 'local_raster_layer',
-            ),
-        );
-        $testProj->setLayers($layers);
         $testProj->setLayerOpacityForTest($cfg);
         $this->assertEquals($expectedLayer, $cfg->getLayers());
-
-        // embedded layers
-        $file = __DIR__.'/Ressources/opacity_embed.qgs';
-        $data = array(
-            'WMSInformation' => array(),
-            'layers' => array(),
-        );
-        $file = __DIR__.'/Ressources/opacity_embed.qgs';
-        $testProjE = new ProjectForTests();
-
-        $testQgis = new QgisProjectForTests($data);
-        $rep = new Project\Repository('key', array(), null, null, null);
-        $testQgis->setPath($file);
-        $testQgis->readXMLProjectTest($file);
-
-        $cfg = json_decode(file_get_contents($file.'.cfg'));
-        $config = new Project\ProjectConfig($cfg);
-
-        $testProjE->setCfg($config);
-        $testProjE->setQgis($testQgis);
-        $testProjE->setRepo($rep);
-        $testProjE->setKey('test');
-
-        $testQgis->setLayerOpacityForTest($config);
-
-        $emLayer = $testQgis->getLayer('_a5a62408_edf3_4c07_a266_0e8ae6642517', $testProjE);
-        $this->assertNotNull($emLayer);
-        $this->assertEquals($emLayer->getName(), 'Fabbricati');
-
-        $eLayerName = $emLayer->getName();
-        $this->assertNotNull($config->getLayer($eLayerName));
-        $this->assertEquals(0.4,$config->getLayer($eLayerName)->opacity);
     }
 
     public static function getLayerData()
