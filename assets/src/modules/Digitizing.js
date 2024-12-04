@@ -4,7 +4,7 @@
  * @copyright 2023 3Liz
  * @license MPL-2.0
  */
-import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
+import { mainEventDispatcher } from '../modules/Globals.js';
 import { deepFreeze } from './config/Tools.js';
 import { createEnum } from './utils/Enums.js';
 import Utils from '../modules/Utils.js';
@@ -61,7 +61,10 @@ export const DigitizingTools = createEnum({
  */
 export class Digitizing {
 
-    constructor() {
+    constructor(map, lizmap3) {
+
+        this._map = map;
+        this._lizmap3 = lizmap3;
 
         // defined a context to separate drawn features
         this._context = 'draw';
@@ -255,7 +258,7 @@ export class Digitizing {
             name: 'LizmapDigitizingDrawLayer'
         });
 
-        mainLizmap.map.addToolLayer(this._drawLayer);
+        this._map.addToolLayer(this._drawLayer);
 
         // Constraint layer
         this._constraintLayer = new VectorLayer({
@@ -282,7 +285,7 @@ export class Digitizing {
         this._constraintLayer.setProperties({
             name: 'LizmapDigitizingConstraintLayer'
         });
-        mainLizmap.map.addToolLayer(this._constraintLayer);
+        this._map.addToolLayer(this._constraintLayer);
 
         // Constraints values
         this._distanceConstraint = 0;
@@ -292,7 +295,7 @@ export class Digitizing {
         this.loadFeatureDrawnToMap();
 
         // Disable drawing tool when measure tool is activated
-        mainLizmap.lizmap3.events.on({
+        this._lizmap3.events.on({
             minidockopened: (e) => {
                 if (e.id == 'measure') {
                     this.toolSelected = this._tools[0];
@@ -372,8 +375,8 @@ export class Digitizing {
         }
         this._isSaved = (localStorage.getItem(this._repoAndProjectString + '_' + this._context + '_drawLayer') !== null);
         this._measureTooltips.forEach((measureTooltip) => {
-            mainLizmap.map.removeOverlay(measureTooltip[0]);
-            mainLizmap.map.removeOverlay(measureTooltip[1]);
+            this._map.removeOverlay(measureTooltip[0]);
+            this._map.removeOverlay(measureTooltip[1]);
             this._measureTooltips.delete(measureTooltip);
         });
         this._drawLayer.getSource().clear();
@@ -396,7 +399,7 @@ export class Digitizing {
     set toolSelected(tool) {
         if (this._tools.includes(tool)) {
             // Disable all tools
-            mainLizmap.map.removeInteraction(this._drawInteraction);
+            this._map.removeInteraction(this._drawInteraction);
 
             // If tool === 'deactivate' or current selected tool is selected again => deactivate
             if (tool === this._toolSelected || tool === this._tools[0]) {
@@ -500,7 +503,7 @@ export class Digitizing {
                     unByKey(this._listener);
                 });
 
-                mainLizmap.map.addInteraction(this._drawInteraction);
+                this._map.addInteraction(this._drawInteraction);
 
                 this._toolSelected = tool;
 
@@ -559,10 +562,10 @@ export class Digitizing {
                     this.drawColor = this.featureDrawn[0].get('color');
                 }
 
-                mainLizmap.map.removeInteraction(this._drawInteraction);
+                this._map.removeInteraction(this._drawInteraction);
 
-                mainLizmap.map.addInteraction(this._selectInteraction);
-                mainLizmap.map.addInteraction(this._modifyInteraction);
+                this._map.addInteraction(this._selectInteraction);
+                this._map.addInteraction(this._modifyInteraction);
 
                 this.toolSelected = 'deactivate';
                 this.isErasing = false;
@@ -571,8 +574,8 @@ export class Digitizing {
             } else {
                 // Clear selection
                 this._selectInteraction.getFeatures().clear();
-                mainLizmap.map.removeInteraction(this._selectInteraction);
-                mainLizmap.map.removeInteraction(this._modifyInteraction);
+                this._map.removeInteraction(this._selectInteraction);
+                this._map.removeInteraction(this._modifyInteraction);
 
                 this.saveFeatureDrawn();
 
@@ -595,7 +598,7 @@ export class Digitizing {
                 this.isEdited = false;
 
                 this._erasingCallBack = event => {
-                    const features = mainLizmap.map.getFeaturesAtPixel(event.pixel, {
+                    const features = this._map.getFeaturesAtPixel(event.pixel, {
                         layerFilter: layer => {
                             return layer === this._drawLayer;
                         },
@@ -619,10 +622,10 @@ export class Digitizing {
                     }
                 };
 
-                mainLizmap.map.on('singleclick', this._erasingCallBack );
+                this._map.on('singleclick', this._erasingCallBack );
                 mainEventDispatcher.dispatch('digitizing.erasingBegins');
             } else {
-                mainLizmap.map.un('singleclick', this._erasingCallBack );
+                this._map.un('singleclick', this._erasingCallBack );
                 mainEventDispatcher.dispatch('digitizing.erasingEnds');
             }
         }
@@ -662,8 +665,8 @@ export class Digitizing {
         if (totalOverlay) {
             this._measureTooltips.forEach((measureTooltip) => {
                 if(measureTooltip[1] === totalOverlay){
-                    mainLizmap.map.removeOverlay(measureTooltip[0]);
-                    mainLizmap.map.removeOverlay(measureTooltip[1]);
+                    this._map.removeOverlay(measureTooltip[0]);
+                    this._map.removeOverlay(measureTooltip[1]);
                     this._measureTooltips.delete(measureTooltip);
                     return;
                 }
@@ -859,7 +862,7 @@ export class Digitizing {
      * @returns {string} The formatted length.
      */
     formatLength(geom) {
-        const length = getLength(geom, {projection: mainLizmap.map.getView().getProjection()});
+        const length = getLength(geom, {projection: this._map.getView().getProjection()});
         let output;
         if (length > 100) {
             output = Math.round((length / 1000) * 100) / 100 + ' ' + 'km';
@@ -875,7 +878,7 @@ export class Digitizing {
      * @returns {string} Formatted area.
      */
     formatArea(polygon) {
-        const area = getArea(polygon, {projection: mainLizmap.map.getView().getProjection()});
+        const area = getArea(polygon, {projection: this._map.getView().getProjection()});
         let output;
         if (area > 10000) {
             output = Math.round((area / 1000000) * 100) / 100 + ' ' + 'km<sup>2</sup>';
@@ -920,8 +923,8 @@ export class Digitizing {
         });
 
         this._measureTooltips.add([segmentOverlay, totalOverlay]);
-        mainLizmap.map.addOverlay(segmentOverlay);
-        mainLizmap.map.addOverlay(totalOverlay);
+        this._map.addOverlay(segmentOverlay);
+        this._map.addOverlay(totalOverlay);
     }
 
     // Get SLD for featureDrawn[index]
@@ -1017,8 +1020,8 @@ export class Digitizing {
 
     eraseAll() {
         this._measureTooltips.forEach((measureTooltip) => {
-            mainLizmap.map.removeOverlay(measureTooltip[0]);
-            mainLizmap.map.removeOverlay(measureTooltip[1]);
+            this._map.removeOverlay(measureTooltip[0]);
+            this._map.removeOverlay(measureTooltip[1]);
             this._measureTooltips.delete(measureTooltip);
         });
         this._drawSource.clear();
@@ -1136,7 +1139,7 @@ export class Digitizing {
     download(format) {
         if (this.featureDrawn) {
             const options = {
-                featureProjection: mainLizmap.projection,
+                featureProjection: this._lizmap3.map.getProjection(),
                 dataProjection: 'EPSG:4326'
             };
             if (format === 'geojson') {
@@ -1199,7 +1202,7 @@ export class Digitizing {
         //         return (e) => {
         //             const buffershp = e.target.result;
         //             shp(buffershp).then(response => {
-        //                 let OL6features = (new GeoJSON()).readFeatures(response, {featureProjection: mainLizmap.projection});
+        //                 let OL6features = (new GeoJSON()).readFeatures(response, {featureProjection: this._lizmap3.map.getProjection()});
 
         //                 if (OL6features) {
         //                     // Add imported features to map and zoom to their extent
@@ -1219,7 +1222,7 @@ export class Digitizing {
                 // Handle GeoJSON, GPX or KML strings
                 try {
                     const options = {
-                        featureProjection: mainLizmap.projection
+                        featureProjection: this._lizmap3.map.getProjection()
                     };
                     // Check extension for format type
                     if (['json', 'geojson'].includes(fileExtension)) {
@@ -1262,10 +1265,10 @@ export class Digitizing {
                                 register(proj4);
                             }
 
-                            features = reprojAll(features, projFGB, mainLizmap.projection);
+                            features = reprojAll(features, projFGB, this._lizmap3.map.getProjection());
                         } else {
                             lizMap.addMessage(lizDict["digitizing.import.metadata.error"] + " : " +
-                                                        mainLizmap.projection
+                                                        this._lizmap3.map.getProjection()
                             , 'info'
                             , true)
                         }
@@ -1284,7 +1287,7 @@ export class Digitizing {
                     const featuresGeometryCollection = new GeometryCollection(featuresGeometry);
                     const extent = featuresGeometryCollection.getExtent();
 
-                    mainLizmap.map.getView().fit(extent);
+                    this._map.getView().fit(extent);
                 }
             };
         })(this);
