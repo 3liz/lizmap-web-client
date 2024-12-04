@@ -5,7 +5,6 @@
  * @license MPL-2.0
  */
 
-import { mainLizmap } from '../modules/Globals.js';
 import { transformExtent } from 'ol/proj.js';
 
 /**
@@ -14,13 +13,18 @@ import { transformExtent } from 'ol/proj.js';
  */
 export default class Search {
 
-    constructor() {
+    /**
+     * Create a search instance
+     * @param {Map}        map        - OpenLayers map
+     * @param {object}     lizmap3    - The old lizmap object
+     */
+    constructor(map, lizmap3) {
         // Attributes
-        this._config = lizMap.config;
-        this._map = lizMap.map;
+        this._map = map;
+        this._lizmap3 = lizmap3;
 
         // Add or remove searches!
-        var configOptions = this._config.options;
+        var configOptions = this._lizmap3.config.options;
         if (('searches' in configOptions) && (configOptions.searches.length > 0)) {
             this._addSearches();
         }
@@ -39,7 +43,7 @@ export default class Search {
             $('#lizmap-search .items').html('<li class="start"><ul><li>' + lizDict['externalsearch.search'] + '</li></ul></li>');
             $('#lizmap-search, #lizmap-search-close').addClass('open');
         } else {
-            lizMap.addMessage(lizDict['externalsearch.noquery'], 'info', true).attr('id', 'lizmap-search-message');
+            this._lizmap3.addMessage(lizDict['externalsearch.noquery'], 'info', true).attr('id', 'lizmap-search-message');
         }
     }
 
@@ -58,8 +62,8 @@ export default class Search {
                 continue;
             }
             sqvalsn.push(sqi);
-            if (sqi != lizMap.cleanName(sqi)) {
-                sqvalsn.push(lizMap.cleanName(sqi));
+            if (sqi != this._lizmap3.cleanName(sqi)) {
+                sqvalsn.push(this._lizmap3.cleanName(sqi));
             }
         }
         sqrex += sqvalsn.join('|');
@@ -85,8 +89,8 @@ export default class Search {
 
         // define max extent for searches
         var wgs84 = new OpenLayers.Projection('EPSG:4326');
-        var extent = new OpenLayers.Bounds(this._map.maxExtent.toArray());
-        extent.transform(this._map.getProjection(), wgs84);
+        var extent = new OpenLayers.Bounds(this._lizmap3.map.maxExtent.toArray());
+        extent.transform(this._map.getView().getProjection().getCode(), wgs84);
 
         $('#nominatim-search').submit(() => {
             this._startExternalSearch();
@@ -153,8 +157,8 @@ export default class Search {
 
         // define max extent for searches
         var wgs84 = new OpenLayers.Projection('EPSG:4326');
-        var extent = new OpenLayers.Bounds(this._map.maxExtent.toArray());
-        extent.transform(this._map.getProjection(), wgs84);
+        var extent = new OpenLayers.Bounds(this._lizmap3.map.maxExtent.toArray());
+        extent.transform(this._map.getView().getProjection().getCode(), wgs84);
 
         // define external search service
         var service = null;
@@ -225,8 +229,8 @@ export default class Search {
                         lizMap.addMessage(lizDict['externalsearch.ignlimit'], 'warning', true);
                         break;
                     }
-                    let mapExtent4326 = transformExtent(mainLizmap.map.getView().calculateExtent(), mainLizmap.projection, 'EPSG:4326');
-                    let queryParam = '?text=' + searchQuery + '&type=StreetAddress&maximumResponses=10&bbox=' + mapExtent4326
+                    let mapExtent4326 = transformExtent(this._map.getView().calculateExtent(), this._map.getView().getProjection().getCode(), 'EPSG:4326');
+                    let queryParam = '?text=' + $('#search-query').val() + '&type=StreetAddress&maximumResponses=10&bbox=' + mapExtent4326;
                     $.getJSON(encodeURI(service + queryParam), data => {
                         let text = '';
                         let count = 0;
@@ -306,7 +310,7 @@ export default class Search {
      * {Boolean} searches added to the user interface
      */
     _addSearches() {
-        var configOptions = this._config.options;
+        var configOptions = this._lizmap3.config.options;
         if (!('searches' in configOptions) || (configOptions.searches.length == 0)) {
             return;
         }
@@ -353,18 +357,18 @@ export default class Search {
                     const linkClicked = evt.currentTarget;
                     var bbox = linkClicked.getAttribute('href').replace('#', '');
                     var bbox = OpenLayers.Bounds.fromString(bbox);
-                    bbox.transform(wgs84, this._map.getProjectionObject());
-                    this._map.zoomToExtent(bbox);
+                    bbox.transform(wgs84, this._lizmap3.map.getProjectionObject());
+                    this._lizmap3.map.zoomToExtent(bbox);
 
                     var feat = new OpenLayers.Feature.Vector(bbox.toGeometry().getCentroid());
                     var geomWKT = linkClicked.dataset.wkt;
                     if (geomWKT) {
-                        mainLizmap.map.setHighlightFeatures(geomWKT, "wkt", "EPSG:4326");
+                        this._map.setHighlightFeatures(geomWKT, "wkt", "EPSG:4326");
                     }
 
                     $('#lizmap-search, #lizmap-search-close').removeClass('open');
                     // trigger event containing selected feature
-                    lizMap.events.triggerEvent('lizmapexternalsearchitemselected',
+                    this._lizmap3.events.triggerEvent('lizmapexternalsearchitemselected',
                         {
                             'feature': feat
                         }
