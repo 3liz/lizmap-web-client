@@ -40,7 +40,7 @@ class ajax_viewZone extends jZone
 
             $lrep = lizmap::getRepository($r);
             $mrep = new lizmapMainViewItem($r, $lrep->getLabel());
-            $metadata = $lrep->getProjectsMetadata();
+            $metadata = $lrep->getProjectsMainData();
             foreach ($metadata as $meta) {
                 // Avoid project with no access rights
                 if (!$meta->getAcl()) {
