@@ -24,7 +24,7 @@ import { Vector as VectorLayer } from 'ol/layer.js';
 import { Feature } from 'ol';
 
 import { Point, LineString, Polygon, Circle as CircleGeom, MultiPoint, GeometryCollection } from 'ol/geom.js';
-import { circular } from 'ol/geom/Polygon.js';
+import { circular, fromCircle } from 'ol/geom/Polygon.js';
 
 import { getArea, getLength } from 'ol/sphere.js';
 import Overlay from 'ol/Overlay.js';
@@ -484,6 +484,8 @@ export class Digitizing {
                             this._updateTotalMeasureTooltip(geom.getCoordinates()[0], geom, 'Polygon', geom.get('totalOverlay'));
                         } else if (geom instanceof LineString) {
                             this._updateTotalMeasureTooltip(geom.getCoordinates(), geom, 'Linestring', geom.get('totalOverlay'));
+                        } else if ( geom instanceof CircleGeom) {
+                            this._updateTotalMeasureTooltip([geom.getFirstCoordinate(), geom.getLastCoordinate()], geom, 'Circle', geom.get('totalOverlay'));
                         }
                     });
 
@@ -809,7 +811,10 @@ export class Digitizing {
 
         // Total length for LineStrings
         // Perimeter and area for Polygons
-        if (coords.length > 2) {
+        // Radius and area for Circles
+        if(geomType == 'Circle') {
+            this._updateTotalMeasureTooltip(coords, geom, geomType, Array.from(this._measureTooltips).pop()[1]);
+        } else if (coords.length > 2) {
             this._updateTotalMeasureTooltip(coords, geom, geomType, Array.from(this._measureTooltips).pop()[1]);
 
             // Display angle ABC between three points. B is center
@@ -830,8 +835,8 @@ export class Digitizing {
             segmentTooltipContent += '<br>' + angleInDegrees + '°';
         }
 
-        // Display current segment measure only when drawing lines, polygons or circles
-        if (['line', 'polygon', 'circle'].includes(this.toolSelected)) {
+        // Display current segment measure only when drawing lines or polygons
+        if (['line', 'polygon'].includes(this.toolSelected)) {
             this._segmentMeasureTooltipElement.innerHTML = segmentTooltipContent;
             Array.from(this._measureTooltips).pop()[0].setPosition(geom.getLastCoordinate());
         }
@@ -847,7 +852,16 @@ export class Digitizing {
 
             overlay.getElement().innerHTML = totalTooltipContent;
             overlay.setPosition(geom.getInteriorPoint().getCoordinates());
-        } else {
+        } else if(geomType == 'Circle') {
+            // get polygon from circular geometry by approximating the circle with a 128-sided polygon
+            let circularGeom = fromCircle(geom,128);
+            let totalTooltipContent = this.formatLength(new LineString([coords[0], coords[1]]));
+            totalTooltipContent += '<br>' + this.formatArea(circularGeom);
+
+            overlay.getElement().innerHTML = totalTooltipContent;
+            overlay.setPosition(circularGeom.getInteriorPoint().getCoordinates());
+        }
+        else {
             overlay.getElement().innerHTML = this.formatLength(geom);
             overlay.setPosition(geom.getCoordinateAt(0.5));
         }
