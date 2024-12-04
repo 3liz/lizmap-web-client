@@ -61,7 +61,7 @@ class main_viewZone extends jZone
                 // Get all files name in the repository directory to look for thumbnails
                 $repFiles = scandir($lrep->getPath());
 
-                $metadata = $lrep->getProjectsMetadata();
+                $metadata = $lrep->getProjectsMainData();
                 foreach ($metadata as $meta) {
                     // Avoid project which needs an update
                     if ($meta->needsUpdateError()) {
