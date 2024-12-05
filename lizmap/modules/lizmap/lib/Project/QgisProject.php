@@ -651,7 +651,7 @@ class QgisProject
      */
     public function xpathQuery($query)
     {
-        $ret = $this->xml->xpath($query);
+        $ret = $this->getXml()->xpath($query);
         if ($ret && is_array($ret)) {
             return $ret;
         }
@@ -702,7 +702,7 @@ class QgisProject
      */
     protected function getXml()
     {
-        if ($this->xml) {
+        if ($this->xml != null) {
             return $this->xml;
         }
         $qgs_path = $this->path;
@@ -768,7 +768,7 @@ class QgisProject
     {
         // get restricted composers
         $rComposers = array();
-        $restrictedComposers = $this->xml->xpath('//properties/WMSRestrictedComposers/value');
+        $restrictedComposers = $this->getXml()->xpath('//properties/WMSRestrictedComposers/value');
         if ($restrictedComposers && is_array($restrictedComposers)) {
             foreach ($restrictedComposers as $restrictedComposer) {
                 $rComposers[] = (string) $restrictedComposer;
@@ -777,7 +777,7 @@ class QgisProject
 
         $printTemplates = array();
         // get layout qgs project version >= 3
-        $layouts = $this->xml->xpath('//Layout');
+        $layouts = $this->getXml()->xpath('//Layout');
         if ($layouts && is_array($layouts)) {
             foreach ($layouts as $layout) {
                 // test restriction
@@ -893,7 +893,7 @@ class QgisProject
         }
         // update locateByLayer with alias and filter information
         foreach ($locateByLayer as $k => $v) {
-            $xmlLayer = $this->getXmlLayer2($this->xml, $v->layerId);
+            $xmlLayer = $this->getXmlLayer2($this->getXml(), $v->layerId);
             if (is_null($xmlLayer)) {
                 continue;
             }
@@ -953,7 +953,7 @@ class QgisProject
             if ($qgisProject) {
                 $xml = $qgisProject->getXml();
             } else {
-                $xml = $this->xml;
+                $xml = $this->getXml();
             }
 
             // Read layer property from QGIS project XML
@@ -982,7 +982,7 @@ class QgisProject
             if ($qgisProject) {
                 $xml = $qgisProject->getXml();
             } else {
-                $xml = $this->xml;
+                $xml = $this->getXml();
             }
 
             $layerXml = $this->getXmlLayer2($xml, $obj->layerId);
@@ -1118,7 +1118,7 @@ class QgisProject
             }
 
             // Read layer property from QGIS project XML
-            $layerXml = $this->getXmlLayer2($this->xml, $obj->layerId);
+            $layerXml = $this->getXmlLayer2($this->getXml(), $obj->layerId);
             if (is_null($layerXml)) {
                 continue;
             }
@@ -1145,7 +1145,7 @@ class QgisProject
     {
         $layersOrder = array();
         if ($this->qgisProjectVersion >= 30000) { // For QGIS >=3.0, custom-order is in layer-tree-group
-            $customOrder = $this->xml->xpath('layer-tree-group/custom-order');
+            $customOrder = $this->getXml()->xpath('layer-tree-group/custom-order');
             if (count($customOrder) == 0) {
                 return $layersOrder;
             }

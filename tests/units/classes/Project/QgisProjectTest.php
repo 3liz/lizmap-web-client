@@ -396,7 +396,7 @@ class QgisProjectTest extends TestCase
         $expectedLayer->local_raster_layer->opacity = (float) 0.6835;
         $cfg = new Project\ProjectConfig((object) array('layers' => $json->layers));
         $testProj = new qgisProjectForTests();
-        $testProj->setXml(simplexml_load_file(__DIR__.'/Ressources/opacity.qgs'));
+        $testProj->setXmlForTest(simplexml_load_file(__DIR__.'/Ressources/opacity.qgs'));
         $layers = array(
             array (
                 'id' => 'events_4c3b47b8_3939_4c8c_8e91_55bdb13a2101',
@@ -521,7 +521,7 @@ class QgisProjectTest extends TestCase
         $file = __DIR__.'/Ressources/'.$fileName.'.qgs';
         $eLayers = json_decode(file_get_contents($file.'.cfg'))->editionLayers;
         $testProj = new qgisProjectForTests();
-        $testProj->setXml(simplexml_load_file($file));
+        $testProj->setXmlForTest(simplexml_load_file($file));
         $testProj->readEditionLayersForTest($eLayers);
         $this->assertEquals($expectedELayer, $eLayers);
     }
@@ -734,7 +734,7 @@ class QgisProjectTest extends TestCase
         $aLayer = json_decode(file_get_contents($file.'.cfg'))->attributeLayers;
         $xml = simplexml_load_string($table);
         $testProj = new qgisProjectForTests();
-        $testProj->setXml(simplexml_load_file($file));
+        $testProj->setXmlForTest(simplexml_load_file($file));
         $testProj->readAttributeLayersForTest($aLayer);
         $xml = json_decode(str_replace('@', '', json_encode($xml)));
         $this->assertEquals($xml, $aLayer->montpellier_events->attributetableconfig);
@@ -768,7 +768,7 @@ class QgisProjectTest extends TestCase
             ),
         );
         $testProj = new qgisProjectForTests();
-        $testProj->setXml(simplexml_load_file($file));
+        $testProj->setXmlForTest(simplexml_load_file($file));
         $cfg = new Project\ProjectConfig((object) array('layers' => (object) $layers));
         $testProj->setShortNamesForTest($cfg);
         $layer = $cfg->getLayers();
