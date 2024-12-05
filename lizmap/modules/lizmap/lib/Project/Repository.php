@@ -403,4 +403,60 @@ class Repository
 
         return $data;
     }
+
+    /**
+     * Get the repository projects main data.
+     *
+     * @return ProjectMainData[]
+     */
+    public function getProjectsMainData()
+    {
+        $data = array();
+        $dir = $this->getPath();
+
+        if (is_dir($dir)) {
+            if ($dh = opendir($dir)) {
+                $cfgFiles = array();
+                $qgsFiles = array();
+                while (($file = readdir($dh)) !== false) {
+                    if (substr($file, -3) == 'cfg') {
+                        $cfgFiles[] = $file;
+                    }
+                    if (substr($file, -3) == 'qgs') {
+                        $qgsFiles[] = $file;
+                    }
+                }
+                closedir($dh);
+
+                $requiredTargetLwcVersion = \jApp::config()->minimumRequiredVersion['lizmapWebClientTargetVersion'];
+                foreach ($qgsFiles as $qgsFile) {
+                    $proj = null;
+                    if (in_array($qgsFile.'.cfg', $cfgFiles)) {
+                        try {
+                            // Get project main data
+                            $proj = new ProjectMainData(
+                                $this->getKey(),
+                                substr($qgsFile, 0, -4),
+                                $this->getPath().$qgsFile,
+                                $requiredTargetLwcVersion,
+                                $this->appContext
+                            );
+                            // $this->getProject(substr($qgsFile, 0, -4), $keepReference);
+                            // Get the project metadata and add it to the returned object
+                            // only if the authenticated user can access the project
+                            if ($proj != null && $proj->getAcl()) {
+                                $data[] = $proj;
+                            }
+                        } catch (UnknownLizmapProjectException $e) {
+                            $this->appContext->logException($e, 'error');
+                        } catch (\Exception $e) {
+                            $this->appContext->logException($e, 'error');
+                        }
+                    }
+                }
+            }
+        }
+
+        return $data;
+    }
 }
