@@ -168,7 +168,12 @@ export default class Lizmap {
                 this.legend = new Legend(this.state.layerTree);
                 this.search = new Search(this.map, this.lizmap3);
                 this.tooltip = new Tooltip();
-                this.locateByLayer = new LocateByLayer();
+                this.locateByLayer = new LocateByLayer(
+                    this.initialConfig.locateByLayer,
+                    this.initialConfig.vectorLayerFeatureTypeList,
+                    this.map,
+                    this._lizmap3
+                );
 
                 // Removed unusable button
                 if (!this.config['printTemplates'] || this.config.printTemplates.length == 0 ) {
