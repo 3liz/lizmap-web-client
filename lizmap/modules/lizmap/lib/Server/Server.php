@@ -195,7 +195,7 @@ class Server
             $repositories[$repositoryKey]['editing_authorized_groups'] = $editingAuthorizedGroups;
 
             // Add the projects
-            $repositoryProjects = $lizmapRepository->getProjectsMetadata();
+            $repositoryProjects = $lizmapRepository->getProjectsMainData();
             $projects = array();
             foreach ($repositoryProjects as $project) {
                 if (!$project->getAcl()) {

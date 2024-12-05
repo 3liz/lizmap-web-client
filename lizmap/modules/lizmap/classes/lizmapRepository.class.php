@@ -166,6 +166,11 @@ class lizmapRepository
         return $this->repo->getProjectsMetadata();
     }
 
+    public function getProjectsMainData()
+    {
+        return $this->repo->getProjectsMainData();
+    }
+
     /**
      * Return the value of the Access-Control-Allow-Origin HTTP header.
      *
