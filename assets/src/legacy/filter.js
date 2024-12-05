@@ -1466,8 +1466,7 @@ var lizLayerFilterTool = function () {
                 if (!bounds || abounds.length != 4) {
                     return false;
                 }
-                var extent = new OpenLayers.Bounds(abounds[0], abounds[1], abounds[2], abounds[3]);
-                lizMap.map.zoomToExtent(extent);
+                lizMap.mainLizmap.map.zoomToGeometryOrExtent(abounds);
                 return false;
             }
 

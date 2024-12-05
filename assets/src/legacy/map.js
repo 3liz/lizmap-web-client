@@ -13,7 +13,6 @@ import { extend } from 'ol/extent.js';
 import WFS from '../modules/WFS.js';
 import WMS from '../modules/WMS.js';
 import Utils from '../modules/Utils.js';
-import DOMPurify from 'dompurify';
 
 window.lizMap = function() {
     /**
@@ -775,59 +774,6 @@ window.lizMap = function() {
     }
 
     /**
-     * Get features for locate by layer tool
-     * @param aName
-     */
-    function updateLocateFeatureList(aName) {
-        var locate = config.locateByLayer[aName];
-        // clone features reference
-        var features = {};
-        for ( var fid in locate.features ) {
-            features[fid] = locate.features[fid];
-        }
-        // filter by filter field name
-        if ('filterFieldName' in locate) {
-            var filterValue = $('#locate-layer-'+cleanName(aName)+'-'+locate.filterFieldName).val();
-            if ( filterValue != '-1' ) {
-                for (var fid in features) {
-                    var feat = features[fid];
-                    if (feat.properties[locate.filterFieldName] != filterValue)
-                        delete features[fid];
-                }
-            } else
-                features = {}
-        }
-        // filter by vector joins
-        if ( 'vectorjoins' in locate && locate.vectorjoins.length != 0 ) {
-            var vectorjoins = locate.vectorjoins;
-            for ( var i=0, len =vectorjoins.length; i< len; i++) {
-                var vectorjoin = vectorjoins[i];
-                var jName = vectorjoin.joinLayer;
-                if ( jName in config.locateByLayer ) {
-                    var jLocate = config.locateByLayer[jName];
-                    var jVal = $('#locate-layer-'+cleanName(jName)).val();
-                    if ( jVal == '-1' ) continue;
-                    var jFeat = jLocate.features[jVal];
-                    for (var fid in features) {
-                        var feat = features[fid];
-                        if ( feat.properties[vectorjoin.targetFieldName] != jFeat.properties[vectorjoin.joinFieldName] )
-                            delete features[fid];
-                    }
-                }
-            }
-        }
-        // create the option list
-        const placeHolder = config.layers[aName].title;
-        var options = '<option value="-1" label="'+placeHolder+'"></option>';
-        for (var fid in features) {
-            var feat = features[fid];
-            options += '<option value="' + feat.id + '">' + DOMPurify.sanitize(feat.properties[locate.fieldName]) + '</option>';
-        }
-        // add option list
-        $('#locate-layer-'+cleanName(aName)).html(options);
-    }
-
-    /**
      *
      * @param layer_name
      */
@@ -837,401 +783,6 @@ window.lizMap = function() {
             return;
         }
         layer[0].destroyFeatures();
-    }
-
-    /**
-     * Zoom to locate feature
-     * @param aName
-     */
-    function zoomToLocateFeature(aName) {
-        // clear highlight layer
-        lizMap.mainLizmap.map.clearHighlightFeatures();
-
-        // get locate by layer val
-        var locate = config.locateByLayer[aName];
-        var layerName = cleanName(aName);
-        var proj = new OpenLayers.Projection(locate.crs);
-        var val = $('#locate-layer-'+layerName).val();
-        if (val == '-1') {
-
-            // Trigger event
-            lizMap.events.triggerEvent('lizmaplocatefeaturecanceled',
-                {
-                    'featureType': aName
-                }
-            );
-        } else {
-            // zoom to val
-            var feat = locate.features[val];
-            var format = new OpenLayers.Format.GeoJSON({
-                ignoreExtraDims: true
-            });
-            feat = format.read(feat)[0];
-
-            if( feat.geometry != null){
-                feat.geometry.transform(proj, map.getProjection());
-                // Show geometry if asked
-                if (locate.displayGeom == 'True') {
-                    var getFeatureUrlData = getVectorLayerWfsUrl( aName, null, null, null );
-                    getFeatureUrlData['options']['PROPERTYNAME'] = ['geometry',locate.fieldName].join(',');
-                    getFeatureUrlData['options']['FEATUREID'] = val;
-                    // Get data
-                    $.post( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
-                        if ( !data.features ){
-                            data = JSON.parse(data);
-                        }
-                        lizMap.mainLizmap.map.setHighlightFeatures(data.features[0], "geojson");
-                    }).fail(function(){
-                        lizMap.mainLizmap.map.setHighlightFeatures(feat, "geojson");
-                    });
-                }
-                // zoom to extent
-                map.zoomToExtent(feat.geometry.getBounds());
-            }
-
-            var fid = val.split('.')[1];
-
-            // Trigger event
-            lizMap.events.triggerEvent('lizmaplocatefeaturechanged',
-                {
-                    'featureType': aName,
-                    'featureId': fid
-                }
-            );
-        }
-    }
-
-    /**
-     * Get features for locate by layer tool
-     * @param aName
-     */
-    function getLocateFeature(aName) {
-        var locate = config.locateByLayer[aName];
-
-        // get fields to retrieve
-        var fields = ['geometry',locate.fieldName];
-        // if a filter field is defined
-        if ('filterFieldName' in locate)
-            fields.push( locate.filterFieldName );
-        // check for join fields
-        if ( 'filterjoins' in locate ) {
-            var filterjoins = locate.filterjoins;
-            for ( var i=0, len=filterjoins.length; i<len; i++) {
-                var filterjoin = filterjoins[i];
-                fields.push( filterjoin.targetFieldName );
-            }
-        }
-        if ( 'vectorjoins' in locate ) {
-            var vectorjoins = locate.vectorjoins;
-            for ( var i=0, len=vectorjoins.length; i<len; i++) {
-                var vectorjoin = vectorjoins[i];
-                fields.push( vectorjoin.targetFieldName );
-            }
-        }
-
-        // Get WFS url and options
-        var getFeatureUrlData = getVectorLayerWfsUrl( aName, null, null, 'extent' );
-        getFeatureUrlData['options']['PROPERTYNAME'] = fields.join(',');
-
-        var layerName = cleanName(aName);
-
-        // Get data
-        $.post( getFeatureUrlData['url'], getFeatureUrlData['options'], function(data) {
-            var lConfig = config.layers[aName];
-            locate['features'] = {};
-            if ( !data.features )
-                data = JSON.parse(data);
-            var features = data.features;
-            if( locate.crs != 'EPSG:4326' && features.length != 0) {
-                // load projection to be sure to have the definition
-                loadProjDefinition( locate.crs, function() {
-                    locate.crs = 'EPSG:4326';
-                });
-            }
-
-            if ('filterFieldName' in locate) {
-                // create filter combobox for the layer
-                features.sort(function(a, b) {
-                    var aProperty = a.properties[locate.filterFieldName];
-                    var bProperty = b.properties[locate.filterFieldName];
-                    if (isNaN(aProperty)) {
-                        if (isNaN(bProperty)) {  // a and b are strings
-                            return aProperty.localeCompare(bProperty);
-                        } else {         // a string and b number
-                            return 1;  // a > b
-                        }
-                    } else {
-                        if (isNaN(bProperty)) {  // a number and b string
-                            return -1;  // a < b
-                        } else {         // a and b are numbers
-                            return parseFloat(aProperty) - parseFloat(bProperty);
-                        }
-                    }
-                });
-                var filterPlaceHolder = '';
-                if ( 'filterFieldAlias' in locate && locate.filterFieldAlias!='')
-                    filterPlaceHolder += locate.filterFieldAlias+' ';
-                else
-                    filterPlaceHolder += locate.filterFieldName;
-                filterPlaceHolder +=' ('+ lConfig.title + ')';
-                var fOptions = '<option value="-1"></option>';
-                var fValue = '-1';
-                for (var i=0, len=features.length; i<len; i++) {
-                    var feat = features[i];
-                    if ( fValue != feat.properties[locate.filterFieldName] ) {
-                        fValue = feat.properties[locate.filterFieldName];
-                        fOptions += '<option value="'+fValue+'">'+fValue+'</option>';
-                    }
-                }
-
-
-                // add filter values list
-                $('#locate-layer-'+layerName).parent().before('<div class="locate-layer"><select id="locate-layer-'+layerName+'-'+locate.filterFieldName+'">'+fOptions+'</select></div><br/>');
-                // listen to filter select changes
-                $('#locate-layer-'+layerName+'-'+locate.filterFieldName).change(function(){
-                    var filterValue = $(this).children(':selected').val();
-                    updateLocateFeatureList( aName );
-                    if (filterValue == '-1')
-                        $('#locate-layer-'+layerName+'-'+locate.filterFieldName+' ~ span > input').val('');
-                    $('#locate-layer-'+layerName+' ~ span > input').val('');
-                    $('#locate-layer-'+layerName).val('-1');
-                    zoomToLocateFeature(aName);
-                });
-                // add combobox to the filter select
-                $('#locate-layer-'+layerName+'-'+locate.filterFieldName).combobox({
-                    position: { my : "right top", at: "right bottom" },
-                    "selected": function(evt, ui){
-                        if ( ui.item ) {
-                            var self = $(this);
-                            var uiItem = $(ui.item);
-                            window.setTimeout(function(){
-                                self.val(uiItem.val()).change();
-                            }, 1);
-                        }
-                    }
-                });
-
-                // add place holder to the filter combobox input
-                $('#locate-layer-'+layerName+'-'+locate.filterFieldName+' ~ span > input').attr('placeholder', filterPlaceHolder).val('');
-                $('#locate-layer-'+layerName+'-'+locate.filterFieldName+' ~ span > input').autocomplete('close');
-            }
-
-            // create combobox for the layer
-            features.sort(function(a, b) {
-                var aProperty = a.properties[locate.fieldName];
-                var bProperty = b.properties[locate.fieldName];
-                if (isNaN(aProperty)) {
-                    if (isNaN(bProperty)) {  // a and b are strings
-                        return aProperty.localeCompare(bProperty);
-                    } else {         // a string and b number
-                        return 1;  // a > b
-                    }
-                } else {
-                    if (isNaN(bProperty)) {  // a number and b string
-                        return -1;  // a < b
-                    } else {         // a and b are numbers
-                        return parseFloat(aProperty) - parseFloat(bProperty);
-                    }
-                }
-            });
-            var placeHolder = '';
-            if ('filterFieldName' in locate) {
-                if ( 'fieldAlias' in locate && locate.fieldAlias!='' )
-                    placeHolder += locate.fieldAlias+' ';
-                else
-                    placeHolder += locate.fieldName+' ';
-                placeHolder += '('+lConfig.title+')';
-            } else {
-                placeHolder = lConfig.title;
-            }
-            var options = '<option value="-1"></option>';
-            for (var i=0, len=features.length; i<len; i++) {
-                var feat = features[i];
-                locate.features[feat.id.toString()] = feat;
-                if ( !('filterFieldName' in locate) )
-                    options += '<option value="' + feat.id + '">' + DOMPurify.sanitize(feat.properties[locate.fieldName]) + '</option>';
-            }
-            // listen to select changes
-            $('#locate-layer-'+layerName).html(options).change(function() {
-                var val = $(this).children(':selected').val();
-                if (val == '-1') {
-                    $('#locate-layer-'+layerName+' ~ span > input').val('');
-                    // update to join layer
-                    if ( 'filterjoins' in locate && locate.filterjoins.length != 0 ) {
-                        var filterjoins = locate.filterjoins;
-                        for (var i=0, len=filterjoins.length; i<len; i++) {
-                            var filterjoin = filterjoins[i];
-                            var jName = filterjoin.joinLayer;
-                            if ( jName in config.locateByLayer ) {
-                                // update joined select options
-                                var oldVal = $('#locate-layer-'+cleanName(jName)).val();
-                                updateLocateFeatureList( jName );
-                                $('#locate-layer-'+cleanName(jName)).val( oldVal );
-                                return;
-                            }
-                        }
-                    }
-                    // zoom to parent selection
-                    if ( 'vectorjoins' in locate && locate.vectorjoins.length == 1 ) {
-                        var jName = locate.vectorjoins[0].joinLayer;
-                        if ( jName in config.locateByLayer ) {
-                            zoomToLocateFeature( jName );
-                            return;
-                        }
-                    }
-                    // clear the map
-                    zoomToLocateFeature( aName );
-                } else {
-                    // zoom to val
-                    zoomToLocateFeature( aName );
-                    // update joined layer
-                    if ( 'filterjoins' in locate && locate.filterjoins.length != 0 ) {
-                        var filterjoins = locate.filterjoins;
-                        for (var i=0, len=filterjoins.length; i<len; i++) {
-                            var filterjoin = filterjoins[i];
-                            var jName = filterjoin.joinLayer;
-                            if ( jName in config.locateByLayer ) {
-                                // update joined select options
-                                updateLocateFeatureList( jName );
-                                $('#locate-layer-'+cleanName(jName)).val('-1');
-                                $('#locate-layer-'+cleanName(jName)+' ~ span > input').val('');
-                            }
-                        }
-                    }
-                }
-                $(this).blur();
-                return;
-            });
-            $('#locate-layer-'+layerName).combobox({
-                "minLength": ('minLength' in locate) ? locate.minLength : 0,
-                "position": { my : "right top", at: "right bottom" },
-                "selected": function(evt, ui){
-                    if ( ui.item ) {
-                        var self = $(this);
-                        var uiItem = $(ui.item);
-                        window.setTimeout(function(){
-                            self.val(uiItem.val()).change();
-                        }, 1);
-                    }
-                }
-            });
-            $('#locate-layer-'+layerName+' ~ span > input').attr('placeholder', placeHolder).val('');
-            $('#locate-layer-'+layerName+' option[value=-1]').attr('label', placeHolder);
-            $('#locate-layer-'+layerName+' ~ span > input').autocomplete('close');
-            if ( ('minLength' in locate) && locate.minLength > 0 )
-                $('#locate-layer-'+layerName).parent().addClass('no-toggle');
-            if(mCheckMobile()){
-                // autocompletion items for locatebylayer feature
-                $('div.locate-layer select').show();
-                $('span.custom-combobox').hide();
-            }
-        },'json');
-    }
-
-    function addLocateByLayer(){
-        var locateByLayerList = [];
-        for (var lname in config.locateByLayer) {
-            if ('order' in config.locateByLayer[lname])
-                locateByLayerList[config.locateByLayer[lname].order] = lname;
-            else
-                locateByLayerList.push(lname);
-        }
-        var locateContent = [];
-        for (var l in locateByLayerList) {
-            var lname = locateByLayerList[l];
-            var lConfig = config.layers[lname];
-            var html = '<div class="locate-layer">';
-            html += '<select id="locate-layer-' + cleanName(lname) + '" class="label">';
-            html += '<option>' + lConfig.title + '...</option>';
-            html += '</select>';
-            html += '</div>';
-            //constructing the select
-            locateContent.push(html);
-        }
-        $('#locate .menu-content').html(locateContent.join('<hr/>'));
-
-        var featureTypes = lizMap.mainLizmap.initialConfig.vectorLayerFeatureTypeList;
-        if (featureTypes.length == 0) {
-            config.locateByLayer = {};
-            $('#button-locate').parent().remove();
-            $('#locate-menu').remove();
-        } else {
-            for (const featureType of featureTypes) {
-                var typeName = featureType.Name;
-                var lname = lizMap.getNameByTypeName(typeName);
-                if (!lname) {
-                    if (typeName in config.locateByLayer)
-                        lname = typeName
-                    else if ((typeName in shortNameMap) && (shortNameMap[typeName] in config.locateByLayer))
-                        lname = shortNameMap[typeName];
-                    else {
-                        for (var lbl in config.locateByLayer) {
-                            if (lbl.split(' ').join('_') == typeName) {
-                                lname = lbl;
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                if (!(lname in config.locateByLayer))
-                    continue;
-
-                var locate = config.locateByLayer[lname];
-                locate['crs'] = featureType.SRS;
-                loadProjDefinition(locate.crs, function () {
-                    new OpenLayers.Projection(locate.crs);
-                });
-                locate['bbox'] = featureType.LatLongBoundingBox;
-            }
-
-            // get joins
-            for (var lName in config.locateByLayer) {
-                var locate = config.locateByLayer[lName];
-                if ('vectorjoins' in locate && locate['vectorjoins'].length != 0) {
-                    var vectorjoin = locate['vectorjoins'][0];
-                    locate['joinFieldName'] = vectorjoin['targetFieldName'];
-                    for (var jName in config.locateByLayer) {
-                        var jLocate = config.locateByLayer[jName];
-                        if (jLocate.layerId == vectorjoin.joinLayerId) {
-                            vectorjoin['joinLayer'] = jName;
-                            locate['joinLayer'] = jName;
-                            jLocate['joinFieldName'] = vectorjoin['joinFieldName'];
-                            jLocate['joinLayer'] = lName;
-                            jLocate['filterjoins'] = [{
-                                'targetFieldName': vectorjoin['joinFieldName'],
-                                'joinFieldName': vectorjoin['targetFieldName'],
-                                'joinLayerId': locate.layerId,
-                                'joinLayer': lName
-                            }];
-                        }
-                    }
-                }
-            }
-
-            // get locate by layers features
-            for (var lname in config.locateByLayer) {
-                getLocateFeature(lname);
-            }
-            $('.btn-locate-clear').click(function () {
-                lizMap.mainLizmap.map.clearHighlightFeatures();
-                $('#locate select').val('-1');
-                $('div.locate-layer span > input').val('');
-
-                if (lizMap.lizmapLayerFilterActive) {
-                    lizMap.events.triggerEvent('lizmaplocatefeaturecanceled',
-                        { 'featureType': lizMap.lizmapLayerFilterActive }
-                    );
-                }
-                return false;
-
-            });
-            $('#locate-close').click(function () {
-                $('.btn-locate-clear').click(); // deactivate locate and filter
-                document.getElementById('button-locate')?.click();
-                return false;
-            });
-        }
     }
 
     /**
@@ -2718,37 +2269,6 @@ window.lizMap = function() {
                 },'json');
             }
         });
-
-        // $.post( getFeatureUrlData['url'], getFeatureUrlData['options'], function(incomingData) {
-        //     const data = DOMPurify.sanitize(incomingData);
-
-        //     aConfig['featureCrs'] = 'EPSG:4326';
-
-        //     if (aConfig?.['alias'] && aConfig?.['types']) {
-        //         callFeatureDataCallBacks(poolId, data.features);
-        //         $('body').css('cursor', 'auto');
-        //     } else {
-        //         $.post(globalThis['lizUrls'].service, {
-        //             'SERVICE':'WFS'
-        //             ,'VERSION':'1.0.0'
-        //             ,'REQUEST':'DescribeFeatureType'
-        //             ,'TYPENAME': ('typename' in aConfig) ? aConfig.typename : aName
-        //             ,'OUTPUTFORMAT':'JSON'
-        //         }, function(describe) {
-
-        //             aConfig['alias'] = describe.aliases;
-        //             aConfig['types'] = describe.types;
-        //             aConfig['columns'] = describe.columns;
-
-        //             callFeatureDataCallBacks(poolId, data.features);
-
-        //             $('body').css('cursor', 'auto');
-
-        //         },'json');
-        //     }
-
-        // },'json');
-
         return true;
     }
 
@@ -2758,8 +2278,7 @@ window.lizMap = function() {
      * @param proj
      * @param zoomAction
      */
-    function zoomToOlFeature( feature, proj, zoomAction ){
-        zoomAction = typeof zoomAction !== 'undefined' ?  zoomAction : 'zoom';
+    function zoomToOlFeature( feature, proj, zoomAction = 'action' ){
         var format = new OpenLayers.Format.GeoJSON({
             ignoreExtraDims: true
         });
@@ -2768,11 +2287,11 @@ window.lizMap = function() {
             feat.geometry.transform( proj, lizMap.map.getProjection() );
 
             // Zoom or center to selected feature
-            if( zoomAction == 'zoom' )
-                map.zoomToExtent(feat.geometry.getBounds());
-            if( zoomAction == 'center' ){
-                var lonlat = feat.geometry.getBounds().getCenterLonLat()
-                map.setCenter(lonlat);
+            if( zoomAction == 'zoom' ){
+                lizMap.mainLizmap.map.zoomToGeometryOrExtent(feat.geometry.getBounds().toArray());
+            } else if( zoomAction == 'center' ){
+                const lonlat = feat.geometry.getBounds().getCenterLonLat();
+                lizMap.mainLizmap.map.getView().setCenter([lonlat.lon, lonlat.lat]);
             }
         }
     }
@@ -2783,9 +2302,7 @@ window.lizMap = function() {
      * @param fid
      * @param zoomAction
      */
-    function zoomToFeature( featureType, fid, zoomAction ){
-        zoomAction = typeof zoomAction !== 'undefined' ?  zoomAction : 'zoom';
-
+    function zoomToFeature( featureType, fid, zoomAction = 'zoom' ){
         getLayerFeature(featureType, fid, function(feat) {
             var proj = new OpenLayers.Projection(config.layers[featureType].crs);
             if( config.layers[featureType].featureCrs )
@@ -2875,10 +2392,6 @@ window.lizMap = function() {
         // Only use when feat is set
         if( !feat )
             return false;
-
-        // Remove map popup to avoid confusion
-        if (lizMap.map.popups.length != 0)
-            lizMap.map.removePopup( lizMap.map.popups[0] );
 
         // Get popup content by FILTER and not with virtual click on map
         var filter = '';
@@ -3838,10 +3351,6 @@ window.lizMap = function() {
                     }));
                 }
 
-                if ('locateByLayer' in config) {
-                    addLocateByLayer();
-                }
-
                 /**
                  * Event when layers have been added
                  * @event layersadded
@@ -3916,15 +3425,6 @@ window.lizMap = function() {
 
                     return false;
                 });
-
-                // Show locate by layer
-                const locateBtn = document.getElementById('button-locate');
-                if (!('locateByLayer' in config)){
-                    locateBtn?.parentNode.classList.add('hide');
-                }
-                else {
-                    locateBtn?.click();
-                }
 
                 // hide mini-dock if no tool is active
                 if ($('#mapmenu ul li.nav-minidock.active').length == 0) {

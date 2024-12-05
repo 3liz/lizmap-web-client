@@ -29,6 +29,8 @@ const optionalProperties = {
     'wmsMaxHeight': {type: 'number', default: 3000},
     'wmsMaxWidth': {type: 'number', default: 3000},
     'fixed_scale_overview_map': {type: 'boolean', default: true},
+    'max_scale_points': {type: 'number', default: 5000},
+    'max_scale_lines_polygons': {type: 'number', default: 5000},
     'use_native_zoom_levels': {type: 'boolean', nullable: true, default: null},
     'hide_numeric_scale_value': {type: 'boolean', default: false},
     'hideGroupCheckbox': { type: 'boolean', default: false },
@@ -62,6 +64,8 @@ export class OptionsConfig  extends BaseObjectConfig {
      * @param {number}   [cfg.wmsMaxHeight]                       - the image max height for WMS GetMap request
      * @param {number}   [cfg.wmsMaxWidth]                        - the image max width for WMS GetMap request
      * @param {boolean}  [cfg.fixed_scale_overview_map]           - does the Overview map have fixed scale ?
+     * @param {number}   [cfg.max_scale_points]                   - maximum scale when zooming on points
+     * @param {boolean}  [cfg.max_scale_lines_polygons]           - maximum scale when zooming on lines or polygons
      * @param {boolean}  [cfg.use_native_zoom_levels]             - does the map use native zoom levels ?
      * @param {boolean}  [cfg.hide_numeric_scale_value]           - does the scale line hide numeric scale value ?
      * @param {boolean}  [cfg.hideGroupCheckbox]                  - are groups checkbox hidden ?
@@ -205,6 +209,22 @@ export class OptionsConfig  extends BaseObjectConfig {
      */
     get fixed_scale_overview_map() {
         return this._fixed_scale_overview_map;
+    }
+
+    /**
+     * Maximum scale when zooming on points
+     * @type {boolean}
+     */
+    get max_scale_points() {
+        return this._max_scale_points;
+    }
+
+    /**
+     * Maximum scale when zooming on lines or polygons
+     * @type {boolean}
+     */
+    get max_scale_lines_polygons() {
+        return this._max_scale_lines_polygons;
     }
 
     /**
