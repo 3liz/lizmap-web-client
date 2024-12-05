@@ -416,7 +416,7 @@ var lizLayerFilterTool = function () {
                         if (!globalThis['filterConfigData'].filter) {
                             sdata.filter = autocompleteFilter;
                         } else {
-                            sdata.filter = globalThis['filterConfigData'].filter + ' AND ' + autocompleteFilter;
+                            sdata.filter = ' ( ' + globalThis['filterConfigData'].filter + ' ) AND ' + autocompleteFilter;
                         }
                         fetch(globalThis['filterConfigData'].url, {
                             method: "POST",
