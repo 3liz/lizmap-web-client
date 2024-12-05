@@ -92,7 +92,12 @@ class QgisProjectForTests extends QgisProject
         return $this->setLayerOpacity($cfg);
     }
 
-    public function setXml($xml)
+    public function getXmlForTest()
+    {
+        return $this->getXml();
+    }
+
+    public function setXmlForTest($xml)
     {
         $this->xml = $xml;
     }
