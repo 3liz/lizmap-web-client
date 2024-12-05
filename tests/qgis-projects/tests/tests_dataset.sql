@@ -3408,6 +3408,8 @@ COPY tests_projects.form_edition_vr_point (id, code_without_exp, code_with_simpl
 COPY tests_projects.form_filter (id, label, geom) FROM stdin;
 1	simple label	01010000206A080000ABDA509923FA8340CA9A3B72843672C0
 2	Œuvres d'art et monuments de l'espace urbain	01010000206A0800000000000000B0844000000000004885C0
+3	monuments	01010000206A080000BC144539B49A9040D88E7FA8F0C072C0
+4	monuments 2	01010000206A080000BA9926EC46DC9140DD5B3AA4A0AD80C0
 \.
 
 
@@ -4123,7 +4125,7 @@ SELECT pg_catalog.setval('tests_projects.form_filter_child_bus_stops_id_seq', 5,
 -- Name: form_filter_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
 --
 
-SELECT pg_catalog.setval('tests_projects.form_filter_id_seq', 2, true);
+SELECT pg_catalog.setval('tests_projects.form_filter_id_seq', 4, true);
 
 
 --
@@ -5050,3 +5052,4 @@ ALTER TABLE ONLY tests_projects.tramway_pivot
 --
 -- PostgreSQL database dump complete
 --
+
