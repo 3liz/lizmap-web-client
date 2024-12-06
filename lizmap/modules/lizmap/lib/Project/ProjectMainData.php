@@ -547,13 +547,13 @@ class ProjectMainData
         );
 
         $qgisCachedData = $cachedData['qgis']['data'];
-        if (array_key_exists('title', $qgisCachedData)) {
+        if (array_key_exists('title', $qgisCachedData) && !is_null($qgisCachedData['title'])) {
             $data['title'] = $qgisCachedData['title'];
         }
-        if (array_key_exists('abstract', $qgisCachedData)) {
+        if (array_key_exists('abstract', $qgisCachedData) && !is_null($qgisCachedData['abstract'])) {
             $data['abstract'] = $qgisCachedData['abstract'];
         }
-        if (array_key_exists('keywordList', $qgisCachedData)) {
+        if (array_key_exists('keywordList', $qgisCachedData) && !is_null($qgisCachedData['keywordList'])) {
             $data['keywordList'] = $qgisCachedData['keywordList'];
         }
 
