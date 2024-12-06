@@ -68,7 +68,7 @@ FILES=lib lizmap CONTRIBUTING.md icon.png INSTALL.md license.txt README.md UPGRA
 FORBIDDEN_CONFIG_FILES := installer.ini.php liveconfig.ini.php localframework.ini.php lizmapConfig.ini.php localconfig.ini.php profiles.ini.php
 EMPTY_DIRS := var/db var/log var/mails var/uploads var/sessions
 
-.PHONY: debug build tests clean check-release check-registry check-factory stage package deploy_download deploy_download_stable saas_package saas_release
+.PHONY: debug build tests clean check-release check-registry stage package deploy_download deploy_download_stable saas_package saas_release
 .PHONY: docker-build docker-build-ci docker-tag docker-deliver docker-clean docker-clean-all docker-release docker-hub docker-run
 
 debug:
@@ -221,7 +221,7 @@ docker-clean:
 docker-clean-all:
 	docker rmi -f $(shell docker images $(DOCKER_BUILDIMAGE) -q) || true
 
-docker-release: check-factory
+docker-release: 
 	cd docker && release-image $(DOCKER_RELEASE_PACKAGE_NAME)
 	cd docker && push-to-docker-hub --clean
 
