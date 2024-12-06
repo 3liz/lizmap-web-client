@@ -1,6 +1,5 @@
 #
 # expected variables in the CI environment
-# - FACTORY_SCRIPTS = path to scripts of the factory
 # - REGISTRY_URL = url of the docker registry
 
 STAGE=build
@@ -172,11 +171,6 @@ ifndef REGISTRY_URL
 	$(error REGISTRY_URL is undefined)
 endif
 
-check-factory:
-ifndef FACTORY_SCRIPTS
-	$(error FACTORY_SCRIPTS is undefined)
-endif
-
 stage: $(DIST)
 
 ci_package: $(ZIP_PACKAGE) $(GENERIC_PACKAGE_PATH) $(ZIP_DEMO_PACKAGE)
@@ -228,11 +222,11 @@ docker-clean-all:
 	docker rmi -f $(shell docker images $(DOCKER_BUILDIMAGE) -q) || true
 
 docker-release: check-factory
-	cd docker && $(FACTORY_SCRIPTS)/release-image.sh $(DOCKER_RELEASE_PACKAGE_NAME)
-	cd docker && $(FACTORY_SCRIPTS)/push-to-docker-hub.sh --clean
+	cd docker && release-image $(DOCKER_RELEASE_PACKAGE_NAME)
+	cd docker && push-to-docker-hub --clean
 
 docker-hub:
-	cd docker && $(FACTORY_SCRIPTS)/push-to-docker-hub.sh --clean
+	cd docker && push-to-docker-hub --clean
 
 php-cs-fixer-test:
 	php-cs-fixer fix --config=.php-cs-fixer.dist.php --allow-risky=yes --dry-run --diff
