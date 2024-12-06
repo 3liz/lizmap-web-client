@@ -21,6 +21,13 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Import and export drawings as [FlatGeobuf](https://flatgeobuf.org/)
 * Form filter: filter autocomplete list based on previous applied filters
 * Be able to set a maximum zoom for points, lines or polygons when zooming
+* New import Shapefile into the drawing toolbox
+* JS External OpenLayers Layer: defined custom title
+* Adding Open Layers format for reading WFS capabilities data
+
+### Changed
+
+* Changed HTML layout due to migration to Bootstrap 5
 
 ### Backend
 
