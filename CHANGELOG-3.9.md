@@ -8,9 +8,21 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Funders
+
+* **[CC Bièvre Est](https://www.bievre-est.fr/)**
+* **[Etra](https://www.etraspa.it/)**, and developed by **[Faunalia](https://www.faunalia.eu/fr)** with @mind84
+* **[Golfe du Morbihan Vannes agglomération](https://www.golfedumorbihan-vannesagglomeration.bzh/)**
+* **[VSB Energy](https://www.vsb.energy/)**
+
 ### Added
+
+* Circular geometry measurement on draw
+* Import and export drawings as [FlatGeobuf](https://flatgeobuf.org/)
+* Form filter: filter autocomplete list based on previous applied filters
+* Be able to set a maximum zoom for points, lines or polygons when zooming
 
 ### Backend
 
 * Expose more OpenLayers and lit classes
-* Update to Bootstrap 5
+* Reduce `mainLizmap` dependencies in all JavaScript code
