@@ -24,7 +24,7 @@ import { Vector as VectorLayer } from 'ol/layer.js';
 import { Feature } from 'ol';
 
 import { Point, LineString, Polygon, Circle as CircleGeom, MultiPoint, GeometryCollection } from 'ol/geom.js';
-import { circular } from 'ol/geom/Polygon.js';
+import { circular, fromCircle } from 'ol/geom/Polygon.js';
 
 import { getArea, getLength } from 'ol/sphere.js';
 import Overlay from 'ol/Overlay.js';
@@ -480,11 +480,7 @@ export class Digitizing {
                     geom.set('totalOverlay', Array.from(this._measureTooltips).pop()[1], true);
                     geom.on('change', (e) => {
                         const geom = e.target;
-                        if (geom instanceof Polygon) {
-                            this._updateTotalMeasureTooltip(geom.getCoordinates()[0], geom, 'Polygon', geom.get('totalOverlay'));
-                        } else if (geom instanceof LineString) {
-                            this._updateTotalMeasureTooltip(geom.getCoordinates(), geom, 'Linestring', geom.get('totalOverlay'));
-                        }
+                        this._setTooltipContentByGeom(geom);
                     });
 
                     this._constraintLayer.setVisible(false);
@@ -809,7 +805,10 @@ export class Digitizing {
 
         // Total length for LineStrings
         // Perimeter and area for Polygons
-        if (coords.length > 2) {
+        // Radius and area for Circles
+        if(geomType == 'Circle') {
+            this._updateTotalMeasureTooltip(coords, geom, geomType, Array.from(this._measureTooltips).pop()[1]);
+        } else if (coords.length > 2) {
             this._updateTotalMeasureTooltip(coords, geom, geomType, Array.from(this._measureTooltips).pop()[1]);
 
             // Display angle ABC between three points. B is center
@@ -830,8 +829,8 @@ export class Digitizing {
             segmentTooltipContent += '<br>' + angleInDegrees + '°';
         }
 
-        // Display current segment measure only when drawing lines, polygons or circles
-        if (['line', 'polygon', 'circle'].includes(this.toolSelected)) {
+        // Display current segment measure only when drawing lines or polygons
+        if (['line', 'polygon'].includes(this.toolSelected)) {
             this._segmentMeasureTooltipElement.innerHTML = segmentTooltipContent;
             Array.from(this._measureTooltips).pop()[0].setPosition(geom.getLastCoordinate());
         }
@@ -847,7 +846,16 @@ export class Digitizing {
 
             overlay.getElement().innerHTML = totalTooltipContent;
             overlay.setPosition(geom.getInteriorPoint().getCoordinates());
-        } else {
+        } else if(geomType == 'Circle') {
+            // get polygon from circular geometry by approximating the circle with a 128-sided polygon
+            let circularGeom = fromCircle(geom,128);
+            let totalTooltipContent = this.formatLength(new LineString([coords[0], coords[1]]));
+            totalTooltipContent += '<br>' + this.formatArea(circularGeom);
+
+            overlay.getElement().innerHTML = totalTooltipContent;
+            overlay.setPosition(circularGeom.getInteriorPoint().getCoordinates());
+        }
+        else {
             overlay.getElement().innerHTML = this.formatLength(geom);
             overlay.setPosition(geom.getCoordinateAt(0.5));
         }
@@ -883,6 +891,43 @@ export class Digitizing {
             output = Math.round(area * 100) / 100 + ' ' + 'm<sup>2</sup>';
         }
         return output;
+    }
+
+    /**
+     * Initializes measure tooltip and change event on a feature loaded from local storage.
+     * @param {Geometry} geom The geometry.
+     */
+    _initMeasureTooltipOnLoadedFeatures(geom){
+        // create overlays
+        this.createMeasureTooltips();
+
+        geom.set('totalOverlay', Array.from(this._measureTooltips).pop()[1], true);
+        // calculate measures
+        this._setTooltipContentByGeom(geom);
+        geom.on('change', (e) => {
+            const geom = e.target;
+            this._setTooltipContentByGeom(geom);
+        });
+        // make measure tooltip static and hidden
+        this._totalMeasureTooltipElement.className = 'ol-tooltip ol-tooltip-static';
+        this._totalMeasureTooltipElement.classList.toggle('hide', !this._hasMeasureVisible);
+
+        // reset measureTooltip element
+        this._totalMeasureTooltipElement = null;
+    }
+
+    /**
+     * Calculates measuements for a specific geometry.
+     * @param {Geometry} geom The geometry.
+     */
+    _setTooltipContentByGeom(geom){
+        if (geom instanceof Polygon) {
+            this._updateTotalMeasureTooltip(geom.getCoordinates()[0], geom, 'Polygon', geom.get('totalOverlay'));
+        } else if (geom instanceof LineString) {
+            this._updateTotalMeasureTooltip(geom.getCoordinates(), geom, 'Linestring', geom.get('totalOverlay'));
+        } else if ( geom instanceof CircleGeom) {
+            this._updateTotalMeasureTooltip([geom.getFirstCoordinate(), geom.getLastCoordinate()], geom, 'Circle', geom.get('totalOverlay'));
+        }
     }
 
     /**
@@ -1100,6 +1145,8 @@ export class Digitizing {
 
                     if(loadedGeom){
                         const loadedFeature = new Feature(loadedGeom);
+                        // init measure tooltip
+                        this._initMeasureTooltipOnLoadedFeatures(loadedFeature.getGeometry());
                         loadedFeature.set('color', feature.color);
                         loadedFeatures.push(loadedFeature);
                     }
@@ -1114,6 +1161,8 @@ export class Digitizing {
                     console.log(loadedFeatures.length+' features read from WKT!');
                     // set color
                     for(const loadedFeature of loadedFeatures){
+                        // init measure tooltip
+                        this._initMeasureTooltipOnLoadedFeatures(loadedFeature.getGeometry());
                         loadedFeature.set('color', this._drawColor);
                     }
                     // No features read from localStorage so remove the data
