@@ -6,6 +6,8 @@
  */
 
 import DOMPurify from 'dompurify';
+import GeoJSON from 'ol/format/GeoJSON.js';
+import { getCenter } from 'ol/extent.js';
 
 (function () {
 
@@ -531,26 +533,18 @@ import DOMPurify from 'dompurify';
              * @param feature
              */
             function runAtlasItem(feature) {
-
-                // Use OL tools to reproject feature geometry
-                var format = new OpenLayers.Format.GeoJSON({
-                    ignoreExtraDims: true
-                });
-                var feat = format.read(feature)[0];
-                var f = feat.clone();
-                var proj = lizMap.config.layers[lizAtlasConfig.layername]['featureCrs'];
-                f.geometry.transform(proj, lizMap.map.getProjection());
+                const olFeature = (new GeoJSON()).readFeature(feature);
 
                 // Zoom to feature
                 if (lizAtlasConfig['zoom']) {
                     if (lizAtlasConfig['zoom'].toLowerCase() == 'center') {
                         // center
-                        var lonlat = f.geometry.getBounds().getCenterLonLat();
-                        lizMap.map.setCenter(lonlat);
+                        const center = getCenter(olFeature.getGeometry().getExtent());
+                        lizMap.map.setCenter(center);
                     }
                     else {
                         // zoom
-                        lizMap.map.zoomToExtent(f.geometry.getBounds());
+                        lizMap.mainLizmap.map.zoomToGeometryOrExtent(olFeature.getGeometry());
                     }
                 }
 
