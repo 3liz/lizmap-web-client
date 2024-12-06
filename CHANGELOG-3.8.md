@@ -8,6 +8,38 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Funders
+
+* Contributions on source code from @erw-1
+* **[Conseil Départemental du Calvados](https://www.calvados.fr)**
+* **[Faunalia](https://www.faunalia.eu/fr)**, contributions on source code from @mind84
+* **[Haute-Saône Numérique](https://www.hautesaonenumerique.fr)**
+* **[Keolis Rennes](https://www.keolis-rennes.com)**
+* **[Le Grand Narbonne](https://www.legrandnarbonne.com/)**
+
+### Added
+
+* Popup - Add layer ID and feature ID as data attributes in the HTML
+* `lizmap-features-table` component - Use a table with additional columns from fields
+
+### Fixed
+
+* Fix CSS : hide only adjacent non-popup-displayed table items, contribution on the source code from @erw-1
+* Tail admin logs to always display data
+* In case of HTTP request error, log it into the admin logs
+  * It's easier to debug and see OGC requests to QGIS server
+* Remove the print overlay when some dialogs are opened
+* Speed up the landing page loading with a lazy loading of each QGIS projects
+* Feature toolbar: child layer is pivot
+* Put highlight layer in tools layer group
+* Include layer opacity info for embedded layers
+* JS State Symbology : checking `ruleKey` for WMS parameters
+* `<lizmap-features-table>` : lower case `sortingOrder` and `draggable` attribute values
+
+### Deprecated
+
+* To get layer ID and feature ID in a JavaScript code, use data-attributes, instead of the legacy `<input class="lizmap-popup-layer-feature-id">`
+
 ## 3.8.3 - 2024-11-08
 
 ### Funders
