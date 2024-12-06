@@ -8,6 +8,14 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Fixed
+
+* Tail admin logs to always display data
+* In case of HTTP request error, log it into the admin logs
+  * It's easier to debug and see OGC requests to QGIS server
+* Remove the print overlay when some dialogs are opened
+* Speed up the landing page loading with a lazy loading of each QGIS projects
+
 ## 3.7.12 - 2024-11-07
 
 ### Funders
