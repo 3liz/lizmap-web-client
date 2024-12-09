@@ -1161,7 +1161,7 @@ class editionCtrl extends jController
                 $feature = $this->featureData->features[0];
                 $rs = $qgisForm->deleteFromDb($feature, $cnx);
 
-                if ($rs) {
+                if ($rs !== false) {
                     jMessage::add(jLocale::get('view~edition.message.success.delete'), 'success');
                     $eventParams['deleteFiles'] = $deleteFiles;
                     $eventParams['success'] = true;
