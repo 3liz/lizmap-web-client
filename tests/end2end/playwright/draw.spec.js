@@ -281,6 +281,26 @@ test.describe('Draw', () => {
         expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toBeNull();
     });
 
+    test('Circular geometry measure', async ({ page }) => {
+        await page.locator('#draw button.dropdown-toggle:nth-child(2)').click();
+        await page.locator('.digitizing-circle > svg').click();
+        await page.locator('#newOlMap').click({
+            position: {
+                x: 450,
+                y: 75
+            }
+        });
+        await page.locator('#newOlMap').click({
+            position: {
+                x: 480,
+                y: 115
+            }
+        });
+        await page.locator('#draw button.digitizing-toggle-measure').click();
+        await expect(page.locator('.ol-tooltip.ol-tooltip-static')).toBeVisible();
+        await expect(page.locator('.ol-tooltip.ol-tooltip-static')).toHaveText('3.3 km34.27 km2');
+    })
+
     test('From local storage', async ({ page }) => {
         const the_json = '[{"type":"Polygon","color":"#000000","coords":[[[764321.0416656,6290805.935670358],[767628.3399468632,6290805.935670358],[767628.3399468632,6295105.423436],[764321.0416656,6295105.423436],[764321.0416656,6290805.935670358],[764321.0416656,6290805.935670358]]]}]';
         await page.evaluate(token => localStorage.setItem('testsrepository_draw_draw_drawLayer', token), the_json);
@@ -312,6 +332,13 @@ test.describe('Draw', () => {
         await expect(drawn[0][3]).toHaveLength(2);
         await expect(drawn[0][4]).toHaveLength(2);
         await expect(drawn[0][5]).toHaveLength(2);
+
+        // check measure initialization
+        await page.locator('#draw button.digitizing-toggle-measure').click();
+        await expect(page.locator('.ol-tooltip.ol-tooltip-static')).toBeVisible();
+        await expect(page.locator('.ol-tooltip.ol-tooltip-static')).toHaveText('15.2 km14.19 km2');
+        // hide measure
+        await page.locator('#draw button.digitizing-toggle-measure').click();
 
         // Hide all elements but #map, #newOlMap and their children
         await page.$eval("*", el => el.style.visibility = 'hidden');
