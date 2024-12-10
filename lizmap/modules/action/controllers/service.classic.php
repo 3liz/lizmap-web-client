@@ -54,7 +54,7 @@ class serviceCtrl extends jController
         // Redirect if the user has no right to access this repository
         if (!$lizmapProject->checkAcl()) {
             $errors = array(
-                'title' => 'Access forbiden',
+                'title' => 'Access forbidden',
                 'detail' => jLocale::get('view~default.repository.access.denied'),
             );
 
@@ -201,10 +201,14 @@ class serviceCtrl extends jController
                 $data = json_decode($r->data);
             }
         } catch (Exception $e) {
-            jLog::log('Error in project '.$repository.'/'.$project.', layer '.$layerId.', while running the query : '.$sql, 'lizmapadmin');
+            jLog::log(
+                'Error in project '.$repository.'/'.$project.', layer '.$layerId.', '.
+                'while running the action with the PostgreSQL query : '.$sql.' → '.$e->getMessage(),
+                'lizmapadmin'
+            );
             $errors = array(
-                'title' => 'An error occurred while running the PostgreSQL query !',
-                'detail' => $e->getMessage(),
+                'title' => 'An error occurred while processing the request',
+                'detail' => 'Please contact the GIS administrator to look to the administrator logs.',
             );
 
             return $this->error($errors);
