@@ -519,11 +519,6 @@ parameters:
       path: lizmap/modules/lizmap/lib/Project/Project.php
 
     -
-      message: "#^PHPDoc tag @param for parameter \\$xml with type SimpleXMLElement is incompatible with native type Lizmap\\\\Project\\\\QgisProject\\.$#"
-      count: 1
-      path: lizmap/modules/lizmap/lib/Project/Project.php
-
-    -
       message: "#^Property Lizmap\\\\Project\\\\Project\\:\\:\\$printCapabilities \\(object\\) does not accept default value of type array\\.$#"
       count: 1
       path: lizmap/modules/lizmap/lib/Project/Project.php
