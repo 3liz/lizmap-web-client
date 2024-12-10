@@ -580,12 +580,15 @@ var lizAttributeTable = function() {
 
                 // Create button
                 var canCreate = false;
-                if( 'editionLayers' in config && cleanName in config.editionLayers ) {
+                if ('editionLayers' in config
+                    && cleanName in attributeLayersDic
+                    && attributeLayersDic[cleanName] in config.editionLayers) {
                     var al = config.editionLayers[attributeLayersDic[cleanName]];
-                    if( al.capabilities.createFeature == "True" )
+                    if (al.capabilities.createFeature == "True") {
                         canCreate = true;
+                    }
                 }
-                if( canCreate ){
+                if (canCreate) {
                     html+= '    <button class="btn-createFeature-attributeTable btn btn-mini" value="' + cleanName + '" title="'+lizDict['attributeLayers.toolbar.btn.data.createFeature.title']+'"><i class="icon-plus-sign"></i></button>';
                 }
 
@@ -640,8 +643,9 @@ var lizAttributeTable = function() {
 
                 html+= '</div>'; // attribute-layer-action-bar
 
-                if( childHtml )
+                if( childHtml ) {
                     alc= ' showChildren';
+                }
                 html+= '<div class="attribute-layer-content'+alc+'">';
                 html+= '    <input type="hidden" class="attribute-table-hidden-layer" value="'+cleanName+'">';
                 html+= '    <table id="attribute-layer-table-' + cleanName + '" class="attribute-table-table table table-hover table-condensed table-striped order-column cell-border" width="100%"></table>';
@@ -836,22 +840,34 @@ var lizAttributeTable = function() {
                     });
 
                 // Bind click on createFeature button
+                // BEWARE - This is used for creating a new line in the displayed attribute table
+                // and for creating a new child item
                 $('#attribute-layer-'+ cleanName + ' button.btn-createFeature-attributeTable')
                     .click(function(){
-                        if ( $('#attribute-layer-'+ cleanName + ' tr.active').length != 1) {
+                        // Ask the user to click on a table line
+                        // before trying to create a child feature
+                        const creationContext = ($(this).hasClass('new-child')) ? 'child' : 'parent';
+                        if (creationContext == 'child'
+                            && $('#attribute-layer-'+ cleanName + ' tr.active').length != 1) {
                             $('#lizmap-edition-message').remove();
                             lizMap.addMessage( lizDict['attributeLayers.toolbar.btn.data.createChildFeature.no.actived'], 'info', true).attr('id','lizmap-edition-message');
                             return false;
                         }
-                        var parentFeatId = document.querySelector('#attribute-layer-'+ cleanName + ' tr.active lizmap-feature-toolbar').fid;
+                        const parentFidElement = document.querySelector('#attribute-layer-'+ cleanName + ' tr.active lizmap-feature-toolbar');
+                        var parentFeatId = (parentFidElement) ? parentFidElement.fid : null;
                         var parentLayerName = attributeLayersDic[ cleanName ];
                         var parentLayerId = config.layers[parentLayerName]['id'];
                         var aName = attributeLayersDic[ $(this).val() ];
                         var pivotId = $(this).attr("data-pivot");
-                        lizMap.getLayerFeature(parentLayerName, parentFeatId, function(parentFeat) {
-                            var lid = config.layers[aName]['id'];
-                            lizMap.launchEdition( lid, null, {layerId:parentLayerId, feature:parentFeat, pivotId:pivotId});
-                        });
+                        var lid = config.layers[aName]['id'];
+                        if (creationContext == 'parent') {
+                            lizMap.launchEdition( lid, null, null);
+                        } else {
+                            lizMap.getLayerFeature(parentLayerName, parentFeatId, function(parentFeat) {
+                                lizMap.launchEdition( lid, null, {layerId:parentLayerId, feature:parentFeat, pivotId:pivotId});
+                            });
+                        }
+
                         return false;
                     })
                     .hover(
@@ -1132,11 +1148,12 @@ var lizAttributeTable = function() {
 
                             // Add create child feature button
                             var canCreateChild = false;
-                            if( 'editionLayers' in config ){
-                                if( childLayerName in config.editionLayers ) {
+                            if ('editionLayers' in config) {
+                                if (childLayerName in config.editionLayers) {
                                     var al = config.editionLayers[childLayerName];
-                                    if( al.capabilities.createFeature == "True" )
+                                    if (al.capabilities.createFeature == "True") {
                                         canCreateChild = true;
+                                    }
                                 }
                                 // if the m layer is displayed then check also the edition capabilities on pivot
                                 if(canCreateChild && isNToM){
@@ -1147,7 +1164,7 @@ var lizAttributeTable = function() {
                             if( canCreateChild ){
                                 // Add a button to create a new feature for this child layer
                                 let childButtonItem = `
-                                    <button class="btn btn-mini btn-createFeature-attributeTable" data-pivot="${isNToM ? pivotConfig[1].id : ''}" value="${lizMap.cleanName(childLayerName)}" title="${lizDict['attributeLayers.toolbar.btn.data.createFeature.title']}">
+                                    <button class="btn btn-mini btn-createFeature-attributeTable new-child" data-pivot="${isNToM ? pivotConfig[1].id : ''}" value="${lizMap.cleanName(childLayerName)}" title="${lizDict['attributeLayers.toolbar.btn.data.createFeature.title']}">
                                     ➕ ${childLayerConfig.title}
                                     </button>
                                 `;
@@ -1202,16 +1219,16 @@ var lizAttributeTable = function() {
              */
             function refreshChildrenLayersContent( sourceTable, featureType, featId ) {
                 var feat = config.layers[featureType]['features'][featId];
-
-                if(!feat)
+                if(!feat) {
                     return false;
+                }
                 var fp = feat.properties;
 
                 var lConfig = config.layers[featureType];
-                if ( !lConfig )
+                if ( !lConfig ) {
                     return false;
+                }
                 var parentLayerId = lConfig['id'];
-
                 // Refresh recursively for direct children and other parent
                 if( 'relations' in config && parentLayerId in config.relations) {
                     var layerRelations = config.relations[parentLayerId];
@@ -1421,12 +1438,11 @@ var lizAttributeTable = function() {
                     var highlightedFeature = null;
                     if (fromEditionForm) {
                         // get fid of current layer on editing
-                        highlightedFeature = $('#edition-form-container form input[name="liz_featureId"]').val()
-
-                    } else highlightedFeature = config.layers[parentLayerConfig[1].cleanname].highlightedFeature;
-
+                        highlightedFeature = $('#edition-form-container form input[name="liz_featureId"]').val();
+                    } else {
+                        highlightedFeature = config.layers[attributeLayersDic[parentLayerConfig[1].cleanname]].highlightedFeature;
+                    }
                     if (parentLayerConfig && parentLayerConfig[1] && parentLayerConfig[1].cleanname && highlightedFeature) {
-
                         var childLayerId = lConfig.id;
                         var pivotId = getPivotIdFromRelatedLayers(parentLayerID, childLayerId);
                         if (pivotId) {
@@ -1434,6 +1450,7 @@ var lizAttributeTable = function() {
                         }
                     }
                 }
+
                 // Hidden fields
                 var hiddenFields = [];
                 if( aName in config.attributeLayers
@@ -1506,8 +1523,9 @@ var lizAttributeTable = function() {
                             refillFeatures = true;
                         }
                     }
-                    if( refillFeatures  )
+                    if( refillFeatures  ) {
                         lConfig['features'] = foundFeatures;
+                    }
 
                     lConfig['alias'] = cAliases;
                     // Datatable configuration
@@ -1954,14 +1972,16 @@ var lizAttributeTable = function() {
             function getEditionChildData( childLayerName, filter, childTable, forceEmptyTable = false ){
                 getDataAndFillAttributeTable(childLayerName, filter, childTable, forceEmptyTable, () => {
                     // Check edition capabilities
-                    var canCreate = false;
+                    var canCreateChildren = false;
                     var canEdit = false;
-                    if ('editionLayers' in config && childLayerName in config.editionLayers ) {
+                    if ('editionLayers' in config && childLayerName in config.editionLayers) {
                         var al = config.editionLayers[childLayerName];
-                        if( al.capabilities.createFeature == "True" )
-                            canCreate = true;
-                        if( al.capabilities.modifyAttribute == "True" || al.capabilities.modifyGeometry == "True" )
+                        if (al.capabilities.createFeature == "True") {
+                            canCreateChildren = true;
+                        }
+                        if (al.capabilities.modifyAttribute == "True" || al.capabilities.modifyGeometry == "True") {
                             canEdit = true;
+                        }
                     }
 
                     // Bind events when drawing table
@@ -1975,7 +1995,7 @@ var lizAttributeTable = function() {
                                 .to$().children('lizmap-feature-toolbar').attr('parent-feature-id', parentFeatId);
                         }
 
-                        if ( canCreate ) {
+                        if ( canCreateChildren ) {
                             // Button to create feature linked to parent
                             const createHeader = $($(childTable).DataTable().column(1).header());
                             if ( createHeader.find('button.attribute-layer-feature-create').length == 0 ) {
@@ -2467,7 +2487,7 @@ var lizAttributeTable = function() {
 
                 // **5** Add other parent to pile when typeName is a pivot
                 if( pivotParam ){
-                    console.log(pivotParam);
+                    // console.log(pivotParam);
                     // Add a Filter to the "other parent" layers
                     config.layers[ pivotParam['otherParentTypeName'] ]['request_params']['filter'] = null;
                     config.layers[ pivotParam['otherParentTypeName'] ]['request_params']['exp_filter'] = null;
