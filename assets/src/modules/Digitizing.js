@@ -14,7 +14,7 @@ import GPX from 'ol/format/GPX.js';
 import KML from 'ol/format/KML.js';
 import WKT from 'ol/format/WKT.js';
 
-import { Draw, Modify, Select } from 'ol/interaction.js';
+import { Draw, Modify, Select, Translate } from 'ol/interaction.js';
 import { createBox } from 'ol/interaction/Draw.js';
 
 import { Circle, Fill, Stroke, RegularShape, Style, Text } from 'ol/style.js';
@@ -180,6 +180,10 @@ export class Digitizing {
         });
 
         this._modifyInteraction = new Modify({
+            features: this._selectInteraction.getFeatures(),
+        });
+
+        this._translateInteraction = new Translate({
             features: this._selectInteraction.getFeatures(),
         });
 
@@ -557,6 +561,7 @@ export class Digitizing {
 
                 mainLizmap.map.removeInteraction(this._drawInteraction);
 
+                mainLizmap.map.addInteraction(this._translateInteraction);
                 mainLizmap.map.addInteraction(this._selectInteraction);
                 mainLizmap.map.addInteraction(this._modifyInteraction);
 
@@ -567,6 +572,7 @@ export class Digitizing {
             } else {
                 // Clear selection
                 this._selectInteraction.getFeatures().clear();
+                mainLizmap.map.removeInteraction(this._translateInteraction);
                 mainLizmap.map.removeInteraction(this._selectInteraction);
                 mainLizmap.map.removeInteraction(this._modifyInteraction);
 
