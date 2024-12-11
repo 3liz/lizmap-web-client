@@ -11,6 +11,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 ### Funders
 
 * Contributions on source code from @erw-1
+* **[Avignon](https://www.avignon.fr)**
 * **[Conseil Départemental du Calvados](https://www.calvados.fr)**
 * **[Faunalia](https://www.faunalia.eu/fr)**, contributions on source code from @mind84
 * **[Haute-Saône Numérique](https://www.hautesaonenumerique.fr)**
@@ -21,6 +22,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 * Popup - Add layer ID and feature ID as data attributes in the HTML
 * `lizmap-features-table` component - Use a table with additional columns from fields
+* Enable translate a geometry
 
 ### Fixed
 
@@ -35,10 +37,21 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Include layer opacity info for embedded layers
 * JS State Symbology : checking `ruleKey` for WMS parameters
 * `<lizmap-features-table>` : lower case `sortingOrder` and `draggable` attribute values
+* Attribute table - Fix bugs
+  * Remove the need to highlight a line when clicking on the "Create feature" button
+  * Fix the "Create feature" button not visible in some cases
+  * Fix the child table not visible in some cases after clicking on a parent feature
+* Fix display of error message when launching a Lizmap action
+* Fix editing : hide "select" when launched from attribute table via parent
+* Editing : exec a SQL DELETE can return 0 in some cases
 
 ### Deprecated
 
 * To get layer ID and feature ID in a JavaScript code, use data-attributes, instead of the legacy `<input class="lizmap-popup-layer-feature-id">`
+
+### Backend
+
+* Update Jelix to 1.8.14
 
 ## 3.8.3 - 2024-11-08
 
