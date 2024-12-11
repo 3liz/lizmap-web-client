@@ -15,6 +15,15 @@ with some extra keywords: backend, tests, test, translation, funders, important
   * It's easier to debug and see OGC requests to QGIS server
 * Remove the print overlay when some dialogs are opened
 * Speed up the landing page loading with a lazy loading of each QGIS projects
+* Attribute table - Fix bugs
+  * Remove the need to highlight a line when clicking on the "Create feature" button
+  * Fix the "Create feature" button not visible in some cases
+  * Fix the child table not visible in some cases after clicking on a parent feature
+* Fix display of error message when launching a Lizmap action
+
+### Backend
+
+* Update Jelix to 1.8.14
 
 ## 3.7.12 - 2024-11-07
 
