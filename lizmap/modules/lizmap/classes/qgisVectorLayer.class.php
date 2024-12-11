@@ -956,9 +956,11 @@ class qgisVectorLayer extends qgisMapLayer
      *                                                - attribute: filter attribute from the layer
      * @param null|jDbConnection $connection          DBConnection, if not null then the parameter conneciton is used, default value null
      *
-     * @return int
+     * @return bool|int the number of affected rows. False if the query has failed.
      *
      * @throws Exception
+     *
+     * @see jDbConnection::exec() Launch a SQL Query (update, delete..) which doesn't return rows.
      */
     public function deleteFeature($feature, $loginFilteredLayers, $connection = null)
     {
