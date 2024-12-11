@@ -1330,6 +1330,12 @@ class QgisForm implements QgisFormControlsInterface
      *
      * @param mixed               $feature
      * @param null|\jDbConnection $cnx     DBConnection, passed along QGISVectorLayer deleteFeature method
+     *
+     * @return bool|int the number of affected rows. False if the query has failed.
+     *
+     * @throws \Exception
+     *
+     * @see \jDbConnection::exec() Launch a SQL Query (update, delete..) which doesn't return rows.
      */
     public function deleteFromDb($feature, $cnx = null)
     {
@@ -1355,7 +1361,7 @@ class QgisForm implements QgisFormControlsInterface
             return 1;
         }
         if ($event->allResponsesByKeyAreFalse('cancelDelete') === false) {
-            return 0;
+            return false;
         }
         $result = $this->layer->deleteFeature($feature, $loginFilteredLayers, $cnx);
         $this->appContext->eventNotify('LizmapEditionFeaturePostDelete', $eventParams);
