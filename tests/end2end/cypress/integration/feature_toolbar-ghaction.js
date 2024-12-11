@@ -442,8 +442,8 @@ describe('Feature Toolbar in popup', function () {
 
         cy.wait(300)
 
-        // Parent_id is disabled in form when edition is started from parent form
-        cy.get('#jforms_view_edition_parent_id').should('be.disabled')
+        // Parent_id is hidden in form when edition is started from parent form
+        cy.get('#jforms_view_edition_parent_id').should('have.class', 'hide');
 
         // Parent_id input should have the value 2 selected
         cy.get('#jforms_view_edition_parent_id').find('option:selected').should('have.value', '2');
@@ -459,8 +459,8 @@ describe('Feature Toolbar in popup', function () {
 
         cy.wait(300)
 
-        // Parent_id is disabled in form when edition is started from parent form
-        cy.get('#jforms_view_edition_parent_id').should('be.disabled')
+        // Parent_id is hidden in form when edition is started from parent form
+        cy.get('#jforms_view_edition_parent_id').should('have.class', 'hide');
 
         // Parent_id input should have the value 2 selected
         cy.get('#jforms_view_edition_parent_id').find('option:selected').should('have.value', '2');
