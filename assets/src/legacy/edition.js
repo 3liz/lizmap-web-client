@@ -1617,19 +1617,13 @@ var lizEdition = function() {
                 } else {
                     var select = form.find('select[name="'+relationRefField+'"]');
                     if( select.length == 1 ){
-                        // Disable the select, the value will be stored in an hidden input
-                        select.val(parentFeatProp)
-                            .attr('disabled','disabled');
-                        // Create hidden input to store value because the select is disabled
-                        var hiddenInput = $('<input type="hidden"></input>')
-                            .attr('id', select.attr('id')+'_hidden')
-                            .attr('name', relationRefField)
-                            .attr('value', parentFeatProp);
-                        form.find('div.jforms-hiddens').append(hiddenInput);
-                        // Disable required constraint
-                        jFormsJQ.getForm(form.attr('id'))
-                            .getControl(relationRefField)
-                            .required=false;
+                        // select the option via jquery (and fire event with "change", will update depending controls)
+                        select.val(parentFeatProp).change();
+                        // create a disabled input with selected option value (will look alike a select)
+                        let readOnlyInput4Select = $('<input type="text" disabled value="'+$("select[name="+relationRefField+"] option:selected").html() +'" />');
+                        select.parent().append(readOnlyInput4Select);
+                        // hide the select, we don't want to see it, but it need to still be enable for controls that depends of its value
+                        select.addClass('hide');
                     } else {
                         var input = form.find('input[name="'+relationRefField+'"]');
                         if( input.length == 1 && input.attr('type') != 'hidden'){
