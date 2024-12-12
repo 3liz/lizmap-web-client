@@ -713,6 +713,16 @@ var lizEdition = function() {
     }
 
     /**
+     * Sleep function
+     * @param {number} sleepDuration Duration to wait (milliseconds)
+     * @returns {Promise}
+     */
+    const editingDelay = sleepDuration => new Promise((resolve, reject) => {
+        setTimeout(_ => resolve(), sleepDuration)
+    });
+
+
+    /**
      *
      */
     function addEditionControls() {
@@ -909,14 +919,23 @@ var lizEdition = function() {
                 }
             });
 
-            $('#edition-draw').click(function(){
+            $('#edition-draw').click(async function(){
                 // Do nothing if not enabled
                 if ( $(this).hasClass('disabled') )
                     return false;
                 // Deactivate previous edition
                 if( lizMap.editionPending){
-                    if ( !confirm( lizDict['edition.confirm.cancel'] ) )
+                    // Show editing dock
+                    document.querySelector('li.edition:not(.active) #button-edition')?.click();
+
+                    // Display a confirmation message
+                    // We need to add a delay in order to show the editing dock
+                    // If not the confirm message is displayed before the editing dock is shown
+                    await editingDelay(10);
+                    if ( !confirm( lizDict['edition.confirm.cancel'] ) ) {
                         return false;
+                    }
+
                     finishEdition();
                     editionLayer.clear();
                 }
@@ -1327,6 +1346,7 @@ var lizEdition = function() {
         return internalLaunchEdition(parentInfo, parentFeat.id.split('.').pop());
     }
 
+
     /**
      *
      * @param {FeatureEditionData} editedFeature
@@ -1334,13 +1354,23 @@ var lizEdition = function() {
      * @param {Function} aCallback
      * @returns {boolean}
      */
-    function internalLaunchEdition(editedFeature, aFid, aCallback) {
+    async function internalLaunchEdition(editedFeature, aFid, aCallback) {
 
         // Deactivate previous edition when the feature to edit has no
         // relation to the current edited feature
         if (lizMap.editionPending) {
-            if ( !confirm( lizDict['edition.confirm.cancel'] ) )
+            // Show editing dock
+            document.querySelector('li.edition:not(.active) #button-edition')?.click();
+
+            // Display a confirmation message
+            // We need to add a delay in order to show the editing dock
+            // If not the confirm message is displayed before the editing dock is shown
+            await editingDelay(10);
+            if ( !confirm( lizDict['edition.confirm.cancel'] ) ) {
                 return false;
+            }
+
+            // Finish editing
             finishEdition();
         }
 
