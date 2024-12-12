@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.7.13 - 2024-12-12
+
 ### Fixed
 
 * Tail admin logs to always display data
@@ -19,6 +21,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
   * Remove the need to highlight a line when clicking on the "Create feature" button
   * Fix the "Create feature" button not visible in some cases
   * Fix the child table not visible in some cases after clicking on a parent feature
+  * Allow `target="_blank"` in cells
 * Fix display of error message when launching a Lizmap action
 
 ### Backend
