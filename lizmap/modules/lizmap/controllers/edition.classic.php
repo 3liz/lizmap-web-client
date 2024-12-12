@@ -767,6 +767,11 @@ class editionCtrl extends jController
         // Some errors where encountered
         if (!$check || !$pkvals) {
             // Redirect to the display action
+            jLog::log(
+                'Error in project '.$this->repository->getKey().'/'.$this->project->getKey().', '.
+                'layer '.$this->layerId.' while saving the feature '.$this->featureIdParam,
+                'lizmapadmin'
+            );
             $rep->params['status'] = '1';
             $rep->action = 'lizmap~edition:editFeature';
 
