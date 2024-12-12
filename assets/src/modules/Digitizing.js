@@ -981,16 +981,17 @@ export class Digitizing {
             return null;
         }
         const color = this.featureDrawn[index].get('color') || this._drawColor;
+        let opacityFactor = this.featureDrawn[index].get('mode') == 'textonly' ? 0 : 1;
         let symbolizer = '';
         let strokeAndFill =
         `<Stroke>
             <SvgParameter name="stroke">${color}</SvgParameter>
-            <SvgParameter name="stroke-opacity">1</SvgParameter>
+            <SvgParameter name="stroke-opacity">${1*opacityFactor}</SvgParameter>
             <SvgParameter name="stroke-width">${this._strokeWidth}</SvgParameter>
         </Stroke>
         <Fill>
             <SvgParameter name="fill">${color}</SvgParameter>
-            <SvgParameter name="fill-opacity">${this._fillOpacity}</SvgParameter>
+            <SvgParameter name="fill-opacity">${this._fillOpacity*opacityFactor}</SvgParameter>
         </Fill>`;
 
         // We consider LINESTRING and POLYGON together currently
