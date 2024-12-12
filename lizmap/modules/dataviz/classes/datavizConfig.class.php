@@ -24,7 +24,7 @@ class datavizConfig
                     'code' => 404,
                     'error_code' => 'project_not_found',
                     'title' => jLocale::get('dataviz~dataviz.log.project_not_found.title'),
-                    'detail' => jLocale::get('dataviz~dataviz.log.project_not_found.detail', array($project, $repository)),
+                    'detail' => jLocale::get('datviz~dataviz.log.project_not_found.detail', array($project, $repository)),
                 );
 
                 return;
