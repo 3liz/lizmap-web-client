@@ -1894,7 +1894,9 @@ var lizAttributeTable = function() {
                             continue;
                         var prop = feat.properties[idx];
                         if (typeof prop == 'string') {
-                            prop = DOMPurify.sanitize(prop);
+                            prop = DOMPurify.sanitize(prop, {
+                                ADD_ATTR: ['target']
+                            });
                         }
                         line[idx] = prop;
                     }
