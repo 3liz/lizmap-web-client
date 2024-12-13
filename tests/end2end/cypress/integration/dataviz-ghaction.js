@@ -64,13 +64,13 @@ describe('Dataviz tests', function () {
 
         cy.get('#dataviz_plot_0 div.svg-container svg.main-svg g.cartesianlayer')
         .should('have.length', 1)
-        cy.get('#dataviz_plot_0 div.svg-container svg.main-svg g.cartesianlayer g.plot')
+        cy.get('#dataviz_plot_0 div.svg-container svg.main-svg g.cartesianlayer g.overplot')
             .should('have.length', 1)
-        cy.get('#dataviz_plot_0 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars')
+        cy.get('#dataviz_plot_0 div.svg-container svg.main-svg g.cartesianlayer g.overplot g.trace.bars')
             .should('have.length', 1)
-        cy.get('#dataviz_plot_0 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points')
+        cy.get('#dataviz_plot_0 div.svg-container svg.main-svg g.cartesianlayer g.overplot g.trace.bars g.points')
             .should('have.length', 1)
-        cy.get('#dataviz_plot_0 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points g.point')
+        cy.get('#dataviz_plot_0 div.svg-container svg.main-svg g.cartesianlayer g.overplot g.trace.bars g.points g.point')
             .should('have.length', 10)
 
         // Test - Bar bakeries by municipalities
@@ -79,13 +79,13 @@ describe('Dataviz tests', function () {
 
         cy.get('#dataviz_plot_1 div.svg-container svg.main-svg g.cartesianlayer')
             .should('have.length', 1)
-        cy.get('#dataviz_plot_1 div.svg-container svg.main-svg g.cartesianlayer g.plot')
+        cy.get('#dataviz_plot_1 div.svg-container svg.main-svg g.cartesianlayer g.overplot')
             .should('have.length', 1)
-        cy.get('#dataviz_plot_1 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars')
+        cy.get('#dataviz_plot_1 div.svg-container svg.main-svg g.cartesianlayer g.overplot g.trace.bars')
             .should('have.length', 1)
-        cy.get('#dataviz_plot_1 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points')
+        cy.get('#dataviz_plot_1 div.svg-container svg.main-svg g.cartesianlayer g.overplot g.trace.bars g.points')
             .should('have.length', 1)
-        cy.get('#dataviz_plot_1 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points g.point')
+        cy.get('#dataviz_plot_1 div.svg-container svg.main-svg g.cartesianlayer g.overplot g.trace.bars g.points g.point')
             .should('have.length', 10)
 
         // Test - Pie bakeries by municipalities
@@ -105,17 +105,17 @@ describe('Dataviz tests', function () {
 
         cy.get('#dataviz_plot_3 div.svg-container svg.main-svg g.cartesianlayer')
             .should('have.length', 1)
-        cy.get('#dataviz_plot_3 div.svg-container svg.main-svg g.cartesianlayer g.plot')
+        cy.get('#dataviz_plot_3 div.svg-container svg.main-svg g.cartesianlayer g.overplot')
             .should('have.length', 1)
-        cy.get('#dataviz_plot_3 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars')
+        cy.get('#dataviz_plot_3 div.svg-container svg.main-svg g.cartesianlayer g.overplot g.trace.bars')
             .should('have.length', 1)
-        cy.get('#dataviz_plot_3 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points')
+        cy.get('#dataviz_plot_3 div.svg-container svg.main-svg g.cartesianlayer g.overplot g.trace.bars g.points')
             .should('have.length', 1)
-        cy.get('#dataviz_plot_3 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points g.point')
+        cy.get('#dataviz_plot_3 div.svg-container svg.main-svg g.cartesianlayer g.overplot g.trace.bars g.points g.point')
             .should('have.length', 10)
 
         // Never filtered plot
-        cy.get('#dataviz_plot_4 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points g.point')
+        cy.get('#dataviz_plot_4 div.svg-container svg.main-svg g.cartesianlayer g.overplot g.trace.bars g.points g.point')
             .should('have.length', 10)
 
         // Click back to the first tab
@@ -132,9 +132,9 @@ describe('Dataviz tests', function () {
         // Wait for visible graphics updated 2 plots are visible
         cy.wait(['@getPlot', '@getPlot'])
 
-        cy.get('#dataviz_plot_0 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points g.point')
+        cy.get('#dataviz_plot_0 div.svg-container svg.main-svg g.cartesianlayer g.overplot g.trace.bars g.points g.point')
             .should('have.length', 1)
-        cy.get('#dataviz_plot_1 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points g.point')
+        cy.get('#dataviz_plot_1 div.svg-container svg.main-svg g.cartesianlayer g.overplot g.trace.bars g.points g.point')
             .should('have.length', 1)
 
         // Activate the Second tab dock to update one graphic only (the other one has the trigger_filter: false
@@ -143,10 +143,10 @@ describe('Dataviz tests', function () {
 
         cy.wait(['@getPlot'])
         // This plot is filtered
-        cy.get('#dataviz_plot_3 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points g.point')
+        cy.get('#dataviz_plot_3 div.svg-container svg.main-svg g.cartesianlayer g.overplot g.trace.bars g.points g.point')
             .should('have.length', 1)
         // This plot must not have been refreshed
-        cy.get('#dataviz_plot_4 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points g.point')
+        cy.get('#dataviz_plot_4 div.svg-container svg.main-svg g.cartesianlayer g.overplot g.trace.bars g.points g.point')
             .should('have.length', 10)
 
         // Go back to the first tab
@@ -163,9 +163,9 @@ describe('Dataviz tests', function () {
         // Wait for visible graphics updated 2 plots are visible
         cy.wait(['@getPlot', '@getPlot'])
 
-        cy.get('#dataviz_plot_0 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points g.point')
+        cy.get('#dataviz_plot_0 div.svg-container svg.main-svg g.cartesianlayer g.overplot g.trace.bars g.points g.point')
             .should('have.length', 1)
-        cy.get('#dataviz_plot_1 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points g.point')
+        cy.get('#dataviz_plot_1 div.svg-container svg.main-svg g.cartesianlayer g.overplot g.trace.bars g.points g.point')
             .should('have.length', 1)
 
         // Activate the Second tab dock to update one graphic
@@ -174,7 +174,7 @@ describe('Dataviz tests', function () {
 
         cy.wait(['@getPlot'])
 
-        cy.get('#dataviz_plot_3 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points g.point')
+        cy.get('#dataviz_plot_3 div.svg-container svg.main-svg g.cartesianlayer g.overplot g.trace.bars g.points g.point')
             .should('have.length', 1)
 
         // Go back to the first tab
@@ -189,15 +189,15 @@ describe('Dataviz tests', function () {
         // Wait for map updated, because plots are in cache
         cy.wait(['@getMap', '@getMap'])
 
-        cy.get('#dataviz_plot_0 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points g.point')
+        cy.get('#dataviz_plot_0 div.svg-container svg.main-svg g.cartesianlayer g.overplot g.trace.bars g.points g.point')
             .should('have.length', 10)
-        cy.get('#dataviz_plot_1 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points g.point')
+        cy.get('#dataviz_plot_1 div.svg-container svg.main-svg g.cartesianlayer g.overplot g.trace.bars g.points g.point')
             .should('have.length', 10)
 
         // Activate the Second tab dock to update one graphic
         cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(2) > a')
             .click()
-        cy.get('#dataviz_plot_3 div.svg-container svg.main-svg g.cartesianlayer g.plot g.trace.bars g.points g.point')
+        cy.get('#dataviz_plot_3 div.svg-container svg.main-svg g.cartesianlayer g.overplot g.trace.bars g.points g.point')
             .should('have.length', 10)
 
         // This test is not really covering the dataviz capabilities for now.
