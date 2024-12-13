@@ -350,8 +350,8 @@ class serviceCtrl extends jController
         $basePath = jApp::config()->urlengine['basePath'];
         $locale = substr(jApp::config()->locale, 0, 2);
         $plot['plotly'] = array(
-            'script' => $basePath.'assets/js/dataviz/plotly-latest.min.js',
-            'locale' => $basePath.'assets/js/dataviz/plotly-locale-'.$locale.'-latest.js',
+            'script' => $basePath.'assets/js/dataviz/plotly-custom.min.js',
+            'locale' => $basePath.'assets/js/dataviz/plotly-locale-'.$locale.'.js',
         );
 
         $rep->data = $plot;
