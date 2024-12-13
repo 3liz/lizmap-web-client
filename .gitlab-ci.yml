@@ -200,6 +200,7 @@ deploy-release:
   when: manual
 
 docker-release:
+  image: ${REGISTRY_URL}/factory-ci-runner:factory-ci
   stage: release
   script:
     - make docker-release
