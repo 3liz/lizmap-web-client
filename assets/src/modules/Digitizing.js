@@ -37,6 +37,8 @@ import * as flatgeobuf from 'flatgeobuf';
 import { register } from "ol/proj/proj4.js";
 import proj4 from "proj4";
 
+import Transform from "ol-ext/interaction/Transform.js";
+
 /**
  * List of digitizing available tools
  * @name DigitizingAvailableTools
@@ -76,6 +78,7 @@ export class Digitizing {
         this._drawColor = localStorage.getItem(this._repoAndProjectString + '_drawColor') || '#ff0000';
 
         this._isEdited = false;
+        this._isRotate = false;
         this._hasMeasureVisible = false;
         this._isSaved = false;
         this._isErasing = false;
@@ -185,6 +188,11 @@ export class Digitizing {
 
         this._translateInteraction = new Translate({
             features: this._selectInteraction.getFeatures(),
+        });
+
+        this._transformInteraction = new Transform({
+            rotate: true,
+            scale: false,
         });
 
         this._drawStyleFunction = (feature) => {
@@ -504,9 +512,10 @@ export class Digitizing {
 
                 this._toolSelected = tool;
 
-                // Disable edition and erasing when tool changes
+                // Disable other tools when digitizing tool changes
                 this.isEdited = false;
                 this.isErasing = false;
+                this.isRotate = false;
             }
 
             mainEventDispatcher.dispatch('digitizing.toolSelected');
@@ -567,6 +576,7 @@ export class Digitizing {
 
                 this.toolSelected = 'deactivate';
                 this.isErasing = false;
+                this.isRotate = false;
 
                 mainEventDispatcher.dispatch('digitizing.editionBegins');
             } else {
@@ -583,6 +593,27 @@ export class Digitizing {
         }
     }
 
+    get isRotate() {
+        return this._isRotate;
+    }
+
+    set isRotate(isRotate) {
+        if (this._isRotate !== isRotate) {
+            this._isRotate = isRotate;
+
+            if (this._isRotate) {
+                this.toolSelected = 'deactivate';
+                this.isErasing = false;
+                this.isEdited = false;
+                mainLizmap.map.addInteraction(this._transformInteraction);
+            } else {
+                mainLizmap.map.removeInteraction(this._transformInteraction);
+            }
+
+            mainEventDispatcher.dispatch('digitizing.rotate');
+        }
+    }
+
     get isErasing() {
         return this._isErasing;
     }
@@ -595,6 +626,7 @@ export class Digitizing {
                 // deactivate draw and edition
                 this.toolSelected = 'deactivate';
                 this.isEdited = false;
+                this.isRotate = false;
 
                 this._erasingCallBack = event => {
                     const features = mainLizmap.map.getFeaturesAtPixel(event.pixel, {
@@ -1051,6 +1083,10 @@ export class Digitizing {
         this.isEdited = !this.isEdited;
     }
 
+    toggleRotate() {
+        this.isRotate = !this.isRotate;
+    }
+
     toggleMeasure() {
         this.hasMeasureVisible = !this.hasMeasureVisible;
     }
@@ -1068,6 +1104,10 @@ export class Digitizing {
     }
 
     eraseAll() {
+        this.isEdited = false;
+        this.isRotate = false
+        this.isErasing = false;
+
         this._measureTooltips.forEach((measureTooltip) => {
             mainLizmap.map.removeOverlay(measureTooltip[0]);
             mainLizmap.map.removeOverlay(measureTooltip[1]);

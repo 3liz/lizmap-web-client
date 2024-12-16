@@ -152,6 +152,11 @@ export default class Digitizing extends HTMLElement {
                     <use xlink:href="#edit"/>
                 </svg>
             </button>
+            <button type="button" class="digitizing-rotate btn ${mainLizmap.digitizing.isRotate ? 'active btn-primary' : ''}" ?disabled=${!mainLizmap.digitizing.featureDrawn} @click=${() => mainLizmap.digitizing.toggleRotate()} data-bs-toggle="tooltip" data-bs-title="${lizDict['digitizing.toolbar.rotate']}">
+                <svg>
+                    <use xlink:href="#edit"/>
+                </svg>
+            </button>
             <button type="button" class="digitizing-erase btn ${mainLizmap.digitizing.isErasing ? 'active btn-primary' : ''}" ?disabled=${!mainLizmap.digitizing.featureDrawn} @click=${() => mainLizmap.digitizing.toggleErasing()} data-bs-toggle="tooltip" data-bs-title="${lizDict['digitizing.toolbar.erase']}">
                 <svg>
                     <use xlink:href="#eraser"/>
@@ -271,7 +276,7 @@ export default class Digitizing extends HTMLElement {
                     render(mainTemplate(), this);
                 }
             },
-            ['digitizing.featureDrawn', 'digitizing.visibility', 'digitizing.toolSelected', 'digitizing.editionBegins', 'digitizing.editionEnds', 'digitizing.erasingBegins', 'digitizing.erasingEnds', 'digitizing.erase', 'digitizing.erase.all', 'digitizing.drawColor', 'digitizing.save', 'digitizing.measure', 'digitizing.editedFeatureText', 'digitizing.editedFeatureRotation', 'digitizing.editedFeatureScale']
+            ['digitizing.featureDrawn', 'digitizing.visibility', 'digitizing.toolSelected', 'digitizing.editionBegins', 'digitizing.editionEnds', 'digitizing.erasingBegins', 'digitizing.erasingEnds', 'digitizing.erase','digitizing.rotate', 'digitizing.erase.all', 'digitizing.drawColor', 'digitizing.save', 'digitizing.measure', 'digitizing.editedFeatureText', 'digitizing.editedFeatureRotation', 'digitizing.editedFeatureScale']
         );
     }
 
