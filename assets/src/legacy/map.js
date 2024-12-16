@@ -3407,9 +3407,7 @@ window.lizMap = function() {
 
                     const dockContentSelector = dockType == 'minidock' ? '#mini-dock-content > div' : '#' + dockType + '-content > div';
 
-                    let navElements = [];
                     document.querySelectorAll('#mapmenu .nav-' + dockType).forEach(element => {
-                        navElements.push(element.className);
                         element.classList.remove('active');
                     });
                     document.querySelectorAll(dockContentSelector).forEach(element => element.classList.add('hide'));
@@ -3421,7 +3419,7 @@ window.lizMap = function() {
                     const dockEvent = dockType == 'right-dock' ? 'rightdock' : dockType;
 
                     const lizmapEvent = wasActive ? dockEvent + 'closed' : dockEvent + 'opened';
-                    lizMap.events.triggerEvent(lizmapEvent, { 'id': dockId, 'navElements': navElements});
+                    lizMap.events.triggerEvent(lizmapEvent, { 'id': dockId });
 
                     return false;
                 });
