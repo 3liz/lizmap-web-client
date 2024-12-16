@@ -20,6 +20,7 @@ import '../images/svg/text.svg';
 
 import '../images/svg/pencil.svg';
 import '../images/svg/edit.svg';
+import '../images/svg/rotate.svg';
 import '../images/svg/eraser.svg';
 import '../images/svg/eraser-all.svg';
 import '../images/svg/save.svg';
@@ -154,7 +155,7 @@ export default class Digitizing extends HTMLElement {
             </button>
             <button type="button" class="digitizing-rotate btn ${mainLizmap.digitizing.isRotate ? 'active btn-primary' : ''}" ?disabled=${!mainLizmap.digitizing.featureDrawn} @click=${() => mainLizmap.digitizing.toggleRotate()} data-bs-toggle="tooltip" data-bs-title="${lizDict['digitizing.toolbar.rotate']}">
                 <svg>
-                    <use xlink:href="#edit"/>
+                    <use xlink:href="#rotate"/>
                 </svg>
             </button>
             <button type="button" class="digitizing-erase btn ${mainLizmap.digitizing.isErasing ? 'active btn-primary' : ''}" ?disabled=${!mainLizmap.digitizing.featureDrawn} @click=${() => mainLizmap.digitizing.toggleErasing()} data-bs-toggle="tooltip" data-bs-title="${lizDict['digitizing.toolbar.erase']}">
