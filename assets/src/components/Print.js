@@ -107,7 +107,7 @@ export default class Print extends HTMLElement {
 
                     render(this._template(), this);
                 } else {
-                    mainLizmap.map.removeToolLayer(this._maskLayer);
+                    mainLizmap.map.removeLayer(this._maskLayer);
                     mainLizmap.map.getView().un('change:resolution', this._onChangeResolution);
                 }
             },
