@@ -89,7 +89,8 @@ export default class Popup {
         const xCoord = evt?.xy?.x || evt?.pixel?.[0];
         const yCoord = evt?.xy?.y || evt?.pixel?.[1];
 
-        let candidateLayers = mainLizmap.state.rootMapGroup.findMapLayers().reverse();
+        // Order popups following layers order
+        let candidateLayers = mainLizmap.state.rootMapGroup.findMapLayers().toSorted((a, b) => b.layerOrder - a.layerOrder);
 
         // Only request visible layers
         candidateLayers = candidateLayers.filter(layer => layer.visibility);
