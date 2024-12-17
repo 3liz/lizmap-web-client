@@ -145,8 +145,30 @@ class OGCResponse
 
             return Psr7\Utils::streamFor($this->data);
         }
+
         if (is_iterable($this->data)) {
-            return Psr7\Utils::streamFor($this->data);
+            $iterData = $this->data;
+
+            return Psr7\Utils::streamFor(function ($length) use ($iterData) {
+                $result = '';
+                $resultLength = 0;
+
+                try {
+                    foreach ($iterData as $step) {
+                        $result .= $step;
+                        $resultLength += strlen($step);
+                        if ($resultLength >= $length) {
+                            break;
+                        }
+                    }
+                } finally {
+                    if ($resultLength) {
+                        return $result;
+                    }
+
+                    return false;
+                }
+            });
         }
 
         return $this->data;
