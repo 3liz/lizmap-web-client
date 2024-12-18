@@ -48,7 +48,7 @@ export default class Popup {
                     return;
                 }
 
-                let candidateLayers = mainLizmap.state.rootMapGroup.findMapLayers().reverse();
+                let candidateLayers = mainLizmap.state.rootMapGroup.findMapLayers().toSorted((a, b) => b.layerOrder - a.layerOrder);
 
                 // Only request visible layers
                 candidateLayers = candidateLayers.filter(layer => layer.visibility);
