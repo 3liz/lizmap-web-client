@@ -29,6 +29,7 @@
   "license": "ISC",
   "dependencies": {
     "flatgeobuf": "^3.36.0",
+    "ol-ext": "^4.0.24",
     "ol-wfs-capabilities": "^2.0.0"
   }
 }
