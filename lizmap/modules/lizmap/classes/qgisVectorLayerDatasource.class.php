@@ -22,6 +22,7 @@ class qgisVectorLayerDatasource
         'user' => "user='?([^ ']+)'? ",
         'password' => "password='?([^ ']+)'? ",
         'sslmode' => "sslmode='?([^ ']+)'? ",
+        'authcfg' => "authcfg='?([^ ']+)'? ",
         'key' => "key='?([^ ']+)'? ",
         'estimatedmetadata' => 'estimatedmetadata=([^ ]+) ',
         'selectatid' => 'selectatid=([^ ]+) ',
