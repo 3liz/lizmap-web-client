@@ -1137,7 +1137,7 @@ class qgisVectorLayer extends qgisMapLayer
         }
 
         $featureStream = \Psr7\StreamWrapper::getResource($result->getBodyAsStream());
-        $features = \JsonMachine\Items::fromStream($featureStream, ['pointer' => "/friends"]);
+        $features = \JsonMachine\Items::fromStream($featureStream, ['pointer' => "/features"]);
         if (iterator_count($features) !== 1) {
             return false;
         }
