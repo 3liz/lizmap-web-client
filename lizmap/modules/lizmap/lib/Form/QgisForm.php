@@ -14,6 +14,7 @@ namespace Lizmap\Form;
 
 use Lizmap\App;
 use Lizmap\Request\RemoteStorageRequest;
+use GuzzleHttp\Psr7;
 
 class QgisForm implements QgisFormControlsInterface
 {
@@ -1816,6 +1817,7 @@ class QgisForm implements QgisFormControlsInterface
             $dataSource->data = $data;
             $formControl->ctrl->datasource = $dataSource;
         } else {
+            $wfsData = $result->getBodyAsString();
             if (!preg_match('#No feature found error messages#', $wfsData)) {
                 return $this->disableControl($formControl, 'Problem : cannot get data to fill this control!');
             }
