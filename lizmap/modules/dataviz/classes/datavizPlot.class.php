@@ -7,7 +7,6 @@
  *
  * @license    Mozilla Public License
  */
-
 class datavizPlot
 {
     /**

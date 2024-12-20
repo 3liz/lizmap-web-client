@@ -9,9 +9,6 @@
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
-
-use GuzzleHttp\Psr7;
-
 class qgisVectorLayer extends qgisMapLayer
 {
     // layer type
@@ -1117,7 +1114,7 @@ class qgisVectorLayer extends qgisMapLayer
             'PROPERTYNAME' => implode(',', $properties),
             'OUTPUTFORMAT' => 'GeoJSON',
             'GEOMETRYNAME' => 'none',
-            'EXP_FILTER' => implode(' AND ', $exp_filters)
+            'EXP_FILTER' => implode(' AND ', $exp_filters),
         );
 
         // Perform the request to get the editable features
@@ -1137,29 +1134,29 @@ class qgisVectorLayer extends qgisMapLayer
         }
 
         $featureStream = \Psr7\StreamWrapper::getResource($result->getBodyAsStream());
-        $features = \JsonMachine\Items::fromStream($featureStream, ['pointer' => "/features"]);
+        $features = \JsonMachine\Items::fromStream($featureStream, array('pointer' => '/features'));
         if (iterator_count($features) !== 1) {
             return false;
         }
 
         return true;
-/*
-        // Get data
-        $wfsData = $result->getBodyAsString();
+        /*
+                // Get data
+                $wfsData = $result->getBodyAsString();
 
-        // Check data: if there is no data returned by WFS, the user has not access to it
-        if (!$wfsData) {
-            return true;
-        }
+                // Check data: if there is no data returned by WFS, the user has not access to it
+                if (!$wfsData) {
+                    return true;
+                }
 
-        // Get data from layer
-        $wfsData = json_decode($wfsData);
-        if (count($wfsData->features) !== 1) {
-            return false;
-        }
+                // Get data from layer
+                $wfsData = json_decode($wfsData);
+                if (count($wfsData->features) !== 1) {
+                    return false;
+                }
 
-        return true;
-        */
+                return true;
+                */
     }
 
     /**
