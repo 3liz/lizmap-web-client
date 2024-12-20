@@ -108,15 +108,12 @@ class QgisFormValueRelationDynamicDatasource extends \jFormsDynamicDatasource
                 // Process request
                 $wfsResult = $wfsRequest->process();
 
-                // $data = $wfsResult->getBodyAsString();
+                $code = $wfsResult->getCode();
                 $mime = $wfsResult->getMime();
 
-                if (strpos($mime, 'text/json') === 0
-                    || strpos($mime, 'application/json') === 0
-                    || strpos($mime, 'application/vnd.geo+json') === 0) {
-                    /*$json = json_decode($data);
-                    // Get result from json
-                    $features = $json->features;*/
+                if ($code < 400 && (strpos($mime, 'text/json') === 0
+                                    || strpos($mime, 'application/json') === 0
+                                    || strpos($mime, 'application/vnd.geo+json') === 0)) {
 
                     $featureStream = Psr7\StreamWrapper::getResource($wfsResult->getBodyAsStream());
                     $features = \JsonMachine\Items::fromStream($featureStream, array('pointer' => '/features'));

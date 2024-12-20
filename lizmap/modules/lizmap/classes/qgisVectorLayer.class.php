@@ -1127,7 +1127,7 @@ class qgisVectorLayer extends qgisMapLayer
         $result = $wfsRequest->process();
 
         // Check code
-        if (floor($result->getCode() / 100) >= 4) {
+        if ($result->getCode() >= 400) {
             return true;
         }
 
@@ -1143,23 +1143,6 @@ class qgisVectorLayer extends qgisMapLayer
         }
 
         return true;
-        /*
-                // Get data
-                $wfsData = $result->getBodyAsString();
-
-                // Check data: if there is no data returned by WFS, the user has not access to it
-                if (!$wfsData) {
-                    return true;
-                }
-
-                // Get data from layer
-                $wfsData = json_decode($wfsData);
-                if (count($wfsData->features) !== 1) {
-                    return false;
-                }
-
-                return true;
-                */
     }
 
     /**

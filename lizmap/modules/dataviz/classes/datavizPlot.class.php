@@ -493,7 +493,7 @@ class datavizPlot
             $features = null;
 
             // Check code
-            if (floor($wfsresponse->getCode() / 100) >= 4) {
+            if ($wfsresponse->getCode() >= 400) {
                 return false;
             }
             // Check mime/type
