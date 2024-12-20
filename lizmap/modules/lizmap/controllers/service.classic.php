@@ -443,7 +443,7 @@ class serviceCtrl extends jController
 
         // Check WFS rights
         if (strtolower($params['service']) === 'wfs'
-            && !$lproj->getAppContext()->aclCheck('lizmap.tools.layer.export', $this->repository->getKey()) ){
+            && !$lproj->getAppContext()->aclCheck('lizmap.tools.layer.export', $this->repository->getKey())) {
             $request_headers = getallheaders();
             if (!isset($_SESSION['html_map_token'])
                 || $_SESSION['html_map_token'] !== md5(json_encode(array(
