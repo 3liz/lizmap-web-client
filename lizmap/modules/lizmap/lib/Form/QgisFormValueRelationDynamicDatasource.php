@@ -2,6 +2,8 @@
 
 namespace Lizmap\Form;
 
+use GuzzleHttp\Psr7;
+
 class QgisFormValueRelationDynamicDatasource extends \jFormsDynamicDatasource
 {
     // protected $formid;
@@ -116,7 +118,7 @@ class QgisFormValueRelationDynamicDatasource extends \jFormsDynamicDatasource
                     // Get result from json
                     $features = $json->features;*/
 
-                    $featureStream = \Psr7\StreamWrapper::getResource($wfsResult->getBodyAsStream());
+                    $featureStream = Psr7\StreamWrapper::getResource($wfsResult->getBodyAsStream());
                     $features = \JsonMachine\Items::fromStream($featureStream, array('pointer' => '/features'));
                     foreach ($features as $feat) {
                         if (property_exists($feat, 'properties')

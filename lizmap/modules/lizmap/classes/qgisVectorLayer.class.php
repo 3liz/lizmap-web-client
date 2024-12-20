@@ -9,6 +9,9 @@
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
+
+use GuzzleHttp\Psr7;
+
 class qgisVectorLayer extends qgisMapLayer
 {
     // layer type
@@ -1133,7 +1136,7 @@ class qgisVectorLayer extends qgisMapLayer
             return true;
         }
 
-        $featureStream = \Psr7\StreamWrapper::getResource($result->getBodyAsStream());
+        $featureStream = Psr7\StreamWrapper::getResource($result->getBodyAsStream());
         $features = \JsonMachine\Items::fromStream($featureStream, array('pointer' => '/features'));
         if (iterator_count($features) !== 1) {
             return false;
