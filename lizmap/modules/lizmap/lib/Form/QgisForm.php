@@ -12,9 +12,9 @@
 
 namespace Lizmap\Form;
 
+use GuzzleHttp\Psr7;
 use Lizmap\App;
 use Lizmap\Request\RemoteStorageRequest;
-use GuzzleHttp\Psr7;
 
 class QgisForm implements QgisFormControlsInterface
 {
