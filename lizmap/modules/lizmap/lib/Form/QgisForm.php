@@ -12,6 +12,7 @@
 
 namespace Lizmap\Form;
 
+use GuzzleHttp\Psr7;
 use Lizmap\App;
 use Lizmap\Request\RemoteStorageRequest;
 
@@ -1777,14 +1778,14 @@ class QgisForm implements QgisFormControlsInterface
         // Perform request
         $result = $wfsRequest->process();
 
-        $wfsData = $result->getBodyAsString();
+        $code = $result->getCode();
         $mime = $result->getMime();
 
         // Used data
-        if ($wfsData && !in_array(strtolower($mime), array('text/html', 'text/xml'))) {
-            $wfsData = json_decode($wfsData);
+        if ($code < 400 && !in_array(strtolower($mime), array('text/html', 'text/xml'))) {
             // Get data from layer
-            $features = $wfsData->features;
+            $featureStream = Psr7\StreamWrapper::getResource($result->getBodyAsStream());
+            $features = \JsonMachine\Items::fromStream($featureStream, array('pointer' => '/features'));
             $data = array();
             foreach ($features as $feat) {
                 if (property_exists($feat, 'properties')
@@ -1816,6 +1817,7 @@ class QgisForm implements QgisFormControlsInterface
             $dataSource->data = $data;
             $formControl->ctrl->datasource = $dataSource;
         } else {
+            $wfsData = $result->getBodyAsString();
             if (!preg_match('#No feature found error messages#', $wfsData)) {
                 return $this->disableControl($formControl, 'Problem : cannot get data to fill this control!');
             }

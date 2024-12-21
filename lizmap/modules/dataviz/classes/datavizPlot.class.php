@@ -1,7 +1,7 @@
 <?php
 /**
  * @author    3liz
- * @copyright 2017 3liz
+ * @copyright 2017-2023 3liz
  *
  * @see      http://3liz.com
  *
@@ -493,7 +493,7 @@ class datavizPlot
             $features = null;
 
             // Check code
-            if (floor($wfsresponse->getCode() / 100) >= 4) {
+            if ($wfsresponse->getCode() >= 400) {
                 return false;
             }
             // Check mime/type
