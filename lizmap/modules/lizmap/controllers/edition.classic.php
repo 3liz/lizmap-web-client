@@ -10,6 +10,7 @@
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
 
+use GuzzleHttp\Psr7;
 use Lizmap\Form;
 
 class editionCtrl extends jController
@@ -1457,9 +1458,42 @@ class editionCtrl extends jController
             return $rep;
         }
 
-        $rep->data['success'] = true;
-        $rep->data['message'] = 'Success';
-        $rep->data = array_merge($rep->data, $layer->editableFeatures());
+        /** @var jResponseBinary $rep */
+        $rep = $this->getResponse('binary');
+
+        $rep->outputFileName = 'editableFeatures.json';
+        $rep->doDownload = false;
+
+        // Get editable features array: status and features as iterator
+        $editableFeatures = $layer->editableFeatures();
+
+        // Build response generator based on editable features
+        $inputGenerator = function () use ($editableFeatures) {
+            // Build static data
+            $data = array();
+            $data['success'] = true;
+            $data['message'] = 'Success';
+            $data['status'] = $editableFeatures['status'];
+
+            // send first part of the JSON based on static data
+            yield trim(json_encode($data, JSON_PRETTY_PRINT), "}\n").",\n    \"features\": [";
+
+            // send features step by step
+            $separator = '';
+            foreach ($editableFeatures['features'] as $feat) {
+                yield $separator.json_encode($feat);
+                $separator = ",\n        ";
+            }
+
+            // send end of the JSON
+            yield "\n    ]\n}\n";
+        };
+
+        $rep->setContentCallback(function () use ($inputGenerator) {
+            $output = Psr7\Utils::streamFor(fopen('php://output', 'w+'));
+            $input = Psr7\Utils::streamFor($inputGenerator());
+            Psr7\Utils::copyToStream($input, $output);
+        });
 
         return $rep;
     }

@@ -1248,20 +1248,13 @@ class qgisVectorLayer extends qgisMapLayer
             return $restricted_empty_data;
         }
 
-        // Get data
-        $wfsData = $result->getBodyAsString();
-
-        // Check data: if there is no data returned by WFS, the user has not access to it
-        if (!$wfsData) {
-            return $restricted_empty_data;
-        }
-
-        // Get data from layer
-        $wfsData = json_decode($wfsData);
+        // Features as iterator
+        $featureStream = Psr7\StreamWrapper::getResource($result->getBodyAsStream());
+        $features = \JsonMachine\Items::fromStream($featureStream, array('pointer' => '/features'));
 
         return array(
             'status' => 'restricted',
-            'features' => $wfsData->features,
+            'features' => $features,
         );
     }
 
