@@ -42,42 +42,22 @@ lizmap/www/live/images/home/*
 !lizmap/www/live/images/home/.empty
 
 # Built JS files
-lizmap/www/assets/js/lizmap.js
-lizmap/www/assets/js/lizmap.js.map
 lizmap/www/assets/js/*.js.LICENSE.txt
+lizmap/www/assets/js/*.js.map
+lizmap/www/assets/js/lizmap.js
 lizmap/www/assets/js/atlas.js
-lizmap/www/assets/js/atlas.js.map
 lizmap/www/assets/js/attributeTable.js
-lizmap/www/assets/js/attributeTable.js.map
 lizmap/www/assets/js/action.js
-lizmap/www/assets/js/action.js.map
 lizmap/www/assets/js/bottom-dock.js
-lizmap/www/assets/js/bottom-dock.js.map
 lizmap/www/assets/js/edition.js
-lizmap/www/assets/js/edition.js.map
 lizmap/www/assets/js/filter.js
-lizmap/www/assets/js/filter.js.map
 lizmap/www/assets/js/map.js
-lizmap/www/assets/js/map.js.map
 lizmap/www/assets/js/map-projects.js
-lizmap/www/assets/js/map-projects.js.map
 lizmap/www/assets/js/popupQgisAtlas.js
-lizmap/www/assets/js/popupQgisAtlas.js.map
 lizmap/www/assets/js/search.js
-lizmap/www/assets/js/search.js.map
 lizmap/www/assets/js/switcher-layers-actions.js
-lizmap/www/assets/js/switcher-layers-actions.js.map
 lizmap/www/assets/js/timemanager.js
-lizmap/www/assets/js/timemanager.js.map
 lizmap/www/assets/js/view.js
-lizmap/www/assets/js/view.js.map
-lizmap/www/assets/js/137.bundle.js
-lizmap/www/assets/js/137.bundle.js.map
-lizmap/www/assets/js/BufferOp.bundle.js
-lizmap/www/assets/js/BufferOp.bundle.js.map
-lizmap/www/assets/js/OLparser.bundle.js
-lizmap/www/assets/js/OLparser.bundle.js.map
-lizmap/www/assets/js/vendors-node_modules_jsts_org_locationtech_jts_geom_GeometryFactory_js.bundle.js
 # Docs
 docs/js
 
