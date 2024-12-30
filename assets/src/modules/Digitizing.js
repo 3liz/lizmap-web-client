@@ -23,7 +23,18 @@ import { Vector as VectorSource } from 'ol/source.js';
 import { Vector as VectorLayer } from 'ol/layer.js';
 import { Feature } from 'ol';
 
-import { Point, LineString, Polygon, Circle as CircleGeom, MultiPoint, GeometryCollection } from 'ol/geom.js';
+import {
+    LinearRing,
+    LineString,
+    MultiLineString,
+    MultiPoint,
+    MultiPolygon,
+    Point,
+    Polygon,
+    Circle as CircleGeom,
+    GeometryCollection
+} from 'ol/geom.js';
+
 import { circular, fromCircle } from 'ol/geom/Polygon.js';
 
 import { getArea, getLength } from 'ol/sphere.js';
@@ -81,6 +92,7 @@ export class Digitizing {
         this._isRotate = false;
         this._hasMeasureVisible = false;
         this._isSaved = false;
+        this._isSplitting = false;
         this._isErasing = false;
 
         this._drawInteraction;
@@ -615,6 +627,84 @@ export class Digitizing {
         }
     }
 
+    get isSplitting() {
+        return this._isSplitting;
+    }
+
+    set isSplitting(isSplitting) {
+        if (this._isSplitting !== isSplitting) {
+            this._isSplitting = isSplitting;
+
+            if (this._isSplitting) {
+                this._splitInteraction = new Draw({
+                    source: this._drawSource,
+                    type: 'LineString'
+                });
+                this._splitInteraction.on('drawend', event => {
+                    Promise.all([
+                        import(/* webpackChunkName: 'OLparser' */ 'jsts/org/locationtech/jts/io/OL3Parser.js'),
+                        import(/* webpackChunkName: 'UnionOp' */ 'jsts/org/locationtech/jts/operation/union/UnionOp.js'),
+                        import(/* webpackChunkName: 'Polygonizer' */ 'jsts/org/locationtech/jts/operation/polygonize/Polygonizer.js'),
+                    ]).then(([{ default: OLparser }, { default: UnionOp }, { default: Polygonizer }]) => {
+                        const parser = new OLparser();
+                        parser.inject(
+                            Point,
+                            LineString,
+                            LinearRing,
+                            Polygon,
+                            MultiPoint,
+                            MultiLineString,
+                            MultiPolygon
+                        );
+
+                        const lineGeometry = event.feature.getGeometry();
+
+                        for (const feature of this._drawSource.getFeatures()) {
+                            if (feature.getGeometry().getType() === 'Polygon') {
+                                // Check if line intersects with polygon
+                                if (lineGeometry.intersectsExtent(feature.getGeometry().getExtent())) {
+                                    // Convert the OpenLayers geometry to a JSTS geometry
+                                    const jstsLine = parser.read(lineGeometry);
+                                    const jstsDrawnGeom = parser.read(feature.getGeometry());
+
+                                    // Perform union of Polygon and Line and use Polygonizer to split the polygon by line
+                                    let union = UnionOp.union(jstsDrawnGeom.getExteriorRing(), jstsLine);
+                                    let polygonizer = new Polygonizer();
+
+                                    // Splitting polygon in two parts
+                                    polygonizer.add(union);
+                                    let polygons = polygonizer.getPolygons();
+
+                                    // This will execute only if polygon is successfully splitted into two parts
+                                    if (polygons.array.length == 2) {
+                                        // Remove original polygon and line used for splitting
+                                        this._drawSource.removeFeature(event.feature);
+                                        this._drawSource.removeFeature(feature);
+
+                                        // Iterate through splitted polygons
+                                        polygons.array.forEach(geom => {
+                                            let splitted_polygon = new Feature({
+                                                geometry: new Polygon(parser.write(geom).getCoordinates())
+                                            });
+
+                                            // Add splitted polygon to vector layer    
+                                            this._drawSource.addFeature(splitted_polygon);
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    });
+                });
+                mainLizmap.map.addInteraction(this._splitInteraction);
+            } else {
+                mainLizmap.map.removeInteraction(this._splitInteraction);
+            }
+            
+            mainEventDispatcher.dispatch('digitizing.split');
+        }
+    }
+
     get isErasing() {
         return this._isErasing;
     }
@@ -1090,6 +1180,10 @@ export class Digitizing {
 
     toggleMeasure() {
         this.hasMeasureVisible = !this.hasMeasureVisible;
+    }
+
+    toggleSplit() {
+        this.isSplitting = !this._isSplitting;
     }
 
     toggleErasing() {
