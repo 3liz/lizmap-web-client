@@ -1,10 +1,12 @@
 <?php
 
-use Lizmap\Project;
 use PHPUnit\Framework\TestCase;
 use function PHPUnit\Framework\assertContains;
 use function PHPUnit\Framework\assertCount;
 use function PHPUnit\Framework\assertEquals;
+use Lizmap\Project;
+use Lizmap\Project\Qgis;
+use Lizmap\App;
 
 /**
  * @internal
@@ -30,295 +32,14 @@ class QgisProjectTest extends TestCase
         }
     }
 
-    public function testReadWMSInfo()
-    {
-        $data = array(
-            'mapcanvas' => array(
-                'destinationsrs' => array('spatialrefsys' => array('authid' => 'CRS4242')),
-            ),
-            'properties' => array(
-                'WMSServiceTitle' => 'title',
-                'WMSServiceAbstract' => 'abstract',
-                'WMSKeywordList' => array(
-                    'value' => array('key', 'word', 'WMS'),
-                ),
-                'WMSExtent' => array(
-                    'value' => array('42', '24', '21', '12'),
-                ),
-                'WMSOnlineResource' => 'ressource',
-                'WMSContactMail' => 'test.mail@3liz.org',
-                'WMSContactOrganization' => '3liz',
-                'WMSContactPerson' => 'marvin',
-                'WMSContactPhone' => '',
-            ),
-        );
-        $expectedWMS = array(
-            'WMSServiceTitle' => 'title',
-            'WMSServiceAbstract' => 'abstract',
-            'WMSKeywordList' => 'key, word, WMS',
-            'WMSExtent' => '42, 24, 21, 12',
-            'ProjectCrs' => 'CRS4242',
-            'WMSOnlineResource' => 'ressource',
-            'WMSContactMail' => 'test.mail@3liz.org',
-            'WMSContactOrganization' => '3liz',
-            'WMSContactPerson' => 'marvin',
-            'WMSContactPhone' => '',
-        );
-        $xml = new SimpleXMLElement('<qgis></qgis>');
-        $this->arrayToXml($data, $xml);
-        $testQgis = new qgisProjectForTests();
-        $this->assertEquals($expectedWMS, $testQgis->readWMSInfoTest($xml));
-    }
-
-    public function testReadCanvasColor()
-    {
-        $data = array(
-            'properties' => array(
-                'Gui' => array(
-                    'CanvasColorGreenPart' => '21',
-                    'CanvasColorRedPart' => '42',
-                    'CanvasColorBluePart' => '84',
-                ),
-            ),
-        );
-        $xml = new SimpleXMLElement('<qgis></qgis>');
-        $this->arrayToXml($data, $xml);
-        $testQgis = new qgisProjectForTests();
-        $this->assertEquals('rgb(42,21,84)', $testQgis->readCanvasColorTest($xml));
-    }
-
-    public function testReadAllProj4()
-    {
-        $data = array(
-            array('spatialrefsys' => array(
-                'authid' => 'CRS1',
-                'proj4' => '1',
-            )),
-            array('spatialrefsys' => array(
-                'authid' => 'CRS2',
-                'proj4' => '2',
-            )),
-            array('spatialrefsys' => array(
-                'authid' => 'CRS3',
-                'proj4' => '3',
-            )),
-            array('spatialrefsys' => array(
-                'authid' => 'CRS4',
-                'proj4' => '4',
-            )),
-        );
-        $expectedProj4 = array(
-            'CRS1' => '1',
-            'CRS2' => '2',
-            'CRS3' => '3',
-            'CRS4' => '4',
-        );
-        $xml = new SimpleXMLElement('<qgis></qgis>');
-        $this->arrayToXml($data, $xml);
-        $testQgis = new qgisProjectForTests();
-        $this->assertEquals($expectedProj4, $testQgis->readAllProj4Test($xml));
-    }
-
-    public function testReadUseLayersIDs()
-    {
-        $data = array(
-            'properties' => array(
-                'WMSUseLayerIDs' => 'false',
-            ),
-        );
-        $xml = new SimpleXMLElement('<qgis></qgis>');
-        $this->arrayToXml($data, $xml);
-        $testQgis = new qgisProjectForTests();
-        $this->assertFalse($testQgis->readUseLayersIDsTest($xml));
-    }
-
-    public function testReadThemes()
-    {
-        $expectedThemes = array(
-            'Administrative' => array(
-                'layers' => array(
-                    'SousQuartiers20160121124316563' => array(
-                        'style' => 'default',
-                        'expanded' => '1',
-                    ),
-                    'VilleMTP_MTP_Quartiers_2011_432620130116112610876' => array(
-                        'style' => 'default',
-                        'expanded' => '0',
-                    ),
-                ),
-                'expandedGroupNode' => array(
-                    'datalayers/Buildings',
-                    'Overview',
-                    'datalayers/Bus',
-                    'datalayers',
-                ),
-            ),
-        );
-        $file = __DIR__.'/Ressources/themes.qgs';
-        $xml = simplexml_load_file($file);
-        $testQgis = new qgisProjectForTests();
-        $themes = $testQgis->readThemesForTests($xml);
-        $this->assertEquals($expectedThemes, $themes);
-
-        $expectedThemes = array(
-          'theme2' => array(
-              'layers' => array(
-                 'sousquartiers_7c49d0fc_0ee0_4308_a66d_45c144e59872' => array(
-                    'style' => 'défaut',
-                    'expanded' => '1',
-                  ),
-                  'quartiers_ef5b13e3_36db_4e0d_98b3_990de580367d' => array(
-                      'style' => 'style2',
-                      'expanded' => '1',
-                  ),
-              ),
-              'expandedGroupNode' => array(
-                  'group1',
-              ),
-              'checkedGroupNode' => array(
-                  'group1',
-            ),
-          ),
-          'theme1' => array(
-              'layers' => array(
-                  'quartiers_ef5b13e3_36db_4e0d_98b3_990de580367d' => array(
-                      'style' => 'style1',
-                      'expanded' => '1',
-                  ),
-              ),
-              'expandedGroupNode' => array(
-                  'group1',
-              ),
-          ),
-      );
-      $file = __DIR__.'/Ressources/themes-3_22.qgs';
-      $xml = simplexml_load_file($file);
-      $testQgis = new qgisProjectForTests();
-      $themes = $testQgis->readThemesForTests($xml);
-      $this->assertEquals($expectedThemes, $themes);
-
-      $file = __DIR__.'/Ressources/themes-3_26.qgs';
-      $xml = simplexml_load_file($file);
-      $testQgis = new qgisProjectForTests();
-      $themes = $testQgis->readThemesForTests($xml);
-      $this->assertEquals($expectedThemes, $themes);
-    }
-
-    public function testReadCustomProjectVariables()
-    {
-        $expectedCustomProjectVariables = array(
-            'lizmap_user' => 'lizmap',
-            'lizmap_user_groups' => 'lizmap-group',
-        );
-        $file = __DIR__.'/Ressources/customProjectVariables.qgs';
-        $xml = simplexml_load_file($file);
-        $testQgis = new qgisProjectForTests();
-        $customProjectVariables = $testQgis->readCustomProjectVariablesForTests($xml);
-        $this->assertEquals($expectedCustomProjectVariables, $customProjectVariables);
-    }
-
-    public function testReadLayers()
-    {
-        // Test if WFS 'label' field is not exposed in 3.10 and 3.16
-        $expectedWfsFields = array(
-            0 => 'id',
-        );
-        $testQgis = new qgisProjectForTests();
-
-        $fileVersions = array('310', '316');
-
-        foreach ($fileVersions as $fileVersion) {
-            $xml = simplexml_load_file(__DIR__.'/Ressources/readLayers_'.$fileVersion.'.qgs');
-            $layers = $testQgis->readLayersForTests($xml);
-            $this->assertEquals($expectedWfsFields, $layers[0]['wfsFields']);
-        }
-    }
-
-    public function testReadQgisMetadataFromXml()
-    {
-        $testQgis = new qgisProjectForTests();
-        $xml = simplexml_load_file(__DIR__.'/Ressources/readLayers_316.qgs');
-        $this->assertEquals('31607', $testQgis->readQgisVersionForTests($xml));
-
-        $testQgis = new qgisProjectForTests();
-        $xml = simplexml_load_file(__DIR__.'/Ressources/readLayers_310.qgs');
-        $this->assertEquals('31004', $testQgis->readQgisVersionForTests($xml));
-    }
-
-    public function testReadQgisMetadataFromLines()
-    {
-        $testQgis = new qgisProjectForTests();
-        $xml_path = __DIR__.'/Ressources/readLayers_316.qgs';
-        $this->assertEquals('2021-06-14T11:50:51', $testQgis->readLastSaveDateTimeForTests($xml_path));
-
-        $testQgis = new qgisProjectForTests();
-        $xml_path = __DIR__.'/Ressources/readLayers_310.qgs';
-        $this->assertEquals('', $testQgis->readLastSaveDateTimeForTests($xml_path));
-    }
-
-    public function testReadRelations()
-    {
-        $expectedRelations = array(
-            'VilleMTP_MTP_Quartiers_2011_432620130116112610876' => array(
-                array('referencingLayer' => 'SousQuartiers20160121124316563',
-                    'referencedField' => 'QUARTMNO',
-                    'referencingField' => 'QUARTMNO',
-                    'previewField' => 'LIBQUART',
-                    'relationName' => 'Subdistricts by district',
-                    'relationId' => 'SousQuartiers20160121124316563_QUARTMNO_VilleMTP_MTP_Quartiers_2011_432620130116112610876_QUARTMNO',
-
-                ),
-            ),
-            'tramstop20150328114203878' => array(
-                array('referencingLayer' => 'jointure_tram_stop20150328114216806',
-                    'referencedField' => 'osm_id',
-                    'referencingField' => 'stop_id',
-                    'previewField' => 'unique_name',
-                    'relationName' => 'Tram stop -> pivot tram stop/tram line',
-                    'relationId' => 'jointure_tram_stop20150328114216806_stop_id_tramstop20150328114203878_osm_id',
-
-                ),
-            ),
-            'pivot' => array(),
-        );
-
-        $expectedFields = array(
-            array (
-                'id' => 'SousQuartiers20160121124316563_QUARTMNO_VilleMTP_MTP_Quartiers_2011_432620130116112610876_QUARTMNO',
-                'layerName' => 'Quartiers',
-                'typeName' => 'Quartiers',
-                'propertyName' => 'QUARTMNO,LIBQUART',
-                'filterExpression' => '',
-                'referencedField' => 'QUARTMNO',
-                'referencingField' => 'QUARTMNO',
-                'previewField' => 'LIBQUART',
-            ),
-            array (
-                'id' => 'jointure_tram_stop20150328114216806_stop_id_tramstop20150328114203878_osm_id',
-                'layerName' => 'tramstop',
-                'typeName' => 'tramstop',
-                'propertyName' => 'osm_id,unique_name',
-                'filterExpression' => '',
-                'referencedField' => 'osm_id',
-                'referencingField' => 'stop_id',
-                'previewField' => 'unique_name',
-            ),
-        );
-
-        $file = __DIR__.'/Ressources/relations.qgs';
-        $xml = simplexml_load_file($file);
-        $testQgis = new qgisProjectForTests();
-        list($relations, $relationsFields) = $testQgis->readRelationsForTests($xml);
-        $this->assertEquals($expectedRelations, $relations);
-        $this->assertEquals($expectedFields, $relationsFields);
-    }
-
     public function testEmbeddedRelation()
     {
          $file = __DIR__.'/Ressources/relations_project_embed.qgs';
          $testQgis = new qgisProjectForTests();
          $testQgis->setPath($file);
          $testQgis->readXMLProjectTest($file);
+
+         $this->assertNull($testQgis->getTheXmlAttribute());
 
          //check layers
          foreach ($testQgis->getLayers() as $layers){
@@ -365,6 +86,8 @@ class QgisProjectTest extends TestCase
          $testQgisParent->setPath($file);
          $testQgisParent->readXMLProjectTest($file);
 
+         $this->assertNull($testQgis->getTheXmlAttribute());
+
          $parentRelations = $testQgisParent->getRelations();
          $parentRelationFields = $testQgisParent->getRelationsFields();
          $this->assertEquals($relations,$parentRelations);
@@ -391,23 +114,16 @@ class QgisProjectTest extends TestCase
     {
         $file = __DIR__.'/Ressources/simpleLayer.qgs.cfg';
         $json = json_decode(file_get_contents($file));
+//<<<<<<< HEAD
         $expectedLayer = unserialize(serialize($json->layers));
+//=======
+//        $expectedLayer = json_decode(json_encode($json->layers));
+//>>>>>>> 6352dab26 (QgisProject remove code in setPropertiesAfterRead methods)
         $expectedLayer->montpellier_events->opacity = (float) 0.85;
         $expectedLayer->local_raster_layer->opacity = (float) 0.6835;
         $cfg = new Project\ProjectConfig((object) array('layers' => $json->layers));
         $testProj = new qgisProjectForTests();
-        $testProj->setXmlForTest(simplexml_load_file(__DIR__.'/Ressources/opacity.qgs'));
-        $layers = array(
-            array (
-                'id' => 'events_4c3b47b8_3939_4c8c_8e91_55bdb13a2101',
-                'name' => 'montpellier_events',
-            ),
-            array (
-                'id' => 'raster_78572dfa_41b3_42da_a9c6_933ead8bad8f',
-                'name' => 'local_raster_layer',
-            ),
-        );
-        $testProj->setLayers($layers);
+        $testProj->setPath(__DIR__.'/Ressources/opacity.qgs');
         $testProj->setLayerOpacityForTest($cfg);
         $this->assertEquals($expectedLayer, $cfg->getLayers());
 
@@ -442,6 +158,33 @@ class QgisProjectTest extends TestCase
         $eLayerName = $emLayer->getName();
         $this->assertNotNull($config->getLayer($eLayerName));
         $this->assertEquals(0.4,$config->getLayer($eLayerName)->opacity);
+    }
+
+    public function testSetLayerGroupData()
+    {
+      $file = __DIR__.'/Ressources/hiddengrouplayer.qgs.cfg';
+      $json = json_decode(file_get_contents($file));
+      $expectedLayer = json_decode(json_encode($json->layers));
+      $expectedLayer->Hidden->shortname = 'Hidden';
+      $expectedLayer->Hidden->mutuallyExclusive = 'True';
+      $cfg = new Project\ProjectConfig((object) array('layers' => $json->layers));
+      $testProj = new qgisProjectForTests();
+      $testProj->setPath(__DIR__.'/Ressources/opacity.qgs');
+      $testProj->setLayerGroupDataForTest($cfg);
+      $this->assertEquals($expectedLayer->Hidden, $cfg->getLayers()->Hidden);
+    }
+
+    public function testSetLayerShowFeatureCount()
+    {
+        $file = __DIR__.'/Ressources/simpleLayer.qgs.cfg';
+        $json = json_decode(file_get_contents($file));
+        $expectedLayer = json_decode(json_encode($json->layers));
+        $expectedLayer->montpellier_events->showFeatureCount = 'True';
+        $cfg = new Project\ProjectConfig((object) array('layers' => $json->layers));
+        $testProj = new qgisProjectForTests();
+        $testProj->setPath(__DIR__.'/Ressources/opacity.qgs');
+        $testProj->setLayerShowFeatureCountForTest($cfg);
+        $this->assertEquals($expectedLayer, $cfg->getLayers());
     }
 
     public static function getLayerData()
@@ -521,7 +264,7 @@ class QgisProjectTest extends TestCase
         $file = __DIR__.'/Ressources/'.$fileName.'.qgs';
         $eLayers = json_decode(file_get_contents($file.'.cfg'))->editionLayers;
         $testProj = new qgisProjectForTests();
-        $testProj->setXmlForTest(simplexml_load_file($file));
+        $testProj->setPath($file);
         $testProj->readEditionLayersForTest($eLayers);
         $this->assertEquals($expectedELayer, $eLayers);
     }
@@ -540,6 +283,8 @@ class QgisProjectTest extends TestCase
         $rep = new Project\Repository('key', array(), null, null, null);
         $testQgis->setPath($file);
         $testQgis->readXMLProjectTest($file);
+
+        $this->assertNull($testQgis->getTheXmlAttribute());
 
         $cfg = json_decode(file_get_contents($file.'.cfg'));
         $config = new Project\ProjectConfig($cfg);
@@ -729,15 +474,15 @@ class QgisProjectTest extends TestCase
             <column type="field" hidden="0" width="-1" name="fid"/>
           </columns>
         </attributetableconfig>';
+        $xmlTable = App\XmlTools::xmlReaderFromString($table);
+        $configTable = Qgis\Layer\AttributeTableConfig::fromXmlReader($xmlTable);
 
         $file = __DIR__.'/Ressources/events.qgs';
         $aLayer = json_decode(file_get_contents($file.'.cfg'))->attributeLayers;
-        $xml = simplexml_load_string($table);
         $testProj = new qgisProjectForTests();
-        $testProj->setXmlForTest(simplexml_load_file($file));
+        $testProj->setPath($file);
         $testProj->readAttributeLayersForTest($aLayer);
-        $xml = json_decode(str_replace('@', '', json_encode($xml)));
-        $this->assertEquals($xml, $aLayer->montpellier_events->attributetableconfig);
+        $this->assertEquals($configTable->toKeyArray(), $aLayer->montpellier_events->attributetableconfig);
     }
 
     public static function getShortNamesData()
@@ -768,7 +513,7 @@ class QgisProjectTest extends TestCase
             ),
         );
         $testProj = new qgisProjectForTests();
-        $testProj->setXmlForTest(simplexml_load_file($file));
+        $testProj->setPath($file);
         $cfg = new Project\ProjectConfig((object) array('layers' => (object) $layers));
         $testProj->setShortNamesForTest($cfg);
         $layer = $cfg->getLayers();
@@ -2261,7 +2006,52 @@ class QgisProjectTest extends TestCase
         $this->assertEquals('', $remotePath->getUploadAccept());
         $this->assertEquals(array(), $remotePath->getMimeTypes());
         $this->assertFalse($remotePath->isImageUpload());
+    }
 
+    public function testReadProject()
+    {
+        //$services = new lizmapServices(array(), (object) array(), false, '', '');
+        $testQgis = new qgisProjectForTests(array());
+        $file = __DIR__.'/Ressources/montpellier.qgs';
+        $testQgis->setPath($file);
+        $testQgis->readXMLProjectTest($file);
+
+        $this->assertNull($testQgis->getTheXmlAttribute());
+
+        $cfg = json_decode(file_get_contents($file.'.cfg'));
+        $config = new Project\ProjectConfig($cfg);
+
+        $testQgis->setPropertiesAfterRead($config);
+
+        $this->assertNull($testQgis->getTheXmlAttribute());
+
+        $testQgis->getPrintTemplates();
+
+        $this->assertNull($testQgis->getTheXmlAttribute());
+
+        $testQgis->readLocateByLayer($config->getLocateByLayer());
+
+        $this->assertNull($testQgis->getTheXmlAttribute());
+
+        $testQgis->readEditionLayers($config->getEditionLayers());
+
+        $this->assertNull($testQgis->getTheXmlAttribute());
+
+        $testQgis->readLayersOrder($config->getLayers());
+
+        $this->assertNull($testQgis->getTheXmlAttribute());
+
+        $testQgis->readAttributeLayers($config->getAttributeLayers());
+
+        $this->assertNull($testQgis->getTheXmlAttribute());
+
+        $testQgis->readEditionForms($config->getEditionLayers(), null);
+
+        $this->assertNull($testQgis->getTheXmlAttribute());
+
+        $testQgis->readLayersLabeledFieldsConfig($config->getLayersWithLabels(), null);
+
+        $this->assertNull($testQgis->getTheXmlAttribute());
 
     }
 }

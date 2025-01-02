@@ -244,53 +244,16 @@ class ProjectMainData
      */
     protected function readXmlProject($qgs_path)
     {
-        $oXml = new \XMLReader();
-
-        // Open file
-        if (!$oXml->open($qgs_path)) {
-            throw new UnknownLizmapProjectException('The file '.$qgs_path.' cannot be parsed.');
-        }
+        $xmlReader = App\XmlTools::xmlReaderFromFile($qgs_path);
 
         $data = array();
         // Read until we are at the root document element
-        while ($oXml->read()) {
-            if ($oXml->nodeType == \XMLReader::ELEMENT
-                && $oXml->depth == 1
-                && $oXml->localName == 'properties') {
-                $data = array_merge($data, $this->readXmlProperties($oXml));
+        while ($xmlReader->read()) {
+            if ($xmlReader->nodeType == \XMLReader::ELEMENT
+                && $xmlReader->depth == 1
+                && $xmlReader->localName == 'properties') {
+                $data = array_merge($data, $this->readXmlProperties($xmlReader));
             }
-        }
-        $errorMsg = '';
-        foreach (libxml_get_errors() as $error) {
-            if ($errorMsg !== '') {
-                $errorMsg .= '\n';
-            }
-
-            switch ($error->level) {
-                case LIBXML_ERR_WARNING:
-                    $errorMsg .= 'Warning '.$error->code.': ';
-
-                    break;
-
-                case LIBXML_ERR_ERROR:
-                    $errorMsg .= 'Error '.$error->code.': ';
-
-                    break;
-
-                case LIBXML_ERR_FATAL:
-                    $errorMsg .= 'Fatal Error '.$error->code.': ';
-
-                    break;
-            }
-            $errorMsg .= 'Line: '.$error->line.' ';
-            $errorMsg .= 'Column: '.$error->column.' ';
-            $errorMsg .= trim($error->message);
-        }
-        // Clear libxml error buffer
-        libxml_clear_errors();
-
-        if ($errorMsg !== '') {
-            throw new \Exception($errorMsg);
         }
 
         return $data;

@@ -6,7 +6,7 @@ class QgisProjectForTests extends QgisProject
 {
     public function __construct($data = null)
     {
-        if ($data) {
+        if ($data !== null) {
             parent::__construct(null, new lizmapServices(null, (object) array(), false, '', ''), new ContextForTests(), $data);
         }
     }
@@ -28,59 +28,6 @@ class QgisProjectForTests extends QgisProject
     {
          return $this->relationsFields;
     }
-    public function readWMSInfoTest($xml)
-    {
-        return $this->readWMSInformation($xml);
-    }
-
-    public function readCanvasColorTest($xml)
-    {
-        return $this->readCanvasColor($xml);
-    }
-
-    public function readAllProj4Test($xml)
-    {
-        return $this->readAllProj4($xml);
-    }
-
-    public function readUseLayersIDsTest($xml)
-    {
-        return $this->readUseLayerIDs($xml);
-    }
-
-    public function readThemesForTests($xml)
-    {
-        return $this->readThemes($xml);
-    }
-
-    public function readCustomProjectVariablesForTests($xml)
-    {
-        return $this->readCustomProjectVariables($xml);
-    }
-
-    public function readLayersForTests($xml)
-    {
-        // readLayers() needs $this->qgisProjectVersion to be set
-        $this->qgisProjectVersion = $this->readQgisProjectVersion($xml);
-
-        return $this->readLayers($xml);
-    }
-
-    public function readQgisVersionForTests($xml)
-    {
-        return $this->readQgisProjectVersion($xml);
-    }
-
-    public function readLastSaveDateTimeForTests($file)
-    {
-        return $this->readLastSaveDateTime($file);
-    }
-
-    public function readRelationsForTests($xml)
-    {
-        $this->xml = $xml;
-        return $this->readRelations($xml);
-    }
 
     public function setShortNamesForTest($cfg)
     {
@@ -90,6 +37,21 @@ class QgisProjectForTests extends QgisProject
     public function setLayerOpacityForTest($cfg)
     {
         return $this->setLayerOpacity($cfg);
+    }
+
+    public function setLayerGroupDataForTest($cfg)
+    {
+        return $this->setLayerGroupData($cfg);
+    }
+
+    public function setLayerShowFeatureCountForTest($cfg)
+    {
+        return $this->setLayerShowFeatureCount($cfg);
+    }
+
+    public function getTheXmlAttribute()
+    {
+        return $this->xml;
     }
 
     public function getXmlForTest()
