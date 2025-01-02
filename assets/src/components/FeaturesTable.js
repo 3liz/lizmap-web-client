@@ -21,7 +21,10 @@ import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
  * <lizmap-features-table draggable="yes"sortingorder="asc" sortingfield="libsquart"
  *                        withgeometry="1" expressionfilter="quartmno = 'HO'"
  *                        uniquefield="id" layerid="subdistrict_24ceec66_e7fe_46a2_b57a_af5c50389649"
- *                        layertitle="child sub-districts" id="0782b34c-840c-4b0f-821c-1b66c964e371">
+ *                        layertitle="child sub-districts" id="0782b34c-840c-4b0f-821c-1b66c964e371"
+ *                        (optionnal) data-show-highlighted-feature-geometry="true"
+ *                        (optionnal) data-center-to-highlighted-feature-geometry="true"
+ *                        >
  *      <lizmap-field data-alias="District's name" data-description="Label of district's name">
  *         "libsquart"
  *      </lizmap-field>
@@ -88,6 +91,11 @@ export default class FeaturesTable extends HTMLElement {
      * Load features from the layer and configured filter
      */
     async load() {
+        if (this.dataset.showHighlightedFeatureGeometry === 'true') {
+            // Remove the highlight on the map
+            mainLizmap.map.clearHighlightFeatures();
+        }
+
         // Build needed fields
         let fields = `${this.uniqueField}`;
         if (this.sortingField) {
@@ -239,6 +247,19 @@ export default class FeaturesTable extends HTMLElement {
         const eventTarget = event.currentTarget;
 
         if (!itemWasActive) {
+            if (this.dataset.showHighlightedFeatureGeometry === 'true') {
+                // Highlight the clicked element on the map
+                mainLizmap.map.setHighlightFeatures(
+                    feature,
+                    "geojson",
+                    "EPSG:4326",
+                );
+            }
+
+            // Center the map on the clicked element if the feature has a geometry
+            if (feature.bbox && this.dataset.centerToHighlightedFeatureGeometry === 'true') {
+                mainLizmap.map.getView().fit(feature.bbox, {duration: 150, maxZoom: mainLizmap.map.getView().getZoom()});
+            }
 
             // Set the features table properties
             const lineId = parseInt(eventTarget.dataset.lineId);
@@ -292,6 +313,9 @@ export default class FeaturesTable extends HTMLElement {
             // Set the features table properties
             this.activeItemFeatureId = null;
             this.activeItemLineNumber = null;
+
+            // Remove the highlight on the map
+            mainLizmap.map.clearHighlightFeatures();
 
             eventTarget.classList.remove('popup-displayed');
             eventTarget.setAttribute('title', defaultItemTitle);
