@@ -210,6 +210,16 @@ export default class FeaturesTable extends HTMLElement {
                     "geojson",
                     "EPSG:4326",
                 );
+
+                /**
+                 * When the user has selected an item and highlighted it
+                 * @event features.table.item.highlighted
+                 * @property {string} itemFeatureId The feature ID of the selected item
+                 */
+                mainEventDispatcher.dispatch({
+                    type: 'features.table.item.highlighted',
+                    itemFeatureId: feature.properties.feature_id,
+                });
             }
 
             // Center the map on the clicked element if the feature has a geometry
