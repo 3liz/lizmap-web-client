@@ -72,6 +72,17 @@ test.describe('Display lizmap-features-table component in popup from QGIS toolti
         await expect(secondItem).toHaveAttribute('data-line-id', '2');
         await expect(secondItem).toHaveAttribute('data-feature-id', '17');
 
+        // expressionfilter attribute listening changes
+        const featTable = page.locator(`lizmap-features-table`);
+        const idFeatTable = featTable.getAttribute("id");
+        await featTable.evaluate(element => element.setAttribute('expressionfilter','quartmno = \'MI\''));
+
+        await page.waitForTimeout(200);
+
+        const newFeatTable = page.locator(`lizmap-features-table`);
+        const newIdFeatTable = newFeatTable.getAttribute("id");
+
+        await expect(idFeatTable).not.toEqual(newIdFeatTable);
 
         //clear screen
         await page.locator('#dock-close').click();
