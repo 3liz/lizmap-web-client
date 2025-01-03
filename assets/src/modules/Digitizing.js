@@ -188,6 +188,7 @@ export class Digitizing {
 
         this._translateInteraction = new Translate({
             features: this._selectInteraction.getFeatures(),
+            hitTolerance: 20
         });
 
         this._transformInteraction = new Transform({
