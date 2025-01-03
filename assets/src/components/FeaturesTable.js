@@ -447,17 +447,45 @@ export default class FeaturesTable extends HTMLElement {
                         title="${lizDict['featuresTable.toolbar.previous']}"
                         @click=${event => {
                         // Click on the previous item
+                        const oldFeatureDiv = this.querySelector(`tr.lizmap-features-table-item[data-line-id="${this.activeItemLineNumber}"]`);
                         const lineNumber = this.activeItemLineNumber - 1;
-                        const featureDiv = this.querySelector(`tr.lizmap-features-table-item[data-line-id="${lineNumber}"]`);
-                        if (featureDiv) featureDiv.click();
+                        const newFeatureDiv = this.querySelector(`tr.lizmap-features-table-item[data-line-id="${lineNumber}"]`);
+
+                        /**
+                         * When the user press the "previous" button
+                         * @event features.table.item.previous.button
+                         * @property {string} itemOldFeatureId The feature ID of the old element
+                         * @property {string} itemNewFeatureId The feature ID of the new element
+                         */
+                        mainEventDispatcher.dispatch({
+                            type: 'features.table.item.previous.button',
+                            itemOldFeatureId: oldFeatureDiv.dataset.featureId, 
+                            itemNewFeatureId: newFeatureDiv.dataset.featureId,
+                        });
+                        
+                        if (newFeatureDiv) newFeatureDiv.click();
                     }}></button>
                     <button class="btn btn-mini next-popup"
                         title="${lizDict['featuresTable.toolbar.next']}"
                         @click=${event => {
                         // Click on the next item
+                        const oldFeatureDiv = this.querySelector(`tr.lizmap-features-table-item[data-line-id="${this.activeItemLineNumber}"]`);
                         const lineNumber = this.activeItemLineNumber + 1;
-                        const featureDiv = this.querySelector(`tr.lizmap-features-table-item[data-line-id="${lineNumber}"]`);
-                        if (featureDiv) featureDiv.click();
+                        const newFeatureDiv = this.querySelector(`tr.lizmap-features-table-item[data-line-id="${lineNumber}"]`);
+
+                        /**
+                         * When the user press the "next" button
+                         * @event features.table.item.previous.button
+                         * @property {string} itemOldFeatureId The feature ID of the old element
+                         * @property {string} itemNewFeatureId The feature ID of the new element
+                         */
+                        mainEventDispatcher.dispatch({
+                            type: 'features.table.item.next.button',
+                            itemOldFeatureId: oldFeatureDiv.dataset.featureId,
+                            itemNewFeatureId: newFeatureDiv.dataset.featureId,
+                        });
+                        
+                        if (newFeatureDiv) newFeatureDiv.click();
                     }}></button>
                     <button class="btn btn-mini close-popup"
                         title="${lizDict['featuresTable.toolbar.close']}"
