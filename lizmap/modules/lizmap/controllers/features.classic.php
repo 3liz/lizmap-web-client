@@ -170,13 +170,23 @@ class featuresCtrl extends jController
 
         $expressions = array_merge($expressions, $additionalFields);
 
+        $sortingField = trim($this->param('sorting_field', null));
+
+        $sortingOrder = trim($this->param('sorting_order', 'asc'));
+
+        // Limit
+        $limit = trim($this->param('limit', 1000));
+
         // Get the evaluated features for the given layer and parameters
         $getDisplayExpressions = qgisExpressionUtils::virtualFields(
             $qgisLayer,
             $expressions,
             $exp_filter,
             $withGeometry,
-            $fields
+            $fields,
+            $limit,
+            $sortingField,
+            $sortingOrder,
         );
 
         // If the returned content is null, an error occurred
