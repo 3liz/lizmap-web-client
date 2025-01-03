@@ -645,7 +645,8 @@ export class Digitizing {
                         import(/* webpackChunkName: 'OLparser' */ 'jsts/org/locationtech/jts/io/OL3Parser.js'),
                         import(/* webpackChunkName: 'UnionOp' */ 'jsts/org/locationtech/jts/operation/union/UnionOp.js'),
                         import(/* webpackChunkName: 'Polygonizer' */ 'jsts/org/locationtech/jts/operation/polygonize/Polygonizer.js'),
-                    ]).then(([{ default: OLparser }, { default: UnionOp }, { default: Polygonizer }]) => {
+                        import(/* webpackChunkName: 'lineSplit' */ '@turf/line-split'),
+                    ]).then(([{ default: OLparser }, { default: UnionOp }, { default: Polygonizer }, { default: lineSplit }]) => {
                         const parser = new OLparser();
                         parser.inject(
                             Point,
@@ -659,8 +660,12 @@ export class Digitizing {
 
                         const lineGeometry = event.feature.getGeometry();
 
+                        // Remove line used for splitting
+                        this._drawSource.removeFeature(event.feature);
+
                         for (const feature of this._drawSource.getFeatures()) {
-                            if (feature.getGeometry().getType() === 'Polygon') {
+                            const geomType = feature.getGeometry().getType();
+                            if ( geomType === 'Polygon') {
                                 // Check if line intersects with polygon
                                 if (lineGeometry.intersectsExtent(feature.getGeometry().getExtent())) {
                                     // Convert the OpenLayers geometry to a JSTS geometry
@@ -677,8 +682,7 @@ export class Digitizing {
 
                                     // This will execute only if polygon is successfully splitted into two parts
                                     if (polygons.array.length == 2) {
-                                        // Remove original polygon and line used for splitting
-                                        this._drawSource.removeFeature(event.feature);
+                                        // Remove original polygon
                                         this._drawSource.removeFeature(feature);
 
                                         // Iterate through splitted polygons
@@ -691,6 +695,22 @@ export class Digitizing {
                                             this._drawSource.addFeature(splitted_polygon);
                                         });
                                     }
+                                }
+                            } else if (geomType === 'LineString') {
+                                const format = new GeoJSON();
+                                const turfDrawnFeature = format.writeFeatureObject(feature);
+                                const turfSplitterFeature = format.writeFeatureObject(event.feature);
+
+                                const split = lineSplit(turfDrawnFeature, turfSplitterFeature);
+
+                                if (split.features.length == 2) {
+                                    // Remove original lineString
+                                    this._drawSource.removeFeature(feature);
+
+                                    split.features.forEach((feature) => {
+                                        let splitted_line = format.readFeature(feature);
+                                        this._drawSource.addFeature(splitted_line);
+                                    });
                                 }
                             }
                         }
