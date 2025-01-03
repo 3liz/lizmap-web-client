@@ -28,6 +28,7 @@
   "author": "3Liz",
   "license": "ISC",
   "dependencies": {
+    "@turf/line-split": "^7.2.0",
     "flatgeobuf": "^3.36.0",
     "ol-ext": "^4.0.24",
     "ol-wfs-capabilities": "^2.0.0"
