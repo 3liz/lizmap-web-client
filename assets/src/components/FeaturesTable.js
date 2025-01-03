@@ -22,8 +22,9 @@ import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
  *                        withgeometry="1" expressionfilter="quartmno = 'HO'"
  *                        uniquefield="id" layerid="subdistrict_24ceec66_e7fe_46a2_b57a_af5c50389649"
  *                        layertitle="child sub-districts" id="0782b34c-840c-4b0f-821c-1b66c964e371"
- *                        (optionnal) data-show-highlighted-feature-geometry="true"
- *                        (optionnal) data-center-to-highlighted-feature-geometry="true"
+ *                        (optional) data-show-highlighted-feature-geometry="true"
+ *                        (optional) data-center-to-highlighted-feature-geometry="true"
+ *                        (optional) data-max-features
  *                        >
  *      <lizmap-field data-alias="District's name" data-description="Label of district's name">
  *         "libsquart"
@@ -36,7 +37,11 @@ export default class FeaturesTable extends HTMLElement {
         super();
 
         // Random element id
-        this.id = window.crypto.randomUUID();
+        if (window.isSecureContext) {
+            this.id = window.crypto.randomUUID();
+        } else {
+            this.id = btoa(String.fromCharCode(...new Uint8Array( Array(30).fill().map(() => Math.round(Math.random() * 30)) )));
+        }
 
         // Layer name
         this.layerTitle = this.getAttribute('layerTitle') || 'Features table: error';
@@ -88,8 +93,8 @@ export default class FeaturesTable extends HTMLElement {
         // Clicked item line number
         this.activeItemLineNumber = null;
 
-        // Limit
-        this.limit = 1000;
+        // Maximum number of features
+        this.maxFeatures = (this.dataset.maxFeatures > 0) ? this.dataset.maxFeatures : 1000;
     }
 
     /**
@@ -118,7 +123,7 @@ export default class FeaturesTable extends HTMLElement {
             });
         }
         // Get the features corresponding to the given parameters from attributes
-        mainLizmap.featuresTable.getFeatures(this.layerId, this.expressionFilter, this.withGeometry, fields, uniqueAdditionalFields, this.limit, this.sortingField, this.sortingOrder)
+        mainLizmap.featuresTable.getFeatures(this.layerId, this.expressionFilter, this.withGeometry, fields, uniqueAdditionalFields, this.maxFeatures, this.sortingField, this.sortingOrder)
             .then(displayExpressions => {
                 // Check for errors
                 if (!('status' in displayExpressions)) return;
