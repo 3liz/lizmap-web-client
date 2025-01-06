@@ -18,13 +18,13 @@ import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
  * @fires features.table.item.dragged
  * @fires features.table.rendered
  * @example <caption>Example of use</caption>
- * <lizmap-features-table draggable="yes"sortingorder="asc" sortingfield="libsquart"
- *                        withgeometry="1" expressionfilter="quartmno = 'HO'"
- *                        uniquefield="id" layerid="subdistrict_24ceec66_e7fe_46a2_b57a_af5c50389649"
- *                        layertitle="child sub-districts" id="0782b34c-840c-4b0f-821c-1b66c964e371"
- *                        (optional) data-show-highlighted-feature-geometry="true"
- *                        (optional) data-center-to-highlighted-feature-geometry="true"
- *                        (optional) data-max-features
+ * <lizmap-features-table draggable="yes" sortingOrder="asc" sortingField="libsquart"
+ *                        withGeometry="1" expressionFilter="quartmno = 'HO'"
+ *                        uniqueField="id" layerId="subdistrict_24ceec66_e7fe_46a2_b57a_af5c50389649"
+ *                        layerTitle="child sub-districts"
+ *                        (optionnal) data-show-highlighted-feature-geometry="true"
+ *                        (optionnal) data-center-to-highlighted-feature-geometry="true"
+ *                        (optional) data-max-features="100"
  *                        >
  *      <lizmap-field data-alias="District's name" data-description="Label of district's name">
  *         "libsquart"
@@ -69,7 +69,6 @@ export default class FeaturesTable extends HTMLElement {
 
         // Sorting attribute
         this.sortingField = this.getAttribute('sortingField');
-
         // Sorting order
         const sortingOrder = this.getAttribute('sortingOrder');
         this.sortingOrder = (sortingOrder !== null && ['asc', 'desc'].includes(sortingOrder.toLowerCase())) ? sortingOrder : 'asc';
@@ -131,6 +130,7 @@ export default class FeaturesTable extends HTMLElement {
                 if (displayExpressions.status != 'success') {
                     console.error(displayExpressions.error);
                 } else {
+
                     // Set component data property
                     this.features = displayExpressions.data;
                 }
@@ -631,14 +631,25 @@ export default class FeaturesTable extends HTMLElement {
         return verifiedFields;
     }
 
-    static get observedAttributes() { return ['updated']; }
+    static get observedAttributes() { return ['updated','expressionfilter']; }
 
     attributeChangedCallback(name, oldValue, newValue) {
         // Listen to the change of the updated attribute
         // This will trigger the load (refresh the content)
+        // Be aware that the name returned here is always lowercase
         if (name === 'updated') {
-            console.log('Reload features table');
+            // console.log('Reload features table');
             this.load();
+        }
+
+        // Also reload when the expressionFilter has changed
+        if (name === 'expressionfilter') {
+            // Prevent features table to load two time at its creation
+            if (oldValue && newValue && oldValue != newValue) {
+                // console.log('Reload the table with the new expressionFilter');
+                this.expressionFilter = newValue;
+                this.load();
+            }
         }
     }
     disconnectedCallback() {
