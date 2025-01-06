@@ -11,18 +11,26 @@ with some extra keywords: backend, tests, test, translation, funders, important
 ### Funders
 
 * Contributions on source code from @erw-1
+* **[Andromède Océanologie](https://www.andromede-ocean.com)**
 * **[Avignon](https://www.avignon.fr)**
 * **[Conseil Départemental du Calvados](https://www.calvados.fr)**
 * **[Faunalia](https://www.faunalia.eu/fr)**, contributions on source code from @mind84
 * **[Haute-Saône Numérique](https://www.hautesaonenumerique.fr)**
 * **[Keolis Rennes](https://www.keolis-rennes.com)**
 * **[Le Grand Narbonne](https://www.legrandnarbonne.com/)**
+* **[Métropole Aix-Marseille-Provence](https://ampmetropole.fr/)**
 
 ### Added
 
 * Popup - Add layer ID and feature ID as data attributes in the HTML
-* `lizmap-features-table` component - Use a table with additional columns from fields
+* HTML component `lizmap-features-table`
+  * Use a table with additional columns from fields
+  * `data-show-highlighted-feature-geometry="true"`
+  * `data-center-to-highlighted-feature-geometry="true"`
+  * `data-max-features` : Request a maximum number of features
+  * Sort data server-side
 * Enable translate a geometry
+* Draw: inform user he can hold "Alt" and click to delete a vertex
 
 ### Fixed
 
@@ -42,8 +50,14 @@ with some extra keywords: backend, tests, test, translation, funders, important
   * Fix the "Create feature" button not visible in some cases
   * Fix the child table not visible in some cases after clicking on a parent feature
 * Fix display of error message when launching a Lizmap action
-* Fix editing : hide "select" when launched from attribute table via parent
-* Editing : exec a SQL DELETE can return 0 in some cases
+* Editing :
+  * Make sure the dock with the form is visible before opening the cancellation confirmation dialog
+  * Hide "select" when launched from attribute table via parent
+  * Exec a SQL DELETE can return 0 in some cases
+* Dataviz
+  * Update PlotlyJS to v2.35.2 and do custom build to reduce file size
+* Fix the print overlay stacking
+* Fix order popups following layers order
 
 ### Deprecated
 
