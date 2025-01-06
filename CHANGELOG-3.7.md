@@ -8,6 +8,11 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Fixed
+
+* Fix the print overlay stacking
+* Fix order popups following layers order
+
 ## 3.7.13 - 2024-12-12
 
 ### Fixed
