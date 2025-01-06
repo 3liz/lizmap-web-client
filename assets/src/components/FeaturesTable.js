@@ -15,6 +15,7 @@ import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
  * @summary Allows to display a compact list of vector layer features labels
  * @augments HTMLElement
  * @element lizmap-features-table
+ * @fires features.table.item.highlighted
  * @fires features.table.item.dragged
  * @fires features.table.rendered
  * @example <caption>Example of use</caption>
@@ -210,6 +211,16 @@ export default class FeaturesTable extends HTMLElement {
                     "geojson",
                     "EPSG:4326",
                 );
+
+                /**
+                 * When the user has selected an item and highlighted it
+                 * @event features.table.item.highlighted
+                 * @property {string} itemFeatureId The feature ID of the selected item
+                 */
+                mainEventDispatcher.dispatch({
+                    type: 'features.table.item.highlighted',
+                    itemFeatureId: feature.properties.feature_id,
+                });
             }
 
             // Center the map on the clicked element if the feature has a geometry
