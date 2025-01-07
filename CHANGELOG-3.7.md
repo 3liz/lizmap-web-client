@@ -8,6 +8,10 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Funders
+
+* **[Biotope](https://www.biotope.fr/)**
+
 ### Fixed
 
 * Fix the print overlay stacking
