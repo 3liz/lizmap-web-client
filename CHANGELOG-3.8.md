@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.8.4 - 2025-01-07
+
 ### Funders
 
 * Contributions on source code from @erw-1
