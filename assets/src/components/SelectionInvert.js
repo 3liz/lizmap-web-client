@@ -11,7 +11,7 @@ import {html, render} from 'lit-html';
 import '../images/svg/mActionInvertSelection.svg';
 
 /**
- * Webcomponent used to invert selection on layer selection defined by 'feature-type' attribute
+ * Web component used to invert selection on layer selection defined by 'feature-type' attribute
  * or allFeatureTypeSelected defined in SelectionTool module
  * @class
  * @name SelectionInvert
