@@ -9,6 +9,8 @@
 import { html, render } from 'lit-html';
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 
+import GeoJSON from 'ol/format/GeoJSON.js';
+
 /**
  * @class
  * @name FeaturesTable
@@ -224,8 +226,12 @@ export default class FeaturesTable extends HTMLElement {
             }
 
             // Center the map on the clicked element if the feature has a geometry
-            if (feature.bbox && this.dataset.centerToHighlightedFeatureGeometry === 'true') {
-                mainLizmap.map.getView().fit(feature.bbox, {duration: 150, maxZoom: mainLizmap.map.getView().getZoom()});
+            if (feature.geometry && this.dataset.centerToHighlightedFeatureGeometry === 'true') {
+                const geom = (new GeoJSON()).readGeometry(feature.geometry, {
+                    dataProjection: 'EPSG:4326',
+                    featureProjection: lizMap.mainLizmap.projection
+                });
+                mainLizmap.map.getView().fit(geom, { duration: 150 });
             }
 
             // Set the features table properties
