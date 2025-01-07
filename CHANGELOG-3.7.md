@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.7.14 - 2025-01-07
+
 ### Funders
 
 * **[Biotope](https://www.biotope.fr/)**
