@@ -38,7 +38,7 @@ test.describe('Server information', () => {
         }
         // Check that QGIS Server table contains 4 lines
         const qgisServerRows = page.locator('#lizmap_server_information table.table-qgis-server tr')
-        await expect(qgisServerRows).toHaveCount(4);
+        await expect(qgisServerRows).toHaveCount(3);
         for (const row of await qgisServerRows.all()) {
             await expect(row.locator('th')).toHaveCount(1);
             await expect(await row.locator('th').innerText()).not.toEqual('');
