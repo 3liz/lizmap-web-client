@@ -13,6 +13,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Contributions on source code from @erw-1
 * **[Andromède Océanologie](https://www.andromede-ocean.com)**
 * **[Avignon](https://www.avignon.fr)**
+* **[Biotope](https://www.biotope.fr/)**
 * **[Conseil Départemental du Calvados](https://www.calvados.fr)**
 * **[Faunalia](https://www.faunalia.eu/fr)**, contributions on source code from @mind84
 * **[Haute-Saône Numérique](https://www.hautesaonenumerique.fr)**
