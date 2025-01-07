@@ -12,7 +12,7 @@ import { html, render } from 'lit-html';
 import '../../images/svg/mActionEditPaste.svg';
 
 /**
- * Webcomponent used to reverse vertices order for a modified feature
+ * Web component used to paste a geometry
  * @class
  * @name pasteGeom
  * @augments HTMLElement
