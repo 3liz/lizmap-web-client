@@ -173,6 +173,11 @@ export default class FeaturesTable extends HTMLElement {
             this.addDragAndDropCapabilities();
         }
 
+        if (this.dataset.activeItemFeatureId) {
+            const featureDiv = this.querySelector(`tr.lizmap-features-table-item[data-feature-id="${this.dataset.activeItemFeatureId}"]`);
+            if (featureDiv && !featureDiv.classList.contains('popup-displayed')) featureDiv.click();
+        }
+
         /**
          * When the table has been successfully displayed. The event carries the lizmap-features-table HTML element ID
          * @event features.table.rendered
