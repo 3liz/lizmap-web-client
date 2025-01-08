@@ -92,6 +92,8 @@
             <td>
                 <a href="https://github.com/qgis/QGIS/releases/tag/{$data['qgis_server_info']['metadata']['tag']}" target="_blank">
                     {$data['qgis_server_info']['metadata']['version']}
+                </a> - <a href="https://github.com/qgis/QGIS/commit/{$data['qgis_server_info']['metadata']['commit_id']}" target="_blank">
+                    {$data['qgis_server_info']['metadata']['commit_id']}
                 </a>
             </td>
         </tr>
@@ -100,32 +102,38 @@
             <td>{$data['qgis_server_info']['metadata']['name']}</td>
         </tr>
         <tr>
-            <th>{@admin.server.information.qgis.commit_id@}</th>
-            <td><a href="https://github.com/qgis/QGIS/commit/{$data['qgis_server_info']['metadata']['commit_id']}" target="_blank">{$data['qgis_server_info']['metadata']['commit_id']}</a></td>
-        </tr>
-        <tr>
-            <th>Py-QGIS-Server</th>
-            <td>
-                {if $data['qgis_server_info']['py_qgis_server']['found']}
+            {if $data['qgis_server_info']['py_qgis_server']['found']}
+                <th>
+                    {$data['qgis_server_info']['py_qgis_server']['name']}
+                    {if $data['qgis_server_info']['py_qgis_server']['documentation_url']}
+                        <a href="{$data['qgis_server_info']['py_qgis_server']['documentation_url']}" target="_blank">
+                            <span class='badge rounded-pill bg-secondary'>{@admin.server.information.qgis.plugin.help@}</span>
+                        </a>
+                    {/if}
+                </th>
+                <td>
                     {if $data['qgis_server_info']['py_qgis_server']['stable']}
                         {if $data['qgis_server_info']['py_qgis_server']['version'] == 'n/a'}
                             {* If the value is n/a, Py-QGIS-Server failed to fetch the version *}
                             {* https://github.com/3liz/py-qgis-server/blob/b11bba45495d32e348457c0802fe08f2bf952b8b/pyqgisserver/version.py#L17 *}
                             {$data['qgis_server_info']['py_qgis_server']['version']}
                         {else}
-                            <a href="https://github.com/3liz/py-qgis-server/releases/tag/{$data['qgis_server_info']['py_qgis_server']['version']}" target="_blank">
-                                {$data['qgis_server_info']['py_qgis_server']['version']}
-                            </a>
+                            {if $data['qgis_server_info']['py_qgis_server']['git_repository_url']}
+                                <a href="{$data['qgis_server_info']['py_qgis_server']['git_repository_url']}/releases/tag/{$data['qgis_server_info']['py_qgis_server']['version']}" target="_blank">
+                                    {$data['qgis_server_info']['py_qgis_server']['version']}
+                                </a>
+                            {/if}
                         {/if}
                     {else}
-                    <a href="https://github.com/3liz/py-qgis-server/commit/{$data['qgis_server_info']['py_qgis_server']['commit_id']}" target="_blank">
-                        {$data['qgis_server_info']['py_qgis_server']['version']} - {$data['qgis_server_info']['py_qgis_server']['commit_id']}
-                    </a>
+                        <a href="{$data['qgis_server_info']['py_qgis_server']['git_repository_url']}/commit/{$data['qgis_server_info']['py_qgis_server']['commit_id']}" target="_blank">
+                            {$data['qgis_server_info']['py_qgis_server']['version']} - {$data['qgis_server_info']['py_qgis_server']['commit_id']}
+                        </a>
                     {/if}
-                {else}
-                    {$data['qgis_server_info']['py_qgis_server']['version']}
-                {/if}
-            </td>
+                </td>
+            {else}
+                {* When Py-QGIS-Server and QJazz were not found *}
+                <th>{@admin.server.information.qgis.wrapper@}</th><td>{@admin.server.information.qgis.wrapper.not.installed@}</td>
+            {/if}
         </tr>
         {if $qgisServerNeedsUpdate }
         <tr>
