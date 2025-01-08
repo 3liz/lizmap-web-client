@@ -1,24 +1,20 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 import { gotoMap } from './globals';
+import {ProjectPage} from "./project-page";
 
 test.describe('Dataviz in popup', () => {
     test('Check lizmap feature toolbar', async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=popup_bar';
-        await gotoMap(url, page);
+        const project = new ProjectPage(page, 'popup_bar');
+        await project.goto();
 
-        await page.locator("#dock-close").click();
+        await project.closeDock();
 
         await page.waitForTimeout(300);
 
         let getPlot = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('getPlot') === true);
 
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 355,
-                y: 280
-            }
-        });
+        await project.clickOnMap(355, 280);
 
         await getPlot;
 
@@ -26,46 +22,26 @@ test.describe('Dataviz in popup', () => {
         await expect(page.locator("#popupcontent > div.menu-content > div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > lizmap-feature-toolbar .feature-toolbar")).toHaveCount(1)
 
         // click again on the same point
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 355,
-                y: 280
-            }
-        });
+        await project.clickOnMap(355, 280);
 
         await getPlot;
         // inspect feature toolbar, expect to find only one
         await expect(page.locator("#popupcontent > div.menu-content > div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > lizmap-feature-toolbar .feature-toolbar")).toHaveCount(1)
 
         // click on another point
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 410,
-                y: 216
-            }
-        });
+        await project.clickOnMap(410, 216);
 
         await getPlot;
         // inspect feature toolbar, expect to find only one
         await expect(page.locator("#popupcontent > div.menu-content > div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > lizmap-feature-toolbar .feature-toolbar")).toHaveCount(1)
 
         // click where there is no feature
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 410,
-                y: 300
-            }
-        });
+        await project.clickOnMap(410, 300);
 
         await page.waitForTimeout(500);
 
         // reopen previous popup
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 410,
-                y: 216
-            }
-        });
+        await project.clickOnMap(410, 216);
 
         await getPlot;
         // inspect feature toolbar, expect to find only one
@@ -90,7 +66,8 @@ test.describe('Style parameter in GetFeatureInfo request', () => {
         await gotoMap(url, page);
     })
     test('Click on the map to show the popup', async ({ page }) => {
-        await page.locator("#dock-close").click();
+        const project = new ProjectPage(page, 'popup_bar');
+        await project.closeDock();
 
         await page.waitForTimeout(300);
 
@@ -100,12 +77,7 @@ test.describe('Style parameter in GetFeatureInfo request', () => {
 
         let getPopup = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('STYLE=default') === true);
 
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 501,
-                y: 488
-            }
-        });
+        await project.clickOnMap(501, 488);
 
         await getPopup;
 
@@ -124,7 +96,7 @@ test.describe('Style parameter in GetFeatureInfo request', () => {
 
 
         // change the style of the layer
-        await page.locator("#button-switcher").click()
+        await project.openLayersPanel();
         await page.getByTestId('natural_areas').hover();
         await page.getByTestId('natural_areas').locator('i').nth(1).click();
         await page.locator('#sub-dock').getByRole('combobox').selectOption("ids")
@@ -134,12 +106,7 @@ test.describe('Style parameter in GetFeatureInfo request', () => {
 
         let getPopupIds = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('STYLE=ids') === true);
         // click again on the previous point
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 501,
-                y: 488
-            }
-        });
+        await project.clickOnMap(501, 488);
 
         await getPopupIds;
 
@@ -153,12 +120,7 @@ test.describe('Style parameter in GetFeatureInfo request', () => {
 
         let getPopupIdsFeature = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('STYLE=ids') === true);
         // click on a feature to get the popup (it should fallback to the default lizmap popup)
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 404,
-                y: 165
-            }
-        });
+        await project.clickOnMap(404, 165);
 
         await getPopupIdsFeature;
 

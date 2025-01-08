@@ -1,6 +1,7 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 import { gotoMap } from './globals';
+import {ProjectPage} from "./project-page";
 
 test.describe('Snap on edition', () => {
     test.beforeEach(async ({ page }) => {
@@ -12,29 +13,29 @@ test.describe('Snap on edition', () => {
 
         let editFeatureRequestPromise = page.waitForResponse(response => response.url().includes('editFeature'));
 
-        await page.locator('#button-edition').click();
-        await page.locator('a#edition-draw').click();
+        const project = new ProjectPage(page, 'form_edition_multilayer_snap');
+        await project.openEditingFormWithLayer('form_edition_snap_control');
 
         await editFeatureRequestPromise;
 
         await page.waitForTimeout(300);
 
-        // brefly check the form
+        // briefly check the form
         await expect(page.getByRole('heading', { name: 'form_edition_snap_control' })).toHaveText("form_edition_snap_control")
         await expect(page.getByLabel('id')).toBeVisible()
 
         // move to digitization panel
         await page.getByRole('tab', { name: 'Digitization' }).click()
 
-        let getSnappingPointFeatureRquestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('GetFeature') === true && request.postData()?.includes('form_edition_snap_point') === true);
-        let getSnappingPointDescribeFeatureRquestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('DescribeFeatureType') === true && request.postData()?.includes('form_edition_snap_point') === true);
+        let getSnappingPointFeatureRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('GetFeature') === true && request.postData()?.includes('form_edition_snap_point') === true);
+        let getSnappingPointDescribeFeatureRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('DescribeFeatureType') === true && request.postData()?.includes('form_edition_snap_point') === true);
 
         // activate snapping
         await page.getByRole('button', { name: 'Start' }).click();
 
-        const allSnapPointResponses = await Promise.all([getSnappingPointFeatureRquestPromise, getSnappingPointDescribeFeatureRquestPromise])
+        const allSnapPointResponses = await Promise.all([getSnappingPointFeatureRequestPromise, getSnappingPointDescribeFeatureRequestPromise])
 
-        // check snap paneland controls
+        // check snap panel and controls
         await expect(page.locator("#edition-point-coord-form-group").getByRole("button").nth(2)).toBeDisabled();
 
         //check layer list in the panel
@@ -154,13 +155,13 @@ test.describe('Snap on edition', () => {
         await expect(page.locator("#edition-point-coord-form-group").getByRole("button").nth(2)).toBeDisabled();
 
         // disable all layer
-        await page.locator('#button-switcher').click();
+        await project.openLayersPanel();
         await page.getByTestId('form_edition_snap_point').getByLabel('Point snap').click();
         await page.getByTestId('form_edition_snap_line').getByLabel('Line snap').click();
         await page.getByTestId('form_edition_snap_polygon').getByLabel('Polygon snap').click();
 
         // back to digitization panel
-        await page.locator('#button-edition').click();
+        await project.buttonEditing.click();
 
         // refresh button enabled
         await expect(page.locator("#edition-point-coord-form-group").getByRole("button").nth(2)).toBeEnabled();
@@ -188,12 +189,12 @@ test.describe('Snap on edition', () => {
 
 
         // back to layers tree, enable line layer and polygon layer to reorder the snap layer list
-        await page.locator('#button-switcher').click();
+        await project.openLayersPanel();
         await page.getByTestId('form_edition_snap_line').getByLabel('Line snap').click();
         await page.getByTestId('form_edition_snap_polygon').getByLabel('Polygon snap').click();
 
         // back to digitization panel
-        await page.locator('#button-edition').click();
+        await project.buttonEditing.click();
 
         // refresh button enabled
         await expect(page.locator("#edition-point-coord-form-group").getByRole("button").nth(2)).toBeEnabled();

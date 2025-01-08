@@ -1,6 +1,7 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 import { gotoMap } from './globals';
+import {ProjectPage} from "./project-page";
 
 test.describe('Media', () => {
     test('Tests media are deleted', async ({ page }) => {
@@ -17,14 +18,11 @@ test.describe('Media', () => {
         await expect(response).toBeOK();
 
         // Open the attribute table
-        const url = '/index.php/view/map?repository=testsrepository&project=form_edition_all_field_type';
-        await gotoMap(url, page);
-
-        await page.locator('#button-attributeLayers').click();
-
+        const project = new ProjectPage(page, 'form_edition_all_field_type');
+        await project.goto();
         let getFeatureRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeature') === true);
 
-        await page.locator('#attribute-layer-list button[value="form_edition_upload"]').click();
+        await project.openAttributeTable('form_edition_upload');
         await getFeatureRequestPromise;
 
         await page.getByRole('row', { name: '2 text_file_mandatory' }).getByRole('button').nth(2);

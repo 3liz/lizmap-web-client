@@ -1,5 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+import { ProjectPage } from './project-page';
 import { gotoMap } from './globals';
 
 test.describe('Attribute table', () => {
@@ -9,18 +10,17 @@ test.describe('Attribute table', () => {
     });
 
     test('Thumbnail class generate img with good path', async ({ page }) => {
-        await page.locator('a#button-attributeLayers').click();
-        // display form
-        //await page.locator('#button-edition').click();
-        await page.locator('#attribute-layer-list-table').locator('button[value=Les_quartiers_a_Montpellier]').click();
-        await expect(page.locator('#attribute-layer-table-Les_quartiers_a_Montpellier tbody tr')).toHaveCount(7);
+        const project = new ProjectPage(page, 'attribute_table');
+        const layerName = 'Les_quartiers_a_Montpellier';
 
+        await project.openAttributeTable(layerName);
+        await expect(project.attributeTableHtml(layerName).locator('tbody tr')).toHaveCount(7);
         // mediaFile as stored in data-src attributes
-        const mediaFile = await page.locator('#attribute-layer-table-Les_quartiers_a_Montpellier img.data-attr-thumbnail').first().getAttribute('data-src');
+        const mediaFile = await project.attributeTableHtml(layerName).locator('img.data-attr-thumbnail').first().getAttribute('data-src');
         // ensure src contain "dynamic" mediaFile
-        await expect(page.locator('#attribute-layer-table-Les_quartiers_a_Montpellier img.data-attr-thumbnail').first()).toHaveAttribute('src', new RegExp(mediaFile));
+        await expect(project.attributeTableHtml(layerName).locator('img.data-attr-thumbnail').first()).toHaveAttribute('src', new RegExp(mediaFile));
         // ensure src contain getMedia and projet URL
-        await expect(page.locator('#attribute-layer-table-Les_quartiers_a_Montpellier img.data-attr-thumbnail').first()).toHaveAttribute('src', /getMedia\?repository=testsrepository&project=attribute_table&/);
+        await expect(project.attributeTableHtml(layerName).locator('img.data-attr-thumbnail').first()).toHaveAttribute('src', /getMedia\?repository=testsrepository&project=attribute_table&/);
     });
 });
 
@@ -37,8 +37,9 @@ test.describe('Attribute table data restricted to map extent', () => {
     });
 
     test('Data restriction, refresh button behaviour and export', async ({ page }) => {
-        await page.locator('a#button-attributeLayers').click();
-        await page.locator('#attribute-layer-list-table').locator('button[value=Les_quartiers_a_Montpellier]').click();
+        const project = new ProjectPage(page, 'attribute_table');
+        const layerName = 'Les_quartiers_a_Montpellier';
+        await project.openAttributeTable(layerName);
 
         await expect(page.locator('.btn-refresh-table')).not.toHaveClass(/btn-warning/);
 
@@ -53,7 +54,7 @@ test.describe('Attribute table data restricted to map extent', () => {
         // Refresh
         await page.locator('.btn-refresh-table').click();
 
-        await expect(page.locator('#attribute-layer-table-Les_quartiers_a_Montpellier tbody tr')).toHaveCount(5);
+        await expect(project.attributeTableHtml(layerName).locator('tbody tr')).toHaveCount(5);
 
         const getFeatureRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('GetFeature') === true);
         // bbox in getFeature request for export

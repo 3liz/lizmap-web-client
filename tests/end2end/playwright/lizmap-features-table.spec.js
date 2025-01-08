@@ -1,25 +1,22 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 import { gotoMap } from './globals';
+import {ProjectPage} from "./project-page";
 
 test.describe('Display lizmap-features-table component in popup from QGIS tooltip', () => {
     test.beforeEach(async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=lizmap_features_table';
-        await gotoMap(url, page);
-        await page.locator('#dock-close').click();
+        const project = new ProjectPage(page, 'lizmap_features_table');
+        await project.closeDock();
     });
 
     test('Visualize popup for layer quartiers', async ({ page }) => {
 
         let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
 
+        const project = new ProjectPage(page, 'lizmap_features_table');
+
         //first point
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 400,
-                y: 300
-            }
-        });
+        await project.clickOnMap(400, 300);
 
         await getFeatureInfoRequestPromise;
 
@@ -85,6 +82,6 @@ test.describe('Display lizmap-features-table component in popup from QGIS toolti
         await expect(idFeatTable).not.toEqual(newIdFeatTable);
 
         //clear screen
-        await page.locator('#dock-close').click();
+        await project.closeDock();
     });
 })
