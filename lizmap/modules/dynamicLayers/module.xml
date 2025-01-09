@@ -5,9 +5,9 @@
         <label lang="en_US">dynamicLayers</label>
         <description lang="en_US"/>
         <license URL="">All rights reserved</license>
-        <copyright>2011-2023 3liz</copyright>
+        <copyright>2011-2025 3liz</copyright>
         <creator name="3liz" email="info@3liz.com"/>
-        <homepageURL>http://3liz.com</homepageURL>
+        <homepageURL>https://3liz.com</homepageURL>
     </info>
     <dependencies>
         <jelix minversion="1.6.5" maxversion="1.8.*"/>

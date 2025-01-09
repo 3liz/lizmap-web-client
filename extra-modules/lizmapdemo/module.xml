@@ -4,8 +4,8 @@
         <version date="2022-03-10">3.6.0a1</version>
         <label lang="en_US">lizmap demo</label>
         <description lang="en_US" />
-        <license URL="http://www.mozilla.org/MPL/">Mozilla Public License</license>
-        <copyright>2011-2023 3liz</copyright>
+        <license URL="https://www.mozilla.org/MPL/">Mozilla Public License</license>
+        <copyright>2011-2025 3liz</copyright>
         <creator name="3liz" email="info@3liz.com"/>
         <homepageURL>https://3liz.com</homepageURL>
     </info>
