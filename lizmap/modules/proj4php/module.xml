@@ -7,7 +7,7 @@
         <license URL="https://www.gnu.org/licenses/lgpl.html">GNU LESSER GENERAL PUBLIC LICENSE Version 3</license>
         <copyright>2011-2025 3liz</copyright>
         <creator name="3liz" email="info@3liz.com"/>
-        <homepageURL>http://3liz.com</homepageURL>
+        <homepageURL>https://3liz.com</homepageURL>
     </info>
     <dependencies>
         <jelix minversion="1.6.2" maxversion="1.8.*"/>

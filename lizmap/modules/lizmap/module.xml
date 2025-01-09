@@ -4,7 +4,7 @@
         <version date="2025-01-07">3.7.15-pre</version>
         <label lang="en_US">lizmap</label>
         <description lang="en_US"/>
-        <license URL="http://www.mozilla.org/MPL/">Mozilla Public License</license>
+        <license URL="https://www.mozilla.org/MPL/">Mozilla Public License</license>
         <copyright>2011-2025 3liz</copyright>
         <creator name="3liz" email="info@3liz.com" active="true"/>
         <homepageURL>https://www.3liz.com</homepageURL>
