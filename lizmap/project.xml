@@ -4,9 +4,9 @@
         <version date="2024-06-06">3.9.0-pre</version><!-- should be always X.Y.Z or X.Y.Z-something -->
         <label lang="en_US">Lizmap Web Client</label>
         <description lang="en_US"/>
-        <license URL="http://www.mozilla.org/MPL/">Mozilla Public Licence</license>
-        <copyright>2011-2024 3Liz</copyright>
+        <license URL="https://www.mozilla.org/MPL/">Mozilla Public Licence</license>
+        <copyright>2011-2025 3Liz</copyright>
         <creator name="3liz" email="info@3liz.com"/>
-        <homepageURL>http://3liz.com</homepageURL>
+        <homepageURL>https://3liz.com</homepageURL>
     </info>
 </project>
