@@ -19,6 +19,14 @@ jobs:
   phpstan:
     name: "Analyze"
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - php-version: '7.4'
+          - php-version: '8.0'
+          - php-version: '8.1'
+          - php-version: '8.2'
+          - php-version: '8.3'
     steps:
       - uses: actions/checkout@v4
 
@@ -30,7 +38,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         # About the PHP version, do not forget to change in PHP Unit as well
         with:
-          php-version: '8.0'
+          php-version: ${{ matrix.php-version }}
           tools: phpstan:1.11.11
 
       - name: Cache dependencies
