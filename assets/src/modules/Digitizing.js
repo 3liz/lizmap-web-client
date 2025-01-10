@@ -23,7 +23,18 @@ import { Vector as VectorSource } from 'ol/source.js';
 import { Vector as VectorLayer } from 'ol/layer.js';
 import { Feature } from 'ol';
 
-import { Point, LineString, Polygon, Circle as CircleGeom, MultiPoint, GeometryCollection } from 'ol/geom.js';
+import {
+    LinearRing,
+    LineString,
+    MultiLineString,
+    MultiPoint,
+    MultiPolygon,
+    Point,
+    Polygon,
+    Circle as CircleGeom,
+    GeometryCollection
+} from 'ol/geom.js';
+
 import { circular, fromCircle } from 'ol/geom/Polygon.js';
 
 import { getArea, getLength } from 'ol/sphere.js';
@@ -81,6 +92,7 @@ export class Digitizing {
         this._isRotate = false;
         this._hasMeasureVisible = false;
         this._isSaved = false;
+        this._isSplitting = false;
         this._isErasing = false;
 
         this._drawInteraction;
@@ -517,6 +529,7 @@ export class Digitizing {
                 this.isEdited = false;
                 this.isErasing = false;
                 this.isRotate = false;
+                this.isSplitting = false;
             }
 
             mainEventDispatcher.dispatch('digitizing.toolSelected');
@@ -578,6 +591,7 @@ export class Digitizing {
                 this.toolSelected = 'deactivate';
                 this.isErasing = false;
                 this.isRotate = false;
+                this.isSplitting = false;
 
                 mainEventDispatcher.dispatch('digitizing.editionBegins');
             } else {
@@ -606,12 +620,124 @@ export class Digitizing {
                 this.toolSelected = 'deactivate';
                 this.isErasing = false;
                 this.isEdited = false;
+                this.isSplitting = false;
+
                 mainLizmap.map.addInteraction(this._transformInteraction);
             } else {
                 mainLizmap.map.removeInteraction(this._transformInteraction);
             }
 
             mainEventDispatcher.dispatch('digitizing.rotate');
+        }
+    }
+
+    get isSplitting() {
+        return this._isSplitting;
+    }
+
+    set isSplitting(isSplitting) {
+        if (this._isSplitting !== isSplitting) {
+            this._isSplitting = isSplitting;
+
+            if (this._isSplitting) {
+                // Disable other tools
+                this.toolSelected = 'deactivate';
+                this.isEdited = false;
+                this.isRotate = false;
+                this.isErasing = false;
+
+                this._splitInteraction = new Draw({
+                    source: this._drawSource,
+                    type: 'LineString'
+                });
+                this._splitInteraction.on('drawend', event => {
+                    Promise.all([
+                        import(/* webpackChunkName: 'OLparser' */ 'jsts/org/locationtech/jts/io/OL3Parser.js'),
+                        import(/* webpackChunkName: 'UnionOp' */ 'jsts/org/locationtech/jts/operation/union/UnionOp.js'),
+                        import(/* webpackChunkName: 'Polygonizer' */ 'jsts/org/locationtech/jts/operation/polygonize/Polygonizer.js'),
+                        import(/* webpackChunkName: 'lineSplit' */ '@turf/line-split'),
+                    ]).then(([{ default: OLparser }, { default: UnionOp }, { default: Polygonizer }, { default: lineSplit }]) => {
+                        const parser = new OLparser();
+                        parser.inject(
+                            Point,
+                            LineString,
+                            LinearRing,
+                            Polygon,
+                            MultiPoint,
+                            MultiLineString,
+                            MultiPolygon
+                        );
+
+                        const lineGeometry = event.feature.getGeometry();
+
+                        // Remove line used for splitting
+                        this._drawSource.removeFeature(event.feature);
+
+                        for (const feature of this._drawSource.getFeatures()) {
+                            // Check if split line intersects with drawn feature
+                            if (!lineGeometry.intersectsExtent(feature.getGeometry().getExtent())) {
+                                continue;
+                            }
+                            const geomType = feature.getGeometry().getType();
+                            if ( geomType === 'Polygon') {
+                                // Convert the OpenLayers geometry to a JSTS geometry
+                                const jstsLine = parser.read(lineGeometry);
+                                const jstsDrawnGeom = parser.read(feature.getGeometry());
+
+                                // Perform union of Polygon and Line and use Polygonizer to split the polygon by line
+                                let union = UnionOp.union(jstsDrawnGeom.getExteriorRing(), jstsLine);
+                                let polygonizer = new Polygonizer();
+
+                                // Splitting polygon in two parts
+                                polygonizer.add(union);
+                                let polygons = polygonizer.getPolygons();
+
+                                // This will execute only if polygon is successfully splitted into two parts
+                                if (polygons.array.length == 2) {
+                                    // Remove original polygon
+                                    this._drawSource.removeFeature(feature);
+
+                                    // Iterate through splitted polygons
+                                    polygons.array.forEach(geom => {
+                                        let splitted_polygon = new Feature({
+                                            geometry: new Polygon(parser.write(geom).getCoordinates())
+                                        });
+
+                                        // Add splitted polygon to vector layer    
+                                        this._drawSource.addFeature(splitted_polygon);
+                                        this._selectInteraction.getFeatures().push(splitted_polygon);
+                                    });
+
+                                    this.isEdited = true;
+                                }
+                            } else if (geomType === 'LineString') {
+                                const format = new GeoJSON();
+                                const turfDrawnFeature = format.writeFeatureObject(feature);
+                                const turfSplitterFeature = format.writeFeatureObject(event.feature);
+
+                                const split = lineSplit(turfDrawnFeature, turfSplitterFeature);
+
+                                if (split.features.length > 1) {
+                                    // Remove original lineString
+                                    this._drawSource.removeFeature(feature);
+
+                                    split.features.forEach((feature) => {
+                                        let splitted_line = format.readFeature(feature);
+                                        this._drawSource.addFeature(splitted_line);
+                                        this._selectInteraction.getFeatures().push(splitted_line);
+                                    });
+                                }
+                                this.isEdited = true;
+                            }
+                        }
+                    });
+                });
+                mainLizmap.map.addInteraction(this._splitInteraction);
+            } else {
+                mainLizmap.map.removeInteraction(this._splitInteraction);
+            }
+            
+            mainEventDispatcher.dispatch('digitizing.split');
         }
     }
 
@@ -624,10 +750,11 @@ export class Digitizing {
             this._isErasing = isErasing;
 
             if (this._isErasing) {
-                // deactivate draw and edition
+                // deactivate other tools
                 this.toolSelected = 'deactivate';
                 this.isEdited = false;
                 this.isRotate = false;
+                this.isSplitting = false;
 
                 this._erasingCallBack = event => {
                     const features = mainLizmap.map.getFeaturesAtPixel(event.pixel, {
@@ -1092,6 +1219,10 @@ export class Digitizing {
         this.hasMeasureVisible = !this.hasMeasureVisible;
     }
 
+    toggleSplit() {
+        this.isSplitting = !this._isSplitting;
+    }
+
     toggleErasing() {
         this.isErasing = !this._isErasing;
     }
@@ -1108,6 +1239,7 @@ export class Digitizing {
         this.isEdited = false;
         this.isRotate = false
         this.isErasing = false;
+        this.isSplitting = false;
 
         this._measureTooltips.forEach((measureTooltip) => {
             mainLizmap.map.removeOverlay(measureTooltip[0]);
