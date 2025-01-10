@@ -307,6 +307,7 @@ class Proxy
             $options['headers'] = array_merge(
                 self::userHttpHeader(),
                 self::$services->wmsServerHeaders,
+                array('X-Request-Id' => uniqid().'-'.bin2hex(random_bytes(10))),
                 $options['headers']
             );
         }
