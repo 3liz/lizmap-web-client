@@ -112,12 +112,14 @@ jobs:
             -vN \
             "http://localhost:8130/index.php/view/app/metadata" \
             -o /tmp/test-qgis-server.json
-          cat /tmp/test-qgis-server.json
+          # cat /tmp/test-qgis-server.json
           qgis_info=$(cat /tmp/test-qgis-server.json | jq --raw-output '.qgis_server_info.error')
+          echo $qgis_info
           if [[ "$qgis_info" != "null" ]]; then
               echo "QGIS Server is not well configured"
               echo "::warning QGIS Server was not up"
-          #              exit 1
+          else
+              echo "JSON metadata OK about QGIS Server"
           fi
 
       - name: Check about updated files after a build (PHP or JS)
