@@ -487,17 +487,30 @@ class Proxy
     /**
      * Log if the HTTP code is a 4XX or 5XX error code.
      *
-     * @param int    $httpCode The HTTP code of the request
-     * @param string $url      The URL of the request, for logging
+     * @param int                   $httpCode The HTTP code of the request
+     * @param string                $url      The URL of the request, for logging
+     * @param array<string, string> $headers  The headers of the response
      */
-    protected static function logRequestIfError($httpCode, $url)
+    protected static function logRequestIfError($httpCode, $url, $headers = array())
     {
         if ($httpCode < 400) {
             return;
         }
 
-        \jLog::log('An HTTP request ended with an error, please check the main error log. HTTP code '.$httpCode, 'lizmapadmin');
-        \jLog::log('The HTTP request ended with an error. HTTP code '.$httpCode.' → '.$url, 'error');
+        $xRequestId = $headers['X-Request-Id'] ?? '';
+
+        $lizmapAdmin = 'An HTTP request ended with an error, please check the main error log.';
+        $lizmapAdmin .= ' HTTP code '.$httpCode.'.';
+        $error = 'The HTTP request ended with an error.';
+        $error .= ' HTTP code '.$httpCode.'.';
+        if ($xRequestId !== '') {
+            $lizmapAdmin .= ' The X-Request-Id `'.$xRequestId.'`.';
+            $error .= ' X-Request-Id `'.$xRequestId.'` → '.$url;
+        } else {
+            $error .= ' → '.$url;
+        }
+        \jLog::log($lizmapAdmin, 'lizmapadmin');
+        \jLog::log($error, 'error');
     }
 
     /**
