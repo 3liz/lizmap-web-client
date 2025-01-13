@@ -95,10 +95,42 @@ jobs:
       - name: Build and start docker images
         run: ./run-docker up --build -d
 
-      - name: Wait docker images ready and install Lizmap
+      - name: Wait 30 secondes for docker images to be ready
         run: |
           sleep 30
+
+      - name: Install Lizmap
+        run: |
           ./lizmap-ctl install
+
+      - name: Wait and check about QGIS Server status
+        run: |
+          curl \
+            --user 'admin:admin' \
+            --retry 30 \
+            --retry-delay 5 \
+            -vN \
+            "http://localhost:8130/index.php/view/app/metadata" \
+            -o /tmp/test-qgis-server.json
+          # cat /tmp/test-qgis-server.json
+          qgis_info=$(cat /tmp/test-qgis-server.json | jq --raw-output '.qgis_server_info.error')
+          echo $qgis_info
+          if [[ "$qgis_info" != "null" ]]; then
+              echo "QGIS Server is not well configured"
+              echo "::warning QGIS Server was not up"
+          else
+              echo "JSON metadata OK about QGIS Server"
+          fi
+
+      - name: Check about updated files after a build (PHP or JS)
+        run: |
+          if [[ -z $(git status --porcelain -uno) ]]; then
+              echo "No updated files"
+          else
+              echo "Updated files"
+              git status
+              echo "::warning Git status is not clean"
+          fi
 
       - name: Load SQL data
         run: |
