@@ -1,3 +1,5 @@
+{meta_html js $j_basepath.'assets/js/admin/scroll_to_bottom_textarea.js', ['defer' => '']}
+
 {jmessage_bootstrap}
 
   <h1>{@admin~admin.menu.lizmap.logs.label@}</h1>
@@ -39,14 +41,36 @@
 
 
   <div>
-    <h2>{@admin~admin.logs.error.title@}</h2>
+    <h2>{@admin~admin.logs.title@}</h2>
 
-    <p>{@admin~admin.logs.error.sentence@}</p>
+    <h3>{@admin~admin.logs.admin.title@}</h3>
 
-<textarea rows="10" style="width:90%;">{if $errorLog != 'toobig'}{$errorLog}{else}{@admin~admin.logs.error.file.too.big@}{/if}</textarea>
+    <p>{@admin~admin.logs.admin.sentence@} : <code>{$lizmapLogBaseName}</code></p>
+
+    <textarea id="lizmap-admin-log" rows="{$lizmapLogTextArea}" style="width:90%;">
+        {if $lizmapLog != 'toobig'}
+            {$lizmapLog}
+        {else}
+            {@admin~admin.logs.file.too.big@}
+        {/if}
+    </textarea>
     {ifacl2 'lizmap.admin.lizmap.log.delete'}
     <div class="form-actions">
-      <a class="btn" href="{jurl 'admin~logs:eraseError'}" onclick="return confirm(`{@admin~admin.logs.error.file.erase.confirm@}`);">{@admin~admin.logs.error.file.erase@}</a>
+      <a class="btn" href="{jurl 'admin~logs:eraseError'}" onclick="return confirm(`{@admin~admin.logs.admin.file.erase.confirm@}`);">{@admin~admin.logs.admin.file.erase@}</a>
     </div>
     {/ifacl2}
+
+    {if $errorLogDisplay}
+        <h3>{@admin~admin.logs.error.title@}</h3>
+
+        <p>{@admin~admin.logs.error.sentence@} : <code>{$errorLogBaseName}</code></p>
+
+        <textarea id="lizmap-error-log" rows="{$errorLogTextArea}"" style="width:90%;">
+            {if $errorLog != 'toobig'}
+                {$errorLog}
+            {else}
+                {@admin~admin.logs.file.too.big@}
+            {/if}
+        </textarea>
+    {/if}
   </div>
