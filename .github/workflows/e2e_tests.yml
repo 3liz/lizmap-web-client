@@ -109,6 +109,24 @@ jobs:
         run: |
             sudo echo "127.0.0.1 othersite.local" | sudo tee -a /etc/hosts
 
+      - name: Check about QGIS Server status
+        run: |
+          qgis_server_info=$(curl --user 'admin:admin' -s "http://localhost:8130/index.php/view/app/metadata" | jq --raw-output '.qgis_server_info.error')
+          if [[ "$qgis_server_info" != "null" ]]; then
+              echo "QGIS Server is not well configured"
+              exit 1
+          fi
+
+      - name: Check about updated files after a build (PHP or JS)
+        run: |
+          if [[ -z $(git status --porcelain -uno) ]]; then
+              echo "No updated files"
+          else
+              echo "Updated files"
+              git status
+              echo "::warning Git status is not clean"
+          fi
+
       # Playwright
       - uses: actions/setup-node@v4
         with:
