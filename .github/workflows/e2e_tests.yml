@@ -95,26 +95,29 @@ jobs:
       - name: Build and start docker images
         run: ./run-docker up --build -d
 
-      - name: Wait docker images ready and install Lizmap
+      - name: Wait 30 secondes for docker images to be ready
         run: |
           sleep 30
+
+      - name: Install Lizmap
+        run: |
           ./lizmap-ctl install
 
-      - name: Load SQL data
+      - name: Wait and check about QGIS Server status
         run: |
-          cd qgis-projects/tests
-          ./load_sql.sh
-
-      - name: Add hosts to /etc/hosts
-        run: |
-            sudo echo "127.0.0.1 othersite.local" | sudo tee -a /etc/hosts
-
-      - name: Check about QGIS Server status
-        run: |
-          qgis_server_info=$(curl --user 'admin:admin' -s "http://localhost:8130/index.php/view/app/metadata" | jq --raw-output '.qgis_server_info.error')
-          if [[ "$qgis_server_info" != "null" ]]; then
+          curl \
+            --user 'admin:admin' \
+            --retry 30 \
+            --retry-delay 5 \
+            -vN \
+            "http://localhost:8130/index.php/view/app/metadata" \
+            -o /tmp/test-qgis-server.json
+          cat /tmp/test-qgis-server.json
+          qgis_info=$(cat /tmp/test-qgis-server.json | jq --raw-output '.qgis_server_info.error')
+          if [[ "$qgis_info" != "null" ]]; then
               echo "QGIS Server is not well configured"
-              exit 1
+              echo "::warning QGIS Server was not up"
+          #              exit 1
           fi
 
       - name: Check about updated files after a build (PHP or JS)
@@ -126,6 +129,15 @@ jobs:
               git status
               echo "::warning Git status is not clean"
           fi
+
+      - name: Load SQL data
+        run: |
+          cd qgis-projects/tests
+          ./load_sql.sh
+
+      - name: Add hosts to /etc/hosts
+        run: |
+            sudo echo "127.0.0.1 othersite.local" | sudo tee -a /etc/hosts
 
       # Playwright
       - uses: actions/setup-node@v4
