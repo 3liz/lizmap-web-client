@@ -124,7 +124,7 @@ export default class Tooltip {
             this._tooltipLayers.set(layerName, this._activeTooltipLayer);
         }
 
-        mainLizmap.map.addLayer(this._activeTooltipLayer);
+        mainLizmap.map.addToolLayer(this._activeTooltipLayer);
 
         const tooltip = document.getElementById('tooltip');
 
