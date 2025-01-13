@@ -680,7 +680,7 @@ class Proxy
         }
 
         $response = $client->send($request, $reqOptions);
-        self::logRequestIfError($response->getStatusCode(), $url);
+        self::logRequestIfError($response->getStatusCode(), $url, $response->getHeaders());
 
         return new ProxyResponse(
             $response->getStatusCode(),
