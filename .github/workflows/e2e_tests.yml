@@ -109,10 +109,10 @@ jobs:
             --user 'admin:admin' \
             --retry 30 \
             --retry-delay 5 \
-            -vN \
+            -N \
             "http://localhost:8130/index.php/view/app/metadata" \
             -o /tmp/test-qgis-server.json
-          # cat /tmp/test-qgis-server.json
+          cat /tmp/test-qgis-server.json | jq .qgis_server_info
           qgis_info=$(cat /tmp/test-qgis-server.json | jq --raw-output '.qgis_server_info.error')
           echo $qgis_info
           if [[ "$qgis_info" != "null" ]]; then
