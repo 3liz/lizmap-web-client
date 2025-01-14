@@ -25,9 +25,10 @@ import GeoJSON from 'ol/format/GeoJSON.js';
  *                        withGeometry="1" expressionFilter="quartmno = 'HO'"
  *                        uniqueField="id" layerId="subdistrict_24ceec66_e7fe_46a2_b57a_af5c50389649"
  *                        layerTitle="child sub-districts"
- *                        (optionnal) data-show-highlighted-feature-geometry="true"
- *                        (optionnal) data-center-to-highlighted-feature-geometry="true"
+ *                        (optional) data-show-highlighted-feature-geometry="true"
+ *                        (optional) data-center-to-highlighted-feature-geometry="true"
  *                        (optional) data-max-features="100"
+ *                        (optional) data-active-item-feature-id="5"
  *                        >
  *      <lizmap-field data-alias="District's name" data-description="Label of district's name">
  *         "libsquart"
@@ -88,9 +89,6 @@ export default class FeaturesTable extends HTMLElement {
 
         // Additional Fields JSON
         this.additionalFields = {fields:[]};
-
-        // Clicked item feature ID
-        this.activeItemFeatureId = null;
 
         // Clicked item line number
         this.activeItemLineNumber = null;
@@ -159,18 +157,21 @@ export default class FeaturesTable extends HTMLElement {
      * Render component from the template using Lit
      */
     render() {
-
         // Render with lit-html
         render(this._template(), this);
 
         // If there is not features, add empty content in the container
         if (this.features.length === 0) {
             this.querySelector('table.lizmap-features-table-container').innerHTML = '&nbsp;';
-        }
+        } else {
 
-        // Add drag & drop capabilities if option is set
-        if (this.itemsDraggable == 'yes') {
-            this.addDragAndDropCapabilities();
+            // Add drag & drop capabilities if option is set
+            if (this.itemsDraggable == 'yes') {
+                this.addDragAndDropCapabilities();
+            }
+
+            // Toggle the feature detail
+            this.toggleFeatureDetail();
         }
 
         /**
@@ -186,113 +187,196 @@ export default class FeaturesTable extends HTMLElement {
     }
 
     /**
-     * Display a popup when a feature item is clicked
+     * Get the feature corresponding to the given feature ID
      *
-     * @param {Event} event Click event on a feature item
-     * @param {Object} feature WFS feature
+     * @param {Number} featureId WFS Feature ID
+     * @return {Object|null} WFS Feature
      */
-    onItemClick(event, feature) {
+    getFeatureById(featureId) {
+        if (this.features.length === 0) {
+            return null;
+        }
 
-        if (!this.openPopup) {return true;}
+        return this.features.find(feature => feature.properties.feature_id == featureId);
+    }
 
-        // Check if the item was active
-        const itemWasActive = (this.activeItemFeatureId == feature.properties.feature_id);
+    /**
+     * Toggle the display of the active feature details
+     *
+     */
+    toggleFeatureDetail() {
+        // Do nothing if features have not been fetched yet
+        // This is important to be able to create a new element
+        // with its attribute data-active-item-feature-id set to a feature ID
+        if (!this.features.length) return;
 
-        // Titles based on active status
-        const activeItemTitle = `${this.openPopup ? lizDict['featuresTable.item.active.hover']: ''}`;
-        const defaultItemTitle = `${this.openPopup ? lizDict['featuresTable.item.hover'] + '.': ''} ${this.itemsDraggable == 'yes' ? lizDict['featuresTable.item.draggable.hover'] + '.' : ''}`;
+        // Get the value store in the dataset attribute
+        const activeItemFeatureId = this.dataset.activeItemFeatureId;
+        // console.log(`Toggle. activeItemFeatureId = ${activeItemFeatureId}`);
 
-        // Fix event.target depending on which HTML tag we click on
-        const eventTarget = event.currentTarget;
+        // We should hide or display the features details
+        // depending on the attribute value
+        // If it is empty or a string 'null', hide the popup and remove the geometry
+        // It is set to an existing feature ID, display the popup and the feature geometry
+        if (!activeItemFeatureId || activeItemFeatureId === 'null') {
+            // activeItemFeatureId empty or a string 'null'
+            // deactivate the display of feature details (popup, geometry, etc.)
+            if (this.openPopup) {
+                // Hide the popup and display the list of features
+                const item = this.querySelector('tr.lizmap-features-table-item.popup-displayed');
+                if (item) item.classList.remove('popup-displayed');
 
-        if (!itemWasActive) {
-            if (this.dataset.showHighlightedFeatureGeometry === 'true') {
-                // Highlight the clicked element on the map
-                mainLizmap.map.setHighlightFeatures(
-                    feature,
-                    "geojson",
-                    "EPSG:4326",
-                );
-
-                /**
-                 * When the user has selected an item and highlighted it
-                 * @event features.table.item.highlighted
-                 * @property {string} itemFeatureId The feature ID of the selected item
-                 */
-                mainEventDispatcher.dispatch({
-                    type: 'features.table.item.highlighted',
-                    itemFeatureId: feature.properties.feature_id,
+                // Set the tr title back to original
+                this.querySelectorAll('tr.lizmap-features-table-item').forEach(tr => {
+                    tr.setAttribute(
+                        'title',
+                        `${lizDict['featuresTable.item.hover'] + '.'} ${this.itemsDraggable == 'yes' ? lizDict['featuresTable.item.draggable.hover'] + '.' : ''}`
+                    );
                 });
+
+                // Also remove the popup-displayed class from the div
+                const div = this.querySelector('div.lizmap-features-table.popup-displayed');
+                if (div) div.classList.remove('popup-displayed');
+            }
+
+            // Remove the highlight on the map
+            if (this.dataset.showHighlightedFeatureGeometry === 'true') {
+                mainLizmap.map.clearHighlightFeatures();
+            }
+
+            // Reset the active line number
+            this.activeItemLineNumber = null;
+        } else {
+            // activeItemFeatureId is set
+            // activate the display of feature details (popup, geometry, etc.)
+
+            // Set the active line number
+            const lineTr = this.querySelector(`tr.lizmap-features-table-item[data-feature-id="${activeItemFeatureId}"]`);
+            if (lineTr) {
+                this.activeItemLineNumber = parseInt(lineTr.dataset.lineId);
+            }
+
+            // Get the WFS feature
+            const activeFeature = this.getFeatureById(activeItemFeatureId);
+            // If no feature corresponds, we should deactivate the features detail
+            if (!activeFeature) {
+                this.setAttribute("data-active-item-feature-id", "");
+
+                return;
+            }
+
+            // Display the feature popup
+            if (this.openPopup) {
+                this.displayFeaturePopup(activeFeature);
             }
 
             // Center the map on the clicked element if the feature has a geometry
-            if (feature.geometry && this.dataset.centerToHighlightedFeatureGeometry === 'true') {
-                const geom = (new GeoJSON()).readGeometry(feature.geometry, {
+            if (activeFeature.geometry && this.dataset.centerToHighlightedFeatureGeometry === 'true') {
+                const geom = (new GeoJSON()).readGeometry(activeFeature.geometry, {
                     dataProjection: 'EPSG:4326',
                     featureProjection: lizMap.mainLizmap.projection
                 });
                 mainLizmap.map.zoomToGeometryOrExtent(geom, { duration: 150 });
             }
 
-            // Set the features table properties
-            const lineId = parseInt(eventTarget.dataset.lineId);
-            this.activeItemFeatureId = feature.properties.feature_id;
-            this.activeItemLineNumber = lineId;
+            // Highlight the clicked element on the map
+            if (this.dataset.showHighlightedFeatureGeometry === 'true') {
+                mainLizmap.map.setHighlightFeatures(
+                    activeFeature,
+                    "geojson",
+                    "EPSG:4326",
+                );
+            }
 
-            // Get popup data and display it
-            mainLizmap.featuresTable.openPopup(
-                eventTarget.dataset.layerId,
-                feature,
-                this.uniqueField,
-                eventTarget.parentElement.parentElement.parentElement.querySelector('div.lizmap-features-table-item-popup'),
-                function(aLayerId, aFeature, aTarget) {
-                    // Add bootstrap classes to the popup tables
-                    const popupTable = aTarget.querySelector('table.lizmapPopupTable');
-                    if (popupTable) {
-                        popupTable.classList.add('table', 'table-condensed', 'table-sm', 'table-bordered', 'table-striped');
-                    }
+            // Dispatch event
+            /**
+             * When the user has selected an item and highlighted it
+             * @event features.table.item.highlighted
+             * @property {string} itemFeatureId The feature ID of the selected item
+             */
+            mainEventDispatcher.dispatch({
+                type: 'features.table.item.highlighted',
+                itemFeatureId: activeItemFeatureId,
+            });
 
-                    // Show popup and hide other children
-                    const featuresTableDiv = aTarget.parentElement;
-                    if (featuresTableDiv) {
-                        // Add class to the parent
-                        featuresTableDiv.classList.add('popup-displayed');
+        }
+    }
 
-                        // Remove popup-displayed for all other items
-                        // And restore previous title
-                        var items = featuresTableDiv.querySelectorAll('table.lizmap-features-table-container tr.lizmap-features-table-item.popup-displayed');
-                        Array.from(items).forEach(item => {
-                            item.classList.remove('popup-displayed');
-                            item.setAttribute('title', defaultItemTitle);
-                        });
+    /**
+     * Get the feature popup HTML content
+     * and display it
+     *
+     * @param {Object} feature WFS feature
+     */
+    displayFeaturePopup(feature) {
+        // Get the default title for the table lines (tr)
+        const defaultItemTitle = `${lizDict['featuresTable.item.hover']}. ${this.itemsDraggable == 'yes' ? lizDict['featuresTable.item.draggable.hover'] + '.' : ''}`;
 
-                        // Add class to the active item
-                        const childSelector = `tr.lizmap-features-table-item[data-feature-id="${feature.properties.feature_id}"]`;
-                        const activeItem = featuresTableDiv.querySelector(childSelector);
-                        if (activeItem) activeItem.classList.add('popup-displayed');
-
-                        // Change title
-                        activeItem.setAttribute('title', activeItemTitle);
-
-                        // Toggle previous/next buttons depending on active line id
-                        const previousButton = featuresTableDiv.querySelector('div.lizmap-features-table-toolbar button.previous-popup');
-                        const nextButton = featuresTableDiv.querySelector('div.lizmap-features-table-toolbar button.next-popup');
-                        previousButton.style.display = (activeItem.dataset.lineId == 1) ? 'none' : 'initial';
-                        nextButton.style.display = (activeItem.dataset.lineId == featuresTableDiv.dataset.featuresCount) ? 'none' : 'initial';
-                    }
+        // Fetch the feature popup HTML and use it to display the popup
+        mainLizmap.featuresTable.openPopup(
+            this.layerId,
+            feature,
+            this.uniqueField,
+            this.querySelector('div.lizmap-features-table-item-popup'),
+            function(aLayerId, aFeature, aTarget) {
+                // Add bootstrap classes to the popup tables
+                const popupTable = aTarget.querySelector('table.lizmapPopupTable');
+                if (popupTable) {
+                    popupTable.classList.add('table', 'table-condensed', 'table-sm', 'table-bordered', 'table-striped');
                 }
-            );
+
+                // Show popup and hide other children
+                const featuresTableDiv = aTarget.parentElement;
+                if (featuresTableDiv) {
+                    // Add class to the parent
+                    featuresTableDiv.classList.add('popup-displayed');
+
+                    // Remove popup-displayed for all other items
+                    // And restore previous title
+                    var items = featuresTableDiv.querySelectorAll('table.lizmap-features-table-container tr.lizmap-features-table-item.popup-displayed');
+                    Array.from(items).forEach(item => {
+                        item.classList.remove('popup-displayed');
+                        item.setAttribute('title', defaultItemTitle);
+                    });
+
+                    // Add class to the active item
+                    const childSelector = `tr.lizmap-features-table-item[data-feature-id="${feature.properties.feature_id}"]`;
+                    const activeItem = featuresTableDiv.querySelector(childSelector);
+                    if (activeItem) activeItem.classList.add('popup-displayed');
+
+                    // Change title
+                    activeItem.setAttribute(
+                        'title',
+                        lizDict['featuresTable.item.active.hover']
+                    );
+
+                    // Toggle previous/next buttons depending on active line id
+                    const previousButton = featuresTableDiv.querySelector('div.lizmap-features-table-toolbar button.previous-popup');
+                    const nextButton = featuresTableDiv.querySelector('div.lizmap-features-table-toolbar button.next-popup');
+                    previousButton.style.display = (activeItem.dataset.lineId == 1) ? 'none' : 'initial';
+                    nextButton.style.display = (activeItem.dataset.lineId == featuresTableDiv.dataset.featuresCount) ? 'none' : 'initial';
+                }
+            }
+        );
+    }
+
+    /**
+     * Display a popup when a feature item is clicked
+     *
+     * @param {Event} event Click event on a feature item
+     * @param {Number} featureId WFS feature ID
+     */
+    onItemClick(event, featureId) {
+        // console.log('onItemClick - top');
+        // Check if the item was active
+        const itemWasActive = (this.dataset.activeItemFeatureId == featureId);
+
+        // Set the features table properties
+        if (!itemWasActive) {
+            this.setAttribute('data-active-item-feature-id', featureId);
         } else {
-            // Set the features table properties
-            this.activeItemFeatureId = null;
+            this.setAttribute('data-active-item-feature-id', "");
             this.activeItemLineNumber = null;
-
-            // Remove the highlight on the map
-            mainLizmap.map.clearHighlightFeatures();
-
-            eventTarget.classList.remove('popup-displayed');
-            eventTarget.setAttribute('title', defaultItemTitle);
-            eventTarget.closest('div.lizmap-features-table').classList.remove('popup-displayed');
         }
     }
 
@@ -382,6 +466,10 @@ export default class FeaturesTable extends HTMLElement {
             // Send event
             const movedFeatureId = dropped.dataset.featureId;
             const newItem = item.parentElement.querySelector(`tr.lizmap-features-table-item[data-feature-id="${movedFeatureId}"]`);
+
+            // Set the new active line number
+            this.activeItemLineNumber = parseInt(newItem.dataset.lineId);
+
             /**
              * When the user has dropped an item in a new position
              * @event features.table.item.dragged
@@ -418,6 +506,7 @@ export default class FeaturesTable extends HTMLElement {
 
 
     connectedCallback() {
+        // console.log('connectedCallback - top');
         if (this.querySelector("lizmap-field")) {
             const listField = this.querySelectorAll("lizmap-field");
 
@@ -469,10 +558,9 @@ export default class FeaturesTable extends HTMLElement {
                     <button class="btn btn-mini close-popup"
                         title="${lizDict['featuresTable.toolbar.close']}"
                         @click=${event => {
-                        // Click on the active line to deactivate it
-                        if (this.activeItemFeatureId === null) return;
-                        const featureDiv = this.querySelector(`tr.lizmap-features-table-item[data-feature-id="${this.activeItemFeatureId}"]`);
-                        featureDiv.click();
+                        const checkFeatureId = (this.dataset.activeItemFeatureId) ?? "";
+                        if (!checkFeatureId) return;
+                        this.dataset.activeItemFeatureId = ""
                     }}></button>
                 </div>
                 <table class="table table-sm table-bordered table-condensed lizmap-features-table-container">
@@ -487,7 +575,7 @@ export default class FeaturesTable extends HTMLElement {
                             data-line-id="${idx+1}"
                             title="${this.openPopup ? lizDict['featuresTable.item.hover'] + '.': ''} ${this.itemsDraggable == 'yes' ? lizDict['featuresTable.item.draggable.hover'] + '.' : ''}"
                             @click=${event => {
-                                this.onItemClick(event, feature);
+                                this.onItemClick(event, feature.properties.feature_id);
                             }}
                         >
                             ${this.buildColumns(feature.properties)}
@@ -648,7 +736,7 @@ export default class FeaturesTable extends HTMLElement {
         return verifiedFields;
     }
 
-    static get observedAttributes() { return ['updated','expressionfilter']; }
+    static get observedAttributes() { return ['updated','expressionfilter', 'data-active-item-feature-id']; }
 
     attributeChangedCallback(name, oldValue, newValue) {
         // Listen to the change of the updated attribute
@@ -666,6 +754,14 @@ export default class FeaturesTable extends HTMLElement {
                 // console.log('Reload the table with the new expressionFilter');
                 this.expressionFilter = newValue;
                 this.load();
+            }
+        }
+
+        // Check for the data-active-item-feature-id
+        if (name === 'data-active-item-feature-id') {
+            if (oldValue != newValue) {
+                // console.log(`Attribute data-active-item-feature-id changed, OLD = ${oldValue}, NEW = ${newValue}`);
+                this.toggleFeatureDetail();
             }
         }
     }
