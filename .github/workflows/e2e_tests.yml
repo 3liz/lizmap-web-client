@@ -206,6 +206,19 @@ jobs:
           spec: cypress/integration/*-ghaction.js
           wait-on: http://localhost:8130
 
+      - name: QGIS Server all logs to file
+        if: always()
+        run: |
+          docker logs lizmap${LZMBRANCH}_test_qgis &> /tmp/qgis-server-all.log
+
+      - name: QGIS Server all logs upload
+        uses: actions/upload-artifact@v4.5.0
+        if: always()
+        with:
+          name: E2E-QGIS-server-logs-all
+          path: |
+            /tmp/qgis-server-all.log
+
       - name: Notify in case of cypress failure, from mainstream branches only
         uses: peter-evans/commit-comment@v3
         if: github.repository == '3liz/lizmap-web-client' && failure() && steps.test-cypress.outcome != 'success' && github.event_name == 'repository_dispatch'
