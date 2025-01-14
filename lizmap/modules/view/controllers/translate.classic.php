@@ -3,7 +3,7 @@
 use Lizmap\App\LocalesLoader;
 
 /**
- * Service to provide translation dictionnary.
+ * Service to provide translation dictionary.
  *
  * @author    3liz
  * @copyright 2011-2022 3liz
@@ -15,7 +15,7 @@ use Lizmap\App\LocalesLoader;
 class translateCtrl extends jController
 {
     /**
-     * Get text/javascript containing all translation for the dictionnary.
+     * Get text/javascript containing all translation for the dictionary.
      *
      * @urlparam string $lang Language. Ex: fr_FR (optional)
      *
@@ -36,6 +36,11 @@ class translateCtrl extends jController
         }
 
         $data = LocalesLoader::getLocalesFrom('view~dictionnary', $lang);
+
+        if (strpos(\jApp::config()->jResponseHtml['plugins'], 'debugbar') !== false) {
+            $fallback = LocalesLoader::getLocalesFrom('view~dictionnary', \jApp::config()->fallbackLocale);
+            $data = array_merge($fallback, $data);
+        }
         $rep->content = 'var lizDict = '.json_encode($data).';';
 
         return $rep;
