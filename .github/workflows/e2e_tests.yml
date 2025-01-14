@@ -209,7 +209,7 @@ jobs:
       - name: QGIS Server all logs to file
         if: always()
         run: |
-          docker logs lizmap${LZMBRANCH}_test_qgis &> /tmp/qgis-server-all.log
+          docker logs lizmap${{ env.LZMBRANCH }}_test_qgis &> /tmp/qgis-server-all.log
 
       - name: QGIS Server all logs upload
         uses: actions/upload-artifact@v4.5.0
