@@ -92,7 +92,7 @@ class QgisProject
     protected $lastSaveDateTime;
 
     /**
-     * @var array contains WMS info
+     * @var array<string, mixed> contains WMS info
      */
     protected $WMSInformation;
 
@@ -102,14 +102,14 @@ class QgisProject
     protected $canvasColor = '';
 
     /**
-     * @var array authid => proj4
+     * @var array<string, string> authid => proj4
      */
     protected $allProj4 = array();
 
     /**
-     * @var array for each referenced layer, there is an item
-     *            with referencingLayer, referencedField, referencingField keys.
-     *            There is also a 'pivot' key
+     * @var array<string, array> for each referenced layer, there is an item
+     *                           with referencingLayer, referencedField, referencingField keys.
+     *                           There is also a 'pivot' key
      */
     protected $relations = array();
 
@@ -119,7 +119,7 @@ class QgisProject
     protected $relationsFields = array();
 
     /**
-     * @var array list of themes
+     * @var array<string, array> list of themes
      */
     protected $themes = array();
 
@@ -293,6 +293,11 @@ class QgisProject
         return $this->lastSaveDateTime;
     }
 
+    /**
+     * WMS informations.
+     *
+     * @return array<string, mixed>
+     */
     public function getWMSInformation()
     {
         return $this->WMSInformation;
@@ -303,6 +308,13 @@ class QgisProject
         return $this->canvasColor;
     }
 
+    /**
+     * Proj4 string for proj Auth Id if is known by the project.
+     *
+     * @param string $authId
+     *
+     * @return null|string
+     */
     public function getProj4($authId)
     {
         if (!array_key_exists($authId, $this->allProj4)) {
@@ -312,16 +324,31 @@ class QgisProject
         return $this->allProj4[$authId];
     }
 
+    /**
+     * All proj4.
+     *
+     * @return array<string, string>
+     */
     public function getAllProj4()
     {
         return $this->allProj4;
     }
 
+    /**
+     * Relations.
+     *
+     * @return array<string, array>
+     */
     public function getRelations()
     {
         return $this->relations;
     }
 
+    /**
+     * Themes of the QGIS project.
+     *
+     * @return array<string, array>
+     */
     public function getThemes()
     {
         return $this->themes;
@@ -354,20 +381,18 @@ class QgisProject
      */
     protected function setShortNames(ProjectConfig $cfg)
     {
-        $shortNames = $this->xpathQuery('//maplayer/shortname');
-        if ($shortNames) {
-            foreach ($shortNames as $sname) {
-                $sname = (string) $sname;
-                $xmlLayer = $this->xpathQuery("//maplayer[shortname='{$sname}']");
-                if (!$xmlLayer) {
-                    continue;
-                }
-                $xmlLayer = $xmlLayer[0];
-                $name = (string) $xmlLayer->layername;
-                $layerCfg = $cfg->getLayer($name);
-                if ($layerCfg) {
-                    $layerCfg->shortname = $sname;
-                }
+        if (!$this->path) {
+            return;
+        }
+
+        $project = Qgis\ProjectInfo::fromQgisPath($this->path);
+        foreach ($project->projectlayers as $layer) {
+            if (!isset($layer->shortname)) {
+                continue;
+            }
+            $layerCfg = $cfg->getLayer($layer->layername);
+            if ($layerCfg) {
+                $layerCfg->shortname = $layer->shortname;
             }
         }
     }
@@ -377,34 +402,35 @@ class QgisProject
      */
     protected function setLayerOpacity(ProjectConfig $cfg)
     {
-        $layers = $this->layers;
-        // loop through project layers to get embedded ones as well
-        foreach ($layers as $layer) {
-            $xpath = "//maplayer[id='{$layer['id']}']/layerOpacity[.!=1]/parent::* | //maplayer[id='{$layer['id']}']/pipe/rasterrenderer/@opacity[.!=1]/ancestor::maplayer";
-            $layerWithOpacity = null;
+        if (!$this->path) {
+            return;
+        }
 
-            // check if layer is embedded or not
-            $qgisProject = $this->getEmbeddedQgisProject($layer['id']);
+        $project = Qgis\ProjectInfo::fromQgisPath($this->path);
+        foreach ($project->projectlayers as $layer) {
+            $layername = '';
+            $opacity = 1;
 
-            if ($qgisProject) {
-                $layerWithOpacity = $qgisProject->xpathQuery($xpath);
-            } else {
-                $layerWithOpacity = $this->xpathQuery($xpath);
-            }
-
-            // layerWithOpacity should have length == 1, if any
-            if ($layerWithOpacity && count($layerWithOpacity) == 1) {
-                $name = (string) $layerWithOpacity[0]->layername;
-                $layerCfg = $cfg->getLayer($name);
-                $opacity = 1;
-                if ($layerCfg) {
-                    if (isset($layerWithOpacity[0]->layerOpacity)) {
-                        $opacity = (float) $layerWithOpacity[0]->layerOpacity;
-                    } elseif (isset($layerWithOpacity[0]->pipe->rasterrenderer['opacity'])) {
-                        $opacity = (float) $layerWithOpacity[0]->pipe->rasterrenderer['opacity'];
-                    }
-                    $layerCfg->opacity = $opacity;
+            /** @var Qgis\Layer\MapLayer $layer */
+            if ($layer->embedded) {
+                try {
+                    /** @var Qgis\Layer\EmbeddedLayer $layer */
+                    $embeddedLayer = $layer->getEmbeddedLayer($this->path);
+                } catch (\Exception $e) {
+                    continue;
                 }
+                $layername = $embeddedLayer->layername;
+                $opacity = $embeddedLayer->getLayerOpacity();
+            } else {
+                $layername = $layer->layername;
+                $opacity = $layer->getLayerOpacity();
+            }
+            if ($layername == '' || $opacity == 1) {
+                continue;
+            }
+            $layerCfg = $cfg->getLayer($layername);
+            if ($layerCfg) {
+                $layerCfg->opacity = $opacity;
             }
         }
     }
@@ -414,61 +440,26 @@ class QgisProject
      */
     protected function setLayerGroupData(ProjectConfig $cfg)
     {
-        $groupsWithShortName = $this->xpathQuery("//layer-tree-group/customproperties/property[@key='wmsShortName']/parent::*/parent::*");
-        if ($groupsWithShortName) {
-            foreach ($groupsWithShortName as $group) {
-                $name = (string) $group['name'];
-                $shortNameProperty = $group->xpath("customproperties/property[@key='wmsShortName']");
-                if (!$shortNameProperty) {
-                    continue;
-                }
-
-                $shortNameProperty = $shortNameProperty[0];
-                $sname = (string) $shortNameProperty['value'];
-                if (!$sname) {
-                    continue;
-                }
-
-                $layerCfg = $cfg->getLayer($name);
-                if (!$layerCfg) {
-                    continue;
-                }
-                $layerCfg->shortname = $sname;
-            }
-        } else {
-            $groupsWithShortName = $this->xpathQuery("//layer-tree-group/customproperties/Option[@type='Map']/Option[@name='wmsShortName']/parent::*/parent::*/parent::*");
-            if ($groupsWithShortName) {
-                foreach ($groupsWithShortName as $group) {
-                    $name = (string) $group['name'];
-                    $shortNameProperty = $group->xpath("customproperties/Option[@type='Map']/Option[@name='wmsShortName']");
-                    if (!$shortNameProperty) {
-                        continue;
-                    }
-
-                    $shortNameProperty = $shortNameProperty[0];
-                    $sname = (string) $shortNameProperty['value'];
-                    if (!$sname) {
-                        continue;
-                    }
-
-                    $layerCfg = $cfg->getLayer($name);
-                    if (!$layerCfg) {
-                        continue;
-                    }
-                    $layerCfg->shortname = $sname;
-                }
-            }
+        if (!$this->path) {
+            return;
         }
 
-        $groupsMutuallyExclusive = $this->xpathQuery("//layer-tree-group[@mutually-exclusive='1']");
-        if ($groupsMutuallyExclusive) {
-            foreach ($groupsMutuallyExclusive as $group) {
-                $name = (string) $group['name'];
-                $layerCfg = $cfg->getLayer($name);
-                if ($layerCfg) {
-                    $layerCfg->mutuallyExclusive = 'True';
-                }
+        $project = Qgis\ProjectInfo::fromQgisPath($this->path);
+        $groupShortNames = $project->layerTreeRoot->getGroupShortNames();
+        foreach ($groupShortNames as $name => $shortName) {
+            $layerCfg = $cfg->getLayer($name);
+            if (!$layerCfg) {
+                continue;
             }
+            $layerCfg->shortname = $shortName;
+        }
+        $groupsMutuallyExclusive = $project->layerTreeRoot->getGroupsMutuallyExclusive();
+        foreach ($groupsMutuallyExclusive as $group) {
+            $layerCfg = $cfg->getLayer($group);
+            if (!$layerCfg) {
+                continue;
+            }
+            $layerCfg->mutuallyExclusive = 'True';
         }
     }
 
@@ -477,18 +468,18 @@ class QgisProject
      */
     protected function setLayerShowFeatureCount(ProjectConfig $cfg)
     {
-        $layersWithShowFeatureCount = $this->xpathQuery("//layer-tree-layer/customproperties/property[@key='showFeatureCount'][@value='1']/parent::*/parent::*");
-        if (!$layersWithShowFeatureCount) {
-            $layersWithShowFeatureCount = $this->xpathQuery("//layer-tree-layer/customproperties/Option[@type='Map']/Option[@name='showFeatureCount'][@value='1']/parent::*/parent::*/parent::*");
+        if (!$this->path) {
+            return;
         }
-        if ($layersWithShowFeatureCount) {
-            foreach ($layersWithShowFeatureCount as $layer) {
-                $name = (string) $layer['name'];
-                $layerCfg = $cfg->getLayer($name);
-                if ($layerCfg) {
-                    $layerCfg->showFeatureCount = 'True';
-                }
+
+        $project = Qgis\ProjectInfo::fromQgisPath($this->path);
+        $layersShowFeatureCount = $project->layerTreeRoot->getLayersShowFeatureCount();
+        foreach ($layersShowFeatureCount as $layer) {
+            $layerCfg = $cfg->getLayer($layer);
+            if (!$layerCfg) {
+                continue;
             }
+            $layerCfg->showFeatureCount = 'True';
         }
     }
 
@@ -498,11 +489,12 @@ class QgisProject
     protected function unsetPropAfterRead(ProjectConfig $cfg)
     {
         // remove plugin layer
-        $pluginLayers = $this->xpathQuery('//maplayer[type="plugin"]');
-        if ($pluginLayers) {
-            foreach ($pluginLayers as $layer) {
-                $name = (string) $layer->layername;
-                $cfg->removeLayer($name);
+        if ($this->path) {
+            $project = Qgis\ProjectInfo::fromQgisPath($this->path);
+            foreach ($project->projectlayers as $layer) {
+                if ($layer->type === 'plugin') {
+                    $cfg->removeLayer($layer->layername);
+                }
             }
         }
 
@@ -769,119 +761,13 @@ class QgisProject
      */
     public function getPrintTemplates()
     {
-        // get restricted composers
-        $rComposers = array();
-        $restrictedComposers = $this->getXml()->xpath('//properties/WMSRestrictedComposers/value');
-        if ($restrictedComposers && is_array($restrictedComposers)) {
-            foreach ($restrictedComposers as $restrictedComposer) {
-                $rComposers[] = (string) $restrictedComposer;
-            }
+        if (!$this->path) {
+            return array();
         }
 
-        $printTemplates = array();
-        // get layout qgs project version >= 3
-        $layouts = $this->getXml()->xpath('//Layout');
-        if ($layouts && is_array($layouts)) {
-            foreach ($layouts as $layout) {
-                // test restriction
-                if (in_array((string) $layout['name'], $rComposers)) {
-                    continue;
-                }
-                // get page element
-                $page = $layout->xpath('PageCollection/LayoutItem[@type="65638"]');
-                if (!$page) {
-                    continue;
-                }
-                $page = $page[0];
+        $project = Qgis\ProjectInfo::fromQgisPath($this->path);
 
-                $pageSize = explode(',', $page['size']);
-                // init print template element
-                $printTemplate = array(
-                    'title' => (string) $layout['name'],
-                    'width' => (int) $pageSize[0],
-                    'height' => (int) $pageSize[1],
-                    'maps' => array(),
-                    'labels' => array(),
-                );
-
-                // store mapping between uuid and id
-                $mapUuidId = array();
-                // get layout maps
-                $lMaps = $layout->xpath('LayoutItem[@type="65639"]');
-                if ($lMaps && is_array($lMaps)) {
-                    // Convert xml to json config
-                    foreach ($lMaps as $lMap) {
-                        $lMapSize = explode(',', $lMap['size']);
-                        $ptMap = array(
-                            'id' => 'map'.(string) count($printTemplate['maps']),
-                            'uuid' => (string) $lMap['uuid'],
-                            'width' => (int) $lMapSize[0],
-                            'height' => (int) $lMapSize[1],
-                        );
-                        // store mapping between uuid and id
-                        $mapUuidId[(string) $lMap['uuid']] = 'map'.(string) count($printTemplate['maps']);
-
-                        // Overview
-                        $cMapOverviews = $lMap->xpath('ComposerMapOverview');
-                        foreach ($cMapOverviews as $cMapOverview) {
-                            if ($cMapOverview and (string) $cMapOverview->attributes()->show !== '0' and (string) $cMapOverview->attributes()->frameMap != '-1') {
-                                // frameMap is an uuid
-                                $ptMap['overviewMap'] = (string) $cMapOverview->attributes()->frameMap;
-                            }
-                        }
-                        // Grid
-                        $cMapGrids = $lMap->xpath('ComposerMapGrid');
-                        foreach ($cMapGrids as $cMapGrid) {
-                            if ($cMapGrid and (string) $cMapGrid->attributes()->show !== '0') {
-                                $ptMap['grid'] = 'True';
-                            }
-                        }
-
-                        $printTemplate['maps'][] = $ptMap;
-                    }
-                    // Modifying overviewMap to id instead of uuid
-                    foreach ($printTemplate['maps'] as $ptMap) {
-                        if (!array_key_exists('overviewMap', $ptMap)) {
-                            continue;
-                        }
-                        if (!array_key_exists($ptMap['overviewMap'], $mapUuidId)) {
-                            unset($ptMap['overviewMap']);
-
-                            continue;
-                        }
-                        $ptMap['overviewMap'] = $mapUuidId[$ptMap['overviewMap']];
-                    }
-                }
-
-                // get layout labels
-                $lLabels = $layout->xpath('LayoutItem[@type="65641"]');
-                if ($lLabels && is_array($lLabels)) {
-                    foreach ($lLabels as $lLabel) {
-                        if ((string) $lLabel['id'] == '') {
-                            continue;
-                        }
-                        $printTemplate['labels'][] = array(
-                            'id' => (string) $lLabel['id'],
-                            'htmlState' => (int) $lLabel['htmlState'],
-                            'text' => (string) $lLabel['labelText'],
-                        );
-                    }
-                }
-
-                // Atlas
-                $atlas = $layout->xpath('Atlas');
-                if ($atlas) {
-                    $atlas = $atlas[0];
-                    $printTemplate['atlas'] = array(
-                        'enabled' => (string) $atlas['enabled'],
-                        'coverageLayer' => (string) $atlas['coverageLayer'],
-                    );
-                }
-                $printTemplates[] = $printTemplate;
-            }
-        }
-
-        return $printTemplates;
+        return $project->getLayoutsAsKeyArray();
     }
 
     /**
@@ -889,48 +775,60 @@ class QgisProject
      */
     public function readLocateByLayer($locateByLayer)
     {
+        if (!$this->path) {
+            return;
+        }
+
         // collect layerIds
         $locateLayerIds = array();
         foreach ($locateByLayer as $k => $v) {
             $locateLayerIds[] = $v->layerId;
         }
+
+        // update locateByLayer with project from path
+        $project = Qgis\ProjectInfo::fromQgisPath($this->path);
+
         // update locateByLayer with alias and filter information
         foreach ($locateByLayer as $k => $v) {
-            $xmlLayer = $this->getXmlLayer2($this->getXml(), $v->layerId);
-            if (is_null($xmlLayer)) {
-                continue;
-            }
-            // aliases
-            $alias = $xmlLayer->xpath("aliases/alias[@field='".$v->fieldName."']");
-            if ($alias && is_array($alias)) {
-                $alias = $alias[0];
-                $v->fieldAlias = (string) $alias['name'];
-                $locateByLayer->{$k} = $v;
+            $updateLocate = false;
+            $layer = $project->getLayerById($v->layerId);
+            // Get field alias
+            $alias = $layer->getFieldAlias($v->fieldName);
+            if ($alias !== null) {
+                // Update locate with field alias
+                $v->fieldAlias = $alias;
+                $updateLocate = true;
             }
             if (property_exists($v, 'filterFieldName')) {
-                $alias = $xmlLayer->xpath("aliases/alias[@field='".$v->filterFieldName."']");
-                if ($alias && is_array($alias)) {
-                    $alias = $alias[0];
-                    $v->filterFieldAlias = (string) $alias['name'];
-                    $locateByLayer->{$k} = $v;
+                // Get filter field alias
+                $filterAlias = $layer->getFieldAlias($v->filterFieldName);
+                if ($filterAlias !== null) {
+                    // Update locate with filter field alias
+                    $v->filterFieldAlias = $filterAlias;
+                    $updateLocate = true;
                 }
             }
-            // vectorjoins
-            $vectorjoins = $xmlLayer->xpath('vectorjoins/join');
-            if ($vectorjoins && is_array($vectorjoins)) {
+            // Get joins
+            if ($layer->vectorjoins !== null && count($layer->vectorjoins) > 0) {
                 if (!property_exists($v, 'vectorjoins')) {
+                    // Add joins to locate
                     $v->vectorjoins = array();
+                    $updateLocate = true;
                 }
-                foreach ($vectorjoins as $vectorjoin) {
-                    $joinLayerId = (string) $vectorjoin['joinLayerId'];
-                    if (in_array($joinLayerId, $locateLayerIds)) {
+                foreach ($layer->vectorjoins as $vectorjoin) {
+                    if (in_array($vectorjoin->joinLayerId, $locateLayerIds)) {
+                        // Add join info to locate
                         $v->vectorjoins[] = (object) array(
-                            'joinFieldName' => (string) $vectorjoin['joinFieldName'],
-                            'targetFieldName' => (string) $vectorjoin['targetFieldName'],
-                            'joinLayerId' => (string) $vectorjoin['joinLayerId'],
+                            'joinFieldName' => $vectorjoin->joinFieldName,
+                            'targetFieldName' => $vectorjoin->targetFieldName,
+                            'joinLayerId' => $vectorjoin->joinLayerId,
                         );
+                        $updateLocate = true;
                     }
                 }
+            }
+            if ($updateLocate) {
+                // Update locate if needed
                 $locateByLayer->{$k} = $v;
             }
         }
@@ -941,6 +839,11 @@ class QgisProject
      */
     public function readEditionLayers($editionLayers)
     {
+        if (!$this->path) {
+            return;
+        }
+
+        $project = Qgis\ProjectInfo::fromQgisPath($this->path);
         foreach ($editionLayers as $key => $obj) {
             // Improve performance by getting provider directly from config
             // Available for lizmap plugin >= 3.3.2
@@ -952,48 +855,38 @@ class QgisProject
                 continue;
             }
             // check for embedded layers
-            $qgisProject = $this->getEmbeddedQgisProject($obj->layerId);
-            if ($qgisProject) {
-                $xml = $qgisProject->getXml();
-            } else {
-                $xml = $this->getXml();
-            }
-
-            // Read layer property from QGIS project XML
-            $layerXml = $this->getXmlLayer2($xml, $obj->layerId);
-            if (is_null($layerXml)) {
-                continue;
-            }
-            $provider = $layerXml->xpath('provider');
-            $provider = (string) $provider[0];
-            if ($provider == 'spatialite') {
+            $layer = $project->getLayerById($obj->layerId);
+            if ($layer->provider == 'spatialite') {
                 unset($editionLayers->{$key});
             }
         }
     }
 
     /**
-     * @param object  $editionLayers
-     * @param Project $proj
+     * @param object       $editionLayers
+     * @param null|Project $proj
      */
-    public function readEditionForms($editionLayers, $proj)
+    public function readEditionForms($editionLayers, $proj = null)
     {
-        $embeddedEditionLayers = array();
-        foreach ($editionLayers as $key => $obj) {
-            // check for embedded layers
-            $qgisProject = $this->getEmbeddedQgisProject($obj->layerId);
-            if ($qgisProject) {
-                $xml = $qgisProject->getXml();
-            } else {
-                $xml = $this->getXml();
-            }
+        if (!$this->path) {
+            return;
+        }
 
-            $layerXml = $this->getXmlLayer2($xml, $obj->layerId);
-            if (is_null($layerXml)) {
+        $project = Qgis\ProjectInfo::fromQgisPath($this->path);
+        foreach ($editionLayers as $key => $obj) {
+            $layer = $project->getLayerById($obj->layerId);
+            if ($layer === null) {
                 continue;
             }
-            $formControls = $this->readFormControls($layerXml, $obj->layerId, $proj);
-            $proj->getCacheHandler()->setEditableLayerFormCache($obj->layerId, $formControls);
+            if ($layer->type !== 'vector') {
+                continue;
+            }
+
+            /** @var Qgis\Layer\VectorLayer $layer */
+            $formControls = $proj->getCacheHandler()->getEditableLayerFormCache($obj->layerId);
+            if (!$formControls && $proj) {
+                $proj->getCacheHandler()->setEditableLayerFormCache($obj->layerId, $layer->getFormControls());
+            }
         }
     }
 
@@ -1039,29 +932,37 @@ class QgisProject
      *
      * This concerns fields with ValueMap, ValueRelation & RelationReference config
      *
-     * @param array   $layerIds List of layer identifiers
-     * @param Project $proj
+     * @param array        $layerIds List of layer identifiers
+     * @param null|Project $proj
      */
-    public function readLayersLabeledFieldsConfig($layerIds, $proj)
+    public function readLayersLabeledFieldsConfig($layerIds, $proj = null)
     {
         // Get QGIS form fields configurations for each layer
         $layersLabeledFieldsConfig = array();
+
+        if (!$this->path) {
+            return $layersLabeledFieldsConfig;
+        }
+
+        $project = Qgis\ProjectInfo::fromQgisPath($this->path);
         foreach ($layerIds as $layerId) {
-            $qgisProject = $this->getEmbeddedQgisProject($layerId);
-
-            if ($qgisProject) {
-                $xml = $qgisProject->getXml();
-            } else {
-                $xml = $this->getXml();
-            }
-
-            $layerXml = $this->getXmlLayer2($xml, $layerId);
-            if (is_null($layerXml)) {
+            $layer = $project->getLayerById($layerId);
+            if ($layer === null) {
                 continue;
             }
-            $formControls = $this->readFormControls($layerXml, $layerId, $proj);
-            $getLayer = $this->getLayer($layerId, $proj);
-            $layerName = $getLayer->getName();
+            if ($layer->type !== 'vector') {
+                continue;
+            }
+
+            /** @var Qgis\Layer\VectorLayer $layer */
+            $formControls = array();
+            if ($proj) {
+                $formControls = $proj->getCacheHandler()->getEditableLayerFormCache($layerId);
+            }
+            if (!$formControls) {
+                $formControls = $layer->getFormControls();
+            }
+
             $fields_config = array();
             foreach ($formControls as $fieldName => $control) {
                 $editType = $control->getFieldEditType();
@@ -1100,8 +1001,7 @@ class QgisProject
                     $fields_config[$fieldName]['exp_filter'] = $relationReferenceData['filterExpression'];
                 }
             }
-
-            $layersLabeledFieldsConfig[$layerName] = $fields_config;
+            $layersLabeledFieldsConfig[$layer->layername] = $fields_config;
         }
 
         return $layersLabeledFieldsConfig;
@@ -1112,6 +1012,11 @@ class QgisProject
      */
     public function readAttributeLayers($attributeLayers)
     {
+        if (!$this->path) {
+            return;
+        }
+
+        $project = Qgis\ProjectInfo::fromQgisPath($this->path);
         // Get field order & visibility
         foreach ($attributeLayers as $key => $obj) {
             // Improve performance by getting custom_config status directly from config
@@ -1120,49 +1025,36 @@ class QgisProject
                 continue;
             }
 
-            // Read layer property from QGIS project XML
-            $layerXml = $this->getXmlLayer2($this->getXml(), $obj->layerId);
-            if (is_null($layerXml)) {
-                continue;
-            }
-            $attributetableconfigXml = $layerXml->xpath('attributetableconfig');
-            if (count($attributetableconfigXml) == 0) {
-                continue;
-            }
-            $attributetableconfig = str_replace(
-                '@',
-                '',
-                json_encode($attributetableconfigXml[0])
-            );
-            $obj->attributetableconfig = json_decode($attributetableconfig);
+            $layer = $project->getLayerById($obj->layerId);
+            $obj->attributetableconfig = $layer->attributetableconfig->toKeyArray();
         }
     }
 
     /**
-     * @param \SimpleXMLElement $xml
-     * @param mixed             $layers
+     * @param mixed $layers
      *
      * @return int[]
      */
-    public function readLayersOrder($xml, $layers)
+    public function readLayersOrder($layers)
     {
         $layersOrder = array();
-        $customOrder = $this->getXml()->xpath('layer-tree-group/custom-order');
-        if (count($customOrder) == 0) {
+        if (!$this->path) {
             return $layersOrder;
         }
-        $customOrderZero = $customOrder[0];
-        if (intval($customOrderZero->attributes()->enabled) == 1) {
-            $items = $customOrderZero->xpath('//item');
-            $lo = 0;
-            foreach ($items as $layerI) {
-                // Get layer name from config instead of XML for possible embedded layers
-                $name = $this->getLayerNameByIdFromConfig($layerI, $layers);
-                if ($name) {
-                    $layersOrder[$name] = $lo;
-                }
-                ++$lo;
+
+        $project = Qgis\ProjectInfo::fromQgisPath($this->path);
+        $customOrder = $project->layerTreeRoot->customOrder;
+        if (!$customOrder->enabled) {
+            return $layersOrder;
+        }
+        $lo = 0;
+        foreach ($customOrder->items as $layerI) {
+            // Get layer name from config instead of XML for possible embedded layers
+            $name = $this->getLayerNameByIdFromConfig($layerI, $layers);
+            if ($name) {
+                $layersOrder[$name] = $lo;
             }
+            ++$lo;
         }
 
         return $layersOrder;
@@ -1179,144 +1071,44 @@ class QgisProject
             throw new \Exception('The QGIS project '.basename($qgs_path).' does not exist!');
         }
 
-        $qgsXml = App\XmlTools::xmlFromFile($qgs_path);
-        if (!is_object($qgsXml)) {
-            $errormsg = '\n'.basename($qgs_path).'\n'.$qgsXml;
-            $errormsg = 'An error has been raised when loading QGIS Project:'.$errormsg;
-            \jLog::log($errormsg, 'lizmapadmin');
+        $project = Qgis\ProjectInfo::fromQgisPath($qgs_path);
 
-            throw new \Exception('The QGIS project '.basename($qgs_path).' has invalid content!');
-        }
-        $this->xml = $qgsXml;
         // Build data
         $this->data = array(
+            'title' => $project->properties->WMSServiceTitle,
+            'abstract' => $project->properties->WMSServiceAbstract,
+            'keywordList' => is_array($project->properties->WMSKeywordList) ? implode(', ', $project->properties->WMSKeywordList) : '',
+            'wmsMaxWidth' => $project->properties->WMSMaxWidth,
+            'wmsMaxHeight' => $project->properties->WMSMaxHeight,
         );
-
-        // get title from WMS properties
-        if (property_exists($qgsXml->properties, 'WMSServiceTitle')) {
-            if (!empty($qgsXml->properties->WMSServiceTitle)) {
-                $this->data['title'] = (string) $qgsXml->properties->WMSServiceTitle;
-            }
-        }
-
-        // get abstract from WMS properties
-        if (property_exists($qgsXml->properties, 'WMSServiceAbstract')) {
-            $this->data['abstract'] = (string) $qgsXml->properties->WMSServiceAbstract;
-        }
-
-        // get keyword list from WMS properties
-        if (property_exists($qgsXml->properties, 'WMSKeywordList')) {
-            $values = array();
-            foreach ($qgsXml->properties->WMSKeywordList->value as $value) {
-                if ((string) $value !== '') {
-                    $values[] = (string) $value;
-                }
-            }
-            $this->data['keywordList'] = implode(', ', $values);
-        }
-
-        // get WMS max width
-        if (property_exists($qgsXml->properties, 'WMSMaxWidth')) {
-            $this->data['wmsMaxWidth'] = (int) $qgsXml->properties->WMSMaxWidth;
-        }
-        if (!array_key_exists('WMSMaxWidth', $this->data) or !$this->data['wmsMaxWidth']) {
-            unset($this->data['wmsMaxWidth']);
-        }
-
-        // get WMS max height
-        if (property_exists($qgsXml->properties, 'WMSMaxHeight')) {
-            $this->data['wmsMaxHeight'] = (int) $qgsXml->properties->WMSMaxHeight;
-        }
-        if (!array_key_exists('WMSMaxHeight', $this->data) or !$this->data['wmsMaxHeight']) {
-            unset($this->data['wmsMaxHeight']);
-        }
 
         // get QGIS project version
-        $this->qgisProjectVersion = $this->readQgisProjectVersion($qgsXml);
-        $this->lastSaveDateTime = $this->readLastSaveDateTime($qgs_path);
+        $this->qgisProjectVersion = $this->convertQgisProjectVersion($project->version);
+        $this->lastSaveDateTime = $project->saveDateTime;
 
-        $this->WMSInformation = $this->readWMSInformation($qgsXml);
-        $this->canvasColor = $this->readCanvasColor($qgsXml);
-        $this->allProj4 = $this->readAllProj4($qgsXml);
-        $this->themes = $this->readThemes($qgsXml);
-        $this->customProjectVariables = $this->readCustomProjectVariables($qgsXml);
-        $this->useLayerIDs = $this->readUseLayerIDs($qgsXml);
-        $this->layers = $this->readLayers($qgsXml);
-        list($this->relations, $this->relationsFields) = $this->readRelations($qgsXml);
-    }
-
-    protected function readWMSInformation($qgsLoad)
-    {
-
-        // Default metadata
-        $WMSServiceTitle = '';
-        $WMSServiceAbstract = '';
-        $WMSKeywordList = '';
-        $WMSExtent = '';
-        $ProjectCrs = '';
-        $WMSOnlineResource = '';
-        $WMSContactMail = '';
-        $WMSContactOrganization = '';
-        $WMSContactPerson = '';
-        $WMSContactPhone = '';
-        if ($qgsLoad) {
-            $WMSServiceTitle = (string) $qgsLoad->properties->WMSServiceTitle;
-            $WMSServiceAbstract = (string) $qgsLoad->properties->WMSServiceAbstract;
-
-            if (property_exists($qgsLoad->properties, 'WMSKeywordList')) {
-                $values = array();
-                foreach ($qgsLoad->properties->WMSKeywordList->value as $value) {
-                    if ((string) $value !== '') {
-                        $values[] = (string) $value;
-                    }
-                }
-                $WMSKeywordList = implode(', ', $values);
-            }
-
-            if (property_exists($qgsLoad->properties->WMSExtent, 'value')
-                && $qgsLoad->properties->WMSExtent->value !== null) {
-                $WMSExtent = $qgsLoad->properties->WMSExtent->value[0];
-                $WMSExtent .= ', '.$qgsLoad->properties->WMSExtent->value[1];
-                $WMSExtent .= ', '.$qgsLoad->properties->WMSExtent->value[2];
-                $WMSExtent .= ', '.$qgsLoad->properties->WMSExtent->value[3];
-            }
-            $WMSOnlineResource = (string) $qgsLoad->properties->WMSOnlineResource;
-            $WMSContactMail = (string) $qgsLoad->properties->WMSContactMail;
-            $WMSContactOrganization = (string) $qgsLoad->properties->WMSContactOrganization;
-            $WMSContactPerson = (string) $qgsLoad->properties->WMSContactPerson;
-            $WMSContactPhone = (string) $qgsLoad->properties->WMSContactPhone;
-        }
-        if (isset($qgsLoad->mapcanvas)) {
-            $ProjectCrs = (string) $qgsLoad->mapcanvas->destinationsrs->spatialrefsys->authid;
-        }
-
-        return array(
-            'WMSServiceTitle' => $WMSServiceTitle,
-            'WMSServiceAbstract' => $WMSServiceAbstract,
-            'WMSKeywordList' => $WMSKeywordList,
-            'WMSExtent' => $WMSExtent,
-            'ProjectCrs' => $ProjectCrs,
-            'WMSOnlineResource' => $WMSOnlineResource,
-            'WMSContactMail' => $WMSContactMail,
-            'WMSContactOrganization' => $WMSContactOrganization,
-            'WMSContactPerson' => $WMSContactPerson,
-            'WMSContactPhone' => $WMSContactPhone,
-        );
+        $this->WMSInformation = $project->getWmsInformationsAsKeyArray();
+        $this->canvasColor = $project->properties->Gui->getCanvasColor();
+        $this->allProj4 = $project->getProjAsKeyArray();
+        $this->themes = $project->getVisibilityPresetsAsKeyArray();
+        $this->customProjectVariables = $project->properties->Variables !== null ? $project->properties->Variables->getVariablesAsKeyArray() : array();
+        $this->useLayerIDs = $project->properties->WMSUseLayerIDs !== null ? $project->properties->WMSUseLayerIDs : false;
+        $this->layers = $project->getLayersAsKeyArray();
+        $this->relations = $project->getRelationsAsKeyArray();
+        $this->relationsFields = $project->getRelationFieldsAsKeyArray();
     }
 
     /**
-     * @param \SimpleXMLElement $xml
+     * @param string $version
+     *
+     * @return int
      */
-    protected function readQgisProjectVersion($xml)
+    protected function convertQgisProjectVersion($version)
     {
-        $qgisRoot = $xml->xpath('//qgis');
-        $qgisRootZero = $qgisRoot[0];
-        $qgisProjectVersion = (string) $qgisRootZero->attributes()->version;
-        $qgisProjectVersion = explode('-', $qgisProjectVersion);
-        $qgisProjectVersion = $qgisProjectVersion[0];
-        $qgisProjectVersion = explode('.', $qgisProjectVersion);
+        $version = explode('-', $version);
+        $version = $version[0];
+        $version = explode('.', $version);
         $a = '';
-        foreach ($qgisProjectVersion as $k) {
+        foreach ($version as $k) {
             if (strlen($k) == 1) {
                 $a .= '0'.$k;
             } else {
@@ -1325,270 +1117,6 @@ class QgisProject
         }
 
         return (int) $a;
-    }
-
-    /**
-     * Read the last modified date of the QGS file.
-     *
-     * @param string $qgs_path the path to the QGS file
-     *
-     * @return string the last saved date contained in the QGS file
-     */
-    protected function readLastSaveDateTime($qgs_path)
-    {
-        $fp = fopen($qgs_path, 'r');
-        $version = '';
-        for ($i = 0; $i < 5; ++$i) {
-            $line = fgets($fp);
-            if (preg_match('/saveDateTime="(?P<date>[\S]*)"/', $line, $matches)) {
-                $version = $matches['date'];
-
-                break;
-            }
-        }
-        fclose($fp);
-
-        return $version;
-    }
-
-    /**
-     * @param \SimpleXMLElement $xml
-     *
-     * @return string
-     */
-    protected function readCanvasColor($xml)
-    {
-        $red = $xml->xpath('//properties/Gui/CanvasColorRedPart');
-        $green = $xml->xpath('//properties/Gui/CanvasColorGreenPart');
-        $blue = $xml->xpath('//properties/Gui/CanvasColorBluePart');
-
-        return 'rgb('.$red[0].','.$green[0].','.$blue[0].')';
-    }
-
-    /**
-     * @param \SimpleXMLElement $xml
-     *
-     * @return array
-     */
-    protected function readAllProj4($xml)
-    {
-        $srsList = array();
-        $spatialrefsys = $xml->xpath('//spatialrefsys');
-        foreach ($spatialrefsys as $srs) {
-            $srsList[(string) $srs->authid] = (string) $srs->proj4;
-        }
-
-        return $srsList;
-    }
-
-    /**
-     * @param \SimpleXMLElement $xml
-     *
-     * @return null|array[]
-     */
-    protected function readThemes($xml)
-    {
-        $xmlThemes = $xml->xpath('//visibility-presets');
-        $themes = array();
-
-        if ($xmlThemes) {
-            foreach ($xmlThemes[0] as $theme) {
-                $themeObj = $theme->attributes();
-                if (!array_key_exists((string) $themeObj->name, $themes)) {
-                    $themes[(string) $themeObj->name] = array();
-                }
-
-                // Copy layers and their attributes
-                foreach ($theme->layer as $layer) {
-                    $layerObj = $layer->attributes();
-                    // Since QGIS 3.26, theme contains every layers with visible attributes
-                    // before only visible layers are in theme
-                    // So do not keep layer with visible != '1' if it is defined
-                    if (isset($layerObj->visible) && (string) $layerObj->visible != '1') {
-                        continue;
-                    }
-                    $themes[(string) $themeObj->name]['layers'][(string) $layerObj->id] = array(
-                        'style' => (string) $layerObj->style,
-                        'expanded' => (string) $layerObj->expanded,
-                    );
-                }
-
-                // Copy checked group nodes
-                if (isset($theme->{'checked-group-nodes'}->{'checked-group-node'})) {
-                    foreach ($theme->{'checked-group-nodes'}->{'checked-group-node'} as $checkedGroupNode) {
-                        $checkedGroupNodeObj = $checkedGroupNode->attributes();
-                        $themes[(string) $themeObj->name]['checkedGroupNode'][] = (string) $checkedGroupNodeObj->id;
-                    }
-                }
-
-                // Copy expanded group nodes
-                if (isset($theme->{'expanded-group-nodes'}->{'expanded-group-node'})) {
-                    foreach ($theme->{'expanded-group-nodes'}->{'expanded-group-node'} as $expandedGroupNode) {
-                        $expandedGroupNodeObj = $expandedGroupNode->attributes();
-                        $themes[(string) $themeObj->name]['expandedGroupNode'][] = (string) $expandedGroupNodeObj->id;
-                    }
-                }
-
-                // Copy expanded legend nodes
-                if (isset($theme->{'expanded-legend-nodes'}->{'expanded-legend-node'})) {
-                    foreach ($theme->{'expanded-legend-nodes'}->{'expanded-legend-node'} as $expandedLegendNode) {
-                        $expandedLegendNodeObj = $expandedLegendNode->attributes();
-                        $themes[(string) $themeObj->name]['expandedLegendNode'][] = (string) $expandedLegendNodeObj->id;
-                    }
-                }
-            }
-
-            return $themes;
-        }
-
-        return null;
-    }
-
-    /**
-     * @param \SimpleXMLElement $xml
-     *
-     * @return null|array<string, string> array of custom variable name => variable value
-     */
-    protected function readCustomProjectVariables($xml)
-    {
-        $xmlCustomProjectVariables = $xml->xpath('//properties/Variables');
-        $customProjectVariables = array();
-
-        if ($xmlCustomProjectVariables) {
-            $variableIndex = 0;
-            foreach ($xmlCustomProjectVariables[0]->variableNames->value as $variableName) {
-                $customProjectVariables[(string) $variableName] = (string) $xmlCustomProjectVariables[0]->variableValues->value[$variableIndex];
-                ++$variableIndex;
-            }
-
-            return $customProjectVariables;
-        }
-
-        return null;
-    }
-
-    /**
-     * @param \SimpleXMLElement $xml
-     *
-     * @return null|array[] list of two list: reference between relation, and fields of relations
-     */
-    protected function readRelations($xml)
-    {
-        $xmlRelations = $xml->xpath('//relations');
-        $relations = array();
-        $relationsFields = array();
-        $pivotGather = array();
-        $pivot = array();
-        if ($xmlRelations) {
-            // Store qgisProjects references in a key=>value array and pass it by reference along the methods that loads and validates relations.
-            // This avoid to reload the same QgisProject instance multiple times, if there are many "embedded relations" referencing the same (embedded) qgis project
-            /** @var \SimpleXMLElement $relation */
-            foreach ($xmlRelations[0] as $relation) {
-                $relationObj = $relation->attributes();
-
-                $relationField = $this->readRelationField($relation);
-                if ($relationField === null) {
-                    // no corresponding layer
-                    continue;
-                }
-                $relationsFields[] = $relationField;
-
-                $referencedLayerId = (string) $relationObj->referencedLayer;
-                $referencingLayerId = (string) $relationObj->referencingLayer;
-                if (!array_key_exists($referencedLayerId, $relations)) {
-                    $relations[$referencedLayerId] = array();
-                }
-                $relations[$referencedLayerId][] = array(
-                    'referencingLayer' => $referencingLayerId,
-                    'referencedField' => $relationField['referencedField'],
-                    'referencingField' => $relationField['referencingField'],
-                    'previewField' => $relationField['previewField'],
-                    'relationName' => (string) $relationObj->name,
-                    'relationId' => (string) $relationObj->id,
-                );
-
-                if (!array_key_exists($referencingLayerId, $pivotGather)) {
-                    $pivotGather[$referencingLayerId] = array();
-                }
-
-                $pivotGather[$referencingLayerId][$referencedLayerId] = $relationField['referencingField'];
-            }
-
-            // Keep only child with at least two parents
-            foreach ($pivotGather as $pi => $vo) {
-                if (count($vo) > 1) {
-                    $pivot[$pi] = $vo;
-                }
-            }
-            $relations['pivot'] = $pivot;
-
-            return array($relations, $relationsFields);
-        }
-
-        return null;
-    }
-
-    /**
-     * @param \SimpleXMLElement $relationXml
-     */
-    protected function readRelationField($relationXml)
-    {
-        $referencedLayerId = $relationXml->attributes()->referencedLayer;
-
-        $_referencedLayerXml = $this->getXmlLayer($referencedLayerId);
-        if (count($_referencedLayerXml) == 0) {
-            return null;
-        }
-        $referencedLayerXml = $_referencedLayerXml[0];
-
-        $_layerName = $referencedLayerXml->xpath('layername');
-        if (count($_layerName) == 0) {
-            return null;
-        }
-        $layerName = (string) $_layerName[0];
-        $typeName = str_replace(' ', '_', $layerName);
-        $_shortname = $referencedLayerXml->xpath('shortname');
-        if (count($_shortname) > 0) {
-            $shortname = (string) $_shortname[0];
-            if (!empty($shortname)) {
-                $typeName = $shortname;
-            }
-        }
-        $referencedField = (string) $relationXml->fieldRef->attributes()->referencedField;
-        $referencingField = (string) $relationXml->fieldRef->attributes()->referencingField;
-
-        $referenceField = array(
-            'id' => (string) $relationXml->attributes()->id,
-            'layerName' => $layerName,
-            'typeName' => $typeName,
-            'propertyName' => '',
-            'filterExpression' => '',
-            'referencedField' => $referencedField,
-            'referencingField' => $referencingField,
-            'previewField' => '',
-        );
-
-        $_previewExpression = $referencedLayerXml->xpath('previewExpression');
-        if (count($_previewExpression) == 0) {
-            return $referenceField;
-        }
-        $previewExpression = (string) $_previewExpression[0];
-
-        $previewField = $previewExpression;
-        if (substr($previewField, 0, 8) == 'COALESCE') {
-            if (preg_match('/"([\S ]+)"/', $previewField, $matches) == 1) {
-                $previewField = $matches[1];
-            } else {
-                $previewField = $referencedField;
-            }
-        } elseif (substr($previewField, 0, 1) == '"' and substr($previewField, -1) == '"') {
-            $previewField = substr($previewField, 1, -1);
-        }
-
-        $referenceField['propertyName'] = $referencedField.','.$previewField;
-        $referenceField['previewField'] = $previewField;
-
-        return $referenceField;
     }
 
     public function getRelationField($relationId)
@@ -1607,227 +1135,11 @@ class QgisProject
     }
 
     /**
-     * @param \SimpleXMLElement $xml
+     * @deprecated 3.9.0 No longer used by internal code and not recommended.
      *
-     * @return bool
+     * @param string $fieldEditType    Field edit type
+     * @param array  $fieldEditOptions Field edit config options
      */
-    protected function readUseLayerIDs($xml)
-    {
-        $WMSUseLayerIDs = $xml->xpath('//properties/WMSUseLayerIDs');
-
-        return $WMSUseLayerIDs && $WMSUseLayerIDs[0] == 'true';
-    }
-
-    /**
-     * @param \SimpleXMLElement $xml
-     *
-     * @return array<MapLayerDef|VectorLayerDef> list of layers. Each item is a list of layer properties
-     *
-     * @throws \Exception
-     */
-    protected function readLayers($xml)
-    {
-        $xmlLayers = $xml->xpath('//maplayer');
-        $layers = array();
-        if (!$xmlLayers) {
-            return $layers;
-        }
-        // Associative array that stores the embedded projects path as key and the list of embedded layers attributes as value.
-        // The the embedded layers definition are retreived outside the main foreach loop to avoid loading the same embedded qgis project multiple times
-        // for each embedded layer
-        $embeddedProjects = array();
-
-        foreach ($xmlLayers as $xmlLayer) {
-            $attributes = $xmlLayer->attributes();
-            if (isset($attributes['embedded']) && (string) $attributes->embedded == '1') {
-                $xmlFile = realpath(dirname($this->path).DIRECTORY_SEPARATOR.(string) $attributes->project);
-                if (!array_key_exists($xmlFile, $embeddedProjects)) {
-                    $embeddedProjects[$xmlFile] = array();
-                }
-                // populate array of embedded layers
-                $embeddedProjects[$xmlFile][] = $attributes;
-            } else {
-                $layer = array(
-                    'type' => (string) $attributes->type,
-                    'id' => (string) $xmlLayer->id,
-                    'name' => (string) $xmlLayer->layername,
-                    'shortname' => (string) $xmlLayer->shortname,
-                    'title' => (string) $xmlLayer->title,
-                    'abstract' => (string) $xmlLayer->abstract,
-                    'proj4' => (string) $xmlLayer->srs->spatialrefsys->proj4,
-                    'srid' => (int) $xmlLayer->srs->spatialrefsys->srid,
-                    'authid' => (int) $xmlLayer->srs->spatialrefsys->authid,
-                    'datasource' => (string) $xmlLayer->datasource,
-                    'provider' => (string) $xmlLayer->provider,
-                    'keywords' => array(),
-                );
-                $keywords = $xmlLayer->xpath('./keywordList/value');
-                if ($keywords) {
-                    foreach ($keywords as $keyword) {
-                        if ((string) $keyword != '') {
-                            $layer['keywords'][] = (string) $keyword;
-                        }
-                    }
-                }
-
-                if ($layer['title'] == '') {
-                    $layer['title'] = $layer['name'];
-                }
-                if ($layer['type'] == 'vector') {
-                    $fields = array();
-                    $wfsFields = array();
-                    $aliases = array();
-                    $defaults = array();
-                    $constraints = array();
-                    $webDavFields = array();
-                    $webDavBaseUris = array();
-                    $edittypes = $xmlLayer->xpath('.//edittype');
-                    if ($edittypes) {
-                        foreach ($edittypes as $edittype) {
-                            $field = (string) $edittype->attributes()->name;
-                            if (in_array($field, $fields)) {
-                                continue; // QGIS sometimes stores them twice
-                            }
-                            $fields[] = $field;
-                            $wfsFields[] = $field;
-                            $aliases[$field] = $field;
-                            $defaults[$field] = null;
-                            $constraints[$field] = null;
-                        }
-                    } else {
-                        $fieldconfigurations = $xmlLayer->xpath('.//fieldConfiguration/field');
-                        if ($fieldconfigurations) {
-                            foreach ($fieldconfigurations as $fieldconfiguration) {
-                                $field = (string) $fieldconfiguration->attributes()->name;
-                                if (in_array($field, $fields)) {
-                                    continue; // QGIS sometimes stores them twice
-                                }
-                                $fields[] = $field;
-                                $wfsFields[] = $field;
-                                $aliases[$field] = $field;
-                                $defaults[$field] = null;
-                                $constraints[$field] = null;
-                                // check for storage type
-                                $storage = $fieldconfiguration->xpath('.//editWidget/config/Option/Option[@name="StorageType"]');
-                                if ($storage && count($storage) == 1) {
-                                    // expecting only one record
-                                    if ($storage[0]->attributes()->value == 'WebDAV') {
-                                        $storageUrlExpression = $fieldconfiguration->xpath('.//editWidget/config/Option/Option[@name="PropertyCollection"]/Option[@name="properties"]/Option[@name="storageUrl"]/Option[@name="expression"]');
-                                        if ($storageUrlExpression && count($storageUrlExpression) == 1) {
-                                            if ($storageUrlExpression[0]->attributes()->value) {
-                                                $webDavFields[] = $field;
-                                                $webDavBaseUris[] = (string) $storageUrlExpression[0]->attributes()->value;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    if (isset($xmlLayer->aliases->alias)) {
-                        foreach ($xmlLayer->aliases->alias as $alias) {
-                            $aliases[(string) $alias['field']] = (string) $alias['name'];
-                        }
-                    }
-
-                    if (isset($xmlLayer->defaults->default)) {
-                        foreach ($xmlLayer->defaults->default as $default) {
-                            $defaults[(string) $default['field']] = (string) $default['expression'];
-                        }
-                    }
-
-                    if (isset($xmlLayer->constraints->constraint)) {
-                        foreach ($xmlLayer->constraints->constraint as $constraint) {
-                            $c = array(
-                                'constraints' => 0,
-                                'notNull' => false,
-                                'unique' => false,
-                                'exp' => false,
-                            );
-                            $c['constraints'] = (int) $constraint['constraints'];
-                            if ($c['constraints'] > 0) {
-                                $c['notNull'] = ((int) $constraint['notnull_strength'] > 0);
-                                $c['unique'] = ((int) $constraint['unique_strength'] > 0);
-                                $c['exp'] = ((int) $constraint['exp_strength'] > 0);
-                            }
-                            $constraints[(string) $constraint['field']] = $c;
-                        }
-                    }
-
-                    if (isset($xmlLayer->constraintExpressions->constraint)) {
-                        foreach ($xmlLayer->constraintExpressions->constraint as $constraint) {
-                            $f = (string) $constraint['field'];
-                            $c = array(
-                                'constraints' => 0,
-                                'notNull' => false,
-                                'unique' => false,
-                                'exp' => false,
-                            );
-                            if (array_key_exists($f, $constraints)) {
-                                $c = $constraints[$f];
-                            }
-                            $exp_val = (string) $constraint['exp'];
-                            if ($exp_val !== '') {
-                                $c['exp'] = true;
-                                $c['exp_value'] = $exp_val;
-                                $c['exp_desc'] = (string) $constraint['desc'];
-                            }
-                            $constraints[$f] = $c;
-                        }
-                    }
-
-                    $layer['fields'] = $fields;
-                    $layer['aliases'] = $aliases;
-                    $layer['defaults'] = $defaults;
-                    $layer['constraints'] = $constraints;
-                    $layer['wfsFields'] = $wfsFields;
-                    $layer['webDavFields'] = $webDavFields;
-                    $layer['webDavBaseUris'] = $webDavBaseUris;
-
-                    // Do not expose fields with HideFromWfs parameter
-                    // Format in .qgs has changed in QGIS 3.16
-                    if ($this->qgisProjectVersion >= 31600) {
-                        $excludeFields = $xmlLayer->xpath('.//field[contains(@configurationFlags,"HideFromWfs")]/@name');
-                    } else {
-                        $excludeFields = $xmlLayer->xpath('.//excludeAttributesWFS/attribute');
-                    }
-
-                    if ($excludeFields && is_array($excludeFields)) {
-                        foreach ($excludeFields as $eField) {
-                            $eField = (string) $eField;
-                            if (!in_array($eField, $wfsFields)) {
-                                continue; // QGIS sometimes stores them twice
-                            }
-                            array_splice($wfsFields, array_search($eField, $wfsFields), 1);
-                        }
-                        $layer['wfsFields'] = $wfsFields;
-                    }
-                }
-                $layers[] = $layer;
-            }
-        }
-        // loop through the embedded projects if any, to get the embedded layers definition
-        foreach ($embeddedProjects as $projectPath => $layersAttributes) {
-            if (is_array($layersAttributes)) {
-                $embeddedProject = new QgisProject($projectPath, $this->services, $this->appContext);
-                foreach ($layersAttributes as $attributes) {
-                    $layer = $embeddedProject->getLayerDefinition((string) $attributes->id);
-                    $layer['qgsmtime'] = filemtime($projectPath);
-                    $layer['file'] = $projectPath;
-                    $layer['embedded'] = 1;
-                    $layer['projectPath'] = (string) $attributes->project;
-                    $layers[] = $layer;
-                }
-                if (!array_key_exists($projectPath, $this->qgisEmbeddedProjects)) {
-                    $this->qgisEmbeddedProjects[$projectPath] = $embeddedProject;
-                }
-            }
-        }
-
-        return $layers;
-    }
-
     protected function readUploadOptions($fieldEditType, &$fieldEditOptions)
     {
         $mimeTypes = array();
@@ -1943,6 +1255,8 @@ class QgisProject
      * update the upload options with the property 'webDAVStorageUrl'.
      *
      * @param array $fieldEditOptions
+     *
+     * @deprecated 3.9.0 No longer used by internal code and not recommended.
      */
     protected function readWebDavStorageOptions(&$fieldEditOptions)
     {
@@ -1965,6 +1279,8 @@ class QgisProject
      * @param int               $valuesExtraction one of MAP_* const
      *
      * @return array
+     *
+     * @deprecated 3.9.0 No longer used by internal code and not recommended.
      */
     protected function getValuesFromOptions($optionList, $valuesExtraction = 0)
     {
@@ -1990,6 +1306,8 @@ class QgisProject
      * @param \SimpleXMLElement $layerXml
      *
      * @return Form\QgisFormControlProperties[]
+     *
+     * @deprecated 3.9.0 No longer used by internal code and not recommended.
      */
     protected function getFieldConfiguration($layerXml)
     {
@@ -2028,6 +1346,9 @@ class QgisProject
         return $edittypes;
     }
 
+    /**
+     * @deprecated 3.9.0 No longer used by internal code and not recommended.
+     */
     protected function getFieldConfigurationOptions(\SimpleXMLElement $options)
     {
         $fieldEditOptions = array();
@@ -2087,6 +1408,8 @@ class QgisProject
      * @param \SimpleXMLElement $layerXml
      *
      * @return Form\QgisFormControlProperties[]
+     *
+     * @deprecated 3.9.0 No longer used by internal code and not recommended.
      */
     protected function getEditType($layerXml)
     {
@@ -2228,6 +1551,8 @@ class QgisProject
      * @param string $type  the option type attribute content
      *
      * @return bool|float|int|string
+     *
+     * @deprecated 3.9.0 No longer used by internal code and not recommended.
      */
     protected function convertValueOptions($value, $type)
     {
@@ -2254,6 +1579,8 @@ class QgisProject
      * @param array      $editAttributes attributes of widgetv2config
      *
      * @return string
+     *
+     * @deprecated 3.9.0 No longer used by internal code and not recommended.
      */
     protected function getMarkup($fieldEditType, $editAttributes)
     {
@@ -2326,6 +1653,8 @@ class QgisProject
      * @param Project           $proj
      *
      * @return array
+     *
+     * @deprecated 3.9.0 No longer used by internal code and not recommended.
      */
     public function readFormControls($layerXml, $layerId, $proj)
     {
