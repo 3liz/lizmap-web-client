@@ -243,10 +243,10 @@ test.describe('Multiple geometry layers', () => {
         // first record comes from db initialization and contains all geometry, so it is equal for all the layers
         await expect(double_geom_geom_attr_table.locator("tbody tr").nth(0).locator("td").nth(2)).toHaveText("F2");
         await expect(double_geom_geom_attr_table.locator("tbody tr").nth(0).locator("td").nth(3)).toHaveText("[object Object]");
-        // geom record does not have geom_d attribute filled beacuse its geometry is stored in the geom column, not showned in the attribute table
+        // geom record does not have geom_d attribute filled because its geometry is stored in the geom column, not shown in the attribute table
         await expect(double_geom_geom_attr_table.locator("tbody tr").nth(1).locator("td").nth(2)).toHaveText("geom");
         await expect(double_geom_geom_attr_table.locator("tbody tr").nth(1).locator("td").nth(3)).toHaveText("");
-        // in the double_geom_geom table, the geom_d record geometry shuold be correctly stroed in the geom_d column
+        // in the double_geom_geom table, the geom_d record geometry should be correctly stored in the geom_d column
         await expect(double_geom_geom_attr_table.locator("tbody tr").nth(2).locator("td").nth(2)).toHaveText("geom_d");
         await expect(double_geom_geom_attr_table.locator("tbody tr").nth(2).locator("td").nth(3)).toHaveText("[object Object]");
 
@@ -269,10 +269,10 @@ test.describe('Multiple geometry layers', () => {
         // first record comes from db initialization and contains all geometry, so it is equal for all the layers
         await expect(double_geom_geom_d_attr_table.locator("tbody tr").nth(0).locator("td").nth(2)).toHaveText("F2");
         await expect(double_geom_geom_d_attr_table.locator("tbody tr").nth(0).locator("td").nth(3)).toHaveText("[object Object]");
-        // in the double_geom_geom_d table, the geom record geometry shuold be correctly stroed in the geom column
+        // in the double_geom_geom_d table, the geom record geometry should be correctly stored in the geom column
         await expect(double_geom_geom_d_attr_table.locator("tbody tr").nth(1).locator("td").nth(2)).toHaveText("geom");
         await expect(double_geom_geom_d_attr_table.locator("tbody tr").nth(1).locator("td").nth(3)).toHaveText("[object Object]");
-        // geom_d record does not have geom attribute filled beacuse its geometry is stored in the geom_d column, not showned in the attribute table
+        // geom_d record does not have geom attribute filled because its geometry is stored in the geom_d column, not shown in the attribute table
         await expect(double_geom_geom_d_attr_table.locator("tbody tr").nth(2).locator("td").nth(2)).toHaveText("geom_d");
         await expect(double_geom_geom_d_attr_table.locator("tbody tr").nth(2).locator("td").nth(3)).toHaveText("");
 
@@ -424,15 +424,15 @@ test.describe('Multiple geometry layers', () => {
         await expect(triple_geom_geom_attr_table.locator("tbody tr").nth(0).locator("td").nth(2)).toHaveText("P2");
         await expect(triple_geom_geom_attr_table.locator("tbody tr").nth(0).locator("td").nth(3)).toHaveText("[object Object]");
         await expect(triple_geom_geom_attr_table.locator("tbody tr").nth(0).locator("td").nth(4)).toHaveText("[object Object]");
-        // triple_geom_point record does not have geom_l or geom_p attribute filled beacuse its geometry is stored in the geom column, not showned in the attribute table
+        // triple_geom_point record does not have geom_l or geom_p attribute filled because its geometry is stored in the geom column, not shown in the attribute table
         await expect(triple_geom_geom_attr_table.locator("tbody tr").nth(1).locator("td").nth(2)).toHaveText("triple_geom_point");
         await expect(triple_geom_geom_attr_table.locator("tbody tr").nth(1).locator("td").nth(3)).toHaveText("");
         await expect(triple_geom_geom_attr_table.locator("tbody tr").nth(1).locator("td").nth(4)).toHaveText("");
-        // in the triple_geom_point table, the triple_geom_line record geometry shuold be correctly stroed in the geom_l column
+        // in the triple_geom_point table, the triple_geom_line record geometry should be correctly stored in the geom_l column
         await expect(triple_geom_geom_attr_table.locator("tbody tr").nth(2).locator("td").nth(2)).toHaveText("triple_geom_line");
         await expect(triple_geom_geom_attr_table.locator("tbody tr").nth(2).locator("td").nth(3)).toHaveText("[object Object]");
         await expect(triple_geom_geom_attr_table.locator("tbody tr").nth(2).locator("td").nth(4)).toHaveText("");
-        // in the triple_geom_point table, the triple_geom_polygon record geometry shuold be correctly stroed in the geom_p column
+        // in the triple_geom_point table, the triple_geom_polygon record geometry should be correctly stored in the geom_p column
         await expect(triple_geom_geom_attr_table.locator("tbody tr").nth(3).locator("td").nth(2)).toHaveText("triple_geom_polygon");
         await expect(triple_geom_geom_attr_table.locator("tbody tr").nth(3).locator("td").nth(3)).toHaveText("");
         await expect(triple_geom_geom_attr_table.locator("tbody tr").nth(3).locator("td").nth(4)).toHaveText("[object Object]");
@@ -460,15 +460,15 @@ test.describe('Multiple geometry layers', () => {
         await expect(triple_geom_geom_l_attr_table.locator("tbody tr").nth(0).locator("td").nth(2)).toHaveText("P2");
         await expect(triple_geom_geom_l_attr_table.locator("tbody tr").nth(0).locator("td").nth(3)).toHaveText("[object Object]");
         await expect(triple_geom_geom_l_attr_table.locator("tbody tr").nth(0).locator("td").nth(4)).toHaveText("[object Object]");
-        // in the triple_geom_line table, the triple_geom_point record geometry shuold be correctly stroed in the geom column
+        // in the triple_geom_line table, the triple_geom_point record geometry should be correctly stored in the geom column
         await expect(triple_geom_geom_l_attr_table.locator("tbody tr").nth(1).locator("td").nth(2)).toHaveText("triple_geom_point");
         await expect(triple_geom_geom_l_attr_table.locator("tbody tr").nth(1).locator("td").nth(3)).toHaveText("[object Object]");
         await expect(triple_geom_geom_l_attr_table.locator("tbody tr").nth(1).locator("td").nth(4)).toHaveText("");
-        // triple_geom_line record does not have geom or geom_p attribute filled beacuse its geometry is stored in the geom_l column, not showned in the attribute table
+        // triple_geom_line record does not have geom or geom_p attribute filled because its geometry is stored in the geom_l column, not shown in the attribute table
         await expect(triple_geom_geom_l_attr_table.locator("tbody tr").nth(2).locator("td").nth(2)).toHaveText("triple_geom_line");
         await expect(triple_geom_geom_l_attr_table.locator("tbody tr").nth(2).locator("td").nth(3)).toHaveText("");
         await expect(triple_geom_geom_l_attr_table.locator("tbody tr").nth(2).locator("td").nth(4)).toHaveText("");
-        // in the triple_geom_line table, the triple_geom_polygon record geometry shuold be correctly stroed in the geom_p column
+        // in the triple_geom_line table, the triple_geom_polygon record geometry should be correctly stored in the geom_p column
         await expect(triple_geom_geom_l_attr_table.locator("tbody tr").nth(3).locator("td").nth(2)).toHaveText("triple_geom_polygon");
         await expect(triple_geom_geom_l_attr_table.locator("tbody tr").nth(3).locator("td").nth(3)).toHaveText("");
         await expect(triple_geom_geom_l_attr_table.locator("tbody tr").nth(3).locator("td").nth(4)).toHaveText("[object Object]");
@@ -495,15 +495,15 @@ test.describe('Multiple geometry layers', () => {
         await expect(triple_geom_geom_p_attr_table.locator("tbody tr").nth(0).locator("td").nth(2)).toHaveText("P2");
         await expect(triple_geom_geom_p_attr_table.locator("tbody tr").nth(0).locator("td").nth(3)).toHaveText("[object Object]");
         await expect(triple_geom_geom_p_attr_table.locator("tbody tr").nth(0).locator("td").nth(4)).toHaveText("[object Object]");
-        // in the triple_geom_polygon table, the triple_geom_point record geometry shuold be correctly stroed in the geom column
+        // in the triple_geom_polygon table, the triple_geom_point record geometry should be correctly stored in the geom column
         await expect(triple_geom_geom_p_attr_table.locator("tbody tr").nth(1).locator("td").nth(2)).toHaveText("triple_geom_point");
         await expect(triple_geom_geom_p_attr_table.locator("tbody tr").nth(1).locator("td").nth(3)).toHaveText("[object Object]");
         await expect(triple_geom_geom_p_attr_table.locator("tbody tr").nth(1).locator("td").nth(4)).toHaveText("");
-        // in the triple_geom_polygon table, the triple_geom_line record geometry shuold be correctly stroed in the geom_l column
+        // in the triple_geom_polygon table, the triple_geom_line record geometry should be correctly stored in the geom_l column
         await expect(triple_geom_geom_p_attr_table.locator("tbody tr").nth(2).locator("td").nth(2)).toHaveText("triple_geom_line");
         await expect(triple_geom_geom_p_attr_table.locator("tbody tr").nth(2).locator("td").nth(3)).toHaveText("");
         await expect(triple_geom_geom_p_attr_table.locator("tbody tr").nth(2).locator("td").nth(4)).toHaveText("[object Object]");
-        // triple_geom_polygon record does not have geom or geom_l attribute filled beacuse its geometry is stored in the geom_p column, not showned in the attribute table
+        // triple_geom_polygon record does not have geom or geom_l attribute filled because its geometry is stored in the geom_p column, not shown in the attribute table
         await expect(triple_geom_geom_p_attr_table.locator("tbody tr").nth(3).locator("td").nth(2)).toHaveText("triple_geom_polygon");
         await expect(triple_geom_geom_p_attr_table.locator("tbody tr").nth(3).locator("td").nth(3)).toHaveText("");
         await expect(triple_geom_geom_p_attr_table.locator("tbody tr").nth(3).locator("td").nth(4)).toHaveText("");
