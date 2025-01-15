@@ -8,7 +8,7 @@ services:
       POSTGRES_USER: lizmap
     volumes:
       - pg_data:/var/lib/postgresql/data
-      - "../:/srv/lzm/"
+      - { type: bind, source: "..", target: /srv/lzm/ }
     ports:
       - ${LZMPGPORT}:5432
     networks:
@@ -16,7 +16,7 @@ services:
         aliases:
           - db.lizmap.local
   redis:
-    image: redis:7.4
+    image: redis:7-alpine
     container_name: "lizmap${LZMBRANCH}_test_redis"
   openldap:
     build: ./docker-conf/openldap
@@ -27,7 +27,7 @@ services:
       SLAPD_ORGANISATION: "Lizmap"
       SLAPD_DOMAIN: "tests.lizmap"
     volumes:
-      - "./docker-conf/openldap/ldif:/customldif"
+      - { type: bind, source: ./docker-conf/openldap/ldif, target: /customldif }
   lizmap:
     build:
       context: ./docker-conf/phpfpm
@@ -44,9 +44,9 @@ services:
       - LIZMAP_ADMIN_DEFAULT_PASSWORD_SOURCE
       - ECHO_OGC_ORIGINAL_REQUEST=on
     volumes:
-      - "../:/srv/lzm/"
-      - ./docker-conf/pg_service.conf:/srv/etc/pg_service.conf
-      - ./docker-conf/phpfpm/admin.conf:/srv/etc/admin.conf
+      - { type: bind, source: "..", target: /srv/lzm/ }
+      - { type: bind, source: ./docker-conf/pg_service.conf, target: /srv/etc/pg_service.conf }
+      - { type: bind, source: ./docker-conf/phpfpm/admin.conf, target: /srv/etc/admin.conf }
     depends_on:
       - pgsql
       - redis
@@ -55,8 +55,8 @@ services:
     image: nginx:alpine
     container_name: "lizmap${LZMBRANCH}_test_nginx"
     volumes:
-      - "./docker-conf/nginx-default.conf:/etc/nginx/conf.d/default.conf"
-      - "../:/srv/lzm/"
+      - { type: bind, source: ./docker-conf/nginx-default.conf, target: /etc/nginx/conf.d/default.conf }
+      - { type: bind, source: "..", target: /srv/lzm/ }
     command: /bin/sh -c "nginx -g 'daemon off;'"
     networks:
       default:
@@ -84,17 +84,17 @@ services:
       QGSRV_USER: ${LIZMAP_USER_ID}:${LIZMAP_GROUP_ID}
       ROUTER_HOST: map
     volumes:
-      - ./qgis-projects:/srv/projects
-      - ./qgis-server-plugins:/srv/qgis-server-plugins
-      - ./wps-data:/srv/data
-      - ./docker-conf/pg_service.conf:/srv/etc/pg_service.conf
+      - { type: bind, source: ./qgis-projects, target: /srv/projects }
+      - { type: bind, source: ./qgis-server-plugins, target: /srv/qgis-server-plugins }
+      - { type: bind, source: ./wps-data, target: /srv/data }
+      - { type: bind, source: ./docker-conf/pg_service.conf, target: /srv/etc/pg_service.conf }
     ports:
       - ${LZMQGSRVPORT}:8080
   webdav:
     container_name: lizmap${LZMBRANCH}_test_webdav
     image: ugeek/webdav:amd64
     volumes:
-      - ./qgis-projects/webdav/test:/media
+      - { type: bind, source: ./qgis-projects/webdav/test, target: /media }
     environment:
       - USERNAME=webdav
       - PASSWORD=webdav
