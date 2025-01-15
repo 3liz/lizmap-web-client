@@ -651,6 +651,7 @@ class Proxy
 
         $reqOptions = array(
             'stream' => true,
+            'http_errors' => false,
         );
         $services = self::getServices();
         if ($services->requestProxyEnabled && $services->requestProxyHost != '') {
