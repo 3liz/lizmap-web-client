@@ -1,12 +1,15 @@
 <?php
 /**
  * @author    3liz
- * @copyright 2017 3liz
+ * @copyright 2017-2023 3liz
  *
  * @see      http://3liz.com
  *
  * @license    Mozilla Public License
  */
+
+use GuzzleHttp\Psr7;
+
 class datavizPlot
 {
     /**
@@ -493,7 +496,7 @@ class datavizPlot
             $features = null;
 
             // Check code
-            if (floor($wfsresponse->getCode() / 100) >= 4) {
+            if ($wfsresponse->getCode() >= 400) {
                 return false;
             }
             // Check mime/type
@@ -501,127 +504,177 @@ class datavizPlot
                 return false;
             }
 
-            // decode features
-            $featureData = json_decode($wfsresponse->getBodyAsString());
-
-            if (empty($featureData) || empty($featureData->features)) {
-                $featureData = null;
-            }
-
-            if (!$featureData) {
-                return false;
-            }
-
-            // Check 1st feature
-            $features = $featureData->features;
-            $f1 = $features[0];
-            if (!property_exists($f1, 'properties')) {
-                return false;
-            }
-
-            // Check if plot needs X and has $x_field
-            if (in_array($this->type, $this->x_mandatory) and !$this->x_fields) {
-                return false;
-            }
-
-            if (count($this->x_fields) > 0) {
-                foreach ($this->x_fields as $x_field) {
-                    if (!property_exists($f1->properties, $x_field)) {
-                        return false;
-                    }
-                }
-            }
-
-            // Check if plot needs Y and has $y_field
-            if (in_array($this->type, $this->y_mandatory) and !$this->y_fields) {
-                return false;
-            }
-            if (count($this->y_fields) > 0) {
-                foreach ($this->y_fields as $y_field) {
-                    if (!property_exists($f1->properties, $y_field)) {
-                        return false;
-                    }
-                }
-            }
-
             // Fill in traces
             $traces = array();
 
-            $yidx = 0;
-            foreach ($this->y_fields as $y_field) {
+            // Features as iterator
+            $featureStream = Psr7\StreamWrapper::getResource($wfsresponse->getBodyAsStream());
+            $features = \JsonMachine\Items::fromStream($featureStream, array('pointer' => '/features'));
 
-                // build empty trace
-                $trace = $this->getTraceTemplate();
+            $f1 = null;
+            $traceBuilders = array();
+            $fidx = 0;
+            foreach ($features as $feat) {
+                ++$fidx;
 
-                // Set trace name. Use QGIS field alias if present
-                $trace_name = $this->getFieldAlias($y_field);
-                $trace['name'] = $trace_name;
+                if ($f1 === null) {
+                    $f1 = $feat;
 
-                // We are in the loop iterating y_fields: $y_field is set
-                $yf = $y_field;
-                // x
-                $xf = null;
-                if (count($this->x_fields) == 1) {
-                    $xf = $this->x_fields[0];
-                }
-                // z
-                $zf = null;
-                if (count($this->z_fields) > 0) {
-                    $zf = $this->z_fields[$yidx];
-                }
-
-                $featcolor = null;
-                if (count($this->colorfields) > 0) {
-                    $featcolor = $this->colorfields[$yidx];
-                }
-
-                // Revert x and y for horizontal bar plot
-                if (array_key_exists('orientation', $trace) and $trace['orientation'] == 'h') {
-                    $xf = $y_field;
-                    $yf = $this->x_fields[0];
-                }
-
-                // Set color
-                if (array_key_exists('marker', $trace) and !empty($this->colors)) {
-                    if ($yidx < count($this->colors)) {
-                        $trace['marker']['color'] = $this->colors[$yidx];
+                    // Check 1st feature
+                    if (!property_exists($f1, 'properties')) {
+                        return false;
                     }
-                    ++$yidx;
-                }
-                // Prepare an array to store features color (if any)
-                $featcolors = array();
 
-                // Creation of array who will be used to aggregate when the type is pie or sunburst
-                $x_aggregate_sum = null;
-                $x_aggregate_count = null;
-                $x_aggregate_min = null;
-                $x_aggregate_max = null;
-                $x_aggregate_first = null;
-                $x_aggregate_stddev = null;
-                $x_aggregate_median = null;
-                $x_aggregate_last = null;
-                $x_distinct_parent = null;
-                if ($this->type == 'pie' or $this->type == 'sunburst' or $this->type == 'html') {
-                    $x_aggregate_sum = array();
-                    $x_aggregate_count = array();
-                    $x_aggregate_min = array();
-                    $x_aggregate_max = array();
-                    $x_aggregate_first = array();
-                    $x_aggregate_stddev = array();
-                    $x_aggregate_median = array();
-                    $x_aggregate_last = array();
-                    $x_distinct_parent = array();
+                    // Check if plot needs X and has $x_field
+                    if (in_array($this->type, $this->x_mandatory) && !$this->x_fields) {
+                        return false;
+                    }
+                    if (count($this->x_fields) > 0) {
+                        foreach ($this->x_fields as $x_field) {
+                            if (!property_exists($f1->properties, $x_field)) {
+                                return false;
+                            }
+                        }
+                    }
+
+                    // Check if plot needs Y and has $y_field
+                    if (in_array($this->type, $this->y_mandatory) and !$this->y_fields) {
+                        return false;
+                    }
+                    if (count($this->y_fields) > 0) {
+                        foreach ($this->y_fields as $y_field) {
+                            if (!property_exists($f1->properties, $y_field)) {
+                                return false;
+                            }
+                        }
+                    }
+
+                    $yidx = 0;
+                    foreach ($this->y_fields as $y_field) {
+                        $traceBuilder = array();
+
+                        // build empty trace
+                        $traceBuilder['trace'] = $this->getTraceTemplate();
+
+                        // Set trace name. Use QGIS field alias if present
+                        $trace_name = $this->getFieldAlias($y_field);
+                        $traceBuilder['trace']['name'] = $trace_name;
+
+                        // We are in the loop iterating y_fields: $y_field is set
+                        $traceBuilder['yf'] = $y_field;
+                        // x
+                        $traceBuilder['xf'] = null;
+                        if (count($this->x_fields) == 1) {
+                            $traceBuilder['xf'] = $this->x_fields[0];
+                        }
+                        // z
+                        $traceBuilder['zf'] = null;
+                        if (count($this->z_fields) > 0) {
+                            $traceBuilder['zf'] = $this->z_fields[$yidx];
+                        }
+
+                        $traceBuilder['featcolor'] = null;
+                        if (count($this->colorfields) > 0) {
+                            $traceBuilder['featcolor'] = $this->colorfields[$yidx];
+                        }
+
+                        // Revert x and y for horizontal bar plot
+                        if (array_key_exists('orientation', $traceBuilder['trace']) and $traceBuilder['trace']['orientation'] == 'h') {
+                            $traceBuilder['xf'] = $y_field;
+                            $traceBuilder['yf'] = $this->x_fields[0];
+                        }
+
+                        // Set color
+                        if (array_key_exists('marker', $traceBuilder['trace']) and !empty($this->colors)) {
+                            if ($yidx < count($this->colors)) {
+                                $traceBuilder['trace']['marker']['color'] = $this->colors[$yidx];
+                            }
+                            ++$yidx;
+                        }
+                        // Prepare an array to store features color (if any)
+                        $traceBuilder['featcolors'] = array();
+
+                        // Creation of array who will be used to aggregate when the type is pie or sunburst
+                        $traceBuilder['x_aggregate_sum'] = null;
+                        $traceBuilder['x_aggregate_count'] = null;
+                        $traceBuilder['x_aggregate_min'] = null;
+                        $traceBuilder['x_aggregate_max'] = null;
+                        $traceBuilder['x_aggregate_first'] = null;
+                        $traceBuilder['x_aggregate_stddev'] = null;
+                        $traceBuilder['x_aggregate_stddev_xy'] = null;
+                        $traceBuilder['x_aggregate_median'] = null;
+                        $traceBuilder['x_aggregate_last'] = null;
+                        $traceBuilder['x_distinct_parent'] = null;
+                        if ($this->type == 'pie' or $this->type == 'sunburst' or $this->type == 'html') {
+                            $traceBuilder['x_aggregate_sum'] = array();
+                            $traceBuilder['x_aggregate_count'] = array();
+                            $traceBuilder['x_aggregate_min'] = array();
+                            $traceBuilder['x_aggregate_max'] = array();
+                            $traceBuilder['x_aggregate_first'] = array();
+                            $traceBuilder['x_aggregate_stddev'] = array();
+                            $traceBuilder['x_aggregate_stddev_xy'] = array();
+                            $traceBuilder['x_aggregate_median'] = array();
+                            $traceBuilder['x_aggregate_last'] = array();
+                            $traceBuilder['x_distinct_parent'] = array();
+                        }
+
+                        // Fill in the trace for each dimension
+                        $traceBuilder['parents_distinct_values'] = null;
+                        $traceBuilder['parents_distinct_colors'] = null;
+                        if ($this->type == 'sunburst') {
+                            $traceBuilder['parents_distinct_values'] = array();
+                            $traceBuilder['parents_distinct_colors'] = array();
+                        }
+
+                        $traceBuilders[] = $traceBuilder;
+                    }
                 }
 
-                // Fill in the trace for each dimension
-                $parents_distinct_values = null;
-                $parents_distinct_colors = null;
-                if ($this->type == 'sunburst') {
-                    $parents_distinct_values = array();
-                    $parents_distinct_colors = array();
-                }
-                foreach ($features as $feat) {
-                    if ($this->type != 'pie' and $this->type != 'sunburst' and $this->type != 'html') {
+                foreach ($traceBuilders as &$traceBuilder) {
+                    $trace = &$traceBuilder['trace'];
+                    $yf = $traceBuilder['yf'];
+                    $xf = $traceBuilder['xf'];
+                    $zf = $traceBuilder['zf'];
+                    $featcolor = $traceBuilder['featcolor'];
+                    $featcolors = &$traceBuilder['featcolors'];
+
+                    /** @var null|array $x_aggregate_sum */
+                    $x_aggregate_sum = &$traceBuilder['x_aggregate_sum'];
+
+                    /** @var null|array $x_aggregate_count */
+                    $x_aggregate_count = &$traceBuilder['x_aggregate_count'];
+
+                    /** @var null|array $x_aggregate_min */
+                    $x_aggregate_min = &$traceBuilder['x_aggregate_min'];
+
+                    /** @var null|array $x_aggregate_max */
+                    $x_aggregate_max = &$traceBuilder['x_aggregate_max'];
+
+                    /** @var null|array $x_aggregate_first */
+                    $x_aggregate_first = &$traceBuilder['x_aggregate_first'];
+
+                    /** @var null|array $x_aggregate_stddev */
+                    $x_aggregate_stddev = &$traceBuilder['x_aggregate_stddev'];
+
+                    /** @var null|array $x_aggregate_stddev_xy */
+                    $x_aggregate_stddev_xy = &$traceBuilder['x_aggregate_stddev_xy'];
+
+                    /** @var null|array $x_aggregate_median */
+                    $x_aggregate_median = &$traceBuilder['x_aggregate_median'];
+
+                    /** @var null|array $x_aggregate_last */
+                    $x_aggregate_last = &$traceBuilder['x_aggregate_last'];
+
+                    /** @var null|array $x_distinct_parent */
+                    $x_distinct_parent = &$traceBuilder['x_distinct_parent'];
+
+                    /** @var null|array $parents_distinct_values */
+                    $parents_distinct_values = &$traceBuilder['parents_distinct_values'];
+
+                    /** @var null|array $parents_distinct_colors */
+                    $parents_distinct_colors = &$traceBuilder['parents_distinct_colors'];
+
+                    if ($this->type != 'pie' && $this->type != 'sunburst' && $this->type != 'html') {
                         // Fill in X field
                         if (count($this->x_fields) == 1) {
                             $trace[$this->x_property_name][] = $feat->properties->{$xf};
@@ -631,13 +684,13 @@ class datavizPlot
                         $trace[$this->y_property_name][] = $feat->properties->{$yf};
 
                         // Fill in Z field
-                        if ($this->z_property_name and $zf) {
+                        if ($this->z_property_name && $zf) {
                             $z_field_value = $feat->properties->{$zf};
                             $trace[$this->z_property_name][] = $z_field_value;
                         }
                         // Fill in feature colors
                         if (property_exists($feat->properties, $featcolor)
-                            and !empty($feat->properties->{$featcolor})
+                            && !empty($feat->properties->{$featcolor})
                         ) {
                             $featcolors[] = $feat->properties->{$featcolor};
                         }
@@ -646,52 +699,62 @@ class datavizPlot
                         // sum and aggregate values per distinct x values
                         // because plotly cannot use aggregations transforms
                         // -> store values in an array to aggregate them afterwards
-                        if ($feat->properties->{$xf} != null or $feat->properties->{$xf} == 0) {
-                            // Aggregate - Each time we find a new X, we initialize the value for this x key
-                            if (!array_key_exists($feat->properties->{$xf}, $x_aggregate_sum)) {
-                                $x_aggregate_sum[$feat->properties->{$xf}] = 0;
-                                $x_aggregate_count[$feat->properties->{$xf}] = 0;
-                                $x_aggregate_min[$feat->properties->{$xf}] = $feat->properties->{$yf};
-                                $x_aggregate_max[$feat->properties->{$xf}] = $feat->properties->{$yf};
-                                $x_aggregate_first[$feat->properties->{$xf}] = $feat->properties->{$yf};
-                                $x_aggregate_stddev[$feat->properties->{$xf}] = 0;
-                                $x_aggregate_median[$feat->properties->{$xf}] = array();
+                        $x = null;
+                        if (property_exists($feat->properties, $xf)) {
+                            $x = $feat->properties->{$xf};
+                        }
 
-                                if ($this->z_property_name and !empty($zf)) {
-                                    $x_distinct_parent[$feat->properties->{$xf}] = $feat->properties->{$zf};
+                        /** @var null|bool|float|int|string $x */
+                        if ($x !== null) {
+                            // Aggregate - Each time we find a new X, we initialize the value for this x key
+                            if ($x_aggregate_sum !== null && !array_key_exists($x, $x_aggregate_sum)) {
+                                $x_aggregate_sum[$x] = 0;
+                                $x_aggregate_count[$x] = 0;
+                                $x_aggregate_min[$x] = $feat->properties->{$yf};
+                                $x_aggregate_max[$x] = $feat->properties->{$yf};
+                                $x_aggregate_first[$x] = $feat->properties->{$yf};
+                                $x_aggregate_stddev[$x] = 0;
+                                $x_aggregate_median[$x] = array();
+
+                                if ($this->z_property_name && !empty($zf)) {
+                                    $x_distinct_parent[$x] = $feat->properties->{$zf};
                                 }
 
                                 // We also add the color
                                 if (property_exists($feat->properties, $featcolor)
-                                and !empty($feat->properties->{$featcolor})
+                                    && !empty($feat->properties->{$featcolor})
                                 ) {
                                     $featcolors[] = $feat->properties->{$featcolor};
                                 }
                             }
                             // incrementation of the sum/count who will be used for other kind of aggregation
-                            ++$x_aggregate_count[$feat->properties->{$xf}];
-                            $x_aggregate_last[$feat->properties->{$xf}] = $feat->properties->{$yf};
-                            if (is_numeric($feat->properties->{$yf})) {
-                                $x_aggregate_sum[$feat->properties->{$xf}] += $feat->properties->{$yf};
-                                if ($x_aggregate_min[$feat->properties->{$xf}] > $feat->properties->{$yf}) {
-                                    $x_aggregate_min[$feat->properties->{$xf}] = $feat->properties->{$yf};
+                            ++$x_aggregate_count[$x];
+                            $y = null;
+                            if (property_exists($feat->properties, $yf)) {
+                                $y = $feat->properties->{$yf};
+                            }
+                            $x_aggregate_last[$x] = $y;
+                            if (is_numeric($y)) {
+                                $x_aggregate_sum[$x] += $y;
+                                if ($x_aggregate_min[$x] > $y) {
+                                    $x_aggregate_min[$x] = $y;
                                 }
-                                if ($x_aggregate_max[$feat->properties->{$xf}] < $feat->properties->{$yf}) {
-                                    $x_aggregate_max[$feat->properties->{$xf}] = $feat->properties->{$yf};
+                                if ($x_aggregate_max[$x] < $y) {
+                                    $x_aggregate_max[$x] = $y;
                                 }
                             }
-                            array_push($x_aggregate_median[$feat->properties->{$xf}], $feat->properties->{$yf});
+                            array_push($x_aggregate_median[$x], $y);
 
                             if ($this->type == 'sunburst') {
                                 // Sum up values for distinct labels to compute values for the sunburst parents
-                                if (!array_key_exists($feat->properties->{$zf}, $parents_distinct_values)) {
+                                if ($parents_distinct_values !== null && !array_key_exists($feat->properties->{$zf}, $parents_distinct_values)) {
                                     $parents_distinct_values[$feat->properties->{$zf}] = 0;
                                 }
-                                $parents_distinct_values[$feat->properties->{$zf}] += $feat->properties->{$yf};
+                                $parents_distinct_values[$feat->properties->{$zf}] += $y;
 
                                 // Keep one color for the same reason
                                 if (property_exists($feat->properties, $featcolor)
-                                and !empty($feat->properties->{$featcolor})
+                                    && !empty($feat->properties->{$featcolor})
                                 ) {
                                     if (!array_key_exists($feat->properties->{$zf}, $parents_distinct_values)) {
                                         $parents_distinct_colors[$feat->properties->{$zf}] = 'white';
@@ -699,57 +762,109 @@ class datavizPlot
                                     $parents_distinct_colors[$feat->properties->{$zf}] = $feat->properties->{$featcolor};
                                 }
                             }
+
+                            if ($this->aggregation == 'stddev') {
+                                $x_aggregate_stddev_xy[] = array($x, $y);
+                            }
                         }
                     }
                 }
+            }
 
-                if ($this->type == 'pie' or $this->type == 'sunburst' or $this->type == 'html') {
-                    if ($this->aggregation == 'stddev') {
-                        foreach ($features as $feat) {
-                            $x = $feat->properties->{$xf};
-                            $x_aggregate_stddev[$x] += pow($feat->properties->{$yf} - ($x_aggregate_sum[$x] / $x_aggregate_count[$x]), 2);
+            foreach ($traceBuilders as &$traceBuilder) {
+                $trace = &$traceBuilder['trace'];
+                $yf = $traceBuilder['yf'];
+                $xf = $traceBuilder['xf'];
+                $zf = $traceBuilder['zf'];
+                $featcolor = $traceBuilder['featcolor'];
+                $featcolors = &$traceBuilder['featcolors'];
+
+                /** @var null|array $x_aggregate_sum */
+                $x_aggregate_sum = &$traceBuilder['x_aggregate_sum'];
+
+                /** @var null|array $x_aggregate_count */
+                $x_aggregate_count = &$traceBuilder['x_aggregate_count'];
+
+                /** @var null|array $x_aggregate_min */
+                $x_aggregate_min = &$traceBuilder['x_aggregate_min'];
+
+                /** @var null|array $x_aggregate_max */
+                $x_aggregate_max = &$traceBuilder['x_aggregate_max'];
+
+                /** @var null|array $x_aggregate_first */
+                $x_aggregate_first = &$traceBuilder['x_aggregate_first'];
+
+                /** @var null|array $x_aggregate_stddev */
+                $x_aggregate_stddev = &$traceBuilder['x_aggregate_stddev'];
+
+                /** @var null|array $x_aggregate_stddev_xy */
+                $x_aggregate_stddev_xy = &$traceBuilder['x_aggregate_stddev_xy'];
+
+                /** @var null|array $x_aggregate_median */
+                $x_aggregate_median = &$traceBuilder['x_aggregate_median'];
+
+                /** @var null|array $x_aggregate_last */
+                $x_aggregate_last = &$traceBuilder['x_aggregate_last'];
+
+                /** @var null|array $x_distinct_parent */
+                $x_distinct_parent = &$traceBuilder['x_distinct_parent'];
+
+                /** @var null|array $parents_distinct_values */
+                $parents_distinct_values = &$traceBuilder['parents_distinct_values'];
+
+                /** @var null|array $parents_distinct_colors */
+                $parents_distinct_colors = &$traceBuilder['parents_distinct_colors'];
+
+                if ($this->type == 'pie' || $this->type == 'sunburst' || $this->type == 'html') {
+                    if ($this->aggregation == 'stddev' && count($x_aggregate_stddev_xy) > 0) {
+                        foreach ($x_aggregate_stddev_xy as $xy) {
+                            $x = $xy[0];
+                            $x_aggregate_stddev[$x] += pow($xy[1] - ($x_aggregate_sum[$x] / $x_aggregate_count[$x]), 2);
                         }
                     }
 
-                    if ($this->aggregation == 'median') {
+                    if ($this->aggregation == 'median' && count($x_aggregate_median) > 0) {
                         foreach ($x_aggregate_median as $key => $value) {
                             asort($x_aggregate_median[$key]);
                         }
                     }
-                    // Fill the data with the correct key => value
-                    foreach ($x_aggregate_sum as $key => $value) {
-                        // x
-                        $trace[$this->x_property_name][] = $key;
-                        if ($this->z_property_name) {
-                            $trace[$this->z_property_name][] = $x_distinct_parent[$key];
-                        }
 
-                        // y
-                        if ($this->aggregation == 'sum' or $this->aggregation == '') {
-                            $trace[$this->y_property_name][] = $value;
-                        } elseif ($this->aggregation == 'avg') {
-                            $trace[$this->y_property_name][] = $value / $x_aggregate_count[$key];
-                        } elseif ($this->aggregation == 'count') {
-                            $trace[$this->y_property_name][] = $x_aggregate_count[$key];
-                        } elseif ($this->aggregation == 'min') {
-                            $trace[$this->y_property_name][] = $x_aggregate_min[$key];
-                        } elseif ($this->aggregation == 'max') {
-                            $trace[$this->y_property_name][] = $x_aggregate_max[$key];
-                        } elseif ($this->aggregation == 'first') {
-                            $trace[$this->y_property_name][] = $x_aggregate_first[$key];
-                        } elseif ($this->aggregation == 'last') {
-                            $trace[$this->y_property_name][] = $x_aggregate_last[$key];
-                        } elseif ($this->aggregation == 'stddev') {
-                            $trace[$this->y_property_name][] = sqrt($x_aggregate_stddev[$key] / $x_aggregate_count[$key]);
-                        } elseif ($this->aggregation == 'median') {
-                            // if count is even
-                            if ($x_aggregate_count[$key] % 2 == 0) {
-                                $trace[$this->y_property_name][] = $x_aggregate_median[$key][$x_aggregate_count[$key] / 2];
+                    // Fill the data with the correct key => value
+                    if (count($x_aggregate_sum) > 0) {
+                        foreach ($x_aggregate_sum as $key => $value) {
+                            // x
+                            $trace[$this->x_property_name][] = $key;
+                            if ($this->z_property_name) {
+                                $trace[$this->z_property_name][] = $x_distinct_parent[$key];
                             }
-                            // si count is odd
-                            else {
-                                $mid = floor($x_aggregate_count[$key] / 2);
-                                $trace[$this->y_property_name][] = ($x_aggregate_median[$key][$mid] + $x_aggregate_median[$key][$mid + 1]) / 2;
+
+                            // y
+                            if ($this->aggregation == 'sum' or $this->aggregation == '') {
+                                $trace[$this->y_property_name][] = $value;
+                            } elseif ($this->aggregation == 'avg') {
+                                $trace[$this->y_property_name][] = $value / $x_aggregate_count[$key];
+                            } elseif ($this->aggregation == 'count') {
+                                $trace[$this->y_property_name][] = $x_aggregate_count[$key];
+                            } elseif ($this->aggregation == 'min') {
+                                $trace[$this->y_property_name][] = $x_aggregate_min[$key];
+                            } elseif ($this->aggregation == 'max') {
+                                $trace[$this->y_property_name][] = $x_aggregate_max[$key];
+                            } elseif ($this->aggregation == 'first') {
+                                $trace[$this->y_property_name][] = $x_aggregate_first[$key];
+                            } elseif ($this->aggregation == 'last') {
+                                $trace[$this->y_property_name][] = $x_aggregate_last[$key];
+                            } elseif ($this->aggregation == 'stddev') {
+                                $trace[$this->y_property_name][] = sqrt($x_aggregate_stddev[$key] / $x_aggregate_count[$key]);
+                            } elseif ($this->aggregation == 'median') {
+                                // if count is even
+                                if ($x_aggregate_count[$key] % 2 == 0) {
+                                    $trace[$this->y_property_name][] = $x_aggregate_median[$key][$x_aggregate_count[$key] / 2];
+                                }
+                                // si count is odd
+                                else {
+                                    $mid = floor($x_aggregate_count[$key] / 2);
+                                    $trace[$this->y_property_name][] = ($x_aggregate_median[$key][$mid] + $x_aggregate_median[$key][$mid + 1]) / 2;
+                                }
                             }
                         }
                     }
@@ -764,12 +879,14 @@ class datavizPlot
                     $colors_before = array('white');
                     $vtotal = 0;
 
-                    foreach ($parents_distinct_values as $z => $v) {
-                        $labels_before[] = $z;
-                        $values_before[] = $v;
-                        $parents_before[] = 'Total';
-                        $colors_before[] = $parents_distinct_colors[$z];
-                        $vtotal += $v;
+                    if (count($parents_distinct_values) > 0) {
+                        foreach ($parents_distinct_values as $z => $v) {
+                            $labels_before[] = $z;
+                            $values_before[] = $v;
+                            $parents_before[] = 'Total';
+                            $colors_before[] = $parents_distinct_colors[$z];
+                            $vtotal += $v;
+                        }
                     }
                     $values_before[0] = $vtotal;
                     $trace[$this->x_property_name] = array_merge($labels_before, $trace[$this->x_property_name]);
@@ -784,20 +901,20 @@ class datavizPlot
                     ) {
                         $trace['marker']['color'] = $featcolors;
                     }
-                    if ($this->type == 'pie' or $this->type == 'sunburst' or $this->type == 'html'
+                    if ($this->type == 'pie' || $this->type == 'sunburst' || $this->type == 'html'
                     ) {
                         $trace['marker']['colors'] = $featcolors;
                         unset($trace['marker']['color']);
                     }
                 }
 
-                if ($this->x_property_name and count($trace[$this->x_property_name]) == 0) {
+                if ($this->x_property_name && count($trace[$this->x_property_name]) == 0) {
                     $trace[$this->x_property_name] = null;
                 }
-                if ($this->y_property_name and count($trace[$this->y_property_name]) == 0) {
+                if ($this->y_property_name && count($trace[$this->y_property_name]) == 0) {
                     $trace[$this->y_property_name] = null;
                 }
-                if ($this->z_property_name and count($trace[$this->z_property_name]) == 0) {
+                if ($this->z_property_name && count($trace[$this->z_property_name]) == 0) {
                     $trace[$this->z_property_name] = null;
                 }
 
@@ -805,7 +922,7 @@ class datavizPlot
                 // Not available for pie, histogram and histogram2d, we have done it manually beforehand in php
                 // Careful : for horizontal bar plots, we need to reverse the groups and target values
                 if ($this->aggregation
-                    and !in_array($this->type, array('pie', 'histogram', 'histogram2d', 'html', 'sunburst'))
+                    && !in_array($this->type, array('pie', 'histogram', 'histogram2d', 'html', 'sunburst'))
                 ) {
                     // Revert x and y for horizontal bar plot
                     $transformGroupsName = $this->x_property_name;
