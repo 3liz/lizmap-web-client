@@ -378,14 +378,14 @@ class QgisProject
     protected function setLayerOpacity(ProjectConfig $cfg)
     {
         /**
-         * NOTE : searching for embedded layers with opacity is time consuming :
-         * need to loop over all layers to find embedded, then peform xpath on new Project files
-         * so : 1st loop to find all layers with opacity (non embedded)
-         * 2nd loop will find embedded layers and parse project file searching for opacity
+         * NOTE : xpath queries are time consumming, need to performs the least we can do.
+         *
+         * so : 1st loop to find all layers with opacity (non embedded) (1 xpath query)
+         * 2nd loop will find embedded layers and parse project file searching for opacity (xpath query as much as embedded layers)
          */
         $layers = $this->layers;
         $xpathOpacity = '//maplayer/layerOpacity[.!=1]/parent::* | //maplayer/pipe/rasterrenderer/@opacity[.!=1]/ancestor::maplayer';
-        // non-embedded layers
+        // non-embedded layers contains "layerOpacity" or "pipe"
         $layerWithOpacities = $this->xpathQuery($xpathOpacity);
         if ($layerWithOpacities) {
             foreach ($layerWithOpacities as $layerWithOpacity) {
@@ -403,38 +403,38 @@ class QgisProject
             }
         }
 
-        // search for embedded layers with xpath ("maplayer id='XXX'" means the layer is embedded)
+        // search for embedded layers only
         foreach ($layers as $layer) {
-            $xpathEmbedded = "//maplayer[@id='{$layer['id']}']";
-            $embeddedLayer = $this->xpathQuery($xpathEmbedded);
-            if (!$embeddedLayer) {
+            if (!array_key_exists('embedded', $layer) || $layer['embedded'] != 1) {
+                // ignore non embedded layers
+
                 continue;
             }
             $qgisProject = $this->getEmbeddedQgisProject($layer['id']);
             if (is_null($qgisProject)) {
+                // no such project, ignore
+
                 continue;
             }
-            // same xpath query as 1st loop, to search opacity
-            $layerWithOpacities = $qgisProject->xpathQuery($xpathOpacity);
-            if ($layerWithOpacities) {
-                // search layers from source project with same id
-                foreach ($layerWithOpacities as $layerWithOpacity) {
-                    // FIXME : Use xpath query to find matching id directly ?
-                    if ($layerWithOpacity->id == $layer['id']) {
-                        $name = (string) $layerWithOpacity[0]->layername;
-                        $layerCfg = $cfg->getLayer($name);
-                        $opacity = 1;
-                        if ($layerCfg) {
-                            if (isset($layerWithOpacity[0]->layerOpacity)) {
-                                $opacity = (float) $layerWithOpacity[0]->layerOpacity;
-                            } elseif (isset($layerWithOpacity[0]->pipe->rasterrenderer['opacity'])) {
-                                $opacity = (float) $layerWithOpacity[0]->pipe->rasterrenderer['opacity'];
-                            }
-                            $layerCfg->opacity = $opacity;
+
+            $xpathOpacityWithID = '//maplayer[id=\''.$layer['id'].'\']/layerOpacity[.!=1]/parent::* | //maplayer[id=\''.$layer['id'].'\']/pipe/rasterrenderer/@opacity[.!=1]/ancestor::maplayer';
+            // same xpath query as 1st loop, but with layer ID to match layer
+            $layerWithOpacities = $qgisProject->xpathQuery($xpathOpacityWithID);
+            if ($layerWithOpacities && count($layerWithOpacities) == 1) {
+                $layerWithOpacity = $layerWithOpacities[0];
+                if ($layerWithOpacity->id == $layer['id']) {
+                    $name = (string) $layerWithOpacity->layername;
+                    $layerCfg = $cfg->getLayer($name);
+                    $opacity = 1;
+                    if ($layerCfg) {
+                        if (isset($layerWithOpacity->layerOpacity)) {
+                            $opacity = (float) $layerWithOpacity->layerOpacity;
+                        } elseif (isset($layerWithOpacity->pipe->rasterrenderer['opacity'])) {
+                            $opacity = (float) $layerWithOpacity->pipe->rasterrenderer['opacity'];
                         }
+                        $layerCfg->opacity = $opacity;
                     }
                 }
-
             }
         }
     }
