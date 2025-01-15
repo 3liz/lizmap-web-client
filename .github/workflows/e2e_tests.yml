@@ -76,6 +76,12 @@ jobs:
           make env
           cat .env
 
+      - name: Read environment file and set variables
+        uses: cosq-network/dotenv-loader@v1.0.2
+        with:
+          # Somehow, the working-directory is not taken into account
+          env-file: tests/.env
+
        # For testing only
 #      - name: Update projects
 #        run: |
@@ -206,18 +212,23 @@ jobs:
           spec: cypress/integration/*-ghaction.js
           wait-on: http://localhost:8130
 
-      - name: QGIS Server all logs to file
+      - name: Export some logs to files
         if: always()
         run: |
-          docker logs lizmap${LZMBRANCH}_test_qgis &> /tmp/qgis-server-all.log
+          mkdir -p /tmp/e2e/lwc
+          mkdir -p /tmp/e2e/docker
+          docker logs lizmap${{ env.LZMBRANCH }}_test_qgis &> /tmp/e2e/docker/qgis-server.log | true
+          docker logs lizmap${{ env.LZMBRANCH }}_test_php &> /tmp/e2e/docker/php.log | true
+          docker logs lizmap${{ env.LZMBRANCH }}_test_nginx &> /tmp/e2e/docker/nginx.log | true
+          cp -r ../lizmap/var/log /tmp/e2e/lwc/
 
-      - name: QGIS Server all logs upload
+      - name: Upload all logs as artifact
         uses: actions/upload-artifact@v4.5.0
         if: always()
         with:
-          name: E2E-QGIS-server-logs-all
+          name: E2E-all-logs
           path: |
-            /tmp/qgis-server-all.log
+            /tmp/e2e/
 
       - name: Notify in case of cypress failure, from mainstream branches only
         uses: peter-evans/commit-comment@v3
