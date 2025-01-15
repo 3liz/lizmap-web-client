@@ -15,10 +15,11 @@
 
 // Import commands.js using ES2015 syntax:
 import './commands'
+import { rmErrorsLog } from './function'
 
 beforeEach(function () {
     // Clear errors
-    cy.exec('./../lizmap-ctl docker-exec rm -f /srv/lzm/lizmap/var/log/errors.log', {failOnNonZeroExit: false})
+    rmErrorsLog()
 })
 
 afterEach(function () {
