@@ -1,3 +1,4 @@
+import { clearErrorsLog } from './../support/function.js'
 describe('WMTS command line', function () {
 
     it('wmts:capabilities success', function () {
@@ -210,7 +211,7 @@ describe('WMTS command line', function () {
             })
 
         // Clear errors
-        cy.exec('./../lizmap-ctl docker-exec truncate -s 0 /srv/lzm/lizmap/var/log/errors.log')
+        clearErrorsLog()
     })
 
     it('wmts:cache:seed failed', function () {
@@ -274,7 +275,7 @@ describe('WMTS command line', function () {
 
 
         // Clear errors
-        cy.exec('./../lizmap-ctl docker-exec truncate -s 0 /srv/lzm/lizmap/var/log/errors.log')
+        clearErrorsLog()
 
         cy.exec('./../lizmap-ctl console wmts:cache:seed -v -f --dry-run testsrepository cache unknown EPSG:3857 10 10', {failOnNonZeroExit: false})
             .then((result) => {
@@ -282,21 +283,21 @@ describe('WMTS command line', function () {
                 expect(result.stdout).to.contain('The layers \'unknown\' have not be found!')
             })
 
-        cy.exec('./../lizmap-ctl docker-exec truncate -s 0 /srv/lzm/lizmap/var/log/errors.log')
+        clearErrorsLog()
         cy.exec('./../lizmap-ctl console wmts:cache:seed -v -f --dry-run testsrepository cache Quartiers unknown 10 10', {failOnNonZeroExit: false})
             .then((result) => {
                 expect(result.code).to.equal(1)
                 expect(result.stdout).to.contain("The TileMatrixSet 'EPSG:3857'!\nThe TileMatrixSet 'unknown' has not be found!")
             })
 
-        cy.exec('./../lizmap-ctl docker-exec truncate -s 0 /srv/lzm/lizmap/var/log/errors.log')
+        clearErrorsLog()
         cy.exec('./../lizmap-ctl console wmts:cache:seed -v -f --dry-run --bbox xmin,ymin,xmax,ymax testsrepository cache Quartiers EPSG:3857 10 10', {failOnNonZeroExit: false})
             .then((result) => {
                 expect(result.code).to.equal(1)
                 expect(result.stdout).to.contain("The TileMatrixSet 'EPSG:3857'!\nThe optional bbox has to contain 4 numbers separated by comma!")
             })
 
-        cy.exec('./../lizmap-ctl docker-exec truncate -s 0 /srv/lzm/lizmap/var/log/errors.log')
+        clearErrorsLog()
         cy.exec('./../lizmap-ctl console wmts:cache:seed -v -f --dry-run --bbox 417094.94691622,5398163.2080343 testsrepository cache Quartiers EPSG:3857 10 10', {failOnNonZeroExit: false})
             .then((result) => {
                 expect(result.code).to.equal(1)
