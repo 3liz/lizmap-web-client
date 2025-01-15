@@ -14,20 +14,6 @@ parameters:
     - jEvent
   ignoreErrors:
     - '#^Call to an undefined method jDaoFactoryBase#'
-    -
-      message: "#^Comparison operation \"\\=\\=\" between 0\\|0\\.0\\|''\\|'0'\\|array\\{\\}\\|false\\|null and 0 results in an error\\.$#"
-      count: 1
-      path: lizmap/modules/dataviz/classes/datavizPlot.class.php
-
-    -
-      message: "#^Offset float does not exist on array\\{\\}\\.$#"
-      count: 2
-      path: lizmap/modules/dataviz/classes/datavizPlot.class.php
-
-    -
-      message: "#^Offset float\\|int\\<0, max\\> does not exist on array\\{\\}\\.$#"
-      count: 1
-      path: lizmap/modules/dataviz/classes/datavizPlot.class.php
 
     -
       message: "#^Method filterConfig\\:\\:__construct\\(\\) with return type void returns false but should not return anything\\.$#"
