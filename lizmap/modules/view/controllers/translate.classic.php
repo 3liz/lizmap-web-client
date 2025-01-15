@@ -36,6 +36,8 @@ class translateCtrl extends jController
         }
 
         $data = LocalesLoader::getLocalesFrom('view~dictionnary', $lang);
+        $fallback = LocalesLoader::getLocalesFrom('view~dictionnary', \jApp::config()->fallbackLocale);
+        $data = array_merge($fallback, $data);
         $rep->content = 'var lizDict = '.json_encode($data).';';
 
         return $rep;
