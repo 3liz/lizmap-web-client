@@ -57,7 +57,7 @@ export default class Print extends HTMLElement {
                     // Filtering printTemplates by atlas enabled
                     // and since 3.7 by layout enabled
                     mainLizmap.config?.printTemplates.map((template, index) => {
-                        if (template?.atlas?.enabled === '0'){
+                        if (template?.atlas?.enabled === '0' || template?.atlas?.enabled === false){
                             // Lizmap >= 3.7
                             if (layouts?.list) {
                                 if(layouts.list?.[index]?.enabled){
