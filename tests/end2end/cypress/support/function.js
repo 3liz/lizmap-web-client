@@ -18,6 +18,16 @@ export function clearErrorsLog() {
     cy.exec('./../lizmap-ctl docker-exec truncate -s 0 /srv/lzm/lizmap/var/log/errors.log')
 }
 
+export function rmLizmapAdminLog() {
+    // Remove errors log
+    cy.exec('./../lizmap-ctl docker-exec rm -f /srv/lzm/lizmap/var/log/errors.log', {failOnNonZeroExit: false})
+}
+
+export function clearLizmapAdminLog() {
+    // Clear errors log
+    cy.exec('./../lizmap-ctl docker-exec truncate -s 0 /srv/lzm/lizmap/var/log/errors.log')
+}
+
 export function serverMetadata() {
 
      return cy.request ({
