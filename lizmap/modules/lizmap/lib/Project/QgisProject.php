@@ -403,11 +403,9 @@ class QgisProject
             }
         }
 
-        // search for embedded layers with xpath ("maplayer id='XXX'" means the layer is embedded)
+        // search for embedded layers only
         foreach ($layers as $layer) {
-            $xpathEmbedded = "//maplayer[@id='{$layer['id']}']";
-            $embeddedLayer = $this->xpathQuery($xpathEmbedded);
-            if (!$embeddedLayer) {
+            if (!array_key_exists('embedded', $layer) || $layer['embedded'] != 1) {
                 continue;
             }
             $qgisProject = $this->getEmbeddedQgisProject($layer['id']);
