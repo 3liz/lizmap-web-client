@@ -874,6 +874,8 @@ class serviceCtrl extends jController
         $this->setupBinaryResponse($rep, $result, 'qgis_server_wfs');
 
         if ($result->code >= 400) {
+            $rep->content = $result->getBodyAsString();
+
             return $rep;
         }
 
