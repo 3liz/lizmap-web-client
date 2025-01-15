@@ -1018,6 +1018,7 @@ describe('Request service', function () {
                 'FEATUREID': 'selection_polygon.1',
                 'BBOX': '160786,900949,186133,925344',
                 'OUTPUTFORMAT': 'GeoJSON',
+                'FORCE_QGIS': '1',
             },
         }).then((resp) => {
             expect(resp.status).to.eq(200)
