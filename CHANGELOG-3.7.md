@@ -8,6 +8,14 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Added
+
+* Preparing QJazz
+
+### Tests
+
+* Improve workflow about PHP and End2End tests
+
 ## 3.7.14 - 2025-01-07
 
 ### Funders
