@@ -96,3 +96,21 @@ export async function reloadMap(page, check = true) {
         await CatchErrors(page);
     }
 }
+
+/**
+ * Re-send the request with additional "__echo__" param to retrieve the OGC Request search params
+ * @param {Page} page The page object
+ * @param {string} url The URL to re-send
+ *
+ * @return {Promise<URLSearchParams>}
+ */
+export async function getEchoRequestParams(page, url) {
+    // Re-send the request with additionnal echo param to retrieve the OGC Request
+    let echoResponse = await page.request.get(url + '&__echo__');
+    const originalUrl = decodeURIComponent(await echoResponse.text());
+    // When the request has not been logged by echo proxy
+    await expect(URL.canParse(originalUrl), originalUrl+' is not an URL!').toBeTruthy();
+    await expect(originalUrl).not.toContain('unfound')
+
+    return new URLSearchParams((new URL(originalUrl).search));
+}
