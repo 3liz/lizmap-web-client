@@ -2,6 +2,17 @@
 import {expect, Locator, Page} from '@playwright/test';
 import { gotoMap } from '../globals';
 
+/**
+ * @typedef {Object} logMessage
+ * @property {string} type - the log type :One of the following values:
+ * 'log', 'debug', 'info', 'error', 'warning', 'dir', 'dirxml', 'table',
+ * 'trace', 'clear', 'startGroup', 'startGroupCollapsed', 'endGroup',
+ * 'assert', 'profile', 'profileEnd', 'count', 'timeEnd'.
+ * @property {string} message - the log message text
+ * @property {string} location - the log message location in one line
+ * @see https://playwright.dev/docs/api/class-consolemessage
+ */
+
 export class ProjectPage {
     /** @type {Page} */
     page;
@@ -70,6 +81,12 @@ export class ProjectPage {
     warningMessage;
 
     /**
+     * Logs collected
+     * @type {logMessage[]}
+     */
+    logs = [];
+
+    /**
      * Attribute table for the given layer name
      * @param {string} name Name of the layer
      * @returns {Locator}
@@ -95,6 +112,21 @@ export class ProjectPage {
         this.search = page.locator('#search-query');
         this.switcher = page.locator('#button-switcher');
         this.buttonEditing = page.locator('#button-edition');
+
+        const logs = this.logs;
+        page.on('console', message => {
+            // Default message from jQuery: JQMIGRATE: Migrate is installed, version 3.3.1
+            // Do not stored it - will be removed when we are sure that this log will not appear
+            if (message.type() == 'log' && message.text().startsWith('JQMIGRATE: Migrate is installed')) {
+                return;
+            }
+            const location = message.location()
+            logs.push({
+                type: message.type(),
+                message: message.text(),
+                location: `${location.url}:${location.lineNumber}:${location.columnNumber}`
+            })
+        })
     }
 
     /**
@@ -103,6 +135,7 @@ export class ProjectPage {
      */
     async open(){
         await gotoMap(`/index.php/view/map?repository=${this.repository}&project=${this.project}`, this.page);
+        expect(this.logs).toHaveLength(0)
     }
 
     /**
