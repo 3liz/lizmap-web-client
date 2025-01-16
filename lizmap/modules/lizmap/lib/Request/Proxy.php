@@ -14,7 +14,9 @@ namespace Lizmap\Request;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
 use Lizmap\App;
+use Psr\Http\Message\ResponseInterface;
 
 class Proxy
 {
@@ -320,202 +322,6 @@ class Proxy
     }
 
     /**
-     * @param string $url
-     * @param array  $options
-     *
-     * @return array{0: string, 1: string, 2: int, 3: array} Array containing data (0: string), mime type (1: string), HTTP code (2: int) and headers
-     */
-    protected static function curlProxy($url, $options)
-    {
-        $services = self::getServices();
-        $http_code = null;
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_HEADER, 1);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-
-        // For POST, remove parameters from the URL
-        // and add them to the body of the request
-        // Also change the content type
-        if ($options['method'] === 'post') {
-            if (empty($options['body'])) {
-                $explode_url = explode('?', $url);
-                if (count($explode_url) == 2) {
-                    // Override previous url by removing the parameters after ?
-                    $url = $explode_url[0];
-
-                    // Set the body to use POST instead of GET
-                    $options['body'] = $explode_url[1];
-                    $options['headers']['Content-type'] = 'application/x-www-form-urlencoded';
-                }
-            }
-        }
-        curl_setopt($ch, CURLOPT_HTTPHEADER, self::encodeHttpHeaders($options['headers']));
-        curl_setopt($ch, CURLOPT_URL, $url);
-
-        if ($services->requestProxyEnabled && $services->requestProxyHost != '') {
-            $proxy = $services->requestProxyHost;
-            if ($services->requestProxyPort) {
-                $proxy .= ':'.$services->requestProxyPort;
-            }
-            curl_setopt($ch, CURLOPT_PROXY, $proxy);
-            if ($services->requestProxyType) {
-                curl_setopt($ch, CURLOPT_PROXYTYPE, $services->requestProxyType);
-            }
-            if ($services->requestProxyNotForDomain) {
-                curl_setopt($ch, CURLOPT_NOPROXY, $services->requestProxyNotForDomain);
-            }
-            if ($services->requestProxyUser) {
-                curl_setopt($ch, CURLOPT_PROXYAUTH, CURLAUTH_BASIC);
-                curl_setopt($ch, CURLOPT_PROXYUSERPWD, $services->requestProxyUser.':'.$services->requestProxyPassword);
-            }
-        }
-
-        if ($options['referer']) {
-            curl_setopt($ch, CURLOPT_REFERER, $options['referer']);
-        }
-        if ($options['method'] === 'post') {
-            curl_setopt($ch, CURLOPT_POST, 1);
-            if (!empty($options['body'])) {
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $options['body']);
-            }
-        }
-
-        $data = curl_exec($ch);
-        if (!$data) {
-            $data = '';
-        }
-        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        $headers_str = substr($data, 0, $header_size);
-        $data = substr($data, $header_size);
-
-        $headers_arr = array_filter(explode("\r\n", $headers_str));
-        $status_message = array_shift($headers_arr);
-        $headers = array();
-        foreach ($headers_arr as $value) {
-            if (false !== ($matches = explode(':', $value, 2))) {
-                $key = str_replace(
-                    ' ',
-                    '-',
-                    ucwords(strtolower(str_replace('-', ' ', $matches[0])))
-                );
-                $headers["{$key}"] = trim($matches[1]);
-            }
-        }
-
-        $info = curl_getinfo($ch);
-        $mime = $info['content_type'];
-        $http_code = (int) $info['http_code'];
-        // Optionnal debug
-        if ($options['debug'] and curl_errno($ch)) {
-            \jLog::log('--> CURL: '.json_encode($info));
-        }
-
-        curl_close($ch);
-
-        return array($data, $mime, $http_code, $headers);
-    }
-
-    /**
-     * @param string $url
-     * @param array  $options
-     *
-     * @return array{0: string, 1: string, 2: int, 3: array} Array containing data (0: string), mime type (1: string), HTTP code (2: int) and headers
-     */
-    protected static function fileProxy($url, $options)
-    {
-        $services = self::getServices();
-        $http_code = null;
-
-        $urlInfo = parse_url($url);
-        $scheme = isset($urlInfo['scheme']) ? $urlInfo['scheme'] : 'http';
-
-        $opts = array(
-            'protocol_version' => '1.1',
-            'method' => strtoupper($options['method']),
-        );
-
-        if ($services->requestProxyEnabled && $services->requestProxyHost != '') {
-            $okproxy = true;
-            if ($services->requestProxyNotForDomain) {
-                $noProxy = preg_split('/\s*,\s*/', $services->requestProxyNotForDomain);
-                $host = isset($urlInfo['host']) ? $urlInfo['host'] : 'localhost';
-                if (in_array($host, $noProxy)) {
-                    $okproxy = false;
-                }
-            }
-            if ($okproxy) {
-                $proxy = 'tcp://'.$services->requestProxyHost;
-                if ($services->requestProxyPort) {
-                    $proxy .= ':'.$services->requestProxyPort;
-                }
-                $opts['proxy'] = $proxy;
-                $opts['request_fulluri'] = true;
-
-                if ($services->requestProxyUser) {
-                    $options['headers']['Proxy-Authorization'] =
-                        'Basic '.base64_encode($services->requestProxyUser.':'.$services->requestProxyPassword);
-                }
-            }
-        }
-        if ($options['referer']) {
-            $options['headers']['Referer'] = $options['referer'];
-        }
-        if ($options['method'] != 'get' && $options['body'] != '') {
-            $opts['content'] = $options['body'];
-        } else {
-            unset($options['headers']['Connection']);
-        }
-        $opts['header'] = self::encodeHttpHeaders($options['headers']);
-
-        $context = stream_context_create(array($scheme => $opts));
-        // for debug, uncomment it and uncomment  the lizmap_stream_notification_callback function below
-        // use stream_context_set_params($context, array("notification" => "lizmap_stream_notification_callback"));
-
-        $data = file_get_contents($url, false, $context);
-        if (!$data) {
-            $data = '';
-        }
-        $mime = 'image/png';
-        $http_code = 0;
-        $headers = array();
-        // $http_response_header is created by file_get_contents
-        foreach ($http_response_header as $header) {
-            if (substr($header, 0, 5) === 'HTTP/') {
-                list($version, $code, $phrase) = explode(' ', $header, 3) + array('', false, '');
-                $http_code = (int) $code;
-
-                continue;
-            }
-            if (false !== ($matches = explode(':', $header, 2))) {
-                $key = str_replace(
-                    ' ',
-                    '-',
-                    ucwords(strtolower(str_replace('-', ' ', $matches[0])))
-                );
-                $headers["{$key}"] = trim($matches[1]);
-                if ($key === 'Content-Type'
-                    && preg_match('#^Content-Type:\s+([\w/\.+]+)(;\s+charset=(\S+))?#i', $header, $matches)) {
-                    $mime = $matches[1];
-                    if (count($matches) > 3) {
-                        $mime .= '; charset='.$matches[3];
-                    }
-                }
-            }
-        }
-        // optional debug
-        if ($options['debug'] && ($http_code >= 400)) {
-            \jLog::log('getRemoteData, bad response for '.$url, 'error');
-            \jLog::dump($opts, 'getRemoteData, bad response, options', 'error');
-            \jLog::dump($http_response_header, 'getRemoteData, bad response, response headers', 'error');
-        }
-
-        return array($data, $mime, $http_code, $headers);
-    }
-
-    /**
      * Log if the HTTP code is a 4XX or 5XX error code.
      *
      * @param int                   $httpCode The HTTP code of the request
@@ -545,89 +351,30 @@ class Proxy
     }
 
     /**
-     * Get remote data from URL, with curl or internal php functions.
-     *
-     * @param string            $url     url of the remote data to fetch
-     * @param null|array|string $options list of options for the http request.
-     *                                   Option items can be: "method", "referer", "proxyHttpBackend",
-     *                                   "headers" (array of headers strings), "body", "debug".
-     *                                   If $options is a string, this should be the proxy method
-     *                                   for compatibility to old calls.
-     *                                   $proxyHttpBackend: method for the proxy : 'php' or 'curl', or ''.
-     *                                   by default, it is the proxy method indicated into lizmapService
-     * @param null|int          $debug   deprecated. 0 or 1 to get debug log.
-     *                                   if null, it uses the method indicated into lizmapService.
-     *                                   it is ignored if $options is an array.
-     * @param string|string[]   $method  deprecated. the http method.
-     *                                   it is ignored if $options is an array.
-     *
-     * @return array{0: string, 1: string, 2: int, 3: array} Array containing data (0: string), mime type (1: string), HTTP code (2: int) and headers
-     */
-    public static function getRemoteData($url, $options = null, $debug = null, $method = 'get')
-    {
-        $options = self::buildOptions($options, $method, $debug);
-        list($url, $options) = self::buildHeaders($url, $options);
-
-        // check is the env variable is set
-        if (getenv('ECHO_OGC_ORIGINAL_REQUEST')) {
-            // did the request has to be echoed ?
-            if (self::hasEchoInBody($options['body'])) {
-                $content = self::getEchoFromRequest($url, $options['body']);
-
-                // We do not perform the request, but return the content previously logged
-                return array(
-                    $content,
-                    'text/json',
-                    200,
-                    array(),
-                );
-            }
-            // All requests are logged
-            self::logRequestToEcho($url, $options['body']);
-        }
-
-        // Proxy http backend : use curl or file_get_contents
-        if (extension_loaded('curl') && $options['proxyHttpBackend'] != 'php') {
-            // With curl
-            $curlRequest = self::curlProxy($url, $options);
-            self::logRequestIfError($curlRequest[2], $url, $curlRequest[3]);
-
-            return $curlRequest;
-        }
-        // With file_get_contents
-        $request = self::fileProxy($url, $options);
-        self::logRequestIfError($request[2], $url, $request[3]);
-
-        return $request;
-    }
-
-    /**
-     * Sends a request, and return the body response as a stream.
+     * Sends a request with Guzzle.
      *
      * @param string     $url     url of the remote data to fetch
      * @param null|array $options list of options for the http request.
      *                            Option items can be: "method", "referer", "proxyHttpBackend",
-     *                            "headers" (array of headers strings), "body", "debug".
+     *                            "headers" (array of headers strings), "body", "debug", stream.
      *
-     * @return ProxyResponse
+     * @return ResponseInterface
      */
-    public static function getRemoteDataAsStream($url, $options = null)
+    protected static function sendRequest($url, $options)
     {
-        $options = self::buildOptions($options, 'get', null);
         list($url, $options) = self::buildHeaders($url, $options);
+
         // check is the env variable is set
         if (getenv('ECHO_OGC_ORIGINAL_REQUEST')) {
             // did the request has to be echoed ?
             if (self::hasEchoInBody($options['body'])) {
                 $content = self::getEchoFromRequest($url, $options['body']);
-                // We do not perform the request, but return the content previously logged
-                $stream = \GuzzleHttp\Psr7\Utils::streamFor($content);
 
-                return new ProxyResponse(
+                // We do not perform the request, but return the content previously logged
+                return new Response(
                     200,
-                    'text/json',
                     array('Content-Type' => 'text/json'),
-                    $stream
+                    $content,
                 );
             }
             // All requests are logged
@@ -638,11 +385,13 @@ class Proxy
             $options['headers']['Referer'] = $options['referer'];
         }
 
+        // Create Client
         $client = new Client(array(
             // You can set any number of default request options.
             'timeout' => max(10.0, floatval(ini_get('max_execution_time')) - 5.0),
         ));
 
+        // Create request
         $request = new Request(
             $options['method'],
             $url,
@@ -650,10 +399,18 @@ class Proxy
             $options['body'],
         );
 
-        $reqOptions = array(
-            'stream' => true,
+        // Define request options
+        $requestOptions = array(
             'http_errors' => false,
         );
+
+        // Set stream request option
+        $requestOptions['stream'] = false;
+        if (array_key_exists('stream', $options) && $options['stream'] === true) {
+            $requestOptions['stream'] = true;
+        }
+
+        // Set proxy request options
         $services = self::getServices();
         if ($services->requestProxyEnabled && $services->requestProxyHost != '') {
             if ($services->requestProxyType == 'socks5') {
@@ -673,21 +430,70 @@ class Proxy
 
             $noProxy = preg_split('/\s*,\s*/', $services->requestProxyNotForDomain);
 
-            $reqOptions['proxy'] = array(
+            $requestOptions['proxy'] = array(
                 'http' => $proxy, // Use this proxy with "http"
                 'https' => $proxy, // Use this proxy with "https",
                 'no' => $noProxy,    // Don't use a proxy with these
             );
         }
 
-        $response = $client->send($request, $reqOptions);
-        $headers = $response->getHeaders();
-        self::logRequestIfError($response->getStatusCode(), $url, $headers);
+        // Send request
+        $response = $client->send($request, $requestOptions);
+
+        // Log if error
+        self::logRequestIfError($response->getStatusCode(), $url, $response->getHeaders());
+
+        return $response;
+    }
+
+    /**
+     * Sends a request, and return the body response as string.
+     *
+     * @param string          $url     url of the remote data to fetch
+     * @param null|array      $options list of options for the http request.
+     *                                 Option items can be: "method", "referer", "proxyHttpBackend",
+     *                                 "headers" (array of headers strings), "body", "debug".
+     * @param null|int        $debug   deprecated. 0 or 1 to get debug log.
+     *                                 it is ignored if $options is an array.
+     * @param string|string[] $method  deprecated. the http method.
+     *                                 it is ignored if $options is an array.
+     *
+     * @return array{0: string, 1: string, 2: int, 3: array} Array containing data (0: string), mime type (1: string), HTTP code (2: int) and headers
+     */
+    public static function getRemoteData($url, $options = null, $debug = null, $method = 'get')
+    {
+        $options = self::buildOptions($options, $method, $debug);
+        $response = self::sendRequest($url, $options);
+
+        return array(
+            (string) $response->getBody(),
+            $response->getHeader('Content-Type')[0],
+            $response->getStatusCode(),
+            $response->getHeaders(),
+        );
+    }
+
+    /**
+     * Sends a request, and return the body response as a stream.
+     *
+     * @param string     $url     url of the remote data to fetch
+     * @param null|array $options list of options for the http request.
+     *                            Option items can be: "method", "referer", "proxyHttpBackend",
+     *                            "headers" (array of headers strings), "body", "debug".
+     *
+     * @return ProxyResponse
+     */
+    public static function getRemoteDataAsStream($url, $options = null)
+    {
+        $options = self::buildOptions($options, 'get', null);
+        $options['stream'] = true;
+
+        $response = self::sendRequest($url, $options);
 
         return new ProxyResponse(
             $response->getStatusCode(),
             $response->getHeader('Content-Type')[0],
-            $headers,
+            $response->getHeaders(),
             $response->getBody()
         );
     }
