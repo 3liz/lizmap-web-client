@@ -27,6 +27,11 @@ class ProxyResponse
     protected $mime;
 
     /**
+     * @var array<string, string> the headers of the response
+     */
+    protected $headers;
+
+    /**
      * @var StreamInterface the response body as a stream
      */
     protected $body;
@@ -34,14 +39,16 @@ class ProxyResponse
     /**
      * constructor.
      *
-     * @param int             $code the HTTP status code of the response
-     * @param string          $mime the MIME type of the response
-     * @param StreamInterface $body the response body as a string
+     * @param int                   $code    the HTTP status code of the response
+     * @param string                $mime    the MIME type of the response
+     * @param array<string, string> $headers the headers of the response
+     * @param StreamInterface       $body    the response body as a string
      */
-    public function __construct($code, $mime, $body)
+    public function __construct($code, $mime, $headers, $body)
     {
         $this->code = $code;
         $this->mime = $mime;
+        $this->headers = $headers;
         $this->body = $body;
     }
 
@@ -63,6 +70,16 @@ class ProxyResponse
     public function getMime()
     {
         return $this->mime;
+    }
+
+    /**
+     * Get the headers of the response.
+     *
+     * @return array<string, string>
+     */
+    public function getHeaders()
+    {
+        return $this->headers;
     }
 
     /**

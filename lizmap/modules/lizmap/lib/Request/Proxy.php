@@ -307,6 +307,7 @@ class Proxy
             $options['headers'] = array_merge(
                 self::userHttpHeader(),
                 self::$services->wmsServerHeaders,
+                array('X-Request-Id' => uniqid().'-'.bin2hex(random_bytes(10))),
                 $options['headers']
             );
         }
@@ -322,7 +323,7 @@ class Proxy
      * @param string $url
      * @param array  $options
      *
-     * @return array{0: string, 1: string, 2: int} Array containing data (0: string), mime type (1: string) and HTTP code (2: int)
+     * @return array{0: string, 1: string, 2: int, 3: array} Array containing data (0: string), mime type (1: string), HTTP code (2: int) and headers
      */
     protected static function curlProxy($url, $options)
     {
@@ -330,7 +331,7 @@ class Proxy
         $http_code = null;
 
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_HEADER, 1);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
@@ -381,10 +382,29 @@ class Proxy
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $options['body']);
             }
         }
+
         $data = curl_exec($ch);
         if (!$data) {
             $data = '';
         }
+        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $headers_str = substr($data, 0, $header_size);
+        $data = substr($data, $header_size);
+
+        $headers_arr = array_filter(explode("\r\n", $headers_str));
+        $status_message = array_shift($headers_arr);
+        $headers = array();
+        foreach ($headers_arr as $value) {
+            if (false !== ($matches = explode(':', $value, 2))) {
+                $key = str_replace(
+                    ' ',
+                    '-',
+                    ucwords(strtolower(str_replace('-', ' ', $matches[0])))
+                );
+                $headers["{$key}"] = trim($matches[1]);
+            }
+        }
+
         $info = curl_getinfo($ch);
         $mime = $info['content_type'];
         $http_code = (int) $info['http_code'];
@@ -395,14 +415,14 @@ class Proxy
 
         curl_close($ch);
 
-        return array($data, $mime, $http_code);
+        return array($data, $mime, $http_code, $headers);
     }
 
     /**
      * @param string $url
      * @param array  $options
      *
-     * @return array{0: string, 1: string, 2: int} Array containing data (0: string), mime type (1: string) and HTTP code (2: int)
+     * @return array{0: string, 1: string, 2: int, 3: array} Array containing data (0: string), mime type (1: string), HTTP code (2: int) and headers
      */
     protected static function fileProxy($url, $options)
     {
@@ -459,18 +479,30 @@ class Proxy
             $data = '';
         }
         $mime = 'image/png';
-        $matches = array();
         $http_code = 0;
+        $headers = array();
         // $http_response_header is created by file_get_contents
         foreach ($http_response_header as $header) {
-            if (preg_match('#^Content-Type:\s+([\w/\.+]+)(;\s+charset=(\S+))?#i', $header, $matches)) {
-                $mime = $matches[1];
-                if (count($matches) > 3) {
-                    $mime .= '; charset='.$matches[3];
-                }
-            } elseif (substr($header, 0, 5) === 'HTTP/') {
+            if (substr($header, 0, 5) === 'HTTP/') {
                 list($version, $code, $phrase) = explode(' ', $header, 3) + array('', false, '');
                 $http_code = (int) $code;
+
+                continue;
+            }
+            if (false !== ($matches = explode(':', $header, 2))) {
+                $key = str_replace(
+                    ' ',
+                    '-',
+                    ucwords(strtolower(str_replace('-', ' ', $matches[0])))
+                );
+                $headers["{$key}"] = trim($matches[1]);
+                if ($key === 'Content-Type'
+                    && preg_match('#^Content-Type:\s+([\w/\.+]+)(;\s+charset=(\S+))?#i', $header, $matches)) {
+                    $mime = $matches[1];
+                    if (count($matches) > 3) {
+                        $mime .= '; charset='.$matches[3];
+                    }
+                }
             }
         }
         // optional debug
@@ -480,23 +512,36 @@ class Proxy
             \jLog::dump($http_response_header, 'getRemoteData, bad response, response headers', 'error');
         }
 
-        return array($data, $mime, $http_code);
+        return array($data, $mime, $http_code, $headers);
     }
 
     /**
      * Log if the HTTP code is a 4XX or 5XX error code.
      *
-     * @param int    $httpCode The HTTP code of the request
-     * @param string $url      The URL of the request, for logging
+     * @param int                   $httpCode The HTTP code of the request
+     * @param string                $url      The URL of the request, for logging
+     * @param array<string, string> $headers  The headers of the response
      */
-    protected static function logRequestIfError($httpCode, $url)
+    protected static function logRequestIfError($httpCode, $url, $headers = array())
     {
         if ($httpCode < 400) {
             return;
         }
 
-        \jLog::log('An HTTP request ended with an error, please check the main error log. HTTP code '.$httpCode, 'lizmapadmin');
-        \jLog::log('The HTTP request ended with an error. HTTP code '.$httpCode.' → '.$url, 'error');
+        $xRequestId = $headers['X-Request-Id'] ?? '';
+
+        $lizmapAdmin = 'An HTTP request ended with an error, please check the main error log.';
+        $lizmapAdmin .= ' HTTP code '.$httpCode.'.';
+        $error = 'The HTTP request ended with an error.';
+        $error .= ' HTTP code '.$httpCode.'.';
+        if ($xRequestId !== '') {
+            $lizmapAdmin .= ' The X-Request-Id `'.$xRequestId.'`.';
+            $error .= ' X-Request-Id `'.$xRequestId.'` → '.$url;
+        } else {
+            $error .= ' → '.$url;
+        }
+        \jLog::log($lizmapAdmin, 'lizmapadmin');
+        \jLog::log($error, 'error');
     }
 
     /**
@@ -516,7 +561,7 @@ class Proxy
      * @param string|string[]   $method  deprecated. the http method.
      *                                   it is ignored if $options is an array.
      *
-     * @return array{0: string, 1: string, 2: int} Array containing data (0: string), mime type (1: string) and HTTP code (2: int)
+     * @return array{0: string, 1: string, 2: int, 3: array} Array containing data (0: string), mime type (1: string), HTTP code (2: int) and headers
      */
     public static function getRemoteData($url, $options = null, $debug = null, $method = 'get')
     {
@@ -534,6 +579,7 @@ class Proxy
                     $content,
                     'text/json',
                     200,
+                    array(),
                 );
             }
             // All requests are logged
@@ -544,13 +590,13 @@ class Proxy
         if (extension_loaded('curl') && $options['proxyHttpBackend'] != 'php') {
             // With curl
             $curlRequest = self::curlProxy($url, $options);
-            self::logRequestIfError($curlRequest[2], $url);
+            self::logRequestIfError($curlRequest[2], $url, $curlRequest[3]);
 
             return $curlRequest;
         }
         // With file_get_contents
         $request = self::fileProxy($url, $options);
-        self::logRequestIfError($request[2], $url);
+        self::logRequestIfError($request[2], $url, $request[3]);
 
         return $request;
     }
@@ -580,6 +626,7 @@ class Proxy
                 return new ProxyResponse(
                     200,
                     'text/json',
+                    array('Content-Type' => 'text/json'),
                     $stream
                 );
             }
@@ -634,11 +681,13 @@ class Proxy
         }
 
         $response = $client->send($request, $reqOptions);
-        self::logRequestIfError($response->getStatusCode(), $url);
+        $headers = $response->getHeaders();
+        self::logRequestIfError($response->getStatusCode(), $url, $headers);
 
         return new ProxyResponse(
             $response->getStatusCode(),
             $response->getHeader('Content-Type')[0],
+            $headers,
             $response->getBody()
         );
     }
