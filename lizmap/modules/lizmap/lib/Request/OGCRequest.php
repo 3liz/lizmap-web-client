@@ -233,15 +233,21 @@ abstract class OGCRequest
     /**
      * Log if the HTTP code is a 4XX or 5XX error code.
      *
-     * @param int $code The HTTP code of the request
+     * @param int                   $code    The HTTP code of the request
+     * @param array<string, string> $headers The headers of the response
      */
-    protected function logRequestIfError($code)
+    protected function logRequestIfError($code, $headers)
     {
         if ($code < 400) {
             return;
         }
 
         $message = 'The HTTP OGC request to QGIS Server ended with an error.';
+
+        $xRequestId = $headers['X-Request-Id'] ?? '';
+        if ($xRequestId !== '') {
+            $message .= ' The X-Request-Id `'.$xRequestId.'`.';
+        }
 
         // The master error with MAP parameter
         // This user must have an access to QGIS Server logs
@@ -308,14 +314,14 @@ abstract class OGCRequest
         if ($stream) {
             $response = \Lizmap\Request\Proxy::getRemoteDataAsStream($querystring, $options);
 
-            $this->logRequestIfError($response->getCode());
+            $this->logRequestIfError($response->getCode(), $response->getHeaders());
 
             return new OGCResponse($response->getCode(), $response->getMime(), $response->getBodyAsStream());
         }
 
-        list($data, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($querystring, $options);
+        list($data, $mime, $code, $headers) = \Lizmap\Request\Proxy::getRemoteData($querystring, $options);
 
-        $this->logRequestIfError($code);
+        $this->logRequestIfError($code, $headers);
 
         return new OGCResponse($code, $mime, $data);
     }
