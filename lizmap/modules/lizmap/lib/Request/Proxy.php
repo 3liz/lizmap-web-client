@@ -626,6 +626,7 @@ class Proxy
                 return new ProxyResponse(
                     200,
                     'text/json',
+                    array('Content-Type' => 'text/json'),
                     $stream
                 );
             }
@@ -680,11 +681,13 @@ class Proxy
         }
 
         $response = $client->send($request, $reqOptions);
-        self::logRequestIfError($response->getStatusCode(), $url, $response->getHeaders());
+        $headers = $response->getHeaders();
+        self::logRequestIfError($response->getStatusCode(), $url, $headers);
 
         return new ProxyResponse(
             $response->getStatusCode(),
             $response->getHeader('Content-Type')[0],
+            $headers,
             $response->getBody()
         );
     }
