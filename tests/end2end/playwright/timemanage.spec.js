@@ -1,6 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { gotoMap } from './globals';
+import { gotoMap, getEchoRequestParams } from './globals';
 
 test.describe('Time Manager', () => {
 
@@ -49,12 +49,8 @@ test.describe('Time Manager', () => {
             await expect(urlMapRequest).toMatch(/FILTERTOKEN/);
             await expect(urlMapRequest).toContain('FILTERTOKEN='+jsonFiltertokenResponse.token);
 
-            // Re-send the request with additionnal echo param to retrieve the WMS Request
-            let echoGetMap = await page.request.get(urlMapRequest + '&__echo__');
-            const originalUrl = decodeURIComponent(await echoGetMap.text());
-            // When the request has not been logged by echo proxy
-            await expect(URL.canParse(originalUrl), originalUrl+' is not an URL!').toBeTruthy();
-            await expect(originalUrl).not.toContain('unfound')
+            // Re-send the request with additional echo param to retrieve the WMS Request search params
+            const urlObj = await getEchoRequestParams(page, urlMapRequest)
 
             // expected request params
             const expectedParamValue = [
@@ -65,7 +61,6 @@ test.describe('Time Manager', () => {
                 { 'param': 'filter', 'expectedvalue': 'time_manager_layer: ( ( "test_date" >= \'' + timeObj.start + '\' ) AND ( "test_date" <= \'' + timeObj.end + '\' ) ) ' },
             ];
             // Check if WMS Request params are as expected
-            const urlObj = new URLSearchParams((new URL(originalUrl).search));
             for (let obj of expectedParamValue) {
                 await expect(urlObj.has(obj.param), obj.param+' not in ['+Array.from(urlObj.keys()).join(', ')+']').toBeTruthy();
                 await expect(urlObj.get(obj.param), obj.param+'='+obj.expectedvalue+' not in ['+urlObj.toString().split('&').join(', ')+']').toBe(obj.expectedvalue);
