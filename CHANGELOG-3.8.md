@@ -8,6 +8,26 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Added
+
+* Preparing QJazz
+
+### Fixed
+
+* Administrator logs :
+  * Add new panel about `errors`
+* Tooltip
+  * Remove CSS `text-align:center`
+  * Use `addToolLayer` instead of `addLayer`
+* Performance issue about opacity and embedded layers
+* `lizmap-features-table` - Improve the logic of the feature detail opening
+* Preparing QJazz :
+  * Add `X-Request-Id` in request to QGIS Server headers
+
+### Tests
+
+* Improve workflow about PHP and End2End tests
+
 ## 3.8.4 - 2025-01-07
 
 ### Funders
