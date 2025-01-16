@@ -1247,7 +1247,11 @@ describe('Request service', function () {
                 .then((result) => {
                     expect(result.code).to.eq(0)
                     expect(result.stdout).to.contain('An HTTP request ended with an error, please check the main error log.')
-                    expect(result.stdout).to.contain('HTTP code 400')
+                    expect(result.stdout).to.contain('HTTP code 400.')
+                    expect(result.stdout).to.contain('The HTTP OGC request to QGIS Server ended with an error.')
+                    expect(result.stdout).to.contain(
+                        'HTTP code 400 on "REPOSITORY" = \'testsrepository\' & "PROJECT" = \'selection\' & "SERVICE" = \'WFS\' & "REQUEST" = \'getfeature\''
+                    )
                     clearLizmapAdminLog()
                 })
             clearErrorsLog()
