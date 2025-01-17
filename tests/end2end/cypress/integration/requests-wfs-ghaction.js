@@ -1,3 +1,4 @@
+import { clearErrorsLog, clearLizmapAdminLog } from './../support/function.js'
 describe('Request service', function () {
     it('WFS GetCapabilities', function () {
         cy.request('/index.php/lizmap/service/?repository=testsrepository&project=selection&SERVICE=WFS&VERSION=1.0.0&REQUEST=GetCapabilities')
@@ -1017,6 +1018,7 @@ describe('Request service', function () {
                 'FEATUREID': 'selection_polygon.1',
                 'BBOX': '160786,900949,186133,925344',
                 'OUTPUTFORMAT': 'GeoJSON',
+                'FORCE_QGIS': '1',
             },
         }).then((resp) => {
             expect(resp.status).to.eq(200)
@@ -1217,6 +1219,42 @@ describe('Request service', function () {
             expect(resp.body).to.contain('Placemark')
             expect(resp.body).to.contain('<SimpleData name="gml_id">selection_polygon.1</SimpleData>')
             expect(resp.body).to.contain('<SimpleData name="gml_id">selection_polygon.2</SimpleData>')
+        })
+    })
+
+    it('WFS GetFeature FAILED && FORCE_QGIS', function () {
+        clearLizmapAdminLog()
+        cy.request({
+            method: 'POST',
+            url: '/index.php/lizmap/service/?repository=testsrepository&project=selection',
+            qs: {
+                'SERVICE': 'WFS',
+                'VERSION': '1.0.0',
+                'REQUEST': 'GetFeature',
+                'TYPENAME': 'selection_polygon',
+                'EXP_FILTER': '\'tref\'+pipe(2)',
+                'FORCE_QGIS': '1'
+            },
+            failOnStatusCode: false,
+        }).then((resp) => {
+            expect(resp.status).to.eq(400)
+            expect(resp.headers['content-type']).to.contain('text/xml')
+            expect(resp.body).to.contain('ServiceException')
+            expect(resp.body).to.contain('code="RequestNotWellFormed"')
+
+            // Check errors
+            cy.exec('./../lizmap-ctl docker-exec cat /srv/lzm/lizmap/var/log/lizmap-admin.log', {failOnNonZeroExit: false})
+                .then((result) => {
+                    expect(result.code).to.eq(0)
+                    expect(result.stdout).to.contain('An HTTP request ended with an error, please check the main error log.')
+                    expect(result.stdout).to.contain('HTTP code 400.')
+                    expect(result.stdout).to.contain('The HTTP OGC request to QGIS Server ended with an error.')
+                    expect(result.stdout).to.contain(
+                        'HTTP code 400 on "REPOSITORY" = \'testsrepository\' & "PROJECT" = \'selection\' & "SERVICE" = \'WFS\' & "REQUEST" = \'getfeature\''
+                    )
+                    clearLizmapAdminLog()
+                })
+            clearErrorsLog()
         })
     })
 
