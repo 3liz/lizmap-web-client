@@ -96,7 +96,7 @@ test.describe('Maps management', () => {
         // Check URL
         await expect(page).toHaveURL(/.*admin.php\/admin\/maps/);
         // Check message
-        await adminPage.checkAlert('alert-info', 'The repository data has been saved.');
+        await adminPage.checkAlert('alert-info', '×The repository data has been saved.');
 
         // Check selected admin menu item
         await adminPage.checkPage('Maps management');
@@ -108,7 +108,7 @@ test.describe('Maps management', () => {
         });
         await page.locator('[href="/admin.php/admin/maps/removeSection?repository=projets1982"]').click();
         // Check message
-        await adminPage.checkAlert('alert-info', 'The repository has been removed (8 group(s) concerned)');
+        await adminPage.checkAlert('alert-info', '×The repository has been removed (8 group(s) concerned)');
         // Check URL
         await expect(page).toHaveURL(/.*admin.php\/admin\/maps/);
 
