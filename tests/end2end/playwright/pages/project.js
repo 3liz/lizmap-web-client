@@ -1,11 +1,9 @@
 // @ts-check
 import {expect, Locator, Page} from '@playwright/test';
 import { gotoMap } from '../globals';
+import { BasePage } from './base';
 
-export class ProjectPage {
-    /** @type {Page} */
-    page;
-
+export class ProjectPage extends BasePage {
     // Metadata
     /**
      * Project name metadata
@@ -78,13 +76,13 @@ export class ProjectPage {
         this.page.locator(`#attribute-layer-table-${name}`);
 
     /**
-     * Constructor
+     * Constructor for a QGIS project page
      * @param {Page} page The playwright page
      * @param {string} project The project name
      * @param {string} repository The repository name, default to testsrepository
      */
     constructor(page, project, repository = 'testsrepository') {
-        this.page = page;
+        super(page);
         this.project = project;
         this.repository = repository;
         this.dock = page.locator('#dock');
