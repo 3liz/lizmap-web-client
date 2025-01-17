@@ -59,6 +59,11 @@ path="/srv/lzm/tests/qgis-projects/tests/"
 allowUserDefinedThemes=0
 accessControlAllowOrigin="http://othersite.local:8130"
 
+[repository:private]
+label="Private repository"
+path="/srv/lzm/tests/qgis-projects/CONFIDENTIAL/"
+allowUserDefinedThemes=1
+
 [repository:badrepository]
 label="Repository with bad path"
 path="/srv/lzm/tests/qgis-projects/bad/"
