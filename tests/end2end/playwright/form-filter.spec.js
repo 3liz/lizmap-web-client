@@ -1,6 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { gotoMap } from './globals';
+import { gotoMap, getEchoRequestParams } from './globals';
 
 test.describe('Form filter', () => {
     test.beforeEach(async ({ page }) => {
@@ -30,10 +30,8 @@ test.describe('Form filter', () => {
         await expect(page.locator(countFeature)).toHaveText('1');
 
         let getMapRequest = await getMapPromise;
-        // Re-send the request with additionnal echo param to retrieve the WMS Request
-        let echoGetMap = await page.request.get(getMapRequest.url() + '&__echo__');
-        let originalUrl = decodeURIComponent(await echoGetMap.text());
-        let urlObj = new URLSearchParams((new URL(originalUrl).search));
+        // Re-send the request with additional echo param to retrieve the WMS Request search params
+        let urlObj = await getEchoRequestParams(page, getMapRequest.url())
 
         expect(urlObj.get('filter')).toBe('form_filter_layer:"id" IN ( 2 ) ');
 
@@ -52,10 +50,8 @@ test.describe('Form filter', () => {
 
         getMapRequest = await getMapPromise;
 
-        // Re-send the request with additionnal echo param to retrieve the WMS Request
-        echoGetMap = await page.request.get(getMapRequest.url() + '&__echo__');
-        originalUrl = decodeURIComponent(await echoGetMap.text());
-        urlObj = new URLSearchParams((new URL(originalUrl).search));
+        // Re-send the request with additional echo param to retrieve the WMS Request search params
+        urlObj = await getEchoRequestParams(page, getMapRequest.url())
 
         expect(urlObj.get('filter')).toBeNull();
 
@@ -101,6 +97,5 @@ test.describe('Form filter', () => {
         await page.locator('#liz-filter-field-textautocomplete').fill('mon');
         await expect(page.locator('#ui-id-2 .ui-menu-item')).toHaveCount(1);
         await expect(page.locator('#ui-id-2 .ui-menu-item div')).toHaveText('monuments');
-    }); 
+    });
 });
-
