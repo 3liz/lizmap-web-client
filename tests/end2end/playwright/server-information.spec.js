@@ -1,5 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+import {AdminPage} from "./pages/admin";
 
 test.describe('Server information', () => {
 
@@ -11,10 +12,11 @@ test.describe('Server information', () => {
     });
 
     test('Check page', async ({ page }) => {
+        const adminPage = new AdminPage(page);
+
         // Go to server information
-        await page.getByRole('link', { name: 'Server information' }).click();
-        // Check selected admin menu item
-        await expect(page.locator('#menu li.active')).toHaveText('Server information');
+        await adminPage.openPage('Server information');
+
         // Check that Lizmap Web Client table contains 3 lines
         const lwcRows = page.locator('#lizmap_server_information table.table-lizmap-web-client tr')
         await expect(lwcRows).toHaveCount(3);
