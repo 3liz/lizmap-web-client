@@ -26,7 +26,17 @@ export class ProjectPage extends BasePage {
      * Editing menu
      * @type {Locator}
      */
-    buttonEditing;
+    buttonEditingPanel;
+    /**
+     * Dataviz button
+     * @type {Locator}
+     */
+    buttonDatavizPanel;
+    /**
+     * Print button
+     * @type {Locator}
+     */
+    buttonPrintPanel;
 
     // Docks
     /**
@@ -92,7 +102,10 @@ export class ProjectPage extends BasePage {
         this.warningMessage = page.locator('#lizmap-warning-message');
         this.search = page.locator('#search-query');
         this.switcher = page.locator('#button-switcher');
-        this.buttonEditing = page.locator('#button-edition');
+        this.buttonEditingPanel = page.locator('#button-edition');
+        this.buttonDatavizPanel = page.locator('#button-dataviz');
+        this.buttonPrintPanel = page.locator('#button-print');
+        this.buttonPrintLaunch = page.locator('#print-launch');
     }
 
     /**
@@ -139,7 +152,7 @@ export class ProjectPage extends BasePage {
      * @param {string} layer Name of the layer
      */
     async openEditingFormWithLayer(layer){
-        await this.buttonEditing.click();
+        await this.buttonEditingPanel.click();
         await this.page.locator('#edition-layer').selectOption({ label: layer });
         await this.page.locator('a#edition-draw').click();
     }

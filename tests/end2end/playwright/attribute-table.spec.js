@@ -3,7 +3,11 @@ import { test, expect } from '@playwright/test';
 import { ProjectPage } from './pages/project';
 import { gotoMap } from './globals';
 
-test.describe('Attribute table', () => {
+test.describe('Attribute table',
+    {
+        tag: ['@readonly'],
+    },
+    () => {
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=attribute_table';
         await gotoMap(url, page)
@@ -16,11 +20,15 @@ test.describe('Attribute table', () => {
         await project.openAttributeTable(layerName);
         await expect(project.attributeTableHtml(layerName).locator('tbody tr')).toHaveCount(7);
         // mediaFile as stored in data-src attributes
-        const mediaFile = await project.attributeTableHtml(layerName).locator('img.data-attr-thumbnail').first().getAttribute('data-src');
+        const locator = 'img.data-attr-thumbnail';
+        const mediaFile = await project.attributeTableHtml(layerName).locator(locator).first().getAttribute('data-src');
         // ensure src contain "dynamic" mediaFile
-        await expect(project.attributeTableHtml(layerName).locator('img.data-attr-thumbnail').first()).toHaveAttribute('src', new RegExp(mediaFile));
+        await expect(project.attributeTableHtml(layerName).locator(locator).first()).toHaveAttribute('src', new RegExp(mediaFile));
         // ensure src contain getMedia and projet URL
-        await expect(project.attributeTableHtml(layerName).locator('img.data-attr-thumbnail').first()).toHaveAttribute('src', /getMedia\?repository=testsrepository&project=attribute_table&/);
+        await expect(project.attributeTableHtml(layerName).locator(locator).first()).toHaveAttribute(
+            'src',
+            /getMedia\?repository=testsrepository&project=attribute_table&/
+        );
     });
 });
 

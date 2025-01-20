@@ -4,7 +4,11 @@ import { gotoMap } from './globals';
 import {ProjectPage} from "./pages/project";
 
 test.describe('Media', () => {
-    test('Tests media are deleted', async ({ page }) => {
+    test('Tests media are deleted',
+        {
+            tag: ['@not-readonly'],
+        },
+        async ({ page }) => {
 
         const baseUrl = 'index.php/view/media/getMedia?repository=testsrepository&project=form_edition_all_field_type&path=';
         // on the feature from the "form_edition_upload" layer

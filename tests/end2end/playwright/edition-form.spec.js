@@ -64,7 +64,7 @@ test.describe('Edition Form Validation', () => {
         });
 
         const project = new ProjectPage(page, 'form_edition_all_field_type');
-        await project.buttonEditing.click();
+        await project.buttonEditingPanel.click();
         await page.locator('a#edition-draw').click();
 
         // message
