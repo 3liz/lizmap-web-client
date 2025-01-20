@@ -173,7 +173,7 @@ jobs:
 
       - name: Run Playwright tests not tagged read-only
         id: test-playwright-not-read-only
-        if: success() || steps.test-playwright-not-read-only.conclusion == 'failure'
+        if: success() || steps.test-playwright-read-only.conclusion == 'failure'
         run: |
           cd end2end
           npx playwright test --workers 1 --grep-invert @readonly --project=end2end
@@ -190,6 +190,7 @@ jobs:
 #          git restore qgis-projects/tests/tests_dataset.sql
 
       - name: Notify in case of playwright failure, from mainstream branches only
+        # Check for new playwright tests with and without tags
         uses: peter-evans/commit-comment@v3
         if: github.repository == '3liz/lizmap-web-client' && failure() && steps.test-playwright.outcome != 'success' && github.event_name == 'repository_dispatch'
         with:
@@ -213,7 +214,7 @@ jobs:
       - name: Cypress run
         id: test-cypress
         # Always run, even if playwright has failed
-        if: success() || steps.test-playwright-not-read-only.conclusion == 'failure' || steps.test-playwright-not-read-only.conclusion == 'failure'
+        if: success() || steps.test-playwright-read-only.conclusion == 'failure' || steps.test-playwright-not-read-only.conclusion == 'failure'
         uses: cypress-io/github-action@v6.7.8
         with:
           browser: chrome
