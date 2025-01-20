@@ -251,12 +251,13 @@ Output colors can be kept with `--tty` parameter, but it won't work with `--grou
 
 You have to install the browsers with `npx playwright install` (only the first time or after an update)
 You can then :
-- execute `npx playwright test --ui --project=chromium` to open a UI as in Cypress which ease testing
-- execute `npx playwright test` to execute all tests with all browsers
-- execute `npx playwright test --project=chromium` to execute all tests with the Chromium browser
-- execute `npx playwright test --project=chromium --grep-invert "test_a|test_b"` to execute all tests but "test_a" and "test_b" with the Chromium browser
-- execute `npx playwright test mytest.spec.js --project=chromium` to execute one test with the Chromium browser
-- execute `npx playwright test mytest.spec.js --project=chromium --debug` to execute one test with the Chromium browser in debug mode
+- `npx playwright test --ui --project=chromium` to open a UI as in Cypress which ease testing
+- `npx playwright test` to execute all tests with all browsers
+- `npx playwright test --grep @readonly --workers 4` to run tests with 4 workers for tests which are read-only
+- `npx playwright test --project=chromium` to execute all tests with the Chromium browser
+- `npx playwright test --project=chromium --grep-invert "test_a|test_b"` to execute all tests but "test_a" and "test_b" with the Chromium browser
+- `npx playwright test mytest.spec.js --project=chromium` to execute one test with the Chromium browser
+- `npx playwright test mytest.spec.js --project=chromium --debug` to execute one test with the Chromium browser in debug mode
 - other command line : https://playwright.dev/docs/intro#command-line
 
 You can also install the handy [Playwright extension](https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright) on VSCode.
