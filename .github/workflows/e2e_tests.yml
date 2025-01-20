@@ -27,6 +27,9 @@ jobs:
         working-directory: tests
     env:
       CYPRESS_CI: TRUE
+      PLAYWRIGHT_FORCE_TTY: true
+      PLAYWRIGHT_LIST_PRINT_STEPS: true
+      FORCE_COLOR: true
       # For testing only
       # PHP_VERSION: 8.3
       # LZMPOSTGISVERSION: 16-3
@@ -160,11 +163,18 @@ jobs:
           cd end2end
           npx playwright install --with-deps chromium
 
-      - name: Run Playwright tests
-        id: test-playwright
+      - name: Run Playwright tests read-only
+        id: test-playwright-read-only
         run: |
           cd end2end
-          npx playwright test --project=end2end
+          npx playwright test --grep @readonly --project=end2end
+
+      - name: Run Playwright tests not tagged read-only
+        id: test-playwright-not-read-only
+        if: success() || steps.test-playwright-read-only.conclusion == 'failure'
+        run: |
+          cd end2end
+          npx playwright test --workers 1 --grep-invert @readonly --project=end2end
 
 #      - name: Generate PG dump from Playwright
 #        if: failure()
@@ -201,7 +211,7 @@ jobs:
       - name: Cypress run
         id: test-cypress
         # Always run, even if playwright has failed
-        if: always()
+        if: success() || steps.test-playwright-read-only.conclusion == 'failure' || steps.test-playwright-not-read-only.conclusion == 'failure'
         uses: cypress-io/github-action@v6.7.8
         with:
           browser: chrome

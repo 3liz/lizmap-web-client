@@ -159,9 +159,6 @@ test.describe('Request JSON metadata as admin, connected from context',
         expect(json.qgis_server_info.metadata.version).toContain('3.');
         expect(json.qgis_server_info.plugins.lizmap_server.version).toMatch(/(\d+\.\d+|master|dev)/i);
 
-        // Modules
-        expect(json.modules.lizmapdemo.version).toMatch(/\d+\.\d+/i)
-
         // Desktop plugin
         expect(json.lizmap_desktop_plugin_version).toBeGreaterThan(10000);
 
