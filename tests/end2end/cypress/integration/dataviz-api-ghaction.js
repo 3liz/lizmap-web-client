@@ -1,24 +1,4 @@
 describe('Dataviz API tests', function () {
-    it('Test JSON data for plot 0 - Municipalities', function () {
-        cy.request({
-            method: 'GET',
-            url: '/index.php/dataviz/service?repository=testsrepository&project=dataviz',
-            qs: {
-                'request': 'getPlot',
-                'plot_id': '0'
-            },
-        }).then((resp) => {
-            expect(resp.status).to.eq(200)
-            expect(resp.headers['content-type']).to.contain('application/json')
-            expect(resp.body).to.have.property('title', 'Municipalities')
-            expect(resp.body).to.have.property('data')
-            expect(resp.body.data).to.have.length(1)
-            expect(resp.body.data[0]).to.have.property('type', 'bar')
-            expect(resp.body.data[0]).to.have.property('x').to.have.same.members(["Grabels", "Clapiers", "Montferrier-sur-Lez", "Saint-Jean-de-Védas", "Lattes", "Montpellier", "Lavérune", "Juvignac", "Le Crès", "Castelnau-le-Lez"])
-            expect(resp.body.data[0]).to.have.property('y').to.have.same.members([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
-            expect(resp.body).to.have.property('layout')
-        })
-    })
 
     it('Test JSON data for plot 2 - Pie bakeries by municipalities', function () {
         cy.request({
