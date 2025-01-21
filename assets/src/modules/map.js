@@ -5,10 +5,12 @@
  * @license MPL-2.0
  */
 
-import { mainLizmap, mainEventDispatcher } from './Globals.js';
+import { mainEventDispatcher } from './Globals.js';
 import Utils from './Utils.js';
-import { BaseLayerTypes } from './config/BaseLayer.js';
-import { MapLayerLoadStatus, MapLayerState } from './state/MapLayer.js';
+import { Config } from './Config.js';
+import { MapState } from './state/Map.js';
+import { BaseLayersState, BaseLayerTypes } from './config/BaseLayer.js';
+import { MapLayerLoadStatus, MapLayerState, MapRootState } from './state/MapLayer.js';
 import olMap from 'ol/Map.js';
 import View from 'ol/View.js';
 import { ADJUSTED_DPI } from '../utils/Constants.js';
@@ -41,15 +43,24 @@ import SingleWMSLayer from './SingleWMSLayer.js';
  * @augments olMap
  */
 export default class map extends olMap {
-
-    constructor() {
-        const qgisProjectProjection = mainLizmap.projection;
+    /**
+     * Create the OpenLayers Map
+     * @param {string}   mapTarget - The id of the container element for the OpenLayers Map
+     * @param {Config} initialConfig - The lizmap initial config instance
+     * @param {string} serviceURL - The lizmap service URL
+     * @param {MapState} mapState  - The lizmap map state
+     * @param {BaseLayersState} baseLayersState - The lizmap base layers state
+     * @param {MapRootState} rootMapGroup - The lizmap root map group
+     * @param {object}   lizmap3   - The old lizmap object
+     */
+    constructor(mapTarget, initialConfig, serviceURL, mapState, baseLayersState, rootMapGroup, lizmap3) {
+        const qgisProjectProjection = lizmap3.map.getProjection();
         const mapProjection = getProjection(qgisProjectProjection);
 
         // Get resolutions from OL2 map
-        let resolutions = mainLizmap.lizmap3.map.resolutions ? mainLizmap.lizmap3.map.resolutions : mainLizmap.lizmap3.map.baseLayer.resolutions;
+        let resolutions = lizmap3.map.resolutions ? lizmap3.map.resolutions : lizmap3.map.baseLayer.resolutions;
         if (resolutions == undefined) {
-            resolutions= [mainLizmap.lizmap3.map.resolution];
+            resolutions= [lizmap3.map.resolution];
         }
         // Remove duplicated values
         resolutions = [... new Set(resolutions)];
@@ -63,14 +74,16 @@ export default class map extends olMap {
             view: new View({
                 resolutions: resolutions,
                 constrainResolution: true,
-                center: [mainLizmap.lizmap3.map.getCenter().lon, mainLizmap.lizmap3.map.getCenter().lat],
+                center: [lizmap3.map.getCenter().lon, lizmap3.map.getCenter().lat],
                 projection: mapProjection,
-                extent: mainLizmap.lizmap3.map.restrictedExtent.toArray(),
+                extent: lizmap3.map.restrictedExtent.toArray(),
                 constrainOnlyCenter: true // allow view outside the restricted extent when zooming
             }),
-            target: 'newOlMap'
+            target: mapTarget
         });
 
+        this._lizmap3 = lizmap3;
+        this._initialConfig = initialConfig;
         this._newOlMap = true;
 
         // Zoom to box
@@ -91,7 +104,7 @@ export default class map extends olMap {
             const pointResolution = getPointResolution(projection, view.getResolution(), view.getCenter(), projection.getUnits());
             const pointScaleDenominator = pointResolution * inchesPerMeter * dpi;
 
-            mainLizmap.state.map.update({
+            mapState.update({
                 'type': 'map.state.changing',
                 'projection': projection.getCode(),
                 'center': [...view.getCenter()],
@@ -113,8 +126,8 @@ export default class map extends olMap {
 
         // Respecting WMS max size
         const wmsMaxSize = [
-            mainLizmap.initialConfig.options.wmsMaxWidth,
-            mainLizmap.initialConfig.options.wmsMaxHeight,
+            initialConfig.options.wmsMaxWidth,
+            initialConfig.options.wmsMaxHeight,
         ];
 
         // Get pixel ratio, if High DPI is disabled do not use device pixel ratio
@@ -126,7 +139,7 @@ export default class map extends olMap {
         );
 
         this._customTileGrid = this._useCustomTileWms ? new TileGrid({
-            extent: mainLizmap.lizmap3.map.restrictedExtent.toArray(),
+            extent: lizmap3.map.restrictedExtent.toArray(),
             resolutions: resolutions,
             tileSize: this.getSize().map((x, i) => {
                 // Get the min value between the map size and the max size
@@ -153,7 +166,7 @@ export default class map extends olMap {
         // Mapping between layers name and states used to construct the singleWMSLayer, if needed
         this._statesSingleWMSLayers = new Map();
 
-        const layersCount = mainLizmap.state.rootMapGroup.countExplodedMapLayers();
+        const layersCount = rootMapGroup.countExplodedMapLayers();
 
         // Returns a layer or a layerGroup depending of the node type
         const createNode = (node, statesOlLayersandGroupsMap, overlayLayersAndGroups, metersPerUnit, WMSRatio) => {
@@ -192,8 +205,8 @@ export default class map extends olMap {
                 }
                 /* Sometimes throw an Error and extent is not used
                 let extent = node.layerConfig.extent;
-                if(node.layerConfig.crs !== "" && node.layerConfig.crs !== mainLizmap.projection){
-                    extent = transformExtent(extent, node.layerConfig.crs, mainLizmap.projection);
+                if(node.layerConfig.crs !== "" && node.layerConfig.crs !== qgisProjectProjection){
+                    extent = transformExtent(extent, node.layerConfig.crs, qgisProjectProjection);
                 }
                 */
 
@@ -212,7 +225,7 @@ export default class map extends olMap {
                     if (result['Contents']['Layer']) {
                         options = optionsFromCapabilities(result, {
                             layer: node.wmsName,
-                            matrixSet: mainLizmap.projection,
+                            matrixSet: qgisProjectProjection,
                         });
                     }
 
@@ -226,7 +239,7 @@ export default class map extends olMap {
                         });
                     }
                 } else {
-                    if(mainLizmap.state.map.singleWMSLayer){
+                    if(mapState.singleWMSLayer){
                         this._statesSingleWMSLayers.set(node.name,node);
                         node.singleWMSLayer = true;
                         return
@@ -238,7 +251,7 @@ export default class map extends olMap {
                                 minResolution: minResolution,
                                 maxResolution: maxResolution,
                                 source: new TileWMS({
-                                    url: useExternalAccess ? itemState.externalAccess.url : mainLizmap.serviceURL,
+                                    url: useExternalAccess ? itemState.externalAccess.url : serviceURL,
                                     serverType: 'qgis',
                                     tileGrid: this._customTileGrid,
                                     params: {
@@ -264,7 +277,7 @@ export default class map extends olMap {
                                 minResolution: minResolution,
                                 maxResolution: maxResolution,
                                 source: new TileWMS({
-                                    url: useExternalAccess ? itemState.externalAccess.url : mainLizmap.serviceURL,
+                                    url: useExternalAccess ? itemState.externalAccess.url : serviceURL,
                                     serverType: 'qgis',
                                     params: {
                                         LAYERS: useExternalAccess ? decodeURIComponent(itemState.externalAccess.layers) : node.wmsName,
@@ -281,7 +294,7 @@ export default class map extends olMap {
                                 minResolution: minResolution,
                                 maxResolution: maxResolution,
                                 source: new ImageWMS({
-                                    url: useExternalAccess ? itemState.externalAccess.url : mainLizmap.serviceURL,
+                                    url: useExternalAccess ? itemState.externalAccess.url : serviceURL,
                                     serverType: 'qgis',
                                     ratio: WMSRatio,
                                     hidpi: this._hidpi,
@@ -345,9 +358,9 @@ export default class map extends olMap {
 
 
         const metersPerUnit = this.getView().getProjection().getMetersPerUnit();
-        if(mainLizmap.state.layerTree.children.length){
+        if(rootMapGroup.children.length){
             this._overlayLayersGroup = createNode(
-                mainLizmap.state.rootMapGroup,
+                rootMapGroup,
                 this._statesOlLayersandGroupsMap,
                 this._overlayLayersAndGroups,
                 metersPerUnit,
@@ -380,7 +393,7 @@ export default class map extends olMap {
         this._hasEmptyBaseLayer = false;
         const baseLayers = [];
 
-        for (const baseLayerState of mainLizmap.state.baseLayers.getBaseLayers()) {
+        for (const baseLayerState of baseLayersState.getBaseLayers()) {
             let baseLayer;
             let layerMinResolution;
             let layerMaxResolution;
@@ -477,7 +490,7 @@ export default class map extends olMap {
                     const result = parser.read(lizMap.wmtsCapabilities);
                     const options = optionsFromCapabilities(result, {
                         layer: baseLayerState.itemState.wmsName,
-                        matrixSet: mainLizmap.projection,
+                        matrixSet: qgisProjectProjection,
                     });
 
                     baseLayer = new TileLayer({
@@ -486,7 +499,7 @@ export default class map extends olMap {
                         source: new WMTS(options)
                     });
                 } else {
-                    if(mainLizmap.state.map.singleWMSLayer){
+                    if(mapState.singleWMSLayer){
                         baseLayerState.singleWMSLayer = true;
                         this._statesSingleWMSLayers.set(baseLayerState.name, baseLayerState);
                     } else {
@@ -496,7 +509,7 @@ export default class map extends olMap {
                                 minResolution: layerMinResolution,
                                 maxResolution: layerMaxResolution,
                                 source: new TileWMS({
-                                    url: mainLizmap.serviceURL,
+                                    url: serviceURL,
                                     projection: qgisProjectProjection,
                                     serverType: 'qgis',
                                     tileGrid: this._customTileGrid,
@@ -516,7 +529,7 @@ export default class map extends olMap {
                                 minResolution: layerMinResolution,
                                 maxResolution: layerMaxResolution,
                                 source: new ImageWMS({
-                                    url: mainLizmap.serviceURL,
+                                    url: serviceURL,
                                     projection: qgisProjectProjection,
                                     serverType: 'qgis',
                                     ratio: this._WMSRatio,
@@ -551,7 +564,7 @@ export default class map extends olMap {
                 baseLayer.getSource().setAttributions(attribution);
             }
 
-            const visible = mainLizmap.initialConfig.baseLayers.startupBaselayerName === baseLayerState.name;
+            const visible = initialConfig.baseLayers.startupBaselayerName === baseLayerState.name;
 
             baseLayer.setProperties({
                 name: baseLayerState.name,
@@ -565,7 +578,7 @@ export default class map extends olMap {
             baseLayers.push(baseLayer);
 
             if (visible && baseLayer.getSource().getProjection().getCode() !== qgisProjectProjection) {
-                this.getView().getProjection().setExtent(mainLizmap.lizmap3.map.restrictedExtent.toArray());
+                this.getView().getProjection().setExtent(lizmap3.map.restrictedExtent.toArray());
             }
         }
 
@@ -609,7 +622,7 @@ export default class map extends olMap {
         }));
 
         // Sync new OL view with OL2 view
-        mainLizmap.lizmap3.map.events.on({
+        lizmap3.map.events.on({
             move: () => {
                 this.syncNewOLwithOL2View();
             }
@@ -618,7 +631,7 @@ export default class map extends olMap {
         this.on('moveend', () => {
             this._dispatchMapStateChanged();
 
-            if (!mainLizmap.newOlMap) {
+            if (!this._newOlMap) {
                 lizMap.map.setCenter(undefined,this.getView().getZoom(), false, false);
             }
         });
@@ -650,34 +663,34 @@ export default class map extends olMap {
 
             if (source instanceof ImageWMS) {
                 source.on('imageloadstart', event => {
-                    const mapLayer = mainLizmap.state.rootMapGroup.getMapLayerByName(event.target.get('name'))
+                    const mapLayer = rootMapGroup.getMapLayerByName(event.target.get('name'))
                     mapLayer.loadStatus = MapLayerLoadStatus.Loading;
                 });
                 source.on('imageloadend', event => {
-                    const mapLayer = mainLizmap.state.rootMapGroup.getMapLayerByName(event.target.get('name'))
+                    const mapLayer = rootMapGroup.getMapLayerByName(event.target.get('name'))
                     mapLayer.loadStatus = MapLayerLoadStatus.Ready;
                 });
                 source.on('imageloaderror', event => {
-                    const mapLayer = mainLizmap.state.rootMapGroup.getMapLayerByName(event.target.get('name'))
+                    const mapLayer = rootMapGroup.getMapLayerByName(event.target.get('name'))
                     mapLayer.loadStatus = MapLayerLoadStatus.Error;
                 });
             } else if (source instanceof WMTS) {
                 source.on('tileloadstart', event => {
-                    const mapLayer = mainLizmap.state.rootMapGroup.getMapLayerByName(event.target.get('name'))
+                    const mapLayer = rootMapGroup.getMapLayerByName(event.target.get('name'))
                     mapLayer.loadStatus = MapLayerLoadStatus.Loading;
                 });
                 source.on('tileloadend', event => {
-                    const mapLayer = mainLizmap.state.rootMapGroup.getMapLayerByName(event.target.get('name'))
+                    const mapLayer = rootMapGroup.getMapLayerByName(event.target.get('name'))
                     mapLayer.loadStatus = MapLayerLoadStatus.Ready;
                 });
                 source.on('tileloaderror', event => {
-                    const mapLayer = mainLizmap.state.rootMapGroup.getMapLayerByName(event.target.get('name'))
+                    const mapLayer = rootMapGroup.getMapLayerByName(event.target.get('name'))
                     mapLayer.loadStatus = MapLayerLoadStatus.Error;
                 });
             }
         }
 
-        mainLizmap.state.rootMapGroup.addListener(
+        rootMapGroup.addListener(
             evt => {
                 // if the layer is loaded ad single WMS, the visibility events are managed by the dedicated class
                 if (this.isSingleWMSLayer(evt.name)) return;
@@ -692,7 +705,7 @@ export default class map extends olMap {
             ['layer.visibility.changed', 'group.visibility.changed']
         );
 
-        mainLizmap.state.layersAndGroupsCollection.addListener(
+        rootMapGroup.addListener(
             evt => {
                 // conservative control since the opacity events should not be fired for single WMS layers
                 if (this.isSingleWMSLayer(evt.name)) return;
@@ -707,7 +720,7 @@ export default class map extends olMap {
             ['layer.opacity.changed', 'group.opacity.changed']
         );
 
-        mainLizmap.state.rootMapGroup.addListener(
+        rootMapGroup.addListener(
             evt => {
                 const stateOlLayerAndMap = this._statesOlLayersandGroupsMap.get(evt.name);
                 if (!stateOlLayerAndMap) return;
@@ -727,16 +740,16 @@ export default class map extends olMap {
             ['layer.symbol.checked.changed', 'layer.style.changed', 'layer.selection.token.changed', 'layer.filter.token.changed']
         );
 
-        mainLizmap.state.baseLayers.addListener(
+        baseLayersState.addListener(
             evt => {
                 this.changeBaseLayer(evt.name);
             },
             ['baselayers.selection.changed']
         );
 
-        mainLizmap.state.rootMapGroup.addListener(
+        rootMapGroup.addListener(
             evt => {
-                const extGroup = mainLizmap.state.rootMapGroup.children[0];
+                const extGroup = rootMapGroup.children[0];
                 if (evt.name != extGroup.name)
                     return;
                 const extLayerGroup = new LayerGroup({
@@ -776,7 +789,7 @@ export default class map extends olMap {
             }, ['ext-group.added']
         );
 
-        mainLizmap.state.rootMapGroup.addListener(
+        rootMapGroup.addListener(
             evt => {
                 const groups = this._overlayLayersGroup
                     .getLayers()
@@ -807,12 +820,12 @@ export default class map extends olMap {
         this.addToolLayer(this._highlightLayer);
 
         // Add startup features to map if any
-        const startupFeatures = mainLizmap.state.map.startupFeatures;
+        const startupFeatures = mapState.startupFeatures;
         if (startupFeatures) {
             this.setHighlightFeatures(startupFeatures, "geojson");
         }
 
-        mainLizmap.state.map.addListener(
+        mapState.addListener(
             evt => {
                 const view = this.getView();
                 const updateCenter = ('center' in evt && view.getCenter().filter((v, i) => {return evt['center'][i] != v}).length != 0);
@@ -909,16 +922,17 @@ export default class map extends olMap {
      * @param {string|undefined} projection optional features projection
      */
     addHighlightFeatures(features, format, projection) {
+        const qgisProjectProjection = this._lizmap3.map.getProjection();
         let olFeatures;
         if (format === "geojson") {
             olFeatures = (new GeoJSON()).readFeatures(features, {
                 dataProjection: projection,
-                featureProjection: mainLizmap.projection
+                featureProjection: qgisProjectProjection
             });
         } else if (format === "wkt") {
             olFeatures = (new WKT()).readFeatures(features, {
                 dataProjection: projection,
-                featureProjection: mainLizmap.projection
+                featureProjection: qgisProjectProjection
             });
         } else {
             return;
@@ -949,17 +963,17 @@ export default class map extends olMap {
      * @memberof Map
      */
     syncNewOLwithOL2View(){
-        const center = mainLizmap.lizmap3.map.getCenter()
+        const center = this._lizmap3.map.getCenter();
         this.getView().animate({
             center: [center.lon, center.lat],
-            zoom: mainLizmap.lizmap3.map.getZoom(),
+            zoom: this._lizmap3.map.getZoom(),
             duration: 50
         });
     }
 
     refreshOL2View() {
         // This refresh OL2 view and layers
-        mainLizmap.lizmap3.map.setCenter(
+        this._lizmap3.map.setCenter(
             this.getView().getCenter(),
             this.getView().getZoom()
         );
@@ -981,10 +995,11 @@ export default class map extends olMap {
 
         // If base layer projection is different from project projection
         // We must set the project extent to the View to reproject nicely
-        if (selectedBaseLayer?.getSource().getProjection().getCode() !== mainLizmap.projection) {
-            this.getView().getProjection().setExtent(mainLizmap.lizmap3.map.restrictedExtent.toArray());
+        const qgisProjectProjection = this._lizmap3.map.getProjection();
+        if (selectedBaseLayer?.getSource().getProjection().getCode() !== qgisProjectProjection) {
+            this.getView().getProjection().setExtent(this._lizmap3.map.restrictedExtent.toArray());
         } else {
-            this.getView().getProjection().setExtent(getProjection(mainLizmap.projection).getExtent());
+            this.getView().getProjection().setExtent(getProjection(qgisProjectProjection).getExtent());
         }
 
         // Trigger legacy event
@@ -1082,16 +1097,16 @@ export default class map extends olMap {
      */
     zoomToGeometryOrExtent(geometryOrExtent, options) {
         const geometryType = geometryOrExtent.getType?.();
-        if (geometryType && (mainLizmap.initialConfig.options.max_scale_lines_polygons || mainLizmap.initialConfig.options.max_scale_lines_polygons)) {
+        if (geometryType && (this._initialConfig.options.max_scale_lines_polygons || this._initialConfig.options.max_scale_lines_polygons)) {
             let maxScale;
             if (['Polygon', 'Linestring', 'MultiPolygon', 'MultiLinestring'].includes(geometryType)){
-                maxScale = mainLizmap.initialConfig.options.max_scale_lines_polygons;
+                maxScale = this._initialConfig.options.max_scale_lines_polygons;
             } else if (geometryType === 'Point'){
-                maxScale = mainLizmap.initialConfig.options.max_scale_points;
+                maxScale = this._initialConfig.options.max_scale_points;
             }
-            const resolution = mainLizmap.utils.getResolutionFromScale(
+            const resolution = Utils.getResolutionFromScale(
                 maxScale,
-                mainLizmap.map.getView().getProjection().getMetersPerUnit()
+                this.getView().getProjection().getMetersPerUnit()
             );
             if (!options?.minResolution) {
                 if (!options) {
@@ -1118,7 +1133,7 @@ export default class map extends olMap {
         lizMap.getLayerFeature(featureType, fid, feat => {
             const olFeature = (new GeoJSON()).readFeature(feat, {
                 dataProjection: 'EPSG:4326',
-                featureProjection: mainLizmap.projection
+                featureProjection: this.getView().getProjection()
             });
             this.zoomToGeometryOrExtent(olFeature.getGeometry(), options);
         });

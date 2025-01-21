@@ -150,14 +150,14 @@ export default class Lizmap {
 
                 // Create Lizmap modules
                 this.permalink = new Permalink();
-                this.map = new map();
+                this.map = new map('newOlMap', this.initialConfig, this.serviceURL, this.state.map, this.state.baseLayers, this.state.rootMapGroup, this.lizmap3);
                 this.edition = new Edition(this._lizmap3);
                 this.featuresTable = new FeaturesTable(this.initialConfig, this.lizmap3);
                 this.geolocation = new Geolocation(this.map, this.lizmap3);
                 this.geolocationSurvey = new GeolocationSurvey(this.geolocation, this.edition);
-                this.digitizing = new Digitizing();
+                this.digitizing = new Digitizing(this.map, this.lizmap3);
                 this.selectionTool = new SelectionTool(this.map, this.digitizing, this.initialConfig, this.lizmap3);
-                this.snapping = new Snapping();
+                this.snapping = new Snapping(this.edition, this.state.rootMapGroup, this.state.layerTree, this.lizmap3);
                 this.layers = new Layers();
                 this.proxyEvents = new ProxyEvents();
                 this.wfs = new WFS();
@@ -167,7 +167,7 @@ export default class Lizmap {
                 this.popup = new Popup(this.initialConfig, this.state, this.map, this.digitizing);
                 this.legend = new Legend(this.state.layerTree);
                 this.search = new Search(this.map, this.lizmap3);
-                this.tooltip = new Tooltip();
+                this.tooltip = new Tooltip(this.map, this.initialConfig.tooltipLayers, this.lizmap3);
                 this.locateByLayer = new LocateByLayer(
                     this.initialConfig.locateByLayer,
                     this.initialConfig.vectorLayerFeatureTypeList,
