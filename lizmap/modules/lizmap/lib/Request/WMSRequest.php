@@ -670,7 +670,7 @@ class WMSRequest extends OGCRequest
                 $templateConfigured = true;
                 // first replace all "media/bla/bla/media.ext" by full url
                 $popupTemplate = preg_replace_callback(
-                    '#(["\']){1}((\.\./)?media/.+\.\w{3,10})(["\']){1}#',
+                    '#(["\']){1}((\.\./)?media/.+\.\w{3,10})(["\']){1}#U',
                     array($this, 'replaceMediaPathByMediaUrl'),
                     $popupTemplate
                 );
@@ -749,7 +749,7 @@ class WMSRequest extends OGCRequest
                 if ($attribute['name'] == 'maptip') {
                     // first replace all "media/bla/bla/media.ext" by full url
                     $maptipValue = preg_replace_callback(
-                        '#(["\']){1}((\.\./)?media/.+\.\w{3,10})(["\']){1}#',
+                        '#(["\']){1}((\.\./)?media/.+\.\w{3,10})(["\']){1}#U',
                         array($this, 'replaceMediaPathByMediaUrl'),
                         $attribute['value']
                     );
