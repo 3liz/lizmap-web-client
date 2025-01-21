@@ -33,6 +33,8 @@ import { Feature } from 'ol';
 export default class SelectionTool {
 
     constructor() {
+        this._map = mainLizmap.map;
+        this._lizmap3 = lizMap;
 
         this._layers = [];
         this._allFeatureTypeSelected = [];
@@ -142,100 +144,15 @@ export default class SelectionTool {
                                 this._bufferLayer.getSource().addFeature(bufferedFeature);
 
                                 selectionFeature = this.featureDrawnBuffered;
-                            });
-                        }
 
-                        for (const featureType of this.allFeatureTypeSelected) {
-                            const lConfig = mainLizmap.config.layers[featureType];
-                            let typeName = featureType;
-                            if ('typename' in lConfig) {
-                                typeName = lConfig.typename;
-                            } else if ('shortname' in lConfig) {
-                                typeName = lConfig.shortname;
-                            }
-
-                            // Yo avoid applying reverseAxis (not supported by QGIS GML Parser)
-                            // Choose a srsName without reverseAxis
-                            let srsName = lConfig.crs;
-                            if (srsName == 'EPSG:4326') {
-                                srsName = 'CRS:84';
-                            }
-                            const gml = new GML3({srsName:srsName});
-
-                            // Get the geometry in the layer projection
-                            let geom = selectionFeature.getGeometry().clone();
-                            geom.transform(mainLizmap.map.getView().getProjection().getCode(), lConfig.crs);
-
-                            // TODO create a geometry collection from the selection draw?
-                            const gmlNode = gml.writeGeometryNode(geom);
-
-                            const serializer = new XMLSerializer();
-
-                            let spatialFilter = this._geomOperator + `($geometry, geom_from_gml('${serializer.serializeToString(gmlNode.firstChild)}'))`;
-
-
-                            let rFilter = lConfig?.request_params?.filter;
-                            if( rFilter ){
-                                rFilter = rFilter.replace( typeName + ':', '');
-                                spatialFilter = rFilter + ' AND ' + spatialFilter;
-                            }
-
-                            // Add exp_filter, for example if set by another tool( filter module )
-                            // Often 'filter' is not set because filtertoken is set instead
-                            // But in this case, exp_filter must also been set and must be added
-                            let eFilter = lConfig?.request_params?.exp_filter;
-                            if( eFilter ){
-                                spatialFilter = eFilter +' AND '+ spatialFilter;
-                            }
-
-                            const wfs = new WFS();
-                            const wfsParams = {
-                                TYPENAME: typeName,
-                                EXP_FILTER: spatialFilter
-                            };
-
-                            // Apply limit to bounding box config
-                            if (mainLizmap.config?.limitDataToBbox === 'True') {
-                                wfsParams['BBOX'] = mainLizmap.map.getView().calculateExtent();
-                                wfsParams['SRSNAME'] = mainLizmap.map.getView().getProjection().getCode();
-                            }
-
-                            // Restrict to current geometry extent for performance
-                            // But not with 'disjoint' to get features
-                            if (this._geomOperator !== 'disjoint') {
-                                let geomExtent = geom.getExtent();
-                                if (olExtent.getArea(geomExtent) == 0) {
-                                    geomExtent = olExtent.buffer(geomExtent, 0.000001);
+                                for (const featureType of this.allFeatureTypeSelected) {
+                                    this.selectLayerFeaturesFromSelectionFeature(featureType, selectionFeature, this._geomOperator);
                                 }
-                                wfsParams['BBOX'] = geomExtent;
-                                wfsParams['SRSNAME'] = lConfig.crs;
-                            }
-
-                            wfs.getFeature(wfsParams).then(response => {
-                                const features = (new GeoJSON()).readFeatures(response);
-
-                                // Array of feature ids matching geometry condition
-                                let featureIds = features.map(feature => feature.getId().split('.')[1]);
-
-                                if (this.newAddRemoveSelected === 'add' ) { // Add to selection
-                                    featureIds = config.layers[featureType]['selectedFeatures'].concat(featureIds);
-                                    // Remove duplicates
-                                    featureIds = [...new Set(featureIds)];
-                                } else if (this.newAddRemoveSelected === 'remove' ) { // Remove from selection
-                                    const toRemove = new Set(featureIds);
-                                    featureIds = config.layers[featureType]['selectedFeatures'].filter( x => !toRemove.has(x) );
-                                }
-
-                                mainLizmap.config.layers[featureType]['selectedFeatures'] = featureIds;
-                                lizMap.events.triggerEvent("layerSelectionChanged",
-                                    {
-                                        'featureType': featureType,
-                                        'featureIds': mainLizmap.config.layers[featureType]['selectedFeatures'],
-                                        'updateDrawing': true
-                                    }
-                                );
-
                             });
+                        } else {
+                            for (const featureType of this.allFeatureTypeSelected) {
+                                this.selectLayerFeaturesFromSelectionFeature(featureType, selectionFeature, this._geomOperator);
+                            }
                         }
                     }
                 }
@@ -484,75 +401,88 @@ export default class SelectionTool {
      * @param geomOperator
      */
     selectLayerFeaturesFromSelectionFeature(targetFeatureType, selectionFeature, geomOperator = 'intersects'){
+        const lConfig = this._lizmap3.config.layers[targetFeatureType];
+        let typeName = targetFeatureType;
+        if ('typename' in lConfig) {
+            typeName = lConfig.typename;
+        } else if ('shortname' in lConfig) {
+            typeName = lConfig.shortname;
+        }
 
-        const lConfig = lizMap.config.layers[targetFeatureType];
+        // To avoid applying reverseAxis (not supported by QGIS GML Parser)
+        // Choose a srsName without reverseAxis
+        let srsName = lConfig.crs;
+        if (srsName == 'EPSG:4326') {
+            srsName = 'CRS:84';
+        }
+        const gml = new GML3({srsName:srsName});
 
-        const GML3Format = new GML3({srsName: mainLizmap.projection});
+        // Get the geometry in the layer projection
+        let geom = selectionFeature.getGeometry().clone();
+        geom.transform(this._map.getView().getProjection().getCode(), lConfig.crs);
 
-        const geomAsGML = GML3Format.writeGeometryNode( selectionFeature.getGeometry());
+        // TODO create a geometry collection from the selection draw?
+        const gmlNode = gml.writeGeometryNode(geom);
 
-        let spatialFilter = geomOperator+"($geometry, geom_from_gml('" + geomAsGML.innerHTML + "'))";
+        const serializer = new XMLSerializer();
 
-        if( 'request_params' in lConfig && 'filter' in lConfig['request_params'] ){
-            let rFilter = lConfig['request_params']['filter'];
-            if( rFilter ){
-                rFilter = rFilter.replace( targetFeatureType + ':', '');
-                spatialFilter = rFilter +' AND '+ spatialFilter;
+        let spatialFilter = geomOperator + `($geometry, geom_from_gml('${serializer.serializeToString(gmlNode.firstChild)}'))`;
+
+
+        let rFilter = lConfig?.request_params?.filter;
+        if( rFilter ){
+            rFilter = rFilter.replace( typeName + ':', '');
+            spatialFilter = rFilter + ' AND ' + spatialFilter;
+        }
+
+        // Add exp_filter, for example if set by another tool( filter module )
+        // Often 'filter' is not set because filtertoken is set instead
+        // But in this case, exp_filter must also been set and must be added
+        let eFilter = lConfig?.request_params?.exp_filter;
+        if( eFilter ){
+            spatialFilter = eFilter +' AND '+ spatialFilter;
+        }
+
+        const wfs = new WFS();
+        const wfsParams = {
+            TYPENAME: typeName,
+            EXP_FILTER: spatialFilter
+        };
+
+        // Apply limit to bounding box config
+        if (this._lizmap3.config?.limitDataToBbox === 'True') {
+            wfsParams['BBOX'] = this._map.getView().calculateExtent();
+            wfsParams['SRSNAME'] = this._map.getView().getProjection().getCode();
+        }
+
+        // Restrict to current geometry extent for performance
+        // But not with 'disjoint' to get features
+        if (this._geomOperator !== 'disjoint') {
+            let geomExtent = geom.getExtent();
+            if (olExtent.getArea(geomExtent) == 0) {
+                geomExtent = olExtent.buffer(geomExtent, 0.000001);
             }
+            wfsParams['BBOX'] = geomExtent;
+            wfsParams['SRSNAME'] = lConfig.crs;
         }
-        if( 'request_params' in lConfig && 'exp_filter' in lConfig['request_params'] ){
-            // Add exp_filter, for example if set by another tool( filter module )
-            // Often 'filter' is not set because filtertoken is set instead
-            // But in this case, exp_filter must also been set and must be added
-            let eFilter = lConfig['request_params']['exp_filter'];
-            if( eFilter ){
-                spatialFilter = eFilter +' AND '+ spatialFilter;
+
+        wfs.getFeature(wfsParams).then(response => {
+            const features = (new GeoJSON()).readFeatures(response);
+
+            // Array of feature ids matching geometry condition
+            let featureIds = features.map(feature => feature.getId().split('.')[1]);
+
+            if (this.newAddRemoveSelected === 'add' ) { // Add to selection
+                featureIds = lConfig['selectedFeatures'].concat(featureIds);
+                // Remove duplicates
+                featureIds = [...new Set(featureIds)];
+            } else if (this.newAddRemoveSelected === 'remove' ) { // Remove from selection
+                const toRemove = new Set(featureIds);
+                featureIds = lConfig['selectedFeatures'].filter( x => !toRemove.has(x) );
             }
-        }
-        let limitDataToBbox = false;
-        if ( 'limitDataToBbox' in lizMap.config.options && lizMap.config.options.limitDataToBbox == 'True'){
-            limitDataToBbox = true;
-        }
-        let getFeatureUrlData = lizMap.getVectorLayerWfsUrl( targetFeatureType, spatialFilter, null, null, limitDataToBbox );
 
-        // add BBox to restrict to geom bbox but not with some geometry operator
-        if (geomOperator !== 'disjoint'){
-            getFeatureUrlData['options']['BBOX'] = selectionFeature.getGeometry().getExtent().join();
-            getFeatureUrlData['options']['SRSNAME'] = lConfig.crs;
-        }
-
-        // get features
-        fetch(getFeatureUrlData['url'], {
-            method: "POST",
-            body: new URLSearchParams(getFeatureUrlData['options'])
-        }).then(response => {
-            return response.json();
-        }).then(result => {
-            const features = (new GeoJSON()).readFeatures(result, {
-                featureProjection: mainLizmap.projection
-            });
-
-            let sfIds = features.map(feat => feat.getId().split('.')[1]);
-
-            if (this._newAddRemoveSelected === 'add') {
-                sfIds = lConfig['selectedFeatures'].concat(sfIds);
-                for (let i = 0; i < sfIds.length; ++i) {
-                    for (let j = i + 1; j < sfIds.length; ++j) {
-                        if (sfIds[i] === sfIds[j])
-                            sfIds.splice(j--, 1);
-                    }
-                }
-            } else if (this._newAddRemoveSelected === 'remove') {
-                let asfIds = lConfig['selectedFeatures'].concat([]);
-                for (let i = 0; i < sfIds.length; ++i) {
-                    let asfIdIdx = asfIds.indexOf(sfIds[i]);
-                    if (asfIdIdx != -1)
-                        asfIds.splice(asfIdIdx, 1);
-                }
-                sfIds = asfIds;
-            }
-            lConfig['selectedFeatures'] = sfIds;
-            lizMap.events.triggerEvent("layerSelectionChanged",
+            lConfig['selectedFeatures'] = featureIds;
+            this._lizmap3.events.triggerEvent("layerSelectionChanged",
                 {
                     'featureType': targetFeatureType,
                     'featureIds': lConfig['selectedFeatures'],
