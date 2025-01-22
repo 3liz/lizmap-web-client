@@ -211,7 +211,7 @@ export default class Utils {
     static sanitizeGFIContent(content) {
         DOMPurify.addHook('afterSanitizeAttributes', node => {
             if (node.nodeName === 'IFRAME') {
-                node.setAttribute('sandbox','allow-scripts allow-forms');
+                node.setAttribute('sandbox','allow-scripts allow-forms allow-same-origin');
             }
         });
         return DOMPurify.sanitize(content, {
