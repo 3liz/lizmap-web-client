@@ -55,6 +55,11 @@ export class ProjectPage extends BasePage {
      */
     miniDock;
     /**
+     * Popup dock
+     * @type {Locator}
+     */
+    popupContent;
+    /**
      * Top search bar
      * @type {Locator}
      */
@@ -76,6 +81,14 @@ export class ProjectPage extends BasePage {
         this.page.locator(`#attribute-layer-table-${name}`);
 
     /**
+     * Editing field for the given field in the panel
+     * @param {string} name Name of the field
+     * @returns {Locator}
+     */
+    editingField = (name) =>
+        this.page.locator(`#jforms_view_edition input[name="${name}"]`);
+
+    /**
      * Constructor for a QGIS project page
      * @param {Page} page The playwright page
      * @param {string} project The project name
@@ -89,6 +102,7 @@ export class ProjectPage extends BasePage {
         this.rightDock = page.locator('#right-dock');
         this.bottomDock = page.locator('#bottom-dock');
         this.miniDock = page.locator('#mini-dock-content');
+        this.popupContent = page.locator('#popupcontent');
         this.warningMessage = page.locator('#lizmap-warning-message');
         this.search = page.locator('#search-query');
         this.switcher = page.locator('#button-switcher');
