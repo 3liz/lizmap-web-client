@@ -1,15 +1,15 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { gotoMap } from './globals';
+import {ProjectPage} from "./pages/project";
 
 test.describe('XSS', () => {
-    test.beforeEach(async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=xss';
-        await gotoMap(url, page);
-    });
 
-    // Test that flawed data are sanitized before being displayed
-    test('No dialog from inline JS alert() appears', async ({ page }) => {
+    test('Flawed data are sanitized before being displayed, no dialog from inline JS alert() appears',
+    {
+        tag: ['@readonly'],
+    },async ({ page }) => {
+        const project = new ProjectPage(page, 'xss');
+        await project.open();
 
         let dialogOpens = 0;
         page.on('dialog', dialog => {
@@ -18,43 +18,35 @@ test.describe('XSS', () => {
         });
 
         // Edition: add XSS data
-        await page.locator('#button-edition').click();
-        await page.locator('#edition-draw').click();
+        await project.openEditingFormWithLayer('xss_layer');
 
-        await page.locator('#jforms_view_edition input[name="description"]').fill('<script>alert("XSS")</script>');
+        await project.editingField('description').fill('<script>alert("XSS")</script>');
 
-        await page.locator('#jforms_view_edition__submit_submit').click();
+        await project.editingSubmitForm();
 
         // Open popup
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 415,
-                y: 290
-            }
-        });
+        await project.clickOnMap(415, 290);
 
         // Open attribute table
-        await page.locator('#button-attributeLayers').click();
-        await page
-            .locator('button[value="xss_layer"].btn-open-attribute-layer')
-            .click({ force: true });
+        await project.openAttributeTable('xss_layer');
 
         expect(dialogOpens).toEqual(0);
     });
 
-    test('Sanitized iframe in popup', async ({ page }) => {
+    test('Sanitized iframe in popup',
+    {
+        tag: ['@readonly'],
+    },async ({ page }) => {
+        const project = new ProjectPage(page, 'xss');
+        await project.open();
+
         let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
 
         // Open popup
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 500,
-                y: 285
-            }
-        });
+        await project.clickOnMap(500, 285);
 
         await getFeatureInfoRequestPromise;
 
-        await expect(page.locator('#popupcontent iframe')).toHaveAttribute('sandbox', 'allow-scripts allow-forms');
+        await expect(project.popupContent.locator('iframe')).toHaveAttribute('sandbox', 'allow-scripts allow-forms');
     });
 });
