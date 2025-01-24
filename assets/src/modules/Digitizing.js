@@ -478,6 +478,10 @@ export default class Digitizing {
                     this._segmentMeasureTooltipElement = null;
                     this._totalMeasureTooltipElement = null;
                     unByKey(this._listener);
+
+                    if (geom.getType() === 'LineString') {
+                        this._updateTotalMeasureTooltip(null, geom, 'LineString', Array.from(this._measureTooltips).pop()[1]);
+                    }
                 });
 
                 mainLizmap.map.addInteraction(this._drawInteraction);
