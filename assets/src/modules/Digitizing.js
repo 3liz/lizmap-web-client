@@ -695,20 +695,22 @@ export default class Digitizing {
             // Contraint where point will be drawn on click
             let constrainedPointCoords = cursorPointCoords;
 
+            const mapProjection = this._map.getView().getProjection();
+
             if (this._distanceConstraint) {
                 // Draw circle with distanceConstraint as radius
                 const circle = circular(
-                    transform(lastDrawnPointCoords, 'EPSG:3857', 'EPSG:4326'),
+                    transform(lastDrawnPointCoords, mapProjection, 'EPSG:4326'),
                     this._distanceConstraint,
                     128
                 );
 
-                constrainedPointCoords = transform(circle.getClosestPoint(transform(cursorPointCoords, 'EPSG:3857', 'EPSG:4326')), 'EPSG:4326', 'EPSG:3857');
+                constrainedPointCoords = transform(circle.getClosestPoint(transform(cursorPointCoords, mapProjection, 'EPSG:4326')), 'EPSG:4326', mapProjection);
 
                 // Draw visual constraint features
                 this._constraintLayer.getSource().addFeature(
                     new Feature({
-                        geometry: circle.transform('EPSG:4326', 'EPSG:3857')
+                        geometry: circle.transform('EPSG:4326', mapProjection)
                     })
                 );
 
