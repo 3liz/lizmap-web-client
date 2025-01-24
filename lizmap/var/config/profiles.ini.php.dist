@@ -90,7 +90,7 @@ searchGroupBaseDN=""
 
 ; name of the default profil to use for cache
 default=lizmap
-
+; the other jcache could be : qgisprojects, acl2db, tiles, requests
 
 [jcache:lizmap]
 ; disable or enable cache for this profile

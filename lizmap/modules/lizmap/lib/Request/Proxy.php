@@ -13,8 +13,11 @@
 namespace Lizmap\Request;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use Kevinrob\GuzzleCache\CacheMiddleware;
+use Kevinrob\GuzzleCache\Strategy;
 use Lizmap\App;
 use Psr\Http\Message\ResponseInterface;
 
@@ -385,10 +388,24 @@ class Proxy
             $options['headers']['Referer'] = $options['referer'];
         }
 
+        // Create request cache strategy
+        $strategy = new Strategy\Delegate\DelegatingCacheStrategy($defaultStrategy = new Strategy\NullCacheStrategy());
+        $lizmapServices = self::getServices();
+        $qgisServerUrl = $lizmapServices->getUrlLizmapQgisServerMetadata();
+        $strategy->registerRequestMatcher(
+            new QgisServerMetadataRequestMatcher($qgisServerUrl),
+            new Strategy\GreedyCacheStrategy(new RequestCacheStorage('requests')) // default TTL to 60 seconds
+        );
+        // Create request stack handler
+        $stack = HandlerStack::create();
+        $stack->push(new CacheMiddleware($strategy));
+
         // Create Client
         $client = new Client(array(
             // You can set any number of default request options.
             'timeout' => max(10.0, floatval(ini_get('max_execution_time')) - 5.0),
+            // Set stack handler
+            'handler' => $stack,
         ));
 
         // Create request
