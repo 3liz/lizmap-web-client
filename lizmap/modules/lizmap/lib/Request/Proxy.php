@@ -465,9 +465,14 @@ class Proxy
         $options = self::buildOptions($options, $method, $debug);
         $response = self::sendRequest($url, $options);
 
+        $contentType = 'application/octet-stream';
+        if ($response->hasHeader('Content-Type')) {
+            $contentType = $response->getHeader('Content-Type')[0];
+        }
+
         return array(
             (string) $response->getBody(),
-            $response->getHeader('Content-Type')[0],
+            $contentType,
             $response->getStatusCode(),
             $response->getHeaders(),
         );
@@ -490,9 +495,14 @@ class Proxy
 
         $response = self::sendRequest($url, $options);
 
+        $contentType = 'application/octet-stream';
+        if ($response->hasHeader('Content-Type')) {
+            $contentType = $response->getHeader('Content-Type')[0];
+        }
+
         return new ProxyResponse(
             $response->getStatusCode(),
-            $response->getHeader('Content-Type')[0],
+            $contentType,
             $response->getHeaders(),
             $response->getBody()
         );
