@@ -31,7 +31,12 @@ jobs:
           node-version: 21
 
       - name: Change tokens about versions
-        run: make version-doc
+        run: |
+          make version-doc
+          echo "FULL_VERSION=${FULL_VERSION}" >> $GITHUB_ENV
+
+      - name: Test
+        run: echo ${{ env.FULL_VERSION }}
 
       - name: Building JS docs
         run: make js-doc
@@ -40,7 +45,7 @@ jobs:
         uses: actions/upload-artifact@master
         with:
           name: js
-          path: docs/js/assets/**/
+          path: docs/js/assets/${{ env.FULL_VERSION }}
 
   phpdoc:
     name: "🐘 PHP-Doc"
