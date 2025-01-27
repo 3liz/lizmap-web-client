@@ -577,28 +577,35 @@ test.describe('Print base layers', () => {
     });
 
     test('Print requests', async ({ page }) => {
+        // Required GetPrint parameters
+        const expectedParameters = {
+            'SERVICE': 'WMS',
+            'REQUEST': 'GetPrint',
+            'VERSION': '1.3.0',
+            'FORMAT': 'pdf',
+            'TRANSPARENT': 'true',
+            'CRS': 'EPSG:3857',
+            'DPI': '100',
+            'TEMPLATE': 'simple',
+            'map0:EXTENT': /420548.\d+,5397710.\d+,441999.\d+,5412877.\d+/,
+            'map0:SCALE': '72224',
+        }
         // Print osm-mapnik
         let getPrintRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
         await page.locator('#print-launch').click();
 
         let getPrintRequest = await getPrintRequestPromise;
-        let getPrintPostData = getPrintRequest.postData();
-        expect(getPrintPostData).toContain('SERVICE=WMS')
-        expect(getPrintPostData).toContain('REQUEST=GetPrint')
-        expect(getPrintPostData).toContain('VERSION=1.3.0')
-        expect(getPrintPostData).toContain('FORMAT=pdf')
-        expect(getPrintPostData).toContain('TRANSPARENT=true')
-        expect(getPrintPostData).toContain('CRS=EPSG%3A3857')
-        expect(getPrintPostData).toContain('DPI=100')
-        expect(getPrintPostData).toContain('TEMPLATE=simple')
-        //expect(getPrintPostData).toContain('map0%3AEXTENT=')
-        expect(getPrintPostData).toContain('map0%3ASCALE=72224')
-        expect(getPrintPostData).toContain('map0%3ALAYERS=osm-mapnik&')
-        expect(getPrintPostData).toContain('map0%3ASTYLES=d%C3%A9faut&')
-        expect(getPrintPostData).toContain('map0%3AOPACITIES=255')
+        // Extend GetPrint parameters
+        const expectedParameters1 = Object.assign({}, expectedParameters, {
+            'map0:LAYERS': 'osm-mapnik',
+            'map0:STYLES': 'défaut',
+            'map0:OPACITIES': '255',
+        })
+        let getPrintParams = await checkParameters('Print requests 1', getPrintRequest.postData() ?? '', expectedParameters1)
+        await expect(getPrintParams.size).toBe(13)
 
         let getPrintResponse = await getPrintRequest.response();
-        expect(getPrintResponse?.headers()['content-type']).toBe('application/pdf');
+        await expect(getPrintResponse?.headers()['content-type']).toBe('application/pdf');
 
         // Print osm-mapnik & quartiers
         let getMapRequestPromise = page.waitForRequest(/REQUEST=GetMap/);
@@ -610,24 +617,17 @@ test.describe('Print base layers', () => {
         await page.locator('#print-launch').click();
 
         getPrintRequest = await getPrintRequestPromise;
-        getPrintPostData = getPrintRequest.postData();
-        expect(getPrintPostData).not.toBeNull()
-        expect(getPrintPostData).toContain('SERVICE=WMS')
-        expect(getPrintPostData).toContain('REQUEST=GetPrint')
-        expect(getPrintPostData).toContain('VERSION=1.3.0')
-        expect(getPrintPostData).toContain('FORMAT=pdf')
-        expect(getPrintPostData).toContain('TRANSPARENT=true')
-        expect(getPrintPostData).toContain('CRS=EPSG%3A3857')
-        expect(getPrintPostData).toContain('DPI=100')
-        expect(getPrintPostData).toContain('TEMPLATE=simple')
-        //expect(getPrintPostData).toContain('map0%3AEXTENT=')
-        expect(getPrintPostData).toContain('map0%3ASCALE=72224')
-        expect(getPrintPostData).toContain('map0%3ALAYERS=osm-mapnik%2Cquartiers&')
-        expect(getPrintPostData).toContain('map0%3ASTYLES=d%C3%A9faut%2Cdefault&')
-        expect(getPrintPostData).toContain('map0%3AOPACITIES=255%2C255')
+        // Extend and update GetPrint parameters
+        const expectedParameters2 = Object.assign({}, expectedParameters, {
+            'map0:LAYERS': 'osm-mapnik,quartiers',
+            'map0:STYLES': 'défaut,default',
+            'map0:OPACITIES': '255,255',
+        })
+        getPrintParams = await checkParameters('Print requests 2', getPrintRequest.postData() ?? '', expectedParameters2)
+        await expect(getPrintParams.size).toBe(13)
 
         getPrintResponse = await getPrintRequest.response();
-        expect(getPrintResponse?.headers()['content-type']).toBe('application/pdf');
+        await expect(getPrintResponse?.headers()['content-type']).toBe('application/pdf');
 
         // Print quartiers not open-topo-map
         await page.locator('#switcher-baselayer').getByRole('combobox').selectOption('open-topo-map');
@@ -638,24 +638,17 @@ test.describe('Print base layers', () => {
         await page.locator('#print-launch').click();
 
         getPrintRequest = await getPrintRequestPromise;
-        getPrintPostData = getPrintRequest.postData();
-        expect(getPrintPostData).not.toBeNull()
-        expect(getPrintPostData).toContain('SERVICE=WMS')
-        expect(getPrintPostData).toContain('REQUEST=GetPrint')
-        expect(getPrintPostData).toContain('VERSION=1.3.0')
-        expect(getPrintPostData).toContain('FORMAT=pdf')
-        expect(getPrintPostData).toContain('TRANSPARENT=true')
-        expect(getPrintPostData).toContain('CRS=EPSG%3A3857')
-        expect(getPrintPostData).toContain('DPI=100')
-        expect(getPrintPostData).toContain('TEMPLATE=simple')
-        //expect(getPrintPostData).toContain('map0%3AEXTENT=')
-        expect(getPrintPostData).toContain('map0%3ASCALE=72224')
-        expect(getPrintPostData).toContain('map0%3ALAYERS=quartiers&')
-        expect(getPrintPostData).toContain('map0%3ASTYLES=default&')
-        expect(getPrintPostData).toContain('map0%3AOPACITIES=255')
+        // Extend and update GetPrint parameters
+        const expectedParameters3 = Object.assign({}, expectedParameters, {
+            'map0:LAYERS': 'quartiers',
+            'map0:STYLES': 'default',
+            'map0:OPACITIES': '255',
+        })
+        getPrintParams = await checkParameters('Print requests 3', getPrintRequest.postData() ?? '', expectedParameters3)
+        await expect(getPrintParams.size).toBe(13)
 
         getPrintResponse = await getPrintRequest.response();
-        expect(getPrintResponse?.headers()['content-type']).toBe('application/pdf');
+        await expect(getPrintResponse?.headers()['content-type']).toBe('application/pdf');
 
         // Print quartiers_baselayer & quartiers
         await page.locator('#switcher-baselayer').getByRole('combobox').selectOption('quartiers_baselayer');
@@ -666,24 +659,17 @@ test.describe('Print base layers', () => {
         await page.locator('#print-launch').click();
 
         getPrintRequest = await getPrintRequestPromise;
-        getPrintPostData = getPrintRequest.postData();
-        expect(getPrintPostData).not.toBeNull()
-        expect(getPrintPostData).toContain('SERVICE=WMS')
-        expect(getPrintPostData).toContain('REQUEST=GetPrint')
-        expect(getPrintPostData).toContain('VERSION=1.3.0')
-        expect(getPrintPostData).toContain('FORMAT=pdf')
-        expect(getPrintPostData).toContain('TRANSPARENT=true')
-        expect(getPrintPostData).toContain('CRS=EPSG%3A3857')
-        expect(getPrintPostData).toContain('DPI=100')
-        expect(getPrintPostData).toContain('TEMPLATE=simple')
-        //expect(getPrintPostData).toContain('map0%3AEXTENT=')
-        expect(getPrintPostData).toContain('map0%3ASCALE=72224')
-        expect(getPrintPostData).toContain('map0%3ALAYERS=quartiers_baselayer%2Cquartiers&')
-        expect(getPrintPostData).toContain('map0%3ASTYLES=default%2Cdefault&')
-        expect(getPrintPostData).toContain('map0%3AOPACITIES=255%2C255')
+        // Extend and update GetPrint parameters
+        const expectedParameters4 = Object.assign({}, expectedParameters, {
+            'map0:LAYERS': 'quartiers_baselayer,quartiers',
+            'map0:STYLES': 'default,default',
+            'map0:OPACITIES': '255,255',
+        })
+        getPrintParams = await checkParameters('Print requests 4', getPrintRequest.postData() ?? '', expectedParameters4)
+        await expect(getPrintParams.size).toBe(13)
 
         getPrintResponse = await getPrintRequest.response();
-        expect(getPrintResponse?.headers()['content-type']).toBe('application/pdf');
+        await expect(getPrintResponse?.headers()['content-type']).toBe('application/pdf');
     });
 });
 
