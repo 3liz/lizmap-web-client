@@ -1,6 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { gotoMap } from './globals';
+import { gotoMap, checkParameters } from './globals';
 
 test.describe('Print', () => {
 
@@ -43,26 +43,34 @@ test.describe('Print', () => {
     });
 
     test('Print requests', async ({ page }) => {
+        // Required GetPrint parameters
+        const expectedParameters = {
+            'SERVICE': 'WMS',
+            'REQUEST': 'GetPrint',
+            'VERSION': '1.3.0',
+            'FORMAT': 'pdf',
+            'TRANSPARENT': 'true',
+            'CRS': 'EPSG:2154',
+            'DPI': '100',
+            'TEMPLATE': 'print_labels',
+        }
         // Test `print_labels` template
         let getPrintPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
         await page.locator('#print-launch').click();
         let getPrintRequest = await getPrintPromise;
-        let getPrintPostData = getPrintRequest.postData();
-        expect(getPrintPostData).toContain('SERVICE=WMS')
-        expect(getPrintPostData).toContain('REQUEST=GetPrint')
-        expect(getPrintPostData).toContain('VERSION=1.3.0')
-        expect(getPrintPostData).toContain('FORMAT=pdf')
-        expect(getPrintPostData).toContain('TRANSPARENT=true')
-        expect(getPrintPostData).toContain('CRS=EPSG%3A2154')
-        expect(getPrintPostData).toContain('DPI=100')
-        expect(getPrintPostData).toContain('TEMPLATE=print_labels')
-        expect(getPrintPostData).toMatch(/map0%3AEXTENT=759249.\d+%2C6271892.\d+%2C781949.\d+%2C6286892.\d+/)
-        expect(getPrintPostData).toContain('map0%3ASCALE=100000')
-        expect(getPrintPostData).toContain('map0%3ALAYERS=OpenStreetMap%2Cquartiers%2Csousquartiers')
-        expect(getPrintPostData).toContain('map0%3ASTYLES=default%2Cd%C3%A9faut%2Cd%C3%A9faut')
-        expect(getPrintPostData).toContain('map0%3AOPACITIES=204%2C255%2C255&simple_label=simple%20label');
-        // Disabled because of the migration when project is saved with QGIS >= 3.32
-        // expect(getPrintPostData).toContain('multiline_label=Multiline%20label');
+        // Extend GetPrint parameters
+        const expectedParameters1 = Object.assign({}, expectedParameters, {
+            'map0:EXTENT': /759249.\d+,6271892.\d+,781949.\d+,6286892.\d+/,
+            'map0:SCALE': '100000',
+            'map0:LAYERS': 'OpenStreetMap,quartiers,sousquartiers',
+            'map0:STYLES': 'default,défaut,défaut',
+            'map0:OPACITIES': '204,255,255',
+            'simple_label': 'simple label',
+            // Disabled because of the migration when project is saved with QGIS >= 3.32
+            // 'multiline_label': 'Multiline label',
+        })
+        let getPrintParams = await checkParameters('Print requests 1', getPrintRequest.postData() ?? '', expectedParameters1)
+        await expect(getPrintParams.size).toBe(15)
 
         // Close message
         await page.locator('.btn-close').click();
@@ -73,20 +81,19 @@ test.describe('Print', () => {
         getPrintPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
         await page.locator('#print-launch').click();
         getPrintRequest = await getPrintPromise;
-        getPrintPostData = getPrintRequest.postData();
-        expect(getPrintPostData).toContain('SERVICE=WMS')
-        expect(getPrintPostData).toContain('REQUEST=GetPrint')
-        expect(getPrintPostData).toContain('VERSION=1.3.0')
-        expect(getPrintPostData).toContain('FORMAT=jpeg')
-        expect(getPrintPostData).toContain('TRANSPARENT=true')
-        expect(getPrintPostData).toContain('CRS=EPSG%3A2154')
-        expect(getPrintPostData).toContain('DPI=200')
-        expect(getPrintPostData).toContain('TEMPLATE=print_map')
-        expect(getPrintPostData).toMatch(/map0%3AEXTENT=765699.\d+%2C6271792.\d+%2C775499.\d+%2C6286992.\d+/)
-        expect(getPrintPostData).toContain('map0%3ASCALE=100000')
-        expect(getPrintPostData).toContain('map0%3ALAYERS=OpenStreetMap%2Cquartiers%2Csousquartiers')
-        expect(getPrintPostData).toContain('map0%3ASTYLES=default%2Cd%C3%A9faut%2Cd%C3%A9faut')
-        expect(getPrintPostData).toContain('map0%3AOPACITIES=204%2C255%2C255');
+        // Extend and update GetPrint parameters
+        const expectedParameters2 = Object.assign({}, expectedParameters, {
+            'FORMAT': 'jpeg',
+            'DPI': '200',
+            'TEMPLATE': 'print_map',
+            'map0:EXTENT': /765699.\d+,6271792.\d+,775499.\d+,6286992.\d+/,
+            'map0:SCALE': '100000',
+            'map0:LAYERS': 'OpenStreetMap,quartiers,sousquartiers',
+            'map0:STYLES': 'default,défaut,défaut',
+            'map0:OPACITIES': '204,255,255',
+        })
+        getPrintParams = await checkParameters('Print requests 2', getPrintRequest.postData() ?? '', expectedParameters2)
+        await expect(getPrintParams.size).toBe(13)
 
         // Close message
         await page.locator('.btn-close').click();
@@ -97,21 +104,18 @@ test.describe('Print', () => {
         getPrintPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
         await page.locator('#print-launch').click();
         getPrintRequest = await getPrintPromise;
-        getPrintPostData = getPrintRequest.postData();
-        expect(getPrintPostData).toContain('SERVICE=WMS')
-        expect(getPrintPostData).toContain('REQUEST=GetPrint')
-        expect(getPrintPostData).toContain('VERSION=1.3.0')
-        expect(getPrintPostData).toContain('FORMAT=pdf')
-        expect(getPrintPostData).toContain('TRANSPARENT=true')
-        expect(getPrintPostData).toContain('CRS=EPSG%3A2154')
-        expect(getPrintPostData).toContain('DPI=100')
-        expect(getPrintPostData).toContain('TEMPLATE=print_overview')
-        expect(getPrintPostData).toMatch(/map1%3AEXTENT=757949.\d+%2C6270842.\d+%2C783249.\d+%2C6287942.\d+/)
-        expect(getPrintPostData).toContain('map1%3ASCALE=100000')
-        expect(getPrintPostData).toContain('map1%3ALAYERS=OpenStreetMap%2Cquartiers%2Csousquartiers')
-        expect(getPrintPostData).toContain('map1%3ASTYLES=default%2Cd%C3%A9faut%2Cd%C3%A9faut')
-        expect(getPrintPostData).toContain('map1%3AOPACITIES=204%2C255%2C255')
-        expect(getPrintPostData).toMatch(/map0%3AEXTENT=761864.\d+%2C6274266.\d+%2C779334.\d+%2C6284518.\d+/);
+        // Extend and update GetPrint parameters
+        const expectedParameters3 = Object.assign({}, expectedParameters, {
+            'TEMPLATE': 'print_overview',
+            'map1:EXTENT': /757949.\d+,6270842.\d+,783249.\d+,6287942.\d+/,
+            'map1:SCALE': '100000',
+            'map1:LAYERS': 'OpenStreetMap,quartiers,sousquartiers',
+            'map1:STYLES': 'default,défaut,défaut',
+            'map1:OPACITIES': '204,255,255',
+            'map0:EXTENT': /761864.\d+,6274266.\d+,779334.\d+,6284518.\d+/,
+        })
+        getPrintParams = await checkParameters('Print requests 3', getPrintRequest.postData() ?? '', expectedParameters3)
+        await expect(getPrintParams.size).toBe(14)
 
         // Close message
         await page.locator('.btn-close').click();
@@ -139,25 +143,41 @@ test.describe('Print', () => {
         getPrintPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
         await page.locator('#print-launch').click();
         getPrintRequest = await getPrintPromise;
-        getPrintPostData = getPrintRequest.postData();
-        expect(getPrintPostData).toContain('SERVICE=WMS')
-        expect(getPrintPostData).toContain('REQUEST=GetPrint')
-        expect(getPrintPostData).toContain('VERSION=1.3.0')
-        expect(getPrintPostData).toContain('FORMAT=pdf')
-        expect(getPrintPostData).toContain('TRANSPARENT=true')
-        expect(getPrintPostData).toContain('CRS=EPSG%3A2154')
-        expect(getPrintPostData).toContain('DPI=100')
-        expect(getPrintPostData).toContain('TEMPLATE=print_labels')
-        expect(getPrintPostData).toMatch(/map0%3AEXTENT=759249.\d+%2C6271892.\d+%2C781949.\d+%2C6286892.\d+/)
-        expect(getPrintPostData).toContain('map0%3ASCALE=100000')
-        expect(getPrintPostData).toContain('map0%3ALAYERS=OpenStreetMap%2Cquartiers%2Csousquartiers')
-        expect(getPrintPostData).toContain('map0%3ASTYLES=default%2Cd%C3%A9faut%2Cd%C3%A9faut')
-        expect(getPrintPostData).toContain('map0%3AOPACITIES=204%2C255%2C255')
-        expect(getPrintPostData).toMatch(/map0%3AHIGHLIGHT_GEOM=CURVEPOLYGON\(CIRCULARSTRING\(%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20772265.\d+%206279008.\d+%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20775229.\d+%206281972.\d+%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20778193.\d+%206279008.\d+%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20775229.\d+%206276044.\d+%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20772265.\d+%206279008.\d+\)\)/)
-        expect(getPrintPostData).toContain('map0%3AHIGHLIGHT_SYMBOL=%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22UTF-8%22%3F%3E%0A%20%20%20%20%3CStyledLayerDescriptor%20xmlns%3D%22http%3A%2F%2Fwww.opengis.net%2Fsld%22%20xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%20xmlns%3Axsi%3D%22http%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema-instance%22%20version%3D%221.1.0%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20xsi%3AschemaLocation%3D%22http%3A%2F%2Fwww.opengis.net%2Fsld%20http%3A%2F%2Fschemas.opengis.net%2Fsld%2F1.1.0%2FStyledLayerDescriptor.xsd%22%20xmlns%3Ase%3D%22http%3A%2F%2Fwww.opengis.net%2Fse%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CUserStyle%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3CFeatureTypeStyle%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3CRule%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3CPolygonSymbolizer%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3CStroke%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CSvgParameter%20name%3D%22stroke%22%3E%23ff0000%3C%2FSvgParameter%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CSvgParameter%20name%3D%22stroke-opacity%22%3E1%3C%2FSvgParameter%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CSvgParameter%20name%3D%22stroke-width%22%3E2%3C%2FSvgParameter%3E%0A%20%20%20%20%20%20%20%20%3C%2FStroke%3E%0A%20%20%20%20%20%20%20%20%3CFill%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CSvgParameter%20name%3D%22fill%22%3E%23ff0000%3C%2FSvgParameter%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CSvgParameter%20name%3D%22fill-opacity%22%3E0.2%3C%2FSvgParameter%3E%0A%20%20%20%20%20%20%20%20%3C%2FFill%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FPolygonSymbolizer%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FRule%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FFeatureTypeStyle%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FUserStyle%3E%0A%20%20%20%20%20%20%20%20%3C%2FStyledLayerDescriptor%3E')
-        expect(getPrintPostData).toContain('simple_label=simple%20label');
-        // Disabled because of the migration when project is saved with QGIS >= 3.32
-        // expect(getPrintPostData).toContain('multiline_label=Multiline%20label');
+        // Extend and update GetPrint parameters
+        const expectedParameters4 = Object.assign({}, expectedParameters, {
+            'TEMPLATE': 'print_labels',
+            'map0:EXTENT': /759249.\d+,6271892.\d+,781949.\d+,6286892.\d+/,
+            'map0:SCALE': '100000',
+            'map0:LAYERS': 'OpenStreetMap,quartiers,sousquartiers',
+            'map0:STYLES': 'default,défaut,défaut',
+            'map0:OPACITIES': '204,255,255',
+            'map0:HIGHLIGHT_GEOM': /CURVEPOLYGON\(CIRCULARSTRING\(\n +772265.\d+ 6279008.\d+,\n +775229.\d+ 6281972.\d+,\n +778193.\d+ 6279008.\d+,\n +775229.\d+ 6276044.\d+,\n +772265.\d+ 6279008.\d+\)\)/,
+            'map0:HIGHLIGHT_SYMBOL': `<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+    <StyledLayerDescriptor xmlns=\"http://www.opengis.net/sld\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\"1.1.0\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/StyledLayerDescriptor.xsd\" xmlns:se=\"http://www.opengis.net/se\">
+            <UserStyle>
+                <FeatureTypeStyle>
+                    <Rule>
+                        <PolygonSymbolizer>
+                <Stroke>
+            <SvgParameter name=\"stroke\">#ff0000</SvgParameter>
+            <SvgParameter name=\"stroke-opacity\">1</SvgParameter>
+            <SvgParameter name=\"stroke-width\">2</SvgParameter>
+        </Stroke>
+        <Fill>
+            <SvgParameter name=\"fill\">#ff0000</SvgParameter>
+            <SvgParameter name=\"fill-opacity\">0.2</SvgParameter>
+        </Fill>
+            </PolygonSymbolizer>
+                    </Rule>
+                </FeatureTypeStyle>
+            </UserStyle>
+        </StyledLayerDescriptor>`,
+            'simple_label': 'simple label',
+            // Disabled because of the migration when project is saved with QGIS >= 3.32
+            // 'multiline_label': 'Multiline label',
+        })
+        getPrintParams = await checkParameters('Print requests 4', getPrintRequest.postData() ?? '', expectedParameters4)
+        await expect(getPrintParams.size).toBe(17)
     });
 
     test('Print requests with selection', async ({ page }) => {
