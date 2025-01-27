@@ -1,6 +1,7 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 import { gotoMap } from './globals';
+import {ProjectPage} from "./pages/project";
 
 test.describe('Dataviz in popup', () => {
     test('Check lizmap feature toolbar', async ({ page }) => {
@@ -225,23 +226,23 @@ test.describe('Style parameter in GetFeatureInfo request', () => {
     })
 })
 
-test.describe('Raster identify', () => {
+test.describe('Raster identify',
+    {
+        tag: ['@readonly', '@lizmap.com'],
+    },() => {
 
     test('Raster identify check with data-attributes', async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=rasters';
-        await gotoMap(url, page);
+        const project = new ProjectPage(page, 'rasters');
+        await project.open();
 
         let getFeatureInfoPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 510,
-                y: 415
-            }
-        });
-        let getFeatureInfoRequest = await getFeatureInfoPromise
-        const popup = page.locator("#popupcontent div.lizmapPopupContent div.lizmapPopupSingleFeature")
-        await expect(popup).toHaveAttribute("data-layer-id", "local_raster_layer_c4c2ec5e_7567_476b_bf78_2b7c64f32615")
-        await expect(popup).not.toHaveAttribute("data-feature-id", )
+
+        await project.clickOnMap(510, 415);
+
+        await getFeatureInfoPromise;
+        const popup = project.popupContent.locator("div.lizmapPopupContent div.lizmapPopupSingleFeature");
+        await expect(popup).toHaveAttribute("data-layer-id", "local_raster_layer_c4c2ec5e_7567_476b_bf78_2b7c64f32615");
+        await expect(popup).not.toHaveAttribute("data-feature-id");
     });
 });
 
