@@ -58,8 +58,11 @@ lizmap/www/assets/js/search.js
 lizmap/www/assets/js/switcher-layers-actions.js
 lizmap/www/assets/js/timemanager.js
 lizmap/www/assets/js/view.js
+
 # Docs
+docs/.build
 docs/js
+docs/php
 
 temp/lizmap/*
 !temp/lizmap/.empty

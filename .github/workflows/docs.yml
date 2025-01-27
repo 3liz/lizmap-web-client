@@ -31,20 +31,22 @@ jobs:
           node-version: 21
 
       - name: Change tokens about versions
-        run: make version-doc
+        run: |
+          make version-doc
+          echo "FULL_VERSION=${FULL_VERSION}" >> $GITHUB_ENV
 
       - name: Building JS docs
-        run: make js-doc
+        run: |
+          make js-doc
 
       - name: Upload JS artifacts
         uses: actions/upload-artifact@master
         with:
           name: js
-          path: docs/js/assets/1.0.0/
+          path: docs/js/assets/${{ env.FULL_VERSION }}
 
   phpdoc:
     name: "🐘 PHP-Doc"
-    if: github.repository == '3liz/lizmap-web-client' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
 
@@ -73,6 +75,9 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Change tokens about versions
+        run: make version-doc
+
       - name: Download PHP artifacts
         uses: actions/download-artifact@master
         with:
@@ -84,9 +89,6 @@ jobs:
         with:
           name: js
           path: docs/js/
-
-      - name: Change tokens about versions
-        run: make version-doc
 
       - name: Upload all docs artifacts
         uses: actions/upload-pages-artifact@v3
