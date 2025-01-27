@@ -1,6 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { gotoMap } from './globals';;
+import { gotoMap, checkParameters } from './globals';;
 
 test.describe('Print in project projection', () => {
 
@@ -19,22 +19,27 @@ test.describe('Print in project projection', () => {
         await page.locator('#print-launch').click();
 
         const getPrintRequest = await getPrintPromise;
-        const getPrintPostData = getPrintRequest.postData();
-        expect(getPrintPostData).toContain('SERVICE=WMS')
-        expect(getPrintPostData).toContain('REQUEST=GetPrint')
-        expect(getPrintPostData).toContain('VERSION=1.3.0')
-        expect(getPrintPostData).toContain('FORMAT=pdf')
-        expect(getPrintPostData).toContain('TRANSPARENT=true')
-        expect(getPrintPostData).toContain('CRS=EPSG%3A3943')
-        expect(getPrintPostData).toContain('DPI=100')
-        expect(getPrintPostData).toContain('TEMPLATE=Paysage%20A4')
-        expect(getPrintPostData).toMatch(/map1%3AEXTENT=1697873.\d+%2C2216859.\d+%2C1698164.\d+%2C2217051.\d+/)
-        expect(getPrintPostData).toContain('map1%3ASCALE=1000')
-        expect(getPrintPostData).toContain('map1%3ALAYERS=reseau')
-        expect(getPrintPostData).toContain('map1%3ASTYLES=default')
-        expect(getPrintPostData).toContain('map1%3AOPACITIES=255')
-        // Disabled because of the migration when project is saved with QGIS >= 3.32
-        // expect(getPrintPostData).toContain('multiline_label=Multiline%20label');
+        const expectedParameters = {
+            'SERVICE': 'WMS',
+            'REQUEST': 'GetPrint',
+            'VERSION': '1.3.0',
+            'FORMAT': 'pdf',
+            'TRANSPARENT': 'true',
+            'CRS': 'EPSG:3943',
+            'DPI': '100',
+            'TEMPLATE': 'Paysage A4',
+            'map1:EXTENT': /1697873.\d+,2216859.\d+,1698164.\d+,2217051.\d+/,
+            'map1:SCALE': '1000',
+            'map1:LAYERS': 'reseau',
+            'map1:STYLES': 'default',
+            'map1:OPACITIES': '255',
+            // Disabled because of the migration when project is saved with QGIS >= 3.32
+            // 'multiline_label': 'Multiline label',
+        }
+        const getPrintParams = await checkParameters('Print empty', getPrintRequest.postData() ?? '', expectedParameters)
+        await expect(getPrintParams.size).toBe(14)
+        await getPrintRequest.response()
+        await page.unroute('**/service*')
     })
 
     test('Print external baselayer', async ({ page }) => {
@@ -44,21 +49,26 @@ test.describe('Print in project projection', () => {
         await page.locator('#print-launch').click();
 
         const getPrintRequest = await getPrintPromise;
-        const getPrintPostData = getPrintRequest.postData();
-        expect(getPrintPostData).toContain('SERVICE=WMS')
-        expect(getPrintPostData).toContain('REQUEST=GetPrint')
-        expect(getPrintPostData).toContain('VERSION=1.3.0')
-        expect(getPrintPostData).toContain('FORMAT=pdf')
-        expect(getPrintPostData).toContain('TRANSPARENT=true')
-        expect(getPrintPostData).toContain('CRS=EPSG%3A3943')
-        expect(getPrintPostData).toContain('DPI=100')
-        expect(getPrintPostData).toContain('TEMPLATE=Paysage%20A4')
-        expect(getPrintPostData).toMatch(/map1%3AEXTENT=1697873.\d+%2C2216859.\d+%2C1698164.\d+%2C2217051.\d+/)
-        expect(getPrintPostData).toContain('map1%3ASCALE=1000')
-        expect(getPrintPostData).toContain('map1%3ALAYERS=Photographies_aeriennes%2Creseau')
-        expect(getPrintPostData).toContain('map1%3ASTYLES=default%2Cdefault')
-        expect(getPrintPostData).toContain('map1%3AOPACITIES=255%2C255')
-        // Disabled because of the migration when project is saved with QGIS >= 3.32
-        // expect(getPrintPostData).toContain('multiline_label=Multiline%20label');
+        const expectedParameters = {
+            'SERVICE': 'WMS',
+            'REQUEST': 'GetPrint',
+            'VERSION': '1.3.0',
+            'FORMAT': 'pdf',
+            'TRANSPARENT': 'true',
+            'CRS': 'EPSG:3943',
+            'DPI': '100',
+            'TEMPLATE': 'Paysage A4',
+            'map1:EXTENT': /1697873.\d+,2216859.\d+,1698164.\d+,2217051.\d+/,
+            'map1:SCALE': '1000',
+            'map1:LAYERS': 'Photographies_aeriennes,reseau',
+            'map1:STYLES': 'default,default',
+            'map1:OPACITIES': '255,255',
+            // Disabled because of the migration when project is saved with QGIS >= 3.32
+            // 'multiline_label': 'Multiline label',
+        }
+        const getPrintParams = await checkParameters('Print external baselayer', getPrintRequest.postData() ?? '', expectedParameters)
+        await expect(getPrintParams.size).toBe(14)
+        await getPrintRequest.response()
+        await page.unroute('**/service*')
     })
 })
