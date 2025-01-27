@@ -46,7 +46,7 @@
           </Option>
         </customproperties>
       </layer-tree-layer>
-      <layer-tree-layer checked="Qt::Unchecked" expanded="0" id="d_faut_03b0eb24_f924_41e8_a5ec_0e41358667f2" legend_exp="" legend_split_behavior="0" name="WMS single internal" patch_size="-1,-1" providerKey="wms" source="contextualWMSLegend=0&amp;crs=EPSG:3857&amp;dpiMode=7&amp;featureCount=10&amp;format=image/png;%20mode%3D8bit&amp;layers=commune&amp;styles=d%C3%A9faut&amp;url=https://demo.lizmap.com/lizmap/index.php/lizmap/service?repository%3Dmiscellaneous%26project%3Dflatgeobuf%26VERSION%3D1.3.0">
+      <layer-tree-layer checked="Qt::Unchecked" expanded="0" id="d_faut_03b0eb24_f924_41e8_a5ec_0e41358667f2" legend_exp="" legend_split_behavior="0" name="WMS single internal" patch_size="-1,-1" providerKey="wms" source="contextualWMSLegend=0&amp;crs=EPSG:3857&amp;dpiMode=7&amp;featureCount=10&amp;format=image/png;%20mode%3D8bit&amp;layers=Communes&amp;styles=d%C3%A9faut&amp;url=https://liz.lizmap.com/tests/index.php/lizmap/service?repository%3Dtestse2elwc%26project%3Dwmts%26VERSION%3D1.3.0">
         <customproperties>
           <Option type="Map">
             <Option name="expandedLegendNodes" type="invalid"></Option>
@@ -634,7 +634,7 @@
         <ymax>43.65374993394283365</ymax>
       </wgs84extent>
       <id>d_faut_03b0eb24_f924_41e8_a5ec_0e41358667f2</id>
-      <datasource>contextualWMSLegend=0&amp;crs=EPSG:3857&amp;dpiMode=7&amp;featureCount=10&amp;format=image/png;%20mode%3D8bit&amp;layers=commune&amp;styles=d%C3%A9faut&amp;url=https://demo.lizmap.com/lizmap/index.php/lizmap/service?repository%3Dmiscellaneous%26project%3Dflatgeobuf%26VERSION%3D1.3.0</datasource>
+      <datasource>contextualWMSLegend=0&amp;crs=EPSG:3857&amp;dpiMode=7&amp;featureCount=10&amp;format=image/png;%20mode%3D8bit&amp;layers=Communes&amp;styles=d%C3%A9faut&amp;url=https://liz.lizmap.com/tests/index.php/lizmap/service?repository%3Dtestse2elwc%26project%3Dwmts%26VERSION%3D1.3.0</datasource>
       <shortname>WMST_lizmap_com_MTP_1</shortname>
       <keywordList>
         <value></value>
