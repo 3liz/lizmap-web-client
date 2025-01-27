@@ -282,7 +282,8 @@ class qgisVectorLayer extends qgisMapLayer
                 if (!empty($dtParams->sslmode)) {
                     $jdbParams['sslmode'] = $dtParams->sslmode;
                 }
-                // when qgis authentication config is used to authenticate a layer against, it requires to have preconfigured jdb::profile to align with the login credentials set in qgis authcfg
+                // When the QGIS authentication config is used to authenticate a layer,
+                // it requires to have set up "jdb::profile" to align with the login credentials set in QGIS "authcfg"
                 if (!empty($dtParams->authcfg)) {
                     $jdbParams['authcfg'] = $dtParams->authcfg;
                     // retrieving user/password from the corresponding jdb::profile in profiles.ini.php.
