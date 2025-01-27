@@ -40,7 +40,7 @@ jobs:
         uses: actions/upload-artifact@master
         with:
           name: js
-          path: docs/js/assets/1.0.0/
+          path: docs/js/assets/**/
 
   phpdoc:
     name: "🐘 PHP-Doc"
