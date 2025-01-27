@@ -330,15 +330,7 @@ class Server
         $services = \lizmap::getServices();
 
         // Get the data from the QGIS Server Lizmap plugin
-        if (empty($services->lizmapPluginAPIURL)) {
-            // When the Lizmap API URL is not set, we use the WMS server URL only
-            $lizmap_url = rtrim($services->wmsServerURL, '/').'/lizmap/server.json';
-        } else {
-            // When the Lizmap API URL is set
-            $lizmap_url = rtrim($services->lizmapPluginAPIURL, '/').'/server.json';
-        }
-
-        list($resp, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($lizmap_url);
+        list($resp, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($services->getUrlLizmapQgisServerMetadata());
         if ($code == 200 && $mime == 'application/json' && strpos((string) $resp, 'metadata') !== false) {
             // Convert the JSON to an associative array
             $qgis_server_data = json_decode($resp, true);
