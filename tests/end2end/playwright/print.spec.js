@@ -482,6 +482,17 @@ test.describe('Print 3857', () => {
     });
 
     test('Print requests', async ({ page }) => {
+        // Required GetPrint parameters
+        const expectedParameters = {
+            'SERVICE': 'WMS',
+            'REQUEST': 'GetPrint',
+            'VERSION': '1.3.0',
+            'FORMAT': 'pdf',
+            'TRANSPARENT': 'true',
+            'CRS': 'EPSG:3857',
+            'DPI': '100',
+            'TEMPLATE': 'print_labels',
+        }
         // Test `print_labels` template
         let getPrintPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
 
@@ -494,23 +505,19 @@ test.describe('Print 3857', () => {
 
         // check request
         let getPrintRequest = await getPrintPromise;
-        let getPrintPostData = getPrintRequest.postData();
-        expect(getPrintPostData).toContain('SERVICE=WMS')
-        expect(getPrintPostData).toContain('REQUEST=GetPrint')
-        expect(getPrintPostData).toContain('VERSION=1.3.0')
-        expect(getPrintPostData).toContain('FORMAT=pdf')
-        expect(getPrintPostData).toContain('TRANSPARENT=true')
-        expect(getPrintPostData).toContain('CRS=EPSG%3A3857')
-        expect(getPrintPostData).toContain('DPI=100')
-        expect(getPrintPostData).toContain('TEMPLATE=print_labels')
-        expect(getPrintPostData).toContain('map0%3AEXTENT=423093.00655000005%2C5399873.567900001%2C439487.85455000005%2C5410707.167900001')
-        expect(getPrintPostData).toContain('map0%3ASCALE=72224')
-        expect(getPrintPostData).toContain('map0%3ALAYERS=OpenStreetMap%2Cquartiers%2Csousquartiers')
-        expect(getPrintPostData).toContain('map0%3ASTYLES=default%2Cd%C3%A9faut%2Cd%C3%A9faut')
-        expect(getPrintPostData).toContain('map0%3AOPACITIES=204%2C255%2C255')
-        expect(getPrintPostData).toContain('simple_label=simple%20label');
-        // Disabled because of the migration when project is saved with QGIS >= 3.32
-        // expect(getPrintPostData).toContain('multiline_label=Multiline%20label');
+        // Extend GetPrint parameters
+        const expectedParameters1 = Object.assign({}, expectedParameters, {
+            'map0:EXTENT': /423093.\d+,5399873.\d+,439487.\d+,5410707.\d+/,
+            'map0:SCALE': '72224',
+            'map0:LAYERS': 'OpenStreetMap,quartiers,sousquartiers',
+            'map0:STYLES': 'default,défaut,défaut',
+            'map0:OPACITIES': '204,255,255',
+            'simple_label': 'simple label',
+            // Disabled because of the migration when project is saved with QGIS >= 3.32
+            // 'multiline_label': 'Multiline label',
+        })
+        let getPrintParams = await expectParametersToContain('Print requests 1', getPrintRequest.postData() ?? '', expectedParameters1)
+        await expect(getPrintParams.size).toBe(15)
 
         // Test `print_map` template
         await page.locator('#print-template').selectOption('1');
@@ -525,20 +532,19 @@ test.describe('Print 3857', () => {
 
         // check request
         getPrintRequest = await getPrintPromise;
-        getPrintPostData = getPrintRequest.postData();
-        expect(getPrintPostData).toContain('SERVICE=WMS')
-        expect(getPrintPostData).toContain('REQUEST=GetPrint')
-        expect(getPrintPostData).toContain('VERSION=1.3.0')
-        expect(getPrintPostData).toContain('FORMAT=jpeg')
-        expect(getPrintPostData).toContain('TRANSPARENT=true')
-        expect(getPrintPostData).toContain('CRS=EPSG%3A3857')
-        expect(getPrintPostData).toContain('DPI=200')
-        expect(getPrintPostData).toContain('TEMPLATE=print_map')
-        expect(getPrintPostData).toContain('map0%3AEXTENT=427751.45455%2C5399801.343900001%2C434829.4065500001%2C5410779.391900001')
-        expect(getPrintPostData).toContain('map0%3ASCALE=72224')
-        expect(getPrintPostData).toContain('map0%3ALAYERS=OpenStreetMap%2Cquartiers%2Csousquartiers')
-        expect(getPrintPostData).toContain('map0%3ASTYLES=default%2Cd%C3%A9faut%2Cd%C3%A9faut')
-        expect(getPrintPostData).toContain('map0%3AOPACITIES=204%2C255%2C255')
+        // Extend and update GetPrint parameters
+        const expectedParameters2 = Object.assign({}, expectedParameters, {
+            'FORMAT': 'jpeg',
+            'DPI': '200',
+            'TEMPLATE': 'print_map',
+            'map0:EXTENT': /427751.\d+,5399801.\d+,434829.\d+,5410779.\d+/,
+            'map0:SCALE': '72224',
+            'map0:LAYERS': 'OpenStreetMap,quartiers,sousquartiers',
+            'map0:STYLES': 'default,défaut,défaut',
+            'map0:OPACITIES': '204,255,255',
+        })
+        getPrintParams = await expectParametersToContain('Print requests 2', getPrintRequest.postData() ?? '', expectedParameters2)
+        await expect(getPrintParams.size).toBe(13)
 
         // Redlining with circle
         await page.locator('#button-draw').click();
@@ -572,25 +578,40 @@ test.describe('Print 3857', () => {
 
         // check request
         getPrintRequest = await getPrintPromise;
-        getPrintPostData = getPrintRequest.postData();
-        expect(getPrintPostData).toContain('SERVICE=WMS')
-        expect(getPrintPostData).toContain('REQUEST=GetPrint')
-        expect(getPrintPostData).toContain('VERSION=1.3.0')
-        expect(getPrintPostData).toContain('FORMAT=pdf')
-        expect(getPrintPostData).toContain('TRANSPARENT=true')
-        expect(getPrintPostData).toContain('CRS=EPSG%3A3857')
-        expect(getPrintPostData).toContain('DPI=100')
-        expect(getPrintPostData).toContain('TEMPLATE=print_labels')
-        expect(getPrintPostData).toContain('map0%3AEXTENT=423093.00655000005%2C5399873.567900001%2C439487.85455000005%2C5410707.167900001')
-        expect(getPrintPostData).toContain('map0%3ASCALE=72224')
-        expect(getPrintPostData).toContain('map0%3ALAYERS=OpenStreetMap%2Cquartiers%2Csousquartiers')
-        expect(getPrintPostData).toContain('map0%3ASTYLES=default%2Cd%C3%A9faut%2Cd%C3%A9faut')
-        expect(getPrintPostData).toContain('map0%3AOPACITIES=204%2C255%2C255')
-        expect(getPrintPostData).toContain('map0%3AHIGHLIGHT_GEOM=CURVEPOLYGON(CIRCULARSTRING(%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20433697.51452157885%205404736.19944501%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20437978.67052402196%205409017.355447453%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20442259.82652646507%205404736.19944501%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20437978.67052402196%205400455.043442567%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20433697.51452157885%205404736.19944501))')
-        expect(getPrintPostData).toContain('map0%3AHIGHLIGHT_SYMBOL=%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22UTF-8%22%3F%3E%0A%20%20%20%20%3CStyledLayerDescriptor%20xmlns%3D%22http%3A%2F%2Fwww.opengis.net%2Fsld%22%20xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%20xmlns%3Axsi%3D%22http%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema-instance%22%20version%3D%221.1.0%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20xsi%3AschemaLocation%3D%22http%3A%2F%2Fwww.opengis.net%2Fsld%20http%3A%2F%2Fschemas.opengis.net%2Fsld%2F1.1.0%2FStyledLayerDescriptor.xsd%22%20xmlns%3Ase%3D%22http%3A%2F%2Fwww.opengis.net%2Fse%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CUserStyle%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3CFeatureTypeStyle%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3CRule%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3CPolygonSymbolizer%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3CStroke%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CSvgParameter%20name%3D%22stroke%22%3E%23ff0000%3C%2FSvgParameter%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CSvgParameter%20name%3D%22stroke-opacity%22%3E1%3C%2FSvgParameter%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CSvgParameter%20name%3D%22stroke-width%22%3E2%3C%2FSvgParameter%3E%0A%20%20%20%20%20%20%20%20%3C%2FStroke%3E%0A%20%20%20%20%20%20%20%20%3CFill%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CSvgParameter%20name%3D%22fill%22%3E%23ff0000%3C%2FSvgParameter%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3CSvgParameter%20name%3D%22fill-opacity%22%3E0.2%3C%2FSvgParameter%3E%0A%20%20%20%20%20%20%20%20%3C%2FFill%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FPolygonSymbolizer%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FRule%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FFeatureTypeStyle%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3C%2FUserStyle%3E%0A%20%20%20%20%20%20%20%20%3C%2FStyledLayerDescriptor%3E')
-        expect(getPrintPostData).toContain('simple_label=simple%20label');
-        // Disabled because of the migration when project is saved with QGIS >= 3.32
-        // expect(getPrintPostData).toContain('multiline_label=Multiline%20label');
+        // Extend and update GetPrint parameters
+        const expectedParameters3 = Object.assign({}, expectedParameters, {
+            'map0:EXTENT': /423093.\d+,5399873.\d+,439487.\d+,5410707.\d+/,
+            'map0:SCALE': '72224',
+            'map0:LAYERS': 'OpenStreetMap,quartiers,sousquartiers',
+            'map0:STYLES': 'default,défaut,défaut',
+            'map0:OPACITIES': '204,255,255',
+            'map0:HIGHLIGHT_GEOM': /CURVEPOLYGON\(CIRCULARSTRING\(\n +433697.\d+ 5404736.\d+,\n +437978.\d+ 5409017.\d+,\n +442259.\d+ 5404736.\d+,\n +437978.\d+ 5400455.\d+,\n +433697.\d+ 5404736.\d+\)\)/,
+            'map0:HIGHLIGHT_SYMBOL': `<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+    <StyledLayerDescriptor xmlns=\"http://www.opengis.net/sld\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\"1.1.0\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/sld http://schemas.opengis.net/sld/1.1.0/StyledLayerDescriptor.xsd\" xmlns:se=\"http://www.opengis.net/se\">
+            <UserStyle>
+                <FeatureTypeStyle>
+                    <Rule>
+                        <PolygonSymbolizer>
+                <Stroke>
+            <SvgParameter name=\"stroke\">#ff0000</SvgParameter>
+            <SvgParameter name=\"stroke-opacity\">1</SvgParameter>
+            <SvgParameter name=\"stroke-width\">2</SvgParameter>
+        </Stroke>
+        <Fill>
+            <SvgParameter name=\"fill\">#ff0000</SvgParameter>
+            <SvgParameter name=\"fill-opacity\">0.2</SvgParameter>
+        </Fill>
+            </PolygonSymbolizer>
+                    </Rule>
+                </FeatureTypeStyle>
+            </UserStyle>
+        </StyledLayerDescriptor>`,
+            'simple_label': 'simple label',
+            // Disabled because of the migration when project is saved with QGIS >= 3.32
+            // 'multiline_label': 'Multiline label',
+        })
+        getPrintParams = await expectParametersToContain('Print requests 3', getPrintRequest.postData() ?? '', expectedParameters3)
+        await expect(getPrintParams.size).toBe(17)
     });
 });
 
