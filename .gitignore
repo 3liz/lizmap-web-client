@@ -78,8 +78,11 @@ lizmap/www/assets/js/BufferOp.bundle.js.map
 lizmap/www/assets/js/OLparser.bundle.js
 lizmap/www/assets/js/OLparser.bundle.js.map
 lizmap/www/assets/js/vendors-node_modules_jsts_org_locationtech_jts_geom_GeometryFactory_js.bundle.js
+
 # Docs
+docs/.build
 docs/js
+docs/php
 
 temp/lizmap/*
 !temp/lizmap/.empty
