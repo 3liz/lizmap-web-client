@@ -5,12 +5,14 @@
         xmlns="https://www.phpdoc.org"
         xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/phpDocumentor/phpDocumentor/master/data/xsd/phpdoc.xsd"
 >
-    <title>Lizmap Web Client Master</title>
+    <!-- VERSION is updated by the Makefile command -->
+    <title>Lizmap Web Client VERSION</title>
     <paths>
         <output>php</output>
         <cache>.build/cache</cache>
     </paths>
-    <version number="master">
+    <!-- VERSION is updated by the Makefile command -->
+    <version number="VERSION">
         <api>
             <source dsn="../lizmap/">
                 <path>modules</path>

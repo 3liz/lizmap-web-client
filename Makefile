@@ -206,7 +206,7 @@ saas_release: check-release
 
 version-doc:
 	sed -i "s@COMMIT_ID@$(COMMITID)@g" docs/index.html
-	sed -i "s@VERSION@$(FULL_VERSION)@g" docs/index.html
+	sed -i "s@VERSION@$(FULL_VERSION)@g" docs/index.html docs/phpdoc.xml
 	sed -i "s@DATE@$(DATE_VERSION)@g" docs/index.html
 	jq '.version = "$(FULL_VERSION)"' assets/package.json > "$tmp" && mv "$tmp" assets/package.json
 
