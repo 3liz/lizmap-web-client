@@ -21,6 +21,7 @@ PATCH_VERSION=$(word 3,$(subst ., ,$(STABLE_VERSION)))
 
 SHORT_VERSION=$(MAJOR_VERSION).$(MINOR_VERSION)
 SHORT_VERSION_NAME=$(MAJOR_VERSION)_$(MINOR_VERSION)
+FULL_VERSION=$(SHORT_VERSION).$(PATCH_VERSION)
 DATE_VERSION=$(shell date +%Y-%m-%d)
 
 LATEST_RELEASE=$(shell git branch -a | grep -Po "(release_\\d+_\\d+)" | sort | tail -n1 | cut -d'_' -f 2,3)
@@ -203,6 +204,12 @@ saas_deploy_snap:
 saas_release: check-release
 	saas_release_lizmap stable $(SAAS_LIZMAP_VERSION) $(GENERIC_PACKAGE_PATH)
 
+version-doc:
+	sed -i "s@COMMIT_ID@$(COMMITID)@g" docs/index.html
+	sed -i "s@VERSION@$(FULL_VERSION)@g" docs/index.html
+	sed -i "s@DATE@$(DATE_VERSION)@g" docs/index.html
+	jq '.version = "$(FULL_VERSION)"' assets/package.json > "$tmp" && mv "$tmp" assets/package.json
+
 php-doc:
 	docker run --rm -v ${PWD}:/data phpdoc/phpdoc:3 -c docs/phpdoc.xml
 
@@ -240,7 +247,7 @@ docker-clean:
 docker-clean-all:
 	docker rmi -f $(shell docker images $(DOCKER_BUILDIMAGE) -q) || true
 
-docker-release: 
+docker-release:
 	cd docker && release-image $(DOCKER_RELEASE_PACKAGE_NAME)
 	cd docker && push-to-docker-hub --clean
 
