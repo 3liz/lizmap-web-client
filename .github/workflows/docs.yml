@@ -25,14 +25,19 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Setup node
+        uses: actions/setup-node@v4
         with:
           node-version: 21
+
+      - name: Change tokens about versions
+        run: make version-doc
 
       - name: Building JS docs
         run: make js-doc
 
-      - uses: actions/upload-artifact@master
+      - name: Upload JS artifacts
+        uses: actions/upload-artifact@master
         with:
           name: js
           path: docs/js/assets/1.0.0/
@@ -46,10 +51,14 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Change tokens about versions
+        run: make version-doc
+
       - name: Building PHP docs
         run: make php-doc
 
-      - uses: actions/upload-artifact@master
+      - name: Upload PHP artifacts
+        uses: actions/upload-artifact@master
         with:
           name: php
           path: docs/php
@@ -64,17 +73,22 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - uses: actions/download-artifact@master
+      - name: Download PHP artifacts
+        uses: actions/download-artifact@master
         with:
           name: php
           path: docs/php/
 
-      - uses: actions/download-artifact@master
+      - name: Download JS artifacts
+        uses: actions/download-artifact@master
         with:
           name: js
           path: docs/js/
 
-      - name: Upload artifact
+      - name: Change tokens about versions
+        run: make version-doc
+
+      - name: Upload all docs artifacts
         uses: actions/upload-pages-artifact@v3
         with:
           path: docs/
