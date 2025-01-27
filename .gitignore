@@ -73,7 +73,9 @@ lizmap/www/assets/js/view.js
 lizmap/www/assets/js/view.js.map
 
 # Docs
+docs/.build
 docs/js
+docs/php
 
 temp/lizmap/*
 !temp/lizmap/.empty
