@@ -325,26 +325,29 @@ test.describe('Print in popup', () => {
         const getPrintPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
         await featureAtlasQuartiers.locator('button').click();
         const getPrintRequest = await getPrintPromise;
-        const getPrintPostData = getPrintRequest.postData();
-        expect(getPrintPostData).toContain('SERVICE=WMS')
-        expect(getPrintPostData).toContain('REQUEST=GetPrintAtlas')
-        expect(getPrintPostData).toContain('VERSION=1.3.0')
-        expect(getPrintPostData).toContain('FORMAT=pdf')
-        expect(getPrintPostData).toContain('TRANSPARENT=true')
-        expect(getPrintPostData).not.toContain('CRS=EPSG%3A2154')
-        expect(getPrintPostData).toContain('DPI=100')
-        expect(getPrintPostData).toContain('TEMPLATE=atlas_quartiers')
-        expect(getPrintPostData).not.toContain('LAYERS=quartiers')
-        expect(getPrintPostData).toContain('LAYER=quartiers')
-        expect(getPrintPostData).not.toContain('ATLAS_PK=1')
-        expect(getPrintPostData).toContain('EXP_FILTER=%24id%20IN%20(1)')
+        const expectedParameters = {
+            'SERVICE': 'WMS',
+            'REQUEST': 'GetPrintAtlas',
+            'VERSION': '1.3.0',
+            'FORMAT': 'pdf',
+            'TRANSPARENT': 'true',
+            'DPI': '100',
+            'TEMPLATE': 'atlas_quartiers',
+            'LAYER': 'quartiers',
+            'EXP_FILTER': '$id IN (1)',
+        }
+        const getPrintParams = await expectParametersToContain('Atlas print in popup requests', getPrintRequest.postData() ?? '', expectedParameters)
+        await expect(getPrintParams.size).toBe(10)
+        await expect(getPrintParams.has('CRS')).toBe(false)
+        await expect(getPrintParams.has('LAYERS')).toBe(false)
+        await expect(getPrintParams.has('ATLAS_PK')).toBe(false)
 
         // Test `atlas_quartiers` print atlas response
         const response = await getPrintRequest.response();
         await expect(response?.status()).toBe(200)
 
-        expect(response?.headers()['content-type']).toBe('application/pdf');
-        expect(response?.headers()['content-disposition']).toBe('attachment; filename="print_atlas_quartiers.pdf"');
+        await expect(response?.headers()['content-type']).toBe('application/pdf');
+        await expect(response?.headers()['content-disposition']).toBe('attachment; filename="print_atlas_quartiers.pdf"');
     });
 });
 
