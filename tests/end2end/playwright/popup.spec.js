@@ -1,6 +1,7 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 import { gotoMap } from './globals';
+import {ProjectPage} from "./pages/project";
 
 test.describe('Dataviz in popup', () => {
     test('Check lizmap feature toolbar', async ({ page }) => {
