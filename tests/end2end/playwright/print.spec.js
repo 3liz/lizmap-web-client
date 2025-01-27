@@ -190,21 +190,25 @@ test.describe('Print', () => {
         const getPrintPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
         await page.locator('#print-launch').click();
         const getPrintRequest = await getPrintPromise;
-        const getPrintPostData = getPrintRequest.postData();
-        expect(getPrintPostData).toContain('SERVICE=WMS')
-        expect(getPrintPostData).toContain('REQUEST=GetPrint')
-        expect(getPrintPostData).toContain('VERSION=1.3.0')
-        expect(getPrintPostData).toContain('FORMAT=pdf')
-        expect(getPrintPostData).toContain('TRANSPARENT=true')
-        expect(getPrintPostData).toContain('CRS=EPSG%3A2154')
-        expect(getPrintPostData).toContain('DPI=100')
-        expect(getPrintPostData).toContain('TEMPLATE=print_labels')
-        expect(getPrintPostData).toContain('map0%3ASCALE=100000')
-        expect(getPrintPostData).toContain('map0%3ALAYERS=OpenStreetMap%2Cquartiers%2Csousquartiers')
-        expect(getPrintPostData).toContain('map0%3ASTYLES=default%2Cd%C3%A9faut%2Cd%C3%A9faut')
-        expect(getPrintPostData).toContain('map0%3AOPACITIES=204%2C255%2C255');
-        expect(getPrintPostData).toContain('simple_label=simple%20label');
-        expect(getPrintPostData).toContain('SELECTIONTOKEN=');
+        const expectedParameters = {
+            'SERVICE': 'WMS',
+            'REQUEST': 'GetPrint',
+            'VERSION': '1.3.0',
+            'FORMAT': 'pdf',
+            'TRANSPARENT': 'true',
+            'CRS': 'EPSG:2154',
+            'DPI': '100',
+            'TEMPLATE': 'print_labels',
+            'map0:EXTENT': /759249.\d+,6271892.\d+,781949.\d+,6286892.\d+/,
+            'map0:SCALE': '100000',
+            'map0:LAYERS': 'OpenStreetMap,quartiers,sousquartiers',
+            'map0:STYLES': 'default,défaut,défaut',
+            'map0:OPACITIES': '204,255,255',
+            'simple_label': 'simple label',
+            'SELECTIONTOKEN': /[a-z\d]+/,
+        }
+        const getPrintParams = await checkParameters('Print requests with selection', getPrintRequest.postData() ?? '', expectedParameters)
+        await expect(getPrintParams.size).toBe(16)
     });
 
     test('Print requests with filter', async ({ page }) => {
