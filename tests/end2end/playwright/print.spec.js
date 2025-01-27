@@ -502,8 +502,8 @@ test.describe('Print 3857', () => {
 
         // Redlining with circle
         await page.locator('#button-draw').click();
-        await page.getByRole('button', { name: 'Toggle Dropdown' }).click();
-        await page.locator('#draw .digitizing-circle > svg').click();
+        await page.getByRole('button', { name: 'Toggle Dropdown' }).click({force:true});
+        await page.locator('#draw .digitizing-circle > svg').click({force:true});
         await page.locator('#newOlMap').click({
             position: {
                 x: 610,
