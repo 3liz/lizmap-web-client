@@ -137,3 +137,26 @@ export async function getEchoRequestParams(page, url) {
 
     return new URLSearchParams((new URL(originalUrl).search));
 }
+
+/**
+ * Check parameters against an object containing expected parameters
+ * @param {string}                        label
+ * @param {string}                        parameters
+ * @param {Object<string, string|RegExp>} expectedParameters
+ * @returns {Promise<URLSearchParams>}
+ */
+export async function expectParametersToContain(label, parameters, expectedParameters) {
+    const searchParams = new URLSearchParams(parameters)
+    await expect(searchParams.size, label + ': Not enough parameters compared to expected!').toBeGreaterThanOrEqual(Object.keys(expectedParameters).length)
+    for (const param in expectedParameters) {
+        await expect(searchParams.has(param), label + ': ' + param + ' not in ' + Array.from(searchParams.keys()).join(', ')).toBe(true)
+        const expectedValue = expectedParameters[param]
+        if (expectedValue instanceof RegExp) {
+            await expect(searchParams.get(param), label + ': ' + param + ' does not match the expected value!').toMatch(expectedValue)
+        } else {
+            await expect(searchParams.get(param), label + ': ' + param + ' has not the right value!').toBe(expectedValue)
+        }
+    }
+
+    return searchParams;
+}
