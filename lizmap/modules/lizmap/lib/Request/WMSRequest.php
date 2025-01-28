@@ -21,6 +21,8 @@ class WMSRequest extends OGCRequest
 {
     protected $tplExceptions = 'lizmap~wms_exception';
 
+    protected static $regexp_media_urls = '#["\']((\.\./)?media/.+?\.\w{3,10})["\']#';
+
     private $forceRequest = false;
 
     public function getForceRequest()
@@ -662,7 +664,7 @@ class WMSRequest extends OGCRequest
                 $templateConfigured = true;
                 // first replace all "media/bla/bla/llkjk.ext" by full url
                 $popupTemplate = preg_replace_callback(
-                    '#(["\']){1}((\.\./)?media/.+\.\w{3,10})(["\']){1}#',
+                    self::$regexp_media_urls,
                     array($this, 'replaceMediaPathByMediaUrl'),
                     $popupTemplate
                 );
@@ -741,7 +743,7 @@ class WMSRequest extends OGCRequest
                 if ($attribute['name'] == 'maptip') {
                     // first replace all "media/bla/bla/llkjk.ext" by full url
                     $maptipValue = preg_replace_callback(
-                        '#(["\']){1}((\.\./)?media/.+\.\w{3,10})(["\']){1}#',
+                        self::$regexp_media_urls,
                         array($this, 'replaceMediaPathByMediaUrl'),
                         $attribute['value']
                     );
@@ -863,7 +865,7 @@ class WMSRequest extends OGCRequest
             array(
                 'repository' => $this->repository->getKey(),
                 'project' => $this->project->getKey(),
-                'path' => $matches[2],
+                'path' => $matches[1],
             )
         );
         $return .= '"';
