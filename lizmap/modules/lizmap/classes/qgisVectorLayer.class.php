@@ -208,7 +208,7 @@ class qgisVectorLayer extends qgisMapLayer
         );
         $parameters = array(
             'dbname', 'service', 'host', 'port', 'user', 'password',
-            'sslmode', 'key', 'estimatedmetadata', 'selectatid',
+            'sslmode', 'authcfg', 'key', 'estimatedmetadata', 'selectatid',
             'srid', 'type', 'checkPrimaryKeyUnicity',
             'table', 'geocol', 'sql', 'schema', 'tablename',
         );
@@ -278,6 +278,23 @@ class qgisVectorLayer extends qgisMapLayer
                 );
                 if (!empty($dtParams->sslmode)) {
                     $jdbParams['sslmode'] = $dtParams->sslmode;
+                }
+                // When the QGIS authentication config is used to authenticate a layer,
+                // it requires to have set up "jdb::profile" to align with the login credentials set in QGIS "authcfg"
+                if (!empty($dtParams->authcfg)) {
+                    $jdbParams['authcfg'] = $dtParams->authcfg;
+                    // retrieving user/password from the corresponding jdb::profile in profiles.ini.php.
+                    $ini = new \Jelix\IniFile\IniModifier(jApp::varConfigPath('profiles.ini.php'));
+                    $profiles = $ini->getSectionList();
+                    foreach ($profiles as $profile) {
+                        if ($profile == 'jdb:'.$dtParams->authcfg) {
+                            $options = $ini->getValues($profile);
+                            $jdbParams['user'] = $options['user'];
+                            $jdbParams['password'] = $options['password'];
+
+                            break;
+                        }
+                    }
                 }
             }
             if (!empty($dtParams->schema) && $setSearchPathFromLayer) {
