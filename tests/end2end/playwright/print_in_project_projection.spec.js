@@ -1,4 +1,5 @@
 // @ts-check
+import * as path from 'path';
 import { test, expect } from '@playwright/test';
 import { gotoMap, checkParameters } from './globals';;
 
@@ -14,6 +15,22 @@ test.describe('Print in project projection', () => {
     test('Print empty', async ({ page }) => {
         await page.locator('#switcher-baselayer').getByRole('combobox').selectOption('empty');
         await page.locator('#print-scale').selectOption('1000');
+
+        // Mock file
+        await page.route('**/service*', async route => {
+            const request = await route.request();
+            if (request.postData()?.includes('GetPrint')) {
+                await route.fulfill({
+                    headers: {
+                        "Content-Description": "File Transfert",
+                        "Content-Disposition": "attachment; filename=\"print_in_project_projection_Paysage_A4.pdf\"",
+                        "Content-Transfer-Encoding": "binary",
+                        "Content-Type": "application/pdf",
+                    },
+                    path: path.join(__dirname, 'mock/print_in_project_projection/empty/Paysage_A4.pdf')
+                })
+            }
+        });
 
         const getPrintPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
         await page.locator('#print-launch').click();
@@ -44,6 +61,22 @@ test.describe('Print in project projection', () => {
 
     test('Print external baselayer', async ({ page }) => {
         await page.locator('#print-scale').selectOption('1000');
+
+        // Mock file
+        await page.route('**/service*', async route => {
+            const request = await route.request();
+            if (request.postData()?.includes('GetPrint')) {
+                await route.fulfill({
+                    headers: {
+                        "Content-Description": "File Transfert",
+                        "Content-Disposition": "attachment; filename=\"print_in_project_projection_Paysage_A4.pdf\"",
+                        "Content-Transfer-Encoding": "binary",
+                        "Content-Type": "application/pdf",
+                    },
+                    path:path.join(__dirname, 'mock/print_in_project_projection/baselayer/Paysage_A4.pdf')
+                })
+            }
+        });
 
         const getPrintPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
         await page.locator('#print-launch').click();
