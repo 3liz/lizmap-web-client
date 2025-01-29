@@ -16,6 +16,18 @@ export class ProjectPage extends BasePage {
      */
     repository;
 
+    // Maps
+    /**
+     * The OpenLayers main map
+     * @type {Locator}
+     */
+    map;
+    /**
+     * The OpenLayers OL2 legacy map
+     * @type {Locator}
+     */
+    mapOl2;
+
     // Menu
     /**
      * Layer switcher menu
@@ -98,6 +110,8 @@ export class ProjectPage extends BasePage {
         super(page);
         this.project = project;
         this.repository = repository;
+        this.map = page.locator('#newOlMap');
+        this.mapOl2 = page.locator('#map');
         this.dock = page.locator('#dock');
         this.rightDock = page.locator('#right-dock');
         this.bottomDock = page.locator('#bottom-dock');
@@ -165,11 +179,26 @@ export class ProjectPage extends BasePage {
      * @param {number} y Position Y on the map
      */
     async clickOnMap(x, y){
-        await this.page.locator('#newOlMap').click({
-            position: {
-                x: x,
-                y: y
-            }
-        });
+        await this.map.click({position: {x: x, y: y}});
+    }
+
+    /**
+     * clickOnMapLegacy function
+     * Click on the OL 2map at the given position
+     * @param {number} x Position X on the map
+     * @param {number} y Position Y on the map
+     */
+    async clickOnMapLegacy(x, y){
+        await this.mapOl2.click({position: {x: x, y: y}});
+    }
+
+    /**
+     * dblClickOnMapLegacy function
+     * Double click on the OL 2map at the given position
+     * @param {number} x Position X on the map
+     * @param {number} y Position Y on the map
+     */
+    async dblClickOnMapLegacy(x, y){
+        await this.mapOl2.dblclick({position: {x: x, y: y}});
     }
 }
