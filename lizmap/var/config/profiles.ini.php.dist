@@ -142,6 +142,23 @@ enabled=1
 driver=file
 ttl=0
 
+;driver=redis_ext
+; docker host
+;host=redis
+; local host
+;host=127.0.0.1
+;port=6379
+;db=1
+
+;[jcache:acl2db]
+;enabled=1
+;driver=redis_ext
+;host=redis
+;port=6379
+;db=2
+;ttl=0
+
+
 [smtp:mailer]
 ;; to send emails via smtp, uncomment these lines and indicate all needed values.
 ;; In localconfig.ini, set mailerType=smtp in the [mailer] section.
