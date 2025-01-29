@@ -97,6 +97,19 @@ export async function reloadMap(page, check = true) {
     }
 }
 
+
+/**
+ * editedFeatureIds function
+ * Get the last IDs when saving features as JSON
+ * @param {Page} page The page object
+ *
+ * @return {JSON} The JSON response, like {"id":"31"}
+ */
+export async function editedFeatureIds(page) {
+    const values = await page.locator('#liz_close_feature_pk_vals').inputValue();
+    return JSON.parse(values);
+}
+
 /**
  * Re-send the request with additional "__echo__" param to retrieve the OGC Request search params
  * @param {Page} page The page object
