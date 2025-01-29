@@ -287,6 +287,17 @@ the admin page of Lizmap, or in its `var/config/lizmapConfig.ini.php`.
 To test CORS, you can load `http://othersite.local:8130`, click on the buttons,
 and check the JS console for errors.
 
+## ESLint
+
+Eslint can be run if you're located in `assets/`.
+
+```bash
+# Run eslint without fixing issues
+npm run pretest
+
+# Run eslint and fix issues
+npm run pretest:fix
+```
 
 ## Using LDAP
 

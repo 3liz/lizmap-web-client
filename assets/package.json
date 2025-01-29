@@ -6,13 +6,13 @@
   "scripts": {
     "build": "webpack --config webpack.prod.js",
     "watch": "webpack --watch --config webpack.dev.js",
-    "pretest": "eslint src",
-    "pretest-fix": "eslint --fix src"
+    "pretest": "npx eslint src --ignore-pattern src/legacy",
+    "pretest-fix": "npx eslint --fix src --ignore-pattern src/legacy"
   },
   "devDependencies": {
     "dompurify": "^3.1.6",
-    "eslint": "^8.56.0",
-    "eslint-plugin-jsdoc": "^48.0.2",
+    "eslint": "^8.57.1",
+    "eslint-plugin-jsdoc": "^48.11.0",
     "jsts": "^2.11.0",
     "lit-html": "^3.1.1",
     "ol": "^10.2.1",
@@ -28,6 +28,7 @@
   "author": "3Liz",
   "license": "ISC",
   "dependencies": {
+    "@eslint/js": "^9.19.0",
     "@turf/line-split": "^7.2.0",
     "flatgeobuf": "^3.36.0",
     "ol-ext": "^4.0.24",
