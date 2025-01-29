@@ -13,11 +13,11 @@ INSERT INTO lizmap.jacl2_group(
 
 -- Users
 INSERT INTO lizmap.jlx_user(
-	usr_login, usr_email, usr_password, status, create_date)
+	usr_login, usr_email, usr_password, status, create_date, firstname, lastname, organization)
 	VALUES
-	('user_in_group_a', 'user_in_group_a@nomail.nomail', '$2y$10$d2KZfxeYJP0l3YbNyDMZYe2vGSA3JWa8kFJSdecmSEIqInjnunTJ.', 1, NOW()),
-	('user_in_group_b', 'user_in_group_b@nomail.nomail', '$2y$10$d2KZfxeYJP0l3YbNyDMZYe2vGSA3JWa8kFJSdecmSEIqInjnunTJ.', 1, NOW()),
-	('publisher', 'publisher@nomail.nomail', '$2y$10$d2KZfxeYJP0l3YbNyDMZYe2vGSA3JWa8kFJSdecmSEIqInjnunTJ.', 1, NOW())
+	('user_in_group_a', 'user_in_group_a@nomail.nomail', '$2y$10$d2KZfxeYJP0l3YbNyDMZYe2vGSA3JWa8kFJSdecmSEIqInjnunTJ.', 1, NOW(), 'User A', 'Testadiferro', 'Make it KISS'),
+	('user_in_group_b', 'user_in_group_b@nomail.nomail', '$2y$10$d2KZfxeYJP0l3YbNyDMZYe2vGSA3JWa8kFJSdecmSEIqInjnunTJ.', 1, NOW(), 'User B', 'Testillano', 'Make it KISS'),
+	('publisher', 'publisher@nomail.nomail', '$2y$10$d2KZfxeYJP0l3YbNyDMZYe2vGSA3JWa8kFJSdecmSEIqInjnunTJ.', 1, NOW(), 'Publisher', 'Testla', 'Make it KISS')
 	ON CONFLICT DO NOTHING
 	;
 
