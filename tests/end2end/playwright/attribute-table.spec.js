@@ -17,8 +17,9 @@ test.describe('Attribute table', () => {
         await expect(project.attributeTableHtml(layerName).locator('tbody tr')).toHaveCount(7);
         // mediaFile as stored in data-src attributes
         const mediaFile = await project.attributeTableHtml(layerName).locator('img.data-attr-thumbnail').first().getAttribute('data-src');
+        expect(mediaFile).not.toBeNull
         // ensure src contain "dynamic" mediaFile
-        await expect(project.attributeTableHtml(layerName).locator('img.data-attr-thumbnail').first()).toHaveAttribute('src', new RegExp(mediaFile));
+        await expect(project.attributeTableHtml(layerName).locator('img.data-attr-thumbnail').first()).toHaveAttribute('src', new RegExp(mediaFile ?? ''));
         // ensure src contain getMedia and projet URL
         await expect(project.attributeTableHtml(layerName).locator('img.data-attr-thumbnail').first()).toHaveAttribute('src', /getMedia\?repository=testsrepository&project=attribute_table&/);
     });
