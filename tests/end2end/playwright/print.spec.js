@@ -292,34 +292,29 @@ test.describe('Print in popup', () => {
         // Test `atlas_quartiers` print atlas request
         const featureAtlasQuartiers = page.locator('#popupcontent lizmap-feature-toolbar[value="quartiers_cc80709a_cd4a_41de_9400_1f492b32c9f7.1"] .feature-atlas');
 
-        page.on('request', request => {
-            if (request.method() === "POST") {
-                const postData = request.postData();
-                if (postData != null && postData.includes('GetPrint')) {
-                    expect(postData).toContain('SERVICE=WMS')
-                    expect(postData).toContain('REQUEST=GetPrintAtlas')
-                    expect(postData).toContain('VERSION=1.3.0')
-                    expect(postData).toContain('FORMAT=pdf')
-                    expect(postData).toContain('TRANSPARENT=true')
-                    expect(postData).not.toContain('CRS=EPSG%3A2154')
-                    expect(postData).toContain('DPI=100')
-                    expect(postData).toContain('TEMPLATE=atlas_quartiers')
-                    expect(postData).not.toContain('LAYERS=quartiers')
-                    expect(postData).toContain('LAYER=quartiers')
-                    expect(postData).not.toContain('ATLAS_PK=1')
-                    expect(postData).toContain('EXP_FILTER=%24id%20IN%20(1)')
-                }
-            }
-        });
-
+        const getPrintPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
         await featureAtlasQuartiers.locator('button').click();
+        const getPrintRequest = await getPrintPromise;
+        const getPrintPostData = getPrintRequest.postData();
+        expect(getPrintPostData).toContain('SERVICE=WMS')
+        expect(getPrintPostData).toContain('REQUEST=GetPrintAtlas')
+        expect(getPrintPostData).toContain('VERSION=1.3.0')
+        expect(getPrintPostData).toContain('FORMAT=pdf')
+        expect(getPrintPostData).toContain('TRANSPARENT=true')
+        expect(getPrintPostData).not.toContain('CRS=EPSG%3A2154')
+        expect(getPrintPostData).toContain('DPI=100')
+        expect(getPrintPostData).toContain('TEMPLATE=atlas_quartiers')
+        expect(getPrintPostData).not.toContain('LAYERS=quartiers')
+        expect(getPrintPostData).toContain('LAYER=quartiers')
+        expect(getPrintPostData).not.toContain('ATLAS_PK=1')
+        expect(getPrintPostData).toContain('EXP_FILTER=%24id%20IN%20(1)')
 
         // Test `atlas_quartiers` print atlas response
-        const responsePromise = page.waitForResponse(response => response.status() === 200);
-        const response = await responsePromise;
+        const response = await getPrintRequest.response();
+        await expect(response?.status()).toBe(200)
 
-        expect(response.headers()['content-type']).toBe('application/pdf');
-        expect(response.headers()['content-disposition']).toBe('attachment; filename="print_atlas_quartiers.pdf"');
+        expect(response?.headers()['content-type']).toBe('application/pdf');
+        expect(response?.headers()['content-disposition']).toBe('attachment; filename="print_atlas_quartiers.pdf"');
     });
 });
 
