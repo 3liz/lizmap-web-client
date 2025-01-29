@@ -1092,7 +1092,7 @@ export default class map extends olMap {
 
     /**
      * Zoom to given geometry or extent
-     * @param {geometry|extent} geometryOrExtent The geometry or extent to zoom to. CRS is 4326 by default.
+     * @param {import("ol/geom/Geometry").default | import("ol/extent").Extent} geometryOrExtent The geometry or extent to zoom to. CRS is 4326 by default.
      * @param {object} [options] Options.
      */
     zoomToGeometryOrExtent(geometryOrExtent, options) {

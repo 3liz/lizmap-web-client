@@ -18,7 +18,6 @@ export default class GeolocationSurvey {
 
     /**
      * Create a geolocation survey instance
-     *
      * @param {Geolocation} geolocation - The Lizmap geolocation instance
      * @param {Edition}     edition     - The Lizmap edition instance
      * @param {object}      lizmap3     - The old lizmap object

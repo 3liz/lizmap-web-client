@@ -17,12 +17,12 @@ import GeoJSON from 'ol/format/GeoJSON.js';
 export default class LocateByLayer {
     /**
      * Build the lizmap LocateByLayer instance
-     * @param {LocateByLayerConfig} locateByLayer - The lizmap locateByLayer config
-     * @param {WfsFeatureType[]} vectorLayerFeatureTypeList - The list of WFS feature type
+     * @param {import("config/Locate.js").LocateByLayerConfig} locateByLayer - The lizmap locateByLayer config
+     * @param {import("Config.js")[]} vectorLayerFeatureTypeList - The list of WFS feature type
      * @param {Map}           map           - OpenLayers map
      * @param {object}        lizmap3       - The old lizmap object
      */
-      constructor(locateByLayer, vectorLayerFeatureTypeList, map, lizmap3) {
+    constructor(locateByLayer, vectorLayerFeatureTypeList, map, lizmap3) {
         this._map = map;
         this._vectorLayerFeatureTypeList = vectorLayerFeatureTypeList;
         
@@ -51,10 +51,10 @@ export default class LocateByLayer {
         }
         var locateContent = [];
         for (var l in locateByLayerList) {
-            var lname = locateByLayerList[l];
-            var lConfig = this._lizmap3.config.layers[lname];
+            var locatedElement = locateByLayerList[l];
+            var lConfig = this._lizmap3.config.layers[locatedElement];
             var html = '<div class="locate-layer">';
-            html += '<select id="locate-layer-' + this._lizmap3.cleanName(lname) + '" class="label">';
+            html += '<select id="locate-layer-' + this._lizmap3.cleanName(locatedElement) + '" class="label">';
             html += '<option>' + lConfig.title + '...</option>';
             html += '</select>';
             html += '</div>';
@@ -71,47 +71,47 @@ export default class LocateByLayer {
         } else {
             for (const featureType of featureTypes) {
                 var typeName = featureType.Name;
-                var lname = this._lizmap3.getNameByTypeName(typeName);
-                if (!lname) {
+                var nameByTypeName = this._lizmap3.getNameByTypeName(typeName);
+                if (!nameByTypeName) {
                     if (typeName in this._lizmap3LocateByLayerConfig)
-                        lname = typeName
+                        nameByTypeName = typeName
                     else if ((typeName in shortNameMap) && (shortNameMap[typeName] in this._lizmap3LocateByLayerConfig))
-                        lname = shortNameMap[typeName];
+                        nameByTypeName = shortNameMap[typeName];
                     else {
                         for (var lbl in this._lizmap3LocateByLayerConfig) {
                             if (lbl.split(' ').join('_') == typeName) {
-                                lname = lbl;
+                                nameByTypeName = lbl;
                                 break;
                             }
                         }
                     }
                 }
 
-                if (!(lname in this._lizmap3LocateByLayerConfig))
+                if (!(nameByTypeName in this._lizmap3LocateByLayerConfig))
                     continue;
 
-                var locate = this._lizmap3LocateByLayerConfig[lname];
+                var locate = this._lizmap3LocateByLayerConfig[nameByTypeName];
                 locate['crs'] = featureType.SRS;
                 locate['bbox'] = featureType.LatLongBoundingBox;
             }
 
             // get joins
             for (var lName in this._lizmap3LocateByLayerConfig) {
-                var locate = this._lizmap3LocateByLayerConfig[lName];
-                if ('vectorjoins' in locate && locate['vectorjoins'].length != 0) {
-                    var vectorjoin = locate['vectorjoins'][0];
-                    locate['joinFieldName'] = vectorjoin['targetFieldName'];
+                var element = this._lizmap3LocateByLayerConfig[lName];
+                if ('vectorjoins' in element && element['vectorjoins'].length != 0) {
+                    var vectorjoin = element['vectorjoins'][0];
+                    element['joinFieldName'] = vectorjoin['targetFieldName'];
                     for (var jName in this._lizmap3LocateByLayerConfig) {
                         var jLocate = this._lizmap3LocateByLayerConfig[jName];
                         if (jLocate.layerId == vectorjoin.joinLayerId) {
                             vectorjoin['joinLayer'] = jName;
-                            locate['joinLayer'] = jName;
+                            element['joinLayer'] = jName;
                             jLocate['joinFieldName'] = vectorjoin['joinFieldName'];
                             jLocate['joinLayer'] = lName;
                             jLocate['filterjoins'] = [{
                                 'targetFieldName': vectorjoin['joinFieldName'],
                                 'joinFieldName': vectorjoin['targetFieldName'],
-                                'joinLayerId': locate.layerId,
+                                'joinLayerId': element.layerId,
                                 'joinLayer': lName
                             }];
                         }
@@ -120,8 +120,8 @@ export default class LocateByLayer {
             }
 
             // get locate by layers features
-            for (var lname in this._lizmap3LocateByLayerConfig) {
-                this.getLocateFeature(lname);
+            for (var layerName in this._lizmap3LocateByLayerConfig) {
+                this.getLocateFeature(layerName);
             }
             document.getElementById('locate-clear').addEventListener('click', () => {
                 this._lizmap3.mainLizmap.map.clearHighlightFeatures();
@@ -144,11 +144,11 @@ export default class LocateByLayer {
         }
     }
 
-     /**
+    /**
      * Get features for locate by layer tool
-     * @param aName
+     * @param {string} aName - The layer name
      */
-     getLocateFeature(aName) {
+    getLocateFeature(aName) {
         var locate = this._lizmap3LocateByLayerConfig[aName];
 
         // get fields to retrieve
@@ -166,7 +166,7 @@ export default class LocateByLayer {
         }
         if ( 'vectorjoins' in locate ) {
             var vectorjoins = locate.vectorjoins;
-            for ( var i=0, len=vectorjoins.length; i<len; i++) {
+            for ( var k=0, vectorjoinsLen=vectorjoins.length; k<vectorjoinsLen; k++) {
                 var vectorjoin = vectorjoins[i];
                 fields.push( vectorjoin.targetFieldName );
             }
@@ -282,11 +282,11 @@ export default class LocateByLayer {
                 placeHolder = lConfig.title;
             }
             var options = '<option value="-1"></option>';
-            for (var i=0, len=features.length; i<len; i++) {
-                var feat = features[i];
-                locate.features[feat.id.toString()] = feat;
+            for (var j=0, featuresLen=features.length; j<featuresLen; j++) {
+                var featElement = features[j];
+                locate.features[featElement.id.toString()] = featElement;
                 if ( !('filterFieldName' in locate) )
-                    options += '<option value="' + feat.id + '">' + DOMPurify.sanitize(feat.properties[locate.fieldName]) + '</option>';
+                    options += '<option value="' + featElement.id + '">' + DOMPurify.sanitize(featElement.properties[locate.fieldName]) + '</option>';
             }
             document.getElementById('locate-layer-'+layerName).innerHTML = options;
             // listen to select changes
@@ -311,9 +311,9 @@ export default class LocateByLayer {
                     }
                     // zoom to parent selection
                     if ( 'vectorjoins' in locate && locate.vectorjoins.length == 1 ) {
-                        var jName = locate.vectorjoins[0].joinLayer;
-                        if ( jName in this._lizmap3LocateByLayerConfig ) {
-                            this.zoomToLocateFeature( jName );
+                        var joinName = locate.vectorjoins[0].joinLayer;
+                        if ( joinName in this._lizmap3LocateByLayerConfig ) {
+                            this.zoomToLocateFeature( joinName );
                             return;
                         }
                     }
@@ -324,15 +324,15 @@ export default class LocateByLayer {
                     this.zoomToLocateFeature( aName );
                     // update joined layer
                     if ( 'filterjoins' in locate && locate.filterjoins.length != 0 ) {
-                        var filterjoins = locate.filterjoins;
-                        for (var i=0, len=filterjoins.length; i<len; i++) {
-                            var filterjoin = filterjoins[i];
-                            var jName = filterjoin.joinLayer;
-                            if ( jName in this._lizmap3LocateByLayerConfig ) {
+                        var filterjoinsList = locate.filterjoins;
+                        for (var index=0, length=filterjoinsList.length; index<length; index++) {
+                            var filterJ = filterjoinsList[index];
+                            var filterJName = filterJ.joinLayer;
+                            if ( filterJName in this._lizmap3LocateByLayerConfig ) {
                                 // update joined select options
-                                this.updateLocateFeatureList( jName );
-                                $('#locate-layer-'+cleanName(jName)).val('-1');
-                                $('#locate-layer-'+cleanName(jName)+' ~ span > input').val('');
+                                this.updateLocateFeatureList( filterJName );
+                                $('#locate-layer-'+cleanName(filterJName)).val('-1');
+                                $('#locate-layer-'+cleanName(filterJName)+' ~ span > input').val('');
                             }
                         }
                     }
@@ -369,7 +369,7 @@ export default class LocateByLayer {
 
     /**
      * Zoom to locate feature
-     * @param aName
+     * @param {string} aName - The layer name
      */
     zoomToLocateFeature(aName) {
         // clear highlight layer
@@ -423,7 +423,7 @@ export default class LocateByLayer {
 
     /**
      * Get features for locate by layer tool
-     * @param aName
+     * @param {string} aName - The layer name
      */
     updateLocateFeatureList(aName) {
         var locate = this._lizmap3LocateByLayerConfig[aName];
@@ -436,10 +436,10 @@ export default class LocateByLayer {
         if ('filterFieldName' in locate) {
             var filterValue = $('#locate-layer-' + this._lizmap3.cleanName(aName) + '-'+locate.filterFieldName).val();
             if ( filterValue != '-1' ) {
-                for (var fid in features) {
-                    var feat = features[fid];
+                for (var featureId in features) {
+                    var feat = features[featureId];
                     if (feat.properties[locate.filterFieldName] != filterValue)
-                        delete features[fid];
+                        delete features[featureId];
                 }
             } else
                 features = {}
@@ -455,10 +455,10 @@ export default class LocateByLayer {
                     var jVal = $('#locate-layer-' + this._lizmap3.cleanName(jName)).val();
                     if ( jVal == '-1' ) continue;
                     var jFeat = jLocate.features[jVal];
-                    for (var fid in features) {
-                        var feat = features[fid];
-                        if ( feat.properties[vectorjoin.targetFieldName] != jFeat.properties[vectorjoin.joinFieldName] )
-                            delete features[fid];
+                    for (var featId in features) {
+                        var feature = features[featId];
+                        if ( feature.properties[vectorjoin.targetFieldName] != jFeat.properties[vectorjoin.joinFieldName] )
+                            delete features[featId];
                     }
                 }
             }
@@ -466,9 +466,9 @@ export default class LocateByLayer {
         // create the option list
         const placeHolder = this._lizmap3.config.layers[aName].title;
         var options = '<option value="-1" label="'+placeHolder+'"></option>';
-        for (var fid in features) {
-            var feat = features[fid];
-            options += '<option value="' + feat.id + '">' + DOMPurify.sanitize(feat.properties[locate.fieldName]) + '</option>';
+        for (var featureElementId in features) {
+            var featureElement = features[featureElementId];
+            options += '<option value="' + featureElement.id + '">' + DOMPurify.sanitize(featureElement.properties[locate.fieldName]) + '</option>';
         }
         // add option list
         $('#locate-layer-'+ this._lizmap3.cleanName(aName)).html(options);

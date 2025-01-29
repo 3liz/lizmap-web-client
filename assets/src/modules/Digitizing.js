@@ -567,7 +567,7 @@ export class Digitizing {
      * @todo active state should be set on UI's events
      * @readonly
      * @memberof Digitizing
-     * @returns {boolean}
+     * @returns {boolean} true if digitizing tool is active, false otherwise
      */
     get isActive() {
         const isActive = document.getElementById('button-draw')?.parentElement?.classList?.contains('active');
@@ -1038,7 +1038,7 @@ export class Digitizing {
 
     /**
      * Format length output.
-     * @param {Geometry} geom The geom.
+     * @param {import("ol/geom/Geometry").default} geom The geom.
      * @returns {string} The formatted length.
      */
     formatLength(geom) {
@@ -1070,7 +1070,7 @@ export class Digitizing {
 
     /**
      * Initializes measure tooltip and change event on a feature loaded from local storage.
-     * @param {Geometry} geom The geometry.
+     * @param {import("ol/geom/Geometry").default} geom The geometry.
      */
     _initMeasureTooltipOnLoadedFeatures(geom){
         // create overlays
@@ -1093,7 +1093,7 @@ export class Digitizing {
 
     /**
      * Calculates measuements for a specific geometry.
-     * @param {Geometry} geom The geometry.
+     * @param {import("ol/geom/Geometry").default} geom The geometry.
      */
     _setTooltipContentByGeom(geom){
         if (geom instanceof Polygon) {
@@ -1204,7 +1204,7 @@ export class Digitizing {
 
     /**
      * Set visibility or toggle if not defined
-     * @param {boolean} visible
+     * @param {boolean} visible - true to show, false to hide
      */
     toggleVisibility(visible = !this.visibility) {
         this._drawLayer.setVisible(visible);

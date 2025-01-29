@@ -18,11 +18,10 @@ export default class Popup {
 
     /**
      * Create a popup instance
-     *
-     * @param {Config} initialConfig - The lizmap initial config instance
-     * @param {State}  lizmapState   - The lizmap user interface state
+     * @param {import("Config.js")} initialConfig - The lizmap initial config instance
+     * @param {import("Layers.js")}  lizmapState   - The lizmap user interface state
      * @param {Map}    map           - OpenLayers map
-     * @param {Digitizing} digitizing - The Lizmap digitizing instance
+     * @param {import("../components/Digitizing.js")} digitizing - The Lizmap digitizing instance
      */
     constructor(initialConfig, lizmapState, map, digitizing) {
 
@@ -71,8 +70,9 @@ export default class Popup {
 
         // OL8
         /**
-        * Create an overlay to anchor the popup to the map.
-        */
+         * Create an overlay to anchor the popup to the map.
+         * @returns {boolean} False
+         */
         document.getElementById('liz_layer_popup_closer').onclick = () => {
             this._overlay.setPosition(undefined);
             this._map.clearHighlightFeatures();

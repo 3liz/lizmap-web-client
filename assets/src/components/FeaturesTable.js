@@ -16,10 +16,10 @@ import GeoJSON from 'ol/format/GeoJSON.js';
  * @name FeaturesTable
  * @summary Allows to display a compact list of vector layer features labels
  * @augments HTMLElement
- * @element lizmap-features-table
- * @fires features.table.item.highlighted
- * @fires features.table.item.dragged
- * @fires features.table.rendered
+ * @description lizmap-features-table
+ * @fires FeaturesTable#features.table.item.highlighted
+ * @fires FeaturesTable#features.table.item.dragged
+ * @fires FeaturesTable#features.table.rendered
  * @example <caption>Example of use</caption>
  * <lizmap-features-table draggable="yes" sortingOrder="asc" sortingField="libsquart"
  *                        withGeometry="1" expressionFilter="quartmno = 'HO'"
@@ -188,9 +188,8 @@ export default class FeaturesTable extends HTMLElement {
 
     /**
      * Get the feature corresponding to the given feature ID
-     *
-     * @param {Number} featureId WFS Feature ID
-     * @return {Object|null} WFS Feature
+     * @param {number} featureId WFS Feature ID
+     * @returns {object | null} WFS Feature
      */
     getFeatureById(featureId) {
         if (this.features.length === 0) {
@@ -305,8 +304,7 @@ export default class FeaturesTable extends HTMLElement {
     /**
      * Get the feature popup HTML content
      * and display it
-     *
-     * @param {Object} feature WFS feature
+     * @param {object} feature WFS feature
      */
     displayFeaturePopup(feature) {
         // Get the default title for the table lines (tr)
@@ -362,9 +360,8 @@ export default class FeaturesTable extends HTMLElement {
 
     /**
      * Display a popup when a feature item is clicked
-     *
      * @param {Event} event Click event on a feature item
-     * @param {Number} featureId WFS feature ID
+     * @param {number} featureId WFS feature ID
      */
     onItemClick(event, featureId) {
         // console.log('onItemClick - top');
@@ -402,15 +399,27 @@ export default class FeaturesTable extends HTMLElement {
         });
 
         // Utility functions for drag & drop capability
+        /**
+         * Action when an item is dragged
+         * @param {Event} e Drag event
+         */
         function onDragStart (e) {
             const index = [].indexOf.call(e.target.parentElement.children, e.target);
             e.dataTransfer.setData('text/plain', index)
         }
 
+        /**
+         * Action on drag enter
+         * @param {Event} e Drag event
+         */
         function onDragEnter (e) {
             cancelDefault(e);
         }
 
+        /**
+         * Action when an item is dragged over another
+         * @param {Event} e Drag event
+         */
         function onDragOver (e) {
             // Change the target element's style to signify a drag over event
             // has occurred
@@ -419,16 +428,29 @@ export default class FeaturesTable extends HTMLElement {
             cancelDefault(e);
         }
 
+        /**
+         * Action when an item is dragged out of another
+         * @param {Event} e Drag event
+         */
         function onDragLeave (e) {
             // Change the target element's style back to default
             e.currentTarget.style.background = "";
             cancelDefault(e);
         }
 
+        /**
+         * Wait for a delay
+         * @param {number} delay Delay in milliseconds
+         * @returns {Promise} Promise that resolves after the delay
+         */
         function waitForIt(delay) {
             return new Promise((resolve) => setTimeout(resolve, delay))
         }
 
+        /**
+         * Action when an item is dropped
+         * @param {Event} e Drag event
+         */
         function OnDropped (e) {
             cancelDefault(e)
 
@@ -485,6 +507,10 @@ export default class FeaturesTable extends HTMLElement {
             });
         }
 
+        /**
+         * Action when an item has finished being dragged
+         * @param {Event} e Drag event
+         */
         async function onDragEnd (e) {
             // Restore style after some time
             await waitForIt(3000);
@@ -494,11 +520,16 @@ export default class FeaturesTable extends HTMLElement {
             cancelDefault(e);
         }
 
+        /**
+         * Prevent the default behavior of an event
+         * @param {Event} e event
+         * @returns {boolean} False
+         */
         function cancelDefault (e) {
-        e.preventDefault();
-        e.stopPropagation();
+            e.preventDefault();
+            e.stopPropagation();
 
-        return false;
+            return false;
         }
 
 
@@ -541,7 +572,7 @@ export default class FeaturesTable extends HTMLElement {
                 <div class="lizmap-features-table-toolbar">
                     <button class="btn btn-mini previous-popup"
                         title="${lizDict['featuresTable.toolbar.previous']}"
-                        @click=${event => {
+                        @click=${() => {
                         // Click on the previous item
                         const lineNumber = this.activeItemLineNumber - 1;
                         const featureDiv = this.querySelector(`tr.lizmap-features-table-item[data-line-id="${lineNumber}"]`);
@@ -549,7 +580,7 @@ export default class FeaturesTable extends HTMLElement {
                     }}></button>
                     <button class="btn btn-mini next-popup"
                         title="${lizDict['featuresTable.toolbar.next']}"
-                        @click=${event => {
+                        @click=${() => {
                         // Click on the next item
                         const lineNumber = this.activeItemLineNumber + 1;
                         const featureDiv = this.querySelector(`tr.lizmap-features-table-item[data-line-id="${lineNumber}"]`);
@@ -557,7 +588,7 @@ export default class FeaturesTable extends HTMLElement {
                     }}></button>
                     <button class="btn btn-mini close-popup"
                         title="${lizDict['featuresTable.toolbar.close']}"
-                        @click=${event => {
+                        @click=${() => {
                         const checkFeatureId = (this.dataset.activeItemFeatureId) ?? "";
                         if (!checkFeatureId) return;
                         this.dataset.activeItemFeatureId = ""
@@ -594,8 +625,8 @@ export default class FeaturesTable extends HTMLElement {
 
     /**
      * Build the columns of the table
-     * @param properties - Object containing the properties of the feature
-     * @returns {TemplateResult<1>} The columns of the table
+     * @param {object} properties - Object containing the properties of the feature
+     * @returns {import("lit").TemplateResult} The columns of the table
      */
     buildColumns(properties) {
 
@@ -625,7 +656,7 @@ export default class FeaturesTable extends HTMLElement {
     /**
      * Initialize tab with the first column "display_expression"
      * @param {object} properties - Object containing the properties of the feature
-     * @returns {TemplateResult<1>} The first column of the table
+     * @returns {import("lit").TemplateResult} The first column of the table
      */
     buildDisplayExpressionColumn(properties) {
         if (this.isGeneralLabelExisting()) {
@@ -641,7 +672,7 @@ export default class FeaturesTable extends HTMLElement {
 
     /**
      * Initialize the labels of the table
-     * @returns {TemplateResult<1>} The labels of the table
+     * @returns {import("lit").TemplateResult} The labels of the table
      */
     buildLabels() {
         if (this.isAdditionalFieldsEmpty()) {
