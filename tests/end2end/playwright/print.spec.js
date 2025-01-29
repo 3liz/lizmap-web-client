@@ -2,6 +2,14 @@
 import { test, expect } from '@playwright/test';
 import { gotoMap, checkParameters } from './globals';
 
+/**
+ * To save request response in a file for mocking
+ *
+ * const downloadPromise = page.waitForEvent('download');
+ * const download = await downloadPromise;
+ * await download.saveAs(path.join(__dirname, 'mock/print_in_project_projection/baselayer/Paysage_A4.pdf'));
+ */
+
 test.describe('Print', () => {
 
     test.beforeEach(async ({ page }) => {
