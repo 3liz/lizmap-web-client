@@ -10,6 +10,7 @@ import WMS from './../WMS.js';
 import {LayerTreeLayerState, LayerTreeGroupState} from './../state/LayerTree.js'
 
 /**
+ * Update the symbology of the tree layers
  * @param {LayerTreeLayerState[]} treeLayers - The tree layer group in which tree layers will be updated
  * @returns {Promise} Promise object represents the tree layers updated
  */
@@ -47,6 +48,7 @@ export async function updateLayerTreeLayersSymbology(treeLayers) {
 }
 
 /**
+ * Update the symbology of the tree layer
  * @param {LayerTreeLayerState} treeLayer - The tree layer to be updated
  * @returns {Promise} Promise object represents the tree layer updated
  */
@@ -58,6 +60,7 @@ export async function updateLayerTreeLayerSymbology(treeLayer) {
 }
 
 /**
+ * Update the symbology of the tree layers in the tree group
  * @param {LayerTreeGroupState} treeGroup - The tree layer group in which tree layers will be updated
  * @returns {Promise} Promise object represents the tree layers updated
  */

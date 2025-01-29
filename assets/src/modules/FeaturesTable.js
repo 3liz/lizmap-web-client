@@ -25,28 +25,25 @@ export default class FeaturesTable {
 
     /**
      * Get the list of features containing the display expression
-     *
      * @param
-     * @return {Promise} features - Promise with the JSON list of features
+     * @returns {Promise} features - Promise with the JSON list of features
      */
 
 
     /**
      * Get the list of features containing the display expression
-     *
      * @param {string}      layerId The QGIS layer ID
      * @param {string|null} filter An QGIS expression filter
      * @param {boolean}     withGeometry If we need to get the geometry
      * @param {string|null} fields List of field names separated by comma
-     * @param {object|array} additionalFields JSON object with the field names and expressions
+     * @param {object | Array} additionalFields JSON object with the field names and expressions
      * @param {number}      limit Number of features to return
      * @param {string|null}      sortingField Field name to sort the features
      * @param {string|null}      sortingOrder Sorting order
-     *
-     * @returns — A Promise that resolves with the result of parsing the response body text as JSON.
-     * @throws {ResponseError} In case of invalid content type (not application/json or application/vnd.geo+json) or Invalid JSON
-     * @throws {HttpError} In case of not successful response (status not in the range 200 – 299)
-     * @throws {NetworkError} In case of catch exceptions
+     * @returns {Promise} — A Promise that resolves with the result of parsing the response body text as JSON.
+     * @throws {import("./errors").ResponseError} In case of invalid content type (not application/json or application/vnd.geo+json) or invalid JSON
+     * @throws {import("./errors").HttpError} In case of not successful response (status not in the range 200–299)
+     * @throws {import("./errors").NetworkError} In case of catch exceptions
      */
     getFeatures(layerId, filter = null, withGeometry = false, fields = 'null', additionalFields = [], limit = 1000, sortingField = null, sortingOrder = null) {
 
@@ -73,7 +70,6 @@ export default class FeaturesTable {
 
     /**
      * Display a lizMap message
-     *
      * @param {string} message  Message to display
      * @param {string} type     Type : error or info
      * @param {number} duration Number of millisecond the message must be displayed
@@ -91,12 +87,12 @@ export default class FeaturesTable {
 
     /**
      * Open a Lizmap Popup
-     *
      * @param {string} layerId       QGIS layer ID
      * @param {object} feature       WFS Feature
      * @param {string} uniqueField   Field containing unique values (used to set the filter for the WMS request)
      * @param {HTMLElement} targetElement Target HTML element to display the popup content for the given feature
-     * @param {requestCallback} aCallBack Callback function
+     * @param {Function} aCallBack   Callback function
+     * @returns {null|void}          Return null if the layerId is not in the configuration
      */
     openPopup(layerId, feature, uniqueField, targetElement, aCallBack) {
 

@@ -88,7 +88,7 @@ export default class Edition {
 
     /**
      * Fetch editable features for given array of layer IDs
-     * @param {Array} layerIds
+     * @param {Array} layerIds - Array of layer IDs
      */
     fetchEditableFeatures(layerIds){
         if (Array.isArray(layerIds)){

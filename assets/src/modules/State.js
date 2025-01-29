@@ -13,12 +13,18 @@ import { MapRootState } from './state/MapLayer.js';
 import { TreeRootState } from './state/LayerTree.js';
 
 /**
+ * Lizmap config instance
+ * @typedef {import('./Config.js').Config} Config
+ */
+
+/**
  * @class
  * @name State
  * @augments EventDispatcher
  */
 export class State extends EventDispatcher {
     /**
+     * Create a new state instance
      * @param {Config} initialCfg - the lizmap initial config instance
      * @param {Array|undefined} startupFeatures - the features to highlight at startup
      */
