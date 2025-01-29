@@ -44,7 +44,6 @@ with some extra keywords: backend, tests, test, translation, funders, important
 ### Changed
 
 * Activate the "Locate by layer" by default
-* Changed HTML layout due to migration to Bootstrap 5
 
 ### Backend
 
