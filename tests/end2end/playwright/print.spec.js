@@ -228,30 +228,33 @@ test.describe('Print', () => {
         let getFilterTokenPromise = page.waitForResponse(responseMatchGetFilterTokenFunc);
         await getFilterTokenPromise;
 
-        page.on('request', request => {
-            if (request.method() === "POST") {
-                const postData = request.postData();
-                if (postData != null && postData.includes('GetPrint')) {
-                    expect(postData).toContain('SERVICE=WMS')
-                    expect(postData).toContain('REQUEST=GetPrint')
-                    expect(postData).toContain('VERSION=1.3.0')
-                    expect(postData).toContain('FORMAT=pdf')
-                    expect(postData).toContain('TRANSPARENT=true')
-                    expect(postData).toContain('CRS=EPSG%3A2154')
-                    expect(postData).toContain('DPI=100')
-                    expect(postData).toContain('TEMPLATE=print_labels')
-                    expect(postData).toContain('map0%3ASCALE=100000')
-                    expect(postData).toContain('map0%3ALAYERS=OpenStreetMap%2Cquartiers%2Csousquartiers')
-                    expect(postData).toContain('map0%3ASTYLES=default%2Cd%C3%A9faut%2Cd%C3%A9faut')
-                    expect(postData).toContain('map0%3AOPACITIES=204%2C255%2C255');
-                    expect(postData).toContain('simple_label=simple%20label');
-                    expect(postData).toContain('FILTERTOKEN=');
-                }
-            }
-        });
-
         await page.locator('#bottom-dock-window-buttons .btn-bottomdock-clear').click();
+        const getPrintPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
+
+        // Launch print
         await page.locator('#print-launch').click();
+        // check message
+        await expect(page.locator('div.alert')).toHaveCount(1)
+        // Close message
+        await page.locator('div.alert button.btn-close').click();
+
+        // check request
+        const getPrintRequest = await getPrintPromise;
+        const getPrintPostData = getPrintRequest.postData();
+        expect(getPrintPostData).toContain('SERVICE=WMS')
+        expect(getPrintPostData).toContain('REQUEST=GetPrint')
+        expect(getPrintPostData).toContain('VERSION=1.3.0')
+        expect(getPrintPostData).toContain('FORMAT=pdf')
+        expect(getPrintPostData).toContain('TRANSPARENT=true')
+        expect(getPrintPostData).toContain('CRS=EPSG%3A2154')
+        expect(getPrintPostData).toContain('DPI=100')
+        expect(getPrintPostData).toContain('TEMPLATE=print_labels')
+        expect(getPrintPostData).toContain('map0%3ASCALE=100000')
+        expect(getPrintPostData).toContain('map0%3ALAYERS=OpenStreetMap%2Cquartiers%2Csousquartiers')
+        expect(getPrintPostData).toContain('map0%3ASTYLES=default%2Cd%C3%A9faut%2Cd%C3%A9faut')
+        expect(getPrintPostData).toContain('map0%3AOPACITIES=204%2C255%2C255');
+        expect(getPrintPostData).toContain('simple_label=simple%20label');
+        expect(getPrintPostData).toContain('FILTERTOKEN=');
     });
 });
 
