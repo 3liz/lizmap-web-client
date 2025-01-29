@@ -6,7 +6,7 @@
   "authors": [
   ],
   "require": {
-    "php": ">=8.1",
+    "php": ">=8.2",
     "jelix/jelix": "dev-jelix-1.8.x",
     "jelix/composer-module-setup": "^1.1.0",
     "jelix/jcommunity-module": "^1.4.3",
@@ -25,7 +25,7 @@
       "jelix/composer-module-setup": true
     },
     "platform": {
-      "php": "8.1"
+      "php": "8.2"
     }
   },
   "extra": {

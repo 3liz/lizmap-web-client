@@ -17,8 +17,6 @@ jobs:
     strategy:
       matrix:
         include:
-          - php-version: "8.1"
-            php-unit: "10.5.40"
           - php-version: "8.2"
             php-unit: "11.5.2"
           - php-version: "8.3"
