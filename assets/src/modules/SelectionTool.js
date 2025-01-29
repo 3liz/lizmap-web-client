@@ -202,7 +202,7 @@ export default class SelectionTool {
      * @todo active state should be set on UI's events
      * @readonly
      * @memberof SelectionTool
-     * @returns {boolean}
+     * @returns {boolean} true if active, false otherwise
      */
     get isActive() {
         const isActive = document.getElementById('button-selectiontool')?.parentElement?.classList?.contains('active');
@@ -408,9 +408,9 @@ export default class SelectionTool {
 
     /**
      * select layer's features with a feature and a geometry operator
-     * @param targetFeatureType
-     * @param selectionFeature - selection feature in map projection
-     * @param geomOperator
+     * @param {string} targetFeatureType - target feature type
+     * @param {import("ol/Feature").default} selectionFeature - selection feature in map projection
+     * @param {string} geomOperator - geometry operator
      */
     selectLayerFeaturesFromSelectionFeature(targetFeatureType, selectionFeature, geomOperator = 'intersects'){
         const lConfig = this._lizmap3.config.layers[targetFeatureType];

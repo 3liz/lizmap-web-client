@@ -36,6 +36,7 @@ export class Extent extends Array {
     }
 
     /**
+     * Get the x minimum value
      * @type {number}
      */
     get xmin() {
@@ -43,6 +44,7 @@ export class Extent extends Array {
     }
 
     /**
+     * Get the y minimum value
      * @type {number}
      */
     get ymin() {
@@ -50,6 +52,7 @@ export class Extent extends Array {
     }
 
     /**
+     * Get the x maximum value
      * @type {number}
      */
     get xmax() {
@@ -57,6 +60,7 @@ export class Extent extends Array {
     }
 
     /**
+     * Get the y maximum value
      * @type {number}
      */
     get ymax() {
@@ -64,6 +68,7 @@ export class Extent extends Array {
     }
 
     /**
+     * Get the center of the extent
      * @type {number[]}
      */
     get center() {
