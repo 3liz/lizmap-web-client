@@ -56,9 +56,12 @@
           <dd>{$p->abstract|nl2br}&nbsp;</dd>
           {if $p->wmsGetCapabilitiesUrl}
           <dt>{@view~map.metadata.properties.wmsGetCapabilitiesUrl@}</dt>
-          <dd><small><a href="{$p->wmsGetCapabilitiesUrl}" target="_blank">WMS Url</a></small></dd>
-          <dd><small><a href="{$p->wmtsGetCapabilitiesUrl}" target="_blank">WMTS Url</a></small></dd>
+          <dd><small><a href="{$p->wmsGetCapabilitiesUrl}" target="_blank">WMS URL</a></small></dd>
+          <dd><small><a href="{$p->wmtsGetCapabilitiesUrl}" target="_blank">WMTS URL</a></small></dd>
           {/if}
+          {ifacl2 'lizmap.tools.layer.export', $mi->id}
+          <dd><small><a href="{$p->wfsGetCapabilitiesUrl}" target="_blank">WFS URL</a></small></dd>
+          {/ifacl2}
         </dl>
       </div>
       <div class="modal-footer">

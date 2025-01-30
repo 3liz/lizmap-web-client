@@ -522,7 +522,7 @@ class Project
     }
 
     /**
-     * Get the WMS GetCapabilities Url.
+     * Get the WMS GetCapabilities URL.
      *
      * @return string
      */
@@ -541,7 +541,7 @@ class Project
     }
 
     /**
-     * Get the WMTS GetCapabilities Url.
+     * Get the WMTS GetCapabilities URL.
      *
      * @return string
      */
@@ -553,6 +553,25 @@ class Project
                 'repository' => $this->repository->getKey(),
                 'project' => $this->key,
                 'SERVICE' => 'WMTS',
+                'VERSION' => '1.0.0',
+                'REQUEST' => 'GetCapabilities',
+            )
+        );
+    }
+
+    /**
+     * Get the WFS GetCapabilities URL.
+     *
+     * @return string
+     */
+    public function getWFSGetCapabilitiesUrl()
+    {
+        return $this->appContext->getFullUrl(
+            'lizmap~service:index',
+            array(
+                'repository' => $this->repository->getKey(),
+                'project' => $this->key,
+                'SERVICE' => 'WFS',
                 'VERSION' => '1.0.0',
                 'REQUEST' => 'GetCapabilities',
             )
@@ -690,6 +709,9 @@ class Project
 
             case 'wmtsGetCapabilitiesUrl':
                 return $this->getWMTSGetCapabilitiesUrl();
+
+            case 'wfsGetCapabilitiesUrl':
+                return $this->getWFSGetCapabilitiesUrl();
         }
 
         return $this->qgis->getData($key);
@@ -2272,7 +2294,7 @@ class Project
         $metadataTpl = new \jTpl();
         // Get the WMS information
         $wmsInfo = $this->qgis->getWMSInformation();
-        // WMS GetCapabilities Url
+        // WMS GetCapabilities URL
         $wmsGetCapabilitiesUrl = $this->appContext->aclCheck(
             'lizmap.tools.displayGetCapabilitiesLinks',
             $this->repository->getKey()
@@ -2282,12 +2304,14 @@ class Project
             $wmsGetCapabilitiesUrl = $this->getWMSGetCapabilitiesUrl();
             $wmtsGetCapabilitiesUrl = $this->getWMTSGetCapabilitiesUrl();
         }
+        $wfsGetCapabilitiesUrl = $this->getWFSGetCapabilitiesUrl();
         $metadataTpl->assign(array_merge(array(
             'repositoryLabel' => $this->repository->getLabel(),
             'repository' => $this->repository->getKey(),
             'project' => $this->getKey(),
             'wmsGetCapabilitiesUrl' => $wmsGetCapabilitiesUrl,
             'wmtsGetCapabilitiesUrl' => $wmtsGetCapabilitiesUrl,
+            'wfsGetCapabilitiesUrl' => $wfsGetCapabilitiesUrl,
         ), $wmsInfo));
         $dockable[] = new \lizmapMapDockItem(
             'metadata',
