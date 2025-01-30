@@ -3,5 +3,9 @@ import common from './webpack.common.js';
 
 export default merge(common, {
     mode: 'production',
-    devtool: 'source-map'
+    devtool: 'source-map',
+    experiments: {
+        asyncWebAssembly: true,
+        syncWebAssembly: true
+    }
 });
