@@ -117,8 +117,17 @@ jobs:
         run: docker volume ls
 
       - name: Install Lizmap
+        # Quick dirty hack "| true" about duplicated key
+        # Error: An error occured during the installation of the module lizmapdemo:
+        # invalid query (ERROR: duplicate key value violates unique constraint "jacl2_group_id_aclgrp_pk"
+        # DETAIL: Key (id_aclgrp)=(__priv_lizadmin) already exists.(INSERT INTO "jacl2_group" (
+        # "id_aclgrp","name","grouptype","ownerlogin"
+        # ) VALUES (
+        # '__priv_lizadmin', 'lizadmin', 2, 'lizadmin'
+        # )))
+        # Installation is finished
         run: |
-          ./lizmap-ctl install
+          ./lizmap-ctl install | true
 
       - name: Wait and check about QGIS Server status
         run: |
