@@ -559,6 +559,25 @@ class Project
         );
     }
 
+    /**
+     * Get the WFS GetCapabilities Url.
+     *
+     * @return string
+     */
+    public function getWFSGetCapabilitiesUrl()
+    {
+        return $this->appContext->getFullUrl(
+            'lizmap~service:index',
+            array(
+                'repository' => $this->repository->getKey(),
+                'project' => $this->key,
+                'SERVICE' => 'WFS',
+                'VERSION' => '1.0.0',
+                'REQUEST' => 'GetCapabilities',
+            )
+        );
+    }
+
     public function getFileTime()
     {
         return $this->cacheHandler->getFileTime();
@@ -690,6 +709,9 @@ class Project
 
             case 'wmtsGetCapabilitiesUrl':
                 return $this->getWMTSGetCapabilitiesUrl();
+
+            case 'wfsGetCapabilitiesUrl':
+                return $this->getWFSGetCapabilitiesUrl();
         }
 
         return $this->qgis->getData($key);
@@ -2281,6 +2303,7 @@ class Project
         if ($wmsGetCapabilitiesUrl) {
             $wmsGetCapabilitiesUrl = $this->getWMSGetCapabilitiesUrl();
             $wmtsGetCapabilitiesUrl = $this->getWMTSGetCapabilitiesUrl();
+            $wfsGetCapabilitiesUrl = $this->getWFSGetCapabilitiesUrl();
         }
         $metadataTpl->assign(array_merge(array(
             'repositoryLabel' => $this->repository->getLabel(),
@@ -2288,6 +2311,7 @@ class Project
             'project' => $this->getKey(),
             'wmsGetCapabilitiesUrl' => $wmsGetCapabilitiesUrl,
             'wmtsGetCapabilitiesUrl' => $wmtsGetCapabilitiesUrl,
+            'wfsGetCapabilitiesUrl' => $wfsGetCapabilitiesUrl,
         ), $wmsInfo));
         $dockable[] = new \lizmapMapDockItem(
             'metadata',

@@ -62,6 +62,7 @@
             <dd><small class="bbox">{$WMSExtent}</small></dd>
             <br/>
 
+            {ifacl2 'lizmap.tools.displayGetCapabilitiesLinks'}
             {if $wmsGetCapabilitiesUrl}
             <dt>{@view~map.metadata.properties.wmsGetCapabilitiesUrl@}</dt>
             <dd>
@@ -78,6 +79,7 @@
             </dd>
             <br/>
             {/if}
+            {/ifacl2}
           </dl>
         </p>
       </div>
