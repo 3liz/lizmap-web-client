@@ -2,11 +2,11 @@ import { expect } from 'chai';
 
 import { readFileSync } from 'fs';
 
-import { deepFreeze, getNotContains } from '../../../../assets/src/modules/config/Tools.js';
+import { deepFreeze, getNotContains } from 'assets/src/modules/config/Tools.js';
 
 describe('deepFreeze', function () {
     it('Valid', function () {
-        const config = JSON.parse(readFileSync('./data/montpellier-config.json', 'utf8'));
+        const config = JSON.parse(readFileSync('./tests/js-units/data/montpellier-config.json', 'utf8'));
         expect(config).to.not.be.undefined
 
         const freezedConfig = deepFreeze(config);
