@@ -1,6 +1,16 @@
 // @ts-check
 
-import {expect, Locator, Page} from '@playwright/test';
+import { expect } from '@playwright/test';
+
+/**
+ * Playwright Page
+ * @typedef {import('@playwright/test').Page} Page
+ */
+
+/**
+ * Playwright Page
+ * @typedef {import('@playwright/test').Locator} Locator
+ */
 
 export class BasePage {
     /** @type {Page} */
