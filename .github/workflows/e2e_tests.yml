@@ -173,7 +173,7 @@ jobs:
 
       - name: Run Playwright tests read-only
         id: test-playwright-read-only
-        working-directory: end2end
+        working-directory: tests/end2end
         env:
           PLAYWRIGHT_JSON_OUTPUT_FILE: playwright-report/tests-results-readonly.json
         run: |
@@ -181,7 +181,7 @@ jobs:
 
       - name: Run Playwright tests not tagged read-only
         id: test-playwright-not-read-only
-        working-directory: end2end
+        working-directory: tests/end2end
         env:
           PLAYWRIGHT_JSON_OUTPUT_FILE: playwright-report/tests-results-not-readonly.json
         if: success() || steps.test-playwright-read-only.conclusion == 'failure'
