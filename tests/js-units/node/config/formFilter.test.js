@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
-import { ValidationError, ConversionError } from '../../../../assets/src/modules/Errors.js';
-import { FormFilterElementConfig, FormFilterConfig } from '../../../../assets/src/modules/config/FormFilter.js';
+import { ValidationError, ConversionError } from 'assets/src/modules/Errors.js';
+import { FormFilterElementConfig, FormFilterConfig } from 'assets/src/modules/config/FormFilter.js';
 
 describe('FormFilterElementConfig', function () {
     it('Valid', function () {

@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
-import { ValidationError, ConversionError } from '../../../../assets/src/modules/Errors.js';
-import { LayerThemeConfig, ThemeConfig, ThemesConfig } from '../../../../assets/src/modules/config/Theme.js';
+import { ValidationError, ConversionError } from 'assets/src/modules/Errors.js';
+import { LayerThemeConfig, ThemeConfig, ThemesConfig } from 'assets/src/modules/config/Theme.js';
 
 describe('LayerThemeConfig', function () {
     it('Valid', function () {
