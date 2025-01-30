@@ -113,8 +113,8 @@ endif
 
 build: debug
 	composer update --working-dir=lizmap/ --prefer-dist --no-ansi --no-interaction --no-dev --no-suggest --no-progress
-	cd assets/ && npm install
-	cd assets/ && npm run build
+	npm install
+	npm run build
 
 tests: debug build
 	composer update --working-dir=tests/units/ --prefer-dist --no-ansi --no-interaction --no-dev --no-suggest --no-progress
@@ -208,7 +208,7 @@ version-doc:
 	sed -i "s@COMMIT_ID@$(COMMITID)@g" docs/index.html
 	sed -i "s@VERSION@$(FULL_VERSION)@g" docs/index.html
 	sed -i "s@DATE@$(DATE_VERSION)@g" docs/index.html
-	jq '.version = "$(FULL_VERSION)"' assets/package.json > "$tmp" && mv "$tmp" assets/package.json
+	jq '.version = "$(FULL_VERSION)"' package.json > "$tmp" && mv "$tmp" package.json
 
 php-doc:
 	docker run --rm -v ${PWD}:/data phpdoc/phpdoc:3 -c docs/phpdoc.xml

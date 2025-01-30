@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { MetadataConfig } from '../../../../assets/src/modules/config/Metadata.js';
+import { MetadataConfig } from 'assets/src/modules/config/Metadata.js';
 
 describe('MetadataConfig', function () {
     it('Empty metadata', function () {

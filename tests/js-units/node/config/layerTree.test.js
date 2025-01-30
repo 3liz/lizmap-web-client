@@ -2,9 +2,9 @@ import { expect } from 'chai';
 
 import { readFileSync } from 'fs';
 
-import { Extent } from '../../../../assets/src/modules/utils/Extent.js';
-import { LayersConfig } from '../../../../assets/src/modules/config/Layer.js';
-import { LayerGeographicBoundingBoxConfig, LayerBoundingBoxConfig, LayerStyleConfig, LayerTreeItemConfig, LayerTreeGroupConfig, LayerTreeLayerConfig, buildLayerTreeConfig } from '../../../../assets/src/modules/config/LayerTree.js';
+import { Extent } from 'assets/src/modules/utils/Extent.js';
+import { LayersConfig } from 'assets/src/modules/config/Layer.js';
+import { LayerGeographicBoundingBoxConfig, LayerBoundingBoxConfig, LayerStyleConfig, LayerTreeItemConfig, LayerTreeGroupConfig, LayerTreeLayerConfig, buildLayerTreeConfig } from 'assets/src/modules/config/LayerTree.js';
 
 describe('LayerGeographicBoundingBoxConfig', function () {
     it('Valid', function () {
@@ -168,10 +168,10 @@ describe('LayerTreeItemConfig', function () {
 
 describe('buildLayerTreeConfig', function () {
     it('Montpellier', function () {
-        const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
+        const capabilities = JSON.parse(readFileSync('./tests/js-units/data/montpellier-capabilities.json', 'utf8'));
         expect(capabilities).to.not.be.undefined
         expect(capabilities.Capability).to.not.be.undefined
-        const config = JSON.parse(readFileSync('./data/montpellier-config.json', 'utf8'));
+        const config = JSON.parse(readFileSync('./tests/js-units/data/montpellier-config.json', 'utf8'));
         expect(config).to.not.be.undefined
 
         const layers = new LayersConfig(config.layers);
@@ -293,10 +293,10 @@ describe('buildLayerTreeConfig', function () {
     })
 
     it('Backgrounds', function () {
-      const capabilities = JSON.parse(readFileSync('./data/backgrounds-capabilities.json', 'utf8'));
+      const capabilities = JSON.parse(readFileSync('./tests/js-units/data/backgrounds-capabilities.json', 'utf8'));
       expect(capabilities).to.not.be.undefined
       expect(capabilities.Capability).to.not.be.undefined
-      const config = JSON.parse(readFileSync('./data/backgrounds-config.json', 'utf8'));
+      const config = JSON.parse(readFileSync('./tests/js-units/data/backgrounds-config.json', 'utf8'));
       expect(config).to.not.be.undefined
 
       const layers = new LayersConfig(config.layers);

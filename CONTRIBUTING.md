@@ -121,21 +121,22 @@ You need some developer tools in order to build and install dependencies.
 #### Requirements
 
 * Install dependencies :
-    * `cd assets/`
-    * `npm install`
+    * `npm install` in root directory of the repository.
 
-It creates a `assets/node_modules/` directory. Don't commit it into the git repository!
+It creates a `node_modules/` directory. Don't commit it into the git repository!
 
 
 #### Installation
 
 * Build for production (minified JS files) :
+    * From root directory :
 `npm run build`
 
 Don't commit minified JS files into the git repository. They will be built by our
 continuous integration and added into zip packages that are available on github.
 
 * Build for development (source mapping, build is executed at every change on a JS file) :
+    * From root directory :
 `npm run watch`
 
 Look at [webpack documentation](https://webpack.js.org/guides/development/) for other development options (e.g. live reloading)
@@ -162,7 +163,7 @@ Configuration of php-cs-fixer has been setup into .php-cs.dist.
 
 ### JavaScript
 
-Please run `npm run pretest` in `assets/` directory and fix errors before any commit.
+Please run `npm run pretest` in the root directory and fix errors before any commit.
 
 ## Issues
 
