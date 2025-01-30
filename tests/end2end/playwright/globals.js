@@ -1,7 +1,21 @@
 // @ts-check
 const { expect } = require('@playwright/test');
-import { Page } from '@playwright/test';
 
+/**
+ * Playwright Page
+ * @typedef {import('@playwright/test').Page} Page
+ */
+
+/**
+ * Integer
+ * @typedef {number} int
+ */
+
+/**
+ * Expect no errors in the map page
+ * @param {Page} page The page object
+ * @param {boolean} checkLayerTreeView Checking  that tree view contains layers
+ */
 async function NoErrors(page, checkLayerTreeView = true) {
     // No error
     await expect(page.locator('p.error-msg')).toHaveCount(0);
@@ -13,10 +27,9 @@ async function NoErrors(page, checkLayerTreeView = true) {
 }
 
 /**
- * CatchErrors function
- * Some checks when the map is on error
+ * Expect errors in the map page
  * @param {Page} page The page object
- * @param {int} layersInTreeView The number of layers to find in the treeview.
+ * @param {int} layersInTreeView The number of layers to find in the tree view.
  */
 async function CatchErrors(page, layersInTreeView = 0) {
     // Error
@@ -29,7 +42,6 @@ async function CatchErrors(page, layersInTreeView = 0) {
 }
 
 /**
- * gotoMap function
  * Helper to load a map and do some basic checks
  * @param {string} url The URL of the map to load
  * @param {Page} page The page object
@@ -67,7 +79,6 @@ export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 
 }
 
 /**
- * reloadMap function
  * Helper to reload a map and do some basic checks
  * @param {Page} page The page object
  * @param {boolean} check If some basic checks must be done.
