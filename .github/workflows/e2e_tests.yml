@@ -29,6 +29,7 @@ jobs:
       CYPRESS_CI: TRUE
       PLAYWRIGHT_FORCE_TTY: true
       PLAYWRIGHT_LIST_PRINT_STEPS: true
+      PLAYWRIGHT_JSON_OUTPUT_DIR: ${{ github.workspace }}/tests/end2end/playwright-report
       FORCE_COLOR: true
       # For testing only
       # PHP_VERSION: '8.4'
@@ -79,6 +80,7 @@ jobs:
 
       - name: Make environment and show Lizmap versions
         run: |
+          mkdir -p ${{env.PLAYWRIGHT_JSON_OUTPUT_DIR}}
           make env
           cat .env
 
@@ -175,7 +177,7 @@ jobs:
         id: test-playwright-read-only
         working-directory: tests/end2end
         env:
-          PLAYWRIGHT_JSON_OUTPUT_FILE: playwright-report/tests-results-readonly.json
+          PLAYWRIGHT_JSON_OUTPUT_NAME: tests-results-readonly.json
         run: |
           npx playwright test --grep @readonly --project=end2end
 
@@ -183,7 +185,7 @@ jobs:
         id: test-playwright-not-read-only
         working-directory: tests/end2end
         env:
-          PLAYWRIGHT_JSON_OUTPUT_FILE: playwright-report/tests-results-not-readonly.json
+          PLAYWRIGHT_JSON_OUTPUT_NAME: tests-results-not-readonly.json
         if: success() || steps.test-playwright-read-only.conclusion == 'failure'
         run: |
           npx playwright test --workers 1 --grep-invert @readonly --project=end2end
