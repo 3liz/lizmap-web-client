@@ -173,15 +173,19 @@ jobs:
 
       - name: Run Playwright tests read-only
         id: test-playwright-read-only
+        working-directory: end2end
+        env:
+          PLAYWRIGHT_JSON_OUTPUT_FILE: playwright-report/tests-results-readonly.json
         run: |
-          cd end2end
           npx playwright test --grep @readonly --project=end2end
 
       - name: Run Playwright tests not tagged read-only
         id: test-playwright-not-read-only
+        working-directory: end2end
+        env:
+          PLAYWRIGHT_JSON_OUTPUT_FILE: playwright-report/tests-results-not-readonly.json
         if: success() || steps.test-playwright-read-only.conclusion == 'failure'
         run: |
-          cd end2end
           npx playwright test --workers 1 --grep-invert @readonly --project=end2end
 
 #      - name: Generate PG dump from Playwright
@@ -209,7 +213,6 @@ jobs:
             Visit ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
       - name: Upload test results
-        if: failure()
         uses: actions/upload-artifact@v4.5.0
         with:
           name: playwright-report
