@@ -409,7 +409,7 @@ export default class SelectionTool {
     /**
      * select layer's features with a feature and a geometry operator
      * @param {string} targetFeatureType - target feature type
-     * @param {import("ol/Feature").default} selectionFeature - selection feature in map projection
+     * @param {Feature} selectionFeature - selection feature in map projection
      * @param {string} geomOperator - geometry operator
      */
     selectLayerFeaturesFromSelectionFeature(targetFeatureType, selectionFeature, geomOperator = 'intersects'){

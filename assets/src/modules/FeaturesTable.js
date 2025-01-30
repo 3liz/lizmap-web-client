@@ -41,9 +41,9 @@ export default class FeaturesTable {
      * @param {string|null}      sortingField Field name to sort the features
      * @param {string|null}      sortingOrder Sorting order
      * @returns {Promise} — A Promise that resolves with the result of parsing the response body text as JSON.
-     * @throws {import("./errors").ResponseError} In case of invalid content type (not application/json or application/vnd.geo+json) or invalid JSON
-     * @throws {import("./errors").HttpError} In case of not successful response (status not in the range 200–299)
-     * @throws {import("./errors").NetworkError} In case of catch exceptions
+     * @throws {ResponseError} In case of invalid content type (not application/json or application/vnd.geo+json) or invalid JSON
+     * @throws {HttpError} In case of not successful response (status not in the range 200–299)
+     * @throws {NetworkError} In case of catch exceptions
      */
     getFeatures(layerId, filter = null, withGeometry = false, fields = 'null', additionalFields = [], limit = 1000, sortingField = null, sortingOrder = null) {
 

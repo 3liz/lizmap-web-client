@@ -38,13 +38,15 @@ export default class Action {
     }
 
     /**
-     * @type {boolean} If the project has actions
+     * If the project has actions
+     * @type {boolean}
      */
     hasActions = false;
 
     /**
-     * @type {string} Unique ID of an action object
+     * Unique ID of an action object
      * We allow only one active action at a time
+     * @type {string}
      */
     ACTIVE_LIZMAP_ACTION = null;
 
@@ -56,8 +58,8 @@ export default class Action {
     /**
      * Build the lizmap Action instance
      * @param {Map}           map           - OpenLayers map
-     * @param {import("../components/SelectionTool.js")} selectionTool - The lizmap selection tool
-     * @param {import("../components/Digitizing.js")}    digitizing    - The Lizmap digitizing instance
+     * @param {SelectionTool} selectionTool - The lizmap selection tool
+     * @param {Digitizing}    digitizing    - The Lizmap digitizing instance
      * @param {object}        lizmap3       - The old lizmap object
      */
     constructor(map, selectionTool, digitizing, lizmap3) {

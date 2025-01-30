@@ -35,6 +35,18 @@ export default [
 
         $: "readonly",
         jQuery: "readonly",
+
+        TemplateResult: "readonly",
+        SelectionTool: "readonly",
+        Digitizing: "readonly",
+        Geometry: "readonly",
+        Extent: "readonly",
+        ResponseError: "readonly",
+        HttpError: "readonly",
+        NetworkError: "readonly",
+        LocateByLayerConfig: "readonly",
+        Config: "readonly",
+        Layers: "readonly",
       },
     },
     rules: {
