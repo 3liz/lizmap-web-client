@@ -1038,7 +1038,7 @@ export class Digitizing {
 
     /**
      * Format length output.
-     * @param {import("ol/geom/Geometry").default} geom The geom.
+     * @param {Geometry} geom The geom.
      * @returns {string} The formatted length.
      */
     formatLength(geom) {
@@ -1070,7 +1070,7 @@ export class Digitizing {
 
     /**
      * Initializes measure tooltip and change event on a feature loaded from local storage.
-     * @param {import("ol/geom/Geometry").default} geom The geometry.
+     * @param {Geometry} geom The geometry.
      */
     _initMeasureTooltipOnLoadedFeatures(geom){
         // create overlays
@@ -1093,7 +1093,7 @@ export class Digitizing {
 
     /**
      * Calculates measuements for a specific geometry.
-     * @param {import("ol/geom/Geometry").default} geom The geometry.
+     * @param {Geometry} geom The geometry.
      */
     _setTooltipContentByGeom(geom){
         if (geom instanceof Polygon) {

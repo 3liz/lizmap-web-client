@@ -17,8 +17,8 @@ import GeoJSON from 'ol/format/GeoJSON.js';
 export default class LocateByLayer {
     /**
      * Build the lizmap LocateByLayer instance
-     * @param {import("config/Locate.js").LocateByLayerConfig} locateByLayer - The lizmap locateByLayer config
-     * @param {import("Config.js")[]} vectorLayerFeatureTypeList - The list of WFS feature type
+     * @param {LocateByLayerConfig} locateByLayer - The lizmap locateByLayer config
+     * @param {Config[]} vectorLayerFeatureTypeList - The list of WFS feature type
      * @param {Map}           map           - OpenLayers map
      * @param {object}        lizmap3       - The old lizmap object
      */
