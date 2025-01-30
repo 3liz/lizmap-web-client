@@ -1,7 +1,15 @@
 // @ts-check
-
-import {Locator, Page} from '@playwright/test';
 import { BasePage } from './base';
+
+/**
+ * Playwright Page
+ * @typedef {import('@playwright/test').Page} Page
+ */
+
+/**
+ * Playwright Page
+ * @typedef {import('@playwright/test').Locator} Locator
+ */
 
 export class HomePage extends BasePage {
     /**

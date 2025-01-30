@@ -1,7 +1,17 @@
 // @ts-check
 
-import {expect, Locator, Page} from '@playwright/test';
+import { expect } from '@playwright/test';
 import { BasePage } from './base';
+
+/**
+ * Playwright Page
+ * @typedef {import('@playwright/test').Page} Page
+ */
+
+/**
+ * Playwright Page
+ * @typedef {import('@playwright/test').Locator} Locator
+ */
 
 export class AdminPage extends BasePage {
     /**
