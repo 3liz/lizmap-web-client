@@ -626,7 +626,7 @@ export default class FeaturesTable extends HTMLElement {
     /**
      * Build the columns of the table
      * @param {object} properties - Object containing the properties of the feature
-     * @returns {import("lit").TemplateResult} The columns of the table
+     * @returns {TemplateResult} The columns of the table
      */
     buildColumns(properties) {
 
@@ -656,7 +656,7 @@ export default class FeaturesTable extends HTMLElement {
     /**
      * Initialize tab with the first column "display_expression"
      * @param {object} properties - Object containing the properties of the feature
-     * @returns {import("lit").TemplateResult} The first column of the table
+     * @returns {TemplateResult} The first column of the table
      */
     buildDisplayExpressionColumn(properties) {
         if (this.isGeneralLabelExisting()) {
@@ -672,7 +672,7 @@ export default class FeaturesTable extends HTMLElement {
 
     /**
      * Initialize the labels of the table
-     * @returns {import("lit").TemplateResult} The labels of the table
+     * @returns {TemplateResult} The labels of the table
      */
     buildLabels() {
         if (this.isAdditionalFieldsEmpty()) {

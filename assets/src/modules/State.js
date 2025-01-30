@@ -13,11 +13,6 @@ import { MapRootState } from './state/MapLayer.js';
 import { TreeRootState } from './state/LayerTree.js';
 
 /**
- * Lizmap config instance
- * @typedef {import('./Config.js').Config} Config
- */
-
-/**
  * @class
  * @name State
  * @augments EventDispatcher

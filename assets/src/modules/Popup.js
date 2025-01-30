@@ -18,10 +18,10 @@ export default class Popup {
 
     /**
      * Create a popup instance
-     * @param {import("Config.js")} initialConfig - The lizmap initial config instance
-     * @param {import("Layers.js")}  lizmapState   - The lizmap user interface state
+     * @param {Config} initialConfig - The lizmap initial config instance
+     * @param {Layers}  lizmapState   - The lizmap user interface state
      * @param {Map}    map           - OpenLayers map
-     * @param {import("../components/Digitizing.js")} digitizing - The Lizmap digitizing instance
+     * @param {Digitizing} digitizing - The Lizmap digitizing instance
      */
     constructor(initialConfig, lizmapState, map, digitizing) {
 
