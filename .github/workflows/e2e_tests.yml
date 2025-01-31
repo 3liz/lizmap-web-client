@@ -20,22 +20,30 @@ jobs:
       contains(github.event.pull_request.labels.*.name, 'run end2end') ||
       github.event_name == 'repository_dispatch' ||
       github.event_name == 'workflow_dispatch'
-    name: "End-to-end"
+    name: "E2E PHP ${{ matrix.php }} PG  ${{ matrix.pg-postgis }} QGIS ${{ matrix.qgis-server }}"
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: tests
+    strategy:
+      matrix:
+        include:
+          - name: "LEGACY"
+            php: "8.1"
+            pg-postgis: "14-3"
+            qgis-server: "3.34"
+            update-projects: "FALSE"
+          - name: "BLEEDING_EDGE"
+            php: "8.3"
+            pg-postgis: "17-3"
+            qgis-server: "3.40"
+            update-projects: "FALSE"
     env:
       CYPRESS_CI: TRUE
       PLAYWRIGHT_FORCE_TTY: true
       PLAYWRIGHT_LIST_PRINT_STEPS: true
       PLAYWRIGHT_JSON_OUTPUT_DIR: ${{ github.workspace }}/tests/end2end/playwright-report
       FORCE_COLOR: true
-      # For testing only
-      # PHP_VERSION: '8.4'
-      # LZMPOSTGISVERSION: '17-3'
-      # LZMQGSRVVERSION: '3.40'
-
     steps:
 
 #      - name: Debug
@@ -75,10 +83,11 @@ jobs:
       - name: Branch name
         run: echo running on branch ${GITHUB_REF##*/} with CYPRESS = ${CYPRESS_CI}
 
-      - name: Docker volume debug 1/3
-        run: docker volume ls
-
       - name: Make environment and show Lizmap versions
+        env:
+          PHP_VERSION: ${{ matrix.php }}
+          LZMPOSTGISVERSION: ${{ matrix.pg-postgis }}
+          LZMQGSRVVERSION: ${{ matrix.qgis-server }}
         run: |
           mkdir -p ${{env.PLAYWRIGHT_JSON_OUTPUT_DIR}}
           make env
@@ -91,10 +100,11 @@ jobs:
           env-file: tests/.env
 
        # For testing only
-#      - name: Update projects
-#        run: |
-#          make upgrade-projects
-#          git status
+      - name: Update projects
+        if: ${{ matrix.update-projects == 'TRUE' }}
+        run: |
+          make upgrade-projects
+          git status
 
       - name: Install QGIS server plugins
         run: make build-plugins
@@ -112,9 +122,6 @@ jobs:
       - name: Wait 30 secondes for docker images to be ready
         run: |
           sleep 30
-
-      - name: Docker volume debug 2/3
-        run: docker volume ls
 
       - name: Install Lizmap
         # Quick dirty hack "| true" about duplicated key
@@ -151,11 +158,12 @@ jobs:
       - name: Check about updated files after a build (PHP or JS)
         run: |
           if [[ -z $(git status --porcelain -uno) ]]; then
-              echo "No updated files"
+              echo "No updated files 👍"
           else
               echo "Updated files"
               git status
               echo "::warning Git status is not clean"
+          #    exit 1
           fi
 
       - name: Load SQL data
@@ -167,20 +175,42 @@ jobs:
         run: |
             sudo echo "127.0.0.1 othersite.local" | sudo tee -a /etc/hosts
 
-      # Playwright
       - uses: actions/setup-node@v4
         with:
           node-version: 21
+          cache: 'npm'
+          cache-dependency-path: ${{ github.workspace }}/tests/end2end/package.json
+
+#      - name: Get npm cache directory
+#        id: npm-cache-dir
+#        shell: bash
+#        run: echo "dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}
+
+#      - name: Restore NPM
+#        id: cache-npm-restore
+#        uses: actions/cache/restore@v4
+#        with:
+#          path: ${{ steps.npm-cache-dir.outputs.dir }}
+#          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install dependencies
+#        if: steps.cache-npm-restore.outputs.cache-hit != 'true'
         run: |
           cd end2end
           npm ci
 
       - name: Install Playwright
+#        if: steps.cache-npm-restore.outputs.cache-hit != 'true'
         run: |
           cd end2end
           npx playwright install --with-deps chromium
+
+#      - name: Save NPM
+#        uses: actions/cache/save@v4
+#        if: steps.cache.outputs.cache-hit != 'true'
+#        with:
+#          path: ${{ steps.npm-cache-dir.outputs.dir }}
+#          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
 
       - name: Run Playwright tests read-only
         id: test-playwright-read-only
@@ -189,6 +219,46 @@ jobs:
           PLAYWRIGHT_JSON_OUTPUT_NAME: tests-results-readonly.json
         run: |
           npx playwright test --grep @readonly --project=end2end
+
+      - name: Prepare the database diff from Playwright read only
+        run: |
+          # Removing "-- Dumped" from the SQL file because it contains a version
+          sed -i '/^-- Dumped/ d' qgis-projects/tests/tests_dataset.sql
+          sed -i '/^SET idle_in_transaction_session_timeout/ d' qgis-projects/tests/tests_dataset.sql
+          sed -i -e :a -e '/^\n*$/{$d;N;ba' -e '}' qgis-projects/tests/tests_dataset.sql
+          cp qgis-projects/tests/tests_dataset.sql qgis-projects/tests/tests_dataset.sql.before
+          ./lizmap-ctl dump-pgsql
+          sed -i '/^-- Dumped/ d' qgis-projects/tests/tests_dataset.sql
+          sed -i '/^SET idle_in_transaction_session_timeout/ d' qgis-projects/tests/tests_dataset.sql
+          sed -i -e :a -e '/^\n*$/{$d;N;ba' -e '}' qgis-projects/tests/tests_dataset.sql
+          diff qgis-projects/tests/tests_dataset.sql qgis-projects/tests/tests_dataset.sql.before
+          if [[ -z $? ]]; then
+                echo "No updated files 👍"
+          else
+                echo "Updated files"
+                echo "::warning Git status is not clean after running tests about the DB"
+          #      exit 1
+          fi
+
+      - name: Upload DB results
+        if: success() || steps.test-playwright-read-only.conclusion == 'failure'
+        uses: actions/upload-artifact@v4.5.0
+        with:
+          name: ${{ matrix.name }}-DB-diff-read-only
+          path: |
+            ${{ github.workspace }}/tests/qgis-projects/tests/tests_dataset.sql
+            ${{ github.workspace }}/tests/qgis-projects/tests/tests_dataset.sql.before
+
+      - name: Check about updated files after a read only tests
+        run: |
+          if [[ -z $(git status --porcelain -uno) ]]; then
+              echo "No updated files 👍"
+          else
+              echo "Updated files"
+              git status
+              echo "::warning Git status is not clean after running tests about tracked files"
+              # exit 1
+          fi
 
       - name: Run Playwright tests not tagged read-only
         id: test-playwright-not-read-only
@@ -224,10 +294,11 @@ jobs:
             Visit ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
       - name: Upload test results
+        if: success() || steps.test-playwright-read-only.conclusion == 'failure' || steps.test-playwright-not-read-only.conclusion == 'failure'
         uses: actions/upload-artifact@v4.5.0
         with:
-          name: playwright-report
-          path: tests/end2end/playwright-report
+          name: ${{ matrix.name }}-playwright-report
+          path: ${{ github.workspace }}/tests/end2end/playwright-report
 
       # Install NPM dependencies, cache them correctly
       # and run all Cypress tests
@@ -257,7 +328,7 @@ jobs:
         uses: actions/upload-artifact@v4.5.0
         if: always()
         with:
-          name: E2E-all-logs
+          name: ${{ matrix.name }}-E2E-all-logs
           path: |
             /tmp/e2e/
 
@@ -277,13 +348,10 @@ jobs:
         uses: actions/upload-artifact@v4.5.0
         if: failure()
         with:
-          name: cypress-screenshots
+          name: ${{ matrix.name }}-cypress-screenshots
           path: |
             tests/end2end/cypress/screenshots
             tests/end2end/cypress/downloads
-
-      - name: Docker volume debug 3/3
-        run: docker volume ls
 
 #      - name: Generate PG dump from Cypress
 #        if: failure()

@@ -1,4 +1,4 @@
-name: "⏰ End2end"
+name: "⏰ End2end scheduler"
 on:
   workflow_dispatch:
   schedule:
