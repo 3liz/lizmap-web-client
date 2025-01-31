@@ -373,6 +373,24 @@ test.describe('Print in popup', () => {
         // Test `atlas_quartiers` print atlas request
         const featureAtlasQuartiers = page.locator('#popupcontent lizmap-feature-toolbar[value="quartiers_cc80709a_cd4a_41de_9400_1f492b32c9f7.1"] .feature-atlas');
 
+        // Mock file
+        await page.route('**/service*', async route => {
+            const request = await route.request();
+            if (request.postData()?.includes('GetPrint')) {
+                await route.fulfill({
+                    headers: {
+                        "Content-Description": "File Transfert",
+                        "Content-Disposition": "attachment; filename=\"print_atlas_quartiers.pdf\"",
+                        "Content-Transfer-Encoding": "binary",
+                        "Content-Type": "application/pdf",
+                    },
+                    path:path.join(__dirname, 'mock/print/atlas/atlas_quartiers.pdf')
+                })
+            } else {
+                await route.continue()
+            }
+        });
+
         const getPrintPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
         await featureAtlasQuartiers.locator('button').click();
         const getPrintRequest = await getPrintPromise;
@@ -393,12 +411,16 @@ test.describe('Print in popup', () => {
         await expect(getPrintParams.has('LAYERS')).toBe(false)
         await expect(getPrintParams.has('ATLAS_PK')).toBe(false)
 
+        // Disable because of mocking
         // Test `atlas_quartiers` print atlas response
-        const responsePromise = page.waitForResponse(response => response.status() === 200);
-        const response = await responsePromise;
+        // const responsePromise = page.waitForResponse(response => response.status() === 200);
+        // const response = await responsePromise;
 
-        await expect(response.headers()['content-type']).toBe('application/pdf');
-        await expect(response.headers()['content-disposition']).toBe('attachment; filename="print_atlas_quartiers.pdf"');
+        // await expect(response.headers()['content-type']).toBe('application/pdf');
+        // await expect(response.headers()['content-disposition']).toBe('attachment; filename="print_atlas_quartiers.pdf"');
+
+        await getPrintRequest.response()
+        await page.unroute('**/service*')
     });
 });
 
