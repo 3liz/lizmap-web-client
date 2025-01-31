@@ -11,7 +11,10 @@ import { gotoMap, checkParameters } from './globals';
  * await download.saveAs(path.join(__dirname, 'mock/print_in_project_projection/baselayer/Paysage_A4.pdf'));
  */
 
-test.describe('Print', () => {
+test.describe('Print',
+    {
+      tag: ['@readonly', '@print'],
+    }, () => {
 
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=print';
