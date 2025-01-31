@@ -1,8 +1,12 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Cors', function () {
+test.describe('CORS',
+  {
+    tag: ['@localonly'],
+  }, () => {
 
   test('send authorized request', async function ({ page }, testInfo) {
+    test.skip(process.env.CI, 'Not working on GH Action');
     await page.goto('http://othersite.local:8130');
     await page.locator('#launch-request').click();
     await expect(page.locator('#status')).toHaveText('200');
@@ -13,6 +17,7 @@ test.describe('Cors', function () {
 
 
   test('send unauthorized request', async function ({ page }, testInfo) {
+    test.skip(process.env.CI, 'Not working on GH Action');
     await page.goto(
       'http://othersite.local:8130');
     await page.locator('#launch-request-bad').click();
