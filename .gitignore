@@ -14,7 +14,7 @@
 
 # Build
 build/
-assets/node_modules/
+node_modules/
 assets/dist/
 *.bundle.js
 
@@ -129,14 +129,18 @@ tests/qgis-projects/tests/*_attachments.zip
 tests/qgis-server-plugins/*
 !tests/qgis-server-plugins/upgrade_projects.py
 tests/lizmap-qgis-plugin.master.zip
-tests/end2end/node_modules/
 tests/end2end/cypress/downloads/
 tests/end2end/cypress/screenshots/
-tests/js-units/node_modules/
 tests/.env
 tests/end2end/playwright-report/
 tests/end2end/playwright/.auth
 tests/end2end/test-results*
+
+# Keep them a little bit, when we come back from a legacy branch, to be removed soon
+tests/js-units/node_modules/
+tests/end2end/node_modules/
+assets/node_modules/
+
 
 /.composer
 /.npm
