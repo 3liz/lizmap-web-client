@@ -19,9 +19,9 @@ updates:
     schedule:
       interval: "monthly"
 
-#  - package-ecosystem: "npm"
-#    directory: "/assets"
-#    schedule:
-#      interval: "monthly"
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "monthly"
 #    assignees:
 #      - "nboisteault"
