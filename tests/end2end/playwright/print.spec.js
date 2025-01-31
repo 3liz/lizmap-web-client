@@ -843,7 +843,10 @@ test.describe('Print base layers',
     });
 });
 
-test.describe('Error while printing', () => {
+test.describe('Error while printing',
+    {
+      tag: ['@readonly', '@print'],
+    }, () => {
 
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=print';
