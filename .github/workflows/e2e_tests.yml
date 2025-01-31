@@ -20,7 +20,7 @@ jobs:
       contains(github.event.pull_request.labels.*.name, 'run end2end') ||
       github.event_name == 'repository_dispatch' ||
       github.event_name == 'workflow_dispatch'
-    name: "E2E PHP ${{ matrix.php }} PG  ${{ matrix.pg-postgis }} QGIS ${{ matrix.qgis-server }}"
+    name: "E2E QGIS ${{ matrix.qgis-server }} PG ${{ matrix.pg-postgis }} PHP ${{ matrix.php }}"
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -181,36 +181,15 @@ jobs:
           cache: 'npm'
           cache-dependency-path: ${{ github.workspace }}/tests/end2end/package.json
 
-#      - name: Get npm cache directory
-#        id: npm-cache-dir
-#        shell: bash
-#        run: echo "dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}
-
-#      - name: Restore NPM
-#        id: cache-npm-restore
-#        uses: actions/cache/restore@v4
-#        with:
-#          path: ${{ steps.npm-cache-dir.outputs.dir }}
-#          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-
       - name: Install dependencies
-#        if: steps.cache-npm-restore.outputs.cache-hit != 'true'
         run: |
           cd end2end
           npm ci
 
       - name: Install Playwright
-#        if: steps.cache-npm-restore.outputs.cache-hit != 'true'
         run: |
           cd end2end
           npx playwright install --with-deps chromium
-
-#      - name: Save NPM
-#        uses: actions/cache/save@v4
-#        if: steps.cache.outputs.cache-hit != 'true'
-#        with:
-#          path: ${{ steps.npm-cache-dir.outputs.dir }}
-#          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
 
       - name: Run Playwright tests read-only
         id: test-playwright-read-only
@@ -222,22 +201,18 @@ jobs:
 
       - name: Prepare the database diff from Playwright read only
         run: |
-          # Removing "-- Dumped" from the SQL file because it contains a version
-          sed -i '/^-- Dumped/ d' qgis-projects/tests/tests_dataset.sql
-          sed -i '/^SET idle_in_transaction_session_timeout/ d' qgis-projects/tests/tests_dataset.sql
-          sed -i -e :a -e '/^\n*$/{$d;N;ba' -e '}' qgis-projects/tests/tests_dataset.sql
-          cp qgis-projects/tests/tests_dataset.sql qgis-projects/tests/tests_dataset.sql.before
           ./lizmap-ctl dump-pgsql
-          sed -i '/^-- Dumped/ d' qgis-projects/tests/tests_dataset.sql
-          sed -i '/^SET idle_in_transaction_session_timeout/ d' qgis-projects/tests/tests_dataset.sql
-          sed -i -e :a -e '/^\n*$/{$d;N;ba' -e '}' qgis-projects/tests/tests_dataset.sql
-          diff qgis-projects/tests/tests_dataset.sql qgis-projects/tests/tests_dataset.sql.before
-          if [[ -z $? ]]; then
+          git diff --exit-code qgis-projects/tests/tests_dataset.sql
+          db_diff=$?
+          echo "db_diff=${db_diff}" >> "$GITHUB_OUTPUT"
+          if [[ -z ${db_diff} ]]; then
                 echo "No updated files 👍"
           else
                 echo "Updated files"
+                git diff qgis-projects/tests/tests_dataset.sql > qgis-projects/tests/tests_dataset.patch
+                git restore qgis-projects/tests/tests_dataset.sql
                 echo "::warning Git status is not clean after running tests about the DB"
-          #      exit 1
+                exit 0
           fi
 
       - name: Upload DB results
@@ -246,8 +221,7 @@ jobs:
         with:
           name: ${{ matrix.name }}-DB-diff-read-only
           path: |
-            ${{ github.workspace }}/tests/qgis-projects/tests/tests_dataset.sql
-            ${{ github.workspace }}/tests/qgis-projects/tests/tests_dataset.sql.before
+            ${{ github.workspace }}/tests/qgis-projects/tests/tests_dataset.patch
 
       - name: Check about updated files after a read only tests
         run: |
@@ -257,7 +231,6 @@ jobs:
               echo "Updated files"
               git status
               echo "::warning Git status is not clean after running tests about tracked files"
-              # exit 1
           fi
 
       - name: Run Playwright tests not tagged read-only
@@ -269,19 +242,8 @@ jobs:
         run: |
           npx playwright test --workers 1 --grep-invert @readonly --project=end2end
 
-#      - name: Generate PG dump from Playwright
-#        if: failure()
-#        run: |
-#          ./lizmap-ctl dump-pgsql
-#
-#      - name: Check the database diff from Playwright
-#        if: failure()
-#        run: |
-#          git diff qgis-projects/tests/tests_dataset.sql
-#          git restore qgis-projects/tests/tests_dataset.sql
-
       - name: Notify in case of playwright failure, from mainstream branches only
-        # Check for new playwright tests with and without tags
+        # Check for playwright tests with and without tags "readonly"
         uses: peter-evans/commit-comment@v3
         if: github.repository == '3liz/lizmap-web-client' && failure() && steps.test-playwright.outcome != 'success' && github.event_name == 'repository_dispatch'
         with:
@@ -300,8 +262,6 @@ jobs:
           name: ${{ matrix.name }}-playwright-report
           path: ${{ github.workspace }}/tests/end2end/playwright-report
 
-      # Install NPM dependencies, cache them correctly
-      # and run all Cypress tests
       - name: Cypress run
         id: test-cypress
         # Always run, even if playwright has failed
@@ -353,26 +313,6 @@ jobs:
             tests/end2end/cypress/screenshots
             tests/end2end/cypress/downloads
 
-#      - name: Generate PG dump from Cypress
-#        if: failure()
-#        run: |
-#          ./lizmap-ctl dump-pgsql
-#
-#      - name: Check the database diff from Cypress
-#        if: failure()
-#        run: |
-#          git diff qgis-projects/tests/tests_dataset.sql
-#          git restore qgis-projects/tests/tests_dataset.sql
-
-#          [[ -z $(git status --porcelain -uno) ]]
-#          exit $?
-
-#  debug:
-#    name: "Debug"
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Dump GitHub context
-#        env:
-#          GITHUB_CONTEXT: ${{ toJson(github) }}
-#        run: |
-#          echo "$GITHUB_CONTEXT"
+      - name: Database diff check after readonly tests
+        run:
+          exit ${{ env.db_diff }}
