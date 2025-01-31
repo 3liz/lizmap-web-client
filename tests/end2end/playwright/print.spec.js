@@ -557,6 +557,24 @@ test.describe('Print 3857', () => {
     });
 
     test('Print requests', async ({ page }) => {
+        // Mock file
+        await page.route('**/service*', async route => {
+            const request = await route.request();
+            if (request.postData()?.includes('GetPrint')) {
+                await route.fulfill({
+                    headers: {
+                        "Content-Description": "File Transfert",
+                        "Content-Disposition": "attachment; filename=\"print_print_labels.pdf\"",
+                        "Content-Transfer-Encoding": "binary",
+                        "Content-Type": "application/pdf",
+                    },
+                    path:path.join(__dirname, 'mock/print/requests3857/print_labels.pdf')
+                })
+            } else {
+                await route.continue()
+            }
+        });
+
         // Required GetPrint parameters
         const expectedParameters = {
             'SERVICE': 'WMS',
@@ -585,6 +603,7 @@ test.describe('Print 3857', () => {
         })
         let getPrintParams = await checkParameters('Print requests 1', getPrintRequest.postData() ?? '', expectedParameters1)
         await expect(getPrintParams.size).toBe(15)
+        await getPrintRequest.response()
 
         // Close message
         await page.locator('.btn-close').click();
@@ -608,6 +627,7 @@ test.describe('Print 3857', () => {
         })
         getPrintParams = await checkParameters('Print requests 2', getPrintRequest.postData() ?? '', expectedParameters2)
         await expect(getPrintParams.size).toBe(13)
+        await getPrintRequest.response()
 
         // Close message
         await page.locator('.btn-close').click();
@@ -669,6 +689,8 @@ test.describe('Print 3857', () => {
         })
         getPrintParams = await checkParameters('Print requests 3', getPrintRequest.postData() ?? '', expectedParameters3)
         await expect(getPrintParams.size).toBe(17)
+        await getPrintRequest.response()
+        await page.unroute('**/service*')
     });
 });
 
