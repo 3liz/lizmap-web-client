@@ -82,6 +82,7 @@ class main_viewZone extends jZone
                     if ($wmsGetCapabilitiesUrl) {
                         $wmsGetCapabilitiesUrl = $meta->getWMSGetCapabilitiesUrl();
                         $wmtsGetCapabilitiesUrl = $meta->getWMTSGetCapabilitiesUrl();
+                        $wfsGetCapabilitiesUrl = $meta->getWFSGetCapabilitiesUrl();
                     }
 
                     // Allowed image types lower or upper case
@@ -114,7 +115,8 @@ class main_viewZone extends jZone
                             $r,
                             'map',
                             $wmsGetCapabilitiesUrl,
-                            $wmtsGetCapabilitiesUrl
+                            $wmtsGetCapabilitiesUrl,
+                            $wfsGetCapabilitiesUrl
                         );
                     }
                 }
