@@ -340,7 +340,11 @@ test.describe('Print',
     });
 });
 
-test.describe('Print in popup', () => {
+test.describe('Print in popup',
+    {
+      tag: ['@readonly', '@print'],
+    }, () => {
+
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=print';
         await gotoMap(url, page)
