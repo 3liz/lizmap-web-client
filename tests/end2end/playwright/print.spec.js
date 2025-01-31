@@ -291,6 +291,24 @@ test.describe('Print', () => {
         let getFilterTokenPromise = page.waitForResponse(responseMatchGetFilterTokenFunc);
         await getFilterTokenPromise;
 
+        // Mock file
+        await page.route('**/service*', async route => {
+            const request = await route.request();
+            if (request.postData()?.includes('GetPrint')) {
+                await route.fulfill({
+                    headers: {
+                        "Content-Description": "File Transfert",
+                        "Content-Disposition": "attachment; filename=\"print_print_labels.pdf\"",
+                        "Content-Transfer-Encoding": "binary",
+                        "Content-Type": "application/pdf",
+                    },
+                    path:path.join(__dirname, 'mock/print/filter/print_labels.pdf')
+                })
+            } else {
+                await route.continue()
+            }
+        });
+
         await page.locator('#bottom-dock-window-buttons .btn-bottomdock-clear').click();
         const getPrintPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
         await page.locator('#print-launch').click();
@@ -314,6 +332,8 @@ test.describe('Print', () => {
         }
         const getPrintParams = await checkParameters('Print requests with filter', getPrintRequest.postData() ?? '', expectedParameters)
         await expect(getPrintParams.size).toBe(16)
+        await getPrintRequest.response()
+        await page.unroute('**/service*')
     });
 });
 
