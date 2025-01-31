@@ -61,9 +61,9 @@ jobs:
         id: test-phpstan
         run: phpstan analyse -c ../phpstan.neon
 
-      - name: Notify in case of failure
+      - name: Notify in case of failure but not on a PR
         uses: peter-evans/commit-comment@v3
-        if: failure()
+        if: failure() && github.event_name != 'pull_request'
         with:
           body: |
             The latest run of **PHPStan** has **failed**, maybe it's due to a newer version released recently 😣
