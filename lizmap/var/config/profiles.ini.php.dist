@@ -90,7 +90,7 @@ searchGroupBaseDN=""
 
 ; name of the default profil to use for cache
 default=lizmap
-
+; the other jcache could be : qgisprojects, acl2db, tiles, requests
 
 [jcache:lizmap]
 ; disable or enable cache for this profile
@@ -139,8 +139,8 @@ cache_file_umask=
 
 [jcache:qgisprojects]
 enabled=1
-driver=file
 ttl=0
+driver=file
 
 ;driver=redis_ext
 ; docker host
@@ -158,6 +158,19 @@ ttl=0
 ;db=2
 ;ttl=0
 
+
+[jcache:requests]
+enabled=1
+ttl=0
+driver=file
+
+;driver=redis_ext
+; docker host
+;host=redis
+; local host
+;host=127.0.0.1
+;port=6379
+;db=0
 
 [smtp:mailer]
 ;; to send emails via smtp, uncomment these lines and indicate all needed values.
