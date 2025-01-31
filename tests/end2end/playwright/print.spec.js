@@ -474,7 +474,11 @@ test.describe('Print - user in group a',
     });
 });
 
-test.describe('Print - admin', () => {
+test.describe('Print - admin',
+    {
+      tag: ['@readonly', '@print'],
+    }, () => {
+
     test.use({ storageState: 'playwright/.auth/admin.json' });
 
     test.beforeEach(async ({ page }) => {
