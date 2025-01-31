@@ -712,7 +712,11 @@ test.describe('Print 3857',
     });
 });
 
-test.describe('Print base layers', () => {
+test.describe('Print base layers',
+    {
+      tag: ['@readonly', '@print'],
+    }, () => {
+
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=base_layers';
         await gotoMap(url, page)
