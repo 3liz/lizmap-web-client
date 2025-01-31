@@ -266,7 +266,7 @@ jobs:
         id: test-cypress
         # Always run, even if playwright has failed
         if: success() || steps.test-playwright-read-only.conclusion == 'failure' || steps.test-playwright-not-read-only.conclusion == 'failure'
-        uses: cypress-io/github-action@v6.7.8
+        uses: cypress-io/github-action@v6.7.10
         with:
           install: false
           browser: chrome
