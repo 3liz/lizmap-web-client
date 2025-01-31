@@ -165,14 +165,14 @@ function launch() {
       composerInstall
     fi
 
-    if [ ! -d "$ROOTDIR/assets/node_modules/" ]; then
+    if [ ! -d "$ROOTDIR/node_modules/" ]; then
       (
-        cd "$ROOTDIR/assets/";
+        cd "$ROOTDIR/";
         su $APP_USER -c "npm install"
       )
     fi
 
-    cd "$ROOTDIR/assets/";
+    cd "$ROOTDIR/";
     if [[ -z "${CYPRESS_CI}" ]]; then
       (
         su $APP_USER -c "npm run build"
