@@ -531,7 +531,10 @@ test.describe('Print - admin',
     });
 });
 
-test.describe('Print 3857', () => {
+test.describe('Print 3857',
+    {
+      tag: ['@readonly', '@print'],
+    }, () => {
 
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=print_3857';
