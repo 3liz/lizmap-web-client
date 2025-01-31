@@ -21,3 +21,15 @@ jobs:
       uses: docker://oskarstark/php-cs-fixer-ga:3.26.0
       with:
         args: --config=.php-cs-fixer.dist.php --allow-risky=yes --dry-run --diff
+  eslint:
+    name: "ESLint 🇯‌🇸‌"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: assets
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install modules
+      run: npm install
+    - name: Run ESLint
+      run: npm run pretest-fix

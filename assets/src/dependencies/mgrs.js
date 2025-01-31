@@ -121,8 +121,9 @@ export function inverse(mgrs) {
 }
 
 /**
- *
- * @param mgrs
+ * Convert MGRS string to lat/lon.
+ * @param {string} mgrs MGRS string.
+ * @returns {[number,number]} An array with longitude and latitude.
  */
 export function toPoint(mgrs) {
     if (mgrs === '') {
@@ -321,7 +322,7 @@ function UTMtoLL(utm) {
  * @private
  * @param {number} latitude The latitude in WGS84 to get the letter designator
  *     for.
- * @returns {string} The letter designator.
+ * @returns {string|void} The letter designator.
  */
 export function getLetterDesignator(latitude) {
     if (latitude <= 84 && latitude >= 72) {
@@ -361,9 +362,9 @@ function encode(utm, accuracy) {
  * Get the two letter 100k designator for a given UTM easting,
  * northing and zone number value.
  * @private
- * @param {number} easting
- * @param {number} northing
- * @param {number} zoneNumber
+ * @param {number} easting the easting value within the UTM zone.
+ * @param {number} northing the northing value within the UTM zone.
+ * @param {number} zoneNumber the UTM zone number.
  * @returns {string} the two letter 100k designator for the given UTM location.
  */
 function get100kID(easting, northing, zoneNumber) {
@@ -654,7 +655,7 @@ function getNorthingFromChar(n, set) {
  * Ported from Geotrans' c Lattitude_Band_Value structure table.
  * @private
  * @param {string} zoneLetter The MGRS zone to get the min northing for.
- * @returns {number}
+ * @returns {number} the minimum northing value of the given zone.
  */
 function getMinNorthing(zoneLetter) {
     let northing;

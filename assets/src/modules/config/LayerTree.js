@@ -29,6 +29,7 @@ export class LayerGeographicBoundingBoxConfig extends Extent {
     }
 
     /**
+     * Get the west value
      * @type {number}
      */
     get west() {
@@ -36,6 +37,7 @@ export class LayerGeographicBoundingBoxConfig extends Extent {
     }
 
     /**
+     * Get the south value
      * @type {number}
      */
     get south() {
@@ -43,6 +45,7 @@ export class LayerGeographicBoundingBoxConfig extends Extent {
     }
 
     /**
+     * Get the east value
      * @type {number}
      */
     get east() {
@@ -50,6 +53,7 @@ export class LayerGeographicBoundingBoxConfig extends Extent {
     }
 
     /**
+     * Get the north value
      * @type {number}
      */
     get north() {

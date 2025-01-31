@@ -126,6 +126,7 @@ export class BaseObjectConfig {
  */
 export class BaseObjectLayerConfig extends BaseObjectConfig {
     /**
+     * Constructor to instantiate a layer config
      * @param {string} layerName                                          - the layer name
      * @param {object} cfg                                                - the lizmap config object
      * @param {string} cfg.layerId                                        - the layer id
@@ -182,6 +183,7 @@ export class BaseObjectLayerConfig extends BaseObjectConfig {
 export class BaseObjectLayersConfig {
 
     /**
+     * Constructor to instantiate a layers config
      * @param {Function} layerConfig - the class name to construct instances contain in cfg
      * @param {object}   cfg         - the lizmap layers config object
      */

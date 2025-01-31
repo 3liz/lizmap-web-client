@@ -6,7 +6,6 @@
  * @license MPL-2.0
  */
 
-import SelectionTool from './SelectionTool.js';
 import { Vector as VectorSource } from 'ol/source.js';
 import { Vector as VectorLayer } from 'ol/layer.js';
 import GeoJSON from 'ol/format/GeoJSON.js';
@@ -39,13 +38,15 @@ export default class Action {
     }
 
     /**
-     * @boolean If the project has actions
+     * If the project has actions
+     * @type {boolean}
      */
     hasActions = false;
 
     /**
-     * @string Unique ID of an action object
+     * Unique ID of an action object
      * We allow only one active action at a time
+     * @type {string}
      */
     ACTIVE_LIZMAP_ACTION = null;
 
@@ -98,7 +99,7 @@ export default class Action {
             // Close the windows via the action-close button
             let closeDockButton = document.getElementById('action-close');
             if (closeDockButton) {
-                closeDockButton.addEventListener('click', event => {
+                closeDockButton.addEventListener('click', () => {
                     let actionMenu = document.querySelector('#mapmenu li.action.active a');
                     if (actionMenu) {
                         actionMenu.click();
@@ -113,7 +114,7 @@ export default class Action {
                 // The popup has been displayed
                 // We need to add the buttons for the action with a 'feature' scope
                 // corresponding to the popup feature layer
-                lizmappopupdisplayed: function (popup, containerId) {
+                lizmappopupdisplayed: function (popup) {
                     // Add action buttons if needed
                     let popupContainerId = popup.containerId;
                     let popupContainer = document.getElementById(popupContainerId);
@@ -199,12 +200,10 @@ export default class Action {
      * corresponding to the given name.
      * If the layer ID is given, only return the action
      * if it concerns the given layer ID.
-     *
      * @param {string} name - Name of the action
-     * @param {Scopes} scope - Scope of the action
+     * @param {Action.Scopes} scope - Scope of the action
      * @param {string} layerId - Layer ID (optional)
-     *
-     * @return {object} The corresponding action
+     * @returns {object} The corresponding action
      */
     getActionItemByName(name, scope = this.Scopes.Feature, layerId = null) {
 
@@ -244,11 +243,9 @@ export default class Action {
      * Get the list of actions
      *
      * A scope and/or a layer ID can be given to filter the actions
-     *
      * @param {string} scope - Scope of the actions to filter
      * @param {string} layerId - Layer ID of the actions to filter
-     *
-     * @return {array} actions - Array of the actions
+     * @returns {Array} actions - Array of the actions
      */
     getActions(scope = null, layerId = null) {
 
@@ -271,10 +268,8 @@ export default class Action {
 
     /**
      * Run the callbacks as defined in the action configuration
-     *
      * @param {object} action - The action
-     * @param {array} features - The OpenLayers features created by the action from the response
-     *
+     * @param {Array} features - The OpenLayers features created by the action from the response
      */
     runCallbacks(action, features = null) {
 
@@ -326,13 +321,11 @@ export default class Action {
     /**
      * Build the unique ID of an action
      * based on its scope
-     *
      * @param {string} actionName - The action name
      * @param {string} scope - The action scope
      * @param {string} layerId - The layer ID
      * @param {string} featureId - The feature ID
-     *
-     * @return {string} uniqueId - The action unique ID.
+     * @returns {string} uniqueId - The action unique ID.
      */
     buildActionInstanceUniqueId(actionName, scope, layerId, featureId) {
         // The default name is the action name
@@ -357,10 +350,8 @@ export default class Action {
     /**
      * Explode the action unique ID into its components
      * action name, layer ID, feature ID
-     *
      * @param {string} uniqueId - The instance object unique ID
-     *
-     * @return {array} components - The components [actionName, layerId, featureId]
+     * @returns {Array} components - The components [actionName, layerId, featureId]
      */
     explodeActionInstanceUniqueId(uniqueId) {
 
@@ -374,12 +365,12 @@ export default class Action {
 
     /**
      * Run a Lizmap action.
-     *
      * @param {string} actionName - The action name
-     * @param {Scopes} scope - The action scope
+     * @param {Action.Scopes} scope - The action scope
      * @param {string} layerId - The optional layer ID
      * @param {string} featureId - The optional feature ID
      * @param {string} wkt - An optional geometry in WKT format and project EPSG:4326
+     * @returns {boolean} - If the action was successful
      */
     async runLizmapAction(actionName, scope = this.Scopes.Feature, layerId = null, featureId = null, wkt = null) {
         if (!this.hasActions) {
@@ -518,7 +509,6 @@ export default class Action {
 
     /**
      * Reset action
-     *
      * @param {boolean} destroyFeatures - If we must remove the geometries in the map.
      * @param {boolean} removeMessage - If we must remove the message displayed at the top.
      * @param {boolean} resetGlobalVariable - If we must empty the global variable ACTIVE_LIZMAP_ACTION
@@ -554,11 +544,9 @@ export default class Action {
     /**
      * Add the features returned by a action
      * to the OpenLayers layer in the map
-     *
      * @param {object} data - The data returned by the action
      * @param {object|undefined} style - Optional OpenLayers style object
-     *
-     * @return {object} features The OpenLayers features converted from the data
+     * @returns {object} features The OpenLayers features converted from the data
      */
     addFeaturesFromActionResponse(data, style) {
         // Change the layer style
@@ -578,9 +566,10 @@ export default class Action {
     }
 
     /**
-    * Reacts to the click on a popup action button.
-    *
-    */
+     * Reacts to the click on a popup action button.
+     * @param {Event} event - The click event
+     * @returns {boolean} - If the action was successful
+     */
     popupActionButtonClickHandler(event) {
         // Only go on when the button has been clicked
         // not the child <i> icon
@@ -648,11 +637,11 @@ export default class Action {
     /**
      * Add an action button for the given popup feature
      * and the given action item.
-     *
      * @param {object} action - The action configuration object
      * @param {string} layerId - The layer ID
      * @param {string} featureId - The feature ID
      * @param {string} popupContainerId - The popup container ID
+     * @returns {boolean|void} - If the action failed
      */
     addPopupActionButton(action, layerId, featureId, popupContainerId) {
 
@@ -669,7 +658,7 @@ export default class Action {
         if (action.icon.startsWith('icon-')) {
             actionButtonHtml += `<i class="${action.icon}"></i>`;
         }
-        let regex = new RegExp('^(\.{1,2})?(/)?media/');
+        let regex = new RegExp('^(.{1,2})?(/)?media/');
         if (action.icon.match(regex)) {
             let mediaLink = globalThis['lizUrls'].media + '?' + new URLSearchParams(globalThis['lizUrls'].params);
             let imageUrl = `${mediaLink}&path=${action.icon}`;

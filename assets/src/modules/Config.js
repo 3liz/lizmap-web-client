@@ -39,6 +39,7 @@ import { buildLayersOrder } from './config/LayersOrder.js';
 export class Config {
 
     /**
+     * Create a new Config object
      * @param {object} cfg               - the lizmap config object
      * @param {object} wmsCapabilities   - the WMS capabilities
      * @param {object} [wfsCapabilities] - the WFS capabilities

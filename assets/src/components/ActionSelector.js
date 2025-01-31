@@ -130,7 +130,7 @@ export default class ActionSelector extends HTMLElement {
         }
     }
 
-    onActionDeactivateClick(event) {
+    onActionDeactivateClick() {
         // Deactivate the current active action
         mainLizmap.digitizing.eraseAll();
         mainLizmap.action.resetLizmapAction();

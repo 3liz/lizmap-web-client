@@ -19,6 +19,7 @@ import { TreeRootState } from './state/LayerTree.js';
  */
 export class State extends EventDispatcher {
     /**
+     * Create a new state instance
      * @param {Config} initialCfg - the lizmap initial config instance
      * @param {Array|undefined} startupFeatures - the features to highlight at startup
      */

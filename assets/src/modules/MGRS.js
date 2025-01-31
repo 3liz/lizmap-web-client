@@ -143,6 +143,7 @@ import { mainLizmap } from './Globals.js';
 class MGRS extends Graticule {
 
     /**
+     * Constructor for a new MGRS layer.
      * @param {Options} [options] Options.
      */
     constructor(options) {
@@ -164,6 +165,7 @@ class MGRS extends Graticule {
     }
 
     /**
+     * Add a parallel to the collection of parallels.
      * @param {number} lon Longitude.
      * @param {number} minLat Minimal latitude.
      * @param {number} maxLat Maximal latitude.
@@ -336,6 +338,7 @@ class MGRS extends Graticule {
     }
 
     /**
+     * Create the graticule.
      * @param {Extent} extent Extent.
      * @param {Coordinate} center Center.
      * @param {number} resolution Resolution.

@@ -567,7 +567,7 @@ export class Digitizing {
      * @todo active state should be set on UI's events
      * @readonly
      * @memberof Digitizing
-     * @returns {boolean}
+     * @returns {boolean} true if digitizing tool is active, false otherwise
      */
     get isActive() {
         const isActive = document.getElementById('button-draw')?.parentElement?.classList?.contains('active');
@@ -1204,7 +1204,7 @@ export class Digitizing {
 
     /**
      * Set visibility or toggle if not defined
-     * @param {boolean} visible
+     * @param {boolean} visible - true to show, false to hide
      */
     toggleVisibility(visible = !this.visibility) {
         this._drawLayer.setVisible(visible);

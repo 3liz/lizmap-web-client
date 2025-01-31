@@ -117,6 +117,7 @@ class ValidationError extends Error {
 class PropertyRequiredError extends ValidationError {
 
     /**
+     * Creating a property required error
      * @param {string} property - The object property in error
      */
     constructor(property) {

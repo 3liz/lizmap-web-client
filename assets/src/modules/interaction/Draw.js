@@ -26,7 +26,7 @@ export default class Draw {
      * @param {string} [geomType] The geometry type. One of 'Point', 'LineString', 'LinearRing', 'Polygon', 'MultiPoint', 'MultiLineString', 'MultiPolygon', 'GeometryCollection', 'Circle'.
      * @param {number} [maxFeatures] Limit the draw to maxFeatures features
      * @param {boolean} [modify] Allow to modify features after being drawn
-     * @param {StyleLike | null} style Layer style
+     * @param {Style | null} style Layer style
      * @memberof Draw
      */
     init(geomType = "Point", maxFeatures = -1, modify = true, style) {

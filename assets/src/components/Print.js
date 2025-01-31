@@ -446,7 +446,8 @@ export default class Print extends HTMLElement {
     }
 
     /**
-     * @param {string | number} index
+     * Update print template
+     * @param {string | number} index - Index of the print template
      */
     set printTemplate(index){
         // No print templates defined do nothing

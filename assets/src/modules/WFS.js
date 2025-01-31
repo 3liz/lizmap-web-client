@@ -34,6 +34,7 @@ export default class WFS {
     }
 
     /**
+     * Get feature from WFS
      * @param {object} options - optional parameters which can override this._defaultParameters
      * @returns {Promise} Promise object represents data
      * @memberof WFS
@@ -49,6 +50,7 @@ export default class WFS {
     }
 
     /**
+     * Describe feature type
      * @param {object} options - optional parameters which can override this._defaultParameters
      * @returns {Promise} Promise object represents data
      * @memberof WFS

@@ -31,7 +31,7 @@ import WMSCapabilities from 'ol/format/WMSCapabilities.js';
 import WFSCapabilities from 'ol-wfs-capabilities';
 import { Coordinate as olCoordinate } from 'ol/coordinate.js'
 import { Extent as olExtent, intersects as olExtentIntersects} from 'ol/extent.js';
-import { Projection as olProjection, transform as olTransform, transformExtent as olTransformExtent, get as getProjection, clearAllProjections, addCommon } from 'ol/proj.js';
+import { transform as olTransform, transformExtent as olTransformExtent, get as getProjection, clearAllProjections, addCommon } from 'ol/proj.js';
 import { register } from 'ol/proj/proj4.js';
 
 import proj4 from 'proj4';
@@ -39,7 +39,7 @@ import ProxyEvents from './ProxyEvents.js';
 
 /**
  * A projection as Projection, SRS identifier string or undefined.
- * @typedef {olProjection|string|undefined} ProjectionLike
+ * @typedef {import("ol/proj/Projection").default | string | undefined} ProjectionLike
  */
 
 /**

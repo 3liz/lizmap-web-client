@@ -1,9 +1,9 @@
 /**
  * UI components or any other components can be notified by this object of some
  * application events, in order to update their state or to do something
- * @version 0.1
+ * @version 0.1.0
  * @author Laurent Jouanneau
- * @licence MIT
+ * @license MIT
  * @copyright 3Liz 2019
  */
 
