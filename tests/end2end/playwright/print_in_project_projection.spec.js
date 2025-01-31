@@ -3,7 +3,10 @@ import * as path from 'path';
 import { test, expect } from '@playwright/test';
 import { gotoMap, checkParameters } from './globals';;
 
-test.describe('Print in project projection', () => {
+test.describe('Print in project projection',
+    {
+      tag: ['@readonly', '@print'],
+    }, () => {
 
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=print_in_project_projection';
