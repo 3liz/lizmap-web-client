@@ -1,10 +1,10 @@
 import { expect } from 'chai';
 
-import { ValidationError, ConversionError } from '../../../../assets/src/modules/Errors.js';
-import EventDispatcher from '../../../../assets/src/utils/EventDispatcher.js';
-import { Extent } from '../../../../assets/src/modules/utils/Extent.js';
-import { OptionsConfig } from '../../../../assets/src/modules/config/Options.js';
-import { MapState, buildScales } from '../../../../assets/src/modules/state/Map.js';
+import { ValidationError, ConversionError } from 'assets/src/modules/Errors.js';
+import EventDispatcher from 'assets/src/utils/EventDispatcher.js';
+import { Extent } from 'assets/src/modules/utils/Extent.js';
+import { OptionsConfig } from 'assets/src/modules/config/Options.js';
+import { MapState, buildScales } from 'assets/src/modules/state/Map.js';
 
 describe('MapState', function () {
     it('Valid', function () {

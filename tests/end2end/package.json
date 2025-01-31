@@ -1,20 +1,6 @@
 {
   "name": "test",
-  "version": "1.0.0",
-  "description": "Test Lizmap JavaScript",
-  "main": "index.js",
-  "devDependencies": {
-    "@playwright/test": "^1.47.0",
-    "cypress": "^9.7.0",
-    "cypress-file-upload": "^5.0.8"
-  },
-  "scripts": {
-    "cy:open": "cypress open",
-    "cy:test": "cypress run --headed"
-  },
+  "description": "E2E Test Lizmap JavaScript",
   "author": "3Liz",
-  "license": "ISC",
-  "dependencies": {
-    "pixelmatch": "^5.3.0"
-  }
+  "license": "ISC"
 }

@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
-import { ValidationError, ConversionError } from '../../../../assets/src/modules/Errors.js';
-import { LocateLayerConfig, LocateByLayerConfig } from '../../../../assets/src/modules/config/Locate.js';
+import { ValidationError, ConversionError } from 'assets/src/modules/Errors.js';
+import { LocateLayerConfig, LocateByLayerConfig } from 'assets/src/modules/config/Locate.js';
 
 describe('LocateLayerConfig', function () {
     it('Valid', function () {

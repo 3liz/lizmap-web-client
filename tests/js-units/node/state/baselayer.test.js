@@ -2,14 +2,14 @@ import { expect } from 'chai';
 
 import { readFileSync } from 'fs';
 
-import { LayersConfig } from '../../../../assets/src/modules/config/Layer.js';
-import { LayerTreeGroupConfig, buildLayerTreeConfig } from '../../../../assets/src/modules/config/LayerTree.js';
-import { BaseLayerTypes, BaseLayerConfig, EmptyBaseLayerConfig, BaseLayersConfig } from '../../../../assets/src/modules/config/BaseLayer.js';
-import { buildLayersOrder } from '../../../../assets/src/modules/config/LayersOrder.js';
-import { LayersAndGroupsCollection } from '../../../../assets/src/modules/state/Layer.js';
-import { OptionsConfig } from '../../../../assets/src/modules/config/Options.js';
+import { LayersConfig } from 'assets/src/modules/config/Layer.js';
+import { LayerTreeGroupConfig, buildLayerTreeConfig } from 'assets/src/modules/config/LayerTree.js';
+import { BaseLayerTypes, BaseLayerConfig, EmptyBaseLayerConfig, BaseLayersConfig } from 'assets/src/modules/config/BaseLayer.js';
+import { buildLayersOrder } from 'assets/src/modules/config/LayersOrder.js';
+import { LayersAndGroupsCollection } from 'assets/src/modules/state/Layer.js';
+import { OptionsConfig } from 'assets/src/modules/config/Options.js';
 
-import { BaseLayerState, EmptyBaseLayerState, BaseLayersState } from '../../../../assets/src/modules/state/BaseLayer.js';
+import { BaseLayerState, EmptyBaseLayerState, BaseLayersState } from 'assets/src/modules/state/BaseLayer.js';
 
 /**
  * Returns the BaseLayersState for the project
@@ -23,10 +23,10 @@ import { BaseLayerState, EmptyBaseLayerState, BaseLayersState } from '../../../.
  * @return {BaseLayersState}
  **/
 function getBaseLayersState(name) {
-    const capabilities = JSON.parse(readFileSync('./data/'+ name +'-capabilities.json', 'utf8'));
+    const capabilities = JSON.parse(readFileSync('./tests/js-units/data/'+ name +'-capabilities.json', 'utf8'));
     expect(capabilities).to.not.be.undefined
     expect(capabilities.Capability).to.not.be.undefined
-    const config = JSON.parse(readFileSync('./data/'+ name +'-config.json', 'utf8'));
+    const config = JSON.parse(readFileSync('./tests/js-units/data/'+ name +'-config.json', 'utf8'));
     expect(config).to.not.be.undefined
 
     const layers = new LayersConfig(config.layers);
@@ -141,10 +141,10 @@ describe('BaseLayersState', function () {
     })
 
     it('From options and layers tree', function () {
-        const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
+        const capabilities = JSON.parse(readFileSync('./tests/js-units/data/montpellier-capabilities.json', 'utf8'));
         expect(capabilities).to.not.be.undefined
         expect(capabilities.Capability).to.not.be.undefined
-        const config = JSON.parse(readFileSync('./data/montpellier-config.json', 'utf8'));
+        const config = JSON.parse(readFileSync('./tests/js-units/data/montpellier-config.json', 'utf8'));
         expect(config).to.not.be.undefined
 
         // Update capabilities change Hidden group to Baselayers group

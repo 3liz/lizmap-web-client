@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
-import { ValidationError, ConversionError } from '../../../../assets/src/modules/Errors.js';
-import { DatavizOptionsConfig, DatavizTraceConfig, DatavizPlotConfig, DatavizElementConfig, DatavizLayersConfig } from '../../../../assets/src/modules/config/Dataviz.js';
+import { ValidationError, ConversionError } from 'assets/src/modules/Errors.js';
+import { DatavizOptionsConfig, DatavizTraceConfig, DatavizPlotConfig, DatavizElementConfig, DatavizLayersConfig } from 'assets/src/modules/config/Dataviz.js';
 
 describe('DatavizOptionsConfig', function () {
     it('Valid', function () {

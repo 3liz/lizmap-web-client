@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { createEnum } from '../../../../assets/src/modules/utils/Enums.js';
+import { createEnum } from 'assets/src/modules/utils/Enums.js';
 
 describe('createEnum', function () {
     it('Valid', function () {

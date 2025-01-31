@@ -5,17 +5,17 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default {
     entry: {
-        lizmap: './src/index.js',
-        map: './src/legacy/map.js',
-        attributeTable: './src/legacy/attributeTable.js',
-        edition: './src/legacy/edition.js',
-        filter: './src/legacy/filter.js',
-        atlas: './src/legacy/atlas.js',
-        'switcher-layers-actions': './src/legacy/switcher-layers-actions.js',
-        timemanager: './src/legacy/timemanager.js',
-        view: './src/legacy/view.js',
-        'bottom-dock': './src/legacy/bottom-dock.js',
-        'map-projects': './src/legacy/map-projects.js',
+        lizmap: './assets/src/index.js',
+        map: './assets/src/legacy/map.js',
+        attributeTable: './assets/src/legacy/attributeTable.js',
+        edition: './assets/src/legacy/edition.js',
+        filter: './assets/src/legacy/filter.js',
+        atlas: './assets/src/legacy/atlas.js',
+        'switcher-layers-actions': './assets/src/legacy/switcher-layers-actions.js',
+        timemanager: './assets/src/legacy/timemanager.js',
+        view: './assets/src/legacy/view.js',
+        'bottom-dock': './assets/src/legacy/bottom-dock.js',
+        'map-projects': './assets/src/legacy/map-projects.js',
     },
     output: {
         filename: '[name].js',

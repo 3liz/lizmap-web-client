@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
-import { ValidationError, ConversionError } from '../../../../assets/src/modules/Errors.js';
-import { TooltipLayerConfig, TooltipLayersConfig } from '../../../../assets/src/modules/config/Tooltip.js';
+import { ValidationError, ConversionError } from 'assets/src/modules/Errors.js';
+import { TooltipLayerConfig, TooltipLayersConfig } from 'assets/src/modules/config/Tooltip.js';
 
 describe('TooltipLayerConfig', function () {
     it('Valid', function () {

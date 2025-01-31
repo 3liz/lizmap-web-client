@@ -2,7 +2,7 @@ import { expect } from 'chai';
 
 import { MockAgent, setGlobalDispatcher, Agent } from 'undici';
 
-import WMS from '../../../assets/src/modules/WMS.js';
+import WMS from 'assets/src/modules/WMS.js';
 
 const agent = new MockAgent();
 const client = agent.get('http://localhost:8130');

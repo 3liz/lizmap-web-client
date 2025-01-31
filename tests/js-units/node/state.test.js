@@ -2,22 +2,22 @@ import { expect } from 'chai';
 
 import { readFileSync } from 'fs';
 
-import { Config } from '../../../assets/src/modules/Config.js';
-import { MapState } from '../../../assets/src/modules/state/Map.js';
-import { BaseLayersState } from '../../../assets/src/modules/state/BaseLayer.js';
-import { LayersAndGroupsCollection } from '../../../assets/src/modules/state/Layer.js';
-import { MapGroupState, MapLayerState } from '../../../assets/src/modules/state/MapLayer.js';
-import { LayerTreeGroupState } from '../../../assets/src/modules/state/LayerTree.js';
+import { Config } from 'assets/src/modules/Config.js';
+import { MapState } from 'assets/src/modules/state/Map.js';
+import { BaseLayersState } from 'assets/src/modules/state/BaseLayer.js';
+import { LayersAndGroupsCollection } from 'assets/src/modules/state/Layer.js';
+import { MapGroupState, MapLayerState } from 'assets/src/modules/state/MapLayer.js';
+import { LayerTreeGroupState } from 'assets/src/modules/state/LayerTree.js';
 
-import { State } from '../../../assets/src/modules/State.js';
+import { State } from 'assets/src/modules/State.js';
 
 describe('State', function () {
 
     it('Initialisation', function () {
-        const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
+        const capabilities = JSON.parse(readFileSync('./tests/js-units/data/montpellier-capabilities.json', 'utf8'));
         expect(capabilities).to.not.be.undefined
         expect(capabilities.Capability).to.not.be.undefined
-        const config = JSON.parse(readFileSync('./data/montpellier-config.json', 'utf8'));
+        const config = JSON.parse(readFileSync('./tests/js-units/data/montpellier-config.json', 'utf8'));
         expect(config).to.not.be.undefined
 
         const initialConfig = new Config(config, capabilities);
@@ -31,10 +31,10 @@ describe('State', function () {
     })
 
     it('Events', function () {
-        const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
+        const capabilities = JSON.parse(readFileSync('./tests/js-units/data/montpellier-capabilities.json', 'utf8'));
         expect(capabilities).to.not.be.undefined
         expect(capabilities.Capability).to.not.be.undefined
-        const config = JSON.parse(readFileSync('./data/montpellier-config.json', 'utf8'));
+        const config = JSON.parse(readFileSync('./tests/js-units/data/montpellier-config.json', 'utf8'));
         expect(config).to.not.be.undefined
 
         const initialConfig = new Config(config, capabilities);

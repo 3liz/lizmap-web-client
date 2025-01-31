@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
-import { ValidationError, ConversionError } from '../../../../assets/src/modules/Errors.js';
-import { AttributeLayerConfig, AttributeLayersConfig } from '../../../../assets/src/modules/config/AttributeTable.js';
+import { ValidationError, ConversionError } from 'assets/src/modules/Errors.js';
+import { AttributeLayerConfig, AttributeLayersConfig } from 'assets/src/modules/config/AttributeTable.js';
 
 describe('AttributeLayerConfig', function () {
     it('Valid', function () {

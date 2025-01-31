@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
-import { ConversionError } from '../../../../assets/src/modules/Errors.js';
-import { convertNumber, convertBoolean, convertArray, hashCode } from '../../../../assets/src/modules/utils/Converters.js';
+import { ConversionError } from 'assets/src/modules/Errors.js';
+import { convertNumber, convertBoolean, convertArray, hashCode } from 'assets/src/modules/utils/Converters.js';
 
 describe('convertNumber', function () {
     it('Valid', function () {
