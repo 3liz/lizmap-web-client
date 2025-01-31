@@ -1,5 +1,6 @@
 {
     "baseUrl": "http://localhost:8130",
+    "reporter": "junit",
     "viewportWidth": 1280,
     "viewportHeight": 800,
     "video": false,
