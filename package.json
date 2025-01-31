@@ -40,6 +40,7 @@
     "build": "webpack --config assets/webpack.prod.js",
     "watch": "webpack --watch --config assets/webpack.dev.js",
     "js:test": "mocha --recursive ./tests/js-units/node",
+    "pr:open": "playwright test --ui --project=end2end ./tests/end2end/",
     "cy:open": "cypress open --project ./tests/end2end/",
     "cy:test": "cypress run --headed --project ./tests/end2end/"
   },

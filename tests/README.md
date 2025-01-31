@@ -214,12 +214,10 @@ To launch PHP tests:
 
 The `js-units` directory contains some unit tests.
 
-Be sure to have executed `npm install` in the `root project directory` to install Mocha.
+In the **root** directory :
 
-You can then go in `root` directory of LWC and execute:
-
-- `npm run js:test` to run the JavaScript unit tests
-
+* Run `npm install` to install Mocha
+* `npm run js:test` to run the JavaScript unit tests
 
 ## Testing data
 
@@ -230,9 +228,8 @@ You must execute `tests/qgis-projects/tests/load_sql.sh` to populate PostgreSQL 
 *First add testing data as explained above.*
 
 The `end2end` directory contains some end-to-end tests made for Cypress and Playwright.
-Be sure to have executed `npm install` in the `root project directory` to install Cypress and Playwright.
 
-In order to run tests, you must be in the `root project directory`.
+In the **root** directory, `npm install` to install Cypress and Playwright.
 
 ### Cypress
 
