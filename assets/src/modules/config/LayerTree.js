@@ -413,7 +413,15 @@ function buildLayerTreeGroupConfigItems(wmsCapaLayerGroup, layersCfg, level) {
         const wmsName = wmsCapaLayer.Name;
         const cfg = layersCfg.getLayerConfigByWmsName(wmsName);
         if (cfg == null) {
-            console.log('The WMS layer name `'+ wmsName +'` is unknown!');
+            const errorMessage = `The WMS layer name "${wmsName}" is unknown. Is the Lizmap configuration file "${lizUrls.params.project}.qgs.cfg" up to date ?`;
+            console.warn(errorMessage);
+            try {
+                // document is not defined in JUnit
+                if (document.body.dataset.lizmapAdminUser === 1) {
+                    lizMap.addMessage(errorMessage, 'warning', true).attr('id', 'lizmap-warning-message');
+                }
+            }catch(error) {}
+
             continue;
         }
         if (wmsCapaLayer.hasOwnProperty('Layer') && wmsCapaLayer.Layer.length != 0) {
