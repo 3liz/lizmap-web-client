@@ -6,7 +6,9 @@ test.describe('Maps management', () => {
 
     test.use({ storageState: 'playwright/.auth/admin.json' });
 
-    test('OpenLayers', async ({ page }) => {
+    test('OpenLayers', {
+        tag: '@flaky',
+    }, async ({ page }) => {
         // Allow themes/javascript codes for tests repository
         await page.goto('admin.php');
         await page.getByRole('link', { name: 'Maps management' }).click();
