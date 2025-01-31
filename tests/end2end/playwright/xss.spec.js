@@ -6,7 +6,7 @@ test.describe('XSS', () => {
 
     test('Flawed data are sanitized before being displayed, no dialog from inline JS alert() appears',
     {
-        tag: ['@readonly'],
+        tag: ['@write'],
     },async ({ page }) => {
         const project = new ProjectPage(page, 'xss');
         await project.open();
