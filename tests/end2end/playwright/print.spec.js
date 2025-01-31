@@ -705,6 +705,24 @@ test.describe('Print base layers', () => {
     });
 
     test('Print requests', async ({ page }) => {
+        // Mock file
+        await page.route('**/service*', async route => {
+            const request = await route.request();
+            if (request.postData()?.includes('GetPrint')) {
+                await route.fulfill({
+                    headers: {
+                        "Content-Description": "File Transfert",
+                        "Content-Disposition": "attachment; filename=\"print_simple.pdf\"",
+                        "Content-Transfer-Encoding": "binary",
+                        "Content-Type": "application/pdf",
+                    },
+                    path:path.join(__dirname, 'mock/print/base_layers/simple.pdf')
+                })
+            } else {
+                await route.continue()
+            }
+        });
+
         // Required GetPrint parameters
         const expectedParameters = {
             'SERVICE': 'WMS',
@@ -798,6 +816,8 @@ test.describe('Print base layers', () => {
 
         getPrintResponse = await getPrintRequest.response();
         await expect(getPrintResponse?.headers()['content-type']).toBe('application/pdf');
+
+        await page.unroute('**/service*')
     });
 });
 
