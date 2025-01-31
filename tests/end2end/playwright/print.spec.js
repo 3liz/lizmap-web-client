@@ -1,4 +1,5 @@
 // @ts-check
+import * as path from 'path';
 import { test, expect } from '@playwright/test';
 import { gotoMap, checkParameters } from './globals';
 
@@ -51,6 +52,36 @@ test.describe('Print', () => {
     });
 
     test('Print requests', async ({ page }) => {
+        // Mock file
+        await page.route('**/service*', async route => {
+            const request = await route.request();
+            const requestParams = new URLSearchParams(request.postData() ?? '')
+            if (requestParams.get('REQUEST') === 'GetPrint') {
+                const mockHeaders = {
+                    "Content-Description": "File Transfert",
+                    "Content-Disposition": "attachment; filename=\"print_print_labels.pdf\"",
+                    "Content-Transfer-Encoding": "binary",
+                    "Content-Type": "application/pdf",
+                }
+                let mockPath = path.join(__dirname, 'mock/print/requests/1_print_labels.pdf')
+                if (requestParams.get('TEMPLATE') === 'print_map') {
+                    mockPath = path.join(__dirname, 'mock/print/requests/2_print_map.pdf')
+                    mockHeaders['Content-Disposition'] = "attachment; filename=\"print_print_map.pdf\""
+                } else if (requestParams.get('TEMPLATE') === 'print_overview') {
+                    mockPath = path.join(__dirname, 'mock/print/requests/3_print_overview.pdf')
+                    mockHeaders['Content-Disposition'] = "attachment; filename=\"print_print_overview.pdf\""
+                } else if (requestParams.has('map0:HIGHLIGHT_GEOM')) {
+                    mockPath = path.join(__dirname, 'mock/print/requests/4_print_labels.pdf')
+                }
+                await route.fulfill({
+                    headers: mockHeaders,
+                    path: mockPath
+                })
+            } else {
+                await route.continue()
+            }
+        });
+
         // Required GetPrint parameters
         const expectedParameters = {
             'SERVICE': 'WMS',
@@ -79,6 +110,7 @@ test.describe('Print', () => {
         })
         let getPrintParams = await checkParameters('Print requests 1', getPrintRequest.postData() ?? '', expectedParameters1)
         await expect(getPrintParams.size).toBe(15)
+        await getPrintRequest.response()
 
         // Close message
         await page.locator('.btn-close').click();
@@ -102,6 +134,7 @@ test.describe('Print', () => {
         })
         getPrintParams = await checkParameters('Print requests 2', getPrintRequest.postData() ?? '', expectedParameters2)
         await expect(getPrintParams.size).toBe(13)
+        await getPrintRequest.response()
 
         // Close message
         await page.locator('.btn-close').click();
@@ -124,6 +157,7 @@ test.describe('Print', () => {
         })
         getPrintParams = await checkParameters('Print requests 3', getPrintRequest.postData() ?? '', expectedParameters3)
         await expect(getPrintParams.size).toBe(14)
+        await getPrintRequest.response()
 
         // Close message
         await page.locator('.btn-close').click();
@@ -186,6 +220,8 @@ test.describe('Print', () => {
         })
         getPrintParams = await checkParameters('Print requests 4', getPrintRequest.postData() ?? '', expectedParameters4)
         await expect(getPrintParams.size).toBe(17)
+        await getPrintRequest.response()
+        await page.unroute('**/service*')
     });
 
     test('Print requests with selection', async ({ page }) => {
