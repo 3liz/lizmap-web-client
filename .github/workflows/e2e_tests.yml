@@ -179,16 +179,16 @@ jobs:
         with:
           node-version: 21
           cache: 'npm'
-          cache-dependency-path: ${{ github.workspace }}/tests/end2end/package.json
+          cache-dependency-path: ${{ github.workspace }}/package.json
 
       - name: Install dependencies
+        working-directory: ./
         run: |
-          cd ..
           npm ci
 
       - name: Install Playwright
+        working-directory: tests/end2end
         run: |
-          cd end2end
           npx playwright install --with-deps chromium
 
       - name: Run Playwright tests read-only
