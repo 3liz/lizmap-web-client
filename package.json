@@ -26,7 +26,7 @@
     "ol-ext": "^4.0.24",
     "ol-wfs-capabilities": "^2.0.0",
     "chai": "^4.3.6",
-    "mocha": "^10.0.0",
+    "mocha": "^11.1.0",
     "undici": "^6.21.1",
     "@playwright/test": "^1.47.0",
     "cypress": "^9.7.0",
