@@ -2,8 +2,8 @@ import { expect } from 'chai';
 
 import { readFileSync } from 'fs';
 
-import { ValidationError } from '../../../../assets/src/modules/Errors.js';
-import { base64png, base64pngNullData, BaseIconSymbology, LayerIconSymbology, SymbolIconSymbology, SymbolRuleSymbology, BaseSymbolsSymbology, LayerSymbolsSymbology, LayerGroupSymbology, buildLayerSymbology } from '../../../../assets/src/modules/state/Symbology.js';
+import { ValidationError } from 'assets/src/modules/Errors.js';
+import { base64png, base64pngNullData, BaseIconSymbology, LayerIconSymbology, SymbolIconSymbology, SymbolRuleSymbology, BaseSymbolsSymbology, LayerSymbolsSymbology, LayerGroupSymbology, buildLayerSymbology } from 'assets/src/modules/state/Symbology.js';
 
 describe('BaseIconSymbology', function () {
     it('Simple', function () {
@@ -374,7 +374,7 @@ describe('LayerSymbolsSymbology', function () {
     })
 
     it('RuleRenderer', function () {
-        const legend = JSON.parse(readFileSync('./data/quickosm-road-legend.json', 'utf8'));
+        const legend = JSON.parse(readFileSync('./tests/js-units/data/quickosm-road-legend.json', 'utf8'));
         expect(legend).to.not.be.undefined
         expect(legend.nodes).to.be.an('array').that.have.length(1)
 
