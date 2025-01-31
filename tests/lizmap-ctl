@@ -127,7 +127,12 @@ case $COMMAND in
        docker exec -it --user postgres -e PGPASSWORD="lizmap1234!" lizmap${LZMBRANCH}_test_pgsql /bin/bash  -l
        ;;
     dump-pgsql)
-       docker exec -it -e PGPASSWORD="lizmap1234!" lizmap${LZMBRANCH}_test_pgsql pg_dump -U lizmap --no-owner --no-acl -n tests_projects -f /srv/lzm/tests/qgis-projects/tests/tests_dataset.sql
+       docker exec -i -e PGPASSWORD="lizmap1234!" lizmap${LZMBRANCH}_test_pgsql pg_dump -U lizmap --no-owner --no-acl -n tests_projects -f /srv/lzm/tests/qgis-projects/tests/tests_dataset.sql
+       docker exec -i -e PGPASSWORD="lizmap1234!" lizmap${LZMBRANCH}_test_pgsql sed -i '/^-- Dumped/ d' /srv/lzm/tests/qgis-projects/tests/tests_dataset.sql
+       docker exec -i -e PGPASSWORD="lizmap1234!" lizmap${LZMBRANCH}_test_pgsql sed -i '/^SET idle_in_transaction_session_timeout/ d' /srv/lzm/tests/qgis-projects/tests/tests_dataset.sql
+       docker exec -i -e PGPASSWORD="lizmap1234!" lizmap${LZMBRANCH}_test_pgsql sed -i '/^SET transaction_timeout/ d' /srv/lzm/tests/qgis-projects/tests/tests_dataset.sql
+       # It removes one extra line at the end of the file, a single one is enough
+       docker exec -i -e PGPASSWORD="lizmap1234!" lizmap${LZMBRANCH}_test_pgsql sed -i -e :a -e '/^\n*$/{$d;N;ba' -e '}' /srv/lzm/tests/qgis-projects/tests/tests_dataset.sql
        ;;
     redis-cli)
       docker exec -it lizmap${LZMBRANCH}_test_redis redis-cli
