@@ -431,7 +431,11 @@ test.describe('Print in popup',
     });
 });
 
-test.describe('Print - user in group a', () => {
+test.describe('Print - user in group a',
+    {
+      tag: ['@readonly', '@print'],
+    }, () => {
+
     test.use({ storageState: 'playwright/.auth/user_in_group_a.json' });
 
     test.beforeEach(async ({ page }) => {
