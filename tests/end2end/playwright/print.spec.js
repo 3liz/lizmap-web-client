@@ -312,11 +312,11 @@ test.describe('Print in popup', () => {
         expect(getPrintPostData).toContain('EXP_FILTER=%24id%20IN%20(1)')
 
         // Test `atlas_quartiers` print atlas response
-        const responsePromise = page.waitForResponse(response => response.status() === 200);
-        const response = await responsePromise;
+        const response = await getPrintRequest.response();
+        await expect(response?.status()).toBe(200)
 
-        expect(response.headers()['content-type']).toBe('application/pdf');
-        expect(response.headers()['content-disposition']).toBe('attachment; filename="print_atlas_quartiers.pdf"');
+        expect(response?.headers()['content-type']).toBe('application/pdf');
+        expect(response?.headers()['content-disposition']).toBe('attachment; filename="print_atlas_quartiers.pdf"');
     });
 });
 
