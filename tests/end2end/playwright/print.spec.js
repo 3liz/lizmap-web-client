@@ -422,7 +422,15 @@ test.describe('Print 3857', () => {
     test('Print requests', async ({ page }) => {
         // Test `print_labels` template
         let getPrintPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
+
+        // Launch print
         await page.locator('#print-launch').click();
+        // check message
+        await expect(page.locator('div.alert')).toHaveCount(1)
+        // Close message
+        await page.locator('div.alert button.btn-close').click();
+
+        // check request
         let getPrintRequest = await getPrintPromise;
         let getPrintPostData = getPrintRequest.postData();
         expect(getPrintPostData).toContain('SERVICE=WMS')
@@ -442,14 +450,18 @@ test.describe('Print 3857', () => {
         // Disabled because of the migration when project is saved with QGIS >= 3.32
         // expect(getPrintPostData).toContain('multiline_label=Multiline%20label');
 
-        // Close message
-        await page.locator('.btn-close').click();
-
         // Test `print_map` template
         await page.locator('#print-template').selectOption('1');
-
         getPrintPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
+
+        // Launch print
         await page.locator('#print-launch').click();
+        // check message
+        await expect(page.locator('div.alert')).toHaveCount(1)
+        // Close message
+        await page.locator('div.alert button.btn-close').click();
+
+        // check request
         getPrintRequest = await getPrintPromise;
         getPrintPostData = getPrintRequest.postData();
         expect(getPrintPostData).toContain('SERVICE=WMS')
@@ -464,10 +476,7 @@ test.describe('Print 3857', () => {
         expect(getPrintPostData).toContain('map0%3ASCALE=72224')
         expect(getPrintPostData).toContain('map0%3ALAYERS=OpenStreetMap%2Cquartiers%2Csousquartiers')
         expect(getPrintPostData).toContain('map0%3ASTYLES=default%2Cd%C3%A9faut%2Cd%C3%A9faut')
-        expect(getPrintPostData).toContain('map0%3AOPACITIES=204%2C255%2C255');
-
-        // Close message
-        await page.locator('.btn-close').click();
+        expect(getPrintPostData).toContain('map0%3AOPACITIES=204%2C255%2C255')
 
         // Redlining with circle
         await page.locator('#button-draw').click();
@@ -490,7 +499,15 @@ test.describe('Print 3857', () => {
         await page.locator('#print-scale').selectOption('72224');
 
         getPrintPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
+
+        // Launch print
         await page.locator('#print-launch').click();
+        // check message
+        await expect(page.locator('div.alert')).toHaveCount(1)
+        // Close message
+        await page.locator('div.alert button.btn-close').click();
+
+        // check request
         getPrintRequest = await getPrintPromise;
         getPrintPostData = getPrintRequest.postData();
         expect(getPrintPostData).toContain('SERVICE=WMS')
