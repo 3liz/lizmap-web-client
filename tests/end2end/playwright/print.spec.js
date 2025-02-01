@@ -45,7 +45,15 @@ test.describe('Print', () => {
     test('Print requests', async ({ page }) => {
         // Test `print_labels` template
         let getPrintPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
+
+        // Launch print
         await page.locator('#print-launch').click();
+        // check message
+        await expect(page.locator('div.alert')).toHaveCount(1)
+        // Close message
+        await page.locator('div.alert button.btn-close').click();
+
+        // check request
         let getPrintRequest = await getPrintPromise;
         let getPrintPostData = getPrintRequest.postData();
         expect(getPrintPostData).toContain('SERVICE=WMS')
@@ -88,14 +96,18 @@ test.describe('Print', () => {
         expect(getPrintPostData).toContain('map0%3ASTYLES=default%2Cd%C3%A9faut%2Cd%C3%A9faut')
         expect(getPrintPostData).toContain('map0%3AOPACITIES=204%2C255%2C255');
 
-        // Close message
-        await page.locator('.btn-close').click();
-
         // Test `print_overview` template
         await page.locator('#print-template').selectOption('2');
-
         getPrintPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
+
+        // Launch print
         await page.locator('#print-launch').click();
+        // check message
+        await expect(page.locator('div.alert')).toHaveCount(1)
+        // Close message
+        await page.locator('div.alert button.btn-close').click();
+
+        // check request
         getPrintRequest = await getPrintPromise;
         getPrintPostData = getPrintRequest.postData();
         expect(getPrintPostData).toContain('SERVICE=WMS')
@@ -112,9 +124,6 @@ test.describe('Print', () => {
         expect(getPrintPostData).toContain('map1%3ASTYLES=default%2Cd%C3%A9faut%2Cd%C3%A9faut')
         expect(getPrintPostData).toContain('map1%3AOPACITIES=204%2C255%2C255')
         expect(getPrintPostData).toMatch(/map0%3AEXTENT=761864.\d+%2C6274266.\d+%2C779334.\d+%2C6284518.\d+/);
-
-        // Close message
-        await page.locator('.btn-close').click();
 
         // Redlining with circle
         await page.locator('#button-draw').click();
@@ -137,7 +146,15 @@ test.describe('Print', () => {
         await page.locator('#print-scale').selectOption('100000');
 
         getPrintPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
+
+        // Launch print
         await page.locator('#print-launch').click();
+        // check message
+        await expect(page.locator('div.alert')).toHaveCount(1)
+        // Close message
+        await page.locator('div.alert button.btn-close').click();
+
+        // check request
         getPrintRequest = await getPrintPromise;
         getPrintPostData = getPrintRequest.postData();
         expect(getPrintPostData).toContain('SERVICE=WMS')
