@@ -577,8 +577,15 @@ test.describe('Print base layers', () => {
     test('Print requests', async ({ page }) => {
         // Print osm-mapnik
         let getPrintRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
-        await page.locator('#print-launch').click();
 
+        // Launch print
+        await page.locator('#print-launch').click();
+        // check message
+        await expect(page.locator('div.alert')).toHaveCount(1)
+        // Close message
+        await page.locator('div.alert button.btn-close').click();
+
+        // check request
         let getPrintRequest = await getPrintRequestPromise;
         let getPrintPostData = getPrintRequest.postData();
         expect(getPrintPostData).toContain('SERVICE=WMS')
@@ -596,6 +603,7 @@ test.describe('Print base layers', () => {
         expect(getPrintPostData).toContain('map0%3AOPACITIES=255')
 
         let getPrintResponse = await getPrintRequest.response();
+        await expect(getPrintResponse?.status()).toBe(200)
         expect(getPrintResponse?.headers()['content-type']).toBe('application/pdf');
 
         // Print osm-mapnik & quartiers
@@ -605,8 +613,15 @@ test.describe('Print base layers', () => {
         await getMapRequest.response();
 
         getPrintRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
-        await page.locator('#print-launch').click();
 
+        // Launch print
+        await page.locator('#print-launch').click();
+        // check message
+        await expect(page.locator('div.alert')).toHaveCount(1)
+        // Close message
+        await page.locator('div.alert button.btn-close').click();
+
+        // check request
         getPrintRequest = await getPrintRequestPromise;
         getPrintPostData = getPrintRequest.postData();
         expect(getPrintPostData).not.toBeNull()
@@ -625,6 +640,7 @@ test.describe('Print base layers', () => {
         expect(getPrintPostData).toContain('map0%3AOPACITIES=255%2C255')
 
         getPrintResponse = await getPrintRequest.response();
+        await expect(getPrintResponse?.status()).toBe(200)
         expect(getPrintResponse?.headers()['content-type']).toBe('application/pdf');
 
         // Print quartiers not open-topo-map
@@ -633,8 +649,15 @@ test.describe('Print base layers', () => {
         await page.waitForResponse(response => response.status() === 200 && response.headers()['content-type'] === 'image/png');
 
         getPrintRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
-        await page.locator('#print-launch').click();
 
+        // Launch print
+        await page.locator('#print-launch').click();
+        // check message
+        await expect(page.locator('div.alert')).toHaveCount(1)
+        // Close message
+        await page.locator('div.alert button.btn-close').click();
+
+        // check request
         getPrintRequest = await getPrintRequestPromise;
         getPrintPostData = getPrintRequest.postData();
         expect(getPrintPostData).not.toBeNull()
@@ -653,6 +676,7 @@ test.describe('Print base layers', () => {
         expect(getPrintPostData).toContain('map0%3AOPACITIES=255')
 
         getPrintResponse = await getPrintRequest.response();
+        await expect(getPrintResponse?.status()).toBe(200)
         expect(getPrintResponse?.headers()['content-type']).toBe('application/pdf');
 
         // Print quartiers_baselayer & quartiers
@@ -661,8 +685,15 @@ test.describe('Print base layers', () => {
         await getMapRequest.response();
 
         getPrintRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
-        await page.locator('#print-launch').click();
 
+        // Launch print
+        await page.locator('#print-launch').click();
+        // check message
+        await expect(page.locator('div.alert')).toHaveCount(1)
+        // Close message
+        await page.locator('div.alert button.btn-close').click();
+
+        // check request
         getPrintRequest = await getPrintRequestPromise;
         getPrintPostData = getPrintRequest.postData();
         expect(getPrintPostData).not.toBeNull()
@@ -681,6 +712,7 @@ test.describe('Print base layers', () => {
         expect(getPrintPostData).toContain('map0%3AOPACITIES=255%2C255')
 
         getPrintResponse = await getPrintRequest.response();
+        await expect(getPrintResponse?.status()).toBe(200)
         expect(getPrintResponse?.headers()['content-type']).toBe('application/pdf');
     });
 });
