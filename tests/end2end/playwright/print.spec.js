@@ -185,7 +185,15 @@ test.describe('Print', () => {
         await page.locator('#bottom-dock-window-buttons .btn-bottomdock-clear').click();
 
         const getPrintPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
+
+        // Launch print
         await page.locator('#print-launch').click();
+        // check message
+        await expect(page.locator('div.alert')).toHaveCount(1)
+        // Close message
+        await page.locator('div.alert button.btn-close').click();
+
+        // check request
         const getPrintRequest = await getPrintPromise;
         const getPrintPostData = getPrintRequest.postData();
         expect(getPrintPostData).toContain('SERVICE=WMS')
