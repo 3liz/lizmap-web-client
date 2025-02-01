@@ -3,6 +3,14 @@ import * as path from 'path';
 import { test, expect } from '@playwright/test';
 import { gotoMap, expectParametersToContain } from './globals';
 
+/**
+ * To save request response in a file for mocking
+ *
+ * const downloadPromise = page.waitForEvent('download');
+ * const download = await downloadPromise;
+ * await download.saveAs(path.join(__dirname, 'mock/print_in_project_projection/baselayer/Paysage_A4.pdf'));
+ */
+
 test.describe('Print in project projection', () => {
 
     test.beforeEach(async ({ page }) => {
