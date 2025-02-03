@@ -1,5 +1,12 @@
 $(document).ready(function () {
 
+    /**
+     *
+     * @param aCRS
+     * @param aRep
+     * @param aProj
+     * @param aCallback
+     */
     function loadProjDefinition( aCRS, aRep, aProj, aCallback ) {
         var proj = aCRS.replace(/^\s+|\s+$/g, ''); // trim();
         if ( proj in Proj4js.defs ) {
