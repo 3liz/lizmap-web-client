@@ -1,6 +1,13 @@
 // @ts-check
+import * as path from 'path';
+import * as fs from 'fs/promises'
+import { existsSync } from 'node:fs';
 import { test, expect } from '@playwright/test';
 import { gotoMap } from './globals';
+
+// To update OSM and GeoPF tiles in the mock directory
+// IMPORTANT, this must not be set to `true` while committing, on GitHub. Set to `false`.
+const UPDATE_MOCK_FILES = false;
 
 test.describe('Base layers', () => {
 
@@ -131,30 +138,57 @@ test.describe('Base layers', () => {
         await page.locator('#navbar button.btn.zoom-in').click();
         await page.locator('#navbar button.btn.zoom-in').click();
         // Wait for OL transition
-        await page.waitForTimeout(1000);
+        await page.waitForTimeout(500);
 
         // Catch osm tile
         let GetTiles = [];
-        await page.route('https://tile.openstreetmap.org/*/*/*.png', (route) => {
-            const request = route.request();
+        await page.route('https://tile.openstreetmap.org/*/*/*.png', async (route) => {
+            const request = await route.request();
             GetTiles.push(request.url());
-        }, { times: 6 });
+
+            // Build path file in mock directory
+            const pathFile = path.join(__dirname, 'mock/base_layers/osm/tiles'+(new URL(request.url()).pathname))
+            if (UPDATE_MOCK_FILES) {
+                // Save file in mock directory
+                const response = await route.fetch();
+                await fs.mkdir(path.dirname(pathFile), { recursive: true })
+                await fs.writeFile(pathFile, await response.body())
+            } else if (existsSync(pathFile)) {
+                // fulfill route's request with mock file
+                route.fulfill({
+                    path: pathFile
+                })
+            } else {
+                // continue
+                route.continue()
+            }
+        })
+
         // Select OSM
         await page.locator('#switcher-baselayer').getByRole('combobox').selectOption('osm-mapnik');
+
         // Wait for request and response
         while (GetTiles.length < 6) {
             await page.waitForTimeout(100);
         }
-        expect(GetTiles).toHaveLength(6);
-        expect(GetTiles[0]).toMatch(/\/19\/\d{6}\/\d{6}\.png/)
-        expect(GetTiles[1]).toMatch(/\/19\/\d{6}\/\d{6}\.png/)
-        expect(GetTiles[2]).toMatch(/\/19\/\d{6}\/\d{6}\.png/)
-        expect(GetTiles[3]).toMatch(/\/19\/\d{6}\/\d{6}\.png/)
-        expect(GetTiles[4]).toMatch(/\/19\/\d{6}\/\d{6}\.png/)
-        expect(GetTiles[5]).toMatch(/\/19\/\d{6}\/\d{6}\.png/)
+
+        // Check that we catch 6 tiles
+        await expect(GetTiles).toHaveLength(6);
+        // Check that every tiles are from level 19
+        await expect(GetTiles[0]).toMatch(/\/19\/\d{6}\/\d{6}\.png/)
+        await expect(GetTiles[1]).toMatch(/\/19\/\d{6}\/\d{6}\.png/)
+        await expect(GetTiles[2]).toMatch(/\/19\/\d{6}\/\d{6}\.png/)
+        await expect(GetTiles[3]).toMatch(/\/19\/\d{6}\/\d{6}\.png/)
+        await expect(GetTiles[4]).toMatch(/\/19\/\d{6}\/\d{6}\.png/)
+        await expect(GetTiles[5]).toMatch(/\/19\/\d{6}\/\d{6}\.png/)
+
+        // Remove listen to osm tiles
         await page.unroute('https://tile.openstreetmap.org/*/*/*.png')
+
         // Wait for OL transition
-        await page.waitForTimeout(1000);
+        await page.waitForTimeout(500);
+
+        // Build screenshot to check if tiles are well drawn
         buffer = await page.screenshot({clip:{x:950/2-380/2, y:600/2-380/2, width:380, height:380}});
         const osmByteLength = buffer.byteLength;
         await expect(osmByteLength).toBeGreaterThan(blankByteLength); // 1286
@@ -163,7 +197,7 @@ test.describe('Base layers', () => {
 
         // back to empty
         await page.locator('#switcher-baselayer').getByRole('combobox').selectOption('empty');
-        // Wai for OL transition
+        // Wait for OL transition
         await page.waitForTimeout(500);
         buffer = await page.screenshot({clip:{x:950/2-380/2, y:600/2-380/2, width:380, height:380}});
         await expect(buffer.byteLength).toBe(blankByteLength);
@@ -171,26 +205,59 @@ test.describe('Base layers', () => {
         // Catch ortho GetTile request
         //let getTileRequestPromise = page.waitForRequest(/Request=GetTile/);
         GetTiles = [];
-        await page.route('https://data.geopf.fr/wmts*', (route) => {
-            const request = route.request();
+        await page.route('https://data.geopf.fr/wmts*', async (route) => {
+            const request = await route.request();
             GetTiles.push(request.url());
-        }, { times: 6 });
+
+            // Build path file in mock directory
+            const parameters = new URL(request.url()).searchParams;
+            const pathFile = path.join(
+                __dirname,
+                'mock/base_layers/geopf',
+                (parameters.get('layer') ?? 'ORTHOIMAGERY.ORTHOPHOTOS').replace('.', '_'),
+                parameters.get('TileMatrix') ?? '19',
+                parameters.get('TileRow') ?? '191427',
+                (parameters.get('TileCol') ?? '267786') +'.jpg',
+            )
+            if (UPDATE_MOCK_FILES) {
+                // Save file in mock directory
+                const response = await route.fetch();
+                await fs.mkdir(path.dirname(pathFile), { recursive: true })
+                await fs.writeFile(pathFile, await response.body())
+            } else if (existsSync(pathFile)) {
+                // fulfill route's request with mock file
+                route.fulfill({
+                    path: pathFile
+                })
+            } else {
+                // continue
+                route.continue()
+            }
+        });
         // Select ortho photos
         await page.locator('#switcher-baselayer').getByRole('combobox').selectOption('ign-photo');
         // Wait for request and response
         while (GetTiles.length < 6) {
-            await page.waitForTimeout(500);
+            await page.waitForTimeout(100);
         }
-        expect(GetTiles).toHaveLength(6);
-        expect(GetTiles[0]).toContain('TileMatrix=19')
-        expect(GetTiles[1]).toContain('TileMatrix=19')
-        expect(GetTiles[2]).toContain('TileMatrix=19')
-        expect(GetTiles[3]).toContain('TileMatrix=19')
-        expect(GetTiles[4]).toContain('TileMatrix=19')
-        expect(GetTiles[5]).toContain('TileMatrix=19')
+
+        // Check that we catch 6 tiles
+        await expect(GetTiles).toHaveLength(6);
+        // Check that every tiles are from level 19
+        await expect(GetTiles[0]).toContain('TileMatrix=19')
+        await expect(GetTiles[1]).toContain('TileMatrix=19')
+        await expect(GetTiles[2]).toContain('TileMatrix=19')
+        await expect(GetTiles[3]).toContain('TileMatrix=19')
+        await expect(GetTiles[4]).toContain('TileMatrix=19')
+        await expect(GetTiles[5]).toContain('TileMatrix=19')
+
+        // Remove listen to geopf tiles
         await page.unroute('https://data.geopf.fr/wmts*')
+
         // Wait for OL transition
-        await page.waitForTimeout(1000);
+        await page.waitForTimeout(500);
+
+        // Build screenshot to check if tiles are well drawn
         buffer = await page.screenshot({clip:{x:950/2-380/2, y:600/2-380/2, width:380, height:380}});
         await expect(buffer.byteLength).toBeGreaterThan(blankByteLength); // 1286
         await expect(buffer.byteLength).toBeGreaterThan(osmByteLength); // 67587
