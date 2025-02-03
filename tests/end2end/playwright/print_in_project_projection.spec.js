@@ -3,17 +3,6 @@ import * as path from 'path';
 import { test, expect } from '@playwright/test';
 import { gotoMap, expectParametersToContain } from './globals';
 
-/**
- * To save request response in a file for mocking, you can copy/paste this snippet temporary.
- * Please consider using a low size PDF file, for testing, if there isn't test done on the PDF file itself, like :
- * tests/qgis-projects/tests/media/test.pdf
- * tests/end2end/playwright/mock/playwright-test.pdf
- *
- * const downloadPromise = page.waitForEvent('download');
- * const download = await downloadPromise;
- * await download.saveAs(path.join(__dirname, 'mock/print_in_project_projection/baselayer/Paysage_A4.pdf'));
- */
-
 test.describe('Print in project projection', () => {
 
     test.beforeEach(async ({ page }) => {
