@@ -1,6 +1,15 @@
 // @ts-check
+import * as path from 'path';
 import { test, expect } from '@playwright/test';
-import { gotoMap } from './globals';;
+import { gotoMap, expectParametersToContain } from './globals';
+
+/**
+ * To save request response in a file for mocking
+ *
+ * const downloadPromise = page.waitForEvent('download');
+ * const download = await downloadPromise;
+ * await download.saveAs(path.join(__dirname, 'mock/print_in_project_projection/baselayer/Paysage_A4.pdf'));
+ */
 
 test.describe('Print in project projection', () => {
 
@@ -14,47 +23,93 @@ test.describe('Print in project projection', () => {
     test('Print empty', async ({ page }) => {
         await page.locator('#switcher-baselayer').getByRole('combobox').selectOption('empty');
         await page.locator('#print-scale').selectOption('1000');
-        page.once('request', request => {
-            const postData = request.postData();
-            expect(postData).toContain('SERVICE=WMS')
-            expect(postData).toContain('REQUEST=GetPrint')
-            expect(postData).toContain('VERSION=1.3.0')
-            expect(postData).toContain('FORMAT=pdf')
-            expect(postData).toContain('TRANSPARENT=true')
-            expect(postData).toContain('CRS=EPSG%3A3943')
-            expect(postData).toContain('DPI=100')
-            expect(postData).toContain('TEMPLATE=Paysage%20A4')
-            expect(postData).toMatch(/map1%3AEXTENT=1697873.\d+%2C2216859.\d+%2C1698164.\d+%2C2217051.\d+/)
-            expect(postData).toContain('map1%3ASCALE=1000')
-            expect(postData).toContain('map1%3ALAYERS=reseau')
-            expect(postData).toContain('map1%3ASTYLES=default')
-            expect(postData).toContain('map1%3AOPACITIES=255')
-            // Disabled because of the migration when project is saved with QGIS >= 3.32
-            // expect(postData).toContain('multiline_label=Multiline%20label');
+
+        // Mock file
+        await page.route('**/service*', async route => {
+            const request = await route.request();
+            if (request.postData()?.includes('GetPrint')) {
+                await route.fulfill({
+                    headers: {
+                        "Content-Description": "File Transfert",
+                        "Content-Disposition": "attachment; filename=\"print_in_project_projection_Paysage_A4.pdf\"",
+                        "Content-Transfer-Encoding": "binary",
+                        "Content-Type": "application/pdf",
+                    },
+                    path: path.join(__dirname, 'mock/print_in_project_projection/empty/Paysage_A4.pdf')
+                })
+            }
         });
+
+        const getPrintPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
         await page.locator('#print-launch').click();
+
+        const getPrintRequest = await getPrintPromise;
+        const expectedParameters = {
+            'SERVICE': 'WMS',
+            'REQUEST': 'GetPrint',
+            'VERSION': '1.3.0',
+            'FORMAT': 'pdf',
+            'TRANSPARENT': 'true',
+            'CRS': 'EPSG:3943',
+            'DPI': '100',
+            'TEMPLATE': 'Paysage A4',
+            'map1:EXTENT': /1697873.\d+,2216859.\d+,1698164.\d+,2217051.\d+/,
+            'map1:SCALE': '1000',
+            'map1:LAYERS': 'reseau',
+            'map1:STYLES': 'default',
+            'map1:OPACITIES': '255',
+            // Disabled because of the migration when project is saved with QGIS >= 3.32
+            // 'multiline_label': 'Multiline label',
+        }
+        const getPrintParams = await expectParametersToContain('Print empty', getPrintRequest.postData() ?? '', expectedParameters)
+        await expect(getPrintParams.size).toBe(14)
+        await getPrintRequest.response()
+        await page.unroute('**/service*')
     })
 
     test('Print external baselayer', async ({ page }) => {
         await page.locator('#print-scale').selectOption('1000');
-        page.once('request', request => {
-            const postData = request.postData();
-            expect(postData).toContain('SERVICE=WMS')
-            expect(postData).toContain('REQUEST=GetPrint')
-            expect(postData).toContain('VERSION=1.3.0')
-            expect(postData).toContain('FORMAT=pdf')
-            expect(postData).toContain('TRANSPARENT=true')
-            expect(postData).toContain('CRS=EPSG%3A3943')
-            expect(postData).toContain('DPI=100')
-            expect(postData).toContain('TEMPLATE=Paysage%20A4')
-            expect(postData).toMatch(/map1%3AEXTENT=1697873.\d+%2C2216859.\d+%2C1698164.\d+%2C2217051.\d+/)
-            expect(postData).toContain('map1%3ASCALE=1000')
-            expect(postData).toContain('map1%3ALAYERS=Photographies_aeriennes%2Creseau')
-            expect(postData).toContain('map1%3ASTYLES=default%2Cdefault')
-            expect(postData).toContain('map1%3AOPACITIES=255%2C255')
-            // Disabled because of the migration when project is saved with QGIS >= 3.32
-            // expect(postData).toContain('multiline_label=Multiline%20label');
+
+        // Mock file
+        await page.route('**/service*', async route => {
+            const request = await route.request();
+            if (request.postData()?.includes('GetPrint')) {
+                await route.fulfill({
+                    headers: {
+                        "Content-Description": "File Transfert",
+                        "Content-Disposition": "attachment; filename=\"print_in_project_projection_Paysage_A4.pdf\"",
+                        "Content-Transfer-Encoding": "binary",
+                        "Content-Type": "application/pdf",
+                    },
+                    path:path.join(__dirname, 'mock/print_in_project_projection/baselayer/Paysage_A4.pdf')
+                })
+            }
         });
+
+        const getPrintPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
         await page.locator('#print-launch').click();
+
+        const getPrintRequest = await getPrintPromise;
+        const expectedParameters = {
+            'SERVICE': 'WMS',
+            'REQUEST': 'GetPrint',
+            'VERSION': '1.3.0',
+            'FORMAT': 'pdf',
+            'TRANSPARENT': 'true',
+            'CRS': 'EPSG:3943',
+            'DPI': '100',
+            'TEMPLATE': 'Paysage A4',
+            'map1:EXTENT': /1697873.\d+,2216859.\d+,1698164.\d+,2217051.\d+/,
+            'map1:SCALE': '1000',
+            'map1:LAYERS': 'Photographies_aeriennes,reseau',
+            'map1:STYLES': 'default,default',
+            'map1:OPACITIES': '255,255',
+            // Disabled because of the migration when project is saved with QGIS >= 3.32
+            // 'multiline_label': 'Multiline label',
+        }
+        const getPrintParams = await expectParametersToContain('Print external baselayer', getPrintRequest.postData() ?? '', expectedParameters)
+        await expect(getPrintParams.size).toBe(14)
+        await getPrintRequest.response()
+        await page.unroute('**/service*')
     })
 })
