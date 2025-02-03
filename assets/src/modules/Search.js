@@ -35,7 +35,7 @@ export default class Search {
     }
 
     /**
-     *
+     * Start the external search
      */
     _startExternalSearch() {
         if ($('#search-query').val().length != 0) {
@@ -48,7 +48,8 @@ export default class Search {
     }
 
     /**
-     *
+     * Get the highlight regular expression
+     * @returns {RegExp} The regular expression
      */
     _getHighlightRegEx() {
         // Format answers to highlight searched keywords
@@ -74,16 +75,14 @@ export default class Search {
     /**
      * PRIVATE method: addExternalSearch
      * add external search capability
-     *
-     * Returns:
-     * {Boolean} external search is in the user interface
-     * @param searchConfig
+     * @param {object} searchConfig - search configuration
+     * @returns {boolean} external search is in the user interface
      */
     _addSearch(searchConfig) {
         if (searchConfig.type == 'externalSearch') {
             return false;
         }
-        if (!'url' in searchConfig) {
+        if (!searchConfig.url) {
             return false;
         }
 
@@ -145,10 +144,8 @@ export default class Search {
     /**
      * PRIVATE method: addExternalSearch
      * add external search capability
-     *
-     * Returns:
-     * {Boolean} external search is in the user interface
-     * @param searchConfig
+     * @param {object} searchConfig - search configuration
+     * @returns {boolean} external search is in the user interface
      */
     _addExternalSearch(searchConfig) {
         if (searchConfig.type != 'externalSearch') {
@@ -224,7 +221,7 @@ export default class Search {
                             this._updateExternalSearch('<li><strong>OpenStreetMap</strong><ul>' + text + '</ul></li>');
                         }, 'json');
                     break;
-                case 'ign':
+                case 'ign': {
                     if (searchQuery.length < 3 || searchQuery.length > 200) {
                         lizMap.addMessage(lizDict['externalsearch.ignlimit'], 'warning', true);
                         break;
@@ -245,6 +242,7 @@ export default class Search {
                         this._updateExternalSearch('<li><strong>IGN</strong><ul>' + text + '</ul></li>');
                     });
                     break;
+                }
                 case 'google':
                     service.geocode({
                         'address': searchQuery,
@@ -305,9 +303,7 @@ export default class Search {
     /**
      * PRIVATE method: _addSearches
      * add searches capability
-     *
-     * Returns:
-     * {Boolean} searches added to the user interface
+     * @returns {boolean|void} searches added to the user interface
      */
     _addSearches() {
         var configOptions = this._lizmap3.config.options;
@@ -336,8 +332,8 @@ export default class Search {
     }
 
     /**
-     *
-     * @param aHTML
+     * Update external search
+     * @param {string} aHTML HTML to update
      */
     _updateExternalSearch(aHTML) {
         if ($('#search-query').val().length != 0) {
@@ -356,7 +352,7 @@ export default class Search {
                     evt.preventDefault();
                     const linkClicked = evt.currentTarget;
                     var bbox = linkClicked.getAttribute('href').replace('#', '');
-                    var bbox = OpenLayers.Bounds.fromString(bbox);
+                    bbox = OpenLayers.Bounds.fromString(bbox);
                     bbox.transform(wgs84, this._lizmap3.map.getProjectionObject());
                     this._lizmap3.map.zoomToExtent(bbox);
 

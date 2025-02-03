@@ -35,6 +35,7 @@ export default class WMS {
     }
 
     /**
+     * Get feature info from WMS
      * @param {object} options - optional parameters which can override this._defaultGetFeatureInfoParameters
      * @returns {Promise} Promise object represents data
      * @memberof WMS
@@ -50,6 +51,7 @@ export default class WMS {
     }
 
     /**
+     * Get legend graphic from WMS
      * @param {object} options - optional parameters which can override this._defaultGetLegendGraphicsParameters
      * @returns {Promise} Promise object represents data
      * @memberof WMS

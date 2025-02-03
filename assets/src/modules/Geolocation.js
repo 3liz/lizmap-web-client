@@ -21,7 +21,6 @@ export default class Geolocation {
 
     /**
      * Create a geolocation instance
-     *
      * @param {Map}    map           - OpenLayers map
      * @param {object}   lizmap3   - The old lizmap object
      */
@@ -186,6 +185,7 @@ export default class Geolocation {
     }
 
     /**
+     * Set tracking status
      * @param {boolean} isTracking - Enable tracking.
      */
     set isTracking(isTracking) {
@@ -197,6 +197,7 @@ export default class Geolocation {
     }
 
     /**
+     * Set bind status
      * @param {boolean} isBind - Enable map view always centered on current position.
      */
     set isBind(isBind) {
@@ -210,6 +211,7 @@ export default class Geolocation {
     }
 
     /**
+     * Set linkedToEdition status
      * @param {boolean} isLinkedToEdition - Link edition and geolocation to draw features based on GPS position
      */
     set isLinkedToEdition(isLinkedToEdition) {
@@ -223,6 +225,7 @@ export default class Geolocation {
     }
 
     /**
+     * Set the interval in second for the bind
      * @param  {number} interval - Interval in second
      */
     set bindIntervalInSecond(interval) {
