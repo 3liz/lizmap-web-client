@@ -14,7 +14,8 @@
     "proj4php/proj4php": "~2.0.0",
     "violet/streaming-json-encoder": "^1.1.5",
     "guzzlehttp/guzzle": "^7.7.0",
-    "halaxa/json-machine": "^1.1"
+    "halaxa/json-machine": "^1.1",
+    "kevinrob/guzzle-cache-middleware": "^6.0"
   },
   "minimum-stability": "stable",
   "config": {
