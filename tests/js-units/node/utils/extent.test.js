@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
-import { ValidationError, ConversionError } from '../../../../assets/src/modules/Errors.js';
-import { Extent } from '../../../../assets/src/modules/utils/Extent.js';
+import { ValidationError, ConversionError } from 'assets/src/modules/Errors.js';
+import { Extent } from 'assets/src/modules/utils/Extent.js';
 
 describe('Extent', function () {
     it('Valid', function () {

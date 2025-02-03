@@ -2,18 +2,18 @@ import { expect } from 'chai';
 
 import { readFileSync } from 'fs';
 
-import { ValidationError } from '../../../assets/src/modules/Errors.js';
-import { Config } from '../../../assets/src/modules/Config.js';
-import { OptionsConfig } from '../../../assets/src/modules/config/Options.js';
-import { LayersConfig } from '../../../assets/src/modules/config/Layer.js';
-import { LayerTreeGroupConfig } from '../../../assets/src/modules/config/LayerTree.js';
-import { BaseLayersConfig } from '../../../assets/src/modules/config/BaseLayer.js';
-import { MetadataConfig } from '../../../assets/src/modules/config/Metadata.js';
-import { LocateByLayerConfig } from '../../../assets/src/modules/config/Locate.js';
-import { AttributeLayersConfig } from '../../../assets/src/modules/config/AttributeTable.js';
-import { TooltipLayersConfig } from '../../../assets/src/modules/config/Tooltip.js';
-import { ThemesConfig } from '../../../assets/src/modules/config/Theme.js';
-import { DatavizLayersConfig, DatavizOptionsConfig } from '../../../assets/src/modules/config/Dataviz.js';
+import { ValidationError } from 'assets/src/modules/Errors.js';
+import { Config } from 'assets/src/modules/Config.js';
+import { OptionsConfig } from 'assets/src/modules/config/Options.js';
+import { LayersConfig } from 'assets/src/modules/config/Layer.js';
+import { LayerTreeGroupConfig } from 'assets/src/modules/config/LayerTree.js';
+import { BaseLayersConfig } from 'assets/src/modules/config/BaseLayer.js';
+import { MetadataConfig } from 'assets/src/modules/config/Metadata.js';
+import { LocateByLayerConfig } from 'assets/src/modules/config/Locate.js';
+import { AttributeLayersConfig } from 'assets/src/modules/config/AttributeTable.js';
+import { TooltipLayersConfig } from 'assets/src/modules/config/Tooltip.js';
+import { ThemesConfig } from 'assets/src/modules/config/Theme.js';
+import { DatavizLayersConfig, DatavizOptionsConfig } from 'assets/src/modules/config/Dataviz.js';
 
 
 describe('Config', function () {
@@ -77,10 +77,10 @@ describe('Config', function () {
     })
 
     it('Valid', function () {
-        const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
+        const capabilities = JSON.parse(readFileSync('./tests/js-units/data/montpellier-capabilities.json', 'utf8'));
         expect(capabilities).to.not.be.undefined
         expect(capabilities.Capability).to.not.be.undefined
-        const config = JSON.parse(readFileSync('./data/montpellier-config.json', 'utf8'));
+        const config = JSON.parse(readFileSync('./tests/js-units/data/montpellier-config.json', 'utf8'));
         expect(config).to.not.be.undefined
 
         const initialConfig = new Config(config, capabilities);
@@ -136,13 +136,13 @@ describe('Config', function () {
     })
 
     it('Valid with WFS', function () {
-        const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
+        const capabilities = JSON.parse(readFileSync('./tests/js-units/data/montpellier-capabilities.json', 'utf8'));
         expect(capabilities).to.not.be.undefined
         expect(capabilities.Capability).to.not.be.undefined
-        const config = JSON.parse(readFileSync('./data/montpellier-config.json', 'utf8'));
+        const config = JSON.parse(readFileSync('./tests/js-units/data/montpellier-config.json', 'utf8'));
         expect(config).to.not.be.undefined
 
-        const wfsCapabilities = JSON.parse(readFileSync('./data/montpellier-capabilities-wfs.json', 'utf8'));
+        const wfsCapabilities = JSON.parse(readFileSync('./tests/js-units/data/montpellier-capabilities-wfs.json', 'utf8'));
         expect(wfsCapabilities).to.not.be.undefined
         expect(wfsCapabilities.Capability).to.not.be.undefined
 
@@ -156,10 +156,10 @@ describe('Config', function () {
     })
 
     it('SingleWMS Layer Config', function () {
-        const capabilities = JSON.parse(readFileSync('./data/single_wms_image-capabilities.json', 'utf8'));
+        const capabilities = JSON.parse(readFileSync('./tests/js-units/data/single_wms_image-capabilities.json', 'utf8'));
         expect(capabilities).to.not.be.undefined
         expect(capabilities.Capability).to.not.be.undefined
-        const config = JSON.parse(readFileSync('./data/single_wms_image-config.json', 'utf8'));
+        const config = JSON.parse(readFileSync('./tests/js-units/data/single_wms_image-config.json', 'utf8'));
         expect(config).to.not.be.undefined
 
         const initialConfig = new Config(config, capabilities);

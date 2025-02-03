@@ -2,19 +2,19 @@ import { expect } from 'chai';
 
 import { readFileSync } from 'fs';
 
-import { ConversionError } from '../../../../assets/src/modules/Errors.js';
-import { LayersConfig } from '../../../../assets/src/modules/config/Layer.js';
-import { LayerTreeGroupConfig, buildLayerTreeConfig } from '../../../../assets/src/modules/config/LayerTree.js';
-import { base64png, base64svg, base64svgPointLayer, base64svgLineLayer, base64svgPolygonLayer, base64svgRasterLayer, base64svgOlLayer, BaseIconSymbology, LayerIconSymbology, LayerSymbolsSymbology, SymbolIconSymbology } from '../../../../assets/src/modules/state/Symbology.js';
-import { buildLayersOrder } from '../../../../assets/src/modules/config/LayersOrder.js';
-import { LayersAndGroupsCollection } from '../../../../assets/src/modules/state/Layer.js';
-import { MapLayerLoadStatus, MapGroupState, MapRootState } from '../../../../assets/src/modules/state/MapLayer.js';
+import { ConversionError } from 'assets/src/modules/Errors.js';
+import { LayersConfig } from 'assets/src/modules/config/Layer.js';
+import { LayerTreeGroupConfig, buildLayerTreeConfig } from 'assets/src/modules/config/LayerTree.js';
+import { base64png, base64svg, base64svgPointLayer, base64svgLineLayer, base64svgPolygonLayer, base64svgRasterLayer, base64svgOlLayer, BaseIconSymbology, LayerIconSymbology, LayerSymbolsSymbology, SymbolIconSymbology } from 'assets/src/modules/state/Symbology.js';
+import { buildLayersOrder } from 'assets/src/modules/config/LayersOrder.js';
+import { LayersAndGroupsCollection } from 'assets/src/modules/state/Layer.js';
+import { MapLayerLoadStatus, MapGroupState, MapRootState } from 'assets/src/modules/state/MapLayer.js';
 
-import { LayerTreeGroupState, LayerTreeLayerState, TreeRootState } from '../../../../assets/src/modules/state/LayerTree.js';
-import { ExternalLayerTreeGroupState } from '../../../../assets/src/modules/state/ExternalLayerTree.js';
-import { OptionsConfig } from '../../../../assets/src/modules/config/Options.js';
+import { LayerTreeGroupState, LayerTreeLayerState, TreeRootState } from 'assets/src/modules/state/LayerTree.js';
+import { ExternalLayerTreeGroupState } from 'assets/src/modules/state/ExternalLayerTree.js';
+import { OptionsConfig } from 'assets/src/modules/config/Options.js';
 
-import { default as ol } from '../../../../assets/src/dependencies/ol.js';
+import { default as ol } from 'assets/src/dependencies/ol.js';
 
 /**
  * Returns the root LayerTreeGroupState for the project
@@ -28,10 +28,10 @@ import { default as ol } from '../../../../assets/src/dependencies/ol.js';
  * @return {LayerTreeGroupState}
  **/
 function getRootLayerTreeGroupState(name) {
-    const capabilities = JSON.parse(readFileSync('./data/'+ name +'-capabilities.json', 'utf8'));
+    const capabilities = JSON.parse(readFileSync('./tests/js-units/data/'+ name +'-capabilities.json', 'utf8'));
     expect(capabilities).to.not.be.undefined
     expect(capabilities.Capability).to.not.be.undefined
-    const config = JSON.parse(readFileSync('./data/'+ name +'-config.json', 'utf8'));
+    const config = JSON.parse(readFileSync('./tests/js-units/data/'+ name +'-config.json', 'utf8'));
     expect(config).to.not.be.undefined
 
     const layers = new LayersConfig(config.layers);
@@ -871,7 +871,7 @@ describe('LayerTreeGroupState', function () {
         const root = getRootLayerTreeGroupState('montpellier')
         expect(root).to.be.instanceOf(LayerTreeGroupState)
 
-        const legend = JSON.parse(readFileSync('./data/montpellier-legend.json', 'utf8'));
+        const legend = JSON.parse(readFileSync('./tests/js-units/data/montpellier-legend.json', 'utf8'));
         expect(legend).to.not.be.undefined
 
         const sousquartiers = root.children[2];

@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
-import { ValidationError, ConversionError } from '../../../../assets/src/modules/Errors.js';
-import { EditionCapabilitiesConfig, EditionLayerConfig, EditionLayersConfig } from '../../../../assets/src/modules/config/Edition.js';
+import { ValidationError, ConversionError } from 'assets/src/modules/Errors.js';
+import { EditionCapabilitiesConfig, EditionLayerConfig, EditionLayersConfig } from 'assets/src/modules/config/Edition.js';
 
 describe('EditionCapabilitiesConfig', function () {
     it('Valid', function () {

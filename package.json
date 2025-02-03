@@ -1,0 +1,54 @@
+{
+  "name": "lizmap-web-client",
+  "version": "3.10.0",
+  "description": "Lizmap Web Client",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "eslint-plugin-jsdoc": "^48.0.2",
+    "dompurify": "^3.1.6",
+    "jsts": "^2.11.0",
+    "lit-html": "^3.1.1",
+    "ol": "^10.2.1",
+    "proj4": "^2.11.0",
+    "shpjs": "^6.1.0",
+    "svg-sprite-loader": "^6.0.11",
+    "svgo": "^3.2.0",
+    "svgo-loader": "^4.0.0",
+    "webpack": "^5.91.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-merge": "^5.10.0",
+    "@turf/line-split": "^7.2.0",
+    "flatgeobuf": "^3.36.0",
+    "ol-ext": "^4.0.24",
+    "ol-wfs-capabilities": "^2.0.0",
+    "chai": "^4.3.6",
+    "mocha": "^10.0.0",
+    "undici": "^6.21.1",
+    "@playwright/test": "^1.47.0",
+    "cypress": "^9.7.0",
+    "cypress-file-upload": "^5.0.8",
+    "pixelmatch": "^5.3.0"
+  },
+  "scripts": {
+    "pretest": "eslint assets/src",
+    "pretest-fix": "eslint --fix assets/src",
+    "jsdoc": "make version-doc && make js-doc",
+    "build": "webpack --config assets/webpack.prod.js",
+    "watch": "webpack --watch --config assets/webpack.dev.js",
+    "js:test": "mocha --recursive ./tests/js-units/node",
+    "pr:open": "playwright test --ui --project=end2end ./tests/end2end/",
+    "cy:open": "cypress open --project ./tests/end2end/",
+    "cy:test": "cypress run --headed --project ./tests/end2end/"
+  },
+  "author": "3Liz",
+  "license": "ISC",
+  "workspaces": [
+    "assets",
+    "tests/js-units",
+    "tests/end2end"
+  ]
+}
