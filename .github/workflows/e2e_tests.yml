@@ -26,6 +26,7 @@ jobs:
       run:
         working-directory: tests
     strategy:
+      fail-fast: false
       matrix:
         include:
           - name: "LEGACY"

@@ -78,7 +78,6 @@ export default defineConfig({
         browserName: 'chromium',
       },
       dependencies: ['setup'],
-      testIgnore: '**/localonly/**',
     },
     /* Test against mobile viewports. */
     // {
