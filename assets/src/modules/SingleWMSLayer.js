@@ -36,54 +36,54 @@ export default class SingleWMSLayer {
 
         /**
          * list of base layers names
-         * @type {String[]}
+         * @type {string[]}
          */
         this._baseLayers = [];
 
         /**
          * list of all map layers names
-         * @type {String[]}
+         * @type {string[]}
          */
         this._mapLayers = [];
 
         /**
          * list of layers names on the current single layer displayed on map
-         * @type {String[]}
+         * @type {string[]}
          */
         this._layersName = [];
         /**
          * list of layers wms names on the current single layer displayed on map
-         * @type {String[]}
+         * @type {string[]}
          */
         this._layersWmsName = [];
 
         /**
          * list of layers styles on the current single layer displayed on map
-         * @type {String[]}
+         * @type {string[]}
          */
         this._layerStyles = [];
 
         /**
          * list of selection token parameter on the current single layer displayed on map
-         * @type {String[]}
+         * @type {string[]}
          */
         this._selectionTokens = [];
 
         /**
          * list of filter token parameter on the current single layer displayed on map
-         * @type {String[]}
+         * @type {string[]}
          */
         this._filterTokens = [];
 
         /**
          * list of legendOn parameter on the current single layer displayed on map
-         * @type {String[]}
+         * @type {string[]}
          */
         this._legendOn = [];
 
         /**
          * list of legendOff parameter on the current single layer displayed on map
-         * @type {String[]}
+         * @type {string[]}
          */
         this._legendOff = [];
 
@@ -95,7 +95,7 @@ export default class SingleWMSLayer {
 
         /**
          * timeout function to manage the image layer reload
-         * @type {?function}
+         * @type {?Function}
          */
         this._timeout = null
 
@@ -132,7 +132,7 @@ export default class SingleWMSLayer {
 
         /**
          * ordered layers
-         * @type {String[]}
+         * @type {string[]}
          */
         this._orderedLayers = [];
 
@@ -176,8 +176,8 @@ export default class SingleWMSLayer {
 
     }
     /**
+     * Get the single WMS layer instance
      * @type {ImageLayer<ImageWMS>}
-     *
      */
     get layer(){
         return this._layer;

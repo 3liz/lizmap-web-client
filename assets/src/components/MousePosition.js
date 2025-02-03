@@ -92,7 +92,8 @@ export default class MousePosition extends HTMLElement {
     }
 
     /**
-     * @param {string} unit
+     * Update the display unit of the mouse position
+     * @param {string} unit - Unit to display 'm', 'mgrs' ...
      */
     set displayUnit(unit){
         unit === 'm' ? this._numDigits = 0 : this._numDigits = 5;

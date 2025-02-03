@@ -24,9 +24,10 @@ export default class Layers {
     /**
      * Add a vector layer from a WKT.
      * @param {string} wkt WKT in EPSG:4326 projection
-     * @param {string} dataProjection
-     * @param {StyleLike | null} style Layer style
+     * @param {string} dataProjection Data projection
+     * @param {import("ol/style/Style").default | null} style Layer style
      * @memberof Layers
+     * @returns {VectorLayer} The added layer
      */
     addLayerFromWKT(wkt, dataProjection = 'EPSG:4326', style){
         const format = new WKT();
@@ -50,9 +51,10 @@ export default class Layers {
     /**
      * Add a vector layer from a GeoJSON.
      * @param {ArrayBuffer | Document | Element | object | string} geojson geojson in EPSG:4326 projection
-     * @param {string} dataProjection
-     * @param {StyleLike | null} style Layer style
+     * @param {string} dataProjection Data projection
+     * @param {import("ol/style/Style").default | null} style Layer style
      * @memberof Layers
+     * @returns {VectorLayer} The added layer
      */
     addLayerFromGeoJSON(geojson, dataProjection = 'EPSG:4326', style) {
         const vector = new VectorLayer({

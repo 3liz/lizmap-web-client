@@ -293,6 +293,7 @@ export default class FeatureToolbar extends HTMLElement {
      * Feature can be deleted if it is editable & if it has delete capabilities & if layer is not pivot
      * If layer is a pivot, unlink button is displayed but a delete action is made instead
      * @readonly
+     * @returns {boolean} - True if feature can be deleted
      */
     get isDeletable(){
         return this._isFeatureEditable
@@ -307,6 +308,7 @@ export default class FeatureToolbar extends HTMLElement {
     /**
      * Return true if childLayer has a relation with parentLayer
      * @readonly
+     * @returns {boolean} - True if childLayer has a relation with parentLayer
      */
     get hasRelation(){
         return lizMap.config?.relations?.[this.parentLayerId]?.some((relation) => relation.referencingLayer === this.layerId);
@@ -315,6 +317,7 @@ export default class FeatureToolbar extends HTMLElement {
     /**
      * Return true if layer has geometry, WFS capability and popup_allow_download = true
      * @readonly
+     * @returns {boolean} - True if layer has geometry, WFS capability and popup_allow_download = true
      */
     get isFeatureExportable(){
         return this.attributeTableConfig &&
@@ -362,7 +365,7 @@ export default class FeatureToolbar extends HTMLElement {
 
     /**
      * Return the list of children layers for which a feature can be created
-     * @returns array
+     * @returns {Array} - List of children layers for which a feature can be created
      */
     get editableChildrenLayers() {
         const editableChildrenLayers = [];
@@ -493,12 +496,12 @@ export default class FeatureToolbar extends HTMLElement {
             lizMap.deleteEditionFeature(this.pivotLayerId, pivotFeatureId, unlinkMessage, ()=>{
                 // refresh mlayer
                 lizMap.events.triggerEvent("lizmapeditionfeaturedeleted",
-                {
-                    'layerId': this.layerId,
-                    'featureId': this.fid,
-                    'featureType': this.featureType,
-                    'updateDrawing': true
-                });
+                    {
+                        'layerId': this.layerId,
+                        'featureId': this.fid,
+                        'featureType': this.featureType,
+                        'updateDrawing': true
+                    });
             });
         }
     }
@@ -707,7 +710,7 @@ export default class FeatureToolbar extends HTMLElement {
 
     /**
      * Launch the creation of a new feature for the given child layer
-     * @param childItem
+     * @param {object} childItem - Child layer configuration
      */
     createChild(childItem) {
         // Get the parent feature corresponding to the popup

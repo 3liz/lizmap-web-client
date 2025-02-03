@@ -15,9 +15,26 @@ jobs:
     name: "PHP-CS-Fixer"
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: "PHP-CS-Fixer"
-      # Version must match the one from the Makefile
-      uses: docker://oskarstark/php-cs-fixer-ga:3.26.0
-      with:
-        args: --config=.php-cs-fixer.dist.php --allow-risky=yes --dry-run --diff
+
+      - name: "Checkout"
+        uses: actions/checkout@v4
+
+      - name: "PHP-CS-Fixer"
+        # Version must match the one from the Makefile
+        uses: docker://oskarstark/php-cs-fixer-ga:3.26.0
+        with:
+          args: --config=.php-cs-fixer.dist.php --allow-risky=yes --dry-run --diff
+
+  eslint:
+      name: "ESLint 🇯‌🇸‌"
+      runs-on: ubuntu-latest
+      steps:
+
+      - name: "Checkout"
+        uses: actions/checkout@v4
+
+      - name: Install modules
+        run: npm install
+
+      - name: Run ESLint
+        run: npm run pretest-fix
