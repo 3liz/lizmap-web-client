@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
-import { ValidationError, ConversionError } from '../../../../assets/src/modules/Errors.js';
-import { PrintAtlasConfig, PrintLabelConfig, PrintMapConfig, PrintTemplateConfig } from '../../../../assets/src/modules/config/PrintTemplate.js';
+import { ValidationError, ConversionError } from 'assets/src/modules/Errors.js';
+import { PrintAtlasConfig, PrintLabelConfig, PrintMapConfig, PrintTemplateConfig } from 'assets/src/modules/config/PrintTemplate.js';
 
 describe('PrintAtlasConfig', function () {
     it('Valid', function () {

@@ -61,13 +61,7 @@ jobs:
           node-version: 21
 
       - name: Install lizmap dependencies
-        working-directory: assets
-        run: npm install
-
-      - name: Install tests dependencies
-        working-directory: tests/js-units
         run: npm install
 
       - name: Running tests
-        working-directory: tests/js-units
         run: npm run js:test

@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
-import { ValidationError, ConversionError } from '../../../../assets/src/modules/Errors.js';
-import { TimeManagerLayerConfig, TimeManagerLayersConfig } from '../../../../assets/src/modules/config/TimeManager.js';
+import { ValidationError, ConversionError } from 'assets/src/modules/Errors.js';
+import { TimeManagerLayerConfig, TimeManagerLayersConfig } from 'assets/src/modules/config/TimeManager.js';
 
 describe('TimeManagerLayerConfig', function () {
     it('Valid', function () {

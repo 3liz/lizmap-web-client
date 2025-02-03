@@ -179,16 +179,16 @@ jobs:
         with:
           node-version: 21
           cache: 'npm'
-          cache-dependency-path: ${{ github.workspace }}/tests/end2end/package.json
+          cache-dependency-path: ${{ github.workspace }}/package.json
 
       - name: Install dependencies
+        working-directory: ./
         run: |
-          cd end2end
           npm ci
 
       - name: Install Playwright
+        working-directory: tests/end2end
         run: |
-          cd end2end
           npx playwright install --with-deps chromium
 
       - name: Run Playwright tests read-only
@@ -268,6 +268,7 @@ jobs:
         if: success() || steps.test-playwright-read-only.conclusion == 'failure' || steps.test-playwright-not-read-only.conclusion == 'failure'
         uses: cypress-io/github-action@v6.7.8
         with:
+          install: false
           browser: chrome
           headed: true
           working-directory: tests/end2end

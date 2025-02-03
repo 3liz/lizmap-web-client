@@ -2,11 +2,11 @@ import { expect } from 'chai';
 
 import { readFileSync } from 'fs';
 
-import { ValidationError, ConversionError } from '../../../../assets/src/modules/Errors.js';
-import { AttributionConfig } from '../../../../assets/src/modules/config/Attribution.js';
-import { LayerConfig, LayersConfig } from '../../../../assets/src/modules/config/Layer.js';
-import { LayerTreeGroupConfig, buildLayerTreeConfig } from '../../../../assets/src/modules/config/LayerTree.js';
-import { BaseLayerTypes, BaseLayerConfig, EmptyBaseLayerConfig, XyzBaseLayerConfig, BingBaseLayerConfig, WmtsBaseLayerConfig, WmsBaseLayerConfig, BaseLayersConfig } from '../../../../assets/src/modules/config/BaseLayer.js';
+import { ValidationError, ConversionError } from 'assets/src/modules/Errors.js';
+import { AttributionConfig } from 'assets/src/modules/config/Attribution.js';
+import { LayerConfig, LayersConfig } from 'assets/src/modules/config/Layer.js';
+import { LayerTreeGroupConfig, buildLayerTreeConfig } from 'assets/src/modules/config/LayerTree.js';
+import { BaseLayerTypes, BaseLayerConfig, EmptyBaseLayerConfig, XyzBaseLayerConfig, BingBaseLayerConfig, WmtsBaseLayerConfig, WmsBaseLayerConfig, BaseLayersConfig } from 'assets/src/modules/config/BaseLayer.js';
 
 describe('BaseLayerConfig', function () {
     it('simple', function () {
@@ -602,10 +602,10 @@ describe('BaseLayersConfig', function () {
     })
 
     it('From options and layers tree', function () {
-        const capabilities = JSON.parse(readFileSync('./data/montpellier-capabilities.json', 'utf8'));
+        const capabilities = JSON.parse(readFileSync('./tests/js-units/data/montpellier-capabilities.json', 'utf8'));
         expect(capabilities).to.not.be.undefined
         expect(capabilities.Capability).to.not.be.undefined
-        const config = JSON.parse(readFileSync('./data/montpellier-config.json', 'utf8'));
+        const config = JSON.parse(readFileSync('./tests/js-units/data/montpellier-config.json', 'utf8'));
         expect(config).to.not.be.undefined
 
         // Update capabilities change Hidden group to Baselayers group
@@ -658,10 +658,10 @@ describe('BaseLayersConfig', function () {
     })
 
     it('From baselayers user defined', function () {
-        const capabilities = JSON.parse(readFileSync('./data/backgrounds-capabilities.json', 'utf8'));
+        const capabilities = JSON.parse(readFileSync('./tests/js-units/data/backgrounds-capabilities.json', 'utf8'));
         expect(capabilities).to.not.be.undefined
         expect(capabilities.Capability).to.not.be.undefined
-        const config = JSON.parse(readFileSync('./data/backgrounds-config.json', 'utf8'));
+        const config = JSON.parse(readFileSync('./tests/js-units/data/backgrounds-config.json', 'utf8'));
         expect(config).to.not.be.undefined
 
         const layers = new LayersConfig(config.layers);
@@ -839,10 +839,10 @@ describe('BaseLayersConfig', function () {
     })
 
     it('default_background_color_index', function () {
-        const capabilities = JSON.parse(readFileSync('./data/backgrounds-capabilities.json', 'utf8'));
+        const capabilities = JSON.parse(readFileSync('./tests/js-units/data/backgrounds-capabilities.json', 'utf8'));
         expect(capabilities).to.not.be.undefined
         expect(capabilities.Capability).to.not.be.undefined
-        const config = JSON.parse(readFileSync('./data/backgrounds-config.json', 'utf8'));
+        const config = JSON.parse(readFileSync('./tests/js-units/data/backgrounds-config.json', 'utf8'));
         expect(config).to.not.be.undefined
 
         const layers = new LayersConfig(config.layers);
@@ -985,10 +985,10 @@ describe('BaseLayersConfig', function () {
     })
 
     it('startupBaseLayer from baselayers user defined', function () {
-        const capabilities = JSON.parse(readFileSync('./data/display_in_legend-capabilities.json', 'utf8'));
+        const capabilities = JSON.parse(readFileSync('./tests/js-units/data/display_in_legend-capabilities.json', 'utf8'));
         expect(capabilities).to.not.be.undefined
         expect(capabilities.Capability).to.not.be.undefined
-        const config = JSON.parse(readFileSync('./data/display_in_legend-config.json', 'utf8'));
+        const config = JSON.parse(readFileSync('./tests/js-units/data/display_in_legend-config.json', 'utf8'));
         expect(config).to.not.be.undefined
 
         const layers = new LayersConfig(config.layers);
