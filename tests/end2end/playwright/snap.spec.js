@@ -4,13 +4,10 @@ import { gotoMap } from './globals';
 import {ProjectPage} from "./pages/project";
 
 test.describe('Snap on edition', () => {
-    test.beforeEach(async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=form_edition_multilayer_snap';
-        await gotoMap(url, page);
-    });
 
     test('Snap panel functionalities', async ({ page }) => {
-
+        const url = '/index.php/view/map/?repository=testsrepository&project=form_edition_multilayer_snap';
+        await gotoMap(url, page);
         let editFeatureRequestPromise = page.waitForResponse(response => response.url().includes('editFeature'));
 
         const project = new ProjectPage(page, 'form_edition_multilayer_snap');
@@ -219,4 +216,50 @@ test.describe('Snap on edition', () => {
         await expect(page.locator("#edition-point-coord-form-group .snap-layers-list .snap-layer").nth(2).locator("label")).toHaveText("Point snap");
         await expect(page.locator("#edition-point-coord-form-group .snap-layers-list .snap-layer").nth(2).locator("label")).toHaveClass("snap-disabled");
     })
+
+    test('Snapping on points, on the map',
+        {
+            tag: ['@readonly'],
+        },async ({ page }) => {
+            const project = new ProjectPage(page, 'form_edition_snap');
+            await project.open();
+
+            await project.openEditingFormWithLayer('form_edition_snap');
+            await project.dock.getByText('Digitization').click();
+
+            let dftRequest = page.waitForRequest(
+                request =>
+                    request.method() === 'POST' &&
+                    request.postData() != null &&
+                    request.postData()?.includes('DescribeFeatureType') === true &&
+                    request.postData()?.includes('form_edition_snap_layer') === true
+            );
+
+            await project.dock.getByText('Start').click();
+
+            // Either we can enter manually coordinates
+            await project.dock.locator("#edition-point-coord-x").fill("3.910")
+            await project.dock.locator("#edition-point-coord-y").fill("43.6161")
+
+            // Or we click on the map
+            // await project.clickOnMapLegacy(600, 250);
+
+            await dftRequest;
+            await page.waitForTimeout(1000);
+
+            await project.dock.getByRole('tab', { name: 'Form' }).click();
+            await project.editingField('id').fill("90");
+
+            // What would be the JS API to check for the current drown geometry point,
+            // which should be different from 3.910 43.6161 because of the snapping
+
+            // let gfiPromise = page.waitForRequest(
+            //     request => request.method() === 'POST' &&
+            //         request.postData()?.includes('GetFeatureInfo') === true
+            // );
+            // await gfiPromise;
+
+            await dftRequest;
+
+        });
 })
