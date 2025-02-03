@@ -3,7 +3,9 @@ import { test, expect } from '@playwright/test';
 import {HomePage} from "./pages/homepage";
 import {AdminPage} from "./pages/admin";
 
-test.describe('Landing page content', () => {
+test.describe('Landing page content', {
+    tag: ['@write'],
+}, () => {
 
     test('Fill form & check content', async ({ browser }) => {
 
