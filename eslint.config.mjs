@@ -1,5 +1,6 @@
 import js from "@eslint/js";
 import jsdoc from "eslint-plugin-jsdoc";
+
 export default [
   js.configs.recommended,
   jsdoc.configs['flat/recommended'],
@@ -58,5 +59,8 @@ export default [
       "no-undef": "off",
       'jsdoc/require-description': 'warn',
     },
+    ignores: [
+      '**/legacy/'
+    ]
   },
 ];
