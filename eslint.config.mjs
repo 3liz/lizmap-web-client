@@ -17,10 +17,8 @@ export default [
             "lizmap/www/assets/jelix/",
             "lizmap/www/assets/js/",
             "tests/end2end/cypress/", // Candidate for to be removed
-            "tests/end2end/playwright/", // Candidate for to be removed
             "tests/js-units/node/",
             "tests/units/vendor/",
-            "tests/qgis-projects/tests/", // Candidate for to be removed
         ],
     }, {
         languageOptions: {
@@ -71,6 +69,24 @@ export default [
             }],
             "no-prototype-builtins": "off",
             "no-undef": "off",
+            'jsdoc/require-description': 'warn',
+        },
+    }, {
+        files: [
+            "tests/end2end/playwright/",
+            "tests/qgis-projects/tests/",
+        ],
+        ignores: [
+            "tests/end2end/playwright/globals.js",
+        ],
+        rules: {
+            "indent": ["error", 4, {
+                "SwitchCase": 1,
+                "ignoredNodes": ["TemplateLiteral *"],
+            }],
+            "no-prototype-builtins": "off",
+            "no-undef": "off",
+            "object-shorthand": 0,
             'jsdoc/require-description': 'warn',
         },
     }

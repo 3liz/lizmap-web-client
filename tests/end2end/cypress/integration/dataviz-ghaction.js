@@ -48,12 +48,12 @@ describe('Dataviz tests', function () {
         // Click on the other tabs to make the other plots visible
         // Sub tab Y
         cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(1) > button')
-        .click()
+            .click()
         cy.get('div#dataviz-dnd-0-39cdf0321d593be51760b8c205de3f3e > fieldset:nth-child(2) > div:nth-child(2) > ul:nth-child(1) > li:nth-child(2) > button:nth-child(1)')
-        .click()
+            .click()
         // Second tab
         cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(2) > button')
-        .click()
+            .click()
 
         // Wait for graphics displayed 5 plots are displayed
         cy.wait(['@getPlot', '@getPlot', '@getPlot', '@getPlot', '@getPlot'])
@@ -63,7 +63,7 @@ describe('Dataviz tests', function () {
             .should('have.text', 'Municipalities')
 
         cy.get('#dataviz_plot_0 div.svg-container svg.main-svg g.cartesianlayer')
-        .should('have.length', 1)
+            .should('have.length', 1)
         cy.get('#dataviz_plot_0 div.svg-container svg.main-svg g.cartesianlayer g.overplot')
             .should('have.length', 1)
         cy.get('#dataviz_plot_0 div.svg-container svg.main-svg g.cartesianlayer g.overplot g.trace.bars')
@@ -120,10 +120,10 @@ describe('Dataviz tests', function () {
 
         // Click back to the first tab
         cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(1) > button')
-        .click()
+            .click()
         // Click back to the first sub tab X
         cy.get('div#dataviz-dnd-0-39cdf0321d593be51760b8c205de3f3e > fieldset:nth-child(2) > div:nth-child(2) > ul:nth-child(1) > li:nth-child(1) > button:nth-child(1)')
-        .click()
+            .click()
 
         // Using locate by layer to filter layers and plots
         cy.get('#locate-layer-polygons ~ span.custom-combobox > a.custom-combobox-toggle').click()
@@ -151,10 +151,10 @@ describe('Dataviz tests', function () {
 
         // Go back to the first tab
         cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(1) > button')
-        .click()
+            .click()
         // Click back to the first sub tab X
         cy.get('div#dataviz-dnd-0-39cdf0321d593be51760b8c205de3f3e > fieldset:nth-child(2) > div:nth-child(2) > ul:nth-child(1) > li:nth-child(1) > button:nth-child(1)')
-        .click()
+            .click()
 
         // Zoom and filter to an other feature
         cy.get('#locate-layer-polygons ~ span.custom-combobox > a.custom-combobox-toggle').click()
@@ -179,10 +179,10 @@ describe('Dataviz tests', function () {
 
         // Go back to the first tab
         cy.get('#dataviz > #dataviz-container > #dataviz-content > div.tab-content > ul > li:nth-child(1) > button')
-        .click()
+            .click()
         // Click back to the first sub tab X
         cy.get('div#dataviz-dnd-0-39cdf0321d593be51760b8c205de3f3e > fieldset:nth-child(2) > div:nth-child(2) > ul:nth-child(1) > li:nth-child(1) > button:nth-child(1)')
-        .click()
+            .click()
 
         // Deactivate filter provided by locate by layer
         cy.get('#locate-clear').click()
