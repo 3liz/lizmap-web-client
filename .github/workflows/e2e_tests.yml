@@ -9,6 +9,10 @@ on:
   repository_dispatch:
     types: [ run-e2e-branches ]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   end2end:
     # The first condition is triggered when we set the new label
