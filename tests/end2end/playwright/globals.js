@@ -48,6 +48,7 @@ async function CatchErrors(page, layersInTreeView = 0) {
  * @param {boolean} mapMustLoad If the loading of the map must be successful or not. Some error might be triggered when loading the map, on purpose.
  * @param {int} layersInTreeView The number of layers to find in the treeview if the map is on error.
  * @param {boolean} waitForGetLegendGraphics
+ * @deprecated Use Project page instead and migrate the test to use proper methods
  */
 export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 0, waitForGetLegendGraphics = true) {
     // TODO keep this function synchronized with the Cypress equivalent
