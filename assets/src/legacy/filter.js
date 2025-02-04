@@ -642,6 +642,9 @@ var lizLayerFilterTool = function () {
                 var filter = null;
                 var field = field_item['field'];
                 if (clist.length) {
+                    // Check if the value '' is present. If so, we should also search for NULL
+                    let hasEmptyValue = false;
+
                     // If there is a separator in the field values, and we need
                     // to explode the values into single items, we need to use
                     // LIKE statements joined with OR
@@ -658,17 +661,35 @@ var lizLayerFilterTool = function () {
                         }
                         for (var i in clist) {
                             var cval = clist[i];
+                            // If cval is '', we should store this information
+                            if (cval === '') {
+                                hasEmptyValue = true;
+                            }
+
+                            // Create the filter for this value
                             filter += sep + '"' + field + '"' + " " + lk + " '%" + cval + "%' ";
                             // We need to use a OR to display features with
                             // 'Theatre, Culture' or 'Theatre', or 'Culture, Information'
                             // When 'Theatre' and 'Culture' are checked in the list
                             sep = ' OR ';
                         }
+                        // Add NULL values
+                        if (hasEmptyValue) {
+                            filter += ` OR "${field}" IS NULL `;
+                        }
                         filter += ' ) ';
                     } else {
+                        // Search for empty values (to add the rule OR "field" IS NULL )
+                        if (clist.includes('')) {
+                            hasEmptyValue = true;
+                        }
                         // If there is not separator in the field values, use IN to get all features
                         // corresponding to one of the checked values
                         filter = '"' + field + '"' + " IN ( '" + clist.join("' , '") + "' ) ";
+                        // Add NULL values
+                        if (hasEmptyValue) {
+                            filter = ` ( ${filter} OR "${field}" IS NULL ) `;
+                        }
                     }
                 }
                 globalThis['filterConfig'][field_item.order]['filter'] = filter;
