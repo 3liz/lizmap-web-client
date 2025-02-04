@@ -1,6 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { gotoMap } from './globals';
+import {expectParametersToContain, gotoMap} from './globals';
 
 test.describe('Viewport devicePixelRatio 1', () => {
     test('Greater than WMS max size', async ({ page }) => {
@@ -206,19 +206,22 @@ test.describe('Viewport standard', () => {
         await page.getByRole('button', { name: 'Zoom in' }).click();
         // Check GetMap request
         let getMapRequest = await getMapPromise;
-        let getMapUrl = getMapRequest.url();
-        expect(getMapUrl).toContain('SERVICE=WMS');
-        expect(getMapUrl).toContain('VERSION=1.3.0');
-        expect(getMapUrl).toContain('REQUEST=GetMap');
-        expect(getMapUrl).toContain('FORMAT=image%2Fpng');
-        expect(getMapUrl).toContain('TRANSPARENT=TRUE');
-        expect(getMapUrl).toContain('LAYERS=world');
-        expect(getMapUrl).toContain('CRS=EPSG%3A3857');
-        expect(getMapUrl).toContain('STYLES=d%C3%A9faut');
-        expect(getMapUrl).toContain('DPI=96');
-        expect(getMapUrl).toContain('WIDTH=958');
-        expect(getMapUrl).toContain('HEIGHT=633');
-        expect(getMapUrl).toMatch(/BBOX=-9373014.15\d+%2C-6193233.77\d+%2C9373014.15\d+%2C6193233.77\d+/);
+        let  expectedParameters = {
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'REQUEST': 'GetMap',
+            'FORMAT': 'image/png',
+            'TRANSPARENT': /\b(\w*^true$\w*)\b/gmi,
+            'LAYERS': 'world',
+            'CRS': 'EPSG:3857',
+            'STYLES': 'défaut',
+            'DPI': '96',
+            'WIDTH': '958',
+            'HEIGHT': '633',
+            'BBOX': /-9373014.15\d+,-6193233.77\d+,9373014.15\d+,6193233.77\d+/,
+        }
+        await expectParametersToContain('GetMap', getMapRequest.url(), expectedParameters);
+
         // Check zoom
         expect(await page.evaluate(() => lizMap.mainLizmap.map.getView().getZoom())).toBe(1);
 
@@ -233,19 +236,22 @@ test.describe('Viewport standard', () => {
         await page.setViewportSize({ width: viewport?.height, height: viewport?.width });
         // Check GetMap request
         getMapRequest = await getMapPromise;
-        getMapUrl = getMapRequest.url();
-        expect(getMapUrl).toContain('SERVICE=WMS');
-        expect(getMapUrl).toContain('VERSION=1.3.0');
-        expect(getMapUrl).toContain('REQUEST=GetMap');
-        expect(getMapUrl).toContain('FORMAT=image%2Fpng');
-        expect(getMapUrl).toContain('TRANSPARENT=TRUE');
-        expect(getMapUrl).toContain('LAYERS=world');
-        expect(getMapUrl).toContain('CRS=EPSG%3A3857');
-        expect(getMapUrl).toContain('STYLES=d%C3%A9faut');
-        expect(getMapUrl).toContain('DPI=96');
-        expect(getMapUrl).toContain('WIDTH=716');
-        expect(getMapUrl).toContain('HEIGHT=909');
-        expect(getMapUrl).toMatch(/BBOX=-7005300.76\d+%2C-8893601.11\d+%2C7005300.76\d+%2C8893601.11\d+/);
+        expectedParameters = {
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'REQUEST': 'GetMap',
+            'FORMAT': 'image/png',
+            'TRANSPARENT': /\b(\w*^true$\w*)\b/gmi,
+            'LAYERS': 'world',
+            'CRS': 'EPSG:3857',
+            'STYLES': 'défaut',
+            'DPI': '96',
+            'WIDTH': '716',
+            'HEIGHT': '909',
+            'BBOX': /-7005300.76\d+,-8893601.11\d+,7005300.76\d+,8893601.11\d+/,
+        }
+        await expectParametersToContain('GetMap', getMapRequest.url(), expectedParameters);
+
         // Check zoom
         expect(await page.evaluate(() => lizMap.mainLizmap.map.getView().getZoom())).toBe(1);
 

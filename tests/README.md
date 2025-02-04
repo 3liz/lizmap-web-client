@@ -262,6 +262,10 @@ You can then :
 
 You can also install the handy [Playwright extension](https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright) on VSCode.
 
+#### Writing tests
+
+A tests doing only a **read-only** on Lizmap must be tagged as `@readonly`, otherwise, it must be tagged `@write`.
+
 ### Artifacts
 
 When GitHub Action is failing, all screenshots and downloaded files are uploaded in an ZIP.
