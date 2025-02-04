@@ -41,6 +41,7 @@
     "ol-ext": "^4.0.24",
     "ol-wfs-capabilities": "^2.0.0",
     "pixelmatch": "^5.3.0",
+    "playwright-ctrf-json-reporter": "^0.0.18",
     "proj4": "^2.11.0",
     "shpjs": "^6.1.0",
     "svg-sprite-loader": "^6.0.11",

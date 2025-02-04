@@ -206,6 +206,23 @@ jobs:
         run: |
           npx playwright test --grep @readonly ${{ env.PLAYWRIGHT_OPTIONS }}
 
+      - name: Publish test report
+        if: always()
+        uses: ctrf-io/github-test-reporter@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          report-path: './tests/end2end/ctrf/*.json'
+          summary-report: true
+          flaky-report: true
+          # pull-request-report: true
+          summary: true
+          pull-request: true
+          title: Read only ${{ env.NAME }}
+          annotate: false
+          overwrite-comment: true
+          comment-tag: '${{ github.workflow }}-${{ github.job }}'
+
       - name: Prepare the database diff from Playwright read only
         run: |
           ./lizmap-ctl dump-pgsql
