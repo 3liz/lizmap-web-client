@@ -45,6 +45,11 @@ export class ProjectPage extends BasePage {
      */
     switcher;
     /**
+     * Base layer select
+     * @type {Locator}
+     */
+    baseLayerSelect;
+    /**
      * Editing menu
      * @type {Locator}
      */
@@ -130,6 +135,7 @@ export class ProjectPage extends BasePage {
         this.warningMessage = page.locator('#lizmap-warning-message');
         this.search = page.locator('#search-query');
         this.switcher = page.locator('#button-switcher');
+        this.baseLayerSelect = page.locator('#switcher-baselayer').getByRole('combobox')
         this.buttonEditing = page.locator('#button-edition');
     }
 

@@ -1,12 +1,16 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { gotoMap } from './globals';
+import {ProjectPage} from "./pages/project";
+import {expectParametersToContain} from "./globals";
 
-test.describe('Axis Orientation', () => {
+test.describe('Axis Orientation',
+    {
+        tag: ['@readonly'],
+    },() => {
 
     test('Axis Orientation NEU for EPSG:3044', async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=axis_orientation_neu_3044';
-        await gotoMap(url, page)
+        const project = new ProjectPage(page, 'axis_orientation_neu_3044');
+        await project.open();
 
         // Get blank buffer
         let buffer = await page.screenshot({clip:{x:950/2-380/2, y:600/2-380/2, width:380, height:380}});
@@ -17,18 +21,20 @@ test.describe('Axis Orientation', () => {
         const getMapPromise = page.waitForRequest(/GetMap/);
         await page.getByLabel('Bundesländer').check();
         const getMapRequest = await getMapPromise;
-        const getMapUrl = getMapRequest.url();
-        expect(getMapUrl).toContain('SERVICE=WMS');
-        expect(getMapUrl).toContain('VERSION=1.3.0');
-        expect(getMapUrl).toContain('REQUEST=GetMap');
-        expect(getMapUrl).toContain('FORMAT=image%2Fpng');
-        expect(getMapUrl).toContain('TRANSPARENT=TRUE');
-        expect(getMapUrl).toContain('LAYERS=Bundeslander');
-        expect(getMapUrl).toContain('CRS=EPSG%3A3044');
-        expect(getMapUrl).toContain('STYLES=default');
-        expect(getMapUrl).toContain('WIDTH=958');
-        expect(getMapUrl).toContain('HEIGHT=633');
-        expect(getMapUrl).toMatch(/BBOX=5276843.28\d+%2C-14455.54\d+%2C6114251.21\d+%2C1252901.15\d+/);
+        const expectedParameters = {
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'REQUEST': 'GetMap',
+            'FORMAT': 'image/png',
+            'TRANSPARENT': /\b(\w*^true$\w*)\b/gmi,
+            'LAYERS': 'Bundeslander',
+            'CRS': 'EPSG:3044',
+            'STYLES': 'default',
+            'WIDTH': '958',
+            'HEIGHT': '633',
+            'BBOX': /5276843.28\d+,-14455.54\d+,6114251.21\d+,1252901.15\d+/,
+        }
+        await expectParametersToContain('GetMap', getMapRequest.url(), expectedParameters)
 
         const getMapResponse = await getMapRequest.response();
         expect(getMapResponse).not.toBeNull();
@@ -42,13 +48,13 @@ test.describe('Axis Orientation', () => {
         const bundeslanderByteLength = buffer.byteLength;
         await expect(bundeslanderByteLength).toBeGreaterThan(blankByteLength);
 
-        // Catch GetTile request;
+        // Catch GetTile request
         let GetTiles = [];
         await page.route('https://tile.openstreetmap.org/*/*/*.png', (route) => {
             const request = route.request();
             GetTiles.push(request.url());
         }, { times: 6 });
-        await page.locator('#switcher-baselayer').getByRole('combobox').selectOption('OpenStreetMap');
+        await project.baseLayerSelect.selectOption('OpenStreetMap');
         while (GetTiles.length < 6) {
             await page.waitForTimeout(100);
         }
@@ -72,8 +78,8 @@ test.describe('Axis Orientation', () => {
     });
 
     test('Axis Orientation NEU for EPSG:3844', async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=axis_orientation_neu_3844';
-        await gotoMap(url, page)
+        const project = new ProjectPage(page, 'axis_orientation_neu_3844');
+        await project.open();
 
         // Get blank buffer
         let buffer = await page.screenshot({clip:{x:950/2-380/2, y:600/2-380/2, width:380, height:380}});
@@ -84,18 +90,20 @@ test.describe('Axis Orientation', () => {
         const getMapPromise = page.waitForRequest(/GetMap/);
         await page.getByLabel('județ').check();
         const getMapRequest = await getMapPromise;
-        const getMapUrl = getMapRequest.url();
-        expect(getMapUrl).toContain('SERVICE=WMS');
-        expect(getMapUrl).toContain('VERSION=1.3.0');
-        expect(getMapUrl).toContain('REQUEST=GetMap');
-        expect(getMapUrl).toContain('FORMAT=image%2Fpng');
-        expect(getMapUrl).toContain('TRANSPARENT=TRUE');
-        expect(getMapUrl).toContain('LAYERS=judet');
-        expect(getMapUrl).toContain('CRS=EPSG%3A3844');
-        expect(getMapUrl).toContain('STYLES=default');
-        expect(getMapUrl).toContain('WIDTH=958');
-        expect(getMapUrl).toContain('HEIGHT=633');
-        expect(getMapUrl).toMatch(/BBOX=72126.00\d+%2C-122200.57\d+%2C909533.92\d+%2C1145156.12\d+/);
+        const expectedParameters = {
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'REQUEST': 'GetMap',
+            'FORMAT': 'image/png',
+            'TRANSPARENT': /\b(\w*^true$\w*)\b/gmi,
+            'LAYERS': 'judet',
+            'CRS': 'EPSG:3844',
+            'STYLES': 'default',
+            'WIDTH': '958',
+            'HEIGHT': '633',
+            'BBOX': /72126.00\d+,-122200.57\d+,909533.92\d+,1145156.12\d+/,
+        }
+        await expectParametersToContain('GetMap', getMapRequest.url(), expectedParameters);
 
         const getMapResponse = await getMapRequest.response();
         expect(getMapResponse).not.toBeNull();
@@ -111,13 +119,13 @@ test.describe('Axis Orientation', () => {
         const judetByteLength = buffer.byteLength;
         await expect(judetByteLength).toBeGreaterThan(blankByteLength);
 
-        // Catch GetTile request;
+        // Catch GetTile request
         let GetTiles = [];
         await page.route('https://tile.openstreetmap.org/*/*/*.png', (route) => {
             const request = route.request();
             GetTiles.push(request.url());
         }, { times: 6 });
-        await page.locator('#switcher-baselayer').getByRole('combobox').selectOption('OpenStreetMap');
+        await project.baseLayerSelect.selectOption('OpenStreetMap');
         while (GetTiles.length < 6) {
             await page.waitForTimeout(100);
         }
