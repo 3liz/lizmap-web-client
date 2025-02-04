@@ -1,6 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { gotoMap, reloadMap } from './globals';
+import {expectParametersToContain, gotoMap, reloadMap} from './globals';
 
 test.describe('Permalink', () => {
 
@@ -721,18 +721,20 @@ test.describe('BBox parameter', () => {
         const getMapPromise = page.waitForRequest(/GetMap/);
         await page.getByLabel('sousquartiers').check();
         const getMapRequest = await getMapPromise;
-        const getMapUrl = getMapRequest.url();
-        expect(getMapUrl).toContain('SERVICE=WMS');
-        expect(getMapUrl).toContain('VERSION=1.3.0');
-        expect(getMapUrl).toContain('REQUEST=GetMap');
-        expect(getMapUrl).toContain('FORMAT=image%2Fpng');
-        expect(getMapUrl).toContain('TRANSPARENT=TRUE');
-        expect(getMapUrl).toContain('LAYERS=sousquartiers');
-        expect(getMapUrl).toContain('CRS=EPSG%3A2154');
-        expect(getMapUrl).toContain('STYLES=d%C3%A9faut');
-        expect(getMapUrl).toContain('WIDTH=958');
-        expect(getMapUrl).toContain('HEIGHT=633');
-        expect(getMapUrl).toMatch(/BBOX=762375.04\d+%2C6277986.97\d+%2C775048.61\d+%2C6286361.05\d+/);
+        const expectedParameters = {
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'REQUEST': 'GetMap',
+            'FORMAT': /image\/png/, // "image/png; mode=8bit"
+            'TRANSPARENT': /\b(\w*^true$\w*)\b/gmi,
+            'LAYERS': 'sousquartiers',
+            'CRS': 'EPSG:2154',
+            'STYLES': 'défaut',
+            'WIDTH': '958',
+            'HEIGHT': '633',
+            'BBOX': /762375.04\d+,6277986.97\d+,775048.61\d+,6286361.05\d+/,
+        }
+        await expectParametersToContain('GetMap', getMapRequest.url(), expectedParameters);
 
         // Check Permalink tool
         const new_share_value = await page.locator('#input-share-permalink').inputValue();
@@ -768,18 +770,20 @@ test.describe('BBox parameter', () => {
         const getMapPromise = page.waitForRequest(/GetMap/);
         await page.getByLabel('sousquartiers').check();
         const getMapRequest = await getMapPromise;
-        const getMapUrl = getMapRequest.url();
-        expect(getMapUrl).toContain('SERVICE=WMS');
-        expect(getMapUrl).toContain('VERSION=1.3.0');
-        expect(getMapUrl).toContain('REQUEST=GetMap');
-        expect(getMapUrl).toContain('FORMAT=image%2Fpng');
-        expect(getMapUrl).toContain('TRANSPARENT=TRUE');
-        expect(getMapUrl).toContain('LAYERS=sousquartiers');
-        expect(getMapUrl).toContain('CRS=EPSG%3A2154');
-        expect(getMapUrl).toContain('STYLES=d%C3%A9faut');
-        expect(getMapUrl).toContain('WIDTH=958');
-        expect(getMapUrl).toContain('HEIGHT=633');
-        expect(getMapUrl).toMatch(/BBOX=762375.04\d+%2C6277986.97\d+%2C775048.61\d+%2C6286361.05\d+/);
+        const expectedParameters = {
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'REQUEST': 'GetMap',
+            'FORMAT': /image\/png/, // "image/png; mode=8bit"
+            'TRANSPARENT': /\b(\w*^true$\w*)\b/gmi,
+            'LAYERS': 'sousquartiers',
+            'CRS': 'EPSG:2154',
+            'STYLES': 'défaut',
+            'WIDTH': '958',
+            'HEIGHT': '633',
+            'BBOX': /762375.04\d+,6277986.97\d+,775048.61\d+,6286361.05\d+/,
+        }
+        await expectParametersToContain('GetMap', getMapRequest.url(), expectedParameters);
 
         // Check Permalink tool
         const new_share_value = await page.locator('#input-share-permalink').inputValue();
