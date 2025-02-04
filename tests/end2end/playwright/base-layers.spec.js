@@ -45,6 +45,8 @@ test.describe('Base layers', () => {
         // Wait for request and response
         let getMapRequest = await getMapRequestPromise;
         await getMapRequest.response();
+        // Wai for OL transition
+        await page.waitForTimeout(1000);
 
         buffer = await page.screenshot({clip:{x:950/2-380/2, y:600/2-380/2, width:380, height:380}});
         const initialByteLength = buffer.byteLength;
