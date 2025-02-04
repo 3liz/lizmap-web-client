@@ -400,11 +400,6 @@ parameters:
       path: lizmap/modules/lizmap/lib/Form/QgisForm.php
 
     -
-      message: "#^PHPDoc tag @param references unknown parameter\\: \\$cnx$#"
-      count: 1
-      path: lizmap/modules/lizmap/lib/Form/QgisForm.php
-
-    -
       message: "#^Result of && is always false\\.$#"
       count: 2
       path: lizmap/modules/lizmap/lib/Form/QgisForm.php
@@ -460,11 +455,6 @@ parameters:
       path: lizmap/modules/lizmap/lib/Form/QgisFormControl.php
 
     -
-      message: "#^PHPDoc tag @param references unknown parameter\\: \\$aliasXml$#"
-      count: 1
-      path: lizmap/modules/lizmap/lib/Form/QgisFormControl.php
-
-    -
       message: "#^Unreachable statement \\- code above always terminates\\.$#"
       count: 3
       path: lizmap/modules/lizmap/lib/Form/QgisFormControl.php
@@ -511,11 +501,6 @@ parameters:
 
     -
       message: "#^PHPDoc tag @param has invalid value \\(int the life time of the cache, in seconds\\)\\: Unexpected token \"the\", expected variable at offset 153$#"
-      count: 1
-      path: lizmap/modules/lizmap/lib/Project/ProjectCache.php
-
-    -
-      message: "#^PHPDoc tag @param references unknown parameter\\: \\$props$#"
       count: 1
       path: lizmap/modules/lizmap/lib/Project/ProjectCache.php
 
@@ -583,11 +568,6 @@ parameters:
       message: "#^Unreachable statement \\- code above always terminates\\.$#"
       count: 1
       path: lizmap/modules/view/classes/lizmapMapDockItem.class.php
-
-    -
-      message: "#^PHPDoc tag @param references unknown parameter\\: \\$repository$#"
-      count: 1
-      path: lizmap/modules/view/controllers/default.classic.php
 
     -
       message: "#^Inner named functions are not supported by PHPStan\\. Consider refactoring to an anonymous function, class method, or a top\\-level\\-defined function\\. See issue \\#165 \\(https\\://github\\.com/phpstan/phpstan/issues/165\\) for more details\\.$#"
