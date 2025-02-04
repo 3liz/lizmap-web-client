@@ -159,8 +159,10 @@ test.describe('Base layers', () => {
                     path: pathFile
                 })
             } else {
-                // continue
-                route.continue()
+                // fulfill route's request with default transparent tile
+                route.fulfill({
+                    path: path.join(__dirname, 'mock/transparent_tile.png')
+                })
             }
         })
 
@@ -230,8 +232,10 @@ test.describe('Base layers', () => {
                     path: pathFile
                 })
             } else {
-                // continue
-                route.continue()
+                // fulfill route's request with default white tile
+                route.fulfill({
+                    path: path.join(__dirname, 'mock/white_tile.jpg')
+                })
             }
         });
         // Select ortho photos
