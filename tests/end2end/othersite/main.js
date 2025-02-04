@@ -13,7 +13,7 @@ window.addEventListener('load', function() {
         if (document.getElementById('cache-disabled').checked) {
             request.setRequestHeader('Cache-Control', 'no-cache');
         }
-        request.onload = function(oEvent) {
+        request.onload = function() {
             document.getElementById('status').textContent = request.status?request.status:'no code';
             document.getElementById('response').value = request.responseText;
         };
@@ -24,7 +24,7 @@ window.addEventListener('load', function() {
 
         var request = new XMLHttpRequest();
         request.open("GET", unauthorizedUrl);
-        request.onload = function(oEvent) {
+        request.onload = function() {
             document.getElementById('status_bad').textContent = request.status?request.status:'no code';
             document.getElementById('response_bad').value = request.responseText;
         };
