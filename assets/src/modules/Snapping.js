@@ -241,7 +241,7 @@ export default class Snapping {
         if(layerConfig && layerConfig[0]) {
             try {
                 visible = this._layerTree.getTreeLayerByName(layerConfig[0]).visibility
-            } catch( error){
+            } catch {
                 visible = false
             }
         }
