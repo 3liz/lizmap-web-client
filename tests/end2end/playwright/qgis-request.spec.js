@@ -8,8 +8,11 @@ test.describe('QGIS Requests', () => {
         await gotoMap(url, page)
 
         const single = await page.evaluate(async () => {
-            return await fetch("/index.php/lizmap/service?repository=testsrepository&project=layer_legends&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=layer_legend_single_symbol&STYLE=&EXCEPTIONS=application/vnd.ogc.se_inimage&FORMAT=application/json&TRANSPARENT=TRUE&DPI=96")
-                .then(r => r.ok ? r.json() : Promise.reject(r))
+            return await fetch(
+                "/index.php/lizmap/service?repository=testsrepository&project=layer_legends&" +
+                "SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=layer_legend_single_symbol&STYLE=&" +
+                "EXCEPTIONS=application/vnd.ogc.se_inimage&FORMAT=application/json&TRANSPARENT=TRUE&DPI=96"
+            ).then(r => r.ok ? r.json() : Promise.reject(r))
         })
         // check root
         expect(single.nodes).toHaveLength(1)
@@ -23,8 +26,11 @@ test.describe('QGIS Requests', () => {
         expect(singleNode.symbols).toBeUndefined()
 
         const categorized = await page.evaluate(async () => {
-            return await fetch("/index.php/lizmap/service?repository=testsrepository&project=layer_legends&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=layer_legend_categorized&STYLE=&EXCEPTIONS=application/vnd.ogc.se_inimage&FORMAT=application/json&TRANSPARENT=TRUE&DPI=96")
-                .then(r => r.ok ? r.json() : Promise.reject(r))
+            return await fetch(
+                "/index.php/lizmap/service?repository=testsrepository&project=layer_legends&" +
+                "SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=layer_legend_categorized&STYLE=&" +
+                "EXCEPTIONS=application/vnd.ogc.se_inimage&FORMAT=application/json&TRANSPARENT=TRUE&DPI=96"
+            ).then(r => r.ok ? r.json() : Promise.reject(r))
         })
         // check root
         expect(categorized.nodes).toHaveLength(1)
@@ -39,8 +45,11 @@ test.describe('QGIS Requests', () => {
         expect(categorizedNode.symbols).toHaveLength(2)
 
         const group = await page.evaluate(async () => {
-            return await fetch("/index.php/lizmap/service?repository=testsrepository&project=layer_legends&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=legend_option_test&STYLE=&EXCEPTIONS=application/vnd.ogc.se_inimage&FORMAT=application/json&TRANSPARENT=TRUE&DPI=96")
-                .then(r => r.ok ? r.json() : Promise.reject(r))
+            return await fetch(
+                "/index.php/lizmap/service?repository=testsrepository&project=layer_legends&" +
+                "SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=legend_option_test&STYLE=" +
+                "&EXCEPTIONS=application/vnd.ogc.se_inimage&FORMAT=application/json&TRANSPARENT=TRUE&DPI=96"
+            ).then(r => r.ok ? r.json() : Promise.reject(r))
         })
         // check root
         expect(group.nodes).toHaveLength(1)
@@ -58,8 +67,12 @@ test.describe('QGIS Requests', () => {
         const combined = await page.evaluate(async () => {
             // To get layer_legend_single_symbol first, layer_legend_categorized second and legend_option_test third
             // LAYER parameter has to be the inverse: legend_option_test,layer_legend_categorized,layer_legend_single_symbol
-            return await fetch("/index.php/lizmap/service?repository=testsrepository&project=layer_legends&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=legend_option_test,layer_legend_categorized,layer_legend_single_symbol&STYLE=&EXCEPTIONS=application/vnd.ogc.se_inimage&FORMAT=application/json&TRANSPARENT=TRUE&DPI=96")
-                .then(r => r.ok ? r.json() : Promise.reject(r))
+            return await fetch(
+                "/index.php/lizmap/service?repository=testsrepository&project=layer_legends&" +
+                "SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&" +
+                "LAYER=legend_option_test,layer_legend_categorized,layer_legend_single_symbol&STYLE=&" +
+                "EXCEPTIONS=application/vnd.ogc.se_inimage&FORMAT=application/json&TRANSPARENT=TRUE&DPI=96"
+            ).then(r => r.ok ? r.json() : Promise.reject(r))
         })
         // check root
         expect(combined.nodes).toHaveLength(3)
