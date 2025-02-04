@@ -77,12 +77,13 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v4
+        id: checkout
         with:
           ref: ${{ env.BRANCH }}
           token: ${{ secrets.BOT_HUB_TOKEN || github.token  }}  # Important to launch CI on a commit from a bot
 
       - name: Branch name
-        run: echo running on branch ${GITHUB_REF##*/} with CYPRESS = ${CYPRESS_CI}
+        run: echo running on branch ${GITHUB_REF##*/} with CYPRESS = ${CYPRESS_CI} and commit ${{ steps.checkout.outputs.commit }}
 
       - name: Make environment and show Lizmap versions
         env:
@@ -248,6 +249,7 @@ jobs:
         uses: peter-evans/commit-comment@v3
         if: github.repository == '3liz/lizmap-web-client' && failure() && steps.test-playwright.outcome != 'success' && github.event_name == 'repository_dispatch'
         with:
+          sha: ${{ steps.checkout.outputs.commit }}
           token: ${{ secrets.BOT_HUB_TOKEN }}
           body: |
             The latest **weekly** run of end2end "playwright" tests failed with this latest commit on the branch **${{ env.BRANCH }}** 😣
@@ -298,6 +300,7 @@ jobs:
         uses: peter-evans/commit-comment@v3
         if: github.repository == '3liz/lizmap-web-client' && failure() && steps.test-cypress.outcome != 'success' && github.event_name == 'repository_dispatch'
         with:
+          sha: ${{ steps.checkout.outputs.commit }}
           token: ${{ secrets.BOT_HUB_TOKEN }}
           body: |
             The latest **weekly** run of end2end "cypress" tests failed with this latest commit on the branch **${{ env.BRANCH }}** 😣
