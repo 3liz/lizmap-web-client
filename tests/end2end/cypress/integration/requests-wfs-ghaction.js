@@ -80,11 +80,11 @@ describe('Request service', function () {
             },
             body: body,
         }).then((resp) => {
-                expect(resp.status).to.eq(200)
-                expect(resp.headers['content-type']).to.eq('text/xml; charset=utf-8')
-                expect(resp.body).to.contain('WFS_Capabilities')
-                expect(resp.body).to.contain('version="1.0.0"')
-            })
+            expect(resp.status).to.eq(200)
+            expect(resp.headers['content-type']).to.eq('text/xml; charset=utf-8')
+            expect(resp.body).to.contain('WFS_Capabilities')
+            expect(resp.body).to.contain('version="1.0.0"')
+        })
     })
 
     it('WFS DescribeFeatureType', function () {

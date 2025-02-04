@@ -231,20 +231,20 @@ test.describe('Raster identify',
         tag: ['@readonly', '@lizmap.com'],
     },() => {
 
-    test('Raster identify check with data-attributes', async ({ page }) => {
-        const project = new ProjectPage(page, 'rasters');
-        await project.open();
+        test('Raster identify check with data-attributes', async ({ page }) => {
+            const project = new ProjectPage(page, 'rasters');
+            await project.open();
 
-        let getFeatureInfoPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
+            let getFeatureInfoPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
 
-        await project.clickOnMap(510, 415);
+            await project.clickOnMap(510, 415);
 
-        await getFeatureInfoPromise;
-        const popup = project.popupContent.locator("div.lizmapPopupContent div.lizmapPopupSingleFeature");
-        await expect(popup).toHaveAttribute("data-layer-id", "local_raster_layer_c4c2ec5e_7567_476b_bf78_2b7c64f32615");
-        await expect(popup).not.toHaveAttribute("data-feature-id");
+            await getFeatureInfoPromise;
+            const popup = project.popupContent.locator("div.lizmapPopupContent div.lizmapPopupSingleFeature");
+            await expect(popup).toHaveAttribute("data-layer-id", "local_raster_layer_c4c2ec5e_7567_476b_bf78_2b7c64f32615");
+            await expect(popup).not.toHaveAttribute("data-feature-id");
+        });
     });
-});
 
 test.describe('Popup', () => {
 

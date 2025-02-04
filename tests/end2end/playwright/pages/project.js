@@ -102,7 +102,7 @@ export class ProjectPage extends BasePage {
     /**
      * Attribute table for the given layer name
      * @param {string} name Name of the layer
-     * @returns {Locator}
+     * @returns {Locator} Locator for attribute table
      */
     attributeTableHtml = (name) =>
         this.page.locator(`#attribute-layer-table-${name}`);
@@ -110,7 +110,7 @@ export class ProjectPage extends BasePage {
     /**
      * Editing field for the given field in the panel
      * @param {string} name Name of the field
-     * @returns {Locator}
+     * @returns {Locator} Locator for the input field
      */
     editingField = (name) =>
         this.page.locator(`#jforms_view_edition input[name="${name}"]`);
