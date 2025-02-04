@@ -3,13 +3,14 @@ import { expect } from '@playwright/test';
 import { gotoMap } from '../globals';
 import { BasePage } from './base';
 
+
 /**
  * Playwright Page
  * @typedef {import('@playwright/test').Page} Page
  */
 
 /**
- * Playwright Page
+ * Playwright Locator
  * @typedef {import('@playwright/test').Locator} Locator
  */
 
@@ -136,9 +137,13 @@ export class ProjectPage extends BasePage {
     /**
      * open function
      * Open the URL for the given project and repository
+     * @param {boolean} assertEmptyClientLog If loading the map mustn't trigger some logs.
      */
-    async open(){
+    async open(assertEmptyClientLog = false){
         await gotoMap(`/index.php/view/map?repository=${this.repository}&project=${this.project}`, this.page);
+        if(assertEmptyClientLog){
+            expect(this.logs).toHaveLength(0);
+        }
     }
 
     /**

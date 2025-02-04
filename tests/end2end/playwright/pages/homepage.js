@@ -7,7 +7,7 @@ import { BasePage } from './base';
  */
 
 /**
- * Playwright Page
+ * Playwright Locator
  * @typedef {import('@playwright/test').Locator} Locator
  */
 
