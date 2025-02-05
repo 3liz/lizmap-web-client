@@ -189,6 +189,24 @@ export class ProjectPage extends BasePage {
     }
 
     /**
+     * Identify content locator, for a given feature ID and layer ID if necessary
+     * @param {string} featureId Feature ID, optional
+     * @param {string} layerId Layer ID, optional
+     * @returns {Locator} Locator for HTML identify content
+     */
+    async identifyContentLocator(featureId = '', layerId= '') {
+        let selector = `div.lizmapPopupSingleFeature`;
+        if (featureId) {
+            selector +=`[data-feature-id="${featureId}"]`;
+        }
+        if (layerId) {
+            selector += `[data-layer-id="${layerId}"]`;
+        }
+        return this.popupContent.locator(selector);
+    }
+
+
+    /**
      * clickOnMap function
      * Click on the map at the given position
      * @param {number} x Position X on the map
