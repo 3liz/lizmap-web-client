@@ -14,7 +14,7 @@ test.describe('Dataviz API tests',
                         'request': 'getPlot',
                         'plot_id': '0',
                     }
-            });
+                });
             expect(response.status()).toBe(200);
             expect(response.headers()['content-type']).toBe('application/json');
             const json = await response.json();

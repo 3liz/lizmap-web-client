@@ -699,8 +699,8 @@ test.describe('Text widget in a form', () => {
         // insert a point feature
         await page.locator('#map').click({
             position: {
-              x: 488,
-              y: 331
+                x: 488,
+                y: 331
             }
         });
 

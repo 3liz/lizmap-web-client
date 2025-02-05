@@ -22,6 +22,7 @@ test.describe('N to M relations', () => {
         await page.locator('#attribute-layer-list button[value="natural_areas"]').click();
         await getFeatureRequestPromise;
 
+        /* eslint-disable no-unused-vars */
         // open birds spots attribute table panel
         let birdSpotRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeature') === true);
         await page.locator('#nav-tab-attribute-summary').click();
@@ -258,6 +259,7 @@ test.describe('N to M relations', () => {
         let naturalAreaChildPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeature') === true);
         await birdsTable.locator("tbody tr").nth(8).click();
         await getFeatureRequestPromise;
+        /* eslint-enable no-unused-vars */
 
         let childNaturalAreasTable = page.locator("#attribute-layer-table-birds-natural_areas");
         await expect(childNaturalAreasTable.locator("tbody tr")).toHaveCount(1);

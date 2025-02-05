@@ -31,13 +31,12 @@ test.describe('Server information', () => {
         await expect(modulesHeadRows).toHaveCount(1);
         const modulesRows = page.locator('#lizmap_server_information table.table-lizmap-modules tbody tr');
         await expect(modulesRows).toHaveCount(1);
-        for (const row of await modulesRows.all()) {
-            await modulesRows.scrollIntoViewIfNeeded();
-            await expect(modulesRows.locator('th')).toHaveCount(1);
-            await expect(await modulesRows.locator('th').innerText()).not.toEqual('');
-            await expect(modulesRows.locator('td')).toHaveCount(1);
-            await expect(await modulesRows.locator('td').innerText()).not.toEqual('');
-        }
+        await modulesRows.scrollIntoViewIfNeeded();
+        await expect(modulesRows.locator('th')).toHaveCount(1);
+        await expect(await modulesRows.locator('th').innerText()).not.toEqual('');
+        await expect(modulesRows.locator('td')).toHaveCount(1);
+        await expect(await modulesRows.locator('td').innerText()).not.toEqual('');
+
         // Check that QGIS Server table contains 4 lines
         const qgisServerRows = page.locator('#lizmap_server_information table.table-qgis-server tr')
         await expect(qgisServerRows).toHaveCount(3);

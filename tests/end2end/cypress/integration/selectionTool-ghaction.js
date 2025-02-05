@@ -23,7 +23,7 @@ describe('Selection tool', function () {
                     req.alias = 'postToService'
             } else
                 req.alias = 'postToService'
-          })
+        })
 
         cy.intercept('*REQUEST=GetMap*',
             { middleware: true },
