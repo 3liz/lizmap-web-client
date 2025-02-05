@@ -201,8 +201,19 @@ test.describe('Filter layer data by user - user in group a', () => {
     test('WMS GetFeatureInfo JSON', async ({ page }) => {
 
         const getFeatureInfo = await page.evaluate(async () => {
-            return await fetch("/index.php/lizmap/service?repository=testsrepository&project=filter_layer_by_user&SERVICE=WMS&REQUEST=GetFeatureInfo&VERSION=1.3.0&CRS=EPSG%3A2154&INFO_FORMAT=application%2Fjson&QUERY_LAYERS=green_filter_layer_by_user_edition_only%2Cblue_filter_layer_by_user%2Cred_layer_with_no_filter&LAYERS=green_filter_layer_by_user_edition_only%2Cblue_filter_layer_by_user%2Cred_layer_with_no_filter&STYLE=default%2Cdefault%2Cdefault&FEATURE_COUNT=10&FILTER=green_filter_layer_by_user_edition_only:\"gid\" > 0")
-                .then(r => r.ok ? r.json() : Promise.reject(r))
+            return await fetch(
+                "/index.php/lizmap/service?repository=testsrepository&project=filter_layer_by_user&" +
+                "SERVICE=WMS&" +
+                "REQUEST=GetFeatureInfo&" +
+                "VERSION=1.3.0&" +
+                "CRS=EPSG%3A2154&" +
+                "INFO_FORMAT=application%2Fjson&" +
+                "QUERY_LAYERS=green_filter_layer_by_user_edition_only%2Cblue_filter_layer_by_user%2Cred_layer_with_no_filter&" +
+                "LAYERS=green_filter_layer_by_user_edition_only%2Cblue_filter_layer_by_user%2Cred_layer_with_no_filter&" +
+                "STYLE=default%2Cdefault%2Cdefault&" +
+                "FEATURE_COUNT=10&" +
+                "FILTER=green_filter_layer_by_user_edition_only:\"gid\" > 0"
+            ).then(r => r.ok ? r.json() : Promise.reject(r))
         })
 
         // check features
@@ -386,8 +397,19 @@ test.describe('Filter layer data by user - admin', () => {
     test('WMS GetFeatureInfo JSON', async ({ page }) => {
 
         const getFeatureInfo = await page.evaluate(async () => {
-            return await fetch("/index.php/lizmap/service?repository=testsrepository&project=filter_layer_by_user&SERVICE=WMS&REQUEST=GetFeatureInfo&VERSION=1.3.0&CRS=EPSG%3A2154&INFO_FORMAT=application%2Fjson&QUERY_LAYERS=green_filter_layer_by_user_edition_only%2Cblue_filter_layer_by_user%2Cred_layer_with_no_filter&LAYERS=green_filter_layer_by_user_edition_only%2Cblue_filter_layer_by_user%2Cred_layer_with_no_filter&STYLE=default%2Cdefault%2Cdefault&FEATURE_COUNT=10&FILTER=green_filter_layer_by_user_edition_only:\"gid\" > 0")
-                .then(r => r.ok ? r.json() : Promise.reject(r))
+            return await fetch(
+                "/index.php/lizmap/service?repository=testsrepository&project=filter_layer_by_user&" +
+                "SERVICE=WMS&" +
+                "REQUEST=GetFeatureInfo&" +
+                "VERSION=1.3.0&" +
+                "CRS=EPSG%3A2154&" +
+                "INFO_FORMAT=application%2Fjson&" +
+                "QUERY_LAYERS=green_filter_layer_by_user_edition_only%2Cblue_filter_layer_by_user%2Cred_layer_with_no_filter&" +
+                "LAYERS=green_filter_layer_by_user_edition_only%2Cblue_filter_layer_by_user%2Cred_layer_with_no_filter&" +
+                "STYLE=default%2Cdefault%2Cdefault&" +
+                "FEATURE_COUNT=10&" +
+                "FILTER=green_filter_layer_by_user_edition_only:\"gid\" > 0"
+            ).then(r => r.ok ? r.json() : Promise.reject(r))
         })
 
         // check features
