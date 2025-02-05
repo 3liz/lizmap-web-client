@@ -28,12 +28,14 @@
     background-color: #C43C35;
     background-image: linear-gradient(to bottom , #EE5F5B, #C43C35);
     background-repeat: repeat-x;
-    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-/*    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);*/
-    border-radius: 4px 4px 4px 4px;
+    border-color: rgb(0 0 0 / 10%) rgb(0 0 0 / 10%) rgb(0 0 0 / 25%);
+
+/*    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25); */
+    border-radius: 4px;
     padding: 10px;
     color: white;
 }
+
 .jforms-error-list li {
     list-style: none;
     color: #FFF;
@@ -44,7 +46,7 @@ fieldset legend {
     width:auto;
     padding-left: 0.5em;
     padding-right: 0.5em;
-    border-bottom: 0px;
+    border-bottom: 0;
     font-size:14px;
 }
 
@@ -77,12 +79,12 @@ fieldset {
 
 
 #dashboard-content {
-    padding-left: 2.127659574468085%;
+    padding-left: 2.1277%;
 }
 
 .dashboard-widget h3 {
-    background-color: #eeeeee;
-    margin: 0 0 10px 0;
+    background-color: #eee;
+    margin: 0 0 10px;
     padding: 0 10px;
 }
 
@@ -93,9 +95,9 @@ fieldset {
 }
 
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
     .form-horizontal .controls {
-        margin-left: 0px;
+        margin-left: 0;
     }
 }
 
@@ -114,7 +116,7 @@ div#lizmap_project_list_container {
     --warning-bg-color: lightyellow;
     --error-bg-color: lightcoral;
     --blocker-bg-color: red;
-    --highlighted-line-bg-color: #0088cc;
+    --highlighted-line-bg-color: #08c;
  }
 
 #lizmap_project_list {
@@ -122,6 +124,7 @@ div#lizmap_project_list_container {
     border: 1px solid lightgray;
     padding: 5px;
 }
+
 div.lizmap_project_list_details {
     background-color: lightgray;
     padding: 5px;
@@ -131,15 +134,18 @@ div.lizmap_project_list_details {
 table.lizmap_project_list tr {
     cursor: default;
 }
+
 table.lizmap_project_list tr.has_hidden_columns {
     cursor: pointer;
 }
 
 /* hovered line  */
+
 /* Blue left border when hovering a line */
 table.lizmap_project_list tr td:first-child {
     border-left: 3px solid transparent;
 }
+
 table.lizmap_project_list tr:not(.child):hover td:first-child
 {
     border-left: 3px solid var(--highlighted-line-bg-color);
@@ -148,9 +154,11 @@ table.lizmap_project_list tr:not(.child):hover td:first-child
 table.lizmap_project_list tr .liz-warning{
     background-color: var(--warning-bg-color);
 }
+
 table.lizmap_project_list tr .liz-error{
     background-color: var(--error-bg-color);
 }
+
 table.lizmap_project_list tr .liz-blocker{
     background-color: var(--blocker-bg-color);
 }
@@ -161,16 +169,19 @@ Style the div which will contain the details */
 div.lizmap_project_list_details dt {
     margin-top: 5px;
 }
+
 div.lizmap_project_list_details dd {
     padding: 5px;
     max-height: 250px;
     overflow: auto;
     background-color: #efefef;
 }
+
 table.lizmap_project_list tr dd.lizmap-project-qgis-log pre {
     font-size: 0.9em;
     line-height: 10px;
 }
+
 table.lizmap_project_list tr td.lizmap-project-qgis-log pre {
     font-size: 0.8em;
     line-height: 10px;
@@ -178,21 +189,26 @@ table.lizmap_project_list tr td.lizmap-project-qgis-log pre {
     max-width: 300px;
     overflow: auto;
 }
+
 /* End of project list page */
 
 /* Project list help with colours and legend */
 #lizmap_project_list_help div.modal-body {
-    background-color: rgb(239, 239, 239);
+    background-color: rgb(239 239 239);
 }
+
 #lizmap_project_list_help ul ul li {
     font-weight: bold;
 }
+
 #lizmap_project_list_help ul ul ul.rules li {
     font-weight: normal;
 }
+
 #lizmap_project_list_help ul > .rules {
     list-style: none;
 }
+
 #lizmap_project_list_help ul > .rules li::before {
   content: '■';
   font-weight: bold;
@@ -201,22 +217,28 @@ table.lizmap_project_list tr td.lizmap-project-qgis-log pre {
   margin-left: -1em;
   font-size: 2.5em;
 }
+
 #lizmap_project_list_help .badge-warning {
     position: absolute;
     left: 55px;
 }
+
 #lizmap_project_list_help .no_symbol::before {
     content: '';
 }
+
 #lizmap_project_list_help .no_symbol > li:nth-child(1) {
     font-weight: normal;
 }
+
 #lizmap_project_list_help .warning::before {
     color: var(--warning-bg-color);
 }
+
 #lizmap_project_list_help .error::before {
     color: var(--error-bg-color);
 }
+
 #lizmap_project_list_help .blocker::before {
     color: var(--blocker-bg-color);
 }
@@ -239,7 +261,7 @@ table.lizmap_project_list tr td.lizmap-project-qgis-log pre {
     border: 0;
     background: transparent;
     box-shadow: none;
-    border-radius: 0px;
+    border-radius: 0;
 }
 
 .copy-to-clipboard svg {

@@ -2,11 +2,11 @@
 :host {
   --ol-background-color: white;
   --ol-accent-background-color: #F5F5F5;
-  --ol-subtle-background-color: rgba(128, 128, 128, 0.25);
-  --ol-partial-background-color: rgba(255, 255, 255, 0.75);
-  --ol-foreground-color: #333333;
-  --ol-subtle-foreground-color: #666666;
-  --ol-brand-color: #00AAFF;
+  --ol-subtle-background-color: rgb(128 128 128 / 25%);
+  --ol-partial-background-color: rgb(255 255 255 / 75%);
+  --ol-foreground-color: #333;
+  --ol-subtle-foreground-color: #666;
+  --ol-brand-color: #0AF;
 }
 
 .ol-box {
@@ -101,8 +101,8 @@
 .ol-viewport,
 .ol-unselectable {
   -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
+  user-select: none;
+  user-select: none;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
@@ -118,21 +118,21 @@
 
 .ol-selectable {
   -webkit-touch-callout: default;
-  -webkit-user-select: text;
-  -moz-user-select: text;
+  user-select: text;
+  user-select: text;
   user-select: text;
 }
 
 .ol-grabbing {
-  cursor: -webkit-grabbing;
-  cursor: -moz-grabbing;
+  cursor: grabbing;
+  cursor: grabbing;
   cursor: grabbing;
 }
 
 .ol-grab {
   cursor: move;
-  cursor: -webkit-grab;
-  cursor: -moz-grab;
+  cursor: grab;
+  cursor: grab;
   cursor: grab;
 }
 
@@ -252,7 +252,7 @@
   list-style: none;
 }
 
-.ol-attribution li:not(:last-child):after {
+.ol-attribution li:not(:last-child)::after {
   content: " ";
 }
 
