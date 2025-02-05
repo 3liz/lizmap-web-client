@@ -3,11 +3,12 @@ Left Menu button
 */
 
 #mapmenu .nav-list > li.filter .icon {
-  background-image: url(filter-icon-white.png);
+  background-image: url("filter-icon-white.png");
 }
+
 #mapmenu .nav-list > li.filter.active .icon,
 #mapmenu .nav-list > li.filter a:hover .icon {
-  background-image: url(filter-icon-dark.png);
+  background-image: url("filter-icon-dark.png");
 }
 
 
@@ -16,7 +17,7 @@ Toolbar buttons
 */
 
 #filter h3 .icon {
-    background-image: url(filter-icon-white.png);
+    background-image: url("filter-icon-white.png");
 }
 
 #filter-content {
@@ -41,6 +42,7 @@ Toolbar buttons
 #filter-main.bottom-content div.menu-content p{
     padding: 5px;
 }
+
 #nav-tab-filter-main > a{
     background: none !important;
     border: none;
@@ -48,12 +50,14 @@ Toolbar buttons
     margin-top: 1px;
     font-weight: bold;
 }
+
 #filter-content > h3{
-    margin-left:0px;
+    margin-left:0;
     border:none;
 }
+
 #filter-content > h3 > span.title{
-    padding-left: 0px;
+    padding-left: 0;
 }
 
 
@@ -78,6 +82,7 @@ div.liz-filter-field-box p {
   padding-left: 5px;
   clear: both;
 }
+
 div.liz-filter-field-box p label {
     font-size: 12px;
 }

@@ -5,20 +5,24 @@
   width: auto;
   border: solid 1px;
 }
+
 #mapmenu > div {
   width: auto;
   height: 30px;
   position: relative;
 }
+
 #mapmenu .nav-list {
   padding-left: 5px;
   padding-right: 5px;
 }
+
 #mapmenu .nav-list > li {
   display: inline-block;
   width: 30px;
   position: relative;
 }
+
 #mapmenu .nav-list > li > a {
   margin-left: 0;
 }
@@ -30,14 +34,16 @@
   margin-left: 5px;
   margin-right: 5px;
 }
+
 #mapmenu .navbar-search .search-query {
   z-index:2;
   position: absolute;
   top: 1px;
-  right: 0px;
+  right: 0;
   padding-top:2px;
   padding-bottom:2px;
 }
+
 #mapmenu .navbar-search .search-icon {
   z-index:3;
   position: absolute;
@@ -48,24 +54,26 @@
   height: 20px;
   cursor: pointer;
 }
+
 #mapmenu .navbar-search .icon {
   background-color: transparent;
-  background-position: -400px 0px;
+  background-position: -400px 0;
   border: none;
-  background-image: url(images/sprite_20_tools.png);
+  background-image: url("images/sprite_20_tools.png");
   width: 20px;
   height: 20px;
 }
 
 #mapmenu .btn-locate-clear.icon {
   background-color: transparent;
-  background-position: -870px 0px;
+  background-position: -870px 0;
   border: none;
-  background-image: url(images/sprite_20_tools.png);
+  background-image: url("images/sprite_20_tools.png");
   width: 20px;
   height: 20px;
   margin-top: 5px;
 }
+
 #mapmenu .navbar-search .icon span {
   display:none;
 }
@@ -77,6 +85,7 @@
   right: auto;
   top: 70px;
 }
+
 #content.embed.mobile #lizmap-search {
   margin-right: 50px;
 }
@@ -97,31 +106,34 @@
   border-left:none;
   min-width:237px;
 }
+
 #map-content {
-  margin-left:0px;
+  margin-left:0;
 }
+
 #content.embed #dock,
 #content.embed.mobile #dock {
   max-width: 237px;
   bottom: 10px;
   right: auto;
 }
+
 #content.embed #mini-dock,
 #content.embed.mobile #mini-dock {
   max-width: 247px;
   min-width: 247px;
-  left: 10px;
-  top: 40px;
-  right: auto;
-  bottom: auto;
+  inset: 40px auto auto 10px;
 }
+
 #content.embed #mapmenu li.tooltip-layer,
 #content.embed.mobile #mapmenu li.tooltip-layer {
   display: inline-block;
 }
+
 #content.embed #navbar {
   top: 5px;
 }
+
 #content.embed #sub-dock {
   left: 256px;
   top: 40px;
