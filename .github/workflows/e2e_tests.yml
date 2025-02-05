@@ -261,11 +261,11 @@ jobs:
           flaky-report: true
           # pull-request-report: true
           summary: true
-          pull-request: true
+#          pull-request: true
           title: Read and write tests ${{ matrix.NAME }}
           annotate: false
-          overwrite-comment: true
-          comment-tag: '${{ github.workflow }}-${{ github.job }}'
+#          overwrite-comment: true
+#          comment-tag: '${{ github.workflow }}-${{ github.job }}'
 
       - name: Notify in case of playwright failure, from mainstream branches only
         # Check for playwright tests with and without tags "readonly"
