@@ -23,7 +23,9 @@ export default defineConfig({
   /* Reporter to use.  */
   reporter: [
     ['json', {  outputFile: 'playwright-report/test-results.json' }],
-    ['playwright-ctrf-json-reporter', {}],
+    ['playwright-ctrf-json-reporter', {
+      outputFile: process.env.CRTF_JSON_FILE ? process.env.CRTF_JSON_FILE : 'output.json'
+    }],
     /* [process.env.CI ? 'github' : 'dot'] */
     [process.env.CI ? 'line' : 'list']
   ],
