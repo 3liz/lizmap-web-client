@@ -1,5 +1,6 @@
 import js from "@eslint/js";
 import jsdoc from "eslint-plugin-jsdoc";
+import stylisticJs from '@stylistic/eslint-plugin-js'
 
 export default [
     js.configs.recommended,
@@ -21,6 +22,10 @@ export default [
             "tests/units/vendor/",
         ],
     }, {
+        plugins: {
+            jsdoc,
+            '@stylistic/js': stylisticJs
+        },
         languageOptions: {
             ecmaVersion: 2022,
             sourceType: "module",
@@ -63,10 +68,14 @@ export default [
             },
         },
         rules: {
-            "indent": ["error", 4, {
-                "SwitchCase": 1,
-                "ignoredNodes": ["TemplateLiteral *"],
-            }],
+            "@stylistic/js/indent": [
+                'error', 4, {
+                    "SwitchCase": 1,
+                    "ignoredNodes": ["TemplateLiteral *"],
+                }
+            ],
+            "@stylistic/js/max-len": [
+                "error", 400, 4],  // It's a temporary value, until we fix some.
             "no-prototype-builtins": "off",
             "no-undef": "off",
             'jsdoc/require-description': 'warn',

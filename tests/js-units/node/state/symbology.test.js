@@ -3,7 +3,8 @@ import { expect } from 'chai';
 import { readFileSync } from 'fs';
 
 import { ValidationError } from 'assets/src/modules/Errors.js';
-import { base64png, base64pngNullData, BaseIconSymbology, LayerIconSymbology, SymbolIconSymbology, SymbolRuleSymbology, BaseSymbolsSymbology, LayerSymbolsSymbology, LayerGroupSymbology, buildLayerSymbology } from 'assets/src/modules/state/Symbology.js';
+import { base64png, base64pngNullData } from 'assets/src/modules/state/SymbologyIcons.js';
+import { BaseIconSymbology, LayerIconSymbology, SymbolIconSymbology, SymbolRuleSymbology, BaseSymbolsSymbology, LayerSymbolsSymbology, LayerGroupSymbology, buildLayerSymbology } from 'assets/src/modules/state/Symbology.js';
 
 describe('BaseIconSymbology', function () {
     it('Simple', function () {

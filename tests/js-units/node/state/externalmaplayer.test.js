@@ -6,7 +6,7 @@ import { LayersConfig } from 'assets/src/modules/config/Layer.js';
 import { LayerTreeGroupConfig, buildLayerTreeConfig } from 'assets/src/modules/config/LayerTree.js';
 import { buildLayersOrder } from 'assets/src/modules/config/LayersOrder.js';
 import { LayersAndGroupsCollection } from 'assets/src/modules/state/Layer.js';
-import { base64svg, base64svgOlLayer, base64svgRasterLayer } from 'assets/src/modules/state/Symbology.js';
+import { base64svg, base64svgOlLayer, base64svgRasterLayer } from 'assets/src/modules/state/SymbologyIcons.js';
 
 import { MapGroupState, MapRootState } from 'assets/src/modules/state/MapLayer.js';
 import { ExternalMapGroupState, OlMapLayerState } from 'assets/src/modules/state/ExternalMapLayer.js';
@@ -413,7 +413,7 @@ describe('OlMapLayerState', function () {
 			olLayerState.icon = ''
 		} catch (error) {
 			expect(error.name).to.be.eq('TypeError')
-			expect(error.message).to.be.eq('base64icon value does not start with `data:image/png;base64, ` or `data:image/svg+xml;base64,`! The value is ``!')
+			expect(error.message).to.be.eq("base64icon value does not start with 'data:image/png;base64, ' or 'data:image/svg+xml;base64,'! The value is ''!")
 			expect(error).to.be.instanceOf(TypeError)
 		}
 	})

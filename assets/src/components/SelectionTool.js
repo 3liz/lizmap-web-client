@@ -21,6 +21,7 @@ export default class SelectionTool extends HTMLElement {
 
     connectedCallback() {
 
+        const isFilterDisabled = mainLizmap.selectionTool.selectedFeaturesCount === 0 && mainLizmap.selectionTool.filteredFeaturesCount === 0;
         const mainTemplate = () => html`
         <div class="selectiontool">
             <h3>
@@ -78,7 +79,7 @@ export default class SelectionTool extends HTMLElement {
                     <button type="button" class="selectiontool-unselect btn btn-sm" ?disabled=${mainLizmap.selectionTool.selectedFeaturesCount === 0} @click=${ () => mainLizmap.selectionTool.unselect()}  data-bs-toggle="tooltip" data-bs-title="${lizDict['selectiontool.toolbar.action.unselect']}">
                         <i class="icon-star-empty"></i>
                     </button>
-                    <button type="button" class="selectiontool-filter btn btn-sm ${mainLizmap.selectionTool.filteredFeaturesCount !== 0 ? 'active' : ''}" ?disabled=${mainLizmap.selectionTool.selectedFeaturesCount === 0 && mainLizmap.selectionTool.filteredFeaturesCount === 0} @click=${ () => mainLizmap.selectionTool.filter()}  data-bs-toggle="tooltip" data-bs-title="${lizDict['selectiontool.toolbar.action.filter']}">
+                    <button type="button" class="selectiontool-filter btn btn-sm ${mainLizmap.selectionTool.filteredFeaturesCount !== 0 ? 'active' : ''}" ?disabled=${isFilterDisabled} @click=${ () => mainLizmap.selectionTool.filter()}  data-bs-toggle="tooltip" data-bs-title="${lizDict['selectiontool.toolbar.action.filter']}">
                         <i class="icon-filter"></i>
                     </button>
                     <lizmap-selection-invert></lizmap-selection-invert>
