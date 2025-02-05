@@ -4,7 +4,7 @@ import { gotoMap } from './globals';
 
 test.describe('N to M relations', () => {
     test('Attribute table and popup behavior', async ({ page }) => {
-
+        /* eslint-disable no-unused-vars */
         const url = '/index.php/view/map/?repository=testsrepository&project=n_to_m_relations';
         await gotoMap(url, page);
 
@@ -426,5 +426,6 @@ test.describe('N to M relations', () => {
         await expect(editionFormBirdsTable.locator("tbody tr").nth(4).locator("td").nth(2)).toHaveText("Mute swan");
         await expect(editionFormBirdsTable.locator("tbody tr").nth(5).locator("td").nth(1)).toHaveText("12");
         await expect(editionFormBirdsTable.locator("tbody tr").nth(5).locator("td").nth(2)).toHaveText("Common shelduck");
+        /* eslint-enable no-unused-vars */
     })
 })

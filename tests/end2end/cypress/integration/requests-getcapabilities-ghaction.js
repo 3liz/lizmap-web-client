@@ -1,6 +1,11 @@
 const parser = new DOMParser();
 const baseUrl = Cypress.config('baseUrl')
 
+/**
+ *
+ * @param elem The element
+ * @param tagName The tag name
+ */
 function* getChildrenByTagName(elem, tagName) {
     for (let i = 0; i < elem.children.length; i++) {
         const elemChild = elem.children[i]
@@ -120,7 +125,7 @@ describe('Request GetCapabilities', function () {
                                 .to.oneOf([
                                     baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection',
                                     baseUrl+'/index.php/lizmap/service?repository=testsrepository&project=selection&',
-                                  ],'OnlineResource error for request: '+onlineResourceElem.parentElement.parentElement.parentElement.parentElement.tagName
+                                ],'OnlineResource error for request: '+onlineResourceElem.parentElement.parentElement.parentElement.parentElement.tagName
                                 )
                         }
                     }
@@ -868,21 +873,21 @@ describe('Request GetCapabilities', function () {
             },
             body: body,
         }).then((resp) => {
-                expect(resp.status).to.eq(200)
-                expect(resp.headers['content-type']).to.eq('text/xml; charset=utf-8')
+            expect(resp.status).to.eq(200)
+            expect(resp.headers['content-type']).to.eq('text/xml; charset=utf-8')
 
-                const xmlBody = parser.parseFromString(resp.body, 'text/xml')
-                expect(xmlBody.documentElement.tagName).to.eq('WFS_Capabilities')
-                expect(xmlBody.documentElement.getAttribute('version')).to.contain('1.0.0')
+            const xmlBody = parser.parseFromString(resp.body, 'text/xml')
+            expect(xmlBody.documentElement.tagName).to.eq('WFS_Capabilities')
+            expect(xmlBody.documentElement.getAttribute('version')).to.contain('1.0.0')
 
-                let serviceName = null
-                for (const serviceElem of getChildrenByTagName(xmlBody.documentElement, 'Service')) {
-                    for (const nameElem of getChildrenByTagName(serviceElem, 'Name')) {
-                        serviceName = nameElem.childNodes[0].nodeValue
-                    }
+            let serviceName = null
+            for (const serviceElem of getChildrenByTagName(xmlBody.documentElement, 'Service')) {
+                for (const nameElem of getChildrenByTagName(serviceElem, 'Name')) {
+                    serviceName = nameElem.childNodes[0].nodeValue
                 }
-                expect(serviceName).to.eq('WFS')
-            })
+            }
+            expect(serviceName).to.eq('WFS')
+        })
     })
 
     it('WFS 1.1.0 GetCapabilities XML', function () {
@@ -903,25 +908,25 @@ describe('Request GetCapabilities', function () {
             },
             body: body,
         }).then((resp) => {
-                expect(resp.status).to.eq(200)
-                expect(resp.headers['content-type']).to.eq('text/xml; charset=utf-8')
+            expect(resp.status).to.eq(200)
+            expect(resp.headers['content-type']).to.eq('text/xml; charset=utf-8')
 
-                const xmlBody = parser.parseFromString(resp.body, 'text/xml')
-                expect(xmlBody.documentElement.tagName).to.eq('WFS_Capabilities')
-                expect(xmlBody.documentElement.getAttribute('version')).to.contain('1.1.0')
+            const xmlBody = parser.parseFromString(resp.body, 'text/xml')
+            expect(xmlBody.documentElement.tagName).to.eq('WFS_Capabilities')
+            expect(xmlBody.documentElement.getAttribute('version')).to.contain('1.1.0')
 
-                let serviceType = null
-                let serviceTypeVersion = null
-                for (const serviceIdentificationElem of getChildrenByTagName(xmlBody.documentElement, 'ows:ServiceIdentification')) {
-                    for (const serviceTypeElem of getChildrenByTagName(serviceIdentificationElem, 'ows:ServiceType')) {
-                        serviceType = serviceTypeElem.childNodes[0].nodeValue
-                    }
-                    for (const serviceTypeVersionElem of getChildrenByTagName(serviceIdentificationElem, 'ows:ServiceTypeVersion')) {
-                        serviceTypeVersion = serviceTypeVersionElem.childNodes[0].nodeValue
-                    }
+            let serviceType = null
+            let serviceTypeVersion = null
+            for (const serviceIdentificationElem of getChildrenByTagName(xmlBody.documentElement, 'ows:ServiceIdentification')) {
+                for (const serviceTypeElem of getChildrenByTagName(serviceIdentificationElem, 'ows:ServiceType')) {
+                    serviceType = serviceTypeElem.childNodes[0].nodeValue
                 }
-                expect(serviceType).to.eq('WFS')
-                expect(serviceTypeVersion).to.eq('1.1.0')
-            })
+                for (const serviceTypeVersionElem of getChildrenByTagName(serviceIdentificationElem, 'ows:ServiceTypeVersion')) {
+                    serviceTypeVersion = serviceTypeVersionElem.childNodes[0].nodeValue
+                }
+            }
+            expect(serviceType).to.eq('WFS')
+            expect(serviceTypeVersion).to.eq('1.1.0')
+        })
     })
 })

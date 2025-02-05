@@ -41,14 +41,14 @@ describe('Filter layer data by polygon for groups', function () {
     beforeEach(function () {
         // Runs before each tests in the block
         cy.intercept('*REQUEST=GetMap*',
-        { middleware: true },
-        (req) => {
-            req.on('before:response', (res) => {
+            { middleware: true },
+            (req) => {
+                req.on('before:response', (res) => {
                 // force all API responses to not be cached
                 // It is needed when launching tests multiple time in headed mode
-                res.headers['cache-control'] = 'no-store'
-            })
-        }).as('getMap')
+                    res.headers['cache-control'] = 'no-store'
+                })
+            }).as('getMap')
 
         cy.intercept('POST','*service*', (req) => {
             if (typeof req.body == 'string') {
@@ -71,7 +71,7 @@ describe('Filter layer data by polygon for groups', function () {
                     req.alias = 'postToService'
             } else
                 req.alias = 'postToService'
-          })
+        })
 
         cy.intercept({
             method: 'POST',

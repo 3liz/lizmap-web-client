@@ -161,6 +161,7 @@ test.describe('Print', () => {
         // check request
         getPrintRequest = await getPrintPromise;
         // Extend and update GetPrint parameters
+        /* eslint-disable no-useless-escape */
         const expectedParameters4 = Object.assign({}, expectedParameters, {
             'TEMPLATE': 'print_labels',
             'map0:EXTENT': /759249.\d+,6271892.\d+,781949.\d+,6286892.\d+/,
@@ -193,6 +194,7 @@ test.describe('Print', () => {
             // Disabled because of the migration when project is saved with QGIS >= 3.32
             // 'multiline_label': 'Multiline label',
         })
+        /* eslint-enable no-useless-escape */
         getPrintParams = await expectParametersToContain('Print requests 4', getPrintRequest.postData() ?? '', expectedParameters4)
         await expect(getPrintParams.size).toBe(17)
     });
@@ -583,6 +585,7 @@ test.describe('Print 3857', () => {
         // check request
         getPrintRequest = await getPrintPromise;
         // Extend and update GetPrint parameters
+        /* eslint-disable no-useless-escape */
         const expectedParameters3 = Object.assign({}, expectedParameters, {
             'map0:EXTENT': /423093.\d+,5399873.\d+,439487.\d+,5410707.\d+/,
             'map0:SCALE': '72224',
@@ -614,6 +617,7 @@ test.describe('Print 3857', () => {
             // Disabled because of the migration when project is saved with QGIS >= 3.32
             // 'multiline_label': 'Multiline label',
         })
+        /* eslint-enable no-useless-escape */
         getPrintParams = await expectParametersToContain('Print requests 3', getPrintRequest.postData() ?? '', expectedParameters3)
         await expect(getPrintParams.size).toBe(17)
     });

@@ -20,8 +20,8 @@
     "js:test": "mocha --recursive ./tests/js-units/node",
     "jsdoc": "make version-doc && make js-doc",
     "pr:open": "playwright test --ui tests/end2end/",
-    "pretest-fix": "eslint --fix",
-    "pretest": "eslint",
+    "pretest-fix": "eslint -c eslint.config.mjs --fix",
+    "pretest": "eslint -c eslint.config.mjs",
     "watch": "webpack --watch --config assets/webpack.dev.js"
   },
   "devDependencies": {

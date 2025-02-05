@@ -1,6 +1,5 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { gotoMap } from './globals';
 import {ProjectPage} from "./pages/project";
 
 test.describe('Media', () => {
@@ -27,14 +26,14 @@ test.describe('Media', () => {
 
         await page.getByRole('row', { name: '2 text_file_mandatory' }).getByRole('button').nth(2);
 
-//        var response = await page.request.get(baseUrl + 'media/upload/form_edition_all_field_type/form_edition_upload/text_file_mandatory/lorem-2.txt');
-//        await expect(response).toBeOK();
-//
-//        var response = await page.request.get(baseUrl + 'media/upload/form_edition_all_field_type/form_edition_upload/image_file_mandatory/random-2.jpg');
-//        await expect(response).toBeFalsy();
-//
-//        var response = await page.request.get(baseUrl + '../media/specific_media_folder/random-4.jpg');
-//        await expect(response).toBeFalsy();
+        //        var response = await page.request.get(baseUrl + 'media/upload/form_edition_all_field_type/form_edition_upload/text_file_mandatory/lorem-2.txt');
+        //        await expect(response).toBeOK();
+        //
+        //        var response = await page.request.get(baseUrl + 'media/upload/form_edition_all_field_type/form_edition_upload/image_file_mandatory/random-2.jpg');
+        //        await expect(response).toBeFalsy();
+        //
+        //        var response = await page.request.get(baseUrl + '../media/specific_media_folder/random-4.jpg');
+        //        await expect(response).toBeFalsy();
 
     })
 })

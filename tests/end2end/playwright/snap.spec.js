@@ -33,7 +33,7 @@ test.describe('Snap on edition', () => {
         // activate snapping
         await page.getByRole('button', { name: 'Start' }).click();
 
-        const allSnapPointResponses = await Promise.all([getSnappingPointFeatureRequestPromise, getSnappingPointDescribeFeatureRequestPromise])
+        await Promise.all([getSnappingPointFeatureRequestPromise, getSnappingPointDescribeFeatureRequestPromise])
 
         // check snap panel and controls
         await expect(page.locator("#edition-point-coord-form-group").getByRole("button").nth(2)).toBeDisabled();
@@ -99,7 +99,7 @@ test.describe('Snap on edition', () => {
 
         await page.locator("#edition-point-coord-form-group").getByRole("button").nth(2).click()
 
-        const allSnapLineResponses = await Promise.all([getSnappingLineFeatureRequestPromise, getSnappingLineDescribeFeatureRequestPromise])
+        await Promise.all([getSnappingLineFeatureRequestPromise, getSnappingLineDescribeFeatureRequestPromise])
 
         await page.waitForTimeout(300);
 
@@ -148,7 +148,7 @@ test.describe('Snap on edition', () => {
 
         await page.locator("#edition-point-coord-form-group").getByRole("button").nth(2).click()
 
-        const allSnapPolygonResponses = await Promise.all([getSnappingPolygonFeatureRequestPromise, getSnappingPolygonDescribeFeatureRequestPromise])
+        await Promise.all([getSnappingPolygonFeatureRequestPromise, getSnappingPolygonDescribeFeatureRequestPromise])
 
         await page.waitForTimeout(300);
 
