@@ -1,5 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+import { getAuthStorageStatePath } from './globals';
 
 /**
  * Playwright Page
@@ -71,7 +72,7 @@ test.describe('Connected from context, as a normal user',
     },
     () => {
 
-        test.use({ storageState: 'playwright/.auth/user_in_group_a.json' });
+        test.use({ storageState: getAuthStorageStatePath('user_in_group_a') });
 
         test('Request metadata', async ({ request }) => {
             const response = await request.get(url, {});
@@ -87,7 +88,7 @@ test.describe('Connected from context, as a publisher',
     },
     () => {
 
-        test.use({ storageState: 'playwright/.auth/publisher.json' });
+        test.use({ storageState: getAuthStorageStatePath('publisher') });
 
         test('Checking JSON metadata content as a publisher', async ({ request }) => {
             const response = await request.get(url, {});
@@ -156,7 +157,7 @@ test.describe('Request JSON metadata as admin, connected from context',
     },
     () => {
 
-        test.use({ storageState: 'playwright/.auth/admin.json' });
+        test.use({ storageState: getAuthStorageStatePath('admin') });
 
         test('Checking JSON metadata content as admin', async ({ request }) => {
             const response = await request.get(url, {});
