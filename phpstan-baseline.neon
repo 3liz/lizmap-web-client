@@ -1,3 +1,4 @@
+
 parameters:
   bootstrapFiles:
     - lizmap/vendor/autoload.php
@@ -13,7 +14,40 @@ parameters:
     - jDaoRecordBase
     - jEvent
   ignoreErrors:
-    - '#^Call to an undefined method jDaoFactoryBase#'
+    -
+      message: "#^Call to an undefined method jDaoFactoryBase\\:\\:getDetailRange\\(\\)\\.$#"
+      count: 1
+      path: lizmap/modules/admin/controllers/logs.classic.php
+
+    -
+      message: "#^Call to an undefined method jDaoFactoryBase\\:\\:getSortedCounter\\(\\)\\.$#"
+      count: 1
+      path: lizmap/modules/admin/controllers/logs.classic.php
+
+    -
+      message: "#^Call to an undefined method jDaoFactoryBase\\:\\:findAllPublicGroup\\(\\)\\.$#"
+      count: 2
+      path: lizmap/modules/admin/controllers/maps.classic.php
+
+    -
+      message: "#^Call to an undefined method jDaoFactoryBase\\:\\:findAllSubject\\(\\)\\.$#"
+      count: 2
+      path: lizmap/modules/admin/controllers/maps.classic.php
+
+    -
+      message: "#^Comparison operation \"\\=\\=\" between 0\\|0\\.0\\|''\\|'0'\\|array\\{\\}\\|false\\|null and 0 results in an error\\.$#"
+      count: 1
+      path: lizmap/modules/dataviz/classes/datavizPlot.class.php
+
+    -
+      message: "#^Offset float does not exist on array\\{\\}\\.$#"
+      count: 2
+      path: lizmap/modules/dataviz/classes/datavizPlot.class.php
+
+    -
+      message: "#^Offset float\\|int\\<0, max\\> does not exist on array\\{\\}\\.$#"
+      count: 1
+      path: lizmap/modules/dataviz/classes/datavizPlot.class.php
 
     -
       message: "#^Method filterConfig\\:\\:__construct\\(\\) with return type void returns false but should not return anything\\.$#"
@@ -245,12 +279,10 @@ parameters:
       count: 3
       path: lizmap/modules/lizmap/controllers/ban.classic.php
 
-
     -
       message: "#^Access to an undefined property jFormsControl\\:\\:\\$datasource\\.$#"
       count: 2
       path: lizmap/modules/lizmap/controllers/edition.classic.php
-
 
     -
       message: "#^Access to an undefined property jResponse\\:\\:\\$content\\.$#"
@@ -261,7 +293,6 @@ parameters:
       message: "#^Access to an undefined property jResponse\\:\\:\\$data\\.$#"
       count: 1
       path: lizmap/modules/lizmap/controllers/edition.classic.php
-
 
     -
       message: "#^Call to an undefined method qgisMapLayer\\:\\:getDbFieldsInfo\\(\\)\\.$#"
@@ -284,6 +315,11 @@ parameters:
       path: lizmap/modules/lizmap/controllers/edition.classic.php
 
     -
+      message: "#^Left side of \\|\\| is always false\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/controllers/edition.classic.php
+
+    -
       message: "#^Negated boolean expression is always false\\.$#"
       count: 6
       path: lizmap/modules/lizmap/controllers/edition.classic.php
@@ -300,6 +336,11 @@ parameters:
 
     -
       message: "#^Property editionCtrl\\:\\:\\$layerXml \\(SimpleXMLElement\\) does not accept default value of type string\\.$#"
+      count: 1
+      path: lizmap/modules/lizmap/controllers/edition.classic.php
+
+    -
+      message: "#^Right side of \\|\\| is always false\\.$#"
       count: 1
       path: lizmap/modules/lizmap/controllers/edition.classic.php
 
@@ -372,7 +413,6 @@ parameters:
       message: "#^Access to property \\$mailer on an unknown class StdObj\\.$#"
       count: 1
       path: lizmap/modules/lizmap/install/upgrade_configjcommunity.php
-
 
     -
       message: "#^Return type \\(Iterator\\) of method Lizmap\\\\App\\\\JelixContext\\:\\:aclUserGroupsInfo\\(\\) should be compatible with return type \\(array\\) of method Lizmap\\\\App\\\\AppContextInterface\\:\\:aclUserGroupsInfo\\(\\)$#"
