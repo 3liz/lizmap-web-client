@@ -46,7 +46,7 @@ test.describe('Geometry editing',
                 // Open its popup, check the auto popup and then edit it
                 await project.clickOnMap(x1, y1);
                 const lastFeature = await project.identifyContentLocator(ids['id'], layerId);
-                await expect(lastFeature.locator(`td[data-field-name="${field}"]`)).toHaveText("VALUE NEW");
+                await expect(lastFeature.locator(`tr[data-field-name="${field}"] td`)).toHaveText("VALUE NEW");
                 await lastFeature.locator(".feature-edit").click();
 
                 await expect(project.editingField(field)).toHaveValue('VALUE NEW');
@@ -71,7 +71,7 @@ test.describe('Geometry editing',
                 // Check the updated value and remove the feature
                 await project.clickOnMap(x1, y1 + delta_y);
                 const feature = await project.identifyContentLocator(ids['id'], layerId);
-                await expect(feature.locator(`td[data-field-name="${field}"]`)).toHaveText("VALUE EDITED");
+                await expect(feature.locator(`tr[data-field-name="${field}"] td`)).toHaveText("VALUE EDITED");
 
                 page.on('dialog', dialog => dialog.accept());
                 await feature.locator(".feature-delete").click();
