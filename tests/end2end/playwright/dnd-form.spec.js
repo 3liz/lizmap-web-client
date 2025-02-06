@@ -25,22 +25,15 @@ test.describe(
         await project.clickOnMap(600, 200);
         await expect(project.popupContent).toBeVisible();
 
-        // Fixme if there is a better way to get the table from the ID in the cell
-        // if the test is run multiple times, Postgres will increment the ID
-        const table = await project.popupContent.getByRole("row", { name: ids['id'] }).locator("..");
-        await expect(table).toBeVisible();
-
-        // First row
-        await expect(table.locator('tr:nth-child(1) th')).toHaveText('id');
-        await expect(table.locator('tr:nth-child(1) td')).toHaveText(ids['id']);
-        ///Second row
-        await expect(table.locator('tr:nth-child(2) > th')).toHaveText('field_in_dnd_form');
-        await expect(table.locator('tr:nth-child(2) > td')).toHaveText('value in DND form');
-        // Third row should be hidden
-        await expect(table.locator('tr:nth-child(3)')).toHaveClass('empty-data');
-        await expect(table.locator('tr:nth-child(3) > th')).toHaveText('field_not_in_dnd_form');
-        await expect(table.locator('tr:nth-child(3) > td')).toBeEmpty();
-    });
+            const feature = await project.identifyContentLocator(ids['id']);
+            // First row
+            await expect(feature.locator(`tr[data-field-name="id"] td`)).toHaveText(ids['id']);
+            ///Second row
+            await expect(feature.locator(`tr[data-field-name="field_in_dnd_form"] td`)).toHaveText('value in DND form');
+            // Third row should be hidden
+            await expect(feature.locator(`tr[data-field-name="field_not_in_dnd_form"]`)).toHaveClass('empty-data');
+            await expect(feature.locator(`tr[data-field-name="field_not_in_dnd_form"] td`)).toBeEmpty();
+        });
 
     test('With non spatial data creation, not remove data', async function ({ page }) {
         const project = new ProjectPage(page, 'dnd_form');
@@ -84,31 +77,21 @@ test.describe(
 
         await firstLine.click();
 
-        // Check the auto popup
-        await expect(popup.locator('tr:nth-child(1) > th')).toHaveText('id');
-        await expect(popup.locator('tr:nth-child(1) > td')).toHaveText('1');
-
-        await expect(popup.locator('tr:nth-child(2) > th')).toHaveText('field_in_dnd_form');
-        await expect(popup.locator('tr:nth-child(2) > td')).toHaveText('test_geom');
-
-        await expect(popup.locator('tr:nth-child(3) > th')).toHaveText('field_not_in_dnd_form');
-        await expect(popup.locator('tr:nth-child(3) > td')).toHaveText('test_geom');
+            // Check the auto popup
+            await expect(popup.locator('tr[data-field-name="id"] td')).toHaveText('1');
+            await expect(popup.locator('tr[data-field-name="field_in_dnd_form"] td')).toHaveText('test_geom');
+            await expect(popup.locator('tr[data-field-name="field_not_in_dnd_form"] td')).toHaveText('test_geom');
 
         // Assert data has not been removed after form submission without modification
         await featureEdit.click();
         await project.editingSubmitForm();
 
-        // Check popup content again
-        // Fixme, strange, the test doesn't re-click on the row, so the test is false, because the popup is not refreshed
-        // Check the auto popup
-        await expect(popup.locator('tr:nth-child(1) > th')).toHaveText('id');
-        await expect(popup.locator('tr:nth-child(1) > td')).toHaveText('1');
-
-        await expect(popup.locator('tr:nth-child(2) > th')).toHaveText('field_in_dnd_form');
-        await expect(popup.locator('tr:nth-child(2) > td')).toHaveText('test_geom');
-
-        await expect(popup.locator('tr:nth-child(3) > th')).toHaveText('field_not_in_dnd_form');
-        await expect(popup.locator('tr:nth-child(3) > td')).toHaveText('test_geom');
+            // Check popup content again
+            // Fixme, strange, the test doesn't re-click on the row, so the test is false, because the popup is not refreshed
+            // Check the auto popup
+            await expect(popup.locator('tr[data-field-name="id"] td')).toHaveText('1');
+            await expect(popup.locator('tr[data-field-name="field_in_dnd_form"] td')).toHaveText('test_geom');
+            await expect(popup.locator('tr[data-field-name="field_not_in_dnd_form"] td')).toHaveText('test_geom');
 
         // Assert data has changed after form submission with modification
         await featureEdit.click();
@@ -121,15 +104,10 @@ test.describe(
         // Click on the line to refresh popup info
         await firstLine.first().click();
 
-        // Check popup content again
-        await expect(popup.locator('tr:nth-child(1) > th')).toHaveText('id');
-        await expect(popup.locator('tr:nth-child(1) > td')).toHaveText('1');
-
-        await expect(popup.locator('tr:nth-child(2) > th')).toHaveText('field_in_dnd_form');
-        await expect(popup.locator('tr:nth-child(2) > td')).toHaveText('modified');
-
-        await expect(popup.locator('tr:nth-child(3) > th')).toHaveText('field_not_in_dnd_form');
-        await expect(popup.locator('tr:nth-child(3) > td')).toHaveText('test_geom');
+            // Check popup content again
+            await expect(popup.locator('tr[data-field-name="id"] td')).toHaveText('1');
+            await expect(popup.locator('tr[data-field-name="field_in_dnd_form"] td')).toHaveText('modified');
+            await expect(popup.locator('tr[data-field-name="field_not_in_dnd_form"] td')).toHaveText('test_geom');
 
         // Write back original data
         // Fixme refresh database data?
