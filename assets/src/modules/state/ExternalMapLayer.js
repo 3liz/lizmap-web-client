@@ -1,7 +1,7 @@
 
 import EventDispatcher from './../../utils/EventDispatcher.js';
 import { convertBoolean, convertNumber } from './../utils/Converters.js';
-import { base64svg, base64svgOlLayer, base64png } from './Symbology.js';
+import { base64svg, base64svgOlLayer, base64png } from './SymbologyIcons.js';
 
 /**
  * Class representing an external map item state
@@ -463,7 +463,7 @@ export class OlMapLayerState extends ExternalMapItemState {
     set icon(base64icon) {
         if (!base64icon.startsWith(base64png)
             && !base64icon.startsWith(base64svg)) {
-            throw new TypeError('base64icon value does not start with `'+ base64png +'` or `'+base64svg+'`! The value is `'+base64icon+'`!');
+            throw new TypeError(`base64icon value does not start with '${base64png}' or '${base64svg}'! The value is '${base64icon}'!`);
         }
         const oldIcon = this._icon;
         this._icon = base64icon;

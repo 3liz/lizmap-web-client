@@ -283,7 +283,25 @@ export default class Digitizing extends HTMLElement {
                     render(mainTemplate(), this);
                 }
             },
-            ['digitizing.featureDrawn', 'digitizing.visibility', 'digitizing.toolSelected', 'digitizing.editionBegins', 'digitizing.editionEnds', 'digitizing.erasingBegins', 'digitizing.erasingEnds', 'digitizing.erase','digitizing.rotate', 'digitizing.erase.all', 'digitizing.drawColor', 'digitizing.save', 'digitizing.measure', 'digitizing.editedFeatureText', 'digitizing.editedFeatureRotation', 'digitizing.editedFeatureScale', 'digitizing.split']
+            [
+                'digitizing.drawColor',
+                'digitizing.editedFeatureRotation',
+                'digitizing.editedFeatureScale',
+                'digitizing.editedFeatureText',
+                'digitizing.editionBegins',
+                'digitizing.editionEnds',
+                'digitizing.erase',
+                'digitizing.erase.all',
+                'digitizing.erasingBegins',
+                'digitizing.erasingEnds',
+                'digitizing.featureDrawn',
+                'digitizing.measure',
+                'digitizing.rotate',
+                'digitizing.save',
+                'digitizing.split',
+                'digitizing.toolSelected',
+                'digitizing.visibility',
+            ]
         );
     }
 
