@@ -15,26 +15,31 @@ import * as path from 'path';
  */
 
 /**
+ * The file path
+ * @var string
+ */
+const __filename = fileURLToPath(import.meta.url);
+
+/**
+ * The file directory path
+ * @var string
+ * @see https://nodejs.org/docs/latest-v15.x/api/esm.html#esm_no_filename_or_dirname
+ * @see https://stackoverflow.com/questions/8817423/why-is-dirname-not-defined-in-node-repl
+ * @example
+ * import { fileURLToPath } from 'url';
+ * import { dirname } from 'path';
+ * const __filename = fileURLToPath(import.meta.url);
+ * const __dirname = dirname(__filename);
+ */
+export const __dirname = path.dirname(__filename);
+
+/**
  * Get the auth storage state path
  * @param {string} name The file name without extension
  * @returns {string} The path to auth storage state path
  */
 export function getAuthStorageStatePath(name) {
-    const __filename = fileURLToPath(import.meta.url);
-    /**
-     * The file directory path
-     * @var string
-     * @see https://nodejs.org/docs/latest-v15.x/api/esm.html#esm_no_filename_or_dirname
-     * @see https://stackoverflow.com/questions/64963450/dirname-is-not-defined
-     * @see https://stackoverflow.com/questions/8817423/why-is-dirname-not-defined-in-node-repl
-     * @example
-     * import { fileURLToPath } from 'url';
-     * import { dirname } from 'path';
-     * const __filename = fileURLToPath(import.meta.url);
-     * const __dirname = dirname(__filename);
-     */
-    const __dirname = path.dirname(__filename);
-    return path.join(__dirname, './.auth/' + name + '.json')
+    return path.join(__dirname, '.auth', name + '.json')
 }
 
 /**
