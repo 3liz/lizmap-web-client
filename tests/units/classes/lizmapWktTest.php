@@ -24,7 +24,32 @@ class lizmapWktTest extends TestCase {
             'GEOMETRY (((30 10, 40 40, 20 40, 10 20, 30 10)))',
         );
         foreach($wktArray as $wkt) {
-            $this->assertIsArray(lizmapWkt::check($wkt), 'The '.$wkt.' has not been checked!');
+            $checked = lizmapWkt::check($wkt);
+            $this->assertIsArray($checked, 'The '.$wkt.' has not been checked!');
+            $this->assertArrayHasKey('geomType', $checked);
+            $this->assertArrayHasKey('dim', $checked);
+            $this->assertEquals('', $checked['dim']);
+            $this->assertArrayHasKey('str', $checked);
+        }
+
+        $zWktArray = array(
+            'POINT Z (30 10 0)',
+            'POINT Z(30 10 0)',
+            'POINTZ(30 10 0)',
+            'LINESTRING Z (30 10 0, 10 30 1, 40 40 2)',
+            'LINESTRING Z(30 10 0, 10 30 1, 40 40 2)',
+            'LINESTRINGZ(30 10 0, 10 30 1, 40 40 2)',
+            'POLYGON Z ((30 10 0, 40 40 2, 20 40 1, 10 20 2, 30 10 0))',
+            'POLYGON Z((30 10 0, 40 40 2, 20 40 1, 10 20 2, 30 10 0))',
+            'POLYGONZ((30 10 0, 40 40 2, 20 40 1, 10 20 2, 30 10 0))',
+        );
+        foreach($zWktArray as $wkt) {
+            $checked = lizmapWkt::check($wkt);
+            $this->assertIsArray($checked, 'The '.$wkt.' has not been checked!');
+            $this->assertArrayHasKey('geomType', $checked);
+            $this->assertArrayHasKey('dim', $checked);
+            $this->assertEquals('z', $checked['dim']);
+            $this->assertArrayHasKey('str', $checked);
         }
 
         $notWktArray = array(
@@ -39,6 +64,35 @@ class lizmapWktTest extends TestCase {
         foreach($notWktArray as $wkt) {
             $this->assertFalse(lizmapWkt::check($wkt), 'The '.$wkt.' has been checked!');
         }
+    }
+
+    function testFixing() {
+        // Unfixed WKT
+        $wkt = 'POINT (30 10)';
+        $nWkt = lizmapWkt::fix($wkt);
+        $this->assertEquals($wkt, $nWkt);
+
+        $wkt = 'POINT Z (30 10 0)';
+        $nWkt = lizmapWkt::fix($wkt);
+        $this->assertEquals($wkt, $nWkt);
+
+        $wkt = 'POINT M (30 10 0)';
+        $nWkt = lizmapWkt::fix($wkt);
+        $this->assertEquals($wkt, $nWkt);
+
+        $wkt = 'POINT ZM (30 10 0 0)';
+        $nWkt = lizmapWkt::fix($wkt);
+        $this->assertEquals($wkt, $nWkt);
+
+        // Fixed WKT
+        $expectedWkt = 'POINT Z (30 10 0)';
+        $wkt = 'POINT Z(30 10 0)';
+        $nWkt = lizmapWkt::fix($wkt);
+        $this->assertEquals($expectedWkt, $nWkt);
+
+        $wkt = 'POINTZ(30 10 0)';
+        $nWkt = lizmapWkt::fix($wkt);
+        $this->assertEquals($expectedWkt, $nWkt);
     }
 
     function testPoint() {

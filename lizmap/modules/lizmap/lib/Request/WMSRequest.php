@@ -761,7 +761,11 @@ class WMSRequest extends OGCRequest
                         'maxy' => 'bbox-maxy',
                     );
                     if ($feature->BoundingBox) {
-                        $hiddenGeometry .= '<input type="hidden" value="'.$attribute['value'].'" class="lizmap-popup-layer-feature-geometry"/>'.PHP_EOL;
+                        // Fix geometry by adding space between geometry type and Z, M or ZM
+                        $geom = \lizmapWkt::fix($attribute['value']);
+                        // Insert geometry as an hidden input
+                        $hiddenGeometry .= '<input type="hidden" value="'.$geom.'" class="lizmap-popup-layer-feature-geometry"/>'.PHP_EOL;
+                        // Insert bounding box data as hidden inputs
                         $bbox = $feature->BoundingBox[0];
                         foreach ($props as $prop => $class) {
                             $hiddenGeometry .= '<input type="hidden" value="'.$bbox[$prop].'" class="lizmap-popup-layer-feature-'.$class.'"/>'.PHP_EOL;
