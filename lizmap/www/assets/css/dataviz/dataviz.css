@@ -3,12 +3,13 @@ Left Menu button
 */
 
 #mapmenu .nav-list > li.dataviz .icon {
-  background-image: url(dataviz-icon-white.png);
+  background-image: url("dataviz-icon-white.png");
   background-position: 0 0;
 }
+
 #mapmenu .nav-list > li.dataviz.active .icon,
 #mapmenu .nav-list > li.dataviz a:hover .icon {
-  background-image: url(dataviz-icon-dark.png);
+  background-image: url("dataviz-icon-dark.png");
   background-position: 0 0;
 }
 
@@ -18,7 +19,7 @@ Toolbar buttons
 */
 
 #dataviz h3 .icon {
-    background-image: url(dataviz-icon-dark.png);
+    background-image: url("dataviz-icon-dark.png");
     background-position: 0 0;
 }
 
@@ -45,6 +46,7 @@ Toolbar buttons
     padding: 5px;
     font-size: 0.8em;
 }
+
 /* Title "Dataviz" of the bottom dock */
 #nav-tab-dataviz-main > a{
     background: none !important;
@@ -53,12 +55,14 @@ Toolbar buttons
     margin-top: 10px;
     font-weight: 500;
 }
+
 #dataviz-content > h3{
-    margin-left:0px;
+    margin-left:0;
     border:none;
 }
+
 #dataviz-content > h3 > span.title{
-    padding-left: 0px;
+    padding-left: 0;
 }
 
 
@@ -66,13 +70,15 @@ Toolbar buttons
 DARK THEME
 */
 #dataviz-content.dark h3 .icon {
-    background-image: url(dataviz-icon-white.png);
+    background-image: url("dataviz-icon-white.png");
     background-position: 0 0;
 }
+
 #dataviz-content.dark div.menu-content {
-    background: rgb(74, 74, 74) !important;
+    background: rgb(74 74 74) !important;
     color: var(--color-contrasted-text);
 }
+
 #dataviz-content.dark h3 {
     font-weight: bold !important;
 }
@@ -84,7 +90,7 @@ DARK THEME
 }
 
 /*
-Diagram height, 450px by default*/
+Diagram height, 450px by default */
 .js-plotly-plot,
 .plot-container {
     height: 400px;
@@ -97,15 +103,18 @@ TABS AND GROUPS
 #dataviz ul.nav-tabs {
     border-bottom: 1px solid var(--color-contrasted-elements-light);
 }
+
 #dataviz .nav-tabs > li > a {
     color: var(--color-text-primary);
     padding: 5px;
     border: none;
 }
+
 #dataviz .nav > li > a:hover,
 #dataviz .nav > li > a:focus {
     text-decoration: none;
 }
+
 #dataviz .nav-tabs > li > a:hover,
 #dataviz .nav-tabs > li > a:focus {
     background: none;
@@ -124,6 +133,7 @@ TABS AND GROUPS
     color: var(--color-text-primary);
     cursor: auto;
 }
+
 /* In bottom-dock, do not use a thick border bottom */
 #bottom-dock #nav-tab-dataviz-main > a {
   border: none;
@@ -142,24 +152,25 @@ TABS AND GROUPS
     padding: 5px;
     width: unset;
     max-width: 100%;
-    margin-bottom: 0px;
+    margin-bottom: 0;
     font-weight: normal !important;
     font-size: 1em;
 }
 
 #dataviz fieldset {
     padding: 10px;
-    padding-top: 0px;
-    margin: 0px 5px;
+    padding-top: 0;
+    margin: 0 5px;
     border: 1px solid var(--color-contrasted-elements);
     border-radius: 5px;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgb(255 255 255 / 20%);
 }
 
 /* Dataviz in bottom-dock */
 #bottom-dock #dataviz ul.nav-tabs {
     border: none;
 }
+
 #bottom-dock div.dataviz_plot_container,
 #right-dock div.dataviz_plot_container
 {
@@ -170,15 +181,17 @@ TABS AND GROUPS
 #bottom-dock div.dataviz_plot_container h3,
 #right-dock div.dataviz_plot_container h3
 {
-    margin-left: 0px !important;
+    margin-left: 0 !important;
     border-bottom: 1px solid lightgray;
 }
+
 #bottom-dock #dataviz-content.light span.icon {
     background-image: url("dataviz-icon-dark.png");
 }
 
 
 /* Some plotly adaptations */
+
 /* deactivated because it moves the plotly toolbar */
 .js-plotly-plot .plotly
 /* ,.js-plotly-plot .plotly div  */

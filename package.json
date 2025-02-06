@@ -22,6 +22,8 @@
     "pr:open": "playwright test --ui tests/end2end/",
     "pretest-fix": "eslint -c eslint.config.mjs --fix",
     "pretest": "eslint -c eslint.config.mjs",
+    "style-fix": "stylelint \"**/*.css\" --fix",
+    "style-check": "stylelint \"**/*.css\"",
     "watch": "webpack --watch --config assets/webpack.dev.js"
   },
   "devDependencies": {
@@ -42,8 +44,12 @@
     "ol-ext": "^4.0.24",
     "ol-wfs-capabilities": "^2.0.0",
     "pixelmatch": "^5.3.0",
+    "playwright-ctrf-json-reporter": "^0.0.18",
+    "postcss-lit": "^1.2.0",
     "proj4": "^2.11.0",
     "shpjs": "^6.1.0",
+    "stylelint": "^16.14.1",
+    "stylelint-config-standard": "^37.0.0",
     "svg-sprite-loader": "^6.0.11",
     "svgo": "^3.2.0",
     "svgo-loader": "^4.0.0",

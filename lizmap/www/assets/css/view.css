@@ -1,12 +1,14 @@
 .thumbnail h5 {
   text-align: center;
 }
+
 .liz-project {
   position:relative;
   text-align:center;
   cursor: pointer;
   flex-grow: 1;
 }
+
 .liz-project-img {
   width : 250px;
   text-align : center;
@@ -17,21 +19,23 @@
   position:relative;
   max-width:100%;
 }
+
 .liz-project-desc {
   color: white;
-  font-size: 0em;
+  font-size: 0;
   line-height: 0em;
   position: absolute;
   bottom:-1px;
-  right:0px;
-  left:0px;
+  right:0;
+  left:0;
   text-align: left;
   text-transform: none;
-  background-color: rgba(0, 0, 0, 0.5);
-  padding:0px;
-  margin:0px;
+  background-color: rgb(0 0 0 / 50%);
+  padding:0;
+  margin:0;
   overflow-wrap: break-word;
 }
+
 .liz-project:hover .liz-project-desc {
   line-height: 0.8em;
   transition: line-height 300ms ease-in;
@@ -106,14 +110,14 @@
   margin-left: 10px;
   font-size: smaller;
   border: white 1px solid;
-  padding: 0px 4px 1px 4px;
+  padding: 0 4px 1px;
   border-radius: 3px;
 }
 
 .project-keyword {
   background-color: #ccc;
   color: black;
-  padding: 0px 4px;
+  padding: 0 4px;
   border-radius: 5px;
   margin-right: 5px;
   display: inline-block;
@@ -128,24 +132,27 @@
   font-size: 1.1em;
 }
 
-@media (max-width: 767px) {
+@media (width <= 767px) {
   .liz-repository-project-list{
     grid-template-columns: 1fr;
   }
 }
 
-@media (max-height: 500px) {
+@media (height <= 500px) {
   .modal.fade.in {
     top:30px;
   }
+
   .modal-body {
     max-height: 200px;
   }
 }
-@media (max-height: 350px) {
+
+@media (height <= 350px) {
   .modal.fade.in {
     top:10px;
   }
+
   .modal-body {
     max-height: 150px;
   }
