@@ -1761,7 +1761,7 @@ class Project
      *
      * @return int[]
      */
-    protected function readLayersOrder(QgisProject $xml)
+    protected function readLayersOrder($xml)
     {
         return $this->qgis->readLayersOrder($xml, $this->getLayers());
     }

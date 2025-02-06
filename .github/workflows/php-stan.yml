@@ -59,7 +59,7 @@ jobs:
 
       - name: Run PHPStan
         id: test-phpstan
-        run: phpstan analyse -c ../phpstan.neon
+        run: phpstan analyse -c ../phpstan-ci.neon
 
       - name: Notify in case of failure but not on a PR
         uses: peter-evans/commit-comment@v3
