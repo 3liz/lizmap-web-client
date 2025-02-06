@@ -25,6 +25,26 @@ jobs:
         with:
           args: --config=.php-cs-fixer.dist.php --allow-risky=yes --dry-run --diff
 
+  stylelint:
+    name: "StyleLint 🎨‌"
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: "Checkout"
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 21
+          cache: 'npm'
+          cache-dependency-path: ${{ github.workspace }}/package.json
+
+      - name: Install modules
+        run: npm install
+
+      - name: Run StyleLint
+        run: npm run style-check
+
   eslint:
       name: "ESLint 🇯‌🇸‌"
       runs-on: ubuntu-latest
@@ -32,6 +52,12 @@ jobs:
 
       - name: "Checkout"
         uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 21
+          cache: 'npm'
+          cache-dependency-path: ${{ github.workspace }}/package.json
 
       - name: Install modules
         run: npm install
