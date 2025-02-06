@@ -1,6 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { gotoMap } from './globals';
+import { getAuthStorageStatePath, gotoMap } from './globals';
 
 test.describe('Filter layer data by user - not connected', () => {
 
@@ -176,7 +176,7 @@ test.describe('Filter layer data by user - not connected', () => {
 });
 
 test.describe('Filter layer data by user - user in group a', () => {
-    test.use({ storageState: 'playwright/.auth/user_in_group_a.json' });
+    test.use({ storageState: getAuthStorageStatePath('user_in_group_a') });
 
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=filter_layer_by_user';
@@ -372,7 +372,7 @@ test.describe('Filter layer data by user - user in group a', () => {
 });
 
 test.describe('Filter layer data by user - admin', () => {
-    test.use({ storageState: 'playwright/.auth/admin.json' });
+    test.use({ storageState: getAuthStorageStatePath('admin') });
 
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=filter_layer_by_user';

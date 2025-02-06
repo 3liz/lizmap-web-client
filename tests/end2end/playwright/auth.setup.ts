@@ -1,21 +1,7 @@
 import { test as setup } from '@playwright/test';
 // @ts-ignore
-import path from 'path';
+import { getAuthStorageStatePath } from './globals';
 import { Page } from '@playwright/test';
-
-/**
- * The file directory path
- * @var string
- * @see https://nodejs.org/docs/latest-v15.x/api/esm.html#esm_no_filename_or_dirname
- * @see https://stackoverflow.com/questions/64963450/dirname-is-not-defined
- * @see https://stackoverflow.com/questions/8817423/why-is-dirname-not-defined-in-node-repl
- * @example
- * import { fileURLToPath } from 'url';
- * import { dirname } from 'path';
- * const __filename = fileURLToPath(import.meta.url);
- * const __dirname = dirname(__filename);
- */
-const __dirname = path.resolve(path.dirname(''));
 
 /**
  * Performs the authentication steps
@@ -40,13 +26,13 @@ export async function auth_using_login(page: Page, login: string, password: stri
 }
 
 setup('authenticate as user_in_group_a', async ({ page }) => {
-  await auth_using_login(page, 'user_in_group_a', 'admin', path.join(__dirname, './.auth/user_in_group_a.json'));
+  await auth_using_login(page, 'user_in_group_a', 'admin', getAuthStorageStatePath('user_in_group_a'));
 });
 
 setup('authenticate as admin', async ({ page }) => {
-  await auth_using_login(page, 'admin', 'admin', path.join(__dirname, './.auth/admin.json'));
+  await auth_using_login(page, 'admin', 'admin', getAuthStorageStatePath('admin'));
 });
 
 setup('authenticate as publisher', async ({ page }) => {
-  await auth_using_login(page, 'publisher', 'admin', path.join(__dirname, './.auth/publisher.json'));
+  await auth_using_login(page, 'publisher', 'admin', getAuthStorageStatePath('publisher'));
 });
