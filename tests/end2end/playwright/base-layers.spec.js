@@ -1,25 +1,9 @@
 // @ts-check
 import * as path from 'path';
 import * as fs from 'fs/promises'
-import { fileURLToPath } from 'url';
 import { existsSync } from 'node:fs';
 import { test, expect } from '@playwright/test';
-import { gotoMap } from './globals';
-
-const __filename = fileURLToPath(import.meta.url);
-/**
- * The file directory path
- * @var string
- * @see https://nodejs.org/docs/latest-v15.x/api/esm.html#esm_no_filename_or_dirname
- * @see https://stackoverflow.com/questions/64963450/dirname-is-not-defined
- * @see https://stackoverflow.com/questions/8817423/why-is-dirname-not-defined-in-node-repl
- * @example
- * import { fileURLToPath } from 'url';
- * import { dirname } from 'path';
- * const __filename = fileURLToPath(import.meta.url);
- * const __dirname = dirname(__filename);
- */
-const __dirname = path.dirname(__filename);
+import { __dirname, gotoMap } from './globals';
 
 // To update OSM and GeoPF tiles in the mock directory
 // IMPORTANT, this must not be set to `true` while committing, on GitHub. Set to `false`.
