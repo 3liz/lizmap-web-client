@@ -42,7 +42,7 @@ jobs:
             php: "8.3"
             pg-postgis: "17-3"
             qgis-server: "3.40"
-            update-projects: "FALSE"
+            update-projects: "TRUE"
     env:
       CYPRESS_CI: TRUE
       PLAYWRIGHT_FORCE_TTY: true
