@@ -3,6 +3,19 @@ import { test as setup } from '@playwright/test';
 import path from 'path';
 import { Page } from '@playwright/test';
 
+/**
+ * The file directory path
+ * @var string
+ * @see https://nodejs.org/docs/latest-v15.x/api/esm.html#esm_no_filename_or_dirname
+ * @see https://stackoverflow.com/questions/64963450/dirname-is-not-defined
+ * @see https://stackoverflow.com/questions/8817423/why-is-dirname-not-defined-in-node-repl
+ * @example
+ * import { fileURLToPath } from 'url';
+ * import { dirname } from 'path';
+ * const __filename = fileURLToPath(import.meta.url);
+ * const __dirname = dirname(__filename);
+ */
+const __dirname = path.resolve(path.dirname(''));
 
 /**
  * Performs the authentication steps

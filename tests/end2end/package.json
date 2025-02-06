@@ -2,5 +2,6 @@
   "name": "test",
   "description": "E2E Test Lizmap JavaScript",
   "author": "3Liz",
+  "type": "module",
   "license": "ISC"
 }

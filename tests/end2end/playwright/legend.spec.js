@@ -1,7 +1,7 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 import { gotoMap } from './globals';
-import {base64svgLineLayer} from "assets/src/modules/state/SymbologyIcons";
+import { base64svg, base64svgLineLayer } from "./../../../assets/src/modules/state/SymbologyIcons";
 
 test.describe('Legend tests', () => {
 
@@ -46,7 +46,7 @@ test.describe('Legend tests', () => {
         await page.locator('#sub-dock select.styleLayer').selectOption('categorized');
 
         // Assert legend has changed
-        await expect(page.getByTestId('tramway_lines').locator('div.layer .legend')).toHaveAttribute('src', base64svgLineLayer);
+        await expect(page.getByTestId('tramway_lines').locator('div.layer .legend')).toHaveAttribute('src', base64svg+base64svgLineLayer);
         expect(await page.getByTestId('tramway_lines').locator('.expandable').count()).toEqual(1);
         await page.getByTestId('tramway_lines').locator('.expandable').click();
 

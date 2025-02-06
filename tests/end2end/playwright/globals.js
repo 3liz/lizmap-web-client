@@ -1,5 +1,5 @@
 // @ts-check
-const { expect } = require('@playwright/test');
+import { expect } from '@playwright/test';
 import { URLSearchParams } from 'url';
 
 /**
