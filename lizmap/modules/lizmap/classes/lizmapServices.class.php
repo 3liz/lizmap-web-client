@@ -627,8 +627,8 @@ class lizmapServices
     {
         if (empty($this->lizmapPluginAPIURL)) {
             // When the Lizmap API URL is not set, we use the WMS server URL only
-            // and we add '/lizmap'/ at then end
-            return rtrim($this->wmsServerURL, '/').'/lizmap/';
+            // and we add '/lizmap' at then end
+            return rtrim($this->wmsServerURL, '/').'/lizmap';
         }
 
         // When the Lizmap API URL is set
