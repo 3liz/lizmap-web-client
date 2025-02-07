@@ -1,6 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { gotoMap, expectParametersToContain } from './globals';
+import { gotoMap, expectParametersToContain, getAuthStorageStatePath } from './globals';
 
 test.describe('Print', () => {
 
@@ -352,7 +352,7 @@ test.describe('Print in popup', () => {
 });
 
 test.describe('Print - user in group a', () => {
-    test.use({ storageState: 'playwright/.auth/user_in_group_a.json' });
+    test.use({ storageState: getAuthStorageStatePath('user_in_group_a') });
 
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=print';
@@ -391,7 +391,7 @@ test.describe('Print - user in group a', () => {
 });
 
 test.describe('Print - admin', () => {
-    test.use({ storageState: 'playwright/.auth/admin.json' });
+    test.use({ storageState: getAuthStorageStatePath('admin') });
 
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=print';

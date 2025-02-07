@@ -1,7 +1,7 @@
 // @ts-check
 import * as path from 'path';
 import { test, expect } from '@playwright/test';
-import { gotoMap } from './globals';
+import { __dirname, gotoMap } from './globals';
 
 test.describe('WebDAV Server', () => {
     test.beforeEach(async ({ page }) => {

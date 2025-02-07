@@ -1,8 +1,7 @@
 import { test as setup } from '@playwright/test';
 // @ts-ignore
-import path from 'path';
+import { getAuthStorageStatePath } from './globals';
 import { Page } from '@playwright/test';
-
 
 /**
  * Performs the authentication steps
@@ -27,13 +26,13 @@ export async function auth_using_login(page: Page, login: string, password: stri
 }
 
 setup('authenticate as user_in_group_a', async ({ page }) => {
-  await auth_using_login(page, 'user_in_group_a', 'admin', path.join(__dirname, './.auth/user_in_group_a.json'));
+  await auth_using_login(page, 'user_in_group_a', 'admin', getAuthStorageStatePath('user_in_group_a'));
 });
 
 setup('authenticate as admin', async ({ page }) => {
-  await auth_using_login(page, 'admin', 'admin', path.join(__dirname, './.auth/admin.json'));
+  await auth_using_login(page, 'admin', 'admin', getAuthStorageStatePath('admin'));
 });
 
 setup('authenticate as publisher', async ({ page }) => {
-  await auth_using_login(page, 'publisher', 'admin', path.join(__dirname, './.auth/publisher.json'));
+  await auth_using_login(page, 'publisher', 'admin', getAuthStorageStatePath('publisher'));
 });

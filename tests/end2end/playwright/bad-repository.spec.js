@@ -1,10 +1,11 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+import { getAuthStorageStatePath } from './globals';
 import {AdminPage} from "./pages/admin";
 
 test.describe('Bad repository in conf', () => {
 
-    test.use({ storageState: 'playwright/.auth/admin.json' });
+    test.use({ storageState: getAuthStorageStatePath('admin') });
 
     test.beforeEach(async ({ page }) => {
         // Go to repos page

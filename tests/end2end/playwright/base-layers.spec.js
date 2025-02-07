@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs/promises'
 import { existsSync } from 'node:fs';
 import { test, expect } from '@playwright/test';
-import { gotoMap } from './globals';
+import { __dirname, gotoMap } from './globals';
 
 // To update OSM and GeoPF tiles in the mock directory
 // IMPORTANT, this must not be set to `true` while committing, on GitHub. Set to `false`.
