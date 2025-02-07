@@ -1,7 +1,14 @@
 // @ts-check
+import * as path from 'path';
+import * as fs from 'fs/promises'
+import { existsSync } from 'node:fs';
 import { test, expect } from '@playwright/test';
 import {ProjectPage} from "./pages/project";
-import {expectParametersToContain} from "./globals";
+import { expectParametersToContain } from "./globals";
+
+// To update OSM and GeoPF tiles in the mock directory
+// IMPORTANT, this must not be set to `true` while committing, on GitHub. Set to `false`.
+const UPDATE_MOCK_FILES = false;
 
 test.describe('Axis Orientation',
     {
@@ -50,22 +57,42 @@ test.describe('Axis Orientation',
 
         // Catch GetTile request
         let GetTiles = [];
-        await page.route('https://tile.openstreetmap.org/*/*/*.png', (route) => {
+        await page.route('https://tile.openstreetmap.org/*/*/*.png', async (route) => {
             const request = route.request();
             GetTiles.push(request.url());
-        }, { times: 6 });
+
+            // Build path file in mock directory
+            const pathFile = path.join(__dirname, 'mock/axis_orientation/osm/tiles'+(new URL(request.url()).pathname))
+            if (UPDATE_MOCK_FILES && GetTiles.length <= 6) {
+                // Save file in mock directory for 6 tiles maximum
+                const response = await route.fetch();
+                await fs.mkdir(path.dirname(pathFile), { recursive: true })
+                await fs.writeFile(pathFile, await response.body())
+            } else if (existsSync(pathFile)) {
+                // fulfill route's request with mock file
+                route.fulfill({
+                    path: pathFile
+                })
+            } else {
+                // fulfill route's request with default transparent tile
+                route.fulfill({
+                    path: path.join(__dirname, 'mock/transparent_tile.png')
+                })
+            }
+        });
+
         await project.baseLayerSelect.selectOption('OpenStreetMap');
         while (GetTiles.length < 6) {
             await page.waitForTimeout(100);
         }
 
-        expect(GetTiles).toHaveLength(6);
-        expect(GetTiles[0]).toContain('6/33/20.png')
-        expect(GetTiles[1]).toContain('6/33/21.png')
-        expect(GetTiles[2]).toContain('6/34/20.png')
-        expect(GetTiles[3]).toContain('6/34/21.png')
-        expect(GetTiles[4]).toContain('6/33/22.png')
-        expect(GetTiles[5]).toContain('6/34/22.png')
+        await expect(GetTiles.length).toBeGreaterThanOrEqual(6);
+        await expect(GetTiles[0]).toContain('6/33/20.png')
+        await expect(GetTiles[1]).toContain('6/33/21.png')
+        await expect(GetTiles[2]).toContain('6/34/20.png')
+        await expect(GetTiles[3]).toContain('6/34/21.png')
+        await expect(GetTiles[4]).toContain('6/33/22.png')
+        await expect(GetTiles[5]).toContain('6/34/22.png')
         await page.unroute('https://tile.openstreetmap.org/*/*/*.png')
 
         // Wait for transition
@@ -121,22 +148,42 @@ test.describe('Axis Orientation',
 
         // Catch GetTile request
         let GetTiles = [];
-        await page.route('https://tile.openstreetmap.org/*/*/*.png', (route) => {
+        await page.route('https://tile.openstreetmap.org/*/*/*.png', async (route) => {
             const request = route.request();
             GetTiles.push(request.url());
-        }, { times: 6 });
+
+            // Build path file in mock directory
+            const pathFile = path.join(__dirname, 'mock/axis_orientation/osm/tiles'+(new URL(request.url()).pathname))
+            if (UPDATE_MOCK_FILES && GetTiles.length <= 6) {
+                // Save file in mock directory for 6 tiles maximum
+                const response = await route.fetch();
+                await fs.mkdir(path.dirname(pathFile), { recursive: true })
+                await fs.writeFile(pathFile, await response.body())
+            } else if (existsSync(pathFile)) {
+                // fulfill route's request with mock file
+                route.fulfill({
+                    path: pathFile
+                })
+            } else {
+                // fulfill route's request with default transparent tile
+                route.fulfill({
+                    path: path.join(__dirname, 'mock/transparent_tile.png')
+                })
+            }
+        });
+
         await project.baseLayerSelect.selectOption('OpenStreetMap');
         while (GetTiles.length < 6) {
             await page.waitForTimeout(100);
         }
 
-        expect(GetTiles).toHaveLength(6);
-        expect(GetTiles[0]).toContain('6/35/22.png')
-        expect(GetTiles[1]).toContain('6/35/23.png')
-        expect(GetTiles[2]).toContain('6/36/22.png')
-        expect(GetTiles[3]).toContain('6/36/23.png')
-        expect(GetTiles[4]).toContain('6/37/22.png')
-        expect(GetTiles[5]).toContain('6/37/23.png')
+        await expect(GetTiles.length).toBeGreaterThanOrEqual(6);
+        await expect(GetTiles[0]).toContain('6/35/22.png')
+        await expect(GetTiles[1]).toContain('6/35/23.png')
+        await expect(GetTiles[2]).toContain('6/36/22.png')
+        await expect(GetTiles[3]).toContain('6/36/23.png')
+        await expect(GetTiles[4]).toContain('6/37/22.png')
+        await expect(GetTiles[5]).toContain('6/37/23.png')
         await page.unroute('https://tile.openstreetmap.org/*/*/*.png')
 
         // Wait for transition
