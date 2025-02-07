@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.9.0-beta.1 - 2025-02-07
+
 ### Funders
 
 * **[Andromède Océanologie](https://www.andromede-ocean.com/)**
@@ -19,7 +21,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ### Important
 
-* PHP 8.1 minimum is required
+* PHP 8.1 minimum is **required**
 
 ### Added
 
