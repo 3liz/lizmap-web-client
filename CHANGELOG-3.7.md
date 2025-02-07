@@ -8,9 +8,23 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.7.15 - 2025-02-07
+
 ### Added
 
-* Preparing QJazz
+* Add `X-Request-Id` in request to QGIS Server headers :
+   * Useful with latest versions of [Py-QGIS-Server](https://github.com/3liz/py-qgis-server) and [QJazz](https://github.com/3liz/qjazz)
+   * The `Q-Request-Id` is shown in the administration log panel
+
+### Fixed
+
+* Wrong distance constraint value
+* When drawing a single segment, display correct total measure for linestring without distance constraint
+* WFS GetFeature request to QGIS Server returns error
+
+### Backend
+
+* Update Jelix to [1.8.16](https://github.com/jelix/jelix/releases/tag/v1.8.16)
 
 ### Tests
 
