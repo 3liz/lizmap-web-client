@@ -803,6 +803,13 @@ const QMSExternalLayer = {
         "title": "Google Satellite",
         "mapType": "satellite",
         "key":""
+    },
+    "google-terrain": {
+        "type" :"google",
+        "title": "Google Terrain",
+        "mapType": "terrain",
+        "key":""
+
     }
 }
 
@@ -903,9 +910,13 @@ export class BaseLayersConfig {
                                     // roads
                                     extendedCfg[layerTreeItem.name] = structuredClone(QMSExternalLayer["google-streets"])
                                 } else if (externalUrl.includes('lyrs=s')){
-                                    // fallback on satellite map
+                                    // satellite map
                                     extendedCfg[layerTreeItem.name] = structuredClone(QMSExternalLayer["google-satellite"])
+                                } else if (externalUrl.includes('lyrs=p') || externalUrl.includes('lyrs=t')){
+                                    // terrain
+                                    extendedCfg[layerTreeItem.name] = structuredClone(QMSExternalLayer["google-terrain"])
                                 } else {
+                                    // Fallback to google-streets
                                     extendedCfg[layerTreeItem.name] = structuredClone(QMSExternalLayer["google-streets"])
                                 }
                                 // add the apikey to the configuration
