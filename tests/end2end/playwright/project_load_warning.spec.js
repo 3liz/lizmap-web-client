@@ -1,5 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+import { getAuthStorageStatePath } from './globals';
 import { ProjectPage } from './pages/project';
 
 test.describe('Project warnings in CFG as admin',
@@ -7,7 +8,7 @@ test.describe('Project warnings in CFG as admin',
         tag: ['@readonly'],
     }, () => {
 
-        test.use({ storageState: 'playwright/.auth/admin.json' });
+        test.use({ storageState: getAuthStorageStatePath('admin') });
 
         test('Visit map with a warning', async ({ page }) => {
             const project = new ProjectPage(page, 'project_cfg_warnings');

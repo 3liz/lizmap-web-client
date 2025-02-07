@@ -1,10 +1,10 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { gotoMap } from './globals';
+import { getAuthStorageStatePath, gotoMap } from './globals';
 
 test.describe('Maps management', () => {
 
-    test.use({ storageState: 'playwright/.auth/admin.json' });
+    test.use({ storageState: getAuthStorageStatePath('admin') });
 
     test('OpenLayers', {
         tag: '@flaky',

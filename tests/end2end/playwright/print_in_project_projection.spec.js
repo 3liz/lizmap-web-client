@@ -1,7 +1,7 @@
 // @ts-check
 import * as path from 'path';
 import { test, expect } from '@playwright/test';
-import { gotoMap, expectParametersToContain } from './globals';
+import { __dirname, gotoMap, expectParametersToContain } from './globals';
 
 test.describe('Print in project projection', () => {
 

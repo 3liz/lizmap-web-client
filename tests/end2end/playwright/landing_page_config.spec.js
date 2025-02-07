@@ -1,5 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+import { getAuthStorageStatePath } from './globals';
 import {HomePage} from "./pages/homepage";
 import {AdminPage} from "./pages/admin";
 
@@ -9,7 +10,7 @@ test.describe('Landing page content', {
 
     test('Fill form & check content', async ({ browser }) => {
 
-        const adminContext = await browser.newContext({ storageState: 'playwright/.auth/admin.json' });
+        const adminContext = await browser.newContext({ storageState: getAuthStorageStatePath('admin') });
         const page = await adminContext.newPage();
         const adminPage = new AdminPage(page);
         // unanthenticated context

@@ -1,12 +1,12 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { gotoMap } from './globals';
+import { getAuthStorageStatePath, gotoMap } from './globals';
 
 test.describe('Map projects switcher', () => {
 
     const locale = 'en-US';
 
-    test.use({ storageState: 'playwright/.auth/admin.json' });
+    test.use({ storageState: getAuthStorageStatePath('admin') });
 
     test.beforeEach(async ({ page }) => {
         // Go to Lizmap configuration
