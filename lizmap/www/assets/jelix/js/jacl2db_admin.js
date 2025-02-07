@@ -527,7 +527,7 @@ $("document").ready( function () {
             if (grpIdCreate.val().length === 0) {
                 var id = grpNameCreate.val();
                 id = id.replace(' ', '_');
-                id = id.replace(/[^a-zA-Z0-9_]/g, '');
+                id = id.replace(/[^a-zA-Z0-9_\-]/g, '');
                 grpIdCreate.val(id);
             }
         });
