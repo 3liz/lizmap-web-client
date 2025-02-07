@@ -55,3 +55,5 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Dataviz with PlotlyJS
   * Update to v2.35.2
   * Use a custom build to reduce file size
+* Code refactoring :
+  * ESLint, StyleLint...
