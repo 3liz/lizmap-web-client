@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.8.5 - 2025-02-07
+
 ### Funders
 
 * [Destination Bretagne Sud - Golfe du Morbihan](https://destination-bretagnesud.bzh/)
