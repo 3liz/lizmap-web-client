@@ -7,6 +7,9 @@ QGIS Server, webbrowsers etc.
 
 ## Requirements
 
+Read requirements on the [release page](https://github.com/3liz/lizmap-web-client/releases) about the version you are
+installing.
+
 First you should install :
 
 - The web server Apache or Nginx
@@ -14,18 +17,18 @@ First you should install :
   You can install PHP 7.4/8.0/8.1. You can use generic package names, which will install latest
   version available (`php7.4`, `php8.0` etc.)
 - The package `curl`, and PHP extensions `curl`, `sqlite3`, `gd` and `xml`
-- [QGIS](http://qgis.org/en/site/forusers/download.html) 3.16 or 3.22
+- [QGIS](http://qgis.org/en/site/forusers/download.html)
 and [its documentation about QGIS Server](https://docs.qgis.org/3.22/en/docs/server_manual/index.html).
   We recommend **strongly** to use the same version on the server **and** on the desktop. QGIS Server will read
   your QGS file and obviously can't read a file made with a newer version of QGIS Desktop.
-- (optional but highly recommended) PostgreSQL with PostGIS and its php extension (`php8.1-pgsql` or equivalents)
+- (optional but highly recommended) PostgreSQL with PostGIS and its PHP extension (`php8.1-pgsql` or equivalents)
 
 ## Get the source
 
 - Download the Lizmap ZIP archive from:
   - [the release page on GitHub](https://github.com/3liz/lizmap-web-client/releases) for stable releases.
   - [3liz website](https://packages.3liz.org/pub/lizmap/unstable/) for unstable releases.
-- Copy files from the ZIP package to a directory for apache/Nginx, let's say  /var/www/mylizmap/.
+- Copy files from the ZIP package to a directory for Apache/Nginx, let's say `/var/www/mylizmap/`.
 
 **Warning**. **Do not use the source code from git**, except if you
 are a developer and you want to contribute on the code of Lizmap.

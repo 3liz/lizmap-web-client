@@ -8,12 +8,23 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Funders
+
+* [Destination Bretagne Sud - Golfe du Morbihan](https://destination-bretagnesud.bzh/)
+
 ### Added
 
-* Preparing QJazz
+* Preparing [QJazz](https://github.com/3liz/qjazz)
 
 ### Fixed
 
+* Add `X-Request-Id` in request to QGIS Server headers :
+  * Useful with latest versions of [Py-QGIS-Server](https://github.com/3liz/py-qgis-server) and [QJazz](https://github.com/3liz/qjazz)
+  * The `Q-Request-Id` is shown in the administration log panel
+* Form filter : Also search for `NULL` values when empty string is checked
+* Authenticating layers with QGIS native "auth" config, contribution from @cfsgarcia
+* Wrong distance constraint value
+* When drawing a single segment, display correct total measure for linestring without distance constraint
 * Administrator logs :
   * Add new panel about `errors`
 * Tooltip
@@ -21,8 +32,11 @@ with some extra keywords: backend, tests, test, translation, funders, important
   * Use `addToolLayer` instead of `addLayer`
 * Performance issue about opacity and embedded layers
 * `lizmap-features-table` - Improve the logic of the feature detail opening
-* Preparing QJazz :
-  * Add `X-Request-Id` in request to QGIS Server headers
+
+### Backend
+
+* Update Jelix to [1.8.16](https://github.com/jelix/jelix/releases/tag/v1.8.16)
+* Update JavaScript dependencies
 
 ### Tests
 
