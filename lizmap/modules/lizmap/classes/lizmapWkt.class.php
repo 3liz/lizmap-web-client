@@ -7,6 +7,10 @@
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
+
+/**
+ * @phpstan-type WktMatches array{geomType: string, dim: string, str: string}
+ */
 class lizmapWkt
 {
     /** @var array<string, string> */
@@ -24,7 +28,7 @@ class lizmapWkt
      *
      * @param string $wkt A WKT string
      *
-     * @return array|false The WKT string is well formed
+     * @return false|WktMatches The WKT string is well formed
      */
     public static function check($wkt)
     {
@@ -42,11 +46,53 @@ class lizmapWkt
             return false;
         }
 
+        $geomType = strtolower($matches[1]);
+        $dim = strtolower($matches[2]);
+        $str = $matches[3];
+
+        if (substr($geomType, -2) === 'zm') {
+            $geomType = substr($geomType, 0, -2);
+            $dim = 'zm';
+        } elseif (substr($geomType, -2) === 'mz') {
+            $geomType = substr($geomType, 0, -2);
+            $dim = 'mz';
+        } elseif (substr($geomType, -1) === 'z') {
+            $geomType = substr($geomType, 0, -1);
+            $dim = 'z';
+        } elseif (substr($geomType, -1) === 'm') {
+            $geomType = substr($geomType, 0, -1);
+            $dim = 'm';
+        }
+
         return array(
-            'geomType' => strtolower($matches[1]),
-            'dim' => strtolower($matches[2]),
-            'str' => $matches[3],
+            'geomType' => $geomType,
+            'dim' => $dim,
+            'str' => $str,
         );
+    }
+
+    /**
+     * Return a WKT string corrected with space between geometry type and dimension as upper case.
+     *
+     * @param string $wkt A WKT string
+     *
+     * @return null|string The WKT string corrected with space between geometry type and dimension as upper case
+     */
+    public static function fix($wkt)
+    {
+        // Checking and extracting geometry type, dimension and coordinates
+        $matches = self::check($wkt);
+        if (!$matches) {
+            return null;
+        }
+
+        $nWkt = $matches['geomType'];
+        if ($matches['dim'] !== '') {
+            $nWkt .= ' '.$matches['dim'];
+        }
+        $nWkt .= ' ('.$matches['str'].')';
+
+        return strtoupper($nWkt);
     }
 
     /**
@@ -66,20 +112,6 @@ class lizmapWkt
         $geomType = $matches['geomType'];
         $dim = $matches['dim'];
         $str = $matches['str'];
-
-        if (substr($geomType, -2) === 'zm') {
-            $geomType = substr($geomType, 0, -2);
-            $dim = 'zm';
-        } elseif (substr($geomType, -2) === 'mz') {
-            $geomType = substr($geomType, 0, -2);
-            $dim = 'mz';
-        } elseif (substr($geomType, -1) === 'z') {
-            $geomType = substr($geomType, 0, -1);
-            $dim = 'z';
-        } elseif (substr($geomType, -1) === 'm') {
-            $geomType = substr($geomType, 0, -1);
-            $dim = 'm';
-        }
 
         // Get coordinates
         $coordinates = null;
