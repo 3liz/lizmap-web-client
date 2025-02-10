@@ -1,4 +1,4 @@
-import { test as setup } from '@playwright/test';
+import { expect, test as setup } from '@playwright/test';
 // @ts-ignore
 import { getAuthStorageStatePath } from './globals';
 import { Page } from '@playwright/test';
@@ -13,7 +13,11 @@ import { Page } from '@playwright/test';
 export async function auth_using_login(page: Page, login: string, password: string, user_file: string) {
   // Perform authentication steps. Replace these actions with your own.
   await page.goto('admin.php/auth/login?auth_url_return=%2Findex.php');
-  await page.locator('#jforms_jcommunity_login_auth_login').fill(login);
+
+  let loginField = page.locator('#jforms_jcommunity_login_auth_login');
+  await expect(loginField, `The login field was not found in ${page.content()}`).toBeVisible();
+  await loginField.fill(login);
+
   await page.locator('#jforms_jcommunity_login_auth_password').fill(password);
   await page.getByRole('button', { name: 'Sign in' }).click();
   // Wait until the page receives the cookies.
