@@ -216,7 +216,7 @@ export async function expectParametersToContain(title, parameters, expectedParam
 
     await expect(
         searchParams.size,
-        `Check "${title}" : Not enough parameters compared to expected!`
+        `Check "${title}" : Not enough parameters compared to expected :\nGot ${Array.from(searchParams.keys()).join(', ')}!`
     ).toBeGreaterThanOrEqual(Object.keys(expectedParameters).length)
 
     for (const param in expectedParameters) {
@@ -229,13 +229,13 @@ export async function expectParametersToContain(title, parameters, expectedParam
         if (expectedValue instanceof RegExp) {
             await expect(
                 searchParams.get(param),
-                `Title "${title}" : ${param} does not match the expected value : expected "${expectedValue}" versus got "${searchParams.get(param)}"`
+                `Title "${title}" : ${param} does not match the expected value :\nExpected "${expectedValue}"\nGot "${searchParams.get(param)}"`
             ).toMatch(expectedValue)
 
         } else {
             await expect(
                 searchParams.get(param),
-                `Title "${title}" : ${param} has not the right value : expected "${expectedValue}" versus got "${searchParams.get(param)}"`
+                `Title "${title}" : ${param} has not the right value :\nExpected "${expectedValue}"\nGot "${searchParams.get(param)}"`
             ).toBe(expectedValue)
         }
     }
