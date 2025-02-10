@@ -62,8 +62,14 @@ test.describe('Time Manager', () => {
             ];
             // Check if WMS Request params are as expected
             for (let obj of expectedParamValue) {
-                await expect(urlObj.has(obj.param), obj.param+' not in ['+Array.from(urlObj.keys()).join(', ')+']').toBeTruthy();
-                await expect(urlObj.get(obj.param), obj.param+'='+obj.expectedvalue+' not in ['+urlObj.toString().split('&').join(', ')+']').toBe(obj.expectedvalue);
+                await expect(
+                    urlObj.has(obj.param),
+                    obj.param+' not in ['+Array.from(urlObj.keys()).join(', ')+']'
+                ).toBeTruthy();
+                await expect(
+                    urlObj.get(obj.param),
+                    obj.param+'='+obj.expectedvalue+' not in ['+urlObj.toString().split('&').join(', ')+']'
+                ).toBe(obj.expectedvalue);
             }
         }
 
