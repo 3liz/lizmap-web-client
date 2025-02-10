@@ -100,7 +100,7 @@ test.describe('Print in project projection', () => {
             // 'multiline_label': 'Multiline label',
         }
         const getPrintParams = await expectParametersToContain('Print external baselayer', getPrintRequest.postData() ?? '', expectedParameters)
-        await expect(getPrintParams.size).toBe(14)
+        await expect(Array.from(getPrintParams.keys())).toHaveLength(14)
         await getPrintRequest.response()
         await page.unroute('**/service*')
     })
