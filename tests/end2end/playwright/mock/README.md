@@ -11,5 +11,5 @@ Please consider using a low size PDF file, for testing, if there isn't test done
 ```js
 const downloadPromise = page.waitForEvent('download');
 const download = await downloadPromise;
-await download.saveAs(path.join(__dirname, 'mock/print_in_project_projection/baselayer/Paysage_A4.pdf'));
+await download.saveAs(playwrightTestFile('mock', 'print_in_project_projection', 'baselayer', 'Paysage_A4.pdf'));
 ```
