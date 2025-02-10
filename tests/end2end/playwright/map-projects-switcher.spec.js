@@ -34,13 +34,13 @@ test.describe('Map projects switcher', () => {
         await expect(page.locator('#_projectSwitcher')).toHaveText('Off');
     })
 
-    test('Switcher form map to map', async ({ page }) => {
+    test('Switcher from map to map', async ({ page }) => {
         await gotoMap('index.php/view/map?repository=testsrepository&project=base_layers', page);
 
         // Check scale
         await expect(page.locator('#overview-bar .ol-scale-text')).toHaveText('1 : ' + (144448).toLocaleString(locale));
 
-        // Go to an other map
+        // Go to another map
         await page.locator('#button-projects').click();
         await page.locator('li').filter({ hasText: 'base_layers_user_defined' }).getByRole('link').nth(1).click();
 
@@ -56,7 +56,7 @@ test.describe('Map projects switcher', () => {
         // Wait for OL transition
         await page.waitForTimeout(1000);
 
-        // Go to an other map
+        // Go to another map
         await page.locator('#button-projects').click();
         await page.locator('li').filter({ hasText: 'base_layers' }).getByRole('link').nth(1).click();
 
@@ -81,7 +81,7 @@ test.describe('Map projects switcher', () => {
         // Check scale
         await expect(page.locator('#overview-bar .ol-scale-text')).toHaveText('1 : ' + (72224).toLocaleString(locale));
 
-        // Go to an other map
+        // Go to another map
         await page.locator('#button-projects').click();
         await page.locator('li').filter({ hasText: 'attribute_table' }).getByRole('link').nth(1).click();
 
@@ -110,7 +110,7 @@ test.describe('Map projects switcher', () => {
         // Check scale
         await expect(page.locator('#overview-bar .ol-scale-text')).toHaveText('1 : ' + (10000).toLocaleString(locale));
 
-        // Go to an other map
+        // Go to another map
         await page.locator('#button-projects').click();
         await page.locator('li').filter({ hasText: 'base_layers_user_defined' }).getByRole('link').nth(1).click();
 
@@ -133,7 +133,7 @@ test.describe('Map projects switcher', () => {
         // Wait for OL transition
         await page.waitForTimeout(1000);
 
-        // Go to an other map
+        // Go to another map
         await page.locator('#button-projects').click();
         await page.locator('li').filter({ hasText: 'base_layers' }).getByRole('link').nth(1).click();
 
