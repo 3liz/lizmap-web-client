@@ -134,7 +134,7 @@ test.describe('Maps management', () => {
         await expect(page.locator('[id=jforms_admin_config_section_label]')).toHaveValue('Tests repository');
         await expect(page.locator('[id=jforms_admin_config_section_repository]')).not.toBeEditable();
         await expect(page.locator('[id=jforms_admin_config_section_repository]')).toHaveAttribute('value', 'testsrepository');
-        await expect(page.locator('[id=jforms_admin_config_section_allowUserDefinedThemes]')).not.toBeChecked();
+        await expect(page.locator('[id=jforms_admin_config_section_allowUserDefinedThemes]')).toBeChecked();
         await expect(page.locator('[id=jforms_admin_config_section_accessControlAllowOrigin]')).toHaveValue('http://othersite.local:8130');
 
         // Check default rights on repository
