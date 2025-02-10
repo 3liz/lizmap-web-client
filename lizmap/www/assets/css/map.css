@@ -972,6 +972,12 @@ CSS Sprite positions calculated via http://instantsprite.com/ using 20px images 
   max-width:40%;
   padding-bottom: 5px;
   height: 100%;
+  display: none;
+}
+
+/* Don't display dock if no content is displayed */
+#dock:has(#dock-content>div:not(.hide)) {
+  display: initial;
 }
 
 #content.mobile #dock{
