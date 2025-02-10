@@ -78,7 +78,7 @@ test.describe('Print', () => {
             // 'multiline_label': 'Multiline label',
         })
         let getPrintParams = await expectParametersToContain('Print requests 1', getPrintRequest.postData() ?? '', expectedParameters1)
-        await expect(getPrintParams.size).toBe(15)
+        await expect(Array.from(getPrintParams.keys())).toHaveLength(15)
 
         // Close message
         await page.locator('.btn-close').click();
@@ -101,7 +101,7 @@ test.describe('Print', () => {
             'map0:OPACITIES': '204,255,255',
         })
         getPrintParams = await expectParametersToContain('Print requests 2', getPrintRequest.postData() ?? '', expectedParameters2)
-        await expect(getPrintParams.size).toBe(13)
+        await expect(Array.from(getPrintParams.keys())).toHaveLength(13)
 
         // Test `print_overview` template
         await page.locator('#print-template').selectOption('2');
@@ -127,7 +127,7 @@ test.describe('Print', () => {
             'map0:EXTENT': /761864.\d+,6274266.\d+,779334.\d+,6284518.\d+/,
         })
         getPrintParams = await expectParametersToContain('Print requests 3', getPrintRequest.postData() ?? '', expectedParameters3)
-        await expect(getPrintParams.size).toBe(14)
+        await expect(Array.from(getPrintParams.keys())).toHaveLength(14)
 
         // Redlining with circle
         await page.locator('#button-draw').click();
@@ -196,7 +196,7 @@ test.describe('Print', () => {
         })
         /* eslint-enable no-useless-escape */
         getPrintParams = await expectParametersToContain('Print requests 4', getPrintRequest.postData() ?? '', expectedParameters4)
-        await expect(getPrintParams.size).toBe(17)
+        await expect(Array.from(getPrintParams.keys())).toHaveLength(17)
     });
 
     test('Print requests with selection', async ({ page }) => {
@@ -235,7 +235,7 @@ test.describe('Print', () => {
             'SELECTIONTOKEN': /[a-z\d]+/,
         }
         const getPrintParams = await expectParametersToContain('Print requests with selection', getPrintRequest.postData() ?? '', expectedParameters)
-        await expect(getPrintParams.size).toBe(16)
+        await expect(Array.from(getPrintParams.keys())).toHaveLength(16)
     });
 
     test('Print requests with filter', async ({ page }) => {
@@ -284,7 +284,7 @@ test.describe('Print', () => {
             'FILTERTOKEN': /[a-z\d]+/,
         }
         const getPrintParams = await expectParametersToContain('Print requests with filter', getPrintRequest.postData() ?? '', expectedParameters)
-        await expect(getPrintParams.size).toBe(16)
+        await expect(Array.from(getPrintParams.keys())).toHaveLength(16)
     });
 });
 
@@ -339,7 +339,7 @@ test.describe('Print in popup', () => {
             'EXP_FILTER': '$id IN (1)',
         }
         const getPrintParams = await expectParametersToContain('Atlas print in popup requests', getPrintRequest.postData() ?? '', expectedParameters)
-        await expect(getPrintParams.size).toBe(10)
+        await expect(Array.from(getPrintParams.keys())).toHaveLength(10)
         await expect(getPrintParams.has('CRS')).toBe(false)
         await expect(getPrintParams.has('LAYERS')).toBe(false)
         await expect(getPrintParams.has('ATLAS_PK')).toBe(false)
@@ -521,7 +521,7 @@ test.describe('Print 3857', () => {
             // 'multiline_label': 'Multiline label',
         })
         let getPrintParams = await expectParametersToContain('Print requests 1', getPrintRequest.postData() ?? '', expectedParameters1)
-        await expect(getPrintParams.size).toBe(15)
+        await expect(Array.from(getPrintParams.keys())).toHaveLength(15)
 
         // Test `print_map` template
         await page.locator('#print-template').selectOption('1');
@@ -548,7 +548,7 @@ test.describe('Print 3857', () => {
             'map0:OPACITIES': '204,255,255',
         })
         getPrintParams = await expectParametersToContain('Print requests 2', getPrintRequest.postData() ?? '', expectedParameters2)
-        await expect(getPrintParams.size).toBe(13)
+        await expect(Array.from(getPrintParams.keys())).toHaveLength(13)
 
         // Close message
         await page.locator('.btn-close').click();
@@ -619,7 +619,7 @@ test.describe('Print 3857', () => {
         })
         /* eslint-enable no-useless-escape */
         getPrintParams = await expectParametersToContain('Print requests 3', getPrintRequest.postData() ?? '', expectedParameters3)
-        await expect(getPrintParams.size).toBe(17)
+        await expect(Array.from(getPrintParams.keys())).toHaveLength(17)
     });
 });
 
@@ -666,7 +666,7 @@ test.describe('Print base layers', () => {
             'map0:OPACITIES': '255',
         })
         let getPrintParams = await expectParametersToContain('Print requests 1', getPrintRequest.postData() ?? '', expectedParameters1)
-        await expect(getPrintParams.size).toBe(13)
+        await expect(Array.from(getPrintParams.keys())).toHaveLength(13)
 
         let getPrintResponse = await getPrintRequest.response();
         await expect(getPrintResponse?.status()).toBe(200)
@@ -696,7 +696,7 @@ test.describe('Print base layers', () => {
             'map0:OPACITIES': '255,255',
         })
         getPrintParams = await expectParametersToContain('Print requests 2', getPrintRequest.postData() ?? '', expectedParameters2)
-        await expect(getPrintParams.size).toBe(13)
+        await expect(Array.from(getPrintParams.keys())).toHaveLength(13)
 
         getPrintResponse = await getPrintRequest.response();
         await expect(getPrintResponse?.status()).toBe(200)
@@ -725,7 +725,7 @@ test.describe('Print base layers', () => {
             'map0:OPACITIES': '255',
         })
         getPrintParams = await expectParametersToContain('Print requests 3', getPrintRequest.postData() ?? '', expectedParameters3)
-        await expect(getPrintParams.size).toBe(13)
+        await expect(Array.from(getPrintParams.keys())).toHaveLength(13)
 
         getPrintResponse = await getPrintRequest.response();
         await expect(getPrintResponse?.status()).toBe(200)
@@ -754,7 +754,7 @@ test.describe('Print base layers', () => {
             'map0:OPACITIES': '255,255',
         })
         getPrintParams = await expectParametersToContain('Print requests 4', getPrintRequest.postData() ?? '', expectedParameters4)
-        await expect(getPrintParams.size).toBe(13)
+        await expect(Array.from(getPrintParams.keys())).toHaveLength(13)
 
         getPrintResponse = await getPrintRequest.response();
         await expect(getPrintResponse?.status()).toBe(200)
