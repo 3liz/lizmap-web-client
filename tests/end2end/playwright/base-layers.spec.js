@@ -1,9 +1,9 @@
 // @ts-check
-import * as path from 'path';
+import { dirname } from 'path';
 import * as fs from 'fs/promises'
 import { existsSync } from 'node:fs';
 import { test, expect } from '@playwright/test';
-import { __dirname, gotoMap } from './globals';
+import { gotoMap, playwrightTestFile } from './globals';
 
 // To update OSM and GeoPF tiles in the mock directory
 // IMPORTANT, this must not be set to `true` while committing, on GitHub. Set to `false`.
@@ -149,21 +149,21 @@ test.describe('Base layers', () => {
             GetTiles.push(request.url());
 
             // Build path file in mock directory
-            const pathFile = path.join(__dirname, 'mock/base_layers/osm/tiles'+(new URL(request.url()).pathname))
+            const pathFile = playwrightTestFile('mock', 'base_layers', 'osm', 'tiles' + (new URL(request.url()).pathname));
             if (UPDATE_MOCK_FILES) {
                 // Save file in mock directory
                 const response = await route.fetch();
-                await fs.mkdir(path.dirname(pathFile), { recursive: true })
+                await fs.mkdir(dirname(pathFile), { recursive: true })
                 await fs.writeFile(pathFile, await response.body())
             } else if (existsSync(pathFile)) {
                 // fulfill route's request with mock file
-                route.fulfill({
+                await route.fulfill({
                     path: pathFile
                 })
             } else {
                 // fulfill route's request with default transparent tile
-                route.fulfill({
-                    path: path.join(__dirname, 'mock/transparent_tile.png')
+                await route.fulfill({
+                    path: playwrightTestFile('mock', 'transparent_tile.png')
                 })
             }
         })
@@ -215,9 +215,8 @@ test.describe('Base layers', () => {
 
             // Build path file in mock directory
             const parameters = new URL(request.url()).searchParams;
-            const pathFile = path.join(
-                __dirname,
-                'mock/base_layers/geopf',
+            const pathFile = playwrightTestFile(
+                'mock', 'base_layers', 'geopf',
                 (parameters.get('layer') ?? 'ORTHOIMAGERY.ORTHOPHOTOS').replace('.', '_'),
                 parameters.get('TileMatrix') ?? '19',
                 parameters.get('TileRow') ?? '191427',
@@ -230,13 +229,13 @@ test.describe('Base layers', () => {
                 await fs.writeFile(pathFile, await response.body())
             } else if (existsSync(pathFile)) {
                 // fulfill route's request with mock file
-                route.fulfill({
+                await route.fulfill({
                     path: pathFile
                 })
             } else {
                 // fulfill route's request with default white tile
-                route.fulfill({
-                    path: path.join(__dirname, 'mock/white_tile.jpg')
+                await route.fulfill({
+                    path: playwrightTestFile('mock', 'white_tile.jpg')
                 })
             }
         });
@@ -304,7 +303,7 @@ test.describe('Base layers with space', () => {
 
 })
 
-test.describe('Base layers withdot', () => {
+test.describe('Base layers with dots', () => {
 
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=base_layers.withdot';
