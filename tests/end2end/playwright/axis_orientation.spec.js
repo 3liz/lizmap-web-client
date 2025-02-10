@@ -1,10 +1,10 @@
 // @ts-check
-import * as path from 'path';
+import { dirname } from 'path';
 import * as fs from 'fs/promises'
 import { existsSync } from 'node:fs';
 import { test, expect } from '@playwright/test';
 import {ProjectPage} from "./pages/project";
-import { __dirname, expectParametersToContain} from "./globals";
+import { expectParametersToContain, playwrightTestFile} from "./globals";
 
 // To update OSM and GeoPF tiles in the mock directory
 // IMPORTANT, this must not be set to `true` while committing, on GitHub. Set to `false`.
@@ -62,21 +62,21 @@ test.describe('Axis Orientation',
                 GetTiles.push(request.url());
 
                 // Build path file in mock directory
-                const pathFile = path.join(__dirname, 'mock/axis_orientation/osm/tiles'+(new URL(request.url()).pathname))
+                const pathFile = playwrightTestFile('mock', 'axis_orientation', 'osm' , 'tiles' + (new URL(request.url()).pathname));
                 if (UPDATE_MOCK_FILES && GetTiles.length <= 6) {
                     // Save file in mock directory for 6 tiles maximum
                     const response = await route.fetch();
-                    await fs.mkdir(path.dirname(pathFile), { recursive: true })
+                    await fs.mkdir(dirname(pathFile), { recursive: true })
                     await fs.writeFile(pathFile, await response.body())
                 } else if (existsSync(pathFile)) {
                     // fulfill route's request with mock file
-                    route.fulfill({
+                    await route.fulfill({
                         path: pathFile
                     })
                 } else {
                     // fulfill route's request with default transparent tile
-                    route.fulfill({
-                        path: path.join(__dirname, 'mock/transparent_tile.png')
+                    await route.fulfill({
+                        path: playwrightTestFile('mock', 'transparent_tile.png')
                     })
                 }
             });
@@ -153,21 +153,21 @@ test.describe('Axis Orientation',
                 GetTiles.push(request.url());
 
                 // Build path file in mock directory
-                const pathFile = path.join(__dirname, 'mock/axis_orientation/osm/tiles'+(new URL(request.url()).pathname))
+                const pathFile = playwrightTestFile('mock', 'axis_orientation', 'osm', 'tiles' + (new URL(request.url()).pathname));
                 if (UPDATE_MOCK_FILES && GetTiles.length <= 6) {
                     // Save file in mock directory for 6 tiles maximum
                     const response = await route.fetch();
-                    await fs.mkdir(path.dirname(pathFile), { recursive: true })
+                    await fs.mkdir(dirname(pathFile), { recursive: true })
                     await fs.writeFile(pathFile, await response.body())
                 } else if (existsSync(pathFile)) {
                     // fulfill route's request with mock file
-                    route.fulfill({
+                    await route.fulfill({
                         path: pathFile
                     })
                 } else {
                     // fulfill route's request with default transparent tile
-                    route.fulfill({
-                        path: path.join(__dirname, 'mock/transparent_tile.png')
+                    await route.fulfill({
+                        path: playwrightTestFile('mock', 'transparent_tile.png')
                     })
                 }
             });

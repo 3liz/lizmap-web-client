@@ -34,12 +34,24 @@ const __filename = fileURLToPath(import.meta.url);
 export const __dirname = path.dirname(__filename);
 
 /**
+ * Get the current file path according the list of given arguments.
+ * @returns {string} The final file path
+ */
+export function playwrightTestFile()   {
+    let finalPath = path.join(__dirname);
+    for (let i = 0; i < arguments.length; i++) {
+        finalPath = path.join(finalPath, arguments[i]);
+    }
+    return finalPath;
+}
+
+/**
  * Get the auth storage state path
  * @param {string} name The file name without extension
  * @returns {string} The path to auth storage state path
  */
 export function getAuthStorageStatePath(name) {
-    return path.join(__dirname, '.auth', name + '.json')
+    return playwrightTestFile('.auth', name + '.json');
 }
 
 /**

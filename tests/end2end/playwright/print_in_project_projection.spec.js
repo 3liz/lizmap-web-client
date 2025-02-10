@@ -1,7 +1,6 @@
 // @ts-check
-import * as path from 'path';
 import { test, expect } from '@playwright/test';
-import { __dirname, gotoMap, expectParametersToContain } from './globals';
+import { gotoMap, expectParametersToContain, playwrightTestFile } from './globals';
 
 test.describe('Print in project projection', () => {
 
@@ -27,7 +26,7 @@ test.describe('Print in project projection', () => {
                         "Content-Transfer-Encoding": "binary",
                         "Content-Type": "application/pdf",
                     },
-                    path: path.join(__dirname, 'mock/print_in_project_projection/empty/Paysage_A4.pdf')
+                    path: playwrightTestFile('mock', 'print_in_project_projection', 'empty', 'Paysage_A4.pdf')
                 })
             }
         });
@@ -73,7 +72,7 @@ test.describe('Print in project projection', () => {
                         "Content-Transfer-Encoding": "binary",
                         "Content-Type": "application/pdf",
                     },
-                    path:path.join(__dirname, 'mock/print_in_project_projection/baselayer/Paysage_A4.pdf')
+                    path:playwrightTestFile('mock', 'print_in_project_projection', 'baselayer', 'Paysage_A4.pdf')
                 })
             }
         });
