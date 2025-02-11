@@ -36,13 +36,13 @@ export async function auth_using_login(page: Page, login: string, password: stri
 }
 
 setup('authenticate as user_in_group_a', async ({page}) => {
-    await auth_using_login(page, 'user_in_group_a', 'admin', getAuthStorageStatePath('user_in_group_a'));
+    await auth_using_login(page, 'user_in_group_a', 'admin', path.join(__dirname, './.auth/user_in_group_a.json'));
 });
 
 setup('authenticate as admin', async ({page}) => {
-    await auth_using_login(page, 'admin', 'admin', getAuthStorageStatePath('admin'));
+    await auth_using_login(page, 'admin', 'admin', path.join(__dirname, './.auth/admin.json'));
 });
 
 setup('authenticate as publisher', async ({page}) => {
-    await auth_using_login(page, 'publisher', 'admin', getAuthStorageStatePath('publisher'));
+    await auth_using_login(page, 'publisher', 'admin', path.join(__dirname, './.auth/publisher.json'));
 });
