@@ -358,9 +358,11 @@ class Repository
     /**
      * Get the repository projects metadata.
      *
+     * @param bool $checkAcl If the ACL must be checked, according to the current user, default to true
+     *
      * @return ProjectMetadata[]
      */
-    public function getProjectsMetadata()
+    public function getProjectsMetadata($checkAcl = true)
     {
         $data = array();
         $dir = $this->getPath();
@@ -387,8 +389,11 @@ class Repository
                             $keepReference = false;
                             $proj = $this->getProject(substr($qgsFile, 0, -4), $keepReference);
                             // Get the project metadata and add it to the returned object
-                            // only if the authenticated user can access the project
-                            if ($proj != null && $proj->checkAcl()) {
+                            // only if the authenticated user can access the project (or if checkACL is disabled)
+                            if ($proj != null) {
+                                if ($checkAcl && !$proj->checkAcl()) {
+                                    continue;
+                                }
                                 $data[] = $proj->getMetadata();
                             }
                         } catch (UnknownLizmapProjectException $e) {

@@ -159,11 +159,13 @@ class lizmapRepository
     /**
      * Get the repository projects metadata.
      *
+     * @param bool $checkAcl If the ACL must be checked, according to the current user, default to true
+     *
      * @return Lizmap\Project\ProjectMetadata[]
      */
-    public function getProjectsMetadata()
+    public function getProjectsMetadata($checkAcl = true)
     {
-        return $this->repo->getProjectsMetadata();
+        return $this->repo->getProjectsMetadata($checkAcl);
     }
 
     public function getProjectsMainData()
