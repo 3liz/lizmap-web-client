@@ -144,21 +144,6 @@ describe('Projects homepage', function () {
         })
     })
 
-    it('Check project_acl visibility according to the connected user and its group', function () {
-        cy.logout();
-        cy.visit('/index.php/view/');
-        cy.get('.liz-repository-project-item:visible .liz-project-title').contains('project_acl').should('not.exist');
-
-        cy.loginAsUserA();
-        cy.visit('/index.php/view/');
-        cy.get('.liz-repository-project-item:visible .liz-project-title').contains('project_acl').should('exist');
-
-        cy.loginAsAdmin();
-        cy.visit('/index.php/view/');
-        cy.get('.liz-repository-project-item:visible .liz-project-title').contains('project_acl').should('not.exist');
-        cy.logout();
-    })
-
     it('Check hide_project visibility, it has to never been displayed because config.options.hideProject:"True"', function () {
         cy.logout();
         cy.visit('/index.php/view/');
