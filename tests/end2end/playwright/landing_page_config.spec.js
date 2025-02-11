@@ -5,11 +5,12 @@ import {HomePage} from "./pages/homepage";
 import {AdminPage} from "./pages/admin";
 
 test.describe('Landing page content', {
-    tag: ['@write'],
 }, () => {
 
-    test('Fill form & check content', async ({ browser }) => {
-
+    test('Fill form & check content', {
+        tag: '@write',
+    }, async ({ browser }) =>
+    {
         const adminContext = await browser.newContext({ storageState: getAuthStorageStatePath('admin') });
         const page = await adminContext.newPage();
         const adminPage = new AdminPage(page);
@@ -72,5 +73,26 @@ test.describe('Landing page content', {
         await expect(homeUserPage.topContent).toHaveText('Top unauth only');
         await expect(homeUserPage.bottomContent).toHaveText('Bottom unauth only');
 
+    });
+
+    [
+        { login: 'anonymous', count: 0 },
+        { login: 'user_in_group_a', count: 1 },
+        { login: 'admin', count: 0 },
+    ].forEach(({ login, count}) => {
+        test(`Check "project_acl" visibility according to "${login}" login and its group`,
+            {
+                tag: '@readonly',
+            }, async ({browser}) => {
+            let context;
+            if (login !== 'anonymous') {
+                context = await browser.newContext({storageState: getAuthStorageStatePath(login)});
+            } else {
+                context = await browser.newContext();
+            }
+            const homePage = new HomePage(await context.newPage());
+            await homePage.open();
+            await expect(homePage.page.getByRole('link', { name: 'project_acl' })).toHaveCount(count);
+        });
     });
 });
