@@ -55,14 +55,25 @@ export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 
 
     // Wait for WMS GetCapabilities promise
     let getCapabilitiesWMSPromise = page.waitForRequest(/SERVICE=WMS&REQUEST=GetCapabilities/);
-    await page.goto(url);
+
+    await expect(async () => {
+        const response = await page.goto(url);
+        expect(response.status()).toBe(200);
+    }).toPass({
+        intervals: [1_000, 2_000, 10_000],
+        timeout: 60_000
+    });
 
     // Wait for WMS GetCapabilities
     await getCapabilitiesWMSPromise;
     if (mapMustLoad) {
         if (waitForGetLegendGraphics) {
             // Wait for WMS GetLegendGraphic promise
-            const getLegendGraphicPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('GetLegendGraphic') === true);
+            const getLegendGraphicPromise = page.waitForRequest(
+                request => request.method() === 'POST' &&
+                    request.postData() != null &&
+                    request.postData()?.includes('GetLegendGraphic') === true
+            );
             // Normal check about the map
             // Wait for WMS GetLegendGraphic
             await getLegendGraphicPromise;
@@ -89,13 +100,25 @@ export async function reloadMap(page, check = true) {
 
     // Wait for WMS GetCapabilities promise
     let getCapabilitiesWMSPromise = page.waitForRequest(/SERVICE=WMS&REQUEST=GetCapabilities/);
-    await page.reload();
+
+    await expect(async () => {
+        const response = await page.reload();
+        expect(response.status()).toBe(200);
+    }).toPass({
+        intervals: [1_000, 2_000, 10_000],
+        timeout: 60_000
+    });
 
     // Wait for WMS GetCapabilities
     await getCapabilitiesWMSPromise;
     if (check) {
         // Wait for WMS GetLegendGraphic promise
-        const getLegendGraphicPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('GetLegendGraphic') === true);
+        const getLegendGraphicPromise = page.waitForRequest(
+            request =>
+                request.method() === 'POST' &&
+                request.postData() != null &&
+                request.postData()?.includes('GetLegendGraphic') === true
+        );
         // Normal check about the map
         // Wait for WMS GetLegendGraphic
         await getLegendGraphicPromise;
@@ -129,7 +152,7 @@ export async function editedFeatureIds(page) {
  * @return {Promise<URLSearchParams>}
  */
 export async function getEchoRequestParams(page, url) {
-    // Re-send the request with additionnal echo param to retrieve the OGC Request
+    // Re-send the request with additional echo param to retrieve the OGC Request
     let echoResponse = await page.request.get(url + '&__echo__');
     const originalUrl = decodeURIComponent(await echoResponse.text());
     // When the request has not been logged by echo proxy
