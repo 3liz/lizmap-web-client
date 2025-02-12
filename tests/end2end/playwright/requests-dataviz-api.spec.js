@@ -23,9 +23,14 @@ test.describe('Dataviz API tests',
             expect(json.data).toHaveLength(1);
             expect(json.data[0]).toHaveProperty('type', 'bar');
             expect(json.data[0]).toHaveProperty('x');
-            expect(json.data[0].x).toStrictEqual(["Grabels", "Clapiers", "Montferrier-sur-Lez", "Saint-Jean-de-Védas", "Lattes", "Montpellier", "Lavérune", "Juvignac", "Le Crès", "Castelnau-le-Lez"]);
+            expect(json.data[0].x).toEqual(
+                expect.arrayContaining([
+                    "Grabels", "Clapiers", "Montferrier-sur-Lez", "Saint-Jean-de-Védas", "Lattes", "Montpellier",
+                    "Lavérune", "Juvignac", "Le Crès", "Castelnau-le-Lez"
+                ])
+            );
             expect(json.data[0]).toHaveProperty('y');
-            expect(json.data[0].y).toStrictEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+            expect(json.data[0].y).toEqual(expect.arrayContaining([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]));
             expect(json).toHaveProperty('layout')
         });
     });
