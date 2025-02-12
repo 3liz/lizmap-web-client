@@ -40,4 +40,12 @@ export class HomePage extends BasePage {
         this.bottomContent = page.locator('#landingPageContentBottom');
         this.search = page.locator('#search');
     }
+
+    /**
+     * open function
+     * Open the URL on the home page.
+     */
+    async open(){
+        await this.page.goto('index.php');
+    }
 }
