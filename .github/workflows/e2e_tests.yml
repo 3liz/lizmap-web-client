@@ -14,9 +14,6 @@ on:
 #  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
 #  cancel-in-progress: true
 
-#permissions:
-#  pull-requests: write
-
 jobs:
   end2end:
     # The first condition is triggered when we set the new label
@@ -29,6 +26,8 @@ jobs:
       github.event_name == 'repository_dispatch' ||
       github.event_name == 'workflow_dispatch'
     name: "E2E QGIS ${{ matrix.qgis-server }} PG ${{ matrix.pg-postgis }} PHP ${{ matrix.php }}"
+    permissions:
+      issues: write
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -207,7 +206,7 @@ jobs:
         id: test-playwright-read-only
         working-directory: tests/end2end
         env:
-          CRTF_JSON_FILE: playwright-tag-readonly
+          CRTF_JSON_FILE: playwright-tagged-readonly.json
           PLAYWRIGHT_JSON_OUTPUT_NAME: tests-results-readonly.json
         run: |
           npx playwright test --grep @readonly ${{ env.PLAYWRIGHT_OPTIONS }}
@@ -259,7 +258,7 @@ jobs:
         id: test-playwright-no-tag
         working-directory: tests/end2end
         env:
-          CRTF_JSON_FILE: playwright-no-tag
+          CRTF_JSON_FILE: playwright-no-tag.json
           PLAYWRIGHT_JSON_OUTPUT_NAME: tests-results-no-tag.json
         if: |
           success() ||
@@ -271,7 +270,7 @@ jobs:
         id: test-playwright-write
         working-directory: tests/end2end
         env:
-          CRTF_JSON_FILE: playwright-tag-write
+          CRTF_JSON_FILE: playwright-tagged-write.json
           PLAYWRIGHT_JSON_OUTPUT_NAME: tests-results-write.json
         if: |
           success() ||
@@ -293,6 +292,7 @@ jobs:
             ${{ github.workspace }}/tests/end2end/test-results/
 
       - name: Publish test report
+        continue-on-error: true
         if: |
           success() ||
           steps.test-playwright-read-only.outcome != 'success' ||
@@ -300,18 +300,19 @@ jobs:
           steps.test-playwright-write.outcome != 'success'
         uses: ctrf-io/github-test-reporter@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.BOT_HUB_TOKEN || github.token  }}
         with:
           report-path: './tests/end2end/ctrf/*.json'
           summary-report: true
           flaky-report: true
-          #           pull-request-report: true
+          flaky-rate-report: true
           summary: true
-          #          pull-request: true
           title: All Playwright tests ${{ matrix.NAME }}
-      #          annotate: false
-      #          overwrite-comment: true
-      #          comment-tag: '${{ github.workflow }}-${{ github.job }}'
+          # pull-request-report: true
+          # pull-request: true
+          # annotate: false
+          # overwrite-comment: true
+          # comment-tag: '${{ github.workflow }}-${{ github.job }}'
 
       - name: Notify in case of playwright failure, from mainstream branches only
         # Check for playwright tests with and without tags "readonly"
