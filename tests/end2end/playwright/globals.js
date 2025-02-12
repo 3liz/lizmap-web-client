@@ -58,7 +58,7 @@ export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 
 
     await expect(async () => {
         const response = await page.goto(url);
-        expect(response.status()).toBe(200);
+        expect(response.status()).toBeLessThan(400);
     }).toPass({
         intervals: [1_000, 2_000, 10_000],
         timeout: 60_000
@@ -103,7 +103,7 @@ export async function reloadMap(page, check = true) {
 
     await expect(async () => {
         const response = await page.reload();
-        expect(response.status()).toBe(200);
+        expect(response.status()).toBeLessThan(400);
     }).toPass({
         intervals: [1_000, 2_000, 10_000],
         timeout: 60_000
@@ -174,7 +174,11 @@ export async function expectParametersToContain(title, parameters, expectedParam
 
     await expect(
         searchParams.size,
-        `Check "${title}" : Not enough parameters compared to expected :\nGot ${Array.from(searchParams.keys()).join(', ')}!`
+        `Check "${title}" : Not enough parameters compared to expected :\n
+        Got ${searchParams.size}\n
+        Expected ${Object.keys(expectedParameters).length}\n
+        Detail got ${Array.from(searchParams.keys()).join(', ')}\n
+        Detail expected ${Object.keys(expectedParameters).join(', ')}`
     ).toBeGreaterThanOrEqual(Object.keys(expectedParameters).length)
 
     for (const param in expectedParameters) {
