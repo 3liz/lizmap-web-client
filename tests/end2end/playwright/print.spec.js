@@ -78,7 +78,10 @@ test.describe('Print', () => {
             // 'multiline_label': 'Multiline label',
         })
         let getPrintParams = await expectParametersToContain('Print requests 1', getPrintRequest.postData() ?? '', expectedParameters1)
-        await expect(Array.from(getPrintParams.keys())).toHaveLength(15)
+        await expect(
+            Array.from(getPrintParams.keys()),
+            `Wrong length list with : ${Array.from(getPrintParams.keys()).join(', ')}`
+        ).toHaveLength(15);
 
         // Close message
         await page.locator('.btn-close').click();
