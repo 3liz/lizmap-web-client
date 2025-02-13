@@ -9,7 +9,7 @@ import { NetworkError, HttpError, ResponseError } from './Errors.js';
 import DOMPurify from 'dompurify';
 import * as pdfjsLib from 'pdfjs-dist';
 
-// Whitelist caricata in una variabile globale
+// Whitelist loaded on global variable
 const allowedDomains = window.allowedDomains || [];
 
 /**
@@ -172,14 +172,14 @@ export class Utils {
         return Utils.fetch(resource, options).then(response => {
             const contentType = response.headers.get('Content-Type') || '';
 
-            if (contentType.includes('text/html')) {
-                return response.text().catch(error => {
+            if (contentType includes 'text/html')) {
+                return response.text().catch(() => {
                     return Promise.reject(new ResponseError('HTML error: ' + error.message, response, resource, options));
                 });
             }
 
             return Promise.reject(new ResponseError('Invalid content type: ' + contentType, response, resource, options));
-        }).catch(error => {return Promise.reject(error)});
+        }).catch((error) => {return Promise.reject(error)});
     }
 
     /**
