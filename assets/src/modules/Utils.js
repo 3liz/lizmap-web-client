@@ -7,6 +7,10 @@
 
 import { NetworkError, HttpError, ResponseError } from './Errors.js';
 import DOMPurify from 'dompurify';
+import * as pdfjsLib from 'pdfjs-dist';
+
+// Whitelist loaded as global variable
+const allowedDomains = window.allowedDomains || [];
 
 /**
  * The main utils methods
@@ -223,4 +227,138 @@ export default class Utils {
             }
         });
     }
+
+    /**
+     * Function to sanitize the iframe URL
+     * @param {string} url - The URL to sanitize
+     * @returns {string} - The sanitized iframe HTML string
+     */
+    static sanitizeIframe(url) {
+        DOMPurify.addHook('afterSanitizeAttributes', node => {
+            if (node.nodeName === 'IFRAME') {
+                node.setAttribute('sandbox', 'allow-scripts allow-forms');
+            }
+        });
+
+        return DOMPurify.sanitize(
+            `<iframe src="${url}" width="600" height="400"></iframe>`,
+            {
+                ADD_TAGS: ['iframe', 'a'],
+                ADD_ATTR: ['src', 'width', 'height', 'data-filename', 'sandbox']
+            }
+        );
+    }
+
+    /**
+     * Function to check if the domain/IP is allowed
+     * @param {string} url - The URL to check
+     * @returns {boolean} - `true` if the domain/IP is allowed, otherwise `false`
+     */
+    static isWhitelisted(url) {
+        try {
+            const { hostname } = new URL(url);
+            return allowedDomains.includes(hostname);
+        } catch (error) {
+            return false;
+        }
+    }
+
+    /**
+     * Function to initialize and render a PDF in a canvas
+     * @param {string} pdfUrl - The URL of the PDF to render
+     */
+    static initializePdfViewer(pdfUrl) {
+        const sanitizedPdfUrl = DOMPurify.sanitize(pdfUrl);
+        let pdfDoc = null;
+        let pageNum = 1;
+        let pageRendering = false;
+        let pageNumPending = null;
+        const scale = 1.5;
+        const canvas = document.getElementById('pdfCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function renderPage(num) {
+            pageRendering = true;
+            pdfDoc.getPage(num).then(function(page) {
+                const viewport = page.getViewport({ scale: scale });
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+
+                const renderContext = {
+                    canvasContext: ctx,
+                    viewport: viewport
+                };
+                const renderTask = page.render(renderContext);
+
+                renderTask.promise.then(function() {
+                    pageRendering = false;
+                    if (pageNumPending !== null) {
+                        renderPage(pageNumPending);
+                        pageNumPending = null;
+                    }
+                });
+            });
+
+            document.getElementById('page_num').textContent = num;
+            document.getElementById('page_count').textContent = pdfDoc.numPages;
+        }
+
+        function queueRenderPage(num) {
+            if (pageRendering) {
+                pageNumPending = num;
+            } else {
+                renderPage(num);
+            }
+        }
+
+        function onPrevPage() {
+            if (pageNum <= 1) {
+                return;
+            }
+            pageNum--;
+            queueRenderPage(pageNum);
+        }
+
+        function onNextPage() {
+            if (pageNum >= pdfDoc.numPages) {
+                return;
+            }
+            pageNum++;
+            queueRenderPage(pageNum);
+        }
+
+        pdfjsLib.getDocument(sanitizedPdfUrl).promise.then(function(pdfDoc_) {
+            pdfDoc = pdfDoc_;
+            document.getElementById('page_count').textContent = pdfDoc.numPages;
+            renderPage(pageNum);
+        });
+
+        document.getElementById('prev').addEventListener('click', onPrevPage);
+        document.getElementById('next').addEventListener('click', onNextPage);
+    }
+
+    /**
+     * Function to get a sanitized URL for a PDF iframe
+     * @static
+     * @param {string} url - The URL of the PDF
+     * @returns {string} - The sanitized iframe HTML string
+     */
+    static getSanitizedPDFIframe(url) {
+        if (Utils.isWhitelisted(url)) {
+            try {
+                const sanitizedUrl = DOMPurify.sanitize(url);
+                const parsedUrl = new URL(sanitizedUrl, window.location.origin);
+                if (parsedUrl.origin !== window.location.origin) {
+                    throw new Error('Invalid URL');
+                }
+                return Utils.sanitizeIframe(`pdfviewer.tpl?file=${encodeURIComponent(parsedUrl.pathname + parsedUrl.search)}`);
+            } catch (error) {
+                throw new Error('URL not allowed');
+            }
+        } else {
+            throw new Error('URL not allowed');
+        }
+    }
 }
+
+export default Utils;
