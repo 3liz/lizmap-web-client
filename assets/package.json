@@ -4,4 +4,8 @@
   "type": "module",
   "author": "3Liz",
   "license": "ISC"
+},
+"dependencies": {
+    "pdfjs-dist": "^2.10.377",
+    "dompurify": "^2.3.4"
 }
