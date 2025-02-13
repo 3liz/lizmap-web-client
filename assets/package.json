@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "pdfjs-dist": "^2.10.377",
-    "dompurify": "^2.3.4"
+    "dompurify": "^2.3.4",
     "jsdoc": "^jsdoc@4.0.4"
   },
   "devDependencies": {
