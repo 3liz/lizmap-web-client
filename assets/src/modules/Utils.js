@@ -229,27 +229,6 @@ export default class Utils {
     }
 
     /**
-     * Function to sanitize the iframe URL
-     * @param {string} url - The URL to sanitize
-     * @returns {string} - The sanitized iframe HTML string
-     */
-    static sanitizeIframe(url) {
-        DOMPurify.addHook('afterSanitizeAttributes', node => {
-            if (node.nodeName === 'IFRAME') {
-                node.setAttribute('sandbox', 'allow-scripts allow-forms');
-            }
-        });
-
-        return DOMPurify.sanitize(
-            `<iframe src="${url}" width="600" height="400"></iframe>`,
-            {
-                ADD_TAGS: ['iframe', 'a'],
-                ADD_ATTR: ['src', 'width', 'height', 'data-filename', 'sandbox']
-            }
-        );
-    }
-
-    /**
      * Function to check if the domain/IP is allowed
      * @param {string} url - The URL to check
      * @returns {boolean} - `true` if the domain/IP is allowed, otherwise `false`
