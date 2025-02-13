@@ -360,5 +360,3 @@ export default class Utils {
         }
     }
 }
-
-export default Utils;
