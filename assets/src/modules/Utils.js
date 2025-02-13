@@ -9,7 +9,7 @@ import { NetworkError, HttpError, ResponseError } from './Errors.js';
 import DOMPurify from 'dompurify';
 import * as pdfjsLib from 'pdfjs-dist';
 
-// Whitelist loaded as global variable
+// Whitelist caricata in una variabile globale
 const allowedDomains = window.allowedDomains || [];
 
 /**
@@ -17,7 +17,7 @@ const allowedDomains = window.allowedDomains || [];
  * @class
  * @name Utils
  */
-export default class Utils {
+export class Utils {
 
     /**
      * Download a file provided as a string
@@ -200,7 +200,7 @@ export default class Utils {
     /**
      * Get the corresponding scale for the resolution with meters per unit
      * @static
-     * @param {number} resolution    - The scale
+     * @param {number} resolution    - The resolution
      * @param {number} metersPerUnit - The meters per unit
      * @returns {number} The corresponding scale
      * @see getResolutionFromScale
@@ -212,6 +212,11 @@ export default class Utils {
         return scale;
     }
 
+    /**
+     * Sanitize the GFI content
+     * @param {string} content - The content to sanitize
+     * @returns {string} The sanitized content
+     */
     static sanitizeGFIContent(content) {
         DOMPurify.addHook('afterSanitizeAttributes', node => {
             if (node.nodeName === 'IFRAME') {
@@ -229,6 +234,27 @@ export default class Utils {
     }
 
     /**
+     * Function to sanitize the iframe URL
+     * @param {string} url - The URL to sanitize
+     * @returns {string} - The sanitized iframe HTML string
+     */
+    static sanitizeIframe(url) {
+        DOMPurify.addHook('afterSanitizeAttributes', node => {
+            if (node.nodeName === 'IFRAME') {
+                node.setAttribute('sandbox', 'allow-scripts allow-forms');
+            }
+        });
+
+        return DOMPurify.sanitize(
+            `<iframe src="${url}" width="600" height="400"></iframe>`,
+            {
+                ADD_TAGS: ['iframe', 'a'],
+                ADD_ATTR: ['src', 'width', 'height', 'data-filename', 'sandbox']
+            }
+        );
+    }
+
+    /**
      * Function to check if the domain/IP is allowed
      * @param {string} url - The URL to check
      * @returns {boolean} - `true` if the domain/IP is allowed, otherwise `false`
@@ -237,7 +263,7 @@ export default class Utils {
         try {
             const { hostname } = new URL(url);
             return allowedDomains.includes(hostname);
-        } catch (error) {
+        } catch {
             return false;
         }
     }
@@ -256,9 +282,13 @@ export default class Utils {
         const canvas = document.getElementById('pdfCanvas');
         const ctx = canvas.getContext('2d');
 
+        /**
+         * Render a page of the PDF
+         * @param {number} num - The page number to render
+         */
         function renderPage(num) {
             pageRendering = true;
-            pdfDoc.getPage(num).then(function(page) {
+            pdfDoc.getPage(num).then(page => {
                 const viewport = page.getViewport({ scale: scale });
                 canvas.height = viewport.height;
                 canvas.width = viewport.width;
@@ -269,7 +299,7 @@ export default class Utils {
                 };
                 const renderTask = page.render(renderContext);
 
-                renderTask.promise.then(function() {
+                renderTask.promise.then(() => {
                     pageRendering = false;
                     if (pageNumPending !== null) {
                         renderPage(pageNumPending);
@@ -282,6 +312,10 @@ export default class Utils {
             document.getElementById('page_count').textContent = pdfDoc.numPages;
         }
 
+        /**
+         * Queue the rendering of a page
+         * @param {number} num - The page number to render
+         */
         function queueRenderPage(num) {
             if (pageRendering) {
                 pageNumPending = num;
@@ -290,6 +324,9 @@ export default class Utils {
             }
         }
 
+        /**
+         * Go to the previous page in the PDF
+         */
         function onPrevPage() {
             if (pageNum <= 1) {
                 return;
@@ -298,6 +335,9 @@ export default class Utils {
             queueRenderPage(pageNum);
         }
 
+        /**
+         * Go to the next page in the PDF
+         */
         function onNextPage() {
             if (pageNum >= pdfDoc.numPages) {
                 return;
@@ -306,7 +346,7 @@ export default class Utils {
             queueRenderPage(pageNum);
         }
 
-        pdfjsLib.getDocument(sanitizedPdfUrl).promise.then(function(pdfDoc_) {
+        pdfjsLib.getDocument(sanitizedPdfUrl).promise.then(pdfDoc_ => {
             pdfDoc = pdfDoc_;
             document.getElementById('page_count').textContent = pdfDoc.numPages;
             renderPage(pageNum);
@@ -331,7 +371,7 @@ export default class Utils {
                     throw new Error('Invalid URL');
                 }
                 return Utils.sanitizeIframe(`pdfviewer.tpl?file=${encodeURIComponent(parsedUrl.pathname + parsedUrl.search)}`);
-            } catch (error) {
+            } catch {
                 throw new Error('URL not allowed');
             }
         } else {
