@@ -5,7 +5,7 @@
  * @license MPL-2.0
  */
 import { Config } from './Config.js';
-import {Utils, isWhitelisted, sanitizeIframe } from '../modules/Utils.js';
+import Utils from '../modules/Utils.js';
 /**
  * @class
  * @name FeaturesTable
