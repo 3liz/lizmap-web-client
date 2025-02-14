@@ -7,7 +7,7 @@
 import { mainEventDispatcher } from '../modules/Globals.js';
 import { deepFreeze } from './config/Tools.js';
 import { createEnum } from './utils/Enums.js';
-import Utils from '../modules/Utils.js';
+import { Utils } from '../modules/Utils.js';
 
 import GeoJSON from 'ol/format/GeoJSON.js';
 import GPX from 'ol/format/GPX.js';
