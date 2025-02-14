@@ -42,11 +42,18 @@ test.describe('XSS', () => {
 
             let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
 
-            // Open popup
+            // Open popup with iframe src with different origin
             await project.clickOnMap(500, 285);
 
             await getFeatureInfoRequestPromise;
 
             await expect(project.popupContent.locator('iframe')).toHaveAttribute('sandbox', 'allow-scripts allow-forms');
+
+            // Open popup with iframe src with same origin
+            await project.clickOnMap(450, 245);
+
+            await getFeatureInfoRequestPromise;
+
+            await expect(project.popupContent.locator('iframe')).not.toHaveAttribute('sandbox', 'allow-scripts allow-forms');
         });
 });
