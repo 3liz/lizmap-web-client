@@ -56,7 +56,7 @@
     "undici": "^6.21.1",
     "webpack": "^5.97.1",
     "webpack-cli": "^6.0.1",
-    "webpack-merge": "^6.0.1"
-    "pdfjs-dist": "^2.10.377",
+    "webpack-merge": "^6.0.1",
+    "pdfjs-dist": "^2.10.377"
   }
 }
