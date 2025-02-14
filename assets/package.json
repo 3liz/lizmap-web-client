@@ -3,5 +3,32 @@
   "description": "Modules & Component for Lizmap",
   "type": "module",
   "author": "3Liz",
-  "license": "ISC"
+  "license": "ISC",
+"scripts": {
+    "start": "webpack serve --open",
+    "build": "webpack --mode production",
+    "jsdoc": "jsdoc -c docs/jsdoc.json",
+    "js:test": "mocha --loader ts-node/esm --recursive ./tests/js-units/node"
+  },
+  "dependencies": {
+    "pdfjs-dist": "^2.10.377",
+    "dompurify": "^2.3.4"
+  },
+  "devDependencies": {
+    "webpack": "^5.28.0",
+    "webpack-cli": "^4.6.0",
+    "webpack-dev-server": "^3.11.2",
+    "webpack-merge": "^5.8.0",
+    "babel-loader": "^8.2.2",
+    "@babel/core": "^7.13.10",
+    "@babel/preset-env": "^7.13.12",
+    "jsdoc": "^4.0.4",
+    "mocha": "^9.1.3",
+    "ts-node": "^10.4.0"
+  },
+  "workspaces": [
+    "assets",
+    "tests/js-units",
+    "tests/end2end"
+  ]
 }
