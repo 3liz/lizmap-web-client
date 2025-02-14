@@ -24,10 +24,15 @@ export default class SelectionInvert extends HTMLElement {
 
     connectedCallback() {
 
-        const isHidden = this.getAttribute('feature-type') && mainLizmap.config.layers[mainLizmap.getLayerNameByCleanName(this.getAttribute('feature-type'))]['selectedFeatures'].length === 0 ? 'hide' : '';
-        const isDisabled = this.getAttribute('feature-type') ? mainLizmap.config.layers[mainLizmap.getLayerNameByCleanName(this.getAttribute('feature-type'))]['selectedFeatures'].length === 0 : (mainLizmap.selectionTool.selectedFeaturesCount === 0 || mainLizmap.selectionTool.allFeatureTypeSelected.length > 1);
-        const mainTemplate = () => html`
-        <button type="button" class="selectiontool-invert btn btn-sm ${isHidden}" ?disabled=${isDisabled} @click=${() => mainLizmap.selectionTool.invert(mainLizmap.getLayerNameByCleanName(this.getAttribute('feature-type')))}  data-bs-toggle="tooltip" data-bs-title="${lizDict['selectiontool.toolbar.action.invert']}">
+        const mainTemplate = (hiddenClass, isDisabled, layerName) => html`
+        <button
+            type="button"
+            class="selectiontool-invert btn btn-sm ${hiddenClass}"
+            data-bs-toggle="tooltip"
+            data-bs-title="${lizDict['selectiontool.toolbar.action.invert']}"
+            ?disabled=${isDisabled}
+            @click=${() => mainLizmap.selectionTool.invert(layerName)}
+            >
             <svg class="icon-">
                 <use xlink:href="#mActionInvertSelection"></use>
             </svg>
@@ -43,7 +48,37 @@ export default class SelectionInvert extends HTMLElement {
 
         mainEventDispatcher.addListener(
             () => {
-                render(mainTemplate(), this);
+                // default template parameters when feature-type attribute is not set
+                let hiddenClass = '';
+                let isDisabled =
+                    mainLizmap.selectionTool.selectedFeaturesCount === 0 ||
+                    mainLizmap.selectionTool.allFeatureTypeSelected.length > 1;
+                let layerName = null;
+
+                // update template parameters if feature-type attribute is set
+                if (this.hasAttribute('feature-type')) {
+                    // default template parameters when feature-type attribute is set
+                    hiddenClass = 'hide';
+                    isDisabled = true;
+                    const featureTypeAttrValue = this.getAttribute('feature-type');
+                    // feature-type attribute can be a layer name or a layer clean name
+                    layerName = mainLizmap.getLayerNameByCleanName(featureTypeAttrValue);
+                    if (layerName) {
+                        // update template parameters if layer name is found in config
+                        if (layerName in mainLizmap.config.layers) {
+                            const layerConfig = mainLizmap.config.layers[layerName];
+                            // update template parameters if layer has selected features
+                            if (layerConfig && 'selectedFeatures' in layerConfig) {
+                                const selectedFeatures = layerConfig['selectedFeatures'];
+                                if (selectedFeatures && selectedFeatures.length) {
+                                    hiddenClass = '';
+                                    isDisabled = false;
+                                }
+                            }
+                        }
+                    }
+                }
+                render(mainTemplate(hiddenClass, isDisabled, layerName), this);
             },
             ['selectionTool.allFeatureTypeSelected', 'selection.changed']
         );
