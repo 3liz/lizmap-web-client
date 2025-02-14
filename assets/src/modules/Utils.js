@@ -210,7 +210,9 @@ export default class Utils {
 
     static sanitizeGFIContent(content) {
         DOMPurify.addHook('afterSanitizeAttributes', node => {
-            if (node.nodeName === 'IFRAME') {
+            // Sandbox all iframes except those from the same origin
+            if (node.nodeName === 'IFRAME' &&
+                !node.attributes['src'].textContent.startsWith(document.location.origin)) {
                 node.setAttribute('sandbox','allow-scripts allow-forms');
             }
         });
