@@ -3,5 +3,20 @@
   "description": "Modules & Component for Lizmap",
   "type": "module",
   "author": "3Liz",
-  "license": "ISC"
+  "license": "ISC",
+  "description": "Lizmap Web Client",
+  "main": "modules/Utils.js",
+  "scripts": {
+    "start": "webpack serve --open",
+    "build": "webpack --mode production"
+  },
+  "dependencies": {
+    "pdfjs-dist": "^2.10.377",
+    "dompurify": "^2.3.4"
+  },
+  "devDependencies": {
+    "webpack": "^5.28.0",
+    "webpack-cli": "^4.6.0",
+    "webpack-dev-server": "^3.11.2"
+  }
 }
