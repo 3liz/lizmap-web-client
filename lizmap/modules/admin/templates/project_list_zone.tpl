@@ -68,7 +68,7 @@ to view the hidden columns data and when there is no data for these columns -->
     {foreach $mapItems as $mi}
     {if $mi->type == 'rep'}
         {foreach $mi->childItems as $p}
-        <tr>
+        <tr data-repository-id="{$p['repository_id']}" data-project-id="{$p['id']}">
             <!-- Empty first column to use with the responsive (contains the triangle to open line details) -->
             <td title="{@admin.project.list.column.show.line.hidden.columns@}">
             </td>
@@ -76,7 +76,7 @@ to view the hidden columns data and when there is no data for these columns -->
             <!-- repository -->
             {* Warning : KEEP the line break after the title to improve the tooltip readability *}
             <td title="{if !empty($mi->title)}{$mi->title|strip_tags|eschtml}{/if}
-{@admin.project.list.column.path.label@ . ' : ' . $p['folder_repository']}">
+{@admin.project.list.column.path.label@ . ' : ' . $p['repository_id']}/">
             {* End of warning *}
                 <a target="_blank" href="{$p['url_repository']}">{$mi->id}</a>
             </td>
@@ -86,9 +86,13 @@ to view the hidden columns data and when there is no data for these columns -->
             <td title="{if !empty($p['title'])}{$p['title']|strip_tags|eschtml}{/if}
 {if !empty($p['abstract'])}{$p['abstract']|strip_tags|eschtml|truncate:150}{/if}">
             {* End of warning *}
-            {if $p['needs_update_error']}
-                {*The project cannot be displayed, do not provide a link to open it.*}
+            {if $p['needs_update_error'] || $p['acl_no_access']}
+                {* The project cannot be displayed, either it is too old, or the user has no access to it. *}
+                {* Do not provide a link to open it.*}
                 {$p['id']}
+                {if $p['acl_no_access']}
+                    <span title='{@admin.project.list.column.project.acl@}'>🔒</span>
+                {/if}
             {else}
                 <a target="_blank" href="{$p['url']}">{$p['id']}</a>
             {/if}

@@ -34,23 +34,35 @@ class project_listZone extends jZone
         // Loop for each repository and find projects
         $hasInspectionData = false;
         $hasSomeProjectsNotDisplayed = false;
+
+        // Project ACL are checked
+        // But there is an exception for users with lizmap.admin.access or lizmap.admin.server.information.view
+        $serverInfoAccess = (\jAcl2::check('lizmap.admin.access') || \jAcl2::check('lizmap.admin.server.information.view'));
+
         foreach ($repositories as $r) {
             $lizmapRepository = lizmap::getRepository($r);
             if (!jAcl2::check('lizmap.repositories.view', $r)) {
-                continue;
+                if (!$serverInfoAccess) {
+                    continue;
+                }
             }
             $lizmapViewItem = new lizmapMainViewItem($r, $lizmapRepository->getLabel());
-            $metadata = $lizmapRepository->getProjectsMetadata();
+            $metadata = $lizmapRepository->getProjectsMetadata(false);
             foreach ($metadata as $projectMetadata) {
+                $hasProjectAcl = false;
                 // Do not add the project if the authenticated user
-                // has no access to it
+                // has no access to it (except for an admin)
                 if (!$projectMetadata->getAcl()) {
-                    continue;
+                    if (!$serverInfoAccess) {
+                        continue;
+                    }
+                    $hasProjectAcl = true;
                 }
 
                 // Get the projects data needed for the administration list table
                 /** @var Lizmap\Project\ProjectMetadata $projectItem */
                 $projectItem = $this->getProjectListItem($inspectionDirectoryPath, $projectMetadata);
+                $projectItem['acl_no_access'] = $hasProjectAcl;
 
                 // If one of the projects has inspection data, set the boolean for the whole table
                 if ($projectItem['has_inspection_data']) {
@@ -157,7 +169,7 @@ class project_listZone extends jZone
         $rootRepositories = lizmap::getServices()->getRootRepositories();
         $repository = lizmap::getRepository($projectMetadata->getRepository())->getOriginalPath();
         if ($rootRepositories != '' && strpos($repository, $rootRepositories) === 0) {
-            $repository = basename($repository).'/';
+            $repository = basename($repository);
         }
 
         // Build the project properties table
@@ -175,7 +187,7 @@ class project_listZone extends jZone
                 'view~default:index',
                 array('repository' => $projectMetadata->getRepository())
             ),
-            'folder_repository' => $repository,
+            'repository_id' => $repository,
             'cfg_warnings_count' => $projectMetadata->countProjectCfgWarnings(),
             'cfg_warnings' => $projectMetadata->projectCfgWarnings(),
             'lizmap_web_client_target_version' => $projectMetadata->getLizmapWebClientTargetVersion(),
