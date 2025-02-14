@@ -67,6 +67,7 @@ export class Config {
         this._options = null;
         this._layers = null;
         this._layerTree = null;
+        this._invalid_layers = null;
         this._baselayers = null;
         this._layersOrder = null;
         this._hasMetadata = true;
@@ -182,9 +183,23 @@ export class Config {
      */
     get layerTree() {
         if (this._layerTree == null) {
-            this._layerTree = buildLayerTreeConfig(this._theWmsCapabilities.Capability.Layer, this.layers);
+            const [root, invalid] = buildLayerTreeConfig(this._theWmsCapabilities.Capability.Layer, this.layers);
+            this._layerTree = root;
+            this._invalid_layers = invalid;
         }
         return this._layerTree;
+    }
+
+    /**
+     * List of invalid layers, not found in the Lizmap configuration file, but found in the WMS GetCapabilities.
+     * Note, the getter layerTree must be called before at least one time, otherwise, an null is returned.
+     * @type {String[]}
+     */
+    get invalidLayersNotFoundInCfg() {
+        if (this._layerTree == null) {
+            return null;
+        }
+        return this._invalid_layers;
     }
 
     /**

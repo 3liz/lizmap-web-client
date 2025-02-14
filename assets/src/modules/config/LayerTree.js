@@ -12,7 +12,7 @@ import { AttributionConfig } from './Attribution.js';
 import { LayerConfig, LayersConfig } from './Layer.js';
 
 /**
- * Class representing a wMS layer Geographic Bounding Box
+ * Class representing a WMS layer Geographic Bounding Box
  * @class
  * @augments Extent
  */
@@ -403,45 +403,50 @@ export class LayerTreeGroupConfig extends LayerTreeItemConfig {
 /**
  * Function to build layer tree items config based on WMS capabilities
  * @function
- * @param {object}       wmsCapaLayerGroup - the wms layer capabilities
+ * @param {object}       wmsCapaLayerGroup - the WMS layer capabilities
  * @param {LayersConfig} layersCfg         - the lizmap layers config instance
- * @param {number}       level             - the wms layer level
- * @returns {LayerTreeItemConfig[]} the layer tree items of the wms layer
+ * @param {number}       level             - the WMS layer level
+ * @returns {Array[LayerTreeItemConfig[], String[]]} The layer tree items of the WMS layer, and the list of invalid layer names
  */
 function buildLayerTreeGroupConfigItems(wmsCapaLayerGroup, layersCfg, level) {
     let items = [];
+    let invalid = [];
+
     if (!wmsCapaLayerGroup.hasOwnProperty('Layer')) {
-        return items;
+        return [items, invalid];
     }
+
     for(const wmsCapaLayer of wmsCapaLayerGroup.Layer) {
         const wmsName = wmsCapaLayer.Name;
         const cfg = layersCfg.getLayerConfigByWmsName(wmsName);
         if (cfg == null) {
-            console.log('The WMS layer name `'+ wmsName +'` is unknown!');
+            invalid.push(wmsName);
             continue;
         }
-        if (wmsCapaLayer.hasOwnProperty('Layer') && wmsCapaLayer.Layer.length != 0) {
-            const groupItems = buildLayerTreeGroupConfigItems(wmsCapaLayer, layersCfg, level+1);
+
+        if (wmsCapaLayer.hasOwnProperty('Layer') && wmsCapaLayer.Layer.length !== 0) {
+            const [groupItems, invalid_layers] = buildLayerTreeGroupConfigItems(wmsCapaLayer, layersCfg, level+1);
             items.push(new LayerTreeGroupConfig(cfg.name, level+1, groupItems, wmsCapaLayer, cfg));
+            invalid.concat(invalid_layers);
         } else {
             // avoid to add the baseLayers group to the map if it doesn't contain any layer.
-            if(wmsName.toLowerCase() != 'baselayers') {
+            if(wmsName.toLowerCase() !== 'baselayers') {
                 items.push(new LayerTreeLayerConfig(cfg.name, level+1, wmsCapaLayer, cfg));
             }
 
         }
     }
-    return items;
+    return [items, invalid];
 }
 
 /**
  * Function to build the root layer tree config based on WMS capabilities
  * @function
- * @param {object}       wmsCapaLayerRoot - the wms root layer capabilities
+ * @param {object}       wmsCapaLayerRoot - the WMS root layer capabilities
  * @param {LayersConfig} layersCfg        - the lizmap layers config instance
- * @returns {LayerTreeGroupConfig} The root layer tree config based on WMS capabilities
+ * @returns {LayerTreeGroupConfig} The root layer tree config based on WMS capabilities, and the list of invalid layer names.
  */
 export function buildLayerTreeConfig(wmsCapaLayerRoot, layersCfg) {
-    let items = buildLayerTreeGroupConfigItems(wmsCapaLayerRoot, layersCfg, 0);
-    return new LayerTreeGroupConfig('root', 0, items, wmsCapaLayerRoot);
+    const [items, invalid] = buildLayerTreeGroupConfigItems(wmsCapaLayerRoot, layersCfg, 0);
+    return [new LayerTreeGroupConfig('root', 0, items, wmsCapaLayerRoot), invalid];
 }

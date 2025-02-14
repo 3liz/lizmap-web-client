@@ -32,8 +32,9 @@ function getRootMapGroupState(name) {
 
     const layers = new LayersConfig(config.layers);
 
-    const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+    const [rootCfg, invalid] = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
     expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
+    expect(invalid).to.have.length(0)
 
     const layersOrder = buildLayersOrder(config, rootCfg);
 

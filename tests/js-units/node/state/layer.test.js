@@ -32,8 +32,9 @@ function getRootLayerGroupState(name) {
 
     const layers = new LayersConfig(config.layers);
 
-    const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+    const [rootCfg, invalid] = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
     expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
+    expect(invalid).to.have.length(0)
 
     const layersOrder = buildLayersOrder(config, rootCfg);
 
@@ -63,8 +64,9 @@ function getLayersAndGroupsCollection(name) {
 
     const layers = new LayersConfig(config.layers);
 
-    const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+    const [rootCfg, invalid] = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
     expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
+    expect(invalid).to.have.length(0)
 
     const layersOrder = buildLayersOrder(config, rootCfg);
 
@@ -1670,8 +1672,9 @@ describe('LayersAndGroupsCollection', function () {
             "group-without-children"
         )
 
-        const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+        const [rootCfg, invalid] = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
         expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
+        expect(invalid).to.have.length(0)
 
         // `group-without-children` has a layerTree config and it is a layer not a group
         expect(rootCfg.childrenCount).to.be.eq(4)

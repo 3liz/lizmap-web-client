@@ -30,7 +30,8 @@ function getBaseLayersState(name) {
     expect(config).to.not.be.undefined
 
     const layers = new LayersConfig(config.layers);
-    const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+    const [rootCfg, invalid] = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+    expect(invalid).to.have.length(0)
 
     let baseLayerTreeItem = null;
     for (const layerTreeItem of rootCfg.getChildren()) {
@@ -158,7 +159,8 @@ describe('BaseLayersState', function () {
         config.layers[blName] = blGroupCfg;
 
         const layers = new LayersConfig(config.layers);
-        const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+        const [rootCfg, invalid] = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+        expect(invalid).to.have.length(0)
 
         const blGroup = rootCfg.children[6];
         expect(blGroup).to.be.instanceOf(LayerTreeGroupConfig)
