@@ -380,5 +380,3 @@ export class Utils {
         }
     }
 }
-
-export { Utils };
