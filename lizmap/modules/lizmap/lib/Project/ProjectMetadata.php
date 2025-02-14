@@ -38,6 +38,7 @@ class ProjectMetadata
             'bbox' => $project->getBbox(),
             'wmsGetCapabilitiesUrl' => $project->getWMSGetCapabilitiesUrl(),
             'wmtsGetCapabilitiesUrl' => $project->getWMTSGetCapabilitiesUrl(),
+            'wfsGetCapabilitiesUrl' => $project->getWFSGetCapabilitiesUrl(),
             'map' => $project->getRelativeQgisPath(),
             'acl' => $project->checkAcl(),
             'qgisProjectVersion' => $project->getQgisProjectVersion(),
@@ -181,6 +182,17 @@ class ProjectMetadata
     public function getWMTSGetCapabilitiesUrl()
     {
         return $this->data['wmtsGetCapabilitiesUrl'];
+    }
+    }
+
+    /**
+     * The url of WFS GetCapabilities.
+     *
+     * @return string
+     */
+    public function getWFSGetCapabilitiesUrl()
+    {
+        return $this->data['wfsGetCapabilitiesUrl'];
     }
 
     /**
