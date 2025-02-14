@@ -11,7 +11,7 @@ import { html, render } from 'lit-html';
 import { keyed } from 'lit-html/directives/keyed.js';
 
 import MaskLayer from '../modules/Mask.js';
-import Utils from '../modules/Utils.js';
+import { Utils } from '../modules/Utils.js';
 
 import WKT from 'ol/format/WKT.js';
 import { transformExtent, get as getProjection } from 'ol/proj.js';
