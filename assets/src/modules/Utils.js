@@ -10,7 +10,7 @@ import DOMPurify from 'dompurify';
 import * as pdfjsLib from 'pdfjs-dist';
 
 // Whitelist loaded on global variable
-const allowedDomains = window.allowedDomains || [];
+const allowedDomains = (typeof window !== 'undefined' && window.allowedDomains) || [];
 
 /**
  * The main utils methods
@@ -18,7 +18,6 @@ const allowedDomains = window.allowedDomains || [];
  * @name Utils
  */
 export class Utils {
-
     /**
      * Download a file provided as a string
      * @static
@@ -381,3 +380,5 @@ export class Utils {
         }
     }
 }
+
+export { Utils };
