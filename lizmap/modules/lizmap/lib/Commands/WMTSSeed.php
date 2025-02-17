@@ -46,7 +46,7 @@ class WMTSSeed extends \Jelix\Scripts\ModuleCommandAbstract
 
             return 1;
         }
-        $WMTSCache = new \Lizmap\CliHelpers\WMTSCache(function ($str) use ($output) {$output->writeln($str); });
+        $WMTSCache = new \Lizmap\CliHelpers\WMTSCache(function ($str) use ($output): void {$output->writeln($str); });
 
         return $WMTSCache->seed(
             $input->getArgument('repository'),

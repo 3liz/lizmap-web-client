@@ -121,7 +121,7 @@ class qgisVectorLayerDatasource
 
                 // Complex sub-query
                 if (substr($table, 0, 1) == '(' and substr($table, -1) == ')') {
-                    $table = $table.' fooliz';
+                    $table .= ' fooliz';
                 }
                 // Simple "schemaname"."table_name"
                 elseif (preg_match('#"."#', $table)) {

@@ -825,7 +825,7 @@ class Project
         if ($attributeLayers) {
             $hasDisplayedLayer = !$onlyDisplayedLayers;
             if ($onlyDisplayedLayers) {
-                foreach ($attributeLayers as $key => $obj) {
+                foreach ($attributeLayers as $obj) {
                     if (!property_exists($obj, 'hideLayer')
                         || strtolower($obj->hideLayer) != 'true'
                     ) {
