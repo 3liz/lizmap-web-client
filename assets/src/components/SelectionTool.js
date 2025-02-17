@@ -15,10 +15,18 @@ import {html, render} from 'lit-html';
  * @augments HTMLElement
  */
 export default class SelectionTool extends HTMLElement {
+    /**
+     * The HTML element constructor
+     * @class
+     * @private
+     */
     constructor() {
         super();
     }
 
+    /**
+     * Invoked when a component is added to the document's DOM.
+     */
     connectedCallback() {
 
         const titleTemplate = () => html`
@@ -225,23 +233,36 @@ export default class SelectionTool extends HTMLElement {
                 'selectionTool.allFeatureTypeSelected',
                 'selection.changed',
                 'filteredFeatures.changed',
-                'selection.bufferValue'
+                'selection.bufferValue',
             ]
         );
     }
 
+    /**
+     * Invoked when a component is removed from the document's DOM.
+     */
     disconnectedCallback() {
     }
 
+    /**
+     * The filter is disabled
+     * @type {boolean}
+     */
     get isFilterDisabled () {
         return mainLizmap.selectionTool.selectedFeaturesCount === 0 &&
             mainLizmap.selectionTool.filteredFeaturesCount === 0;
     }
 
+    /**
+     * The results of the selection
+     * @type {string}
+     */
     get results () {
-        return mainLizmap.selectionTool.selectedFeaturesCount > 1 ?
-            lizDict['selectiontool.results.more'].replace('%s', mainLizmap.selectionTool.selectedFeaturesCount) :
-            mainLizmap.selectionTool.selectedFeaturesCount === 1 ?
-                lizDict['selectiontool.results.one'] : lizDict['selectiontool.results.none'];
+        if (mainLizmap.selectionTool.selectedFeaturesCount > 1 ) {
+            return lizDict['selectiontool.results.more'].replace('%s', mainLizmap.selectionTool.selectedFeaturesCount);
+        } else if (mainLizmap.selectionTool.selectedFeaturesCount === 1) {
+            return lizDict['selectiontool.results.one'];
+        }
+        return lizDict['selectiontool.results.none'];
     }
 }
