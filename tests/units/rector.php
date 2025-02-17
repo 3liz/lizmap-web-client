@@ -4,6 +4,29 @@ declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
 
+// Set the level of type coverage
+$levelTypeCoverage = 0;
+$levelDeadCode = 0;
+$levelCodeQuality = 0;
+
+function getLevelTypeCoverage(): int
+{
+    global $levelTypeCoverage;
+    return $levelTypeCoverage;
+}
+
+function getLevelDeadCode(): int
+{
+    global $levelDeadCode;
+    return $levelDeadCode;
+}
+
+function getLevelCodeQuality(): int
+{
+    global $levelCodeQuality;
+    return $levelCodeQuality;
+}
+
 return RectorConfig::configure()
     ->withPaths([
         __DIR__ . '/../../lizmap/modules/lizmap/classes/',
@@ -20,4 +43,6 @@ return RectorConfig::configure()
     ])
     // uncomment to reach your current PHP version
     // ->withPhpSets()
-    ->withTypeCoverageLevel(0);
+    ->withTypeCoverageLevel($levelTypeCoverage)
+    ->withDeadCodeLevel($levelDeadCode)
+    ->withCodeQualityLevel($levelCodeQuality);

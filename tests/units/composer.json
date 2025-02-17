@@ -10,7 +10,8 @@
     "require": {
         "php": ">=8.1.0",
         "phpunit/phpunit": "^10.5.29",
-        "phpstan/phpstan": "1.11.11"
+        "phpstan/phpstan": "1.11.11",
+        "symfony/console": "*"
     },
     "autoload": {
         "classmap": ["../../lizmap/modules/lizmap/classes/" ],
@@ -19,5 +20,9 @@
     "minimum-stability": "stable",
     "require-dev": {
         "rector/rector": "1.2.*"
+    },
+    "scripts": {
+        "rector": "php listRules.php && vendor/bin/rector --dry-run",
+        "rector:fix": "php listRules.php && vendor/bin/rector"
     }
 }

@@ -303,6 +303,21 @@ npm run pretest
 npm run pretest:fix
 ```
 
+## PHP Rector
+
+PHP Rector can be run if you're located in `tests/units`.
+
+```bash
+# Install composer dependencies
+composer install
+
+# Run PHP Rector without fixing issues
+composer rector
+
+# Run PHP Rector and fix issues
+composer rector:fix
+```
+
 ## Using LDAP
 
 Into `lizmap/var/config/localconfig.ini.php`:
