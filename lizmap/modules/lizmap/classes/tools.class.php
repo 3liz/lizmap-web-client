@@ -83,7 +83,7 @@ class tools
         } elseif ($taille_fichier >= 1024) {
             $taille_fichier = round($taille_fichier / 1024 * 100) / 100 .' Ko';
         } else {
-            $taille_fichier = $taille_fichier.' o';
+            $taille_fichier .= ' o';
         }
 
         return $taille_fichier;

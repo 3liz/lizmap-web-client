@@ -340,7 +340,7 @@ class WMTSCache
                             if ($verbose && $tileProgress * 100 / $tileCount >= $tileStep) {
                                 $tileStep = floor($tileProgress * 100 / $tileCount);
                                 $outputCallback('Progression: '.$tileStep.'%, '.$tileProgress.' tiles generated on '.$tileCount.' tiles');
-                                $tileStep = $tileStep + $tileStepHeight;
+                                $tileStep += $tileStepHeight;
                             }
                         }
                         ++$row;

@@ -39,7 +39,7 @@ class qgisExpressionUtils
     public static function getCriteriaFromExpressions($expressions)
     {
         $criteriaFrom = array();
-        foreach ($expressions as $id => $exp) {
+        foreach ($expressions as $exp) {
             if ($exp === null || trim($exp) === '') {
                 continue;
             }

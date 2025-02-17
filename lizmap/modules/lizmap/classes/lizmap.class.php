@@ -340,7 +340,7 @@ class lizmap
      */
     public static function updateRepository($key, $data)
     {
-        if (!key_exists($key, self::$repositoryInstances)) {
+        if (!array_key_exists($key, self::$repositoryInstances)) {
             return false;
         }
 

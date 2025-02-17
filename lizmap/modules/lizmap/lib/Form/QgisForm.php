@@ -193,7 +193,7 @@ class QgisForm implements QgisFormControlsInterface
         // we need some QgisFormControl data in some case where we have only the jForms object,
         // not the QgisForm object (like in jForms datasource objects etc.)
         $privateData['qgis_controls'] = array();
-        foreach ($this->formControls as $fieldName => $formControl) {
+        foreach ($this->formControls as $formControl) {
             $privateData['qgis_controls'][$formControl->ref] = array(
                 'valueRelationData' => $formControl->valueRelationData,
             );
@@ -1283,7 +1283,7 @@ class QgisForm implements QgisFormControlsInterface
             }
             if (substr($newStorageUrl, -1) == '/') {
                 // it's a directory, this should't happen, maybe it's better to throw an exception
-                $newStorageUrl = $newStorageUrl.$filename;
+                $newStorageUrl .= $filename;
             }
             // temp file on local file system
             $newFileToCopy = $uploadCtrl->getTempFile($form->getContainer()->privateData[$ref]['newfile']);

@@ -537,7 +537,7 @@ class ProjectConfig
         $layersWithLabeledFields = array();
 
         // Attribute layers
-        foreach ($this->getAttributeLayers() as $key => $config) {
+        foreach ($this->getAttributeLayers() as $config) {
             if ($config->hideLayer == 'True') {
                 continue;
             }
@@ -545,7 +545,7 @@ class ProjectConfig
         }
 
         // Dataviz layers
-        foreach ($this->getDatavizLayers() as $o => $config) {
+        foreach ($this->getDatavizLayers() as $config) {
             $layerId = $config->layerId;
             if (array_key_exists($layerId, $layersWithLabeledFields)) {
                 continue;
@@ -554,7 +554,7 @@ class ProjectConfig
         }
 
         // Form filter layers
-        foreach ($this->getFormFilterLayers() as $o => $config) {
+        foreach ($this->getFormFilterLayers() as $config) {
             $layerId = $config->layerId;
             if (array_key_exists($layerId, $layersWithLabeledFields)) {
                 continue;
@@ -601,7 +601,7 @@ class ProjectConfig
     {
         // Get the correspondance between the plot uid & the plot ID (integer)
         $plotUidToId = array();
-        foreach ($this->datavizLayers as $id => $plot) {
+        foreach ($this->datavizLayers as $plot) {
             // If a uuid exists in the config, use it
             if (property_exists($plot, 'uuid')) {
                 $plotUidToId[$plot->uuid] = $plot->order;

@@ -98,8 +98,8 @@ class Config
      */
     public function getLogItem($key)
     {
-        if (!key_exists($key, $this->logItems)) {
-            if (!key_exists('item:'.$key, $this->data)) {
+        if (!array_key_exists($key, $this->logItems)) {
+            if (!array_key_exists('item:'.$key, $this->data)) {
                 return null;
             }
             $this->logItems[$key] = new Item($key, $this->data['item:'.$key], $this->appContext);

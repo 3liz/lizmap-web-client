@@ -128,7 +128,7 @@ class WFSRequest extends OGCRequest
 
         // Merge login filter
         $attribute = '';
-        foreach ($loginFilters as $typename => $lfilter) {
+        foreach ($loginFilters as $lfilter) {
             $expFilters[] = '( '.$lfilter['filter'].' )';
             $attribute = $lfilter['filterAttribute'];
         }
