@@ -64,3 +64,23 @@ jobs:
 
       - name: Run ESLint
         run: npm run pretest-fix
+
+  rector:
+      name: "Rector 🛠️"
+      runs-on: ubuntu-latest
+      steps:
+
+      - name: "Checkout"
+        uses: actions/checkout@v4
+
+      - uses: "shivammathur/setup-php@v2"
+        with:
+          php-version: "latest"
+
+      - uses: "ramsey/composer-install@v3"
+        with:
+          working-directory: "tests/units"
+
+      - name: "Execute Rector"
+        working-directory: "tests/units"
+        run: composer rector
