@@ -16,5 +16,8 @@
         "classmap": ["../../lizmap/modules/lizmap/classes/" ],
         "psr-4": {"Lizmap\\": "../../lizmap/modules/lizmap/lib/"}
     },
-    "minimum-stability": "stable"
+    "minimum-stability": "stable",
+    "require-dev": {
+        "rector/rector": "1.2.*"
+    }
 }
