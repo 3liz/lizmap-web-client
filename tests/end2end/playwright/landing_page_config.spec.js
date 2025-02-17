@@ -83,15 +83,15 @@ test.describe('Landing page content', {
             {
                 tag: '@readonly',
             }, async ({browser}) => {
-            let context;
-            if (login !== 'anonymous') {
-                context = await browser.newContext({ storageState: `playwright/.auth/${login}.json` });
-            } else {
-                context = await browser.newContext();
-            }
-            const homePage = new HomePage(await context.newPage());
-            await homePage.open();
-            await expect(homePage.page.getByRole('link', { name: 'project_acl' })).toHaveCount(count);
+                let context;
+                if (login !== 'anonymous') {
+                    context = await browser.newContext({ storageState: `playwright/.auth/${login}.json` });
+                } else {
+                    context = await browser.newContext();
+                }
+                const homePage = new HomePage(await context.newPage());
+                await homePage.open();
+                await expect(homePage.page.getByRole('link', { name: 'project_acl' })).toHaveCount(count);
         });
     });
 });
