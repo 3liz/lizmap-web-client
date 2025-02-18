@@ -17,7 +17,7 @@ import Snapping from './Snapping.js';
 import Layers from './Layers.js';
 import WFS from './WFS.js';
 import WMS from './WMS.js';
-import Utils from './Utils.js';
+import { Utils } from './Utils.js';
 import Action from './Action.js';
 import FeatureStorage from './FeatureStorage.js';
 import Popup from './Popup.js';

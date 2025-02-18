@@ -7,7 +7,7 @@
  */
 
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
-import Utils from '../modules/Utils.js';
+import { Utils } from '../modules/Utils.js';
 import { MapLayerLoadStatus } from '../modules/state/MapLayer.js';
 
 import { html, render } from 'lit-html';

@@ -5,7 +5,7 @@
  * @license MPL-2.0
  */
 
-import Utils from './Utils.js';
+import { Utils } from './Utils.js';
 
 /**
  * @class

@@ -11,7 +11,7 @@ import EventDispatcher from './../../utils/EventDispatcher.js';
 import { convertNumber, convertBoolean } from './../utils/Converters.js';
 import { Extent } from './../utils/Extent.js';
 import { OptionsConfig } from './../config/Options.js';
-import Utils from './../Utils.js';
+import { Utils } from '../Utils.js';
 import { get as getProjection, transformExtent } from 'ol/proj.js';
 
 /**
