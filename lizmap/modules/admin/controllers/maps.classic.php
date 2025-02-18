@@ -598,7 +598,7 @@ class mapsCtrl extends jController
             /** @var jResponseRedirect $rep */
             $rep = $this->getResponse('redirect');
             // undefined form : redirect
-            $rep->action = 'admin~config:index';
+            $rep->action = 'admin~maps:index';
 
             return $rep;
         }
