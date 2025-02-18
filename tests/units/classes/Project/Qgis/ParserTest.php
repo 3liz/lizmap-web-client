@@ -10,7 +10,7 @@ use Lizmap\App;
  */
 class ParserTest extends TestCase
 {
-    public function testReadVersion()
+    public function testReadVersion(): void
     {
         $xml_path = __DIR__.'/../../Project/Ressources/montpellier.qgs';
         // Open the document with XML Reader at the root element document
@@ -21,7 +21,7 @@ class ParserTest extends TestCase
         $this->assertEquals('3.10.5-A Coruña', $oXml->getAttribute('version'));
     }
 
-    public function testReadAttributes()
+    public function testReadAttributes(): void
     {
         $xmlStr = '
         <excludeAttributesWFS>
@@ -49,7 +49,7 @@ class ParserTest extends TestCase
         $this->assertEquals($expected, $values);
     }
 
-    public function testReadItems()
+    public function testReadItems(): void
     {
         $xmlStr = '
             <custom-order enabled="0">
@@ -79,7 +79,7 @@ class ParserTest extends TestCase
         $this->assertEquals('osm_mapnik20180315181738526', $values[12]);
     }
 
-    public function testReadValues()
+    public function testReadValues(): void
     {
         $xmlStr = '
         <WMSCrsList type="QStringList">
@@ -101,7 +101,7 @@ class ParserTest extends TestCase
         $this->assertEquals($expected, $values);
     }
 
-    public function testReadOption()
+    public function testReadOption(): void
     {
         $xmlStr = '
               <Option type="Map">
@@ -297,7 +297,7 @@ class ParserTest extends TestCase
         $this->assertEquals($expectedOptions, $options);
     }
 
-    public function testReadCustomProperties()
+    public function testReadCustomProperties(): void
     {
         $xmlStr = '
         <customproperties>

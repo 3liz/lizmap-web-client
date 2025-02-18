@@ -10,7 +10,7 @@ use Lizmap\App;
  */
 class ProjectVariablesTest extends TestCase
 {
-    public function testConstruct()
+    public function testConstruct(): void
     {
         $data = array(
             'variableNames' => array('lizmap_user', 'lizmap_user_groups'),
@@ -25,7 +25,7 @@ class ProjectVariablesTest extends TestCase
         $this->assertEquals('lizmap', $variables->getVariableValue('lizmap_user'));
     }
 
-    public function testFromXmlReader()
+    public function testFromXmlReader(): void
     {
         $xmlStr = '
         <Variables>
@@ -71,7 +71,7 @@ class ProjectVariablesTest extends TestCase
         $this->assertFalse($variables->hasVariableName('lizmap_user'));
     }
 
-    public function testGetVariablesAsKeyArray()
+    public function testGetVariablesAsKeyArray(): void
     {
         $data = array(
             'variableNames' => array('lizmap_user', 'lizmap_user_groups'),

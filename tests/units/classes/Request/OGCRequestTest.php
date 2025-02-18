@@ -4,7 +4,7 @@ use PHPUnit\Framework\TestCase;
 
 class OGCRequestTest extends TestCase
 {
-    public function testParam()
+    public function testParam(): void
     {
         $params = array(
             'request' => 'getmap',
@@ -21,7 +21,7 @@ class OGCRequestTest extends TestCase
         $this->assertEquals($default, $ogc->param('empty', $default, true));
     }
 
-    public function testParameters()
+    public function testParameters(): void
     {
         $params = array(
             'request' => 'getmap',
@@ -66,7 +66,7 @@ class OGCRequestTest extends TestCase
         $this->assertEquals($expectedParameters, $parameters);
     }
 
-    public function testProcess()
+    public function testProcess(): void
     {
         $params = array(
             'service' => 'WMS',

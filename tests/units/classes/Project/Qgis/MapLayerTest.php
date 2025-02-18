@@ -10,7 +10,7 @@ use Lizmap\App;
  */
 class MapLayerTest extends TestCase
 {
-    public function testFromXmlReader()
+    public function testFromXmlReader(): void
     {
         // EmbeddedLayer
         $xmlStr = '

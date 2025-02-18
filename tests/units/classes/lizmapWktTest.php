@@ -3,7 +3,8 @@ use PHPUnit\Framework\TestCase;
 
 class lizmapWktTest extends TestCase {
 
-    function testChecking() {
+    function testChecking(): void
+    {
         $wktArray = array(
             'POINT (30 10)',
             'POINT(30 10)',
@@ -100,7 +101,8 @@ class lizmapWktTest extends TestCase {
         }
     }
 
-    function testFixing() {
+    function testFixing(): void
+    {
         // Unfixed WKT
         $wkt = 'POINT (30 10)';
         $nWkt = lizmapWkt::fix($wkt);
@@ -141,7 +143,8 @@ class lizmapWktTest extends TestCase {
         $this->assertEquals($expectedWkt, $nWkt);
     }
 
-    function testPoint() {
+    function testPoint(): void
+    {
         $wkt = 'POINT (30 10)';
         $geom = lizmapWkt::parse($wkt);
 
@@ -161,7 +164,7 @@ class lizmapWktTest extends TestCase {
         $this->assertCount(2, $geom['coordinates']);
     }
 
-    function testMultiPoint() {
+    function testMultiPoint(): void {
         $wkt = 'MULTIPOINT ((30 10))';
         $geom = lizmapWkt::parse($wkt);
 
@@ -194,7 +197,8 @@ class lizmapWktTest extends TestCase {
         $this->assertCount(2, $geom['coordinates'][0]);
     }
 
-    function testLineString() {
+    function testLineString(): void
+    {
         $wkt = 'LINESTRING (30 10, 10 30, 40 40)';
         $geom = lizmapWkt::parse($wkt);
 
@@ -214,7 +218,8 @@ class lizmapWktTest extends TestCase {
         $this->assertCount(3, $geom['coordinates']);
     }
 
-    function testMultiLineString() {
+    function testMultiLineString(): void
+    {
         $wkt = 'MULTILINESTRING ((30 10, 10 30, 40 40))';
         $geom = lizmapWkt::parse($wkt);
 
@@ -247,7 +252,8 @@ class lizmapWktTest extends TestCase {
         $this->assertCount(3, $geom['coordinates'][0]);
     }
 
-    function testPolygon() {
+    function testPolygon(): void
+    {
         $wkt = 'POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))';
         $geom = lizmapWkt::parse($wkt);
 
@@ -280,7 +286,8 @@ class lizmapWktTest extends TestCase {
         $this->assertCount(5, $geom['coordinates'][0]);
     }
 
-    function testMultiPolygon() {
+    function testMultiPolygon(): void
+    {
         $wkt = 'MULTIPOLYGON (((30 10, 40 40, 20 40, 10 20, 30 10)))';
         $geom = lizmapWkt::parse($wkt);
 
@@ -316,7 +323,8 @@ class lizmapWktTest extends TestCase {
         $this->assertCount(5, $geom['coordinates'][0][0]);
     }
 
-    function testUnknown() {
+    function testUnknown(): void
+    {
         $wkt = 'GEOMETRY (((30 10, 40 40, 20 40, 10 20, 30 10)))';
         $geom = lizmapWkt::parse($wkt);
 

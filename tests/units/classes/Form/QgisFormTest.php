@@ -138,7 +138,7 @@ class QgisFormTest extends TestCase
      * @param mixed $file
      * @param mixed $fields
      */
-    public function testConstruct($projectKey, $layer, $fields)
+    public function testConstruct($projectKey, $layer, $fields): void
     {
         $layer = $this->setUpEnv($projectKey, $layer, $fields);
         if (!$fields) {
@@ -172,7 +172,7 @@ class QgisFormTest extends TestCase
      * @param mixed $expressionResult
      * @param mixed $expectedResult
      */
-    public function testGetDefaultValues($defaultValue, $expressionResult, $expectedResult)
+    public function testGetDefaultValues($defaultValue, $expressionResult, $expectedResult): void
     {
         $formMock = $this->getMockBuilder(QgisFormForTests::class)->onlyMethods(array('evaluateExpression'))->getMock();
         $formMock->method('evaluateExpression')->willReturn($expressionResult);
@@ -182,7 +182,7 @@ class QgisFormTest extends TestCase
         $this->assertEquals($expectedResult, $formMock->getDefaultValueForTests('testField'));
     }
 
-    public function testGetAttributeEditorForm()
+    public function testGetAttributeEditorForm(): void
     {
         $proj = new Project\QgisProject(__DIR__.'/forms/attributeEditorTest.qgs', new lizmapServices(array(), (object) array(), false, '', null), new ContextForTests());
         $layer = $proj->getLayer('LayerId', $proj);
@@ -256,7 +256,7 @@ class QgisFormTest extends TestCase
      * @param mixed $constraints
      * @param mixed $expectedResult
      */
-    public function testCheck($dbFieldsInfo, $check, $data, $evaluateExpression, $constraints, $allowWithoutGeom, $expectedResult)
+    public function testCheck($dbFieldsInfo, $check, $data, $evaluateExpression, $constraints, $allowWithoutGeom, $expectedResult): void
     {
         $mockFuncs = array('getAttributesEditorForm', 'getFieldValue', 'getConstraints', 'evaluateExpression');
         $formMock = $this->getMockBuilder(QgisFormForTests::class)->onlyMethods($mockFuncs)->getMock();
@@ -294,7 +294,7 @@ class QgisFormTest extends TestCase
         $this->assertEquals($expectedResult, $formMock->check());
     }
 
-    public function testSaveToDbInsert()
+    public function testSaveToDbInsert(): void
     {
         $dbFieldsInfo = (object) array(
             'dataFields' => (object) array(
@@ -330,7 +330,7 @@ class QgisFormTest extends TestCase
         $formMock->saveToDb();
     }
 
-    public function testSaveToDbUpdate()
+    public function testSaveToDbUpdate(): void
     {
         $dbFieldsInfo = (object) array(
             'dataFields' => (object) array(
@@ -432,7 +432,7 @@ class QgisFormTest extends TestCase
      * @param mixed $insert
      * @param mixed $expectedFields
      */
-    public function testGetFieldsList($eCaps, $formFields, $insert, $expectedFields)
+    public function testGetFieldsList($eCaps, $formFields, $insert, $expectedFields): void
     {
         $dataFields = (object) array(
             'pkuid' => null,
@@ -497,7 +497,7 @@ class QgisFormTest extends TestCase
      * @param mixed $expectedData
      * @param mixed $expectedRequired
      */
-    public function testFillControlFromUniqueValue($uniqueValues, $required, $setAttribute, $expectedData, $expectedRequired)
+    public function testFillControlFromUniqueValue($uniqueValues, $required, $setAttribute, $expectedData, $expectedRequired): void
     {
         $dbFieldValues = array('foo', 'bar');
         $form = new QgisFormForTests();

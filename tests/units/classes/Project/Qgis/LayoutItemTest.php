@@ -10,7 +10,7 @@ use Lizmap\App;
  */
 class LayoutItemTest extends TestCase
 {
-    public function testFromXmlReader()
+    public function testFromXmlReader(): void
     {
         // LayoutItemPage
         $xmlStr = '

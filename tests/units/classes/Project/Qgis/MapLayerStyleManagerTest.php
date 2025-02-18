@@ -10,7 +10,7 @@ use Lizmap\App;
  */
 class MapLayerStyleManagerTest extends TestCase
 {
-    public function testFromXmlReader()
+    public function testFromXmlReader(): void
     {
         // Simple default
         $xmlStr = '

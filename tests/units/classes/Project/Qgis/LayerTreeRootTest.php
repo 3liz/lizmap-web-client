@@ -10,7 +10,7 @@ use Lizmap\App;
  */
 class LayerTreeRootTest extends TestCase
 {
-    public function testConstruct()
+    public function testConstruct(): void
     {
         $data = array(
           'customOrder' => new Qgis\LayerTreeCustomOrder(array(
@@ -59,7 +59,7 @@ class LayerTreeRootTest extends TestCase
         $this->assertEquals(array(), $root->customOrder->items);
     }
 
-    public function testFromXmlReader()
+    public function testFromXmlReader(): void
     {
         $xmlStr = '
       <layer-tree-group>

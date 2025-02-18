@@ -10,7 +10,7 @@ use Lizmap\App;
  */
 class RasterLayerTest extends TestCase
 {
-    public function testFromXmlReader()
+    public function testFromXmlReader(): void
     {
         $xmlStr = '
         <maplayer hasScaleBasedVisibilityFlag="0" refreshOnNotifyEnabled="0" styleCategories="AllStyleCategories" maxScale="0" minScale="1e+8" autoRefreshEnabled="0" refreshOnNotifyMessage="" type="raster" autoRefreshTime="0">

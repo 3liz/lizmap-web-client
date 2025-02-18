@@ -34,13 +34,13 @@ class projectConfigTest extends TestCase
      * @param mixed $data
      * @param mixed $expectedData
      */
-    public function testConstruct($data, $expectedData)
+    public function testConstruct($data, $expectedData): void
     {
         $testCfg = new Project\ProjectConfig($data);
         $this->assertEquals($expectedData, $testCfg->getConfigContent());
     }
 
-    public function testConstructCache()
+    public function testConstructCache(): void
     {
         $file = __DIR__.'/Ressources/events.qgs.cfg';
         $data = json_decode(file_get_contents($file));
@@ -80,7 +80,7 @@ class projectConfigTest extends TestCase
      * @param mixed $key
      * @param mixed $layerName
      */
-    public function testFindLayer($layers, $key, $layerName)
+    public function testFindLayer($layers, $key, $layerName): void
     {
         $testCfg = new Project\ProjectConfig($layers);
         if ($layerName) {
@@ -109,7 +109,7 @@ class projectConfigTest extends TestCase
      * @param mixed $eLayers
      * @param mixed $name
      */
-    public function testGetEditionLayerByName($eLayers, $name)
+    public function testGetEditionLayerByName($eLayers, $name): void
     {
         $testCfg = new Project\ProjectConfig($eLayers);
         if ($name) {
@@ -141,7 +141,7 @@ class projectConfigTest extends TestCase
      * @param mixed $id
      * @param mixed $eLayerName
      */
-    public function testGetEditionLayerByLayerId($eLayers, $id, $eLayerName)
+    public function testGetEditionLayerByLayerId($eLayers, $id, $eLayerName): void
     {
         $testCfg = new Project\ProjectConfig($eLayers);
         if ($eLayerName) {
@@ -184,7 +184,7 @@ class projectConfigTest extends TestCase
      * @param mixed $option
      * @param mixed $expectedValue
      */
-    public function testGetOption($option, $expectedValue)
+    public function testGetOption($option, $expectedValue): void
     {
         $file = __DIR__.'/Ressources/montpellier.qgs.cfg';
         $data = json_decode(file_get_contents($file));
@@ -194,7 +194,7 @@ class projectConfigTest extends TestCase
 
     /**
      */
-    public function testGetBooleanOption()
+    public function testGetBooleanOption(): void
     {
         $file = __DIR__.'/Ressources/events.qgs.cfg';
         $data = json_decode(file_get_contents($file));
@@ -206,7 +206,7 @@ class projectConfigTest extends TestCase
     /**
      * Test an empty project config
      */
-    public function testEmptyConfig()
+    public function testEmptyConfig(): void
     {
         $testCfg = new Project\ProjectConfig(new StdClass());
         $this->assertEquals(new stdClass(), $testCfg->getLayers());

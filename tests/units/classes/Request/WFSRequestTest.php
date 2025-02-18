@@ -5,7 +5,7 @@ use Lizmap\Request\WFSRequest;
 
 class WFSRequestTest extends TestCase
 {
-    public function testParameters()
+    public function testParameters(): void
     {
         $wfs = new WFSRequest(new ProjectForOGCForTests(), array('request' => 'notGetFeature'), null);
         $expectedParameters = array(
@@ -72,7 +72,7 @@ class WFSRequestTest extends TestCase
     /**
      * @dataProvider getParametersWithFiltersData
      */
-    public function testParametersWithFilters($params, $loginFilters, $expectedParameters)
+    public function testParametersWithFilters($params, $loginFilters, $expectedParameters): void
     {
         $testContext = new ContextForTests();
         $testContext->setResult(array('lizmap.tools.loginFilteredLayers.override' => false));
@@ -107,7 +107,7 @@ class WFSRequestTest extends TestCase
     /**
      * @dataProvider getGetFeatureIdFilterExpData
      */
-    public function testGetFeatureIdFilterExp($featureid, $typename, $expectedExpFilter, $layerOptions)
+    public function testGetFeatureIdFilterExp($featureid, $typename, $expectedExpFilter, $layerOptions): void
     {
         $wfs = new WFSRequestForTests();
         $qgisLayer = new LayerWFSForTests();
@@ -147,7 +147,7 @@ class WFSRequestTest extends TestCase
     /**
      * @dataProvider getBuildQueryBaseData
      */
-    public function testBuildQueryBase($params, $wfsFields, $expectedSelectFields, $expectedSql)
+    public function testBuildQueryBase($params, $wfsFields, $expectedSelectFields, $expectedSql): void
     {
         $cnx = new jDbConnectionForTests();
         $wfs = new WFSRequestForTests();
@@ -175,7 +175,7 @@ class WFSRequestTest extends TestCase
     /**
      * @dataProvider getGetBboxSqlData
      */
-    public function testGetBboxSql($geocol, $params, $expectedSql)
+    public function testGetBboxSql($geocol, $params, $expectedSql): void
     {
         $wfs = new WFSRequestForTests();
         $wfs->datasource = (object)array(
@@ -200,7 +200,7 @@ class WFSRequestTest extends TestCase
     /**
      * @dataProvider getParseExpFilterData
      */
-    public function testParseExpFilter($params, $key, $expectedSql)
+    public function testParseExpFilter($params, $key, $expectedSql): void
     {
         $wfs = new WFSRequestForTests();
         $wfs->appContext = new ContextForTests();
@@ -222,7 +222,7 @@ class WFSRequestTest extends TestCase
     /**
      * @dataProvider getParseFeatureData
      */
-    public function testParseFeatureId($typename, $featureId, $keys, $expectedSql)
+    public function testParseFeatureId($typename, $featureId, $keys, $expectedSql): void
     {
         $params = array(
             'typename' => $typename,
@@ -247,7 +247,7 @@ class WFSRequestTest extends TestCase
     /**
      * @dataProvider getGetQueryOrderData
      */
-    public function testGetQueryOrder($params, $wfsFields, $expectedSql)
+    public function testGetQueryOrder($params, $wfsFields, $expectedSql): void
     {
         $wfs = new WFSRequestForTests();
         $result = '';
@@ -287,7 +287,7 @@ class WFSRequestTest extends TestCase
     /**
      * @dataProvider getValidateExpressionFilterData
      */
-    public function testValidateExpressionFilter($filter, $expectedResult)
+    public function testValidateExpressionFilter($filter, $expectedResult): void
     {
         $wfs = new WFSRequestForTests();
         $wfs->appContext = new ContextForTests();
@@ -308,7 +308,7 @@ class WFSRequestTest extends TestCase
     /**
      * @dataProvider getValidateFilterData
      */
-    public function testValidateFilter($filter, $expectedFilter)
+    public function testValidateFilter($filter, $expectedFilter): void
     {
         $wfs = new WFSRequestForTests();
         $wfs->appContext = new ContextForTests();

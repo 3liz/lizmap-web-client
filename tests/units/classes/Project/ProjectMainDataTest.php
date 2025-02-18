@@ -8,7 +8,7 @@ use Lizmap\Project;
  */
 class ProjectMainDataTest extends TestCase
 {
-    public function testConstruct()
+    public function testConstruct(): void
     {
         $context = new ContextForTests();
 

@@ -3,7 +3,7 @@ use PHPUnit\Framework\TestCase;
 
 class qgisExpressionUtilsTest extends TestCase {
 
-    function testCriteriaFromExpression() {
+    function testCriteriaFromExpression(): void {
         $exp = '"name" IS NOT NULL AND "name" <> \'\'';
         $dependencies = qgisExpressionUtils::getCriteriaFromExpression($exp);
 
@@ -32,7 +32,7 @@ class qgisExpressionUtilsTest extends TestCase {
         $this->assertTrue(in_array('description', $dependencies));
     }
 
-    function testCriteriaFromExpressions() {
+    function testCriteriaFromExpressions(): void {
         $exp = '"name" IS NOT NULL AND "name" <> \'\'';
         $dependencies = qgisExpressionUtils::getCriteriaFromExpressions(
                 array($exp)
@@ -72,7 +72,7 @@ class qgisExpressionUtilsTest extends TestCase {
         $this->assertTrue(in_array('description', $dependencies));
     }
 
-    function testCurrentValueCriteriaFromExpression() {
+    function testCurrentValueCriteriaFromExpression(): void {
         $exp = '"old_name" = current_value(\'name\')';
         $dependencies = qgisExpressionUtils::getCurrentValueCriteriaFromExpression($exp);
 
@@ -143,7 +143,7 @@ class qgisExpressionUtilsTest extends TestCase {
         $this->assertTrue(in_array('description', $dependencies));
     }
 
-    function testCurrentGeometry() {
+    function testCurrentGeometry(): void {
         $exp = '@current_geometry';
         $this->assertTrue(qgisExpressionUtils::hasCurrentGeometry($exp));
 
