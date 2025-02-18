@@ -526,7 +526,7 @@ class QgisProject
 
         // unset displayInLegend for geometryType none or unknown
         $layers = $cfg->getLayers();
-        foreach ($layers as $key => $layerCfg) {
+        foreach ($layers as $layerCfg) {
             if (property_exists($layerCfg, 'geometryType')
                 && ($layerCfg->geometryType == 'none'
                     || $layerCfg->geometryType == 'unknown')
@@ -873,7 +873,7 @@ class QgisProject
         }
 
         $project = Qgis\ProjectInfo::fromQgisPath($this->path);
-        foreach ($editionLayers as $key => $obj) {
+        foreach ($editionLayers as $obj) {
             $layer = $project->getLayerById($obj->layerId);
             if ($layer === null) {
                 continue;
@@ -1018,7 +1018,7 @@ class QgisProject
 
         $project = Qgis\ProjectInfo::fromQgisPath($this->path);
         // Get field order & visibility
-        foreach ($attributeLayers as $key => $obj) {
+        foreach ($attributeLayers as $obj) {
             // Improve performance by getting custom_config status directly from config
             // Available for lizmap plugin >= 3.3.3
             if (property_exists($obj, 'custom_config') && $obj->custom_config != 'True') {
@@ -1313,7 +1313,7 @@ class QgisProject
     {
         $edittypes = array();
         $fieldConfiguration = $layerXml->fieldConfiguration;
-        foreach ($fieldConfiguration->field as $key => $field) {
+        foreach ($fieldConfiguration->field as $field) {
             $editWidget = $field->editWidget;
             $fieldName = (string) $field->attributes()->name;
             $fieldEditType = (string) $editWidget->attributes()->type;

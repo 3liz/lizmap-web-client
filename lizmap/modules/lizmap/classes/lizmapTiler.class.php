@@ -250,7 +250,7 @@ class lizmapTiler
                 );
 
                 while ($scaleDenominator > $minScale) {
-                    $scaleDenominator = $scaleDenominator / 2;
+                    $scaleDenominator /= 2;
                     $scale = $scaleDenominator;
                     $res = 0.28E-3 * $scale / $METERS_PER_INCH / $INCHES_PER_UNIT[$unit];
                     // $res = $scale / ($INCHES_PER_UNIT[ $unit ] * 96.0);
@@ -351,7 +351,7 @@ class lizmapTiler
     {
         $cfgLayers = $project->getLayers();
         $layers = array();
-        foreach ($cfgLayers as $n => $l) {
+        foreach ($cfgLayers as $l) {
             if ($l->cached == 'True' && $l->singleTile != 'True' && strtolower($l->name) != 'overview') {
                 $layer = lizmapTiler::getLayerTileInfo($l->name, $project, $wms_xml, $tileMatrixSetList);
                 if ($layer) {
