@@ -176,7 +176,10 @@ describe('buildLayerTreeConfig', function () {
 
         const layers = new LayersConfig(config.layers);
 
-        const root = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+        let invalid = [];
+        const root = buildLayerTreeConfig(capabilities.Capability.Layer, layers, invalid);
+
+        expect(invalid).to.have.length(0);
         expect(root).to.be.instanceOf(LayerTreeGroupConfig)
         expect(root.name).to.be.eq('root')
         expect(root.type).to.be.eq('group')
@@ -301,7 +304,10 @@ describe('buildLayerTreeConfig', function () {
 
       const layers = new LayersConfig(config.layers);
 
-      const root = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+      let invalid = [];
+      const root = buildLayerTreeConfig(capabilities.Capability.Layer, layers, invalid);
+
+      expect(invalid).to.have.length(0);
       expect(root).to.be.instanceOf(LayerTreeGroupConfig)
       expect(root.name).to.be.eq('root')
       expect(root.type).to.be.eq('group')
