@@ -619,8 +619,9 @@ describe('BaseLayersConfig', function () {
         config.layers[blName] = blGroupCfg;
 
         const layers = new LayersConfig(config.layers);
-        const root = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
-
+        let invalid = [];
+        const root = buildLayerTreeConfig(capabilities.Capability.Layer, layers, invalid);
+        expect(invalid).to.have.length(0);
         expect(root).to.be.instanceOf(LayerTreeGroupConfig)
         expect(root.name).to.be.eq('root')
         expect(root.type).to.be.eq('group')
@@ -665,8 +666,9 @@ describe('BaseLayersConfig', function () {
         expect(config).to.not.be.undefined
 
         const layers = new LayersConfig(config.layers);
-        const root = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
-
+        let invalid = [];
+        const root = buildLayerTreeConfig(capabilities.Capability.Layer, layers, invalid);
+        expect(invalid).to.have.length(0);
         expect(root).to.be.instanceOf(LayerTreeGroupConfig)
         expect(root.name).to.be.eq('root')
         expect(root.type).to.be.eq('group')
@@ -870,8 +872,10 @@ describe('BaseLayersConfig', function () {
             });
         }
 
-        const root = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+        let invalid = [];
+        const root = buildLayerTreeConfig(capabilities.Capability.Layer, layers, invalid);
 
+        expect(invalid).to.have.length(0);
         expect(root).to.be.instanceOf(LayerTreeGroupConfig)
         expect(root.name).to.be.eq('root')
         expect(root.type).to.be.eq('group')
@@ -1016,8 +1020,10 @@ describe('BaseLayersConfig', function () {
             });
         }
 
-        const root = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+        let invalid = [];
+        const root = buildLayerTreeConfig(capabilities.Capability.Layer, layers, invalid);
 
+        expect(invalid).to.have.length(0);
         expect(root).to.be.instanceOf(LayerTreeGroupConfig)
         expect(root.name).to.be.eq('root')
         expect(root.type).to.be.eq('group')
