@@ -62,7 +62,7 @@ describe('Selection tool', function () {
 
         // Select single layer and intersects geom operator
         cy.get('lizmap-selection-tool .selectiontool-layer-list').select('selection_polygon')
-        cy.get('lizmap-selection-tool .selection-geom-operator').select('intersects')
+        cy.get('lizmap-selection-tool .selectiontool-geom-operator').select('intersects')
 
 
         // It should select two features
@@ -106,7 +106,7 @@ describe('Selection tool', function () {
 
         // Select single layer and intersects geom operator
         cy.get('lizmap-selection-tool .selectiontool-layer-list').select('selection_polygon')
-        cy.get('lizmap-selection-tool .selection-geom-operator').select('intersects')
+        cy.get('lizmap-selection-tool .selectiontool-geom-operator').select('intersects')
 
 
         // It should select two features
@@ -149,7 +149,7 @@ describe('Selection tool', function () {
 
         // Select single layer and intersects geom operator
         cy.get('lizmap-selection-tool .selectiontool-layer-list').select('selection_polygon')
-        cy.get('lizmap-selection-tool .selection-geom-operator').select('intersects')
+        cy.get('lizmap-selection-tool .selectiontool-geom-operator').select('intersects')
 
 
         // It should select one feature
@@ -199,7 +199,7 @@ describe('Selection tool connected as user a', function () {
 
         // Select single layer and intersects geom operator
         cy.get('lizmap-selection-tool .selectiontool-layer-list').select('selection')
-        cy.get('lizmap-selection-tool .selection-geom-operator').select('intersects')
+        cy.get('lizmap-selection-tool .selectiontool-geom-operator').select('intersects')
 
         cy.intercept('*REQUEST=GetMap*',
             { middleware: true },
@@ -248,7 +248,7 @@ describe('Selection tool connected as admin', function () {
 
         // Select single layer and intersects geom operator
         cy.get('lizmap-selection-tool .selectiontool-layer-list').select('selection')
-        cy.get('lizmap-selection-tool .selection-geom-operator').select('intersects')
+        cy.get('lizmap-selection-tool .selectiontool-geom-operator').select('intersects')
 
         cy.intercept('*REQUEST=GetMap*',
             { middleware: true },
