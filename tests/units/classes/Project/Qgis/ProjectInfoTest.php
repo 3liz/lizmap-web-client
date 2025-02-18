@@ -10,7 +10,7 @@ use Lizmap\App;
  */
 class ProjectInfoTest extends TestCase
 {
-    public function testFromXmlReader()
+    public function testFromXmlReader(): void
     {
         $xml_path = __DIR__.'/../../Project/Ressources/montpellier.qgs';
         // Open the document with XML Reader at the root element document
@@ -189,7 +189,7 @@ Data is licensed under ODbl, OpenStreetMap contributors',
         $this->assertTrue($layouts[1]['atlas']['enabled']);
     }
 
-    public function testFromQgisPath()
+    public function testFromQgisPath(): void
     {
         $xml_path = __DIR__.'/../../Project/Ressources/montpellier.qgs';
         $project = Qgis\ProjectInfo::fromQgisPath($xml_path);
@@ -208,7 +208,7 @@ Data is licensed under ODbl, OpenStreetMap contributors',
         $this->assertEquals(realpath($xml_path), $project->getPath());
     }
 
-    public function testEmbeddedQgisProject()
+    public function testEmbeddedQgisProject(): void
     {
         $xml_path = __DIR__.'/../../Project/Ressources/relations_project_embed.qgs';
         $project = Qgis\ProjectInfo::fromQgisPath($xml_path);
@@ -244,7 +244,7 @@ Data is licensed under ODbl, OpenStreetMap contributors',
         $this->assertEquals('father_layer', $layers[1]['name']);
     }
 
-    public function testJsonEncode()
+    public function testJsonEncode(): void
     {
         $xml_path = __DIR__.'/../../Project/Ressources/montpellier.qgs';
         // Open the document with XML Reader at the root element document

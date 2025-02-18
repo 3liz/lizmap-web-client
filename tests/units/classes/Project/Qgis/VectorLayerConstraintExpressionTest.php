@@ -10,7 +10,7 @@ use Lizmap\App;
  */
 class VectorLayerConstraintExpressionTest extends TestCase
 {
-    public function testEmpty()
+    public function testEmpty(): void
     {
         $xmlStr ='<constraint desc="" exp="" field="id"></constraint>';
         $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
@@ -22,7 +22,7 @@ class VectorLayerConstraintExpressionTest extends TestCase
         $this->assertEquals('', $constraint->desc);
     }
 
-    public function testExpression()
+    public function testExpression(): void
     {
         $xmlStr ='<constraint desc="Web site URL must start with \'http\'" exp="left( &quot;website&quot;, 4) = \'http\'" field="website"></constraint>';
         $oXml = App\XmlTools::xmlReaderFromString($xmlStr);

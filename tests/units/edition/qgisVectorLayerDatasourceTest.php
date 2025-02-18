@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
  */
 class qgisVectorLayerDatasourceTest extends TestCase
 {
-    public function testPostgresqlDatasource()
+    public function testPostgresqlDatasource(): void
     {
         $provider = 'postgres';
         // Host without '
@@ -63,7 +63,7 @@ class qgisVectorLayerDatasourceTest extends TestCase
         $this->assertEquals('', $element->getDatasourceParameter('sql'));
     }
 
-    public function testPostgresDatasourceWithoutGeometry()
+    public function testPostgresDatasourceWithoutGeometry(): void
     {
         $provider = 'postgres';
         $datasource = "dbname='test_dbname' host=test_host port=5432 user='test_user' password='test_password' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=\"test_schema\".\"test_table\" sql=";
@@ -91,7 +91,7 @@ class qgisVectorLayerDatasourceTest extends TestCase
         $this->assertEquals('', $element->getDatasourceParameter('sql'));
     }
 
-    public function testPostgresqlDatasourceWithService()
+    public function testPostgresqlDatasourceWithService(): void
     {
         $provider = 'postgres';
         $datasource = "dbname='test_dbname' service='test_service' sslmode=disable key='id' srid=2193 type=Polygon checkPrimaryKeyUnicity='1' table=\"public\".\"EditTest\" (geom) sql=";
@@ -119,7 +119,7 @@ class qgisVectorLayerDatasourceTest extends TestCase
         $this->assertEquals('', $element->getDatasourceParameter('sql'));
     }
 
-    public function testPostgresqlDatasourceWithoutGeometryWithServiceWithoutSql()
+    public function testPostgresqlDatasourceWithoutGeometryWithServiceWithoutSql(): void
     {
         $provider = 'postgres';
         $datasource = "dbname='test_dbname' service='test_service' sslmode=disable key='id' srid=2193 checkPrimaryKeyUnicity='1' table=\"public\".\"EditTest\"";
@@ -147,7 +147,7 @@ class qgisVectorLayerDatasourceTest extends TestCase
         $this->assertEquals('', $element->getDatasourceParameter('sql'));
     }
 
-    public function testPostgresqlDatasourceWithAuthcfg()
+    public function testPostgresqlDatasourceWithAuthcfg(): void
     {
         $provider = 'postgres';
         $datasource = "dbname='test_dbname' host=127.0.0.1 port=5432 authcfg='lizmap-test' sslmode=disable key='id' srid=4326 type=Polygon checkPrimaryKeyUnicity='1' table=\"test_schema\".\"test_table\" (geom) sql=";
@@ -175,7 +175,7 @@ class qgisVectorLayerDatasourceTest extends TestCase
         $this->assertEquals('', $element->getDatasourceParameter('sql'));
     }
 
-    public function testPostgresqlDatasourceWithoutGeometryWithAuthcfgWithoutSql()
+    public function testPostgresqlDatasourceWithoutGeometryWithAuthcfgWithoutSql(): void
     {
         $provider = 'postgres';
         $datasource = "dbname='test_dbname' host=127.0.0.1 port=5432 authcfg='lizmap-test' sslmode=disable key='id' srid=2193 checkPrimaryKeyUnicity='1' table=\"public\".\"EditTest\"";
@@ -203,7 +203,7 @@ class qgisVectorLayerDatasourceTest extends TestCase
         $this->assertEquals('', $element->getDatasourceParameter('sql'));
     }
 
-    public function testPostgresDatasourceSimpleTableWithSql()
+    public function testPostgresDatasourceSimpleTableWithSql(): void
     {
         $provider = 'postgres';
         $datasource = "dbname='test_dbname' host=127.0.0.1 port=5432 user='test_user' password='test_password' sslmode=disable key='id_lieux' srid=2154 type=MultiPolygon checkPrimaryKeyUnicity='1' table=\"referentiel\".\"lieux\" (geom) sql=\"code_com\" = '010'";
@@ -231,7 +231,7 @@ class qgisVectorLayerDatasourceTest extends TestCase
         $this->assertEquals("\"code_com\" = '010'", $element->getDatasourceParameter('sql'));
     }
 
-    public function testPostgresqlDatasourceWithoutSql()
+    public function testPostgresqlDatasourceWithoutSql(): void
     {
         $provider = 'postgres';
         $datasource = "dbname='test_dbname' host=127.0.0.1 port=5432 user='test_user' password='test_password' sslmode=disable key='id' srid=4326 type=Point checkPrimaryKeyUnicity='0' table=\"test_schema\".\"test_table\" (geom)";
@@ -259,7 +259,7 @@ class qgisVectorLayerDatasourceTest extends TestCase
         $this->assertEquals('', $element->getDatasourceParameter('sql'));
     }
 
-    public function testComplexQueryDatasource()
+    public function testComplexQueryDatasource(): void
     {
         $provider = 'postgres';
         $datasource = "service='test_service' key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=\"((             SELECT                 o.id,&#xD;
@@ -303,7 +303,7 @@ WHERE fk_id_series = 2  )
         $this->assertEquals($sql, $element->getDatasourceParameter('sql'));
     }
 
-    public function testComplexQueryDatasourceWithEscapedDoubleQuotes()
+    public function testComplexQueryDatasourceWithEscapedDoubleQuotes(): void
     {
         $provider = 'postgres';
         $datasource = "service='test_service' key='id' checkPrimaryKeyUnicity='1' table=\"( SELECT o.id, so_unique_id AS spatial_object_code, so.geom, to_char(ob_start_timestamp, 'YYYY') AS observation_start, to_char(ob_end_timestamp, 'YYYY') AS observation_end, ob_start_timestamp AS observation_start_timestamp, ob_end_timestamp AS observation_end_timestamp, (ob_value->>0)::integer AS \\\"population\\\" FROM gobs.observation AS o INNER JOIN gobs.spatial_object AS so ON so.id = o.fk_id_spatial_object WHERE fk_id_series = 2         )\" (geom) sql=";
@@ -332,7 +332,7 @@ WHERE fk_id_series = 2  )
         $this->assertEquals($sql, $element->getDatasourceParameter('sql'));
     }
 
-    public function testGeopackageDatasource()
+    public function testGeopackageDatasource(): void
     {
         $provider = 'ogr';
         $datasource = './edition/events.gpkg|layername=events';
@@ -344,7 +344,7 @@ WHERE fk_id_series = 2  )
         $this->assertEquals('', $element->getDatasourceParameter('sql'));
     }
 
-    public function testGeopackageDatasourceWithSql()
+    public function testGeopackageDatasourceWithSql(): void
     {
         $provider = 'ogr';
         $datasource = './edition/events.gpkg|layername=events|subset="counter" > 3';

@@ -11,7 +11,7 @@ require_once __DIR__.'/../../../../lizmap/vendor/jelix/jelix/lib/jelix/forms/jFo
  */
 class QgisFormControlTest extends TestCase
 {
-    public function testSetControlMainProperties()
+    public function testSetControlMainProperties(): void
     {
         $ctrl = new \jFormsControlInput('test');
         $ctrl->datatype = new \jDatatypeDecimal();
@@ -69,7 +69,7 @@ class QgisFormControlTest extends TestCase
         $this->assertInstanceOf(jDatatypeDecimal::class, $control->ctrl->datatype);
     }
 
-    public function testConstructGeometry()
+    public function testConstructGeometry(): void
     {
         $appContext = new ContextForTests();
         # DB properties - Point
@@ -136,7 +136,7 @@ class QgisFormControlTest extends TestCase
         $this->assertEquals($control->fieldDataType, 'geometry');
     }
 
-    public function testConstructPrimaryKey()
+    public function testConstructPrimaryKey(): void
     {
         $appContext = new ContextForTests();
         # DB properties - Text
@@ -193,7 +193,7 @@ class QgisFormControlTest extends TestCase
         $this->assertFalse($control->required);
     }
 
-    public function testConstructInput()
+    public function testConstructInput(): void
     {
         $appContext = new ContextForTests();
         # DB properties - Text
@@ -271,7 +271,7 @@ class QgisFormControlTest extends TestCase
         $this->assertFalse($control->required);
     }
 
-    public function testConstructCheckbox()
+    public function testConstructCheckbox(): void
     {
         $appContext = new ContextForTests();
         # DB properties - Bool

@@ -10,7 +10,7 @@ use Lizmap\App;
  */
 class ProjectGuiPropertiesTest extends TestCase
 {
-    public function testConstruct()
+    public function testConstruct(): void
     {
         $data = array(
           'CanvasColorBluePart' => 255,
@@ -28,7 +28,7 @@ class ProjectGuiPropertiesTest extends TestCase
         }
       }
 
-    public function testGetCanvasColor()
+    public function testGetCanvasColor(): void
     {
       $data = array(
         'CanvasColorBluePart' => 255,
@@ -57,7 +57,7 @@ class ProjectGuiPropertiesTest extends TestCase
       $this->assertEquals('rgb(50, 100, 200)', $properties->getCanvasColor());
     }
 
-    public function testExceptionNoSuchProperty()
+    public function testExceptionNoSuchProperty(): void
     {
         $data = array(
           'CanvasColorBluePart' => 255,
@@ -76,7 +76,7 @@ class ProjectGuiPropertiesTest extends TestCase
         $srs->CanvasColorAlphaPart;
     }
 
-    public function testExceptionMandatoryProperties()
+    public function testExceptionMandatoryProperties(): void
     {
         $data = array(
           'SelectionColorAlphaPart' => 255,
@@ -90,7 +90,7 @@ class ProjectGuiPropertiesTest extends TestCase
         $srs = new Qgis\ProjectGuiProperties($data);
     }
 
-    public function testFromXmlReader()
+    public function testFromXmlReader(): void
     {
         $xmlStr = '
         <Gui>
@@ -120,7 +120,7 @@ class ProjectGuiPropertiesTest extends TestCase
         }
     }
 
-    public function testExceptionMandatoryElements()
+    public function testExceptionMandatoryElements(): void
     {
         $xmlStr = '
         <Gui>

@@ -24,14 +24,14 @@ class Person extends Qgis\BaseQgisObject
  */
 class BaseQgisObjectTest extends TestCase
 {
-    public function testConstruct()
+    public function testConstruct(): void
     {
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('$data has to contain `name` keys! Missing keys: name!');
         $p1 = new Person(array());
     }
 
-    public function testGetData()
+    public function testGetData(): void
     {
         $p1Data = array('name' => 'Foo');
         $p1 = new Person($p1Data);

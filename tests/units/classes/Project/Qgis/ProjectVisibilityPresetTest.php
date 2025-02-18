@@ -10,7 +10,7 @@ use Lizmap\App;
  */
 class ProjectVisibilityPresetTest extends TestCase
 {
-    public function testFromXmlReader()
+    public function testFromXmlReader(): void
     {
         $xmlStr = '
         <visibility-preset has-checked-group-info="1" name="theme1" has-expanded-info="1">

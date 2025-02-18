@@ -11,7 +11,7 @@ require_once __DIR__.'/../../../../lizmap/vendor/jelix/jelix/lib/jelix/forms/jFo
  */
 class QgisFormControlPropertiesTest extends TestCase
 {
-    function testIsEditable() {
+    function testIsEditable(): void {
         # TextEdit - editable
         $properties = new QgisFormControlProperties(
             'id',
@@ -103,7 +103,7 @@ class QgisFormControlPropertiesTest extends TestCase
         $this->assertTrue($properties->isEditable());
     }
 
-    function testGetEditAttribute() {
+    function testGetEditAttribute(): void {
 
         $properties = new QgisFormControlProperties(
             'risque',
@@ -130,7 +130,7 @@ class QgisFormControlPropertiesTest extends TestCase
         $this->assertEquals($properties->getEditAttribute('referencedlayerid'), 'risque_66cb8d43_86b7_4583_9217_f7ead54463c3');
     }
 
-    function testGetValueRelationData() {
+    function testGetValueRelationData(): void {
 
         $properties = new QgisFormControlProperties(
             'tram_id',
@@ -162,7 +162,7 @@ class QgisFormControlPropertiesTest extends TestCase
         $this->assertTrue($valueRelationData['fieldEditable']);
     }
 
-    function testGetRelationReference() {
+    function testGetRelationReference(): void {
 
         $properties = new QgisFormControlProperties(
             'risque',

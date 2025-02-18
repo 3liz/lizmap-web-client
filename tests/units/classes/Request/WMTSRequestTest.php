@@ -4,7 +4,7 @@ use PHPUnit\Framework\TestCase;
 
 class WMTSRequestTest extends TestCase
 {
-    public function testGetCapabilities()
+    public function testGetCapabilities(): void
     {
         $appContext = new ContextForTests();
         $project = new ProjectForOGCForTests();

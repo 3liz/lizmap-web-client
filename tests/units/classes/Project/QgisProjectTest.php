@@ -32,7 +32,7 @@ class QgisProjectTest extends TestCase
         }
     }
 
-    public function testEmbeddedRelation()
+    public function testEmbeddedRelation(): void
     {
          $file = __DIR__.'/Ressources/relations_project_embed.qgs';
          $testQgis = new qgisProjectForTests();
@@ -95,7 +95,7 @@ class QgisProjectTest extends TestCase
 
     }
 
-    public function testCacheConstruct()
+    public function testCacheConstruct(): void
     {
         $cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
             'relations', 'themes', 'useLayerIDs', 'layers', 'data',
@@ -110,7 +110,7 @@ class QgisProjectTest extends TestCase
         $this->assertEquals($data, $testQgis->getCacheData());
     }
 
-    public function testSetLayerOpacity()
+    public function testSetLayerOpacity(): void
     {
         $file = __DIR__.'/Ressources/simpleLayer.qgs.cfg';
         $json = json_decode(file_get_contents($file));
@@ -160,7 +160,7 @@ class QgisProjectTest extends TestCase
         $this->assertEquals(0.4,$config->getLayer($eLayerName)->opacity);
     }
 
-    public function testSetLayerGroupData()
+    public function testSetLayerGroupData(): void
     {
       $file = __DIR__.'/Ressources/hiddengrouplayer.qgs.cfg';
       $json = json_decode(file_get_contents($file));
@@ -174,7 +174,7 @@ class QgisProjectTest extends TestCase
       $this->assertEquals($expectedLayer->Hidden, $cfg->getLayers()->Hidden);
     }
 
-    public function testSetLayerShowFeatureCount()
+    public function testSetLayerShowFeatureCount(): void
     {
         $file = __DIR__.'/Ressources/simpleLayer.qgs.cfg';
         $json = json_decode(file_get_contents($file));
@@ -217,7 +217,7 @@ class QgisProjectTest extends TestCase
      * @param mixed $id
      * @param mixed $key
      */
-    public function testGetLayerDefinition($layers, $id, $key)
+    public function testGetLayerDefinition($layers, $id, $key): void
     {
         $testProj = new qgisProjectForTests();
         $testProj->setLayers($layers);
@@ -259,7 +259,7 @@ class QgisProjectTest extends TestCase
      * @param mixed $fileName
      * @param mixed $expectedELayer
      */
-    public function testReadEditionLayers($fileName, $expectedELayer)
+    public function testReadEditionLayers($fileName, $expectedELayer): void
     {
         $file = __DIR__.'/Ressources/'.$fileName.'.qgs';
         $eLayers = json_decode(file_get_contents($file.'.cfg'))->editionLayers;
@@ -269,7 +269,7 @@ class QgisProjectTest extends TestCase
         $this->assertEquals($expectedELayer, $eLayers);
     }
 
-    public function testReadEditionFormsForEmbeddedLayers()
+    public function testReadEditionFormsForEmbeddedLayers(): void
     {
         $file = __DIR__.'/Ressources/embed_child.qgs';
         $data = array(
@@ -453,7 +453,7 @@ class QgisProjectTest extends TestCase
 
     }
 
-    public function testReadAttributeLayer()
+    public function testReadAttributeLayer(): void
     {
         $table = '<attributetableconfig actionWidgetStyle="dropDown" sortExpression="&quot;field_communes&quot;" sortOrder="1">
           <columns>
@@ -504,7 +504,7 @@ class QgisProjectTest extends TestCase
      * @param mixed $lname
      * @param mixed $sname
      */
-    public function testSetShortNames($file, $lname, $sname)
+    public function testSetShortNames($file, $lname, $sname): void
     {
         $layers = array(
             $lname => (object) array(
@@ -524,7 +524,7 @@ class QgisProjectTest extends TestCase
         }
     }
 
-    public function testGetEditType()
+    public function testGetEditType(): void
     {
         $xmlStr = '
         <maplayer autoRefreshEnabled="0" readOnly="0" simplifyDrawingHints="0" simplifyMaxScale="1" type="vector" maxScale="0" geometry="Point" simplifyAlgorithm="0" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" wkbType="MultiPoint" minScale="1e+8" refreshOnNotifyEnabled="0" autoRefreshTime="0" simplifyDrawingTol="1" styleCategories="AllStyleCategories" labelsEnabled="1" refreshOnNotifyMessage="">
@@ -577,7 +577,7 @@ class QgisProjectTest extends TestCase
         $this->assertEquals($prop->getFieldEditType(), 'Hidden');
     }
 
-    public function testGetFieldConfiguration()
+    public function testGetFieldConfiguration(): void
     {
         $testProj = new qgisProjectForTests();
 
@@ -1255,7 +1255,7 @@ class QgisProjectTest extends TestCase
         $this->assertEquals($prop->getFieldEditType(), '');
     }
 
-    public function testGetValuesFromOptions()
+    public function testGetValuesFromOptions(): void
     {
         $testProj = new qgisProjectForTests();
 
@@ -1370,7 +1370,7 @@ class QgisProjectTest extends TestCase
         $this->assertEquals($expectedOptions, $options);
     }
 
-    public function testGetMarkup()
+    public function testGetMarkup(): void
     {
         $testProj = new qgisProjectForTests();
 
@@ -1731,7 +1731,7 @@ class QgisProjectTest extends TestCase
     }
 
 
-    public function testUploadField()
+    public function testUploadField(): void
     {
         $testProj = new qgisProjectForTests();
 
@@ -2008,7 +2008,7 @@ class QgisProjectTest extends TestCase
         $this->assertFalse($remotePath->isImageUpload());
     }
 
-    public function testReadProject()
+    public function testReadProject(): void
     {
         //$services = new lizmapServices(array(), (object) array(), false, '', '');
         $testQgis = new qgisProjectForTests(array());
