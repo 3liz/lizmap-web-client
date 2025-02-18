@@ -7,7 +7,7 @@
  */
 
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
-import Utils from '../modules/Utils.js';
+import { Utils } from '../modules/Utils.js';
 import { html, render } from 'lit-html';
 
 import { transformExtent } from 'ol/proj.js';
