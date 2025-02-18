@@ -31,7 +31,6 @@
     color: #FFF;
 }
 
-
 fieldset legend {
     width:auto;
     padding-left: 0.5em;
@@ -91,6 +90,20 @@ fieldset {
     }
 }
 
+/*
+======
+Admin repository lists
+======
+*/
+div.admin_repository:target::before {
+    /* Fixed page header overlaps in-page anchors
+     * https://stackoverflow.com/questions/4086107/fixed-page-header-overlaps-in-page-anchors
+     */
+    content: "";
+    display: block;
+    height: 75px; /* fixed header height */
+    margin: -75px 0 0; /* negative fixed header height */
+}
 
 /*
 ======
