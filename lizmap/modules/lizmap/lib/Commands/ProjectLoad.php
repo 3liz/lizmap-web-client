@@ -34,7 +34,7 @@ class ProjectLoad extends \Jelix\Scripts\ModuleCommandAbstract
             return 1;
         }
         $checker = new \Lizmap\CliHelpers\RepositoryWMSChecker();
-        $checker->checkAllRepository($nb, function ($str) use ($output) {$output->writeln($str); });
+        $checker->checkAllRepository($nb, function ($str) use ($output): void {$output->writeln($str); });
 
         return 0;
     }

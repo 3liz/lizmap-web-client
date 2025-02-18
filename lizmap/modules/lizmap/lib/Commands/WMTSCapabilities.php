@@ -29,7 +29,7 @@ class WMTSCapabilities extends \Jelix\Scripts\ModuleCommandAbstract
         $fakeServer = new \Jelix\FakeServerConf\ApacheMod(\jApp::wwwPath(), '/index.php');
         $fakeServer->setHttpRequest($req->getServerURI());
 
-        $WMTSCache = new \Lizmap\CliHelpers\WMTSCache(function ($str) use ($output) {$output->writeln($str); });
+        $WMTSCache = new \Lizmap\CliHelpers\WMTSCache(function ($str) use ($output): void {$output->writeln($str); });
 
         return $WMTSCache->capabilities(
             $input->getArgument('repository'),
