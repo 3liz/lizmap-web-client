@@ -20,7 +20,7 @@ class lizmapWkt
         'parenComma' => '/\)\s*,\s*\(/',
         'doubleParenComma' => '/\)\s*\)\s*,\s*\(\s*\(/',  // can't use {2} here
         'trimParens' => '/^\s*\(?(.*?)\)?\s*$/',
-        'checkCoordinates' => '/^[0-9 \(\)\.,]*$/',
+        'checkCoordinates' => '/^[0-9 \(\)\.,-]*$/',
     );
 
     /**
