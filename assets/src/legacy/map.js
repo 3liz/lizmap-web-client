@@ -1905,12 +1905,13 @@ window.lizMap = function() {
      *
      * Returns:
      * {jQuery Object} The message added.
-     * @param aMessage
-     * @param aType
-     * @param aClose
-     * @param aTimeout
+     * @function mAddMessage
+     * @param aMessage The message to display
+     * @param aType The level of the message : 'info', 'danger', 'success'
+     * @param aClose If the message can be closed
+     * @param aTimeout Timeout for the message
      */
-    function mAddMessage( aMessage, aType, aClose, aTimeout ) {
+    function mAddMessage( aMessage, aType, aClose, aTimeout, errorDetailed ) {
         var mType = 'info';
         var mTypeList = ['info', 'error', 'danger', 'success'];
         var mClose = false;
@@ -1924,12 +1925,31 @@ window.lizMap = function() {
             mType = 'danger';
         }
 
+        // Logs which are either errors or warnings are logged in the console
+        switch (mType) {
+            case 'danger':
+                console.error(aMessage);
+                break;
+            case 'warn':
+                // warn is missing for now
+                console.warn(aMessage);
+                break;
+        }
+
         if ( aClose ){
             mClose = true;
         }
 
         var html = '<div class="alert alert-'+mType+' alert-dismissible fade show" role="alert" data-alert="alert">';
         html += '<p>'+aMessage+'</p>';
+
+        if (document.body.dataset.lizmapAdminUser == 1) {
+            if (errorDetailed) {
+                // If the user is an admin, and a detailed error is provided
+                html += '<button type="button" class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#errorDetailed" aria-expanded="false" aria-controls="errorDetailed">Details</button>';
+                html += '<div class="collapse" id="errorDetailed"><pre>' + errorDetailed + '</pre></div>';
+            }
+        }
 
         if ( mClose ){
             html += '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
@@ -2840,14 +2860,15 @@ window.lizMap = function() {
         },
 
         /**
-         * Method: addMessage
-         * @param aMessage
-         * @param aType
-         * @param aClose
-         * @param aTimeout
+         * Add a message in the web interface
+         * @function addMessage
+         * @param aMessage The message to display
+         * @param aType The level of the message : 'info', 'error', 'danger', 'success'
+         * @param aClose If the message can be closed
+         * @param aTimeout Timeout for the message
          */
-        addMessage: function( aMessage, aType, aClose, aTimeout ) {
-            return mAddMessage( aMessage, aType, aClose, aTimeout );
+        addMessage: function( aMessage, aType, aClose, aTimeout, errorDetailed ) {
+            return mAddMessage( aMessage, aType, aClose, aTimeout, errorDetailed );
         },
 
         /**

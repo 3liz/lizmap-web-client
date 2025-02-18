@@ -12,6 +12,7 @@ import GeoJSON from 'ol/format/GeoJSON.js';
 import Point from 'ol/geom/Point.js';
 import { fromExtent } from 'ol/geom/Polygon.js';
 import WKT from 'ol/format/WKT.js';
+import {mainLizmap} from "./Globals.js";
 
 /**
  * @class
@@ -498,8 +499,7 @@ export default class Action {
             this.ACTIVE_LIZMAP_ACTION = this.buildActionInstanceUniqueId(action.name, scope, layerId, featureId);
 
         } catch (error) {
-            // Display the error
-            console.warn(error);
+            mainLizmap._lizmap3.addMessage(lizDict['action.error'], 'danger', true, error);
 
             // Reset the action
             this.resetLizmapAction(true, true, true, true);
