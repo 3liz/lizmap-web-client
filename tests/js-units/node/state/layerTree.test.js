@@ -36,7 +36,10 @@ function getRootLayerTreeGroupState(name) {
 
     const layers = new LayersConfig(config.layers);
 
-    const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+    let invalid = [];
+    const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers, invalid);
+
+    expect(invalid).to.have.length(0);
     expect(rootCfg).to.be.instanceOf(LayerTreeGroupConfig)
 
     const layersOrder = buildLayersOrder(config, rootCfg);

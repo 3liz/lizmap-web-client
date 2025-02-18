@@ -52,8 +52,10 @@ describe('buildLayersOrder', function () {
 
         const layers = new LayersConfig(config.layers);
 
-        const root = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+        let invalid = [];
+        const root = buildLayerTreeConfig(capabilities.Capability.Layer, layers, invalid);
 
+        expect(invalid).to.have.length(0);
         const layersOrder = buildLayersOrder(config, root);
         expect(layersOrder).to.have.ordered.members([
             "points_of_interest",

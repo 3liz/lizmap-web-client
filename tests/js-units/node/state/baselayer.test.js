@@ -19,18 +19,24 @@ import { BaseLayerState, EmptyBaseLayerState, BaseLayersState } from 'assets/src
  * - name +'-config.json': the Lizmap config send by lizmap web client
  *
  * @param {String} name - The project name
+ * @param {string[]} expectedInvalidLayers - Expected list of invalid layers
  *
  * @return {BaseLayersState}
  **/
-function getBaseLayersState(name) {
-    const capabilities = JSON.parse(readFileSync('./tests/js-units/data/'+ name +'-capabilities.json', 'utf8'));
+function getBaseLayersState(name, expectedInvalidLayers = []) {
+    console.log(`Current test : ${name}`);
+    const capabilities = JSON.parse(readFileSync(`./tests/js-units/data/${name}-capabilities.json`, 'utf8'));
     expect(capabilities).to.not.be.undefined
     expect(capabilities.Capability).to.not.be.undefined
-    const config = JSON.parse(readFileSync('./tests/js-units/data/'+ name +'-config.json', 'utf8'));
+    const config = JSON.parse(readFileSync(`./tests/js-units/data/${name}-config.json`, 'utf8'));
+
     expect(config).to.not.be.undefined
 
     const layers = new LayersConfig(config.layers);
-    const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+    let invalid = [];
+    const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers, invalid);
+    expect(invalid).to.have.length(expectedInvalidLayers.length);
+    expect(invalid).to.deep.eq(expectedInvalidLayers);
 
     let baseLayerTreeItem = null;
     for (const layerTreeItem of rootCfg.getChildren()) {
@@ -158,7 +164,10 @@ describe('BaseLayersState', function () {
         config.layers[blName] = blGroupCfg;
 
         const layers = new LayersConfig(config.layers);
-        const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers);
+        let invalid = [];
+        const rootCfg = buildLayerTreeConfig(capabilities.Capability.Layer, layers, invalid);
+
+        expect(invalid).to.have.length(0);
 
         const blGroup = rootCfg.children[6];
         expect(blGroup).to.be.instanceOf(LayerTreeGroupConfig)
@@ -296,7 +305,8 @@ describe('BaseLayersState', function () {
     });
 
     it('Tiled baselayer', function () {
-        const baseLayers = getBaseLayersState('tiled_baselayers')
+        // This project has OpenStreetMap in its GetCapabilities but not in CFG file
+        const baseLayers = getBaseLayersState('tiled_baselayers', ['OpenStreetMap'])
         expect(baseLayers.selectedBaseLayerName).to.be.eq('wms_baselayer')
         expect(baseLayers.selectedBaseLayer).to.not.be.undefined
         expect(baseLayers.selectedBaseLayer.name).to.be.eq('wms_baselayer')
