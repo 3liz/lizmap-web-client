@@ -305,7 +305,7 @@ npm run pretest:fix
 
 ## PHP Rector
 
-PHP Rector can be run if you're located in `tests/units`.
+[PHP Rector](https://getrector.com/) can be run if you're located in `tests/units`.
 
 ```bash
 # Install composer dependencies

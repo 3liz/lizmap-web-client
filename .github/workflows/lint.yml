@@ -10,6 +10,10 @@ on:
       - master
       - release_3_*
 
+env:
+  PHP_VERSION: "8.1"
+  NODE_VERSION: "21"
+
 jobs:
   php-cs-fixer:
     name: "PHP-CS-Fixer"
@@ -33,9 +37,10 @@ jobs:
       - name: "Checkout"
         uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: "Setup Node ${{ env.NODE_VERSION }}"
+        uses: actions/setup-node@v4
         with:
-          node-version: 21
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
           cache-dependency-path: ${{ github.workspace }}/package.json
 
@@ -53,9 +58,10 @@ jobs:
       - name: "Checkout"
         uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: "Setup Node ${{ env.NODE_VERSION }}"
+        uses: actions/setup-node@v4
         with:
-          node-version: 21
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
           cache-dependency-path: ${{ github.workspace }}/package.json
 
@@ -73,11 +79,13 @@ jobs:
       - name: "Checkout"
         uses: actions/checkout@v4
 
-      - uses: "shivammathur/setup-php@v2"
+      - name: "Setup PHP ${{ env.PHP_VERSION }}"
+        uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.1"
+          php-version: ${{ env.PHP_VERSION }}
 
-      - uses: "ramsey/composer-install@v3"
+      - name: "Install composer tools in tests/units"
+        uses: ramsey/composer-install@v3
         with:
           working-directory: "tests/units"
 
