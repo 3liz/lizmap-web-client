@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
  */
 class ProjectTest extends TestCase
 {
-    public function testReadProject()
+    public function testReadProject(): void
     {
         $data = array(
             'WMSInformation' => array(),
@@ -54,7 +54,7 @@ class ProjectTest extends TestCase
      * @param mixed $key
      * @param mixed $expectedPath
      */
-    public function testGetQgisPath($repPath, $key, $expectedPath)
+    public function testGetQgisPath($repPath, $key, $expectedPath): void
     {
         $rep = new Project\Repository($key, array('path' => $repPath), null, null, null);
         $proj = new ProjectForTests();
@@ -80,7 +80,7 @@ class ProjectTest extends TestCase
      * @param mixed $file
      * @param mixed $expectedPath
      */
-    public function testGetRelativeQgisPath($relative, $root, $file, $expectedPath)
+    public function testGetRelativeQgisPath($relative, $root, $file, $expectedPath): void
     {
         $services = new lizmapServices(
             array('services' =>
@@ -132,7 +132,7 @@ class ProjectTest extends TestCase
      * @param mixed $attributeLayers
      * @param mixed $expectedReturn
      */
-    public function testHasAttributeLayer($only, $attributeLayers, $expectedReturn)
+    public function testHasAttributeLayer($only, $attributeLayers, $expectedReturn): void
     {
         $config = new Project\ProjectConfig((object)array('attributeLayers' => $attributeLayers));
         $proj = new ProjectForTests();
@@ -201,7 +201,7 @@ class ProjectTest extends TestCase
      * @param mixed $unset
      * @param mixed $expectedRet
      */
-    public function testHasEditionLayers($editionLayers, $acl, $unset, $expectedRet)
+    public function testHasEditionLayers($editionLayers, $acl, $unset, $expectedRet): void
     {
         $eLayers = clone $editionLayers;
         foreach ($editionLayers as $key => $obj) {
@@ -252,7 +252,7 @@ class ProjectTest extends TestCase
      * @param mixed $ln
      * @param mixed $expectedLn
      */
-    public function testGetLoginFilteredConfig($lfLayers, $layers, $ln, $expectedLn)
+    public function testGetLoginFilteredConfig($lfLayers, $layers, $ln, $expectedLn): void
     {
         $config = new Project\ProjectConfig((object) array(
             'loginFilteredLayers' => $lfLayers,
@@ -296,7 +296,7 @@ class ProjectTest extends TestCase
      * @param mixed $aclData
      * @param mixed $expectedFilters
      */
-    public function testGetLoginFilters($aclData, $expectedFilters)
+    public function testGetLoginFilters($aclData, $expectedFilters): void
     {
         $data = array(
             'WMSInformation' => array(),
@@ -354,7 +354,7 @@ class ProjectTest extends TestCase
      * @param mixed $aclData
      * @param mixed $expectedFilters
      */
-    public function testGetLoginFiltersNotMultiple($aclData, $expectedFilters)
+    public function testGetLoginFiltersNotMultiple($aclData, $expectedFilters): void
     {
         $data = array(
             'WMSInformation' => array(),
@@ -430,7 +430,7 @@ class ProjectTest extends TestCase
      * @param mixed $needGoogle
      * @param mixed $gKey
      */
-    public function testGoogle($options, $needGoogle, $gKey)
+    public function testGoogle($options, $needGoogle, $gKey): void
     {
         $config = new Project\ProjectConfig((object) array('options' => $options));
         $proj = new ProjectForTests();
@@ -484,7 +484,7 @@ class ProjectTest extends TestCase
      * @param mixed $options
      * @param mixed $expectedRet
      */
-    public function testCheckAcl($aclData, $options, $expectedRet)
+    public function testCheckAcl($aclData, $options, $expectedRet): void
     {
         $rep = new Project\Repository('key', array(), null, null, null);
         $context = new ContextForTests();
@@ -535,7 +535,7 @@ class ProjectTest extends TestCase
     /**
      * @dataProvider userFiles4Projets
      */
-    public function testFinder(string $projectName, $repoName, array $projectData, array $expectedFiles) {
+    public function testFinder(string $projectName, $repoName, array $projectData, array $expectedFiles): void {
         $repo = new Project\Repository($repoName, $projectData
            , null, null, null
         );

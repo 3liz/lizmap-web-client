@@ -10,7 +10,7 @@ use Lizmap\App;
  */
 class LayerTreeGroupTest extends TestCase
 {
-    public function testConstruct()
+    public function testConstruct(): void
     {
       $xmlStr = '
       <layer-tree-group expanded="1" groupLayer="" name="Buildings" checked="Qt::Checked">

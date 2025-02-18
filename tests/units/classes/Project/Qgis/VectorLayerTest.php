@@ -11,7 +11,7 @@ use Lizmap\Form;
  */
 class VectorLayerTest extends TestCase
 {
-    public function testGetFormControls()
+    public function testGetFormControls(): void
     {
         // VectorLayer
         $xmlStr = '
@@ -2065,7 +2065,7 @@ def my_form_open(dialog, layer, feature):
         $this->assertEquals('', $formControls['local']->getEditAttribute('StorageType'));
     }
 
-    public function testToKeyArray() {
+    public function testToKeyArray(): void {
         $xmlStr = '
   <maplayer refreshOnNotifyMessage="" minScale="100000000" maxScale="0" wkbType="Point" readOnly="0" styleCategories="AllStyleCategories" simplifyDrawingTol="1" type="vector" autoRefreshTime="0" geometry="Point" refreshOnNotifyEnabled="0" legendPlaceholderImage="" simplifyLocal="1" autoRefreshEnabled="0" simplifyMaxScale="1" simplifyAlgorithm="0" hasScaleBasedVisibilityFlag="0" labelsEnabled="0" simplifyDrawingHints="0" symbologyReferenceScale="-1">
     <extent>
@@ -2695,7 +2695,7 @@ def my_form_open(dialog, layer, feature):
         $this->assertEquals(array(), $layerToKeyArray['webDavBaseUris']);
     }
 
-    public function testToKeyArrayConstraintExpressions()
+    public function testToKeyArrayConstraintExpressions(): void
     {
         $xmlStr = '
   <maplayer autoRefreshEnabled="0" autoRefreshTime="0" geometry="Point" hasScaleBasedVisibilityFlag="0" labelsEnabled="0" legendPlaceholderImage="" maxScale="0" minScale="100000000" readOnly="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" simplifyAlgorithm="0" simplifyDrawingHints="0" simplifyDrawingTol="1" simplifyLocal="0" simplifyMaxScale="1" styleCategories="AllStyleCategories" symbologyReferenceScale="-1" type="vector" wkbType="Point">

@@ -7,7 +7,7 @@ use Lizmap\Request\OGCResponse;
 
 class WMSRequestTest extends TestCase
 {
-    public function testParameters()
+    public function testParameters(): void
     {
         $params = array(
             'request' => 'falseRequest',
@@ -59,7 +59,7 @@ class WMSRequestTest extends TestCase
     /**
      * @dataProvider getParametersWithFilterData
      */
-    public function testParametersWithFilters($loginFilter, $filter, $expectedFilter)
+    public function testParametersWithFilters($loginFilter, $filter, $expectedFilter): void
     {
         $testContext = new ContextForTests();
         $testContext->setResult(array('lizmap.tools.loginFilteredLayers.override' => false));
@@ -141,7 +141,7 @@ class WMSRequestTest extends TestCase
     /**
      * @dataProvider getGetContextData
      */
-    public function testGetContext($response, $url, $expectedResponse)
+    public function testGetContext($response, $url, $expectedResponse): void
     {
         $testContext = new ContextForTests();
         $testContext->setResult(array('fullUrl' => $url));
@@ -175,7 +175,7 @@ class WMSRequestTest extends TestCase
     /**
      * @dataProvider getCheckMaximumWidthHeightData
      */
-    public function testCheckMaximumWidthHeight($width, $maxWidth, $height, $maxHeight, $useServices, $expectedBool)
+    public function testCheckMaximumWidthHeight($width, $maxWidth, $height, $maxHeight, $useServices, $expectedBool): void
     {
         $params = array(
             'width' => $width,
@@ -210,7 +210,7 @@ class WMSRequestTest extends TestCase
     /**
      * @dataProvider getUseCacheData
      */
-    public function testUseCache($params, $cacheDriver, $cached, $expectedUseCache, $expectedWmsClient)
+    public function testUseCache($params, $cacheDriver, $cached, $expectedUseCache, $expectedWmsClient): void
     {
         $testContext = new ContextForTests();
         $testContext->setResult(array('cacheDriver' => $cacheDriver));

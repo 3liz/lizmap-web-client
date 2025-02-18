@@ -10,7 +10,7 @@ use Lizmap\App;
  */
 class ProjectRelationTest extends TestCase
 {
-    public function testFromXmlReader()
+    public function testFromXmlReader(): void
     {
         $xmlStr = '
         <relation id="SousQuartiers20160121124316563_QUARTMNO_VilleMTP_MTP_Quartiers_2011_432620130116112610876_QUARTMNO" referencingLayer="SousQuartiers20160121124316563" referencedLayer="VilleMTP_MTP_Quartiers_2011_432620130116112610876" strength="Association" name="Subdistricts by district">

@@ -10,7 +10,7 @@ use Lizmap\App;
  */
 class SpatialRefSysTest extends TestCase
 {
-    public function testConstruct()
+    public function testConstruct(): void
     {
         $data = array(
             'proj4' => '+proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs',
@@ -26,7 +26,7 @@ class SpatialRefSysTest extends TestCase
         $this->assertEquals($data['description'], $srs->description);
     }
 
-    public function testExceptionNoSuchProperty()
+    public function testExceptionNoSuchProperty(): void
     {
         $data = array(
             'wkt' => 'PROJCS["WGS 84 / Pseudo-Mercator",GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4326"]],PROJECTION["Mercator_1SP"],PARAMETER["central_meridian",0],PARAMETER["scale_factor",1],PARAMETER["false_easting",0],PARAMETER["false_northing",0],UNIT["metre",1,AUTHORITY["EPSG","9001"]],AXIS["X",EAST],AXIS["Y",NORTH],EXTENSION["PROJ4","+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs"],AUTHORITY["EPSG","3857"]]',
@@ -47,7 +47,7 @@ class SpatialRefSysTest extends TestCase
         $srs->wkt;
     }
 
-    public function testExceptionMandatoryProperties()
+    public function testExceptionMandatoryProperties(): void
     {
         $data = array(
             'srid' => 2154,
@@ -60,7 +60,7 @@ class SpatialRefSysTest extends TestCase
         $srs = new Qgis\SpatialRefSys($data);
     }
 
-    public function testGetInstance()
+    public function testGetInstance(): void
     {
         Qgis\SpatialRefSys::clearInstances();
         $this->assertCount(0, Qgis\SpatialRefSys::allInstances());
@@ -106,7 +106,7 @@ class SpatialRefSysTest extends TestCase
         $this->assertCount(2, Qgis\SpatialRefSys::allInstances());
     }
 
-    public function testFromXmlReader()
+    public function testFromXmlReader(): void
     {
         $xmlStr = '
         <spatialrefsys>
@@ -137,7 +137,7 @@ class SpatialRefSysTest extends TestCase
         $this->assertEquals($expected->description, $data->description);
     }
 
-    public function testExceptionMandatoryElements()
+    public function testExceptionMandatoryElements(): void
     {
         $xmlStr = '
         <spatialrefsys>

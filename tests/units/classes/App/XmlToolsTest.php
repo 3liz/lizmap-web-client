@@ -24,7 +24,7 @@ class XmlToolsTest extends TestCase
         }
     }
 
-    function testXmlFromString() {
+    function testXmlFromString(): void {
         $data = array(
             'properties' => array(
                 'WMSServiceTitle' => 'title',
@@ -61,7 +61,7 @@ class XmlToolsTest extends TestCase
         $this->assertStringContainsString('Fatal', $xml);
     }
 
-    function testXmlFromFile() {
+    function testXmlFromFile(): void {
         $xml_path = __DIR__.'/../Project/Ressources/WMSInfotest.qgs';
 
         $xml = App\XmlTools::xmlFromFile($xml_path);
@@ -78,7 +78,7 @@ class XmlToolsTest extends TestCase
         $this->assertStringContainsString('Fatal', $xml);
     }
 
-    function testXmlReaderFromString() {
+    function testXmlReaderFromString(): void {
         $data = array(
             'properties' => array(
                 'WMSServiceTitle' => 'title',
@@ -152,12 +152,12 @@ class XmlToolsTest extends TestCase
         $this->assertEquals(2, $xml->depth);
     }
 
-    function testXmlReaderFromStringException() {
+    function testXmlReaderFromStringException(): void {
         $this->expectExceptionMessage('Fatal Error 5: Line: 1 Column: 7 Extra content at the end of the document');
         App\XmlTools::xmlReaderFromString('<qgis>');
     }
 
-    function testXmlReaderFromFile() {
+    function testXmlReaderFromFile(): void {
         $xml_path = __DIR__.'/../Project/Ressources/WMSInfotest.qgs';
 
         // Open the document with XML Reader at the root element document
