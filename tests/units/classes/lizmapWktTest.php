@@ -52,6 +52,40 @@ class lizmapWktTest extends TestCase {
             $this->assertArrayHasKey('str', $checked);
         }
 
+        $wkt = 'MultiPoint ((15086.677 -105584.25))';
+        $checked = lizmapWkt::check($wkt);
+        $this->assertIsArray($checked, 'The '.$wkt.' has not been checked!');
+        $this->assertArrayHasKey('geomType', $checked);
+        $this->assertArrayHasKey('dim', $checked);
+        $this->assertEquals('', $checked['dim']);
+        $this->assertArrayHasKey('str', $checked);
+        $this->assertEquals('(15086.677 -105584.25)', $checked['str']);
+
+
+        $wkt = 'MultiLineString ((12875.475 -104903.9644, 13191.533 -104786.96, -2699.383 -80765.69))';
+        $checked = lizmapWkt::check($wkt);
+        $this->assertIsArray($checked, 'The '.$wkt.' has not been checked!');
+        $this->assertArrayHasKey('geomType', $checked);
+        $this->assertArrayHasKey('dim', $checked);
+        $this->assertEquals('', $checked['dim']);
+        $this->assertArrayHasKey('str', $checked);
+        $this->assertEquals(
+            '(12875.475 -104903.9644, 13191.533 -104786.96, -2699.383 -80765.69)',
+            $checked['str'],
+        );
+
+        $wkt = 'MULTIPOLYGON (((13186.1 -104723.44, 13234.679 -104763.3, 13126.31 -104640.92, 13186.1 -104723.44)))';
+        $checked = lizmapWkt::check($wkt);
+        $this->assertIsArray($checked, 'The '.$wkt.' has not been checked!');
+        $this->assertArrayHasKey('geomType', $checked);
+        $this->assertArrayHasKey('dim', $checked);
+        $this->assertEquals('', $checked['dim']);
+        $this->assertArrayHasKey('str', $checked);
+        $this->assertEquals(
+            '((13186.1 -104723.44, 13234.679 -104763.3, 13126.31 -104640.92, 13186.1 -104723.44))',
+            $checked['str'],
+        );
+
         $notWktArray = array(
             '',
             'POINT',
@@ -81,6 +115,18 @@ class lizmapWktTest extends TestCase {
         $this->assertEquals($wkt, $nWkt);
 
         $wkt = 'POINT ZM (30 10 0 0)';
+        $nWkt = lizmapWkt::fix($wkt);
+        $this->assertEquals($wkt, $nWkt);
+
+        $wkt = 'MultiPoint ((15086.677 -105584.25))';
+        $nWkt = lizmapWkt::fix($wkt);
+        $this->assertEquals(strtoupper($wkt), $nWkt);
+
+        $wkt = 'MultiLineString ((12875.475 -104903.9644, 13191.533 -104786.96, -2699.383 -80765.69))';
+        $nWkt = lizmapWkt::fix($wkt);
+        $this->assertEquals(strtoupper($wkt), $nWkt);
+
+        $wkt = 'MULTIPOLYGON (((13186.1 -104723.44, 13234.679 -104763.3, 13126.31 -104640.92, 13186.1 -104723.44)))';
         $nWkt = lizmapWkt::fix($wkt);
         $this->assertEquals($wkt, $nWkt);
 
