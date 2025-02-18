@@ -5,7 +5,7 @@ use Lizmap\App\FileTools;
 
 class FileToolsTest extends TestCase
 {
-    function testTail() {
+    function testTail(): void {
         $TAIL_NL = "\n";
 
         $oneLinePath = __DIR__.'/Ressources/one-line.txt';

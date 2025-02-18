@@ -10,7 +10,7 @@ use Lizmap\App;
  */
 class VectorLayerConstraintTest extends TestCase
 {
-    public function testNoConstraint()
+    public function testNoConstraint(): void
     {
         $xmlStr = '<constraint field="name" notnull_strength="0" constraints="0" unique_strength="0" exp_strength="0"/>';
         $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
@@ -24,7 +24,7 @@ class VectorLayerConstraintTest extends TestCase
         $this->assertFalse($constraint->exp_strength);
     }
 
-    public function testNotNull()
+    public function testNotNull(): void
     {
         $xmlStr = '<constraint field="pkuid" notnull_strength="1" constraints="3" unique_strength="1" exp_strength="0"/>';
         $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
@@ -38,7 +38,7 @@ class VectorLayerConstraintTest extends TestCase
         $this->assertFalse($constraint->exp_strength);
     }
 
-    public function testEnforceNotNull()
+    public function testEnforceNotNull(): void
     {
         $xmlStr = '<constraint constraints="1" unique_strength="0" field="test_not_null_only" notnull_strength="2" exp_strength="0"/>';
         $oXml = App\XmlTools::xmlReaderFromString($xmlStr);

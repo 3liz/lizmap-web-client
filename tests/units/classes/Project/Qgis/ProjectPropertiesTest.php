@@ -10,7 +10,7 @@ use Lizmap\App;
  */
 class ProjectPropertiesTest extends TestCase
 {
-    public function testConstruct()
+    public function testConstruct(): void
     {
         $data = array(
             'WMSServiceTitle' => 'Montpellier - Transports',
@@ -36,7 +36,7 @@ Data is licensed under ODbl, OpenStreetMap contributors',
         $this->assertNull($properties->Gui);
     }
 
-    public function testFromXmlReader()
+    public function testFromXmlReader(): void
     {
         $xmlStr = '
         <properties>

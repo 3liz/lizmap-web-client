@@ -10,7 +10,7 @@ use Lizmap\App;
  */
 class RasterLayerPipeTest extends TestCase
 {
-    public function testFromXmlReader()
+    public function testFromXmlReader(): void
     {
         $xmlStr = '
       <pipe>

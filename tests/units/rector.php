@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Rector\Config\RectorConfig;
 
 // Set the level of type coverage
-$levelTypeCoverage = 0;
+$levelTypeCoverage = 2;
 $levelDeadCode = 0;
 $levelCodeQuality = 0;
 

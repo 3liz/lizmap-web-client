@@ -39,7 +39,7 @@ class ProxyTest extends TestCase
     /**
      * @dataProvider getBuildData
      */
-    public function testBuild($params, $requestXml, $expectedClass)
+    public function testBuild($params, $requestXml, $expectedClass): void
     {
         $project = new ProjectForOGCForTests();
         $requestObj = Request\Proxy::build($project, $params, $requestXml);
@@ -86,7 +86,7 @@ class ProxyTest extends TestCase
     /**
      * @dataProvider getNormalizeParamsData
      */
-    public function testNormalizeParams($params, $expectedData)
+    public function testNormalizeParams($params, $expectedData): void
     {
         $data = Request\Proxy::normalizeParams($params);
         $this->assertEquals($expectedData, $data);
@@ -116,7 +116,7 @@ class ProxyTest extends TestCase
     /**
      * @dataProvider getConstructUrlData
      */
-    public function testConstructUrl($params, $expectedUrl, $url)
+    public function testConstructUrl($params, $expectedUrl, $url): void
     {
         $services = (object)array(
             'wmsServerURL' => 'https://localhost'
@@ -166,7 +166,7 @@ class ProxyTest extends TestCase
     /**
      * @dataProvider getBuildOptionsData
      */
-    public function testBuildOptions($options, $method, $debug, $expectedResult)
+    public function testBuildOptions($options, $method, $debug, $expectedResult): void
     {
         $services = (object)array(
             'proxyHttpBackend' => 'proxy',
@@ -230,7 +230,7 @@ class ProxyTest extends TestCase
     /**
      * @dataProvider getBuildHeadersData
      */
-    public function testBuildHeaders($options, $expectedHeaders, $expectedBody, $expectedUrl = null)
+    public function testBuildHeaders($options, $expectedHeaders, $expectedBody, $expectedUrl = null): void
     {
         $url = 'http://localhost?test=test';
         ProxyForTests::setServices((object)array('wmsServerURL' => 'http://localhost', 'wmsServerHeaders' => array()));
@@ -258,7 +258,7 @@ class ProxyTest extends TestCase
     /**
      * @dataProvider getUserHttpHeadersData
      */
-    public function testUserHttpHeader($connected, $userSession, $userGroups, $expectedUser, $expectedGroups)
+    public function testUserHttpHeader($connected, $userSession, $userGroups, $expectedUser, $expectedGroups): void
     {
         $contextResult = array(
             'userIsConnected' => $connected,

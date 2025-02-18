@@ -10,7 +10,7 @@ use Lizmap\App;
  */
 class LayerTreeLayerTest extends TestCase
 {
-    public function testConstruct()
+    public function testConstruct(): void
     {
       $xmlStr = '
         <layer-tree-layer expanded="1" legend_exp="" name="tramway" checked="Qt::Unchecked" id="tramway20150328114206278" source="dbname=\'/bob/lizmapdemo/qgis-projects/demoqgis/edition/transport.sqlite\' table=&quot;tramway&quot; (geometry)" providerKey="spatialite" patch_size="0,0" legend_split_behavior="0">

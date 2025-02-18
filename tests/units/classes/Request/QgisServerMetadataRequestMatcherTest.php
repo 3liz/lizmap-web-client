@@ -6,7 +6,7 @@ use Lizmap\Request\QgisServerMetadataRequestMatcher;
 
 class QgisServerMetadataRequestMatcherTest extends TestCase
 {
-    public function testMapHost()
+    public function testMapHost(): void
     {
         $matcher = new QgisServerMetadataRequestMatcher('http://map:8080/lizmap/server.json');
         $request = new Request(
@@ -28,7 +28,7 @@ class QgisServerMetadataRequestMatcherTest extends TestCase
         $this->assertFalse($matcher->matches($request));
     }
 
-    public function testLocalHost()
+    public function testLocalHost(): void
     {
         $matcher = new QgisServerMetadataRequestMatcher('http://localhost/qgis_mapserv.fcgi/lizmap/server.json');
         $request = new Request(

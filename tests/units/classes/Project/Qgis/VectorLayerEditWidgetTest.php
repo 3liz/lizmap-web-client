@@ -10,7 +10,7 @@ use Lizmap\App;
  */
 class VectorLayerEditWidgetTest extends TestCase
 {
-    public function testFromXmlReader()
+    public function testFromXmlReader(): void
     {
         // Simple default
         $xmlStr = '
@@ -89,7 +89,7 @@ class VectorLayerEditWidgetTest extends TestCase
         }
     }
 
-    public function testCheckBoxFromXmlReader()
+    public function testCheckBoxFromXmlReader(): void
     {
         // Config
         $xmlStr = '
@@ -170,7 +170,7 @@ class VectorLayerEditWidgetTest extends TestCase
         }
     }
 
-    public function testDateTimeFromXmlReader()
+    public function testDateTimeFromXmlReader(): void
     {
         // Config
         $xmlStr = '
@@ -231,7 +231,7 @@ class VectorLayerEditWidgetTest extends TestCase
         }
     }
 
-    public function testRangeFromXmlReader()
+    public function testRangeFromXmlReader(): void
     {
         // Config
         $xmlStr = '

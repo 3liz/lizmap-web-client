@@ -10,7 +10,7 @@ use Lizmap\App;
  */
 class RendererV2Test extends TestCase
 {
-    public function testFromXmlReader()
+    public function testFromXmlReader(): void
     {
         // singleSymbol
         $xmlStr = '
