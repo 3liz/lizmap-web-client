@@ -10,6 +10,10 @@ on:
       - master
       - release_3_*
 
+env:
+  PHP_VERSION: "8.1"
+  NODE_VERSION: "21"
+
 jobs:
   php-tests:
     name: "🐘 PHP-Unit"
@@ -52,9 +56,12 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: "Setup Node ${{ env.NODE_VERSION }}"
+        uses: actions/setup-node@v4
         with:
-          node-version: 21
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: ${{ github.workspace }}/package.json
 
       - name: Install lizmap dependencies
         run: npm install

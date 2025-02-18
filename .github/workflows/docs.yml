@@ -12,6 +12,9 @@ on:
       - release_3_*
   workflow_dispatch:
 
+env:
+  NODE_VERSION: "21"
+
 permissions:
   id-token: write
   pages: write
@@ -25,10 +28,12 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Setup node
+      - name: "Setup Node ${{ env.NODE_VERSION }}"
         uses: actions/setup-node@v4
         with:
-          node-version: 21
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: ${{ github.workspace }}/package.json
 
       - name: Change tokens about versions
         run: |

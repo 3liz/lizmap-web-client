@@ -10,6 +10,9 @@ on:
   repository_dispatch:
     types: [ run-e2e-branches ]
 
+env:
+  NODE_VERSION: "21"
+
 #concurrency:
 #  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
 #  cancel-in-progress: true
@@ -187,9 +190,10 @@ jobs:
         run: |
             sudo echo "127.0.0.1 othersite.local" | sudo tee -a /etc/hosts
 
-      - uses: actions/setup-node@v4
+      - name: "Setup Node ${{ env.NODE_VERSION }}"
+        uses: actions/setup-node@v4
         with:
-          node-version: 21
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
           cache-dependency-path: ${{ github.workspace }}/package.json
 
