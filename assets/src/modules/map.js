@@ -6,7 +6,7 @@
  */
 
 import { mainEventDispatcher } from './Globals.js';
-import Utils from './Utils.js';
+import { Utils } from './Utils.js';
 import { Config } from './Config.js';
 import { MapState } from './state/Map.js';
 import { BaseLayersState, BaseLayerTypes } from './config/BaseLayer.js';

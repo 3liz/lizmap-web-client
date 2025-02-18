@@ -13,7 +13,7 @@ import DOMPurify from 'dompurify';
  * @class
  * @name Utils
  */
-export default class Utils {
+export class Utils {
 
     /**
      * Download a file provided as a string
@@ -196,7 +196,7 @@ export default class Utils {
     /**
      * Get the corresponding scale for the resolution with meters per unit
      * @static
-     * @param {number} resolution    - The scale
+     * @param {number} resolution    - The resolution
      * @param {number} metersPerUnit - The meters per unit
      * @returns {number} The corresponding scale
      * @see getResolutionFromScale
@@ -208,6 +208,11 @@ export default class Utils {
         return scale;
     }
 
+    /**
+     * Sanitize the GetFeatureInfo content
+     * @param {string} content - The content to sanitize
+     * @returns {string} The sanitized content
+     */
     static sanitizeGFIContent(content) {
         DOMPurify.addHook('afterSanitizeAttributes', node => {
             // Sandbox all iframes except those from the same origin
