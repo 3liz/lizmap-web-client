@@ -4,6 +4,7 @@
 
 {ifacl2 'lizmap.admin.repositories.view'}
     <!--Repositories-->
+    <div class="admin_repositories">
 
         <!--Add a repository-->
         {ifacl2 'lizmap.admin.repositories.create'}
@@ -12,9 +13,10 @@
             </div>
         {/ifacl2}
 
-
+        <!--Loop on repositories-->
         {foreach $repositories as $repo}
 
+        <div id="{$repo->getKey()}" class="admin_repository">
             <legend>{$repo->getKey()}
             {if !$repo->hasValidPath() }
                 <span class='badge badge-important'>{@admin~admin.form.admin_section.repository.path.invalid@}</span>
@@ -73,8 +75,11 @@
                     <a class="btn" href="{jurl 'admin~maps:removeCache', array('repository'=>$repo->getKey())}" onclick="return confirm(`{@admin~admin.cache.button.remove.repository.cache.confirm.label@}`)">{@admin~admin.cache.button.remove.repository.cache.label@}</a>
                 {/ifacl2}
             </div>
+        </div>
 
         {/foreach}
+
+    </div>
 {/ifacl2}
 
 <!--Add a repository-->

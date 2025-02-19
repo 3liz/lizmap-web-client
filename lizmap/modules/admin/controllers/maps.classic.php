@@ -368,6 +368,9 @@ class mapsCtrl extends jController
         /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
         $rep->action = 'admin~maps:index';
+        if ($lizmapRep) {
+            $rep->anchor = $lizmapRep->getKey();
+        }
 
         return $rep;
     }
@@ -415,6 +418,9 @@ class mapsCtrl extends jController
             /** @var jResponseRedirect $rep */
             $rep = $this->getResponse('redirect');
             $rep->action = 'admin~maps:index';
+            if (!$new) {
+                $rep->anchor = $repository;
+            }
 
             return $rep;
         }
@@ -592,7 +598,7 @@ class mapsCtrl extends jController
             /** @var jResponseRedirect $rep */
             $rep = $this->getResponse('redirect');
             // undefined form : redirect
-            $rep->action = 'admin~config:index';
+            $rep->action = 'admin~maps:index';
 
             return $rep;
         }
@@ -601,6 +607,7 @@ class mapsCtrl extends jController
         $rep = $this->getResponse('redirect');
         // Redirect to the index
         $rep->action = 'admin~maps:index';
+        $rep->anchor = $repository;
 
         return $rep;
     }
