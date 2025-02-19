@@ -25,15 +25,15 @@ export default class LocateByLayer {
     constructor(locateByLayer, vectorLayerFeatureTypeList, map, lizmap3) {
         this._map = map;
         this._vectorLayerFeatureTypeList = vectorLayerFeatureTypeList;
-        
+
         this._lizmap3 = lizmap3;
         this._lizmap3LocateByLayerConfig = lizmap3.config.locateByLayer;
-        
+
         const locateBtn = document.getElementById('button-locate');
         if (locateByLayer) {
             this.addLocateByLayer();
-            document.querySelector('#mapmenu .locate').classList.add('active') 
-            document.getElementById('locate').classList.remove('hide') 
+            document.querySelector('#mapmenu .locate').classList.add('active')
+            document.getElementById('locate').classList.remove('hide')
         } else {
             locateBtn?.parentNode.classList.add('hide');
         }
