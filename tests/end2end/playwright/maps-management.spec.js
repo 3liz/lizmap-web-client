@@ -96,6 +96,9 @@ test.describe('Maps management', () => {
 
         // Check URL
         await expect(page).toHaveURL(/.*admin.php\/admin\/maps/);
+        let page_url = new URL(page.url());
+        await expect(page_url?.hash).toBe('#projets1982');
+        await expect(page.locator('#projets1982')).toBeVisible();
         // Check message
         await adminPage.checkAlert('alert-info', 'The repository data has been saved.');
 
@@ -112,6 +115,8 @@ test.describe('Maps management', () => {
         await adminPage.checkAlert('alert-info', 'The repository has been removed (8 group(s) concerned)');
         // Check URL
         await expect(page).toHaveURL(/.*admin.php\/admin\/maps/);
+        page_url = new URL(page.url());
+        await expect(page_url?.hash).toBe('');
 
         // Check selected admin menu item
         await adminPage.checkPage('Maps management');
@@ -192,6 +197,9 @@ test.describe('Maps management', () => {
         await page.getByRole('link', { name: 'Back' }).click();
         // Check URL
         await expect(page).toHaveURL(/.*admin.php\/admin\/maps/);
+        const page_url = new URL(page.url());
+        await expect(page_url?.hash).toBe('#testsrepository');
+        await expect(page.locator('#testsrepository')).toBeVisible();
 
         // Check selected admin menu item
         await adminPage.checkPage('Maps management');
