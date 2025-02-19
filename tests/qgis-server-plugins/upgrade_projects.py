@@ -57,6 +57,11 @@ def stop_qgis_application():
 def upgrade_projects():
 
     for qgs_file in pathlib.Path('/tmp/qgis-projects').glob('*.qgs'):
+        if qgs_file.name in ("embed_child.qgs", "relations_project_embed.qgs"):
+            # Fixme, flag QgsProject.FlagDontResolveLayers is not working with embedded layers
+            print(f"---- Skipping {qgs_file.name}")
+            continue
+
         print(f"Processing {qgs_file.name}")
 
         project = QgsProject()
