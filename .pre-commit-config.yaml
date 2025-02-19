@@ -1,12 +1,23 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
--   repo: https://github.com/pre-commit/pre-commit-hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.6.0
     hooks:
-    -   id: trailing-whitespace
+      - id: trailing-whitespace
         exclude: ^lizmap/app/overloads|lizmap/app/themes|lizmap/www/assets/
-    -   id: end-of-file-fixer
+      - id: end-of-file-fixer
         exclude: ^lizmap/app/overloads|lizmap/app/themes|lizmap/www/assets/
-    -   id: check-yaml
-    -   id: check-added-large-files
+      - id: check-yaml
+      - id: check-added-large-files
+  - repo: https://github.com/thibaudcolas/pre-commit-stylelint
+    rev: v16.14.1
+    hooks:
+      - id: stylelint
+        args: [--fix]
+#-  repo: local
+#   hooks:
+#      - id: php-cs-fixer
+#        name: PHP CS Fixer
+#        entry: oskarstark/php-cs-fixer-ga:3.8.0 --allow-risky=yes --config=.php-cs-fixer.dist.php
+#        language: docker_image
