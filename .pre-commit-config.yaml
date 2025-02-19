@@ -15,6 +15,15 @@ repos:
     hooks:
       - id: stylelint
         args: [--fix]
+  - repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v9.20.1
+    hooks:
+      - id: eslint
+        files: \.[jt]sx?$  # *.js, *.jsx, *.ts and *.tsx
+        types: [ file ]
+        additional_dependencies:
+          - eslint@9.19.0
+
 #-  repo: local
 #   hooks:
 #      - id: php-cs-fixer
