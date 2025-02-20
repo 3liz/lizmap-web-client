@@ -11,6 +11,7 @@
         "php": ">=8.1.0",
         "phpunit/phpunit": "^10.5.29",
         "phpstan/phpstan": "1.11.11",
+        "rector/rector": "1.2.*",
         "symfony/console": "*"
     },
     "autoload": {
@@ -18,9 +19,6 @@
         "psr-4": {"Lizmap\\": "../../lizmap/modules/lizmap/lib/"}
     },
     "minimum-stability": "stable",
-    "require-dev": {
-        "rector/rector": "1.2.*"
-    },
     "scripts": {
         "rector": "php listRules.php && vendor/bin/rector --dry-run",
         "rector:fix": "php listRules.php && vendor/bin/rector"

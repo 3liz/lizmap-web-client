@@ -24,7 +24,8 @@ if [ "$COMMAND" == "" ]; then
     echo "Error: command is missing"
     echo "Possible commands: "
     echo " - clean, clean-tmp, reset, reset-sqlite, ldap-reset, rights"
-    echo " - install,  composer-install, composer-update"
+    echo " - install, composer-install, composer-update"
+    echo " - composer-run [Any command in the 'tests/units/composer.json' 'scripts' section]"
     echo " - psql, redis-cli, shell, shell-root, shell-pgsql, shell-nginx"
     echo " - phpstan, unit-tests, ldap-users"
     exit 1;
@@ -100,6 +101,8 @@ case $COMMAND in
         execInPhp rights;;
     composer-install | composer_install)
         execInPhp composer_install;;
+    composer-run | composer_run)
+        execInPhp composer_run $EXTRA;;
     composer-update | composer_update)
         execInPhp composer_update;;
     unit-tests | unittests)
