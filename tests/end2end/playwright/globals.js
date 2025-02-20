@@ -163,6 +163,25 @@ export async function getEchoRequestParams(page, url) {
 }
 
 /**
+ * Similar to "toHaveLength", but display the list of members if it fails.
+ * @param {string}                        title Check title, for testing and debug
+ * @param {Array}                         parameters List of parameters to check
+ * @param {int}                           expectedLength Expected size length
+ * @param {string[]}                      expectedParameters List of expected parameters, only for debug for the print
+ */
+export async function expectToHaveLengthCompare(title, parameters, expectedLength, expectedParameters) {
+    await expect(
+        parameters,
+        `${title} → wrong length list :\n
+            Got    : ${parameters.length} items\n
+            With   : ${parameters.join(', ')}\n
+            To have: ${expectedLength} items\n
+            Debug  : ${expectedParameters.join(', ')}\n
+            Debug count : ${expectedParameters.length} items`
+    ).toHaveLength(expectedLength);
+}
+
+/**
  * Check parameters against an object containing expected parameters
  * @param {string}                        title Check title, for testing and debug
  * @param {string}                        parameters

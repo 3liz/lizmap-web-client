@@ -1,6 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { gotoMap, expectParametersToContain } from './globals';
+import { gotoMap, expectParametersToContain, expectToHaveLengthCompare } from './globals';
 
 test.describe('Print', () => {
 
@@ -77,11 +77,9 @@ test.describe('Print', () => {
             // Disabled because of the migration when project is saved with QGIS >= 3.32
             // 'multiline_label': 'Multiline label',
         })
-        let getPrintParams = await expectParametersToContain('Print requests 1', getPrintRequest.postData() ?? '', expectedParameters1)
-        await expect(
-            Array.from(getPrintParams.keys()),
-            `Wrong length list with : ${Array.from(getPrintParams.keys()).join(', ')}`
-        ).toHaveLength(15);
+        let name = "Print requests";
+        let getPrintParams = await expectParametersToContain(name, getPrintRequest.postData() ?? '', expectedParameters1)
+        await expectToHaveLengthCompare(name, Array.from(getPrintParams.keys()), 15, Object.keys(expectedParameters1));
 
         // Test `print_map` template
         await page.locator('#print-template').selectOption('1');
@@ -100,8 +98,9 @@ test.describe('Print', () => {
             'map0:STYLES': 'default,défaut,défaut',
             'map0:OPACITIES': '204,255,255',
         })
-        getPrintParams = await expectParametersToContain('Print requests 2', getPrintRequest.postData() ?? '', expectedParameters2)
-        await expect(Array.from(getPrintParams.keys())).toHaveLength(13)
+        name = 'Print requests 2';
+        getPrintParams = await expectParametersToContain(name, getPrintRequest.postData() ?? '', expectedParameters2)
+        await expectToHaveLengthCompare(name, Array.from(getPrintParams.keys()), 13, Object.keys(expectedParameters2));
 
         // Test `print_overview` template
         await page.locator('#print-template').selectOption('2');
@@ -126,8 +125,9 @@ test.describe('Print', () => {
             'map1:OPACITIES': '204,255,255',
             'map0:EXTENT': /761864.\d+,6274266.\d+,779334.\d+,6284518.\d+/,
         })
-        getPrintParams = await expectParametersToContain('Print requests 3', getPrintRequest.postData() ?? '', expectedParameters3)
-        await expect(Array.from(getPrintParams.keys())).toHaveLength(14)
+        name = 'Print requests 3';
+        getPrintParams = await expectParametersToContain(name, getPrintRequest.postData() ?? '', expectedParameters3)
+        await expectToHaveLengthCompare(name, Array.from(getPrintParams.keys()), 14, Object.keys(expectedParameters3));
 
         // Redlining with circle
         await page.locator('#button-draw').click();
@@ -194,8 +194,9 @@ test.describe('Print', () => {
             // Disabled because of the migration when project is saved with QGIS >= 3.32
             // 'multiline_label': 'Multiline label',
         })
-        getPrintParams = await expectParametersToContain('Print requests 4', getPrintRequest.postData() ?? '', expectedParameters4)
-        await expect(Array.from(getPrintParams.keys())).toHaveLength(17)
+        name = 'Print requests 4';
+        getPrintParams = await expectParametersToContain(name, getPrintRequest.postData() ?? '', expectedParameters4)
+        await expectToHaveLengthCompare(name, Array.from(getPrintParams.keys()), 17, Object.keys(expectedParameters4));
     });
 
     test('Print requests with selection', async ({ page }) => {
@@ -233,8 +234,10 @@ test.describe('Print', () => {
             'simple_label': 'simple label',
             'SELECTIONTOKEN': /[a-z\d]+/,
         }
-        const getPrintParams = await expectParametersToContain('Print requests with selection', getPrintRequest.postData() ?? '', expectedParameters)
-        await expect(Array.from(getPrintParams.keys())).toHaveLength(16)
+        const name = "Print requests with selection";
+        const getPrintParams = await expectParametersToContain(name, getPrintRequest.postData() ?? '', expectedParameters)
+        await expectToHaveLengthCompare(name, Array.from(getPrintParams.keys()), 16, Object.keys(expectedParameters));
+
     });
 
     test('Print requests with filter', async ({ page }) => {
@@ -282,8 +285,9 @@ test.describe('Print', () => {
             'simple_label': 'simple label',
             'FILTERTOKEN': /[a-z\d]+/,
         }
-        const getPrintParams = await expectParametersToContain('Print requests with filter', getPrintRequest.postData() ?? '', expectedParameters)
-        await expect(Array.from(getPrintParams.keys())).toHaveLength(16)
+        const name = 'Print requests with filter';
+        const getPrintParams = await expectParametersToContain(name, getPrintRequest.postData() ?? '', expectedParameters)
+        await expectToHaveLengthCompare(name, Array.from(getPrintParams.keys()), 16, Object.keys(expectedParameters));
     });
 });
 
@@ -337,8 +341,10 @@ test.describe('Print in popup', () => {
             'LAYER': 'quartiers',
             'EXP_FILTER': '$id IN (1)',
         }
-        const getPrintParams = await expectParametersToContain('Atlas print in popup requests', getPrintRequest.postData() ?? '', expectedParameters)
-        await expect(Array.from(getPrintParams.keys())).toHaveLength(10)
+        const name = 'Atlas print in popup requests';
+        const getPrintParams = await expectParametersToContain(name, getPrintRequest.postData() ?? '', expectedParameters)
+        await expectToHaveLengthCompare(name, Array.from(getPrintParams.keys()), 10, Object.keys(expectedParameters));
+
         await expect(getPrintParams.has('CRS')).toBe(false)
         await expect(getPrintParams.has('LAYERS')).toBe(false)
         await expect(getPrintParams.has('ATLAS_PK')).toBe(false)
@@ -519,8 +525,9 @@ test.describe('Print 3857', () => {
             // Disabled because of the migration when project is saved with QGIS >= 3.32
             // 'multiline_label': 'Multiline label',
         })
-        let getPrintParams = await expectParametersToContain('Print requests 1', getPrintRequest.postData() ?? '', expectedParameters1)
-        await expect(Array.from(getPrintParams.keys())).toHaveLength(15)
+        let name = "Print requests 1";
+        let getPrintParams = await expectParametersToContain(name, getPrintRequest.postData() ?? '', expectedParameters1)
+        await expectToHaveLengthCompare(name, Array.from(getPrintParams.keys()), 15, Object.keys(expectedParameters1));
 
         // Test `print_map` template
         await page.locator('#print-template').selectOption('1');
@@ -546,8 +553,9 @@ test.describe('Print 3857', () => {
             'map0:STYLES': 'default,défaut,défaut',
             'map0:OPACITIES': '204,255,255',
         })
-        getPrintParams = await expectParametersToContain('Print requests 2', getPrintRequest.postData() ?? '', expectedParameters2)
-        await expect(Array.from(getPrintParams.keys())).toHaveLength(13)
+        name = 'Print requests 2';
+        getPrintParams = await expectParametersToContain(name, getPrintRequest.postData() ?? '', expectedParameters2)
+        await expectToHaveLengthCompare(name, Array.from(getPrintParams.keys()), 13, Object.keys(expectedParameters2));
 
         // Redlining with circle
         await page.locator('#button-draw').click();
@@ -613,8 +621,9 @@ test.describe('Print 3857', () => {
             // Disabled because of the migration when project is saved with QGIS >= 3.32
             // 'multiline_label': 'Multiline label',
         })
-        getPrintParams = await expectParametersToContain('Print requests 3', getPrintRequest.postData() ?? '', expectedParameters3)
-        await expect(Array.from(getPrintParams.keys())).toHaveLength(17)
+        name = 'Print requests 3';
+        getPrintParams = await expectParametersToContain(name, getPrintRequest.postData() ?? '', expectedParameters3)
+        await expectToHaveLengthCompare(name, Array.from(getPrintParams.keys()), 17, Object.keys(expectedParameters3));
     });
 });
 
@@ -660,8 +669,9 @@ test.describe('Print base layers', () => {
             'map0:STYLES': 'défaut',
             'map0:OPACITIES': '255',
         })
-        let getPrintParams = await expectParametersToContain('Print requests 1', getPrintRequest.postData() ?? '', expectedParameters1)
-        await expect(Array.from(getPrintParams.keys())).toHaveLength(13)
+        let name = 'Print requests 1';
+        let getPrintParams = await expectParametersToContain(name, getPrintRequest.postData() ?? '', expectedParameters1)
+        await expectToHaveLengthCompare(name, Array.from(getPrintParams.keys()), 13, Object.keys(expectedParameters1));
 
         let getPrintResponse = await getPrintRequest.response();
         await expect(getPrintResponse?.status()).toBe(200)
@@ -690,8 +700,9 @@ test.describe('Print base layers', () => {
             'map0:STYLES': 'défaut,default',
             'map0:OPACITIES': '255,255',
         })
-        getPrintParams = await expectParametersToContain('Print requests 2', getPrintRequest.postData() ?? '', expectedParameters2)
-        await expect(Array.from(getPrintParams.keys())).toHaveLength(13)
+        name = 'Print requests 2';
+        getPrintParams = await expectParametersToContain(name, getPrintRequest.postData() ?? '', expectedParameters2)
+        await expectToHaveLengthCompare(name, Array.from(getPrintParams.keys()), 13, Object.keys(expectedParameters2));
 
         getPrintResponse = await getPrintRequest.response();
         await expect(getPrintResponse?.status()).toBe(200)
@@ -719,8 +730,9 @@ test.describe('Print base layers', () => {
             'map0:STYLES': 'default',
             'map0:OPACITIES': '255',
         })
-        getPrintParams = await expectParametersToContain('Print requests 3', getPrintRequest.postData() ?? '', expectedParameters3)
-        await expect(Array.from(getPrintParams.keys())).toHaveLength(13)
+        name = 'Print requests 3';
+        getPrintParams = await expectParametersToContain(name, getPrintRequest.postData() ?? '', expectedParameters3)
+        await expectToHaveLengthCompare(name, Array.from(getPrintParams.keys()), 13, Object.keys(expectedParameters3));
 
         getPrintResponse = await getPrintRequest.response();
         await expect(getPrintResponse?.status()).toBe(200)
@@ -748,8 +760,9 @@ test.describe('Print base layers', () => {
             'map0:STYLES': 'default,default',
             'map0:OPACITIES': '255,255',
         })
-        getPrintParams = await expectParametersToContain('Print requests 4', getPrintRequest.postData() ?? '', expectedParameters4)
-        await expect(Array.from(getPrintParams.keys())).toHaveLength(13)
+        name = 'Print requests 4';
+        getPrintParams = await expectParametersToContain(name, getPrintRequest.postData() ?? '', expectedParameters4)
+        await expectToHaveLengthCompare(name, Array.from(getPrintParams.keys()), 13, Object.keys(expectedParameters4));
 
         getPrintResponse = await getPrintRequest.response();
         await expect(getPrintResponse?.status()).toBe(200)
