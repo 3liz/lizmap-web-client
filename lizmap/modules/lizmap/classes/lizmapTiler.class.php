@@ -3,8 +3,8 @@
 use Lizmap\App\XmlTools;
 use Lizmap\Project\Project;
 use Lizmap\Request\WMSRequest;
-use proj4php\Point;
-use proj4php\Proj;
+use proj4php\Point as Proj4Point;
+use proj4php\Proj as Proj4Proj;
 use proj4php\Proj4php;
 
 /**
@@ -289,13 +289,13 @@ class lizmapTiler
             } elseif ($CRS == $projection->ref) {
                 $proj4 = new Proj4php();
                 $proj4->addDef($CRS, $projection->proj4);
-                $sourceProj = new Proj('EPSG:4326', $proj4);
-                $destProj = new Proj($projection->ref, $proj4);
+                $sourceProj = new Proj4Proj('EPSG:4326', $proj4);
+                $destProj = new Proj4Proj($projection->ref, $proj4);
 
-                $sourceMinPt = new Point($rootExtent[0], $rootExtent[1]);
+                $sourceMinPt = new Proj4Point($rootExtent[0], $rootExtent[1]);
                 $destMinPt = $proj4->transform($sourceProj, $destProj, $sourceMinPt);
 
-                $sourceMaxPt = new Point($rootExtent[2], $rootExtent[3]);
+                $sourceMaxPt = new Proj4Point($rootExtent[2], $rootExtent[3]);
                 $destMaxPt = $proj4->transform($sourceProj, $destProj, $sourceMaxPt);
 
                 $extent = array($destMinPt->x, $destMinPt->y, $destMaxPt->x, $destMaxPt->y);
@@ -499,31 +499,31 @@ class lizmapTiler
         $proj4 = new Proj4php();
 
         $proj4->addDef($projection->ref, $projection->proj4);
-        $sourceProj = new Proj('EPSG:4326', $proj4);
+        $sourceProj = new Proj4Proj('EPSG:4326', $proj4);
 
         $tileMatrixSetLinkList = array();
         foreach ($tileMatrixSetList as $tileMatrixSet) {
-            $destProj = new Proj($tileMatrixSet->ref, $proj4);
+            $destProj = new Proj4Proj($tileMatrixSet->ref, $proj4);
             $destMaxExtent = $tileMatrixSet->extent;
 
-            $sourceMinPt = new Point($layerExtent[0], $layerExtent[1]);
-            $destMinPt = new Point($destMaxExtent[0], $destMaxExtent[1]);
+            $sourceMinPt = new Proj4Point($layerExtent[0], $layerExtent[1]);
+            $destMinPt = new Proj4Point($destMaxExtent[0], $destMaxExtent[1]);
 
-            $sourceMaxPt = new Point($layerExtent[2], $layerExtent[3]);
-            $destMaxPt = new Point($destMaxExtent[2], $destMaxExtent[3]);
+            $sourceMaxPt = new Proj4Point($layerExtent[2], $layerExtent[3]);
+            $destMaxPt = new Proj4Point($destMaxExtent[2], $destMaxExtent[3]);
 
             try {
                 $destMinPt = $proj4->transform($sourceProj, $destProj, $sourceMinPt);
             } catch (Exception $e) {
                 jLog::logEx($e, 'error');
-                $destMinPt = new Point($destMaxExtent[0], $destMaxExtent[1]);
+                $destMinPt = new Proj4Point($destMaxExtent[0], $destMaxExtent[1]);
             }
 
             try {
                 $destMaxPt = $proj4->transform($sourceProj, $destProj, $sourceMaxPt);
             } catch (Exception $e) {
                 jLog::logEx($e, 'error');
-                $destMaxPt = new Point($destMaxExtent[2], $destMaxExtent[3]);
+                $destMaxPt = new Proj4Point($destMaxExtent[2], $destMaxExtent[3]);
             }
 
             $extent = array($destMinPt->x, $destMinPt->y, $destMaxPt->x, $destMaxPt->y);
