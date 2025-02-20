@@ -112,6 +112,10 @@ function composerInstall() {
 
 }
 
+function composerRun() {
+    composer --working-dir=$ROOTDIR/tests/units/ run $*
+}
+
 function composerUpdate() {
     composer update --prefer-dist --no-progress --no-ansi --no-interaction --working-dir=$APPDIR
     chown -R $APP_USER:$APP_GROUP $APPDIR/vendor $APPDIR/composer.lock
@@ -223,6 +227,8 @@ case $COMMAND in
         setRights;;
     composer_install)
         composerInstall;;
+    composer_run)
+        composerRun ${*:2};;
     composer_update)
         composerUpdate;;
     unittests)
