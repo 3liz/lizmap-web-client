@@ -14,7 +14,7 @@
 use Jelix\IniFile\IniModifier;
 use Lizmap\App\JelixContext;
 use Lizmap\Logger as Log;
-use Lizmap\Logger\Config;
+use Lizmap\Logger\Config as LogConfig;
 use Lizmap\Logger\Item;
 use Lizmap\Project\Project;
 
@@ -397,7 +397,7 @@ class lizmap
     {
         if (!self::$lizmapLogConfigInstance) {
             $readConfigPath = parse_ini_file(jApp::varPath().self::$lizmapLogConfig, true);
-            self::$lizmapLogConfigInstance = new Config($readConfigPath, self::getAppContext(), jApp::varConfigPath('lizmapLogConfig.ini.php'));
+            self::$lizmapLogConfigInstance = new LogConfig($readConfigPath, self::getAppContext(), jApp::varConfigPath('lizmapLogConfig.ini.php'));
         }
 
         return self::$lizmapLogConfigInstance;

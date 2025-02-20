@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Utilities for upload, delete and retreive resources from remote storage.
+ * Utilities for upload, delete and retrieve resources from remote storage.
  *
  * @author
  * @copyright 2012-2016 3liz
@@ -13,7 +13,7 @@
 
 namespace Lizmap\Request;
 
-use GuzzleHttp\Client as GuzzleHttpClient;
+use GuzzleHttp;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Utils as Psr7Utils;
 
@@ -300,7 +300,7 @@ class RemoteStorageRequest
      *
      * @param array $profile The WebDAV profile
      *
-     * @return GuzzleHttpClient
+     * @return GuzzleHttp\Client
      */
     protected static function buildClient($profile)
     {
