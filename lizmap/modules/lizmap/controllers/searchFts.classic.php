@@ -1,4 +1,7 @@
 <?php
+
+use Lizmap\Project\UnknownLizmapProjectException;
+
 /**
  * Php proxy to access database search.
  *
@@ -64,7 +67,7 @@ class searchFtsCtrl extends jController
 
                 return $rep;
             }
-        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
+        } catch (UnknownLizmapProjectException $e) {
             jLog::logEx($e, 'error');
             jLog::log('The lizmap project '.$project.' does not exist !', 'lizmapadmin');
 

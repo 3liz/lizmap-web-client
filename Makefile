@@ -255,13 +255,9 @@ docker-hub:
 	cd docker && push-to-docker-hub --clean
 
 php-cs-fixer-test-docker:
-	# TODO Switch to PHP-CS-Fixer official image, which are more up to date (3.65.0)
-	# Current 3.26.0 tag is 3.40.0 inside the docker image... :/
-	# Version must match the one in the GitHub workflow
-	docker run --rm -w=/app -v ${PWD}:/app oskarstark/php-cs-fixer-ga:3.26.0 --allow-risky=yes --config=.php-cs-fixer.dist.php  --dry-run --diff
+	# Version must match the one in the GitHub workflow and pre-commit
+	docker run --rm -w=/app -v ${PWD}:/app ghcr.io/php-cs-fixer/php-cs-fixer:3.69-php8.1 check --allow-risky=yes --diff
 
 php-cs-fixer-apply-docker:
-	# TODO Switch to PHP-CS-Fixer official image, which are more up to date (3.65.0)
-	# Current 3.26.0 tag is 3.40.0 inside the docker image... :/
-	# Version must match the one in the GitHub workflow
-	docker run --rm -it -w=/app -v ${PWD}:/app oskarstark/php-cs-fixer-ga:3.26.0 --allow-risky=yes --config=.php-cs-fixer.dist.php
+	# Version must match the one in the GitHub workflow and pre-commit
+	docker run --rm -it -w=/app -v ${PWD}:/app ghcr.io/php-cs-fixer/php-cs-fixer:3.69-php8.1 fix --allow-risky=yes

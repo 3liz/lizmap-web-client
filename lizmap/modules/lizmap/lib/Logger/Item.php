@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Manage and give access to lizmap log item.
  *

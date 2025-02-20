@@ -1,4 +1,5 @@
 <?php
+
 /**
  * XML tools for Lizmap.
  *

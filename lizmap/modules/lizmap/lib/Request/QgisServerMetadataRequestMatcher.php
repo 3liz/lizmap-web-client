@@ -1,4 +1,5 @@
 <?php
+
 /**
  * QGIS Server metadata request matcher to cache response.
  *

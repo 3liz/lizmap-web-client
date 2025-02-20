@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Request cache storage to use in GuzzleCache with jCache.
  *

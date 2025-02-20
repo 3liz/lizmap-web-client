@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Manage and give access to lizmap configuration.
  *
@@ -11,6 +12,8 @@
  */
 
 namespace Lizmap\Project;
+
+use Lizmap\App\AppContextInterface;
 
 class Repository
 {
@@ -75,11 +78,11 @@ class Repository
      *
      * Do not call it directly. Prefer to call `lizmapServices::getLizmapRepository()` instead.
      *
-     * @param string                          $key        the name of the repository
-     * @param array                           $data       the repository data
-     * @param string                          $varPath    the configuration files folder path
-     * @param \lizmapServices                 $services
-     * @param \Lizmap\App\AppContextInterface $appContext
+     * @param string              $key        the name of the repository
+     * @param array               $data       the repository data
+     * @param string              $varPath    the configuration files folder path
+     * @param \lizmapServices     $services
+     * @param AppContextInterface $appContext
      */
     public function __construct($key, $data, $varPath, $services, $appContext)
     {
@@ -152,7 +155,7 @@ class Repository
         }
 
         if (is_string($origins)) {
-            $origins = preg_split('/\\s*,\\s*/', $origins);
+            $origins = preg_split('/\s*,\s*/', $origins);
         }
 
         $refParts = parse_url($referer);

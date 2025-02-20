@@ -2,6 +2,8 @@
 
 namespace Lizmap\CliHelpers;
 
+use Lizmap\Request\Proxy;
+
 class RepositoryWMSChecker
 {
     public function checkAllRepository(int $checkCount, $outputCallback)
@@ -26,7 +28,7 @@ class RepositoryWMSChecker
                     'request' => 'GetCapabilities',
                 );
 
-                $url = \Lizmap\Request\Proxy::constructUrl($params, \lizmap::getServices());
+                $url = Proxy::constructUrl($params, \lizmap::getServices());
 
                 $nb_500 = 0;
                 $nb_400 = 0;
@@ -35,7 +37,7 @@ class RepositoryWMSChecker
                 $i = 0;
                 while ($i < $checkCount) {
                     // Get remote data
-                    list($data, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($url);
+                    list($data, $mime, $code) = Proxy::getRemoteData($url);
                     if (floor($code / 100) >= 5) {
                         ++$nb_500;
                     } elseif (floor($code / 100) >= 4) {

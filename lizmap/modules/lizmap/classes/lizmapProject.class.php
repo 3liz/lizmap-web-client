@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Manage and give access to lizmap configuration.
  *
@@ -10,7 +11,10 @@
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
 
-use Lizmap\Project;
+use Lizmap\Project\Project;
+use Lizmap\Project\ProjectMetadata;
+use Lizmap\Project\Repository;
+use Lizmap\Project\UnknownLizmapProjectException;
 
 /**
  * @deprecated
@@ -21,23 +25,23 @@ use Lizmap\Project;
 class lizmapProject
 {
     /**
-     * @var Project\Project
+     * @var Project
      */
     protected $proj;
 
     /**
      * constructor.
      *
-     * @param string             $key      : the project name
-     * @param Project\Repository $rep      : the repository
-     * @param mixed              $context
-     * @param mixed              $services
+     * @param string     $key      : the project name
+     * @param Repository $rep      : the repository
+     * @param mixed      $context
+     * @param mixed      $services
      */
     public function __construct($key, $rep, $context, $services)
     {
         try {
-            $this->proj = new \Lizmap\Project\Project($key, $rep, $context, $services);
-        } catch (Project\UnknownLizmapProjectException $e) {
+            $this->proj = new Project($key, $rep, $context, $services);
+        } catch (UnknownLizmapProjectException $e) {
             throw $e;
         }
     }
@@ -152,7 +156,7 @@ class lizmapProject
     /**
      * Get the minimum needed project information for some pages (landing page, admin project listing).
      *
-     * @return Lizmap\Project\ProjectMetadata
+     * @return ProjectMetadata
      */
     public function getMetadata()
     {

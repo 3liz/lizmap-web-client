@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author    René-Luc D'hont, Michael Douchin
  * @copyright 2017 3liz

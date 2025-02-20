@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Proxy for map services.
  *
@@ -19,6 +20,9 @@ use GuzzleHttp\Psr7\Response;
 use Kevinrob\GuzzleCache\CacheMiddleware;
 use Kevinrob\GuzzleCache\Strategy;
 use Lizmap\App;
+use Lizmap\App\AppContextInterface;
+use Lizmap\Project\Project;
+use Lizmap\Project\Repository;
 use Psr\Http\Message\ResponseInterface;
 
 class Proxy
@@ -59,10 +63,8 @@ class Proxy
 
     /**
      * Sets the appContext property that contains the context of the application (Jelix or Test).
-     *
-     * @param \Lizmap\App\AppContextInterface $appContext
      */
-    public static function setAppContext(App\AppContextInterface $appContext)
+    public static function setAppContext(AppContextInterface $appContext)
     {
         self::$appContext = $appContext;
     }
@@ -84,7 +86,7 @@ class Proxy
     /**
      * Returns the appContext property.
      *
-     * @return \Lizmap\App\AppContextInterface
+     * @return AppContextInterface
      */
     public static function getAppContext()
     {
@@ -98,9 +100,9 @@ class Proxy
     /**
      * Build OGC Request.
      *
-     * @param \Lizmap\Project\Project $project    the project
-     * @param array                   $params     the params array
-     * @param null|string             $requestXml the params array
+     * @param Project     $project    the project
+     * @param array       $params     the params array
+     * @param null|string $requestXml the params array
      *
      * @return null|WFSRequest|WMSRequest|WMTSRequest
      */
@@ -749,7 +751,7 @@ class Proxy
     }
 
     /**
-     * @param \Lizmap\Project\Repository $lrep
+     * @param Repository $lrep
      *
      * @return false|string the repository key, or false if clear has failed
      */

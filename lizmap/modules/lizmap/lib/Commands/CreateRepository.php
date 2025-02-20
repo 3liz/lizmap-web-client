@@ -2,11 +2,13 @@
 
 namespace Lizmap\Commands;
 
+use Jelix\Scripts\ModuleCommandAbstract;
+use Lizmap\CliHelpers\RepositoryCreator;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class CreateRepository extends \Jelix\Scripts\ModuleCommandAbstract
+class CreateRepository extends ModuleCommandAbstract
 {
     protected function configure()
     {
@@ -40,7 +42,7 @@ class CreateRepository extends \Jelix\Scripts\ModuleCommandAbstract
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
-            $cli = new \Lizmap\CliHelpers\RepositoryCreator();
+            $cli = new RepositoryCreator();
             $cli->create(
                 $input->getArgument('key'),
                 $input->getArgument('label'),

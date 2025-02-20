@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Manage OGC request.
  *
@@ -412,7 +413,7 @@ class WFSRequest extends OGCRequest
         }
 
         // get primary keys values
-        $fids = preg_split('/\\s*,\\s*/', $featureid);
+        $fids = preg_split('/\s*,\s*/', $featureid);
         $pks = array();
         foreach ($fids as $fid) {
             $exp = explode('.', $fid);
@@ -467,7 +468,7 @@ class WFSRequest extends OGCRequest
             // for postgres layer we can build the expression filter for
             // simple and multi fields key
             $dtparams = $qgisLayer->getDatasourceParameters();
-            $keys = preg_split('/\\s*,\\s*/', $dtparams->key);
+            $keys = preg_split('/\s*,\s*/', $dtparams->key);
             if (count($keys) == 1 && !$hasDoubleAtSign) {
                 // for simple field key
                 $expFilter = '"'.$keys[0].'" IN ('.implode(', ', $pks).')';

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Manage OGC request.
  *
@@ -13,6 +14,7 @@
 namespace Lizmap\Request;
 
 use Lizmap\Project\Project;
+use Lizmap\Project\UnknownLizmapProjectException;
 
 /**
  * @see https://en.wikipedia.org/wiki/Web_Map_Service.
@@ -365,7 +367,7 @@ class WMSRequest extends OGCRequest
                 $singleLayerParams['styles'] = $style;
 
                 // Perform the request
-                $singleRequest = \Lizmap\Request\Proxy::build($this->project, $singleLayerParams);
+                $singleRequest = Proxy::build($this->project, $singleLayerParams);
                 $result = $singleRequest->process();
                 if ($result->code != 200) {
                     // The request failed
@@ -448,7 +450,7 @@ class WMSRequest extends OGCRequest
             $querystring = Proxy::constructUrl($externalWMSLayerParams, $this->services, $url);
 
             // Query external WMS layers
-            list($data, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($querystring);
+            list($data, $mime, $code) = Proxy::getRemoteData($querystring);
 
             $rep .= $this->gfiGmlToHtml($data, $configLayer);
         }
@@ -977,7 +979,7 @@ class WMSRequest extends OGCRequest
 
                     return array('error', 'text/plain');
                 }
-            } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
+            } catch (UnknownLizmapProjectException $e) {
                 \jLog::logEx($e, 'error');
                 \jMessage::add('The lizmap project '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
 

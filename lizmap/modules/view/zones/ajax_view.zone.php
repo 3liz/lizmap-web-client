@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Construct the view list for ajax.
  *

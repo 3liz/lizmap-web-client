@@ -1,5 +1,7 @@
 <?php
 
+use Lizmap\Project\UnknownLizmapProjectException;
+
 class listProjectDatasource extends jFormsDynamicDatasource
 {
     protected $formId = 0;
@@ -47,7 +49,7 @@ class listProjectDatasource extends jFormsDynamicDatasource
                 if ($p) {
                     return (string) $p->getTitle();
                 }
-            } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
+            } catch (UnknownLizmapProjectException $e) {
                 jLog::logEx($e, 'error');
 
                 return '';

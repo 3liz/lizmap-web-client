@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Utilities for upload, delete and retreive resources from remote storage.
+ * Utilities for upload, delete and retrieve resources from remote storage.
  *
  * @author
  * @copyright 2012-2016 3liz
@@ -12,8 +13,9 @@
 
 namespace Lizmap\Request;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Psr7;
+use GuzzleHttp\Client as GuzzleHttpClient;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Psr7\Utils as Psr7Utils;
 
 class RemoteStorageRequest
 {
@@ -42,7 +44,7 @@ class RemoteStorageRequest
         }
 
         try {
-            $resource = Psr7\Utils::tryFopen($file, 'r');
+            $resource = Psr7Utils::tryFopen($file, 'r');
         } catch (\RuntimeException $e) {
             return array(null, 400, 'Error on file upload');
         }
@@ -55,7 +57,7 @@ class RemoteStorageRequest
             if (strpos($storageUrl, $profile['baseUri']) === 0) {
                 $opt = array();
 
-                $stream = \GuzzleHttp\Psr7\Utils::streamFor($resource);
+                $stream = Psr7Utils::streamFor($resource);
                 $opt['body'] = $stream;
                 $client = self::buildClient($profile);
 
@@ -63,7 +65,7 @@ class RemoteStorageRequest
                     $response = $client->request('PUT', $storageUrl, $opt);
                     $returnUrl = $storageUrl;
                     $http_code = $response->getStatusCode();
-                } catch (\GuzzleHttp\Exception\RequestException $e) {
+                } catch (RequestException $e) {
                     $message = 'Error on file upload '.$e->getMessage();
                     if ($e->hasResponse()) {
                         $http_code = $e->getResponse()->getStatusCode();
@@ -111,7 +113,7 @@ class RemoteStorageRequest
                     try {
                         $response = $client->request('DELETE', $storageUrl.$fileName);
                         $http_code = $response->getStatusCode();
-                    } catch (\GuzzleHttp\Exception\RequestException $e) {
+                    } catch (RequestException $e) {
                         $message = 'Error on deleting remote file '.$e->getMessage();
                         if ($e->hasResponse()) {
                             $http_code = $e->getResponse()->getStatusCode();
@@ -128,7 +130,7 @@ class RemoteStorageRequest
     }
 
     /**
-     * check if resource is a file on remote webdav storage.
+     * check if resource is a file on remote WebDAV storage.
      *
      * @param string $storageUrl remote destination path
      * @param string $fileName   the file to check
@@ -144,7 +146,7 @@ class RemoteStorageRequest
 
             try {
                 $response = $client->request('PROPFIND', $storageUrl.$fileName);
-            } catch (\GuzzleHttp\Exception\RequestException $e) {
+            } catch (RequestException $e) {
                 return false;
             } catch (\Exception $e) {
                 return false;
@@ -200,14 +202,14 @@ class RemoteStorageRequest
                     \jFile::createDir(\jApp::tempPath('davDownloads/'));
                     $tempFile = \jApp::tempPath('davDownloads/'.uniqid('dav_', true).'-'.$fileName);
 
-                    $output = Psr7\Utils::streamFor(fopen($tempFile, 'w+'));
+                    $output = Psr7Utils::streamFor(fopen($tempFile, 'w+'));
                     $opt['sink'] = $output;
 
                     try {
                         $response = $client->request('GET', $storageUrl.$fileName, $opt);
 
                         return $tempFile;
-                    } catch (\GuzzleHttp\Exception\RequestException $e) {
+                    } catch (RequestException $e) {
                         self::getAppContext()->logMessage($e->getMessage(), 'error');
 
                         return null;
@@ -224,7 +226,7 @@ class RemoteStorageRequest
     }
 
     /**
-     * Check if remote storage is reacheable on setted configuration.
+     * Check if remote storage is reachable on set configuration.
      *
      * @return bool
      */
@@ -238,7 +240,7 @@ class RemoteStorageRequest
                 $response = $client->request('GET', $profile['baseUri']);
 
                 return true;
-            } catch (\GuzzleHttp\Exception\RequestException $e) {
+            } catch (RequestException $e) {
                 return false;
             } catch (\Exception $e) {
                 return false;
@@ -275,7 +277,7 @@ class RemoteStorageRequest
     }
 
     /**
-     * Return the WebDav Url or null if fails
+     * Return the WebDAV URL or null if fails
      * The function assumes that the last part of the url is the filename and is defined as "file_name(@selected_file_path)".
      *
      * @param string      $storageUrl remote destination folder
@@ -294,11 +296,11 @@ class RemoteStorageRequest
     }
 
     /**
-     * Create HttpClient for webDav requests.
+     * Create HttpClient for WebDAV requests.
      *
-     * @param array $profile The webDav profile
+     * @param array $profile The WebDAV profile
      *
-     * @return \GuzzleHttp\Client
+     * @return GuzzleHttpClient
      */
     protected static function buildClient($profile)
     {
@@ -313,6 +315,6 @@ class RemoteStorageRequest
         }
         $opt['headers'] = $headers;
 
-        return new Client($opt);
+        return new GuzzleHttpClient($opt);
     }
 }

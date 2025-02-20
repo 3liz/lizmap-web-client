@@ -1,5 +1,7 @@
 <?php
 
+use Jelix\IniFile\IniModifier;
+
 class lizmapModuleUpgrader_replyto extends jInstallerModule
 {
     public $targetVersions = array(
@@ -17,10 +19,10 @@ class lizmapModuleUpgrader_replyto extends jInstallerModule
         if (isset($this->entryPoint->getConfigObj()->lizmap['setAdminContactEmailAsReplyTo'])
             && $this->entryPoint->getConfigObj()->lizmap['setAdminContactEmailAsReplyTo']
         ) {
-            $liveIni = new \Jelix\IniFile\IniModifier(jApp::varConfigPath('liveconfig.ini.php'));
+            $liveIni = new IniModifier(jApp::varConfigPath('liveconfig.ini.php'));
             if ($liveIni->getValue('replyTo', 'mailer') == '') {
                 $lizmapConfFile = jApp::varConfigPath('lizmapConfig.ini.php');
-                $ini = new \Jelix\IniFile\IniModifier($lizmapConfFile);
+                $ini = new IniModifier($lizmapConfFile);
                 $replyTo = $ini->getValue('adminContactEmail', 'services');
 
                 $liveIni->setValue('replyTo', $replyTo, 'mailer');

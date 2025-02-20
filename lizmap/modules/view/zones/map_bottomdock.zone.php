@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Construct the subdock content.
  *

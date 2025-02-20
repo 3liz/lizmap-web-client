@@ -1,4 +1,7 @@
 <?php
+
+use Jelix\IniFile\IniModifier;
+
 /**
  * Manage and give access to lizmap theme configuration.
  *
@@ -124,7 +127,7 @@ class lizmapTheme
     {
         // Get access to the ini file
         $iniFile = jApp::varConfigPath('lizmapConfig.ini.php');
-        $ini = new \Jelix\IniFile\IniModifier($iniFile);
+        $ini = new IniModifier($iniFile);
 
         foreach ($this->properties as $prop) {
             if ($this->{$prop} != '') {

@@ -2,6 +2,8 @@
 
 namespace Lizmap\CliHelpers;
 
+use Lizmap\Project\Repository;
+
 class RepositoryCreator
 {
     public function create($key, $label, $path, $allowUserDefinedThemes = null)
@@ -18,7 +20,7 @@ class RepositoryCreator
             'path' => $path,
             'allowUserDefinedThemes' => $allowUserDefinedThemes,
         );
-        foreach (\Lizmap\Project\Repository::getProperties() as $prop) {
+        foreach (Repository::getProperties() as $prop) {
             // Check paths
             if ($prop == 'path') {
                 $path = $data[$prop];

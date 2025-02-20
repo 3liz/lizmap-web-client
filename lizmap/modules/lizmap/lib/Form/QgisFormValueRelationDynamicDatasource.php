@@ -2,7 +2,9 @@
 
 namespace Lizmap\Form;
 
-use GuzzleHttp\Psr7;
+use GuzzleHttp\Psr7\StreamWrapper as Psr7StreamWrapper;
+use JsonMachine\Items as JsonMachineItems;
+use Lizmap\Request\WFSRequest;
 
 class QgisFormValueRelationDynamicDatasource extends \jFormsDynamicDatasource
 {
@@ -102,7 +104,7 @@ class QgisFormValueRelationDynamicDatasource extends \jFormsDynamicDatasource
                 );
 
                 // Get request
-                $wfsRequest = new \Lizmap\Request\WFSRequest($lproj, $params, \lizmap::getServices());
+                $wfsRequest = new WFSRequest($lproj, $params, \lizmap::getServices());
                 // Set Editing context
                 $wfsRequest->setEditingContext(true);
                 // Process request
@@ -115,8 +117,8 @@ class QgisFormValueRelationDynamicDatasource extends \jFormsDynamicDatasource
                                     || strpos($mime, 'application/json') === 0
                                     || strpos($mime, 'application/vnd.geo+json') === 0)) {
 
-                    $featureStream = Psr7\StreamWrapper::getResource($wfsResult->getBodyAsStream());
-                    $features = \JsonMachine\Items::fromStream($featureStream, array('pointer' => '/features'));
+                    $featureStream = Psr7StreamWrapper::getResource($wfsResult->getBodyAsStream());
+                    $features = JsonMachineItems::fromStream($featureStream, array('pointer' => '/features'));
                     foreach ($features as $feat) {
                         if (property_exists($feat, 'properties')
                             and property_exists($feat->properties, $keyColumn)
@@ -180,7 +182,7 @@ class QgisFormValueRelationDynamicDatasource extends \jFormsDynamicDatasource
         );
 
         // Perform request
-        $wfsRequest = new \Lizmap\Request\WFSRequest($lproj, $params, \lizmap::getServices());
+        $wfsRequest = new WFSRequest($lproj, $params, \lizmap::getServices());
         $wfsResult = $wfsRequest->process();
 
         $data = $wfsResult->data;

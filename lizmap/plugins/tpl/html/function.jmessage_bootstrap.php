@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author      Loic Mathaud, Bruno Perles
  * @copyright   2008 Loic Mathaud

@@ -1,4 +1,7 @@
 <?php
+
+use Lizmap\Logger\MigratorFromSqlite;
+
 /**
  * @copyright 2019 3liz
  *
@@ -61,13 +64,13 @@ class databaseCtrl extends jControllerCmdLine
     {
         /** @var jResponseCmdline $rep */
         $rep = $this->getResponse();
-        $logMigrator = new \Lizmap\Logger\MigratorFromSqlite();
+        $logMigrator = new MigratorFromSqlite();
         $rep->addContent("Using this command is deprecated, all commands are now unified in console.php
         In lizmap folder, use 'php console.php database:migratelog'\n\n");
 
         try {
             $res = $logMigrator->migrateLog('lizlog', $this->option('-resetbefore'));
-        } catch (\UnexpectedValueException $e) {
+        } catch (UnexpectedValueException $e) {
             $rep->addContent('Error during the migration: '.$e->getMessage()."\n");
             $rep->setExitCode(1);
 
@@ -104,13 +107,13 @@ class databaseCtrl extends jControllerCmdLine
     {
         /** @var jResponseCmdline $rep */
         $rep = $this->getResponse();
-        $logMigrator = new \Lizmap\Users\MigratorFromSqlite();
+        $logMigrator = new Lizmap\Users\MigratorFromSqlite();
         $rep->addContent("Using this command is deprecated, all commands are now unified in console.php
         In lizmap folder, use 'php console.php database:migrateusers'\n\n");
 
         try {
             $res = $logMigrator->migrateUsersAndRights($this->option('-resetbefore'));
-        } catch (\UnexpectedValueException $e) {
+        } catch (UnexpectedValueException $e) {
             $rep->addContent('Error during the migration: '.$e->getMessage()."\n");
             $rep->setExitCode(1);
 

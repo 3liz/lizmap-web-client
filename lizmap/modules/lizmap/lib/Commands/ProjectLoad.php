@@ -2,13 +2,16 @@
 
 namespace Lizmap\Commands;
 
+use Jelix\FakeServerConf\ApacheMod;
+use Jelix\Scripts\ModuleCommandAbstract;
+use Lizmap\CliHelpers\RepositoryWMSChecker;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 require JELIX_LIB_CORE_PATH.'request/jClassicRequest.class.php';
 
-class ProjectLoad extends \Jelix\Scripts\ModuleCommandAbstract
+class ProjectLoad extends ModuleCommandAbstract
 {
     protected function configure()
     {
@@ -24,7 +27,7 @@ class ProjectLoad extends \Jelix\Scripts\ModuleCommandAbstract
     {
         $req = new \jClassicRequest();
 
-        $fakeServer = new \Jelix\FakeServerConf\ApacheMod(\jApp::wwwPath(), '/index.php');
+        $fakeServer = new ApacheMod(\jApp::wwwPath(), '/index.php');
         $fakeServer->setHttpRequest($req->getServerURI());
 
         $nb = $input->getArgument('nb');
@@ -33,7 +36,7 @@ class ProjectLoad extends \Jelix\Scripts\ModuleCommandAbstract
 
             return 1;
         }
-        $checker = new \Lizmap\CliHelpers\RepositoryWMSChecker();
+        $checker = new RepositoryWMSChecker();
         $checker->checkAllRepository($nb, function ($str) use ($output): void {$output->writeln($str); });
 
         return 0;

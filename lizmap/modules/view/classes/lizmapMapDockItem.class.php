@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class for items in the main view list.
  *

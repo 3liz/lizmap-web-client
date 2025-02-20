@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Displays a full featured map based on one Qgis project.
  *

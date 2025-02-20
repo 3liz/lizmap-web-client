@@ -1,5 +1,6 @@
 <?php
 
+use Lizmap\Server\Server;
 use LizmapAdmin\ModulesInfo\ModulesChecker;
 
 /**
@@ -30,7 +31,7 @@ class server_informationCtrl extends jController
         $rep = $this->getResponse('html');
 
         // Get the metadata
-        $server = new \Lizmap\Server\Server();
+        $server = new Server();
         $data = $server->getMetadata();
 
         $qgisMinimumVersionRequired = jApp::config()->minimumRequiredVersion['qgisServer'];
@@ -49,7 +50,7 @@ class server_informationCtrl extends jController
             // but LWC could not reach QGIS server or the Lizmap API
             jLog::log(jLocale::get(
                 'admin.server.information.qgis.unknown',
-                array($qgisMinimumVersionRequired, $lizmapPluginMinimumVersionRequired, \lizmap::getServices()->wmsServerURL)
+                array($qgisMinimumVersionRequired, $lizmapPluginMinimumVersionRequired, lizmap::getServices()->wmsServerURL)
             ), 'lizmapadmin');
         }
 
@@ -78,7 +79,7 @@ class server_informationCtrl extends jController
         $tpl = new jTpl();
         $assign = array(
             'data' => $data,
-            'baseUrlApplication' => \jServer::getServerURI().\jApp::urlBasePath(),
+            'baseUrlApplication' => jServer::getServerURI().jApp::urlBasePath(),
             'modules' => $modules->getList(false),
             'qgisServerNeedsUpdate' => $qgisServerNeedsUpdate,
             'updateQgisServer' => $updateQgisServer,

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author     Laurent Jouanneau
  * @copyright  2007 Laurent Jouanneau

@@ -1,4 +1,7 @@
 <?php
+
+use Jelix\FileUtilities\File;
+
 /**
  * Image upload controller for ckeditor.
  *
@@ -83,7 +86,7 @@ class upload_imageCtrl extends jController
             return $this->uploadError(jLocale::get('admin~admin.upload.image.error.file.invalid'));
         }
 
-        $type = \Jelix\FileUtilities\File::getMimeType($file['tmp_name']);
+        $type = File::getMimeType($file['tmp_name']);
         if ($type == 'application/octet-stream') {
             $type = jFile::getMimeTypeFromFilename($file['name']);
         }

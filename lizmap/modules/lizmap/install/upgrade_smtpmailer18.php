@@ -1,14 +1,19 @@
 <?php
 
+use Jelix\IniFile\IniModifierInterface;
+use Jelix\IniFile\IniReaderInterface;
+use Jelix\Installer\Module\API\InstallHelpers;
+use Jelix\Installer\Module\Installer;
+
 /**
  * Move smtp access parameters from localconfig to profiles.
  */
-class lizmapModuleUpgrader_smtpmailer18 extends \Jelix\Installer\Module\Installer
+class lizmapModuleUpgrader_smtpmailer18 extends Installer
 {
     protected $targetVersions = array('3.6.0-rc.1');
     protected $date = '2022-09-16';
 
-    public function install(Jelix\Installer\Module\API\InstallHelpers $helpers)
+    public function install(InstallHelpers $helpers)
     {
         $mailerType = $helpers->getConfigIni()->getValue('mailerType', 'mailer');
         if ($mailerType != 'smtp') {
@@ -26,12 +31,12 @@ class lizmapModuleUpgrader_smtpmailer18 extends \Jelix\Installer\Module\Installe
     }
 
     /**
-     * @param \Jelix\IniFile\IniReaderInterface $ini
-     * @param mixed                             $profilesIni
+     * @param IniReaderInterface $ini
+     * @param mixed              $profilesIni
      */
     protected function migrateConfig($ini, $profilesIni)
     {
-        if (!$ini instanceof \Jelix\IniFile\IniModifierInterface) {
+        if (!$ini instanceof IniModifierInterface) {
             echo 'ERROR '.$ini->getFileName()." not allowed to be writable by the Jelix installer\n";
 
             return;
