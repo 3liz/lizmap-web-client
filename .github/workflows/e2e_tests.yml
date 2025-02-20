@@ -281,6 +281,7 @@ jobs:
 
       - name: Send screenshots if necessary about all Playwright tests, if one failed
         if: |
+          failure() &&
           steps.test-playwright-read-only.outcome != 'success' ||
           steps.test-playwright-no-tag.outcome != 'success' ||
           steps.test-playwright-write.outcome != 'success'
