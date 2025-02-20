@@ -11,9 +11,9 @@
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
 
-use GuzzleHttp\Psr7 as Psr7;
+use GuzzleHttp\Psr7\StreamWrapper as Psr7StreamWrapper;
 use Jelix\IniFile\IniModifier;
-use JsonMachine as JsonMachine;
+use JsonMachine\Items as JsonMachineItems;
 use Lizmap\Project\Project;
 use Lizmap\Request\Proxy;
 use Lizmap\Request\WFSRequest;
@@ -1159,8 +1159,8 @@ class qgisVectorLayer extends qgisMapLayer
             return true;
         }
 
-        $featureStream = Psr7\StreamWrapper::getResource($result->getBodyAsStream());
-        $features = JsonMachine\Items::fromStream($featureStream, array('pointer' => '/features'));
+        $featureStream = Psr7StreamWrapper::getResource($result->getBodyAsStream());
+        $features = JsonMachineItems::fromStream($featureStream, array('pointer' => '/features'));
         if (iterator_count($features) !== 1) {
             return false;
         }
@@ -1272,8 +1272,8 @@ class qgisVectorLayer extends qgisMapLayer
         }
 
         // Features as iterator
-        $featureStream = Psr7\StreamWrapper::getResource($result->getBodyAsStream());
-        $features = JsonMachine\Items::fromStream($featureStream, array('pointer' => '/features'));
+        $featureStream = Psr7StreamWrapper::getResource($result->getBodyAsStream());
+        $features = JsonMachineItems::fromStream($featureStream, array('pointer' => '/features'));
 
         return array(
             'status' => 'restricted',

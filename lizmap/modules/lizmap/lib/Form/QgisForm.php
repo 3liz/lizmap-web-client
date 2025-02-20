@@ -13,8 +13,8 @@
 
 namespace Lizmap\Form;
 
-use GuzzleHttp\Psr7 as Psr7;
-use JsonMachine as JsonMachine;
+use GuzzleHttp\Psr7\StreamWrapper as Psr7StreamWrapper;
+use JsonMachine\Items as JsonMachineItems;
 use Lizmap\App;
 use Lizmap\Request\RemoteStorageRequest;
 use Lizmap\Request\WFSRequest;
@@ -1787,8 +1787,8 @@ class QgisForm implements QgisFormControlsInterface
         // Used data
         if ($code < 400 && !in_array(strtolower($mime), array('text/html', 'text/xml'))) {
             // Get data from layer
-            $featureStream = Psr7\StreamWrapper::getResource($result->getBodyAsStream());
-            $features = JsonMachine\Items::fromStream($featureStream, array('pointer' => '/features'));
+            $featureStream = Psr7StreamWrapper::getResource($result->getBodyAsStream());
+            $features = JsonMachineItems::fromStream($featureStream, array('pointer' => '/features'));
             $data = array();
             foreach ($features as $feat) {
                 if (property_exists($feat, 'properties')
