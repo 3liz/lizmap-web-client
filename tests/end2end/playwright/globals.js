@@ -34,6 +34,12 @@ const __filename = fileURLToPath(import.meta.url);
 export const __dirname = path.dirname(__filename);
 
 /**
+ * The file directory path
+ * @member string
+ */
+export const testsDirectory = path.join(__dirname, '..', '..');
+
+/**
  * Get the current file path according the list of given arguments.
  * @returns {string} The final file path
  */
@@ -43,6 +49,16 @@ export function playwrightTestFile()   {
         finalPath = path.join(finalPath, arguments[i]);
     }
     return finalPath;
+}
+
+/**
+ * Get the given QGS file path.
+ * @param {string} file_name The file name without extension
+ * @param {string} directory The directory name, default to 'tests'
+ * @returns {string} The QGS file path
+ */
+export function qgsTestFile(file_name, directory = 'tests')   {
+    return path.join(testsDirectory, 'qgis-projects', directory, file_name + '.qgs');
 }
 
 /**
