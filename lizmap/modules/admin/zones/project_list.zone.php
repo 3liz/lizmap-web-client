@@ -1,5 +1,9 @@
 <?php
 
+use Jelix\Core\Infos\AppInfos;
+use Lizmap\Project\ProjectMetadata;
+use Lizmap\Server\Server;
+
 /**
  * Construct a list of Lizmap projects.
  *
@@ -37,7 +41,7 @@ class project_listZone extends jZone
 
         // Project ACL are checked
         // But there is an exception for users with lizmap.admin.access or lizmap.admin.server.information.view
-        $serverInfoAccess = (\jAcl2::check('lizmap.admin.access') || \jAcl2::check('lizmap.admin.server.information.view'));
+        $serverInfoAccess = (jAcl2::check('lizmap.admin.access') || jAcl2::check('lizmap.admin.server.information.view'));
 
         foreach ($repositories as $r) {
             $lizmapRepository = lizmap::getRepository($r);
@@ -60,7 +64,7 @@ class project_listZone extends jZone
                 }
 
                 // Get the projects data needed for the administration list table
-                /** @var Lizmap\Project\ProjectMetadata $projectItem */
+                /** @var ProjectMetadata $projectItem */
                 $projectItem = $this->getProjectListItem($inspectionDirectoryPath, $projectMetadata);
                 $projectItem['acl_no_access'] = $hasProjectAcl;
 
@@ -77,11 +81,11 @@ class project_listZone extends jZone
             }
             $maps[$r] = $lizmapViewItem;
         }
-        $lizmapTargetVersionInt = \jApp::config()->minimumRequiredVersion['lizmapWebClientTargetVersion'];
+        $lizmapTargetVersionInt = jApp::config()->minimumRequiredVersion['lizmapWebClientTargetVersion'];
         $humanLizmapTargetVersion = substr($lizmapTargetVersionInt, 0, 1);  // Major
         $humanLizmapTargetVersion .= '.'.ltrim(substr($lizmapTargetVersionInt, 2, 1), ''); // Minor
 
-        $lizmapDesktopInt = \jApp::config()->minimumRequiredVersion['lizmapDesktopPlugin'];
+        $lizmapDesktopInt = jApp::config()->minimumRequiredVersion['lizmapDesktopPlugin'];
         $lizmapDesktopRecommended = substr($lizmapDesktopInt, 0, 1);  // Major
         $lizmapDesktopRecommended .= '.'.ltrim(substr($lizmapDesktopInt, 2, 1), '');  // Minor
         $lizmapDesktopRecommended .= '.'.ltrim(substr($lizmapDesktopInt, 3, 2), '');  // Bugfix
@@ -92,7 +96,7 @@ class project_listZone extends jZone
 
         // Add an warning message when some projects cannot be displayed in LWC
         if ($hasSomeProjectsNotDisplayed) {
-            \jMessage::add(
+            jMessage::add(
                 jLocale::get(
                     'admin~admin.project.error.some.projects.not.displayed',
                     array(jLocale::get('admin~admin.project.modal.title'))
@@ -102,7 +106,7 @@ class project_listZone extends jZone
         }
 
         // Get the server metadata
-        $server = new \Lizmap\Server\Server();
+        $server = new Server();
         $data = $server->getMetadata();
         $serverVersions = array(
             'qgis_server_version' => null,
@@ -146,7 +150,7 @@ class project_listZone extends jZone
         }
         $this->_tpl->assign('qgisServerOk', $statusQgisServer);
 
-        $lizmapInfo = \Jelix\Core\Infos\AppInfos::load();
+        $lizmapInfo = AppInfos::load();
         $this->_tpl->assign('lizmapVersion', $lizmapInfo->version);
         $this->_tpl->assign('oldQgisVersionDiff', $oldQgisVersionDelta);
         $this->_tpl->assign('lizmapDesktopRecommended', $lizmapDesktopRecommended);
@@ -159,8 +163,8 @@ class project_listZone extends jZone
      * Get the QGIS project properties which must be displayed
      * in the administration project list table.
      *
-     * @param string                         $inspectionDirectoryPath The path where the inspection files are stored
-     * @param Lizmap\Project\ProjectMetadata $projectMetadata         The QGIS project metadata instance
+     * @param string          $inspectionDirectoryPath The path where the inspection files are stored
+     * @param ProjectMetadata $projectMetadata         The QGIS project metadata instance
      *
      * @return array The QGIS project properties
      */
@@ -284,7 +288,7 @@ class project_listZone extends jZone
                 );
             }
         } catch (Exception $e) {
-            \jLog::logEx($e, 'error');
+            jLog::logEx($e, 'error');
 
             return $inspectionData;
         }

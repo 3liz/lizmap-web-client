@@ -13,7 +13,7 @@
 namespace Lizmap\Request;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Psr7;
+use GuzzleHttp\Psr7 as Psr7;
 
 class RemoteStorageRequest
 {
@@ -55,7 +55,7 @@ class RemoteStorageRequest
             if (strpos($storageUrl, $profile['baseUri']) === 0) {
                 $opt = array();
 
-                $stream = \GuzzleHttp\Psr7\Utils::streamFor($resource);
+                $stream = Psr7\Utils::streamFor($resource);
                 $opt['body'] = $stream;
                 $client = self::buildClient($profile);
 

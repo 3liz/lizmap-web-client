@@ -2,6 +2,10 @@
 
 namespace Lizmap\CliHelpers;
 
+use Lizmap\Project\UnknownLizmapProjectException;
+use Lizmap\Request\Proxy;
+use Lizmap\Request\WMTSRequest;
+
 class WMTSCache
 {
     private $outputFunc;
@@ -24,7 +28,7 @@ class WMTSCache
             if (!$project) {
                 throw new \Exception('Unknown repository!');
             }
-        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
+        } catch (UnknownLizmapProjectException $e) {
             throw new \Exception('The project has not be found!');
         }
 
@@ -309,7 +313,7 @@ class WMTSCache
                     while ($row <= $tileMatrixLimit->maxRow) {
                         $col = (int) $tileMatrixLimit->minCol;
                         while ($col <= $tileMatrixLimit->maxCol) {
-                            $request = new \Lizmap\Request\WMTSRequest(
+                            $request = new WMTSRequest(
                                 $project,
                                 array(
                                     'service' => 'WMTS',
@@ -406,9 +410,9 @@ class WMTSCache
         $outputCallback('Start cleaning');
         $outputCallback('================');
         if ($layerId) {
-            $result = \Lizmap\Request\Proxy::clearLayerCache($repository->getKey(), $project->getKey(), $layerId);
+            $result = Proxy::clearLayerCache($repository->getKey(), $project->getKey(), $layerId);
         } else {
-            $result = \Lizmap\Request\Proxy::clearProjectCache($repository->getKey(), $project->getKey());
+            $result = Proxy::clearProjectCache($repository->getKey(), $project->getKey());
         }
         $outputCallback('================');
         if (!$result) {

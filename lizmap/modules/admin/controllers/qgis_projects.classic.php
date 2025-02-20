@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Lizmap administration : List of QGIS projects.
  *

@@ -1,7 +1,10 @@
 <?php
 
+use Lizmap\Project\Project;
 use Lizmap\Project\ProjectFilesFinder;
+use Lizmap\Project\UnknownLizmapProjectException;
 use Lizmap\Request\RemoteStorageRequest;
+use Lizmap\Server\Server;
 
 /**
  * Displays a full featured map based on one Qgis project.
@@ -23,7 +26,7 @@ class lizMapCtrl extends jController
     /**
      * Used to pass project Object (no need to rebuild it).
      *
-     * @var \Lizmap\Project\Project
+     * @var Project
      */
     protected $projectObj;
 
@@ -67,7 +70,7 @@ class lizMapCtrl extends jController
         $rep->action = 'view~default:index';
 
         // Check server status
-        $server = new \Lizmap\Server\Server();
+        $server = new Server();
 
         // QGIS server version
         $requiredQgisVersion = jApp::config()->minimumRequiredVersion['qgisServer'];
@@ -104,7 +107,7 @@ class lizMapCtrl extends jController
                     return $rep;
                 }
                 $project = $lser->defaultProject;
-            } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
+            } catch (UnknownLizmapProjectException $e) {
                 jMessage::add('The parameter project is mandatory!', 'error');
 
                 return $rep;
@@ -119,7 +122,7 @@ class lizMapCtrl extends jController
 
                 return $rep;
             }
-        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
+        } catch (UnknownLizmapProjectException $e) {
             jMessage::add('The lizmap project '.strtoupper($project).' does not exist !', 'error');
 
             return $rep;
@@ -522,11 +525,11 @@ class lizMapCtrl extends jController
 
         // Add Google Analytics ID
         $assign['googleAnalyticsID'] = '';
-        if ($lser->googleAnalyticsID != '' && preg_match('/^UA-\\d+-\\d+$/', $lser->googleAnalyticsID) == 1) {
+        if ($lser->googleAnalyticsID != '' && preg_match('/^UA-\d+-\d+$/', $lser->googleAnalyticsID) == 1) {
             $assign['googleAnalyticsID'] = $lser->googleAnalyticsID;
         }
 
-        if (\jAcl2::check('lizmap.admin.access') || \jAcl2::check('lizmap.admin.server.information.view')) {
+        if (jAcl2::check('lizmap.admin.access') || jAcl2::check('lizmap.admin.server.information.view')) {
             if ($lproj->qgisLizmapPluginUpdateNeeded()) {
                 $rep->setBodyAttributes(array('data-lizmap-plugin-update-warning-url' => jUrl::get('admin~qgis_projects:index')));
             } elseif ($lproj->projectCountCfgWarnings() >= 1) {
@@ -538,7 +541,7 @@ class lizMapCtrl extends jController
 
         $rep->body->assign($assign);
 
-        $request_headers = \jApp::coord()->request->headers();
+        $request_headers = jApp::coord()->request->headers();
         $_SESSION['html_map_token'] = md5(json_encode(array(
             'Host' => $request_headers['Host'],
             'User-Agent' => $request_headers['User-Agent'],

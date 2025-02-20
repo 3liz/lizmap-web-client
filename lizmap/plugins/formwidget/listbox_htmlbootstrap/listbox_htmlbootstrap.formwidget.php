@@ -1,5 +1,7 @@
 <?php
 
+use Lizmap\Form\WidgetTrait;
+
 /**
  * @author    3liz
  * @copyright 2018 3liz
@@ -12,5 +14,5 @@ require_once JELIX_LIB_PATH.'plugins/formwidget/listbox_html/listbox_html.formwi
 
 class listbox_htmlbootstrapFormWidget extends listbox_htmlFormWidget
 {
-    use \Lizmap\Form\WidgetTrait;
+    use WidgetTrait;
 }

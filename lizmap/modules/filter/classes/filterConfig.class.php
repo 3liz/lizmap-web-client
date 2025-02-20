@@ -1,4 +1,7 @@
 <?php
+
+use Lizmap\Project\UnknownLizmapProjectException;
+
 /**
  * Manage and give access to lizmap configuration.
  *
@@ -30,7 +33,7 @@ class filterConfig
 
                 return false;
             }
-        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
+        } catch (UnknownLizmapProjectException $e) {
             $this->errors = array(
                 'title' => 'Invalid Query Parameter',
                 'detail' => 'The lizmap project '.strtoupper($project).' does not exist !',

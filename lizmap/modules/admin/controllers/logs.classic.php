@@ -1,4 +1,7 @@
 <?php
+
+use Lizmap\App\FileTools;
+
 /**
  * Lizmap administration : logs.
  *
@@ -50,16 +53,16 @@ class logsCtrl extends jController
 
         // Get last admin log
         $lizmapLogPath = jApp::logPath('lizmap-admin.log');
-        $lizmapLog = \Lizmap\App\FileTools::tail($lizmapLogPath, $maxLinesToFetch);
+        $lizmapLog = FileTools::tail($lizmapLogPath, $maxLinesToFetch);
         $lizmapLogTextArea = $this->logLinesDisplayTextArea($lizmapLog);
 
-        $errorLogDisplay = !\lizmap::getServices()->hideSensitiveProperties();
+        $errorLogDisplay = !lizmap::getServices()->hideSensitiveProperties();
         $errorLogPath = jApp::logPath('errors.log');
         $errorLog = '';
         $errorLogTextArea = '';
         if ($errorLogDisplay) {
             // Get last error log
-            $errorLog = \Lizmap\App\FileTools::tail($errorLogPath, $maxLinesToFetch);
+            $errorLog = FileTools::tail($errorLogPath, $maxLinesToFetch);
             $errorLogTextArea = $this->logLinesDisplayTextArea($errorLog);
         }
 

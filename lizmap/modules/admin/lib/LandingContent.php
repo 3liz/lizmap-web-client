@@ -2,6 +2,8 @@
 
 namespace LizmapAdmin;
 
+use Jelix\IniFile\IniModifier;
+
 class LandingContent
 {
     public const HTMLformCtrls = array(
@@ -17,7 +19,7 @@ class LandingContent
     public function __construct()
     {
         $file = \jApp::varConfigPath('liveconfig.ini.php');
-        $this->iniFile = new \Jelix\IniFile\IniModifier($file);
+        $this->iniFile = new IniModifier($file);
     }
 
     public function initForm($form)

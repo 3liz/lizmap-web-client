@@ -1,4 +1,7 @@
 <?php
+
+use Lizmap\Request\Proxy;
+
 /**
  * Php proxy to access OpenStreetMap services.
  *
@@ -50,7 +53,7 @@ class banCtrl extends jController
         }
 
         $url .= http_build_query($params);
-        list($content, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($url, array(
+        list($content, $mime, $code) = Proxy::getRemoteData($url, array(
             'method' => 'get',
             'referer' => jUrl::getFull('view~default:index'),
         ));

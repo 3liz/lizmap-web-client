@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Give access to qgis mapLayer configuration.
  *
@@ -96,7 +97,7 @@ class qgisVectorLayerDatasource
             $backSlashedQuoteReplacement = '@@@LIZMAP@@@';
             preg_match(
                 '#'.$regex.'#s',
-                str_replace('\\"', $backSlashedQuoteReplacement, $this->datasource),
+                str_replace('\"', $backSlashedQuoteReplacement, $this->datasource),
                 $result
             );
         } else {

@@ -1,4 +1,7 @@
 <?php
+
+use Lizmap\Form\WidgetTrait;
+
 /**
  * @author    3liz
  * @copyright 2022 3liz
@@ -11,5 +14,5 @@ require_once JELIX_LIB_PATH.'plugins/formwidget/color_html/color_html.formwidget
 
 class color_htmlbootstrapFormWidget extends color_htmlFormWidget
 {
-    use \Lizmap\Form\WidgetTrait;
+    use WidgetTrait;
 }

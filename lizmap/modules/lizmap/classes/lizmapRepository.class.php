@@ -1,4 +1,10 @@
 <?php
+
+use Jelix\IniFile\IniModifier;
+use Lizmap\Project\Project;
+use Lizmap\Project\ProjectMetadata;
+use Lizmap\Project\Repository;
+
 /**
  * Manage and give access to lizmap configuration.
  *
@@ -12,7 +18,7 @@
 
 /**
  * @deprecated
- * @see \Lizmap\Project\Repository
+ * @see Repository
  */
 class lizmapRepository
 {
@@ -55,7 +61,7 @@ class lizmapRepository
     );
 
     /**
-     * @var \Lizmap\Project\Repository The repository instance
+     * @var Repository The repository instance
      */
     protected $repo;
 
@@ -72,7 +78,7 @@ class lizmapRepository
      */
     public function __construct($key, $data, $varPath, $context, $services)
     {
-        $this->repo = new \Lizmap\Project\Repository($key, $data, $varPath, $context, $services);
+        $this->repo = new Repository($key, $data, $varPath, $context, $services);
     }
 
     public function getKey()
@@ -123,8 +129,8 @@ class lizmapRepository
     /**
      * Update a repository in a \Jelix\IniFile\IniModifier object.
      *
-     * @param array                      $data the repository data
-     * @param \Jelix\IniFile\IniModifier $ini  the object to edit the ini file
+     * @param array       $data the repository data
+     * @param IniModifier $ini  the object to edit the ini file
      *
      * @return bool true if there is at least one valid data in $data
      */
@@ -139,7 +145,7 @@ class lizmapRepository
      * @param string $key           the project key
      * @param bool   $keepReference if we need to keep reference in projectInstances
      *
-     * @return null|Lizmap\Project\Project null if it does not exist
+     * @return null|Project null if it does not exist
      */
     public function getProject($key, $keepReference = true)
     {
@@ -149,7 +155,7 @@ class lizmapRepository
     /**
      * Get the repository projects.
      *
-     * @return Lizmap\Project\Project[]
+     * @return Project[]
      */
     public function getProjects()
     {
@@ -161,7 +167,7 @@ class lizmapRepository
      *
      * @param bool $checkAcl If the ACL must be checked, according to the current user, default to true
      *
-     * @return Lizmap\Project\ProjectMetadata[]
+     * @return ProjectMetadata[]
      */
     public function getProjectsMetadata($checkAcl = true)
     {

@@ -1,4 +1,8 @@
 <?php
+
+use jelix\forms\Builder\HtmlBuilder;
+use jelix\forms\HtmlWidget\RootWidget;
+
 /**
  * @author      Laurent Jouanneau
  *
@@ -10,7 +14,7 @@
  *
  * @licence     http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
  */
-class htmlbootstrapFormWidget extends \jelix\forms\HtmlWidget\RootWidget
+class htmlbootstrapFormWidget extends RootWidget
 {
     public function outputHeader($builder)
     {
@@ -50,7 +54,7 @@ class htmlbootstrapFormWidget extends \jelix\forms\HtmlWidget\RootWidget
     }
 
     /**
-     * @param \jelix\forms\Builder\HtmlBuilder $builder
+     * @param HtmlBuilder $builder
      */
     public function outputFooter($builder)
     {
@@ -72,7 +76,7 @@ class htmlbootstrapFormWidget extends \jelix\forms\HtmlWidget\RootWidget
         $container->privateData['__jforms_js'] = $js;
         $formId = $container->formId;
         $formName = $builder->getForm()->getSelector();
-        echo '<script type="text/javascript" defer src="'.\jUrl::get(
+        echo '<script type="text/javascript" defer src="'.jUrl::get(
             'jelix~jforms:js',
             array('__form' => $formName, '__fid' => $formId)
         ).'"></script>';

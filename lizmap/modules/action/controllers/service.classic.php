@@ -1,4 +1,7 @@
 <?php
+
+use Lizmap\Project\UnknownLizmapProjectException;
+
 /**
  * PHP proxy to execute action request.
  *
@@ -42,7 +45,7 @@ class serviceCtrl extends jController
 
                 return $this->error($errors);
             }
-        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
+        } catch (UnknownLizmapProjectException $e) {
             $errors = array(
                 'title' => 'Wrong repository and project !',
                 'detail' => 'The lizmap project '.strtoupper($project).' does not exist !',
@@ -142,8 +145,8 @@ class serviceCtrl extends jController
         foreach ($wktParameters as $paramName) {
             $value = trim($this->param($paramName, ''));
             ${$paramName} = $value;
-            if (!empty($value) && \lizmapWkt::check($value)) {
-                $geom = \lizmapWkt::parse($value);
+            if (!empty($value) && lizmapWkt::check($value)) {
+                $geom = lizmapWkt::parse($value);
                 if ($geom === null) {
                     ${$paramName} = '';
                     $errors = array(

@@ -1,4 +1,8 @@
 <?php
+
+use Lizmap\Events\LizmapMetadataEvent;
+use Lizmap\Server\Server;
+
 /**
  * Methods providing information about Lizmap application.
  *
@@ -29,11 +33,11 @@ class appCtrl extends jController
         }
 
         // Get server metadata from LWC and QGIS Server Lizmap plugin
-        $server = new \Lizmap\Server\Server();
+        $server = new Server();
         $data = $server->getMetadata();
 
         // Only show QGIS related data for admins
-        $serverInfoAccess = (\jAcl2::check('lizmap.admin.access') || \jAcl2::check('lizmap.admin.server.information.view'));
+        $serverInfoAccess = (jAcl2::check('lizmap.admin.access') || jAcl2::check('lizmap.admin.server.information.view'));
         if (!$serverInfoAccess) {
             $data['qgis_server_info'] = array('error' => 'NO_ACCESS');
         }
@@ -45,8 +49,8 @@ class appCtrl extends jController
         }
 
         // retrieves foreign metadata
-        $event = new \Lizmap\Events\LizmapMetadataEvent();
-        \jEvent::notify($event);
+        $event = new LizmapMetadataEvent();
+        jEvent::notify($event);
         // merge other foreign metadata with current metadata.
         // We don't want that foreign metadata overwrite our own metadata.
         $data = array_merge($event->getMetadata(), $data);

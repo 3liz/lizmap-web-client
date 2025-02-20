@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Plugin modifier for the popup templates.
  *

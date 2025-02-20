@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Lizmap FTS searcher.
  *

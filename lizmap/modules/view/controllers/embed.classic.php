@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Displays an embedded map based on one Qgis project.
  *

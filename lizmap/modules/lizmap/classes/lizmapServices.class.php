@@ -1,4 +1,7 @@
 <?php
+
+use Lizmap\Server\Server;
+
 /**
  * Manage and give access to lizmap configuration.
  *
@@ -138,7 +141,7 @@ class lizmapServices
      *
      * @var string
      *
-     * @deprecated 3.7.0 Use the {@see \Lizmap\Server\Server}
+     * @deprecated 3.7.0 Use the {@see Server}
      */
     public $qgisServerVersion = '3.0';
 
@@ -500,7 +503,7 @@ class lizmapServices
 
     public function isSmtpEnabled()
     {
-        $config = \jApp::config()->mailer;
+        $config = jApp::config()->mailer;
 
         return $config['mailerType'] == 'smtp'
             && $config['smtpHost'] != ''

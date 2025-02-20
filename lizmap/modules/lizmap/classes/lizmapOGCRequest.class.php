@@ -1,4 +1,8 @@
 <?php
+
+use Lizmap\Request\OGCRequest;
+use Lizmap\Request\Proxy;
+
 /**
  * Manage OGC request.
  *
@@ -12,10 +16,10 @@
 /**
  * dummy class for compatibility.
  *
- * @see \Lizmap\Request\OGCRequest
+ * @see OGCRequest
  * @deprecated
  */
-class lizmapOGCRequest extends \Lizmap\Request\OGCRequest
+class lizmapOGCRequest extends OGCRequest
 {
     /**
      * constructor.
@@ -31,10 +35,10 @@ class lizmapOGCRequest extends \Lizmap\Request\OGCRequest
         $this->repository = $project->getRepository();
 
         $this->services = lizmap::getServices();
-        $this->appContext = \Lizmap\Request\Proxy::getAppContext();
+        $this->appContext = Proxy::getAppContext();
 
         $params['map'] = $project->getRelativeQgisPath();
-        $this->params = \Lizmap\Request\Proxy::normalizeParams($params);
+        $this->params = Proxy::normalizeParams($params);
         $this->requestXml = $requestXml;
     }
 }

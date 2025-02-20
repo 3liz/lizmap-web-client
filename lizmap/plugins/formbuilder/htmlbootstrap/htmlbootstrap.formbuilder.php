@@ -1,4 +1,7 @@
 <?php
+
+use jelix\forms\Builder\HtmlBuilder;
+
 /**
  * @author    3liz
  * @copyright 2014-2018 3liz
@@ -7,7 +10,7 @@
  *
  * @license  Mozilla Public License : http://www.mozilla.org/MPL/
  */
-class htmlbootstrapFormBuilder extends \jelix\forms\Builder\HtmlBuilder
+class htmlbootstrapFormBuilder extends HtmlBuilder
 {
     protected $formType = 'htmlbootstrap';
 

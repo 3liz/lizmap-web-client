@@ -1,4 +1,7 @@
 <?php
+
+use Lizmap\Form\WidgetTrait;
+
 /**
  * @author    3liz
  * @copyright 2022 3liz
@@ -11,5 +14,5 @@ require_once JELIX_LIB_PATH.'plugins/formwidget/time_html/time_html.formwidget.p
 
 class time_htmlbootstrapFormWidget extends time_htmlFormWidget
 {
-    use \Lizmap\Form\WidgetTrait;
+    use WidgetTrait;
 }

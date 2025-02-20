@@ -1,4 +1,5 @@
 <?php
+
 /**
  * QGIS Vector layer field.
  *
@@ -17,9 +18,9 @@ use Lizmap\Project\Qgis;
 /**
  * QGIS Vector layer field.
  *
- * @property string                           $name
- * @property null|string                      $configurationFlags
- * @property Qgis\Layer\VectorLayerEditWidget $editWidget
+ * @property string                $name
+ * @property null|string           $configurationFlags
+ * @property VectorLayerEditWidget $editWidget
  */
 class VectorLayerField extends Qgis\BaseQgisXmlObject
 {

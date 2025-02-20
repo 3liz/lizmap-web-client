@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Manage OGC response.
  *
@@ -12,7 +13,7 @@
 
 namespace Lizmap\Request;
 
-use GuzzleHttp\Psr7;
+use GuzzleHttp\Psr7 as Psr7;
 use Psr\Http\Message\StreamInterface;
 
 class OGCResponse

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class with methods relative to Lizmap Popups.
  *
