@@ -13,7 +13,7 @@
 
 namespace Lizmap\Request;
 
-use GuzzleHttp;
+use GuzzleHttp\Client as GuzzleHttpClient;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Utils as Psr7Utils;
 
@@ -300,7 +300,7 @@ class RemoteStorageRequest
      *
      * @param array $profile The WebDAV profile
      *
-     * @return GuzzleHttp\Client
+     * @return GuzzleHttpClient
      */
     protected static function buildClient($profile)
     {
@@ -315,6 +315,6 @@ class RemoteStorageRequest
         }
         $opt['headers'] = $headers;
 
-        return new Client($opt);
+        return new GuzzleHttpClient($opt);
     }
 }

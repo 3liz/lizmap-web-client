@@ -15,7 +15,7 @@ use Jelix\IniFile\IniModifier;
 use Lizmap\App\JelixContext;
 use Lizmap\Logger as Log;
 use Lizmap\Logger\Config as LogConfig;
-use Lizmap\Logger\Item;
+use Lizmap\Logger\Item as LogItem;
 use Lizmap\Project\Project;
 
 /**
@@ -45,7 +45,7 @@ class lizmap
     protected static $lizmapServicesInstance;
 
     /**
-     * @var Config The Lizmap Logger Config instance for the singleton
+     * @var LogConfig The Lizmap Logger Config instance for the singleton
      */
     protected static $lizmapLogConfigInstance;
 
@@ -202,15 +202,15 @@ class lizmap
 
                             $filePath = $rootRepositories.$file.'/';
                             if (is_dir($filePath)) {
-                                $allreadyUsed = false;
+                                $allReadyUsed = false;
                                 foreach ($repositories as $repo) {
                                     if ($repo->getPath() == $filePath) {
-                                        $allreadyUsed = true;
+                                        $allReadyUsed = true;
 
                                         break;
                                     }
                                 }
-                                if (!$allreadyUsed) {
+                                if (!$allReadyUsed) {
                                     $data[$filePath] = $file;
                                 }
                             }
@@ -336,7 +336,7 @@ class lizmap
     }
 
     /**
-     * Uptade a repository.
+     * Update a repository.
      *
      * @param string $key  the repository name
      * @param array  $data the repository data
@@ -391,7 +391,7 @@ class lizmap
     /**
      * Get global configuration for logs.
      *
-     * @return Config
+     * @return LogConfig
      */
     public static function getLogConfig()
     {
@@ -410,7 +410,7 @@ class lizmap
      */
     public static function getLogItemProperties()
     {
-        return Item::getSProperties();
+        return LogItem::getSProperties();
     }
 
     /**
@@ -418,7 +418,7 @@ class lizmap
      *
      * @param string $key Key of the log item to get
      *
-     * @return Item
+     * @return LogItem
      *
      * @deprecated
      */
