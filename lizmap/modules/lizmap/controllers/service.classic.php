@@ -1,6 +1,6 @@
 <?php
 
-use GuzzleHttp\Psr7 as Psr7;
+use GuzzleHttp\Psr7\Utils as Psr7Utils;
 use Lizmap\Project\Project;
 use Lizmap\Project\UnknownLizmapProjectException;
 
@@ -931,8 +931,8 @@ class serviceCtrl extends jController
         $rep->doDownload = $doDownload;
 
         $rep->setContentCallback(function () use ($result) {
-            $output = Psr7\Utils::streamFor(fopen('php://output', 'w+'));
-            Psr7\Utils::copyToStream($result->getBodyAsStream(), $output);
+            $output = Psr7Utils::streamFor(fopen('php://output', 'w+'));
+            Psr7Utils::copyToStream($result->getBodyAsStream(), $output);
         });
 
         return $rep;

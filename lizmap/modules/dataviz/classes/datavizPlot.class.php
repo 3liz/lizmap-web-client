@@ -9,8 +9,8 @@
  * @license    Mozilla Public License
  */
 
-use GuzzleHttp\Psr7 as Psr7;
-use JsonMachine as JsonMachine;
+use GuzzleHttp\Psr7;
+use JsonMachine;
 use Lizmap\Project\Project;
 use Lizmap\Project\UnknownLizmapProjectException;
 use Lizmap\Request\WFSRequest;

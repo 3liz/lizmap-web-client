@@ -13,7 +13,7 @@
 
 namespace Lizmap\Request;
 
-use GuzzleHttp\Psr7 as Psr7;
+use GuzzleHttp\Psr7\Utils as Psr7Utils;
 use Psr\Http\Message\StreamInterface;
 
 class OGCResponse
@@ -139,15 +139,15 @@ class OGCResponse
     {
         if (is_string($this->data)) {
             if (substr($this->data, 0, 7) == 'file://' && is_file(substr($this->data, 7))) {
-                $resource = Psr7\Utils::tryFopen(substr($this->data, 7), 'r');
+                $resource = Psr7Utils::tryFopen(substr($this->data, 7), 'r');
 
-                return Psr7\Utils::streamFor($resource);
+                return Psr7Utils::streamFor($resource);
             }
 
-            return Psr7\Utils::streamFor($this->data);
+            return Psr7Utils::streamFor($this->data);
         }
         if (is_iterable($this->data)) {
-            return Psr7\Utils::streamFor($this->data);
+            return Psr7Utils::streamFor($this->data);
         }
 
         return $this->data;

@@ -11,7 +11,7 @@
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
 
-use GuzzleHttp\Psr7 as Psr7;
+use GuzzleHttp\Psr7\Utils as Psr7Utils;
 use Lizmap\Form;
 use Lizmap\Project\Project;
 use Lizmap\Project\UnknownLizmapProjectException;
@@ -1494,9 +1494,9 @@ class editionCtrl extends jController
         };
 
         $rep->setContentCallback(function () use ($inputGenerator) {
-            $output = Psr7\Utils::streamFor(fopen('php://output', 'w+'));
-            $input = Psr7\Utils::streamFor($inputGenerator());
-            Psr7\Utils::copyToStream($input, $output);
+            $output = Psr7Utils::streamFor(fopen('php://output', 'w+'));
+            $input = Psr7Utils::streamFor($inputGenerator());
+            Psr7Utils::copyToStream($input, $output);
         });
 
         return $rep;
