@@ -52,4 +52,3 @@ foreach ($coverageList as $key => $value) {
 
     $output->writeln("");
 }
-

@@ -35,5 +35,5 @@ repos:
 #      - id: php-cs-fixer
 #        name: PHP CS Fixer
 #        # To match value in Makefile
-#        entry: oskarstark/php-cs-fixer-ga:3.26.0 --allow-risky=yes --config=.php-cs-fixer.dist.php
+#        entry: ghcr.io/php-cs-fixer/php-cs-fixer:3.69-php8.1 fix --config .php-cs-fixer.dist.php --allow-risky=yes
 #        language: docker_image

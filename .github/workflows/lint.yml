@@ -25,9 +25,9 @@ jobs:
 
       - name: "PHP-CS-Fixer"
         # Version must match the one from the Makefile
-        uses: docker://oskarstark/php-cs-fixer-ga:3.26.0
+        uses: docker://ghcr.io/php-cs-fixer/php-cs-fixer:3.69-php8.1
         with:
-          args: --config=.php-cs-fixer.dist.php --allow-risky=yes --dry-run --diff
+          args: check --allow-risky=yes --diff
 
   stylelint:
     name: "StyleLint 🎨‌"
