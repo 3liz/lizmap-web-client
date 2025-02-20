@@ -1,4 +1,9 @@
 <?php
+
+use Lizmap\Project\Project;
+use Lizmap\Project\UnknownLizmapProjectException;
+use Lizmap\Request\Proxy;
+
 /**
  * PHP Dataviz service to get plot config.
  *
@@ -22,7 +27,7 @@ class serviceCtrl extends jController
     private $project;
 
     /**
-     * @var null|Lizmap\Project\Project the Lizmap project
+     * @var null|Project the Lizmap project
      */
     private $lizmapProject;
 
@@ -62,7 +67,7 @@ class serviceCtrl extends jController
         $plotConfigParameter = $this->param('plot_config');
 
         if ($this->debugMode == '1') {
-            \jLog::log('Dataviz - repository: '.$repository.' - project: '.$project, 'lizmapadmin');
+            jLog::log('Dataviz - repository: '.$repository.' - project: '.$project, 'lizmapadmin');
         }
 
         // Connect from auth basic if necessary
@@ -82,7 +87,7 @@ class serviceCtrl extends jController
         }
 
         if ($this->debugMode == '1') {
-            \jLog::log('Dataviz - basic authentication  = '.json_encode($this->basicAuthUsed), 'lizmapadmin');
+            jLog::log('Dataviz - basic authentication  = '.json_encode($this->basicAuthUsed), 'lizmapadmin');
         }
 
         // Check the repository exists
@@ -111,7 +116,7 @@ class serviceCtrl extends jController
                     )
                 );
             }
-        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
+        } catch (UnknownLizmapProjectException $e) {
             return $this->error(
                 array(
                     'code' => 404,
@@ -193,7 +198,7 @@ class serviceCtrl extends jController
             $code = (int) $errors['code'];
             $rep->setHttpStatus(
                 $code,
-                \Lizmap\Request\Proxy::getHttpStatusMsg($code)
+                Proxy::getHttpStatusMsg($code)
             );
         }
         $rep->data = array('errors' => $errors);
@@ -216,13 +221,13 @@ class serviceCtrl extends jController
         $plotConfigParameter = $this->param('plot_config');
 
         if ($this->debugMode == '1') {
-            \jLog::log('Dataviz - parameter plot_id     = '.$plot_id, 'lizmapadmin');
-            \jLog::log('Dataviz - parameter exp_filter  = '.$exp_filter, 'lizmapadmin');
+            jLog::log('Dataviz - parameter plot_id     = '.$plot_id, 'lizmapadmin');
+            jLog::log('Dataviz - parameter exp_filter  = '.$exp_filter, 'lizmapadmin');
             $logPlotConfigParameter = $plotConfigParameter;
             if (is_array($plotConfigParameter)) {
                 $logPlotConfigParameter = json_encode($plotConfigParameter);
             }
-            \jLog::log('Dataviz - parameter plot_config = '.$logPlotConfigParameter, 'lizmapadmin');
+            jLog::log('Dataviz - parameter plot_config = '.$logPlotConfigParameter, 'lizmapadmin');
         }
 
         /** @var jResponseJson $rep */
@@ -233,7 +238,7 @@ class serviceCtrl extends jController
         if ($this->config !== null && array_key_exists($plot_id, $this->config['layers'])) {
             $plotConfig = $this->config['layers'][$plot_id];
             if ($this->debugMode == '1') {
-                \jLog::log('Dataviz - a plot configuration exists for this plot_id = '.$plot_id, 'lizmapadmin');
+                jLog::log('Dataviz - a plot configuration exists for this plot_id = '.$plot_id, 'lizmapadmin');
             }
         }
 
@@ -244,13 +249,13 @@ class serviceCtrl extends jController
         if (!empty($plotConfigParameter) && !is_array($plotConfigParameter)) {
             // Convert the given string to a PHP array if needed
             if ($this->debugMode == '1') {
-                \jLog::log('Dataviz - the given plot_config must be converted to an Array', 'lizmapadmin');
+                jLog::log('Dataviz - the given plot_config must be converted to an Array', 'lizmapadmin');
             }
             $plotConfigParameter = json_decode($plotConfigParameter, true);
         }
-        if (!empty($plotConfigParameter) && $this->basicAuthUsed && \jAuth::isConnected()) {
+        if (!empty($plotConfigParameter) && $this->basicAuthUsed && jAuth::isConnected()) {
             if ($this->debugMode == '1') {
-                \jLog::log('Dataviz - parameter plot_config is not empty & basic authentication is used', 'lizmapadmin');
+                jLog::log('Dataviz - parameter plot_config is not empty & basic authentication is used', 'lizmapadmin');
             }
 
             // Transform back to object
@@ -261,7 +266,7 @@ class serviceCtrl extends jController
             if (!empty($parsedPlotConfig)) {
                 $plotConfig = $parsedPlotConfig;
                 if ($this->debugMode == '1') {
-                    \jLog::log('Dataviz - plot_config is used to override the original plot configuration', 'lizmapadmin');
+                    jLog::log('Dataviz - plot_config is used to override the original plot configuration', 'lizmapadmin');
                 }
             } else {
                 if (property_exists($configObject, 'layerId')) {

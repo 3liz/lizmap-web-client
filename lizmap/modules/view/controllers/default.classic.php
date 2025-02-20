@@ -1,4 +1,9 @@
 <?php
+
+use Lizmap\Project\UnknownLizmapProjectException;
+use Lizmap\Server\Server;
+use LizmapAdmin\LandingContent;
+
 /**
  * Displays a list of project for a given repository.
  *
@@ -59,7 +64,7 @@ class defaultCtrl extends jController
                         jMessage::add(jLocale::get('view~default.project.needs.update'), 'error');
                     }
                     jMessage::add('The \'only maps\' option is not well configured!', 'error');
-                } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
+                } catch (UnknownLizmapProjectException $e) {
                     jMessage::add('The \'only maps\' option is not well configured!', 'error');
                     jLog::logEx($e, 'error');
                 }
@@ -104,7 +109,7 @@ class defaultCtrl extends jController
         $rep->body->assign('allowUserAccountRequests', $services->allowUserAccountRequests);
 
         // Add Google Analytics ID
-        if ($services->googleAnalyticsID != '' && preg_match('/^UA-\\d+-\\d+$/', $services->googleAnalyticsID) == 1) {
+        if ($services->googleAnalyticsID != '' && preg_match('/^UA-\d+-\d+$/', $services->googleAnalyticsID) == 1) {
             $rep->body->assign('googleAnalyticsID', $services->googleAnalyticsID);
         }
 
@@ -113,7 +118,7 @@ class defaultCtrl extends jController
         $checkServerInformation = false;
         if (jAcl2::check('lizmap.admin.server.information.view')) {
             // Check server status
-            $server = new \Lizmap\Server\Server();
+            $server = new Server();
 
             // Check QGIS server status
             $requiredQgisVersion = jApp::config()->minimumRequiredVersion['qgisServer'];
@@ -131,7 +136,7 @@ class defaultCtrl extends jController
         }
         $rep->body->assign('checkServerInformation', $checkServerInformation);
 
-        $landingContentService = new LizmapAdmin\LandingContent();
+        $landingContentService = new LandingContent();
 
         // Add custom HTML content at top of page
         $rep->body->assign('landing_page_content_bottom', $landingContentService->getBottomContentForView());

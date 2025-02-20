@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Create and set \jForms form based on QGIS vector layer.
  *
@@ -12,9 +13,11 @@
 
 namespace Lizmap\Form;
 
-use GuzzleHttp\Psr7;
+use GuzzleHttp\Psr7 as Psr7;
+use JsonMachine as JsonMachine;
 use Lizmap\App;
 use Lizmap\Request\RemoteStorageRequest;
+use Lizmap\Request\WFSRequest;
 
 class QgisForm implements QgisFormControlsInterface
 {
@@ -373,8 +376,8 @@ class QgisForm implements QgisFormControlsInterface
      * Get the storage path of QGIS form control
      * for a given form input.
      *
-     * @param null|\Lizmap\Form\QgisFormControl $ctrl   QGIS Form control
-     * @param array                             $values Jelix form field values
+     * @param null|QgisFormControl $ctrl   QGIS Form control
+     * @param array                $values Jelix form field values
      *
      * @return null|string[]
      */
@@ -409,8 +412,8 @@ class QgisForm implements QgisFormControlsInterface
      *
      * In this case we need to evaluate the expression
      *
-     * @param \Lizmap\Form\QgisFormControl $ctrl   QGIS Form control
-     * @param null|array                   $values Form fields values
+     * @param QgisFormControl $ctrl   QGIS Form control
+     * @param null|array      $values Form fields values
      *
      * @return string
      */
@@ -1484,8 +1487,8 @@ class QgisForm implements QgisFormControlsInterface
     /**
      * Get the values for a "Unique Values" layer's field and fill the form control for a specific field.
      *
-     * @param string                       $fieldName   Name of QGIS field
-     * @param \Lizmap\Form\QgisFormControl $formControl QGIS Form control
+     * @param string          $fieldName   Name of QGIS field
+     * @param QgisFormControl $formControl QGIS Form control
      */
     protected function fillControlFromUniqueValues($fieldName, $formControl)
     {
@@ -1760,7 +1763,7 @@ class QgisForm implements QgisFormControlsInterface
         }
 
         // Get request
-        $wfsRequest = new \Lizmap\Request\WFSRequest($project, $params, \lizmap::getServices());
+        $wfsRequest = new WFSRequest($project, $params, \lizmap::getServices());
         // Set Editing context
         $wfsRequest->setEditingContext(true);
         // Perform request
@@ -1785,7 +1788,7 @@ class QgisForm implements QgisFormControlsInterface
         if ($code < 400 && !in_array(strtolower($mime), array('text/html', 'text/xml'))) {
             // Get data from layer
             $featureStream = Psr7\StreamWrapper::getResource($result->getBodyAsStream());
-            $features = \JsonMachine\Items::fromStream($featureStream, array('pointer' => '/features'));
+            $features = JsonMachine\Items::fromStream($featureStream, array('pointer' => '/features'));
             $data = array();
             foreach ($features as $feat) {
                 if (property_exists($feat, 'properties')

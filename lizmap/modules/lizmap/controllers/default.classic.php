@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Redirect to the default repository project list page.
  *

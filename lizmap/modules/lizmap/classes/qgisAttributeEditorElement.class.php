@@ -1,4 +1,7 @@
 <?php
+
+use Lizmap\Form\QgisFormControlsInterface;
+
 /**
  * @author    3liz
  * @copyright 2019 3liz
@@ -33,7 +36,7 @@ class qgisAttributeEditorElement
     protected $_textWidgetText = '';
 
     public function __construct(
-        Lizmap\Form\QgisFormControlsInterface $formControls,
+        QgisFormControlsInterface $formControls,
         SimpleXMLElement $node,
         $parentId,
         $idx = 0,

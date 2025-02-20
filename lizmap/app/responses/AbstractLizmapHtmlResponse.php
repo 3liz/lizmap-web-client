@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Abstract class for our custom HTML response objects.
  *
@@ -22,7 +23,7 @@ class AbstractLizmapHtmlResponse extends jResponseHtml
         // Header
         $this->addHttpHeader('x-ua-compatible', 'ie=edge');
 
-        $csp = \jApp::config()->lizmap[$this->CSPPropName];
+        $csp = jApp::config()->lizmap[$this->CSPPropName];
         if ($csp != '') {
             $this->addHttpHeader('Content-Security-Policy', $csp);
         }

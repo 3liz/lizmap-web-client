@@ -1,5 +1,7 @@
 <?php
 
+use Lizmap\CliHelpers\RepositoryWMSChecker;
+
 /**
  * @author    your name
  * @copyright 2020 3liz
@@ -56,7 +58,7 @@ class projectCtrl extends jControllerCmdLine
 
             return $rep;
         }
-        $checker = new \Lizmap\CliHelpers\RepositoryWMSChecker();
+        $checker = new RepositoryWMSChecker();
         $checker->checkAllRepository($nb, function ($str) use ($rep) { $rep->addContent($str."\n"); });
 
         return $rep;

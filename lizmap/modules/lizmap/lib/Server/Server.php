@@ -13,6 +13,8 @@
 
 namespace Lizmap\Server;
 
+use Jelix\Core\Infos\AppInfos;
+use Lizmap\Request\Proxy;
 use LizmapAdmin\ModulesInfo\ModulesChecker;
 
 class Server
@@ -265,7 +267,7 @@ class Server
         $data = array();
 
         // Get Lizmap version from project.xml
-        $projectInfos = \Jelix\Core\Infos\AppInfos::load();
+        $projectInfos = AppInfos::load();
         // Version
         $data['info'] = array();
         $data['info']['version'] = $projectInfos->version;
@@ -330,7 +332,7 @@ class Server
         $services = \lizmap::getServices();
 
         // Get the data from the QGIS Server Lizmap plugin
-        list($resp, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($services->getUrlLizmapQgisServerMetadata());
+        list($resp, $mime, $code) = Proxy::getRemoteData($services->getUrlLizmapQgisServerMetadata());
         if ($code == 200 && $mime == 'application/json' && strpos((string) $resp, 'metadata') !== false) {
             // Convert the JSON to an associative array
             $qgis_server_data = json_decode($resp, true);
@@ -362,8 +364,8 @@ class Server
             'service' => 'WMS',
             'request' => 'GetCapabilities',
         );
-        $url = \Lizmap\Request\Proxy::constructUrl($params, $services);
-        list($resp, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($url);
+        $url = Proxy::constructUrl($params, $services);
+        list($resp, $mime, $code) = Proxy::getRemoteData($url);
         if (
             preg_match('#ServerException#i', $resp)
             || preg_match('#ServiceExceptionReport#i', $resp)

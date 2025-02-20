@@ -1,12 +1,20 @@
 <?php
 
-if (isset($application)) {
-    $application->add(new \Lizmap\Commands\CreateRepository());
-    $application->add(new \Lizmap\Commands\DbMigrateLog());
-    $application->add(new \Lizmap\Commands\DbMigrateUsers());
-    $application->add(new \Lizmap\Commands\ProjectLoad());
+use Lizmap\Commands\CreateRepository;
+use Lizmap\Commands\DbMigrateLog;
+use Lizmap\Commands\DbMigrateUsers;
+use Lizmap\Commands\ProjectLoad;
+use Lizmap\Commands\WMTSCacheClean;
+use Lizmap\Commands\WMTSCapabilities;
+use Lizmap\Commands\WMTSSeed;
 
-    $application->add(new \Lizmap\Commands\WMTSCapabilities());
-    $application->add(new \Lizmap\Commands\WMTSSeed());
-    $application->add(new \Lizmap\Commands\WMTSCacheClean());
+if (isset($application)) {
+    $application->add(new CreateRepository());
+    $application->add(new DbMigrateLog());
+    $application->add(new DbMigrateUsers());
+    $application->add(new ProjectLoad());
+
+    $application->add(new WMTSCapabilities());
+    $application->add(new WMTSSeed());
+    $application->add(new WMTSCacheClean());
 }

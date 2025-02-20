@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Manage OGC request.
  *
@@ -13,6 +14,8 @@
 namespace Lizmap\Request;
 
 use Lizmap\App;
+use Lizmap\Project\Project;
+use Lizmap\Project\Repository;
 
 /**
  * @see https://en.wikipedia.org/wiki/Open_Geospatial_Consortium.
@@ -22,12 +25,12 @@ use Lizmap\App;
 abstract class OGCRequest
 {
     /**
-     * @var \Lizmap\Project\Project
+     * @var Project
      */
     protected $project;
 
     /**
-     * @var \Lizmap\Project\Repository
+     * @var Repository
      */
     protected $repository;
 
@@ -59,10 +62,10 @@ abstract class OGCRequest
     /**
      * constructor.
      *
-     * @param \Lizmap\Project\Project $project    the project
-     * @param array                   $params     the params array
-     * @param \lizmapServices         $services
-     * @param null|string             $requestXml the params array
+     * @param Project         $project    the project
+     * @param array           $params     the params array
+     * @param \lizmapServices $services
+     * @param null|string     $requestXml the params array
      */
     public function __construct($project, $params, $services, $requestXml = null)
     {
@@ -312,14 +315,14 @@ abstract class OGCRequest
         $options['loginFilteredOverride'] = \jAcl2::check('lizmap.tools.loginFilteredLayers.override', $this->repository->getKey());
 
         if ($stream) {
-            $response = \Lizmap\Request\Proxy::getRemoteDataAsStream($querystring, $options);
+            $response = Proxy::getRemoteDataAsStream($querystring, $options);
 
             $this->logRequestIfError($response->getCode(), $response->getHeaders());
 
             return new OGCResponse($response->getCode(), $response->getMime(), $response->getBodyAsStream());
         }
 
-        list($data, $mime, $code, $headers) = \Lizmap\Request\Proxy::getRemoteData($querystring, $options);
+        list($data, $mime, $code, $headers) = Proxy::getRemoteData($querystring, $options);
 
         $this->logRequestIfError($code, $headers);
 

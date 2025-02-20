@@ -1,5 +1,7 @@
 <?php
 
+use Jelix\IniFile\IniModifier;
+
 class lizmapModuleUpgrader_commconfig extends jInstallerModule
 {
     public $targetVersions = array(
@@ -16,11 +18,11 @@ class lizmapModuleUpgrader_commconfig extends jInstallerModule
     {
         // copy the value of adminContactEmail into the config parameter notificationReceiverEmail
         // for jCommunity 1.4+
-        $liveIni = new \Jelix\IniFile\IniModifier(jApp::varConfigPath('liveconfig.ini.php'));
+        $liveIni = new IniModifier(jApp::varConfigPath('liveconfig.ini.php'));
         $currentValue = $liveIni->getValue('notificationReceiverEmail', 'jcommunity');
         if (!$currentValue) {
             $lizmapConfFile = jApp::varConfigPath('lizmapConfig.ini.php');
-            $ini = new \Jelix\IniFile\IniModifier($lizmapConfFile);
+            $ini = new IniModifier($lizmapConfFile);
             $contact = $ini->getValue('adminContactEmail', 'services');
             $liveIni->setValue('notificationReceiverEmail', $contact, 'jcommunity');
             $liveIni->save();

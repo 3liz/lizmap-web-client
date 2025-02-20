@@ -1,4 +1,7 @@
 <?php
+
+use Jelix\IniFile\IniModifier;
+
 /**
  * @author    3liz
  * @copyright 2011 3liz
@@ -30,7 +33,7 @@ class lizmapModuleInstaller extends jInstallerModule
                 file_put_contents($localConfig, ';<?php die(\'\');?>');
             }
         }
-        $ini = new \Jelix\IniFile\IniModifier($localConfig);
+        $ini = new IniModifier($localConfig);
         $ini->setValue('lizmap', 'lizmapConfig.ini.php', 'coordplugins');
         $ini->save();
 

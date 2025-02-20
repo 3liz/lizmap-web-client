@@ -1,4 +1,7 @@
 <?php
+
+use Lizmap\Project\UnknownLizmapProjectException;
+
 /**
  * Construct the toolbar content.
  *
@@ -57,7 +60,7 @@ class map_menuZone extends jZone
             $assign['timemanager'] = $lproj->hasTimemanagerLayers();
 
             $assign['attributeLayers'] = $lproj->hasAttributeLayers();
-        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
+        } catch (UnknownLizmapProjectException $e) {
             jLog::logEx($e, 'error');
         }
 

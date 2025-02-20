@@ -1,4 +1,5 @@
 <?php
+
 /**
  * app context informations inside a Jelix environment.
  *

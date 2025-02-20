@@ -1,4 +1,8 @@
 <?php
+
+use Jelix\FakeServerConf\ApacheMod;
+use Lizmap\CliHelpers\WMTSCache;
+
 /**
  * @author    your name
  * @copyright 2011 3liz
@@ -119,14 +123,14 @@ class wmtsCtrl extends jControllerCmdLine
 
     public function capabilities()
     {
-        $fakeServer = new Jelix\FakeServerConf\ApacheMod(jApp::wwwPath(), '/index.php');
+        $fakeServer = new ApacheMod(jApp::wwwPath(), '/index.php');
 
         /** @var jResponseCmdline $rep */
         $rep = $this->getResponse(); // cmdline response by default
         $rep->addContent("Using this command is deprecated, all commands are now unified in console.php
         In lizmap folder, use 'php console.php wmts:capabilities <repository> <project> [layer] [tileMatrix]'\n\n");
 
-        $WMTSCache = new \Lizmap\CliHelpers\WMTSCache(function ($str) use ($rep) {$rep->addContent($str."\n"); });
+        $WMTSCache = new WMTSCache(function ($str) use ($rep) {$rep->addContent($str."\n"); });
 
         $returnCode = $WMTSCache->capabilities(
             $this->param('repository'),
@@ -143,7 +147,7 @@ class wmtsCtrl extends jControllerCmdLine
 
     public function seeding()
     {
-        $fakeServer = new Jelix\FakeServerConf\ApacheMod(jApp::wwwPath(), '/index.php');
+        $fakeServer = new ApacheMod(jApp::wwwPath(), '/index.php');
 
         /** @var jResponseCmdline $rep */
         $rep = $this->getResponse();
@@ -158,7 +162,7 @@ class wmtsCtrl extends jControllerCmdLine
             return $rep;
         }
 
-        $WMTSCache = new \Lizmap\CliHelpers\WMTSCache(function ($str) use ($rep) {$rep->addContent($str."\n"); });
+        $WMTSCache = new WMTSCache(function ($str) use ($rep) {$rep->addContent($str."\n"); });
 
         $returnCode = $WMTSCache->seed(
             $this->param('repository'),
@@ -180,14 +184,14 @@ class wmtsCtrl extends jControllerCmdLine
 
     public function cleaning()
     {
-        $fakeServer = new Jelix\FakeServerConf\ApacheMod(jApp::wwwPath(), '/index.php');
+        $fakeServer = new ApacheMod(jApp::wwwPath(), '/index.php');
 
         /** @var jResponseCmdline $rep */
         $rep = $this->getResponse();
         $rep->addContent("Using this command is deprecated, all commands are now unified in console.php
         In lizmap folder, use 'php console.php wmts:cache:clean <repository> <project>'\n\n");
 
-        $WMTSCache = new \Lizmap\CliHelpers\WMTSCache(function ($str) use ($rep) {$rep->addContent($str."\n"); });
+        $WMTSCache = new WMTSCache(function ($str) use ($rep) {$rep->addContent($str."\n"); });
         $returnCode = $WMTSCache->clean(
             $this->param('repository'),
             $this->param('project'),

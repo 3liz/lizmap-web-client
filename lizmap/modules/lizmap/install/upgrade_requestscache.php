@@ -1,5 +1,7 @@
 <?php
 
+use Jelix\IniFile\IniModifier;
+
 class lizmapModuleUpgrader_requestscache extends jInstallerModule
 {
     public $targetVersions = array(
@@ -10,7 +12,7 @@ class lizmapModuleUpgrader_requestscache extends jInstallerModule
     public function install()
     {
         if ($this->firstExec('cacherequests')) {
-            $profiles = new \Jelix\IniFile\IniModifier(jApp::varConfigPath('profiles.ini.php'));
+            $profiles = new IniModifier(jApp::varConfigPath('profiles.ini.php'));
             if (!$profiles->isSection('jcache:requests')) {
                 $profiles->setValues(array(
                     'enabled' => 1,

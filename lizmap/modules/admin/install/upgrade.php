@@ -1,4 +1,9 @@
 <?php
+
+use Jelix\IniFile\IniModifierInterface;
+use Jelix\Installer\Module\API\InstallHelpers;
+use Jelix\Installer\Module\Installer;
+
 /**
  * @author    3liz
  * @copyright 2024 3liz
@@ -7,13 +12,13 @@
  *
  * @license    Mozilla Public License - MPL
  */
-class adminModuleUpgrader extends \Jelix\Installer\Module\Installer
+class adminModuleUpgrader extends Installer
 {
-    public function install(Jelix\Installer\Module\API\InstallHelpers $helpers)
+    public function install(InstallHelpers $helpers)
     {
         // remove some unwanted web assets that may have been set by previous installation
         // having bugs into their installers.
-        /** @var Jelix\IniFile\IniModifierInterface $localConf */
+        /** @var IniModifierInterface $localConf */
         $localConf = $helpers->getLocalConfigIni();
         $localConf->removeValue('jauthdb_admin.js', 'webassets_common');
         $localConf->removeValue('jauthdb_admin.css', 'webassets_common');

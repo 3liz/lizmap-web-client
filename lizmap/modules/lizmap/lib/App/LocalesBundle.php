@@ -1,4 +1,5 @@
 <?php
+
 /**
  * locale bundle loader.
  *

@@ -14,6 +14,7 @@
 namespace Lizmap\Project;
 
 use Lizmap\App;
+use Lizmap\Server\Server;
 
 /**
  * @phpstan-import-type MapLayerDef from QgisProject
@@ -1000,7 +1001,7 @@ class Project
         if (property_exists($eLayer, 'acl') && $eLayer->acl) {
             // Check if configured groups white list and authenticated user
             // groups list intersects
-            $editionGroups = preg_split('/\\s*,\\s*/', $eLayer->acl);
+            $editionGroups = preg_split('/\s*,\s*/', $eLayer->acl);
             if ($isAdmin || ($editionGroups
                 && array_intersect($editionGroups, $userGroups))) {
                 // User group(s) correspond to the groups given for this edition layer
@@ -1979,7 +1980,7 @@ class Project
         // Add printTemplates to the config
         $configJson->printTemplates = array();
         // Get server metadata to check atlasprint plugin
-        $server = new \Lizmap\Server\Server();
+        $server = new Server();
         $serverMetadata = $server->getMetadata();
         $serverPlugins = $serverMetadata['qgis_server_info']['plugins'];
         foreach ($this->printCapabilities as $printTemplate) {

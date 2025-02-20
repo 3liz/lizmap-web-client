@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Displays the list of projects for ajax request.
  *

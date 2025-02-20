@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Get information about QGIS Server.
  *

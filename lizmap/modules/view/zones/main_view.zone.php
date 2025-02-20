@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Construct the main view list.
  *

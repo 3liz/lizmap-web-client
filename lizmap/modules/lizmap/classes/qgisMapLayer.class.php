@@ -1,4 +1,7 @@
 <?php
+
+use Lizmap\Project\Project;
+
 /**
  * Give access to qgis mapLayer configuration.
  *
@@ -62,15 +65,15 @@ class qgisMapLayer
     protected $provider = '';
 
     /**
-     * @var Lizmap\Project\Project|qgisProject
+     * @var Project|qgisProject
      */
     protected $project;
 
     /**
      * constructor.
      *
-     * @param Lizmap\Project\Project|qgisProject $project
-     * @param array                              $propLayer list of properties values
+     * @param Project|qgisProject $project
+     * @param array               $propLayer list of properties values
      */
     public function __construct($project, $propLayer)
     {
@@ -141,7 +144,7 @@ class qgisMapLayer
     }
 
     /**
-     * @return Lizmap\Project\Project|qgisProject
+     * @return Project|qgisProject
      */
     public function getProject()
     {

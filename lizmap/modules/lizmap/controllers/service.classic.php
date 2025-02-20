@@ -1,9 +1,12 @@
 <?php
 
-use GuzzleHttp\Psr7;
+use GuzzleHttp\Psr7 as Psr7;
+use Lizmap\Project\Project;
+use Lizmap\Project\UnknownLizmapProjectException;
+
+use Lizmap\Request\Proxy;
 use Lizmap\Request\WFSRequest;
 use Lizmap\Request\WMSRequest;
-
 use Lizmap\Request\WMTSRequest;
 
 /**
@@ -19,7 +22,7 @@ use Lizmap\Request\WMTSRequest;
 class serviceCtrl extends jController
 {
     /**
-     * @var null|Lizmap\Project\Project
+     * @var null|Project
      */
     protected $project;
 
@@ -71,7 +74,7 @@ class serviceCtrl extends jController
             $requestXml = $this->request->getBody();
         }
 
-        $ogcRequest = \Lizmap\Request\Proxy::build($this->project, $this->params, $requestXml);
+        $ogcRequest = Proxy::build($this->project, $this->params, $requestXml);
         if ($ogcRequest === null) {
             // Error message
             jMessage::add('Service unknown or unsupported.', 'ServiceNotSupported');
@@ -277,7 +280,7 @@ class serviceCtrl extends jController
             if ($code == 'AuthorizationRequired') {
 
                 // 401 : AuthorizationRequired
-                $rep->setHttpStatus(401, \Lizmap\Request\Proxy::getHttpStatusMsg(401));
+                $rep->setHttpStatus(401, Proxy::getHttpStatusMsg(401));
 
                 // Add WWW-Authenticate header only for external clients
                 // To avoid web browser to ask for login/password when session expires
@@ -301,13 +304,13 @@ class serviceCtrl extends jController
                     $rep->addHttpHeader('WWW-Authenticate', 'Basic realm="LizmapWebClient", charset="UTF-8"');
                 }
             } elseif ($code == 'Forbidden') {
-                $rep->setHttpStatus(403, \Lizmap\Request\Proxy::getHttpStatusMsg(403));
+                $rep->setHttpStatus(403, Proxy::getHttpStatusMsg(403));
             } elseif ($code == 'ProjectNotDefined'
                       || $code == 'RepositoryNotDefined') {
-                $rep->setHttpStatus(404, \Lizmap\Request\Proxy::getHttpStatusMsg(404));
+                $rep->setHttpStatus(404, Proxy::getHttpStatusMsg(404));
             } elseif ($code === 'OperationNotSupported'
                       || $code === 'ServiceNotSupported') {
-                $rep->setHttpStatus(501, \Lizmap\Request\Proxy::getHttpStatusMsg(501));
+                $rep->setHttpStatus(501, Proxy::getHttpStatusMsg(501));
             }
         }
 
@@ -350,7 +353,7 @@ class serviceCtrl extends jController
      */
     protected function setupBinaryResponse($rep, $ogcResult, $filename, $eTag = '')
     {
-        $rep->setHttpStatus($ogcResult->code, \Lizmap\Request\Proxy::getHttpStatusMsg($ogcResult->code));
+        $rep->setHttpStatus($ogcResult->code, Proxy::getHttpStatusMsg($ogcResult->code));
         $rep->mimeType = $ogcResult->mime;
         if (is_string($ogcResult->data) || is_callable($ogcResult->data)) {
             $rep->content = $ogcResult->data;
@@ -418,7 +421,7 @@ class serviceCtrl extends jController
 
                 return false;
             }
-        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
+        } catch (UnknownLizmapProjectException $e) {
             jLog::logEx($e, 'error');
             jMessage::add('The lizmap project '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
 
@@ -439,12 +442,12 @@ class serviceCtrl extends jController
         // Get and normalize the passed parameters
         $pParams = jApp::coord()->request->params;
         $pParams['map'] = $lproj->getRelativeQgisPath();
-        $params = \Lizmap\Request\Proxy::normalizeParams($pParams);
+        $params = Proxy::normalizeParams($pParams);
 
         // Check WFS rights
         if (isset($params['service']) && strtolower($params['service']) === 'wfs'
             && !$lproj->getAppContext()->aclCheck('lizmap.tools.layer.export', $this->repository->getKey())) {
-            $request_headers = \jApp::coord()->request->headers();
+            $request_headers = jApp::coord()->request->headers();
             if (!isset($_SESSION['html_map_token'])
                 || $_SESSION['html_map_token'] !== md5(json_encode(array(
                     'Host' => $request_headers['Host'],
@@ -724,7 +727,7 @@ class serviceCtrl extends jController
 
         /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
-        $fileName = $this->project->getKey().'_'.preg_replace('#[\\W]+#', '_', $this->params['template']).'.'.$this->params['format'];
+        $fileName = $this->project->getKey().'_'.preg_replace('#[\W]+#', '_', $this->params['template']).'.'.$this->params['format'];
         $this->setupBinaryResponse($rep, $result, $fileName);
         $rep->doDownload = true;
 
@@ -757,7 +760,7 @@ class serviceCtrl extends jController
 
         /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
-        $fileName = $this->project->getKey().'_'.preg_replace('#[\\W]+#', '_', $this->params['template']).'.'.$this->params['format'];
+        $fileName = $this->project->getKey().'_'.preg_replace('#[\W]+#', '_', $this->params['template']).'.'.$this->params['format'];
         $this->setupBinaryResponse($rep, $result, $fileName);
         $rep->doDownload = true;
 
@@ -983,7 +986,7 @@ class serviceCtrl extends jController
         // Get content
         $content = $this->project->getProj4($authid);
         if (!$content) {
-            $rep->setHttpStatus(404, \Lizmap\Request\Proxy::getHttpStatusMsg(404));
+            $rep->setHttpStatus(404, Proxy::getHttpStatusMsg(404));
         }
         $rep->content = $content;
         $rep->setExpires('+300 seconds');
@@ -1070,7 +1073,7 @@ class serviceCtrl extends jController
 
         // Get params
         $typename = $this->params['typename'];
-        $ids = preg_split('/\\s*,\\s*/', $this->params['ids']);
+        $ids = preg_split('/\s*,\s*/', $this->params['ids']);
         sort($ids);
 
         // Token

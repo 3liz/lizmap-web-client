@@ -1,4 +1,7 @@
 <?php
+
+use Lizmap\CliHelpers\RepositoryCreator;
+
 /**
  * @author    your name
  * @copyright 2018 3liz
@@ -58,14 +61,14 @@ class repositoryCtrl extends jControllerCmdLine
 In lizmap folder, use 'php console.php repository:create <key> <label> <path>'\n\n");
 
         try {
-            $cli = new \Lizmap\CliHelpers\RepositoryCreator();
+            $cli = new RepositoryCreator();
             $cli->create(
                 $this->param('key'),
                 $this->param('label'),
                 $this->param('path'),
                 $this->param('allowUserDefinedThemes')
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $rep->addContent("The repository can't be created ! : \n");
             $rep->addContent($e->getMessage()."\n");
             $rep->setExitCode(1);

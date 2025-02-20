@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Properties of a Form field.
  *

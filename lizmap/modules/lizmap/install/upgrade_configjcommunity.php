@@ -1,5 +1,7 @@
 <?php
 
+use Jelix\IniFile\IniModifier;
+
 class lizmapModuleUpgrader_configjcommunity extends jInstallerModule
 {
     public $targetVersions = array(
@@ -10,7 +12,7 @@ class lizmapModuleUpgrader_configjcommunity extends jInstallerModule
     public function install()
     {
         if ($this->firstExec('configchange')) {
-            $lzmIni = new \Jelix\IniFile\IniModifier(jApp::varConfigPath('lizmapConfig.ini.php'));
+            $lzmIni = new IniModifier(jApp::varConfigPath('lizmapConfig.ini.php'));
 
             $liveIni = $this->entryPoint->liveConfigIni;
 

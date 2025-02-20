@@ -1,4 +1,7 @@
 <?php
+
+use Lizmap\Project\UnknownLizmapProjectException;
+
 /**
  * Manage and give access to lizmap configuration.
  *
@@ -29,7 +32,7 @@ class datavizConfig
 
                 return;
             }
-        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
+        } catch (UnknownLizmapProjectException $e) {
             $this->errors = array(
                 'code' => 404,
                 'error_code' => 'project_not_found',

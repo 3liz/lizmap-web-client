@@ -1,4 +1,5 @@
 <?php
+
 /**
  * QGIS Map layer style manager.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Manage and give access to lizmap configuration.
  *
@@ -11,6 +12,7 @@
  */
 
 use Lizmap\Project;
+use Lizmap\Project\ProjectMetadata;
 
 /**
  * @deprecated
@@ -36,7 +38,7 @@ class lizmapProject
     public function __construct($key, $rep, $context, $services)
     {
         try {
-            $this->proj = new \Lizmap\Project\Project($key, $rep, $context, $services);
+            $this->proj = new Project\Project($key, $rep, $context, $services);
         } catch (Project\UnknownLizmapProjectException $e) {
             throw $e;
         }
@@ -152,7 +154,7 @@ class lizmapProject
     /**
      * Get the minimum needed project information for some pages (landing page, admin project listing).
      *
-     * @return Lizmap\Project\ProjectMetadata
+     * @return ProjectMetadata
      */
     public function getMetadata()
     {

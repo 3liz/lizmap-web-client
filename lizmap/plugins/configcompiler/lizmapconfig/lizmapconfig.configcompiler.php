@@ -1,4 +1,7 @@
 <?php
+
+use jelix\core\ConfigCompilerPluginInterface;
+
 /**
  * Plugin for the jelix configuration compiler.
  *
@@ -14,7 +17,7 @@
  * This object is called each time Jelix should generate the configuration cache into the
  * temp/ directory.
  */
-class lizmapconfigConfigCompilerPlugin implements \jelix\core\ConfigCompilerPluginInterface
+class lizmapconfigConfigCompilerPlugin implements ConfigCompilerPluginInterface
 {
     public function getPriority()
     {
