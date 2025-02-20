@@ -12,6 +12,53 @@ const { expect } = require('@playwright/test');
  */
 
 /**
+ * The file path
+ * @member string
+ */
+const __filename = fileURLToPath(import.meta.url);
+
+/**
+ * The file directory path
+ * @member string
+ * @see https://nodejs.org/docs/latest-v15.x/api/esm.html#esm_no_filename_or_dirname
+ * @see https://stackoverflow.com/questions/8817423/why-is-dirname-not-defined-in-node-repl
+ * @example
+ * import { fileURLToPath } from 'url';
+ * import { dirname } from 'path';
+ * const __filename = fileURLToPath(import.meta.url);
+ * const __dirname = dirname(__filename);
+ */
+export const __dirname = path.dirname(__filename);
+
+/**
+ * The file directory path
+ * @member string
+ */
+export const testsDirectory = path.join(__dirname, '..', '..');
+
+/**
+ * Get the current file path according the list of given arguments.
+ * @returns {string} The final file path
+ */
+export function playwrightTestFile()   {
+    let finalPath = path.join(__dirname);
+    for (let i = 0; i < arguments.length; i++) {
+        finalPath = path.join(finalPath, arguments[i]);
+    }
+    return finalPath;
+}
+
+/**
+ * Get the given QGS file path.
+ * @param {string} file_name The file name without extension
+ * @param {string} directory The directory name, default to 'tests'
+ * @returns {string} The QGS file path
+ */
+export function qgsTestFile(file_name, directory = 'tests')   {
+    return path.join(testsDirectory, 'qgis-projects', directory, file_name + '.qgs');
+}
+
+/**
  * Expect no errors in the map page
  * @param {Page} page The page object
  * @param {boolean} checkLayerTreeView Checking  that tree view contains layers
