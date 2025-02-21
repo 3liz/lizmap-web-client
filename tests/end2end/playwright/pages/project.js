@@ -1,6 +1,6 @@
 // @ts-check
 import { expect } from '@playwright/test';
-import { gotoMap, qgsTestFile } from '../globals';
+import { gotoMap } from '../globals';
 import { BasePage } from './base';
 
 /**
@@ -98,12 +98,6 @@ export class ProjectPage extends BasePage {
      * @type {Locator}
      */
     warningMessage;
-
-    /**
-     * Path to the QGS file
-     * @type {string}
-     */
-    qgsFile = () => qgsTestFile(this.project, this.repository);
 
     /**
      * Attribute table for the given layer name
