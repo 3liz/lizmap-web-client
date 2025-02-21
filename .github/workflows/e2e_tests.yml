@@ -284,6 +284,17 @@ jobs:
         run: |
           npx playwright test --workers 1 --grep @write ${{ env.PLAYWRIGHT_OPTIONS }}
 
+      - name: Debug
+        if: always()
+        working-directory: tests
+        run: |
+          find . -type d -name "test-results"
+          echo $GITHUB_WORKSPACE
+          echo ${{ github.workspace }}
+          echo ${{ github.workspace }}/tests/end2end/test-results/
+          ls -l $GITHUB_WORKSPACE/tests/end2end/test-results/
+          ls ${{ github.workspace }}/tests/end2end/test-results/
+
       - name: Send screenshots if necessary about all Playwright tests, if one failed
         if: |
           failure() &&
