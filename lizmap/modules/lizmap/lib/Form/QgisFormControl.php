@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Create and set jForms controls based on QGIS form edit type.
  *
@@ -12,6 +13,7 @@
 
 namespace Lizmap\Form;
 
+use Jelix\FileUtilities\Path;
 use Lizmap\App;
 
 class QgisFormControl
@@ -792,9 +794,9 @@ class QgisFormControl
 
         // Else use given root, but only if it is a child or brother of the repository path
         if (!empty($alternatePath)) {
-            $fullPath = \Jelix\FileUtilities\Path::normalizePath(
+            $fullPath = Path::normalizePath(
                 $repPath.$alternatePath,
-                \Jelix\FileUtilities\Path::NORM_ADD_TRAILING_SLASH
+                Path::NORM_ADD_TRAILING_SLASH
             );
             $parentPath = realpath($repPath.'../');
             if (strpos($fullPath, $repPath) === 0

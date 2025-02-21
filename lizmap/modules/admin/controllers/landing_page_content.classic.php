@@ -1,4 +1,7 @@
 <?php
+
+use LizmapAdmin\LandingContent;
+
 /**
  * Lizmap administration : landing page content.
  *
@@ -34,7 +37,7 @@ class landing_page_contentCtrl extends jController
             $form = jForms::create('admin~landing_page_content');
         }
 
-        $landingContentService = new LizmapAdmin\LandingContent();
+        $landingContentService = new LandingContent();
 
         $landingContentService->initForm($form);
         $tpl = new jTpl();
@@ -62,7 +65,7 @@ class landing_page_contentCtrl extends jController
                 // or content is invalid
                 return $this->redirect('landing_page_content:index');
             }
-        } catch (\jException $e) {
+        } catch (jException $e) {
             // invalid CSRF token or other technical errors
             jMessage::add(jLocale::get('admin~admin.landingPageContent.error.submit'), 'error');
 
@@ -70,7 +73,7 @@ class landing_page_contentCtrl extends jController
         }
 
         // Save HTML content
-        $landingContentService = new LizmapAdmin\LandingContent();
+        $landingContentService = new LandingContent();
         $fileWriteOK = $landingContentService->saveForm($form);
         if ($fileWriteOK) {
             jMessage::add(jLocale::get('admin~admin.landingPageContent.saved'), 'ok');

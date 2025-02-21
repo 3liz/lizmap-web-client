@@ -1,4 +1,5 @@
 <?php
+
 /**
  * QGIS Raster layer hue saturation.
  *

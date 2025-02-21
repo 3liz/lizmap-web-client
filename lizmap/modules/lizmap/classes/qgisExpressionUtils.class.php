@@ -1,4 +1,8 @@
 <?php
+
+use Lizmap\Project\Project;
+use Lizmap\Request\Proxy;
+
 /**
  * @author    3liz
  * @copyright 2020 3liz
@@ -59,7 +63,7 @@ class qgisExpressionUtils
      */
     public static function getCurrentValueCriteriaFromExpression($exp)
     {
-        $preg = preg_match_all('/\\bcurrent_value\\(\\s*\'([^)]*)\'\\s*\\)/', $exp, $matches);
+        $preg = preg_match_all('/\bcurrent_value\(\s*\'([^)]*)\'\s*\)/', $exp, $matches);
         if ($preg !== false) {
             return array_values(array_unique($matches[1]));
         }
@@ -76,7 +80,7 @@ class qgisExpressionUtils
      */
     public static function hasCurrentGeometry($exp)
     {
-        return preg_match('/\\B@current_geometry\\b/', $exp) === 1;
+        return preg_match('/\B@current_geometry\b/', $exp) === 1;
     }
 
     /**
@@ -372,10 +376,10 @@ class qgisExpressionUtils
             if ($ref == $form->getData('liz_geometryColumn')) {
                 // from wkt to geom
                 $wkt = trim($form->getData($ref));
-                if ($wkt && \lizmapWkt::check($wkt)) {
-                    $geom = \lizmapWkt::parse($wkt);
+                if ($wkt && lizmapWkt::check($wkt)) {
+                    $geom = lizmapWkt::parse($wkt);
                     if ($geom === null) {
-                        \jLog::log('Parsing WKT failed! '.$wkt, 'error');
+                        jLog::log('Parsing WKT failed! '.$wkt, 'error');
                     }
                 }
             } else {
@@ -413,9 +417,9 @@ class qgisExpressionUtils
         );
 
         // Request evaluate constraint expressions
-        $url = \Lizmap\Request\Proxy::constructUrl($params, lizmap::getServices());
+        $url = Proxy::constructUrl($params, lizmap::getServices());
         $options = array('method' => 'post');
-        list($data, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($url, $options);
+        list($data, $mime, $code) = Proxy::getRemoteData($url, $options);
 
         // Check data from request
         if (strpos($mime, 'text/json') === 0 || strpos($mime, 'application/json') === 0) {
@@ -446,8 +450,8 @@ class qgisExpressionUtils
     /**
      * Performing the request to QGIS Server.
      *
-     * @param array                               $params
-     * @param \Lizmap\Project\Project|qgisProject $project
+     * @param array               $params
+     * @param Project|qgisProject $project
      *
      * @return null|object The response content or null
      */
@@ -473,10 +477,10 @@ class qgisExpressionUtils
                 'Lizmap_Override_Filter' => $loginFilteredOverride,
             ));
         }
-        $url = \Lizmap\Request\Proxy::constructUrl($merged_params, lizmap::getServices());
+        $url = Proxy::constructUrl($merged_params, lizmap::getServices());
         // Use POST method as the expressions can be heavy (polygon filter)
         $options = array('method' => 'post');
-        list($data, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($url, $options);
+        list($data, $mime, $code) = Proxy::getRemoteData($url, $options);
 
         // Check data from request
         if (strpos($mime, 'text/json') === 0 || strpos($mime, 'application/json') === 0 || strpos($mime, 'application/vnd.geo+json') === 0) {

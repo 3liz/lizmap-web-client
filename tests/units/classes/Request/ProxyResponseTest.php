@@ -1,6 +1,7 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
+use GuzzleHttp\Psr7 as Psr7;
 use Lizmap\Request;
 
 class ProxyResponseTest extends TestCase
@@ -11,7 +12,7 @@ class ProxyResponseTest extends TestCase
             200,
             'text/json',
             array('Content-Type' => 'text/json'),
-            \GuzzleHttp\Psr7\Utils::streamFor('{}')
+            Psr7\Utils::streamFor('{}')
         );
         $this->assertEquals(200, $response->getCode());
         $this->assertEquals('text/json', $response->getMime());

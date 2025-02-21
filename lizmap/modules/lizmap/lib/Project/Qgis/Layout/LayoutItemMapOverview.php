@@ -1,4 +1,5 @@
 <?php
+
 /**
  * QGIS Layout item map overview.
  *

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author    3liz
  * @copyright 2017-2023 3liz
@@ -9,11 +10,15 @@
  */
 
 use GuzzleHttp\Psr7;
+use JsonMachine;
+use Lizmap\Project\Project;
+use Lizmap\Project\UnknownLizmapProjectException;
+use Lizmap\Request\WFSRequest;
 
 class datavizPlot
 {
     /**
-     * @var null|Lizmap\Project\Project
+     * @var null|Project
      */
     protected $lproj;
 
@@ -24,7 +29,7 @@ class datavizPlot
     public $layerId;
 
     /**
-     * @var \SimpleXMLElement
+     * @var SimpleXMLElement
      *
      * @deprecated
      */
@@ -207,7 +212,7 @@ class datavizPlot
      * @param string $repository
      * @param string $project
      *
-     * @return null|bool|Lizmap\Project\Project
+     * @return null|bool|Project
      *
      * @throws jExceptionSelector
      */
@@ -222,7 +227,7 @@ class datavizPlot
 
                 return false;
             }
-        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
+        } catch (UnknownLizmapProjectException $e) {
             jMessage::add('The lizmap project '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
 
             return false;
@@ -490,7 +495,7 @@ class datavizPlot
                 $wfsparams['EXP_FILTER'] = $exp_filter;
             }
 
-            $wfsrequest = new \Lizmap\Request\WFSRequest($this->lproj, $wfsparams, lizmap::getServices());
+            $wfsrequest = new WFSRequest($this->lproj, $wfsparams, lizmap::getServices());
 
             $wfsresponse = $wfsrequest->process();
             $features = null;
@@ -509,7 +514,7 @@ class datavizPlot
 
             // Features as iterator
             $featureStream = Psr7\StreamWrapper::getResource($wfsresponse->getBodyAsStream());
-            $features = \JsonMachine\Items::fromStream($featureStream, array('pointer' => '/features'));
+            $features = JsonMachine\Items::fromStream($featureStream, array('pointer' => '/features'));
 
             $f1 = null;
             $traceBuilders = array();

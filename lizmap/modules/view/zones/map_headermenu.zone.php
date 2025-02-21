@@ -1,4 +1,7 @@
 <?php
+
+use Lizmap\Project\UnknownLizmapProjectException;
+
 /**
  * Construct the toolbar content.
  *
@@ -51,7 +54,7 @@ class map_headermenuZone extends jZone
             if ($externalSearch !== null) {
                 $assign['externalSearch'] = $externalSearch;
             }
-        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
+        } catch (UnknownLizmapProjectException $e) {
             jLog::logEx($e, 'error');
         }
 

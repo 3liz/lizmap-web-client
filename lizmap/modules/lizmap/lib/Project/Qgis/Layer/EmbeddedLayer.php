@@ -1,4 +1,5 @@
 <?php
+
 /**
  * QGIS Embedded layer.
  *
@@ -91,13 +92,13 @@ class EmbeddedLayer extends Qgis\BaseQgisObject
      *
      * @param string $parentProjectPath The parent project path
      *
-     * @return null|Qgis\Layer\MapLayer|Qgis\Layer\RasterLayer|Qgis\Layer\VectorLayer The embedded layer
+     * @return null|MapLayer|RasterLayer|VectorLayer The embedded layer
      */
     public function getEmbeddedLayer(string $parentProjectPath)
     {
         $embeddedProject = $this->getEmbeddedProject($parentProjectPath);
         foreach ($embeddedProject->projectlayers as $embeddedLayer) {
-            /** @var Qgis\Layer\MapLayer $embeddedLayer */
+            /** @var MapLayer $embeddedLayer */
             if ($embeddedLayer->id !== $this->id) {
                 continue;
             }

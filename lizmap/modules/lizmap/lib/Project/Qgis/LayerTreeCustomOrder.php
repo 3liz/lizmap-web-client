@@ -1,4 +1,5 @@
 <?php
+
 /**
  * QGIS Layer tree custom order.
  *

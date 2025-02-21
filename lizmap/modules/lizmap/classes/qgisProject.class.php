@@ -1,4 +1,7 @@
 <?php
+
+use Lizmap\App\XmlTools;
+
 /**
  * Manage and give access to qgis project.
  *
@@ -433,11 +436,11 @@ class qgisProject
             throw new Exception('The QGIS project '.$qgs_path.' does not exist!');
         }
 
-        $xml = \Lizmap\App\XmlTools::xmlFromFile($qgs_path);
+        $xml = XmlTools::xmlFromFile($qgs_path);
         if (!is_object($xml)) {
             $errormsg = '\n'.basename($qgs_path).'\n'.$xml;
             $errormsg = 'An error has been raised when loading QGIS Project:'.$errormsg;
-            \jLog::log($errormsg, 'lizmapadmin');
+            jLog::log($errormsg, 'lizmapadmin');
 
             throw new Exception('The QGIS project '.$qgs_path.' has invalid content!');
         }
@@ -459,11 +462,11 @@ class qgisProject
             throw new Exception('The QGIS project '.basename($qgs_path).' does not exist!');
         }
 
-        $qgs_xml = \Lizmap\App\XmlTools::xmlFromFile($qgs_path);
+        $qgs_xml = XmlTools::xmlFromFile($qgs_path);
         if (!is_object($qgs_xml)) {
             $errormsg = '\n'.basename($qgs_path).'\n'.$qgs_xml;
             $errormsg = 'An error has been raised when loading QGIS Project:'.$errormsg;
-            \jLog::log($errormsg, 'lizmapadmin');
+            jLog::log($errormsg, 'lizmapadmin');
 
             throw new Exception('The QGIS project '.basename($qgs_path).' has invalid content!');
         }

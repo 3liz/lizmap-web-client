@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Get access to the Lizmap project main data.
  *

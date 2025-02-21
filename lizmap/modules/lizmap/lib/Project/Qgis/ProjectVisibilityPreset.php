@@ -1,4 +1,5 @@
 <?php
+
 /**
  * QGIS Project Visibility Preset.
  *

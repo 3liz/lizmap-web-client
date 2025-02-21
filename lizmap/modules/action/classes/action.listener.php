@@ -36,14 +36,14 @@ class actionListener extends jEventListener
 
         // Warn the publisher/administrator that the action JSON configuration
         // is written in the old type
-        $serverInfoAccess = (\jAcl2::check('lizmap.admin.access') || \jAcl2::check('lizmap.admin.server.information.view'));
+        $serverInfoAccess = (jAcl2::check('lizmap.admin.access') || jAcl2::check('lizmap.admin.server.information.view'));
         if ($serverInfoAccess && $actionConfigInstance->oldConfigConversionDone) {
             $url = 'https://docs.lizmap.com/current/en/publish/lizmap_plugin/actions.html';
-            $message = \jLocale::get('action~action.warning.converted.from.old.configuration', array($url));
+            $message = jLocale::get('action~action.warning.converted.from.old.configuration', array($url));
 
             $bodyattr[] = array('data-lizmap-action-warning-old' => $message);
 
-            \jLog::log("{$event->repository}/{$event->project} : action module - ".strip_tags($message), 'lizmapadmin');
+            jLog::log("{$event->repository}/{$event->project} : action module - ".strip_tags($message), 'lizmapadmin');
         }
 
         $event->add(

@@ -1,4 +1,8 @@
 <?php
+
+use Jelix\Forms\HtmlWidget\WidgetInterface;
+use Lizmap\Form\WidgetTrait;
+
 /**
  * @author    3liz
  * @copyright 2018 3liz
@@ -11,7 +15,7 @@ require_once JELIX_LIB_PATH.'plugins/formwidget/group_html/group_html.formwidget
 
 class group_htmlbootstrapFormWidget extends group_htmlFormWidget
 {
-    use \Lizmap\Form\WidgetTrait;
+    use WidgetTrait;
 
     public function outputLabel($format = '', $editMode = true)
     {
@@ -42,7 +46,7 @@ class group_htmlbootstrapFormWidget extends group_htmlFormWidget
     }
 
     /**
-     * @param \Jelix\Forms\HtmlWidget\WidgetInterface $widget
+     * @param WidgetInterface $widget
      */
     protected function displayChildControl($widget)
     {

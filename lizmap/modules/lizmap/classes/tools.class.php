@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Some generic methods.
  *

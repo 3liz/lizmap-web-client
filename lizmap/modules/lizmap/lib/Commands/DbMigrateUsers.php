@@ -2,12 +2,14 @@
 
 namespace Lizmap\Commands;
 
+use Jelix\Scripts\ModuleCommandAbstract;
+use Lizmap\Users\MigratorFromSqlite;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 // See controllers/database.cmdline.php
-class DbMigrateUsers extends \Jelix\Scripts\ModuleCommandAbstract
+class DbMigrateUsers extends ModuleCommandAbstract
 {
     protected function configure()
     {
@@ -21,7 +23,7 @@ class DbMigrateUsers extends \Jelix\Scripts\ModuleCommandAbstract
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $logMigrator = new \Lizmap\Users\MigratorFromSqlite();
+        $logMigrator = new MigratorFromSqlite();
 
         try {
             $res = $logMigrator->migrateUsersAndRights($input->getOption('resetbefore'));

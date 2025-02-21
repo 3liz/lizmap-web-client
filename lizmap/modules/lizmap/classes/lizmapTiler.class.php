@@ -1,4 +1,12 @@
 <?php
+
+use Lizmap\App\XmlTools;
+use Lizmap\Project\Project;
+use Lizmap\Request\WMSRequest;
+use proj4php\Point as Proj4Point;
+use proj4php\Proj as Proj4Proj;
+use proj4php\Proj4php;
+
 /**
  * WMTS.
  *
@@ -66,7 +74,7 @@ class lizmapTiler
         if (!is_array($tileMatrixSetList) || !is_array($layers) || !is_array($hash)
             || $hash['qgsmtime'] < filemtime($file)
             || $hash['qgscfgmtime'] < filemtime($file.'.cfg')) {
-            $wmsRequest = new \Lizmap\Request\WMSRequest(
+            $wmsRequest = new WMSRequest(
                 $project,
                 array(
                     'service' => 'WMS',
@@ -78,7 +86,7 @@ class lizmapTiler
             // Http code error
             if (($wmsResult->code / 100) >= 4) {
                 $errormsg = 'An error has been raised when loading WMS GetCapabilities: HTTP Code '.$wmsResult->code;
-                \jLog::log($errormsg, 'error');
+                jLog::log($errormsg, 'error');
 
                 return null;
             }
@@ -87,16 +95,16 @@ class lizmapTiler
             if (empty($wms) or preg_match('/ServiceExceptionReport/', $wms)) {
                 $errormsg = 'An error has been raised when loading WMS GetCapabilities: ServiceExceptionReport';
                 $errormsg .= '\n'.$wms;
-                \jLog::log($errormsg, 'error');
+                jLog::log($errormsg, 'error');
 
                 return null;
             }
 
-            $wms_xml = \Lizmap\App\XmlTools::xmlFromString($wms);
+            $wms_xml = XmlTools::xmlFromString($wms);
             if (!is_object($wms_xml)) {
                 $errormsg = '\n'.$file.'\n'.$wms_xml;
                 $errormsg = 'An error has been raised when loading WMS GetCapabilities:'.$errormsg;
-                \jLog::log($errormsg, 'error');
+                jLog::log($errormsg, 'error');
 
                 return null;
             }
@@ -168,8 +176,8 @@ class lizmapTiler
     /**
      * Get a list of tileMatrixSet.
      *
-     * @param \Lizmap\Project\Project $project
-     * @param mixed                   $wms_xml
+     * @param Project $project
+     * @param mixed   $wms_xml
      */
     public static function getTileMatrixSetList($project, $wms_xml)
     {
@@ -279,15 +287,15 @@ class lizmapTiler
                 $tileMatrixSet->tileMatrixList = $tileMatrixList;
                 $tileMatrixSetList[] = $tileMatrixSet;
             } elseif ($CRS == $projection->ref) {
-                $proj4 = new \proj4php\Proj4php();
+                $proj4 = new Proj4php();
                 $proj4->addDef($CRS, $projection->proj4);
-                $sourceProj = new \proj4php\Proj('EPSG:4326', $proj4);
-                $destProj = new \proj4php\Proj($projection->ref, $proj4);
+                $sourceProj = new Proj4Proj('EPSG:4326', $proj4);
+                $destProj = new Proj4Proj($projection->ref, $proj4);
 
-                $sourceMinPt = new \proj4php\Point($rootExtent[0], $rootExtent[1]);
+                $sourceMinPt = new Proj4Point($rootExtent[0], $rootExtent[1]);
                 $destMinPt = $proj4->transform($sourceProj, $destProj, $sourceMinPt);
 
-                $sourceMaxPt = new \proj4php\Point($rootExtent[2], $rootExtent[3]);
+                $sourceMaxPt = new Proj4Point($rootExtent[2], $rootExtent[3]);
                 $destMaxPt = $proj4->transform($sourceProj, $destProj, $sourceMaxPt);
 
                 $extent = array($destMinPt->x, $destMinPt->y, $destMaxPt->x, $destMaxPt->y);
@@ -488,34 +496,34 @@ class lizmapTiler
         );
 
         $projection = $project->getOption('projection');
-        $proj4 = new \proj4php\Proj4php();
+        $proj4 = new Proj4php();
 
         $proj4->addDef($projection->ref, $projection->proj4);
-        $sourceProj = new \proj4php\Proj('EPSG:4326', $proj4);
+        $sourceProj = new Proj4Proj('EPSG:4326', $proj4);
 
         $tileMatrixSetLinkList = array();
         foreach ($tileMatrixSetList as $tileMatrixSet) {
-            $destProj = new \proj4php\Proj($tileMatrixSet->ref, $proj4);
+            $destProj = new Proj4Proj($tileMatrixSet->ref, $proj4);
             $destMaxExtent = $tileMatrixSet->extent;
 
-            $sourceMinPt = new \proj4php\Point($layerExtent[0], $layerExtent[1]);
-            $destMinPt = new \proj4php\Point($destMaxExtent[0], $destMaxExtent[1]);
+            $sourceMinPt = new Proj4Point($layerExtent[0], $layerExtent[1]);
+            $destMinPt = new Proj4Point($destMaxExtent[0], $destMaxExtent[1]);
 
-            $sourceMaxPt = new \proj4php\Point($layerExtent[2], $layerExtent[3]);
-            $destMaxPt = new \proj4php\Point($destMaxExtent[2], $destMaxExtent[3]);
+            $sourceMaxPt = new Proj4Point($layerExtent[2], $layerExtent[3]);
+            $destMaxPt = new Proj4Point($destMaxExtent[2], $destMaxExtent[3]);
 
             try {
                 $destMinPt = $proj4->transform($sourceProj, $destProj, $sourceMinPt);
             } catch (Exception $e) {
                 jLog::logEx($e, 'error');
-                $destMinPt = new \proj4php\Point($destMaxExtent[0], $destMaxExtent[1]);
+                $destMinPt = new Proj4Point($destMaxExtent[0], $destMaxExtent[1]);
             }
 
             try {
                 $destMaxPt = $proj4->transform($sourceProj, $destProj, $sourceMaxPt);
             } catch (Exception $e) {
                 jLog::logEx($e, 'error');
-                $destMaxPt = new \proj4php\Point($destMaxExtent[2], $destMaxExtent[3]);
+                $destMaxPt = new Proj4Point($destMaxExtent[2], $destMaxExtent[3]);
             }
 
             $extent = array($destMinPt->x, $destMinPt->y, $destMaxPt->x, $destMaxPt->y);

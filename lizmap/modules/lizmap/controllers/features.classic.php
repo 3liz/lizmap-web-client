@@ -1,4 +1,7 @@
 <?php
+
+use Lizmap\Project\UnknownLizmapProjectException;
+
 /**
  * Get features from QGIS Server with the help of expressions.
  *
@@ -40,7 +43,7 @@ class featuresCtrl extends jController
 
                 return $rep;
             }
-        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
+        } catch (UnknownLizmapProjectException $e) {
             jLog::logEx($e, 'error');
             jMessage::add('The lizmap project '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
 
@@ -66,7 +69,7 @@ class featuresCtrl extends jController
         if (isset($tooltipLayers->{$layerName}, $tooltipLayers->{$layerName}->{'template'})) {
             $tooltip = array('tooltip' => $tooltipLayers->{$layerName}->{'template'});
 
-            $data = \qgisExpressionUtils::replaceExpressionText(
+            $data = qgisExpressionUtils::replaceExpressionText(
                 $qgisLayer,
                 $tooltip,
             );
@@ -119,7 +122,7 @@ class featuresCtrl extends jController
 
                 return $rep;
             }
-        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
+        } catch (UnknownLizmapProjectException $e) {
             jLog::logEx($e, 'error');
             $content['error'] = 'The lizmap project '.strtoupper($project).' does not exist !';
             $rep->data = $content;
@@ -133,7 +136,7 @@ class featuresCtrl extends jController
             return $rep;
         }
 
-        /** @var null|\qgisVectorLayer $qgisLayer */
+        /** @var null|qgisVectorLayer $qgisLayer */
         $qgisLayer = $lproj->getLayer($layerId);
 
         if ($qgisLayer === null) {
@@ -157,7 +160,7 @@ class featuresCtrl extends jController
         // AdditionalFields
         try {
             $additionalFields = json_decode($this->param('additionalFields', '[]'), true);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $content['error'] = 'An error occurred while replacing the expression text !';
             $rep->data = $content;
 
@@ -219,7 +222,7 @@ class featuresCtrl extends jController
     private function regexCheck($expression): string
     {
         // Allowing only fields like "libsquart" and not expressions like rand(10,34)
-        $regex = '/^[a-zA-Z0-9_\\- ]+$/';
+        $regex = '/^[a-zA-Z0-9_\- ]+$/';
 
         $expression = str_replace('"', '', $expression);
 

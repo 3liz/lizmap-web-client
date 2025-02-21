@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Base QGIS XML Object.
  *

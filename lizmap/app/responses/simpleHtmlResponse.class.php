@@ -1,4 +1,5 @@
 <?php
+
 /**
  * HTML Jelix response for full screen map.
  *
