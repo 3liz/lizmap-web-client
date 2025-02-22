@@ -51,12 +51,17 @@ import proj4 from "proj4";
 import Transform from "ol-ext/interaction/Transform.js";
 
 /**
- * List of digitizing available tools
- * @name DigitizingAvailableTools
- * @constant {Array<string>}
+ * Enum for digitizing tools
+ * @enum {string}
+ * @property {string} Deactivate - Deactivate digitizing tools
+ * @property {string} Point - Point digitizing tool
+ * @property {string} Line - Line digitizing tool
+ * @property {string} Polygon - Polygon digitizing tool
+ * @property {string} Box - Box digitizing tool
+ * @property {string} Circle - Circle digitizing tool
+ * @property {string} Freehand - Freehand digitizing tool
+ * @property {string} Text - Text digitizing tool
  */
-export const DigitizingAvailableTools = deepFreeze(['deactivate', 'point', 'line', 'polygon', 'box', 'circle', 'freehand', 'text']);
-
 export const DigitizingTools = createEnum({
     'Deactivate': 'deactivate',
     'Point': 'point',
@@ -67,6 +72,22 @@ export const DigitizingTools = createEnum({
     'Freehand': 'freehand',
     'Text': 'text'
 });
+
+/**
+ * List of digitizing available tools
+ * @name DigitizingAvailableTools
+ * @constant {Array<string>}
+ */
+export const DigitizingAvailableTools = deepFreeze([
+    DigitizingTools.Deactivate,
+    DigitizingTools.Point,
+    DigitizingTools.Line,
+    DigitizingTools.Polygon,
+    DigitizingTools.Box,
+    DigitizingTools.Circle,
+    DigitizingTools.Freehand,
+    DigitizingTools.Text
+]);
 
 /**
  * @class
@@ -86,7 +107,10 @@ export class Digitizing {
         this._tools = DigitizingAvailableTools;
         this._toolSelected = this._tools[0];
 
-        this._repoAndProjectString = globalThis['lizUrls'].params.repository + '_' + globalThis['lizUrls'].params.project;
+        this._repoAndProjectString =
+            globalThis['lizUrls'].params.repository +
+            '_' +
+            globalThis['lizUrls'].params.project;
 
         // Set draw color to value in local storage if any or default (red)
         this._drawColor = localStorage.getItem(this._repoAndProjectString + '_drawColor') || '#ff0000';
@@ -398,7 +422,9 @@ export class Digitizing {
         } else {
             this._contextFeatures[this._context] = null;
         }
-        this._isSaved = (localStorage.getItem(this._repoAndProjectString + '_' + this._context + '_drawLayer') !== null);
+        this._isSaved = (
+            localStorage.getItem(this._repoAndProjectString + '_' + this._context + '_drawLayer') !== null
+        );
         this._measureTooltips.forEach((measureTooltip) => {
             this._map.removeOverlay(measureTooltip[0]);
             this._map.removeOverlay(measureTooltip[1]);
@@ -441,11 +467,15 @@ export class Digitizing {
                         break;
                     case this._tools[2]:
                         drawOptions.type = 'LineString';
-                        drawOptions.geometryFunction = (coords, geom) => this._contraintsHandler(coords, geom, drawOptions.type);
+                        drawOptions.geometryFunction = (coords, geom) => {
+                            return this._contraintsHandler(coords, geom, drawOptions.type);
+                        }
                         break;
                     case this._tools[3]:
                         drawOptions.type = 'Polygon';
-                        drawOptions.geometryFunction = (coords, geom) => this._contraintsHandler(coords, geom, drawOptions.type);
+                        drawOptions.geometryFunction = (coords, geom) => {
+                            return this._contraintsHandler(coords, geom, drawOptions.type);
+                        }
                         break;
                     case this._tools[4]:
                         drawOptions.type = 'Circle';
@@ -524,7 +554,12 @@ export class Digitizing {
                     unByKey(this._listener);
 
                     if (geom.getType() === 'LineString') {
-                        this._updateTotalMeasureTooltip(null, geom, 'LineString', Array.from(this._measureTooltips).pop()[1]);
+                        this._updateTotalMeasureTooltip(
+                            null,
+                            geom,
+                            'LineString',
+                            Array.from(this._measureTooltips).pop()[1],
+                        );
                     }
                 });
 
@@ -659,11 +694,25 @@ export class Digitizing {
                 });
                 this._splitInteraction.on('drawend', event => {
                     Promise.all([
-                        import(/* webpackChunkName: 'OLparser' */ 'jsts/org/locationtech/jts/io/OL3Parser.js'),
-                        import(/* webpackChunkName: 'UnionOp' */ 'jsts/org/locationtech/jts/operation/union/UnionOp.js'),
-                        import(/* webpackChunkName: 'Polygonizer' */ 'jsts/org/locationtech/jts/operation/polygonize/Polygonizer.js'),
-                        import(/* webpackChunkName: 'lineSplit' */ '@turf/line-split'),
-                    ]).then(([{ default: OLparser }, { default: UnionOp }, { default: Polygonizer }, { default: lineSplit }]) => {
+                        import(
+                            /* webpackChunkName: 'OLparser' */ 'jsts/org/locationtech/jts/io/OL3Parser.js'
+                        ),
+                        import(
+                            /* webpackChunkName: 'UnionOp' */ 'jsts/org/locationtech/jts/operation/union/UnionOp.js'
+                        ),
+                        import(
+                            /* webpackChunkName: 'Polygonizer' */
+                            'jsts/org/locationtech/jts/operation/polygonize/Polygonizer.js'
+                        ),
+                        import(
+                            /* webpackChunkName: 'lineSplit' */ '@turf/line-split'
+                        ),
+                    ]).then(([
+                        { default: OLparser },
+                        { default: UnionOp },
+                        { default: Polygonizer },
+                        { default: lineSplit }
+                    ]) => {
                         const parser = new OLparser();
                         parser.inject(
                             Point,
@@ -899,7 +948,13 @@ export class Digitizing {
                     128
                 );
 
-                constrainedPointCoords = transform(circle.getClosestPoint(transform(cursorPointCoords, mapProjection, 'EPSG:4326')), 'EPSG:4326', mapProjection);
+                constrainedPointCoords = transform(
+                    circle.getClosestPoint(
+                        transform(cursorPointCoords, mapProjection, 'EPSG:4326')
+                    ),
+                    'EPSG:4326',
+                    mapProjection,
+                );
 
                 // Draw visual constraint features
                 this._constraintLayer.getSource().addFeature(
@@ -945,7 +1000,11 @@ export class Digitizing {
 
                 // Display clockwise or anticlockwise angle
                 // Closest from cursor is displayed
-                if (getLength(new LineString([closestClockwise, cursorPointCoords])) < getLength(new LineString([closestAntiClockwise, cursorPointCoords]))) {
+                if (getLength(
+                    new LineString([closestClockwise, cursorPointCoords])
+                ) < getLength(
+                    new LineString([closestAntiClockwise, cursorPointCoords])
+                )) {
                     constrainedAngleLineString = constrainedAngleClockwise.clone();
                 } else {
                     constrainedAngleLineString = constrainedAngleAntiClockwise.clone();
@@ -976,7 +1035,9 @@ export class Digitizing {
     // Display draw measures in tooltips
     _updateTooltips(coords, geom, geomType) {
         // Current segment length
-        let segmentTooltipContent = this.formatLength(new LineString([coords[coords.length - 1], coords[coords.length - 2]]));
+        let segmentTooltipContent = this.formatLength(
+            new LineString([coords[coords.length - 1], coords[coords.length - 2]])
+        );
 
         // Total length for LineStrings
         // Perimeter and area for Polygons
@@ -1101,7 +1162,9 @@ export class Digitizing {
         } else if (geom instanceof LineString) {
             this._updateTotalMeasureTooltip(geom.getCoordinates(), geom, 'Linestring', geom.get('totalOverlay'));
         } else if ( geom instanceof CircleGeom) {
-            this._updateTotalMeasureTooltip([geom.getFirstCoordinate(), geom.getLastCoordinate()], geom, 'Circle', geom.get('totalOverlay'));
+            this._updateTotalMeasureTooltip(
+                [geom.getFirstCoordinate(), geom.getLastCoordinate()], geom, 'Circle', geom.get('totalOverlay')
+            );
         }
     }
 
@@ -1292,7 +1355,10 @@ export class Digitizing {
                         });
                     }
                 }
-                localStorage.setItem(this._repoAndProjectString + '_' + this._context + '_drawLayer', JSON.stringify(savedFeatures));
+                localStorage.setItem(
+                    this._repoAndProjectString + '_' + this._context + '_drawLayer',
+                    JSON.stringify(savedFeatures),
+                );
             } else {
                 localStorage.removeItem(this._repoAndProjectString + '_' + this._context + '_drawLayer');
             }
@@ -1306,7 +1372,8 @@ export class Digitizing {
      */
     loadFeatureDrawnToMap() {
         // get saved data without context for draw
-        const oldSavedGeomJSON = this._context === 'draw' ? localStorage.getItem(this._repoAndProjectString + '_drawLayer') : null;
+        const oldSavedGeomJSON =
+            this._context === 'draw' ? localStorage.getItem(this._repoAndProjectString + '_drawLayer') : null;
 
         // Clear old saved data without context for draw from localStorage
         if (oldSavedGeomJSON !== null) {
@@ -1315,7 +1382,9 @@ export class Digitizing {
         }
 
         // keep saved data without context for draw or get saved data with context
-        const savedGeomJSON = oldSavedGeomJSON !== null ? oldSavedGeomJSON : localStorage.getItem(this._repoAndProjectString + '_' + this._context + '_drawLayer');
+        const savedGeomJSON =
+            oldSavedGeomJSON !== null ? oldSavedGeomJSON :
+                localStorage.getItem(this._repoAndProjectString + '_' + this._context + '_drawLayer');
 
         if (savedGeomJSON) {
             let loadedFeatures = [];
@@ -1441,8 +1510,11 @@ export class Digitizing {
         //         return (e) => {
         //             const buffershp = e.target.result;
         //             shp(buffershp).then(response => {
-        //                 let OL6features = (new GeoJSON()).readFeatures(response, {featureProjection: this._lizmap3.map.getProjection()});
-
+        //                 let OL6features = (new GeoJSON()).readFeatures(
+        //                     response,
+        //                     {featureProjection: this._lizmap3.map.getProjection()},
+        //                 );
+        //
         //                 if (OL6features) {
         //                     // Add imported features to map and zoom to their extent
         //                     this._drawSource.addFeatures(OL6features);
@@ -1491,13 +1563,18 @@ export class Digitizing {
 
                             // Verifiy if the projection is already included in proj4
                             if (Object.keys(proj4.defs).filter((name) => name.includes(projFGB)).length === 0) {
-                                // We need a reprojection to be done because flatgeobuf files doessn't have a precise projection
-                                // We neither used wkt located in headers due to some errors to define it with proj4.
-                                // Nor 'fromEPSGcode()' because it returns a 'Projection' object that sometimes throws errors.
+                                // We need a reprojection to be done because flatgeobuf files
+                                // doesn't have a precise projection
+                                // We neither used wkt located in headers due to some errors
+                                // to define it with proj4.
+                                // Nor 'fromEPSGcode()' because it returns a 'Projection' object
+                                // that sometimes throws errors.
                                 let descriptor = await Utils.fetch('https://epsg.io/' + projCode + '.proj4')
                                     .then((res) => res.text())
                                     .catch((error) => {
-                                        throw new Error(lizDict["digitizing.import.fetch.error"] + " : " + error.message);
+                                        throw new Error(
+                                            lizDict["digitizing.import.fetch.error"] + " : " + error.message
+                                        );
                                     });
 
                                 proj4.defs(projFGB, descriptor);
