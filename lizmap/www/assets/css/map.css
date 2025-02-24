@@ -3347,7 +3347,7 @@ lizmap-digitizing {
   height: 24px;
 }
 
-svg.digitizing-selected-tool{
+.digitizing-selected-tool svg.digitizing-tool-icon{
   width: 13px;
   position: absolute;
   bottom: -4px;
