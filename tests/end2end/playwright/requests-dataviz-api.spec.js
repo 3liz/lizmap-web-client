@@ -17,7 +17,13 @@ test.describe('Dataviz API tests',
                 });
             expect(response.status()).toBe(200);
             expect(response.headers()['content-type']).toBe('application/json');
-            const json = await response.json();
+            const content = await response.text();
+            let json;
+            try {
+                json = await JSON.parse(content);
+            } catch (error) {
+                console.error(`Error while parsing to JSON : \n${error}\n${content}`);
+            }
             expect(json).toHaveProperty('title', 'Municipalities');
             expect(json).toHaveProperty('data');
             expect(json.data).toHaveLength(1);

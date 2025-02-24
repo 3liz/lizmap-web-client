@@ -1,12 +1,11 @@
-Build and testing the Lizmap Docker image
-=========================================
+# Build and testing the Lizmap Docker image
 
-First you have to install Docker on your machine of course.
+First you have to install [Docker](https://www.docker.com/) on your computer.
 
 Then you should go in the root of the repository, and follow these instructions:
 
 
-* if you have install all developer tools indicating into the CONTRIBUTING.md file
+* if you have to install all developer tools indicating into the [CONTRIBUTING.md](../CONTRIBUTING.md) file
   of the root directory, execute `make package`. Else if you don't want to install
   them, you can use the docker container of `dev/`. Execute `make -C dev/ build`.
 * execute `make docker-build-ci`
