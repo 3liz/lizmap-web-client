@@ -16,7 +16,8 @@ test.describe('Print', () => {
     test('Print UI', async ({ page }) => {
         // Scales
         await expect(page.locator('#print-scale > option')).toHaveCount(6);
-        await expect(page.locator('#print-scale > option')).toContainText(['500,000', '250,000', '100,000', '50,000', '25,000', '10,000']);
+        await expect(page.locator('#print-scale > option')).toContainText(
+            ['500,000', '250,000', '100,000', '50,000', '25,000', '10,000']);
         // Templates
         await expect(page.locator('#print-template > option')).toHaveCount(3);
         await expect(page.locator('#print-template > option')).toContainText(['print_labels', 'print_map']);
@@ -55,7 +56,11 @@ test.describe('Print', () => {
             'TEMPLATE': 'print_labels',
         }
         // Test `print_labels` template
-        let getPrintPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
+        let getPrintPromise = page.waitForRequest(
+            request =>
+                request.method() === 'POST' &&
+                request.postData()?.includes('GetPrint') === true
+        );
 
         // Launch print
         await page.locator('#print-launch').click();
@@ -78,13 +83,18 @@ test.describe('Print', () => {
             // 'multiline_label': 'Multiline label',
         })
         let name = "Print requests";
-        let getPrintParams = await expectParametersToContain(name, getPrintRequest.postData() ?? '', expectedParameters1)
+        let getPrintParams = await expectParametersToContain(
+            name, getPrintRequest.postData() ?? '', expectedParameters1);
         await expectToHaveLengthCompare(name, Array.from(getPrintParams.keys()), 15, Object.keys(expectedParameters1));
 
         // Test `print_map` template
         await page.locator('#print-template').selectOption('1');
 
-        getPrintPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
+        getPrintPromise = page.waitForRequest(
+            request =>
+                request.method() === 'POST' &&
+                request.postData()?.includes('GetPrint') === true
+        );
         await page.locator('#print-launch').click();
         getPrintRequest = await getPrintPromise;
         // Extend and update GetPrint parameters
@@ -99,12 +109,20 @@ test.describe('Print', () => {
             'map0:OPACITIES': '204,255,255',
         })
         name = 'Print requests 2';
-        getPrintParams = await expectParametersToContain(name, getPrintRequest.postData() ?? '', expectedParameters2)
-        await expectToHaveLengthCompare(name, Array.from(getPrintParams.keys()), 13, Object.keys(expectedParameters2));
+        getPrintParams = await expectParametersToContain(name, getPrintRequest.postData() ?? '', expectedParameters2);
+        await expectToHaveLengthCompare(
+            name,
+            Array.from(getPrintParams.keys()),
+            13, Object.keys(expectedParameters2)
+        );
 
         // Test `print_overview` template
         await page.locator('#print-template').selectOption('2');
-        getPrintPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
+        getPrintPromise = page.waitForRequest(
+            request =>
+                request.method() === 'POST' &&
+                request.postData()?.includes('GetPrint') === true
+        );
 
         // Launch print
         await page.locator('#print-launch').click();
@@ -126,8 +144,13 @@ test.describe('Print', () => {
             'map0:EXTENT': /761864.\d+,6274266.\d+,779334.\d+,6284518.\d+/,
         })
         name = 'Print requests 3';
-        getPrintParams = await expectParametersToContain(name, getPrintRequest.postData() ?? '', expectedParameters3)
-        await expectToHaveLengthCompare(name, Array.from(getPrintParams.keys()), 14, Object.keys(expectedParameters3));
+        getPrintParams = await expectParametersToContain(name, getPrintRequest.postData() ?? '', expectedParameters3);
+        await expectToHaveLengthCompare(
+            name,
+            Array.from(getPrintParams.keys()),
+            14,
+            Object.keys(expectedParameters3)
+        );
 
         // Redlining with circle
         await page.locator('#button-draw').click();
@@ -150,7 +173,11 @@ test.describe('Print', () => {
         await page.locator('#button-print').click();
         await page.locator('#print-scale').selectOption('100000');
 
-        getPrintPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
+        getPrintPromise = page.waitForRequest(
+            request =>
+                request.method() === 'POST' &&
+                request.postData()?.includes('GetPrint') === true
+        );
 
         // Launch print
         await page.locator('#print-launch').click();
@@ -195,18 +222,31 @@ test.describe('Print', () => {
             // 'multiline_label': 'Multiline label',
         })
         name = 'Print requests 4';
-        getPrintParams = await expectParametersToContain(name, getPrintRequest.postData() ?? '', expectedParameters4)
-        await expectToHaveLengthCompare(name, Array.from(getPrintParams.keys()), 17, Object.keys(expectedParameters4));
+        getPrintParams = await expectParametersToContain(
+            name,
+            getPrintRequest.postData() ?? '', expectedParameters4
+        );
+        await expectToHaveLengthCompare(
+            name,
+            Array.from(getPrintParams.keys()),
+            17,
+            Object.keys(expectedParameters4)
+        );
     });
 
     test('Print requests with selection', async ({ page }) => {
         // Select a feature
         await page.locator('#button-attributeLayers').click();
         await page.getByRole('button', { name: 'Detail' }).click();
-        await page.locator('lizmap-feature-toolbar:nth-child(1) > div:nth-child(1) > button:nth-child(1)').first().click();
+        await page.locator(
+            'lizmap-feature-toolbar:nth-child(1) > div:nth-child(1) > button:nth-child(1)').first().click();
         await page.locator('#bottom-dock-window-buttons .btn-bottomdock-clear').click();
 
-        const getPrintPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
+        const getPrintPromise = page.waitForRequest(
+            request =>
+                request.method() === 'POST' &&
+                request.postData()?.includes('GetPrint') === true
+        );
 
         // Launch print
         await page.locator('#print-launch').click();
@@ -235,7 +275,7 @@ test.describe('Print', () => {
             'SELECTIONTOKEN': /[a-z\d]+/,
         }
         const name = "Print requests with selection";
-        const getPrintParams = await expectParametersToContain(name, getPrintRequest.postData() ?? '', expectedParameters)
+        const getPrintParams = await expectParametersToContain(name, getPrintRequest.postData() ?? '', expectedParameters);
         await expectToHaveLengthCompare(name, Array.from(getPrintParams.keys()), 16, Object.keys(expectedParameters));
 
     });
@@ -286,7 +326,7 @@ test.describe('Print', () => {
             'FILTERTOKEN': /[a-z\d]+/,
         }
         const name = 'Print requests with filter';
-        const getPrintParams = await expectParametersToContain(name, getPrintRequest.postData() ?? '', expectedParameters)
+        const getPrintParams = await expectParametersToContain(name, getPrintRequest.postData() ?? '', expectedParameters);
         await expectToHaveLengthCompare(name, Array.from(getPrintParams.keys()), 16, Object.keys(expectedParameters));
     });
 });
@@ -342,7 +382,7 @@ test.describe('Print in popup', () => {
             'EXP_FILTER': '$id IN (1)',
         }
         const name = 'Atlas print in popup requests';
-        const getPrintParams = await expectParametersToContain(name, getPrintRequest.postData() ?? '', expectedParameters)
+        const getPrintParams = await expectParametersToContain(name, getPrintRequest.postData() ?? '', expectedParameters);
         await expectToHaveLengthCompare(name, Array.from(getPrintParams.keys()), 10, Object.keys(expectedParameters));
 
         await expect(getPrintParams.has('CRS')).toBe(false)
@@ -526,12 +566,25 @@ test.describe('Print 3857', () => {
             // 'multiline_label': 'Multiline label',
         })
         let name = "Print requests 1";
-        let getPrintParams = await expectParametersToContain(name, getPrintRequest.postData() ?? '', expectedParameters1)
-        await expectToHaveLengthCompare(name, Array.from(getPrintParams.keys()), 15, Object.keys(expectedParameters1));
+        let getPrintParams = await expectParametersToContain(
+            name,
+            getPrintRequest.postData() ?? '',
+            expectedParameters1
+        );
+        await expectToHaveLengthCompare(
+            name,
+            Array.from(getPrintParams.keys()),
+            15,
+            Object.keys(expectedParameters1)
+        );
 
         // Test `print_map` template
         await page.locator('#print-template').selectOption('1');
-        getPrintPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
+        getPrintPromise = page.waitForRequest(
+            request =>
+                request.method() === 'POST' &&
+                request.postData()?.includes('GetPrint') === true
+        );
 
         // Launch print
         await page.locator('#print-launch').click();
@@ -555,7 +608,12 @@ test.describe('Print 3857', () => {
         })
         name = 'Print requests 2';
         getPrintParams = await expectParametersToContain(name, getPrintRequest.postData() ?? '', expectedParameters2)
-        await expectToHaveLengthCompare(name, Array.from(getPrintParams.keys()), 13, Object.keys(expectedParameters2));
+        await expectToHaveLengthCompare(
+            name,
+            Array.from(getPrintParams.keys()),
+            13,
+            Object.keys(expectedParameters2)
+        );
 
         // Redlining with circle
         await page.locator('#button-draw').click();
@@ -578,7 +636,11 @@ test.describe('Print 3857', () => {
         await page.locator('#button-print').click();
         await page.locator('#print-scale').selectOption('72224');
 
-        getPrintPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
+        getPrintPromise = page.waitForRequest(
+            request =>
+                request.method() === 'POST' &&
+                request.postData()?.includes('GetPrint') === true
+        );
 
         // Launch print
         await page.locator('#print-launch').click();
@@ -622,8 +684,17 @@ test.describe('Print 3857', () => {
             // 'multiline_label': 'Multiline label',
         })
         name = 'Print requests 3';
-        getPrintParams = await expectParametersToContain(name, getPrintRequest.postData() ?? '', expectedParameters3)
-        await expectToHaveLengthCompare(name, Array.from(getPrintParams.keys()), 17, Object.keys(expectedParameters3));
+        getPrintParams = await expectParametersToContain(
+            name,
+            getPrintRequest.postData() ?? ''
+            , expectedParameters3
+        );
+        await expectToHaveLengthCompare(
+            name,
+            Array.from(getPrintParams.keys()),
+            17,
+            Object.keys(expectedParameters3)
+        );
     });
 });
 
@@ -652,7 +723,11 @@ test.describe('Print base layers', () => {
             'map0:SCALE': '72224',
         }
         // Print osm-mapnik
-        let getPrintRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
+        let getPrintRequestPromise = page.waitForRequest(
+            request =>
+                request.method() === 'POST' &&
+                request.postData()?.includes('GetPrint') === true
+        );
 
         // Launch print
         await page.locator('#print-launch').click();
@@ -670,8 +745,17 @@ test.describe('Print base layers', () => {
             'map0:OPACITIES': '255',
         })
         let name = 'Print requests 1';
-        let getPrintParams = await expectParametersToContain(name, getPrintRequest.postData() ?? '', expectedParameters1)
-        await expectToHaveLengthCompare(name, Array.from(getPrintParams.keys()), 13, Object.keys(expectedParameters1));
+        let getPrintParams = await expectParametersToContain(
+            name,
+            getPrintRequest.postData() ?? '',
+            expectedParameters1,
+        );
+        await expectToHaveLengthCompare(
+            name,
+            Array.from(getPrintParams.keys()),
+            13,
+            Object.keys(expectedParameters1)
+        );
 
         let getPrintResponse = await getPrintRequest.response();
         await expect(getPrintResponse?.status()).toBe(200)
@@ -683,7 +767,11 @@ test.describe('Print base layers', () => {
         let getMapRequest = await getMapRequestPromise;
         await getMapRequest.response();
 
-        getPrintRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
+        getPrintRequestPromise = page.waitForRequest(
+            request =>
+                request.method() === 'POST' &&
+                request.postData()?.includes('GetPrint') === true
+        );
 
         // Launch print
         await page.locator('#print-launch').click();
@@ -701,8 +789,17 @@ test.describe('Print base layers', () => {
             'map0:OPACITIES': '255,255',
         })
         name = 'Print requests 2';
-        getPrintParams = await expectParametersToContain(name, getPrintRequest.postData() ?? '', expectedParameters2)
-        await expectToHaveLengthCompare(name, Array.from(getPrintParams.keys()), 13, Object.keys(expectedParameters2));
+        getPrintParams = await expectParametersToContain(
+            name,
+            getPrintRequest.postData() ?? '',
+            expectedParameters2
+        );
+        await expectToHaveLengthCompare(
+            name,
+            Array.from(getPrintParams.keys()),
+            13,
+            Object.keys(expectedParameters2)
+        );
 
         getPrintResponse = await getPrintRequest.response();
         await expect(getPrintResponse?.status()).toBe(200)
@@ -711,9 +808,17 @@ test.describe('Print base layers', () => {
         // Print quartiers not open-topo-map
         await page.locator('#switcher-baselayer').getByRole('combobox').selectOption('open-topo-map');
 
-        await page.waitForResponse(response => response.status() === 200 && response.headers()['content-type'] === 'image/png');
+        await page.waitForResponse(
+            response =>
+                response.status() === 200 &&
+                response.headers()['content-type'] === 'image/png'
+        );
 
-        getPrintRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
+        getPrintRequestPromise = page.waitForRequest(
+            request =>
+                request.method() === 'POST' &&
+                request.postData()?.includes('GetPrint') === true
+        );
 
         // Launch print
         await page.locator('#print-launch').click();
@@ -731,8 +836,17 @@ test.describe('Print base layers', () => {
             'map0:OPACITIES': '255',
         })
         name = 'Print requests 3';
-        getPrintParams = await expectParametersToContain(name, getPrintRequest.postData() ?? '', expectedParameters3)
-        await expectToHaveLengthCompare(name, Array.from(getPrintParams.keys()), 13, Object.keys(expectedParameters3));
+        getPrintParams = await expectParametersToContain(
+            name,
+            getPrintRequest.postData() ?? '',
+            expectedParameters3
+        );
+        await expectToHaveLengthCompare(
+            name,
+            Array.from(getPrintParams.keys()),
+            13,
+            Object.keys(expectedParameters3)
+        );
 
         getPrintResponse = await getPrintRequest.response();
         await expect(getPrintResponse?.status()).toBe(200)
@@ -743,7 +857,11 @@ test.describe('Print base layers', () => {
         getMapRequest = await getMapRequestPromise;
         await getMapRequest.response();
 
-        getPrintRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
+        getPrintRequestPromise = page.waitForRequest(
+            request =>
+                request.method() === 'POST' &&
+                request.postData()?.includes('GetPrint') === true
+        );
 
         // Launch print
         await page.locator('#print-launch').click();
@@ -762,7 +880,12 @@ test.describe('Print base layers', () => {
         })
         name = 'Print requests 4';
         getPrintParams = await expectParametersToContain(name, getPrintRequest.postData() ?? '', expectedParameters4)
-        await expectToHaveLengthCompare(name, Array.from(getPrintParams.keys()), 13, Object.keys(expectedParameters4));
+        await expectToHaveLengthCompare(
+            name,
+            Array.from(getPrintParams.keys()),
+            13,
+            Object.keys(expectedParameters4)
+        );
 
         getPrintResponse = await getPrintRequest.response();
         await expect(getPrintResponse?.status()).toBe(200)
@@ -795,7 +918,9 @@ test.describe('Error while printing', () => {
 
         await page.locator('#print-launch').click();
 
-        await expect(page.getByText('The output is currently not available. Please contact the system administrator.')).toBeVisible();
+        await expect(
+            page.getByText('The output is currently not available. Please contact the system administrator.')
+        ).toBeVisible();
 
         await expect(page.locator("#message > div:last-child")).toHaveClass(/alert-error/);
     });
@@ -803,13 +928,19 @@ test.describe('Error while printing', () => {
 
     test('Print Atlas error', async ({ page }) => {
 
-        let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
+        let getFeatureInfoRequestPromise = page.waitForRequest(
+            request =>
+                request.method() === 'POST' &&
+                request.postData()?.includes('GetFeatureInfo') === true
+        );
         await page.locator('#newOlMap').click({ position: { x: 409, y: 186 } });
         let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
         expect(getFeatureInfoRequest.postData()).toMatch(/GetFeatureInfo/);
 
         // Test `atlas_quartiers` print atlas request
-        const featureAtlasQuartiers = page.locator('#popupcontent lizmap-feature-toolbar[value="quartiers_cc80709a_cd4a_41de_9400_1f492b32c9f7.1"] .feature-atlas');
+        const featureAtlasQuartiers = page.locator(
+            '#popupcontent lizmap-feature-toolbar[value="quartiers_cc80709a_cd4a_41de_9400_1f492b32c9f7.1"] .feature-atlas'
+        );
 
         await page.route('**/service*', async route => {
             if (route.request()?.postData()?.includes('GetPrint'))
@@ -824,7 +955,9 @@ test.describe('Error while printing', () => {
 
         await featureAtlasQuartiers.locator('button').click();
 
-        await expect(page.getByText('The output is currently not available. Please contact the system administrator.')).toBeVisible();
+        await expect(page.getByText(
+            'The output is currently not available. Please contact the system administrator.'
+        )).toBeVisible();
 
         await expect(page.locator("#message > div:last-child")).toHaveClass(/alert-error/);
     });
