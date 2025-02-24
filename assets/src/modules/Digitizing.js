@@ -706,7 +706,7 @@ export default class Digitizing {
             // Contraint where point will be drawn on click
             let constrainedPointCoords = cursorPointCoords;
 
-            const mapProjection = this._map.getView().getProjection();
+            const mapProjection = mainLizmap.map.getView().getProjection();
 
             if (this._distanceConstraint) {
                 // Draw circle with distanceConstraint as radius
