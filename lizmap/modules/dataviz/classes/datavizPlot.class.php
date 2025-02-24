@@ -10,7 +10,7 @@
  */
 
 use GuzzleHttp\Psr7;
-use JsonMachine;
+use JsonMachine as Json;
 use Lizmap\Project\Project;
 use Lizmap\Project\UnknownLizmapProjectException;
 use Lizmap\Request\WFSRequest;
@@ -514,7 +514,7 @@ class datavizPlot
 
             // Features as iterator
             $featureStream = Psr7\StreamWrapper::getResource($wfsresponse->getBodyAsStream());
-            $features = JsonMachine\Items::fromStream($featureStream, array('pointer' => '/features'));
+            $features = Json\Items::fromStream($featureStream, array('pointer' => '/features'));
 
             $f1 = null;
             $traceBuilders = array();
