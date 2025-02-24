@@ -1088,7 +1088,8 @@ window.lizMap = function() {
 
                     // prepare utilities object
                     let rUtilities = {
-                        rLayerId : rLayerId // pivot id or table id
+                        rLayerId : rLayerId, // pivot id or table id
+                        relationId: relation.relationId, // relationId
                     };
                     const pivotAttributeLayerConf = lizMap.getLayerConfigById( rLayerId, lizMap.config.attributeLayers, 'layerId' );
                     // check if child is a pivot table
@@ -1142,7 +1143,8 @@ window.lizMap = function() {
                         if ( rGetLayerConfig ) {
                             preProcessRequest = {
                                 oneToN:true,
-                                layer:rGetLayerConfig[1]
+                                layer:rGetLayerConfig[1],
+                                relationId:relation.relationId,
                             }
                             let ut = {
                                 referencingField: relation.referencingField,
@@ -1330,7 +1332,10 @@ window.lizMap = function() {
 
                                 parentDiv.append(childPopup);
 
-                                childPopupElements.push(childPopup);
+                                childPopupElements.push({
+                                    childPopupElement:childPopup,
+                                    relationId:utilities.relationId,
+                                });
 
                                 // Trigger event for single popup children
                                 lizMap.events.triggerEvent(
@@ -1364,33 +1369,11 @@ window.lizMap = function() {
 
                         // place children in the right div, if any
                         let relations = parentDiv.children('.container.popup_lizmap_dd').find(".popup_lizmap_dd_relation");
-                        relations.each((ind,relation) => {
-                            let referencingLayerId = $(relation).attr('data-referencing-layer-id');
-                            if (referencingLayerId) {
-                                let relLayerId = null;
-                                let referencingLayerConfig = lizMap.getLayerConfigById( referencingLayerId, lizMap.config.attributeLayers, 'layerId' );
-                                if (referencingLayerConfig && referencingLayerConfig[1]?.pivot == 'True' && config.relations.pivot && config.relations.pivot[referencingLayerId]) {
-                                    // relation is a pivot, search for "m" child layers
-                                    let mLayer = Object.keys(config.relations.pivot[referencingLayerId]).filter((k)=>{ return k !== layerId})
-                                    if (mLayer.length == 1) {
-                                        relLayerId = mLayer[0];
-                                    }
-                                } else {
-                                    // relation is 1:n, search for n layer
-                                    relLayerId = referencingLayerId;
-                                }
-
-                                if (relLayerId) {
-                                    let childLayer = childPopupElements.filter((child)=>{
-                                        let lName = child.attr("data-layername");
-                                        let lId = lName ? lizMap.config.layers?.[lName]?.id : '';
-                                        return relLayerId == lId;
-                                    })
-
-                                    if(childLayer.length == 1) {
-                                        $(relation).append(childLayer[0])
-                                    }
-                                }
+                        relations.each((ind, relation) => {
+                            let relationId = relation.dataset.relationId;
+                            let elementToMove = childPopupElements.filter(c => c.relationId == relationId);
+                            if (elementToMove.length == 1) {
+                                $(relation).append(elementToMove[0].childPopupElement);
                             }
                         });
 
@@ -1399,7 +1382,7 @@ window.lizMap = function() {
                             "lizmappopupallchildrendisplayed",
                             {
                                 parentPopupElement: self.parents('.lizmapPopupSingleFeature'),
-                                childPopupElements: childPopupElements
+                                childPopupElements: childPopupElements.map(c => c.childPopupElement)
                             }
                         );
                     });
