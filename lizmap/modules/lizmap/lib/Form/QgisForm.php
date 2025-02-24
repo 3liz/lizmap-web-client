@@ -708,9 +708,23 @@ class QgisForm implements QgisFormControlsInterface
 
         // Evaluate constraint expressions
         if (count($constraintExpressions) > 0) {
+
+            // build geom
+            $geom = null;
+            if ($geometryColumn != '') {
+                // from wkt to geom
+                $wkt = trim($form->getData($values[$geometryColumn]));
+                if ($wkt && \lizmapWkt::check($wkt)) {
+                    $geom = \lizmapWkt::parse($wkt);
+                    if ($geom === null) {
+                        \jLog::log('Parsing WKT failed! '.$wkt, 'error');
+                    }
+                }
+            }
+
             $form_feature = array(
                 'type' => 'Feature',
-                'geometry' => null,
+                'geometry' => $geom,
                 'properties' => $values,
             );
             $results = $this->evaluateExpression($constraintExpressions, $form_feature);
