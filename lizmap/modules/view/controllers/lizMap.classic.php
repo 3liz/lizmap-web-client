@@ -271,7 +271,7 @@ class lizMapCtrl extends jController
             $rep->addJsVariable('filterConfigData', $filterConfigData);
         }
 
-        // Add atlas.js for atlas feature and additionnal CSS for right-dock max-width
+        // Add atlas.js for atlas feature and additional CSS for right-dock max-width
         if ($lproj->hasAtlasEnabled()) {
             // Add JS
             $rep->addJSLink($bp.'assets/js/atlas.js', array('defer' => ''));
@@ -325,7 +325,7 @@ class lizMapCtrl extends jController
             }
         }
 
-        // Get additionnal JS and CSS from modules
+        // Get additional JS and CSS from modules
         $additions = jEvent::notify('getMapAdditions', array('repository' => $repository, 'project' => $project))->getResponse();
         foreach ($additions as $addition) {
             if (is_array($addition)) {
@@ -366,13 +366,17 @@ class lizMapCtrl extends jController
             }
         }
 
+        if ($this->boolParam('skip_warnings_display') == true) {
+            $rep->setBodyAttributes(array('data-skip-warnings-display' => true));
+        }
+
         $countUserJs = 0;
         // Override default theme by themes found in folder media/themes/...
         // Theme name can be 'default' and apply to all projects in a repository
         // or the project name and only apply to it
-        // Also if media/themes/default/css is found one directory above repositorie's one
+        // Also if media/themes/default/css is found one directory above repositories one
         // it will apply to all repositories
-        if ($lrep->allowUserDefinedThemes() && $this->param('no_user_defined_js') != '1') {
+        if ($lrep->allowUserDefinedThemes() && $this->boolParam('no_user_defined_js') != true) {
             $repositoryPath = $lrep->getPath();
             $cssArray = array('main', 'map', 'media');
             $themeArray = array('default', $project);
