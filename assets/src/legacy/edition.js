@@ -2294,7 +2294,13 @@ var lizEdition = function() {
         if(lizMap.config?.relations?.[aLayerId]){
             hasNToMRelations = lizMap.config.relations[aLayerId].some((el)=>{
                 const pivotAttributeLayerConf = lizMap.getLayerConfigById( el.referencingLayer, lizMap.config.attributeLayers, 'layerId' );
-                return lizMap.config.relations.pivot && lizMap.config.relations.pivot[el.referencingLayer] != null && pivotAttributeLayerConf[1]?.pivot == 'True'
+                // The referencingLayer has no attribute layer configuration
+                if (!Array.isArray(pivotAttributeLayerConf ) || pivotAttributeLayerConf.length != 2) {
+                    return false;
+                }
+                return lizMap.config.relations.pivot &&
+                    lizMap.config.relations.pivot[el.referencingLayer] != null &&
+                    pivotAttributeLayerConf[1]?.pivot == 'True';
             })
         }
         var deleteConfirm = lizDict['edition.confirm.delete'];
