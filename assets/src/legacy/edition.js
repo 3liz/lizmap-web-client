@@ -2073,7 +2073,6 @@ var lizEdition = function() {
             sendFormPromise.then(function(data) {
                 formResult = data;
             }).catch(e => {
-                console.error(e);
                 $('#edition-waiter').hide();
                 // Display the message
                 addEditionMessage(lizDict['edition.message.error.send.feature'], 'error', true);
