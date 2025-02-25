@@ -12,7 +12,7 @@ test.describe('Project warnings in CFG as admin',
 
         test('Visit map with a warning', async ({ page }) => {
             const project = new ProjectPage(page, 'project_cfg_warnings');
-            await project.open();
+            await project.open(false);
             await expect(project.warningMessage).toBeVisible();
         });
 
@@ -25,7 +25,7 @@ test.describe('Project warnings in CFG as anonymous',
 
         test('Visit map without a warning', async ({ page }) => {
             const project = new ProjectPage(page, 'project_cfg_warnings');
-            await project.open();
+            await project.open(false);
             await expect(project.warningMessage).toHaveCount(0);
         });
 

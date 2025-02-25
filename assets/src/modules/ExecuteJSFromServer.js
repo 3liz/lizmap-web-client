@@ -4,32 +4,13 @@
 export default function executeJSFromServer() {
     lizMap.events.on({
         uicreated: () => {
-            if (document.body.dataset.lizmapPluginUpdateWarningUrl) {
-                var messageOutdatedWarning = lizDict['project.plugin.outdated.warning'];
-                messageOutdatedWarning += `<br><a href="${document.body.dataset.lizmapPluginUpdateWarningUrl}">`;
-                messageOutdatedWarning += lizDict['visit.admin.panel.project.page'];
-                messageOutdatedWarning += '</a>';
-                messageOutdatedWarning += '<br>';
-                messageOutdatedWarning += lizDict['project.admin.panel.info'];
-                // The plugin can be easily updated, the popup can not be closed
-                lizMap.addMessage(messageOutdatedWarning, 'warning', false).attr('id', 'lizmap-warning-message');
-            } else if (document.body.dataset.lizmapPluginHasWarningsUrl) {
-                var messageHasWarnings = lizDict['project.has.warnings'];
-                messageHasWarnings += `<br><a href="${document.body.dataset.lizmapPluginHasWarningsUrl}">`;
-                messageHasWarnings += lizDict['visit.admin.panel.project.page'];
-                messageHasWarnings += '</a>';
-                messageHasWarnings += '<br>';
-                messageHasWarnings += lizDict['project.admin.panel.info'];
-                // It can take times to fix these issues, the popup can be closed
-                lizMap.addMessage(messageHasWarnings, 'warning', true).attr('id', 'lizmap-warning-message');
+            // skipWarningsDisplay is used in tests, to skip a possible warnings about old QGIS plugin used
+            if (!document.body.dataset.skipWarningsDisplay){
+                displayWarningsAdministrator();
             }
 
             if (document.body.dataset.lizmapHideLegend) {
                 document.querySelector('li.switcher.active #button-switcher')?.click();
-            }
-
-            if (document.body.dataset.lizmapActionWarningOld) {
-                lizMap.addMessage(document.body.dataset.lizmapActionWarningOld,'info',true).attr('id','lizmap-action-message');
             }
         }
     });
@@ -102,5 +83,34 @@ export default function executeJSFromServer() {
                 }
             }
         });
+    }
+}
+
+/**
+ * Display messages to the user about deprecated features or outdated versions.
+ */
+function displayWarningsAdministrator() {
+    if (document.body.dataset.lizmapPluginUpdateWarningUrl) {
+        var messageOutdatedWarning = lizDict['project.plugin.outdated.warning'];
+        messageOutdatedWarning += `<br><a href="${document.body.dataset.lizmapPluginUpdateWarningUrl}">`;
+        messageOutdatedWarning += lizDict['visit.admin.panel.project.page'];
+        messageOutdatedWarning += '</a>';
+        messageOutdatedWarning += '<br>';
+        messageOutdatedWarning += lizDict['project.admin.panel.info'];
+        // The plugin can be easily updated, the popup can not be closed
+        lizMap.addMessage(messageOutdatedWarning, 'warning', false).attr('id', 'lizmap-warning-message');
+    } else if (document.body.dataset.lizmapPluginHasWarningsUrl) {
+        var messageHasWarnings = lizDict['project.has.warnings'];
+        messageHasWarnings += `<br><a href="${document.body.dataset.lizmapPluginHasWarningsUrl}">`;
+        messageHasWarnings += lizDict['visit.admin.panel.project.page'];
+        messageHasWarnings += '</a>';
+        messageHasWarnings += '<br>';
+        messageHasWarnings += lizDict['project.admin.panel.info'];
+        // It can take times to fix these issues, the popup can be closed
+        lizMap.addMessage(messageHasWarnings, 'warning', true).attr('id', 'lizmap-warning-message');
+    }
+
+    if (document.body.dataset.lizmapActionWarningOld) {
+        lizMap.addMessage(document.body.dataset.lizmapActionWarningOld,'info',true).attr('id','lizmap-action-message');
     }
 }
