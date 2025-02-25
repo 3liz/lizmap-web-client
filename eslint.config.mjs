@@ -75,7 +75,7 @@ export default [
                 }
             ],
             "@stylistic/js/max-len": [
-                "error", 350, 4],  // It's a temporary value, until we fix some.
+                "error", 290, 4],  // It's a temporary value, until we fix some.
             "no-prototype-builtins": "off",
             "no-undef": "off",
             'jsdoc/require-description': 'warn',
