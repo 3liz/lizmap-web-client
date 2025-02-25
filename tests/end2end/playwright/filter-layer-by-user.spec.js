@@ -5,7 +5,11 @@ import { getAuthStorageStatePath, gotoMap } from './globals';
 test.describe('Filter layer data by user - not connected', () => {
 
     test.beforeEach(async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=filter_layer_by_user';
+        const url =
+            '/index.php/view/map/?' +
+            'repository=testsrepository&' +
+            'project=filter_layer_by_user&' +
+            'skip_warnings_display=1';
         await gotoMap(url, page);
 
         // Close dock to access all features on map
@@ -179,7 +183,11 @@ test.describe('Filter layer data by user - user in group a', () => {
     test.use({ storageState: getAuthStorageStatePath('user_in_group_a') });
 
     test.beforeEach(async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=filter_layer_by_user';
+        const url = '' +
+            '/index.php/view/map/?' +
+            'repository=testsrepository&' +
+            'project=filter_layer_by_user&' +
+            'skip_warnings_display=1';
         await gotoMap(url, page);
 
         // Close dock to access all features on map
@@ -375,7 +383,10 @@ test.describe('Filter layer data by user - admin', () => {
     test.use({ storageState: getAuthStorageStatePath('admin') });
 
     test.beforeEach(async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=filter_layer_by_user';
+        const url = '/index.php/view/map/?' +
+            'repository=testsrepository&' +
+            'project=filter_layer_by_user&' +
+            'skip_warnings_display=1';
         await gotoMap(url, page);
 
         // Close dock to access all features on map
