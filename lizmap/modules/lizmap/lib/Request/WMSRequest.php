@@ -781,8 +781,16 @@ class WMSRequest extends OGCRequest
             // edition can be restricted on current feature
             $qgisLayer = $this->project->getLayer($layerId);
 
+            // get wfs name
             /** @var \qgisVectorLayer $qgisLayer */
-            $editableFeatures = $qgisLayer->editableFeatures();
+            $typename = $qgisLayer->getWfsTypeName();
+
+            // additional WFS parameter for features filtering
+            $wfsParams = array(
+                'FEATUREID' => $typename.'.'.$id,
+            );
+
+            $editableFeatures = $qgisLayer->editableFeatures($wfsParams);
             $editionRestricted = '';
             if (array_key_exists('status', $editableFeatures) && $editableFeatures['status'] === 'restricted') {
                 $editionRestricted = 'edition-restricted="true"';
