@@ -35,6 +35,7 @@ test.describe('Not connected from context, so testing basic auth',
         test('As anonymous', async ({request}) => {
             const response = await request.get(url, {});
             const json = await checkJson(response);
+            expect(json.info.installation_complete).toBe(true)
             // Only testing the access to qgis_server_info
             expect(json.qgis_server_info.error).toBe("NO_ACCESS")
         });
