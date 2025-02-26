@@ -5,7 +5,11 @@ import { gotoMap } from './globals';
 test.describe('Filter layer data by user - not connected', () => {
 
     test.beforeEach(async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=filter_layer_by_user';
+        const url =
+            '/index.php/view/map/?' +
+            'repository=testsrepository&' +
+            'project=filter_layer_by_user&' +
+            'skip_warnings_display=1';
         await gotoMap(url, page);
 
         // Close dock to access all features on map
@@ -179,7 +183,11 @@ test.describe('Filter layer data by user - user in group a', () => {
     test.use({ storageState: 'playwright/.auth/user_in_group_a.json' });
 
     test.beforeEach(async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=filter_layer_by_user';
+        const url = '' +
+            '/index.php/view/map/?' +
+            'repository=testsrepository&' +
+            'project=filter_layer_by_user&' +
+            'skip_warnings_display=1';
         await gotoMap(url, page);
 
         // Close dock to access all features on map
@@ -364,7 +372,10 @@ test.describe('Filter layer data by user - admin', () => {
     test.use({ storageState: 'playwright/.auth/admin.json' });
 
     test.beforeEach(async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=filter_layer_by_user';
+        const url = '/index.php/view/map/?' +
+            'repository=testsrepository&' +
+            'project=filter_layer_by_user&' +
+            'skip_warnings_display=1';
         await gotoMap(url, page);
 
         // Close dock to access all features on map
