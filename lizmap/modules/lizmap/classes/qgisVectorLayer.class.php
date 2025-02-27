@@ -1173,9 +1173,11 @@ class qgisVectorLayer extends qgisMapLayer
      * when there is a filter by login (or by polygon). This allows to deactivate the editing icon
      * for the non-editable features inside the popup and attribute table.
      *
+     * @param array<string, string> $wfsParams Extra WFS parameters to filter the layer : FEATUREID or EXP_FILTER could be use
+     *
      * @return array Data containing the status (restricted|unrestricted) and the features if restricted
      */
-    public function editableFeatures()
+    public function editableFeatures($wfsParams = array())
     {
         // Editable features are a restricted list
         $restricted_empty_data = array(
@@ -1253,6 +1255,8 @@ class qgisVectorLayer extends qgisMapLayer
             'OUTPUTFORMAT' => 'GeoJSON',
             'GEOMETRYNAME' => 'none',
         );
+
+        $params = array_merge($params, $wfsParams);
 
         // Perform the request to get the editable features
         $wfsRequest = new \Lizmap\Request\WFSRequest($project, $params, lizmap::getServices());
