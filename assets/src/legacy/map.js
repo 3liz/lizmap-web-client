@@ -3659,7 +3659,15 @@ window.lizMap = function() {
             }
 
             // Request config and capabilities in parallel
-            Promise.allSettled([configRequest, keyValueConfigRequest, WMSRequest, WMTSRequest, WFSRequest, featureExtentRequest, getFeatureInfoRequest]).then(responses => {
+            Promise.allSettled([
+                configRequest,
+                keyValueConfigRequest,
+                WMSRequest,
+                WMTSRequest,
+                WFSRequest,
+                featureExtentRequest,
+                getFeatureInfoRequest,
+            ]).then(async (responses) => {
                 // Raise an error when one those required requests fails
                 // Other requests can fail silently
                 const requiredRequests = [responses[0], responses[2], responses[3], responses[4]];
@@ -3685,13 +3693,46 @@ window.lizMap = function() {
                     }
                 }
 
-                self.events.triggerEvent("configsloaded", {
-                    initialConfig: config,
-                    wmsCapabilities: wmsCapaData,
-                    wmtsCapabilities: wmtsCapaData,
-                    wfsCapabilities: wfsCapaData,
-                    startupFeatures: responses[5].value,
+                /**
+                 * mainLizmap is loaded in another JS file
+                 * and could not be available when `configsloaded` is fired
+                 * in this case all the Lizmap is not build
+                 * to be sur mainLizmap is ready when `configsloaded` is fired
+                 * we have to wait until `lizMap.mainLizmap` is not `undefined`
+                 */
+
+                // sleep Promise
+                let sleep = ms => new Promise(r => setTimeout(r, ms));
+                // sleep step first value the *2
+                let sleepStep = 100;
+                // max wait to 10 seconds
+                const maxWait = 10000;
+                // waitFor function returns waiting time in milliseconds
+                let waitFor = async function waitFor(f){
+                    let waitingTime = 0;
+                    while(waitingTime < maxWait && !f()) {
+                        await sleep(sleepStep);
+                        waitingTime += sleepStep;
+                        sleepStep *= 2;
+                    }
+                    return waitingTime;
+                };
+                // wait until lizMap.mainLizmap is not undefined
+                // lizMap.mainLizmap is defined when configsloaded is fired
+                const waitingFor = await waitFor(() => {
+                    self.events.triggerEvent("configsloaded", {
+                        initialConfig: config,
+                        wmsCapabilities: wmsCapaData,
+                        wmtsCapabilities: wmtsCapaData,
+                        wfsCapabilities: wfsCapaData,
+                        startupFeatures: responses[5].value,
+                    });
+                    return self.mainLizmap !== undefined;
                 });
+                // lizMap.mainLizmap is still undefined
+                if (self.mainLizmap === undefined) {
+                    throw new Error('Until we wait '+waitingFor+' ms, mainLizmap has not been loaded!');
+                }
 
                 getFeatureInfo = responses[6].value;
 
