@@ -225,7 +225,7 @@ class Server
         $data = array();
         $modules = new ModulesChecker();
 
-        foreach ($modules->getList(false) as $info) {
+        foreach ($modules->getList(false, false, true) as $info) {
             $data[$info->slug] = array(
                 'version' => $info->version,
                 'core' => $info->isCore,
@@ -269,10 +269,14 @@ class Server
         // Get Lizmap version from project.xml
         $projectInfos = AppInfos::load();
         // Version
+        $lizmapVersion = $projectInfos->version;
         $data['info'] = array();
-        $data['info']['version'] = $projectInfos->version;
+        $data['info']['version'] = $lizmapVersion;
         $data['info']['date'] = $projectInfos->versionDate;
         $data['info']['commit'] = \jApp::config()->commitSha;
+
+        $modules = new ModulesChecker();
+        $data['info']['installation_complete'] = $modules->compareLizmapCoreModulesVersions($lizmapVersion);
 
         $jelixVersion = \jFramework::version();
 
