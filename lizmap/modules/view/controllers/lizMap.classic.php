@@ -533,14 +533,22 @@ class lizMapCtrl extends jController
             $assign['googleAnalyticsID'] = $lser->googleAnalyticsID;
         }
 
-        if (jAcl2::check('lizmap.admin.access') || jAcl2::check('lizmap.admin.server.information.view')) {
-            if ($lproj->qgisLizmapPluginUpdateNeeded()) {
+        $isAdmin = jAcl2::check('lizmap.admin.access') || jAcl2::check('lizmap.admin.server.information.view');
+        if ($isAdmin) {
+            // Add body attribute to tell if current user is admin
+            $rep->setBodyAttributes(array('data-lizmap-admin-user' => true));
+        }
+
+        if ($lproj->qgisLizmapPluginUpdateNeeded()) {
+            $rep->setBodyAttributes(array('data-lizmap-plugin-update-warning' => true));
+            if ($isAdmin) {
                 $rep->setBodyAttributes(array('data-lizmap-plugin-update-warning-url' => jUrl::get('admin~qgis_projects:index')));
-            } elseif ($lproj->projectCountCfgWarnings() >= 1) {
+            }
+        } elseif ($lproj->projectCountCfgWarnings() >= 1) {
+            $rep->setBodyAttributes(array('data-lizmap-plugin-has-warnings' => true));
+            if ($isAdmin) {
                 $rep->setBodyAttributes(array('data-lizmap-plugin-has-warnings-url' => jUrl::get('admin~qgis_projects:index')));
             }
-            // add body attribute to tell if current user is admin
-            $rep->setBodyAttributes(array('data-lizmap-admin-user' => true));
         }
 
         $rep->body->assign($assign);
