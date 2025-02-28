@@ -337,6 +337,127 @@ test.describe('Print', () => {
     });
 });
 
+test.describe('Print opacities', () => {
+    test.beforeEach(async ({ page }) => {
+        const url = '/index.php/view/map/?repository=testsrepository&project=group_as_layer_opacity';
+        await gotoMap(url, page);
+
+        await page.locator('#button-print').click();
+
+        await page.locator('#print-scale').selectOption('50000');
+    });
+
+    test('Group as layer', async ({ page }) => {
+        // set opacity of `Group_opacity` (group as layer) layer to 60%
+        await page.getByTestId('Group_opacity').hover();
+        await page.getByTestId('Group_opacity').locator('i').nth(1).click();
+        await page.getByRole('link', { name: '60' }).click();
+
+        // opacity notes:
+        // the `raster` layer already has 80% opacity (inherited from QGIS project)
+        // setting the opacity to 60% on the `Group_opacity` causes:
+        // - `raster` layer to have a final total opacity of 48% (0.8*0.6) -> OPACITIES PARAM = 255*0.48 ~= 122
+        // - `single_wms_polygons` layer to have a final total opacity of 60% (1*0.6) _> OPACITIES PARAM = 255*0.6 = 153
+        //
+        // other layers have opacity 100% (255)
+        const expectedParameters = {
+            'SERVICE': 'WMS',
+            'REQUEST': 'GetPrint',
+            'VERSION': '1.3.0',
+            'FORMAT': 'pdf',
+            'TRANSPARENT': 'true',
+            'CRS': 'EPSG:3857',
+            'DPI': '100',
+            'TEMPLATE': 'test',
+            'map0:EXTENT': /425189.\d+,5401412.\d+,439539.\d+,5411262.\d+/,
+            'map0:SCALE': '50000',
+            'map0:LAYERS': 'OpenStreetMap,raster,single_wms_polygons,single_wms_polygons_group_as_layer,single_wms_points_group',
+            'map0:STYLES': 'default,default,default,default,default',
+            'map0:OPACITIES': '255,122,153,255,255',
+        }
+        // Test `test` template
+        let getPrintPromise = page.waitForRequest(
+            request =>
+                request.method() === 'POST' &&
+                request.postData()?.includes('GetPrint') === true
+        );
+
+        // Launch print
+        await page.locator('#print-launch').click();
+        // check message
+        await expect(page.locator('div.alert')).toHaveCount(1)
+
+        // check request
+        let getPrintRequest = await getPrintPromise;
+        
+        // check response parameters
+        let name = "Group as layer opacity requests";
+        let getPrintParams = await expectParametersToContain(
+            name, getPrintRequest.postData() ?? '', expectedParameters);
+        await expectToHaveLengthCompare(name, Array.from(getPrintParams.keys()), 13, Object.keys(expectedParameters));
+    })
+
+    test('Layers in group with opacity', async ({ page }) => {
+        // set opacity of `Group_a` group opacity to 60%
+        await page.getByTestId('Group_a').locator('div').filter({ hasText: 'Group_a' }).first().hover();
+        await page.locator('.icon-info-sign').first().click();
+        await page.getByRole('link', { name: '60' }).click();
+
+        // set opacity of `single_wms_points_group` (belonging to `Group_a`) layer to 40%
+        await page.getByTestId('single_wms_points_group').locator('div').nth(2).hover();
+        await page.getByTestId('single_wms_points_group').locator('i').nth(1).click();
+        await page.getByRole('link', { name: '40' }).click();
+
+        // set opacity of `single_wms_polygons_group_as_layer` (belonging to `Group_a`) layer to 80%
+        await page.getByTestId('single_wms_polygons_group_as_layer').locator('div').nth(2).hover();
+        await page.getByTestId('single_wms_polygons_group_as_layer').locator('i').nth(1).click();
+        await page.getByRole('link', { name: '80' }).click();
+
+        // opacity notes:
+        // setting the opacity to 60% on `Group_a` causes:
+        // - `single_wms_points_group` layer to have a final total opacity of 24% (0.4*0.6) -> OPACITIES PARAM = 255*0.24 ~= 61
+        // - `single_wms_polygons_group_as_layer` layer to have a final total opacity of 48% (0.8*0.6) -> OPACITIES PARAM = 255*0.48 ~= 122
+        //
+        // other layers have opacity 100%, except for `raster` layer which has a 80% opacity by default,
+        // resulting in a OPACITIES PARAM = 255*0.8 = 204
+        const expectedParameters = {
+            'SERVICE': 'WMS',
+            'REQUEST': 'GetPrint',
+            'VERSION': '1.3.0',
+            'FORMAT': 'pdf',
+            'TRANSPARENT': 'true',
+            'CRS': 'EPSG:3857',
+            'DPI': '100',
+            'TEMPLATE': 'test',
+            'map0:EXTENT': /425189.\d+,5401412.\d+,439539.\d+,5411262.\d+/,
+            'map0:SCALE': '50000',
+            'map0:LAYERS': 'OpenStreetMap,raster,single_wms_polygons,single_wms_polygons_group_as_layer,single_wms_points_group',
+            'map0:STYLES': 'default,default,default,default,default',
+            'map0:OPACITIES': '255,204,255,122,61',
+        }
+        // Test `test` template
+        let getPrintPromise = page.waitForRequest(
+            request =>
+                request.method() === 'POST' &&
+                request.postData()?.includes('GetPrint') === true
+        );
+
+        // Launch print
+        await page.locator('#print-launch').click();
+        // check message
+        await expect(page.locator('div.alert')).toHaveCount(1)
+
+        // check request
+        let getPrintRequest = await getPrintPromise;
+
+        // check response parameters
+        let name = "Layers in group with opacity request";
+        let getPrintParams = await expectParametersToContain(
+            name, getPrintRequest.postData() ?? '', expectedParameters);
+        await expectToHaveLengthCompare(name, Array.from(getPrintParams.keys()), 13, Object.keys(expectedParameters));
+    })
+});
+
 test.describe('Print in popup', () => {
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/map/?repository=testsrepository&project=print';

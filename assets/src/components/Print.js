@@ -245,7 +245,7 @@ export default class Print extends HTMLElement {
 
         // Add visible layers in defined order
         const orderedVisibleLayers = {};
-        mainLizmap.state.rootMapGroup.findMapLayers().forEach(layer => {
+        mainLizmap.state.rootMapGroup.findExplodedMapLayers().forEach(layer => {
             if (layer.visibility) {
                 orderedVisibleLayers[layer.layerOrder] = layer;
             }
@@ -267,9 +267,9 @@ export default class Print extends HTMLElement {
 
             // Handle qgis layer opacity otherwise client value override it
             if (layer.layerConfig?.opacity) {
-                opacityLayers.push(parseInt(255 * layer.opacity * layer.layerConfig.opacity));
+                opacityLayers.push(parseInt(255 * layer.calculateTotalOpacity() * layer.layerConfig.opacity));
             } else {
-                opacityLayers.push(parseInt(255 * layer.opacity));
+                opacityLayers.push(parseInt(255 * layer.calculateTotalOpacity()));
             }
             if ('FILTERTOKEN' in layerWmsParams) {
                 filter.push(layerWmsParams['FILTERTOKEN']);
