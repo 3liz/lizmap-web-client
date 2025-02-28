@@ -175,6 +175,27 @@ export class ProjectPage extends BasePage {
     }
 
     /**
+     * openLayerInfo function
+     * Open the info layer panel for the given layer
+     * @param {string} layer Name of the layer
+     */
+    async openLayerInfo(layer) {
+        await this.page.getByTestId(layer).locator('.node').first().hover();
+        await this.page.getByTestId(layer).locator('.layer-actions').first().locator('i.icon-info-sign').click();
+    }
+
+    /**
+     * setLayerOpacity function
+     * Open the info layer panel for the given layer
+     * @param {string} layer Name of the layer
+     * @param {string} opacity Layer opacity, possible values '0','20','40','60','80','100'
+     */
+    async setLayerOpacity(layer, opacity = '100') {
+        await this.openLayerInfo(layer);
+        await this.page.getByRole('link', { name: opacity }).click();
+    }
+
+    /**
      * editingSubmitForm function
      * Submit the form
      * @param {string} futureAction The action to do after submit : can be close/create/edit.
