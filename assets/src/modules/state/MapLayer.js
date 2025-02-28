@@ -425,6 +425,30 @@ export class MapGroupState extends MapItemState {
     }
 
     /**
+     * Find all layers by exploding the layers within every "group as layer" groups
+     * @returns {LayerLayerState[]} The layer states of listed layers
+    */
+    findExplodedMapLayers(){
+        let layers = [];
+        for(const item of this.getChildren()) {
+            if (item instanceof MapLayerState) {
+                const itemState = item.itemState;
+                if(itemState instanceof LayerGroupState && itemState.groupAsLayer){
+                    //count the layers inside the group
+                    layers = layers.concat(itemState.findLayers());
+                }
+                else if(itemState instanceof LayerLayerState){
+                    layers.push(item.itemState);
+                }
+            } else if (item instanceof MapGroupState) {
+                layers = layers.concat(item.findExplodedMapLayers());
+            }
+        }
+
+        return layers;
+    }
+
+    /**
      * Find layer items
      * @returns {MapLayerState[]} The layer names of all map layers
      */
