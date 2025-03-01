@@ -31,7 +31,7 @@
     "@playwright/test": "^1.50.1",
     "@stylistic/eslint-plugin-js": "^3.0.1",
     "@turf/line-split": "^7.2.0",
-    "chai": "^5.1.2",
+    "chai": "^5.2.0",
     "cypress": "^9.7.0",
     "cypress-file-upload": "^5.0.8",
     "dompurify": "^3.1.6",
