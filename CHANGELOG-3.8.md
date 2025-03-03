@@ -8,6 +8,30 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Funders
+
+* **[Faunalia](https://www.faunalia.eu)**
+* **[Syslor](https://syslor.net/)**
+* **[TDPA](https://www.terredeprovence-agglo.com/)**
+* **[Qair](https://www.qair.energy)**
+* **[Avignon city](https://cartes.mairie-avignon.com)
+
+### Added
+
+* Add Google "Terrain" layer in the `baselayers` group
+* Add authenticated user organization in hidden fields
+
+### Fixed
+
+* Display an error message if the layer is found in the QGS file, but not in the CFG file
+* Consider the opacity of groups for printing, contribution from @mind84
+* Distance constraint in the measure tool is not correctly interpreted in the map
+* QGIS constraints with geometry
+* Rely on the relation ID for children popup positioning
+* Fix Javascript error if `pivotAttributeLayerConf` is undefined
+* Fix WKT geometry string provided by QGIS Server in GetFeatureInfo
+* Sandbox all iframes except those from the same origin
+
 ## 3.8.5 - 2025-02-07
 
 ### Funders
