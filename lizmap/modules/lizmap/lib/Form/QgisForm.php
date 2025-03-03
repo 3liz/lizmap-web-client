@@ -229,7 +229,7 @@ class QgisForm implements QgisFormControlsInterface
                     if ($wkt && \lizmapWkt::check($wkt)) {
                         $geom = \lizmapWkt::parse($wkt);
                         if ($geom === null) {
-                            \jLog::log('Parsing WKT failed! '.$wkt, 'error');
+                            $this->logMessage('Parsing WKT failed: "'.$wkt.'".', 'lizmapadmin');
                         }
                     }
 
@@ -251,6 +251,19 @@ class QgisForm implements QgisFormControlsInterface
         }
 
         $form->getContainer()->privateData = array_merge($form->getContainer()->privateData, $privateData);
+    }
+
+    /**
+     * Log a Form message.
+     *
+     * @param mixed  $message The message to log
+     * @param string $cat     The category of the logged message
+     */
+    protected function logMessage($message, $cat = 'default'): void
+    {
+        $project = $this->layer->getProject();
+        $prefix = 'Error in form '.$project->getRepository()->getKey().' / '.$project->getKey().' / '.$this->layer->getName().': ';
+        $this->appContext->logMessage($prefix.$message, $cat);
     }
 
     /**
@@ -760,7 +773,7 @@ class QgisForm implements QgisFormControlsInterface
                 if ($wkt && \lizmapWkt::check($wkt)) {
                     $geom = \lizmapWkt::parse($wkt);
                     if ($geom === null) {
-                        \jLog::log('Parsing WKT failed! '.$wkt, 'error');
+                        $this->logMessage('Parsing WKT failed: "'.$wkt.'".', 'lizmapadmin');
                     }
                 }
             }
@@ -936,14 +949,14 @@ class QgisForm implements QgisFormControlsInterface
             if ($insertAction) {
                 // For insertion, one field has to be set
                 // FIXME missing context
-                $this->appContext->logMessage('Error in form, SQL cannot be constructed: no fields available for insert !', 'lizmapadmin');
+                $this->logMessage('SQL cannot be constructed: no fields available for insert.', 'lizmapadmin');
                 $this->form->setErrorOn($geometryColumn, \jLocale::get('view~edition.message.error.save').' '.\jLocale::get('view~edition.message.error.save.fields'));
 
                 // do not throw an exception to let the user update the form
                 throw new \Exception($this->appContext->getLocale('view~edition.link.error.sql'));
             }
             // For update, nothing has changed so nothing to do except close form
-            $this->appContext->logMessage('SQL cannot be constructed: no fields available for update !', 'lizmapadmin');
+            $this->logMessage('SQL cannot be constructed: no fields available for update.', 'lizmapadmin');
 
             return true;
         }
@@ -1008,7 +1021,7 @@ class QgisForm implements QgisFormControlsInterface
                     } catch (\Exception $e) {
                         // Need to catch Exception if operation on remote storage fails
                         $form->setErrorOn($ref, $e->getMessage());
-                        $this->appContext->logMessage($e->getMessage(), 'lizmapadmin');
+                        $this->logMessage($e->getMessage(), 'lizmapadmin');
                         $this->appContext->logException($e, 'lizmapadmin');
 
                         return false;
@@ -1056,7 +1069,7 @@ class QgisForm implements QgisFormControlsInterface
             return $pkVal;
         } catch (\Exception $e) {
             $form->setErrorOn($geometryColumn, $this->appContext->getLocale('view~edition.message.error.save'));
-            $this->appContext->logMessage('An error has been raised when saving form data edition to db : ', 'lizmapadmin');
+            $this->logMessage('An error has been raised when saving form data edition to the database.', 'lizmapadmin');
             $this->appContext->logException($e, 'lizmapadmin');
 
             return false;
@@ -1519,7 +1532,7 @@ class QgisForm implements QgisFormControlsInterface
         if (array_key_exists('notNull', $formControl->uniqueValuesData)
             && $formControl->uniqueValuesData['notNull']
         ) {
-            $this->appContext->logMessage('notNull '.$formControl->uniqueValuesData['notNull'], 'lizmapadmin');
+            $this->logMessage('notNull '.$formControl->uniqueValuesData['notNull'], 'lizmapadmin');
             $formControl->ctrl->required = true;
         }
         // combobox
@@ -1553,7 +1566,7 @@ class QgisForm implements QgisFormControlsInterface
         if (array_key_exists('notNull', $formControl->valueRelationData)
                 and $formControl->valueRelationData['notNull']
         ) {
-            \jLog::log('notNull '.$formControl->valueRelationData['notNull'], 'lizmapadmin');
+            $this->logMessage('notNull '.$formControl->valueRelationData['notNull'], 'lizmapadmin');
             $formControl->ctrl->required = true;
         }
         // combobox

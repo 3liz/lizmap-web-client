@@ -508,7 +508,7 @@ class QgisFormTest extends TestCase
         }
         $control->uniqueValuesData = $uniqueValues;
         $control->ctrl->required = $required;
-        $layer = new QgisLayerForTests();
+        $layer = $this->setUpEnv('test', 'test', $dbFieldValues);
         $layer->dbFieldValues = $dbFieldValues;
         $form->setLayer($layer);
         $form->appContext = new ContextForTests();
