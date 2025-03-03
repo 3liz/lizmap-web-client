@@ -43,7 +43,6 @@
     "ol": "^10.4.0",
     "ol-ext": "^4.0.24",
     "ol-wfs-capabilities": "^2.0.0",
-    "pixelmatch": "^5.3.0",
     "playwright-ctrf-json-reporter": "^0.0.18",
     "postcss-lit": "^1.2.0",
     "proj4": "^2.11.0",
