@@ -51,6 +51,9 @@ test.describe('Axis Orientation',
         const contentLength = await getMapResponse?.headerValue('Content-Length');
         expect(parseInt(contentLength ? contentLength : '0')).toBeGreaterThan(5552);
 
+        // Wait for transition
+        await page.waitForTimeout(1000);
+
         buffer = await page.screenshot({clip:{x:950/2-380/2, y:600/2-380/2, width:380, height:380}});
         const bundeslanderByteLength = buffer.byteLength;
         await expect(bundeslanderByteLength).toBeGreaterThan(blankByteLength);
@@ -141,6 +144,9 @@ test.describe('Axis Orientation',
         expect(parseInt(contentLength ? contentLength : '0')).toBeGreaterThan(5552);
         // image size lesser than disorder axis
         expect(parseInt(contentLength ? contentLength : '0')).toBeLessThan(240115);
+
+        // Wait for transition
+        await page.waitForTimeout(1000);
 
         buffer = await page.screenshot({clip:{x:950/2-380/2, y:600/2-380/2, width:380, height:380}});
         const judetByteLength = buffer.byteLength;
