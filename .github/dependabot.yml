@@ -11,8 +11,6 @@ updates:
     directory: "/lizmap"
     schedule:
       interval: "monthly"
-#    assignees:
-#      - "laurentj"
 
   - package-ecosystem: "composer"
     directory: "/tests/units"
