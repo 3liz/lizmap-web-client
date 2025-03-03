@@ -27,16 +27,16 @@
     "watch": "webpack --watch --config assets/webpack.dev.js"
   },
   "devDependencies": {
-    "@eslint/js": "^9.19.0",
+    "@eslint/js": "^9.21.x",
     "@playwright/test": "^1.50.1",
-    "@stylistic/eslint-plugin-js": "^3.0.1",
+    "@stylistic/eslint-plugin-js": "^4.2.x",
     "@turf/line-split": "^7.2.0",
     "chai": "^5.2.x",
     "cypress": "<10.0.0",
     "cypress-file-upload": "^5.0.8",
     "dompurify": "^3.1.6",
     "eslint-plugin-jsdoc": "^50.6.3",
-    "flatgeobuf": "^3.36.0",
+    "flatgeobuf": "^3.37.x",
     "jsts": "^2.11.0",
     "lit-html": "^3.1.1",
     "mocha": "^11.1.0",
@@ -54,7 +54,7 @@
     "svgo": "^3.2.0",
     "svgo-loader": "^4.0.0",
     "undici": "^6.21.x",
-    "webpack": "^5.97.1",
+    "webpack": "^5.98.x",
     "webpack-cli": "^6.0.1",
     "webpack-merge": "^6.0.1"
   }
