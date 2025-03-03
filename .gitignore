@@ -1,6 +1,10 @@
 # IDE
 .idea
 .vscode/
+*.code-workspace
+
+# Git
+.worktrees/
 
 *.orig
 *.rej
@@ -124,6 +128,3 @@ assets/node_modules/
 
 /.composer
 /.npm
-
-
-*.code-workspace
