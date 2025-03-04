@@ -1,8 +1,7 @@
 # Lizmap web client Docker image
 
 The container deploys one Lizmap instance and may run php-fpm on the command line.
-(see [docker/php](https://hub.docker.com/_/php/) )
-
+(see [docker/php](https://hub.docker.com/_/php/))
 
 ## Configuration variables
 
