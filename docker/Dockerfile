@@ -1,5 +1,5 @@
 ARG REGISTRY_PREFIX=''
-FROM ${REGISTRY_PREFIX}alpine:3.17 as build
+FROM ${REGISTRY_PREFIX}alpine:3.17 AS build
 
 COPY lizmap_web_client.zip .
 RUN unzip lizmap_web_client.zip

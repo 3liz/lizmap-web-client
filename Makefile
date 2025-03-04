@@ -1,6 +1,6 @@
 #
-# expected variables in the CI environment
-# - REGISTRY_URL = url of the docker registry
+# Expected variables in the CI environment
+# - REGISTRY_URL = URL of the Docker registry
 
 STAGE=build
 
