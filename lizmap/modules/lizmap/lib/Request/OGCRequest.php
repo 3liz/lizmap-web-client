@@ -247,7 +247,16 @@ abstract class OGCRequest
 
         $message = 'The HTTP OGC request to QGIS Server ended with an error.';
 
-        $xRequestId = $headers['X-Request-Id'] ?? '';
+        if (isset($headers['X-Request-Id'])) {
+            if (is_array($headers['X-Request-Id'])) {
+                $xRequestId = implode(',', $headers['X-Request-Id']);
+            } else {
+                $xRequestId = $headers['X-Request-Id'];
+            }
+        } else {
+            $xRequestId = '';
+        }
+
         if ($xRequestId !== '') {
             $message .= ' The X-Request-Id `'.$xRequestId.'`.';
         }

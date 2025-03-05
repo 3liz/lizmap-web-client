@@ -310,11 +310,14 @@ class Proxy
         ), $options['headers']);
 
         if (strpos($url, self::$services->wmsServerURL) === 0) {
-            // headers only for QGIS server
+            // Headers only for QGIS server
+            parse_str(parse_url($options['headers']['X-Qgis-Service-Url'], PHP_URL_QUERY), $output);
+            $requestId = $output['repository'].'-'.$output['project'];
+            $requestId .= '-'.uniqid().'-'.bin2hex(random_bytes(10));
             $options['headers'] = array_merge(
                 self::userHttpHeader(),
                 self::$services->wmsServerHeaders,
-                array('X-Request-Id' => uniqid().'-'.bin2hex(random_bytes(10))),
+                array('X-Request-Id' => $requestId),
                 $options['headers']
             );
         }
@@ -339,7 +342,16 @@ class Proxy
             return;
         }
 
-        $xRequestId = $headers['X-Request-Id'] ?? '';
+        if (isset($headers['X-Request-Id'])) {
+            if (is_array($headers['X-Request-Id'])) {
+                $xRequestId = implode(',', $headers['X-Request-Id']);
+                $xRequestId = json_encode($headers['X-Request-Id']);
+            } else {
+                $xRequestId = $headers['X-Request-Id'];
+            }
+        } else {
+            $xRequestId = '';
+        }
 
         $lizmapAdmin = 'An HTTP request ended with an error, please check the main error log.';
         $lizmapAdmin .= ' HTTP code '.$httpCode.'.';

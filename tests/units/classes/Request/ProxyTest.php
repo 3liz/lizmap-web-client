@@ -240,6 +240,7 @@ class ProxyTest extends TestCase
             $this->assertEquals($value, $result['headers'][$header]);
         }
         $this->assertArrayHasKey('X-Request-Id', $result['headers']);
+        $this->assertIsString($result['headers']['X-Request-Id']);
         $this->assertEquals($expectedBody, $result['body']);
         if ($expectedUrl) {
             $this->assertEquals($expectedUrl, $url);
