@@ -25,15 +25,16 @@ test.describe('Google Maps Baselayers', () => {
         await gotoMap(url, page);
 
         // there are three Google base layers in the project, so the expected number of failing requests is three
-        expect(initGoogleRequestsCount).toBe(3);
+        expect(initGoogleRequestsCount).toBe(4);
         // baselayers group should be visible...
         await expect(page.locator('#switcher-baselayer')).toBeVisible();
 
         //.. and should contain the three Google base layers (not loaded)
         let options = page.locator('#switcher-baselayer').getByRole('combobox').locator('option');
-        await expect(options).toHaveCount(3);
+        await expect(options).toHaveCount(4);
         expect(await options.nth(0).getAttribute('value')).toBe('Google Streets');
         expect(await options.nth(1).getAttribute('value')).toBe('Google Satellite');
         expect(await options.nth(2).getAttribute('value')).toBe('Google Hybrid');
+        expect(await options.nth(3).getAttribute('value')).toBe('Google Terrain');
     });
 });
