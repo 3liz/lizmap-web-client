@@ -14,6 +14,7 @@
                 <span id="info-user-login" title="{$user->firstname} {$user->lastname}">{$user->login|eschtml}</span>
                 <span class="hide" id="info-user-firstname">{$user->firstname}</span>
                 <span class="hide" id="info-user-lastname">{$user->lastname}</span>
+                <span class="hide" id="info-user-organization">{$user->organization}</span>
             </span>
         </a>
         <ul class="dropdown-menu dropdown-menu-end">
