@@ -1,6 +1,7 @@
 /**
  * LizDict
- * @typedef {object} lizDict
+ * @typedef {object}  lizDict
+ * @property {object} string All strings translated in user interface
  */
 
 /**
