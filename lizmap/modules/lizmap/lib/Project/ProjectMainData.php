@@ -97,6 +97,16 @@ class ProjectMainData
                 'REQUEST' => 'GetCapabilities',
             )
         );
+        $this->data['wfsGetCapabilitiesUrl'] = $appContext->getFullUrl(
+            'lizmap~service:index',
+            array(
+                'repository' => $repository,
+                'project' => $id,
+                'SERVICE' => 'WFS',
+                'VERSION' => '1.0.0',
+                'REQUEST' => 'GetCapabilities',
+            )
+        );
 
         // Check right on repository
         if ($this->data['acl'] && !$appContext->aclCheck('lizmap.repositories.view', $repository)) {
@@ -224,6 +234,16 @@ class ProjectMainData
     public function getWMTSGetCapabilitiesUrl()
     {
         return $this->data['wmtsGetCapabilitiesUrl'];
+    }
+
+    /**
+     * The url of WFS GetCapabilities.
+     *
+     * @return string
+     */
+    public function getWFSGetCapabilitiesUrl()
+    {
+        return $this->data['wfsGetCapabilitiesUrl'];
     }
 
     /**
