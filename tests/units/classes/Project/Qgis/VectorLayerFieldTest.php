@@ -1,11 +1,12 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
-use Lizmap\Project\Qgis;
 use Lizmap\App;
+use Lizmap\Project\Qgis;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 class VectorLayerFieldTest extends TestCase
@@ -35,14 +36,14 @@ class VectorLayerFieldTest extends TestCase
         $this->assertEquals('TextEdit', $field->editWidget->type);
         $this->assertNotNull($field->editWidget->config);
         $this->assertInstanceOf(Qgis\Layer\EditWidget\TextEditConfig::class, $field->editWidget->config);
-        //$this->assertCount(2, $field->editWidget->config);
+        // $this->assertCount(2, $field->editWidget->config);
 
         $config = array(
             'IsMultiline' => false,
             'UseHtml' => false,
         );
-        foreach($config as $prop => $value) {
-            $this->assertEquals($value, $field->editWidget->config->$prop, $prop);
+        foreach ($config as $prop => $value) {
+            $this->assertEquals($value, $field->editWidget->config->{$prop}, $prop);
         }
 
         // Old simple
@@ -67,14 +68,14 @@ class VectorLayerFieldTest extends TestCase
         $this->assertNotNull($field->editWidget);
         $this->assertEquals('TextEdit', $field->editWidget->type);
         $this->assertNotNull($field->editWidget->config);
-        //$this->assertCount(2, $field->editWidget->config);
+        // $this->assertCount(2, $field->editWidget->config);
 
         $config = array(
             'IsMultiline' => false,
             'UseHtml' => false,
         );
-        foreach($config as $prop => $value) {
-            $this->assertEquals($value, $field->editWidget->config->$prop, $prop);
+        foreach ($config as $prop => $value) {
+            $this->assertEquals($value, $field->editWidget->config->{$prop}, $prop);
         }
         $this->assertEquals($config, $field->editWidget->config->getData());
 
@@ -97,14 +98,14 @@ class VectorLayerFieldTest extends TestCase
         $this->assertNotNull($field->editWidget);
         $this->assertEquals('TextEdit', $field->editWidget->type);
         $this->assertNotNull($field->editWidget->config);
-        //$this->assertCount(2, $field->editWidget->config);
+        // $this->assertCount(2, $field->editWidget->config);
 
         $config = array(
             'IsMultiline' => false,
             'UseHtml' => false,
         );
-        foreach($config as $prop => $value) {
-            $this->assertEquals($value, $field->editWidget->config->$prop, $prop);
+        foreach ($config as $prop => $value) {
+            $this->assertEquals($value, $field->editWidget->config->{$prop}, $prop);
         }
     }
 }

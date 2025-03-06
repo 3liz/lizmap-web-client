@@ -1,8 +1,14 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
+use Lizmap\Project\Repository;
 use Lizmap\Request\WFSRequest;
+use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class WFSRequestTest extends TestCase
 {
     public function testParameters(): void
@@ -17,7 +23,7 @@ class WFSRequestTest extends TestCase
         $parameters = $wfs->parameters();
         $this->assertEquals($expectedParameters, $parameters);
         $proj = new ProjectForOGCForTests();
-        $proj->setRepo(new Lizmap\Project\Repository('test', array(), '', null, new ContextForTests()));
+        $proj->setRepo(new Repository('test', array(), '', null, new ContextForTests()));
         $wfs = new WFSRequest($proj, array('request' => 'notGetFeature'), null);
         $parameters = $wfs->parameters();
         $this->assertEquals($expectedParameters, $parameters);
@@ -32,12 +38,12 @@ class WFSRequestTest extends TestCase
         $filters1 = array(
             'type' => array(
                 'filter' => 'filter',
-                'filterAttribute' => 'attr'
+                'filterAttribute' => 'attr',
             ),
             'name' => array(
                 'filter' => 'test',
-                'filterAttribute' => 'test attr'
-            )
+                'filterAttribute' => 'test attr',
+            ),
         );
         $expected1 = array(
             'request' => 'getfeature',
@@ -52,7 +58,7 @@ class WFSRequestTest extends TestCase
             'request' => 'getfeature',
             'typename' => 'type,name,for,test',
             'exp_filter' => 'testParam',
-            'propertyname' => 'prop  '
+            'propertyname' => 'prop  ',
         );
         $expected2 = array(
             'request' => 'getfeature',
@@ -61,8 +67,9 @@ class WFSRequestTest extends TestCase
             'Lizmap_User' => '',
             'Lizmap_User_Groups' => '',
             'exp_filter' => '( testParam ) AND ( filter ) AND ( test )',
-            'propertyname' => 'prop,test attr'
+            'propertyname' => 'prop,test attr',
         );
+
         return array(
             array($params1, $filters1, $expected1),
             array($params2, $filters1, $expected2),
@@ -71,6 +78,10 @@ class WFSRequestTest extends TestCase
 
     /**
      * @dataProvider getParametersWithFiltersData
+     *
+     * @param mixed $params
+     * @param mixed $loginFilters
+     * @param mixed $expectedParameters
      */
     public function testParametersWithFilters($params, $loginFilters, $expectedParameters): void
     {
@@ -78,7 +89,7 @@ class WFSRequestTest extends TestCase
         $testContext->setResult(array('lizmap.tools.loginFilteredLayers.override' => false));
         $proj = new ProjectForOGCForTests($testContext);
         $proj->loginFilters = $loginFilters;
-        $proj->setRepo(new Lizmap\Project\Repository('test', array(), '', null, $testContext));
+        $proj->setRepo(new Repository('test', array(), '', null, $testContext));
         $wfs = new WFSRequest($proj, $params, null);
         $parameters = $wfs->parameters();
         $this->assertEquals($expectedParameters, $parameters);
@@ -87,25 +98,30 @@ class WFSRequestTest extends TestCase
     public static function getGetFeatureIdFilterExpData()
     {
         return array(
-            array('', '', '', array()), //nothing
+            array('', '', '', array()), // nothing
             array('type.1', '', '', array()), // only featureid
             array('type', 'type', '', array()), // featureid not well formed
             array('type.', 'type', '', array()), // fetaureid not well formed
             array('type.1', 'typed', '', array()), // featureid and typename are not for the same layer
             array('type.test@@55', 'type', '', array()), // featureid with multi fields key not for postgres layer
-            array('type.test@@55', 'type', '', array('provider'=>'postgres')), // featureid with multi fields key for postgres layer with simple field key
+            array('type.test@@55', 'type', '', array('provider' => 'postgres')), // featureid with multi fields key for postgres layer with simple field key
             array('type.1', 'type', '$id IN (1)', array()),
             array('type.1,type.2', 'type', '$id IN (1, 2)', array()),
-            array('type.1', 'type', '"id" IN (1)', array('provider'=>'postgres')),
-            array('type.1,type.2', 'type', '"id" IN (1, 2)', array('provider'=>'postgres')),
-            array('type.test', 'type', '"id" IN (\'test\')', array('provider'=>'postgres')),
-            array('type.test@@55', 'type', '("foo" = \'test\' AND "id" = 55)', array('provider'=>'postgres', 'dtparams'=>array('key' => 'foo,id'))),
-            array('type.test@@55,type.bar@@44', 'type', '("foo" = \'test\' AND "id" = 55) OR ("foo" = \'bar\' AND "id" = 44)', array('provider'=>'postgres', 'dtparams'=>array('key' => 'foo,id'))),
+            array('type.1', 'type', '"id" IN (1)', array('provider' => 'postgres')),
+            array('type.1,type.2', 'type', '"id" IN (1, 2)', array('provider' => 'postgres')),
+            array('type.test', 'type', '"id" IN (\'test\')', array('provider' => 'postgres')),
+            array('type.test@@55', 'type', '("foo" = \'test\' AND "id" = 55)', array('provider' => 'postgres', 'dtparams' => array('key' => 'foo,id'))),
+            array('type.test@@55,type.bar@@44', 'type', '("foo" = \'test\' AND "id" = 55) OR ("foo" = \'bar\' AND "id" = 44)', array('provider' => 'postgres', 'dtparams' => array('key' => 'foo,id'))),
         );
     }
 
     /**
      * @dataProvider getGetFeatureIdFilterExpData
+     *
+     * @param mixed $featureid
+     * @param mixed $typename
+     * @param mixed $expectedExpFilter
+     * @param mixed $layerOptions
      */
     public function testGetFeatureIdFilterExp($featureid, $typename, $expectedExpFilter, $layerOptions): void
     {
@@ -127,16 +143,17 @@ class WFSRequestTest extends TestCase
     {
         $paramsComplete = array(
             'propertyname' => 'prop,erty,name',
-            'geometryname' => 'geom'
+            'geometryname' => 'geom',
         );
         $wfsFields = array('prop', 'name', 'notProp');
         $paramsGeom = array(
-            'geometryname' => 'geom'
+            'geometryname' => 'geom',
         );
         $paramsProp = array(
             'propertyname' => 'prop,erty,name',
-            'geometryname' => 'none'
+            'geometryname' => 'none',
         );
+
         return array(
             array($paramsComplete, $wfsFields, array('"prop"', '"name"', '"key"', '"geom"', '"test"'), ' SELECT "prop", "name", "key", "geom", "test", "geocol" AS "geosource" FROM table'),
             array($paramsGeom, $wfsFields, array('"prop"', '"name"', '"notProp"', '"key"', '"geom"', '"test"'), ' SELECT "prop", "name", "notProp", "key", "geom", "test", "geocol" AS "geosource" FROM table'),
@@ -146,12 +163,17 @@ class WFSRequestTest extends TestCase
 
     /**
      * @dataProvider getBuildQueryBaseData
+     *
+     * @param mixed $params
+     * @param mixed $wfsFields
+     * @param mixed $expectedSelectFields
+     * @param mixed $expectedSql
      */
     public function testBuildQueryBase($params, $wfsFields, $expectedSelectFields, $expectedSql): void
     {
         $cnx = new jDbConnectionForTests();
         $wfs = new WFSRequestForTests();
-        $wfs->datasource = (object)array(
+        $wfs->datasource = (object) array(
             'key' => 'key,prop,geom,test',
             'geocol' => 'geocol',
             'table' => 'table',
@@ -174,11 +196,15 @@ class WFSRequestTest extends TestCase
 
     /**
      * @dataProvider getGetBboxSqlData
+     *
+     * @param mixed $geocol
+     * @param mixed $params
+     * @param mixed $expectedSql
      */
     public function testGetBboxSql($geocol, $params, $expectedSql): void
     {
         $wfs = new WFSRequestForTests();
-        $wfs->datasource = (object)array(
+        $wfs->datasource = (object) array(
             'geocol' => $geocol,
         );
         $wfs->qgisLayer = new LayerWFSForTests();
@@ -199,12 +225,16 @@ class WFSRequestTest extends TestCase
 
     /**
      * @dataProvider getParseExpFilterData
+     *
+     * @param mixed $params
+     * @param mixed $key
+     * @param mixed $expectedSql
      */
     public function testParseExpFilter($params, $key, $expectedSql): void
     {
         $wfs = new WFSRequestForTests();
         $wfs->appContext = new ContextForTests();
-        $wfs->datasource = (object)array('key' => $key, 'geocol' => 'geom');
+        $wfs->datasource = (object) array('key' => $key, 'geocol' => 'geom');
         $result = $wfs->parseExpFilterForTests(new jDbConnectionForTests(), $params);
         $this->assertEquals($expectedSql, $result);
     }
@@ -221,15 +251,20 @@ class WFSRequestTest extends TestCase
 
     /**
      * @dataProvider getParseFeatureData
+     *
+     * @param mixed $typename
+     * @param mixed $featureId
+     * @param mixed $keys
+     * @param mixed $expectedSql
      */
     public function testParseFeatureId($typename, $featureId, $keys, $expectedSql): void
     {
         $params = array(
             'typename' => $typename,
-            'featureid' => $featureId
+            'featureid' => $featureId,
         );
         $wfs = new WFSRequestForTests();
-        $wfs->datasource = (object)array('key' => $keys);
+        $wfs->datasource = (object) array('key' => $keys);
         $sql = $wfs->parseFeatureIdForTests(new jDbConnectionForTests(), $params);
         $this->assertEquals($expectedSql, $sql);
     }
@@ -246,6 +281,10 @@ class WFSRequestTest extends TestCase
 
     /**
      * @dataProvider getGetQueryOrderData
+     *
+     * @param mixed $params
+     * @param mixed $wfsFields
+     * @param mixed $expectedSql
      */
     public function testGetQueryOrder($params, $wfsFields, $expectedSql): void
     {
@@ -286,6 +325,9 @@ class WFSRequestTest extends TestCase
 
     /**
      * @dataProvider getValidateExpressionFilterData
+     *
+     * @param mixed $filter
+     * @param mixed $expectedResult
      */
     public function testValidateExpressionFilter($filter, $expectedResult): void
     {
@@ -307,13 +349,16 @@ class WFSRequestTest extends TestCase
 
     /**
      * @dataProvider getValidateFilterData
+     *
+     * @param mixed $filter
+     * @param mixed $expectedFilter
      */
     public function testValidateFilter($filter, $expectedFilter): void
     {
         $wfs = new WFSRequestForTests();
         $wfs->appContext = new ContextForTests();
-        $wfs->datasource = (object)array(
-            'geocol' => 'column'
+        $wfs->datasource = (object) array(
+            'geocol' => 'column',
         );
         $this->assertEquals($expectedFilter, $wfs->validateFilterForTests($filter));
     }

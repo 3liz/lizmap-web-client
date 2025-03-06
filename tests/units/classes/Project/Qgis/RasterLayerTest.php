@@ -1,11 +1,12 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
-use Lizmap\Project\Qgis;
 use Lizmap\App;
+use Lizmap\Project\Qgis;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 class RasterLayerTest extends TestCase
@@ -354,7 +355,7 @@ class RasterLayerTest extends TestCase
             'embedded' => false,
             'type' => 'raster',
             'layername' => 'local_raster_layer',
-            //'srs',
+            // 'srs',
             'datasource' => './media/raster.asc',
             'provider' => 'gdal',
             'shortname' => 'local_raster',
@@ -362,8 +363,8 @@ class RasterLayerTest extends TestCase
             'abstract' => null,
             'keywordList' => array(''),
         );
-        foreach($data as $prop => $value) {
-            $this->assertEquals($value, $layer->$prop, $prop);
+        foreach ($data as $prop => $value) {
+            $this->assertEquals($value, $layer->{$prop}, $prop);
         }
 
         $this->assertNotNull($layer->srs);
@@ -373,17 +374,17 @@ class RasterLayerTest extends TestCase
             'authid' => 'OGC:CRS84',
             'description' => 'WGS 84 (CRS84)',
         );
-        foreach($data as $prop => $value) {
-            $this->assertEquals($value, $layer->srs->$prop, $prop);
+        foreach ($data as $prop => $value) {
+            $this->assertEquals($value, $layer->srs->{$prop}, $prop);
         }
 
         $this->assertNotNull($layer->styleManager);
         $data = array(
-          'current' => 'default',
-          'styles' => array('default'),
+            'current' => 'default',
+            'styles' => array('default'),
         );
-        foreach($data as $prop => $value) {
-            $this->assertEquals($value, $layer->styleManager->$prop, $prop);
+        foreach ($data as $prop => $value) {
+            $this->assertEquals($value, $layer->styleManager->{$prop}, $prop);
         }
 
         $keyData = $layer->toKeyArray();
@@ -402,7 +403,7 @@ class RasterLayerTest extends TestCase
             'provider' => 'gdal',
             'keywords' => array(''),
         );
-        foreach($data as $prop => $value) {
+        foreach ($data as $prop => $value) {
             $this->assertEquals($value, $keyData[$prop], $prop);
         }
 

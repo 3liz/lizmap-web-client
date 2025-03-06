@@ -1,11 +1,10 @@
 <?php
 
-
 class LizmapTilerForTests
 {
-    public static $tileCapFail = null;
+    public static $tileCapFail;
 
-    public static $tileCaps = null;
+    public static $tileCaps;
 
     public static function getTileCapabilities($project)
     {

@@ -1,11 +1,12 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
-use Lizmap\Project\Qgis;
 use Lizmap\App;
+use Lizmap\Project\Qgis;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 class RendererV2Test extends TestCase
@@ -53,7 +54,6 @@ class RendererV2Test extends TestCase
 
         $this->assertEquals($renderer->type, 'singleSymbol');
         $this->assertCount(0, $renderer->categories);
-
 
         // categorizedSymbol
         $xmlStr = '
@@ -184,7 +184,7 @@ class RendererV2Test extends TestCase
             '3' => '3',
             '4' => '4',
         );
-        foreach($data as $prop => $value) {
+        foreach ($data as $prop => $value) {
             $this->assertEquals($value, $renderer->categories[$prop], $value);
         }
     }

@@ -2,7 +2,6 @@
 
 use Lizmap\Request\WMTSRequest;
 
-
 class WMTSRequestForTests extends WMTSRequest
 {
     public function getCapabilitiesForTests()

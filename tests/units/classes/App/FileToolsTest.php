@@ -1,11 +1,17 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
 use Lizmap\App\FileTools;
+use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class FileToolsTest extends TestCase
 {
-    function testTail(): void {
+    public function testTail(): void
+    {
         $TAIL_NL = "\n";
 
         $oneLinePath = __DIR__.'/Ressources/one-line.txt';

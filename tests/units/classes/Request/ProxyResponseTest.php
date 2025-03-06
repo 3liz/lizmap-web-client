@@ -1,12 +1,17 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
-use GuzzleHttp\Psr7 as Psr7;
+use GuzzleHttp\Psr7;
 use Lizmap\Request;
+use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class ProxyResponseTest extends TestCase
 {
-    public function testGetter() : void
+    public function testGetter(): void
     {
         $response = new Request\ProxyResponse(
             200,

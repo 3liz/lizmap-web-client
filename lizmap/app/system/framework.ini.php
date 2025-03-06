@@ -1,4 +1,4 @@
-;<?php die('');?>
+;<?php exit(''); ?>
 ; =============================================================================
 ; WARNING: DON'T CHANGE ANYTHING IN THIS FILE. IF YOU WANT TO ADD/ MODIFY SOME
 ; OPTIONS, SET THEM INTO var/config/localframework.ini.php.
