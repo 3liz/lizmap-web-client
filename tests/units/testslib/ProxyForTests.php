@@ -2,7 +2,6 @@
 
 use Lizmap\Request\Proxy;
 
-
 class ProxyForTests extends Proxy
 {
     public static function buildOptionsForTest($options, $method, $debug)

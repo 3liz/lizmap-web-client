@@ -3,11 +3,16 @@
 use Lizmap\Logger as Log;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class ItemTest extends TestCase
 {
-    protected $context = null;
+    protected $context;
 
-    public function setUp() : void
+    public function setUp(): void
     {
         if (!$this->context) {
             $this->context = new ContextForTests();
@@ -22,12 +27,13 @@ class ItemTest extends TestCase
             'logDetail' => 'detail',
             'logIp' => 'Ip',
             'logEmail' => 'Email',
-            'unknownProp' => 'whatever'
+            'unknownProp' => 'whatever',
         );
         $data2 = array(
             'label' => 'test',
-            'logCounter' => null
+            'logCounter' => null,
         );
+
         return array(
             array($data1),
             array($data2),
@@ -37,6 +43,8 @@ class ItemTest extends TestCase
 
     /**
      * @dataProvider getConstructData
+     *
+     * @param mixed $config
      */
     public function testConstruct($config): void
     {
@@ -64,8 +72,9 @@ class ItemTest extends TestCase
         );
         $data2 = array(
             'key' => '1234',
-            'unknownProp' => 'test'
+            'unknownProp' => 'test',
         );
+
         return array(
             array($data1),
             array($data1),
@@ -76,13 +85,15 @@ class ItemTest extends TestCase
 
     /**
      * @dataProvider getLogDetailData
+     *
+     * @param mixed $data
      */
     public function testInsertLogDetail($data): void
     {
         $context = new ContextForTests();
         $context->setResult(array(
             'getDao' => $context,
-            'createDaoRecord' => (object)array(
+            'createDaoRecord' => (object) array(
                 'key' => null,
                 'user' => null,
                 'content' => null,
@@ -90,7 +101,7 @@ class ItemTest extends TestCase
                 'project' => null,
                 'ip' => null,
                 'email' => null,
-            )
+            ),
         ));
         $item = new Log\Item('test', array(), $context);
         $item->insertLogDetail($data);
@@ -103,16 +114,15 @@ class ItemTest extends TestCase
             $this->assertNull($resultRecord->project);
             $this->assertNull($resultRecord->ip);
             $this->assertNull($resultRecord->email);
-            return ;
-        }
 
+            return;
+        }
 
         foreach ($data as $key => $value) {
             if (in_array($key, $item->getRecordKeys())) {
-                $this->assertEquals($value, $resultRecord->$key);
-            }
-            else {
-                $this->assertFalse(isset($resultRecord->$key));
+                $this->assertEquals($value, $resultRecord->{$key});
+            } else {
+                $this->assertFalse(isset($resultRecord->{$key}));
             }
         }
     }

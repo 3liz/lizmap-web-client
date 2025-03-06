@@ -1,11 +1,15 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
 use Lizmap\App;
+use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class XmlToolsTest extends TestCase
 {
-
     public function arrayToXml(array $array, SimpleXMLElement &$xml)
     {
         foreach ($array as $key => $value) {
@@ -24,7 +28,8 @@ class XmlToolsTest extends TestCase
         }
     }
 
-    function testXmlFromString(): void {
+    public function testXmlFromString(): void
+    {
         $data = array(
             'properties' => array(
                 'WMSServiceTitle' => 'title',
@@ -61,7 +66,8 @@ class XmlToolsTest extends TestCase
         $this->assertStringContainsString('Fatal', $xml);
     }
 
-    function testXmlFromFile(): void {
+    public function testXmlFromFile(): void
+    {
         $xml_path = __DIR__.'/../Project/Ressources/WMSInfotest.qgs';
 
         $xml = App\XmlTools::xmlFromFile($xml_path);
@@ -78,7 +84,8 @@ class XmlToolsTest extends TestCase
         $this->assertStringContainsString('Fatal', $xml);
     }
 
-    function testXmlReaderFromString(): void {
+    public function testXmlReaderFromString(): void
+    {
         $data = array(
             'properties' => array(
                 'WMSServiceTitle' => 'title',
@@ -103,20 +110,20 @@ class XmlToolsTest extends TestCase
         $xml = App\XmlTools::xmlReaderFromString($xml_str);
         $this->assertTrue(is_object($xml));
         $this->assertEquals($xml_str, '<?xml version="1.0"?>'."\n".$xml->readOuterXml()."\n");
-        $this->assertEquals(\XMLReader::ELEMENT, $xml->nodeType);
+        $this->assertEquals(XMLReader::ELEMENT, $xml->nodeType);
         $this->assertEquals('qgis', $xml->localName);
         $this->assertEquals(0, $xml->depth);
 
         // first child element
         $xml->read();
-        $this->assertEquals(\XMLReader::ELEMENT, $xml->nodeType);
+        $this->assertEquals(XMLReader::ELEMENT, $xml->nodeType);
         $this->assertEquals('properties', $xml->localName);
         $this->assertEquals(1, $xml->depth);
 
         // Go to next sibling
         $xml->next();
         // No sibling we are at the end of the parent element
-        $this->assertEquals(\XMLReader::END_ELEMENT, $xml->nodeType);
+        $this->assertEquals(XMLReader::END_ELEMENT, $xml->nodeType);
         $this->assertEquals('qgis', $xml->localName);
         $this->assertEquals(0, $xml->depth);
 
@@ -127,17 +134,17 @@ class XmlToolsTest extends TestCase
 
         $xml = App\XmlTools::xmlReaderFromString($xml_str_invalid);
         $this->assertTrue(is_object($xml));
-        $this->assertEquals(\XMLReader::ELEMENT, $xml->nodeType);
+        $this->assertEquals(XMLReader::ELEMENT, $xml->nodeType);
         $this->assertEquals('qgis', $xml->localName);
 
         // The validate parser option must be enabled for
         // this method to work properly
-        $xml->setParserProperty(\XMLReader::VALIDATE, true);
+        $xml->setParserProperty(XMLReader::VALIDATE, true);
         $this->assertTrue($xml->isValid());
 
         // first child element
         $xml->read();
-        $this->assertEquals(\XMLReader::ELEMENT, $xml->nodeType);
+        $this->assertEquals(XMLReader::ELEMENT, $xml->nodeType);
         $this->assertEquals('properties', $xml->localName);
         $this->assertEquals(1, $xml->depth);
 
@@ -147,41 +154,43 @@ class XmlToolsTest extends TestCase
         // But the XML is invalid here
         $this->assertFalse($xml->isValid());
         // And we are some where else
-        $this->assertEquals(\XMLReader::ELEMENT, $xml->nodeType);
+        $this->assertEquals(XMLReader::ELEMENT, $xml->nodeType);
         $this->assertEquals('WMSContactPerson', $xml->localName);
         $this->assertEquals(2, $xml->depth);
     }
 
-    function testXmlReaderFromStringException(): void {
+    public function testXmlReaderFromStringException(): void
+    {
         $this->expectExceptionMessage('Fatal Error 5: Line: 1 Column: 7 Extra content at the end of the document');
         App\XmlTools::xmlReaderFromString('<qgis>');
     }
 
-    function testXmlReaderFromFile(): void {
+    public function testXmlReaderFromFile(): void
+    {
         $xml_path = __DIR__.'/../Project/Ressources/WMSInfotest.qgs';
 
         // Open the document with XML Reader at the root element document
         $xml = App\XmlTools::xmlReaderFromFile($xml_path);
         $this->assertTrue(is_object($xml));
-        $this->assertEquals(\XMLReader::ELEMENT, $xml->nodeType);
+        $this->assertEquals(XMLReader::ELEMENT, $xml->nodeType);
         $this->assertEquals('qgis', $xml->localName);
         $this->assertEquals(0, $xml->depth);
 
         // next element
         $xml->read();
-        $this->assertEquals(\XMLReader::SIGNIFICANT_WHITESPACE, $xml->nodeType);
+        $this->assertEquals(XMLReader::SIGNIFICANT_WHITESPACE, $xml->nodeType);
         // next element
         $xml->read();
-        $this->assertEquals(\XMLReader::ELEMENT, $xml->nodeType);
+        $this->assertEquals(XMLReader::ELEMENT, $xml->nodeType);
         $this->assertEquals('homePath', $xml->localName);
         $this->assertEquals(1, $xml->depth);
 
         // Go to next sibling
         $xml->next();
-        $this->assertEquals(\XMLReader::SIGNIFICANT_WHITESPACE, $xml->nodeType);
+        $this->assertEquals(XMLReader::SIGNIFICANT_WHITESPACE, $xml->nodeType);
         // Go to next sibling
         $xml->next();
-        $this->assertEquals(\XMLReader::ELEMENT, $xml->nodeType);
+        $this->assertEquals(XMLReader::ELEMENT, $xml->nodeType);
         $this->assertEquals('title', $xml->localName);
         $this->assertEquals(1, $xml->depth);
 
@@ -190,30 +199,30 @@ class XmlToolsTest extends TestCase
         // Open the document with XML Reader at the root element document
         $xml = App\XmlTools::xmlReaderFromFile($xml_path_invalid);
         $this->assertTrue(is_object($xml));
-        $this->assertEquals(\XMLReader::ELEMENT, $xml->nodeType);
+        $this->assertEquals(XMLReader::ELEMENT, $xml->nodeType);
         $this->assertEquals('qgis', $xml->localName);
         $this->assertEquals(0, $xml->depth);
 
         // The validate parser option must be enabled for
         // this method to work properly
-        $xml->setParserProperty(\XMLReader::VALIDATE, true);
+        $xml->setParserProperty(XMLReader::VALIDATE, true);
         $this->assertTrue($xml->isValid());
 
         // next element
         $xml->read();
-        $this->assertEquals(\XMLReader::SIGNIFICANT_WHITESPACE, $xml->nodeType);
+        $this->assertEquals(XMLReader::SIGNIFICANT_WHITESPACE, $xml->nodeType);
         // next element
         $xml->read();
-        $this->assertEquals(\XMLReader::ELEMENT, $xml->nodeType);
+        $this->assertEquals(XMLReader::ELEMENT, $xml->nodeType);
         $this->assertEquals('homePath', $xml->localName);
         $this->assertEquals(1, $xml->depth);
 
         // Go to next sibling
         $xml->next();
-        $this->assertEquals(\XMLReader::SIGNIFICANT_WHITESPACE, $xml->nodeType);
+        $this->assertEquals(XMLReader::SIGNIFICANT_WHITESPACE, $xml->nodeType);
         // Go to next sibling
         $xml->next();
-        $this->assertEquals(\XMLReader::ELEMENT, $xml->nodeType);
+        $this->assertEquals(XMLReader::ELEMENT, $xml->nodeType);
         $this->assertEquals('title', $xml->localName);
         $this->assertEquals(1, $xml->depth);
     }

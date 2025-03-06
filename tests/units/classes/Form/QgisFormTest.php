@@ -1,7 +1,9 @@
 <?php
 
 use Lizmap\Form\QgisFormControl;
+use Lizmap\Form\QgisFormControlProperties;
 use Lizmap\Project;
+use Lizmap\Project\Repository;
 use PHPUnit\Framework\TestCase;
 
 require_once __DIR__.'/../../../../lizmap/vendor/jelix/jelix/lib/jelix/forms/jFormsBase.class.php';
@@ -19,13 +21,9 @@ class dummyForm
         return $this->check;
     }
 
-    public function addControl()
-    {
-    }
+    public function addControl() {}
 
-    public function setReadOnly()
-    {
-    }
+    public function setReadOnly() {}
 
     public function getSelector()
     {
@@ -42,9 +40,7 @@ class dummyForm
         return $this->data;
     }
 
-    public function setErrorOn()
-    {
-    }
+    public function setErrorOn() {}
 
     public function getControl($ref)
     {
@@ -52,6 +48,11 @@ class dummyForm
     }
 }
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class QgisFormTest extends TestCase
 {
     protected $appContext;
@@ -67,9 +68,10 @@ class QgisFormTest extends TestCase
         $layer->fields = $fields;
         $layer->setId($layerId);
         $proj = new ProjectForTests($appContext);
-        $proj->setRepo(new \Lizmap\Project\Repository('key', array(), null, null, $appContext));
+        $proj->setRepo(new Repository('key', array(), null, null, $appContext));
         $proj->setKey($projectKey);
         $layer->setProject($proj);
+
         return $layer;
     }
 
@@ -77,8 +79,8 @@ class QgisFormTest extends TestCase
     {
         $formCache = json_decode(file_get_contents($file), true);
         $properties = array();
-        foreach($formCache as $ref => $props) {
-            $prop = new \Lizmap\Form\QgisFormControlProperties(
+        foreach ($formCache as $ref => $props) {
+            $prop = new QgisFormControlProperties(
                 $ref,
                 $props['fieldEditType'],
                 $props['markup'],
@@ -89,10 +91,9 @@ class QgisFormTest extends TestCase
             }
             $properties[$ref] = $prop;
         }
+
         return $properties;
     }
-
-
 
     public static function getConstructData()
     {
@@ -126,17 +127,18 @@ class QgisFormTest extends TestCase
         );
 
         return array(
-            array('test','date', $fields),
-            array('montpellier','line', $fields2),
-            array('not','existing', null),
+            array('test', 'date', $fields),
+            array('montpellier', 'line', $fields2),
+            array('not', 'existing', null),
         );
     }
 
     /**
      * @dataProvider getConstructData
      *
-     * @param mixed $file
      * @param mixed $fields
+     * @param mixed $projectKey
+     * @param mixed $layer
      */
     public function testConstruct($projectKey, $layer, $fields): void
     {
@@ -193,7 +195,7 @@ class QgisFormTest extends TestCase
         $form->setFormName(null);
         $attributeForm = $form->getAttributesEditorForm();
         $this->assertNotNull($attributeForm);
-        $this->assertInstanceOf(\qgisAttributeEditorElement::class, $attributeForm);
+        $this->assertInstanceOf(qgisAttributeEditorElement::class, $attributeForm);
         $form->setFormName(null);
         $form->setLayer($layerFalse);
         $attributeForm = $form->getAttributesEditorForm();
@@ -255,6 +257,7 @@ class QgisFormTest extends TestCase
      * @param mixed $evaluateExpression
      * @param mixed $constraints
      * @param mixed $expectedResult
+     * @param mixed $allowWithoutGeom
      */
     public function testCheck($dbFieldsInfo, $check, $data, $evaluateExpression, $constraints, $allowWithoutGeom, $expectedResult): void
     {
@@ -263,7 +266,7 @@ class QgisFormTest extends TestCase
         foreach ($mockFuncs as $method) {
             if ($method === 'evaluateExpression') {
                 $formMock->method($method)->willReturn($evaluateExpression);
-            } else if ($method === 'getConstraints') {
+            } elseif ($method === 'getConstraints') {
                 $formMock->method($method)->willReturn($constraints);
             } else {
                 $formMock->method($method)->willReturn(null);
@@ -275,17 +278,17 @@ class QgisFormTest extends TestCase
         $jForm->check = $check;
         $jForm->data = $data;
         $jForm->controls = array();
-        foreach(array_keys((array)$dbFieldsInfo->dataFields) as $key) {
-            $jForm->controls[$key] = new \jFormsControlInput($key);
+        foreach (array_keys((array) $dbFieldsInfo->dataFields) as $key) {
+            $jForm->controls[$key] = new jFormsControlInput($key);
         }
         $layer = new QgisLayerForTests();
         $layer->eCapabilities = (object) array('capabilities' => (object) array('modifyGeometry' => 'True', 'allow_without_geom' => $allowWithoutGeom));
         $layer->dbFieldValues = array();
 
-        $testCfg = new Project\ProjectConfig(new StdClass());
+        $testCfg = new Project\ProjectConfig(new stdClass());
 
         $proj = new ProjectForTests();
-        $proj->setRepo(new \Lizmap\Project\Repository('key', array(), null, null, null));
+        $proj->setRepo(new Repository('key', array(), null, null, null));
         $proj->setCfg($testCfg);
 
         $layer->setProject($proj);
@@ -305,9 +308,9 @@ class QgisFormTest extends TestCase
             'geometryColumn' => 'geometry',
         );
         $controls = array(
-            'pkuid' => new \jFormsControlInput('pkuid'),
-            'field' => new \jFormsControlInput('field'),
-            'geometry' => new \jFormsControlInput('geometry'),
+            'pkuid' => new jFormsControlInput('pkuid'),
+            'field' => new jFormsControlInput('field'),
+            'geometry' => new jFormsControlInput('geometry'),
         );
         $values = array(
             'pkuid' => true,
@@ -341,9 +344,9 @@ class QgisFormTest extends TestCase
             'geometryColumn' => 'geometry',
         );
         $controls = array(
-            'pkuid' => new \jFormsControlInput('pkuid'),
-            'field' => new \jFormsControlInput('field'),
-            'geometry' => new \jFormsControlUpload('geometry'),
+            'pkuid' => new jFormsControlInput('pkuid'),
+            'field' => new jFormsControlInput('field'),
+            'geometry' => new jFormsControlUpload('geometry'),
         );
         $values = array(
             'pkuid' => true,

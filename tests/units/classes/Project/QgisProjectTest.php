@@ -1,15 +1,17 @@
 <?php
 
+use Lizmap\App;
+use Lizmap\Project;
+use Lizmap\Project\Qgis;
 use PHPUnit\Framework\TestCase;
+
 use function PHPUnit\Framework\assertContains;
 use function PHPUnit\Framework\assertCount;
 use function PHPUnit\Framework\assertEquals;
-use Lizmap\Project;
-use Lizmap\Project\Qgis;
-use Lizmap\App;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 class QgisProjectTest extends TestCase
@@ -34,64 +36,64 @@ class QgisProjectTest extends TestCase
 
     public function testEmbeddedRelation(): void
     {
-         $file = __DIR__.'/Ressources/relations_project_embed.qgs';
-         $testQgis = new qgisProjectForTests();
-         $testQgis->setPath($file);
-         $testQgis->readXMLProjectTest($file);
+        $file = __DIR__.'/Ressources/relations_project_embed.qgs';
+        $testQgis = new qgisProjectForTests();
+        $testQgis->setPath($file);
+        $testQgis->readXMLProjectTest($file);
 
-         $this->assertNull($testQgis->getTheXmlAttribute());
+        $this->assertNull($testQgis->getTheXmlAttribute());
 
-         //check layers
-         foreach ($testQgis->getLayers() as $layers){
-                  $this->assertEquals($layers["embedded"],1);
-                  $this->assertEquals($layers["projectPath"],'./relations_project.qgs');
-         }
+        // check layers
+        foreach ($testQgis->getLayers() as $layers) {
+            $this->assertEquals($layers['embedded'], 1);
+            $this->assertEquals($layers['projectPath'], './relations_project.qgs');
+        }
 
-         //check relation on embedded project
-         $expectedRelationsOnEmbeddedLayers = array(
-                  'father_layer_79f5a996_39db_4a1f_b270_dfe21d3e44ff' => array(
-                      array('referencingLayer' => 'child_layer_8dec6d75_eeed_494b_b97f_5f2c7e16fd00',
-                          'referencedField' => 'ref_id',
-                          'referencingField' => 'father_id',
-                          'previewField'=>'fid',
-                          'relationName' => 'fk_father_child_relation',
-                          'relationId' => 'child_laye_father_id_father_lay_ref_id_1',
+        // check relation on embedded project
+        $expectedRelationsOnEmbeddedLayers = array(
+            'father_layer_79f5a996_39db_4a1f_b270_dfe21d3e44ff' => array(
+                array('referencingLayer' => 'child_layer_8dec6d75_eeed_494b_b97f_5f2c7e16fd00',
+                    'referencedField' => 'ref_id',
+                    'referencingField' => 'father_id',
+                    'previewField' => 'fid',
+                    'relationName' => 'fk_father_child_relation',
+                    'relationId' => 'child_laye_father_id_father_lay_ref_id_1',
 
-                      ),
-                  ),
-                  'pivot' => array(),
-         );
+                ),
+            ),
+            'pivot' => array(),
+        );
 
-         $expectedFieldsOnEmbeddedLayers = array(
-                  array (
-                      'id' => 'child_laye_father_id_father_lay_ref_id_1',
-                      'layerName' => 'father_layer',
-                      'typeName' => 'father_layer',
-                      'propertyName' => 'ref_id,fid',
-                      'filterExpression' => '',
-                      'referencedField' => 'ref_id',
-                      'referencingField' => 'father_id',
-                      'previewField' => 'fid',
-                  )
-         );
+        $expectedFieldsOnEmbeddedLayers = array(
+            array(
+                'id' => 'child_laye_father_id_father_lay_ref_id_1',
+                'layerName' => 'father_layer',
+                'typeName' => 'father_layer',
+                'propertyName' => 'ref_id,fid',
+                'filterExpression' => '',
+                'referencedField' => 'ref_id',
+                'referencingField' => 'father_id',
+                'previewField' => 'fid',
+            ),
+        );
 
-         $relations = $testQgis->getRelations();
-         $relationFields = $testQgis->getRelationsFields();
-         $this->assertEquals($expectedRelationsOnEmbeddedLayers, $relations);
-         $this->assertEquals($expectedFieldsOnEmbeddedLayers, $relationFields);
+        $relations = $testQgis->getRelations();
+        $relationFields = $testQgis->getRelationsFields();
+        $this->assertEquals($expectedRelationsOnEmbeddedLayers, $relations);
+        $this->assertEquals($expectedFieldsOnEmbeddedLayers, $relationFields);
 
-         // check relations identity on main project
-         $file = __DIR__.'/Ressources/relations_project.qgs';
-         $testQgisParent = new qgisProjectForTests();
-         $testQgisParent->setPath($file);
-         $testQgisParent->readXMLProjectTest($file);
+        // check relations identity on main project
+        $file = __DIR__.'/Ressources/relations_project.qgs';
+        $testQgisParent = new qgisProjectForTests();
+        $testQgisParent->setPath($file);
+        $testQgisParent->readXMLProjectTest($file);
 
-         $this->assertNull($testQgis->getTheXmlAttribute());
+        $this->assertNull($testQgis->getTheXmlAttribute());
 
-         $parentRelations = $testQgisParent->getRelations();
-         $parentRelationFields = $testQgisParent->getRelationsFields();
-         $this->assertEquals($relations,$parentRelations);
-         $this->assertEquals($relationFields,$parentRelationFields);
+        $parentRelations = $testQgisParent->getRelations();
+        $parentRelationFields = $testQgisParent->getRelationsFields();
+        $this->assertEquals($relations, $parentRelations);
+        $this->assertEquals($relationFields, $parentRelationFields);
 
     }
 
@@ -114,11 +116,11 @@ class QgisProjectTest extends TestCase
     {
         $file = __DIR__.'/Ressources/simpleLayer.qgs.cfg';
         $json = json_decode(file_get_contents($file));
-//<<<<<<< HEAD
+        // <<<<<<< HEAD
         $expectedLayer = unserialize(serialize($json->layers));
-//=======
-//        $expectedLayer = json_decode(json_encode($json->layers));
-//>>>>>>> 6352dab26 (QgisProject remove code in setPropertiesAfterRead methods)
+        // =======
+        //        $expectedLayer = json_decode(json_encode($json->layers));
+        // >>>>>>> 6352dab26 (QgisProject remove code in setPropertiesAfterRead methods)
         $expectedLayer->montpellier_events->opacity = (float) 0.85;
         $expectedLayer->local_raster_layer->opacity = (float) 0.6835;
         $cfg = new Project\ProjectConfig((object) array('layers' => $json->layers));
@@ -157,21 +159,21 @@ class QgisProjectTest extends TestCase
 
         $eLayerName = $emLayer->getName();
         $this->assertNotNull($config->getLayer($eLayerName));
-        $this->assertEquals(0.4,$config->getLayer($eLayerName)->opacity);
+        $this->assertEquals(0.4, $config->getLayer($eLayerName)->opacity);
     }
 
     public function testSetLayerGroupData(): void
     {
-      $file = __DIR__.'/Ressources/hiddengrouplayer.qgs.cfg';
-      $json = json_decode(file_get_contents($file));
-      $expectedLayer = json_decode(json_encode($json->layers));
-      $expectedLayer->Hidden->shortname = 'Hidden';
-      $expectedLayer->Hidden->mutuallyExclusive = 'True';
-      $cfg = new Project\ProjectConfig((object) array('layers' => $json->layers));
-      $testProj = new qgisProjectForTests();
-      $testProj->setPath(__DIR__.'/Ressources/opacity.qgs');
-      $testProj->setLayerGroupDataForTest($cfg);
-      $this->assertEquals($expectedLayer->Hidden, $cfg->getLayers()->Hidden);
+        $file = __DIR__.'/Ressources/hiddengrouplayer.qgs.cfg';
+        $json = json_decode(file_get_contents($file));
+        $expectedLayer = json_decode(json_encode($json->layers));
+        $expectedLayer->Hidden->shortname = 'Hidden';
+        $expectedLayer->Hidden->mutuallyExclusive = 'True';
+        $cfg = new Project\ProjectConfig((object) array('layers' => $json->layers));
+        $testProj = new qgisProjectForTests();
+        $testProj->setPath(__DIR__.'/Ressources/opacity.qgs');
+        $testProj->setLayerGroupDataForTest($cfg);
+        $this->assertEquals($expectedLayer->Hidden, $cfg->getLayers()->Hidden);
     }
 
     public function testSetLayerShowFeatureCount(): void
@@ -360,44 +362,52 @@ class QgisProjectTest extends TestCase
 
         // check layer edition_layer_embed_line
         // drag n drop form
-        $formControlCache = $testProj->getCacheHandler()->getEditableLayerFormCache("edition_layer_embed_line_e74301b9_95ae_4b72_81cc_71fafb80082f");
-        $names = array('id','descr');
-        assertCount(2,$formControlCache);
-        foreach($formControlCache as $formControl) {
+        $formControlCache = $testProj->getCacheHandler()->getEditableLayerFormCache('edition_layer_embed_line_e74301b9_95ae_4b72_81cc_71fafb80082f');
+        $names = array('id', 'descr');
+        assertCount(2, $formControlCache);
+        foreach ($formControlCache as $formControl) {
             assertContains($formControl->getName(), $names);
-            switch($formControl->getName()){
+
+            switch ($formControl->getName()) {
                 case 'id':
-                    assertEquals($formControl->getFieldAlias(),'id');
-                    assertEquals($formControl->getMarkup(),'input');
-                    assertEquals($formControl->getFieldEditType(),'TextEdit');
+                    assertEquals($formControl->getFieldAlias(), 'id');
+                    assertEquals($formControl->getMarkup(), 'input');
+                    assertEquals($formControl->getFieldEditType(), 'TextEdit');
+
                     break;
+
                 case 'descr':
-                    assertEquals($formControl->getFieldAlias(),'Description');
-                    assertEquals($formControl->getMarkup(),'input');
-                    assertEquals($formControl->getFieldEditType(),'TextEdit');
+                    assertEquals($formControl->getFieldAlias(), 'Description');
+                    assertEquals($formControl->getMarkup(), 'input');
+                    assertEquals($formControl->getFieldEditType(), 'TextEdit');
+
                     break;
+
                 default:
                     break;
             }
         }
         // check layer edition_layer_embed_point
         // drag n drop form
-        $formControlCache = $testProj->getCacheHandler()->getEditableLayerFormCache("edition_layer_embed_point_7794e305_0e9b_40d0_bf0b_2494790d4eb3");
-        $names = array('id','id_ext_point','descr');
-        assertCount(3,$formControlCache);
-        foreach($formControlCache as $formControl) {
+        $formControlCache = $testProj->getCacheHandler()->getEditableLayerFormCache('edition_layer_embed_point_7794e305_0e9b_40d0_bf0b_2494790d4eb3');
+        $names = array('id', 'id_ext_point', 'descr');
+        assertCount(3, $formControlCache);
+        foreach ($formControlCache as $formControl) {
             assertContains($formControl->getName(), $names);
-            switch($formControl->getName()){
+
+            switch ($formControl->getName()) {
                 case 'id':
-                    assertEquals($formControl->getFieldAlias(),'Id');
-                    assertEquals($formControl->getMarkup(),'input');
-                    assertEquals($formControl->getFieldEditType(),'TextEdit');
+                    assertEquals($formControl->getFieldAlias(), 'Id');
+                    assertEquals($formControl->getMarkup(), 'input');
+                    assertEquals($formControl->getFieldEditType(), 'TextEdit');
+
                     break;
+
                 case 'id_ext_point':
-                    assertEquals($formControl->getFieldAlias(),'external_ref');
-                    assertEquals($formControl->getMarkup(),'menulist');
-                    assertEquals($formControl->getFieldEditType(),'ValueRelation');
-                    $attributesArray =     array (
+                    assertEquals($formControl->getFieldAlias(), 'external_ref');
+                    assertEquals($formControl->getMarkup(), 'menulist');
+                    assertEquals($formControl->getFieldEditType(), 'ValueRelation');
+                    $attributesArray = array(
                         'AllowMulti' => false,
                         'AllowNull' => true,
                         'Description' => '',
@@ -411,41 +421,49 @@ class QgisProjectTest extends TestCase
                         'OrderByValue' => false,
                         'UseCompleter' => false,
                         'Value' => 'descr',
-                        'filters' =>
-                        array (
+                        'filters' => array(
                         ),
                         'chainFilters' => false,
                     );
-                    assertEquals($formControl->getEditAttributes(),$attributesArray);
+                    assertEquals($formControl->getEditAttributes(), $attributesArray);
+
                     break;
+
                 case 'descr':
-                    assertEquals($formControl->getFieldAlias(),'Point description');
-                    assertEquals($formControl->getMarkup(),'input');
-                    assertEquals($formControl->getFieldEditType(),'TextEdit');
+                    assertEquals($formControl->getFieldAlias(), 'Point description');
+                    assertEquals($formControl->getMarkup(), 'input');
+                    assertEquals($formControl->getFieldEditType(), 'TextEdit');
+
                     break;
+
                 default:
                     break;
             }
         }
         // check layer edition_layer_embed_child
         // autogenerated form
-        $formControlCache = $testProj->getCacheHandler()->getEditableLayerFormCache("edition_layer_embed_child_d87f81cd_26d2_4c40_820d_676ba03ff6ab");
-        $names = array('id','descr');
+        $formControlCache = $testProj->getCacheHandler()->getEditableLayerFormCache('edition_layer_embed_child_d87f81cd_26d2_4c40_820d_676ba03ff6ab');
+        $names = array('id', 'descr');
 
-        assertCount(2,$formControlCache);
-        foreach($formControlCache as $formControl) {
+        assertCount(2, $formControlCache);
+        foreach ($formControlCache as $formControl) {
             assertContains($formControl->getName(), $names);
-            switch($formControl->getName()){
+
+            switch ($formControl->getName()) {
                 case 'id':
-                    assertEquals($formControl->getFieldAlias(),'');
-                    assertEquals($formControl->getMarkup(),'');
-                    assertEquals($formControl->getFieldEditType(),'');
+                    assertEquals($formControl->getFieldAlias(), '');
+                    assertEquals($formControl->getMarkup(), '');
+                    assertEquals($formControl->getFieldEditType(), '');
+
                     break;
+
                 case 'descr':
-                    assertEquals($formControl->getFieldAlias(),'');
-                    assertEquals($formControl->getMarkup(),'');
-                    assertEquals($formControl->getFieldEditType(),'');
+                    assertEquals($formControl->getFieldAlias(), '');
+                    assertEquals($formControl->getMarkup(), '');
+                    assertEquals($formControl->getFieldEditType(), '');
+
                     break;
+
                 default:
                     break;
             }
@@ -1006,7 +1024,7 @@ class QgisProjectTest extends TestCase
         $this->assertFalse($relationReferenceData['mapIdentification']);
         $this->assertTrue(is_array($relationReferenceData['filters']));
         $this->assertCount(0, $relationReferenceData['filters']);
-        $this->assertEquals($relationReferenceData['filterExpression'], Null);
+        $this->assertEquals($relationReferenceData['filterExpression'], null);
         $this->assertFalse($relationReferenceData['chainFilters']);
         $this->assertEquals($relationReferenceData['referencedLayerName'], 'risque');
         $this->assertEquals($relationReferenceData['referencedLayerId'], 'risque_66cb8d43_86b7_4583_9217_f7ead54463c3');
@@ -1730,12 +1748,11 @@ class QgisProjectTest extends TestCase
         $this->assertEquals($props['code_for_drill_down_exp']->getMarkup(), 'menulist');
     }
 
-
     public function testUploadField(): void
     {
         $testProj = new qgisProjectForTests();
 
-        # no widget
+        // no widget
         $xmlStr = '
         <maplayer>
           <fieldConfiguration>
@@ -1999,8 +2016,8 @@ class QgisProjectTest extends TestCase
 
         $this->assertTrue(array_key_exists('remote_path', $props));
         $remotePath = $props['remote_path'];
-        $this->assertEquals('WebDAV',$remotePath->getEditAttribute("StorageType"));
-        $this->assertEquals("'http://webdav/'|| file_name(@selected_file_path)",$remotePath->getEditAttribute("webDAVStorageUrl"));
+        $this->assertEquals('WebDAV', $remotePath->getEditAttribute('StorageType'));
+        $this->assertEquals("'http://webdav/'|| file_name(@selected_file_path)", $remotePath->getEditAttribute('webDAVStorageUrl'));
         $this->assertEquals('upload', $remotePath->getMarkup());
         $this->assertEquals('', $remotePath->getUploadCapture());
         $this->assertEquals('', $remotePath->getUploadAccept());
@@ -2010,7 +2027,7 @@ class QgisProjectTest extends TestCase
 
     public function testReadProject(): void
     {
-        //$services = new lizmapServices(array(), (object) array(), false, '', '');
+        // $services = new lizmapServices(array(), (object) array(), false, '', '');
         $testQgis = new qgisProjectForTests(array());
         $file = __DIR__.'/Ressources/montpellier.qgs';
         $testQgis->setPath($file);

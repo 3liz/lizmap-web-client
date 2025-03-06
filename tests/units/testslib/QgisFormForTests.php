@@ -10,9 +10,7 @@ class QgisFormForTests extends Form\QgisForm
 
     public $featureId;
 
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     public function setLayer($layer)
     {
@@ -44,8 +42,6 @@ class QgisFormForTests extends Form\QgisForm
         $this->fillControlFromUniqueValues($fieldName, $control);
     }
 }
-
-
 
 class jAcl2
 {

@@ -1,12 +1,13 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
-use Lizmap\Project\Qgis;
 use Lizmap\App;
 use Lizmap\Form;
+use Lizmap\Project\Qgis;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 class VectorLayerTest extends TestCase
@@ -709,13 +710,13 @@ def my_form_open(dialog, layer, feature):
         $this->assertTrue($formControls['date']->isEditable());
         $this->assertEquals('', $formControls['date']->getFieldAlias());
         $this->assertEquals('date', $formControls['date']->getMarkup());
-        $attributes = array (
+        $attributes = array(
             'allow_null' => false,
             'calendar_popup' => false,
             'display_format' => '',
             'field_format' => 'yyyy-MM-dd',
             'field_iso_format' => false,
-            'filters' => [],
+            'filters' => array(),
             'chainFilters' => false,
         );
         $this->assertEquals($attributes, $formControls['date']->getEditAttributes());
@@ -1095,7 +1096,6 @@ def my_form_open(dialog, layer, feature):
         $this->assertTrue($formControls['author']->isEditable());
         $this->assertEquals('', $formControls['author']->getFieldAlias());
         $this->assertEquals('menulist', $formControls['author']->getMarkup());
-
 
         $this->assertInstanceOf(Form\QgisFormControlProperties::class, $formControls['checked']);
         $this->assertEquals('checked', $formControls['checked']->getName());
@@ -2065,7 +2065,8 @@ def my_form_open(dialog, layer, feature):
         $this->assertEquals('', $formControls['local']->getEditAttribute('StorageType'));
     }
 
-    public function testToKeyArray(): void {
+    public function testToKeyArray(): void
+    {
         $xmlStr = '
   <maplayer refreshOnNotifyMessage="" minScale="100000000" maxScale="0" wkbType="Point" readOnly="0" styleCategories="AllStyleCategories" simplifyDrawingTol="1" type="vector" autoRefreshTime="0" geometry="Point" refreshOnNotifyEnabled="0" legendPlaceholderImage="" simplifyLocal="1" autoRefreshEnabled="0" simplifyMaxScale="1" simplifyAlgorithm="0" hasScaleBasedVisibilityFlag="0" labelsEnabled="0" simplifyDrawingHints="0" symbologyReferenceScale="-1">
     <extent>
@@ -2661,23 +2662,24 @@ def my_form_open(dialog, layer, feature):
         $this->assertCount(5, $layerToKeyArray['aliases']);
         $this->assertEquals(
             array(
-            'gid' => '',
-            'titre' => '',
-            'test' => '',
-            'test_not_null_only' => 'Test constraint not null only',
-            'test_empty_value_only' => 'Test with empty value only'
+                'gid' => '',
+                'titre' => '',
+                'test' => '',
+                'test_not_null_only' => 'Test constraint not null only',
+                'test_empty_value_only' => 'Test with empty value only',
             ),
-            $layerToKeyArray['aliases']);
+            $layerToKeyArray['aliases']
+        );
 
         $this->assertArrayHasKey('defaults', $layerToKeyArray);
         $this->assertCount(5, $layerToKeyArray['defaults']);
         $this->assertEquals(
             array(
-            'gid' => '',
-            'titre' => '',
-            'test' => '',
-            'test_not_null_only' => '',
-            'test_empty_value_only' => ''
+                'gid' => '',
+                'titre' => '',
+                'test' => '',
+                'test_not_null_only' => '',
+                'test_empty_value_only' => '',
             ),
             $layerToKeyArray['defaults']
         );

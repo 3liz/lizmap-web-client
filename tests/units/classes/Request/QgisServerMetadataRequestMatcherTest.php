@@ -1,9 +1,14 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
 use GuzzleHttp\Psr7\Request;
 use Lizmap\Request\QgisServerMetadataRequestMatcher;
+use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class QgisServerMetadataRequestMatcherTest extends TestCase
 {
     public function testMapHost(): void

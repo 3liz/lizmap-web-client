@@ -1,7 +1,11 @@
 <?php
+
+use Jelix\IniFile\IniModifier;
 use PHPUnit\Framework\TestCase;
+
 /**
  * @internal
+ *
  * @coversNothing
  */
 class lizmapServicesTest extends TestCase
@@ -266,11 +270,11 @@ class lizmapServicesTest extends TestCase
         $ini1 = array(
             'appName' => 'Lizmap',
             'adminContactEmail' => 'test.test@test.com',
-            'uploadedImageMaxWidthHeight' => 1920
+            'uploadedImageMaxWidthHeight' => 1920,
         );
         $ini1_1 = array(
             'appName' => 'Lizmap',
-            'uploadedImageMaxWidthHeight' => 1920
+            'uploadedImageMaxWidthHeight' => 1920,
         );
         $ini2 = array(
             'webmasterName' => 'Adrien',
@@ -326,12 +330,15 @@ class lizmapServicesTest extends TestCase
         $testLizmapServices = new LizmapServices(
             array('hideSensitiveServicesProperties' => $hide),
             (object) array(
-                'lizmap' => [
+                'lizmap' => array(
                     'setAdminContactEmailAsReplyTo' => false,
-                    'version' => 'unit-test-3'
-                ]
+                    'version' => 'unit-test-3',
+                ),
             ),
-            false, '', null);
+            false,
+            '',
+            null
+        );
 
         foreach ($defaultPropList as $prop) {
             $testLizmapServices->{$prop} = '';
@@ -341,8 +348,8 @@ class lizmapServicesTest extends TestCase
             $testLizmapServices->{$key} = $val;
         }
 
-        $ini = new \Jelix\IniFile\IniModifier($iniPath);
-        $liveIni = new \Jelix\IniFile\IniModifier($liveIniPath);
+        $ini = new IniModifier($iniPath);
+        $liveIni = new IniModifier($liveIniPath);
         $testLizmapServices->saveIntoIni($ini, $liveIni);
         if (isset($expectedIniValues)) {
             $this->assertEquals($expectedIniValues, $ini->getValues($section_name));
@@ -415,8 +422,7 @@ class lizmapServicesTest extends TestCase
         if (isset($repInfosValues['allowUserDefinedThemes'])) {
             if ($repInfosValues['allowUserDefinedThemes'] == '1') {
                 $this->assertTrue($repo->allowUserDefinedThemes());
-            }
-            else {
+            } else {
                 $this->assertFalse($repo->allowUserDefinedThemes());
             }
         }

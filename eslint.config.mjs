@@ -69,7 +69,7 @@ export default [
         },
         rules: {
             "@stylistic/js/indent": [
-                'error', 4, {
+                "error", 4, {
                     "SwitchCase": 1,
                     "ignoredNodes": ["TemplateLiteral *"],
                 }
@@ -78,7 +78,13 @@ export default [
                 "error", 290, 4],  // It's a temporary value, until we fix some.
             "no-prototype-builtins": "off",
             "no-undef": "off",
-            'jsdoc/require-description': 'warn',
+            "jsdoc/require-description": "warn",
+            "jsdoc/tag-lines": [
+                "error"|"warn",
+                "always",{
+                    "applyToEndTag":false
+                }
+            ],
         },
     }, {
         files: [

@@ -1,18 +1,19 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
-use Lizmap\Project\Qgis;
 use Lizmap\App;
+use Lizmap\Project\Qgis;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 class VectorLayerConstraintExpressionTest extends TestCase
 {
     public function testEmpty(): void
     {
-        $xmlStr ='<constraint desc="" exp="" field="id"></constraint>';
+        $xmlStr = '<constraint desc="" exp="" field="id"></constraint>';
         $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
         $constraint = Qgis\Layer\VectorLayerConstraintExpression::fromXmlReader($oXml);
 
@@ -24,7 +25,7 @@ class VectorLayerConstraintExpressionTest extends TestCase
 
     public function testExpression(): void
     {
-        $xmlStr ='<constraint desc="Web site URL must start with \'http\'" exp="left( &quot;website&quot;, 4) = \'http\'" field="website"></constraint>';
+        $xmlStr = '<constraint desc="Web site URL must start with \'http\'" exp="left( &quot;website&quot;, 4) = \'http\'" field="website"></constraint>';
         $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
         $constraint = Qgis\Layer\VectorLayerConstraintExpression::fromXmlReader($oXml);
 

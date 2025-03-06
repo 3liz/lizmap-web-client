@@ -1,11 +1,12 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
-use Lizmap\Project\Qgis;
 use Lizmap\App;
+use Lizmap\Project\Qgis;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 class VectorLayerEditWidgetTest extends TestCase
@@ -34,8 +35,8 @@ class VectorLayerEditWidgetTest extends TestCase
             'IsMultiline' => false,
             'UseHtml' => false,
         );
-        foreach($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->$prop, $prop);
+        foreach ($config as $prop => $value) {
+            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
         }
         $this->assertEquals($config, $editWidget->config->getData());
 
@@ -61,8 +62,8 @@ class VectorLayerEditWidgetTest extends TestCase
             'IsMultiline' => false,
             'UseHtml' => false,
         );
-        foreach($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->$prop, $prop);
+        foreach ($config as $prop => $value) {
+            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
         }
 
         // Default config
@@ -84,8 +85,8 @@ class VectorLayerEditWidgetTest extends TestCase
             'IsMultiline' => false,
             'UseHtml' => false,
         );
-        foreach($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->$prop, $prop);
+        foreach ($config as $prop => $value) {
+            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
         }
     }
 
@@ -115,8 +116,8 @@ class VectorLayerEditWidgetTest extends TestCase
             'UncheckedState' => '0',
             'TextDisplayMethod' => 1,
         );
-        foreach($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->$prop, $prop);
+        foreach ($config as $prop => $value) {
+            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
         }
 
         $xmlStr = '
@@ -141,8 +142,8 @@ class VectorLayerEditWidgetTest extends TestCase
             'UncheckedState' => '0',
             'TextDisplayMethod' => 0,
         );
-        foreach($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->$prop, $prop);
+        foreach ($config as $prop => $value) {
+            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
         }
 
         // Default config
@@ -165,8 +166,8 @@ class VectorLayerEditWidgetTest extends TestCase
             'UncheckedState' => '',
             'TextDisplayMethod' => 0,
         );
-        foreach($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->$prop, $prop);
+        foreach ($config as $prop => $value) {
+            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
         }
     }
 
@@ -200,8 +201,8 @@ class VectorLayerEditWidgetTest extends TestCase
             'field_format' => 'yyyy-MM-dd',
             'field_iso_format' => false,
         );
-        foreach($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->$prop, $prop);
+        foreach ($config as $prop => $value) {
+            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
         }
 
         // Default config
@@ -226,8 +227,8 @@ class VectorLayerEditWidgetTest extends TestCase
             'field_format' => 'yyyy-MM-dd',
             'field_iso_format' => false,
         );
-        foreach($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->$prop, $prop);
+        foreach ($config as $prop => $value) {
+            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
         }
     }
 
@@ -263,8 +264,8 @@ class VectorLayerEditWidgetTest extends TestCase
             'Step' => 1,
             'Style' => 'SpinBox',
         );
-        foreach($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->$prop, $prop);
+        foreach ($config as $prop => $value) {
+            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
         }
 
         // Default config
@@ -286,8 +287,8 @@ class VectorLayerEditWidgetTest extends TestCase
             'AllowNull' => true,
             'Style' => 'SpinBox',
         );
-        foreach($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->$prop, $prop);
+        foreach ($config as $prop => $value) {
+            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
         }
         $notSet = array(
             'Max',
@@ -295,8 +296,8 @@ class VectorLayerEditWidgetTest extends TestCase
             'Precision',
             'Step',
         );
-        foreach($notSet as $not) {
-            $this->assertFalse(isset($editWidget->config->$not), $not);
+        foreach ($notSet as $not) {
+            $this->assertFalse(isset($editWidget->config->{$not}), $not);
         }
     }
 }

@@ -1,7 +1,11 @@
 <?php
+
+use Jelix\IniFile\IniModifier;
 use PHPUnit\Framework\TestCase;
+
 /**
  * @internal
+ *
  * @coversNothing
  */
 class lizmapRepositoryTest extends TestCase
@@ -139,7 +143,7 @@ class lizmapRepositoryTest extends TestCase
         $section = 'repository:test';
 
         file_put_contents($iniFile, '');
-        $ini = new \Jelix\IniFile\IniModifier($iniFile);
+        $ini = new IniModifier($iniFile);
         $services = new lizmapServices($data, (object) array(), true, '', null);
         $repo = $services->getLizmapRepository('test');
         if ($changedProp && $changedValue) {
@@ -154,38 +158,38 @@ class lizmapRepositoryTest extends TestCase
 
     // Tests for after the lizmapProject class refactorisation
 
-/*  public function testGetProject()
-    {
-        $ini = parse_ini_file(jApp::varConfigPath('lizmapConfig.ini.php'), true);
-        $services = new lizmapServices($ini, jApp::config(), true, jApp::varPath());
-        $rep = $services->getLizmapRepository('montpellier');
-        $proj = $rep->getProject('events');
-        $proj2 = $rep->getProject('events');
+    /*  public function testGetProject()
+        {
+            $ini = parse_ini_file(jApp::varConfigPath('lizmapConfig.ini.php'), true);
+            $services = new lizmapServices($ini, jApp::config(), true, jApp::varPath());
+            $rep = $services->getLizmapRepository('montpellier');
+            $proj = $rep->getProject('events');
+            $proj2 = $rep->getProject('events');
 
-        $this->AssertNotEquals(null, $proj);
-        $this->assertSame($proj, $proj2);
-        unset($proj, $proj2, $rep, $services);
-    }
-
-    public function testGetProjects()
-    {
-        $repo = array(
-            'repository:montpellier' => array(
-                'label' => 'Demo',
-                'path' => realpath(__DIR__.'/../../qgis-projects/demoqgis'),
-                'allowUserDefinedThemes' => true,
-            ),
-        );
-
-        $projKeys = array('events', 'montpellier');
-        $ini = parse_ini_file(jApp::varConfigPath('lizmapConfig.ini.php'), true);
-        $services = new lizmapServices($ini, jApp::config(), true, jApp::varPath());
-        $rep = $services->getLizmapRepository('montpellier');
-        $projects = $rep->getProjects();
-        $this->assertEquals(count($projKeys), count($projects));
-        foreach ($projKeys as $key => $projKey) {
-            $this->assertEquals($projKey, $projects[$key]->getKey());
+            $this->AssertNotEquals(null, $proj);
+            $this->assertSame($proj, $proj2);
+            unset($proj, $proj2, $rep, $services);
         }
-        unset($projects, $rep, $services);
-    } */
+
+        public function testGetProjects()
+        {
+            $repo = array(
+                'repository:montpellier' => array(
+                    'label' => 'Demo',
+                    'path' => realpath(__DIR__.'/../../qgis-projects/demoqgis'),
+                    'allowUserDefinedThemes' => true,
+                ),
+            );
+
+            $projKeys = array('events', 'montpellier');
+            $ini = parse_ini_file(jApp::varConfigPath('lizmapConfig.ini.php'), true);
+            $services = new lizmapServices($ini, jApp::config(), true, jApp::varPath());
+            $rep = $services->getLizmapRepository('montpellier');
+            $projects = $rep->getProjects();
+            $this->assertEquals(count($projKeys), count($projects));
+            foreach ($projKeys as $key => $projKey) {
+                $this->assertEquals($projKey, $projects[$key]->getKey());
+            }
+            unset($projects, $rep, $services);
+        } */
 }

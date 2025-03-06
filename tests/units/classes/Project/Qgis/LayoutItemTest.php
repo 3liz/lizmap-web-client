@@ -1,11 +1,12 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
-use Lizmap\Project\Qgis;
 use Lizmap\App;
+use Lizmap\Project\Qgis;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 class LayoutItemTest extends TestCase
@@ -63,8 +64,8 @@ class LayoutItemTest extends TestCase
             'x' => 0,
             'y' => 0,
         );
-        foreach($data as $prop => $value) {
-            $this->assertEquals($value, $item->$prop, $prop);
+        foreach ($data as $prop => $value) {
+            $this->assertEquals($value, $item->{$prop}, $prop);
         }
 
         // LayoutItemLabel
@@ -97,8 +98,8 @@ class LayoutItemTest extends TestCase
             'htmlState' => false,
             'text' => 'Tram stops in the district',
         );
-        foreach($data as $prop => $value) {
-            $this->assertEquals($value, $item->$prop, $prop);
+        foreach ($data as $prop => $value) {
+            $this->assertEquals($value, $item->{$prop}, $prop);
         }
 
         // LayoutItemMap
@@ -249,8 +250,8 @@ class LayoutItemTest extends TestCase
             'grid' => false,
             'overviewMap' => '{a228885d-4d7a-4ae0-af9b-02a4fe7cd814}',
         );
-        foreach($data as $prop => $value) {
-            $this->assertEquals($value, $item->$prop, $prop);
+        foreach ($data as $prop => $value) {
+            $this->assertEquals($value, $item->{$prop}, $prop);
         }
 
         // LayoutItemMap
@@ -332,8 +333,8 @@ class LayoutItemTest extends TestCase
             'x' => 252,
             'y' => 84,
         );
-        foreach($data as $prop => $value) {
-            $this->assertEquals($value, $item->$prop, $prop);
+        foreach ($data as $prop => $value) {
+            $this->assertEquals($value, $item->{$prop}, $prop);
         }
     }
 }

@@ -1,9 +1,11 @@
 <?php
-use PHPUnit\Framework\TestCase;
+
 use Lizmap\Project;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 class ProjectMainDataTest extends TestCase
@@ -24,7 +26,7 @@ class ProjectMainDataTest extends TestCase
         $this->assertFalse($p->needsUpdateError());
         $this->assertTrue($p->getAcl());
         $this->assertFalse($p->getHidden());
-        //$this->assertEquals(array(), $p->getData());
+        // $this->assertEquals(array(), $p->getData());
 
         $file = __DIR__.'/Ressources/montpellier_intranet.qgs';
         $p = new Project\ProjectMainData('tests', 'montpellier_intranet', $file, 30200, $context);

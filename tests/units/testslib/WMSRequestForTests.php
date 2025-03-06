@@ -2,7 +2,6 @@
 
 use Lizmap\Request\WMSRequest;
 
-
 class WMSRequestForTests extends WMSRequest
 {
     public function getContextForTests()
