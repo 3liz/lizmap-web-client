@@ -542,7 +542,7 @@ class lizMapCtrl extends jController
                 $rep->setBodyAttributes(array('data-lizmap-plugin-update-warning-url' => jUrl::get('admin~qgis_projects:index')));
             }
         } elseif ($lproj->projectCountCfgWarnings() >= 1) {
-            $rep->setBodyAttributes(array('data-lizmap-plugin-has-warnings' => true));
+            $rep->setBodyAttributes(array('data-lizmap-plugin-warnings-count' => $lproj->projectCountCfgWarnings()));
             if ($isAdmin) {
                 $rep->setBodyAttributes(array('data-lizmap-plugin-has-warnings-url' => jUrl::get('admin~qgis_projects:index')));
             }
