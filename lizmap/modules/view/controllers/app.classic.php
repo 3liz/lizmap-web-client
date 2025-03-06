@@ -1,9 +1,13 @@
 <?php
+
+use Lizmap\Server\Server;
+use LizmapAdmin\ModulesInfo\ModulesChecker;
+
 /**
  * Methods providing information about Lizmap application.
  *
  * @author    3liz
- * @copyright 2016-2022 3liz
+ * @copyright 2016-2025 3liz
  *
  * @see      http://3liz.com
  *
@@ -29,8 +33,12 @@ class appCtrl extends jController
         }
 
         // Get server metadata from LWC and QGIS Server Lizmap plugin
-        $server = new \Lizmap\Server\Server();
+        $server = new Server();
         $data = $server->getMetadata();
+
+        // Add if the installation is completed
+        $modules = new ModulesChecker();
+        $data['info']['installation_complete'] = $modules->compareLizmapCoreModulesVersions($data['info']['version']);
 
         // Only show QGIS related data for admins
         $serverInfoAccess = (\jAcl2::check('lizmap.admin.access') || \jAcl2::check('lizmap.admin.server.information.view'));

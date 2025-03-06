@@ -8,6 +8,11 @@
 
     <h3>{@admin.server.information.lizmap.label@}</h3>
     <h4>{@admin.server.information.lizmap.info@}</h4>
+    {if !$installationComplete}
+      <div class="alert alert-danger" role="alert">
+          {@admin.server.information.installation.not.complete.html@}
+      </div>
+    {/if}
     <table class="table table-striped table-bordered table-server-info table-lizmap-web-client">
         <tr>
             <th>{@admin.server.information.lizmap.info.version@}</th>
