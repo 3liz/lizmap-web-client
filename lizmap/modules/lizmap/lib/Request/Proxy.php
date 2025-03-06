@@ -276,6 +276,24 @@ class Proxy
     }
 
     /**
+     * Get the X-Request-Id of the request from the given headers.
+     *
+     * @param array<string, array<string>> $headers The headers to check. Note, it can be array<string, string> if headers are not from Guzzle
+     *
+     * @return string
+     */
+    public static function httpRequestId($headers)
+    {
+        $xRequestId = $headers['X-Request-Id'] ?? '';
+
+        if (is_string($xRequestId)) {
+            return $xRequestId;
+        }
+
+        return implode(',', $xRequestId);
+    }
+
+    /**
      * @param string $url
      * @param array  $options
      *
@@ -518,9 +536,9 @@ class Proxy
     /**
      * Log if the HTTP code is a 4XX or 5XX error code.
      *
-     * @param int                   $httpCode The HTTP code of the request
-     * @param string                $url      The URL of the request, for logging
-     * @param array<string, string> $headers  The headers of the response
+     * @param int                          $httpCode The HTTP code of the request
+     * @param string                       $url      The URL of the request, for logging
+     * @param array<string, array<string>> $headers  The headers of the response
      */
     protected static function logRequestIfError($httpCode, $url, $headers = array())
     {
@@ -528,7 +546,7 @@ class Proxy
             return;
         }
 
-        $xRequestId = $headers['X-Request-Id'] ?? '';
+        $xRequestId = self::httpRequestId($headers);
 
         $lizmapAdmin = 'An HTTP request ended with an error, please check the main error log.';
         $lizmapAdmin .= ' HTTP code '.$httpCode.'.';
