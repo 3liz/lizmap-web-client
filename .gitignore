@@ -21,6 +21,7 @@ build/
 node_modules/
 assets/dist/
 *.bundle.js
+lizmap/www/assets/jelix/*
 
 # Config
 lizmap/var/config/lizmapConfig.ini.php
