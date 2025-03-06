@@ -1,18 +1,18 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
 use Lizmap\Project\Qgis;
+use PHPUnit\Framework\TestCase;
 
 class Person extends Qgis\BaseQgisObject
 {
-    /** @var Array<string> The instance properties*/
+    /** @var array<string> The instance properties */
     protected $properties = array(
         'name',
         'parent',
         'children',
     );
 
-    /** @var Array<string> The not null properties */
+    /** @var array<string> The not null properties */
     protected $mandatoryProperties = array(
         'name',
     );
@@ -20,6 +20,7 @@ class Person extends Qgis\BaseQgisObject
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 class BaseQgisObjectTest extends TestCase

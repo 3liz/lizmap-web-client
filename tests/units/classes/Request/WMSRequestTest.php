@@ -1,10 +1,15 @@
 <?php
 
 use Lizmap\Project\Repository;
-use PHPUnit\Framework\TestCase;
-use Lizmap\Request\WMSRequest;
 use Lizmap\Request\OGCResponse;
+use Lizmap\Request\WMSRequest;
+use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class WMSRequestTest extends TestCase
 {
     public function testParameters(): void
@@ -46,18 +51,23 @@ class WMSRequestTest extends TestCase
                 'filter' => 'test',
             ),
             'layer2' => array(
-                'filter' => 'other test'
-            )
+                'filter' => 'other test',
+            ),
         );
+
         return array(
             array(array(), null, null),
             array(array('layer' => array('filter' => '')), 'layer:filter', 'layer:filter'),
-            array($loginFilters, 'layer1:filter;layer:dontExists', 'layer1:filter;layer:dontExists')
+            array($loginFilters, 'layer1:filter;layer:dontExists', 'layer1:filter;layer:dontExists'),
         );
     }
 
     /**
      * @dataProvider getParametersWithFilterData
+     *
+     * @param mixed $loginFilter
+     * @param mixed $filter
+     * @param mixed $expectedFilter
      */
     public function testParametersWithFilters($loginFilter, $filter, $expectedFilter): void
     {
@@ -91,7 +101,7 @@ class WMSRequestTest extends TestCase
             '<whatever><nourl/></whatever>'
         );
 
-        $expectedResponseNoUrl = (object)array(
+        $expectedResponseNoUrl = (object) array(
             'code' => 200,
             'mime' => 'text/xml',
             'data' => '<whatever><nourl/></whatever>',
@@ -103,7 +113,7 @@ class WMSRequestTest extends TestCase
             '<whatever><location xlink:href="test.google.com"/></whatever>',
         );
 
-        $expectedResponseSimpleUrl = (object)array(
+        $expectedResponseSimpleUrl = (object) array(
             'code' => 200,
             'mime' => 'text/xml',
             'data' => '<whatever><location xlink:href="http://localhost?repo=test&amp;project=test&amp;&amp;"/></whatever>',
@@ -120,7 +130,7 @@ class WMSRequestTest extends TestCase
             </xml>',
         );
 
-        $expectedResponseMultiplesUrl = (object)array(
+        $expectedResponseMultiplesUrl = (object) array(
             'code' => 200,
             'mime' => 'text/xml',
             'data' => '<xml>
@@ -140,6 +150,10 @@ class WMSRequestTest extends TestCase
 
     /**
      * @dataProvider getGetContextData
+     *
+     * @param mixed $response
+     * @param mixed $url
+     * @param mixed $expectedResponse
      */
     public function testGetContext($response, $url, $expectedResponse): void
     {
@@ -150,13 +164,14 @@ class WMSRequestTest extends TestCase
         $proj->setKey('proj');
         $proj->setRepo(new Repository('key', array(), '', null, $testContext));
         $wmsMock = $this->getMockBuilder(WMSRequestForTests::class)
-                        ->onlyMethods(['request'])
-                        ->setConstructorArgs([$proj, array(), null])
-                        ->getMock();
+            ->onlyMethods(array('request'))
+            ->setConstructorArgs(array($proj, array(), null))
+            ->getMock()
+        ;
         $wmsMock->method('request')->willReturn($response);
         $newResponse = $wmsMock->getContextForTests();
-        foreach($expectedResponse as $prop => $value) {
-            $this->assertEquals($value, $newResponse->$prop);
+        foreach ($expectedResponse as $prop => $value) {
+            $this->assertEquals($value, $newResponse->{$prop});
         }
     }
 
@@ -174,19 +189,26 @@ class WMSRequestTest extends TestCase
 
     /**
      * @dataProvider getCheckMaximumWidthHeightData
+     *
+     * @param mixed $width
+     * @param mixed $maxWidth
+     * @param mixed $height
+     * @param mixed $maxHeight
+     * @param mixed $useServices
+     * @param mixed $expectedBool
      */
     public function testCheckMaximumWidthHeight($width, $maxWidth, $height, $maxHeight, $useServices, $expectedBool): void
     {
         $params = array(
             'width' => $width,
-            'height' => $height
+            'height' => $height,
         );
         $proj = new ProjectForOGCForTests();
         $proj->setWMSMaxWidthHeight(
             $useServices ? '' : $maxWidth,
             $useServices ? '' : $maxHeight
         );
-        $services = (object)array(
+        $services = (object) array(
             'wmsMaxWidth' => $useServices ? $maxWidth : '',
             'wmsMaxHeight' => $useServices ? $maxHeight : '',
         );
@@ -209,13 +231,19 @@ class WMSRequestTest extends TestCase
 
     /**
      * @dataProvider getUseCacheData
+     *
+     * @param mixed $params
+     * @param mixed $cacheDriver
+     * @param mixed $cached
+     * @param mixed $expectedUseCache
+     * @param mixed $expectedWmsClient
      */
     public function testUseCache($params, $cacheDriver, $cached, $expectedUseCache, $expectedWmsClient): void
     {
         $testContext = new ContextForTests();
         $testContext->setResult(array('cacheDriver' => $cacheDriver));
         $wms = new WMSRequestForTests(new ProjectForOGCForTests($testContext), array(), null);
-        $configLayer = (object)array('cached' => $cached);
+        $configLayer = (object) array('cached' => $cached);
         list($useCache, $wmsClient) = $wms->useCacheForTests($configLayer, $params, '');
         $this->assertEquals($expectedUseCache, $useCache);
         $this->assertEquals($expectedWmsClient, $wmsClient);

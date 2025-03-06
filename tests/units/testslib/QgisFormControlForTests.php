@@ -12,7 +12,6 @@ class QgisFormControlForTests extends QgisFormControl
         self::buildEditTypeMap();
     }
 
-
     /**
      * @param QgisFormControlProperties $properties
      */

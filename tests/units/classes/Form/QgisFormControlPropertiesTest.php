@@ -1,18 +1,20 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
 use Lizmap\Form\QgisFormControlProperties;
+use PHPUnit\Framework\TestCase;
 
 require_once __DIR__.'/../../../../lizmap/vendor/jelix/jelix/lib/jelix/forms/jFormsBase.class.php';
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 class QgisFormControlPropertiesTest extends TestCase
 {
-    function testIsEditable(): void {
-        # TextEdit - editable
+    public function testIsEditable(): void
+    {
+        // TextEdit - editable
         $properties = new QgisFormControlProperties(
             'id',
             'TextEdit',
@@ -20,12 +22,12 @@ class QgisFormControlPropertiesTest extends TestCase
             array(
                 'IsMultiline' => false,
                 'UseHtml' => false,
-                'Editable' => true
+                'Editable' => true,
             )
         );
         $this->assertTrue($properties->isEditable());
 
-        # TextEdit - not editable
+        // TextEdit - not editable
         $properties = new QgisFormControlProperties(
             'id',
             'TextEdit',
@@ -33,12 +35,12 @@ class QgisFormControlPropertiesTest extends TestCase
             array(
                 'IsMultiline' => false,
                 'UseHtml' => false,
-                'Editable' => false
+                'Editable' => false,
             )
         );
         $this->assertFalse($properties->isEditable());
 
-        # TextEdit - field editable
+        // TextEdit - field editable
         $properties = new QgisFormControlProperties(
             'id',
             'TextEdit',
@@ -46,12 +48,12 @@ class QgisFormControlPropertiesTest extends TestCase
             array(
                 'IsMultiline' => false,
                 'UseHtml' => false,
-                'fieldEditable' => true
+                'fieldEditable' => true,
             )
         );
         $this->assertTrue($properties->isEditable());
 
-        # TextEdit - field not editable
+        // TextEdit - field not editable
         $properties = new QgisFormControlProperties(
             'id',
             'TextEdit',
@@ -59,51 +61,52 @@ class QgisFormControlPropertiesTest extends TestCase
             array(
                 'IsMultiline' => false,
                 'UseHtml' => false,
-                'fieldEditable' => false
+                'fieldEditable' => false,
             )
         );
         $this->assertFalse($properties->isEditable());
 
-        # UniqueValues - editable
+        // UniqueValues - editable
         $properties = new QgisFormControlProperties(
             'author',
             'UniqueValues',
             'input',
             array(
-                'Editable' => true
+                'Editable' => true,
             )
         );
         $this->assertTrue($properties->isEditable());
 
-        # UniqueValues - not editable
+        // UniqueValues - not editable
         $properties = new QgisFormControlProperties(
             'author',
             'UniqueValues',
             'input',
             array(
-                'Editable' => false
+                'Editable' => false,
             )
         );
         $this->assertFalse($properties->isEditable());
 
-        # ValueMap
+        // ValueMap
         $properties = new QgisFormControlProperties(
             'checked',
             'ValueMap',
             'menulist',
             array(
                 'valueMap' => array(
-                     'true' => 'Yes',
-                     'false' => 'No',
-                     '{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}' => '<NULL>',
+                    'true' => 'Yes',
+                    'false' => 'No',
+                    '{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}' => '<NULL>',
                 ),
-                'Editable' => 1
+                'Editable' => 1,
             )
         );
         $this->assertTrue($properties->isEditable());
     }
 
-    function testGetEditAttribute(): void {
+    public function testGetEditAttribute(): void
+    {
 
         $properties = new QgisFormControlProperties(
             'risque',
@@ -130,7 +133,8 @@ class QgisFormControlPropertiesTest extends TestCase
         $this->assertEquals($properties->getEditAttribute('referencedlayerid'), 'risque_66cb8d43_86b7_4583_9217_f7ead54463c3');
     }
 
-    function testGetValueRelationData(): void {
+    public function testGetValueRelationData(): void
+    {
 
         $properties = new QgisFormControlProperties(
             'tram_id',
@@ -162,7 +166,8 @@ class QgisFormControlPropertiesTest extends TestCase
         $this->assertTrue($valueRelationData['fieldEditable']);
     }
 
-    function testGetRelationReference(): void {
+    public function testGetRelationReference(): void
+    {
 
         $properties = new QgisFormControlProperties(
             'risque',
@@ -186,14 +191,14 @@ class QgisFormControlPropertiesTest extends TestCase
         $this->assertFalse($relationReferenceData['mapIdentification']);
         $this->assertTrue(is_array($relationReferenceData['filters']));
         $this->assertCount(0, $relationReferenceData['filters']);
-        $this->assertEquals($relationReferenceData['filterExpression'], Null);
+        $this->assertEquals($relationReferenceData['filterExpression'], null);
         $this->assertFalse($relationReferenceData['chainFilters']);
         $this->assertEquals($relationReferenceData['referencedLayerName'], 'risque');
         $this->assertEquals($relationReferenceData['referencedLayerId'], 'risque_66cb8d43_86b7_4583_9217_f7ead54463c3');
 
-        # AllowNULL / not AllowNull
-        # referencedLayerName / not ReferencedLayerName
-        # referencedLayerId / not ReferencedLayerId
+        // AllowNULL / not AllowNull
+        // referencedLayerName / not ReferencedLayerName
+        // referencedLayerId / not ReferencedLayerId
         $properties = new QgisFormControlProperties(
             'risque',
             'RelationReference',
@@ -216,7 +221,7 @@ class QgisFormControlPropertiesTest extends TestCase
         $this->assertFalse($relationReferenceData['mapIdentification']);
         $this->assertTrue(is_array($relationReferenceData['filters']));
         $this->assertCount(0, $relationReferenceData['filters']);
-        $this->assertEquals($relationReferenceData['filterExpression'], Null);
+        $this->assertEquals($relationReferenceData['filterExpression'], null);
         $this->assertFalse($relationReferenceData['chainFilters']);
         $this->assertEquals($relationReferenceData['referencedLayerName'], 'risque');
         $this->assertEquals($relationReferenceData['referencedLayerId'], 'risque_66cb8d43_86b7_4583_9217_f7ead54463c3');

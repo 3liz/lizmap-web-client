@@ -1,20 +1,19 @@
 #!/usr/bin/env php
 <?php
-require('/www/lizmap/vendor/autoload.php');
-use \Jelix\IniFile\IniModifier;
+
+require '/www/lizmap/vendor/autoload.php';
+use Jelix\IniFile\IniModifier;
 
 /**
- * @param $varname
  * @param IniModifier $iniFileModifier
- * @return void
  */
 function load_include_config($varname, $iniFileModifier)
 {
     $includeConfigDir = getenv($varname);
     if ($includeConfigDir !== false and is_dir($includeConfigDir)) {
-        echo("Checking for lizmap configuration files in ".$includeConfigDir."\n");
-        foreach (glob(rtrim($includeConfigDir,"/")."/*.ini.php") as $includeFile) {
-            echo("* Loading lizmap configuration: ".$includeFile."\n");
+        echo 'Checking for lizmap configuration files in '.$includeConfigDir."\n";
+        foreach (glob(rtrim($includeConfigDir, '/').'/*.ini.php') as $includeFile) {
+            echo '* Loading lizmap configuration: '.$includeFile."\n";
             $includeConfig = new IniModifier($includeFile);
             $iniFileModifier->import($includeConfig);
         }
@@ -29,17 +28,19 @@ function load_include_config($varname, $iniFileModifier)
 }
 
 /**
- * connect to Postgresql with the given profile
+ * connect to Postgresql with the given profile.
+ *
  * @param array
+ * @param mixed $profile
  */
-function pgSqlConnect ($profile)
+function pgSqlConnect($profile)
 {
     $str = '';
 
     // Service is PostgreSQL way to store credentials in a file :
     // http://www.postgresql.org/docs/9.1/static/libpq-pgservice.html
     // If given, no need to add host, user, database, port and password
-    if(isset($profile['service']) && $profile['service'] != ''){
+    if (isset($profile['service']) && $profile['service'] != '') {
         $str = 'service=\''.$profile['service'].'\''.$str;
 
         // Database name may be given, even if service is used
@@ -47,11 +48,11 @@ function pgSqlConnect ($profile)
         if (isset($profile['database']) && $profile['database'] != '') {
             $str .= ' dbname=\''.$profile['database'].'\'';
         }
-    }
-    else {
+    } else {
         // we do a distinction because if the host is given == TCP/IP connection else unix socket
-        if($profile['host'] != '')
+        if ($profile['host'] != '') {
             $str = 'host=\''.$profile['host'].'\''.$str;
+        }
 
         if (isset($profile['port'])) {
             $str .= ' port=\''.$profile['port'].'\'';
@@ -82,16 +83,17 @@ function pgSqlConnect ($profile)
 
     if (isset($profile['force_new']) && $profile['force_new']) {
         $cnx = pg_connect($str, PGSQL_CONNECT_FORCE_NEW);
-    }
-    else {
+    } else {
         $cnx = pg_connect($str);
     }
 
     // let's do the connection
     if ($cnx) {
         pg_close($cnx);
+
         return true;
     }
+
     return false;
 }
 
@@ -99,12 +101,15 @@ function pgSqlConnect ($profile)
  * Try to connect to the postgresql database.
  *
  * @param IniModifier $profilesConfig
- * @param string $profileName The profile to use
- * @param int $nbRetries
+ * @param string      $profileName    The profile to use
+ * @param int         $nbRetries
+ * @param mixed       $wait
+ *
  * @return bool
+ *
  * @throws Exception
  */
-function checkAndWaitPostgresql($profilesConfig, $profileName, $nbRetries=10, $wait=2)
+function checkAndWaitPostgresql($profilesConfig, $profileName, $nbRetries = 10, $wait = 2)
 {
     $origProfileName = $profileName;
     $profileAlias = $profilesConfig->getValue($profileName, 'jdb');
@@ -113,17 +118,18 @@ function checkAndWaitPostgresql($profilesConfig, $profileName, $nbRetries=10, $w
     }
     $profile = $profilesConfig->getValues('jdb:'.$profileName);
     if ($profile === null) {
-        throw new Exception("Database profile jdb:$profileName not found");
+        throw new Exception("Database profile jdb:{$profileName} not found");
     }
     $profile = (new jDbParameters($profile))->getParameters();
     if ($profile['driver'] != 'pgsql') {
         return true;
     }
     $profile['timeout'] = 30;
-    echo "trying to connect to the Postgresql database ".$profile['database']." at ".$profile['host']." with the profile $origProfileName...\n";
-    for($i=0; $i < $nbRetries; $i++) {
+    echo 'trying to connect to the Postgresql database '.$profile['database'].' at '.$profile['host']." with the profile {$origProfileName}...\n";
+    for ($i = 0; $i < $nbRetries; ++$i) {
         if (pgSqlConnect($profile)) {
             echo "  Ok, Postgresql is alive.\n";
+
             return true;
         }
         // if there is nothing on the host/port, pg_connect fails immediately,
@@ -134,28 +140,29 @@ function checkAndWaitPostgresql($profilesConfig, $profileName, $nbRetries=10, $w
     }
     echo "Error: cannot connect to the Postgresql database.\n";
     echo "Lizmap cannot starts.\n";
+
     return false;
 }
 
 /**
- * lizmapConfig.ini.php
+ * lizmapConfig.ini.php.
  */
-$lizmapConfig = new \Jelix\IniFile\IniModifier('/www/lizmap/var/config/lizmapConfig.ini.php');
+$lizmapConfig = new IniModifier('/www/lizmap/var/config/lizmapConfig.ini.php');
 
 $lizmapConfig->setValue('wmsServerURL', getenv('LIZMAP_WMSSERVERURL'), 'services');
 $lizmapConfig->setValue('lizmapPluginAPIURL', getenv('LIZMAP_LIZMAPPLUGINAPIURL'), 'services');
 $lizmapConfig->setValue('rootRepositories', getenv('LIZMAP_ROOT_REPOSITORIES'), 'services');
 $lizmapConfig->setValue('relativeWMSPath', true, 'services');
 
-foreach(array(
-        'cacheExpiration'     => 'LIZMAP_CACHEEXPIRATION',
-        'debugMode'           => 'LIZMAP_DEBUGMODE',
-        'cacheStorageType'    => 'LIZMAP_CACHESTORAGETYPE',
-        'cacheRedisDb'        => 'LIZMAP_CACHEREDISDB',
-        'cacheRedisKeyPrefix' => 'LIZMAP_CACHEREDISKEYPREFIX',
-        'cacheRedisHost'      => 'LIZMAP_CACHEREDISHOST',
-        'cacheRedisPort'      => 'LIZMAP_CACHEREDISPORT',
-        ) as $key => $envValue
+foreach (array(
+    'cacheExpiration' => 'LIZMAP_CACHEEXPIRATION',
+    'debugMode' => 'LIZMAP_DEBUGMODE',
+    'cacheStorageType' => 'LIZMAP_CACHESTORAGETYPE',
+    'cacheRedisDb' => 'LIZMAP_CACHEREDISDB',
+    'cacheRedisKeyPrefix' => 'LIZMAP_CACHEREDISKEYPREFIX',
+    'cacheRedisHost' => 'LIZMAP_CACHEREDISHOST',
+    'cacheRedisPort' => 'LIZMAP_CACHEREDISPORT',
+) as $key => $envValue
 ) {
     if (getenv($envValue) !== false) {
         $lizmapConfig->setValue($key, getenv($envValue), 'services');
@@ -174,10 +181,10 @@ if ($logger_metric !== false) {
 $lizmapConfig->save();
 
 /**
- * localconfig.ini.php
+ * localconfig.ini.php.
  */
-$localConfig = new \Jelix\IniFile\IniModifier('/www/lizmap/var/config/localconfig.ini.php');
-$mainConfig =  new \Jelix\IniFile\IniModifier('/www/lizmap/app/system/mainconfig.ini.php');
+$localConfig = new IniModifier('/www/lizmap/var/config/localconfig.ini.php');
+$mainConfig = new IniModifier('/www/lizmap/app/system/mainconfig.ini.php');
 
 // Let's modify the install configuration of jcommunity, to not create a default
 // admin account (no `defaultusers` parameter). We're relying on
@@ -185,7 +192,6 @@ $mainConfig =  new \Jelix\IniFile\IniModifier('/www/lizmap/app/system/mainconfig
 $jCommunityInstallParams = $mainConfig->getValue('jcommunity.installparam', 'modules');
 unset($jCommunityInstallParams['defaultusers']);
 $localConfig->setValue('jcommunity.installparam', $jCommunityInstallParams, 'modules');
-
 
 if ($logger_metric !== false) {
     $localConfig->setValue('metric', $logger_metric, 'logger');
@@ -201,8 +207,7 @@ if (getenv('LIZMAP_PROXYURL_PROTOCOL') !== false) {
     if (getenv('LIZMAP_PROXYURL_HTTPS_PORT') !== false) {
         $config['forceHTTPSPort'] = getenv('LIZMAP_PROXYURL_HTTPS_PORT');
         $localConfig->setValue('forceHTTPSPort', getenv('LIZMAP_PROXYURL_HTTPS_PORT'));
-    }
-    else {
+    } else {
         $localConfig->setValue('forceHTTPSPort', 443);
     }
 }
@@ -236,7 +241,7 @@ if (file_exists($mailConfigFile)) {
 $localConfig->save();
 
 /**
- * profiles.ini.php
+ * profiles.ini.php.
  */
 $profilesConfig = new IniModifier('/www/lizmap/var/config/profiles.ini.php');
 
@@ -260,9 +265,9 @@ if ($waits == 0) {
 // its table and so on.
 // Try with the default profile
 if (!checkAndWaitPostgresql($profilesConfig, 'default', $retries, $waits)) {
-    exit (1);
+    exit(1);
 }
 // try with the lizlog profile, it may be a different database.
 if (!checkAndWaitPostgresql($profilesConfig, 'lizlog', $retries, $waits)) {
-    exit (1);
+    exit(1);
 }

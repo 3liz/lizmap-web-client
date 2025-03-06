@@ -1,11 +1,12 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
-use Lizmap\Project\Qgis;
 use Lizmap\App;
+use Lizmap\Project\Qgis;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 class ProjectPropertiesTest extends TestCase
@@ -29,8 +30,8 @@ Data is licensed under ODbl, OpenStreetMap contributors',
         );
 
         $properties = new Qgis\ProjectProperties($data);
-        foreach($data as $prop => $value) {
-            $this->assertEquals($value, $properties->$prop);
+        foreach ($data as $prop => $value) {
+            $this->assertEquals($value, $properties->{$prop});
         }
         $this->assertNull($properties->Variables);
         $this->assertNull($properties->Gui);
@@ -100,8 +101,8 @@ Data is licensed under ODbl, OpenStreetMap contributors',
             'WMSUseLayerIDs' => false,
             'WMSAddWktGeometry' => true,
         );
-        foreach($data as $prop => $value) {
-            $this->assertEquals($value, $properties->$prop, $prop);
+        foreach ($data as $prop => $value) {
+            $this->assertEquals($value, $properties->{$prop}, $prop);
         }
 
         $this->assertNotNull($properties->Variables);
@@ -109,22 +110,22 @@ Data is licensed under ODbl, OpenStreetMap contributors',
             'variableNames' => array(),
             'variableValues' => array(),
         );
-        foreach($data as $prop => $value) {
-            $this->assertEquals($value, $properties->Variables->$prop, $prop);
+        foreach ($data as $prop => $value) {
+            $this->assertEquals($value, $properties->Variables->{$prop}, $prop);
         }
 
         $this->assertNotNull($properties->Gui);
         $data = array(
-          'CanvasColorBluePart' => 255,
-          'CanvasColorGreenPart' => 255,
-          'CanvasColorRedPart' => 255,
-          'SelectionColorAlphaPart' => 255,
-          'SelectionColorBluePart' => 0,
-          'SelectionColorGreenPart' => 255,
-          'SelectionColorRedPart' => 255,
+            'CanvasColorBluePart' => 255,
+            'CanvasColorGreenPart' => 255,
+            'CanvasColorRedPart' => 255,
+            'SelectionColorAlphaPart' => 255,
+            'SelectionColorBluePart' => 0,
+            'SelectionColorGreenPart' => 255,
+            'SelectionColorRedPart' => 255,
         );
-        foreach($data as $prop => $value) {
-            $this->assertEquals($value, $properties->Gui->$prop, $prop);
+        foreach ($data as $prop => $value) {
+            $this->assertEquals($value, $properties->Gui->{$prop}, $prop);
         }
     }
 }

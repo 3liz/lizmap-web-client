@@ -1,11 +1,12 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
-use Lizmap\Project\Qgis;
 use Lizmap\App;
+use Lizmap\Project\Qgis;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 class ProjectVariablesTest extends TestCase
@@ -18,8 +19,8 @@ class ProjectVariablesTest extends TestCase
         );
 
         $variables = new Qgis\ProjectVariables($data);
-        foreach($data as $prop => $value) {
-            $this->assertEquals($value, $variables->$prop);
+        foreach ($data as $prop => $value) {
+            $this->assertEquals($value, $variables->{$prop});
         }
         $this->assertTrue($variables->hasVariableName('lizmap_user'));
         $this->assertEquals('lizmap', $variables->getVariableValue('lizmap_user'));
@@ -46,8 +47,8 @@ class ProjectVariablesTest extends TestCase
             'variableNames' => array('lizmap_user', 'lizmap_user_groups'),
             'variableValues' => array('lizmap', 'lizmap-group'),
         );
-        foreach($data as $prop => $value) {
-            $this->assertEquals($value, $variables->$prop, $prop);
+        foreach ($data as $prop => $value) {
+            $this->assertEquals($value, $variables->{$prop}, $prop);
         }
         $this->assertTrue($variables->hasVariableName('lizmap_user'));
         $this->assertEquals('lizmap', $variables->getVariableValue('lizmap_user'));
@@ -65,8 +66,8 @@ class ProjectVariablesTest extends TestCase
             'variableNames' => array(),
             'variableValues' => array(),
         );
-        foreach($data as $prop => $value) {
-            $this->assertEquals($value, $variables->$prop, $prop);
+        foreach ($data as $prop => $value) {
+            $this->assertEquals($value, $variables->{$prop}, $prop);
         }
         $this->assertFalse($variables->hasVariableName('lizmap_user'));
     }
@@ -80,7 +81,7 @@ class ProjectVariablesTest extends TestCase
 
         $variables = new Qgis\ProjectVariables($data);
         $variables = $variables->getVariablesAsKeyArray();
-        foreach($data['variableNames'] as $varIndex => $prop) {
+        foreach ($data['variableNames'] as $varIndex => $prop) {
             $this->assertArrayHasKey($prop, $variables);
             $this->assertEquals($data['variableValues'][$varIndex], $variables[$prop], $prop);
         }

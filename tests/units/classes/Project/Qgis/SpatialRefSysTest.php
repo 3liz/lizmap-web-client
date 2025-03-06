@@ -1,11 +1,12 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
-use Lizmap\Project\Qgis;
 use Lizmap\App;
+use Lizmap\Project\Qgis;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 class SpatialRefSysTest extends TestCase
@@ -124,12 +125,12 @@ class SpatialRefSysTest extends TestCase
         $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
         $data = Qgis\SpatialRefSys::fromXmlReader($oXml);
         $expected = new Qgis\SpatialRefSys(
-          array(
-            'proj4' => '+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs',
-            'srid' => 3857,
-            'authid' => 'EPSG:3857',
-            'description' => 'WGS 84 / Pseudo-Mercator',
-          )
+            array(
+                'proj4' => '+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs',
+                'srid' => 3857,
+                'authid' => 'EPSG:3857',
+                'description' => 'WGS 84 / Pseudo-Mercator',
+            )
         );
         $this->assertEquals($expected->proj4, $data->proj4);
         $this->assertEquals($expected->srid, $data->srid);
@@ -155,5 +156,4 @@ class SpatialRefSysTest extends TestCase
         $this->expectExceptionMessage('`spatialrefsys` element has to contain `authid`, `proj4` elements!');
         Qgis\SpatialRefSys::fromXmlReader($oXml);
     }
-
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author    3liz
  * @copyright 2011-2020 3liz
@@ -18,20 +19,21 @@ class lizmapdemoModuleInstaller extends jInstallerModule
         $this->useDbProfile('auth');
 
         // create group
-        jAcl2DbUserGroup:: createGroup('lizadmins');
-        jAcl2DbUserGroup:: createGroup('Intranet demos group', 'intranet');
+        jAcl2DbUserGroup::createGroup('lizadmins');
+        jAcl2DbUserGroup::createGroup('Intranet demos group', 'intranet');
 
         // create user in jAuth
         require_once JELIX_LIB_PATH.'auth/jAuth.class.php';
+
         require_once JELIX_LIB_PATH.'plugins/auth/db/db.auth.php';
 
         $authconfig = $this->config->getValue('auth', 'coordplugins');
         $confIni = parse_ini_file(jApp::configPath($authconfig), true);
         $authConfig = jAuth::loadConfig($confIni);
         $driverConfig = $authConfig[$authConfig['driver']];
-        if ($authConfig['driver'] == 'Db' ||
-            (isset($driverConfig['compatiblewithdb']) &&
-                $driverConfig['compatiblewithdb'])
+        if ($authConfig['driver'] == 'Db'
+            || (isset($driverConfig['compatiblewithdb'])
+                && $driverConfig['compatiblewithdb'])
         ) {
             $daoSelector = $driverConfig['dao'];
             $daoProfile = $driverConfig['profile'];
@@ -135,8 +137,7 @@ class lizmapdemoModuleInstaller extends jInstallerModule
             jFile::copyDirectoryContent($sourceDemo, $rootRepo, true);
             $demoPath = $rootRepo.'/demoqgis';
             $demoIntranetPath = $rootRepo.'/demoqgis_intranet';
-        }
-        else {
+        } else {
             $demoPath = $sourceDemo.'demoqgis';
             $demoIntranetPath = $sourceDemo.'demoqgis_intranet';
         }

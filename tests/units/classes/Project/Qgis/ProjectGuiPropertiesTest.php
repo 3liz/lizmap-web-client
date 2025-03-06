@@ -1,11 +1,12 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
-use Lizmap\Project\Qgis;
 use Lizmap\App;
+use Lizmap\Project\Qgis;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 class ProjectGuiPropertiesTest extends TestCase
@@ -13,57 +14,57 @@ class ProjectGuiPropertiesTest extends TestCase
     public function testConstruct(): void
     {
         $data = array(
-          'CanvasColorBluePart' => 255,
-          'CanvasColorGreenPart' => 255,
-          'CanvasColorRedPart' => 255,
-          'SelectionColorAlphaPart' => 255,
-          'SelectionColorBluePart' => 0,
-          'SelectionColorGreenPart' => 255,
-          'SelectionColorRedPart' => 255,
+            'CanvasColorBluePart' => 255,
+            'CanvasColorGreenPart' => 255,
+            'CanvasColorRedPart' => 255,
+            'SelectionColorAlphaPart' => 255,
+            'SelectionColorBluePart' => 0,
+            'SelectionColorGreenPart' => 255,
+            'SelectionColorRedPart' => 255,
         );
 
         $properties = new Qgis\ProjectGuiProperties($data);
-        foreach($data as $prop => $value) {
-            $this->assertEquals($value, $properties->$prop);
+        foreach ($data as $prop => $value) {
+            $this->assertEquals($value, $properties->{$prop});
         }
-      }
+    }
 
     public function testGetCanvasColor(): void
     {
-      $data = array(
-        'CanvasColorBluePart' => 255,
-        'CanvasColorGreenPart' => 255,
-        'CanvasColorRedPart' => 255,
-        'SelectionColorAlphaPart' => 255,
-        'SelectionColorBluePart' => 0,
-        'SelectionColorGreenPart' => 255,
-        'SelectionColorRedPart' => 255,
-      );
+        $data = array(
+            'CanvasColorBluePart' => 255,
+            'CanvasColorGreenPart' => 255,
+            'CanvasColorRedPart' => 255,
+            'SelectionColorAlphaPart' => 255,
+            'SelectionColorBluePart' => 0,
+            'SelectionColorGreenPart' => 255,
+            'SelectionColorRedPart' => 255,
+        );
 
-      $properties = new Qgis\ProjectGuiProperties($data);
-      $this->assertEquals('rgb(255, 255, 255)', $properties->getCanvasColor());
+        $properties = new Qgis\ProjectGuiProperties($data);
+        $this->assertEquals('rgb(255, 255, 255)', $properties->getCanvasColor());
 
-      $data = array(
-        'CanvasColorBluePart' => 200,
-        'CanvasColorGreenPart' => 100,
-        'CanvasColorRedPart' => 50,
-        'SelectionColorAlphaPart' => 255,
-        'SelectionColorBluePart' => 0,
-        'SelectionColorGreenPart' => 255,
-        'SelectionColorRedPart' => 255,
-      );
+        $data = array(
+            'CanvasColorBluePart' => 200,
+            'CanvasColorGreenPart' => 100,
+            'CanvasColorRedPart' => 50,
+            'SelectionColorAlphaPart' => 255,
+            'SelectionColorBluePart' => 0,
+            'SelectionColorGreenPart' => 255,
+            'SelectionColorRedPart' => 255,
+        );
 
-      $properties = new Qgis\ProjectGuiProperties($data);
-      $this->assertEquals('rgb(50, 100, 200)', $properties->getCanvasColor());
+        $properties = new Qgis\ProjectGuiProperties($data);
+        $this->assertEquals('rgb(50, 100, 200)', $properties->getCanvasColor());
     }
 
     public function testExceptionNoSuchProperty(): void
     {
         $data = array(
-          'CanvasColorBluePart' => 255,
-          'CanvasColorGreenPart' => 255,
-          'CanvasColorRedPart' => 255,
-          'CanvasColorAlphaPart' => 255,
+            'CanvasColorBluePart' => 255,
+            'CanvasColorGreenPart' => 255,
+            'CanvasColorRedPart' => 255,
+            'CanvasColorAlphaPart' => 255,
         );
 
         $srs = new Qgis\ProjectGuiProperties($data);
@@ -79,10 +80,10 @@ class ProjectGuiPropertiesTest extends TestCase
     public function testExceptionMandatoryProperties(): void
     {
         $data = array(
-          'SelectionColorAlphaPart' => 255,
-          'SelectionColorBluePart' => 0,
-          'SelectionColorGreenPart' => 255,
-          'SelectionColorRedPart' => 255,
+            'SelectionColorAlphaPart' => 255,
+            'SelectionColorBluePart' => 0,
+            'SelectionColorGreenPart' => 255,
+            'SelectionColorRedPart' => 255,
         );
 
         $this->expectException(Exception::class);
@@ -107,16 +108,16 @@ class ProjectGuiPropertiesTest extends TestCase
         $properties = Qgis\ProjectGuiProperties::fromXmlReader($oXml);
 
         $data = array(
-          'CanvasColorBluePart' => 255,
-          'CanvasColorGreenPart' => 255,
-          'CanvasColorRedPart' => 255,
-          'SelectionColorAlphaPart' => 255,
-          'SelectionColorBluePart' => 0,
-          'SelectionColorGreenPart' => 255,
-          'SelectionColorRedPart' => 255,
+            'CanvasColorBluePart' => 255,
+            'CanvasColorGreenPart' => 255,
+            'CanvasColorRedPart' => 255,
+            'SelectionColorAlphaPart' => 255,
+            'SelectionColorBluePart' => 0,
+            'SelectionColorGreenPart' => 255,
+            'SelectionColorRedPart' => 255,
         );
-        foreach($data as $prop => $value) {
-            $this->assertEquals($value, $properties->$prop, $prop);
+        foreach ($data as $prop => $value) {
+            $this->assertEquals($value, $properties->{$prop}, $prop);
         }
     }
 

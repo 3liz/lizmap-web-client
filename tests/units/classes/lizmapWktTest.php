@@ -1,9 +1,15 @@
 <?php
+
 use PHPUnit\Framework\TestCase;
 
-class lizmapWktTest extends TestCase {
-
-    function testChecking(): void
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
+class lizmapWktTest extends TestCase
+{
+    public function testChecking(): void
     {
         $wktArray = array(
             'POINT (30 10)',
@@ -24,7 +30,7 @@ class lizmapWktTest extends TestCase {
             'MULTIPOLYGON(((30 10, 40 40, 20 40, 10 20, 30 10)))',
             'GEOMETRY (((30 10, 40 40, 20 40, 10 20, 30 10)))',
         );
-        foreach($wktArray as $wkt) {
+        foreach ($wktArray as $wkt) {
             $checked = lizmapWkt::check($wkt);
             $this->assertIsArray($checked, 'The '.$wkt.' has not been checked!');
             $this->assertArrayHasKey('geomType', $checked);
@@ -44,7 +50,7 @@ class lizmapWktTest extends TestCase {
             'POLYGON Z((30 10 0, 40 40 2, 20 40 1, 10 20 2, 30 10 0))',
             'POLYGONZ((30 10 0, 40 40 2, 20 40 1, 10 20 2, 30 10 0))',
         );
-        foreach($zWktArray as $wkt) {
+        foreach ($zWktArray as $wkt) {
             $checked = lizmapWkt::check($wkt);
             $this->assertIsArray($checked, 'The '.$wkt.' has not been checked!');
             $this->assertArrayHasKey('geomType', $checked);
@@ -61,7 +67,6 @@ class lizmapWktTest extends TestCase {
         $this->assertEquals('', $checked['dim']);
         $this->assertArrayHasKey('str', $checked);
         $this->assertEquals('(15086.677 -105584.25)', $checked['str']);
-
 
         $wkt = 'MultiLineString ((12875.475 -104903.9644, 13191.533 -104786.96, -2699.383 -80765.69))';
         $checked = lizmapWkt::check($wkt);
@@ -96,12 +101,12 @@ class lizmapWktTest extends TestCase {
             'POINT(A 10)',
             'POINT(30 A)',
         );
-        foreach($notWktArray as $wkt) {
+        foreach ($notWktArray as $wkt) {
             $this->assertFalse(lizmapWkt::check($wkt), 'The '.$wkt.' has been checked!');
         }
     }
 
-    function testFixing(): void
+    public function testFixing(): void
     {
         // Unfixed WKT
         $wkt = 'POINT (30 10)';
@@ -143,7 +148,7 @@ class lizmapWktTest extends TestCase {
         $this->assertEquals($expectedWkt, $nWkt);
     }
 
-    function testPoint(): void
+    public function testPoint(): void
     {
         $wkt = 'POINT (30 10)';
         $geom = lizmapWkt::parse($wkt);
@@ -164,7 +169,8 @@ class lizmapWktTest extends TestCase {
         $this->assertCount(2, $geom['coordinates']);
     }
 
-    function testMultiPoint(): void {
+    public function testMultiPoint(): void
+    {
         $wkt = 'MULTIPOINT ((30 10))';
         $geom = lizmapWkt::parse($wkt);
 
@@ -197,7 +203,7 @@ class lizmapWktTest extends TestCase {
         $this->assertCount(2, $geom['coordinates'][0]);
     }
 
-    function testLineString(): void
+    public function testLineString(): void
     {
         $wkt = 'LINESTRING (30 10, 10 30, 40 40)';
         $geom = lizmapWkt::parse($wkt);
@@ -218,7 +224,7 @@ class lizmapWktTest extends TestCase {
         $this->assertCount(3, $geom['coordinates']);
     }
 
-    function testMultiLineString(): void
+    public function testMultiLineString(): void
     {
         $wkt = 'MULTILINESTRING ((30 10, 10 30, 40 40))';
         $geom = lizmapWkt::parse($wkt);
@@ -252,7 +258,7 @@ class lizmapWktTest extends TestCase {
         $this->assertCount(3, $geom['coordinates'][0]);
     }
 
-    function testPolygon(): void
+    public function testPolygon(): void
     {
         $wkt = 'POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))';
         $geom = lizmapWkt::parse($wkt);
@@ -286,7 +292,7 @@ class lizmapWktTest extends TestCase {
         $this->assertCount(5, $geom['coordinates'][0]);
     }
 
-    function testMultiPolygon(): void
+    public function testMultiPolygon(): void
     {
         $wkt = 'MULTIPOLYGON (((30 10, 40 40, 20 40, 10 20, 30 10)))';
         $geom = lizmapWkt::parse($wkt);
@@ -323,7 +329,7 @@ class lizmapWktTest extends TestCase {
         $this->assertCount(5, $geom['coordinates'][0][0]);
     }
 
-    function testUnknown(): void
+    public function testUnknown(): void
     {
         $wkt = 'GEOMETRY (((30 10, 40 40, 20 40, 10 20, 30 10)))';
         $geom = lizmapWkt::parse($wkt);

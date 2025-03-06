@@ -28,12 +28,12 @@ repos:
         files: \.[jt]sx?$  # *.js, *.jsx, *.ts and *.tsx
         types: [ file ]
         additional_dependencies:
-          - eslint@9.19.0
+          - eslint@9.21.0
 
-#  - repo: local
-#    hooks:
-#      - id: php-cs-fixer
-#        name: PHP CS Fixer
-#        # To match value in Makefile
-#        entry: ghcr.io/php-cs-fixer/php-cs-fixer:3.69-php8.1 fix --config .php-cs-fixer.dist.php --allow-risky=yes
-#        language: docker_image
+  - repo: local
+    hooks:
+      - id: php-cs-fixer
+        name: PHP CS Fixer
+        # To match value in Makefile
+        entry: ghcr.io/php-cs-fixer/php-cs-fixer:3.69-php8.1 fix --config .php-cs-fixer.dist.php --allow-risky=yes
+        language: docker_image

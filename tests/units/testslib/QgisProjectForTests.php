@@ -13,20 +13,22 @@ class QgisProjectForTests extends QgisProject
 
     public function readXMLProjectTest($file)
     {
-         return $this->readXMLProject($file);
+        return $this->readXMLProject($file);
     }
 
     public function getLayers()
     {
-         return $this->layers;
+        return $this->layers;
     }
+
     public function getRelations()
     {
-         return $this->relations;
+        return $this->relations;
     }
+
     public function getRelationsFields()
     {
-         return $this->relationsFields;
+        return $this->relationsFields;
     }
 
     public function setShortNamesForTest($cfg)
