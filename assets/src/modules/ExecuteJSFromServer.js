@@ -164,8 +164,9 @@ function displayWarningsAdministrator(withDisplay) {
             ).attr('id', 'lizmap-warning-message');
         }
 
-    } else if (document.body.dataset.lizmapPluginHasWarnings) {
-        console.warn('The project has some warnings in the Lizmap plugin.');
+    } else if (document.body.dataset.lizmapPluginWarningsCount) {
+        console.warn(
+            `The project has ${document.body.dataset.lizmapPluginWarningsCount} warning(s) in the Lizmap plugin.`);
 
         if (document.body.dataset.lizmapPluginHasWarningsUrl && withDisplay) {
             let messageHasWarnings = lizDict['project.has.warnings'];
