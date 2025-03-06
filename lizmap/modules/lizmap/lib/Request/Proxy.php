@@ -278,7 +278,7 @@ class Proxy
     /**
      * Get the X-Request-Id of the request from the given headers.
      *
-     * @param array<string, array<string>> $headers The headers to check
+     * @param array<string, array<string>> $headers The headers to check. Note, it can be array<string, array<string>> if headers are not from Guzzle
      *
      * @return string
      */
@@ -287,7 +287,7 @@ class Proxy
         $xRequestId = $headers['X-Request-Id'] ?? '';
 
         if (is_string($xRequestId)) {
-            return '';
+            return $xRequestId;
         }
 
         return implode(',', $xRequestId);
