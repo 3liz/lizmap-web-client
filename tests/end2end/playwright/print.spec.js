@@ -1,5 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+import {PrintPage} from "./pages/printpage";
 import { gotoMap, expectParametersToContain, getAuthStorageStatePath, expectToHaveLengthCompare } from './globals';
 
 test.describe('Print', () => {
@@ -336,6 +337,153 @@ test.describe('Print', () => {
         await expectToHaveLengthCompare(name, Array.from(getPrintParams.keys()), 16, Object.keys(expectedParameters));
     });
 });
+
+test.describe(
+    'Print opacities',
+    {
+        tag: ['@readonly'],
+    },() =>
+    {
+
+        test('Group as layer', async ({ page }) => {
+
+            const printPage = new PrintPage(page, 'group_as_layer_opacity');
+            await printPage.open();
+            await printPage.openPrintPanel();
+            await printPage.setPrintScale('50000');
+
+            // set opacity of `Group_opacity` (group as layer) layer to 60%
+            await printPage.setLayerOpacity('Group_opacity','60');
+
+            // opacity notes:
+            // the `raster` layer already has 80% opacity (inherited from QGIS project)
+            // setting the opacity to 60% on the `Group_opacity` causes:
+            // - `raster` layer to have a final total opacity of 48% (0.8*0.6)
+            //          -> OPACITIES PARAM = 255*0.48 ~= 122
+            // - `single_wms_polygons` layer to have a final total opacity of 60% (1*0.6)
+            //          -> OPACITIES PARAM = 255*0.6 = 153
+            // other layers have opacity 100% (255)
+
+            const mapLayers = [
+                'OpenStreetMap',
+                'raster',
+                'single_wms_polygons',
+                'single_wms_polygons_group_as_layer',
+                'single_wms_points_group',
+            ]
+
+            const expectedParameters = {
+                'SERVICE': 'WMS',
+                'REQUEST': 'GetPrint',
+                'VERSION': '1.3.0',
+                'FORMAT': 'pdf',
+                'TRANSPARENT': 'true',
+                'CRS': 'EPSG:3857',
+                'DPI': '100',
+                'TEMPLATE': 'test',
+                'map0:EXTENT': /425189.\d+,5401412.\d+,439539.\d+,5411262.\d+/,
+                'map0:SCALE': '50000',
+                'map0:LAYERS': mapLayers.join(','),
+                'map0:STYLES': 'default,default,default,default,default',
+                'map0:OPACITIES': '255,122,153,255,255',
+            }
+            // Test `test` template
+            let getPrintPromise = page.waitForRequest(
+                request =>
+                    request.method() === 'POST' &&
+                    request.postData()?.includes('GetPrint') === true
+            );
+
+            // Launch print
+            await printPage.launchPrint();
+
+            // check request
+            let getPrintRequest = await getPrintPromise;
+
+            // check response parameters
+            let name = "Group as layer opacity requests";
+            let getPrintParams = await expectParametersToContain(
+                name, getPrintRequest.postData() ?? '', expectedParameters);
+
+            await expectToHaveLengthCompare(
+                name,
+                Array.from(getPrintParams.keys()),
+                13,
+                Object.keys(expectedParameters)
+            );
+        })
+
+        test('Layers in group with opacity', async ({ page }) => {
+            const printPage = new PrintPage(page, 'group_as_layer_opacity');
+            await printPage.open();
+            await printPage.openPrintPanel();
+            await printPage.setPrintScale('50000');
+
+            // set opacity of `Group_a` group opacity to 60%
+            await printPage.setLayerOpacity('Group_a','60');
+            // set opacity of `single_wms_points_group` (belonging to `Group_a`) layer to 40%
+            await printPage.setLayerOpacity('single_wms_points_group','40');
+            // set opacity of `single_wms_polygons_group_as_layer` (belonging to `Group_a`) layer to 80%
+            await printPage.setLayerOpacity('single_wms_polygons_group_as_layer','80');
+
+            // opacity notes:
+            // setting the opacity to 60% on `Group_a` causes:
+            // - `single_wms_points_group` layer to have a final total opacity of 24% (0.4*0.6) 
+            //              -> OPACITIES PARAM = 255*0.24 ~= 61
+            // - `single_wms_polygons_group_as_layer` layer to have a final total opacity of 48% (0.8*0.6) 
+            //              -> OPACITIES PARAM = 255*0.48 ~= 122
+            // other layers have opacity 100%, except for `raster` layer which has a 80% opacity by default,
+            // resulting in a OPACITIES PARAM = 255*0.8 = 204
+
+            const mapLayers = [
+                'OpenStreetMap',
+                'raster',
+                'single_wms_polygons',
+                'single_wms_polygons_group_as_layer',
+                'single_wms_points_group',
+            ]
+
+            const expectedParameters = {
+                'SERVICE': 'WMS',
+                'REQUEST': 'GetPrint',
+                'VERSION': '1.3.0',
+                'FORMAT': 'pdf',
+                'TRANSPARENT': 'true',
+                'CRS': 'EPSG:3857',
+                'DPI': '100',
+                'TEMPLATE': 'test',
+                'map0:EXTENT': /425189.\d+,5401412.\d+,439539.\d+,5411262.\d+/,
+                'map0:SCALE': '50000',
+                'map0:LAYERS': mapLayers.join(','),
+                'map0:STYLES': 'default,default,default,default,default',
+                'map0:OPACITIES': '255,204,255,122,61',
+            }
+            // Test `test` template
+            let getPrintPromise = page.waitForRequest(
+                request =>
+                    request.method() === 'POST' &&
+                    request.postData()?.includes('GetPrint') === true
+            );
+
+            // Launch print
+            await printPage.launchPrint();
+
+            // check request
+            let getPrintRequest = await getPrintPromise;
+
+            // check response parameters
+            let name = "Layers in group with opacity request";
+            let getPrintParams = await expectParametersToContain(
+                name, getPrintRequest.postData() ?? '', expectedParameters);
+            await expectToHaveLengthCompare(
+                name,
+                Array.from(getPrintParams.keys()),
+                13,
+                Object.keys(expectedParameters)
+            );
+        })
+    }
+);
 
 test.describe('Print in popup', () => {
     test.beforeEach(async ({ page }) => {
