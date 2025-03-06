@@ -1,5 +1,6 @@
 <?php
 
+use Jelix\FileUtilities\Directory;
 use Jelix\Scripts\SingleCommandApplication;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
@@ -7,11 +8,8 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-require(__DIR__.'/../../vendor/autoload.php');
+require __DIR__.'/../../vendor/autoload.php';
 
-/**
- *
- */
 class ComposerVersionUpdaterCommand extends Command
 {
     protected function configure()
@@ -71,25 +69,24 @@ class ComposerVersionUpdaterCommand extends Command
 
         $file = $input->getArgument('file');
         if (!file_exists($file)) {
-            throw new \Exception('Unknown file');
+            throw new Exception('Unknown file');
         }
 
         $lizmapModulesDir = $input->getArgument('lizmap-modules');
         if ($lizmapModulesDir && !file_exists($lizmapModulesDir)) {
-            throw new \Exception('Unknown lizmap-modules directory');
+            throw new Exception('Unknown lizmap-modules directory');
         }
 
         $composerJson = json_decode(file_get_contents($file), true);
         if (!is_array($composerJson)) {
-            throw new \Exception('Bad JSON content into the given file');
+            throw new Exception('Bad JSON content into the given file');
         }
 
         if (!isset($composerJson['require']) || !is_array($composerJson['require'])) {
             return 0;
         }
 
-        foreach($composerJson['require'] as $packageName => $packageVersion)
-        {
+        foreach ($composerJson['require'] as $packageName => $packageVersion) {
             if (isset(self::$packagesVersions[$packageName])) {
                 $composerJson['require'][$packageName] = self::$packagesVersions[$packageName];
             }
@@ -106,19 +103,19 @@ class ComposerVersionUpdaterCommand extends Command
 
     protected function updateLizmapModules(array &$composerJson, string $lizmapModulesDir)
     {
-        $dir = new \DirectoryIterator($lizmapModulesDir);
+        $dir = new DirectoryIterator($lizmapModulesDir);
         foreach ($dir as $dirContent) {
             if (!$dirContent->isDot() && $dirContent->isDir()) {
                 $moduleName = $dirContent->getFilename();
                 if (isset(self::$moduleDirPackages[$moduleName])) {
                     $package = self::$moduleDirPackages[$moduleName];
-                    $composerJson['require'][$package] =  self::$packagesVersions[$package];
-                    \Jelix\FileUtilities\Directory::remove($dirContent->getPathname());
+                    $composerJson['require'][$package] = self::$packagesVersions[$package];
+                    Directory::remove($dirContent->getPathname());
                 }
             }
         }
-        unset($dir);
-        unset($dirContent);
+        unset($dir, $dirContent);
+
     }
 }
 

@@ -1,11 +1,12 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
-use Lizmap\Project\Qgis;
 use Lizmap\App;
+use Lizmap\Project\Qgis;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 class ParserTest extends TestCase
@@ -234,9 +235,9 @@ class ParserTest extends TestCase
         $options = Qgis\Parser::readOption($oXml);
         $this->assertTrue(is_array($options));
         $expectedOptions = array(
-                'Zone A',
-                'Zone B',
-                'No Zone',
+            'Zone A',
+            'Zone B',
+            'No Zone',
         );
         $this->assertEquals($expectedOptions, $options);
 
@@ -272,27 +273,27 @@ class ParserTest extends TestCase
 
         $this->assertTrue(is_array($options));
         $expectedOptions = array(
-                'DocumentViewer' => 1,
-                'DocumentViewerHeight' => 0,
-                'DocumentViewerWidth' => 0,
-                'FileWidget' => true,
-                'FileWidgetButton' => true,
-                'FileWidgetFilter' => '',
-                'PropertyCollection' => array(
-                  'name' => '',
-                  'properties' => array(
-                    'storageUrl' => array (
-                      'active' => true,
-                      'expression' => '\'http://webdav/shapeData/\'||file_name(@selected_file_path)',
-                      'type' => 3,
+            'DocumentViewer' => 1,
+            'DocumentViewerHeight' => 0,
+            'DocumentViewerWidth' => 0,
+            'FileWidget' => true,
+            'FileWidgetButton' => true,
+            'FileWidgetFilter' => '',
+            'PropertyCollection' => array(
+                'name' => '',
+                'properties' => array(
+                    'storageUrl' => array(
+                        'active' => true,
+                        'expression' => '\'http://webdav/shapeData/\'||file_name(@selected_file_path)',
+                        'type' => 3,
                     ),
-                  ),
-                  'type' => 'collection',
                 ),
-                'RelativeStorage' => 0,
-                'StorageAuthConfigId' => 'k6k7lv8',
-                'StorageMode' => 0,
-                'StorageType' => 'WebDAV',
+                'type' => 'collection',
+            ),
+            'RelativeStorage' => 0,
+            'StorageAuthConfigId' => 'k6k7lv8',
+            'StorageMode' => 0,
+            'StorageType' => 'WebDAV',
         );
         $this->assertEquals($expectedOptions, $options);
     }
@@ -312,7 +313,7 @@ class ParserTest extends TestCase
         $customProperties = Qgis\Parser::readCustomProperties($oXml);
         $this->assertCount(1, $customProperties);
         $expectedCustomProperties = array(
-          'wmsShortName' => 'Buildings',
+            'wmsShortName' => 'Buildings',
         );
         $this->assertEquals($expectedCustomProperties, $customProperties);
 
@@ -329,7 +330,7 @@ class ParserTest extends TestCase
         $customProperties = Qgis\Parser::readCustomProperties($oXml);
         $this->assertCount(1, $customProperties);
         $expectedCustomProperties = array(
-          'expandedLegendNodes' => null,
+            'expandedLegendNodes' => null,
         );
         $this->assertEquals($expectedCustomProperties, $customProperties);
 
@@ -347,8 +348,8 @@ class ParserTest extends TestCase
         $customProperties = Qgis\Parser::readCustomProperties($oXml);
         $this->assertCount(2, $customProperties);
         $expectedCustomProperties = array(
-          'expandedLegendNodes' => null,
-          'showFeatureCount' => '1',
+            'expandedLegendNodes' => null,
+            'showFeatureCount' => '1',
         );
         $this->assertEquals($expectedCustomProperties, $customProperties);
 
@@ -366,5 +367,4 @@ class ParserTest extends TestCase
         );
         $this->assertEquals($expectedCustomProperties, $customProperties);
     }
-
 }

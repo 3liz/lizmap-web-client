@@ -1,11 +1,12 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
-use Lizmap\Project\Qgis;
 use Lizmap\App;
+use Lizmap\Project\Qgis;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 class ProjectVisibilityPresetTest extends TestCase
@@ -31,13 +32,13 @@ class ProjectVisibilityPresetTest extends TestCase
         $this->assertCount(1, $visibilityPreset->layers);
         $this->assertInstanceOf(Qgis\ProjectVisibilityPresetLayer::class, $visibilityPreset->layers[0]);
         $data = array(
-          'id' => 'quartiers_ef5b13e3_36db_4e0d_98b3_990de580367d',
-          'visible' => True,
-          'style' => 'style1',
-          'expanded' => True,
+            'id' => 'quartiers_ef5b13e3_36db_4e0d_98b3_990de580367d',
+            'visible' => true,
+            'style' => 'style1',
+            'expanded' => true,
         );
-        foreach($data as $prop => $value) {
-          $this->assertEquals($value, $visibilityPreset->layers[0]->$prop, $prop);
+        foreach ($data as $prop => $value) {
+            $this->assertEquals($value, $visibilityPreset->layers[0]->{$prop}, $prop);
         }
 
         $dataArray = $visibilityPreset->toKeyArray();
@@ -69,22 +70,22 @@ class ProjectVisibilityPresetTest extends TestCase
         $this->assertCount(2, $visibilityPreset->layers);
         $this->assertInstanceOf(Qgis\ProjectVisibilityPresetLayer::class, $visibilityPreset->layers[0]);
         $data = array(
-          'id' => 'sousquartiers_7c49d0fc_0ee0_4308_a66d_45c144e59872',
-          'visible' => False,
-          'style' => 'défaut',
-          'expanded' => True,
+            'id' => 'sousquartiers_7c49d0fc_0ee0_4308_a66d_45c144e59872',
+            'visible' => false,
+            'style' => 'défaut',
+            'expanded' => true,
         );
-        foreach($data as $prop => $value) {
-          $this->assertEquals($value, $visibilityPreset->layers[0]->$prop, $prop);
+        foreach ($data as $prop => $value) {
+            $this->assertEquals($value, $visibilityPreset->layers[0]->{$prop}, $prop);
         }
         $data = array(
-          'id' => 'quartiers_ef5b13e3_36db_4e0d_98b3_990de580367d',
-          'visible' => True,
-          'style' => 'style1',
-          'expanded' => True,
+            'id' => 'quartiers_ef5b13e3_36db_4e0d_98b3_990de580367d',
+            'visible' => true,
+            'style' => 'style1',
+            'expanded' => true,
         );
-        foreach($data as $prop => $value) {
-          $this->assertEquals($value, $visibilityPreset->layers[1]->$prop, $prop);
+        foreach ($data as $prop => $value) {
+            $this->assertEquals($value, $visibilityPreset->layers[1]->{$prop}, $prop);
         }
 
         $dataArray = $visibilityPreset->toKeyArray();

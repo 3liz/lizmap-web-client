@@ -1,15 +1,17 @@
 <?php
-/**
-* @package   lizmap
-* @subpackage lizmap
-* @author    3liz
-* @copyright 2011 3liz
-* @link      http://3liz.com
-* @license    Mozilla Public License : http://www.mozilla.org/MPL/
-*/
 
-require ('../application.init.php');
-require (JELIX_LIB_CORE_PATH.'request/jClassicRequest.class.php');
+/**
+ * @author    3liz
+ * @copyright 2011 3liz
+ *
+ * @see      http://3liz.com
+ *
+ * @license    Mozilla Public License : http://www.mozilla.org/MPL/
+ */
+
+require '../application.init.php';
+
+require JELIX_LIB_CORE_PATH.'request/jClassicRequest.class.php';
 
 checkAppOpened();
 

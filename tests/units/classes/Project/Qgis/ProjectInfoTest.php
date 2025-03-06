@@ -1,11 +1,12 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
-use Lizmap\Project\Qgis;
 use Lizmap\App;
+use Lizmap\Project\Qgis;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 class ProjectInfoTest extends TestCase
@@ -18,44 +19,44 @@ class ProjectInfoTest extends TestCase
         $project = Qgis\ProjectInfo::fromXmlReader($oXml);
 
         $data = array(
-          'version' => '3.10.5-A Coruña',
-          'projectname' => 'Montpellier - Transports',
-          'saveDateTime' => '',
-          'title' => 'Montpellier - Transports',
+            'version' => '3.10.5-A Coruña',
+            'projectname' => 'Montpellier - Transports',
+            'saveDateTime' => '',
+            'title' => 'Montpellier - Transports',
         );
-        foreach($data as $prop => $value) {
-            $this->assertEquals($value, $project->$prop, $prop);
+        foreach ($data as $prop => $value) {
+            $this->assertEquals($value, $project->{$prop}, $prop);
         }
 
         $this->assertNotNull($project->properties);
         $data = array(
-          'WMSServiceTitle' => 'Montpellier - Transports',
-          'WMSServiceAbstract' => 'Demo project with bus and tramway lines in Montpellier, France.
+            'WMSServiceTitle' => 'Montpellier - Transports',
+            'WMSServiceAbstract' => 'Demo project with bus and tramway lines in Montpellier, France.
 Data is licensed under ODbl, OpenStreetMap contributors',
-          'WMSKeywordList' => array(''),
-          'WMSExtent' => array('417006.61373760335845873', '5394910.34090302512049675', '447158.04891100589884445', '5414844.99480544030666351'),
-          'WMSOnlineResource' => 'http://www.3liz.com/lizmap.html',
-          'WMSContactMail' => 'info@3liz.com',
-          'WMSContactOrganization' => '3liz',
-          'WMSContactPerson' => '3liz',
-          'WMSContactPhone' => '+334 67 16 64 51',
-          'WMSRestrictedComposers' => array('Composeur1'),
-          'WMSRestrictedLayers' => array(),
-          'WMSUseLayerIDs' => false,
+            'WMSKeywordList' => array(''),
+            'WMSExtent' => array('417006.61373760335845873', '5394910.34090302512049675', '447158.04891100589884445', '5414844.99480544030666351'),
+            'WMSOnlineResource' => 'http://www.3liz.com/lizmap.html',
+            'WMSContactMail' => 'info@3liz.com',
+            'WMSContactOrganization' => '3liz',
+            'WMSContactPerson' => '3liz',
+            'WMSContactPhone' => '+334 67 16 64 51',
+            'WMSRestrictedComposers' => array('Composeur1'),
+            'WMSRestrictedLayers' => array(),
+            'WMSUseLayerIDs' => false,
         );
-        foreach($data as $prop => $value) {
-            $this->assertEquals($value, $project->properties->$prop, $prop);
+        foreach ($data as $prop => $value) {
+            $this->assertEquals($value, $project->properties->{$prop}, $prop);
         }
 
         $this->assertNotNull($project->projectCrs);
         $data = array(
-          'proj4' => '+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs',
-          'srid' => 0,
-          'authid' => 'USER:100000',
-          'description' => ' * SCR généré (+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs)',
+            'proj4' => '+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs',
+            'srid' => 0,
+            'authid' => 'USER:100000',
+            'description' => ' * SCR généré (+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs)',
         );
-        foreach($data as $prop => $value) {
-            $this->assertEquals($value, $project->projectCrs->$prop, $prop);
+        foreach ($data as $prop => $value) {
+            $this->assertEquals($value, $project->projectCrs->{$prop}, $prop);
         }
 
         $this->assertNotNull($project->layerTreeRoot);
@@ -71,13 +72,13 @@ Data is licensed under ODbl, OpenStreetMap contributors',
         $this->assertCount(4, $project->visibilityPresets[0]->layers);
         $this->assertInstanceOf(Qgis\ProjectVisibilityPresetLayer::class, $project->visibilityPresets[0]->layers[0]);
         $data = array(
-          'id' => 'SousQuartiers20160121124316563',
-          'visible' => True,
-          'style' => 'default',
-          'expanded' => True,
+            'id' => 'SousQuartiers20160121124316563',
+            'visible' => true,
+            'style' => 'default',
+            'expanded' => true,
         );
-        foreach($data as $prop => $value) {
-          $this->assertEquals($value, $project->visibilityPresets[0]->layers[0]->$prop, $prop);
+        foreach ($data as $prop => $value) {
+            $this->assertEquals($value, $project->visibilityPresets[0]->layers[0]->{$prop}, $prop);
         }
 
         $this->assertNotNull($project->projectlayers);
@@ -85,16 +86,16 @@ Data is licensed under ODbl, OpenStreetMap contributors',
         $this->assertCount(18, $project->projectlayers);
 
         $expectedWmsInformations = array(
-          'WMSServiceTitle' => $project->properties->WMSServiceTitle,
-          'WMSServiceAbstract' => $project->properties->WMSServiceAbstract,
-          'WMSKeywordList' => '',
-          'WMSExtent' => implode(', ', $project->properties->WMSExtent),
-          'ProjectCrs' => $project->projectCrs->authid,
-          'WMSOnlineResource' => $project->properties->WMSOnlineResource,
-          'WMSContactMail' => $project->properties->WMSContactMail,
-          'WMSContactOrganization' => $project->properties->WMSContactOrganization,
-          'WMSContactPerson' => $project->properties->WMSContactPerson,
-          'WMSContactPhone' => $project->properties->WMSContactPhone,
+            'WMSServiceTitle' => $project->properties->WMSServiceTitle,
+            'WMSServiceAbstract' => $project->properties->WMSServiceAbstract,
+            'WMSKeywordList' => '',
+            'WMSExtent' => implode(', ', $project->properties->WMSExtent),
+            'ProjectCrs' => $project->projectCrs->authid,
+            'WMSOnlineResource' => $project->properties->WMSOnlineResource,
+            'WMSContactMail' => $project->properties->WMSContactMail,
+            'WMSContactOrganization' => $project->properties->WMSContactOrganization,
+            'WMSContactPerson' => $project->properties->WMSContactPerson,
+            'WMSContactPhone' => $project->properties->WMSContactPhone,
         );
         $this->assertEquals($expectedWmsInformations, $project->getWmsInformationsAsKeyArray());
 
@@ -112,12 +113,12 @@ Data is licensed under ODbl, OpenStreetMap contributors',
         $this->assertTrue(is_array($relations));
         $this->assertCount(6, $relations); // 5 layers + pivot
         $expectedRelationsKeys = array(
-          'VilleMTP_MTP_Quartiers_2011_432620130116112610876',
-          'tramstop20150328114203878',
-          'tramway20150328114206278',
-          'publicbuildings20150420100958543',
-          'tramway_ref20150612171109044',
-          'pivot',
+            'VilleMTP_MTP_Quartiers_2011_432620130116112610876',
+            'tramstop20150328114203878',
+            'tramway20150328114206278',
+            'publicbuildings20150420100958543',
+            'tramway_ref20150612171109044',
+            'pivot',
         );
         $this->assertEquals($expectedRelationsKeys, array_keys($relations));
         $this->assertCount(1, $relations['VilleMTP_MTP_Quartiers_2011_432620130116112610876']);
@@ -127,8 +128,8 @@ Data is licensed under ODbl, OpenStreetMap contributors',
         $this->assertCount(1, $relations['tramway_ref20150612171109044']);
         $this->assertCount(2, $relations['pivot']);
         $expectedPivotKeys = array(
-          'jointure_tram_stop20150328114216806',
-          'publicbuildings_tramstop20150420095614071',
+            'jointure_tram_stop20150328114216806',
+            'publicbuildings_tramstop20150420095614071',
         );
         $this->assertEquals($expectedPivotKeys, array_keys($relations['pivot']));
 
@@ -195,13 +196,13 @@ Data is licensed under ODbl, OpenStreetMap contributors',
         $project = Qgis\ProjectInfo::fromQgisPath($xml_path);
 
         $data = array(
-          'version' => '3.10.5-A Coruña',
-          'projectname' => 'Montpellier - Transports',
-          'saveDateTime' => '',
-          'title' => 'Montpellier - Transports',
+            'version' => '3.10.5-A Coruña',
+            'projectname' => 'Montpellier - Transports',
+            'saveDateTime' => '',
+            'title' => 'Montpellier - Transports',
         );
-        foreach($data as $prop => $value) {
-            $this->assertEquals($value, $project->$prop, $prop);
+        foreach ($data as $prop => $value) {
+            $this->assertEquals($value, $project->{$prop}, $prop);
         }
 
         $this->assertEquals(realpath($xml_path), Qgis\ProjectInfo::getQgisPath($project));
@@ -214,13 +215,13 @@ Data is licensed under ODbl, OpenStreetMap contributors',
         $project = Qgis\ProjectInfo::fromQgisPath($xml_path);
 
         $data = array(
-          'version' => '3.28.7-Firenze',
-          'projectname' => '',
-          'saveDateTime' => '2023-09-27T15:15:59',
-          'title' => '',
+            'version' => '3.28.7-Firenze',
+            'projectname' => '',
+            'saveDateTime' => '2023-09-27T15:15:59',
+            'title' => '',
         );
-        foreach($data as $prop => $value) {
-            $this->assertEquals($value, $project->$prop, $prop);
+        foreach ($data as $prop => $value) {
+            $this->assertEquals($value, $project->{$prop}, $prop);
         }
 
         $this->assertNotNull($project->projectlayers);

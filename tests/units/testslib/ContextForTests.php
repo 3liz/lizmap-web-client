@@ -8,9 +8,7 @@ class ContextForTests implements AppContextInterface
 
     protected $cache = array();
 
-    public function appConfig()
-    {
-    }
+    public function appConfig() {}
 
     public function appConfigPath($file = '')
     {
@@ -21,13 +19,9 @@ class ContextForTests implements AppContextInterface
         return null;
     }
 
-    public function appVarPath($file = '')
-    {
-    }
+    public function appVarPath($file = '') {}
 
-    public function getCoord()
-    {
-    }
+    public function getCoord() {}
 
     public function aclCheck($role, $resource = null)
     {
@@ -47,9 +41,7 @@ class ContextForTests implements AppContextInterface
         return array();
     }
 
-    public function aclGroupsIdByUser($login)
-    {
-    }
+    public function aclGroupsIdByUser($login) {}
 
     public function aclUserPublicGroupsId($login = null)
     {
@@ -72,7 +64,7 @@ class ContextForTests implements AppContextInterface
     public function aclUserPrivateGroup($login = null)
     {
         $userGroups = $this->aclUserGroupsId();
-        foreach($userGroups as $uGroup) {
+        foreach ($userGroups as $uGroup) {
             if (substr($uGroup, 0, 7) == '__priv_') {
                 return $uGroup;
             }
@@ -81,9 +73,7 @@ class ContextForTests implements AppContextInterface
         return null;
     }
 
-    public function aclUserGroupsInfo()
-    {
-    }
+    public function aclUserGroupsInfo() {}
 
     public function UserIsConnected()
     {
@@ -112,6 +102,7 @@ class ContextForTests implements AppContextInterface
         if (isset($this->cache[$profile][$key])) {
             return $this->cache[$profile][$key];
         }
+
         return null;
     }
 
@@ -126,7 +117,7 @@ class ContextForTests implements AppContextInterface
             return $this->result['cacheDriver'];
         }
 
-        return \jCache::getDriver($profile);
+        return jCache::getDriver($profile);
     }
 
     public function normalizeCacheKey($key)
@@ -158,25 +149,17 @@ class ContextForTests implements AppContextInterface
         unset($this->cache[$profile]);
     }
 
-    public function logMessage($message, $cat = 'default')
-    {
-    }
+    public function logMessage($message, $cat = 'default') {}
 
-    public function logException($exception, $cat = 'default')
-    {
-    }
+    public function logException($exception, $cat = 'default') {}
 
-    public function createVirtualProfile($category, $name, $params)
-    {
-    }
+    public function createVirtualProfile($category, $name, $params) {}
 
-    public function getProfile($category, $name = '', $noDefault = false)
-    {
-    }
+    public function getProfile($category, $name = '', $noDefault = false) {}
 
     public function eventNotify($eventName, $params = array())
     {
-        return new \jEvent('event');
+        return new jEvent('event');
     }
 
     public function getDbConnection($profile = '')
@@ -184,9 +167,7 @@ class ContextForTests implements AppContextInterface
         return new jDbConnectionForTests();
     }
 
-    public function getLocale($key, $variables = array())
-    {
-    }
+    public function getLocale($key, $variables = array()) {}
 
     public function getJelixDao($daoKey, $profile = '')
     {
@@ -206,16 +187,15 @@ class ContextForTests implements AppContextInterface
         return null;
     }
 
-    public function createJelixForm($formSel, $formId = null)
-    {
-    }
+    public function createJelixForm($formSel, $formId = null) {}
 
     public function getUrl($selector, $params = array())
     {
         // simple url build
         $keyWithVal4QueryString = array();
-        array_walk($params, function($v ,$key) use (&$keyWithVal4QueryString): void {$keyWithVal4QueryString[]=$key.'='.$v;});
-        return $selector.'?'.implode("&", $keyWithVal4QueryString);
+        array_walk($params, function ($v, $key) use (&$keyWithVal4QueryString): void {$keyWithVal4QueryString[] = $key.'='.$v; });
+
+        return $selector.'?'.implode('&', $keyWithVal4QueryString);
     }
 
     public function getFullUrl($selector, $params = array())
@@ -246,19 +226,14 @@ class ContextForTests implements AppContextInterface
         return null;
     }
 
-    public function insert($record)
-    {
-
-    }
+    public function insert($record) {}
 
     public function getFormPath()
     {
         return $this->result['path'];
     }
 
-    public function getClassService($selector)
-    {
-    }
+    public function getClassService($selector) {}
 
     public function getTpl()
     {

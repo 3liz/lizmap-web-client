@@ -1,11 +1,12 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
-use Lizmap\Project\Qgis;
 use Lizmap\App;
+use Lizmap\Project\Qgis;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 class AttributeTableConfigTest extends TestCase
@@ -118,9 +119,9 @@ class AttributeTableConfigTest extends TestCase
                 'hidden' => false,
             ),
         );
-        foreach($columns as $idx => $data) {
-            foreach($data as $prop => $value) {
-                $this->assertEquals($value, $config->columns[$idx]->$prop, $idx.' '.$prop);
+        foreach ($columns as $idx => $data) {
+            foreach ($data as $prop => $value) {
+                $this->assertEquals($value, $config->columns[$idx]->{$prop}, $idx.' '.$prop);
             }
         }
 
@@ -175,8 +176,8 @@ class AttributeTableConfigTest extends TestCase
                 'name' => 'fid',
             ),
         );
-        foreach($columns as $idx => $data) {
-            foreach($data as $prop => $value) {
+        foreach ($columns as $idx => $data) {
+            foreach ($data as $prop => $value) {
                 $this->assertEquals($value, $configKeyArray['columns'][$idx][$prop], $idx.' '.$prop);
             }
         }

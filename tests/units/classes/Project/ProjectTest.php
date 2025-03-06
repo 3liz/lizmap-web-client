@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 class ProjectTest extends TestCase
@@ -83,10 +84,14 @@ class ProjectTest extends TestCase
     public function testGetRelativeQgisPath($relative, $root, $file, $expectedPath): void
     {
         $services = new lizmapServices(
-            array('services' =>
-                      array('relativeWMSPath' => $relative,
-                            'rootRepositories' => $root)
-            ), (object) array(), false, null, null);
+            array('services' => array('relativeWMSPath' => $relative,
+                'rootRepositories' => $root),
+            ),
+            (object) array(),
+            false,
+            null,
+            null
+        );
         $proj = new ProjectForTests();
         $proj->setRepo(new Project\Repository(null, array('path' => ''), null, null, null));
         $proj->setServices($services);
@@ -134,7 +139,7 @@ class ProjectTest extends TestCase
      */
     public function testHasAttributeLayer($only, $attributeLayers, $expectedReturn): void
     {
-        $config = new Project\ProjectConfig((object)array('attributeLayers' => $attributeLayers));
+        $config = new Project\ProjectConfig((object) array('attributeLayers' => $attributeLayers));
         $proj = new ProjectForTests();
         $proj->setCfg($config);
         $this->assertEquals($expectedReturn, $proj->hasAttributeLayers($only));
@@ -272,7 +277,7 @@ class ProjectTest extends TestCase
         $aclData2 = array(
             'userIsConnected' => false,
         );
-        //$filter1 = '"descr" IN ( \'admin\' , \'groups\' , \'lizmap\' , \'all\' )';
+        // $filter1 = '"descr" IN ( \'admin\' , \'groups\' , \'lizmap\' , \'all\' )';
         $filter1 = '( "descr" = \'admin\' OR "descr" LIKE \'admin,%\' OR "descr" LIKE \'%,admin\' OR "descr" LIKE \'%,admin,%\'';
         $filter1 .= ' OR ';
         $filter1 .= '"descr" = \'groups\' OR "descr" LIKE \'groups,%\' OR "descr" LIKE \'%,groups\' OR "descr" LIKE \'%,groups,%\'';
@@ -281,7 +286,7 @@ class ProjectTest extends TestCase
         $filter1 .= ' OR ';
         $filter1 .= '"descr" = \'all\' OR "descr" LIKE \'all,%\' OR "descr" LIKE \'%,all\' OR "descr" LIKE \'%,all,%\' )';
 
-        //$filter2 = '"Group" = \'all\'';
+        // $filter2 = '"Group" = \'all\'';
         $filter2 = '( "descr" = \'all\' OR "descr" LIKE \'all,%\' OR "descr" LIKE \'%,all\' OR "descr" LIKE \'%,all,%\' )';
 
         return array(
@@ -311,7 +316,7 @@ class ProjectTest extends TestCase
         $testQgis->setPath($file);
         $testQgis->readXMLProjectTest($file);
 
-        $cfg = json_decode(file_get_contents( __DIR__.'/Ressources/embed_parent_filtered.qgs.cfg'));
+        $cfg = json_decode(file_get_contents(__DIR__.'/Ressources/embed_parent_filtered.qgs.cfg'));
         $config = new Project\ProjectConfig($cfg);
         $proj->setCfg($config);
         $proj->setQgis($testQgis);
@@ -320,9 +325,11 @@ class ProjectTest extends TestCase
 
         // Test
         $expectedFilters = array(
-            'edition_layer_embed_point' => array_merge((array)$cfg->loginFilteredLayers->edition_layer_embed_point,
-                                          array('layername' => 'edition_layer_embed_point',
-                                                'filter' => $expectedFilters)),
+            'edition_layer_embed_point' => array_merge(
+                (array) $cfg->loginFilteredLayers->edition_layer_embed_point,
+                array('layername' => 'edition_layer_embed_point',
+                    'filter' => $expectedFilters)
+            ),
         );
         $filters = $proj->getLoginFilters(array('edition_layer_embed_point'));
         $this->assertEquals($expectedFilters, $filters);
@@ -369,7 +376,7 @@ class ProjectTest extends TestCase
         $testQgis->setPath($file);
         $testQgis->readXMLProjectTest($file);
 
-        $cfg = json_decode(file_get_contents( __DIR__.'/Ressources/embed_parent_filtered.qgs.cfg'));
+        $cfg = json_decode(file_get_contents(__DIR__.'/Ressources/embed_parent_filtered.qgs.cfg'));
         $config = new Project\ProjectConfig($cfg);
         $proj->setCfg($config);
         $proj->setQgis($testQgis);
@@ -378,9 +385,11 @@ class ProjectTest extends TestCase
 
         // test
         $expectedFilters = array(
-            'edition_layer_embed_line' => array_merge((array)$cfg->loginFilteredLayers->edition_layer_embed_line,
-                                          array('layername' => 'edition_layer_embed_line',
-                                                'filter' => $expectedFilters)),
+            'edition_layer_embed_line' => array_merge(
+                (array) $cfg->loginFilteredLayers->edition_layer_embed_line,
+                array('layername' => 'edition_layer_embed_line',
+                    'filter' => $expectedFilters)
+            ),
         );
         $filters = $proj->getLoginFilters(array('edition_layer_embed_line'));
         $this->assertEquals($expectedFilters, $filters);
@@ -489,55 +498,63 @@ class ProjectTest extends TestCase
         $rep = new Project\Repository('key', array(), null, null, null);
         $context = new ContextForTests();
         $context->setResult($aclData);
-        $config = new Project\ProjectConfig((object)array('options' => $options));
+        $config = new Project\ProjectConfig((object) array('options' => $options));
         $proj = new ProjectForTests($context);
         $proj->setRepo($rep);
         $proj->setCfg($config);
         $this->assertEquals($expectedRet, $proj->checkAcl());
     }
 
-    public static function userFiles4Projets() {
+    public static function userFiles4Projets()
+    {
         $eventsBaseURL = 'view~media:getMedia?repository=repo1&project=events&';
+
         return array(
             array(
                 'montpellier',
                 'montpellier',
                 array('path' => __DIR__.'/../../../qgis-projects/demoqgis'),
                 array(
-                    'css'=> array(),
+                    'css' => array(),
                     'mjs' => array(),
-                    'js' => array()
-                    ),
+                    'js' => array(),
                 ),
+            ),
             array(
                 'events',
                 'repo1',
                 array('path' => __DIR__.'/Ressources/root4Repository/repo1'),
-                array('css'=> array(
-                    'view~media:getCssFile?repository=repo1&project=events&path=media/js/events/style1.css'
-                    ),
+                array('css' => array(
+                    'view~media:getCssFile?repository=repo1&project=events&path=media/js/events/style1.css',
+                ),
                     'mjs' => array(
-                    'view~media:getMedia?repository=repo1&project=events&path=media/js/events/mjs.mjs'
+                        'view~media:getMedia?repository=repo1&project=events&path=media/js/events/mjs.mjs',
                     ),
                     'js' => array(
-                    $eventsBaseURL.'path=media/js/default/jsdefaultinrepo.js',
-                    $eventsBaseURL.'path=../media/js/default/jsdefaultinroot.js',
-                    $eventsBaseURL.'path=media/js/events/subfolder/jsinsubfolder.js',
-                    $eventsBaseURL.'path=media/js/events/jsprojetinrepo.js',
-                    $eventsBaseURL.'path=../media/js/events/jsprojetinroot.js',
-                    )
-                    )
-                )
-               ,
+                        $eventsBaseURL.'path=media/js/default/jsdefaultinrepo.js',
+                        $eventsBaseURL.'path=../media/js/default/jsdefaultinroot.js',
+                        $eventsBaseURL.'path=media/js/events/subfolder/jsinsubfolder.js',
+                        $eventsBaseURL.'path=media/js/events/jsprojetinrepo.js',
+                        $eventsBaseURL.'path=../media/js/events/jsprojetinroot.js',
+                    ),
+                ),
+            ),
         );
     }
 
     /**
      * @dataProvider userFiles4Projets
+     *
+     * @param mixed $repoName
      */
-    public function testFinder(string $projectName, $repoName, array $projectData, array $expectedFiles): void {
-        $repo = new Project\Repository($repoName, $projectData
-           , null, null, null
+    public function testFinder(string $projectName, $repoName, array $projectData, array $expectedFiles): void
+    {
+        $repo = new Project\Repository(
+            $repoName,
+            $projectData,
+            null,
+            null,
+            null
         );
 
         $project = new ProjectForTests();
@@ -545,11 +562,10 @@ class ProjectTest extends TestCase
         $project->setKey($projectName);
         $finder = new ProjectFilesFinder();
         $listFiles = $finder->listFileURLS($project, true);
-        foreach($listFiles as $fileExt => $list) {
+        foreach ($listFiles as $fileExt => $list) {
             // remove mtime=XXX From URLs
-            $urlsWithoutMtime = array_map( function ($url) {
-                $urlok = preg_replace('/&mtime=[0-9]*/', '', $url);
-                return $urlok;
+            $urlsWithoutMtime = array_map(function ($url) {
+                return preg_replace('/&mtime=[0-9]*/', '', $url);
             }, $list);
             // sorting to ensure list are in same order
             sort($urlsWithoutMtime);

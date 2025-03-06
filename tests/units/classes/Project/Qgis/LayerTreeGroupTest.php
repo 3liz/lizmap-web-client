@@ -1,18 +1,19 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
-use Lizmap\Project\Qgis;
 use Lizmap\App;
+use Lizmap\Project\Qgis;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 class LayerTreeGroupTest extends TestCase
 {
     public function testConstruct(): void
     {
-      $xmlStr = '
+        $xmlStr = '
       <layer-tree-group expanded="1" groupLayer="" name="Buildings" checked="Qt::Checked">
         <customproperties>
           <Option type="Map">
@@ -35,21 +36,21 @@ class LayerTreeGroupTest extends TestCase
         </layer-tree-layer>
       </layer-tree-group>
       ';
-      $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
-      $treeGroup = Qgis\LayerTreeGroup::fromXmlReader($oXml);
+        $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
+        $treeGroup = Qgis\LayerTreeGroup::fromXmlReader($oXml);
 
-      $this->assertEquals('Buildings', $treeGroup->name);
-      $this->assertFalse($treeGroup->mutuallyExclusive);
+        $this->assertEquals('Buildings', $treeGroup->name);
+        $this->assertFalse($treeGroup->mutuallyExclusive);
 
-      $expectedCustomproperties = array(
-        'wmsShortName' => 'Buildings',
-      );
-      $this->assertEquals($expectedCustomproperties, $treeGroup->customproperties);
+        $expectedCustomproperties = array(
+            'wmsShortName' => 'Buildings',
+        );
+        $this->assertEquals($expectedCustomproperties, $treeGroup->customproperties);
 
-      $this->assertCount(2, $treeGroup->items);
-      $this->assertInstanceOf(Qgis\LayerTreeLayer::class, $treeGroup->items[0]);
-      $this->assertEquals('publicbuildings', $treeGroup->items[0]->name);
-      $this->assertInstanceOf(Qgis\LayerTreeLayer::class, $treeGroup->items[1]);
-      $this->assertEquals('publicbuildings_tramstop', $treeGroup->items[1]->name);
+        $this->assertCount(2, $treeGroup->items);
+        $this->assertInstanceOf(Qgis\LayerTreeLayer::class, $treeGroup->items[0]);
+        $this->assertEquals('publicbuildings', $treeGroup->items[0]->name);
+        $this->assertInstanceOf(Qgis\LayerTreeLayer::class, $treeGroup->items[1]);
+        $this->assertEquals('publicbuildings_tramstop', $treeGroup->items[1]->name);
     }
 }

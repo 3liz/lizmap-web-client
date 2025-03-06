@@ -426,9 +426,9 @@ test.describe(
 
             // opacity notes:
             // setting the opacity to 60% on `Group_a` causes:
-            // - `single_wms_points_group` layer to have a final total opacity of 24% (0.4*0.6) 
+            // - `single_wms_points_group` layer to have a final total opacity of 24% (0.4*0.6)
             //              -> OPACITIES PARAM = 255*0.24 ~= 61
-            // - `single_wms_polygons_group_as_layer` layer to have a final total opacity of 48% (0.8*0.6) 
+            // - `single_wms_polygons_group_as_layer` layer to have a final total opacity of 48% (0.8*0.6)
             //              -> OPACITIES PARAM = 255*0.48 ~= 122
             // other layers have opacity 100%, except for `raster` layer which has a 80% opacity by default,
             // resulting in a OPACITIES PARAM = 255*0.8 = 204

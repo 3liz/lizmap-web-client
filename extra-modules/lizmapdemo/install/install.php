@@ -1,4 +1,9 @@
 <?php
+
+use Jelix\IniFile\IniModifier;
+use Jelix\Installer\Module\API\InstallHelpers;
+use Jelix\Installer\Module\Installer;
+
 /**
  * @author    3liz
  * @copyright 2011-2022 3liz
@@ -7,25 +12,25 @@
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
-class lizmapdemoModuleInstaller extends \Jelix\Installer\Module\Installer
+class lizmapdemoModuleInstaller extends Installer
 {
-    public function install(Jelix\Installer\Module\API\InstallHelpers $helpers)
+    public function install(InstallHelpers $helpers)
     {
         $helpers->database()->useDbProfile('auth');
 
         // create group
-        jAcl2DbUserGroup:: createGroup('lizadmins');
-        jAcl2DbUserGroup:: createGroup('Intranet demos group', 'intranet');
+        jAcl2DbUserGroup::createGroup('lizadmins');
+        jAcl2DbUserGroup::createGroup('Intranet demos group', 'intranet');
 
         // create user in jAuth
         require_once JELIX_LIB_PATH.'auth/jAuth.class.php';
+
         require_once JELIX_LIB_PATH.'plugins/auth/db/db.auth.php';
 
-        //$configIni = $helpers->getEntryPointsById('index')->getConfigIni();
+        // $configIni = $helpers->getEntryPointsById('index')->getConfigIni();
 
-
-        /** @var $authConfig \Jelix\IniFile\IniModifier */
-        //list($authConfig, $authSection) = $helpers->getCoordPluginConfig('auth', $configIni);
+        /** @var \Jelix\IniFile\IniModifier $authConfig */
+        // list($authConfig, $authSection) = $helpers->getCoordPluginConfig('auth', $configIni);
 
         /*$driver = $authConfig->getValue('driver', $authSection);
         $driverConfig = $authConfig->getValues($driver);*/
@@ -33,9 +38,9 @@ class lizmapdemoModuleInstaller extends \Jelix\Installer\Module\Installer
         $authConfig = jAuth::loadConfig();
         $driver = $authConfig['driver'];
         $driverConfig = jAuth::getDriverConfig();
-        if ($driver == 'Db' ||
-            (isset($driverConfig['compatiblewithdb']) &&
-                $driverConfig['compatiblewithdb'])
+        if ($driver == 'Db'
+            || (isset($driverConfig['compatiblewithdb'])
+                && $driverConfig['compatiblewithdb'])
         ) {
             $daoSelector = $driverConfig['dao'];
             $daoProfile = $driverConfig['profile'];
@@ -130,7 +135,7 @@ class lizmapdemoModuleInstaller extends \Jelix\Installer\Module\Installer
 
         // declare the repositories of demo in the configuration
         $lizmapConfFile = jApp::varConfigPath('lizmapConfig.ini.php');
-        $ini = new \Jelix\IniFile\IniModifier($lizmapConfFile);
+        $ini = new IniModifier($lizmapConfFile);
 
         $sourceDemo = realpath(__DIR__.'/../qgis-projects/').'/';
 
@@ -139,8 +144,7 @@ class lizmapdemoModuleInstaller extends \Jelix\Installer\Module\Installer
             jFile::copyDirectoryContent($sourceDemo, $rootRepo, true);
             $demoPath = $rootRepo.'/demoqgis';
             $demoIntranetPath = $rootRepo.'/demoqgis_intranet';
-        }
-        else {
+        } else {
             $demoPath = $sourceDemo.'demoqgis';
             $demoIntranetPath = $sourceDemo.'demoqgis_intranet';
         }

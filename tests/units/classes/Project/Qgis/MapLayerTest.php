@@ -1,11 +1,12 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
-use Lizmap\Project\Qgis;
 use Lizmap\App;
+use Lizmap\Project\Qgis;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 class MapLayerTest extends TestCase
@@ -27,13 +28,13 @@ class MapLayerTest extends TestCase
             'type' => 'embedded',
             'project' => './relations_project.qgs',
         );
-        foreach($data as $prop => $value) {
-            $this->assertEquals($value, $layer->$prop, $prop);
+        foreach ($data as $prop => $value) {
+            $this->assertEquals($value, $layer->{$prop}, $prop);
         }
 
         $keyData = $layer->toKeyArray();
         $this->assertTrue(is_array($keyData));
-        foreach($data as $prop => $value) {
+        foreach ($data as $prop => $value) {
             $this->assertEquals($value, $keyData[$prop], $prop);
         }
 
@@ -134,7 +135,7 @@ class MapLayerTest extends TestCase
             'embedded' => false,
             'type' => 'raster',
             'layername' => 'osm-mapnik',
-            //'srs',
+            // 'srs',
             'datasource' => 'crs=EPSG:3857&format=&type=xyz&url=http://tile.openstreetmap.org/%7Bz%7D/%7Bx%7D/%7By%7D.png',
             'provider' => 'wms',
             'shortname' => null,
@@ -142,28 +143,28 @@ class MapLayerTest extends TestCase
             'abstract' => null,
             'keywordList' => array(''),
         );
-        foreach($data as $prop => $value) {
-            $this->assertEquals($value, $layer->$prop, $prop);
+        foreach ($data as $prop => $value) {
+            $this->assertEquals($value, $layer->{$prop}, $prop);
         }
 
         $this->assertNotNull($layer->srs);
         $data = array(
-          'proj4' => '+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs',
-          'srid' => 3857,
-          'authid' => 'EPSG:3857',
-          'description' => 'WGS 84 / Pseudo-Mercator',
+            'proj4' => '+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs',
+            'srid' => 3857,
+            'authid' => 'EPSG:3857',
+            'description' => 'WGS 84 / Pseudo-Mercator',
         );
-        foreach($data as $prop => $value) {
-            $this->assertEquals($value, $layer->srs->$prop, $prop);
+        foreach ($data as $prop => $value) {
+            $this->assertEquals($value, $layer->srs->{$prop}, $prop);
         }
 
         $this->assertNotNull($layer->styleManager);
         $data = array(
-          'current' => 'default',
-          'styles' => array('default'),
+            'current' => 'default',
+            'styles' => array('default'),
         );
-        foreach($data as $prop => $value) {
-            $this->assertEquals($value, $layer->styleManager->$prop, $prop);
+        foreach ($data as $prop => $value) {
+            $this->assertEquals($value, $layer->styleManager->{$prop}, $prop);
         }
 
         $keyData = $layer->toKeyArray();
@@ -182,7 +183,7 @@ class MapLayerTest extends TestCase
             'provider' => 'wms',
             'keywords' => array(''),
         );
-        foreach($data as $prop => $value) {
+        foreach ($data as $prop => $value) {
             $this->assertEquals($value, $keyData[$prop], $prop);
         }
 
@@ -926,42 +927,42 @@ class MapLayerTest extends TestCase
         $this->assertInstanceOf(Qgis\Layer\VectorLayer::class, $layer);
 
         $data = array(
-          'id' => 'tramway20150328114206278',
-          'embedded' => false,
-          'type' => 'vector',
-          'layername' => 'tramway',
-          //'srs',
-          'datasource' => 'dbname=\'./edition/transport.sqlite\' table="tramway" (geometry) sql=',
-          'provider' => 'spatialite',
-          'shortname' => null,
-          'title' => 'Tram lines',
-          'abstract' => null,
-          'keywordList' => array(''),
-          'previewExpression' => 'COALESCE("name", \'<NULL>\')',
-          'layerOpacity' => 1,
+            'id' => 'tramway20150328114206278',
+            'embedded' => false,
+            'type' => 'vector',
+            'layername' => 'tramway',
+            // 'srs',
+            'datasource' => 'dbname=\'./edition/transport.sqlite\' table="tramway" (geometry) sql=',
+            'provider' => 'spatialite',
+            'shortname' => null,
+            'title' => 'Tram lines',
+            'abstract' => null,
+            'keywordList' => array(''),
+            'previewExpression' => 'COALESCE("name", \'<NULL>\')',
+            'layerOpacity' => 1,
         );
-        foreach($data as $prop => $value) {
-            $this->assertEquals($value, $layer->$prop, $prop);
+        foreach ($data as $prop => $value) {
+            $this->assertEquals($value, $layer->{$prop}, $prop);
         }
 
         $this->assertNotNull($layer->srs);
         $data = array(
-          'proj4' => '+proj=longlat +datum=WGS84 +no_defs',
-          'srid' => 4326,
-          'authid' => 'EPSG:4326',
-          'description' => 'WGS 84',
+            'proj4' => '+proj=longlat +datum=WGS84 +no_defs',
+            'srid' => 4326,
+            'authid' => 'EPSG:4326',
+            'description' => 'WGS 84',
         );
-        foreach($data as $prop => $value) {
-            $this->assertEquals($value, $layer->srs->$prop, $prop);
+        foreach ($data as $prop => $value) {
+            $this->assertEquals($value, $layer->srs->{$prop}, $prop);
         }
 
         $this->assertNotNull($layer->styleManager);
         $data = array(
-          'current' => 'black',
-          'styles' => array('black', 'colored'),
+            'current' => 'black',
+            'styles' => array('black', 'colored'),
         );
-        foreach($data as $prop => $value) {
-            $this->assertEquals($value, $layer->styleManager->$prop, $prop);
+        foreach ($data as $prop => $value) {
+            $this->assertEquals($value, $layer->styleManager->{$prop}, $prop);
         }
 
         $this->assertNotNull($layer->fieldConfiguration);
@@ -1013,7 +1014,7 @@ class MapLayerTest extends TestCase
             'provider' => 'spatialite',
             'keywords' => array(''),
         );
-        foreach($data as $prop => $value) {
+        foreach ($data as $prop => $value) {
             $this->assertEquals($value, $keyData[$prop], $prop);
         }
 

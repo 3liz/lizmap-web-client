@@ -1,11 +1,12 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
-use Lizmap\Project\Qgis;
 use Lizmap\App;
+use Lizmap\Project\Qgis;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 class MapLayerStyleManagerTest extends TestCase
@@ -25,10 +26,9 @@ class MapLayerStyleManagerTest extends TestCase
             'current' => 'default',
             'styles' => array('default'),
         );
-        foreach($data as $prop => $value) {
-            $this->assertEquals($value, $manager->$prop, $prop);
+        foreach ($data as $prop => $value) {
+            $this->assertEquals($value, $manager->{$prop}, $prop);
         }
-
 
         $xmlStr = '
         <map-layer-style-manager current="black">
@@ -48,8 +48,8 @@ class MapLayerStyleManagerTest extends TestCase
                 'other',
             ),
         );
-        foreach($data as $prop => $value) {
-            $this->assertEquals($value, $manager->$prop, $prop);
+        foreach ($data as $prop => $value) {
+            $this->assertEquals($value, $manager->{$prop}, $prop);
         }
 
         $xmlStr = '
@@ -471,8 +471,8 @@ class MapLayerStyleManagerTest extends TestCase
                 'colored',
             ),
         );
-        foreach($data as $prop => $value) {
-            $this->assertEquals($value, $manager->$prop, $prop);
+        foreach ($data as $prop => $value) {
+            $this->assertEquals($value, $manager->{$prop}, $prop);
         }
     }
 }

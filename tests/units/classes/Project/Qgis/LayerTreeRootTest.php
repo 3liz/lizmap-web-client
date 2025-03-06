@@ -1,11 +1,12 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
-use Lizmap\Project\Qgis;
 use Lizmap\App;
+use Lizmap\Project\Qgis;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 class LayerTreeRootTest extends TestCase
@@ -13,9 +14,9 @@ class LayerTreeRootTest extends TestCase
     public function testConstruct(): void
     {
         $data = array(
-          'customOrder' => new Qgis\LayerTreeCustomOrder(array(
-            'enabled' => False,
-          )),
+            'customOrder' => new Qgis\LayerTreeCustomOrder(array(
+                'enabled' => false,
+            )),
         );
 
         $root = new Qgis\LayerTreeRoot($data);
@@ -31,8 +32,8 @@ class LayerTreeRootTest extends TestCase
         );
         $data = array(
             'customOrder' => new Qgis\LayerTreeCustomOrder(array(
-              'enabled' => True,
-              'items' => $items,
+                'enabled' => true,
+                'items' => $items,
             )),
         );
         $root = new Qgis\LayerTreeRoot($data);
@@ -48,8 +49,8 @@ class LayerTreeRootTest extends TestCase
         );
         $data = array(
             'customOrder' => new Qgis\LayerTreeCustomOrder(array(
-              'enabled' => False,
-              'items' => $items,
+                'enabled' => false,
+                'items' => $items,
             )),
         );
         $root = new Qgis\LayerTreeRoot($data);
@@ -132,7 +133,6 @@ class LayerTreeRootTest extends TestCase
         $this->assertTrue($root->customOrder->enabled);
         $this->assertCount(13, $root->customOrder->items);
         $this->assertEquals($items, $root->customOrder->items);
-
 
         $xmlStr = '
   <layer-tree-group>
