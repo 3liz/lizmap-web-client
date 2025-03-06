@@ -80,7 +80,8 @@ class server_informationCtrl extends jController
         $assign = array(
             'data' => $data,
             'baseUrlApplication' => jServer::getServerURI().jApp::urlBasePath(),
-            'modules' => $modules->getList(false),
+            'modules' => $modules->getList(false, false, true),
+            'installationComplete' => $modules->compareLizmapCoreModulesVersions($data['info']['version']),
             'qgisServerNeedsUpdate' => $qgisServerNeedsUpdate,
             'updateQgisServer' => $updateQgisServer,
             'lizmapQgisServerNeedsUpdate' => $lizmapQgisServerNeedsUpdate,

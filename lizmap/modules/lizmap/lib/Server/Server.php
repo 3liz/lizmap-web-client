@@ -225,7 +225,7 @@ class Server
         $data = array();
         $modules = new ModulesChecker();
 
-        foreach ($modules->getList(false) as $info) {
+        foreach ($modules->getList(false, false, true) as $info) {
             $data[$info->slug] = array(
                 'version' => $info->version,
                 'core' => $info->isCore,
