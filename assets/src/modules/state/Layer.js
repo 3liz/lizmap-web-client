@@ -552,6 +552,19 @@ export class LayerItemState extends EventDispatcher {
         }
         return this._visibility;
     }
+
+    /**
+     * Calculate total opacity by including also all parent groups opacity values
+     * @returns {number} the total opacity
+     */
+    calculateTotalOpacity(){
+        let opacity = this.opacity;
+        if(this._parentGroup !== null){
+            opacity = opacity*this._parentGroup.calculateTotalOpacity();
+        }
+
+        return Math.round(opacity * 100) / 100;
+    }
 }
 
 /**
