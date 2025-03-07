@@ -28,10 +28,17 @@ test.describe('Viewport devicePixelRatio 1', () => {
 
         // Go to the map
         await gotoMap(url, page)
-        // Wait to let the config loaded
-        await page.waitForTimeout(1000);
         // Check that the get project config has been catched
-        expect(requests).toHaveLength(1);
+        // Preload and fetch
+        let timeCount = 0;
+        while (requests.length < 2) {
+            timeCount += 100;
+            if (timeCount > 1000) {
+                throw new Error('Timeout');
+            }
+            await page.waitForTimeout(100);
+        }
+        await expect(requests).toHaveLength(2);
 
         // Wait to let the JS build classes
         await page.waitForTimeout(1000);
@@ -98,10 +105,17 @@ test.describe('Viewport devicePixelRatio 2', () => {
 
         // Go to the map
         await gotoMap(url, page)
-        // Wait to let the config loaded
-        await page.waitForTimeout(1000);
         // Check that the get project config has been catched
-        expect(requests).toHaveLength(1);
+        // Preload and fetch
+        let timeCount = 0;
+        while (requests.length < 2) {
+            timeCount += 100;
+            if (timeCount > 1000) {
+                throw new Error('Timeout');
+            }
+            await page.waitForTimeout(100);
+        }
+        expect(requests).toHaveLength(2);
 
         // Wait to let the JS build classes
         await page.waitForTimeout(1000);
