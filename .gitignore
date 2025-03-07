@@ -63,6 +63,10 @@ lizmap/www/assets/js/switcher-layers-actions.js
 lizmap/www/assets/js/timemanager.js
 lizmap/www/assets/js/view.js
 
+# assets copied by composer
+lizmap/www/assets/css/bootstrap.min.css
+lizmap/www/assets/js/bootstrap.min.js
+
 # Docs
 docs/.build
 docs/js
