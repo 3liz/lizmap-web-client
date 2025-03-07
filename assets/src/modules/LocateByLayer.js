@@ -166,7 +166,7 @@ export default class LocateByLayer {
         if ( 'vectorjoins' in locate ) {
             var vectorjoins = locate.vectorjoins;
             for ( var k=0, vectorjoinsLen=vectorjoins.length; k<vectorjoinsLen; k++) {
-                var vectorjoin = vectorjoins[i];
+                var vectorjoin = vectorjoins[k];
                 fields.push( vectorjoin.targetFieldName );
             }
         }
