@@ -120,9 +120,22 @@ export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 
     // Wait for WMS GetCapabilities promise
     let getCapabilitiesWMSPromise = page.waitForRequest(/SERVICE=WMS&REQUEST=GetCapabilities/);
 
+    // Wait for WMS GetLegendGraphic promise
+    // if it is required
+    let getLegendGraphicPromise = null;
+    if (mapMustLoad) {
+        if (waitForGetLegendGraphic) {
+            getLegendGraphicPromise = page.waitForRequest(
+                request => request.method() === 'POST' &&
+                    request.postData() != null &&
+                    request.postData()?.includes('GetLegendGraphic') === true
+            );
+        }
+    }
+
     await expect(async () => {
         const response = await page.goto(url);
-        expect(response.status()).toBeLessThan(400);
+        expect(response?.status()).toBeLessThan(400);
     }).toPass({
         intervals: [1_000, 2_000, 10_000],
         timeout: 60_000
@@ -130,14 +143,9 @@ export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 
 
     // Wait for WMS GetCapabilities
     await getCapabilitiesWMSPromise;
+
     if (mapMustLoad) {
         if (waitForGetLegendGraphic) {
-            // Wait for WMS GetLegendGraphic promise
-            const getLegendGraphicPromise = page.waitForRequest(
-                request => request.method() === 'POST' &&
-                    request.postData() != null &&
-                    request.postData()?.includes('GetLegendGraphic') === true
-            );
             // Normal check about the map
             // Wait for WMS GetLegendGraphic
             await getLegendGraphicPromise;
