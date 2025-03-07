@@ -84,6 +84,12 @@ class ModulesChecker
         $modules = $this->getList(false, true, false);
         foreach ($modules as $module) {
             if ($version != $module->version) {
+                \jLog::log(
+                    'Found module "'.$module->slug.'" with version "'.$module->version.'", expected version "'.
+                    $version.'".',
+                    'error'
+                );
+
                 return false;
             }
         }
