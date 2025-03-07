@@ -11,7 +11,11 @@ test.describe('Treeview', () => {
         // Wait for WMS GetCapabilities promise
         let getCapabilitiesWMSPromise = page.waitForRequest(/SERVICE=WMS&REQUEST=GetCapabilities/);
         // Wait for WMS GetLegendGraphic promise
-        const getLegendGraphicPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('GetLegendGraphic') === true);
+        const getLegendGraphicPromise = page.waitForRequest(
+            request => request.method() === 'POST' &&
+            request.postData() != null &&
+            request.postData()?.includes('GetLegendGraphic') === true
+        );
         await page.goto(url);
         // Wait for WMS GetCapabilities
         await getCapabilitiesWMSPromise;
@@ -19,10 +23,12 @@ test.describe('Treeview', () => {
         let getLegendGraphicRequest = await getLegendGraphicPromise;
 
         // Check WMS GetLegendGraphic postData
-        const getLegendGraphicRequestPostData = getLegendGraphicRequest.postData();
-        expect(getLegendGraphicRequestPostData).toContain('SERVICE=WMS')
-        expect(getLegendGraphicRequestPostData).toContain('REQUEST=GetLegendGraphic')
-        expect(getLegendGraphicRequestPostData).toContain('LAYER=sousquartiers%2Cquartiers%2Cshop_bakery_pg%2Ctramway_lines%2Cgroup_as_layer_1%2Cgroup_as_layer_2')
+        const searchParams = new URLSearchParams(getLegendGraphicRequest.postData() ?? '');
+        expect(searchParams.get('SERVICE')).toBe('WMS');
+        expect(searchParams.get('REQUEST')).toBe('GetLegendGraphic');
+        expect(searchParams.get('LAYER')).toBe(
+            'sousquartiers,quartiers,shop_bakery_pg,tramway_lines,group_as_layer_1,group_as_layer_2'
+        );
 
         // Check that the map scale is the right one
         await expect(page.locator('#overview-bar .ol-scale-text')).toHaveText('1 : ' + (100180).toLocaleString(locale))
@@ -40,8 +46,12 @@ test.describe('Treeview', () => {
         await expect(page.getByTestId('sub-group1').getByTestId('subdistricts')).toHaveCount(1)
         await expect(page.getByTestId('subdistricts')).toBeVisible()
         await expect(page.getByTestId('group with space in name and shortname defined')).toHaveCount(1)
-        await expect(page.getByTestId('group with space in name and shortname defined').getByTestId('quartiers')).toHaveCount(1)
-        await expect(page.getByTestId('group with space in name and shortname defined').getByTestId('shop_bakery_pg')).toHaveCount(1)
+        await expect(
+            page.getByTestId('group with space in name and shortname defined').getByTestId('quartiers')
+        ).toHaveCount(1)
+        await expect(
+            page.getByTestId('group with space in name and shortname defined').getByTestId('shop_bakery_pg')
+        ).toHaveCount(1)
         await expect(page.getByTestId('tramway_lines')).toHaveCount(1)
         await expect(page.getByTestId('tramway_lines')).toHaveText('Tramway lines')
         await expect(page.getByTestId('group-without-children')).toHaveCount(0)
@@ -169,7 +179,8 @@ test.describe('Treeview', () => {
     });
 });
 
-test.describe('Treeview mocked with "Hide checkboxes for groups" option', () => {
+test.describe('Treeview mocked', () => {
+
     test('"Hide checkboxes for groups" option', async ({ page }) => {
         await page.route('**/service/getProjectConfig*', async route => {
             const response = await route.fetch();
@@ -183,4 +194,180 @@ test.describe('Treeview mocked with "Hide checkboxes for groups" option', () => 
 
         await expect(page.locator('lizmap-treeview div.group > input')).toHaveCount(0);
     });
+
+    test('Timeout on GetLegendGraphic with multi layers',
+        {
+            tag: ['@mock', '@readonly'],
+        }, async ({ page }) => {
+            // we can't use Project page, because we are making GetLegendGraphic failing on purpose
+            const timedOutRequest = [];
+            const GetLegends = [];
+            await page.route('**/service*', async route => {
+                const request = await route.request();
+                if (request.method() !== 'POST') {
+                    // GetLegendGraphic is a POST request
+                    // Continue the request for non POST requests
+                    await route.continue();
+                    return;
+                }
+                const searchParams = new URLSearchParams(request.postData() ?? '');
+                if (searchParams.get('SERVICE') !== 'WMS' ||
+                    !searchParams.has('REQUEST') ||
+                    searchParams.get('REQUEST') !== 'GetLegendGraphic') {
+                    // Continue the request for non GetLegendGraphic requests
+                    await route.continue();
+                    return;
+                }
+                if (!searchParams.has('LAYER')) {
+                    // Continue the request for GetLegendGraphic without LAYER parameter
+                    await route.continue();
+                    return;
+                }
+                const layers = searchParams.get('LAYER')?.split(',');
+                if (layers?.length == 1) {
+                    // Continue the request for GetLegendGraphic with one layer
+                    GetLegends.push(searchParams);
+                    await route.continue();
+                    return;
+                }
+                timedOutRequest.push(searchParams);
+                // Timeout on GetLegendGraphic with multi layers
+                await route.fulfill({
+                    status: 504,
+                    contentType: 'text/plain',
+                    body: 'Timeout',
+                });
+            });
+            const url = '/index.php/view/map/?repository=testsrepository&project=treeview';
+            // Wait for WMS GetCapabilities promise
+            let getCapabilitiesWMSPromise = page.waitForRequest(/SERVICE=WMS&REQUEST=GetCapabilities/);
+
+            await page.goto(url);
+
+            // Wait for WMS GetCapabilities
+            await getCapabilitiesWMSPromise;
+
+            // Wait for WMS GetLegendGraphic
+            // 1 timed out request and at least 2 GetLegendGraphic requests on 6
+            let timeCount = 0;
+            while (timedOutRequest.length < 1 || GetLegends.length < 2) {
+                timeCount += 100;
+                if (timeCount > 1000) {
+                    break;
+                }
+                await page.waitForTimeout(100);
+            }
+
+            await expect(timedOutRequest.length).toBeGreaterThanOrEqual(1);
+            await expect(GetLegends.length).toBeGreaterThanOrEqual(2);
+            await expect(GetLegends.length).toBeLessThanOrEqual(6);
+
+            // Check that the GetLegendGraphic requests are well formed
+            GetLegends.forEach((searchParams) => {
+                expect(searchParams.get('SERVICE')).toBe('WMS');
+                expect(searchParams.get('REQUEST')).toBe('GetLegendGraphic');
+                expect(searchParams.get('VERSION')).toBe('1.3.0');
+                expect(searchParams.get('FORMAT')).toBe('application/json');
+                expect(searchParams.get('LAYER')).toBeDefined();
+                expect(searchParams.get('LAYER')).not.toContain(',');
+                expect(searchParams.get('STYLES')).toBeDefined();
+                expect(searchParams.get('STYLES')).not.toContain(',');
+            });
+
+            // Check that the timed out GetLegendGraphic requests are well formed
+            timedOutRequest.forEach((searchParams) => {
+                expect(searchParams.get('SERVICE')).toBe('WMS');
+                expect(searchParams.get('REQUEST')).toBe('GetLegendGraphic');
+                expect(searchParams.get('VERSION')).toBe('1.3.0');
+                expect(searchParams.get('FORMAT')).toBe('application/json');
+                expect(searchParams.get('LAYER')).toBeDefined();
+                expect(searchParams.get('LAYER')).toContain(',');
+                expect(searchParams.get('STYLES')).toBeDefined();
+                expect(searchParams.get('STYLES')).toContain(',');
+            });
+
+            await page.unroute('**/service*');
+        });
+
+    test('Error on GetLegendGraphic',
+        {
+            tag: ['@mock', '@readonly'],
+        }, async ({ page }) => {
+            // we can't use Project page, because we are making GetLegendGraphic failing on purpose
+            const abortedRequest = [];
+            const GetLegends = [];
+            await page.route('**/service*', async route => {
+                const request = await route.request();
+                if (request.method() !== 'POST') {
+                    // GetLegendGraphic is a POST request
+                    // Continue the request for non POST requests
+                    await route.continue();
+                    return;
+                }
+                const searchParams = new URLSearchParams(request.postData() ?? '');
+                if (searchParams.get('SERVICE') !== 'WMS' ||
+                    !searchParams.has('REQUEST') ||
+                    searchParams.get('REQUEST') !== 'GetLegendGraphic') {
+                    // Continue the request for non GetLegendGraphic requests
+                    await route.continue();
+                    return;
+                }
+                if (!searchParams.has('LAYER')) {
+                    // Continue the request for GetLegendGraphic without LAYER parameter
+                    await route.continue();
+                    return;
+                }
+                const layers = searchParams.get('LAYER')?.split(',');
+                if (layers?.length == 1) {
+                    // Continue the request for GetLegendGraphic with one layer
+                    GetLegends.push(searchParams);
+                    await route.continue();
+                    return;
+                }
+                abortedRequest.push(searchParams);
+                // Abort the request for GetLegendGraphic with multiple layers
+                await route.abort();
+                //await route.abort('failed');
+            });
+
+            const url = '/index.php/view/map/?repository=testsrepository&project=treeview';
+            // Wait for WMS GetCapabilities promise
+            let getCapabilitiesWMSPromise = page.waitForRequest(/SERVICE=WMS&REQUEST=GetCapabilities/);
+
+            await page.goto(url);
+
+            // Wait for WMS GetCapabilities
+            await getCapabilitiesWMSPromise;
+
+            // Wait for WMS GetLegendGraphic
+            // 1 aborted request and at least 2 potential GetLegendGraphic requests on 6
+            // even if we do not have to get all the GetLegendGraphic requests
+            // we have to wait to be sure that no more GetLegendGraphic requests are done
+            let timeCount = 0;
+            while (abortedRequest.length < 1 || GetLegends.length < 2) {
+                timeCount += 100;
+                if (timeCount > 1000) {
+                    break;
+                }
+                await page.waitForTimeout(100);
+            }
+
+            // Check if the GetLegendGraphic requests were all aborted
+            await expect(GetLegends.length).toBe(0);
+            await expect(abortedRequest.length).toBe(1);
+
+            // Check that the aborted GetLegendGraphic requests are well formed
+            abortedRequest.forEach((searchParams) => {
+                expect(searchParams.get('SERVICE')).toBe('WMS');
+                expect(searchParams.get('REQUEST')).toBe('GetLegendGraphic');
+                expect(searchParams.get('VERSION')).toBe('1.3.0');
+                expect(searchParams.get('FORMAT')).toBe('application/json');
+                expect(searchParams.get('LAYER')).toBeDefined();
+                expect(searchParams.get('LAYER')).toContain(',');
+                expect(searchParams.get('STYLES')).toBeDefined();
+                expect(searchParams.get('STYLES')).toContain(',');
+            });
+
+            await page.unroute('**/service*');
+        });
 });

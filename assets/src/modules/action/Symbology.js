@@ -6,6 +6,7 @@
  * @license MPL-2.0
  */
 
+import { HttpError } from '../Errors.js';
 import WMS from './../WMS.js';
 import {LayerTreeLayerState, LayerTreeGroupState} from './../state/LayerTree.js'
 
@@ -42,7 +43,28 @@ export async function updateLayerTreeLayersSymbology(treeLayers) {
                 treeLayersByName[node.name].symbology = node;
             }
         }
-    }).catch(console.error);
+    }).catch((error) => {
+        console.error(error);
+        // If the request failed, try to get the legend graphic for each layer separately
+        // This is a workaround for the issue when QGIS server timed out when requesting
+        // the legend graphic for multiple layers at once (LAYER parameter with multiple values)
+        if (treeLayers.length == 1) {
+            // If there is only one layer, there is no need to try to get the legend graphic
+            // for each layer separately
+            return treeLayers;
+        }
+        if (!(error instanceof HttpError) || error.statusCode != 504) {
+            // If the error is not a timeout, there is no need to try to get the legend graphic
+            // for each layer separately
+            return treeLayers;
+        }
+        // Try to get the legend graphic for each layer separately
+        Promise.all(
+            treeLayers.map(treeLayer => updateLayerTreeLayerSymbology(treeLayer))
+        ).then((treeLayers) => {
+            return treeLayers;
+        });
+    });
     return treeLayers;
 }
 
@@ -63,7 +85,9 @@ export async function updateLayerTreeLayerSymbology(treeLayer) {
  */
 export async function updateLayerTreeGroupLayersSymbology(treeGroup) {
     if (!(treeGroup instanceof LayerTreeGroupState)) {
-        throw new TypeError('`updateLayerTreeGroupLayersSymbology` method required a LayerTreeGroupState as parameter!');
+        throw new TypeError(
+            '`updateLayerTreeGroupLayersSymbology` method required a LayerTreeGroupState as parameter!'
+        );
     }
     return updateLayerTreeLayersSymbology(treeGroup.findTreeLayers());
 }
