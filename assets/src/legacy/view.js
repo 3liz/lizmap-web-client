@@ -281,6 +281,95 @@ var searchProjects = function(){
     }
 }
 
+var addPrefetchOnClick = function () {
+    console.log('Test '+$('a.liz-project-view').length );
+    const links = [{
+        url: lizUrls.map,
+        type: 'text/html',
+        as: 'document',
+        params: {},
+    },{
+        url: lizUrls.config,
+        type: 'application/json',
+        as: 'fetch',
+        params: {},
+    },{
+        url: lizUrls.keyValueConfig,
+        type: 'application/json',
+        as: 'fetch',
+        params: {},
+    },{
+        url: lizUrls.ogcService,
+        type: 'text/xml',
+        as: 'fetch',
+        params: {
+            SERVICE: 'WMS',
+            REQUEST: 'GetCapabilities',
+            VERSION: '1.3.0',
+        },
+    },{
+        url: lizUrls.ogcService,
+        type: 'text/xml',
+        as: 'fetch',
+        params: {
+            SERVICE: 'WFS',
+            REQUEST: 'GetCapabilities',
+            VERSION: '1.0.0',
+        },
+    },{
+        url: lizUrls.ogcService,
+        type: 'text/xml',
+        as: 'fetch',
+        params: {
+            SERVICE: 'WMTS',
+            REQUEST: 'GetCapabilities',
+            VERSION: '1.0.0',
+        },
+    }];
+    $('a.liz-project-view').click(function () {
+        var self = $(this);
+        var projElem = self.parent().parent().find('div.liz-project');
+        if (projElem.length < 1) {
+            alert('no project');
+            return false;
+        }
+        projElem = projElem[0];
+        var repId = projElem.dataset.lizmapRepository;
+        var projId = projElem.dataset.lizmapProject;
+        links.forEach(link => {
+            const params = new URLSearchParams();
+            params.append('repository', repId);
+            params.append('project', projId);
+            for (const key in link.params) {
+                params.append(key, link.params[key]);
+            }
+            //create link tag
+            const linkTag = document.createElement('link');
+            linkTag.rel = 'prefetch';
+            linkTag.href = link.url+'?'+params;
+            linkTag.type = link.type;
+            linkTag.as = link.as;
+            //inject tag in the head of the document
+            document.head.appendChild(linkTag);
+        });
+
+        return true;
+    });
+}
+
 window.addEventListener('load', function () {
+    // Initialize global variables
+    const lizmapVariablesJSON = document.getElementById('lizmap-vars')?.innerText;
+    if (lizmapVariablesJSON) {
+        try {
+            const lizmapVariables = JSON.parse(lizmapVariablesJSON);
+            for (const variable in lizmapVariables) {
+                globalThis[variable] = lizmapVariables[variable];
+            }
+        } catch {
+            console.warn('JSON for Lizmap global variables is not valid!');
+        }
+    }
     searchProjects();
+    addPrefetchOnClick();
 });
