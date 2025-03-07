@@ -15,7 +15,8 @@
     "violet/streaming-json-encoder": "^1.1.5",
     "guzzlehttp/guzzle": "^7.7.0",
     "halaxa/json-machine": "^1.1",
-    "kevinrob/guzzle-cache-middleware": "^6.0"
+    "kevinrob/guzzle-cache-middleware": "^6.0",
+    "twbs/bootstrap": "^5.3.3"
   },
   "minimum-stability": "stable",
   "config": {
@@ -34,5 +35,11 @@
       "app-dir" : "./",
       "var-config-dir" : "var/config/"
     }
+  },
+  "scripts": {
+    "post-update-cmd": [
+      "php -r \"copy('vendor/twbs/bootstrap/dist/css/bootstrap.min.css', 'www/assets/css/bootstrap.min.css');\"",
+      "php -r \"copy('vendor/twbs/bootstrap/dist/js/bootstrap.min.js', 'www/assets/js/bootstrap.min.js');\""
+    ]
   }
 }
