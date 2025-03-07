@@ -2783,8 +2783,8 @@ input[type="color"].digitizing-color{
 .digitizing-export .dropdown-menu{
   min-width: unset;
   position: absolute;
-  left: 60px;
-  top: -45px;
+  left: 47px;
+  top: -9px;
 }
 
 .digitizing .caret{
