@@ -136,8 +136,8 @@ export default class Digitizing extends HTMLElement {
                 </svg>
             </button>
             <div class="digitizing-import-export ${this.hasAttribute('import-export') ? '' : 'hide'}">
-                <div class="btn-group digitizing-export">
-                    <button class="btn dropdown-toggle" ?disabled=${!mainLizmap.digitizing.featureDrawn} data-toggle="dropdown" data-original-title="${lizDict['attributeLayers.toolbar.btn.data.export.title']}">
+                <div class="btn-group digitizing-export" data-original-title="${lizDict['attributeLayers.toolbar.btn.data.export.title']}">
+                    <button class="btn dropdown-toggle" ?disabled=${!mainLizmap.digitizing.featureDrawn} data-toggle="dropdown">
                         <svg>
                             <use xlink:href="#file-download"></use>
                         </svg>
@@ -214,7 +214,7 @@ export default class Digitizing extends HTMLElement {
         render(mainTemplate(), this);
 
         // Add tooltip on buttons
-        $('.digitizing-buttons, .digitizing .btn', this).tooltip({
+        $('.digitizing-buttons, .digitizing .btn, .digitizing-export', this).tooltip({
             placement: 'top'
         });
 
