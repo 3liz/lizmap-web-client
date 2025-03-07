@@ -1,5 +1,7 @@
 <?php
 
+use Lizmap\App\VersionTools;
+
 /**
  * Construct a list of Lizmap projects.
  *
@@ -105,11 +107,13 @@ class project_listZone extends jZone
             $serverVersions['qgis_server_version'] = $qgisServerVersion;
             $explode = explode('.', $qgisServerVersion);
             // Keep only major and minor version
+            // Like 3.40
+            // Fixme, to move in VersionTools
             $qgisServerVersionInt = intval($explode[0].str_pad($explode[1], 2, '0', STR_PAD_LEFT));
             $serverVersions['qgis_server_version_int'] = $qgisServerVersionInt;
-            $serverVersions['qgis_server_version_human_readable'] = $this->qgisMajMinHumanVersion($qgisServerVersionInt);
-            $serverVersions['qgis_server_version_old'] = $this->qgisMajMinHumanVersion($qgisServerVersionInt - $oldQgisVersionDelta - 2);
-            $serverVersions['qgis_server_version_next'] = $this->qgisMajMinHumanVersion($qgisServerVersionInt + 2);
+            $serverVersions['qgis_server_version_human_readable'] = VersionTools::qgisMajMinHumanVersion($qgisServerVersionInt);
+            $serverVersions['qgis_server_version_old'] = VersionTools::qgisMajMinHumanVersion($qgisServerVersionInt - $oldQgisVersionDelta - 2);
+            $serverVersions['qgis_server_version_next'] = VersionTools::qgisMajMinHumanVersion($qgisServerVersionInt + 2);
             // Lizmap server plugin
             $serverVersions['lizmap_plugin_server_version'] = $data['info']['version'];
         }
@@ -180,7 +184,7 @@ class project_listZone extends jZone
             'cfg_warnings' => $projectMetadata->projectCfgWarnings(),
             'lizmap_web_client_target_version' => $projectMetadata->getLizmapWebClientTargetVersion(),
             // convert int to string orderable
-            'lizmap_plugin_version' => $this->pluginIntVersionToSortableString($projectMetadata->getLizmapPluginVersion()),
+            'lizmap_plugin_version' => VersionTools::intVersionToSortableString($projectMetadata->getLizmapPluginVersion()),
             'lizmap_plugin_update' => $projectMetadata->qgisLizmapPluginUpdateNeeded(),
             'file_time' => $projectMetadata->getFileTime(),
             'layer_count' => $projectMetadata->getLayerCount(),
@@ -192,6 +196,7 @@ class project_listZone extends jZone
         $qgisVersionInt = $projectMetadata->getQgisProjectVersion();
         // Create a human readable version, but suitable for string ordering
         // Ex: 3.06.02 instead of 3.6.2
+        // Fixme, to move in VersionTools
         $qgisVersion = substr($qgisVersionInt, 0, 1);
         $qgisVersion .= '.'.ltrim(substr($qgisVersionInt, 1, 2), '');
         $qgisVersion .= '.'.ltrim(substr($qgisVersionInt, 3, 2), '');
@@ -305,42 +310,5 @@ class project_listZone extends jZone
         }
 
         return $inspectionData;
-    }
-
-    private function qgisMajMinHumanVersion($qgisIntVersion): string
-    {
-        // NOTE Will work as long a Major version is on 1 Digit
-        return substr($qgisIntVersion, 0, 1).'.'.substr($qgisIntVersion, -2);
-    }
-
-    /**
-     * Transform int formatted version (from 5 or 6 integer) to sortable string .
-     *
-     * Transform "10102" into "01.01.02"
-     * Transform "050912" into "05.09.12"
-     *
-     * @param string $intVersion the lizmap QGIS plugin version (not always int !!)
-     *
-     * @return string the version as sortable string
-     */
-    private function pluginIntVersionToSortableString(string $intVersion): string
-    {
-        if ($intVersion == 'master' || $intVersion == 'dev') {
-            return '00.00.00';
-        }
-
-        // in some old plugin the version is already human readable
-        if (strpos($intVersion, '.') != false) {
-            list($majorVersion, $minorVersion, $patchVersion) = explode('.', $intVersion);
-            // add 0 to 1 digit version
-            $majorVersion = (strlen($majorVersion) == 1 ? '0'.$majorVersion : $majorVersion);
-            $minorVersion = (strlen($minorVersion) == 1 ? '0'.$minorVersion : $minorVersion);
-            $patchVersion = (strlen($patchVersion) == 1 ? '0'.$patchVersion : $patchVersion);
-        } else {
-            $intVersion6Digit = (strlen($intVersion) == 6 ? $intVersion : '0'.$intVersion);
-            list($majorVersion, $minorVersion, $patchVersion) = str_split($intVersion6Digit, 2);
-        }
-
-        return $majorVersion.'.'.$minorVersion.'.'.$patchVersion;
     }
 }
