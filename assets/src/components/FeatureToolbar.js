@@ -190,11 +190,6 @@ export default class FeatureToolbar extends HTMLElement {
 
         render(this._mainTemplate(), this);
 
-        // Add tooltip on buttons
-        $('.btn', this).tooltip({
-            placement: 'top'
-        });
-
         this._editableFeaturesCallBack = (editableFeatures) => {
             this.updateIsFeatureEditable(editableFeatures.properties);
             render(this._mainTemplate(), this);
