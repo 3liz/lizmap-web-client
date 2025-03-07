@@ -18,7 +18,7 @@ body {
 }
 
 /* BUTTONS */
-button.btn, a.btn, input.btn {
+button.btn, a.btn, input.btn, label.btn {
   background-image: none;
   border: 1px solid transparent;
   background-color: var(--color-contrasted-elements-light);
