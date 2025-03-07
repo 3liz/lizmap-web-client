@@ -28,7 +28,7 @@ class defaultCtrl extends jController
             jApp::config()->theme = $theme;
         }
 
-        /** @var jResponseHtml $rep */
+        /** @var AbstractLizmapHtmlResponse $rep */
         $rep = $this->getResponse('html');
 
         // Get lizmap services
@@ -186,6 +186,14 @@ class defaultCtrl extends jController
             }
         }
         $rep->body->assign('showHomeLink', false);
+
+        $lizUrls = array(
+            'map' => jUrl::get('view~map:index'),
+            'config' => jUrl::get('lizmap~service:getProjectConfig'),
+            'keyValueConfig' => jUrl::get('lizmap~service:getKeyValueConfig'),
+            'ogcService' => jUrl::get('lizmap~service:index'),
+        );
+        $rep->addJsVariable('lizUrls', $lizUrls);
 
         return $rep;
     }
