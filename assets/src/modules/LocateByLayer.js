@@ -221,17 +221,22 @@ export default class LocateByLayer {
                 }
 
                 // add filter values list
-                $('#locate-layer-'+layerName).parent().before('<div class="locate-layer"><select id="locate-layer-'+layerName+'-'+locate.filterFieldName+'">'+fOptions+'</select></div><br/>');
+                $('#locate-layer-'+layerName).parent().before(
+                    `<div class="locate-layer">
+                    <select id="locate-layer-`+layerName+'-'+locate.filterFieldName+'">'+fOptions+`</select>
+                    </div><br/>`
+                );
                 // listen to filter select changes
-                document.getElementById('locate-layer-'+layerName+'-'+locate.filterFieldName).addEventListener("change", () => {
-                    var filterValue = $(this).children(':selected').val();
-                    this.updateLocateFeatureList( aName );
-                    if (filterValue == '-1')
-                        $('#locate-layer-'+layerName+'-'+locate.filterFieldName+' ~ span > input').val('');
-                    $('#locate-layer-'+layerName+' ~ span > input').val('');
-                    $('#locate-layer-'+layerName).val('-1');
-                    this.zoomToLocateFeature(aName);
-                });
+                document.getElementById('locate-layer-'+layerName+'-'+locate.filterFieldName)
+                    .addEventListener("change", () => {
+                        var filterValue = $(this).children(':selected').val();
+                        this.updateLocateFeatureList( aName );
+                        if (filterValue == '-1')
+                            $('#locate-layer-'+layerName+'-'+locate.filterFieldName+' ~ span > input').val('');
+                        $('#locate-layer-'+layerName+' ~ span > input').val('');
+                        $('#locate-layer-'+layerName).val('-1');
+                        this.zoomToLocateFeature(aName);
+                    });
                 // add combobox to the filter select
                 $('#locate-layer-'+layerName+'-'+locate.filterFieldName).combobox({
                     position: { my : "right top", at: "right bottom" },
@@ -248,8 +253,10 @@ export default class LocateByLayer {
                 });
 
                 // add place holder to the filter combobox input
-                $('#locate-layer-'+layerName+'-'+locate.filterFieldName+' ~ span > input').attr('placeholder', filterPlaceHolder).val('');
-                $('#locate-layer-'+layerName+'-'+locate.filterFieldName+' ~ span > input').autocomplete('close');
+                $('#locate-layer-'+layerName+'-'+locate.filterFieldName+' ~ span > input')
+                    .attr('placeholder', filterPlaceHolder).val('');
+                $('#locate-layer-'+layerName+'-'+locate.filterFieldName+' ~ span > input')
+                    .autocomplete('close');
             }
 
             // create combobox for the layer
@@ -285,7 +292,9 @@ export default class LocateByLayer {
                 var featElement = features[j];
                 locate.features[featElement.id.toString()] = featElement;
                 if ( !('filterFieldName' in locate) )
-                    options += '<option value="' + featElement.id + '">' + DOMPurify.sanitize(featElement.properties[locate.fieldName]) + '</option>';
+                    options += '<option value="' + featElement.id + '">'
+                        + DOMPurify.sanitize(featElement.properties[locate.fieldName])
+                        + '</option>';
             }
             document.getElementById('locate-layer-'+layerName).innerHTML = options;
             // listen to select changes
@@ -456,7 +465,9 @@ export default class LocateByLayer {
                     var jFeat = jLocate.features[jVal];
                     for (var featId in features) {
                         var feature = features[featId];
-                        if ( feature.properties[vectorjoin.targetFieldName] != jFeat.properties[vectorjoin.joinFieldName] )
+                        var targetProperty = feature.properties[vectorjoin.targetFieldName];
+                        var joinProperty = jFeat.properties[vectorjoin.joinFieldName];
+                        if ( targetProperty != joinProperty )
                             delete features[featId];
                     }
                 }
@@ -467,7 +478,9 @@ export default class LocateByLayer {
         var options = '<option value="-1" label="'+placeHolder+'"></option>';
         for (var featureElementId in features) {
             var featureElement = features[featureElementId];
-            options += '<option value="' + featureElement.id + '">' + DOMPurify.sanitize(featureElement.properties[locate.fieldName]) + '</option>';
+            options += '<option value="' + featureElement.id + '">'
+                + DOMPurify.sanitize(featureElement.properties[locate.fieldName])
+                + '</option>';
         }
         // add option list
         $('#locate-layer-'+ this._lizmap3.cleanName(aName)).html(options);
