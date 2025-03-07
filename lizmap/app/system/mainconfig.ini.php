@@ -33,16 +33,16 @@ fallbackLocale=en_US
 ; Versions on the server, for the system administrator
 ; The minimum version required about external software to make Lizmap Web Client happy
 ; QGIS server required minimum version
-qgisServer="3.34"
+qgisServer=3.34
 ; Lizmap server QGIS plugin required minimum version
-lizmapServerPlugin="2.12.0"
+lizmapServerPlugin=2.12.0
 ; Lizmap QGIS desktop plugin required/recommended minimum version for newly or updated project only
 ; This version MUST match at least on https://plugins.qgis.org/plugins/lizmap/#plugin-versions
 ; with the minimum QGIS server version supported above.
 ; This value is only forwarded to the plugin thanks to the server metadata. According to the age of the project, it
 ; will be either recommended or nothing.
 lizmapDesktopPlugin=40406
-lizmapDesktopPluginDate="2024-12-10"
+lizmapDesktopPluginDate=2024-12-10
 
 ; Versions written in QGIS/CFG files, for the GIS administrator
 ; Lizmap CFG files with a lower target version are not displayed in the landing page, but displayed in the administration panel to warn the GIS administrator
@@ -105,6 +105,7 @@ ldapdao.path="app:vendor/jelix/ldapdao-module/ldapdao"
 saml.installparam[localconfig]=on
 saml.installparam[authep]=admin
 
+admin_api.enabled=on
 [coordplugins]
 ;name = file_ini_name or 1
 autolocale=1
@@ -178,7 +179,7 @@ notfoundAct="jelix~error:notfound"
 ; the configuration will be compiled. Else a value can be given directly into the
 ; configuration, but it is the responsibility to the developer or the administrator
 ; to indicate a new one each time the application is deployed for example.
-assetsRevision = autoconfig
+assetsRevision=autoconfig
 
 [logger]
 _all=
@@ -333,8 +334,8 @@ datatables.require=bootstrap
 datatables.js[]="assets/js/jquery.dataTables.min.js|defer"
 datatables.js[]="assets/js/dataTables.bootstrap.min.js|defer"
 datatables.js[]="$jelix/datatables/i18n/$locale.js|defer"
-datatables.css[]=assets/css/jquery.dataTables.min.css
-datatables.css[]=assets/css/dataTables.bootstrap.min.css
+datatables.css[]="assets/css/jquery.dataTables.min.css"
+datatables.css[]="assets/css/dataTables.bootstrap.min.css"
 
 datatables_responsive.require=datatables
 datatables_responsive.js[]="assets/js/dataTables.responsive.min.js|defer"
@@ -348,23 +349,23 @@ map.js[]="assets/js/Proj4js/proj4js.min.js|defer"
 map.js[]="assets/js/jquery.combobox.js|defer"
 map.js[]="assets/js/map.js|defer"
 map.js[]="assets/js/lizmap.js|defer"
-map.css[]=assets/css/ol.css
-map.css[]=assets/css/main.css
-map.css[]=assets/css/map.css
-map.css[]=assets/css/media.css
+map.css[]="assets/css/ol.css"
+map.css[]="assets/css/main.css"
+map.css[]="assets/css/map.css"
+map.css[]="assets/css/media.css"
 
 maptheme.css[]="$theme/css/main.css"
 maptheme.css[]="$theme/css/map.css"
 maptheme.css[]="$theme/css/media.css"
 
 
-normal.css[]=assets/css/main.css
-normal.css[]=assets/css/view.css
-normal.css[]=assets/css/media.css
+normal.css[]="assets/css/main.css"
+normal.css[]="assets/css/view.css"
+normal.css[]="assets/css/media.css"
 
 view.js[]="assets/js/view.js|defer"
 
-embed.css[]=assets/css/embed.css
+embed.css[]="assets/css/embed.css"
 embed.css[]="$theme/css/embed.css"
 
 jauthdb_admin.js[]="$jelix/js/authdb_admin.js|defer"
@@ -377,7 +378,7 @@ jacl2_admin.require[]=jquery_ui
 
 ;master_admin.css[]="$jelix/design/master_admin.css"
 
-jforms_html.js[]= "$jelix/js/jforms_jquery.js|defer"
+jforms_html.js[]="$jelix/js/jforms_jquery.js|defer"
 
 jforms_datepicker_default.js[]="$jelix/jquery/ui/i18n/datepicker-$lang.js|defer"
 jforms_datepicker_default.js[]="$jelix/js/jforms/datepickers/default/ui.$lang.js|defer"
