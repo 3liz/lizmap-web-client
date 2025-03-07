@@ -16,6 +16,24 @@ class AbstractLizmapHtmlResponse extends jResponseHtml
 {
     protected $CSPPropName = 'mapCSPHeader';
 
+    protected function outputJsScriptTag($fileUrl, $scriptParams)
+    {
+        echo '<link rel="preload" href="',htmlspecialchars($fileUrl),'" as="script" ',$this->_endTag;
+        parent::outputJsScriptTag($fileUrl, $scriptParams);
+    }
+
+    protected function outputCssLinkTag($fileUrl, $cssParams)
+    {
+        echo '<link rel="preload" href="',htmlspecialchars($fileUrl),'" as="style" ',$this->_endTag;
+        parent::outputCssLinkTag($fileUrl, $cssParams);
+    }
+
+    protected function outputIconLinkTag($fileUrl, $iconParams)
+    {
+        echo '<link rel="preload" href="',htmlspecialchars($fileUrl),'" as="image" ',$this->_endTag;
+        parent::outputIconLinkTag($fileUrl, $iconParams);
+    }
+
     protected function prepareHeadContent()
     {
         $bp = jApp::urlBasePath();
@@ -64,8 +82,25 @@ class AbstractLizmapHtmlResponse extends jResponseHtml
         $this->jsVarData = array_merge($this->jsVarData, $variables);
     }
 
+    protected $preloadLink = array();
+
+    public function addPreloadLink($href, $as, $type = null)
+    {
+        $this->preloadLink[] = array(
+            'href' => $href,
+            'as' => $as,
+            'type' => $type,
+        );
+    }
+
     protected function doAfterActions()
     {
-        $this->addHeadContent('<script id="lizmap-vars" type="application/json">'.json_encode($this->jsVarData).'</script>');
+        $this->addHeadContent('<!-- Start preload -->');
+        // other preload links
+        foreach ($this->preloadLink as $link) {
+            $this->addHeadContent('<link rel="preload" href="'.$link['href'].'" as="'.$link['as'].'"'.($link['type'] ? ' type="'.$link['type'].'"' : '').'>');
+        }
+        $this->addHeadContent('<!-- End preload -->');
+        $this->addHeadContent('<script id="lizmap-vars" type="application/json">'.json_encode($this->jsVarData).'</script>'."\n");
     }
 }
