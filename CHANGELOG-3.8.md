@@ -10,11 +10,12 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ### Funders
 
+* **[Avignon city](https://cartes.mairie-avignon.com)
+* **[CédéGIS](https://www.cedegis.fr/)**
 * **[Faunalia](https://www.faunalia.eu)**
 * **[Syslor](https://syslor.net/)**
 * **[TDPA](https://www.terredeprovence-agglo.com/)**
 * **[Qair](https://www.qair.energy)**
-* **[Avignon city](https://cartes.mairie-avignon.com)
 
 ### Added
 
@@ -23,7 +24,10 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ### Fixed
 
+* Add a workaround when QGIS server timed out when requesting the legend per layer
+* `X-Request-Id` could be an array when doing an HTTP request, fixing logging issue about HTTP requests which have failed
 * Display an error message if the layer is found in the QGS file, but not in the CFG file
+* Display an error message in the administration panel if the installation is not completed
 * Consider the opacity of groups for printing, contribution from @mind84
 * Distance constraint in the measure tool is not correctly interpreted in the map
 * QGIS constraints with geometry
@@ -31,6 +35,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Fix Javascript error if `pivotAttributeLayerConf` is undefined
 * Fix WKT geometry string provided by QGIS Server in GetFeatureInfo
 * Sandbox all iframes except those from the same origin
+* Fix tooltips in some dialogs
 
 ## 3.8.5 - 2025-02-07
 
