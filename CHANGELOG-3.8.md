@@ -8,9 +8,11 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.8.6 - 2025-03-10
+
 ### Funders
 
-* **[Avignon city](https://cartes.mairie-avignon.com)
+* **[Avignon city](https://cartes.mairie-avignon.com)**
 * **[CédéGIS](https://www.cedegis.fr/)**
 * **[Faunalia](https://www.faunalia.eu)**
 * **[Syslor](https://syslor.net/)**
