@@ -74,10 +74,7 @@ export default class Geolocation {
 
         this._geolocation.on('change:tracking', () => {
             // FIXME : later we'll need an object listening to 'geolocation.isTracking' event and setting visibility accordingly
-            const geolocationLayer = this._lizmap3.map.getLayersByName('geolocation')[0];
-            if (geolocationLayer) {
-                geolocationLayer.setVisibility(this.isTracking);
-            }
+            this._geolocationLayer.setVisible(this.isTracking);
 
             if(this.isBind){
                 if (this.isTracking) {
