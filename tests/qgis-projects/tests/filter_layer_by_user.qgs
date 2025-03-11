@@ -20,17 +20,17 @@
     <customproperties>
       <Option></Option>
     </customproperties>
-    <layer-tree-layer checked="Qt::Checked" expanded="1" id="layer_with_no_filter_89c540b5_0c19_4805_b505_78770286189f" legend_exp="" legend_split_behavior="0" name="red_layer_with_no_filter" patch_size="0,0" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='gid' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;layer_with_no_filter&quot; (geom)">
+    <layer-tree-layer checked="Qt::Checked" expanded="1" id="layer_with_no_filter_89c540b5_0c19_4805_b505_78770286189f" legend_exp="" legend_split_behavior="0" name="red_layer_with_no_filter" patch_size="0,0" providerKey="postgres" source="service='lizmapdb' sslmode=prefer key='gid' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;layer_with_no_filter&quot; (geom)">
       <customproperties>
         <Option></Option>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer checked="Qt::Checked" expanded="1" id="filter_layer_by_user_8bd3128f_2cad_4121_b5f9_0b6f6118e2f0" legend_exp="" legend_split_behavior="0" name="blue_filter_layer_by_user" patch_size="0,0" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='gid' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;filter_layer_by_user&quot; (geom)">
+    <layer-tree-layer checked="Qt::Checked" expanded="1" id="filter_layer_by_user_8bd3128f_2cad_4121_b5f9_0b6f6118e2f0" legend_exp="" legend_split_behavior="0" name="blue_filter_layer_by_user" patch_size="0,0" providerKey="postgres" source="service='lizmapdb' sslmode=prefer key='gid' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;filter_layer_by_user&quot; (geom)">
       <customproperties>
         <Option></Option>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer checked="Qt::Checked" expanded="1" id="filter_layer_by_user_edition_only_7bc0e81c_2860_4d6b_8b20_ad6c7b76e42f" legend_exp="" legend_split_behavior="0" name="green_filter_layer_by_user_edition_only" patch_size="0,0" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='gid' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;filter_layer_by_user_edition_only&quot; (geom)">
+    <layer-tree-layer checked="Qt::Checked" expanded="1" id="filter_layer_by_user_edition_only_7bc0e81c_2860_4d6b_8b20_ad6c7b76e42f" legend_exp="" legend_split_behavior="0" name="green_filter_layer_by_user_edition_only" patch_size="0,0" providerKey="postgres" source="service='lizmapdb' sslmode=prefer key='gid' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;filter_layer_by_user_edition_only&quot; (geom)">
       <customproperties>
         <Option></Option>
       </customproperties>
@@ -159,7 +159,7 @@
         <ymax>0.72806877284717786</ymax>
       </wgs84extent>
       <id>filter_layer_by_user_8bd3128f_2cad_4121_b5f9_0b6f6118e2f0</id>
-      <datasource>service='lizmapdb' sslmode=disable key='gid' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table="tests_projects"."filter_layer_by_user" (geom)</datasource>
+      <datasource>service='lizmapdb' sslmode=prefer key='gid' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table="tests_projects"."filter_layer_by_user" (geom)</datasource>
       <shortname>blue_filter_layer_by_user</shortname>
       <keywordList>
         <value></value>
@@ -743,7 +743,7 @@ def my_form_open(dialog, layer, feature):
         <ymax>0.15806253425939365</ymax>
       </wgs84extent>
       <id>filter_layer_by_user_edition_only_7bc0e81c_2860_4d6b_8b20_ad6c7b76e42f</id>
-      <datasource>service='lizmapdb' sslmode=disable key='gid' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table="tests_projects"."filter_layer_by_user_edition_only" (geom)</datasource>
+      <datasource>service='lizmapdb' sslmode=prefer key='gid' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table="tests_projects"."filter_layer_by_user_edition_only" (geom)</datasource>
       <shortname>green_filter_layer_by_user_edition_only</shortname>
       <keywordList>
         <value></value>
@@ -1323,7 +1323,7 @@ def my_form_open(dialog, layer, feature):
         <ymax>1.24763697503544235</ymax>
       </wgs84extent>
       <id>layer_with_no_filter_89c540b5_0c19_4805_b505_78770286189f</id>
-      <datasource>service='lizmapdb' sslmode=disable key='gid' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table="tests_projects"."layer_with_no_filter" (geom)</datasource>
+      <datasource>service='lizmapdb' sslmode=prefer key='gid' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table="tests_projects"."layer_with_no_filter" (geom)</datasource>
       <shortname>red_layer_with_no_filter</shortname>
       <keywordList>
         <value></value>
