@@ -148,15 +148,15 @@ export class ProjectPage extends BasePage {
     /**
      * open function
      * Open the URL for the given project and repository
-     * @param {boolean} skip_warnings_display Skip UI warnings when loading the map, true by default.
+     * @param {boolean} skip_plugin_update_warning Skip UI warning about QGIS plugin version, false by default.
      */
-    async open(skip_warnings_display = true){
+    async open(skip_plugin_update_warning = false){
         // By default, do not display warnings about old QGIS plugin or outdated Action JSON file
         await gotoMap(
             `/index.php/view/map?
             repository=${this.repository}&
             project=${this.project}&
-            skip_warnings_display=${skip_warnings_display}&`,
+            skip_plugin_update_warning=${skip_plugin_update_warning}&`,
             this.page);
     }
 
