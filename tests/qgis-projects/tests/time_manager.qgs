@@ -21,7 +21,7 @@
     <customproperties>
       <Option/>
     </customproperties>
-    <layer-tree-layer providerKey="postgres" checked="Qt::Checked" legend_exp="" patch_size="0,0" name="time_manager" source="service='lizmapdb' sslmode=disable key='gid' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;time_manager&quot; (geom)" id="time_manager_f272466b_c160_439c_bb9b_6c4b8c5ff74d" legend_split_behavior="0" expanded="1">
+    <layer-tree-layer providerKey="postgres" checked="Qt::Checked" legend_exp="" patch_size="0,0" name="time_manager" source="service='lizmapdb' sslmode=prefer key='gid' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;time_manager&quot; (geom)" id="time_manager_f272466b_c160_439c_bb9b_6c4b8c5ff74d" legend_split_behavior="0" expanded="1">
       <customproperties>
         <Option/>
       </customproperties>
@@ -136,7 +136,7 @@
         <ymax>-0.02232924757739157</ymax>
       </wgs84extent>
       <id>time_manager_f272466b_c160_439c_bb9b_6c4b8c5ff74d</id>
-      <datasource>service='lizmapdb' sslmode=disable key='gid' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table="tests_projects"."time_manager" (geom)</datasource>
+      <datasource>service='lizmapdb' sslmode=prefer key='gid' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table="tests_projects"."time_manager" (geom)</datasource>
       <shortname>time_manager_layer</shortname>
       <keywordList>
         <value></value>

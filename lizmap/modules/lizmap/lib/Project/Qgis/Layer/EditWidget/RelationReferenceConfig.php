@@ -25,7 +25,7 @@ use Lizmap\Project\Qgis;
  *       <Option type="bool" value="false" name="MapIdentification"/>
  *       <Option type="bool" value="false" name="OrderByValue"/>
  *       <Option type="bool" value="false" name="ReadOnly"/>
- *       <Option type="QString" value="service=lizmap sslmode=disable key=\'fid\' checkPrimaryKeyUnicity=\'0\' table=&quot;lizmap_data&quot;.&quot;risque&quot;" name="ReferencedLayerDataSource"/>
+ *       <Option type="QString" value="service=lizmap sslmode=prefer key=\'fid\' checkPrimaryKeyUnicity=\'0\' table=&quot;lizmap_data&quot;.&quot;risque&quot;" name="ReferencedLayerDataSource"/>
  *       <Option type="QString" value="risque_66cb8d43_86b7_4583_9217_f7ead54463c3" name="ReferencedLayerId"/>
  *       <Option type="QString" value="risque" name="ReferencedLayerName"/>
  *       <Option type="QString" value="postgres" name="ReferencedLayerProviderKey"/>
