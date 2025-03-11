@@ -1,4 +1,4 @@
-<qgis projectname="" saveDateTime="2024-02-27T15:56:32" saveUser="etienne" saveUserFull="Etienne Trimaille" version="3.34.4-Prizren">
+<qgis projectname="" saveDateTime="2025-03-11T14:59:44" saveUser="etienne" saveUserFull="Etienne Trimaille" version="3.40.4-Bratislava">
   <homePath path=""></homePath>
   <title></title>
   <transaction mode="Disabled"></transaction>
@@ -16,6 +16,19 @@
       <geographicflag>false</geographicflag>
     </spatialrefsys>
   </projectCrs>
+  <verticalCrs>
+    <spatialrefsys nativeFormat="Wkt">
+      <wkt></wkt>
+      <proj4></proj4>
+      <srsid>0</srsid>
+      <srid>0</srid>
+      <authid></authid>
+      <description></description>
+      <projectionacronym></projectionacronym>
+      <ellipsoidacronym></ellipsoidacronym>
+      <geographicflag>false</geographicflag>
+    </spatialrefsys>
+  </verticalCrs>
   <elevation-shading-renderer combined-method="0" edl-distance="0.5" edl-distance-unit="0" edl-is-active="1" edl-strength="1000" hillshading-is-active="0" hillshading-is-multidirectional="0" hillshading-z-factor="1" is-active="0" light-altitude="45" light-azimuth="315"></elevation-shading-renderer>
   <layer-tree-group>
     <customproperties>
@@ -37,7 +50,7 @@
           <Option name="wmsShortName" type="QString" value="baselayers"></Option>
         </Option>
       </customproperties>
-      <layer-tree-layer checked="Qt::Checked" expanded="0" id="OpenStreetMap_dbf029fb_caac_4448_b79f_7ba9059ca4c6" legend_exp="" legend_split_behavior="0" name="OpenStreetMap" patch_size="-1,-1" providerKey="wms" source="type=xyz&amp;url=https://tile.openstreetmap.org/{z}/{x}/{y}.png&amp;zmax=19&amp;zmin=0">
+      <layer-tree-layer checked="Qt::Checked" expanded="0" id="OpenStreetMap_dbf029fb_caac_4448_b79f_7ba9059ca4c6" legend_exp="" legend_split_behavior="0" name="OpenStreetMap" patch_size="-1,-1" providerKey="wms" source="crs=EPSG:3857&amp;format&amp;type=xyz&amp;url=https://tile.openstreetmap.org/%7Bz%7D/%7Bx%7D/%7By%7D.png&amp;zmax=19&amp;zmin=0">
         <customproperties>
           <Option></Option>
         </customproperties>
@@ -51,8 +64,8 @@
   </layer-tree-group>
   <snapping-settings enabled="0" intersection-snapping="0" maxScale="0" minScale="0" mode="2" scaleDependencyMode="0" self-snapping="0" tolerance="12" type="1" unit="1">
     <individual-layer-settings>
-      <layer-setting enabled="0" id="form_edition_snap_c3de8c2d_c8d2_412d_b431_ef550d14945d" maxScale="0" minScale="0" tolerance="12" type="1" units="1"></layer-setting>
       <layer-setting enabled="0" id="form_edition_snap_e8f37811_54fb_425e_b730_1772bd99df05" maxScale="0" minScale="0" tolerance="12" type="1" units="1"></layer-setting>
+      <layer-setting enabled="0" id="form_edition_snap_c3de8c2d_c8d2_412d_b431_ef550d14945d" maxScale="0" minScale="0" tolerance="12" type="1" units="1"></layer-setting>
     </individual-layer-settings>
   </snapping-settings>
   <relations></relations>
@@ -60,9 +73,9 @@
   <mapcanvas annotationsVisible="1" name="theMapCanvas">
     <units>meters</units>
     <extent>
-      <xmin>427350.56631946680136025</xmin>
+      <xmin>425036.09292506793281063</xmin>
       <ymin>5400365.84231525752693415</ymin>
-      <xmax>439492.14154124702326953</xmax>
+      <xmax>441806.61493564589181915</xmax>
       <ymax>5411951.41690946463495493</ymax>
     </extent>
     <rotation>0</rotation>
@@ -84,8 +97,8 @@
   </mapcanvas>
   <StateDataPlotly>
     <Option type="Map">
-      <Option name="geometry" type="QString" value="AdnQywADAAAAAAe6AAAAGwAADv8AAASvAAAJOAAAAEAAAA0ZAAACRAAAAAACAAAAB4AAAAe6AAAAQAAADv8AAASv"></Option>
-      <Option name="state" type="QString" value="AAAA/wAAA+f9AAAABAAAAAAAAAGYAAADx/wCAAAADfwAAACLAAADxwAAAHsBAAAa+gAAAAIBAAAABPsAAAAOAEIAcgBvAHcAcwBlAHIBAAAAAP////8AAAA3AP////sAAAAUAEwAYQB5AGUAcgBPAHIAZABlAHIAAAAAAP////8AAAC6AP////sAAAAMAEwAYQB5AGUAcgBzAQAAAAD/////AAAANwD////7AAAADABMAGUAZwBlAG4AZAEAAAAA/////wAAAAAAAAAA+wAAABAATwB2AGUAcgB2AGkAZQB3AAAAAdcAAADEAAAAEgD////7AAAAIgBDAG8AbwByAGQAaQBuAGEAdABlAEMAYQBwAHQAdQByAGUAAAABfgAAAKAAAAAAAAAAAPsAAAAIAFUAbgBkAG8AAAAB5AAAANwAAAAAAAAAAPsAAAAQAEIAcgBvAHcAcwBlAHIAMgAAAAITAAAArQAAAGIA////+wAAABwARwBQAFMASQBuAGYAbwByAG0AYQB0AGkAbwBuAAAAAbsAAAEFAAAARQD////7AAAAKABkAHcATwBwAGUAbgBsAGEAeQBlAHIAcwBPAHYAZQByAHYAaQBlAHcAAAABZAAAATcAAAAAAAAAAPsAAAAcAHUAbgBkAG8ALwByAGUAZABvACAAZABvAGMAawAAAAAA/////wAAAO4A////+wAAAC4AQQBkAHYAYQBuAGMAZQBkAEQAaQBnAGkAdABpAHoAaQBuAGcAVABvAG8AbABzAAAAAAD/////AAAA5wD////7AAAANABTAHQAYQB0AGkAcwB0AGEAbABTAHUAbQBtAGEAcgB5AEQAbwBjAGsAVwBpAGQAZwBlAHQAAAAAAP////8AAAAAAAAAAPsAAAAmAEIAbwBvAGsAbQBhAHIAawBzAEQAbwBjAGsAVwBpAGQAZwBlAHQAAAAAAP////8AAABgAP////sAAAA4AFMAdABhAHQAaQBzAHQAaQBjAGEAbABTAHUAbQBtAGEAcgB5AEQAbwBjAGsAVwBpAGQAZwBlAHQAAAAAAP////8AAACsAP////sAAAAYAFYAZQByAHQAZQB4AEUAZABpAHQAbwByAAAAA4QAAADNAAAARQD///8AAAABAAABJQAAA8f8AgAAAA37AAAAHgBTAGUAeAB0AGEAbgB0AGUAVABvAG8AbABiAG8AeAAAAABnAAACNAAAAAAAAAAA/AAAAIsAAAPHAAAAjQD////6AAAAAAEAAAAC+wAAABgATABhAHkAZQByAFMAdAB5AGwAaQBuAGcBAAAD1gAAASoAAAElAP////sAAAAiAFAAcgBvAGMAZQBzAHMAaQBuAGcAVABvAG8AbABiAG8AeAAAAAAA/////wAAAFkA////+wAAABQARABvAGMAawBXAGkAZABnAGUAdAAAAAAA/////wAAAAAAAAAA+wAAABoAUgBlAHMAdQBsAHQAcwBWAGkAZQB3AGUAcgAAAAAA/////wAAAQcA////+wAAACYASQBkAGUAbgB0AGkAZgB5AFIAZQBzAHUAbAB0AHMARABvAGMAawEAAALGAAABFwAAAAAAAAAA+wAAACIAUQBtAHMAUwBlAHIAdgBpAGMAZQBUAG8AbwBsAGIAbwB4AAAAAGIAAALFAAAAsAD////7AAAAHABEAGEAdABhAFAAbABvAHQAbAB5AEQAbwBjAGsAAAAAAP////8AAAAAAAAAAPsAAAA0AEQAYQB0AGEAUABsAG8AdABsAHkALQBEAGEAdABhAFAAbABvAHQAbAB5AC0ARABvAGMAawAAAALaAAAAVwAAAEUA////+wAAACgAYwBhAGQAYQBzAHQAcgBlAF8AcwBlAGEAcgBjAGgAXwBmAG8AcgBtAAAAAAD/////AAAAUQD////7AAAAEABEAGUAdgBUAG8AbwBsAHMAAAAAAP////8AAABJAP////sAAAAeAHAAZwBtAGUAdABhAGQAYQB0AGEAXwBkAG8AYwBrAAAAAIsAAAPGAAAARAD////7AAAAIAB0AGgAZQBUAGkAbABlAFMAYwBhAGwAZQBEAG8AYwBrAAAAAAD/////AAAAeAD////7/////wAAAAAA/////wAAAtQA////AAAAAgAABioAAALR/AEAAAAB+wAAACYAVABlAG0AcABvAHIAYQBsACAAQwBvAG4AdAByAG8AbABsAGUAcgAAAAKQAAADNAAAAxwA////AAAAAwAABH0AAACm/AEAAAAF/AAAAZ4AAAR9AAAAgQD////6AAAAAAEAAAAC+wAAABQATQBlAHMAcwBhAGcAZQBMAG8AZwEAAAAA/////wAAAIEA////+wAAABwAQQB0AHQAcgBpAGIAdQB0AGUA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"></Option>
+      <Option name="geometry" type="QString" value="AdnQywADAAAAAAe2AAAAIAAADv8AAASvAAAI0gAAAL0AAA5xAAAEGwAAAAACAAAAB4AAAAe2AAAARQAADv8AAASv"></Option>
+      <Option name="state" type="QString" value="AAAA/wAAA+f9AAAABAAAAAAAAAD6AAADmvwCAAAADvwAAACyAAADmgAAAJUBAAAc+gAAAAABAAAABfsAAAAMAEwAYQB5AGUAcgBzAQAAAAD/////AAAARgD////7AAAADABMAGUAZwBlAG4AZAEAAAAA/////wAAAAAAAAAA+wAAABQATABhAHkAZQByAE8AcgBkAGUAcgAAAAAA/////wAAALoA////+wAAAA4AQgByAG8AdwBzAGUAcgEAAAAA/////wAAAEYA////+wAAAB4AcABnAG0AZQB0AGEAZABhAHQAYQBfAGQAbwBjAGsAAAAAAP////8AAACIAP////sAAAAQAE8AdgBlAHIAdgBpAGUAdwAAAAHXAAAAxAAAABMA////+wAAACIAQwBvAG8AcgBkAGkAbgBhAHQAZQBDAGEAcAB0AHUAcgBlAAAAAX4AAACgAAAAAAAAAAD7AAAACABVAG4AZABvAAAAAeQAAADcAAAAAAAAAAD7AAAAEABCAHIAbwB3AHMAZQByADIAAAACEwAAAK0AAAB8AP////sAAAAcAEcAUABTAEkAbgBmAG8AcgBtAGEAdABpAG8AbgAAAAG7AAABBQAAAF0A////+wAAACgAZAB3AE8AcABlAG4AbABhAHkAZQByAHMATwB2AGUAcgB2AGkAZQB3AAAAAWQAAAE3AAAAAAAAAAD7AAAAHAB1AG4AZABvAC8AcgBlAGQAbwAgAGQAbwBjAGsAAAAAAP////8AAADvAP////sAAAAuAEEAZAB2AGEAbgBjAGUAZABEAGkAZwBpAHQAaQB6AGkAbgBnAFQAbwBvAGwAcwAAAAAA/////wAAAOgA////+wAAADQAUwB0AGEAdABpAHMAdABhAGwAUwB1AG0AbQBhAHIAeQBEAG8AYwBrAFcAaQBkAGcAZQB0AAAAAAD/////AAAAAAAAAAD7AAAAJgBCAG8AbwBrAG0AYQByAGsAcwBEAG8AYwBrAFcAaQBkAGcAZQB0AAAAAAD/////AAAAeAD////7AAAAOABTAHQAYQB0AGkAcwB0AGkAYwBhAGwAUwB1AG0AbQBhAHIAeQBEAG8AYwBrAFcAaQBkAGcAZQB0AAAAAtUAAADBAAAAxAD////7AAAAGABWAGUAcgB0AGUAeABFAGQAaQB0AG8AcgAAAAAA/////wAAAF0A////+wAAADQAWgBvAG8AbQBUAG8ATABhAHQATABvAG4ARABvAGMAawBXAGkAZABnAGUAdABCAGEAcwBlAAAAAtcAAABaAAAAAAAAAAAAAAABAAAB0gAAAyL8AgAAABH7AAAAHgBTAGUAeAB0AGEAbgB0AGUAVABvAG8AbABiAG8AeAAAAABnAAACNAAAAAAAAAAA/AAAAJwAAAKVAAAAAAD////6AAAAAAEAAAAD+wAAACIAUQBnAHMARwByAGEAcwBzAFQAbwBvAGwAcwBCAGEAcwBlAAAAAAD/////AAAAAAAAAAD7AAAAGABMAGEAeQBlAHIAUwB0AHkAbABpAG4AZwAAAAPWAAABKgAAASkA////+wAAACIAUAByAG8AYwBlAHMAcwBpAG4AZwBUAG8AbwBsAGIAbwB4AAAAAAD/////AAAARgD////7AAAAFABEAG8AYwBrAFcAaQBkAGcAZQB0AAAAAAD/////AAAAAAAAAAD7AAAAEABEAGUAdgBUAG8AbwBsAHMAAAAAnAAAApUAAABdAP////sAAAAaAFIAZQBzAHUAbAB0AHMAVgBpAGUAdwBlAHIAAAAAdQAAAR0AAAEdAP////sAAAAmAEMAbwBvAHIAZABpAG4AYQB0AGUAQwBvAG4AdgBlAHIAdABlAHICAAAHUwAAAMcAAAFyAAABv/sAAAAcAEQAYQB0AGEAUABsAG8AdABsAHkARABvAGMAawAAAAB1AAADbgAAAAAAAAAA+wAAACYASQBkAGUAbgB0AGkAZgB5AFIAZQBzAHUAbAB0AHMARABvAGMAawEAAACyAAADIgAAAAAAAAAA+wAAADQAUQBnAHMATQBhAHAAQwBhAG4AdgBhAHMARABvAGMAawBXAGkAZABnAGUAdABCAGEAcwBlAgAAB48AAADyAAADKQAAAhP7AAAAJgBOAGUAdAB3AG8AcgBrAEEAYwB0AGkAdgBpAHQAeQBEAG8AYwBrAAAAAHUAAAMlAAAAAAAAAAD7AAAAIgBRAG0AcwBTAGUAcgB2AGkAYwBlAFQAbwBvAGwAYgBvAHgAAAAAdQAAArwAAADCAP////sAAAA0AEQAYQB0AGEAUABsAG8AdABsAHkALQBEAGEAdABhAFAAbABvAHQAbAB5AC0ARABvAGMAawAAAACcAAAClAAAAF0A////+wAAACQATwBzAG0ASQBuAGYAbwBSAGUAcwB1AGwAdABzAEQAbwBjAGsAAAAAAP////8AAAAAAAAAAPsAAAAoAEQAYQB0AGEAUABsAG8AdABsAHkALQBOAG8AbgBlAC0ARABvAGMAawAAAAFBAAAAXQAAAAAAAAAA+wAAACgAYwBhAGQAYQBzAHQAcgBlAF8AcwBlAGEAcgBjAGgAXwBmAG8AcgBtAAAAAnsAAAC2AAAAawD////7/////wAAAAAA/////wAAAtEA////+wAAACAAdABoAGUAVABpAGwAZQBTAGMAYQBsAGUARABvAGMAawAAAAAA/////wAAAJAA////AAAAAgAABa0AAABp/AEAAAAC+wAAACYAVABlAG0AcABvAHIAYQBsACAAQwBvAG4AdAByAG8AbABsAGUAcgAAAAAA/////wAAA0UA////+wAAAC4ATQBhAGcAaQBjAHcAYQBuAGQARABvAGMAawBXAGkAZABnAGUAdABCAGEAcwBlAAAAAdEAAAWtAAAAAAAAAAAAAAADAAAGSgAAAbD8AQAAACf8AAABAAAABkoAAAB/AP////oAAAAAAQAAAAT7AAAAFABNAGUAcwBzAGEAZwBlAEwAbwBnAQAAAAD/////AAAAfwD////7AAAAGgBQAHkAdABoAG8AbgBDAG8AbgBzAG8AbABlAQAAAAD/////AAAAAAAAAAD7AAAAGgBQAHkAdABoAG8AbgBDAG8AbgBzAG8AbABlAQAAAAD/////AAAAAAAAAAD7AAAAGgBQAHkAdABoAG8AbgBDAG8AbgBzAG8AbABlAQAAAAD/////AAAAAAAAAAD7AAAAJgBVAHMAZQByAEkAbgBwAHUAdABEAG8AYwBrAFcAaQBkAGcAZQB0AgAAAAAAAAAAAAAAyAAAAGT7AAAAGgBQAHkAdABoAG8AbgBDAG8AbgBzAG8AbABlAAAAAUIAAAP8AAAAAAAAAAD8AAABNAAAA8MAAAAAAP////r/////AQAAAAD8AAABKwAABX4AAAAAAP////r/////AQAAAAD8AAABqwAAA/UAAAAAAP////r/////AQAAAAD8AAABqwAAA/UAAAAAAP////r/////AQAAAAD8AAABqwAABdUAAAAAAP////r/////AQAAAAD8AAABqwAABdUAAAAAAP////r/////AQAAAAD8AAABsgAABc4AAAAAAP////r/////AQAAAAD8AAABsgAAA+4AAAAAAP////r/////AQAAAAD8AAACgwAAAugAAAAAAP////r/////AQAAAAD8AAACYQAABOQAAAAAAP////r/////AQAAAAD8AAABewAAA1kAAAAAAP////r/////AQAAAAD8AAABfAAABBUAAAAAAP////r/////AQAAAAD8AAABfAAABHsAAAAAAP////r/////AQAAAAD8AAABjQAAAp8AAAAAAP////r/////AQAAAAD8AAABTgAAAuIAAAAAAP////r/////AQAAAAD8AAACGwAAA1wAAAAAAP////r/////AQAAAAD8AAABGgAABIYAAAAAAP////r/////AQAAAAD8AAABGgAABg8AAAAAAP////r/////AQAAAAD8AAABSQAABFcAAAAAAP////r/////AQAAAAD8AAABSQAAAvYAAAAAAP////r/////AQAAAAD8AAABAwAABJ0AAAAAAP////r/////AQAAAAD8AAABfgAAA64AAAAAAP////r/////AQAAAAD8AAABfgAABRYAAAAAAP////r/////AQAAAAD8AAABkgAABNAAAAAAAP////r/////AQAAAAD8AAABVgAAAu8AAAAAAP////r/////AQAAAAD8AAABJAAABbIAAAAAAP////r/////AQAAAAD8AAABJAAABbIAAAAAAP////r/////AQAAAAD7AAAAFgB0AGkAbQBlAE0AYQBuAGEAZwBlAHIAAAABUAAABFAAAAAAAAAAAPwAAAHHAAADrwAAAAAA////+v////8BAAAAAPwAAAFQAAADzQAAAAAA////+v////8BAAAAAPwAAAE5AAAEZwAAAAAA////+v////8BAAAAAPwAAAFQAAAFdgAAAAAA////+v////8BAAAAAPwAAAFQAAAEZgAAAAAA////+v////8BAAAAAPwAAAFQAAAEOgAAAAAA////+v////8BAAAAAPwAAAEdAAAEgwAAAAAA////+v////8BAAAAAPwAAAEdAAAEgwAAAAAA////+v////8BAAAAAAAABkoAAAHkAAAAAQAAAAIAAAABAAAAAvwAAAANAAAAAAAAAAEAAAAaAG0ATABhAHkAZQByAFQAbwBvAGwAQgBhAHICAAAAwv////8AAAAAAAAAAAAAAAEAAAAAAAAAAgAAAAAAAAACAAAAAAAAAAIAAAAEAAAAGABtAEYAaQBsAGUAVABvAG8AbABCAGEAcgEAAAAA/////wAAAAAAAAAAAAAAHABtAE0AYQBwAE4AYQB2AFQAbwBvAGwAQgBhAHIBAAAA1v////8AAAAAAAAAAAAAACIAbQBTAGUAbABlAGMAdABpAG8AbgBUAG8AbwBsAEIAYQByAQAAAvb/////AAAAAAAAAAAAAAAkAG0AQQB0AHQAcgBpAGIAdQB0AGUAcwBUAG8AbwBsAEIAYQByAQAAA7oAAAHyAAAAAAAAAAAAAAACAAAAAAAAAAIAAAAAAAAAAgAAAAAAAAACAAAAAAAAAAIAAAAAAAAAAgAAAAYAAAAyAG0ARABhAHQAYQBTAG8AdQByAGMAZQBNAGEAbgBhAGcAZQByAFQAbwBvAGwAQgBhAHIBAAAAAP////8AAAAAAAAAAAAAACAAbQBEAGkAZwBpAHQAaQB6AGUAVABvAG8AbABCAGEAcgEAAAD3/////wAAAAAAAAAAAAAAGgBtAEwAYQBiAGUAbABUAG8AbwBsAEIAYQByAQAAAswAAAFiAAAAAAAAAAAAAAAgAG0ARABhAHQAYQBiAGEAcwBlAFQAbwBvAGwAQgBhAHIBAAAELv////8AAAAAAAAAAAAAABYAbQBXAGUAYgBUAG8AbwBsAEIAYQByAQAABF//////AAAAAAAAAAAAAAAcAG0AUABsAHUAZwBpAG4AVABvAG8AbABCAGEAcgEAAATz/////wAAAAAAAAAAAAAAAgAAAAQAAAAwAG0AQQBkAHYAYQBuAGMAZQBkAEQAaQBnAGkAdABpAHoAZQBUAG8AbwBsAEIAYQByAQAAAAD/////AAAAAAAAAAAAAAAcAG0AUgBhAHMAdABlAHIAVABvAG8AbABCAGEAcgAAAAAAAAACsAAAAAAAAAAAAAAAIABtAFMAbgBhAHAAcABpAG4AZwBUAG8AbwBsAEIAYQByAAAAAAD/////AAAAAAAAAAAAAAAYAG0ASABlAGwAcABUAG8AbwBsAEIAYQByAQAAApsAAASvAAAAAAAAAAAAAAACAAAABwAAACoAbQBTAGgAYQBwAGUARABpAGcAaQB0AGkAegBlAFQAbwBvAGwAQgBhAHIAAAAAAP////8AAAAAAAAAAAAAABgAbQBNAGUAcwBoAFQAbwBvAGwAQgBhAHIAAAAAuP////8AAAAAAAAAAAAAACYAbQBBAG4AbgBvAHQAYQB0AGkAbwBuAHMAVABvAG8AbABCAGEAcgAAAAC4/////wAAAAAAAAAAAAAAHABtAFYAZQBjAHQAbwByAFQAbwBvAGwAQgBhAHIAAAAAAP////8AAAAAAAAAAAAAABAAUQB1AGkAYwBrAE8AUwBNAQAAAAD/////AAAAAAAAAAAAAAAWAG0ARwBwAHMAVABvAG8AbABCAGEAcgEAAABS/////wAAAAAAAAAAAAAAHgBjAGEAZABhAHMAdAByAGUAVABvAG8AbABiAGEAcgEAAAF4/////wAAAAAAAAAA"></Option>
     </Option>
   </StateDataPlotly>
   <DataPlotly>
@@ -286,11 +299,11 @@
       <wgs84extent>
         <xmin>-180</xmin>
         <ymin>-85.05112877980660357</ymin>
-        <xmax>179.99999999999997158</xmax>
+        <xmax>180</xmax>
         <ymax>85.05112877980660357</ymax>
       </wgs84extent>
       <id>OpenStreetMap_dbf029fb_caac_4448_b79f_7ba9059ca4c6</id>
-      <datasource>type=xyz&amp;url=https://tile.openstreetmap.org/{z}/{x}/{y}.png&amp;zmax=19&amp;zmin=0</datasource>
+      <datasource>crs=EPSG:3857&amp;format&amp;type=xyz&amp;url=https://tile.openstreetmap.org/%7Bz%7D/%7Bx%7D/%7By%7D.png&amp;zmax=19&amp;zmin=0</datasource>
       <shortname>OpenStreetMap</shortname>
       <keywordList>
         <value></value>
@@ -357,13 +370,13 @@
         <Searchable>0</Searchable>
         <Private>0</Private>
       </flags>
-      <temporal enabled="0" fetchMode="0" mode="0">
+      <temporal bandNumber="1" enabled="0" fetchMode="0" mode="0">
         <fixedRange>
           <start></start>
           <end></end>
         </fixedRange>
       </temporal>
-      <elevation band="1" enabled="0" symbology="Line" zoffset="0" zscale="1">
+      <elevation band="1" enabled="0" mode="RepresentsElevationSurface" symbology="Line" zoffset="0" zscale="1">
         <data-defined-properties>
           <Option type="Map">
             <Option name="name" type="QString" value=""></Option>
@@ -392,7 +405,7 @@
                 <Option name="dash_pattern_offset_unit" type="QString" value="MM"></Option>
                 <Option name="draw_inside_polygon" type="QString" value="0"></Option>
                 <Option name="joinstyle" type="QString" value="bevel"></Option>
-                <Option name="line_color" type="QString" value="243,166,178,255"></Option>
+                <Option name="line_color" type="QString" value="243,166,178,255,rgb:0.95294117647058818,0.65098039215686276,0.69803921568627447,1"></Option>
                 <Option name="line_style" type="QString" value="solid"></Option>
                 <Option name="line_width" type="QString" value="0.6"></Option>
                 <Option name="line_width_unit" type="QString" value="MM"></Option>
@@ -432,12 +445,12 @@
             <layer class="SimpleFill" enabled="1" id="{340354a5-a50d-4879-a39d-93fc33df9adb}" locked="0" pass="0">
               <Option type="Map">
                 <Option name="border_width_map_unit_scale" type="QString" value="3x:0,0,0,0,0,0"></Option>
-                <Option name="color" type="QString" value="243,166,178,255"></Option>
+                <Option name="color" type="QString" value="243,166,178,255,rgb:0.95294117647058818,0.65098039215686276,0.69803921568627447,1"></Option>
                 <Option name="joinstyle" type="QString" value="bevel"></Option>
                 <Option name="offset" type="QString" value="0,0"></Option>
                 <Option name="offset_map_unit_scale" type="QString" value="3x:0,0,0,0,0,0"></Option>
                 <Option name="offset_unit" type="QString" value="MM"></Option>
-                <Option name="outline_color" type="QString" value="35,35,35,255"></Option>
+                <Option name="outline_color" type="QString" value="35,35,35,255,rgb:0.13725490196078433,0.13725490196078433,0.13725490196078433,1"></Option>
                 <Option name="outline_style" type="QString" value="no"></Option>
                 <Option name="outline_width" type="QString" value="0.26"></Option>
                 <Option name="outline_width_unit" type="QString" value="MM"></Option>
@@ -599,7 +612,7 @@
                 <Option name="dash_pattern_offset_unit" type="QString" value="MM"></Option>
                 <Option name="draw_inside_polygon" type="QString" value="0"></Option>
                 <Option name="joinstyle" type="QString" value="bevel"></Option>
-                <Option name="line_color" type="QString" value="213,180,60,255"></Option>
+                <Option name="line_color" type="QString" value="213,180,60,255,rgb:0.83529411764705885,0.70588235294117652,0.23529411764705882,1"></Option>
                 <Option name="line_style" type="QString" value="solid"></Option>
                 <Option name="line_width" type="QString" value="0.6"></Option>
                 <Option name="line_width_unit" type="QString" value="MM"></Option>
@@ -639,12 +652,12 @@
             <layer class="SimpleFill" enabled="1" id="{1fb3bdb1-ddac-4477-bad5-bf0b30baad3a}" locked="0" pass="0">
               <Option type="Map">
                 <Option name="border_width_map_unit_scale" type="QString" value="3x:0,0,0,0,0,0"></Option>
-                <Option name="color" type="QString" value="213,180,60,255"></Option>
+                <Option name="color" type="QString" value="213,180,60,255,rgb:0.83529411764705885,0.70588235294117652,0.23529411764705882,1"></Option>
                 <Option name="joinstyle" type="QString" value="bevel"></Option>
                 <Option name="offset" type="QString" value="0,0"></Option>
                 <Option name="offset_map_unit_scale" type="QString" value="3x:0,0,0,0,0,0"></Option>
                 <Option name="offset_unit" type="QString" value="MM"></Option>
-                <Option name="outline_color" type="QString" value="152,129,43,255"></Option>
+                <Option name="outline_color" type="QString" value="152,129,43,255,rgb:0.59607843137254901,0.50588235294117645,0.16862745098039217,1"></Option>
                 <Option name="outline_style" type="QString" value="solid"></Option>
                 <Option name="outline_width" type="QString" value="0.2"></Option>
                 <Option name="outline_width_unit" type="QString" value="MM"></Option>
@@ -673,14 +686,14 @@
               <Option type="Map">
                 <Option name="angle" type="QString" value="0"></Option>
                 <Option name="cap_style" type="QString" value="square"></Option>
-                <Option name="color" type="QString" value="213,180,60,255"></Option>
+                <Option name="color" type="QString" value="213,180,60,255,rgb:0.83529411764705885,0.70588235294117652,0.23529411764705882,1"></Option>
                 <Option name="horizontal_anchor_point" type="QString" value="1"></Option>
                 <Option name="joinstyle" type="QString" value="bevel"></Option>
                 <Option name="name" type="QString" value="diamond"></Option>
                 <Option name="offset" type="QString" value="0,0"></Option>
                 <Option name="offset_map_unit_scale" type="QString" value="3x:0,0,0,0,0,0"></Option>
                 <Option name="offset_unit" type="QString" value="MM"></Option>
-                <Option name="outline_color" type="QString" value="152,129,43,255"></Option>
+                <Option name="outline_color" type="QString" value="152,129,43,255,rgb:0.59607843137254901,0.50588235294117645,0.16862745098039217,1"></Option>
                 <Option name="outline_style" type="QString" value="solid"></Option>
                 <Option name="outline_width" type="QString" value="0.2"></Option>
                 <Option name="outline_width_map_unit_scale" type="QString" value="3x:0,0,0,0,0,0"></Option>
@@ -716,14 +729,14 @@
               <Option type="Map">
                 <Option name="angle" type="QString" value="0"></Option>
                 <Option name="cap_style" type="QString" value="square"></Option>
-                <Option name="color" type="QString" value="184,8,8,255"></Option>
+                <Option name="color" type="QString" value="184,8,8,255,rgb:0.72156862745098038,0.03137254901960784,0.03137254901960784,1"></Option>
                 <Option name="horizontal_anchor_point" type="QString" value="1"></Option>
                 <Option name="joinstyle" type="QString" value="bevel"></Option>
                 <Option name="name" type="QString" value="star"></Option>
                 <Option name="offset" type="QString" value="0,0"></Option>
                 <Option name="offset_map_unit_scale" type="QString" value="3x:0,0,0,0,0,0"></Option>
                 <Option name="offset_unit" type="QString" value="MM"></Option>
-                <Option name="outline_color" type="QString" value="184,8,8,255"></Option>
+                <Option name="outline_color" type="QString" value="184,8,8,255,rgb:0.72156862745098038,0.03137254901960784,0.03137254901960784,1"></Option>
                 <Option name="outline_style" type="QString" value="solid"></Option>
                 <Option name="outline_width" type="QString" value="0.2"></Option>
                 <Option name="outline_width_map_unit_scale" type="QString" value="3x:0,0,0,0,0,0"></Option>
@@ -741,7 +754,7 @@
                     <Option name="blur_level" type="QString" value="2.645"></Option>
                     <Option name="blur_unit" type="QString" value="MM"></Option>
                     <Option name="blur_unit_scale" type="QString" value="3x:0,0,0,0,0,0"></Option>
-                    <Option name="color" type="QString" value="0,0,0,255"></Option>
+                    <Option name="color" type="QString" value="0,0,0,255,rgb:0,0,0,1"></Option>
                     <Option name="draw_mode" type="QString" value="2"></Option>
                     <Option name="enabled" type="QString" value="1"></Option>
                     <Option name="offset_angle" type="QString" value="135"></Option>
@@ -772,14 +785,14 @@
               <Option type="Map">
                 <Option name="angle" type="QString" value="34"></Option>
                 <Option name="cap_style" type="QString" value="square"></Option>
-                <Option name="color" type="QString" value="255,0,0,255"></Option>
+                <Option name="color" type="QString" value="255,0,0,255,rgb:1,0,0,1"></Option>
                 <Option name="horizontal_anchor_point" type="QString" value="1"></Option>
                 <Option name="joinstyle" type="QString" value="bevel"></Option>
                 <Option name="name" type="QString" value="star"></Option>
                 <Option name="offset" type="QString" value="0,0"></Option>
                 <Option name="offset_map_unit_scale" type="QString" value="3x:0,0,0,0,0,0"></Option>
                 <Option name="offset_unit" type="QString" value="MM"></Option>
-                <Option name="outline_color" type="QString" value="255,0,0,255"></Option>
+                <Option name="outline_color" type="QString" value="255,0,0,255,rgb:1,0,0,1"></Option>
                 <Option name="outline_style" type="QString" value="solid"></Option>
                 <Option name="outline_width" type="QString" value="0.2"></Option>
                 <Option name="outline_width_map_unit_scale" type="QString" value="3x:0,0,0,0,0,0"></Option>
@@ -812,6 +825,13 @@
         </symbols>
         <rotation></rotation>
         <sizescale></sizescale>
+        <data-defined-properties>
+          <Option type="Map">
+            <Option name="name" type="QString" value=""></Option>
+            <Option name="properties"></Option>
+            <Option name="type" type="QString" value="collection"></Option>
+          </Option>
+        </data-defined-properties>
       </renderer-v2>
       <selection mode="Default">
         <selectionColor invalid="1"></selectionColor>
@@ -845,6 +865,9 @@
       <splitPolicies>
         <policy field="id" policy="Duplicate"></policy>
       </splitPolicies>
+      <duplicatePolicies>
+        <policy field="id" policy="Duplicate"></policy>
+      </duplicatePolicies>
       <defaults>
         <default applyOnUpdate="0" expression="" field="id"></default>
       </defaults>
@@ -991,7 +1014,7 @@
                 <Option name="dash_pattern_offset_unit" type="QString" value="MM"></Option>
                 <Option name="draw_inside_polygon" type="QString" value="0"></Option>
                 <Option name="joinstyle" type="QString" value="bevel"></Option>
-                <Option name="line_color" type="QString" value="213,180,60,255"></Option>
+                <Option name="line_color" type="QString" value="213,180,60,255,rgb:0.83529411764705885,0.70588235294117652,0.23529411764705882,1"></Option>
                 <Option name="line_style" type="QString" value="solid"></Option>
                 <Option name="line_width" type="QString" value="0.6"></Option>
                 <Option name="line_width_unit" type="QString" value="MM"></Option>
@@ -1031,12 +1054,12 @@
             <layer class="SimpleFill" enabled="1" id="{1fb3bdb1-ddac-4477-bad5-bf0b30baad3a}" locked="0" pass="0">
               <Option type="Map">
                 <Option name="border_width_map_unit_scale" type="QString" value="3x:0,0,0,0,0,0"></Option>
-                <Option name="color" type="QString" value="213,180,60,255"></Option>
+                <Option name="color" type="QString" value="213,180,60,255,rgb:0.83529411764705885,0.70588235294117652,0.23529411764705882,1"></Option>
                 <Option name="joinstyle" type="QString" value="bevel"></Option>
                 <Option name="offset" type="QString" value="0,0"></Option>
                 <Option name="offset_map_unit_scale" type="QString" value="3x:0,0,0,0,0,0"></Option>
                 <Option name="offset_unit" type="QString" value="MM"></Option>
-                <Option name="outline_color" type="QString" value="152,129,43,255"></Option>
+                <Option name="outline_color" type="QString" value="152,129,43,255,rgb:0.59607843137254901,0.50588235294117645,0.16862745098039217,1"></Option>
                 <Option name="outline_style" type="QString" value="solid"></Option>
                 <Option name="outline_width" type="QString" value="0.2"></Option>
                 <Option name="outline_width_unit" type="QString" value="MM"></Option>
@@ -1065,14 +1088,14 @@
               <Option type="Map">
                 <Option name="angle" type="QString" value="0"></Option>
                 <Option name="cap_style" type="QString" value="square"></Option>
-                <Option name="color" type="QString" value="213,180,60,255"></Option>
+                <Option name="color" type="QString" value="213,180,60,255,rgb:0.83529411764705885,0.70588235294117652,0.23529411764705882,1"></Option>
                 <Option name="horizontal_anchor_point" type="QString" value="1"></Option>
                 <Option name="joinstyle" type="QString" value="bevel"></Option>
                 <Option name="name" type="QString" value="diamond"></Option>
                 <Option name="offset" type="QString" value="0,0"></Option>
                 <Option name="offset_map_unit_scale" type="QString" value="3x:0,0,0,0,0,0"></Option>
                 <Option name="offset_unit" type="QString" value="MM"></Option>
-                <Option name="outline_color" type="QString" value="152,129,43,255"></Option>
+                <Option name="outline_color" type="QString" value="152,129,43,255,rgb:0.59607843137254901,0.50588235294117645,0.16862745098039217,1"></Option>
                 <Option name="outline_style" type="QString" value="solid"></Option>
                 <Option name="outline_width" type="QString" value="0.2"></Option>
                 <Option name="outline_width_map_unit_scale" type="QString" value="3x:0,0,0,0,0,0"></Option>
@@ -1108,14 +1131,14 @@
               <Option type="Map">
                 <Option name="angle" type="QString" value="0"></Option>
                 <Option name="cap_style" type="QString" value="square"></Option>
-                <Option name="color" type="QString" value="72,123,182,255"></Option>
+                <Option name="color" type="QString" value="72,123,182,255,rgb:0.28235294117647058,0.4823529411764706,0.71372549019607845,1"></Option>
                 <Option name="horizontal_anchor_point" type="QString" value="1"></Option>
                 <Option name="joinstyle" type="QString" value="bevel"></Option>
                 <Option name="name" type="QString" value="circle"></Option>
                 <Option name="offset" type="QString" value="0,0"></Option>
                 <Option name="offset_map_unit_scale" type="QString" value="3x:0,0,0,0,0,0"></Option>
                 <Option name="offset_unit" type="QString" value="MM"></Option>
-                <Option name="outline_color" type="QString" value="50,87,128,255"></Option>
+                <Option name="outline_color" type="QString" value="50,87,128,255,rgb:0.19607843137254902,0.3411764705882353,0.50196078431372548,1"></Option>
                 <Option name="outline_style" type="QString" value="solid"></Option>
                 <Option name="outline_width" type="QString" value="0.4"></Option>
                 <Option name="outline_width_map_unit_scale" type="QString" value="3x:0,0,0,0,0,0"></Option>
@@ -1138,6 +1161,13 @@
         </symbols>
         <rotation></rotation>
         <sizescale></sizescale>
+        <data-defined-properties>
+          <Option type="Map">
+            <Option name="name" type="QString" value=""></Option>
+            <Option name="properties"></Option>
+            <Option name="type" type="QString" value="collection"></Option>
+          </Option>
+        </data-defined-properties>
       </renderer-v2>
       <selection mode="Default">
         <selectionColor invalid="1"></selectionColor>
@@ -1171,6 +1201,9 @@
       <splitPolicies>
         <policy field="id" policy="Duplicate"></policy>
       </splitPolicies>
+      <duplicatePolicies>
+        <policy field="id" policy="Duplicate"></policy>
+      </duplicatePolicies>
       <defaults>
         <default applyOnUpdate="0" expression="" field="id"></default>
       </defaults>
@@ -1213,6 +1246,7 @@
     <layer id="form_edition_snap_e8f37811_54fb_425e_b730_1772bd99df05"></layer>
     <layer id="OpenStreetMap_dbf029fb_caac_4448_b79f_7ba9059ca4c6"></layer>
   </layerorder>
+  <labelEngineSettings></labelEngineSettings>
   <properties>
     <Digitizing>
       <AvoidIntersectionsMode type="int">0</AvoidIntersectionsMode>
@@ -1251,7 +1285,7 @@
       <ShowingCandidates type="bool">false</ShowingCandidates>
       <ShowingPartialsLabels type="bool">true</ShowingPartialsLabels>
       <TextFormat type="int">0</TextFormat>
-      <UnplacedColor type="QString">255,0,0,255</UnplacedColor>
+      <UnplacedColor type="QString">255,0,0,255,rgb:1,0,0,1</UnplacedColor>
     </PAL>
     <Paths>
       <Absolute type="bool">false</Absolute>
@@ -1377,7 +1411,7 @@
   <Sensors></Sensors>
   <ProjectViewSettings UseProjectScales="0" rotation="0">
     <Scales></Scales>
-    <DefaultViewExtent xmax="441806.61493564589181915" xmin="425036.09292506793281063" ymax="5411951.41690946463495493" ymin="5400365.84231525752693415">
+    <DefaultViewExtent xmax="452746.66922857786994427" xmin="414096.03863213595468551" ymax="5411951.41690946463495493" ymin="5400365.84231525752693415">
       <spatialrefsys nativeFormat="Wkt">
         <wkt>PROJCRS["WGS 84 / Pseudo-Mercator",BASEGEOGCRS["WGS 84",ENSEMBLE["World Geodetic System 1984 ensemble",MEMBER["World Geodetic System 1984 (Transit)"],MEMBER["World Geodetic System 1984 (G730)"],MEMBER["World Geodetic System 1984 (G873)"],MEMBER["World Geodetic System 1984 (G1150)"],MEMBER["World Geodetic System 1984 (G1674)"],MEMBER["World Geodetic System 1984 (G1762)"],MEMBER["World Geodetic System 1984 (G2139)"],ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]],ENSEMBLEACCURACY[2.0]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4326]],CONVERSION["Popular Visualisation Pseudo-Mercator",METHOD["Popular Visualisation Pseudo Mercator",ID["EPSG",1024]],PARAMETER["Latitude of natural origin",0,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8801]],PARAMETER["Longitude of natural origin",0,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8802]],PARAMETER["False easting",0,LENGTHUNIT["metre",1],ID["EPSG",8806]],PARAMETER["False northing",0,LENGTHUNIT["metre",1],ID["EPSG",8807]]],CS[Cartesian,2],AXIS["easting (X)",east,ORDER[1],LENGTHUNIT["metre",1]],AXIS["northing (Y)",north,ORDER[2],LENGTHUNIT["metre",1]],USAGE[SCOPE["Web mapping and visualisation."],AREA["World between 85.06°S and 85.06°N."],BBOX[-85.06,-180,85.06,180]],ID["EPSG",3857]]</wkt>
         <proj4>+proj=merc +a=6378137 +b=6378137 +lat_ts=0 +lon_0=0 +x_0=0 +y_0=0 +k=1 +units=m +nadgrids=@null +wktext +no_defs</proj4>
@@ -1391,11 +1425,11 @@
       </spatialrefsys>
     </DefaultViewExtent>
   </ProjectViewSettings>
-  <ProjectStyleSettings DefaultSymbolOpacity="1" RandomizeDefaultSymbolColor="1" projectStyleId="attachment:///fpyoPL_styles.db">
+  <ProjectStyleSettings DefaultSymbolOpacity="1" RandomizeDefaultSymbolColor="1" colorModel="Rgb" iccProfileId="attachment:///upgrade_projects.py-hDRPFO" projectStyleId="attachment:///ElscAs_styles.db">
     <databases></databases>
   </ProjectStyleSettings>
-  <ProjectTimeSettings cumulativeTemporalRange="0" frameRate="1" timeStep="1" timeStepUnit="h"></ProjectTimeSettings>
-  <ElevationProperties>
+  <ProjectTimeSettings cumulativeTemporalRange="0" frameRate="1" timeStep="1" timeStepUnit="h" totalMovieFrames="100"></ProjectTimeSettings>
+  <ElevationProperties FilterInvertSlider="0">
     <terrainProvider type="flat">
       <TerrainProvider offset="0" scale="1"></TerrainProvider>
     </terrainProvider>
@@ -1442,7 +1476,7 @@
       </spatialrefsys>
     </CoordinateCustomCrs>
   </ProjectDisplaySettings>
-  <ProjectGpsSettings autoAddTrackVertices="0" autoCommitFeatures="0" destinationFollowsActiveLayer="1" destinationLayer="form_edition_snap_e8f37811_54fb_425e_b730_1772bd99df05" destinationLayerName="form_edition_snap copy" destinationLayerProvider="postgres" destinationLayerSource="service='lizmapdb' key='id' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;form_edition_snap&quot; (geom)">
+  <ProjectGpsSettings autoAddTrackVertices="0" autoCommitFeatures="0" destinationFollowsActiveLayer="1" destinationLayer="form_edition_snap_e8f37811_54fb_425e_b730_1772bd99df05" destinationLayerName="form_edition_snap" destinationLayerProvider="postgres" destinationLayerSource="service='lizmapdb' key='id' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;form_edition_snap&quot; (geom)">
     <timeStampFields></timeStampFields>
   </ProjectGpsSettings>
 </qgis>

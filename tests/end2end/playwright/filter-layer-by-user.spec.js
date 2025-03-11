@@ -9,7 +9,7 @@ test.describe('Filter layer data by user - not connected', () => {
             '/index.php/view/map/?' +
             'repository=testsrepository&' +
             'project=filter_layer_by_user&' +
-            'skip_warnings_display=1';
+            'skip_plugin_update_warning=1';
         await gotoMap(url, page);
 
         // Close dock to access all features on map
@@ -187,7 +187,7 @@ test.describe('Filter layer data by user - user in group a', () => {
             '/index.php/view/map/?' +
             'repository=testsrepository&' +
             'project=filter_layer_by_user&' +
-            'skip_warnings_display=1';
+            'skip_plugin_update_warning=1';
         await gotoMap(url, page);
 
         // Close dock to access all features on map
@@ -375,7 +375,7 @@ test.describe('Filter layer data by user - admin', () => {
         const url = '/index.php/view/map/?' +
             'repository=testsrepository&' +
             'project=filter_layer_by_user&' +
-            'skip_warnings_display=1';
+            'skip_plugin_update_warning=1';
         await gotoMap(url, page);
 
         // Close dock to access all features on map
