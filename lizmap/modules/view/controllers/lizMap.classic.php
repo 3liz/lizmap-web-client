@@ -366,10 +366,6 @@ class lizMapCtrl extends jController
             }
         }
 
-        if ($this->boolParam('skip_warnings_display') == true) {
-            $rep->setBodyAttributes(array('data-skip-warnings-display' => true));
-        }
-
         $countUserJs = 0;
         // Override default theme by themes found in folder media/themes/...
         // Theme name can be 'default' and apply to all projects in a repository
@@ -539,7 +535,10 @@ class lizMapCtrl extends jController
             $rep->setBodyAttributes(array('data-lizmap-admin-user' => true));
         }
 
-        if ($lproj->qgisLizmapPluginUpdateNeeded()) {
+        // Let's not make too much messages in the UI
+        // First, force the user to update, then the user might have warnings in the plugin
+        // skip_plugin_update_warning is used in E2E tests, when the stack automatically update QGS files
+        if ($lproj->qgisLizmapPluginUpdateNeeded() && !$this->boolParam('skip_plugin_update_warning')) {
             $rep->setBodyAttributes(array('data-lizmap-plugin-update-warning' => true));
             if ($isAdmin) {
                 $rep->setBodyAttributes(array('data-lizmap-plugin-update-warning-url' => jUrl::get('admin~qgis_projects:index')));
