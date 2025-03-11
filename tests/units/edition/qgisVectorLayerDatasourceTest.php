@@ -13,7 +13,7 @@ class qgisVectorLayerDatasourceTest extends TestCase
     {
         $provider = 'postgres';
         // Host without '
-        $datasource = "dbname='test_dbname' host=127.0.0.1 port=5432 user='test_user' password='test_password' sslmode=disable key='id' srid=4326 type=Polygon checkPrimaryKeyUnicity='1' table=\"test_schema\".\"test_table\" (geom) sql=";
+        $datasource = "dbname='test_dbname' host=127.0.0.1 port=5432 user='test_user' password='test_password' sslmode=prefer key='id' srid=4326 type=Polygon checkPrimaryKeyUnicity='1' table=\"test_schema\".\"test_table\" (geom) sql=";
 
         $element = new qgisVectorLayerDatasource($provider, $datasource);
 
@@ -24,7 +24,7 @@ class qgisVectorLayerDatasourceTest extends TestCase
         $this->assertEquals('test_user', $element->getDatasourceParameter('user'));
         $this->assertEquals('test_password', $element->getDatasourceParameter('password'));
         $this->assertEquals('', $element->getDatasourceParameter('authcfg'));
-        $this->assertEquals('disable', $element->getDatasourceParameter('sslmode'));
+        $this->assertEquals('prefer', $element->getDatasourceParameter('sslmode'));
         $this->assertEquals('id', $element->getDatasourceParameter('key'));
         $this->assertEquals('', $element->getDatasourceParameter('estimatedmetadata'));
         $this->assertEquals('', $element->getDatasourceParameter('selectatid'));
@@ -38,7 +38,7 @@ class qgisVectorLayerDatasourceTest extends TestCase
         $this->assertEquals('', $element->getDatasourceParameter('sql'));
 
         // Host with '
-        $datasource = "dbname='test_dbname' host='test_host' port=5432 user='test_user' password='test_password' sslmode=disable key='id' srid=4326 type=Polygon checkPrimaryKeyUnicity='1' table=\"test_schema\".\"test_table\" (geom) sql=";
+        $datasource = "dbname='test_dbname' host='test_host' port=5432 user='test_user' password='test_password' sslmode=prefer key='id' srid=4326 type=Polygon checkPrimaryKeyUnicity='1' table=\"test_schema\".\"test_table\" (geom) sql=";
 
         $element = new qgisVectorLayerDatasource($provider, $datasource);
 
@@ -49,7 +49,7 @@ class qgisVectorLayerDatasourceTest extends TestCase
         $this->assertEquals('test_user', $element->getDatasourceParameter('user'));
         $this->assertEquals('test_password', $element->getDatasourceParameter('password'));
         $this->assertEquals('', $element->getDatasourceParameter('authcfg'));
-        $this->assertEquals('disable', $element->getDatasourceParameter('sslmode'));
+        $this->assertEquals('prefer', $element->getDatasourceParameter('sslmode'));
         $this->assertEquals('id', $element->getDatasourceParameter('key'));
         $this->assertEquals('', $element->getDatasourceParameter('estimatedmetadata'));
         $this->assertEquals('', $element->getDatasourceParameter('selectatid'));
@@ -66,7 +66,7 @@ class qgisVectorLayerDatasourceTest extends TestCase
     public function testPostgresDatasourceWithoutGeometry()
     {
         $provider = 'postgres';
-        $datasource = "dbname='test_dbname' host=test_host port=5432 user='test_user' password='test_password' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=\"test_schema\".\"test_table\" sql=";
+        $datasource = "dbname='test_dbname' host=test_host port=5432 user='test_user' password='test_password' sslmode=prefer key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=\"test_schema\".\"test_table\" sql=";
 
         $element = new qgisVectorLayerDatasource($provider, $datasource);
 
@@ -77,7 +77,7 @@ class qgisVectorLayerDatasourceTest extends TestCase
         $this->assertEquals('test_user', $element->getDatasourceParameter('user'));
         $this->assertEquals('test_password', $element->getDatasourceParameter('password'));
         $this->assertEquals('', $element->getDatasourceParameter('authcfg'));
-        $this->assertEquals('disable', $element->getDatasourceParameter('sslmode'));
+        $this->assertEquals('prefer', $element->getDatasourceParameter('sslmode'));
         $this->assertEquals('id', $element->getDatasourceParameter('key'));
         $this->assertEquals('true', $element->getDatasourceParameter('estimatedmetadata'));
         $this->assertEquals('', $element->getDatasourceParameter('selectatid'));
@@ -94,7 +94,7 @@ class qgisVectorLayerDatasourceTest extends TestCase
     public function testPostgresqlDatasourceWithService()
     {
         $provider = 'postgres';
-        $datasource = "dbname='test_dbname' service='test_service' sslmode=disable key='id' srid=2193 type=Polygon checkPrimaryKeyUnicity='1' table=\"public\".\"EditTest\" (geom) sql=";
+        $datasource = "dbname='test_dbname' service='test_service' sslmode=prefer key='id' srid=2193 type=Polygon checkPrimaryKeyUnicity='1' table=\"public\".\"EditTest\" (geom) sql=";
 
         $element = new qgisVectorLayerDatasource($provider, $datasource);
 
@@ -105,7 +105,7 @@ class qgisVectorLayerDatasourceTest extends TestCase
         $this->assertEquals('', $element->getDatasourceParameter('user'));
         $this->assertEquals('', $element->getDatasourceParameter('password'));
         $this->assertEquals('', $element->getDatasourceParameter('authcfg'));
-        $this->assertEquals('disable', $element->getDatasourceParameter('sslmode'));
+        $this->assertEquals('prefer', $element->getDatasourceParameter('sslmode'));
         $this->assertEquals('id', $element->getDatasourceParameter('key'));
         $this->assertEquals('', $element->getDatasourceParameter('estimatedmetadata'));
         $this->assertEquals('', $element->getDatasourceParameter('selectatid'));
@@ -122,7 +122,7 @@ class qgisVectorLayerDatasourceTest extends TestCase
     public function testPostgresqlDatasourceWithoutGeometryWithServiceWithoutSql()
     {
         $provider = 'postgres';
-        $datasource = "dbname='test_dbname' service='test_service' sslmode=disable key='id' srid=2193 checkPrimaryKeyUnicity='1' table=\"public\".\"EditTest\"";
+        $datasource = "dbname='test_dbname' service='test_service' sslmode=prefer key='id' srid=2193 checkPrimaryKeyUnicity='1' table=\"public\".\"EditTest\"";
 
         $element = new qgisVectorLayerDatasource($provider, $datasource);
 
@@ -133,7 +133,7 @@ class qgisVectorLayerDatasourceTest extends TestCase
         $this->assertEquals('', $element->getDatasourceParameter('user'));
         $this->assertEquals('', $element->getDatasourceParameter('password'));
         $this->assertEquals('', $element->getDatasourceParameter('authcfg'));
-        $this->assertEquals('disable', $element->getDatasourceParameter('sslmode'));
+        $this->assertEquals('prefer', $element->getDatasourceParameter('sslmode'));
         $this->assertEquals('id', $element->getDatasourceParameter('key'));
         $this->assertEquals('', $element->getDatasourceParameter('estimatedmetadata'));
         $this->assertEquals('', $element->getDatasourceParameter('selectatid'));
@@ -150,7 +150,7 @@ class qgisVectorLayerDatasourceTest extends TestCase
     public function testPostgresqlDatasourceWithAuthcfg()
     {
         $provider = 'postgres';
-        $datasource = "dbname='test_dbname' host=127.0.0.1 port=5432 authcfg='lizmap-test' sslmode=disable key='id' srid=4326 type=Polygon checkPrimaryKeyUnicity='1' table=\"test_schema\".\"test_table\" (geom) sql=";
+        $datasource = "dbname='test_dbname' host=127.0.0.1 port=5432 authcfg='lizmap-test' sslmode=prefer key='id' srid=4326 type=Polygon checkPrimaryKeyUnicity='1' table=\"test_schema\".\"test_table\" (geom) sql=";
 
         $element = new qgisVectorLayerDatasource($provider, $datasource);
 
@@ -161,7 +161,7 @@ class qgisVectorLayerDatasourceTest extends TestCase
         $this->assertEquals('', $element->getDatasourceParameter('user'));
         $this->assertEquals('', $element->getDatasourceParameter('password'));
         $this->assertEquals('lizmap-test', $element->getDatasourceParameter('authcfg'));
-        $this->assertEquals('disable', $element->getDatasourceParameter('sslmode'));
+        $this->assertEquals('prefer', $element->getDatasourceParameter('sslmode'));
         $this->assertEquals('id', $element->getDatasourceParameter('key'));
         $this->assertEquals('', $element->getDatasourceParameter('estimatedmetadata'));
         $this->assertEquals('', $element->getDatasourceParameter('selectatid'));
@@ -178,7 +178,7 @@ class qgisVectorLayerDatasourceTest extends TestCase
     public function testPostgresqlDatasourceWithoutGeometryWithAuthcfgWithoutSql()
     {
         $provider = 'postgres';
-        $datasource = "dbname='test_dbname' host=127.0.0.1 port=5432 authcfg='lizmap-test' sslmode=disable key='id' srid=2193 checkPrimaryKeyUnicity='1' table=\"public\".\"EditTest\"";
+        $datasource = "dbname='test_dbname' host=127.0.0.1 port=5432 authcfg='lizmap-test' sslmode=prefer key='id' srid=2193 checkPrimaryKeyUnicity='1' table=\"public\".\"EditTest\"";
 
         $element = new qgisVectorLayerDatasource($provider, $datasource);
 
@@ -189,7 +189,7 @@ class qgisVectorLayerDatasourceTest extends TestCase
         $this->assertEquals('', $element->getDatasourceParameter('user'));
         $this->assertEquals('', $element->getDatasourceParameter('password'));
         $this->assertEquals('lizmap-test', $element->getDatasourceParameter('authcfg'));
-        $this->assertEquals('disable', $element->getDatasourceParameter('sslmode'));
+        $this->assertEquals('prefer', $element->getDatasourceParameter('sslmode'));
         $this->assertEquals('id', $element->getDatasourceParameter('key'));
         $this->assertEquals('', $element->getDatasourceParameter('estimatedmetadata'));
         $this->assertEquals('', $element->getDatasourceParameter('selectatid'));
@@ -206,7 +206,7 @@ class qgisVectorLayerDatasourceTest extends TestCase
     public function testPostgresDatasourceSimpleTableWithSql()
     {
         $provider = 'postgres';
-        $datasource = "dbname='test_dbname' host=127.0.0.1 port=5432 user='test_user' password='test_password' sslmode=disable key='id_lieux' srid=2154 type=MultiPolygon checkPrimaryKeyUnicity='1' table=\"referentiel\".\"lieux\" (geom) sql=\"code_com\" = '010'";
+        $datasource = "dbname='test_dbname' host=127.0.0.1 port=5432 user='test_user' password='test_password' sslmode=prefer key='id_lieux' srid=2154 type=MultiPolygon checkPrimaryKeyUnicity='1' table=\"referentiel\".\"lieux\" (geom) sql=\"code_com\" = '010'";
 
         $element = new qgisVectorLayerDatasource($provider, $datasource);
 
@@ -217,7 +217,7 @@ class qgisVectorLayerDatasourceTest extends TestCase
         $this->assertEquals('test_user', $element->getDatasourceParameter('user'));
         $this->assertEquals('test_password', $element->getDatasourceParameter('password'));
         $this->assertEquals('', $element->getDatasourceParameter('authcfg'));
-        $this->assertEquals('disable', $element->getDatasourceParameter('sslmode'));
+        $this->assertEquals('prefer', $element->getDatasourceParameter('sslmode'));
         $this->assertEquals('id_lieux', $element->getDatasourceParameter('key'));
         $this->assertEquals('', $element->getDatasourceParameter('estimatedmetadata'));
         $this->assertEquals('', $element->getDatasourceParameter('selectatid'));
@@ -234,7 +234,7 @@ class qgisVectorLayerDatasourceTest extends TestCase
     public function testPostgresqlDatasourceWithoutSql()
     {
         $provider = 'postgres';
-        $datasource = "dbname='test_dbname' host=127.0.0.1 port=5432 user='test_user' password='test_password' sslmode=disable key='id' srid=4326 type=Point checkPrimaryKeyUnicity='0' table=\"test_schema\".\"test_table\" (geom)";
+        $datasource = "dbname='test_dbname' host=127.0.0.1 port=5432 user='test_user' password='test_password' sslmode=prefer key='id' srid=4326 type=Point checkPrimaryKeyUnicity='0' table=\"test_schema\".\"test_table\" (geom)";
 
         $element = new qgisVectorLayerDatasource($provider, $datasource);
 
@@ -245,7 +245,7 @@ class qgisVectorLayerDatasourceTest extends TestCase
         $this->assertEquals('test_user', $element->getDatasourceParameter('user'));
         $this->assertEquals('test_password', $element->getDatasourceParameter('password'));
         $this->assertEquals('', $element->getDatasourceParameter('authcfg'));
-        $this->assertEquals('disable', $element->getDatasourceParameter('sslmode'));
+        $this->assertEquals('prefer', $element->getDatasourceParameter('sslmode'));
         $this->assertEquals('id', $element->getDatasourceParameter('key'));
         $this->assertEquals('', $element->getDatasourceParameter('estimatedmetadata'));
         $this->assertEquals('', $element->getDatasourceParameter('selectatid'));

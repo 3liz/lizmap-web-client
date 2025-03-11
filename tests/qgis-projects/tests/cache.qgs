@@ -20,7 +20,7 @@
     <customproperties>
       <Option></Option>
     </customproperties>
-    <layer-tree-layer checked="Qt::Checked" expanded="1" id="Quartiers_cb345e1c_d328_4a0a_a148_76420491d176" legend_exp="" legend_split_behavior="0" name="Quartiers" patch_size="0,0" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='quartier' estimatedmetadata=true srid=4326 type=MultiPolygon checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;quartiers&quot; (geom)">
+    <layer-tree-layer checked="Qt::Checked" expanded="1" id="Quartiers_cb345e1c_d328_4a0a_a148_76420491d176" legend_exp="" legend_split_behavior="0" name="Quartiers" patch_size="0,0" providerKey="postgres" source="service='lizmapdb' sslmode=prefer key='quartier' estimatedmetadata=true srid=4326 type=MultiPolygon checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;quartiers&quot; (geom)">
       <customproperties>
         <Option></Option>
       </customproperties>
@@ -135,7 +135,7 @@
         <ymax>43.65337122449288643</ymax>
       </wgs84extent>
       <id>Quartiers_cb345e1c_d328_4a0a_a148_76420491d176</id>
-      <datasource>service='lizmapdb' sslmode=disable key='quartier' estimatedmetadata=true srid=4326 type=MultiPolygon checkPrimaryKeyUnicity='1' table="tests_projects"."quartiers" (geom)</datasource>
+      <datasource>service='lizmapdb' sslmode=prefer key='quartier' estimatedmetadata=true srid=4326 type=MultiPolygon checkPrimaryKeyUnicity='1' table="tests_projects"."quartiers" (geom)</datasource>
       <shortname>Quartiers</shortname>
       <keywordList>
         <value></value>

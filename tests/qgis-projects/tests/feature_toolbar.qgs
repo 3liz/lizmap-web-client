@@ -21,42 +21,42 @@
     <customproperties>
       <Option></Option>
     </customproperties>
-    <layer-tree-layer checked="Qt::Checked" expanded="1" id="tramway_lines_4215fd0b_5136_4c19_b3ee_d1617f8df8ea" legend_exp="" legend_split_behavior="0" name="tramway_lines" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='id_line' estimatedmetadata=true srid=2154 type=LineString checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;tramway_lines&quot; (geom)">
+    <layer-tree-layer checked="Qt::Checked" expanded="1" id="tramway_lines_4215fd0b_5136_4c19_b3ee_d1617f8df8ea" legend_exp="" legend_split_behavior="0" name="tramway_lines" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=prefer key='id_line' estimatedmetadata=true srid=2154 type=LineString checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;tramway_lines&quot; (geom)">
       <customproperties>
         <Option></Option>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer checked="Qt::Checked" expanded="1" id="tramway_pivot_e5cbaecd_969d_44c2_b372_f28507a488d5" legend_exp="" legend_split_behavior="0" name="tramway_pivot" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='id_pivot' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;tramway_pivot&quot;">
+    <layer-tree-layer checked="Qt::Checked" expanded="1" id="tramway_pivot_e5cbaecd_969d_44c2_b372_f28507a488d5" legend_exp="" legend_split_behavior="0" name="tramway_pivot" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=prefer key='id_pivot' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;tramway_pivot&quot;">
       <customproperties>
         <Option></Option>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer checked="Qt::Checked" expanded="1" id="tramway_stops_01da13aa_bcf1_4efc_a839_3585289d7af2" legend_exp="" legend_split_behavior="0" name="tramway_stops" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='id_stop' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;tramway_stops&quot; (geom)">
+    <layer-tree-layer checked="Qt::Checked" expanded="1" id="tramway_stops_01da13aa_bcf1_4efc_a839_3585289d7af2" legend_exp="" legend_split_behavior="0" name="tramway_stops" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=prefer key='id_stop' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;tramway_stops&quot; (geom)">
       <customproperties>
         <Option></Option>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer checked="Qt::Checked" expanded="1" id="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111" legend_exp="" legend_split_behavior="0" name="parent_layer" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;parent_layer&quot; (geom)">
+    <layer-tree-layer checked="Qt::Checked" expanded="1" id="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111" legend_exp="" legend_split_behavior="0" name="parent_layer" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;parent_layer&quot; (geom)">
       <customproperties>
         <Option></Option>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer checked="Qt::Checked" expanded="1" id="parent_layer_37995b81_7718_4aee_b942_a7f1f39b562e" legend_exp="" legend_split_behavior="0" name="parent_layer_without_attribute_table" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;parent_layer&quot; (geom)">
+    <layer-tree-layer checked="Qt::Checked" expanded="1" id="parent_layer_37995b81_7718_4aee_b942_a7f1f39b562e" legend_exp="" legend_split_behavior="0" name="parent_layer_without_attribute_table" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;parent_layer&quot; (geom)">
       <customproperties>
         <Option></Option>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer checked="Qt::Checked" expanded="1" id="children_layer_358cb5a3_0c83_4a6c_8f2f_950e7459d9d0" legend_exp="" legend_split_behavior="0" name="children_layer" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;children_layer&quot;">
+    <layer-tree-layer checked="Qt::Checked" expanded="1" id="children_layer_358cb5a3_0c83_4a6c_8f2f_950e7459d9d0" legend_exp="" legend_split_behavior="0" name="children_layer" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;children_layer&quot;">
       <customproperties>
         <Option></Option>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer checked="Qt::Checked" expanded="1" id="tramway_stops_fd557309_c85f_4bdb_83e1_93e4fb027c07" legend_exp="" legend_split_behavior="0" name="tramway stop (with parenthesis) and spaces" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='id_stop' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;tramway_stops&quot; (geom)">
+    <layer-tree-layer checked="Qt::Checked" expanded="1" id="tramway_stops_fd557309_c85f_4bdb_83e1_93e4fb027c07" legend_exp="" legend_split_behavior="0" name="tramway stop (with parenthesis) and spaces" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=prefer key='id_stop' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;tramway_stops&quot; (geom)">
       <customproperties>
         <Option></Option>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer checked="Qt::Checked" expanded="1" id="data_uids_481aebcb_1b4e_495a_9664_ca64ee1becc4" legend_exp="" legend_split_behavior="0" name="data_uids" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_uids&quot;">
+    <layer-tree-layer checked="Qt::Checked" expanded="1" id="data_uids_481aebcb_1b4e_495a_9664_ca64ee1becc4" legend_exp="" legend_split_behavior="0" name="data_uids" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_uids&quot;">
       <customproperties>
         <Option></Option>
       </customproperties>
@@ -343,7 +343,7 @@
   <projectlayers>
     <maplayer autoRefreshEnabled="0" autoRefreshTime="0" geometry="No geometry" hasScaleBasedVisibilityFlag="0" legendPlaceholderImage="" maxScale="0" minScale="1e+08" readOnly="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" styleCategories="AllStyleCategories" type="vector" wkbType="NoGeometry">
       <id>children_layer_358cb5a3_0c83_4a6c_8f2f_950e7459d9d0</id>
-      <datasource>service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table="tests_projects"."children_layer"</datasource>
+      <datasource>service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table="tests_projects"."children_layer"</datasource>
       <shortname>children_layer</shortname>
       <keywordList>
         <value></value>
@@ -439,7 +439,7 @@
       </geometryOptions>
       <legend showLabelLegend="0" type="default-vector"></legend>
       <referencedLayers>
-        <relation dataSource="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;parent_layer&quot; (geom)" id="children_l_parent_id_parent_lay_id" layerId="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111" layerName="parent_layer" name="parent_children_relation" providerKey="postgres" referencedLayer="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111" referencingLayer="children_layer_358cb5a3_0c83_4a6c_8f2f_950e7459d9d0" strength="Association">
+        <relation dataSource="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;parent_layer&quot; (geom)" id="children_l_parent_id_parent_lay_id" layerId="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111" layerName="parent_layer" name="parent_children_relation" providerKey="postgres" referencedLayer="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111" referencingLayer="children_layer_358cb5a3_0c83_4a6c_8f2f_950e7459d9d0" strength="Association">
           <fieldRef referencedField="id" referencingField="parent_id"></fieldRef>
         </relation>
       </referencedLayers>
@@ -460,7 +460,7 @@
                 <Option name="MapIdentification" type="bool" value="false"></Option>
                 <Option name="OrderByValue" type="bool" value="false"></Option>
                 <Option name="ReadOnly" type="bool" value="false"></Option>
-                <Option name="ReferencedLayerDataSource" type="QString" value="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;parent_layer&quot; (geom)"></Option>
+                <Option name="ReferencedLayerDataSource" type="QString" value="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;parent_layer&quot; (geom)"></Option>
                 <Option name="ReferencedLayerId" type="QString" value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111"></Option>
                 <Option name="ReferencedLayerName" type="QString" value="parent_layer"></Option>
                 <Option name="ReferencedLayerProviderKey" type="QString" value="postgres"></Option>
@@ -559,7 +559,7 @@ def my_form_open(dialog, layer, feature):
     </maplayer>
     <maplayer autoRefreshEnabled="0" autoRefreshTime="0" geometry="No geometry" hasScaleBasedVisibilityFlag="0" legendPlaceholderImage="" maxScale="0" minScale="1e+08" readOnly="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" styleCategories="AllStyleCategories" type="vector" wkbType="NoGeometry">
       <id>data_uids_481aebcb_1b4e_495a_9664_ca64ee1becc4</id>
-      <datasource>service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table="tests_projects"."data_uids"</datasource>
+      <datasource>service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table="tests_projects"."data_uids"</datasource>
       <shortname>data_uids</shortname>
       <keywordList>
         <value></value>
@@ -720,7 +720,7 @@ def my_form_open(dialog, layer, feature):
         <ymax>43.61070378322501284</ymax>
       </wgs84extent>
       <id>parent_layer_37995b81_7718_4aee_b942_a7f1f39b562e</id>
-      <datasource>service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table="tests_projects"."parent_layer" (geom)</datasource>
+      <datasource>service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table="tests_projects"."parent_layer" (geom)</datasource>
       <shortname>parent_layer_without_attribute_table</shortname>
       <keywordList>
         <value></value>
@@ -1037,7 +1037,7 @@ def my_form_open(dialog, layer, feature):
         <ymax>43.61070378322501284</ymax>
       </wgs84extent>
       <id>parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111</id>
-      <datasource>service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table="tests_projects"."parent_layer" (geom)</datasource>
+      <datasource>service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table="tests_projects"."parent_layer" (geom)</datasource>
       <shortname>parent_layer</shortname>
       <keywordList>
         <value></value>
@@ -1354,7 +1354,7 @@ def my_form_open(dialog, layer, feature):
         <ymax>43.67959702962155433</ymax>
       </wgs84extent>
       <id>tramway_lines_4215fd0b_5136_4c19_b3ee_d1617f8df8ea</id>
-      <datasource>service='lizmapdb' sslmode=disable key='id_line' estimatedmetadata=true srid=2154 type=LineString checkPrimaryKeyUnicity='1' table="tests_projects"."tramway_lines" (geom)</datasource>
+      <datasource>service='lizmapdb' sslmode=prefer key='id_line' estimatedmetadata=true srid=2154 type=LineString checkPrimaryKeyUnicity='1' table="tests_projects"."tramway_lines" (geom)</datasource>
       <shortname>tramway_lines</shortname>
       <keywordList>
         <value></value>
@@ -1564,7 +1564,7 @@ def my_form_open(dialog, layer, feature):
     </maplayer>
     <maplayer autoRefreshEnabled="0" autoRefreshTime="0" geometry="No geometry" hasScaleBasedVisibilityFlag="0" legendPlaceholderImage="" maxScale="0" minScale="1e+08" readOnly="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" styleCategories="AllStyleCategories" type="vector" wkbType="NoGeometry">
       <id>tramway_pivot_e5cbaecd_969d_44c2_b372_f28507a488d5</id>
-      <datasource>service='lizmapdb' sslmode=disable key='id_pivot' estimatedmetadata=true checkPrimaryKeyUnicity='1' table="tests_projects"."tramway_pivot"</datasource>
+      <datasource>service='lizmapdb' sslmode=prefer key='id_pivot' estimatedmetadata=true checkPrimaryKeyUnicity='1' table="tests_projects"."tramway_pivot"</datasource>
       <shortname>tramway_pivot</shortname>
       <keywordList>
         <value></value>
@@ -1641,10 +1641,10 @@ def my_form_open(dialog, layer, feature):
       </geometryOptions>
       <legend showLabelLegend="0" type="default-vector"></legend>
       <referencedLayers>
-        <relation dataSource="service='lizmapdb' sslmode=disable key='id_line' estimatedmetadata=true srid=2154 type=LineString checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;tramway_lines&quot; (geom)" id="tramway_pivot_e5cbaecd_969d_44c2_b372_f28507a488d5_id_line_tramway_lines_4215fd0b_5136_4c19_b3ee_d1617f8df8ea_id_line" layerId="tramway_lines_4215fd0b_5136_4c19_b3ee_d1617f8df8ea" layerName="tramway_lines" name="line_fkey" providerKey="postgres" referencedLayer="tramway_lines_4215fd0b_5136_4c19_b3ee_d1617f8df8ea" referencingLayer="tramway_pivot_e5cbaecd_969d_44c2_b372_f28507a488d5" strength="Association">
+        <relation dataSource="service='lizmapdb' sslmode=prefer key='id_line' estimatedmetadata=true srid=2154 type=LineString checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;tramway_lines&quot; (geom)" id="tramway_pivot_e5cbaecd_969d_44c2_b372_f28507a488d5_id_line_tramway_lines_4215fd0b_5136_4c19_b3ee_d1617f8df8ea_id_line" layerId="tramway_lines_4215fd0b_5136_4c19_b3ee_d1617f8df8ea" layerName="tramway_lines" name="line_fkey" providerKey="postgres" referencedLayer="tramway_lines_4215fd0b_5136_4c19_b3ee_d1617f8df8ea" referencingLayer="tramway_pivot_e5cbaecd_969d_44c2_b372_f28507a488d5" strength="Association">
           <fieldRef referencedField="id_line" referencingField="id_line"></fieldRef>
         </relation>
-        <relation dataSource="service='lizmapdb' sslmode=disable key='id_stop' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;tramway_stops&quot; (geom)" id="tramway_pivot_e5cbaecd_969d_44c2_b372_f28507a488d5_id_stop_tramway_stops_01da13aa_bcf1_4efc_a839_3585289d7af2_id_stop" layerId="tramway_stops_01da13aa_bcf1_4efc_a839_3585289d7af2" layerName="tramway_stops" name="stop_fkey" providerKey="postgres" referencedLayer="tramway_stops_01da13aa_bcf1_4efc_a839_3585289d7af2" referencingLayer="tramway_pivot_e5cbaecd_969d_44c2_b372_f28507a488d5" strength="Association">
+        <relation dataSource="service='lizmapdb' sslmode=prefer key='id_stop' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;tramway_stops&quot; (geom)" id="tramway_pivot_e5cbaecd_969d_44c2_b372_f28507a488d5_id_stop_tramway_stops_01da13aa_bcf1_4efc_a839_3585289d7af2_id_stop" layerId="tramway_stops_01da13aa_bcf1_4efc_a839_3585289d7af2" layerName="tramway_stops" name="stop_fkey" providerKey="postgres" referencedLayer="tramway_stops_01da13aa_bcf1_4efc_a839_3585289d7af2" referencingLayer="tramway_pivot_e5cbaecd_969d_44c2_b372_f28507a488d5" strength="Association">
           <fieldRef referencedField="id_stop" referencingField="id_stop"></fieldRef>
         </relation>
       </referencedLayers>
@@ -1737,7 +1737,7 @@ def my_form_open(dialog, layer, feature):
         <ymax>43.67838964885666542</ymax>
       </wgs84extent>
       <id>tramway_stops_01da13aa_bcf1_4efc_a839_3585289d7af2</id>
-      <datasource>service='lizmapdb' sslmode=disable key='id_stop' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table="tests_projects"."tramway_stops" (geom)</datasource>
+      <datasource>service='lizmapdb' sslmode=prefer key='id_stop' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table="tests_projects"."tramway_stops" (geom)</datasource>
       <shortname>tramway_stops</shortname>
       <keywordList>
         <value></value>
@@ -1946,7 +1946,7 @@ def my_form_open(dialog, layer, feature):
         <ymax>43.67838964885666542</ymax>
       </wgs84extent>
       <id>tramway_stops_fd557309_c85f_4bdb_83e1_93e4fb027c07</id>
-      <datasource>service='lizmapdb' sslmode=disable key='id_stop' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table="tests_projects"."tramway_stops" (geom)</datasource>
+      <datasource>service='lizmapdb' sslmode=prefer key='id_stop' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table="tests_projects"."tramway_stops" (geom)</datasource>
       <shortname>tramway_stop_with_parenthesis_and_spaces</shortname>
       <keywordList>
         <value></value>
