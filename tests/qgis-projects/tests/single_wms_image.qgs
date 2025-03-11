@@ -27,12 +27,12 @@
           <Option value="GroupAsLayer" name="wmsShortName" type="QString"/>
         </Option>
       </customproperties>
-      <layer-tree-layer providerKey="postgres" patch_size="-1,-1" legend_split_behavior="0" name="single_wms_lines_group_as_layer" expanded="1" legend_exp="" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=4326 type=LineString checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;single_wms_lines_group_as_layer&quot; (geom)" checked="Qt::Checked" id="single_wms_lines_group_as_layer_3b2aea6c_f225_4840_9065_832910fd65ea">
+      <layer-tree-layer providerKey="postgres" patch_size="-1,-1" legend_split_behavior="0" name="single_wms_lines_group_as_layer" expanded="1" legend_exp="" source="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=4326 type=LineString checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;single_wms_lines_group_as_layer&quot; (geom)" checked="Qt::Checked" id="single_wms_lines_group_as_layer_3b2aea6c_f225_4840_9065_832910fd65ea">
         <customproperties>
           <Option/>
         </customproperties>
       </layer-tree-layer>
-      <layer-tree-layer providerKey="postgres" patch_size="-1,-1" legend_split_behavior="0" name="single_wms_polygons_group_as_layer" expanded="1" legend_exp="" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=4326 type=Polygon checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;single_wms_polygons_group_as_layer&quot; (geom)" checked="Qt::Checked" id="single_wms_polygons_group_as_layer_cb8ca18b_9474_411f_9e56_3e2cf877ab58">
+      <layer-tree-layer providerKey="postgres" patch_size="-1,-1" legend_split_behavior="0" name="single_wms_polygons_group_as_layer" expanded="1" legend_exp="" source="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=4326 type=Polygon checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;single_wms_polygons_group_as_layer&quot; (geom)" checked="Qt::Checked" id="single_wms_polygons_group_as_layer_cb8ca18b_9474_411f_9e56_3e2cf877ab58">
         <customproperties>
           <Option/>
         </customproperties>
@@ -44,28 +44,28 @@
           <Option value="Group_1" name="wmsShortName" type="QString"/>
         </Option>
       </customproperties>
-      <layer-tree-layer providerKey="postgres" patch_size="-1,-1" legend_split_behavior="0" name="single_wms_lines_group" expanded="1" legend_exp="" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=4326 type=LineString checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;single_wms_lines_group&quot; (geom)" checked="Qt::Checked" id="single_wms_lines_group_83aee53e_4c30_43e8_afad_19b5c995dbd8">
+      <layer-tree-layer providerKey="postgres" patch_size="-1,-1" legend_split_behavior="0" name="single_wms_lines_group" expanded="1" legend_exp="" source="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=4326 type=LineString checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;single_wms_lines_group&quot; (geom)" checked="Qt::Checked" id="single_wms_lines_group_83aee53e_4c30_43e8_afad_19b5c995dbd8">
         <customproperties>
           <Option/>
         </customproperties>
       </layer-tree-layer>
-      <layer-tree-layer providerKey="postgres" patch_size="-1,-1" legend_split_behavior="0" name="single_wms_points_group" expanded="1" legend_exp="" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;single_wms_points_group&quot; (geom)" checked="Qt::Checked" id="single_wms_points_group_37aa76b0_0d6a_4b8c_8692_976350b1581b">
+      <layer-tree-layer providerKey="postgres" patch_size="-1,-1" legend_split_behavior="0" name="single_wms_points_group" expanded="1" legend_exp="" source="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;single_wms_points_group&quot; (geom)" checked="Qt::Checked" id="single_wms_points_group_37aa76b0_0d6a_4b8c_8692_976350b1581b">
         <customproperties>
           <Option/>
         </customproperties>
       </layer-tree-layer>
     </layer-tree-group>
-    <layer-tree-layer providerKey="postgres" patch_size="-1,-1" legend_split_behavior="0" name="single_wms_points" expanded="1" legend_exp="" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;single_wms_points&quot; (geom)" checked="Qt::Checked" id="single_wms_points_7462146f_833e_4d7f_be4f_bccfc4ca1662">
+    <layer-tree-layer providerKey="postgres" patch_size="-1,-1" legend_split_behavior="0" name="single_wms_points" expanded="1" legend_exp="" source="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;single_wms_points&quot; (geom)" checked="Qt::Checked" id="single_wms_points_7462146f_833e_4d7f_be4f_bccfc4ca1662">
       <customproperties>
         <Option/>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer providerKey="postgres" patch_size="-1,-1" legend_split_behavior="0" name="single_wms_lines" expanded="0" legend_exp="" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=4326 type=LineString checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;single_wms_lines&quot; (geom)" checked="Qt::Checked" id="single_wms_lines_1e302878_563d_4cc7_9bed_145269e95d68">
+    <layer-tree-layer providerKey="postgres" patch_size="-1,-1" legend_split_behavior="0" name="single_wms_lines" expanded="0" legend_exp="" source="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=4326 type=LineString checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;single_wms_lines&quot; (geom)" checked="Qt::Checked" id="single_wms_lines_1e302878_563d_4cc7_9bed_145269e95d68">
       <customproperties>
         <Option/>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer providerKey="postgres" patch_size="-1,-1" legend_split_behavior="0" name="single_wms_polygons" expanded="1" legend_exp="" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=4326 type=Polygon checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;single_wms_polygons&quot; (geom)" checked="Qt::Checked" id="single_wms_polygons_40d5f3fb_38b4_4012_9771_4a1f984eadf4">
+    <layer-tree-layer providerKey="postgres" patch_size="-1,-1" legend_split_behavior="0" name="single_wms_polygons" expanded="1" legend_exp="" source="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=4326 type=Polygon checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;single_wms_polygons&quot; (geom)" checked="Qt::Checked" id="single_wms_polygons_40d5f3fb_38b4_4012_9771_4a1f984eadf4">
       <customproperties>
         <Option/>
       </customproperties>
@@ -76,12 +76,12 @@
           <Option value="baselayers" name="wmsShortName" type="QString"/>
         </Option>
       </customproperties>
-      <layer-tree-layer providerKey="postgres" patch_size="-1,-1" legend_split_behavior="0" name="single_wms_baselayer" expanded="1" legend_exp="" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=4326 type=Polygon checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;single_wms_baselayer&quot; (geom)" checked="Qt::Checked" id="single_wms_baselayer_cbae5bbf_e9ca_49e9_ab6b_59d321e98aa9">
+      <layer-tree-layer providerKey="postgres" patch_size="-1,-1" legend_split_behavior="0" name="single_wms_baselayer" expanded="1" legend_exp="" source="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=4326 type=Polygon checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;single_wms_baselayer&quot; (geom)" checked="Qt::Checked" id="single_wms_baselayer_cbae5bbf_e9ca_49e9_ab6b_59d321e98aa9">
         <customproperties>
           <Option/>
         </customproperties>
       </layer-tree-layer>
-      <layer-tree-layer providerKey="postgres" patch_size="-1,-1" legend_split_behavior="0" name="single_wms_tiled_baselayer" expanded="1" legend_exp="" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=4326 type=Polygon checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;single_wms_tiled_baselayer&quot; (geom)" checked="Qt::Unchecked" id="single_wms_tiled_baselayer_18228037_1139_4478_ae3e_3161e331ba07">
+      <layer-tree-layer providerKey="postgres" patch_size="-1,-1" legend_split_behavior="0" name="single_wms_tiled_baselayer" expanded="1" legend_exp="" source="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=4326 type=Polygon checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;single_wms_tiled_baselayer&quot; (geom)" checked="Qt::Unchecked" id="single_wms_tiled_baselayer_18228037_1139_4478_ae3e_3161e331ba07">
         <customproperties>
           <Option/>
         </customproperties>
@@ -480,7 +480,7 @@
         <ymax>43.65704581870000567</ymax>
       </wgs84extent>
       <id>single_wms_baselayer_cbae5bbf_e9ca_49e9_ab6b_59d321e98aa9</id>
-      <datasource>service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=4326 type=Polygon checkPrimaryKeyUnicity='1' table="tests_projects"."single_wms_baselayer" (geom)</datasource>
+      <datasource>service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=4326 type=Polygon checkPrimaryKeyUnicity='1' table="tests_projects"."single_wms_baselayer" (geom)</datasource>
       <shortname>single_wms_baselayer</shortname>
       <keywordList>
         <value></value>
@@ -920,7 +920,7 @@ def my_form_open(dialog, layer, feature):
         <ymax>43.627503071758575</ymax>
       </wgs84extent>
       <id>single_wms_lines_1e302878_563d_4cc7_9bed_145269e95d68</id>
-      <datasource>service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=4326 type=LineString checkPrimaryKeyUnicity='1' table="tests_projects"."single_wms_lines" (geom)</datasource>
+      <datasource>service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=4326 type=LineString checkPrimaryKeyUnicity='1' table="tests_projects"."single_wms_lines" (geom)</datasource>
       <shortname>single_wms_lines</shortname>
       <title>Lines</title>
       <keywordList>
@@ -1615,7 +1615,7 @@ def my_form_open(dialog, layer, feature):
         <ymax>43.62909356120091076</ymax>
       </wgs84extent>
       <id>single_wms_lines_group_83aee53e_4c30_43e8_afad_19b5c995dbd8</id>
-      <datasource>service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=4326 type=LineString checkPrimaryKeyUnicity='1' table="tests_projects"."single_wms_lines_group" (geom)</datasource>
+      <datasource>service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=4326 type=LineString checkPrimaryKeyUnicity='1' table="tests_projects"."single_wms_lines_group" (geom)</datasource>
       <shortname>single_wms_lines_group</shortname>
       <keywordList>
         <value></value>
@@ -2065,7 +2065,7 @@ def my_form_open(dialog, layer, feature):
         <ymax>43.63629209230957429</ymax>
       </wgs84extent>
       <id>single_wms_lines_group_as_layer_3b2aea6c_f225_4840_9065_832910fd65ea</id>
-      <datasource>service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=4326 type=LineString checkPrimaryKeyUnicity='1' table="tests_projects"."single_wms_lines_group_as_layer" (geom)</datasource>
+      <datasource>service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=4326 type=LineString checkPrimaryKeyUnicity='1' table="tests_projects"."single_wms_lines_group_as_layer" (geom)</datasource>
       <shortname>single_wms_lines_group_as_layer</shortname>
       <keywordList>
         <value></value>
@@ -2515,7 +2515,7 @@ def my_form_open(dialog, layer, feature):
         <ymax>43.62298250356227669</ymax>
       </wgs84extent>
       <id>single_wms_points_7462146f_833e_4d7f_be4f_bccfc4ca1662</id>
-      <datasource>service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='1' table="tests_projects"."single_wms_points" (geom)</datasource>
+      <datasource>service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='1' table="tests_projects"."single_wms_points" (geom)</datasource>
       <shortname>single_wms_points</shortname>
       <title>Points</title>
       <keywordList>
@@ -3319,7 +3319,7 @@ def my_form_open(dialog, layer, feature):
         <ymax>43.62557768612489895</ymax>
       </wgs84extent>
       <id>single_wms_points_group_37aa76b0_0d6a_4b8c_8692_976350b1581b</id>
-      <datasource>service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='1' table="tests_projects"."single_wms_points_group" (geom)</datasource>
+      <datasource>service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='1' table="tests_projects"."single_wms_points_group" (geom)</datasource>
       <shortname>single_wms_points_group</shortname>
       <keywordList>
         <value></value>
@@ -3761,7 +3761,7 @@ def my_form_open(dialog, layer, feature):
         <ymax>43.63754756174982674</ymax>
       </wgs84extent>
       <id>single_wms_polygons_40d5f3fb_38b4_4012_9771_4a1f984eadf4</id>
-      <datasource>service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=4326 type=Polygon checkPrimaryKeyUnicity='1' table="tests_projects"."single_wms_polygons" (geom)</datasource>
+      <datasource>service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=4326 type=Polygon checkPrimaryKeyUnicity='1' table="tests_projects"."single_wms_polygons" (geom)</datasource>
       <shortname>single_wms_polygons</shortname>
       <title>Polygons</title>
       <keywordList>
@@ -4202,7 +4202,7 @@ def my_form_open(dialog, layer, feature):
         <ymax>43.64164857911855222</ymax>
       </wgs84extent>
       <id>single_wms_polygons_group_as_layer_cb8ca18b_9474_411f_9e56_3e2cf877ab58</id>
-      <datasource>service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=4326 type=Polygon checkPrimaryKeyUnicity='1' table="tests_projects"."single_wms_polygons_group_as_layer" (geom)</datasource>
+      <datasource>service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=4326 type=Polygon checkPrimaryKeyUnicity='1' table="tests_projects"."single_wms_polygons_group_as_layer" (geom)</datasource>
       <shortname>single_wms_polygons_group_as_layer</shortname>
       <keywordList>
         <value></value>
@@ -4524,7 +4524,7 @@ def my_form_open(dialog, layer, feature):
         <ymax>43.65704581870000567</ymax>
       </wgs84extent>
       <id>single_wms_tiled_baselayer_18228037_1139_4478_ae3e_3161e331ba07</id>
-      <datasource>service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=4326 type=Polygon checkPrimaryKeyUnicity='1' table="tests_projects"."single_wms_tiled_baselayer" (geom)</datasource>
+      <datasource>service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=4326 type=Polygon checkPrimaryKeyUnicity='1' table="tests_projects"."single_wms_tiled_baselayer" (geom)</datasource>
       <shortname>single_wms_tiled_baselayer</shortname>
       <keywordList>
         <value></value>

@@ -20,17 +20,17 @@
     <customproperties>
       <Option></Option>
     </customproperties>
-    <layer-tree-layer checked="Qt::Checked" expanded="1" id="form_edition_vr_point_9df2a12a_46f0_45d3_885a_0de72c5d1d03" legend_exp="" legend_split_behavior="0" name="point" patch_size="0,0" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='0' table=&quot;tests_projects&quot;.&quot;form_edition_vr_point&quot; (geom)">
+    <layer-tree-layer checked="Qt::Checked" expanded="1" id="form_edition_vr_point_9df2a12a_46f0_45d3_885a_0de72c5d1d03" legend_exp="" legend_split_behavior="0" name="point" patch_size="0,0" providerKey="postgres" source="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='0' table=&quot;tests_projects&quot;.&quot;form_edition_vr_point&quot; (geom)">
       <customproperties>
         <Option></Option>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer checked="Qt::Checked" expanded="1" id="form_edition_vr_list_934681e5_2397_4451_a9f4_37d292240173" legend_exp="" legend_split_behavior="0" name="list" patch_size="0,0" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=4326 type=Polygon checkPrimaryKeyUnicity='0' table=&quot;tests_projects&quot;.&quot;form_edition_vr_list&quot; (geom)">
+    <layer-tree-layer checked="Qt::Checked" expanded="1" id="form_edition_vr_list_934681e5_2397_4451_a9f4_37d292240173" legend_exp="" legend_split_behavior="0" name="list" patch_size="0,0" providerKey="postgres" source="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=4326 type=Polygon checkPrimaryKeyUnicity='0' table=&quot;tests_projects&quot;.&quot;form_edition_vr_list&quot; (geom)">
       <customproperties>
         <Option></Option>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer checked="Qt::Checked" expanded="1" id="form_edition_vr_dd_list_18e4aaee_1c3f_4b99_8fcd_bdfbe2ed90b4" legend_exp="" legend_split_behavior="0" name="dd_list" patch_size="0,0" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='0' table=&quot;tests_projects&quot;.&quot;form_edition_vr_dd_list&quot;">
+    <layer-tree-layer checked="Qt::Checked" expanded="1" id="form_edition_vr_dd_list_18e4aaee_1c3f_4b99_8fcd_bdfbe2ed90b4" legend_exp="" legend_split_behavior="0" name="dd_list" patch_size="0,0" providerKey="postgres" source="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true checkPrimaryKeyUnicity='0' table=&quot;tests_projects&quot;.&quot;form_edition_vr_dd_list&quot;">
       <customproperties>
         <Option></Option>
       </customproperties>
@@ -368,7 +368,7 @@
     </maplayer>
     <maplayer autoRefreshEnabled="0" autoRefreshTime="0" geometry="No geometry" hasScaleBasedVisibilityFlag="0" legendPlaceholderImage="" maxScale="0" minScale="1e+08" readOnly="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" styleCategories="AllStyleCategories" type="vector" wkbType="NoGeometry">
       <id>form_edition_vr_dd_list_18e4aaee_1c3f_4b99_8fcd_bdfbe2ed90b4</id>
-      <datasource>service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='0' table="tests_projects"."form_edition_vr_dd_list"</datasource>
+      <datasource>service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true checkPrimaryKeyUnicity='0' table="tests_projects"."form_edition_vr_dd_list"</datasource>
       <shortname>dd_list</shortname>
       <keywordList>
         <value></value>
@@ -661,7 +661,7 @@
         <ymax>48</ymax>
       </wgs84extent>
       <id>form_edition_vr_list_934681e5_2397_4451_a9f4_37d292240173</id>
-      <datasource>service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=4326 type=Polygon checkPrimaryKeyUnicity='0' table="tests_projects"."form_edition_vr_list" (geom)</datasource>
+      <datasource>service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=4326 type=Polygon checkPrimaryKeyUnicity='0' table="tests_projects"."form_edition_vr_list" (geom)</datasource>
       <shortname>list</shortname>
       <keywordList>
         <value></value>
@@ -1242,7 +1242,7 @@ def my_form_open(dialog, layer, feature):
     </maplayer>
     <maplayer autoRefreshEnabled="0" autoRefreshTime="0" geometry="Point" hasScaleBasedVisibilityFlag="0" labelsEnabled="0" legendPlaceholderImage="" maxScale="0" minScale="100000000" readOnly="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" simplifyAlgorithm="0" simplifyDrawingHints="0" simplifyDrawingTol="1" simplifyLocal="1" simplifyMaxScale="1" styleCategories="AllStyleCategories" symbologyReferenceScale="-1" type="vector" wkbType="Point">
       <id>form_edition_vr_point_9df2a12a_46f0_45d3_885a_0de72c5d1d03</id>
-      <datasource>service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='0' table="tests_projects"."form_edition_vr_point" (geom)</datasource>
+      <datasource>service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='0' table="tests_projects"."form_edition_vr_point" (geom)</datasource>
       <shortname>point</shortname>
       <keywordList>
         <value></value>
@@ -1604,7 +1604,7 @@ def my_form_open(dialog, layer, feature):
                 <Option name="Layer" type="QString" value="form_edition_vr_list_934681e5_2397_4451_a9f4_37d292240173"></Option>
                 <Option name="LayerName" type="QString" value="form_edition_vr_list"></Option>
                 <Option name="LayerProviderName" type="QString" value="postgres"></Option>
-                <Option name="LayerSource" type="QString" value="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=4326 type=Polygon checkPrimaryKeyUnicity='0' table=&quot;tests_projects&quot;.&quot;form_edition_vr_list&quot; (geom) sql="></Option>
+                <Option name="LayerSource" type="QString" value="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=4326 type=Polygon checkPrimaryKeyUnicity='0' table=&quot;tests_projects&quot;.&quot;form_edition_vr_list&quot; (geom) sql="></Option>
                 <Option name="NofColumns" type="int" value="1"></Option>
                 <Option name="OrderByValue" type="bool" value="false"></Option>
                 <Option name="UseCompleter" type="bool" value="false"></Option>
@@ -1624,7 +1624,7 @@ def my_form_open(dialog, layer, feature):
                 <Option name="Layer" type="QString" value="form_edition_vr_list_934681e5_2397_4451_a9f4_37d292240173"></Option>
                 <Option name="LayerName" type="QString" value="form_edition_vr_list"></Option>
                 <Option name="LayerProviderName" type="QString" value="postgres"></Option>
-                <Option name="LayerSource" type="QString" value="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=4326 type=Polygon checkPrimaryKeyUnicity='0' table=&quot;tests_projects&quot;.&quot;form_edition_vr_list&quot; (geom) sql="></Option>
+                <Option name="LayerSource" type="QString" value="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=4326 type=Polygon checkPrimaryKeyUnicity='0' table=&quot;tests_projects&quot;.&quot;form_edition_vr_list&quot; (geom) sql="></Option>
                 <Option name="NofColumns" type="int" value="1"></Option>
                 <Option name="OrderByValue" type="bool" value="false"></Option>
                 <Option name="UseCompleter" type="bool" value="false"></Option>
@@ -1663,7 +1663,7 @@ def my_form_open(dialog, layer, feature):
                 <Option name="Layer" type="QString" value="form_edition_vr_list_934681e5_2397_4451_a9f4_37d292240173"></Option>
                 <Option name="LayerName" type="QString" value="form_edition_vr_list"></Option>
                 <Option name="LayerProviderName" type="QString" value="postgres"></Option>
-                <Option name="LayerSource" type="QString" value="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=4326 type=Polygon checkPrimaryKeyUnicity='0' table=&quot;tests_projects&quot;.&quot;form_edition_vr_list&quot; (geom) sql="></Option>
+                <Option name="LayerSource" type="QString" value="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=4326 type=Polygon checkPrimaryKeyUnicity='0' table=&quot;tests_projects&quot;.&quot;form_edition_vr_list&quot; (geom) sql="></Option>
                 <Option name="NofColumns" type="int" value="1"></Option>
                 <Option name="OrderByValue" type="bool" value="false"></Option>
                 <Option name="UseCompleter" type="bool" value="false"></Option>
@@ -1683,7 +1683,7 @@ def my_form_open(dialog, layer, feature):
                 <Option name="Layer" type="QString" value="form_edition_vr_list_934681e5_2397_4451_a9f4_37d292240173"></Option>
                 <Option name="LayerName" type="QString" value="form_edition_vr_list"></Option>
                 <Option name="LayerProviderName" type="QString" value="postgres"></Option>
-                <Option name="LayerSource" type="QString" value="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=4326 type=Polygon checkPrimaryKeyUnicity='0' table=&quot;tests_projects&quot;.&quot;form_edition_vr_list&quot; (geom) sql="></Option>
+                <Option name="LayerSource" type="QString" value="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=4326 type=Polygon checkPrimaryKeyUnicity='0' table=&quot;tests_projects&quot;.&quot;form_edition_vr_list&quot; (geom) sql="></Option>
                 <Option name="NofColumns" type="int" value="1"></Option>
                 <Option name="OrderByValue" type="bool" value="false"></Option>
                 <Option name="UseCompleter" type="bool" value="false"></Option>

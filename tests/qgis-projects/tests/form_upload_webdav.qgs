@@ -21,12 +21,12 @@
     <customproperties>
       <Option/>
     </customproperties>
-    <layer-tree-layer source="service='lizmapdb' sslmode=disable key='id' checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;form_edition_upload_webdav_child_attachments&quot;" expanded="1" patch_size="-1,-1" name="form_edition_upload_webdav_child_attachments" providerKey="postgres" checked="Qt::Checked" legend_exp="" id="form_edition_upload_webdav_child_attachments_0e53afd9_2e39_4a05_9308_a5c7f6cfffca" legend_split_behavior="0">
+    <layer-tree-layer source="service='lizmapdb' sslmode=prefer key='id' checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;form_edition_upload_webdav_child_attachments&quot;" expanded="1" patch_size="-1,-1" name="form_edition_upload_webdav_child_attachments" providerKey="postgres" checked="Qt::Checked" legend_exp="" id="form_edition_upload_webdav_child_attachments_0e53afd9_2e39_4a05_9308_a5c7f6cfffca" legend_split_behavior="0">
       <customproperties>
         <Option/>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;form_edition_upload_webdav_parent_geom&quot; (geom)" expanded="1" patch_size="-1,-1" name="form_edition_upload_webdav_parent_geom" providerKey="postgres" checked="Qt::Checked" legend_exp="" id="form_edition_upload_webdav_parent_geom_8c26e78b_f73b_4b2a_9c0e_d7a9e185346e" legend_split_behavior="0">
+    <layer-tree-layer source="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;form_edition_upload_webdav_parent_geom&quot; (geom)" expanded="1" patch_size="-1,-1" name="form_edition_upload_webdav_parent_geom" providerKey="postgres" checked="Qt::Checked" legend_exp="" id="form_edition_upload_webdav_parent_geom_8c26e78b_f73b_4b2a_9c0e_d7a9e185346e" legend_split_behavior="0">
       <customproperties>
         <Option/>
       </customproperties>
@@ -36,12 +36,12 @@
         <Option/>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;form_edition_upload_webdav_geom&quot; (geom)" expanded="1" patch_size="-1,-1" name="form_edition_upload_webdav_geom" providerKey="postgres" checked="Qt::Checked" legend_exp="" id="form_edition_upload_webdav_geom_c71ec5ff_dc88_451f_98e1_ccf41e34ddd7" legend_split_behavior="0">
+    <layer-tree-layer source="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;form_edition_upload_webdav_geom&quot; (geom)" expanded="1" patch_size="-1,-1" name="form_edition_upload_webdav_geom" providerKey="postgres" checked="Qt::Checked" legend_exp="" id="form_edition_upload_webdav_geom_c71ec5ff_dc88_451f_98e1_ccf41e34ddd7" legend_split_behavior="0">
       <customproperties>
         <Option/>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer source="service='lizmapdb' sslmode=disable key='id' checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;form_edition_upload_webdav&quot;" expanded="1" patch_size="-1,-1" name="form_edition_upload_webdav" providerKey="postgres" checked="Qt::Checked" legend_exp="" id="form_edition_upload_webdav_da2c53fe_a99a_41ee_8feb_e2570b11e547" legend_split_behavior="0">
+    <layer-tree-layer source="service='lizmapdb' sslmode=prefer key='id' checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;form_edition_upload_webdav&quot;" expanded="1" patch_size="-1,-1" name="form_edition_upload_webdav" providerKey="postgres" checked="Qt::Checked" legend_exp="" id="form_edition_upload_webdav_da2c53fe_a99a_41ee_8feb_e2570b11e547" legend_split_behavior="0">
       <customproperties>
         <Option/>
       </customproperties>
@@ -715,7 +715,7 @@ def my_form_open(dialog, layer, feature):
     </maplayer>
     <maplayer legendPlaceholderImage="" wkbType="NoGeometry" styleCategories="AllStyleCategories" readOnly="0" type="vector" hasScaleBasedVisibilityFlag="0" autoRefreshEnabled="0" geometry="No geometry" refreshOnNotifyMessage="" maxScale="0" minScale="1e+08" refreshOnNotifyEnabled="0" autoRefreshTime="0">
       <id>form_edition_upload_webdav_child_attachments_0e53afd9_2e39_4a05_9308_a5c7f6cfffca</id>
-      <datasource>service='lizmapdb' sslmode=disable key='id' checkPrimaryKeyUnicity='1' table="tests_projects"."form_edition_upload_webdav_child_attachments"</datasource>
+      <datasource>service='lizmapdb' sslmode=prefer key='id' checkPrimaryKeyUnicity='1' table="tests_projects"."form_edition_upload_webdav_child_attachments"</datasource>
       <shortname>form_edition_upload_webdav_child_attachments</shortname>
       <keywordList>
         <value></value>
@@ -946,7 +946,7 @@ def my_form_open(dialog, layer, feature):
       </geometryOptions>
       <legend type="default-vector" showLabelLegend="0"/>
       <referencedLayers>
-        <relation referencingLayer="form_edition_upload_webdav_child_attachments_0e53afd9_2e39_4a05_9308_a5c7f6cfffca" dataSource="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;form_edition_upload_webdav_parent_geom&quot; (geom)" layerName="form_edition_upload_webdav_parent_geom" name="child" referencedLayer="form_edition_upload_webdav_parent_geom_8c26e78b_f73b_4b2a_9c0e_d7a9e185346e" strength="Association" layerId="form_edition_upload_webdav_parent_geom_8c26e78b_f73b_4b2a_9c0e_d7a9e185346e" providerKey="postgres" id="form_editi_id_parent_form_editi_id_1">
+        <relation referencingLayer="form_edition_upload_webdav_child_attachments_0e53afd9_2e39_4a05_9308_a5c7f6cfffca" dataSource="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;form_edition_upload_webdav_parent_geom&quot; (geom)" layerName="form_edition_upload_webdav_parent_geom" name="child" referencedLayer="form_edition_upload_webdav_parent_geom_8c26e78b_f73b_4b2a_9c0e_d7a9e185346e" strength="Association" layerId="form_edition_upload_webdav_parent_geom_8c26e78b_f73b_4b2a_9c0e_d7a9e185346e" providerKey="postgres" id="form_editi_id_parent_form_editi_id_1">
           <fieldRef referencingField="id_parent" referencedField="id"/>
         </relation>
       </referencedLayers>
@@ -1083,7 +1083,7 @@ def my_form_open(dialog, layer, feature):
     </maplayer>
     <maplayer legendPlaceholderImage="" wkbType="NoGeometry" styleCategories="AllStyleCategories" readOnly="0" type="vector" hasScaleBasedVisibilityFlag="0" autoRefreshEnabled="0" geometry="No geometry" refreshOnNotifyMessage="" maxScale="0" minScale="1e+08" refreshOnNotifyEnabled="0" autoRefreshTime="0">
       <id>form_edition_upload_webdav_da2c53fe_a99a_41ee_8feb_e2570b11e547</id>
-      <datasource>service='lizmapdb' sslmode=disable key='id' checkPrimaryKeyUnicity='1' table="tests_projects"."form_edition_upload_webdav"</datasource>
+      <datasource>service='lizmapdb' sslmode=prefer key='id' checkPrimaryKeyUnicity='1' table="tests_projects"."form_edition_upload_webdav"</datasource>
       <shortname>form_edition_upload_webdav</shortname>
       <keywordList>
         <value></value>
@@ -1492,7 +1492,7 @@ def my_form_open(dialog, layer, feature):
         <ymax>46.50445820852591794</ymax>
       </wgs84extent>
       <id>form_edition_upload_webdav_geom_c71ec5ff_dc88_451f_98e1_ccf41e34ddd7</id>
-      <datasource>service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='1' table="tests_projects"."form_edition_upload_webdav_geom" (geom)</datasource>
+      <datasource>service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='1' table="tests_projects"."form_edition_upload_webdav_geom" (geom)</datasource>
       <shortname>form_edition_upload_webdav_geom</shortname>
       <keywordList>
         <value></value>
@@ -2032,7 +2032,7 @@ def my_form_open(dialog, layer, feature):
         <ymax>45.61355644895509442</ymax>
       </wgs84extent>
       <id>form_edition_upload_webdav_parent_geom_8c26e78b_f73b_4b2a_9c0e_d7a9e185346e</id>
-      <datasource>service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='1' table="tests_projects"."form_edition_upload_webdav_parent_geom" (geom)</datasource>
+      <datasource>service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='1' table="tests_projects"."form_edition_upload_webdav_parent_geom" (geom)</datasource>
       <shortname>form_edition_upload_webdav_parent_geom</shortname>
       <keywordList>
         <value></value>

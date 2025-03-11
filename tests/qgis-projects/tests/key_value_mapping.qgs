@@ -21,32 +21,32 @@
     <customproperties>
       <Option></Option>
     </customproperties>
-    <layer-tree-layer checked="Qt::Checked" expanded="1" id="attribute_table_5a99a714_c29f_40d3_9b85_89deed970e68" legend_exp="" legend_split_behavior="0" name="attribute_table" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;attribute_table&quot;">
+    <layer-tree-layer checked="Qt::Checked" expanded="1" id="attribute_table_5a99a714_c29f_40d3_9b85_89deed970e68" legend_exp="" legend_split_behavior="0" name="attribute_table" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;attribute_table&quot;">
       <customproperties>
         <Option></Option>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer checked="Qt::Checked" expanded="1" id="data_integers_ae40b1b1_9f4f_411b_8815_6b29fa580f00" legend_exp="" legend_split_behavior="0" name="data_integers" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_integers&quot;">
+    <layer-tree-layer checked="Qt::Checked" expanded="1" id="data_integers_ae40b1b1_9f4f_411b_8815_6b29fa580f00" legend_exp="" legend_split_behavior="0" name="data_integers" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_integers&quot;">
       <customproperties>
         <Option></Option>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer checked="Qt::Checked" expanded="1" id="data_trad_en_fr_e48ee27d_494b_42b6_a916_8281f6045169" legend_exp="" legend_split_behavior="0" name="data_trad_en_fr" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_trad_en_fr&quot;">
+    <layer-tree-layer checked="Qt::Checked" expanded="1" id="data_trad_en_fr_e48ee27d_494b_42b6_a916_8281f6045169" legend_exp="" legend_split_behavior="0" name="data_trad_en_fr" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_trad_en_fr&quot;">
       <customproperties>
         <Option></Option>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer checked="Qt::Unchecked" expanded="1" id="attribute_table_4d31660d_cc10_40ea_8b0a_21c3479c0e8c" legend_exp="" legend_split_behavior="0" name="attribute table shortname" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;attribute_table&quot;">
+    <layer-tree-layer checked="Qt::Unchecked" expanded="1" id="attribute_table_4d31660d_cc10_40ea_8b0a_21c3479c0e8c" legend_exp="" legend_split_behavior="0" name="attribute table shortname" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;attribute_table&quot;">
       <customproperties>
         <Option></Option>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer checked="Qt::Unchecked" expanded="1" id="data_integers_26ecfa7b_28c4_4ee3_870c_484fe2189fb1" legend_exp="" legend_split_behavior="0" name="data integers not published" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_integers&quot;">
+    <layer-tree-layer checked="Qt::Unchecked" expanded="1" id="data_integers_26ecfa7b_28c4_4ee3_870c_484fe2189fb1" legend_exp="" legend_split_behavior="0" name="data integers not published" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_integers&quot;">
       <customproperties>
         <Option></Option>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer checked="Qt::Unchecked" expanded="1" id="data_trad_en_fr_b2098ba4_f3d6_4f48_821e_0aaf02a88e88" legend_exp="" legend_split_behavior="0" name="data trad en fr not published" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_trad_en_fr&quot;">
+    <layer-tree-layer checked="Qt::Unchecked" expanded="1" id="data_trad_en_fr_b2098ba4_f3d6_4f48_821e_0aaf02a88e88" legend_exp="" legend_split_behavior="0" name="data trad en fr not published" patch_size="-1,-1" providerKey="postgres" source="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_trad_en_fr&quot;">
       <customproperties>
         <Option></Option>
       </customproperties>
@@ -293,7 +293,7 @@
   <projectlayers>
     <maplayer autoRefreshEnabled="0" autoRefreshTime="0" geometry="No geometry" hasScaleBasedVisibilityFlag="0" legendPlaceholderImage="" maxScale="0" minScale="1e+08" readOnly="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" styleCategories="AllStyleCategories" type="vector" wkbType="NoGeometry">
       <id>attribute_table_4d31660d_cc10_40ea_8b0a_21c3479c0e8c</id>
-      <datasource>service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table="tests_projects"."attribute_table"</datasource>
+      <datasource>service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table="tests_projects"."attribute_table"</datasource>
       <shortname>attribute_table_shortname</shortname>
       <keywordList>
         <value></value>
@@ -392,10 +392,10 @@
       </geometryOptions>
       <legend showLabelLegend="0" type="default-vector"></legend>
       <referencedLayers>
-        <relation dataSource="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_integers&quot;" id="attribute__label_from_int_relation_reference_data_integ_id_1" layerId="data_integers_26ecfa7b_28c4_4ee3_870c_484fe2189fb1" layerName="data integers not published" name="" providerKey="postgres" referencedLayer="data_integers_26ecfa7b_28c4_4ee3_870c_484fe2189fb1" referencingLayer="attribute_table_4d31660d_cc10_40ea_8b0a_21c3479c0e8c" strength="Association">
+        <relation dataSource="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_integers&quot;" id="attribute__label_from_int_relation_reference_data_integ_id_1" layerId="data_integers_26ecfa7b_28c4_4ee3_870c_484fe2189fb1" layerName="data integers not published" name="" providerKey="postgres" referencedLayer="data_integers_26ecfa7b_28c4_4ee3_870c_484fe2189fb1" referencingLayer="attribute_table_4d31660d_cc10_40ea_8b0a_21c3479c0e8c" strength="Association">
           <fieldRef referencedField="id" referencingField="label_from_int_relation_reference"></fieldRef>
         </relation>
-        <relation dataSource="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_trad_en_fr&quot;" id="attribute__label_from_text_relation_reference_data_trad__label_en_1" layerId="data_trad_en_fr_b2098ba4_f3d6_4f48_821e_0aaf02a88e88" layerName="data trad en fr not published" name="" providerKey="postgres" referencedLayer="data_trad_en_fr_b2098ba4_f3d6_4f48_821e_0aaf02a88e88" referencingLayer="attribute_table_4d31660d_cc10_40ea_8b0a_21c3479c0e8c" strength="Association">
+        <relation dataSource="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_trad_en_fr&quot;" id="attribute__label_from_text_relation_reference_data_trad__label_en_1" layerId="data_trad_en_fr_b2098ba4_f3d6_4f48_821e_0aaf02a88e88" layerName="data trad en fr not published" name="" providerKey="postgres" referencedLayer="data_trad_en_fr_b2098ba4_f3d6_4f48_821e_0aaf02a88e88" referencingLayer="attribute_table_4d31660d_cc10_40ea_8b0a_21c3479c0e8c" strength="Association">
           <fieldRef referencedField="label_en" referencingField="label_from_text_relation_reference"></fieldRef>
         </relation>
       </referencedLayers>
@@ -419,7 +419,7 @@
                 <Option name="Layer" type="QString" value="data_integers_26ecfa7b_28c4_4ee3_870c_484fe2189fb1"></Option>
                 <Option name="LayerName" type="QString" value="data integers not published"></Option>
                 <Option name="LayerProviderName" type="QString" value="postgres"></Option>
-                <Option name="LayerSource" type="QString" value="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_integers&quot;"></Option>
+                <Option name="LayerSource" type="QString" value="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_integers&quot;"></Option>
                 <Option name="NofColumns" type="int" value="1"></Option>
                 <Option name="OrderByValue" type="bool" value="false"></Option>
                 <Option name="UseCompleter" type="bool" value="false"></Option>
@@ -440,7 +440,7 @@
                 <Option name="Layer" type="QString" value="data_trad_en_fr_b2098ba4_f3d6_4f48_821e_0aaf02a88e88"></Option>
                 <Option name="LayerName" type="QString" value="data trad en fr not published"></Option>
                 <Option name="LayerProviderName" type="QString" value="postgres"></Option>
-                <Option name="LayerSource" type="QString" value="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_trad_en_fr&quot;"></Option>
+                <Option name="LayerSource" type="QString" value="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_trad_en_fr&quot;"></Option>
                 <Option name="NofColumns" type="int" value="1"></Option>
                 <Option name="OrderByValue" type="bool" value="false"></Option>
                 <Option name="UseCompleter" type="bool" value="false"></Option>
@@ -508,7 +508,7 @@
                 <Option name="MapIdentification" type="bool" value="false"></Option>
                 <Option name="OrderByValue" type="bool" value="false"></Option>
                 <Option name="ReadOnly" type="bool" value="false"></Option>
-                <Option name="ReferencedLayerDataSource" type="QString" value="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_integers&quot;"></Option>
+                <Option name="ReferencedLayerDataSource" type="QString" value="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_integers&quot;"></Option>
                 <Option name="ReferencedLayerId" type="QString" value="data_integers_26ecfa7b_28c4_4ee3_870c_484fe2189fb1"></Option>
                 <Option name="ReferencedLayerName" type="QString" value="data integers not published"></Option>
                 <Option name="ReferencedLayerProviderKey" type="QString" value="postgres"></Option>
@@ -528,7 +528,7 @@
                 <Option name="MapIdentification" type="bool" value="false"></Option>
                 <Option name="OrderByValue" type="bool" value="false"></Option>
                 <Option name="ReadOnly" type="bool" value="false"></Option>
-                <Option name="ReferencedLayerDataSource" type="QString" value="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_trad_en_fr&quot;"></Option>
+                <Option name="ReferencedLayerDataSource" type="QString" value="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_trad_en_fr&quot;"></Option>
                 <Option name="ReferencedLayerId" type="QString" value="data_trad_en_fr_b2098ba4_f3d6_4f48_821e_0aaf02a88e88"></Option>
                 <Option name="ReferencedLayerName" type="QString" value="data trad en fr not published"></Option>
                 <Option name="ReferencedLayerProviderKey" type="QString" value="postgres"></Option>
@@ -551,7 +551,7 @@
                 <Option name="Layer" type="QString" value="data_integers_26ecfa7b_28c4_4ee3_870c_484fe2189fb1"></Option>
                 <Option name="LayerName" type="QString" value="data integers not published"></Option>
                 <Option name="LayerProviderName" type="QString" value="postgres"></Option>
-                <Option name="LayerSource" type="QString" value="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_integers&quot;"></Option>
+                <Option name="LayerSource" type="QString" value="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_integers&quot;"></Option>
                 <Option name="NofColumns" type="int" value="1"></Option>
                 <Option name="OrderByValue" type="bool" value="false"></Option>
                 <Option name="UseCompleter" type="bool" value="false"></Option>
@@ -572,7 +572,7 @@
                 <Option name="Layer" type="QString" value="data_trad_en_fr_b2098ba4_f3d6_4f48_821e_0aaf02a88e88"></Option>
                 <Option name="LayerName" type="QString" value="data trad en fr not published"></Option>
                 <Option name="LayerProviderName" type="QString" value="postgres"></Option>
-                <Option name="LayerSource" type="QString" value="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_trad_en_fr&quot;"></Option>
+                <Option name="LayerSource" type="QString" value="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_trad_en_fr&quot;"></Option>
                 <Option name="NofColumns" type="int" value="1"></Option>
                 <Option name="OrderByValue" type="bool" value="false"></Option>
                 <Option name="UseCompleter" type="bool" value="false"></Option>
@@ -593,7 +593,7 @@
                 <Option name="Layer" type="QString" value="data_trad_en_fr_b2098ba4_f3d6_4f48_821e_0aaf02a88e88"></Option>
                 <Option name="LayerName" type="QString" value="data trad en fr not published"></Option>
                 <Option name="LayerProviderName" type="QString" value="postgres"></Option>
-                <Option name="LayerSource" type="QString" value="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_trad_en_fr&quot;"></Option>
+                <Option name="LayerSource" type="QString" value="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_trad_en_fr&quot;"></Option>
                 <Option name="NofColumns" type="int" value="1"></Option>
                 <Option name="OrderByValue" type="bool" value="false"></Option>
                 <Option name="UseCompleter" type="bool" value="false"></Option>
@@ -758,7 +758,7 @@ def my_form_open(dialog, layer, feature):
     </maplayer>
     <maplayer autoRefreshEnabled="0" autoRefreshTime="0" geometry="No geometry" hasScaleBasedVisibilityFlag="0" legendPlaceholderImage="" maxScale="0" minScale="1e+08" readOnly="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" styleCategories="AllStyleCategories" type="vector" wkbType="NoGeometry">
       <id>attribute_table_5a99a714_c29f_40d3_9b85_89deed970e68</id>
-      <datasource>service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table="tests_projects"."attribute_table"</datasource>
+      <datasource>service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table="tests_projects"."attribute_table"</datasource>
       <keywordList>
         <value></value>
       </keywordList>
@@ -856,10 +856,10 @@ def my_form_open(dialog, layer, feature):
       </geometryOptions>
       <legend showLabelLegend="0" type="default-vector"></legend>
       <referencedLayers>
-        <relation dataSource="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_integers&quot;" id="attribute__label_from_int_relation_reference_data_integ_id" layerId="data_integers_ae40b1b1_9f4f_411b_8815_6b29fa580f00" layerName="data_integers" name="" providerKey="postgres" referencedLayer="data_integers_ae40b1b1_9f4f_411b_8815_6b29fa580f00" referencingLayer="attribute_table_5a99a714_c29f_40d3_9b85_89deed970e68" strength="Association">
+        <relation dataSource="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_integers&quot;" id="attribute__label_from_int_relation_reference_data_integ_id" layerId="data_integers_ae40b1b1_9f4f_411b_8815_6b29fa580f00" layerName="data_integers" name="" providerKey="postgres" referencedLayer="data_integers_ae40b1b1_9f4f_411b_8815_6b29fa580f00" referencingLayer="attribute_table_5a99a714_c29f_40d3_9b85_89deed970e68" strength="Association">
           <fieldRef referencedField="id" referencingField="label_from_int_relation_reference"></fieldRef>
         </relation>
-        <relation dataSource="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_trad_en_fr&quot;" id="attribute__label_from_text_relation_reference_data_trad__label_en" layerId="data_trad_en_fr_e48ee27d_494b_42b6_a916_8281f6045169" layerName="data_trad_en_fr" name="" providerKey="postgres" referencedLayer="data_trad_en_fr_e48ee27d_494b_42b6_a916_8281f6045169" referencingLayer="attribute_table_5a99a714_c29f_40d3_9b85_89deed970e68" strength="Association">
+        <relation dataSource="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_trad_en_fr&quot;" id="attribute__label_from_text_relation_reference_data_trad__label_en" layerId="data_trad_en_fr_e48ee27d_494b_42b6_a916_8281f6045169" layerName="data_trad_en_fr" name="" providerKey="postgres" referencedLayer="data_trad_en_fr_e48ee27d_494b_42b6_a916_8281f6045169" referencingLayer="attribute_table_5a99a714_c29f_40d3_9b85_89deed970e68" strength="Association">
           <fieldRef referencedField="label_en" referencingField="label_from_text_relation_reference"></fieldRef>
         </relation>
       </referencedLayers>
@@ -883,7 +883,7 @@ def my_form_open(dialog, layer, feature):
                 <Option name="Layer" type="QString" value="data_integers_ae40b1b1_9f4f_411b_8815_6b29fa580f00"></Option>
                 <Option name="LayerName" type="QString" value="data_integers"></Option>
                 <Option name="LayerProviderName" type="QString" value="postgres"></Option>
-                <Option name="LayerSource" type="QString" value="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_integers&quot;"></Option>
+                <Option name="LayerSource" type="QString" value="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_integers&quot;"></Option>
                 <Option name="NofColumns" type="int" value="1"></Option>
                 <Option name="OrderByValue" type="bool" value="false"></Option>
                 <Option name="UseCompleter" type="bool" value="false"></Option>
@@ -904,7 +904,7 @@ def my_form_open(dialog, layer, feature):
                 <Option name="Layer" type="QString" value="data_trad_en_fr_e48ee27d_494b_42b6_a916_8281f6045169"></Option>
                 <Option name="LayerName" type="QString" value="data_trad_en_fr"></Option>
                 <Option name="LayerProviderName" type="QString" value="postgres"></Option>
-                <Option name="LayerSource" type="QString" value="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_trad_en_fr&quot;"></Option>
+                <Option name="LayerSource" type="QString" value="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_trad_en_fr&quot;"></Option>
                 <Option name="NofColumns" type="int" value="1"></Option>
                 <Option name="OrderByValue" type="bool" value="false"></Option>
                 <Option name="UseCompleter" type="bool" value="false"></Option>
@@ -972,7 +972,7 @@ def my_form_open(dialog, layer, feature):
                 <Option name="MapIdentification" type="bool" value="false"></Option>
                 <Option name="OrderByValue" type="bool" value="false"></Option>
                 <Option name="ReadOnly" type="bool" value="false"></Option>
-                <Option name="ReferencedLayerDataSource" type="QString" value="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_integers&quot;"></Option>
+                <Option name="ReferencedLayerDataSource" type="QString" value="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_integers&quot;"></Option>
                 <Option name="ReferencedLayerId" type="QString" value="data_integers_ae40b1b1_9f4f_411b_8815_6b29fa580f00"></Option>
                 <Option name="ReferencedLayerName" type="QString" value="data_integers"></Option>
                 <Option name="ReferencedLayerProviderKey" type="QString" value="postgres"></Option>
@@ -992,7 +992,7 @@ def my_form_open(dialog, layer, feature):
                 <Option name="MapIdentification" type="bool" value="false"></Option>
                 <Option name="OrderByValue" type="bool" value="false"></Option>
                 <Option name="ReadOnly" type="bool" value="false"></Option>
-                <Option name="ReferencedLayerDataSource" type="QString" value="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_trad_en_fr&quot;"></Option>
+                <Option name="ReferencedLayerDataSource" type="QString" value="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_trad_en_fr&quot;"></Option>
                 <Option name="ReferencedLayerId" type="QString" value="data_trad_en_fr_e48ee27d_494b_42b6_a916_8281f6045169"></Option>
                 <Option name="ReferencedLayerName" type="QString" value="data_trad_en_fr"></Option>
                 <Option name="ReferencedLayerProviderKey" type="QString" value="postgres"></Option>
@@ -1015,7 +1015,7 @@ def my_form_open(dialog, layer, feature):
                 <Option name="Layer" type="QString" value="data_integers_ae40b1b1_9f4f_411b_8815_6b29fa580f00"></Option>
                 <Option name="LayerName" type="QString" value="data_integers"></Option>
                 <Option name="LayerProviderName" type="QString" value="postgres"></Option>
-                <Option name="LayerSource" type="QString" value="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_integers&quot;"></Option>
+                <Option name="LayerSource" type="QString" value="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_integers&quot;"></Option>
                 <Option name="NofColumns" type="int" value="1"></Option>
                 <Option name="OrderByValue" type="bool" value="false"></Option>
                 <Option name="UseCompleter" type="bool" value="false"></Option>
@@ -1036,7 +1036,7 @@ def my_form_open(dialog, layer, feature):
                 <Option name="Layer" type="QString" value="data_trad_en_fr_e48ee27d_494b_42b6_a916_8281f6045169"></Option>
                 <Option name="LayerName" type="QString" value="data_trad_en_fr"></Option>
                 <Option name="LayerProviderName" type="QString" value="postgres"></Option>
-                <Option name="LayerSource" type="QString" value="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_trad_en_fr&quot;"></Option>
+                <Option name="LayerSource" type="QString" value="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_trad_en_fr&quot;"></Option>
                 <Option name="NofColumns" type="int" value="1"></Option>
                 <Option name="OrderByValue" type="bool" value="false"></Option>
                 <Option name="UseCompleter" type="bool" value="false"></Option>
@@ -1057,7 +1057,7 @@ def my_form_open(dialog, layer, feature):
                 <Option name="Layer" type="QString" value="data_trad_en_fr_e48ee27d_494b_42b6_a916_8281f6045169"></Option>
                 <Option name="LayerName" type="QString" value="data_trad_en_fr"></Option>
                 <Option name="LayerProviderName" type="QString" value="postgres"></Option>
-                <Option name="LayerSource" type="QString" value="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_trad_en_fr&quot;"></Option>
+                <Option name="LayerSource" type="QString" value="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;data_trad_en_fr&quot;"></Option>
                 <Option name="NofColumns" type="int" value="1"></Option>
                 <Option name="OrderByValue" type="bool" value="false"></Option>
                 <Option name="UseCompleter" type="bool" value="false"></Option>
@@ -1222,7 +1222,7 @@ def my_form_open(dialog, layer, feature):
     </maplayer>
     <maplayer autoRefreshEnabled="0" autoRefreshTime="0" geometry="No geometry" hasScaleBasedVisibilityFlag="0" legendPlaceholderImage="" maxScale="0" minScale="1e+08" readOnly="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" styleCategories="AllStyleCategories" type="vector" wkbType="NoGeometry">
       <id>data_integers_26ecfa7b_28c4_4ee3_870c_484fe2189fb1</id>
-      <datasource>service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table="tests_projects"."data_integers"</datasource>
+      <datasource>service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table="tests_projects"."data_integers"</datasource>
       <shortname>data_integers_not_published</shortname>
       <keywordList>
         <value></value>
@@ -1412,7 +1412,7 @@ def my_form_open(dialog, layer, feature):
     </maplayer>
     <maplayer autoRefreshEnabled="0" autoRefreshTime="0" geometry="No geometry" hasScaleBasedVisibilityFlag="0" legendPlaceholderImage="" maxScale="0" minScale="1e+08" readOnly="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" styleCategories="AllStyleCategories" type="vector" wkbType="NoGeometry">
       <id>data_integers_ae40b1b1_9f4f_411b_8815_6b29fa580f00</id>
-      <datasource>service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table="tests_projects"."data_integers"</datasource>
+      <datasource>service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table="tests_projects"."data_integers"</datasource>
       <keywordList>
         <value></value>
       </keywordList>
@@ -1558,7 +1558,7 @@ def my_form_open(dialog, layer, feature):
     </maplayer>
     <maplayer autoRefreshEnabled="0" autoRefreshTime="0" geometry="No geometry" hasScaleBasedVisibilityFlag="0" legendPlaceholderImage="" maxScale="0" minScale="1e+08" readOnly="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" styleCategories="AllStyleCategories" type="vector" wkbType="NoGeometry">
       <id>data_trad_en_fr_b2098ba4_f3d6_4f48_821e_0aaf02a88e88</id>
-      <datasource>service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table="tests_projects"."data_trad_en_fr"</datasource>
+      <datasource>service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table="tests_projects"."data_trad_en_fr"</datasource>
       <shortname>data_trad_en_fr_not_published</shortname>
       <keywordList>
         <value></value>
@@ -1763,7 +1763,7 @@ def my_form_open(dialog, layer, feature):
     </maplayer>
     <maplayer autoRefreshEnabled="0" autoRefreshTime="0" geometry="No geometry" hasScaleBasedVisibilityFlag="0" legendPlaceholderImage="" maxScale="0" minScale="1e+08" readOnly="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" styleCategories="AllStyleCategories" type="vector" wkbType="NoGeometry">
       <id>data_trad_en_fr_e48ee27d_494b_42b6_a916_8281f6045169</id>
-      <datasource>service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table="tests_projects"."data_trad_en_fr"</datasource>
+      <datasource>service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true checkPrimaryKeyUnicity='1' table="tests_projects"."data_trad_en_fr"</datasource>
       <keywordList>
         <value></value>
       </keywordList>
