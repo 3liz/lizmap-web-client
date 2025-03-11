@@ -22,7 +22,7 @@
     <customproperties>
       <Option/>
     </customproperties>
-    <layer-tree-layer checked="Qt::Checked" expanded="1" patch_size="-1,-1" legend_split_behavior="0" legend_exp="" source="service='lizmapdb' sslmode=disable key='quartier' estimatedmetadata=true srid=4326 type=MultiPolygon checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;quartiers&quot; (geom)" name="quartiers" providerKey="postgres" id="quartiers_6371ce30_1b1e_4f14_b677_80ee62d9d447">
+    <layer-tree-layer checked="Qt::Checked" expanded="1" patch_size="-1,-1" legend_split_behavior="0" legend_exp="" source="service='lizmapdb' sslmode=prefer key='quartier' estimatedmetadata=true srid=4326 type=MultiPolygon checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;quartiers&quot; (geom)" name="quartiers" providerKey="postgres" id="quartiers_6371ce30_1b1e_4f14_b677_80ee62d9d447">
       <customproperties>
         <Option/>
       </customproperties>
@@ -381,7 +381,7 @@
         <ymax>43.65337122449288643</ymax>
       </wgs84extent>
       <id>quartiers_6371ce30_1b1e_4f14_b677_80ee62d9d447</id>
-      <datasource>service='lizmapdb' sslmode=disable key='quartier' estimatedmetadata=true srid=4326 type=MultiPolygon checkPrimaryKeyUnicity='1' table="tests_projects"."quartiers" (geom)</datasource>
+      <datasource>service='lizmapdb' sslmode=prefer key='quartier' estimatedmetadata=true srid=4326 type=MultiPolygon checkPrimaryKeyUnicity='1' table="tests_projects"."quartiers" (geom)</datasource>
       <shortname>quartiers</shortname>
       <keywordList>
         <value></value>
@@ -969,7 +969,7 @@
       </spatialrefsys>
     </CoordinateCustomCrs>
   </ProjectDisplaySettings>
-  <ProjectGpsSettings destinationLayerName="quartiers" destinationLayerSource="service='lizmapdb' sslmode=disable key='quartier' estimatedmetadata=true srid=4326 type=MultiPolygon checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;quartiers&quot; (geom)" autoAddTrackVertices="0" destinationFollowsActiveLayer="1" autoCommitFeatures="0" destinationLayer="quartiers_6371ce30_1b1e_4f14_b677_80ee62d9d447" destinationLayerProvider="postgres">
+  <ProjectGpsSettings destinationLayerName="quartiers" destinationLayerSource="service='lizmapdb' sslmode=prefer key='quartier' estimatedmetadata=true srid=4326 type=MultiPolygon checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;quartiers&quot; (geom)" autoAddTrackVertices="0" destinationFollowsActiveLayer="1" autoCommitFeatures="0" destinationLayer="quartiers_6371ce30_1b1e_4f14_b677_80ee62d9d447" destinationLayerProvider="postgres">
     <timeStampFields/>
   </ProjectGpsSettings>
 </qgis>
