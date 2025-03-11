@@ -416,7 +416,7 @@ class QgisProjectTest extends TestCase
                         'Layer' => 'edition_layer_embed_child_d87f81cd_26d2_4c40_820d_676ba03ff6ab',
                         'LayerName' => 'edition_layer_embed_child',
                         'LayerProviderName' => 'postgres',
-                        'LayerSource' => 'service=\'lizmapdb\' sslmode=disable key=\'id\' checkPrimaryKeyUnicity=\'1\' table="tests_projects"."edition_layer_embed_child"',
+                        'LayerSource' => 'service=\'lizmapdb\' sslmode=prefer key=\'id\' checkPrimaryKeyUnicity=\'1\' table="tests_projects"."edition_layer_embed_child"',
                         'NofColumns' => 1,
                         'OrderByValue' => false,
                         'UseCompleter' => false,
@@ -933,7 +933,7 @@ class QgisProjectTest extends TestCase
                     <Option value="form_edition_vr_list_934681e5_2397_4451_a9f4_37d292240173" type="QString" name="Layer"/>
                     <Option value="form_edition_vr_list" type="QString" name="LayerName"/>
                     <Option value="postgres" type="QString" name="LayerProviderName"/>
-                    <Option value="service=\'lizmapdb\' sslmode=disable key=\'id\' estimatedmetadata=true srid=4326 type=Polygon checkPrimaryKeyUnicity=\'0\' table=&quot;tests_projects&quot;.&quot;form_edition_vr_list&quot; (geom) sql=" type="QString" name="LayerSource"/>
+                    <Option value="service=\'lizmapdb\' sslmode=prefer key=\'id\' estimatedmetadata=true srid=4326 type=Polygon checkPrimaryKeyUnicity=\'0\' table=&quot;tests_projects&quot;.&quot;form_edition_vr_list&quot; (geom) sql=" type="QString" name="LayerSource"/>
                     <Option value="1" type="int" name="NofColumns"/>
                     <Option value="false" type="bool" name="OrderByValue"/>
                     <Option value="false" type="bool" name="UseCompleter"/>
@@ -971,7 +971,7 @@ class QgisProjectTest extends TestCase
                     <Option type="bool" value="false" name="MapIdentification"/>
                     <Option type="bool" value="false" name="OrderByValue"/>
                     <Option type="bool" value="false" name="ReadOnly"/>
-                    <Option type="QString" value="service=lizmap sslmode=disable key=\'fid\' checkPrimaryKeyUnicity=\'0\' table=&quot;lizmap_data&quot;.&quot;risque&quot;" name="ReferencedLayerDataSource"/>
+                    <Option type="QString" value="service=lizmap sslmode=prefer key=\'fid\' checkPrimaryKeyUnicity=\'0\' table=&quot;lizmap_data&quot;.&quot;risque&quot;" name="ReferencedLayerDataSource"/>
                     <Option type="QString" value="risque_66cb8d43_86b7_4583_9217_f7ead54463c3" name="ReferencedLayerId"/>
                     <Option type="QString" value="risque" name="ReferencedLayerName"/>
                     <Option type="QString" value="postgres" name="ReferencedLayerProviderKey"/>
@@ -1667,7 +1667,7 @@ class QgisProjectTest extends TestCase
                     <Option type="bool" value="false" name="MapIdentification"/>
                     <Option type="bool" value="false" name="OrderByValue"/>
                     <Option type="bool" value="false" name="ReadOnly"/>
-                    <Option type="QString" value="service=lizmap sslmode=disable key=\'fid\' checkPrimaryKeyUnicity=\'0\' table=&quot;lizmap_data&quot;.&quot;risque&quot;" name="ReferencedLayerDataSource"/>
+                    <Option type="QString" value="service=lizmap sslmode=prefer key=\'fid\' checkPrimaryKeyUnicity=\'0\' table=&quot;lizmap_data&quot;.&quot;risque&quot;" name="ReferencedLayerDataSource"/>
                     <Option type="QString" value="risque_66cb8d43_86b7_4583_9217_f7ead54463c3" name="ReferencedLayerId"/>
                     <Option type="QString" value="risque" name="ReferencedLayerName"/>
                     <Option type="QString" value="postgres" name="ReferencedLayerProviderKey"/>

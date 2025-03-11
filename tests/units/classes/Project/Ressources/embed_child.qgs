@@ -21,7 +21,7 @@
     <customproperties>
       <Option/>
     </customproperties>
-    <layer-tree-layer legend_exp="" providerKey="postgres" name="edition_layer_embed_point" expanded="1" checked="Qt::Checked" patch_size="-1,-1" legend_split_behavior="0" id="edition_layer_embed_point_7794e305_0e9b_40d0_bf0b_2494790d4eb3" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;edition_layer_embed_point&quot; (geom)">
+    <layer-tree-layer legend_exp="" providerKey="postgres" name="edition_layer_embed_point" expanded="1" checked="Qt::Checked" patch_size="-1,-1" legend_split_behavior="0" id="edition_layer_embed_point_7794e305_0e9b_40d0_bf0b_2494790d4eb3" source="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;edition_layer_embed_point&quot; (geom)">
       <customproperties>
         <Option type="Map">
           <Option value="1" name="embedded" type="int"/>
@@ -29,7 +29,7 @@
         </Option>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer legend_exp="" providerKey="postgres" name="edition_layer_embed_line" expanded="1" checked="Qt::Checked" patch_size="-1,-1" legend_split_behavior="0" id="edition_layer_embed_line_e74301b9_95ae_4b72_81cc_71fafb80082f" source="service='lizmapdb' sslmode=disable key='id' estimatedmetadata=true srid=4326 type=LineString checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;edition_layer_embed_line&quot; (geom)">
+    <layer-tree-layer legend_exp="" providerKey="postgres" name="edition_layer_embed_line" expanded="1" checked="Qt::Checked" patch_size="-1,-1" legend_split_behavior="0" id="edition_layer_embed_line_e74301b9_95ae_4b72_81cc_71fafb80082f" source="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=4326 type=LineString checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;edition_layer_embed_line&quot; (geom)">
       <customproperties>
         <Option type="Map">
           <Option value="1" name="embedded" type="int"/>
@@ -37,7 +37,7 @@
         </Option>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer legend_exp="" providerKey="postgres" name="edition_layer_embed_child" expanded="1" checked="Qt::Checked" patch_size="-1,-1" legend_split_behavior="0" id="edition_layer_embed_child_d87f81cd_26d2_4c40_820d_676ba03ff6ab" source="service='lizmapdb' sslmode=disable key='id' checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;edition_layer_embed_child&quot;">
+    <layer-tree-layer legend_exp="" providerKey="postgres" name="edition_layer_embed_child" expanded="1" checked="Qt::Checked" patch_size="-1,-1" legend_split_behavior="0" id="edition_layer_embed_child_d87f81cd_26d2_4c40_820d_676ba03ff6ab" source="service='lizmapdb' sslmode=prefer key='id' checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;edition_layer_embed_child&quot;">
       <customproperties>
         <Option type="Map">
           <Option value="1" name="embedded" type="int"/>

@@ -2082,7 +2082,7 @@ def my_form_open(dialog, layer, feature):
       <ymax>43.99299944327356116</ymax>
     </wgs84extent>
     <id>table_for_form_8a6a46b7_21ef_47d6_a5cd_134f6e84dace</id>
-    <datasource>service=\'lizmapdb\' sslmode=disable key=\'gid\' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity=\'1\' table="tests_projects"."table_for_form" (geom)</datasource>
+    <datasource>service=\'lizmapdb\' sslmode=prefer key=\'gid\' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity=\'1\' table="tests_projects"."table_for_form" (geom)</datasource>
     <shortname>table_for_form</shortname>
     <keywordList>
       <value></value>
@@ -2452,7 +2452,7 @@ def my_form_open(dialog, layer, feature):
               <Option type="QString" name="Layer" value="table_for_relationnal_value_dc724c81_0004_4aec_89bf_2fa1e80fccb8"/>
               <Option type="QString" name="LayerName" value="table_for_relationnal_value"/>
               <Option type="QString" name="LayerProviderName" value="postgres"/>
-              <Option type="QString" name="LayerSource" value="service=\'lizmapdb\' sslmode=disable key=\'gid\' checkPrimaryKeyUnicity=\'1\' table=&quot;tests_projects&quot;.&quot;table_for_relationnal_value&quot; sql="/>
+              <Option type="QString" name="LayerSource" value="service=\'lizmapdb\' sslmode=prefer key=\'gid\' checkPrimaryKeyUnicity=\'1\' table=&quot;tests_projects&quot;.&quot;table_for_relationnal_value&quot; sql="/>
               <Option type="int" name="NofColumns" value="1"/>
               <Option type="bool" name="OrderByValue" value="true"/>
               <Option type="bool" name="UseCompleter" value="false"/>
@@ -2472,7 +2472,7 @@ def my_form_open(dialog, layer, feature):
               <Option type="QString" name="Layer" value="table_for_relationnal_value_dc724c81_0004_4aec_89bf_2fa1e80fccb8"/>
               <Option type="QString" name="LayerName" value="table_for_relationnal_value"/>
               <Option type="QString" name="LayerProviderName" value="postgres"/>
-              <Option type="QString" name="LayerSource" value="service=\'lizmapdb\' sslmode=disable key=\'gid\' checkPrimaryKeyUnicity=\'1\' table=&quot;tests_projects&quot;.&quot;table_for_relationnal_value&quot; sql="/>
+              <Option type="QString" name="LayerSource" value="service=\'lizmapdb\' sslmode=prefer key=\'gid\' checkPrimaryKeyUnicity=\'1\' table=&quot;tests_projects&quot;.&quot;table_for_relationnal_value&quot; sql="/>
               <Option type="int" name="NofColumns" value="1"/>
               <Option type="bool" name="OrderByValue" value="true"/>
               <Option type="bool" name="UseCompleter" value="false"/>
@@ -2492,7 +2492,7 @@ def my_form_open(dialog, layer, feature):
               <Option type="QString" name="Layer" value="table_for_relationnal_value_dc724c81_0004_4aec_89bf_2fa1e80fccb8"/>
               <Option type="QString" name="LayerName" value="table_for_relationnal_value"/>
               <Option type="QString" name="LayerProviderName" value="postgres"/>
-              <Option type="QString" name="LayerSource" value="service=\'lizmapdb\' sslmode=disable key=\'gid\' checkPrimaryKeyUnicity=\'1\' table=&quot;tests_projects&quot;.&quot;table_for_relationnal_value&quot; sql="/>
+              <Option type="QString" name="LayerSource" value="service=\'lizmapdb\' sslmode=prefer key=\'gid\' checkPrimaryKeyUnicity=\'1\' table=&quot;tests_projects&quot;.&quot;table_for_relationnal_value&quot; sql="/>
               <Option type="int" name="NofColumns" value="1"/>
               <Option type="bool" name="OrderByValue" value="true"/>
               <Option type="bool" name="UseCompleter" value="false"/>
@@ -2645,7 +2645,7 @@ def my_form_open(dialog, layer, feature):
         $this->assertEquals('EPSG:2154', $layerToKeyArray['authid']);
 
         $this->assertArrayHasKey('datasource', $layerToKeyArray);
-        $this->assertEquals("service='lizmapdb' sslmode=disable key='gid' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table=\"tests_projects\".\"table_for_form\" (geom)", $layerToKeyArray['datasource']);
+        $this->assertEquals("service='lizmapdb' sslmode=prefer key='gid' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table=\"tests_projects\".\"table_for_form\" (geom)", $layerToKeyArray['datasource']);
 
         $this->assertArrayHasKey('provider', $layerToKeyArray);
         $this->assertEquals('postgres', $layerToKeyArray['provider']);
@@ -2702,7 +2702,7 @@ def my_form_open(dialog, layer, feature):
         $xmlStr = '
   <maplayer autoRefreshEnabled="0" autoRefreshTime="0" geometry="Point" hasScaleBasedVisibilityFlag="0" labelsEnabled="0" legendPlaceholderImage="" maxScale="0" minScale="100000000" readOnly="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" simplifyAlgorithm="0" simplifyDrawingHints="0" simplifyDrawingTol="1" simplifyLocal="0" simplifyMaxScale="1" styleCategories="AllStyleCategories" symbologyReferenceScale="-1" type="vector" wkbType="Point">
     <id>form_advanced_point_0805ae82_fa78_4e67_a0cf_4ff25c4728b5</id>
-    <datasource>service=\'lizmapdb\' sslmode=disable key=\'id\' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity=\'1\' table="tests_projects"."form_advanced_point" (geom)</datasource>
+    <datasource>service=\'lizmapdb\' sslmode=prefer key=\'id\' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity=\'1\' table="tests_projects"."form_advanced_point" (geom)</datasource>
     <shortname>form_advanced_point</shortname>
     <keywordList>
       <value></value>
@@ -3087,7 +3087,7 @@ def my_form_open(dialog, layer, feature):
               <Option name="Layer" type="QString" value="quartiers_9948ccbd_d390_4324_b2e2_e5bd0ebddcb7"></Option>
               <Option name="LayerName" type="QString" value="quartiers"></Option>
               <Option name="LayerProviderName" type="QString" value="postgres"></Option>
-              <Option name="LayerSource" type="QString" value="service=\'lizmapdb\' sslmode=disable key=\'quartier\' estimatedmetadata=true srid=4326 type=MultiPolygon checkPrimaryKeyUnicity=\'1\' table=&quot;tests_projects&quot;.&quot;quartiers&quot; (geom)"></Option>
+              <Option name="LayerSource" type="QString" value="service=\'lizmapdb\' sslmode=prefer key=\'quartier\' estimatedmetadata=true srid=4326 type=MultiPolygon checkPrimaryKeyUnicity=\'1\' table=&quot;tests_projects&quot;.&quot;quartiers&quot; (geom)"></Option>
               <Option name="NofColumns" type="int" value="1"></Option>
               <Option name="OrderByValue" type="bool" value="false"></Option>
               <Option name="UseCompleter" type="bool" value="false"></Option>
@@ -3108,7 +3108,7 @@ def my_form_open(dialog, layer, feature):
               <Option name="Layer" type="QString" value="sousquartiers_e1ffdafd_f1e3_4e62_a6ac_fcd717175021"></Option>
               <Option name="LayerName" type="QString" value="sousquartiers"></Option>
               <Option name="LayerProviderName" type="QString" value="postgres"></Option>
-              <Option name="LayerSource" type="QString" value="service=\'lizmapdb\' sslmode=disable key=\'id\' estimatedmetadata=true srid=2154 type=MultiPolygon checkPrimaryKeyUnicity=\'1\' table=&quot;tests_projects&quot;.&quot;sousquartiers&quot; (geom)"></Option>
+              <Option name="LayerSource" type="QString" value="service=\'lizmapdb\' sslmode=prefer key=\'id\' estimatedmetadata=true srid=2154 type=MultiPolygon checkPrimaryKeyUnicity=\'1\' table=&quot;tests_projects&quot;.&quot;sousquartiers&quot; (geom)"></Option>
               <Option name="NofColumns" type="int" value="1"></Option>
               <Option name="OrderByValue" type="bool" value="false"></Option>
               <Option name="UseCompleter" type="bool" value="false"></Option>

@@ -21,12 +21,12 @@
     <customproperties>
       <Option/>
     </customproperties>
-    <layer-tree-layer expanded="1" name="table_for_relationnal_value" patch_size="0,0" id="table_for_relationnal_value_dc724c81_0004_4aec_89bf_2fa1e80fccb8" providerKey="postgres" legend_split_behavior="0" checked="Qt::Checked" source="service='lizmapdb' sslmode=disable key='gid' checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;table_for_relationnal_value&quot;" legend_exp="">
+    <layer-tree-layer expanded="1" name="table_for_relationnal_value" patch_size="0,0" id="table_for_relationnal_value_dc724c81_0004_4aec_89bf_2fa1e80fccb8" providerKey="postgres" legend_split_behavior="0" checked="Qt::Checked" source="service='lizmapdb' sslmode=prefer key='gid' checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;table_for_relationnal_value&quot;" legend_exp="">
       <customproperties>
         <Option/>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer expanded="1" name="table_for_form" patch_size="0,0" id="table_for_form_8a6a46b7_21ef_47d6_a5cd_134f6e84dace" providerKey="postgres" legend_split_behavior="0" checked="Qt::Checked" source="service='lizmapdb' sslmode=disable key='gid' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;table_for_form&quot; (geom)" legend_exp="">
+    <layer-tree-layer expanded="1" name="table_for_form" patch_size="0,0" id="table_for_form_8a6a46b7_21ef_47d6_a5cd_134f6e84dace" providerKey="postgres" legend_split_behavior="0" checked="Qt::Checked" source="service='lizmapdb' sslmode=prefer key='gid' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;table_for_form&quot; (geom)" legend_exp="">
       <customproperties>
         <Option/>
       </customproperties>
@@ -369,7 +369,7 @@
         <ymax>43.99299944327356116</ymax>
       </wgs84extent>
       <id>table_for_form_8a6a46b7_21ef_47d6_a5cd_134f6e84dace</id>
-      <datasource>service='lizmapdb' sslmode=disable key='gid' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table="tests_projects"."table_for_form" (geom)</datasource>
+      <datasource>service='lizmapdb' sslmode=prefer key='gid' estimatedmetadata=true srid=2154 type=Point checkPrimaryKeyUnicity='1' table="tests_projects"."table_for_form" (geom)</datasource>
       <shortname>table_for_form</shortname>
       <keywordList>
         <value></value>
@@ -739,7 +739,7 @@
                 <Option type="QString" name="Layer" value="table_for_relationnal_value_dc724c81_0004_4aec_89bf_2fa1e80fccb8"/>
                 <Option type="QString" name="LayerName" value="table_for_relationnal_value"/>
                 <Option type="QString" name="LayerProviderName" value="postgres"/>
-                <Option type="QString" name="LayerSource" value="service='lizmapdb' sslmode=disable key='gid' checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;table_for_relationnal_value&quot; sql="/>
+                <Option type="QString" name="LayerSource" value="service='lizmapdb' sslmode=prefer key='gid' checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;table_for_relationnal_value&quot; sql="/>
                 <Option type="int" name="NofColumns" value="1"/>
                 <Option type="bool" name="OrderByValue" value="true"/>
                 <Option type="bool" name="UseCompleter" value="false"/>
@@ -759,7 +759,7 @@
                 <Option type="QString" name="Layer" value="table_for_relationnal_value_dc724c81_0004_4aec_89bf_2fa1e80fccb8"/>
                 <Option type="QString" name="LayerName" value="table_for_relationnal_value"/>
                 <Option type="QString" name="LayerProviderName" value="postgres"/>
-                <Option type="QString" name="LayerSource" value="service='lizmapdb' sslmode=disable key='gid' checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;table_for_relationnal_value&quot; sql="/>
+                <Option type="QString" name="LayerSource" value="service='lizmapdb' sslmode=prefer key='gid' checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;table_for_relationnal_value&quot; sql="/>
                 <Option type="int" name="NofColumns" value="1"/>
                 <Option type="bool" name="OrderByValue" value="true"/>
                 <Option type="bool" name="UseCompleter" value="false"/>
@@ -779,7 +779,7 @@
                 <Option type="QString" name="Layer" value="table_for_relationnal_value_dc724c81_0004_4aec_89bf_2fa1e80fccb8"/>
                 <Option type="QString" name="LayerName" value="table_for_relationnal_value"/>
                 <Option type="QString" name="LayerProviderName" value="postgres"/>
-                <Option type="QString" name="LayerSource" value="service='lizmapdb' sslmode=disable key='gid' checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;table_for_relationnal_value&quot; sql="/>
+                <Option type="QString" name="LayerSource" value="service='lizmapdb' sslmode=prefer key='gid' checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;table_for_relationnal_value&quot; sql="/>
                 <Option type="int" name="NofColumns" value="1"/>
                 <Option type="bool" name="OrderByValue" value="true"/>
                 <Option type="bool" name="UseCompleter" value="false"/>
@@ -882,7 +882,7 @@ def my_form_open(dialog, layer, feature):
     </maplayer>
     <maplayer type="vector" styleCategories="AllStyleCategories" hasScaleBasedVisibilityFlag="0" readOnly="0" legendPlaceholderImage="" autoRefreshTime="0" minScale="1e+08" geometry="No geometry" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" maxScale="0" wkbType="NoGeometry" autoRefreshEnabled="0">
       <id>table_for_relationnal_value_dc724c81_0004_4aec_89bf_2fa1e80fccb8</id>
-      <datasource>service='lizmapdb' sslmode=disable key='gid' checkPrimaryKeyUnicity='1' table="tests_projects"."table_for_relationnal_value"</datasource>
+      <datasource>service='lizmapdb' sslmode=prefer key='gid' checkPrimaryKeyUnicity='1' table="tests_projects"."table_for_relationnal_value"</datasource>
       <shortname>table_for_relationnal_value</shortname>
       <keywordList>
         <value></value>
