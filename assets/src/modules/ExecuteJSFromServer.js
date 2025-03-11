@@ -10,9 +10,8 @@
 export default function executeJSFromServer() {
     lizMap.events.on({
         uicreated: () => {
-            const withDisplay = !document.body.dataset.skipWarningsDisplay;
-            displayWarningsAdministrator(withDisplay);
-            checkInvalidLayersCfgFile(withDisplay);
+            displayWarningsAdministrator();
+            checkInvalidLayersCfgFile();
 
             if (document.body.dataset.lizmapHideLegend) {
                 document.querySelector('li.switcher.active #button-switcher')?.click();
@@ -104,10 +103,8 @@ export default function executeJSFromServer() {
  *
  * A message is logged in the console in English.
  * Another message is translated and displayed for GIS administrators.
- *
- * @param {boolean} withDisplay If the message must be displayed in the web interface, only in the console otherwise.
  */
-function checkInvalidLayersCfgFile(withDisplay){
+function checkInvalidLayersCfgFile(){
     const invalidLayers = lizMap.mainLizmap.initialConfig.invalidLayersNotFoundInCfg;
     if (invalidLayers.length === 0) {
         return;
@@ -116,10 +113,6 @@ function checkInvalidLayersCfgFile(withDisplay){
     let message = `WMS layers "${invalidLayers.join(', ')}" are not found in the Lizmap configuration. `;
     message += `Is the Lizmap configuration file "${lizUrls.params.project}.qgs.cfg" up to date ?`;
     console.warn(message);
-
-    if (!withDisplay){
-        return;
-    }
 
     if (!document.body.dataset.lizmapAdminUser){
         return;
@@ -133,7 +126,7 @@ function checkInvalidLayersCfgFile(withDisplay){
         layersNotFound,
         'warning',
         true
-    ).attr('id', 'lizmap-warning-message');
+    ).attr('id', 'lizmap-invalid-layers');
 }
 
 /**
@@ -141,14 +134,12 @@ function checkInvalidLayersCfgFile(withDisplay){
  *
  * The message is translated and displayed for GIS administrators.
  * A message is logged in the console in English.
- *
- * @param {boolean} withDisplay If the message must be displayed in the web interface, only in the console otherwise.
  */
-function displayWarningsAdministrator(withDisplay) {
+function displayWarningsAdministrator() {
     if (document.body.dataset.lizmapPluginUpdateWarning) {
         console.warn('The plugin in QGIS is not up to date.');
 
-        if (document.body.dataset.lizmapPluginUpdateWarningUrl && withDisplay) {
+        if (document.body.dataset.lizmapPluginUpdateWarningUrl) {
             let messageOutdatedWarning = lizDict['project.plugin.outdated.warning'];
             messageOutdatedWarning += `<br><a href="${document.body.dataset.lizmapPluginUpdateWarningUrl}">`;
             messageOutdatedWarning += lizDict['visit.admin.panel.project.page'];
@@ -161,14 +152,16 @@ function displayWarningsAdministrator(withDisplay) {
                 messageOutdatedWarning,
                 'warning',
                 false
-            ).attr('id', 'lizmap-warning-message');
+            ).attr('id', 'lizmap-outdated-plugin');
         }
 
-    } else if (document.body.dataset.lizmapPluginWarningsCount) {
+    }
+
+    if (document.body.dataset.lizmapPluginWarningsCount) {
         console.warn(
             `The project has ${document.body.dataset.lizmapPluginWarningsCount} warning(s) in the Lizmap plugin.`);
 
-        if (document.body.dataset.lizmapPluginHasWarningsUrl && withDisplay) {
+        if (document.body.dataset.lizmapPluginHasWarningsUrl) {
             let messageHasWarnings = lizDict['project.has.warnings'];
             messageHasWarnings += `<br><a href="${document.body.dataset.lizmapPluginHasWarningsUrl}">`;
             messageHasWarnings += lizDict['visit.admin.panel.project.page'];
@@ -181,7 +174,7 @@ function displayWarningsAdministrator(withDisplay) {
                 messageHasWarnings,
                 'warning',
                 true
-            ).attr('id', 'lizmap-outdated-plugin');
+            ).attr('id', 'lizmap-project-warnings');
         }
     }
 
@@ -190,7 +183,7 @@ function displayWarningsAdministrator(withDisplay) {
         message += 'Read https://docs.lizmap.com/current/en/publish/lizmap_plugin/actions.html for more information';
         console.warn(message);
 
-        if (document.body.dataset.lizmapAdminUser && withDisplay) {
+        if (document.body.dataset.lizmapAdminUser) {
             lizMap.addMessage(
                 document.body.dataset.lizmapActionWarningOld,
                 'info',
