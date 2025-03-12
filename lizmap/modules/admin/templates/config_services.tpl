@@ -7,7 +7,7 @@
     <div>
         <h2>{@admin~admin.configuration.services.section.interface.label@}</h2>
         <table class="table services-table">
-            {formcontrols array('appName', 'onlyMaps', 'projectSwitcher', 'googleAnalyticsID')}
+            {formcontrols array('appName', 'onlyMaps', 'projectSwitcher', 'googleTag')}
                 <tr>
                     <th>{ctrl_label}</th><td>{ctrl_control}</td>
                 </tr>

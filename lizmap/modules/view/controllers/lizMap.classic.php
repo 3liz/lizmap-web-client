@@ -523,10 +523,10 @@ class lizMapCtrl extends jController
         // switcher-layers-actions javascript
         $rep->addJSLink($bp.'assets/js/switcher-layers-actions.js', array('defer' => ''));
 
-        // Add Google Analytics ID
-        $assign['googleAnalyticsID'] = '';
-        if ($lser->googleAnalyticsID != '' && preg_match('/^UA-\d+-\d+$/', $lser->googleAnalyticsID) == 1) {
-            $assign['googleAnalyticsID'] = $lser->googleAnalyticsID;
+        // Add Google Tag
+        $assign['googleTag'] = '';
+        if ($lser->googleTag != '' && preg_match('/^G-\w+$/', $lser->googleTag) == 1) {
+            $assign['googleTag'] = $lser->googleTag;
         }
 
         $isAdmin = jAcl2::check('lizmap.admin.access') || jAcl2::check('lizmap.admin.server.information.view');
