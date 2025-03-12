@@ -1,6 +1,7 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 const { gotoMap, reloadMap } = require('./globals')
+import {DrawPage} from "./pages/drawpage";
 
 test.describe('Draw', () => {
 
@@ -384,3 +385,65 @@ test.describe('Draw', () => {
         expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toBeNull;
     });
 });
+
+test.describe('Measure',
+    {
+        tag: ['@readonly'],
+    },
+    () => {
+
+        test('Length and angle constraints', async ({ page }) => {
+
+            const drawProject = new DrawPage(page, 'draw');
+            // open page
+            await drawProject.open();
+            // open draw panel
+            await drawProject.openDrawPanel();
+            // select geometry to draw
+            await drawProject.selectGeometry('line');
+            // toggleMeasure
+            await drawProject.toggleMeasure();
+            // set constraint
+            await drawProject.setMeasureConstraint('distance','1500');
+
+            // draw a single fixed length line
+            await drawProject.clickOnMap(450,75);
+            await drawProject.dblClickOnMap(480,115);
+
+            // check final length measure
+            await(expect(drawProject.mapAnnotationToolTipStatic)).toBeVisible();
+            await(expect(drawProject.mapAnnotationToolTipStatic)).toHaveText('1.5 km');
+
+            // delete drawings
+            await drawProject.deleteAllDrawings();
+
+            // draw a linestring composed by two segment of length 1500 m each
+            await drawProject.clickOnMap(395,246);
+            await drawProject.clickOnMap(423,263);
+            await drawProject.dblClickOnMap(418,305);
+
+            // check final length measure
+            await(expect(drawProject.mapAnnotationToolTipStatic)).toBeVisible();
+            await(expect(drawProject.mapAnnotationToolTipStatic)).toHaveText('3 km');
+
+            // delete drawings
+            await drawProject.deleteAllDrawings();
+
+            // add angle constraint
+            await drawProject.setMeasureConstraint('angle','37');
+            // draw a feature without finalize it
+            await drawProject.clickOnMap(395,246);
+            await drawProject.clickOnMap(423,263);
+
+            // check measure tooltips before finalize. The first should contains degrees info
+            await expect(drawProject.mapAnnotationToolTipMeasure.nth(0)).toHaveText('1.5 km37°');
+            await expect(drawProject.mapAnnotationToolTipMeasure.nth(1)).toHaveText('3 km');
+
+            // finalize draw
+            await drawProject.dblClickOnMap(418,305);
+
+            // check final length measure
+            await(expect(drawProject.mapAnnotationToolTipStatic)).toBeVisible();
+            await(expect(drawProject.mapAnnotationToolTipStatic)).toHaveText('3 km');
+        });
+    });
