@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://jelix.org/ns/forms/1.1">
+
+    <hidden ref="id"></hidden>
+    <hidden ref="uuid"></hidden>
+    <hidden ref="repository"></hidden>
+    <hidden ref="project"></hidden>
+    <hidden ref="created_by"></hidden>
+    <hidden ref="created_at"></hidden>
+    <hidden ref="updated_by"></hidden>
+    <hidden ref="updated_at"></hidden>
+    <hidden ref="submit_button" defaultvalue="submit"></hidden>
+    <hidden ref="item_type" defaultvalue="presentation"></hidden>
+
+    <input ref="title" type="string" required="true">
+        <label locale="presentation~presentation.form.presentation.title.label" />
+        <hint locale="presentation~presentation.form.presentation.title.hint" />
+    </input>
+
+    <htmleditor ref="description" required="true" rows="5" maxlength="1000" config="default">
+        <label locale="presentation~presentation.form.presentation.description.label" />
+        <hint locale="presentation~presentation.form.presentation.description.hint" />
+    </htmleditor>
+
+    <image ref="background_image" mimetype="image/jpeg;image/jpg;image/png;image/webp" maxsize="2000000" maxWidth="2000" maxHeight="2000">
+        <label locale="presentation~presentation.form.presentation.background_image.label"/>
+        <hint locale="presentation~presentation.form.presentation.background_image.hint" />
+    </image>
+
+    <menulist ref="background_display" required="false">
+        <label locale="presentation~presentation.form.presentation.background_display.label"/>
+        <hint locale="presentation~presentation.form.presentation.background_display.hint" />
+        <item value="cover" selected="true" locale="presentation~presentation.form.presentation.background_display.cover"/>
+        <item value="contain" locale="presentation~presentation.form.presentation.background_display.contain"/>
+        <item value="stretch" locale="presentation~presentation.form.presentation.background_display.stretch"/>
+    </menulist>
+
+    <input ref="background_color" type="string" required="false" defaultvalue="#333333" >
+        <label locale="presentation~presentation.form.presentation.background_color.label" />
+        <hint locale="presentation~presentation.form.presentation.background_color.hint" />
+    </input>
+
+    <input ref="text_color" type="string" required="false" defaultvalue="#FFFFFF" >
+        <label locale="presentation~presentation.form.presentation.text_color.label" />
+        <hint locale="presentation~presentation.form.presentation.text_color.hint" />
+    </input>
+
+    <htmleditor ref="footer" required="false" rows="5">
+        <label locale="presentation~presentation.form.presentation.footer.label" />
+        <hint locale="presentation~presentation.form.presentation.footer.hint" />
+    </htmleditor>
+
+    <checkbox ref="published" required="false">
+        <label locale="presentation~presentation.form.presentation.published.label" />
+        <hint locale="presentation~presentation.form.presentation.published.hint" />
+    </checkbox>
+
+    <input ref="granted_groups" type="string" required="false">
+        <label locale="presentation~presentation.form.presentation.granted_groups.label" />
+        <hint locale="presentation~presentation.form.presentation.granted_groups.hint" />
+    </input>
+
+    <reset ref="reinit">
+        <label locale="presentation~presentation.form.presentation.reinit.label" />
+    </reset>
+
+    <submit ref="cancel">
+        <label locale="presentation~presentation.form.presentation.cancel.label" />
+    </submit>
+
+    <submit ref="submit">
+        <label locale="presentation~presentation.form.presentation.submit.label" />
+    </submit>
+</form>

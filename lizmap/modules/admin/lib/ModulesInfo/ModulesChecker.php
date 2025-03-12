@@ -25,6 +25,10 @@ class ModulesChecker
         'proj4php',
         'view',
     );
+    // TODO, implement a core module which is disabled by default
+    private const coreAdditionalModules = array(
+        'presentation',
+    );
 
     /**
      * Get the list of installed modules with their metadata.
