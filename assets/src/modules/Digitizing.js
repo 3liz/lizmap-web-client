@@ -762,14 +762,14 @@ export default class Digitizing {
 
                 // Display clockwise or anticlockwise angle
                 // Closest from cursor is displayed
-                if (getLength(new LineString([closestClockwise, cursorPointCoords])) < getLength(new LineString([closestAntiClockwise, cursorPointCoords]))) {
+                if (this.getProjectedLength(new LineString([closestClockwise, cursorPointCoords])) < this.getProjectedLength(new LineString([closestAntiClockwise, cursorPointCoords]))) {
                     constrainedAngleLineString = constrainedAngleClockwise.clone();
                 } else {
                     constrainedAngleLineString = constrainedAngleAntiClockwise.clone();
                 }
 
                 if (this._distanceConstraint) {
-                    const ratio = this._distanceConstraint / getLength(constrainedAngleLineString);
+                    const ratio = this._distanceConstraint / this.getProjectedLength(constrainedAngleLineString);
                     constrainedAngleLineString.scale(ratio, ratio, constrainedAngleLineString.getLastCoordinate());
 
                     constrainedPointCoords = constrainedAngleLineString.getFirstCoordinate();
@@ -842,12 +842,26 @@ export default class Digitizing {
     }
 
     /**
+     * Get spherical length of a geometry based on provided projection
+     * @param {Geometry} geom The geom.
+     * @param {null|string} projection The projection.
+     * @returns {number} The calculated spherical length.
+     */
+    getProjectedLength(geom, projection = null) {
+        if(!projection) {
+            projection = mainLizmap.map.getView().getProjection();
+        }
+
+        return getLength(geom, {projection: projection});
+    }
+
+    /**
      * Format length output.
      * @param {Geometry} geom The geom.
      * @returns {string} The formatted length.
      */
     formatLength(geom) {
-        const length = getLength(geom, {projection: mainLizmap.map.getView().getProjection()});
+        const length = this.getProjectedLength(geom);
         let output;
         if (length > 100) {
             output = Math.round((length / 1000) * 100) / 100 + ' ' + 'km';
