@@ -104,8 +104,8 @@ class defaultCtrl extends jController
         $rep->body->assign('allowUserAccountRequests', $services->allowUserAccountRequests);
 
         // Add Google Analytics ID
-        if ($services->googleAnalyticsID != '' && preg_match('/^UA-\\d+-\\d+$/', $services->googleAnalyticsID) == 1) {
-            $rep->body->assign('googleAnalyticsID', $services->googleAnalyticsID);
+        if ($services->googleTag != '' && preg_match('/^G-\w+$/', $services->googleTag) == 1) {
+            $rep->body->assign('googleTag', $services->googleTag);
         }
 
         // Is QGIS server OK ?

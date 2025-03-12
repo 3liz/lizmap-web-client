@@ -58,7 +58,7 @@ class lizmapServices
         'adminContactEmail',
         'adminSenderEmail',
         'adminSenderName',
-        'googleAnalyticsID',
+        'googleTag',
         'uploadedImageMaxWidthHeight',
     );
 
@@ -382,11 +382,11 @@ class lizmapServices
     public $adminSenderName = '';
 
     /**
-     * Application ID for Google Analytics.
+     * Google Tag for Analytics.
      *
      * @var string
      */
-    public $googleAnalyticsID = '';
+    public $googleTag = '';
 
     /**
      * Uploaded image maximum width and height.
