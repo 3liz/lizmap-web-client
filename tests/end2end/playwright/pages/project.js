@@ -251,6 +251,16 @@ export class ProjectPage extends BasePage {
     }
 
     /**
+     * dblClickOnMap function
+     * Double click on the map at the given position
+     * @param {number} x Position X on the map
+     * @param {number} y Position Y on the map
+     */
+    async dblClickOnMap(x, y){
+        await this.map.dblclick({position: {x: x, y: y}});
+    }
+
+    /**
      * clickOnMapLegacy function
      * Click on the OL 2map at the given position
      * @param {number} x Position X on the map
