@@ -15,6 +15,7 @@ while ($tryAgain) {
     $tryAgain = false;
     pg_query($cnx, 'CREATE SCHEMA IF NOT EXISTS lizmap');
     pg_query($cnx, 'CREATE EXTENSION IF NOT EXISTS postgis SCHEMA public');
+    pg_query($cnx, 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp"');
     pg_close($cnx);
 }
 
