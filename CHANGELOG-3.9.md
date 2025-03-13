@@ -8,6 +8,21 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Fixed
+
+* Avoid an admin to not see some projects in the administration panel
+* Add HTML anchors to repositories page in the administration panel
+* `X-Request-Id` could be an array when doing an HTTP request, fixing logging issue about HTTP requests which have failed
+* Locate By Layer - Error after automatic ESlint
+* Fix tooltips in some dialogs
+* Support Google Tag instead of the old Analytics
+
+### Backend
+
+* Update Jelix to [1.8.17](https://github.com/jelix/jelix/releases/tag/v1.8.16)
+* Code refactoring :
+  * ESLint, StyleLint, Rector...
+
 ## 3.9.0-beta.1 - 2025-02-07
 
 ### Funders
