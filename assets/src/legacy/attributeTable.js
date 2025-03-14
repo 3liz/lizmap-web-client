@@ -216,7 +216,7 @@ var lizAttributeTable = function() {
                             const tableSelector = '#attribute-layer-table-' + cleanName;
 
                             // Get data and fill attribute table
-                            getDataAndFillAttributeTable(layerName, layerFilter, tableSelector, false);
+                            // getDataAndFillAttributeTable(layerName, layerFilter, tableSelector, false);
 
                             const tabElement = document.getElementById('nav-tab-attribute-layer-' + cleanName);
                             bootstrap.Tab.getOrCreateInstance(tabElement).show();
@@ -502,6 +502,7 @@ var lizAttributeTable = function() {
                 // Get layer config
                 var atConfig = config.attributeLayers[lname];
                 var cleanName = lizMap.cleanName(lname);
+                const layerId = lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerByName(lname).id;
 
                 // Add li to the tabs
                 var liHtml = '<li class="nav-item" role="presentation">';
@@ -511,6 +512,13 @@ var lizAttributeTable = function() {
                 liHtml+= '</li>';
 
                 $('#attributeLayers-tabs').append( liHtml );
+
+                $('#attribute-table-container').append(`
+                    <div id="attribute-layer-' + cleanName + '" class="tab-pane attribute-content bottom-content">
+                        <lizmap-attribute-table layerId="${layerId}"></lizmap-attribute-table>
+                    </div>`);
+
+                return;
 
                 // Add content div
                 var html = '<div id="attribute-layer-' + cleanName + '" class="tab-pane attribute-content bottom-content" >';

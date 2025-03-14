@@ -26,6 +26,7 @@ import Treeview from './components/Treeview.js';
 import NavBar from './components/NavBar.js';
 import Tooltip from './components/Tooltip.js';
 import Message from './components/Message.js';
+import AttributeTable from './components/AttributeTable.js';
 
 import { mainLizmap, mainEventDispatcher } from './modules/Globals.js';
 import executeJSFromServer from './modules/ExecuteJSFromServer.js';
@@ -67,6 +68,7 @@ lizMap.events.on({
         window.customElements.define('lizmap-navbar', NavBar);
         window.customElements.define('lizmap-tooltip', Tooltip);
         window.customElements.define('lizmap-message', Message);
+        window.customElements.define('lizmap-attribute-table', AttributeTable);
     }
 });
 
