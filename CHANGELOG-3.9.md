@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.9.0-beta.2 - 2025-03-14
+
 ### Fixed
 
 * Avoid an admin to not see some projects in the administration panel
