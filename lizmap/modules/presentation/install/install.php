@@ -17,6 +17,8 @@ class presentationModuleInstaller extends Installer
     {
         $helpers->database()->useDbProfile('auth');
 
+        // TODO Check that the profile is using PostgreSQL driver
+
         // Get SQL template file
         $sql_file = $this->getPath().'install/sql/install.pgsql.sql';
         $sql = jFile::read($sql_file);
