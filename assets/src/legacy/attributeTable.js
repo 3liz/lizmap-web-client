@@ -1544,8 +1544,13 @@ var lizAttributeTable = function() {
                             myDom = '<<t>ipl>';
                         }
 
+                        const datatablesUrl = globalThis['lizUrls'].wms.replace('service', 'datatables');
+                        const params = globalThis['lizUrls'].params;
+                        params['layerId'] = lConfig.id;
+
                         $( aTable ).dataTable( {
-                            data: dataSet
+                            serverSide: true
+                            ,ajax: datatablesUrl + '?' + new URLSearchParams(params).toString()
                             ,columns: columns
                             ,initComplete: function(settings, json) {
                                 const api = new $.fn.dataTable.Api(settings);
@@ -1577,7 +1582,7 @@ var lizAttributeTable = function() {
                                 }
                             }
                             ,dom: myDom
-                            ,pageLength: 50
+                            ,pageLength: 10
                             ,scrollY: '95%'
                             ,scrollX: '100%'
 
@@ -1661,10 +1666,33 @@ var lizAttributeTable = function() {
                 const columns = [];
                 let firstDisplayedColIndex = 0;
                 // Column with selected status
-                columns.push( {"data": "lizSelected", "width": "25px", "searchable": false, "sortable": true, "visible": false} );
+                columns.push({
+                    data: "lizSelected",
+                    width: "25px",
+                    searchable: false,
+                    sortable: true,
+                    visible: false
+                });
                 firstDisplayedColIndex+=1;
 
-                columns.push({ "data": "featureToolbar", "width": "25px", "searchable": false, "sortable": false});
+                columns.push({
+                    data: "featureToolbar",
+                    width: "25px",
+                    searchable: false,
+                    sortable: false,
+                    render: (data, type, row, meta) => {
+                        const layerId = config.layers[aName].id;
+                        const fid = row['DT_RowId'];
+
+                        // TODO: handle pivotId, parentLayerID and isChild
+                        let pivotId;
+                        let isChild;
+                        let parentLayerID;
+                        return `
+                            <lizmap-feature-toolbar value="${layerId + '.' + fid}" ${isChild ? `parent-layer-id="${parentLayerID}"` : ''} ${pivotId ? `pivot-layer="${pivotId}"` : ''}>
+                            </lizmap-feature-toolbar>`;
+                    }
+                });
                 firstDisplayedColIndex += 1;
 
                 // Add column for each field
@@ -1901,6 +1929,7 @@ var lizAttributeTable = function() {
 
                     if( selectedFeatures && $.inArray( fid, selectedFeatures ) != -1 )
                         line.lizSelected = 'a';
+
                     line['featureToolbar'] = `<lizmap-feature-toolbar value="${layerId + '.' + fid}" ${isChild ? `parent-layer-id="${parentLayerID}"`: ''} ${pivotId ? `pivot-layer="${pivotId}"`: ''}></lizmap-feature-toolbar>`;
 
                     // Build table lines
