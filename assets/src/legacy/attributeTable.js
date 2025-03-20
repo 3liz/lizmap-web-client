@@ -1580,10 +1580,9 @@ var lizAttributeTable = function() {
                             ,order: [[ firstDisplayedColIndex, "asc" ]]
                             ,language: { url:globalThis['lizUrls']["dataTableLanguage"] }
                             ,deferRender: true
-                            ,createdRow: function ( row, data, dataIndex ) {
-                                if ( $.inArray( data.DT_RowId.toString(), lConfig['selectedFeatures'] ) != -1
-                                ) {
-                                    $(row).addClass('selected');
+                            , createdRow: (row, data) => {
+                                if ((lConfig['selectedFeatures'].includes(data.DT_RowId.toString()))) {
+                                    row.classList.add('selected');
                                     data.lizSelected = 'a';
                                 }
                             }
@@ -3035,68 +3034,6 @@ var lizAttributeTable = function() {
             /**
              *
              * @param featureType
-             * @param featureIds
-             */
-            function redrawAttributeTableContent( featureType, featureIds ){
-                // Loop through all datatables to get the one concerning this featureType
-                $('.attribute-table-table[id]').each(function(){
-                    var tableId = $(this).attr('id');
-                    var tableLayerName = $(this).parents('div.dataTables_wrapper:first').prev('input.attribute-table-hidden-layer').val()
-
-                    if ( tableLayerName
-                        && $.fn.dataTable.isDataTable( $(this) )
-                        && lizMap.cleanName( featureType ) == tableLayerName
-                    ){
-                        // Get selected feature ids if not given
-                        if( !featureIds ){
-                            // Assure selectedFeatures property exists for the layer
-                            if( !config.layers[featureType]['selectedFeatures'] )
-                                config.layers[featureType]['selectedFeatures'] = [];
-                            var featureIds = config.layers[featureType]['selectedFeatures'];
-                        }
-
-                        // Get Datatable api
-                        var rTable = $(this).DataTable();
-                        var dTable = $(this).dataTable();
-
-                        // Remove class selected for all the lines
-                        rTable
-                            .rows( $(this).find('tr.selected') )
-                            .every(function(){
-                                dTable.fnUpdate( 'z', this, 0, false, false );
-                            })
-                        //~ .draw()
-                            .nodes()
-                            .to$()
-                            .removeClass( 'selected' )
-                        ;
-
-                        // Add class selected from featureIds
-                        // And change lizSelected column value to a
-                        if( featureIds.length > 0 ){
-
-                            var rTable = $(this).DataTable();
-                            rTable.data().each( function(d){
-                                if( $.inArray( d.DT_RowId.toString(), featureIds ) != -1 )
-                                    d.lizSelected = 'a';
-                            });
-                            rTable
-                                .rows( function ( idx, data, node ) {
-                                    return data.lizSelected == 'a' ? true : false;
-                                })
-                                .nodes()
-                                .to$()
-                                .addClass( 'selected' )
-                            ;
-                        }
-                    }
-
-                });
-            }
-
-            /**
-             *
-             * @param featureType
              */
             function refreshTablesAfterEdition( featureType ){
                 // Loop through each datatable, and refresh if it corresponds to the layer edited
@@ -3401,8 +3338,10 @@ var lizAttributeTable = function() {
                     // Update attribute table tools
                     updateAttributeTableTools( e.featureType );
 
-                    // Redraw attribute table content ( = add "selected" classes)
-                    redrawAttributeTableContent( e.featureType, e.featureIds );
+                    // Redraw attribute table content
+                    // `createdRow` callback handles "selected" classes
+                    const table = new DataTable('table[id^=attribute-layer-table-]');
+                    table.draw('page');
 
                     // Update openlayers layer drawing
                     if( e.updateDrawing )
