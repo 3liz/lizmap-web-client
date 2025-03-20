@@ -106,6 +106,7 @@ ldapdao.path="app:vendor/jelix/ldapdao-module/ldapdao"
 saml.installparam[localconfig]=on
 saml.installparam[authep]=admin
 
+admin_api.enabled=on
 [coordplugins]
 ;name = file_ini_name or 1
 autolocale=1
@@ -380,7 +381,7 @@ jacl2_admin.require[]=jquery_ui
 
 ;master_admin.css[]="$jelix/design/master_admin.css"
 
-jforms_html.js[]= "$jelix/js/jforms_jquery.js|defer"
+jforms_html.js[]="$jelix/js/jforms_jquery.js|defer"
 
 jforms_datepicker_default.js[]="$jelix/jquery/ui/i18n/datepicker-$lang.js|defer"
 jforms_datepicker_default.js[]="$jelix/js/jforms/datepickers/default/ui.$lang.js|defer"
