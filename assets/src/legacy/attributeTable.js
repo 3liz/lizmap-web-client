@@ -45,6 +45,7 @@ var lizAttributeTable = function() {
             var wfsTypenameMap = {};
             var mediaLinkPrefix = globalThis['lizUrls'].media + '?' + new URLSearchParams(globalThis['lizUrls'].params);
             var startupFilter = false;
+            let moveSelectedToTop = false;
             if( !( typeof lizLayerFilter === 'undefined' ) ){
                 startupFilter = true;
                 lizMap.lizmapLayerFilterActive = true;
@@ -775,27 +776,19 @@ var lizAttributeTable = function() {
                     );
 
                 // Bind click on "move selected to top" button
-                $('#attribute-layer-'+ cleanName + ' button.btn-moveselectedtotop-attributeTable')
-                    .click(function(){
-                        var aTable = '#attribute-layer-table-' + $(this).val();
-                        var dTable = $( aTable ).DataTable();
-                        var previousOrder = dTable.order();
-                        previousOrder = $.grep(previousOrder, function(o){
-                            return o[0] != 0;
-                        });
-                        var selectedOrder = [ [0, 'asc'] ];
-                        var newOrder = selectedOrder.concat(previousOrder);
-                        dTable.order( newOrder ).draw();
+                const moveSelectedToTopSelector = '#attribute-layer-' + cleanName + ' button.btn-moveselectedtotop-attributeTable';
+                document.querySelector(moveSelectedToTopSelector).addEventListener('click', (e) => {
+                    const dTableSelector = '#attribute-layer-table-' + e.currentTarget.value;
+                    const dTable = new DataTable(dTableSelector);
+                    moveSelectedToTop = true;
+                    dTable.draw();
+                    moveSelectedToTop = false;
 
-                        // Scroll to top
-                        $(aTable).parents('div.attribute-layer-content').scrollTop(0);
-
-                        return false;
-                    })
-                    .hover(
-                        function(){ $(this).addClass('btn-primary'); },
-                        function(){ $(this).removeClass('btn-primary'); }
-                    );
+                    // Scroll to top
+                    document.querySelector(dTableSelector).parentElement.scroll({
+                        top: 0
+                    }) ;
+                });
 
 
                 // Bind click on filter button
@@ -1559,7 +1552,15 @@ var lizAttributeTable = function() {
 
                         $( aTable ).dataTable( {
                             serverSide: true
-                            ,ajax: datatablesUrl + '?' + new URLSearchParams(params).toString()
+                            ,ajax: {
+                                url: datatablesUrl + '?' + new URLSearchParams(params).toString(),
+                                data: (d) => {
+                                    if (moveSelectedToTop) {
+                                        d.moveselectedtotop = true;
+                                        d.selectedfeatureids = lConfig['selectedFeatures'].join();
+                                    }
+                                }
+                            }
                             ,columns: columns
                             ,initComplete: function(settings, json) {
                                 const api = new $.fn.dataTable.Api(settings);
