@@ -1,5 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+import { requestWithAdminBasicAuth } from './globals';
 
 /**
  * Playwright Page
@@ -53,19 +54,13 @@ test.describe('Not connected from context, so testing basic auth',
         expect(json.qgis_server_info.error).toBe("WRONG_CREDENTIALS")
     });
 
-    test('As admin', async ({request}) => {
-        const response = await request.get(
-            url,
-            {
-                headers: {
-                    authorization: 'Basic YWRtaW46YWRtaW4=',
-                }
-            });
-        const json = await checkJson(response);
-        // Only testing the access to qgis_server_info
-        expect(json.qgis_server_info.metadata.name).toBeDefined();
+        test('As admin', async ({request}) => {
+            const response = await requestWithAdminBasicAuth(request, url);
+            const json = await checkJson(response);
+            // Only testing the access to qgis_server_info
+            expect(json.qgis_server_info.metadata.name).toBeDefined();
+        });
     });
-});
 
 test.describe('Connected from context, as a normal user',
     {
