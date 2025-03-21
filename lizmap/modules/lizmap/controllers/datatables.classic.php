@@ -25,6 +25,8 @@ class datatablesCtrl extends jController
         $repository = $this->param('repository');
         $project = $this->param('project');
         $layerId = $this->param('layerId');
+        $moveSelectedToTop = $this->param('moveselectedtotop');
+        $selectedFeatureIDs = explode(',', $this->param('selectedfeatureids'));
 
         // DataTables parameters
         $DTStart = $this->param('start');
@@ -42,7 +44,9 @@ class datatablesCtrl extends jController
         $layer = $lproj->getLayer($layerId);
         $typeName = $layer->getWfsTypeName();
 
-        $wfsparams = array(
+        $jsonFeatures = array();
+
+        $wfsParamsData = array(
             'SERVICE' => 'WFS',
             'VERSION' => '1.0.0',
             'REQUEST' => 'GetFeature',
@@ -54,10 +58,38 @@ class datatablesCtrl extends jController
             'STARTINDEX' => $DTStart,
         );
 
-        $wfsrequest = new WFSRequest($lproj, $wfsparams, lizmap::getServices());
+        if ($moveSelectedToTop == 'true') {
+            $featureIds = array();
+            foreach ($selectedFeatureIDs as $id) {
+                $featureIds[] = $typeName.'.'.$id;
+            }
+
+            $wfsrequest = new WFSRequest(
+                $lproj,
+                array(
+                    'SERVICE' => 'WFS',
+                    'VERSION' => '1.0.0',
+                    'REQUEST' => 'GetFeature',
+                    'OUTPUTFORMAT' => 'GeoJSON',
+                    'GEOMETRYNAME' => 'none',
+                    'FEATUREID' => implode(',', $featureIds),
+                ),
+                lizmap::getServices()
+            );
+            $wfsresponse = $wfsrequest->process();
+            $featureData = $wfsresponse->getBodyAsString();
+            $jsonFeatures = json_decode($featureData)->features;
+
+            // Remove selected features from the list of features to get
+            $DTLength = $DTLength - count($jsonFeatures);
+            $wfsParamsData['MAXFEATURES'] = $DTLength;
+            $wfsParamsData['EXP_FILTER'] = '$id NOT IN ('.implode(' , ', $selectedFeatureIDs).')';
+        }
+
+        $wfsrequest = new WFSRequest($lproj, $wfsParamsData, lizmap::getServices());
         $wfsresponse = $wfsrequest->process();
         $featureData = $wfsresponse->getBodyAsString();
-        $jsonFeatures = json_decode($featureData)->features;
+        $jsonFeatures = array_merge($jsonFeatures, json_decode($featureData)->features);
         $data = array();
         foreach ($jsonFeatures as $key => $feature) {
             $dataObject = array_merge(
@@ -70,18 +102,15 @@ class datatablesCtrl extends jController
             );
             $data[] = $dataObject;
         }
-        // jLog::log(var_export(, true), 'error');
 
         $returnedData = array(
             'draw' => (int) $this->param('draw'),
             'recordsTotal' => 31, // TODO: get the total number of features
             'recordsFiltered' => 31,
             'data' => $data,
-            // 'error' => 'error',
         );
 
         $rep->content = json_encode($returnedData);
-        // $rep->content = $wfsresponse;
 
         return $rep;
     }
