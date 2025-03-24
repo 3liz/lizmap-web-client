@@ -40,7 +40,7 @@ class WMSRequest extends OGCRequest
         // Filter data by login if necessary
         // as configured in the plugin for login filtered layers.
 
-        // Filter data by login for request: getmap, getfeatureinfo, getprint, getprintatlas
+        // Filter data by login for request: GetMap, GetFeatureInfo, GetPrint, GetPrintAtlas
         $wmsRequest = strtolower($this->param('request'));
         if (!in_array($wmsRequest, array('getmap', 'getfeatureinfo', 'getprint', 'getprintatlas'))) {
             return $params;
@@ -54,7 +54,7 @@ class WMSRequest extends OGCRequest
         // filter data by login
         $layers = $this->param('layers');
 
-        // 'getprintatlas' request has param 'layer' and not 'layers'
+        // 'GetPrintAtlas' request has param 'layer' and not 'layers'
         if ($wmsRequest == 'getprintatlas') {
             $layers = $this->param('layer');
         }
@@ -78,23 +78,23 @@ class WMSRequest extends OGCRequest
         // merge client filter parameter
         $clientFilter = $this->param('filter', '');
         if (!empty($clientFilter)) {
-            $cfexp = explode(';', $clientFilter);
-            foreach ($cfexp as $a) {
+            $clientFilterExpression = explode(';', $clientFilter);
+            foreach ($clientFilterExpression as $a) {
                 $b = explode(':', $a);
-                $lname = trim($b[0]);
-                $lfilter = trim($b[1]);
-                if (array_key_exists($lname, $loginFilters)) {
-                    $loginFilters[$lname]['filter'] .= ' AND ( '.$lfilter.' )';
+                $layerName = trim($b[0]);
+                $layerFilter = trim($b[1]);
+                if (array_key_exists($layerName, $loginFilters)) {
+                    $loginFilters[$layerName]['filter'] .= ' AND ( '.$layerFilter.' )';
                 } else {
-                    $loginFilters[$lname] = array('filter' => '( '.$lfilter.' )', 'layername' => $lname);
+                    $loginFilters[$layerName] = array('filter' => '( '.$layerFilter.' )', 'layername' => $layerName);
                 }
             }
         }
 
         // update filter parameter
         $filters = array();
-        foreach ($loginFilters as $layername => $lfilter) {
-            $filters[] = $layername.':'.$lfilter['filter'];
+        foreach ($loginFilters as $layerName => $layerFilter) {
+            $filters[] = $layerName.':'.$layerFilter['filter'];
         }
         $params['filter'] = implode(';', $filters);
 
@@ -118,9 +118,15 @@ class WMSRequest extends OGCRequest
         $data = $result->data;
         if (empty($data) or floor($result->code / 100) >= 4) {
             if (empty($data)) {
-                \jLog::log('Error in project '.$this->repository->getKey().'/'.$this->project->getKey().': GetCapabilities empty data', 'lizmapadmin');
+                \jLog::log(
+                    'Error in project '.$this->repository->getKey().'/'.$this->project->getKey().': GetCapabilities empty data',
+                    'lizmapadmin'
+                );
             } else {
-                \jLog::log('Error in project '.$this->repository->getKey().'/'.$this->project->getKey().': GetCapabilities result code: '.$result->code, 'lizmapadmin');
+                \jLog::log(
+                    'Error in project '.$this->repository->getKey().'/'.$this->project->getKey().': GetCapabilities result code: '.$result->code,
+                    'lizmapadmin'
+                );
             }
             \jMessage::add('Server Error !', 'Error');
 
@@ -231,7 +237,7 @@ class WMSRequest extends OGCRequest
     }
 
     /**
-     * Check wether the height and width values are valid.
+     * Check both the height and width values are valid.
      *
      * @return bool
      */
@@ -276,8 +282,8 @@ class WMSRequest extends OGCRequest
         $layers = $this->param('layers', $this->param('layer', ''));
         $layers = explode(',', $layers);
         if (count($layers) == 1) {
-            $lName = $layers[0];
-            $layer = $this->project->findLayerByAnyName($lName);
+            $layerName = $layers[0];
+            $layer = $this->project->findLayerByAnyName($layerName);
             if ($layer && property_exists($layer, 'showFeatureCount') && $layer->showFeatureCount == 'True') {
                 $this->params['showFeatureCount'] = 'True';
             }
@@ -296,7 +302,7 @@ class WMSRequest extends OGCRequest
             if (count($layers) == 1) {
                 $result = $this->request(true);
                 if ($result->code == 200) {
-                    $layer = $this->project->findLayerByAnyName($lName);
+                    $layer = $this->project->findLayerByAnyName($layerName);
                     $nodes = json_decode($result->data)->nodes;
                     if (!$nodes) {
                         return $result;
@@ -307,14 +313,14 @@ class WMSRequest extends OGCRequest
                         $legends['nodes'] = array(array(
                             'nodes' => $nodes,
                             'type' => 'group',
-                            'name' => $lName,
+                            'name' => $layerName,
                             'title' => $layer->title ? $layer->title : $layer->name,
                             'layerName' => $layer->name,
                         ));
                     } else {
                         // Add name to the layer node
                         $node = $nodes[0];
-                        $node->name = $lName;
+                        $node->name = $layerName;
                         $node->layerName = $layer->name;
                         $legends['nodes'][] = $node;
                     }
@@ -331,7 +337,7 @@ class WMSRequest extends OGCRequest
             if (count($styles) != 1 && count($styles) != count($layers)) {
                 // if the number of styles and layers is not the same
                 // add empty string in styles
-                foreach ($layers as $idx => $lName) {
+                foreach ($layers as $idx => $layerName) {
                     if ($idx + 1 <= count($layers)) {
                         continue;
                     }
@@ -359,9 +365,9 @@ class WMSRequest extends OGCRequest
             $styles = array_reverse($styles);
 
             // Loop through layers
-            foreach ($layers as $idx => $lName) {
+            foreach ($layers as $idx => $layerName) {
                 $style = $styles[$idx];
-                $singleLayerParams['layer'] = $lName;
+                $singleLayerParams['layer'] = $layerName;
                 $singleLayerParams['styles'] = $style;
 
                 // Perform the request
@@ -466,6 +472,9 @@ class WMSRequest extends OGCRequest
         $this->params['with_maptip'] = 'true';
         // Always request geometry to QGIS server so we can decide if to use it later
         $this->params['with_geometry'] = 'true';
+        // Starting from LWC 3.10.0, we need to request the maptip with Bootstrap 5
+        // TODO, remove later when the lizmapWebClientTargetVersion=30800 because all projects will be migrated.
+        $this->params['CSS_FRAMEWORK'] = 'BOOTSTRAP2';
 
         // Get remote data
         $response = $this->request(true);
@@ -657,7 +666,7 @@ class WMSRequest extends OGCRequest
 
             if (!empty($popupTemplate)) {
                 $templateConfigured = true;
-                // first replace all "media/bla/bla/llkjk.ext" by full url
+                // first replace all "media/bla/bla/media.ext" by full url
                 $popupTemplate = preg_replace_callback(
                     '#(["\']){1}((\.\./)?media/.+\.\w{3,10})(["\']){1}#',
                     array($this, 'replaceMediaPathByMediaUrl'),
@@ -736,7 +745,7 @@ class WMSRequest extends OGCRequest
 
             foreach ($feature->Attribute as $attribute) {
                 if ($attribute['name'] == 'maptip') {
-                    // first replace all "media/bla/bla/llkjk.ext" by full url
+                    // first replace all "media/bla/bla/media.ext" by full url
                     $maptipValue = preg_replace_callback(
                         '#(["\']){1}((\.\./)?media/.+\.\w{3,10})(["\']){1}#',
                         array($this, 'replaceMediaPathByMediaUrl'),
@@ -916,30 +925,30 @@ class WMSRequest extends OGCRequest
     /**
      * gfiGmlToHtml : return HTML for the getFeatureInfo GML.
      *
-     * @param string $gmldata     GML data from getFeatureInfo
+     * @param string $gmlData     GML data from getFeatureInfo
      * @param object $configLayer
      *
      * @return string feature Info in HTML format
      */
-    protected function gfiGmlToHtml($gmldata, $configLayer)
+    protected function gfiGmlToHtml($gmlData, $configLayer)
     {
-        $xml = $this->loadXmlString($gmldata, 'GetFeatureInfoHtml');
+        $xml = $this->loadXmlString($gmlData, 'GetFeatureInfoHtml');
 
         if (!$xml || count($xml->children()) == 0) {
             return '';
         }
 
-        $layerstring = $configLayer->name.'_layer';
-        if (!property_exists($xml, $layerstring)) {
+        $layerString = $configLayer->name.'_layer';
+        if (!property_exists($xml, $layerString)) {
             return '';
         }
-        $xmlLayer = $xml->{$layerstring};
+        $xmlLayer = $xml->{$layerString};
 
-        $featurestring = $configLayer->name.'_feature';
-        if (!property_exists($xmlLayer, $featurestring)) {
+        $featureString = $configLayer->name.'_feature';
+        if (!property_exists($xmlLayer, $featureString)) {
             return '';
         }
-        $xmlFeature = $xmlLayer->{$featurestring};
+        $xmlFeature = $xmlLayer->{$featureString};
 
         if (count($xmlFeature->children())) {
             return '';
@@ -971,16 +980,16 @@ class WMSRequest extends OGCRequest
             $newProject = (string) $configLayer->sourceProject;
             $repository = $newRepository;
             $project = $newProject;
-            $lrep = \lizmap::getRepository($repository);
-            if (!$lrep) {
+            $layerRepository = \lizmap::getRepository($repository);
+            if (!$layerRepository) {
                 \jMessage::add('The repository '.strtoupper($repository).' does not exist !', 'RepositoryNotDefined');
 
                 return array('error', 'text/plain');
             }
 
             try {
-                $lproj = \lizmap::getProject($repository.'~'.$project);
-                if (!$lproj) {
+                $layerProject = \lizmap::getProject($repository.'~'.$project);
+                if (!$layerProject) {
                     \jMessage::add('The lizmap project '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
 
                     return array('error', 'text/plain');
@@ -1112,12 +1121,12 @@ class WMSRequest extends OGCRequest
         // Calculate the new bbox
         $param_width = (int) $params['width'];
         $param_height = (int) $params['height'];
-        $xmin = $bbox0 - $xFactor * $width - $metatileBuffer * $width / $param_width;
-        $ymin = $bbox1 - $yFactor * $height - $metatileBuffer * $height / $param_height;
-        $xmax = $bbox2 + $xFactor * $width + $metatileBuffer * $width / $param_width;
-        $ymax = $bbox3 + $yFactor * $height + $metatileBuffer * $height / $param_height;
+        $xMin = $bbox0 - $xFactor * $width - $metatileBuffer * $width / $param_width;
+        $yMin = $bbox1 - $yFactor * $height - $metatileBuffer * $height / $param_height;
+        $xMax = $bbox2 + $xFactor * $width + $metatileBuffer * $width / $param_width;
+        $yMax = $bbox3 + $yFactor * $height + $metatileBuffer * $height / $param_height;
         // Replace request bbox by metatile bbox
-        $params['bbox'] = "{$xmin},{$ymin},{$xmax},{$ymax}";
+        $params['bbox'] = "{$xMin},{$yMin},{$xMax},{$yMax}";
 
         // Keep original param value
         $originalParams = array('width' => $param_width, 'height' => $param_height);
@@ -1218,14 +1227,14 @@ class WMSRequest extends OGCRequest
         $crs = preg_replace('#[^a-zA-Z0-9_]#', '_', $crs);
 
         // Get repository data
-        $lrep = $project->getRepository();
-        $lproj = $project;
-        $project = $lproj->getKey();
-        $repository = $lrep->getKey();
+        $layerRepository = $project->getRepository();
+        $layerProject = $project;
+        $project = $layerProject->getKey();
+        $repository = $layerRepository->getKey();
 
         // Read config file for the current project
-        $layername = $params['layers'];
-        $configLayer = $lproj->findLayerByAnyName($layername);
+        $layerName = $params['layers'];
+        $configLayer = $layerProject->findLayerByAnyName($layerName);
 
         list($repository, $project) = $this->getVProfileInfos($configLayer, $repository, $project);
 
@@ -1254,10 +1263,10 @@ class WMSRequest extends OGCRequest
         // No cache hit : need to ask the tile from QGIS Server
         // ***************************
         // Add project path into map parameter
-        $params['map'] = $lproj->getRelativeQgisPath();
+        $params['map'] = $layerProject->getRelativeQgisPath();
 
         // Metatile : if needed, change the bbox
-        // Avoid metatiling when the cache is not active for the layer
+        // Avoid meta-tiling when the cache is not active for the layer
         $metatileSize = '1,1';
         if ($configLayer and property_exists($configLayer, 'metatileSize')) {
             if (preg_match('#^[3579],[3579]$#', $configLayer->metatileSize)) {
