@@ -27,6 +27,8 @@ class datatablesCtrl extends jController
         $layerId = $this->param('layerId');
         $moveSelectedToTop = $this->param('moveselectedtotop');
         $selectedFeatureIDs = explode(',', $this->param('selectedfeatureids'));
+        $filteredFeatureIDs = explode(',', $this->param('filteredfeatureids'));
+        $expFilter = $this->param('exp_filter');
 
         // DataTables parameters
         $DTStart = $this->param('start');
@@ -84,6 +86,14 @@ class datatablesCtrl extends jController
             $DTLength = $DTLength - count($jsonFeatures);
             $wfsParamsData['MAXFEATURES'] = $DTLength;
             $wfsParamsData['EXP_FILTER'] = '$id NOT IN ('.implode(' , ', $selectedFeatureIDs).')';
+        }
+
+        if (count($filteredFeatureIDs) > 0) {
+            $wfsParamsData['EXP_FILTER'] = '$id IN ('.implode(' , ', $filteredFeatureIDs).')';
+        }
+
+        if ($expFilter) {
+            $wfsParamsData['EXP_FILTER'] = $expFilter;
         }
 
         $wfsrequest = new WFSRequest($lproj, $wfsParamsData, lizmap::getServices());
