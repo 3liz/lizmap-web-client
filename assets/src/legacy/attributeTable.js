@@ -1325,22 +1325,10 @@ var lizAttributeTable = function() {
                         lConfig['id'],
                         parentLayerID);
                     var foundFeatures = ff.foundFeatures;
-                    var dataSet = ff.dataSet;
-
-                    // Datatable configuration
-                    if ( $.fn.dataTable.isDataTable( aTable ) ) {
-                        var oTable = $( aTable ).dataTable();
-                        oTable.fnClearTable();
-                        oTable.fnAddData( dataSet );
-                    }
                     lConfig['features'] = foundFeatures;
                 }
 
                 if ( !cFeatures || cFeatures.length == 0 ){
-                    if ( $.fn.dataTable.isDataTable( aTable ) ) {
-                        var oTable = $( aTable ).dataTable();
-                        oTable.fnClearTable();
-                    }
                     $(aTable).hide();
 
                     $('#attribute-layer-'+ cleanName +' span.attribute-layer-msg').html(
@@ -1521,12 +1509,7 @@ var lizAttributeTable = function() {
 
                     lConfig['alias'] = cAliases;
                     // Datatable configuration
-                    if ( $.fn.dataTable.isDataTable( aTable ) ) {
-                        var oTable = $( aTable ).dataTable();
-                        oTable.fnClearTable();
-                        oTable.fnAddData( dataSet );
-                    }
-                    else {
+                    if ( !$.fn.dataTable.isDataTable( aTable ) ) {
                         // Search while typing in text input
                         // Deactivate if too many items
                         var searchWhileTyping = true;
@@ -1555,9 +1538,22 @@ var lizAttributeTable = function() {
                             ,ajax: {
                                 url: datatablesUrl + '?' + new URLSearchParams(params).toString(),
                                 data: (d) => {
+                                    // Handle selected features moved to top
                                     if (moveSelectedToTop) {
                                         d.moveselectedtotop = true;
                                         d.selectedfeatureids = lConfig['selectedFeatures'].join();
+                                    }
+
+                                    // Handle filtered features
+                                    const filteredFeaturesIds = lConfig.filteredFeatures;
+                                    if (filteredFeaturesIds && filteredFeaturesIds.length > 0) {
+                                        d.filteredfeatureids = filteredFeaturesIds.join();
+                                    }
+
+                                    // Handle features filtered by their parent
+                                    const exp_filter = lConfig.request_params.exp_filter;
+                                    if (exp_filter) {
+                                        d.exp_filter = exp_filter;
                                     }
                                 }
                             }
@@ -1640,10 +1636,6 @@ var lizAttributeTable = function() {
                 }
 
                 if ( !cFeatures || cFeatures.length == 0 ){
-                    if ( $.fn.dataTable.isDataTable( aTable ) ) {
-                        var oTable = $( aTable ).dataTable();
-                        oTable.fnClearTable();
-                    }
                     $(aTable).hide();
 
                     $('#attribute-layer-'+ cleanName +' span.attribute-layer-msg').html(
@@ -2335,6 +2327,10 @@ var lizAttributeTable = function() {
                     applyEmptyLayerFilter( typeName, typeNamePile, typeNameFilter, typeNameDone, cascade );
                 }
 
+                // Refresh attributeTable
+                const table = new DataTable('#attribute-layer-table-' + lizMap.cleanName(typeName));
+                table.draw();
+
                 $('#layerActionUnfilter').toggle((lizMap.lizmapLayerFilterActive !== null));
             }
 
@@ -2727,12 +2723,6 @@ var lizAttributeTable = function() {
 
                             // Update layer state
                             lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerByName(layerConfig.name).expressionFilter = null;
-                        }
-
-                        // Refresh attributeTable
-                        var opTable = '#attribute-layer-table-'+lizMap.cleanName( typeName );
-                        if( $( opTable ).length ){
-                            refreshLayerAttributeDatatable(typeName, opTable, cFeatures);
                         }
 
                         // And send event so that getFeatureInfo and getPrint use the updated layer filters
