@@ -533,7 +533,11 @@ import { getCenter } from 'ol/extent.js';
              * @param feature
              */
             function runAtlasItem(feature) {
-                const olFeature = (new GeoJSON()).readFeature(feature);
+                const options = {
+                    featureProjection: lizMap.map.getProjection(),
+                    dataProjection: 'EPSG:4326'
+                };
+                const olFeature = (new GeoJSON()).readFeature(feature, options);
 
                 // Zoom to feature
                 if (lizAtlasConfig['zoom']) {

@@ -168,7 +168,10 @@ test.describe('Viewport mobile', () => {
         await expect(page.locator('#right-dock')).toBeInViewport();
 
         // Choose a feature and check getFeatureInfo
-        let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
+        let getFeatureInfoRequestPromise = page.waitForRequest(
+            request => request.method() === 'POST' &&
+            request.postData()?.includes('GetFeatureInfo') === true
+        );
         await page.locator('#liz-atlas-select').selectOption('2');
         let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
         let getFeatureInfoResponse = await getFeatureInfoRequest.response();
