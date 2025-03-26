@@ -1015,24 +1015,30 @@ edition-form-container > div > h3 {
   color: var(--color-contrasted-text);
 }
 
-/* editing forms tabs */
-#edition ul.nav-tabs {
+/* Flat style for editing forms & drag-and-drop designed popup */
+#edition ul.nav-tabs,
+div.popup_lizmap_dd ul.nav-tabs {
   border-bottom: 1px solid var(--color-contrasted-elements);
 }
 
-#edition .nav-tabs > li > a {
+#edition .nav-tabs > li > a,
+div.popup_lizmap_dd .nav-tabs > li > a {
   color: var(--color-text-primary);
   padding: 5px;
   border: none;
 }
 
 #edition .nav > li > a:hover,
-#edition .nav > li > a:focus {
+#edition .nav > li > a:focus,
+div.popup_lizmap_dd .nav > li > a:hover,
+div.popup_lizmap_dd .nav > li > a:focus {
   text-decoration: none;
 }
 
 #edition .nav-tabs > li > a:hover,
-#edition .nav-tabs > li > a:focus {
+#edition .nav-tabs > li > a:focus,
+div.popup_lizmap_dd .nav-tabs > li > a:hover,
+div.popup_lizmap_dd .nav-tabs > li > a:focus {
   background: none;
   border: none;
   border-bottom: 3px solid var(--color-contrasted-elements);
@@ -1042,7 +1048,10 @@ edition-form-container > div > h3 {
 
 #edition .nav-tabs > li.active > a,
 #edition .nav-tabs > li.active > a:hover,
-#edition .nav-tabs > li.active > a:focus {
+#edition .nav-tabs > li.active > a:focus,
+div.popup_lizmap_dd .nav-tabs > li.active > a,
+div.popup_lizmap_dd .nav-tabs > li.active > a:hover,
+div.popup_lizmap_dd .nav-tabs > li.active > a:focus {
   background: none;
   border: none;
   border-bottom: 3px solid var(--color-contrasted-elements);
@@ -1050,7 +1059,8 @@ edition-form-container > div > h3 {
   cursor: auto;
 }
 
-#edition div.tab-pane {
+#edition div.tab-pane,
+div.popup_lizmap_dd div.tab-pane {
   border-left: 1px solid var(--color-contrasted-elements);
   border-right: 1px solid var(--color-contrasted-elements);
   border-bottom: 1px solid var(--color-contrasted-elements);
@@ -1059,15 +1069,18 @@ edition-form-container > div > h3 {
   margin-bottom: 5px;
 }
 
-#edition div.tab-pane.attribute-layer-child-content {
+#edition div.tab-pane.attribute-layer-child-content,
+div.popup_lizmap_dd div.tab-pane.attribute-layer-child-content {
   border: none;
 }
 
-#edition #tabform {
+#edition #tabform,
+div.popup_lizmap_dd #tabform {
   border: none;
 }
 
-#edition legend {
+#edition legend,
+div.popup_lizmap_dd legend {
   color: var(--color-text-primary);
   border-bottom: none;
   padding: 5px;
@@ -1076,7 +1089,9 @@ edition-form-container > div > h3 {
   margin-bottom: 0;
 }
 
-#edition fieldset {
+
+#edition fieldset,
+div.popup_lizmap_dd fieldset {
   padding: 10px;
   padding-top: 0;
   margin: 0 5px;
@@ -1085,6 +1100,24 @@ edition-form-container > div > h3 {
   background: rgb(255 255 255 / 20%);
 }
 
+/* Minor adaptation for popup compared to editing form */
+div.popup_lizmap_dd {
+  font-size: 12px;
+}
+
+div.popup_lizmap_dd .form-horizontal .control-group {
+  margin-bottom: 0 !important;
+}
+
+div.popup_lizmap_dd label {
+  padding-top: 0 !important;
+  font-size: 12px !important;
+  width: 130px !important;
+}
+
+div.popup_lizmap_dd .controls {
+  margin-left: 140px !important;
+}
 
 /* ATLAS */
 
