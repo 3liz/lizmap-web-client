@@ -8,6 +8,19 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Funders
+
+* **[Etra](https://www.etraspa.it/)**, and developed by **[Faunalia](https://www.faunalia.eu/fr)** with @mind84
+
+### Changed
+
+* Google Analytics is now Google Tag Manager
+
+### Fixed
+
+* Fix measurement when both angle and dimension constraints are set
+* Administration panel: drop the build number from the version when comparing Lizmap Web Client modules.
+
 ## 3.8.6 - 2025-03-10
 
 ### Funders
