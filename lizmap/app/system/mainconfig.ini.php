@@ -93,6 +93,7 @@ dataviz.enabled=on
 filter.enabled=on
 action.enabled=on
 lizmap.enabled=on
+presentation.enabled=on
 proj4php.enabled=on
 view.enabled=on
 jacl2db_admin.enabled=on
