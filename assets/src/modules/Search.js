@@ -5,8 +5,6 @@
  * @license MPL-2.0
  */
 
-import { transformExtent } from 'ol/proj.js';
-
 /**
  * @class
  * @name Search
@@ -226,21 +224,31 @@ export default class Search {
                         lizMap.addMessage(lizDict['externalsearch.ignlimit'], 'warning', true);
                         break;
                     }
-                    let mapExtent4326 = transformExtent(this._map.getView().calculateExtent(), this._map.getView().getProjection().getCode(), 'EPSG:4326');
-                    let queryParam = '?text=' + $('#search-query').val() + '&type=StreetAddress&maximumResponses=10&bbox=' + mapExtent4326;
-                    $.getJSON(encodeURI(service + queryParam), data => {
-                        let text = '';
-                        let count = 0;
-                        for (const result of data.results) {
-                            var lab = result.fulltext.replace(labrex, '<strong class="highlight">$1</strong>');
-                            text += `<li><a href="#${result.x},${result.y},${result.x},${result.y}" data-wkt="POINT(${result.x} ${result.y})">${lab}</a></li>`;
-                            count++;
+                    $.get(service
+                        , {
+                            "text": searchQuery,
+                            "type": 'StreetAddress',
+                            "maximumResponses": 10,
+                            "bbox": extent.toBBOX()
                         }
-                        if (count == 0 || text == '') {
-                            text = '<li>' + lizDict['externalsearch.notfound'] + '</li>';
-                        }
-                        this._updateExternalSearch('<li><strong>IGN</strong><ul>' + text + '</ul></li>');
-                    });
+                        , data => {
+                            let text = '';
+                            let count = 0;
+                            for (const result of data.results) {
+                                var lab = result.fulltext.replace(labrex, '<strong class="highlight">$1</strong>');
+                                text += `
+                                <li>
+                                    <a href="#${result.x},${result.y},${result.x},${result.y}" data-wkt="POINT(${result.x} ${result.y})">
+                                        ${lab}
+                                    </a>
+                                </li>`;
+                                count++;
+                            }
+                            if (count == 0 || text == '') {
+                                text = '<li>' + lizDict['externalsearch.notfound'] + '</li>';
+                            }
+                            this._updateExternalSearch('<li><strong>IGN</strong><ul>' + text + '</ul></li>');
+                        }, 'json');
                     break;
                 }
                 case 'google':
