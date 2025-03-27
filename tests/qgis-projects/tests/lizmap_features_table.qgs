@@ -1002,7 +1002,8 @@ def my_form_open(dialog, layer, feature):
   draggable="yes"
 &gt;
   &lt;lizmap-field data-alias="Virtual code" data-description="Virtual code"&gt;"squartmno"&lt;/lizmap-field&gt;
-  &lt;lizmap-field data-alias="Virtual area" data-description="Virtual area"&gt;$area&lt;/lizmap-field&gt;
+  &lt;lizmap-field data-alias="Virtual area" data-description="Virtual area"&gt;round($area,2)&lt;/lizmap-field&gt;
+  &lt;lizmap-field data-alias="Forbidden" data-description="Virtual forbidden"&gt;env('TEST')&lt;/lizmap-field&gt;
 &lt;/lizmap-features-table&gt;</mapTip>
     </maplayer>
     <maplayer autoRefreshMode="Disabled" autoRefreshTime="0" geometry="Polygon" hasScaleBasedVisibilityFlag="0" labelsEnabled="1" legendPlaceholderImage="" maxScale="0" minScale="100000000" readOnly="0" refreshOnNotifyEnabled="0" refreshOnNotifyMessage="" simplifyAlgorithm="0" simplifyDrawingHints="1" simplifyDrawingTol="1" simplifyLocal="0" simplifyMaxScale="1" styleCategories="AllStyleCategories" symbologyReferenceScale="-1" type="vector" wkbType="MultiPolygon">

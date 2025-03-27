@@ -161,17 +161,11 @@ class featuresCtrl extends jController
         try {
             $additionalFields = json_decode($this->param('additionalFields', '[]'), true);
         } catch (Exception $e) {
-            $content['error'] = 'An error occurred while replacing the expression text !';
+            $content['error'] = 'An error occurred while evaluating additional fields';
             $rep->data = $content;
 
             return $rep;
         }
-
-        foreach ($additionalFields as $key => $value) {
-            $additionalFields[$key] = $this->regexCheck($value);
-        }
-
-        $expressions = array_merge($expressions, $additionalFields);
 
         $sortingField = trim($this->param('sorting_field', null));
 
@@ -190,6 +184,7 @@ class featuresCtrl extends jController
             $limit,
             $sortingField,
             $sortingOrder,
+            $additionalFields,
         );
 
         // If the returned content is null, an error occurred
@@ -210,28 +205,5 @@ class featuresCtrl extends jController
         $rep->data = $content;
 
         return $rep;
-    }
-
-    /**
-     * Check if the expression is valid.
-     *
-     * @param $expression string  The expression to check
-     *
-     * @return string The expression if it is valid, 'INVALID EXPRESSION' otherwise
-     */
-    private function regexCheck($expression): string
-    {
-        // Allowing only fields like "libsquart" and not expressions like rand(10,34)
-        $regex = '/^[a-zA-Z0-9_\- ]+$/';
-
-        $expression = str_replace('"', '', $expression);
-
-        preg_match($regex, $expression, $matches);
-
-        if (count($matches) == 0) {
-            return "'INVALID EXPRESSION'";
-        }
-
-        return '"'.$expression.'"';
     }
 }

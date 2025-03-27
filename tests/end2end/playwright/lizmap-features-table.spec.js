@@ -44,6 +44,7 @@ test.describe('Display lizmap-features-table component in popup from QGIS toolti
         await expect(lizmapFeaturesTable.locator('thead tr th:nth-child(1)')).toHaveText('');
         await expect(lizmapFeaturesTable.locator('thead tr th:nth-child(2)')).toHaveText('Virtual code');
         await expect(lizmapFeaturesTable.locator('thead tr th:nth-child(3)')).toHaveText('Virtual area');
+        await expect(lizmapFeaturesTable.locator('thead tr th:nth-child(4)')).toHaveText('Forbidden');
 
         // Get first item and check it
         let firstItem = lizmapFeaturesTable.locator(
@@ -52,7 +53,8 @@ test.describe('Display lizmap-features-table component in popup from QGIS toolti
         await expect(firstItem).toHaveAttribute('data-feature-id', '17');
         await expect(firstItem.locator('td:nth-child(1)')).not.toBeEmpty();
         await expect(firstItem.locator('td:nth-child(2)')).toHaveText('MCN');
-        await expect(firstItem.locator('td:nth-child(3)')).toHaveText('INVALID EXPRESSION');
+        await expect(firstItem.locator('td:nth-child(3)')).toContainText(new RegExp('\\d+.\\d+'));
+        await expect(firstItem.locator('td:nth-child(4)')).toHaveText('not allowed');
 
         // Click on first item and check sub-popup
         await firstItem.click();

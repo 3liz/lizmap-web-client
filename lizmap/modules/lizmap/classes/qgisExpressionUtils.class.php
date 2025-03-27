@@ -155,19 +155,29 @@ class qgisExpressionUtils
      * A filter can be used to retrieve the virtual fields values only
      * for a subset of features.
      *
-     * @param qgisVectorLayer $layer         A QGIS vector layer
-     * @param array           $virtualFields The expressions' list to evaluate as key
-     * @param string          $filter        A filter to restrict virtual fields creation
-     * @param string          $withGeometry  'true' to get geometries of features
-     * @param string          $fields        A list of field names separated by comma. E.g. 'name,code'
-     * @param int             $limit         The maximum number of features to return
-     * @param null|string     $sortingField  The field to sort by E.g. 'desc'
-     * @param null|string     $sortingOrder  The order to sort by E.g. 'name'
+     * @param qgisVectorLayer $layer             A QGIS vector layer
+     * @param array           $virtualFields     The expressions' list to evaluate as key
+     * @param string          $filter            A filter to restrict virtual fields creation
+     * @param string          $withGeometry      'true' to get geometries of features
+     * @param string          $fields            A list of field names separated by comma. E.g. 'name,code'
+     * @param int             $limit             The maximum number of features to return
+     * @param null|string     $sortingField      The field to sort by E.g. 'desc'
+     * @param null|string     $sortingOrder      The order to sort by E.g. 'name'
+     * @param null|array      $safeVirtualFields List of expressions to be evaluated carefully
      *
      * @return null|array the features with virtual fields
      */
-    public static function virtualFields($layer, $virtualFields, $filter = null, $withGeometry = 'true', $fields = '', $limit = 1000, $sortingField = null, $sortingOrder = 'asc')
-    {
+    public static function virtualFields(
+        $layer,
+        $virtualFields,
+        $filter = null,
+        $withGeometry = 'true',
+        $fields = '',
+        $limit = 1000,
+        $sortingField = null,
+        $sortingOrder = 'asc',
+        $safeVirtualFields = null,
+    ) {
         // Evaluate the expression by qgis
         $project = $layer->getProject();
         $params = array(
@@ -186,6 +196,10 @@ class qgisExpressionUtils
         if ($sortingField) {
             $params['sorting_field'] = $sortingField;
             $params['sorting_order'] = in_array(strtolower($sortingOrder), array('asc', 'desc')) ? $sortingOrder : 'asc';
+        }
+
+        if ($safeVirtualFields) {
+            $params['safe_virtuals'] = json_encode($safeVirtualFields);
         }
 
         // Request virtual fields
