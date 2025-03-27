@@ -239,6 +239,12 @@ export class ProjectPage extends BasePage {
         return this.popupContent.locator(selector);
     }
 
+    /**
+     * Close left dock
+     */
+    async closeLeftDock() {
+        await this.page.locator('#dock-close').click();
+    }
 
     /**
      * clickOnMap function
