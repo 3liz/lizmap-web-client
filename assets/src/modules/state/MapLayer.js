@@ -427,7 +427,7 @@ export class MapGroupState extends MapItemState {
     /**
      * Find all layers by exploding the layers within every "group as layer" groups
      * @returns {LayerLayerState[]} The layer states of listed layers
-    */
+     */
     findExplodedMapLayers(){
         let layers = [];
         for(const item of this.getChildren()) {
