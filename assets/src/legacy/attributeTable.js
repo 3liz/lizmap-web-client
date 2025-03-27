@@ -3327,10 +3327,21 @@ var lizAttributeTable = function() {
                     // Update attribute table tools
                     updateAttributeTableTools( e.featureType );
 
-                    // Redraw attribute table content
-                    // `createdRow` callback handles "selected" classes
-                    const table = new DataTable('table[id^=attribute-layer-table-]');
-                    table.draw('page');
+                    // Update selected features in the table
+                    const layerId = config.attributeLayers[e.featureType].layerId;
+                    const selectedFeatures = config.layers[e.featureType].selectedFeatures;
+                    const table = new DataTable('table[data-layerid=' + layerId + ']');
+
+                    table.rows().every(function (rowIdx) {
+                        var data = this.data();
+                        if ((selectedFeatures.includes(data.DT_RowId.toString()))) {
+                            this.row(rowIdx).node().classList.add('selected');
+                            data.lizSelected = 'a';
+                        } else {
+                            this.row(rowIdx).node().classList.remove('selected');
+                            data.lizSelected = 'z';
+                        }
+                    });
 
                     // Update openlayers layer drawing
                     if( e.updateDrawing )
