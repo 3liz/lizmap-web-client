@@ -1,6 +1,5 @@
 <?php
 
-use Lizmap\App\VersionTools;
 use Lizmap\Server\Server;
 use LizmapAdmin\ModulesInfo\ModulesChecker;
 
@@ -78,12 +77,11 @@ class server_informationCtrl extends jController
 
         // Set the HTML content
         $tpl = new jTpl();
-        $semanticVersion = VersionTools::dropBuildId($data['info']['version']);
         $assign = array(
             'data' => $data,
             'baseUrlApplication' => jServer::getServerURI().jApp::urlBasePath(),
             'modules' => $modules->getList(false, false, true),
-            'installationComplete' => $modules->compareLizmapCoreModulesVersions($semanticVersion),
+            'installationComplete' => $modules->compareLizmapCoreModulesVersions($data['info']['version']),
             'qgisServerNeedsUpdate' => $qgisServerNeedsUpdate,
             'updateQgisServer' => $updateQgisServer,
             'lizmapQgisServerNeedsUpdate' => $lizmapQgisServerNeedsUpdate,
