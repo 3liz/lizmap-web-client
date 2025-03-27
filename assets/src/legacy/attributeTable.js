@@ -644,7 +644,8 @@ var lizAttributeTable = function() {
                 }
                 html+= '<div class="attribute-layer-content'+alc+'">';
                 html+= '    <input type="hidden" class="attribute-table-hidden-layer" value="'+cleanName+'">';
-                html+= '    <table id="attribute-layer-table-' + cleanName + '" class="attribute-table-table table table-hover table-condensed table-striped order-column cell-border" width="100%"></table>';
+                const classes = 'attribute-table-table table table-hover table-condensed table-striped order-column cell-border';
+                html+= '    <table id="attribute-layer-table-' + cleanName + '" data-layerid="' + atConfig.layerId + '" class="' + classes + '" width="100%"></table>';
 
                 html+= '</div>';  // attribute-layer-content
 
@@ -1119,9 +1120,10 @@ var lizAttributeTable = function() {
                             var cDiv = '<div class="tab-pane attribute-layer-child-content '+childActive+'" id="'+ tabId +'" >';
                             var tId = 'attribute-layer-table-' + lizMap.cleanName(parentLayerName) + '-' + lizMap.cleanName(childLayerName);
                             var tClass = 'attribute-table-table table table-hover table-condensed table-striped cell-border child-of-' + lizMap.cleanName(parentLayerName);
+                            const dataLayerId = relation.referencingLayer;
                             cDiv+= '    <input type="hidden" class="attribute-table-hidden-parent-layer" value="'+lizMap.cleanName(parentLayerName)+'">';
                             cDiv+= '    <input type="hidden" class="attribute-table-hidden-layer" value="'+lizMap.cleanName(childLayerName)+'">';
-                            cDiv+= '    <table id="' + tId  + '" class="' + tClass + '" width="100%"></table>';
+                            cDiv+= '    <table id="' + tId  + '" class="' + tClass + '" data-layerid="' + dataLayerId + '" width="100%"></table>';
                             cDiv+= '</div>';
                             childDiv.push(cDiv);
 
