@@ -13,40 +13,26 @@ class RepositoryRightsService
      */
     public static function getRights(string $repo): array
     {
-        $manager = new \jAcl2DbAdminUIManager();
+        $cnx = \jDb::getConnection('jacl2_profile');
 
-        $groups = $manager->getGroupRights();
+        // $sql = " SELECT r.id_aclsbj, group_concat(g.name, ' - ') AS group_names";
+        $sql = ' SELECT r.id_aclsbj, g.name AS group_name';
+        $sql .= ' FROM jacl2_rights r';
+        $sql .= ' INNER JOIN jacl2_group g ON r.id_aclgrp = g.id_aclgrp';
+        $sql .= ' WHERE (g.grouptype = 0 OR g.grouptype = 1)';
+        $sql .= ' AND id_aclres='.$cnx->quote($repo);
+        // $sql.= " GROUP BY r.id_aclsbj;";
+        $sql .= ' ORDER BY g.name';
+        $rights = $cnx->query($sql);
 
-        $userById = array();
-
-        foreach ($groups['groups'] as $group) {
-            $userById[$group->id_aclgrp] = $group->name;
-        }
-
-        $rightsLabel = array_keys(
-            $manager->getGroupRightsWithResources('admins')['rightsLabels']
-        );
-
-        $rights = array();
-
-        foreach ($userById as $userId => $userName) {
-            $rightsFromId = $manager->getGroupRightsWithResources($userId)['rightsWithResources'];
-
-            foreach ($rightsLabel as $right) {
-                if (array_key_exists($right, $rightsFromId)) {
-                    $element = $rightsFromId[$right];
-
-                    foreach ($element as $elementRight) {
-                        if ($elementRight->id_aclres == $repo) {
-                            $rights[$right][] = $userName;
-
-                            break;
-                        }
-                    }
-                }
+        $group_names = array();
+        foreach ($rights as $r) {
+            if (!array_key_exists($r->id_aclsbj, $group_names)) {
+                $group_names[$r->id_aclsbj] = array();
             }
+            $group_names[$r->id_aclsbj][] = $r->group_name;
         }
 
-        return $rights;
+        return $group_names;
     }
 }
