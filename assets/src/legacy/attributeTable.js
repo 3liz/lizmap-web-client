@@ -335,11 +335,8 @@ var lizAttributeTable = function() {
                     wfsParams['SRSNAME'] = 'EPSG:4326';
                 }
 
-                const getFeatureRequest = lizMap.mainLizmap.wfs.getFeature(wfsParams);
-
-                let fetchRequests = [getFeatureRequest];
-                let namedRequests = {'getFeature': fetchRequests.length-1};
-
+                let fetchRequests = [];
+                let namedRequests = [];
 
                 if (!(layerConfig?.['alias'] && layerConfig?.['types'])) {
                     const describeFeatureTypeRequest = lizMap.mainLizmap.wfs.describeFeatureType({
@@ -351,7 +348,7 @@ var lizAttributeTable = function() {
 
                 const allColumnsKeyValues = {};
 
-                // Indexes 0 and 1 are use for getFeature and describeFeature requests
+                // Index 0 is used for describeFeature requests
                 namedRequests['keyValues'] = fetchRequests.length+0;
                 let responseOrder = fetchRequests.length+0;
                 for (const fieldName in lizMap.keyValueConfig?.[layerName]) {
@@ -378,7 +375,7 @@ var lizAttributeTable = function() {
                         }));
                     }
                 }
-                if (forceEmptyTable) return buildLayerAttributeDatatable(layerName, tableSelector, [], layerConfig.aliases, layerConfig.types, allColumnsKeyValues, callBack);
+                // if (forceEmptyTable) return buildLayerAttributeDatatable(layerName, tableSelector, [], layerConfig.aliases, layerConfig.types, allColumnsKeyValues, callBack);
 
                 document.body.style.cursor = 'progress';
                 Promise.all(fetchRequests).then(responses => {
@@ -398,14 +395,14 @@ var lizAttributeTable = function() {
 
                     }
                     layerConfig['featureCrs'] = 'EPSG:4326';
-                    if (namedRequests?.['describeFeatureType']) {
+                    if (namedRequests.hasOwnProperty('describeFeatureType') ) {
                         const describeFeatureTypeResponse = responses[namedRequests['describeFeatureType']];
                         layerConfig['aliases'] = describeFeatureTypeResponse.aliases;
                         layerConfig['types'] = describeFeatureTypeResponse.types;
                         layerConfig['columns'] = describeFeatureTypeResponse.columns;
                     }
 
-                    buildLayerAttributeDatatable(layerName, tableSelector, responses[0].features, layerConfig.aliases, layerConfig.types, allColumnsKeyValues, callBack);
+                    buildLayerAttributeDatatable(layerName, tableSelector, layerConfig.aliases, layerConfig.types, allColumnsKeyValues, callBack);
 
                     document.body.style.cursor = 'default';
                 }).catch(() => {
@@ -1350,13 +1347,12 @@ var lizAttributeTable = function() {
              *
              * @param aName
              * @param aTable
-             * @param cFeatures
              * @param cAliases
              * @param cTypes
              * @param allColumnsKeyValues
              * @param aCallback
              */
-            function buildLayerAttributeDatatable(aName, aTable, cFeatures, cAliases, cTypes, allColumnsKeyValues, aCallback ) {
+            function buildLayerAttributeDatatable(aName, aTable, cAliases, cTypes, allColumnsKeyValues, aCallback ) {
                 // Get config
                 var lConfig = config.layers[aName];
 
@@ -1445,210 +1441,136 @@ var lizAttributeTable = function() {
                         canDelete = true;
                 }
 
-                cFeatures = typeof cFeatures !== 'undefined' ?  cFeatures : null;
-                if( !cFeatures ){
-                    // features is an object, let's transform it to an array
-                    // XXX IE compat: Object.values is not available on IE...
-                    var features = config.layers[aName]['features'];
-                    cFeatures = Object.keys(features).map(function (key) {
-                        return features[key];
+                // Create columns for datatable
+                var cdc = createDatatableColumns(aName, hiddenFields, cAliases, cTypes, allColumnsKeyValues);
+                var columns = cdc.columns;
+                var firstDisplayedColIndex = cdc.firstDisplayedColIndex;
+
+                lConfig['alias'] = cAliases;
+                // Datatable configuration
+                if ( !$.fn.dataTable.isDataTable( aTable ) ) {
+                    // Search while typing in text input
+                    // Deactivate if too many items
+                    var searchWhileTyping = true;
+
+                    var myDom = '<<t>ipl>';
+                    if( searchWhileTyping ) {
+                        $('#attribute-layer-search-' + cleanName).on( 'keyup', function (e){
+                            var searchVal = this.value;
+                            lizdelay(function(){
+                                oTable.fnFilter( searchVal );
+                            }, 500 );
+                        });
+                    }else{
+                        myDom = '<<t>ipl>';
+                    }
+
+                    const datatablesUrl = globalThis['lizUrls'].wms.replace('service', 'datatables');
+                    const params = globalThis['lizUrls'].params;
+                    params['layerId'] = lConfig.id;
+
+                    $( aTable ).dataTable( {
+                        serverSide: true
+                        ,ajax: {
+                            url: datatablesUrl + '?' + new URLSearchParams(params).toString(),
+                            type: 'POST',
+                            data: (d) => {
+                                // Handle selected features moved to top
+                                if (moveSelectedToTop) {
+                                    d.moveselectedtotop = true;
+                                    d.selectedfeatureids = lConfig['selectedFeatures'].join();
+                                }
+
+                                // Handle filtered features
+                                const filteredFeaturesIds = lConfig.filteredFeatures;
+                                if (filteredFeaturesIds && filteredFeaturesIds.length > 0) {
+                                    d.filteredfeatureids = filteredFeaturesIds.join();
+                                }
+
+                                // Handle features filtered by their parent
+                                const exp_filter = lConfig.request_params.exp_filter;
+                                if (exp_filter) {
+                                    d.exp_filter = exp_filter;
+                                }
+                            }
+                        }
+                        ,columns: columns
+                        ,initComplete: function(settings, json) {
+                            const api = new $.fn.dataTable.Api(settings);
+                            const tableId = api.table().node().id;
+                            const featureType = tableId.split('attribute-layer-table-')[1];
+
+                            // Trigger event telling attribute table is ready
+                            lizMap.events.triggerEvent("attributeLayerContentReady",
+                                {
+                                    'featureType': featureType
+                                }
+                            );
+                        }
+                        ,order: [[ firstDisplayedColIndex, "asc" ]]
+                        ,language: { url:globalThis['lizUrls']["dataTableLanguage"] }
+                        ,deferRender: true
+                        , createdRow: (row, data) => {
+                            if ((lConfig['selectedFeatures'].includes(data.DT_RowId.toString()))) {
+                                row.classList.add('selected');
+                                data.lizSelected = 'a';
+                            }
+                        }
+                        ,drawCallback: function (settings) {
+                            // rendering ok, find img with data-attr-thumbnail
+                            const thumbnailColl = document.getElementsByClassName('data-attr-thumbnail');
+                            for(let thumbnail of thumbnailColl) {
+                                thumbnail.setAttribute('src', lizUrls.media+'?repository='+lizUrls.params.repository+'&project='+lizUrls.params.project+'&path='+thumbnail.dataset.src);
+                            }
+                        }
+                        ,dom: myDom
+                        ,pageLength: 50
+                        ,scrollY: '95%'
+                        ,scrollX: '100%'
+                    } );
+
+                    var oTable = $( aTable ).dataTable();
+
+                    if( !searchWhileTyping )
+                        $('#attribute-layer-search-' + cleanName).hide();
+
+                    // Bind button which clears top-left search input content
+                    $('#attribute-layer-search-' + cleanName).next('.clear-layer-search').click(function(){
+                        $('#attribute-layer-search-' + cleanName).val('').focus().keyup();
+                    });
+
+                    // Unbind previous events on page
+                    $( aTable ).on( 'page.dt', function() {
+                        // unbind previous events
+                        $(aTable +' tr').unbind('click');
+                        $(aTable +' tr td button').unbind('click');
+                    });
+
+                    // Bind events when drawing table
+                    $( aTable ).on( 'draw.dt', function() {
+
+                        $(aTable +' tr').unbind('click');
+                        $(aTable +' tr td button').unbind('click');
+
+                        // Bind event when users click anywhere on the table line to highlight
+                        bindTableLineClick(aName, aTable);
+
+                        // Refresh size
+                        var mycontainerId = $('#bottom-dock div.bottom-content.active div.attribute-layer-main').attr('id');
+
+                        refreshDatatableSize('#' + mycontainerId);
+
+                        return false;
+
                     });
                 }
 
-                var atFeatures = cFeatures;
-                var dataLength = atFeatures.length;
-
-                if( cFeatures && cFeatures.length > 0 ){
-                    let keys = [], exp_f;
-                    let pkey = config.attributeLayers[aName]['primaryKey'] || null;
-                    if (pkey) {
-                        keys = cFeatures.map((f) =>
-                            `'${f.id.split(".")[1]}'`
-                        )
-                        exp_f = `"${pkey}" IN ( ${keys.join(' , ')} )`;
-                    }
-
-                    // Create columns for datatable
-                    var cdc = createDatatableColumns(aName, atFeatures, hiddenFields, cAliases, cTypes, allColumnsKeyValues);
-                    var columns = cdc.columns;
-                    var firstDisplayedColIndex = cdc.firstDisplayedColIndex;
-
-                    // Format features for datatable
-                    var ff = formatDatatableFeatures(
-                        atFeatures,
-                        isChild,
-                        hiddenFields,
-                        lConfig['selectedFeatures'],
-                        lConfig['id'],
-                        parentLayerID,
-                        pivotReference);
-                    var foundFeatures = ff.foundFeatures;
-                    var dataSet = ff.dataSet;
-
-                    // Fill in the features object
-                    // only when necessary : object is empty or is not child or (is child and no full features list in the object)
-                    var refillFeatures = false;
-                    var dLen = lConfig['features'] ? Object.keys(lConfig['features']).length : 0;
-                    if( dLen == 0 ){
-                        refillFeatures = true;
-                        if( !isChild ){
-                            lConfig['featuresFullSet'] = true;
-                        }
-                    }
-                    else{
-                        if( isChild ){
-                            if( !lConfig['featuresFullSet'] ){
-                                refillFeatures = true;
-                            }
-                        }else{
-                            lConfig['featuresFullSet'] = true;
-                            refillFeatures = true;
-                        }
-                    }
-                    if( refillFeatures  ) {
-                        lConfig['features'] = foundFeatures;
-                    }
-
-                    lConfig['alias'] = cAliases;
-                    // Datatable configuration
-                    if ( !$.fn.dataTable.isDataTable( aTable ) ) {
-                        // Search while typing in text input
-                        // Deactivate if too many items
-                        var searchWhileTyping = true;
-                        if( dataLength > 500000 ){
-                            searchWhileTyping = false;
-                        }
-
-                        var myDom = '<<t>ipl>';
-                        if( searchWhileTyping ) {
-                            $('#attribute-layer-search-' + cleanName).on( 'keyup', function (e){
-                                var searchVal = this.value;
-                                lizdelay(function(){
-                                    oTable.fnFilter( searchVal );
-                                }, 500 );
-                            });
-                        }else{
-                            myDom = '<<t>ipl>';
-                        }
-
-                        const datatablesUrl = globalThis['lizUrls'].wms.replace('service', 'datatables');
-                        const params = globalThis['lizUrls'].params;
-                        params['layerId'] = lConfig.id;
-
-                        $( aTable ).dataTable( {
-                            serverSide: true
-                            ,ajax: {
-                                url: datatablesUrl + '?' + new URLSearchParams(params).toString(),
-                                data: (d) => {
-                                    // Handle selected features moved to top
-                                    if (moveSelectedToTop) {
-                                        d.moveselectedtotop = true;
-                                        d.selectedfeatureids = lConfig['selectedFeatures'].join();
-                                    }
-
-                                    // Handle filtered features
-                                    const filteredFeaturesIds = lConfig.filteredFeatures;
-                                    if (filteredFeaturesIds && filteredFeaturesIds.length > 0) {
-                                        d.filteredfeatureids = filteredFeaturesIds.join();
-                                    }
-
-                                    // Handle features filtered by their parent
-                                    const exp_filter = lConfig.request_params.exp_filter;
-                                    if (exp_filter) {
-                                        d.exp_filter = exp_filter;
-                                    }
-                                }
-                            }
-                            ,columns: columns
-                            ,initComplete: function(settings, json) {
-                                const api = new $.fn.dataTable.Api(settings);
-                                const tableId = api.table().node().id;
-                                const featureType = tableId.split('attribute-layer-table-')[1];
-
-                                // Trigger event telling attribute table is ready
-                                lizMap.events.triggerEvent("attributeLayerContentReady",
-                                    {
-                                        'featureType': featureType
-                                    }
-                                );
-                            }
-                            ,order: [[ firstDisplayedColIndex, "asc" ]]
-                            ,language: { url:globalThis['lizUrls']["dataTableLanguage"] }
-                            ,deferRender: true
-                            , createdRow: (row, data) => {
-                                if ((lConfig['selectedFeatures'].includes(data.DT_RowId.toString()))) {
-                                    row.classList.add('selected');
-                                    data.lizSelected = 'a';
-                                }
-                            }
-                            ,drawCallback: function (settings) {
-                                // rendering ok, find img with data-attr-thumbnail
-                                const thumbnailColl = document.getElementsByClassName('data-attr-thumbnail');
-                                for(let thumbnail of thumbnailColl) {
-                                    thumbnail.setAttribute('src', lizUrls.media+'?repository='+lizUrls.params.repository+'&project='+lizUrls.params.project+'&path='+thumbnail.dataset.src);
-                                }
-                            }
-                            ,dom: myDom
-                            ,pageLength: 10
-                            ,scrollY: '95%'
-                            ,scrollX: '100%'
-
-                        } );
-
-                        var oTable = $( aTable ).dataTable();
-
-                        if( !searchWhileTyping )
-                            $('#attribute-layer-search-' + cleanName).hide();
-
-                        // Bind button which clears top-left search input content
-                        $('#attribute-layer-search-' + cleanName).next('.clear-layer-search').click(function(){
-                            $('#attribute-layer-search-' + cleanName).val('').focus().keyup();
-                        });
-
-                        // Unbind previous events on page
-                        $( aTable ).on( 'page.dt', function() {
-                            // unbind previous events
-                            $(aTable +' tr').unbind('click');
-                            $(aTable +' tr td button').unbind('click');
-                        });
-
-                        // Bind events when drawing table
-                        $( aTable ).on( 'draw.dt', function() {
-
-                            $(aTable +' tr').unbind('click');
-                            $(aTable +' tr td button').unbind('click');
-
-                            // Bind event when users click anywhere on the table line to highlight
-                            bindTableLineClick(aName, aTable);
-
-                            // Refresh size
-                            var mycontainerId = $('#bottom-dock div.bottom-content.active div.attribute-layer-main').attr('id');
-
-                            refreshDatatableSize('#' + mycontainerId);
-
-                            return false;
-
-                        });
-                    }
-
-                    // Check editable features
-                    if (canEdit || canDelete) {
-                        lizMap.mainLizmap.edition.fetchEditableFeatures([lConfig.id],[exp_f]);
-                    }
+                // Check editable features
+                if (canEdit || canDelete) {
+                    lizMap.mainLizmap.edition.fetchEditableFeatures([lConfig.id],[exp_f]);
                 }
 
-                if ( !cFeatures || cFeatures.length == 0 ){
-                    $(aTable).hide();
-
-                    $('#attribute-layer-'+ cleanName +' span.attribute-layer-msg').html(
-                        lizDict['attributeLayers.toolbar.msg.data.nodata'] + ' ' + lizDict['attributeLayers.toolbar.msg.data.extent']
-                    ).addClass('failure');
-
-                } else {
-                    $(aTable).show();
-                    refreshDatatableSize('#'+$('#bottom-dock div.bottom-content.active div.attribute-layer-main').attr('id'))
-
-                }
+                refreshDatatableSize('#'+$('#bottom-dock div.bottom-content.active div.attribute-layer-main').attr('id'))
 
                 if (aCallback)
                     aCallback(aName,aTable);
@@ -1665,7 +1587,7 @@ var lizAttributeTable = function() {
              * @param cTypes
              * @param allColumnsKeyValues
              */
-            function createDatatableColumns(aName, atFeatures, hiddenFields, cAliases, cTypes, allColumnsKeyValues){
+            function createDatatableColumns(aName, hiddenFields, cAliases, cTypes, allColumnsKeyValues){
                 const columns = [];
                 let firstDisplayedColIndex = 0;
                 // Column with selected status
@@ -1699,7 +1621,7 @@ var lizAttributeTable = function() {
                 firstDisplayedColIndex += 1;
 
                 // Add column for each field
-                for (var columnName in atFeatures[0].properties){
+                for (var columnName in cAliases){
                     // Do not add hidden fields
                     if (hiddenFields.includes(columnName)){
                         continue;
@@ -1745,8 +1667,14 @@ var lizAttributeTable = function() {
                         let davConf = globalThis['lizUrls'].webDavUrl && globalThis['lizUrls']?.resourceUrlReplacement?.webdav && config.layers[aName]?.webDavFields && Array.isArray(config.layers[aName].webDavFields) && config.layers[aName].webDavFields.includes(columnName);
                         colConf['render'] = function (data, type, row, meta) {
                             // Replace media and URL with links
-                            if (!data || !(typeof data === 'string'))
+                            if (!data || !(typeof data === 'string')){
                                 return data;
+                            }
+                            // Sanitize 'string' data
+                            data = DOMPurify.sanitize(data, {
+                                ADD_ATTR: ['target']
+                            });
+
                             if (davConf) {
                                 // replace the root of the url
                                 if(data.startsWith(globalThis['lizUrls'].webDavUrl)){
