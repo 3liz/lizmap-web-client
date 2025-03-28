@@ -152,6 +152,9 @@ export class ProjectPage extends BasePage {
             project=${this.project}&
             skip_plugin_update_warning=${skip_plugin_update_warning}&`,
             this.page);
+
+        await expect(await this.hasDebugBarErrors(), (await this.getDebugBarErrorsMessage())).toBe(false);
+        await expect(await this.hasDebugBarWarnings(), (await this.getDebugBarWarningMessage())).toBe(false);
     }
 
     /**
