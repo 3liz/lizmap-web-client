@@ -1703,4 +1703,42 @@ class QgisProject
 
         return $props;
     }
+
+    /**
+     * Retreive the first qgis config line as array.
+     *
+     * @return array Array filled with version, projectname, saveDateTime, saveUser and saveUserFull
+     *
+     * @throws \Exception
+     *
+     *@example <qgis projectname="" saveDateTime="2024-11-06T14:13:16" saveUser="etienne" saveUserFull="Etienne Trimaille" version="3.34.12-Prizren">
+     */
+    public function getFirstQgisConfigLine()
+    {
+        $xmlReader = App\XmlTools::xmlReaderFromFile($this->path);
+
+        $data = array();
+
+        /*
+         * We use a 'do while' because initializing $xmlReader make it read the first node,
+         * we need to check it before call $xmlReader->read.
+         */
+        do {
+            if ($xmlReader->nodeType == \XMLReader::ELEMENT
+                && $xmlReader->depth == 0
+                && $xmlReader->localName == 'qgis') {
+                $data = array(
+                    'version' => $xmlReader->getAttribute('version'),
+                    'projectname' => $xmlReader->getAttribute('projectname'),
+                    'saveDateTime' => $xmlReader->getAttribute('saveDateTime'),
+                    'saveUser' => $xmlReader->getAttribute('saveUser'),
+                    'saveUserFull' => $xmlReader->getAttribute('saveUserFull'),
+                );
+
+                break;
+            }
+        } while ($xmlReader->read());
+
+        return $data;
+    }
 }

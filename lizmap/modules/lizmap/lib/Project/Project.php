@@ -2626,4 +2626,12 @@ class Project
 
         return false;
     }
+
+    /**
+     * Retreive the first qgis config line as array.
+     */
+    public function getFirstQgisConfigLine()
+    {
+        return $this->qgis->getFirstQgisConfigLine();
+    }
 }
