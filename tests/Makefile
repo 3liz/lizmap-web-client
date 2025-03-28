@@ -23,6 +23,8 @@ LIZMAP_ADMIN_LOGIN ?= admin
 LIZMAP_ADMIN_EMAIL ?= admin@localhost.local
 LIZMAP_ADMIN_DEFAULT_PASSWORD_SOURCE ?= /srv/etc/admin.conf
 DOCKER_BUILDKIT ?= 1
+SWAGGER_UI_PORT ?= 8133
+SWAGGER_YAML_FOLDER_PATH ?= ./api
 
 env:
 	@echo "Creating environment file for Docker Compose"
@@ -41,6 +43,7 @@ env:
 	COMPOSE_PROJECT_NAME=$(PREFIX)
 	PHP_VERSION=$(PHP_VERSION)
 	DOCKER_BUILDKIT=$(DOCKER_BUILDKIT)
+	SWAGGER_PORT=$(SWAGGER_UI_PORT)
 	EOF
 
 

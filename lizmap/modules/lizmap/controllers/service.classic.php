@@ -1,12 +1,14 @@
 <?php
 
 use GuzzleHttp\Psr7\Utils as Psr7Utils;
+use Lizmap\App\Checker;
 use Lizmap\Project\Project;
-use Lizmap\Project\UnknownLizmapProjectException;
 
+use Lizmap\Project\UnknownLizmapProjectException;
 use Lizmap\Request\Proxy;
 use Lizmap\Request\WFSRequest;
 use Lizmap\Request\WMSRequest;
+
 use Lizmap\Request\WMTSRequest;
 
 /**
@@ -59,10 +61,7 @@ class serviceCtrl extends jController
 
         lizmap::startMetric();
 
-        if (isset($_SERVER['PHP_AUTH_USER'])) {
-            $ok = jAuth::login($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
-            // FIXME we don't return an error if login fails?
-        }
+        $ok = Checker::checkCredentials($_SERVER);
 
         // Get parameters
         if (!$this->getServiceParameters()) {
