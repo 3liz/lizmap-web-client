@@ -2171,7 +2171,6 @@ lizmap-mouse-position > div.coords-unit > select{
 #map-content .lizmapPopupDiv{
   margin: 10px !important;
   margin-bottom: 20px !important;
-  background-color:#F0F0F0 !important;
 }
 
 #liz_layer_popup_contentDiv {
@@ -3543,5 +3542,3 @@ div.lizmap-features-table.popup-displayed > table.lizmap-features-table-containe
 #popupcontent div.lizmap-features-table.popup-displayed > table.lizmap-features-table-container + div.lizmap-features-table-item-popup div.lizmapPopupDiv {
   margin: 0 !important;
 }
-
-
