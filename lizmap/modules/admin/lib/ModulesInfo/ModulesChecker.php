@@ -83,13 +83,14 @@ class ModulesChecker
      */
     public function compareLizmapCoreModulesVersions($version)
     {
+        $semanticVersion = VersionTools::dropBuildId($version);
         // We only want Lizmap core modules, without additional modules such as (AltiProfil, MapBuilder…)
         $modules = $this->getList(false, true, false);
         foreach ($modules as $module) {
             // It should be improved
             // 3.9.0-beta.2    → 3.9.0-beta
             // 3.10.0-pre.8697 → 3.10.0-pre
-            if ($version != VersionTools::dropBuildId($module->version)) {
+            if ($semanticVersion != VersionTools::dropBuildId($module->version)) {
 
                 return false;
             }
