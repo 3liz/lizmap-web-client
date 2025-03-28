@@ -100,12 +100,6 @@ export class ProjectPage extends BasePage {
     warningMessage;
 
     /**
-     * Debug bar
-     * @type {Locator}
-     */
-    debugBar;
-
-    /**
      * Attribute table for the given layer name
      * @param {string} name Name of the layer
      * @returns {Locator}
@@ -139,7 +133,6 @@ export class ProjectPage extends BasePage {
         this.miniDock = page.locator('#mini-dock-content');
         this.popupContent = page.locator('#popupcontent');
         this.warningMessage = page.locator('#lizmap-warning-message');
-        this.debugBar = page.locator('#jxdb');
         this.search = page.locator('#search-query');
         this.switcher = page.locator('#button-switcher');
         this.baseLayerSelect = page.locator('#switcher-baselayer').getByRole('combobox')
