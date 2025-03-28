@@ -42,6 +42,9 @@ export class AdminPage extends BasePage {
      */
     async open(){
         await this.page.goto('admin.php');
+
+        await expect(await this.hasDebugBarErrors(), (await this.getDebugBarErrorsMessage())).toBe(false);
+        await expect(await this.hasDebugBarWarnings(), (await this.getDebugBarWarningMessage())).toBe(false);
     }
 
     /**
