@@ -1,4 +1,5 @@
 // @ts-check
+import { expect } from '@playwright/test';
 import { BasePage } from './base';
 
 /**
@@ -47,5 +48,8 @@ export class HomePage extends BasePage {
      */
     async open(){
         await this.page.goto('index.php');
+
+        await expect(await this.hasDebugBarErrors(), (await this.getDebugBarErrorsMessage())).toBe(false);
+        await expect(await this.hasDebugBarWarnings(), (await this.getDebugBarWarningMessage())).toBe(false);
     }
 }
