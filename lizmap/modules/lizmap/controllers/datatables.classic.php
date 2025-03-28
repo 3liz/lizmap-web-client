@@ -26,8 +26,14 @@ class datatablesCtrl extends jController
         $project = $this->param('project');
         $layerId = $this->param('layerId');
         $moveSelectedToTop = $this->param('moveselectedtotop');
-        $selectedFeatureIDs = explode(',', $this->param('selectedfeatureids'));
-        $filteredFeatureIDs = explode(',', $this->param('filteredfeatureids'));
+        $selectedFeatureIDs = array();
+        if ($this->param('selectedfeatureids')) {
+            $selectedFeatureIDs = explode(',', $this->param('selectedfeatureids'));
+        }
+        $filteredFeatureIDs = array();
+        if ($this->param('filteredfeatureids')) {
+            $filteredFeatureIDs = explode(',', $this->param('filteredfeatureids'));
+        }
         $expFilter = $this->param('exp_filter');
 
         // DataTables parameters
@@ -48,6 +54,23 @@ class datatablesCtrl extends jController
 
         $jsonFeatures = array();
 
+        // Get total number of features
+        $hits = 0;
+        $wfsParamsHits = array(
+            'SERVICE' => 'WFS',
+            'VERSION' => '1.0.0',
+            'REQUEST' => 'GetFeature',
+            'TYPENAME' => $typeName,
+            'RESULTTYPE' => 'hits',
+        );
+
+        $wfsrequest = new WFSRequest($lproj, $wfsParamsHits, lizmap::getServices());
+        $wfsresponse = $wfsrequest->process();
+        $hitsData = $wfsresponse->getBodyAsString();
+        preg_match('/numberOfFeatures="([0-9]+)"/', $hitsData, $matches);
+        $hits = $matches[1];
+
+        // Get features
         $wfsParamsData = array(
             'SERVICE' => 'WFS',
             'VERSION' => '1.0.0',
@@ -115,8 +138,8 @@ class datatablesCtrl extends jController
 
         $returnedData = array(
             'draw' => (int) $this->param('draw'),
-            'recordsTotal' => 31, // TODO: get the total number of features
-            'recordsFiltered' => 31,
+            'recordsTotal' => $hits,
+            'recordsFiltered' => $hits, // TODO: implement filtering
             'data' => $data,
         );
 
