@@ -31,6 +31,12 @@ class LayerTreeGroup extends BaseQgisXmlObject
         'items',
     );
 
+    /** @var array The default values for properties */
+    protected $defaultValues = array(
+        'customproperties' => array(),
+        'items' => array(),
+    );
+
     /** @var string The XML element local name */
     protected static $qgisLocalName = 'layer-tree-group';
 
