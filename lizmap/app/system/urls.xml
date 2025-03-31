@@ -27,5 +27,8 @@ DANS LE FICHIER var/config/localurls.xml
         <url pathinfo="/acl-admin" module="jacl2db_admin"/>
         <url pathinfo="/auth" module="jcommunity"/>
     </entrypoint>
+    <entrypoint name="api">
+        <url pathinfo="/admin" module="admin_api" include="urls.xml"/>
+    </entrypoint>
     <entrypoint name="cmdline" type="cmdline"/>
 </urls>

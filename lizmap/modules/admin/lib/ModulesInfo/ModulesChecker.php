@@ -19,6 +19,7 @@ class ModulesChecker
     private const coreLizmapModules = array(
         'action',
         'admin',
+        'admin_api',
         'dataviz',
         'filter',
         'action',

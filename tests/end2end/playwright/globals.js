@@ -223,3 +223,19 @@ export async function expectParametersToContain(title, parameters, expectedParam
 
     return searchParams;
 }
+
+/**
+ * Create a GET request on a given URL with Basic authentication admin:admin
+ * @param {import("playwright-core/types/types.js").APIRequestContext} request Request to use
+ * @param {string} url URL to do a GET request on
+ * @returns {Promise<import("playwright-core/types/types.js").APIResponse>} Response
+ */
+export async function requestWithAdminBasicAuth(request, url) {
+    return await request.get(url,
+        {
+            headers: {
+                authorization: 'Basic YWRtaW46YWRtaW4=' // admin:admin
+            }
+        });
+}
+/* eslint-enable jsdoc/check-types */
