@@ -81,7 +81,7 @@ class repository_restCtrl extends RestApiCtrl
             $repo = lizmap::getRepository($this->param('repo'));
 
             if ($repo == null) {
-                throw new Exception(code: 404);
+                throw new Exception("Valid repository is needed", 404);
             }
 
             $referer = $this->request->header('Referer');

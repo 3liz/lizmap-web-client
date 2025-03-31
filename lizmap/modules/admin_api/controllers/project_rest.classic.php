@@ -35,7 +35,7 @@ class project_restCtrl extends RestApiCtrl
             $repo = lizmap::getRepository($this->param('repo'));
 
             if ($repo == null) {
-                throw new Exception(code: 404);
+                throw new Exception("Valid repository is needed", 404);
             }
         } catch (Throwable $e) {
             return Error::setError($rep, $e->getCode());
