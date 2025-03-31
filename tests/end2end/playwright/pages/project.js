@@ -13,6 +13,11 @@ import { BasePage } from './base';
  * @typedef {import('@playwright/test').Locator} Locator
  */
 
+/**
+ * Playwright Request
+ * @typedef {import('@playwright/test').Request} Request
+ */
+
 export class ProjectPage extends BasePage {
     // Metadata
     /**
@@ -137,6 +142,27 @@ export class ProjectPage extends BasePage {
         this.switcher = page.locator('#button-switcher');
         this.baseLayerSelect = page.locator('#switcher-baselayer').getByRole('combobox')
         this.buttonEditing = page.locator('#button-edition');
+    }
+
+    /**
+     * waitForGetMapRequest function
+     * waits for a GetMap request
+     * @returns {Promise<Request>} The GetMap request
+     */
+    async waitForGetMapRequest() {
+        return this.page.waitForRequest(/GetMap/);
+    }
+
+    /**
+     * waitForGetFeatureInfoRequest function
+     * waits for a GetFeatureInfo request
+     * @returns {Promise<Request>} The GetFeatureInfo request
+     */
+    async waitForGetFeatureInfoRequest() {
+        return this.page.waitForRequest(
+            request => request.method() === 'POST' &&
+            request.postData()?.includes('GetFeatureInfo') === true
+        );
     }
 
     /**
