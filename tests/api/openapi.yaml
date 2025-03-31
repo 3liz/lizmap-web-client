@@ -1,0 +1,285 @@
+openapi: 3.0.4
+info:
+  title: Lizmap Admin API
+  version: 3.10.0-pre
+servers:
+  - url: http://localhost:8130/api.php
+tags:
+  - name: repositories
+    description: Requests onto repositories located in Lizmap
+  - name: projects
+    description: Requests onto projects located in a specific repository in Lizmap
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          description: The HTTP response code message
+          example: Not Found
+        status:
+          type: integer
+          format: int32
+          description: The HTTP response code status
+          example: 404
+        message:
+          type: string
+          description: Message describing the error
+          example: Resource not found. Please provide a valid entry.
+    RepositoryMainData:
+      type: object
+      properties:
+        key:
+          type: string
+          description: String representing the ID of a repository
+          example: testsrepository
+        label:
+          type: string
+          description: Clean name of a repository
+          example: Tests repository
+        path:
+          type: string
+          description: Path to a repository
+          example: tests/
+    RepositoryRightsGroup:
+      type: object
+      properties:
+        lizmap.tools.edition.use:
+          type: array
+          items:
+            type: string
+            example: admins
+        lizmap.repositories.view:
+          type: array
+          items:
+            type: string
+            example: admins
+        lizmap.tools.loginFilteredLayers.override:
+          type: array
+          items:
+            type: string
+            example: anonymous
+        lizmap.tools.displayGetCapabilitiesLinks:
+          type: array
+          items:
+            type: string
+            example: anonymous
+        lizmap.tools.layer.export:
+          type: array
+          items:
+            type: string
+            example: lizadmins
+    Repository:
+      type: object
+      properties:
+        key:
+          type: string
+          description: String representing the ID of a repository
+          example: testsrepository
+        label:
+          type: string
+          description: Clean name of a repository
+          example: Tests repository
+        path:
+          type: string
+          description: Path to a repository
+          example: tests/
+        allowUserDefinedThemes:
+          type: boolean
+          description: Indicate if user defined themes are allowed
+          example: true
+        accessControlAllowOrigin:
+          type: string
+          description: Value of the Access-Control-Allow-Origin HTTP header
+          example: https://example.com
+        rightsGroup:
+          $ref: '#/components/schemas/RepositoryRightsGroup'
+    ProjectMainData:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: string
+            description: Project key
+            example: montpellier
+          title:
+            type: string
+            description: Human name of a project
+            example: Montpellier - Transports
+          abstract:
+            type: string
+            description: Abstract of a project
+            example: Demo project with bus and tramway lines in Montpellier, France.
+    Project:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Project key
+          example: montpellier
+        title:
+          type: string
+          description: Human name of a project
+          example: Montpellier - Transports
+        abstract:
+          type: string
+          description: Abstract of a project
+          example: Demo project with bus and tramway lines in Montpellier, France.
+        keywordList:
+          type: string
+          description: List of keywords defining a project
+          example: EU, demo, GPS, stats
+        proj:
+          type: string
+          description: Project projection
+          example: EPSG:3857
+        bbox:
+          type: string
+          description: Extent of the project
+          example: 417006.61369999998714775, 5394910.3409000001847744, 447158.04889999999431893, 5414844.99480000045150518
+        needsUpdateError:
+          type: boolean
+          description: If the project needs an update which lead to an error.
+          example: false
+        acl:
+          type: boolean
+          description: ACL rights on the project.
+          example: true
+        wmsGetCapabilitiesUrl:
+          type: string
+          description: WMS GetCapabilities URL
+          example: http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=montpellier&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities
+        wmtsGetCapabilitiesUrl:
+          type: string
+          description: WMTS GetCapabilities URL
+          example: http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=montpellier&SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetCapabilities
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+security:
+  - basicAuth: []
+paths:
+  /admin/repositories:
+    get:
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RepositoryMainData'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - basicAuth: []
+      tags:
+        - repositories
+      summary: Get all repositories
+  /admin/repositories/{repository_key}:
+    get:
+      parameters:
+        - name: repository_key
+          in: path
+          description: The repository key to get repository data.
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Repository'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - basicAuth: []
+      tags:
+        - repositories
+      summary: Get a specific repository
+  /admin/repositories/{repository_key}/projects:
+    get:
+      parameters:
+        - name: repository_key
+          in: path
+          description: The repository key to get repository data.
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectMainData'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - basicAuth: []
+      tags:
+        - projects
+      summary: Get all projects from a specific repository
+  /admin/repositories/{repository_key}/projects/{project_id}:
+    get:
+      parameters:
+        - name: repository_key
+          in: path
+          description: The repository key to get repository data.
+          required: true
+          schema:
+            type: string
+        - name: project_id
+          in: path
+          description: The project ID to get project data.
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - basicAuth: []
+      tags:
+        - projects
+      summary: Get a specific project from a specific repository
