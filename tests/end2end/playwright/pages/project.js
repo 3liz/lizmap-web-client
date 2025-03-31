@@ -13,6 +13,11 @@ import { BasePage } from './base';
  * @typedef {import('@playwright/test').Locator} Locator
  */
 
+/**
+ * Playwright Request
+ * @typedef {import('@playwright/test').Request} Request
+ */
+
 export class ProjectPage extends BasePage {
     // Metadata
     /**
@@ -140,18 +145,41 @@ export class ProjectPage extends BasePage {
     }
 
     /**
+     * waitForGetMapRequest function
+     * waits for a GetMap request
+     * @returns {Promise<Request>} The GetMap request
+     */
+    async waitForGetMapRequest() {
+        return this.page.waitForRequest(/GetMap/);
+    }
+
+    /**
+     * waitForGetFeatureInfoRequest function
+     * waits for a GetFeatureInfo request
+     * @returns {Promise<Request>} The GetFeatureInfo request
+     */
+    async waitForGetFeatureInfoRequest() {
+        return this.page.waitForRequest(
+            request => request.method() === 'POST' &&
+            request.postData()?.includes('GetFeatureInfo') === true
+        );
+    }
+
+    /**
      * open function
      * Open the URL for the given project and repository
      * @param {boolean} skip_plugin_update_warning Skip UI warning about QGIS plugin version, false by default.
      */
     async open(skip_plugin_update_warning = false){
         // By default, do not display warnings about old QGIS plugin or outdated Action JSON file
+        const searchParams = new URLSearchParams();
+        searchParams.set('repository', this.repository);
+        searchParams.set('project', this.project);
+        searchParams.set('skip_plugin_update_warning', `${skip_plugin_update_warning}`);
         await gotoMap(
-            `/index.php/view/map?
-            repository=${this.repository}&
-            project=${this.project}&
-            skip_plugin_update_warning=${skip_plugin_update_warning}&`,
-            this.page);
+            `/index.php/view/map?${searchParams.toString()}`,
+            this.page,
+        );
 
         await expect(await this.hasDebugBarErrors(), (await this.getDebugBarErrorsMessage())).toBe(false);
         await expect(await this.hasDebugBarWarnings(), (await this.getDebugBarWarningMessage())).toBe(false);
