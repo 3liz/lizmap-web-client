@@ -131,7 +131,7 @@ password=lizmap1234!
 If you want to test or learn about the API, after having set up the stack, you can access
 to http://localhost:8133/ and find the Swagger page.
 
-If you want to update this page, you can modify the `./api/openapi.yaml` file.
+If you want to update this page, you can modify the [./api/openapi.yaml](./api/openapi.yaml) file.
 
 ## Admin User Account Setup
 
