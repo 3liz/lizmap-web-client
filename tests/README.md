@@ -126,6 +126,13 @@ user=lizmap
 password=lizmap1234!
 ```
 
+## Accessing to Swagger for admin API
+
+If you want to test or learn about the API, after having set up the stack, you can access
+to http://localhost:8133/ and find the Swagger page.
+
+If you want to update this page, you can modify the [./api/openapi.yaml](./api/openapi.yaml) file.
+
 ## Admin User Account Setup
 
 Default admin credentials are `admin`/`admin`, to modify it, set these variables in your environment,
