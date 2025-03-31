@@ -18,6 +18,8 @@ test.describe('Axis Orientation',
     test('Axis Orientation NEU for EPSG:3044', async ({ page }) => {
         const project = new ProjectPage(page, 'axis_orientation_neu_3044');
         await project.open();
+        await expect(await project.getDebugBarWarning()).toHaveCount(0);
+        await expect(await project.hasDebugBarWarnings(), (await project.getDebugBarWarningMessage())).toBe(false);
 
         // Get blank buffer
         let buffer = await page.screenshot({clip:{x:950/2-380/2, y:600/2-380/2, width:380, height:380}});

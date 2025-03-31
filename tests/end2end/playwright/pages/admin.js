@@ -37,6 +37,17 @@ export class AdminPage extends BasePage {
     }
 
     /**
+     * open function
+     * Open the URL on the home page.
+     */
+    async open(){
+        await this.page.goto('admin.php');
+
+        await expect(await this.hasDebugBarErrors(), (await this.getDebugBarErrorsMessage())).toBe(false);
+        await expect(await this.hasDebugBarWarnings(), (await this.getDebugBarWarningMessage())).toBe(false);
+    }
+
+    /**
      * Navigate in the administrator menu by clicking in the menu
      * @param {string} expected Name of the page
      */
