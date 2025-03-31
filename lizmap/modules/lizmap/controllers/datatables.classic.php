@@ -77,7 +77,6 @@ class datatablesCtrl extends jController
             'REQUEST' => 'GetFeature',
             'TYPENAME' => $typeName,
             'OUTPUTFORMAT' => 'GeoJSON',
-            'GEOMETRYNAME' => 'none',
             'MAXFEATURES' => $DTLength,
             'SORTBY' => $DTOrderColumnName.' '.$DTOrderColumnDirection,
             'STARTINDEX' => $DTStart,
@@ -122,25 +121,12 @@ class datatablesCtrl extends jController
         $wfsrequest = new WFSRequest($lproj, $wfsParamsData, lizmap::getServices());
         $wfsresponse = $wfsrequest->process();
         $featureData = $wfsresponse->getBodyAsString();
-        $jsonFeatures = array_merge($jsonFeatures, json_decode($featureData)->features);
-        $data = array();
-        foreach ($jsonFeatures as $key => $feature) {
-            $dataObject = array_merge(
-                array(
-                    'DT_RowId' => (int) explode('.', $feature->id)[1],
-                    'lizSelected' => '',
-                    'featureToolbar' => '',
-                ),
-                (array) $feature->properties
-            );
-            $data[] = $dataObject;
-        }
 
         $returnedData = array(
             'draw' => (int) $this->param('draw'),
             'recordsTotal' => $hits,
             'recordsFiltered' => $hits, // TODO: implement filtering
-            'data' => $data,
+            'data' => json_decode($featureData),
         );
 
         $rep->content = json_encode($returnedData);
