@@ -152,12 +152,14 @@ export class ProjectPage extends BasePage {
      */
     async open(skip_plugin_update_warning = false){
         // By default, do not display warnings about old QGIS plugin or outdated Action JSON file
+        const searchParams = new URLSearchParams();
+        searchParams.set('repository', this.repository);
+        searchParams.set('project', this.project);
+        searchParams.set('skip_plugin_update_warning', `${skip_plugin_update_warning}`);
         await gotoMap(
-            `/index.php/view/map?
-            repository=${this.repository}&
-            project=${this.project}&
-            skip_plugin_update_warning=${skip_plugin_update_warning}&`,
-            this.page);
+            `/index.php/view/map?${searchParams.toString()}`,
+            this.page,
+        );
 
         await expect(await this.hasDebugBarErrors(), (await this.getDebugBarErrorsMessage())).toBe(false);
         await expect(await this.hasDebugBarWarnings(), (await this.getDebugBarWarningMessage())).toBe(false);
