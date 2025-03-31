@@ -103,7 +103,7 @@ export class ProjectPage extends BasePage {
      * Path to the QGS file
      * @type {string}
      */
-    qgsFile = () => qgsTestFile(this.project, this.repository);
+    get qgsFile () { return qgsTestFile(this.project, this.repository); }
 
     /**
      * Attribute table for the given layer name
@@ -226,7 +226,7 @@ export class ProjectPage extends BasePage {
      * Identify content locator, for a given feature ID and layer ID if necessary
      * @param {string} featureId Feature ID, optional
      * @param {string} layerId Layer ID, optional
-     * @returns {Locator} Locator for HTML identify content
+     * @returns {Promise<Locator>} Locator for HTML identify content
      */
     async identifyContentLocator(featureId = '', layerId= '') {
         let selector = `div.lizmapPopupSingleFeature`;
