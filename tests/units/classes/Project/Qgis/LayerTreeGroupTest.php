@@ -42,15 +42,40 @@ class LayerTreeGroupTest extends TestCase
         $this->assertEquals('Buildings', $treeGroup->name);
         $this->assertFalse($treeGroup->mutuallyExclusive);
 
+        $this->assertNotNull($treeGroup->customproperties);
+        $this->assertIsArray($treeGroup->customproperties);
         $expectedCustomproperties = array(
             'wmsShortName' => 'Buildings',
         );
         $this->assertEquals($expectedCustomproperties, $treeGroup->customproperties);
 
+        $this->assertNotNull($treeGroup->items);
+        $this->assertIsArray($treeGroup->items);
         $this->assertCount(2, $treeGroup->items);
         $this->assertInstanceOf(Qgis\LayerTreeLayer::class, $treeGroup->items[0]);
         $this->assertEquals('publicbuildings', $treeGroup->items[0]->name);
         $this->assertInstanceOf(Qgis\LayerTreeLayer::class, $treeGroup->items[1]);
         $this->assertEquals('publicbuildings_tramstop', $treeGroup->items[1]->name);
+    }
+
+    public function testEmpty(): void
+    {
+        $xmlStr = '
+      <layer-tree-group expanded="1" groupLayer="" name="Buildings" checked="Qt::Checked">
+      </layer-tree-group>
+      ';
+        $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
+        $treeGroup = Qgis\LayerTreeGroup::fromXmlReader($oXml);
+
+        $this->assertEquals('Buildings', $treeGroup->name);
+        $this->assertFalse($treeGroup->mutuallyExclusive);
+
+        $this->assertNotNull($treeGroup->customproperties);
+        $this->assertIsArray($treeGroup->customproperties);
+        $this->assertCount(0, $treeGroup->customproperties);
+
+        $this->assertNotNull($treeGroup->items);
+        $this->assertIsArray($treeGroup->items);
+        $this->assertCount(0, $treeGroup->items);
     }
 }
