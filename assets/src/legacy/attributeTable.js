@@ -121,6 +121,9 @@ var lizAttributeTable = function() {
                         'exp_filter': null,
                         'selection': null
                     };
+                    // This parameter is used when a parent feature is highlighted
+                    // It only filters children tables
+                    config.layers[configLayerName]['line_filter'] = null;
 
                     // Get existing filter if exists (via permalink)
                     const layer = lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerByName(layername);
@@ -318,10 +321,6 @@ var lizAttributeTable = function() {
                     TYPENAME: typeName,
                     GEOMETRYNAME: 'extent'
                 };
-
-                if(filter){
-                    wfsParams['EXP_FILTER'] = filter;
-                }
 
                 // Calculate bbox from map extent if needed
                 if (config.options?.limitDataToBbox == 'True') {
@@ -1247,7 +1246,16 @@ var lizAttributeTable = function() {
                                     if( relation.referencingLayer == childLayerConfig.id ){
                                         filter = '"' + relation.referencingField + '" = ' + "'" + fp[relation.referencedField] + "'";
                                     }
-                                    getDataAndFillAttributeTable(childLayerName, filter, childTableSelector, false);
+
+                                    // Refresh datatable if it is already created
+                                    // Create if it is not
+                                    childLayerConfig.line_filter = filter;
+                                    if (DataTable.isDataTable(childTableSelector)) {
+                                        const childTable = new DataTable(childTableSelector);
+                                        childTable.draw();
+                                    } else {
+                                        getDataAndFillAttributeTable(childLayerName, filter, childTableSelector, false);
+                                    }
                                 }
                             }
                         }
@@ -1469,7 +1477,7 @@ var lizAttributeTable = function() {
                     const params = globalThis['lizUrls'].params;
                     params['layerId'] = lConfig.id;
 
-                    $( aTable ).dataTable( {
+                    $( aTable ).dataTable({
                         serverSide: true
                         ,ajax: {
                             url: datatablesUrl + '?' + new URLSearchParams(params).toString(),
@@ -1488,10 +1496,23 @@ var lizAttributeTable = function() {
                                 }
 
                                 // Handle features filtered by their parent
-                                const exp_filter = lConfig.request_params.exp_filter;
-                                if (exp_filter) {
-                                    d.exp_filter = exp_filter;
+                                if(isChild) {
+                                    if(lConfig.line_filter) {
+                                        d.exp_filter = lConfig.line_filter;
+                                    }
+                                } else {
+                                    const exp_filter = lConfig.request_params.exp_filter;
+                                    if (exp_filter) {
+                                        d.exp_filter = exp_filter;
+                                    }
                                 }
+                            },
+                            dataSrc: function(json) {
+                                // Copy received features to config
+                                for (const feature of json.data) {
+                                    config.layers[aName]['features'][feature.DT_RowId] = {'properties' : feature};
+                                }
+                                return json.data;
                             }
                         }
                         ,columns: columns
