@@ -478,6 +478,13 @@ class WMSRequest extends OGCRequest
         // TODO, remove later when the lizmapWebClientTargetVersion=30800 because all projects will be migrated.
         $this->params['CSS_FRAMEWORK'] = 'BOOTSTRAP5';
 
+        // Starting from
+        // Lizmap server plugin 2.13.0 01/04/2025 PR https://github.com/3liz/qgis-lizmap-server-plugin/pull/107
+        // Lizmap desktop plugin 4.5.0 01/04/2025 PR XXXX
+        // The CSS is included in LWC source code, PR https://github.com/3liz/lizmap-web-client/pull/5571
+        // On the plugin side, the non-presence of this flag has a default value to true.
+        $this->params['WITH_CSS'] = 'FALSE';
+
         // Get remote data
         $response = $this->request(true);
         $code = $response->code;
