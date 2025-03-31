@@ -6,7 +6,6 @@
  */
 
 import DOMPurify from 'dompurify';
-import GeoJSON from 'ol/format/GeoJSON.js';
 import { getCenter } from 'ol/extent.js';
 
 (function () {
@@ -533,11 +532,12 @@ import { getCenter } from 'ol/extent.js';
              * @param feature
              */
             function runAtlasItem(feature) {
+                // Using lizMap.ol to read feature to be sure to have projections defined
                 const options = {
-                    featureProjection: lizMap.map.getProjection(),
-                    dataProjection: 'EPSG:4326'
+                    featureProjection: lizMap.ol.proj.get(lizMap.map.getProjection()),
+                    dataProjection: lizMap.ol.proj.get('EPSG:4326'),
                 };
-                const olFeature = (new GeoJSON()).readFeature(feature, options);
+                const olFeature = (new lizMap.ol.format.GeoJSON()).readFeature(feature, options);
 
                 // Zoom to feature
                 if (lizAtlasConfig['zoom']) {
