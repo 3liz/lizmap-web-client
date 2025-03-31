@@ -1511,12 +1511,21 @@ var lizAttributeTable = function() {
                                     }
                                 }
                             },
-                            dataSrc: function(json) {
-                                // Copy received features to config
-                                for (const feature of json.data) {
-                                    config.layers[aName]['features'][feature.DT_RowId] = {'properties' : feature};
+                            dataSrc: (json) => {
+                                // Format data for DataTables
+                                let formatedData = [];
+                                for (const feature of json.data.features) {
+                                    const featID = feature.id.split('.').pop();
+                                    formatedData.push(Object.assign({
+                                        'DT_RowId': featID,
+                                        'lizSelected': '',
+                                        'featureToolbar': '',
+                                    }, feature.properties));
+
+                                    // Copy received features to config
+                                    config.layers[aName]['features'][featID] = feature;
                                 }
-                                return json.data;
+                                return formatedData;
                             }
                         }
                         ,columns: columns
