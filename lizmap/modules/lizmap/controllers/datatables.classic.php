@@ -69,6 +69,10 @@ class datatablesCtrl extends jController
         $hitsData = $wfsresponse->getBodyAsString();
         preg_match('/numberOfFeatures="([0-9]+)"/', $hitsData, $matches);
         $hits = $matches[1];
+        $recordsFiltered = $hits;
+        if (count($filteredFeatureIDs) > 0) {
+            $recordsFiltered = count($filteredFeatureIDs);
+        }
 
         // Get features
         $wfsParamsData = array(
@@ -125,7 +129,7 @@ class datatablesCtrl extends jController
         $returnedData = array(
             'draw' => (int) $this->param('draw'),
             'recordsTotal' => $hits,
-            'recordsFiltered' => $hits, // TODO: implement filtering
+            'recordsFiltered' => $recordsFiltered,
             'data' => json_decode($featureData),
         );
 
