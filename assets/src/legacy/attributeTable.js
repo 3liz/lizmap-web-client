@@ -1404,6 +1404,7 @@ var lizAttributeTable = function() {
 
                 // Pivot table ?
                 var isPivot = false;
+                let pivotId;
                 if( isChild
                     && 'pivot' in config.attributeLayers[aName]
                     && config.attributeLayers[aName]['pivot'] == 'True'
@@ -1425,7 +1426,7 @@ var lizAttributeTable = function() {
                     }
                     if (parentLayerConfig && parentLayerConfig[1] && parentLayerConfig[1].cleanname && highlightedFeature) {
                         var childLayerId = lConfig.id;
-                        var pivotId = getPivotIdFromRelatedLayers(parentLayerID, childLayerId);
+                        pivotId = getPivotIdFromRelatedLayers(parentLayerID, childLayerId);
                         if (pivotId) {
                             pivotReference = pivotId + ":" + highlightedFeature;
                         }
@@ -1454,7 +1455,7 @@ var lizAttributeTable = function() {
                 }
 
                 // Create columns for datatable
-                var cdc = createDatatableColumns(aName, hiddenFields, cAliases, cTypes, allColumnsKeyValues);
+                var cdc = createDatatableColumns(aName, hiddenFields, cAliases, cTypes, allColumnsKeyValues, isChild, pivotId, parentLayerID);
                 var columns = cdc.columns;
                 var firstDisplayedColIndex = cdc.firstDisplayedColIndex;
 
@@ -1621,7 +1622,7 @@ var lizAttributeTable = function() {
              * @param cTypes
              * @param allColumnsKeyValues
              */
-            function createDatatableColumns(aName, hiddenFields, cAliases, cTypes, allColumnsKeyValues){
+            function createDatatableColumns(aName, hiddenFields, cAliases, cTypes, allColumnsKeyValues, isChild, pivotId, parentLayerID){
                 const columns = [];
                 let firstDisplayedColIndex = 0;
                 // Column with selected status
@@ -1642,11 +1643,6 @@ var lizAttributeTable = function() {
                     render: (data, type, row, meta) => {
                         const layerId = config.layers[aName].id;
                         const fid = row['DT_RowId'];
-
-                        // TODO: handle pivotId, parentLayerID and isChild
-                        let pivotId;
-                        let isChild;
-                        let parentLayerID;
                         return `
                             <lizmap-feature-toolbar value="${layerId + '.' + fid}" ${isChild ? `parent-layer-id="${parentLayerID}"` : ''} ${pivotId ? `pivot-layer="${pivotId}"` : ''}>
                             </lizmap-feature-toolbar>`;
