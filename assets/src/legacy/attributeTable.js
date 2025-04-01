@@ -1598,6 +1598,10 @@ var lizAttributeTable = function() {
                         return false;
 
                     });
+                } else {
+                    // Table already created, just redraw it
+                    const table = new DataTable(aTable);
+                    table.draw();
                 }
 
                 // Check editable features
