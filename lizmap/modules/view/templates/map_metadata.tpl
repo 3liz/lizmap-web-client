@@ -54,12 +54,17 @@
             <dd><small class="bbox">{$WMSExtent}</small></dd>
             <br/>
 
+            {ifacl2 'lizmap.tools.displayGetCapabilitiesLinks'}
             {if $wmsGetCapabilitiesUrl}
             <dt>{@view~map.metadata.properties.wmsGetCapabilitiesUrl@}</dt>
             <dd><small><a href="{$wmsGetCapabilitiesUrl}" target="_blank">WMS Url</a></small></dd>
             <dd><small><a id="metadata-wmts-getcapabilities-url" href="{$wmtsGetCapabilitiesUrl}" target="_blank">WMTS Url</a></small></dd>
+            {ifacl2 'lizmap.tools.layer.export'}
+            <dd><small><a href="{$wfsGetCapabilitiesUrl}" target="_blank">WFS Url</a></small></dd>
+            {/ifacl2}
             <br/>
             {/if}
+            {/ifacl2}
           </dl>
         </p>
       </div>
