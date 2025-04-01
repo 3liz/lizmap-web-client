@@ -1,7 +1,7 @@
 openapi: 3.0.4
 info:
   title: Lizmap Admin API
-  version: 3.8.7-pre
+  version: 3.8.7
 servers:
   - url: http://localhost:8130/api.php
 tags:
