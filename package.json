@@ -1,6 +1,6 @@
 {
   "name": "lizmap-web-client",
-  "version": "3.8.7",
+  "version": "3.8.8-pre",
   "description": "Lizmap Web Client",
   "directories": {
     "doc": "docs",
