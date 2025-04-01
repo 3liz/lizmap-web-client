@@ -11,6 +11,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 ### Funders
 
 * **[Etra](https://www.etraspa.it/)**, and developed by **[Faunalia](https://www.faunalia.eu/fr)** with @mind84
+* **[Destination Bretagne Sud Golfe du Morbihan](https://destination-bretagnesud.bzh/)**
+* **[SMICA](https://www.smica.fr/)**
 
 ### Changed
 
@@ -20,6 +22,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 * Fix measurement when both angle and dimension constraints are set
 * Administration panel: drop the build number from the version when comparing Lizmap Web Client modules.
+* Fix: zoom in form filter
+* Popup - Improve styling of drag-and-drop designed popups
 
 ## 3.8.6 - 2025-03-10
 
