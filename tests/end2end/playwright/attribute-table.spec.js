@@ -1,6 +1,8 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 import { ProjectPage } from './pages/project';
+import { expectParametersToContain, getAuthStorageStatePath } from './globals';
+import { AdminPage } from "./pages/admin";
 import { gotoMap } from './globals';
 
 test.describe('Attribute table', () => {
@@ -37,7 +39,7 @@ test.describe('Attribute table data restricted to map extent', () => {
         await gotoMap(url, page)
     });
 
-    test('Data restriction, refresh button behaviour and export', async ({ page }) => {
+    test('Data restriction and refresh button behaviour', async ({ page }) => {
         const project = new ProjectPage(page, 'attribute_table');
         const layerName = 'Les_quartiers_a_Montpellier';
         await project.openAttributeTable(layerName);
@@ -56,19 +58,147 @@ test.describe('Attribute table data restricted to map extent', () => {
         await page.locator('.btn-refresh-table').click();
 
         await expect(project.attributeTableHtml(layerName).locator('tbody tr')).toHaveCount(5);
-
-        const getFeatureRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('GetFeature') === true);
-        // bbox in getFeature request for export
-        const getFeatureRequestContains = request => {
-            const postData = request.postData();
-            expect(postData).toContain('SERVICE=WFS');
-            expect(postData).toContain('REQUEST=GetFeature');
-            expect(postData).toMatch(/BBOX=3.8258070366989356%2C43.61961486194198%2C3.897611727269447%2C43.6544002918056/);
-        };
-
-        await page.getByRole('button', { name: 'Export' }).click();
-        await page.getByRole('button', { name: 'GeoJSON' }).click();
-
-        getFeatureRequestContains(await getFeatureRequestPromise);
     });
+});
+
+test.describe('Layer export permissions ACL', () => {
+    // single_wms_points -> export enabled for group_a users
+    // single_wms_points_group -> export enabled, no groups specified, inherith export permission from repository level
+    // single_wms_lines_group_as_layer -> export disabled
+    // single_wms_lines_group_as_layer -> export enabled for group_a, group_b users
+    [
+        {
+            login:'__anonymous',
+            enabled_groups: [],
+            expected: [
+                {layer:'single_wms_points', onPage:0},
+                {layer:'single_wms_points_group', onPage:0},
+                {layer:'single_wms_lines_group_as_layer', onPage:0},
+                {layer:'single_wms_polygons', onPage:0},
+            ]
+        },
+        {
+            login:'admin',
+            enabled_groups: ['admins'],
+            expected: [
+                {layer:'single_wms_points', onPage:1},
+                {layer:'single_wms_points_group', onPage:1},
+                {layer:'single_wms_lines_group_as_layer', onPage:0},
+                {layer:'single_wms_polygons', onPage:1},
+            ]
+        },
+        {
+            login:'user_in_group_a',
+            enabled_groups: ['admins'],
+            expected: [
+                {layer:'single_wms_points', onPage:1},
+                {layer:'single_wms_points_group', onPage:0},
+                {layer:'single_wms_lines_group_as_layer', onPage:0},
+                {layer:'single_wms_polygons', onPage:1},
+            ]
+        },
+        {
+            login:'user_in_group_a',
+            enabled_groups: ['group_a','group_b'],
+            expected: [
+                {layer:'single_wms_points', onPage:1},
+                {layer:'single_wms_points_group', onPage:1},
+                {layer:'single_wms_lines_group_as_layer', onPage:0},
+                {layer:'single_wms_polygons', onPage:1},
+            ]
+        },
+        {
+            login:'user_in_group_b',
+            enabled_groups: ['admins'],
+            expected: [
+                {layer:'single_wms_points', onPage:0},
+                {layer:'single_wms_points_group', onPage:0},
+                {layer:'single_wms_lines_group_as_layer', onPage:0},
+                {layer:'single_wms_polygons', onPage:1},
+            ]
+        },
+        {
+            login:'publisher',
+            enabled_groups: ['group_b','group_a','admins'],
+            expected: [
+                {layer:'single_wms_points', onPage:0},
+                {layer:'single_wms_points_group', onPage:0},
+                {layer:'single_wms_lines_group_as_layer', onPage:0},
+                {layer:'single_wms_polygons', onPage:0},
+            ]
+        },
+    ].forEach(({login, enabled_groups, expected}, c) => {
+        test(`#${c} Layer export with ${login} user logged in`, {
+            tag: '@write',
+        }, async ({browser}) => {
+            // open admin page to set export permissions
+            const adminContext = await browser.newContext({ storageState: getAuthStorageStatePath('admin') });
+            const page = await adminContext.newPage();
+            const adminPage = new AdminPage(page);
+
+            await page.goto('admin.php');
+            // open maps management page
+            await adminPage.openPage('Maps management');
+
+            // set layer export permissions
+            await adminPage.modifyRepository('testsrepository');
+            await adminPage.uncheckAllExportPermission();
+            await adminPage.setLayerExportPermission(enabled_groups);
+            await adminPage.page.getByRole('button', { name: 'Save' }).click();
+
+            // login with specific user
+            let userContext;
+            if (login !== '__anonymous') {
+                userContext = await browser.newContext({storageState: getAuthStorageStatePath(login)});
+            } else {
+                userContext = await browser.newContext();
+            }
+            const userPage = await userContext.newPage();
+
+            // go to project page
+            const project = new ProjectPage(userPage, 'enable_export_acl');
+            await project.open();
+
+            // check layer export capabilities for logged in user
+            for(const layerObj of expected){
+                await project.openAttributeTable(layerObj.layer);
+                await expect(userPage.locator('.attribute-layer-action-bar .export-formats')).toHaveCount(layerObj.onPage);
+                await project.closeAttributeTable();
+            }
+
+            // reset layer export permissions
+            await adminPage.modifyRepository('testsrepository');
+            await adminPage.resetLayerExportPermission();
+
+            await adminPage.page.getByRole('button', { name: 'Save' }).click();
+        })
+    })
+
+    test('Layer export request ACL', {
+        tag: '@readonly',
+    }, async ({page}) => {
+        await page.route('**/service/getProjectConfig*', async route => {
+            const response = await route.fetch();
+            const json = await response.json();
+            json.options['limitDataToBbox'] = 'True';
+            await route.fulfill({ response, json });
+        });
+
+        const project = new ProjectPage(page, 'enable_export_acl');
+        await project.open();
+        await project.openAttributeTable('single_wms_points');
+
+        // launche export
+        const getFeatureRequest = await project.launchExport('single_wms_points','GeoJSON');
+
+        const expectedParameters = {
+            'SERVICE': 'WFS',
+            'REQUEST': 'GetFeature',
+            'VERSION': '1.0.0',
+            'OUTPUTFORMAT': 'GeoJSON',
+            'BBOX': /3.7759\d+,43.55267\d+,3.98277\d+,43.6516\d+/,
+        }
+
+        await expectParametersToContain('Export GeoJSON with BBOX', getFeatureRequest.postData() ?? '', expectedParameters);
+    })
 });
