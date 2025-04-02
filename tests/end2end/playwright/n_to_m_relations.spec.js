@@ -157,9 +157,8 @@ test.describe('N to M relations', () => {
 
         await oneToNAttrTable.locator("tbody tr").nth(0).locator("td").nth(0).locator("lizmap-feature-toolbar").locator(".feature-toolbar button[data-bs-title='Unlink child']").click();
         await unlinkOneToN;
-
-        // wait for UI to reload properly
-        await page.waitForTimeout(300);
+        await datatablesRequestPromise;
+        await datatablesRequestPromise;
 
         await expect(page.locator("#lizmap-edition-message")).toBeVisible();
         await expect(page.locator("#lizmap-edition-message li.jelix-msg-item-success")).toHaveText("The child feature has correctly been unlinked.");
@@ -259,12 +258,11 @@ test.describe('N to M relations', () => {
         let unlinkPivotFeature = page.waitForResponse(response => response.request().method() === 'POST' && response.request().postData()?.includes('%22bird_id%22+%3D+%279%27') === true)
         await childNaturalAreasTable.locator("tbody tr").nth(0).locator("td").nth(0).locator("lizmap-feature-toolbar").locator(".feature-toolbar button[data-bs-title='Unlink child']").click();
         await unlinkPivotFeature;
-
-
-        await page.waitForTimeout(300);
+        await datatablesRequestPromise;
+        await datatablesRequestPromise;
 
         await expect(childNaturalAreasTable.locator("tbody tr")).toHaveCount(1)
-        await expect(childNaturalAreasTable.locator("tbody tr").nth(0).locator("td").nth(0)).toHaveText("No data available in table");
+        await expect(childNaturalAreasTable.locator("tbody tr").nth(0).locator("td").nth(0)).toHaveText("No matching records found");
 
         // delete a bird record, this should remove pivot records too
         page.once('dialog', dialog => {
