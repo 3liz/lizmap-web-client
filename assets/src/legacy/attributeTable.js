@@ -220,7 +220,7 @@ var lizAttributeTable = function() {
                             const tableSelector = '#attribute-layer-table-' + cleanName;
 
                             // Get data and fill attribute table
-                            getDataAndFillAttributeTable(layerName, layerFilter, tableSelector, false);
+                            getDataAndFillAttributeTable(layerName, layerFilter, false, tableSelector, false);
 
                             const tabElement = document.getElementById('nav-tab-attribute-layer-' + cleanName);
                             bootstrap.Tab.getOrCreateInstance(tabElement).show();
@@ -308,14 +308,26 @@ var lizAttributeTable = function() {
              *
              * @param layerName
              * @param filter
+             * @param isLinefilter
              * @param tableSelector
              * @param forceEmptyTable
              * @param callBack
              */
-            function getDataAndFillAttributeTable(layerName, filter, tableSelector, forceEmptyTable, callBack){
+            function getDataAndFillAttributeTable(layerName, filter, isLinefilter = false, tableSelector, forceEmptyTable, callBack){
 
                 let layerConfig = lizMap.config.layers[layerName];
                 const typeName = layerConfig?.shortname || layerConfig?.typename || layerConfig?.name;
+
+                if(filter){
+                    if (isLinefilter) {
+                        layerConfig['line_filter'] = filter;
+                    } else {
+                        layerConfig['request_params']['filter'] = filter;
+                    }
+                } else {
+                    layerConfig['line_filter'] = '$id = -99999999';
+                    layerConfig['request_params']['filter'] = undefined;
+                }
 
                 const wfsParams = {
                     TYPENAME: typeName,
@@ -717,7 +729,7 @@ var lizAttributeTable = function() {
                             const tableSelector = '#attribute-layer-table-'+cleanName;
                             $('#attribute-layer-main-'+cleanName+' > div.attribute-layer-content').hide();
 
-                            getDataAndFillAttributeTable(lname, null, tableSelector, false, () => {
+                            getDataAndFillAttributeTable(lname, null, false, tableSelector, false, () => {
                                 $('#attribute-layer-main-' + cleanName + ' > div.attribute-layer-content').show();
                                 refreshDatatableSize('#attribute-layer-main-' + cleanName);
                             });
@@ -1247,15 +1259,7 @@ var lizAttributeTable = function() {
                                         filter = '"' + relation.referencingField + '" = ' + "'" + fp[relation.referencedField] + "'";
                                     }
 
-                                    // Refresh datatable if it is already created
-                                    // Create if it is not
-                                    childLayerConfig.line_filter = filter;
-                                    if (DataTable.isDataTable(childTableSelector)) {
-                                        const childTable = new DataTable(childTableSelector);
-                                        childTable.draw();
-                                    } else {
-                                        getDataAndFillAttributeTable(childLayerName, filter, childTableSelector, false);
-                                    }
+                                    getDataAndFillAttributeTable(childLayerName, filter, true, childTableSelector, false);
                                 }
                             }
                         }
@@ -1407,7 +1411,7 @@ var lizAttributeTable = function() {
                 ){
                     isPivot = true;
                 }
-                var pivotReference = null;
+                let pivotReference = null;
                 // checks if the parent and child are related via pivot
                 if (parentLayerID) {
                     // means that the table is displayed as a child
@@ -1451,7 +1455,7 @@ var lizAttributeTable = function() {
                 }
 
                 // Create columns for datatable
-                var cdc = createDatatableColumns(aName, hiddenFields, cAliases, cTypes, allColumnsKeyValues, isChild, pivotId, parentLayerID);
+                var cdc = createDatatableColumns(aName, hiddenFields, cAliases, cTypes, allColumnsKeyValues, isChild, pivotReference, parentLayerID);
                 var columns = cdc.columns;
                 var firstDisplayedColIndex = cdc.firstDisplayedColIndex;
 
@@ -1622,7 +1626,7 @@ var lizAttributeTable = function() {
              * @param cTypes
              * @param allColumnsKeyValues
              */
-            function createDatatableColumns(aName, hiddenFields, cAliases, cTypes, allColumnsKeyValues, isChild, pivotId, parentLayerID){
+            function createDatatableColumns(aName, hiddenFields, cAliases, cTypes, allColumnsKeyValues, isChild, pivotReference, parentLayerID){
                 const columns = [];
                 let firstDisplayedColIndex = 0;
                 // Column with selected status
@@ -1644,7 +1648,7 @@ var lizAttributeTable = function() {
                         const layerId = config.layers[aName].id;
                         const fid = row['DT_RowId'];
                         return `
-                            <lizmap-feature-toolbar value="${layerId + '.' + fid}" ${isChild ? `parent-layer-id="${parentLayerID}"` : ''} ${pivotId ? `pivot-layer="${pivotId}"` : ''}>
+                            <lizmap-feature-toolbar value="${layerId + '.' + fid}" ${isChild ? `parent-layer-id="${parentLayerID}"` : ''} ${pivotReference ? `pivot-layer="${pivotReference}"` : ''}>
                             </lizmap-feature-toolbar>`;
                     }
                 });
@@ -1977,7 +1981,7 @@ var lizAttributeTable = function() {
              * @param forceEmptyTable
              */
             function getEditionChildData( childLayerName, filter, childTable, forceEmptyTable = false ){
-                getDataAndFillAttributeTable(childLayerName, filter, childTable, forceEmptyTable, () => {
+                getDataAndFillAttributeTable(childLayerName, filter, true, childTable, forceEmptyTable, () => {
                     // Check edition capabilities
                     var canCreateChildren = false;
                     var canEdit = false;
@@ -3080,7 +3084,7 @@ var lizAttributeTable = function() {
                         // Else refresh main table with no filter
                         else{
                             // If not pivot
-                            getDataAndFillAttributeTable(featureType, null, zTable, false);
+                            getDataAndFillAttributeTable(featureType, null, false, zTable, false);
                         }
                     }
                 });
