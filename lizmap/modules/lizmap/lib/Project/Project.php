@@ -1836,11 +1836,6 @@ class Project
             unset($configJson->editionLayers);
         }
 
-        // Add export layer right
-        if ($this->appContext->aclCheck('lizmap.tools.layer.export', $this->repository->getKey())) {
-            $configJson->options->exportLayers = 'True';
-        }
-
         // Add WMS max width ad height
         $services = $this->services;
 
@@ -1926,7 +1921,7 @@ class Project
             }
         }
 
-        // Get user groups to check layouts and layers visibility
+        // Get user groups to check layouts, layers visibility and layers export permissions
         $userGroups = array('');
         if ($this->appContext->userIsConnected()) {
             $userGroups = $this->appContext->aclUserGroupsId();
@@ -1997,6 +1992,9 @@ class Project
                 $configJson->printTemplates[] = $printTemplate;
             }
         }
+
+        // Set layers export permissions
+        $this->setLayersExportPermissions($configJson, $userGroups);
 
         // Check layers visibility
         // and update the layers info
@@ -2167,6 +2165,50 @@ class Project
         }
 
         return $configJson;
+    }
+
+    /**
+     * Updates attributeLayers configuration object with layers export permissions information.
+     *
+     * @param object   $configJson Project configuration object
+     * @param string[] $userGroups User groups
+     */
+    public function setLayersExportPermissions(&$configJson, $userGroups)
+    {
+        if (property_exists($configJson, 'attributeLayers')) {
+            $attributeLayers = $configJson->attributeLayers;
+
+            // can user exports layers at repository level?
+            $userCanExportLayersAtRepositoryLevel = $this->appContext->aclCheck(
+                'lizmap.tools.layer.export',
+                $this->repository->getKey()
+            );
+
+            foreach ($attributeLayers as $attributeLayer) {
+                $exportEnabled = $userCanExportLayersAtRepositoryLevel ? 'True' : 'False';
+                if (property_exists($attributeLayer, 'export_enabled')) {
+                    if ($attributeLayer->export_enabled) {
+                        if (property_exists($attributeLayer, 'export_allowed_groups')
+                            && is_array($attributeLayer->export_allowed_groups)
+                            && !empty($attributeLayer->export_allowed_groups)) {
+                            $export_allowed_groups = array_map('trim', $attributeLayer->export_allowed_groups);
+                            foreach ($userGroups as $group) {
+                                if (in_array($group, $export_allowed_groups) || $userCanExportLayersAtRepositoryLevel) {
+                                    $exportEnabled = 'True';
+
+                                    break;
+                                }
+                            }
+                        }
+                    } else {
+                        $exportEnabled = 'False';
+                    }
+                }
+
+                $attributeLayer->export_enabled = $exportEnabled;
+                unset($attributeLayer->export_allowed_groups);
+            }
+        }
     }
 
     /**

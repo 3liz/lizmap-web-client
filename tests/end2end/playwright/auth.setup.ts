@@ -45,3 +45,7 @@ setup('authenticate as admin', async ({page}) => {
 setup('authenticate as publisher', async ({page}) => {
     await auth_using_login(page, 'publisher', 'admin', getAuthStorageStatePath('publisher'));
 });
+
+setup('authenticate as user_in_group_b', async ({page}) => {
+    await auth_using_login(page, 'user_in_group_b', 'admin', getAuthStorageStatePath('user_in_group_b'));
+});

@@ -63,4 +63,53 @@ export class AdminPage extends BasePage {
     async checkPage(expected){
         await expect(this.menu.locator('li.active')).toHaveText(expected);
     }
+
+    /**
+     * Open Maps management page in editing mode
+     * @param {string} repository The repository name
+     */
+    async modifyRepository(repository){
+        const modifyButton = this.page.locator('#'+repository).getByRole('link', { name: 'Modify' });
+        await modifyButton.scrollIntoViewIfNeeded();
+        await modifyButton.click();
+    }
+
+    /**
+     * Remove all groups from layer export permissions section
+     */
+    async uncheckAllExportPermission(){
+        const groups = this.page.locator('.jforms-ctl-lizmap\\.tools\\.layer\\.export input');
+        for (let i = 0; i < await groups.count(); i++) {
+            await groups.nth(i).uncheck();
+        }
+    }
+
+    /**
+     * Set layers export permissions on specific groups
+     * @param {string[]} groups Array of groups
+     */
+    async setLayerExportPermission(groups){
+        for (const group of groups) {
+            await this.page.locator('.jforms-ctl-lizmap\\.tools\\.layer\\.export input[value="'+group+'"]').check();
+        }
+    }
+
+    /**
+     * Reset layers export permissions
+     */
+    async resetLayerExportPermission(){
+        const groups = [
+            '__anonymous',
+            'admins',
+            'group_a',
+            'group_b',
+            'publishers',
+        ];
+
+        await this.uncheckAllExportPermission();
+
+        for (const group of groups){
+            await this.page.locator('.jforms-ctl-lizmap\\.tools\\.layer\\.export input[value="'+group+'"]').check();
+        }
+    }
 }

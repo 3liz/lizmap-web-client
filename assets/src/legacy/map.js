@@ -1941,12 +1941,6 @@ window.lizMap = function() {
 
         restrictToMapExtent = typeof restrictToMapExtent !== 'undefined' ?  restrictToMapExtent : null;
 
-        // right not set
-        if ( !('exportLayers' in lizMap.config.options) || lizMap.config.options.exportLayers != 'True' ) {
-            mAddMessage(lizDict['layer.export.right.required'], 'danger', true);
-            return false;
-        }
-
         // Set function parameters if not given
         eformat = typeof eformat !== 'undefined' ?  eformat : 'GeoJSON';
 
@@ -1957,9 +1951,15 @@ window.lizMap = function() {
         if (!selectionLayer) {
             selectionLayer = aName;
         }
-
         // Get the layer Lizmap configuration
         var config_layer = lizMap.config.layers[selectionLayer];
+
+        var attributeLayerConfig = getLayerConfigById(config_layer.id, lizMap.config.attributeLayers, 'layerId' );
+        // right not set
+        if ( !('export_enabled' in attributeLayerConfig[1]) || attributeLayerConfig[1].export_enabled != 'True' ) {
+            mAddMessage(lizDict['layer.export.right.required'], 'danger', true);
+            return false;
+        }
 
         // Check if the layer is spatial
         const is_spatial = (

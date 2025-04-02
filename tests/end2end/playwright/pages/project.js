@@ -214,6 +214,47 @@ export class ProjectPage extends BasePage {
     }
 
     /**
+     * closeAttributeTable function
+     * Close each layer panel and close attribute table dock
+     */
+    async closeAttributeTable(){
+        const tabsCloseButtons = await this.page.locator('.btn-close-attribute-tab');
+        for (let i = 0; i < await tabsCloseButtons.count(); i ++){
+            await tabsCloseButtons.nth(i).click();
+        }
+
+        await this.page.locator('a#button-attributeLayers').click();
+    }
+
+    /**
+     * launchExport function
+     * @param {string} layer the layer to export
+     * @param {null|string} bbox bounding box if limitDataToBbox is set
+     */
+    async launchExport(layer, bbox = null){
+        const getFeatureRequestPromise = this.page.waitForRequest(
+            request => request.method() === 'POST'
+            && request.postData() != null
+            && request.postData()?.includes('GetFeature') === true
+        );
+        // bbox in getFeature request for export
+        const getFeatureRequestContains = request => {
+            const postData = request.postData();
+            expect(postData).toContain('SERVICE=WFS');
+            expect(postData).toContain('REQUEST=GetFeature');
+            if(bbox) {
+                let bboxParameter = new RegExp(String.raw`BBOX=${bbox}`, "g");
+                expect(postData).toMatch(bboxParameter);
+            }
+        };
+
+        await this.page.getByRole('button', { name: 'Export' }).click();
+        await this.page.getByRole('button', { name: 'GeoJSON' }).click();
+
+        getFeatureRequestContains(await getFeatureRequestPromise);
+    }
+
+    /**
      * openLayerInfo function
      * Open the info layer panel for the given layer
      * @param {string} layer Name of the layer
