@@ -235,7 +235,7 @@ jobs:
         if: |
           success() ||
           steps.test-playwright-read-only.outcome != 'success'
-        uses: actions/upload-artifact@v4.6.1
+        uses: actions/upload-artifact@master
         with:
           name: ${{ matrix.name }}-DB-diff-read-only
           if-no-files-found: 'ignore'
@@ -297,7 +297,7 @@ jobs:
           steps.test-playwright-read-only.outcome != 'success' ||
           steps.test-playwright-no-tag.outcome != 'success' ||
           steps.test-playwright-write.outcome != 'success'
-        uses: actions/upload-artifact@v4.6.1
+        uses: actions/upload-artifact@master
         with:
           name: ${{ matrix.name }}-screenshots-readonly
           if-no-files-found: 'ignore'
@@ -354,7 +354,7 @@ jobs:
           steps.test-playwright-read-only.outcome != 'success' ||
           steps.test-playwright-no-tag.outcome != 'success' ||
           steps.test-playwright-write.outcome != 'success'
-        uses: actions/upload-artifact@v4.6.1
+        uses: actions/upload-artifact@master
         with:
           if-no-files-found: 'ignore'
           name: ${{ matrix.name }}-playwright-report
@@ -367,7 +367,7 @@ jobs:
           steps.test-playwright-read-only.outcome != 'success' ||
           steps.test-playwright-no-tag.outcome != 'success' ||
           steps.test-playwright-write.outcome != 'success'
-        uses: cypress-io/github-action@v6.7.14
+        uses: cypress-io/github-action@v6.7.16
         with:
           install: false
           browser: chrome
@@ -387,7 +387,7 @@ jobs:
           cp -r ../lizmap/var/log /tmp/e2e/lwc/
 
       - name: Upload all logs as artifact
-        uses: actions/upload-artifact@v4.6.1
+        uses: actions/upload-artifact@master
         if: always()
         with:
           name: ${{ matrix.name }}-E2E-all-logs
@@ -412,7 +412,7 @@ jobs:
             Visit ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
       - name: Save screenshots as artifacts if a test fails to ease debug
-        uses: actions/upload-artifact@v4.6.1
+        uses: actions/upload-artifact@master
         if: |
           failure() &&
           steps.test-cypress.outcome != 'success'
