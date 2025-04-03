@@ -80,6 +80,8 @@ services:
       QGSRV_CACHE_STRICT_CHECK: yes
       QGSRV_LOGGING_LEVEL: DEBUG
       QGSRV_SERVER_PLUGINPATH: /srv/qgis-server-plugins
+      QGSRV_MANAGEMENT_ENABLED: yes
+      QGSRV_MANAGEMENT_INTERFACES: "0.0.0.0"
       QGSRV_SERVER_WORKERS: 4
       QGSRV_USER: ${LIZMAP_USER_ID}:${LIZMAP_GROUP_ID}
       ROUTER_HOST: map
@@ -90,6 +92,7 @@ services:
       - { type: bind, source: ./docker-conf/pg_service.conf, target: /srv/etc/pg_service.conf }
     ports:
       - ${LZMQGSRVPORT}:8080
+      - ${QGSRVAPIPORT}:19876
   webdav:
     container_name: lizmap${LZMBRANCH}_test_webdav
     image: ugeek/webdav:amd64
