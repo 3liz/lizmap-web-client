@@ -20,7 +20,7 @@ export default {
     output: {
         filename: '[name].js',
         chunkFilename: '[name].bundle.js',
-        publicPath: '/assets/js/',
+        publicPath: 'auto',
         path: resolve(__dirname, '../lizmap/www/assets/js/')
     },
     module: {
