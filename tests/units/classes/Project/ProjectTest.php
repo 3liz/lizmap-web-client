@@ -573,4 +573,195 @@ class ProjectTest extends TestCase
             $this->assertEquals($urlsWithoutMtime, $expectedFiles[$fileExt]);
         }
     }
+
+    public static function getAttributeLayersForExport()
+    {
+        // test #1
+        // user has no export permission at repository level
+        $acl1 = array(
+            'lizmap.tools.layer.export' => false,
+        );
+        // user belongs to group_a
+        $groups1 = array(
+            'group_a',
+        );
+        $attributeLayer1 = (object) array(
+            'layer1' => (object) array(
+                'export_enabled' => true,
+                'export_allowed_groups' => array('group_a'),
+            ),
+            'layer2' => (object) array(
+                'export_enabled' => false,
+                'export_allowed_groups' => array(''),
+            ),
+        );
+        $expectedResponse1 = array(
+            // the export_enable set to true overrides the repository level permission for user belonging to group a
+            'layer1' => 'True',
+            // the export permission at attribute layer lever ovverrides the repo permission
+            'layer2' => 'False',
+        );
+
+        // test #2
+        // user has no export permission at repository level
+        $acl2 = array(
+            'lizmap.tools.layer.export' => false,
+        );
+        // user belongs to group_b
+        $groups2 = array(
+            'group_b',
+        );
+        $attributeLayer2 = (object) array(
+            'layer1' => (object) array(
+                'export_enabled' => true,
+                'export_allowed_groups' => array('group_a'),
+            ),
+            'layer2' => (object) array(
+                'export_enabled' => false,
+                'export_allowed_groups' => array(''),
+            ),
+        );
+        $expectedResponse2 = array(
+            // the user does not belong to any groups enabled for export on layer 1, then no export permission is granted
+            'layer1' => 'False',
+            // the export permission at attribute layer lever ovverrides the repo permission
+            'layer2' => 'False',
+        );
+
+        // test #3
+        // user has export permission at repository level
+        $acl3 = array(
+            'lizmap.tools.layer.export' => true,
+        );
+        // user belongs to group_b
+        $groups3 = array(
+            'group_b',
+        );
+        $attributeLayer3 = (object) array(
+            'layer1' => (object) array(
+                'export_enabled' => true,
+                'export_allowed_groups' => array('group_a'),
+            ),
+            'layer2' => (object) array(
+                'export_enabled' => false,
+                'export_allowed_groups' => array(''),
+            ),
+        );
+        $expectedResponse3 = array(
+            // even if the user does not belong to the group_a, he can export layers due to the repo permission
+            'layer1' => 'True',
+            // the export permission at attribute layer lever ovverrides the repo permission
+            'layer2' => 'False',
+        );
+
+        // test #4
+        // test undefined values with repo permission
+        $acl4 = array(
+            'lizmap.tools.layer.export' => true,
+        );
+        // user belongs to group_b
+        $groups4 = array(
+            'group_b',
+        );
+        $attributeLayer4 = (object) array(
+            'layer1' => (object) array(),
+            'layer2' => (object) array(),
+        );
+        $expectedResponse4 = array(
+            // repository permission
+            'layer1' => 'True',
+            // repository permission
+            'layer2' => 'True',
+        );
+
+        // test #5
+        // test undefined values, no repo permission
+        $acl5 = array(
+            'lizmap.tools.layer.export' => false,
+        );
+        // user belongs to group_b
+        $groups5 = array(
+            'group_b',
+        );
+        $attributeLayer5 = (object) array(
+            'layer1' => (object) array(),
+            'layer2' => (object) array(),
+        );
+        $expectedResponse5 = array(
+            // repository permission
+            'layer1' => 'False',
+            // repository permission
+            'layer2' => 'False',
+        );
+
+        // test #6
+        // multiple groups, user has no export permission at repository level
+        $acl6 = array(
+            'lizmap.tools.layer.export' => false,
+        );
+        // user belongs to group_a and group_b
+        $groups6 = array(
+            'group_a',
+            'group_b',
+        );
+        $attributeLayer6 = (object) array(
+            'layer1' => (object) array(
+                'export_enabled' => true,
+                'export_allowed_groups' => array('group_a'),
+            ),
+            'layer2' => (object) array(
+                'export_enabled' => false,
+                'export_allowed_groups' => array(''),
+            ),
+        );
+        $expectedResponse6 = array(
+            // the export_enable set to true overrides the repository level permission for user belonging to group a
+            'layer1' => 'True',
+            // the export permission at attribute layer lever ovverrides the repo permission
+            'layer2' => 'False',
+
+        );
+
+        return array(
+            array($acl1, $groups1, $attributeLayer1, $expectedResponse1),
+            array($acl2, $groups2, $attributeLayer2, $expectedResponse2),
+            array($acl3, $groups3, $attributeLayer3, $expectedResponse3),
+            array($acl4, $groups4, $attributeLayer4, $expectedResponse4),
+            array($acl5, $groups5, $attributeLayer5, $expectedResponse5),
+            array($acl6, $groups6, $attributeLayer6, $expectedResponse6),
+        );
+    }
+
+    /**
+     * @dataProvider getAttributeLayersForExport
+     *
+     * @param mixed $aclData
+     * @param mixed $groups
+     * @param mixed $attributeLayers
+     * @param mixed $expectedResponse
+     */
+    public function testExportLayer($aclData, $groups, $attributeLayers, $expectedResponse): void
+    {
+        $context = new ContextForTests();
+        $context->setResult($aclData);
+        $rep = new Project\Repository('key', array(), null, null, null);
+
+        $config = new Project\ProjectConfig((object) array('attributeLayers' => $attributeLayers));
+        $proj = new ProjectForTests($context);
+
+        $proj->setRepo($rep);
+        $proj->setCfg($config);
+
+        $configContent = $config->getConfigContent();
+
+        $proj->setLayersExportPermissions($configContent, $groups);
+
+        $this->assertObjectHasProperty('attributeLayers', $configContent);
+
+        foreach ($expectedResponse as $key => $enabled) {
+            $this->assertObjectHasProperty($key, $configContent->attributeLayers);
+            $this->assertEquals($configContent->attributeLayers->{$key}->export_enabled, $enabled);
+            $this->assertObjectNotHasProperty('export_allowed_groups', $configContent->attributeLayers->{$key});
+        }
+    }
 }
