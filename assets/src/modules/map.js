@@ -674,7 +674,7 @@ export default class map extends olMap {
                     const mapLayer = rootMapGroup.getMapLayerByName(event.target.get('name'))
                     mapLayer.loadStatus = MapLayerLoadStatus.Error;
                 });
-            } else if (source instanceof WMTS) {
+            } else if (source instanceof TileWMS || source instanceof WMTS) {
                 source.on('tileloadstart', event => {
                     const mapLayer = rootMapGroup.getMapLayerByName(event.target.get('name'))
                     mapLayer.loadStatus = MapLayerLoadStatus.Loading;
