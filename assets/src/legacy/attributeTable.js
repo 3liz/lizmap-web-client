@@ -6,6 +6,7 @@
  */
 
 import DOMPurify from 'dompurify';
+import '../images/svg/filter-square.svg';
 
 var lizAttributeTable = function() {
 
@@ -248,18 +249,14 @@ var lizAttributeTable = function() {
                     {'layers': attributeLayersDic}
                 );
 
-                // Map events
-                if (limitDataToBbox) {
-                    lizMap.mainLizmap.map.on('moveend', () => {
-                        let btitle = lizDict['attributeLayers.toolbar.btn.refresh.table.tooltip.changed'];
-                        btitle += ' ' + lizDict['attributeLayers.toolbar.btn.refresh.table.tooltip'];
-                        $('button.btn-refresh-table')
-                            .attr('data-bs-toggle', 'tooltip')
-                            .attr('data-bs-title', btitle)
-                            .addClass('btn-warning')
-                            .tooltip();
+                // Redraw datatables when map is moved and their filter by extent button is active
+                lizMap.mainLizmap.map.on('moveend', () => {
+                    document.querySelectorAll('.btn-filterbyextent-attributeTable.active').forEach((btn) => {
+                        const layerId = btn.getAttribute('data-layerid');
+                        const dTable = new DataTable('table[data-layerid=' + layerId + ']');
+                        dTable.draw();
                     });
-                }
+                });
 
                 // Bind click on tabs to resize datatable tables
                 $('#attributeLayers-tabs li').click(function(){
@@ -524,6 +521,14 @@ var lizAttributeTable = function() {
                 ){
                     html+= '    <button class="btn-filter-attributeTable btn btn-sm' + filClass + '" value="' + cleanName + '" title="'+lizDict['attributeLayers.toolbar.btn.data.filter.title']+'"><i class="icon-filter"></i></button>';
                 }
+
+                // Filter data by extent button
+                html+= `
+                <button class="btn-filterbyextent-attributeTable btn btn-sm" data-layerid="${config.layers[lname].id}" data-bs-toggle="button" value="${cleanName}" title="${lizDict['attributeLayers.toolbar.btn.filterByExtent.title']}">
+                    <svg>
+                        <use xlink:href="#filter-square"></use>
+                    </svg>
+                </button>`;
 
                 // Invert selection
                 html += '<lizmap-selection-invert tooltip-placement="bottom" feature-type="' + cleanName +'"></lizmap-selection-invert>'
@@ -936,11 +941,17 @@ var lizAttributeTable = function() {
                         { 'featureType': aName, 'updateDrawing': true}
                     );
                     return false;
-                })
-                    .hover(
-                        function(){ $(this).addClass('btn-primary'); },
-                        function(){ $(this).removeClass('btn-primary'); }
-                    );
+                }).hover(
+                    function(){ $(this).addClass('btn-primary'); },
+                    function(){ $(this).removeClass('btn-primary'); }
+                );
+
+                // Bind click on btn-filterbyextent button
+                document.querySelector('#attribute-layer-'+ cleanName + ' button.btn-filterbyextent-attributeTable').addEventListener('click', (e) => {
+                    const layerId = e.currentTarget.getAttribute('data-layerid');
+                    const dTable = new DataTable('table[data-layerid=' + layerId + ']');
+                    dTable.draw();
+                });
             }
 
             /**
@@ -1425,10 +1436,22 @@ var lizAttributeTable = function() {
                                         d.exp_filter = exp_filter;
                                     }
                                 }
+                                // Handle features filtered by extent
+                                if (document.querySelector('.btn-filterbyextent-attributeTable.active[value="' + cleanName + '"]')) {
+                                    const olView = lizMap.mainLizmap.map.getView();
+                                    const bbox = olView.calculateExtent().join(',');
+                                    d.bbox = bbox;
+                                    const projCode = olView.getProjection().getCode();
+                                    d.srsname = projCode;
+                                }
                             },
                             dataSrc: (json) => {
                                 // Format data for DataTables
                                 let formatedData = [];
+                                if (!json.data) {
+                                    return formatedData;
+                                }
+
                                 for (const feature of json.data.features) {
                                     const featID = feature.id.split('.').pop();
                                     formatedData.push(Object.assign({

@@ -36,6 +36,12 @@ class datatablesCtrl extends jController
         }
         $expFilter = $this->param('exp_filter');
 
+        $bbox = array();
+        $srsName = $this->param('srsname');
+        if ($this->param('bbox') && $srsName) {
+            $bbox = explode(',', $this->param('bbox'));
+        }
+
         // DataTables parameters
         $DTStart = $this->param('start');
         $DTLength = $this->param('length');
@@ -120,6 +126,31 @@ class datatablesCtrl extends jController
 
         if ($expFilter) {
             $wfsParamsData['EXP_FILTER'] = $expFilter;
+        }
+
+        // Handle filter by extent
+        if (count($bbox) == 4) {
+            // Add parameters to get features in the bounding box (paginated)
+            $bboxString = implode(',', $bbox);
+            $wfsParamsData['BBOX'] = $bboxString;
+            $wfsParamsData['SRSNAME'] = $srsName;
+
+            // Get total number of features in the bounding box
+            $wfsParamsFilterByExtentHits = array(
+                'SERVICE' => 'WFS',
+                'VERSION' => '1.0.0',
+                'REQUEST' => 'GetFeature',
+                'TYPENAME' => $typeName,
+                'RESULTTYPE' => 'hits',
+                'BBOX' => $bboxString,
+                'SRSNAME' => $srsName,
+            );
+
+            $wfsrequest = new WFSRequest($lproj, $wfsParamsFilterByExtentHits, lizmap::getServices());
+            $wfsresponse = $wfsrequest->process();
+            $filterByExtentHitsData = $wfsresponse->getBodyAsString();
+            preg_match('/numberOfFeatures="([0-9]+)"/', $filterByExtentHitsData, $matches);
+            $recordsFiltered = $matches[1];
         }
 
         $wfsrequest = new WFSRequest($lproj, $wfsParamsData, lizmap::getServices());
