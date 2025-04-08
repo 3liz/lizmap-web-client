@@ -1,6 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { gotoMap } from './globals';
+import { gotoMap, expectParametersToContain } from './globals';
 
 test.describe('WebDAV Server', () => {
     test.beforeEach(async ({ page }) => {
@@ -196,7 +196,10 @@ test.describe('WebDAV Server', () => {
 
     test("Inspect popups and attribute table for postgre layers", async ({ page }) => {
 
-        let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
+        let getFeatureInfoRequestPromise = page.waitForRequest(
+            request => request.method() === 'POST' &&
+            request.postData()?.includes('GetFeatureInfo') === true
+        );
 
         await page.locator('#newOlMap').click({
             position: {
@@ -204,10 +207,39 @@ test.describe('WebDAV Server', () => {
                 y: 282
             }
         });
-        await getFeatureInfoRequestPromise;
 
-        //time for rendering the popup
-        await page.waitForTimeout(500);
+        let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
+        let layers = [
+            'form_edition_upload_webdav_geom',
+            'for_edition_upload_webdav_shape',
+            'form_edition_upload_webdav_parent_geom',
+        ];
+        const expectedParameters = {
+            'SERVICE': 'WMS',
+            'REQUEST': 'GetFeatureInfo',
+            'VERSION': '1.3.0',
+            'INFO_FORMAT': /^text\/html/,
+            'LAYERS': layers.join(),
+            'QUERY_LAYERS': layers.join(),
+            'STYLE': 'default,default,default',
+            'WIDTH': '870',
+            'HEIGHT': '575',
+            'I': '644',
+            'J': '282',
+            'FEATURE_COUNT': '10',
+            'CRS': 'EPSG:4326',
+            'BBOX': /44.6568\d+,-1.2512\d+,47.3951\d+,2.8918\d+/,
+        }
+        await expectParametersToContain('GetFeatureInfo', getFeatureInfoRequest.postData() ?? '', expectedParameters);
+
+        // wait for response
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        expect(getFeatureInfoResponse).not.toBeNull();
+        expect(getFeatureInfoResponse?.ok()).toBe(true);
+        expect(await getFeatureInfoResponse?.headerValue('Content-Type')).toContain('text/html');
+
+        // time for rendering the popup
+        await page.waitForTimeout(100);
 
         await expect(page.locator('.lizmapPopupContent > .lizmapPopupSingleFeature .lizmapPopupTitle').first()).toHaveText("form_edition_upload_webdav_geom");
         await expect(page.locator(".container.popup_lizmap_dd .before-tabs div.field")).toHaveCount(2);
@@ -233,7 +265,10 @@ test.describe('WebDAV Server', () => {
 
     test("Inspect popups and attribute table for non-postgre layers", async ({ page }) => {
 
-        let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
+        let getFeatureInfoRequestPromise = page.waitForRequest(
+            request => request.method() === 'POST' &&
+            request.postData()?.includes('GetFeatureInfo') === true
+        );
 
         await page.locator('#newOlMap').click({
             position: {
@@ -241,10 +276,39 @@ test.describe('WebDAV Server', () => {
                 y: 180
             }
         });
-        await getFeatureInfoRequestPromise;
 
-        //time for rendering the popup
-        await page.waitForTimeout(500);
+        let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
+        let layers = [
+            'form_edition_upload_webdav_geom',
+            'for_edition_upload_webdav_shape',
+            'form_edition_upload_webdav_parent_geom',
+        ];
+        const expectedParameters = {
+            'SERVICE': 'WMS',
+            'REQUEST': 'GetFeatureInfo',
+            'VERSION': '1.3.0',
+            'INFO_FORMAT': /^text\/html/,
+            'LAYERS': layers.join(),
+            'QUERY_LAYERS': layers.join(),
+            'STYLE': 'default,default,default',
+            'WIDTH': '870',
+            'HEIGHT': '575',
+            'I': '397',
+            'J': '180',
+            'FEATURE_COUNT': '10',
+            'CRS': 'EPSG:4326',
+            'BBOX': /44.6568\d+,-1.2512\d+,47.3951\d+,2.8918\d+/,
+        }
+        await expectParametersToContain('GetFeatureInfo', getFeatureInfoRequest.postData() ?? '', expectedParameters);
+
+        // wait for response
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        expect(getFeatureInfoResponse).not.toBeNull();
+        expect(getFeatureInfoResponse?.ok()).toBe(true);
+        expect(await getFeatureInfoResponse?.headerValue('Content-Type')).toContain('text/html');
+
+        // time for rendering the popup
+        await page.waitForTimeout(100);
 
         await expect(page.locator('.lizmapPopupContent > .lizmapPopupSingleFeature .lizmapPopupTitle').first()).toHaveText("form_edition_upload_webdav_shape");
         await expect(page.locator(".lizmapPopupContent > .lizmapPopupSingleFeature .lizmapPopupTable").locator("tbody tr")).toHaveCount(3);
@@ -319,7 +383,10 @@ test.describe('WebDAV Server', () => {
     })
 
     test('Inspect popupAllFeaturesCompact data table in popup', async ({ page }) => {
-        let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
+        let getFeatureInfoRequestPromise = page.waitForRequest(
+            request => request.method() === 'POST' &&
+            request.postData()?.includes('GetFeatureInfo') === true
+        );
 
         await page.locator('#newOlMap').click({
             position: {
@@ -327,10 +394,40 @@ test.describe('WebDAV Server', () => {
                 y: 377
             }
         });
-        await getFeatureInfoRequestPromise;
 
-        //time for rendering the popup
-        await page.waitForTimeout(500);
+        let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
+        let layers = [
+            'form_edition_upload_webdav_geom',
+            'for_edition_upload_webdav_shape',
+            'form_edition_upload_webdav_parent_geom',
+        ];
+        const expectedParameters = {
+            'SERVICE': 'WMS',
+            'REQUEST': 'GetFeatureInfo',
+            'VERSION': '1.3.0',
+            'INFO_FORMAT': /^text\/html/,
+            'LAYERS': layers.join(),
+            'QUERY_LAYERS': layers.join(),
+            'STYLE': 'default,default,default',
+            'WIDTH': '870',
+            'HEIGHT': '575',
+            'I': '484',
+            'J': '377',
+            'FEATURE_COUNT': '10',
+            'CRS': 'EPSG:4326',
+            'BBOX': /44.6568\d+,-1.2512\d+,47.3951\d+,2.8918\d+/,
+        }
+        await expectParametersToContain('GetFeatureInfo', getFeatureInfoRequest.postData() ?? '', expectedParameters);
+
+        // wait for response
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        expect(getFeatureInfoResponse).not.toBeNull();
+        expect(getFeatureInfoResponse?.ok()).toBe(true);
+        expect(await getFeatureInfoResponse?.headerValue('Content-Type')).toContain('text/html');
+
+        // time for rendering the popup
+        await page.waitForTimeout(100);
+
         await expect(page.locator('.lizmapPopupContent > .lizmapPopupSingleFeature .lizmapPopupTitle').first()).toHaveText("form_edition_upload_webdav_parent_geom");
         let children = page.locator('.lizmapPopupContent .lizmapPopupChildren');
         await expect(children).toHaveCount(1);
