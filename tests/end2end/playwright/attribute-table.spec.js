@@ -669,14 +669,7 @@ test.describe('Attribute table @readonly', () => {
 
 test.describe('Attribute table data restricted to map extent @readonly', () => {
 
-    test('Data restriction and refresh button behaviour', async ({ page }) => {
-        // Update config to update limitDataToBbox
-        await page.route('**/service/getProjectConfig*', async route => {
-            const response = await route.fetch();
-            const json = await response.json();
-            json.options['limitDataToBbox'] = 'True';
-            await route.fulfill({ response, json });
-        });
+    test('Data filtered by extent', async ({ page }) => {
 
         const project = new ProjectPage(page, 'attribute_table');
         // Catch default GetMap
@@ -704,20 +697,34 @@ test.describe('Attribute table data restricted to map extent @readonly', () => {
         requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
         await getMapRequest.response();
 
-        let getFeatureRequest = await project.openAttributeTable(tableName);
-        let getFeatureResponse = await getFeatureRequest.response();
-        responseExpect(getFeatureResponse).toBeGeoJson();
+        let datatablesRequest = await project.openAttributeTable(tableName);
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+
         let tableHtml = project.attributeTableHtml(tableName);
 
         // Check table lines
         await expect(tableHtml.locator('tbody tr')).toHaveCount(7);
+        // Check filter by extent button
+        await expect(page.locator('.btn-filterbyextent-table')).not.toHaveClass(/active/);
 
-        await expect(page.locator('.btn-refresh-table')).not.toHaveClass(/btn-warning/);
+        // Activate filter by extent
+        let datatablesRequestPromise = project.waitForDatatablesRequest();
+        await page.locator('.btn-filterbyextent-table').click();
+        datatablesRequest = await datatablesRequestPromise;
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+
+        // Check table lines
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(7);
+        // Check filter by extent button
+        await expect(page.locator('.btn-filterbyextent-table')).toHaveClass(/active/);
 
         // Use the first line
         let firstTr = tableHtml.locator('tbody tr').first();
         await expect(firstTr.locator('lizmap-feature-toolbar .feature-zoom')).toBeVisible();
 
+        // Zoom to feature of the first line
         getMapRequestPromise = project.waitForGetMapRequest();
         await firstTr.locator('lizmap-feature-toolbar .feature-zoom').click();
 
@@ -727,12 +734,20 @@ test.describe('Attribute table data restricted to map extent @readonly', () => {
         requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
         await getMapRequest.response();
 
-        await expect(page.locator('.btn-refresh-table')).toHaveClass(/btn-warning/);
-
-        // Refresh
-        await page.locator('.btn-refresh-table').click();
-
+        // Check table lines
         await expect(tableHtml.locator('tbody tr')).toHaveCount(5);
+
+        // Unactivate filter by extent and assert all features are in the table
+        datatablesRequestPromise = project.waitForDatatablesRequest();
+        await page.locator('.btn-filterbyextent-table').click();
+        datatablesRequest = await datatablesRequestPromise;
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+
+        // Check table lines
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(7);
+        // Check filter by extent button
+        await expect(page.locator('.btn-filterbyextent-table')).not.toHaveClass(/active/);
     });
 });
 
