@@ -51,11 +51,6 @@ var lizAttributeTable = function() {
                 lizMap.lizmapLayerFilterActive = true;
             }
 
-            var limitDataToBbox = false;
-            if ( 'limitDataToBbox' in config.options && config.options.limitDataToBbox == 'True'){
-                limitDataToBbox = true;
-            }
-
             if (!('attributeLayers' in config))
                 return -1;
 
@@ -198,16 +193,6 @@ var lizAttributeTable = function() {
                         .click(function(){
                             var cleanName = $(this).val();
 
-                            // Disable attribute table if limitDataToBbox and layer not visible in map
-                            if(limitDataToBbox){
-                                let layer = lizMap.mainLizmap.map.getLayerByName(lizMap.getLayerNameByCleanName(cleanName));
-                                if( layer ) {
-                                    if(warnResolution(layer)){
-                                        return false;
-                                    }
-                                }
-                            }
-
                             // Add Div if not already there
                             const layerName = attributeLayersDic[cleanName];
                             if( !$('#nav-tab-attribute-layer-' + cleanName ).length ){
@@ -332,18 +317,6 @@ var lizAttributeTable = function() {
                     GEOMETRYNAME: 'extent'
                 };
 
-                // Calculate bbox from map extent if needed
-                if (config.options?.limitDataToBbox == 'True') {
-                    const mapExtent = lizMap.mainLizmap.map.getView().calculateExtent();
-                    const mapExtent4326 = lizMap.mainLizmap.transformExtent(
-                        mapExtent,
-                        lizMap.mainLizmap.map.getView().getProjection().getCode(),
-                        'EPSG:4326'
-                    );
-                    wfsParams['BBOX'] = mapExtent4326;
-                    wfsParams['SRSNAME'] = 'EPSG:4326';
-                }
-
                 let fetchRequests = [];
                 let namedRequests = [];
 
@@ -438,18 +411,6 @@ var lizAttributeTable = function() {
 
                 if(filter){
                     wfsParams['EXP_FILTER'] = filter;
-                }
-
-                // Calculate bbox from map extent if needed
-                if (config.options?.limitDataToBbox == 'True') {
-                    const mapExtent = lizMap.mainLizmap.map.getView().calculateExtent();
-                    const mapExtent4326 = lizMap.mainLizmap.transformExtent(
-                        mapExtent,
-                        lizMap.mainLizmap.map.getView().getProjection().getCode(),
-                        'EPSG:4326'
-                    );
-                    wfsParams['BBOX'] = mapExtent4326;
-                    wfsParams['SRSNAME'] = 'EPSG:4326';
                 }
 
                 const getFeatureRequest = lizMap.mainLizmap.wfs.getFeature(wfsParams);
@@ -595,16 +556,6 @@ var lizAttributeTable = function() {
                     html+= '    <button class="btn-createFeature-attributeTable btn btn-mini" value="' + cleanName + '" title="'+lizDict['attributeLayers.toolbar.btn.data.createFeature.title']+'"><i class="icon-plus-sign"></i></button>';
                 }
 
-                // Refresh button (if limitDataToBbox is true)
-                if( limitDataToBbox
-                    && config.layers[lname]['geometryType'] != 'none'
-                    && config.layers[lname]['geometryType'] != 'unknown'
-                ){
-                    // Add button to refresh table
-                    html+= '<button class="btn-refresh-table btn btn-mini" value="' + cleanName + '" title="'+lizDict['attributeLayers.toolbar.btn.refresh.table.tooltip']+'">'+lizDict['attributeLayers.toolbar.btn.refresh.table.title']+'</button>';
-
-                }
-
                 // Get children content
                 var childHtml = getChildrenHtmlContent( lname );
                 var alc='';
@@ -708,42 +659,6 @@ var lizAttributeTable = function() {
                     });
                 }
 
-                if(limitDataToBbox){
-                    $('#attribute-layer-'+ cleanName + ' button.btn-refresh-table')
-                        .click(function(){
-                        // Reset button tooltip & style
-                            $(this)
-                                .attr('data-original-title', lizDict['attributeLayers.toolbar.btn.refresh.table.tooltip'])
-                                .removeClass('btn-warning');
-
-                            // Disable if the layer is not visible
-                            let layer = lizMap.mainLizmap.map.getLayerByName(lizMap.getLayerNameByCleanName(cleanName));
-                            if( layer ) {
-                                if(warnResolution(layer)){
-                                    return false;
-                                }
-                            }else{
-                            // do nothing if no layer found
-                                return false;
-                            }
-
-                            // Refresh table
-                            const tableSelector = '#attribute-layer-table-'+cleanName;
-                            $('#attribute-layer-main-'+cleanName+' > div.attribute-layer-content').hide();
-
-                            getDataAndFillAttributeTable(lname, null, false, tableSelector, false, () => {
-                                $('#attribute-layer-main-' + cleanName + ' > div.attribute-layer-content').show();
-                                refreshDatatableSize('#attribute-layer-main-' + cleanName);
-                            });
-
-                            return false;
-                        })
-                        .hover(
-                            function(){ $(this).addClass('btn-primary'); },
-                            function(){ $(this).removeClass('btn-primary'); }
-                        );
-                }
-
                 if( childHtml ){
                     $('#attribute-layer-'+ cleanName + ' button.btn-toggle-children')
                         .click(function(){
@@ -830,7 +745,7 @@ var lizAttributeTable = function() {
                             eFormat = 'GML3';
                         var cleanName = $(this).parents('div.attribute-layer-main:first').attr('id').replace('attribute-layer-main-', '');
                         var eName = attributeLayersDic[ cleanName ];
-                        lizMap.exportVectorLayer( eName, eFormat, limitDataToBbox );
+                        lizMap.exportVectorLayer( eName, eFormat );
                         $(this).blur();
                         return false;
                     });
@@ -2079,11 +1994,7 @@ var lizAttributeTable = function() {
                 if( aName in config.attributeLayers )
                     atConfig = config.attributeLayers[aName];
 
-                var limitDataToBbox = false;
-                if ( 'limitDataToBbox' in config.options && config.options.limitDataToBbox == 'True'){
-                    limitDataToBbox = true;
-                }
-                lizMap.getFeatureData(aName, aFilter, aFeatureID, aGeometryName, limitDataToBbox, null, null, aCallBack);
+                lizMap.getFeatureData(aName, aFilter, aFeatureID, aGeometryName, null, null, null, aCallBack);
                 return true;
             }
 
@@ -3222,10 +3133,6 @@ var lizAttributeTable = function() {
                         GEOMETRYNAME: 'extent'
                     };
                     wfsParams['EXP_FILTER'] = '"' + referencedPivotField + '" = ' + "'" + referencedFieldValue + "'";
-                    if (config.options?.limitDataToBbox == 'True') {
-                        wfsParams['BBOX'] = lizMap.mainLizmap.map.getView().calculateExtent();
-                        wfsParams['SRSNAME'] = lizMap.mainLizmap.map.getView().getProjection().getCode();
-                    }
 
                     const getFeatureRequest = lizMap.mainLizmap.wfs.getFeature(wfsParams);
 
