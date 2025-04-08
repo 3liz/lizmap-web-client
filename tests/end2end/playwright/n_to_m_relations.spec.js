@@ -1,6 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { gotoMap } from './globals';
+import { gotoMap, expectParametersToContain } from './globals';
 
 test.describe('N to M relations', () => {
     test.beforeEach(async ({ page }) => {
@@ -301,7 +301,11 @@ test.describe('N to M relations', () => {
     test('Popup behavior', async ({ page }) => {
 
         // click on map to get popup list
-        let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
+        let getFeatureInfoRequestPromise = page.waitForRequest(
+            request => request.method() === 'POST' &&
+            request.postData()?.includes('GetFeatureInfo') === true
+        );
+
         await page.locator('#newOlMap').click({
             position: {
                 x: 413,
@@ -309,10 +313,34 @@ test.describe('N to M relations', () => {
             }
         });
 
-        await getFeatureInfoRequestPromise;
+        let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
 
-        //time for rendering the popup
-        await page.waitForTimeout(500);
+        const expectedParameters = {
+            'SERVICE': 'WMS',
+            'REQUEST': 'GetFeatureInfo',
+            'VERSION': '1.3.0',
+            'INFO_FORMAT': /^text\/html/,
+            'LAYERS': 'natural_areas',
+            'QUERY_LAYERS': 'natural_areas',
+            'STYLE': 'default',
+            'WIDTH': '870',
+            'HEIGHT': '575',
+            'I': '413',
+            'J': '232',
+            'FEATURE_COUNT': '10',
+            'CRS': 'EPSG:4326',
+            'BBOX': /43.2302\d+,4.3586\d+,43.5724\d+,4.8765\d+/,
+        }
+        await expectParametersToContain('GetFeatureInfo', getFeatureInfoRequest.postData() ?? '', expectedParameters);
+
+        // wait for response
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        expect(getFeatureInfoResponse).not.toBeNull();
+        expect(getFeatureInfoResponse?.ok()).toBe(true);
+        expect(await getFeatureInfoResponse?.headerValue('Content-Type')).toContain('text/html');
+
+        // time for rendering the popup
+        await page.waitForTimeout(100);
 
         await expect(page.locator('.lizmapPopupContent > .lizmapPopupSingleFeature .lizmapPopupTitle').first()).toHaveText("Natural areas");
         await expect(page.locator(".container.popup_lizmap_dd").nth(0).locator(".before-tabs div.field")).toHaveCount(2);
