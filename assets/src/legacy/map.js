@@ -1111,11 +1111,6 @@ window.lizMap = function() {
                                     };
 
                                     wfsParams['EXP_FILTER'] = '"' + config.relations.pivot[rLayerId][layerId] + '" = ' + "'" + feat.properties[relation.referencedField] + "'";
-                                    // Calculate bbox
-                                    if (config.options?.limitDataToBbox == 'True') {
-                                        wfsParams['BBOX'] = lizMap.mainLizmap.map.getView().calculateExtent();
-                                        wfsParams['SRSNAME'] = lizMap.mainLizmap.map.getView().getProjection().getCode();
-                                    }
                                     preProcessRequest = lizMap.mainLizmap.wfs.getFeature(wfsParams);
 
                                     let ut = {
