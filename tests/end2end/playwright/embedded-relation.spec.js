@@ -1,6 +1,7 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 import {ProjectPage} from "./pages/project";
+import { expectParametersToContain } from './globals';
 
 test.describe('Display embedded relation in popup',
     {
@@ -14,18 +15,39 @@ test.describe('Display embedded relation in popup',
             await project.open();
             await project.closeLeftDock();
 
-            let getFeatureInfoRequestPromise = page.waitForRequest(
-                request => request.method() === 'POST'
-                && request.postData()?.includes('GetFeatureInfo') === true
-            );
+            let getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest();
 
             //first point
             await project.clickOnMap(74, 40);
 
-            await getFeatureInfoRequestPromise;
+            let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
 
-            //time for rendering the popup
-            await page.waitForTimeout(500);
+            let expectedParameters = {
+                'SERVICE': 'WMS',
+                'REQUEST': 'GetFeatureInfo',
+                'VERSION': '1.3.0',
+                'INFO_FORMAT': /^text\/html/,
+                'LAYERS': 'child_layer,father_layer',
+                'QUERY_LAYERS': 'child_layer,father_layer',
+                'STYLE': 'default,default',
+                'WIDTH': '870',
+                'HEIGHT': '575',
+                'I': '74',
+                'J': '40',
+                'FEATURE_COUNT': '10',
+                'CRS': 'EPSG:4326',
+                'BBOX': /-0.2789\d+,-0.7174\d+,0.4056\d+,0.3183\d+/,
+            }
+            await expectParametersToContain('GetFeatureInfo', getFeatureInfoRequest.postData() ?? '', expectedParameters);
+
+            // wait for response
+            let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+            expect(getFeatureInfoResponse).not.toBeNull();
+            expect(getFeatureInfoResponse?.ok()).toBe(true);
+            expect(await getFeatureInfoResponse?.headerValue('Content-Type')).toContain('text/html');
+
+            // time for rendering the popup
+            await page.waitForTimeout(100);
 
             let popup = await project.identifyContentLocator(
                 '3',
@@ -62,12 +84,39 @@ test.describe('Display embedded relation in popup',
             //clear screen
             await project.closeLeftDock();
 
+            getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest();
+
             //second point
             await project.clickOnMap(392, 257);
-            await getFeatureInfoRequestPromise;
 
-            //time for rendering the popup
-            await page.waitForTimeout(500);
+            getFeatureInfoRequest = await getFeatureInfoRequestPromise;
+
+            expectedParameters = {
+                'SERVICE': 'WMS',
+                'REQUEST': 'GetFeatureInfo',
+                'VERSION': '1.3.0',
+                'INFO_FORMAT': /^text\/html/,
+                'LAYERS': 'child_layer,father_layer',
+                'QUERY_LAYERS': 'child_layer,father_layer',
+                'STYLE': 'default,default',
+                'WIDTH': '870',
+                'HEIGHT': '575',
+                'I': '392',
+                'J': '257',
+                'FEATURE_COUNT': '10',
+                'CRS': 'EPSG:4326',
+                'BBOX': /-0.2789\d+,-0.7174\d+,0.4056\d+,0.3183\d+/,
+            }
+            await expectParametersToContain('GetFeatureInfo', getFeatureInfoRequest.postData() ?? '', expectedParameters);
+
+            // wait for response
+            getFeatureInfoResponse = await getFeatureInfoRequest.response();
+            expect(getFeatureInfoResponse).not.toBeNull();
+            expect(getFeatureInfoResponse?.ok()).toBe(true);
+            expect(await getFeatureInfoResponse?.headerValue('Content-Type')).toContain('text/html');
+
+            // time for rendering the popup
+            await page.waitForTimeout(100);
 
             popup = await project.identifyContentLocator(
                 '4',
