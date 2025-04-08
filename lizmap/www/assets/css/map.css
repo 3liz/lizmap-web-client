@@ -808,6 +808,11 @@ SubDock
   overflow: auto;
 }
 
+.btn-filterbyextent-attributeTable svg {
+    height: 14px;
+    width: 14px;
+}
+
 .attribute-layer-content {
   overflow:auto;
   height: 90%;
