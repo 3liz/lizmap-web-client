@@ -1,7 +1,7 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { playwrightTestFile } from './globals';
-import {ProjectPage} from "./pages/project";
+import { expectParametersToContain, playwrightTestFile } from './globals';
+import { ProjectPage } from "./pages/project";
 
 test.describe('WebDAV Server',
     {
@@ -210,16 +210,41 @@ test.describe('WebDAV Server',
             await project.open();
             await project.closeLeftDock();
 
-            let getFeatureInfoRequestPromise = page.waitForRequest(
-                request => request.method() === 'POST'
-                && request.postData()?.includes('GetFeatureInfo') === true
-            );
+            let getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest();
             await project.clickOnMap(644, 282);
 
-            await getFeatureInfoRequestPromise;
+            let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
+            let layers = [
+                'form_edition_upload_webdav_geom',
+                'for_edition_upload_webdav_shape',
+                'form_edition_upload_webdav_parent_geom',
+            ];
+            const expectedParameters = {
+                'SERVICE': 'WMS',
+                'REQUEST': 'GetFeatureInfo',
+                'VERSION': '1.3.0',
+                'INFO_FORMAT': /^text\/html/,
+                'LAYERS': layers.join(),
+                'QUERY_LAYERS': layers.join(),
+                'STYLE': 'default,default,default',
+                'WIDTH': '870',
+                'HEIGHT': '575',
+                'I': '644',
+                'J': '282',
+                'FEATURE_COUNT': '10',
+                'CRS': 'EPSG:4326',
+                'BBOX': /44.6568\d+,-1.2512\d+,47.3951\d+,2.8918\d+/,
+            }
+            await expectParametersToContain('GetFeatureInfo', getFeatureInfoRequest.postData() ?? '', expectedParameters);
 
-            //time for rendering the popup
-            await page.waitForTimeout(500);
+            // wait for response
+            let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+            expect(getFeatureInfoResponse).not.toBeNull();
+            expect(getFeatureInfoResponse?.ok()).toBe(true);
+            expect(await getFeatureInfoResponse?.headerValue('Content-Type')).toContain('text/html');
+
+            // time for rendering the popup
+            await page.waitForTimeout(100);
 
             const popup = await project.identifyContentLocator(
                 '1',
@@ -258,16 +283,41 @@ test.describe('WebDAV Server',
             await project.open();
             await project.closeLeftDock();
 
-            let getFeatureInfoRequestPromise = page.waitForRequest(request =>
-                request.method() === 'POST'
-                && request.postData()?.includes('GetFeatureInfo') === true
-            );
+            let getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest();
             await project.clickOnMap(397, 180);
 
-            await getFeatureInfoRequestPromise;
+            let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
+            let layers = [
+                'form_edition_upload_webdav_geom',
+                'for_edition_upload_webdav_shape',
+                'form_edition_upload_webdav_parent_geom',
+            ];
+            const expectedParameters = {
+                'SERVICE': 'WMS',
+                'REQUEST': 'GetFeatureInfo',
+                'VERSION': '1.3.0',
+                'INFO_FORMAT': /^text\/html/,
+                'LAYERS': layers.join(),
+                'QUERY_LAYERS': layers.join(),
+                'STYLE': 'default,default,default',
+                'WIDTH': '870',
+                'HEIGHT': '575',
+                'I': '397',
+                'J': '180',
+                'FEATURE_COUNT': '10',
+                'CRS': 'EPSG:4326',
+                'BBOX': /44.6568\d+,-1.2512\d+,47.3951\d+,2.8918\d+/,
+            }
+            await expectParametersToContain('GetFeatureInfo', getFeatureInfoRequest.postData() ?? '', expectedParameters);
 
-            //time for rendering the popup
-            await page.waitForTimeout(500);
+            // wait for response
+            let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+            expect(getFeatureInfoResponse).not.toBeNull();
+            expect(getFeatureInfoResponse?.ok()).toBe(true);
+            expect(await getFeatureInfoResponse?.headerValue('Content-Type')).toContain('text/html');
+
+            // time for rendering the popup
+            await page.waitForTimeout(100);
 
             const popup = await project.identifyContentLocator(
                 '1',
@@ -360,17 +410,41 @@ test.describe('WebDAV Server',
             await project.open();
             await project.closeLeftDock();
 
-            let getFeatureInfoRequestPromise = page.waitForRequest(request =>
-                request.method() === 'POST'
-                && request.postData()?.includes('GetFeatureInfo') === true
-            );
-
+            let getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest();
             await project.clickOnMap(484, 377);
 
-            await getFeatureInfoRequestPromise;
+            let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
+            let layers = [
+                'form_edition_upload_webdav_geom',
+                'for_edition_upload_webdav_shape',
+                'form_edition_upload_webdav_parent_geom',
+            ];
+            const expectedParameters = {
+                'SERVICE': 'WMS',
+                'REQUEST': 'GetFeatureInfo',
+                'VERSION': '1.3.0',
+                'INFO_FORMAT': /^text\/html/,
+                'LAYERS': layers.join(),
+                'QUERY_LAYERS': layers.join(),
+                'STYLE': 'default,default,default',
+                'WIDTH': '870',
+                'HEIGHT': '575',
+                'I': '484',
+                'J': '377',
+                'FEATURE_COUNT': '10',
+                'CRS': 'EPSG:4326',
+                'BBOX': /44.6568\d+,-1.2512\d+,47.3951\d+,2.8918\d+/,
+            }
+            await expectParametersToContain('GetFeatureInfo', getFeatureInfoRequest.postData() ?? '', expectedParameters);
 
-            //time for rendering the popup
-            await page.waitForTimeout(500);
+            // wait for response
+            let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+            expect(getFeatureInfoResponse).not.toBeNull();
+            expect(getFeatureInfoResponse?.ok()).toBe(true);
+            expect(await getFeatureInfoResponse?.headerValue('Content-Type')).toContain('text/html');
+
+            // time for rendering the popup
+            await page.waitForTimeout(100);
 
             const popup = await project.identifyContentLocator(
                 '1',
