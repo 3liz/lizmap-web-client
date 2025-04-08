@@ -97,6 +97,13 @@ export class ProjectPage extends BasePage {
      */
     search;
 
+    // form
+    /**
+     * Edition form
+     * @type {Locator}
+     */
+    editionForm;
+
     // Messages
     /**
      * Foreground message bar
@@ -148,6 +155,7 @@ export class ProjectPage extends BasePage {
         this.switcher = page.locator('#button-switcher');
         this.baseLayerSelect = page.locator('#switcher-baselayer').getByRole('combobox')
         this.buttonEditing = page.locator('#button-edition');
+        this.editionForm = page.locator('#jforms_view_edition');
     }
 
     /**
@@ -239,7 +247,43 @@ export class ProjectPage extends BasePage {
         } else {
             await expect(this.page.locator('#edition-form-container')).toBeVisible();
         }
-        await expect(this.page.locator('#lizmap-edition-message')).toBeVisible();
+        if(futureAction == 'close') {
+            await expect(this.page.locator('#lizmap-edition-message')).toBeVisible();
+        }
+    }
+
+    /**
+     * checkEditionFormTextField function
+     * check the given text input or text widget value
+     * @param {string} fieldName The name of the input/text widget field
+     * @param {string} fieldValue The expected field/text widget value
+     * @param {null|string} labelText The label text, optional if only input value should be checked
+     * @param {boolean} trim trim the text widget value (only for text widget checks)
+     */
+    async checkEditionFormTextField(fieldName, fieldValue, labelText = null, trim = false){
+        if (labelText !== null) {
+            await expect(this.editionForm.locator(`label[id='jforms_view_edition_${fieldName}_label']`))
+                .toHaveText(labelText);
+        }
+        const input = this.editionForm.locator(`input[id='jforms_view_edition_${fieldName}']`);
+        let value;
+        if (trim) {
+            value = (await input.inputValue()).replace(/\s+/g,' ').trim();
+        } else {
+            value = await input.inputValue();
+        }
+
+        expect(value).toBe(fieldValue);
+    }
+
+    /**
+     * fillEditionFormTextInput function
+     * fills the given text input with the given text value
+     * @param {string} inputName The name of the input field
+     * @param {string} value The value to be filled
+     */
+    async fillEditionFormTextInput(inputName ,value){
+        await this.editionForm.locator(`input[id='jforms_view_edition_${inputName}']`).fill(value);
     }
 
     /**
