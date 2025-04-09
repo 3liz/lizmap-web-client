@@ -55,7 +55,7 @@ test.describe('Display embedded relation in popup', () => {
 
         await expect(page.locator('.lizmapPopupContent > .lizmapPopupSingleFeature .lizmapPopupTitle').first()).toHaveText("father_layer");
 
-        let firstPointElements = page.locator(".container.popup_lizmap_dd .before-tabs p b");
+        let firstPointElements = page.locator(".container.popup_lizmap_dd .before-tabs div.control-group label.control-label");
         await expect(firstPointElements).toHaveCount(3);
 
         await expect(firstPointElements.nth(0)).toHaveText("fid");
@@ -63,7 +63,7 @@ test.describe('Display embedded relation in popup', () => {
         await expect(firstPointElements.nth(2)).toHaveText("description");
 
 
-        let firstElementsValues = page.locator(".container.popup_lizmap_dd .before-tabs div.field");
+        let firstElementsValues = page.locator(".container.popup_lizmap_dd .before-tabs div.control-group span.jforms-control-input");
         await expect(firstElementsValues).toHaveCount(3);
         await expect(firstElementsValues.nth(0)).toHaveText("3");
         await expect(firstElementsValues.nth(1)).toHaveText("1");
@@ -130,7 +130,7 @@ test.describe('Display embedded relation in popup', () => {
 
         await expect(page.locator('.lizmapPopupContent > .lizmapPopupSingleFeature .lizmapPopupTitle').first()).toHaveText("father_layer");
 
-        let elements = page.locator(".container.popup_lizmap_dd .before-tabs p b");
+        let elements = page.locator(".container.popup_lizmap_dd .before-tabs div.control-group label.control-label");
         await expect(elements).toHaveCount(3);
 
         await expect(elements.nth(0)).toHaveText("fid");
@@ -138,7 +138,7 @@ test.describe('Display embedded relation in popup', () => {
         await expect(elements.nth(2)).toHaveText("description");
 
 
-        let elementsValues = page.locator(".container.popup_lizmap_dd .before-tabs div.field");
+        let elementsValues = page.locator(".container.popup_lizmap_dd .before-tabs div.control-group span.jforms-control-input");
         await expect(elementsValues).toHaveCount(3);
         await expect(elementsValues.nth(0)).toHaveText("4");
         await expect(elementsValues.nth(1)).toHaveText("2");

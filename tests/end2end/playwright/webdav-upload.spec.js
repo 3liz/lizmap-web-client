@@ -242,11 +242,11 @@ test.describe('WebDAV Server', () => {
         await page.waitForTimeout(100);
 
         await expect(page.locator('.lizmapPopupContent > .lizmapPopupSingleFeature .lizmapPopupTitle').first()).toHaveText("form_edition_upload_webdav_geom");
-        await expect(page.locator(".container.popup_lizmap_dd .before-tabs div.field")).toHaveCount(2);
-        const resourceUrl = await page.locator(".container.popup_lizmap_dd .before-tabs div.field").nth(1).locator("a").getAttribute("href");
+        await expect(page.locator(".container.popup_lizmap_dd .before-tabs div.control-group span.jforms-control-input")).toHaveCount(3);
+        const resourceUrl = await page.locator(".container.popup_lizmap_dd .before-tabs div.control-group span.jforms-control-input").nth(1).locator("a").getAttribute("href");
         expect(resourceUrl).toContain("index.php/view/media/getMedia?repository=testsrepository&project=form_upload_webdav&path=dav%2Flogo.png");
         // no image preview
-        await expect(page.locator(".container.popup_lizmap_dd .before-tabs div.field").nth(1).locator("img")).toHaveCount(0);
+        await expect(page.locator(".container.popup_lizmap_dd .before-tabs div.control-group span.jforms-control-input").nth(1).locator("img")).toHaveCount(0);
 
         //clear screen
         await page.locator('#dock-close').click();
