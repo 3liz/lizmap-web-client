@@ -1,6 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { gotoMap } from './globals';
+import { gotoMap, expectParametersToContain } from './globals';
 
 test.describe('Display embedded relation in popup', () => {
     test.beforeEach(async ({ page }) => {
@@ -11,7 +11,10 @@ test.describe('Display embedded relation in popup', () => {
 
     test('Visualize popup for embedded layers', async ({ page }) => {
 
-        let getFeatureInfoRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
+        let getFeatureInfoRequestPromise = page.waitForRequest(
+            request => request.method() === 'POST' &&
+            request.postData()?.includes('GetFeatureInfo') === true
+        );
 
         //first point
         await page.locator('#newOlMap').click({
@@ -21,14 +24,38 @@ test.describe('Display embedded relation in popup', () => {
             }
         });
 
-        await getFeatureInfoRequestPromise;
+        let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
 
-        //time for rendering the popup
-        await page.waitForTimeout(500);
+        let expectedParameters = {
+            'SERVICE': 'WMS',
+            'REQUEST': 'GetFeatureInfo',
+            'VERSION': '1.3.0',
+            'INFO_FORMAT': /^text\/html/,
+            'LAYERS': 'child_layer,father_layer',
+            'QUERY_LAYERS': 'child_layer,father_layer',
+            'STYLE': 'default,default',
+            'WIDTH': '870',
+            'HEIGHT': '575',
+            'I': '74',
+            'J': '40',
+            'FEATURE_COUNT': '10',
+            'CRS': 'EPSG:4326',
+            'BBOX': /-0.2789\d+,-0.7174\d+,0.4056\d+,0.3183\d+/,
+        }
+        await expectParametersToContain('GetFeatureInfo', getFeatureInfoRequest.postData() ?? '', expectedParameters);
+
+        // wait for response
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        expect(getFeatureInfoResponse).not.toBeNull();
+        expect(getFeatureInfoResponse?.ok()).toBe(true);
+        expect(await getFeatureInfoResponse?.headerValue('Content-Type')).toContain('text/html');
+
+        // time for rendering the popup
+        await page.waitForTimeout(100);
 
         await expect(page.locator('.lizmapPopupContent > .lizmapPopupSingleFeature .lizmapPopupTitle').first()).toHaveText("father_layer");
 
-        let firstPointElements = page.locator(".container.popup_lizmap_dd .before-tabs p b");
+        let firstPointElements = page.locator(".container.popup_lizmap_dd .before-tabs div.control-group label.control-label");
         await expect(firstPointElements).toHaveCount(3);
 
         await expect(firstPointElements.nth(0)).toHaveText("fid");
@@ -36,7 +63,7 @@ test.describe('Display embedded relation in popup', () => {
         await expect(firstPointElements.nth(2)).toHaveText("description");
 
 
-        let firstElementsValues = page.locator(".container.popup_lizmap_dd .before-tabs div.field");
+        let firstElementsValues = page.locator(".container.popup_lizmap_dd .before-tabs div.control-group span.jforms-control-input");
         await expect(firstElementsValues).toHaveCount(3);
         await expect(firstElementsValues.nth(0)).toHaveText("3");
         await expect(firstElementsValues.nth(1)).toHaveText("1");
@@ -59,6 +86,11 @@ test.describe('Display embedded relation in popup', () => {
         //clear screen
         await page.locator('#dock-close').click();
 
+        getFeatureInfoRequestPromise = page.waitForRequest(
+            request => request.method() === 'POST' &&
+            request.postData()?.includes('GetFeatureInfo') === true
+        );
+
         //second point
         await page.locator('#newOlMap').click({
             position: {
@@ -66,14 +98,39 @@ test.describe('Display embedded relation in popup', () => {
                 y: 257
             }
         });
-        await getFeatureInfoRequestPromise;
 
-        //time for rendering the popup
-        await page.waitForTimeout(500);
+        getFeatureInfoRequest = await getFeatureInfoRequestPromise;
+
+        expectedParameters = {
+            'SERVICE': 'WMS',
+            'REQUEST': 'GetFeatureInfo',
+            'VERSION': '1.3.0',
+            'INFO_FORMAT': /^text\/html/,
+            'LAYERS': 'child_layer,father_layer',
+            'QUERY_LAYERS': 'child_layer,father_layer',
+            'STYLE': 'default,default',
+            'WIDTH': '870',
+            'HEIGHT': '575',
+            'I': '392',
+            'J': '257',
+            'FEATURE_COUNT': '10',
+            'CRS': 'EPSG:4326',
+            'BBOX': /-0.2789\d+,-0.7174\d+,0.4056\d+,0.3183\d+/,
+        }
+        await expectParametersToContain('GetFeatureInfo', getFeatureInfoRequest.postData() ?? '', expectedParameters);
+
+        // wait for response
+        getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        expect(getFeatureInfoResponse).not.toBeNull();
+        expect(getFeatureInfoResponse?.ok()).toBe(true);
+        expect(await getFeatureInfoResponse?.headerValue('Content-Type')).toContain('text/html');
+
+        // time for rendering the popup
+        await page.waitForTimeout(100);
 
         await expect(page.locator('.lizmapPopupContent > .lizmapPopupSingleFeature .lizmapPopupTitle').first()).toHaveText("father_layer");
 
-        let elements = page.locator(".container.popup_lizmap_dd .before-tabs p b");
+        let elements = page.locator(".container.popup_lizmap_dd .before-tabs div.control-group label.control-label");
         await expect(elements).toHaveCount(3);
 
         await expect(elements.nth(0)).toHaveText("fid");
@@ -81,7 +138,7 @@ test.describe('Display embedded relation in popup', () => {
         await expect(elements.nth(2)).toHaveText("description");
 
 
-        let elementsValues = page.locator(".container.popup_lizmap_dd .before-tabs div.field");
+        let elementsValues = page.locator(".container.popup_lizmap_dd .before-tabs div.control-group span.jforms-control-input");
         await expect(elementsValues).toHaveCount(3);
         await expect(elementsValues.nth(0)).toHaveText("4");
         await expect(elementsValues.nth(1)).toHaveText("2");
