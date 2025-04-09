@@ -95,6 +95,9 @@
                         <div class="col-8">
                             <dd><small><a href="{$p->wmsGetCapabilitiesUrl}" target="_blank">WMS Url</a></small></dd>
                             <dd><small><a href="{$p->wmtsGetCapabilitiesUrl}" target="_blank">WMTS Url</a></small></dd>
+                            {ifacl2 'lizmap.tools.layer.export'}
+                            <dd><small><a href="{$p->wfsGetCapabilitiesUrl}" target="_blank">WFS Url</a></small></dd>
+                            {/ifacl2}
                         </div>
                     </dl>
                     {/if}
