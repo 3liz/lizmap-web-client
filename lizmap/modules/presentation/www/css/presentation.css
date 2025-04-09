@@ -1,0 +1,484 @@
+/* SVG credit : https://remixicon.com/ */
+#mapmenu li.presentation a .icon,
+#mini-dock #presentation div.presentation h3 span.icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='rgba(255,255,255,1)'%3E%3Cpath d='M13 18V20H17V22H7V20H11V18H3C2.44772 18 2 17.5523 2 17V4C2 3.44772 2.44772 3 3 3H21C21.5523 3 22 3.44772 22 4V17C22 17.5523 21.5523 18 21 18H13ZM4 5V16H20V5H4ZM10 7.5L15 10.5L10 13.5V7.5Z'%3E%3C/path%3E%3C/svg%3E");
+    background-size: contain;
+}
+
+#mini-dock #presentation div.presentation h3 span.icon {
+    background-position: unset;
+}
+
+#mapmenu li.presentation a:hover .icon,
+#mapmenu li.presentation.active a .icon {
+    filter: invert(1);
+}
+
+/* Body : remove padding-top when a presentation if visible */
+body.presentation-visible {
+    padding-top: 0 !important;
+}
+
+/* Presentation card */
+div#presentation-introduction {
+    margin: 5px;
+    padding: 5px;
+    display: block;
+}
+
+div#lizmap-presentation-container[data-display='none'] {
+    display: none;
+}
+
+div#lizmap-presentation-container[data-display='detail'] div#presentation-introduction {
+    display: none;
+}
+
+button.liz-presentation-create {
+    margin: 5px;
+    width: calc(100% - 10px);
+    display: block;
+}
+
+div#lizmap-presentation-container[data-display='detail'] button.liz-presentation-create.presentation {
+    display: none;
+}
+
+/* Hide presentation container when presentation is running */
+#dock.presentation-visible div#lizmap-presentation-container {
+    display: none;
+}
+
+div.lizmap-presentation-card {
+    border: 1px solid var(--color-contrasted-elements);
+    border-radius: 5px;
+    padding: 5px;
+    margin: 10px;
+    display: block;
+}
+
+div.lizmap-presentation-card[data-display='normal'] {
+    display: block;
+}
+
+div.lizmap-presentation-card[data-display='none'] {
+    display: none;
+}
+
+div.lizmap-presentation-card[data-display='detail'] {
+    display: block;
+    border: none;
+    padding: 0;
+}
+
+div.lizmap-presentation-card h3.lizmap-presentation-title {
+    padding: 5px;
+}
+
+div.lizmap-presentation-card p.lizmap-presentation-description {
+    padding: 5px;
+    font-size: 0.8em;
+
+    /* font-style: italic; */
+    text-align: justify;
+}
+
+div.lizmap-presentation-card table.presentation-detail-table {
+    width: 100%;
+    font-size: 0.8em;
+    display: none;
+}
+
+div.lizmap-presentation-card[data-display='detail'] table.presentation-detail-table {
+    display: block;
+}
+
+div.lizmap-presentation-card-toolbar {
+    text-align: right;
+}
+
+/* show presentation edit button only in Detail mode */
+div.lizmap-presentation-card button.liz-presentation-edit {
+    display: none;
+}
+
+div.lizmap-presentation-card[data-display='detail'] button.liz-presentation-edit {
+    display: inline;
+}
+
+/* Page preview */
+div.lizmap-presentation-card-pages-preview {
+    display: none;
+    margin-top: 10px;
+    overflow: auto;
+}
+
+div.lizmap-presentation-card[data-display='detail'] div.lizmap-presentation-card-pages-preview {
+    display: block;
+}
+
+h3.lizmap-presentation-card-pages-preview-title {
+    font-size: 0.8em;
+    padding-bottom: 10px;
+}
+
+div.lizmap-presentation-page-preview {
+    border: 1px solid var(--color-contrasted-elements);
+    border-radius: 5px;
+    padding: 5px;
+    margin-bottom: 10px;
+    cursor: move;
+
+    &[draggable="true"] {
+        user-select: none;
+        user-select: none;
+        user-select: none;
+        user-select: none;
+    }
+
+    &:hover {
+        background-color: #eee;
+    }
+
+}
+
+div.lizmap-presentation-page-preview-toolbar {
+    text-align: right;
+}
+
+/* Forms */
+#lizmap-presentation-form-container {
+    padding: 10px;
+    overflow: auto;
+    width: 100%;
+}
+
+#lizmap-presentation-form-container fieldset {
+    padding: 10px;
+    padding-top: 10px;
+    padding-top: 0;
+    width: 90%;
+    margin: 0 5px;
+    border: 1px solid var(--color-contrasted-elements-light);
+    border-radius: 5px;
+    background: rgb(255 255 255 / 20%);
+}
+
+#lizmap-presentation-form-container fieldset legend {
+    color: var(--color-text-primary);
+    font-weight: bold;
+    border-bottom: none;
+    padding: 5px;
+    width: unset;
+    max-width: 100%;
+    margin-bottom: 0;
+}
+
+#lizmap-presentation-form-container fieldset div.jforms-table-group {
+    padding: 5px 0;
+}
+
+/* Map related buttons */
+#lizmap-presentation-form-container button.edit-map-buttons {
+    background-repeat: no-repeat;
+    background-position: left !important;
+    padding-left: 35px;
+
+    &:hover,
+    &:active,
+    &:focus,
+    &.has-data {
+        background-color: var(--color-contrasted-elements);
+        color: var(--color-contrasted-text);
+    }
+}
+
+/* tree state saver */
+#lizmap-presentation-form-container button.edit-map-buttons.presentation-page-add-tree-state {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpath d='M10 2C10.5523 2 11 2.44772 11 3V7C11 7.55228 10.5523 8 10 8H8V10H13V9C13 8.44772 13.4477 8 14 8H20C20.5523 8 21 8.44772 21 9V13C21 13.5523 20.5523 14 20 14H14C13.4477 14 13 13.5523 13 13V12H8V18H13V17C13 16.4477 13.4477 16 14 16H20C20.5523 16 21 16.4477 21 17V21C21 21.5523 20.5523 22 20 22H14C13.4477 22 13 21.5523 13 21V20H7C6.44772 20 6 19.5523 6 19V8H4C3.44772 8 3 7.55228 3 7V3C3 2.44772 3.44772 2 4 2H10ZM19 18H15V20H19V18ZM19 10H15V12H19V10ZM9 4H5V6H9V4Z'%3E%3C/path%3E%3C/svg%3E");
+
+    &:hover,
+    &:active,
+    &:focus,
+    &.has-data {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='rgba(255,255,255,1)'%3E%3Cpath d='M10 2C10.5523 2 11 2.44772 11 3V7C11 7.55228 10.5523 8 10 8H8V10H13V9C13 8.44772 13.4477 8 14 8H20C20.5523 8 21 8.44772 21 9V13C21 13.5523 20.5523 14 20 14H14C13.4477 14 13 13.5523 13 13V12H8V18H13V17C13 16.4477 13.4477 16 14 16H20C20.5523 16 21 16.4477 21 17V21C21 21.5523 20.5523 22 20 22H14C13.4477 22 13 21.5523 13 21V20H7C6.44772 20 6 19.5523 6 19V8H4C3.44772 8 3 7.55228 3 7V3C3 2.44772 3.44772 2 4 2H10ZM19 18H15V20H19V18ZM19 10H15V12H19V10ZM9 4H5V6H9V4Z'%3E%3C/path%3E%3C/svg%3E");
+    }
+}
+
+/* extent saver */
+#lizmap-presentation-form-container button.edit-map-buttons.presentation-page-add-bbox {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpath d='M16.9497 11.9497C18.7347 10.1648 19.3542 7.65558 18.8081 5.36796L21.303 4.2987C21.5569 4.18992 21.8508 4.30749 21.9596 4.56131C21.9862 4.62355 22 4.69056 22 4.75827V19L15 22L9 19L2.69696 21.7013C2.44314 21.8101 2.14921 21.6925 2.04043 21.4387C2.01375 21.3765 2 21.3094 2 21.2417V7L5.12892 5.65904C4.70023 7.86632 5.34067 10.2402 7.05025 11.9497L12 16.8995L16.9497 11.9497ZM15.5355 10.5355L12 14.0711L8.46447 10.5355C6.51184 8.58291 6.51184 5.41709 8.46447 3.46447C10.4171 1.51184 13.5829 1.51184 15.5355 3.46447C17.4882 5.41709 17.4882 8.58291 15.5355 10.5355Z'%3E%3C/path%3E%3C/svg%3E");
+
+    &:hover,
+    &:active,
+    &:focus,
+    &.has-data {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='rgba(255,255,255,1)'%3E%3Cpath d='M16.9497 11.9497C18.7347 10.1648 19.3542 7.65558 18.8081 5.36796L21.303 4.2987C21.5569 4.18992 21.8508 4.30749 21.9596 4.56131C21.9862 4.62355 22 4.69056 22 4.75827V19L15 22L9 19L2.69696 21.7013C2.44314 21.8101 2.14921 21.6925 2.04043 21.4387C2.01375 21.3765 2 21.3094 2 21.2417V7L5.12892 5.65904C4.70023 7.86632 5.34067 10.2402 7.05025 11.9497L12 16.8995L16.9497 11.9497ZM15.5355 10.5355L12 14.0711L8.46447 10.5355C6.51184 8.58291 6.51184 5.41709 8.46447 3.46447C10.4171 1.51184 13.5829 1.51184 15.5355 3.46447C17.4882 5.41709 17.4882 8.58291 15.5355 10.5355Z'%3E%3C/path%3E%3C/svg%3E");
+    }
+}
+
+/* drop buttons */
+#lizmap-presentation-form-container button.drop-map-buttons.presentation-page-drop-tree-state,
+#lizmap-presentation-form-container button.drop-map-buttons.presentation-page-drop-bbox {
+    display: none;
+    padding-left: 10px;
+
+    &.has-data {
+        display: inline;
+        margin-left: 5px;
+    }
+}
+
+/* Slides container */
+#lizmap-presentation-slides-container {
+    width: 0;
+    height: 0;
+    display: none;
+}
+
+#lizmap-presentation-slides-container.visible {
+    position: absolute;
+    display: block;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    z-index: 10000;
+}
+
+#lizmap-presentation-slides-container.visible.no-scroll {
+    overflow: hidden;
+}
+
+#dock.presentation-visible button#dock-close {
+    display: none;
+}
+
+/* Slides toolbar */
+div#lizmap-presentation-slides-toolbar {
+    border: 1p solid rgb(150 150 150 / 80%);
+    border-radius: 10px;
+    padding: 10px;
+    background-color: rgb(150 150 150 / 50%);
+
+    /* Set position in the bottom center of the whole page */
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10000;
+
+    /* Change opacity when hovering */
+    opacity: 0.7;
+
+    &:hover {
+        opacity: 1;
+        background-color: rgb(255 255 255 / 50%);
+    }
+}
+
+div#lizmap-presentation-slides-minified-toolbar {
+    border: 1p solid rgb(150 150 150 / 80%);
+    border-radius: 10px;
+    padding: 10px;
+    background-color: rgb(150 150 150 / 50%);
+
+    /* Set position in the bottom center of the whole page */
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10000;
+
+    /* Show only when presentation is minified */
+    display: none;
+
+    /* Change opacity when hovering */
+    opacity: 0.7;
+
+    &:hover {
+        opacity: 1;
+        background-color: rgb(255 255 255 / 50%);
+    }
+}
+
+div#lizmap-presentation-slides-minified-toolbar.visible {
+    display: block;
+}
+
+/* Slideshow page */
+lizmap-presentation-page {
+    display: block;
+
+    /* Width must be 100 % minus top and bottom padding */
+    width: calc(100% - 20px);
+    padding: 10px;
+
+    /* Height must be 100 % minus top and bottom padding */
+    min-height: calc(100% - 20px);
+    ;
+    height: calc(100% - 20px);
+    font-size: 1em;
+
+    /* background properties */
+    background-repeat: no-repeat;
+
+    /* Full - Respect image ratio - full image will always be visible (with possible empty spaces around) */
+    background-position: top;
+    background-size: contain;
+    opacity: 0.4;
+
+    /* Need to set position to allow having absolute positioned children (toolbar) */
+    position: relative;
+
+    /* Hide by default, display only active page */
+    display: none;
+}
+
+/* Page anchor */
+lizmap-presentation-page a.lizmap-presentation-page-anchor {
+    position: absolute;
+    top: 0;
+}
+
+/* active page */
+lizmap-presentation-page.active {
+    opacity: 1;
+    display: block;
+}
+
+lizmap-presentation-page.background-contain {
+    /* Full - Respect image ratio - full image will always be visible (with possible empty spaces around) */
+    background-position: top;
+    background-size: contain;
+}
+
+lizmap-presentation-page.background-cover {
+    /* Zoom full width - Respect the image ratio - bottom and sides of the image can be hidden */
+    background-position: top;
+    background-size: cover;
+}
+
+lizmap-presentation-page.background-stretch {
+    /* Stretched to cover all the page. It will distort the image */
+    background-position: center;
+    background-size: 100% 100%;
+}
+
+/* Page toolbar */
+lizmap-presentation-page div.lizmap-presentation-page-toolbar {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+
+    /* Change opacity when hovering */
+    opacity: 0.1;
+
+    &:hover {
+        opacity: 1;
+    }
+}
+
+lizmap-presentation-page h2.lizmap-presentation-page-title {
+    /* color: white; */
+
+    /* Invert the H2 text color based on the page background */
+
+    /* deactivated because new option text_color has been added to presentation & presentation_page */
+
+    /* mix-blend-mode: difference; */
+    font-size: 1.5em;
+    font-weight: bold;
+    line-height: 1em;
+    padding: 5px;
+    height: 30px;
+    margin: 0;
+}
+
+lizmap-presentation-page div.lizmap-presentation-page-content {
+    height: calc(100% - 30px);
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: stretch;
+}
+
+lizmap-presentation-page div.lizmap-presentation-page-content>div {
+    padding: 0;
+}
+
+lizmap-presentation-page div.lizmap-presentation-page-content>div.lizmap-presentation-page-text {
+    padding: 10px;
+    font-size: 1em;
+    line-height: 1em;
+    text-align: justify;
+
+    /* color: white; */
+    background-color: rgb(255 255 255 / 10%);
+
+    /* Invert the text color based on the page background */
+
+    /* deactivated because new option text_color has been added to presentation & presentation_page */
+
+    /* mix-blend-mode: difference; */
+    flex: 1 1 auto;
+    overflow: auto;
+
+    /* background-color: purple; */
+}
+
+lizmap-presentation-page div.lizmap-presentation-page-content>div.lizmap-presentation-page-media {
+    flex: 1 1 60%;
+
+    /* height: 100%;
+    min-height: 30%;
+    min-width: 50%; */
+
+    /* background-color: orange; */
+    margin: 10px;
+    padding: 0;
+}
+
+
+lizmap-presentation-page div.lizmap-presentation-page-content>div.lizmap-presentation-page-media>div.media-content {
+    width: calc(100%);
+    height: calc(100%);
+    margin: 0;
+    padding: 0;
+}
+
+lizmap-presentation-page div.lizmap-presentation-page-content>div.lizmap-presentation-page-media>div.media-content.media-image {
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+lizmap-presentation-page div.lizmap-presentation-page-content>div.lizmap-presentation-page-media>div.media-content.media-image.illustration-contain {
+    /* Full - Respect image ratio - full image will always be visible (with possible empty spaces around) */
+    background-position: center;
+    background-size: contain;
+    background-color: rgb(255 255 255 / 5%);
+}
+
+lizmap-presentation-page div.lizmap-presentation-page-content>div.lizmap-presentation-page-media>div.media-content.media-image.illustration-cover {
+    /* Zoom full width - Respect the image ratio - bottom and sides of the image can be hidden */
+    background-position: top;
+    background-size: cover;
+}
+
+lizmap-presentation-page div.lizmap-presentation-page-content>div.lizmap-presentation-page-media>div.media-content.media-image.illustration-stretch {
+    /* Stretched to cover all the page. It will distort the image */
+    background-position: center;
+    background-size: 100% 100%;
+}
+
+
+
+lizmap-presentation-page div.lizmap-presentation-page-content>div.lizmap-presentation-page-media>div.media-content.media-video {
+    /* background-color: red; */
+}
+
+lizmap-presentation-page div.lizmap-presentation-page-content>div.lizmap-presentation-page-media>div.media-content.media-iframe {
+    /* background-color: red; */
+}
