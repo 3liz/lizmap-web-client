@@ -1,6 +1,7 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 import {ProjectPage} from "./pages/project";
+import { expectParametersToContain } from './globals';
 
 test.describe('N to M relations',
     {
@@ -297,17 +298,39 @@ test.describe('N to M relations',
             await page.locator("#bottom-dock-window-buttons button.btn-bottomdock-clear").click()
 
             // click on map to get popup list
-            let getFeatureInfoRequestPromise = page.waitForRequest(request =>
-                request.method() === 'POST'
-                && request.postData()?.includes('GetFeatureInfo') === true
-            );
+            let getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest();
 
             await project.clickOnMap(413, 232);
 
-            await getFeatureInfoRequestPromise;
+            let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
 
-            //time for rendering the popup
-            await page.waitForTimeout(500);
+            const expectedParameters = {
+                'SERVICE': 'WMS',
+                'REQUEST': 'GetFeatureInfo',
+                'VERSION': '1.3.0',
+                'INFO_FORMAT': /^text\/html/,
+                'LAYERS': 'natural_areas',
+                'QUERY_LAYERS': 'natural_areas',
+                'STYLE': 'default',
+                'WIDTH': '870',
+                'HEIGHT': '575',
+                'I': '413',
+                'J': '232',
+                'FEATURE_COUNT': '10',
+                'CRS': 'EPSG:4326',
+                'BBOX': /43.2302\d+,4.3586\d+,43.5724\d+,4.8765\d+/,
+            }
+            await expectParametersToContain('GetFeatureInfo', getFeatureInfoRequest.postData() ?? '', expectedParameters);
+
+            // wait for response
+            let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+            expect(getFeatureInfoResponse).not.toBeNull();
+            expect(getFeatureInfoResponse?.ok()).toBe(true);
+            expect(await getFeatureInfoResponse?.headerValue('Content-Type')).toContain('text/html');
+
+            // time for rendering the popup
+            await page.waitForTimeout(100);
+
             let popup = await project.identifyContentLocator(
                 '1',
                 'natural_areas_5f5587de_ddf8_4740_a724_00bcdf518813'
