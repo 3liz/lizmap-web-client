@@ -615,7 +615,7 @@ var lizAttributeTable = function() {
                 }
 
                 // Export tools
-                if ( 'exportLayers' in config.options && config.options.exportLayers == 'True' ) {
+                if ( 'export_enabled' in atConfig && atConfig.export_enabled == 'True' ) {
                     html+= '&nbsp;<div class="export-formats btn-group pull-right" role="group" >';
                     html+= '    <button type="button" class="btn btn-mini dropdown-toggle exportLayer" data-toggle="dropdown" aria-expanded="false">';
                     html+= lizDict['attributeLayers.toolbar.btn.data.export.title'];
