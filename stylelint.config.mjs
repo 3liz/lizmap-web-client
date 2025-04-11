@@ -25,6 +25,7 @@ export default {
         "lizmap/www/assets/css/dataTables.bootstrap.min.css",
         "lizmap/www/assets/css/jquery.dataTables.min.css",
         "lizmap/www/assets/css/responsive.dataTables.min.css",
+        "lizmap/www/assets/css/datatables.min.css",
         "lizmap/www/assets/jelix/**/*.css",
         "lizmap/www/assets/js/jquery/**/*.css",
         "tests/units/vendor/**/*.css",
