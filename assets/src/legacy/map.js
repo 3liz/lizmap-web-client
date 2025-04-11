@@ -14,6 +14,8 @@ import WFS from '../modules/WFS.js';
 import WMS from '../modules/WMS.js';
 import { Utils } from '../modules/Utils.js';
 
+import DataTable from 'datatables.net-bs5';
+
 window.lizMap = function() {
     /**
      * PRIVATE Property: config
@@ -1330,7 +1332,7 @@ window.lizMap = function() {
                     }
 
                     // Handle compact-tables/explode-tables behaviour
-                    parentDiv.find('.lizmapPopupChildren .popupAllFeaturesCompact table').DataTable({
+                    new DataTable(parentDiv.find('.lizmapPopupChildren .popupAllFeaturesCompact table'),{
                         order: [[1, 'asc']],
                         language: { url:globalThis['lizUrls']["dataTableLanguage"] }
                     });
