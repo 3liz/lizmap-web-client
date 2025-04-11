@@ -257,13 +257,6 @@ var lizAttributeTable = function() {
                         dTable.draw();
                     });
                 });
-
-                // Bind click on tabs to resize datatable tables
-                $('#attributeLayers-tabs li').click(function(){
-                    var mycontainerId = $('#bottom-dock div.bottom-content.active div.attribute-layer-main').attr('id');
-                    refreshDatatableSize('#'+mycontainerId);
-                });
-
             } else {
                 // Hide navbar menu
                 $('#mapmenu li.attributeLayers').hide();
@@ -500,12 +493,6 @@ var lizAttributeTable = function() {
                 // Action bar specific to the tab
                 html+= '<div class="attribute-layer-action-bar">';
 
-                // Search input
-                html+= '<div class="btn-group">';
-                html+= '  <input id="attribute-layer-search-' + cleanName + '" type="search" class="form-control" placeholder="'+lizDict['attributeLayers.toolbar.input.search.title']+'">';
-                html+= '  <i class="clear-layer-search icon-remove" style="position:absolute;right:4px;top:4px;cursor:pointer;"></i>';
-                html+= '</div>';
-
                 // Selected searched lines button
                 html+= '<button class="btn-select-searched btn btn-mini" value="'+cleanName+'" title="'+lizDict['attributeLayers.toolbar.btn.select.searched.title']+'"><i class="icon-star"></i></button>';
 
@@ -657,21 +644,11 @@ var lizAttributeTable = function() {
                 });
 
                 if( childHtml ){
-
-                    // Bind adjust child columns when children tab visibility change
-                    $('#attribute-layer-' + cleanName + ' div.attribute-layer-child-content ul li a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-                        var target = $(e.target).attr("href") // activated tab
-                        var dtable = $(target).find('table.dataTable');
-                        dtable.DataTable().tables().columns.adjust();
-                    });
-                }
-
-                if( childHtml ){
                     $('#attribute-layer-'+ cleanName + ' button.btn-toggle-children')
                         .click(function(){
                             var parentDir = $(this).parents('div.attribute-layer-main');
                             parentDir.find('div.attribute-layer-content').toggleClass('showChildren');
-                            parentDir.find('div.tabbable.attribute-layer-child-content').toggle();
+                            parentDir.find('div.attribute-layer-child-content').toggle();
                             // Refresh parent table size
                             refreshDatatableSize('#attribute-layer-main-'+ cleanName);
                             return false;
@@ -687,8 +664,6 @@ var lizAttributeTable = function() {
                             $('#attribute-layer-main-' + cleanName).toggleClass('reduced', !$(this).hasClass('btn-primary'));
                             $('#attribute-table-panel-' + cleanName).toggleClass('visible', !$(this).hasClass('btn-primary'));
                             $(this).toggleClass('btn-primary');
-
-                            refreshDatatableSize('#attribute-layer-main-'+ cleanName);
                             return false;
                         });
                 }
@@ -1393,28 +1368,12 @@ var lizAttributeTable = function() {
 
                 lConfig['alias'] = cAliases;
                 // Datatable configuration
-                if ( !$.fn.dataTable.isDataTable( aTable ) ) {
-                    // Search while typing in text input
-                    // Deactivate if too many items
-                    var searchWhileTyping = true;
-
-                    var myDom = '<<t>ipl>';
-                    if( searchWhileTyping ) {
-                        $('#attribute-layer-search-' + cleanName).on( 'keyup', function (e){
-                            var searchVal = this.value;
-                            lizdelay(function(){
-                                oTable.fnFilter( searchVal );
-                            }, 500 );
-                        });
-                    }else{
-                        myDom = '<<t>ipl>';
-                    }
-
+                if ( !DataTable.isDataTable( aTable ) ) {
                     const datatablesUrl = globalThis['lizUrls'].wms.replace('service', 'datatables');
                     const params = globalThis['lizUrls'].params;
                     params['layerId'] = lConfig.id;
 
-                    $( aTable ).dataTable({
+                    const oTable = new DataTable(aTable, {
                         serverSide: true
                         ,ajax: {
                             url: datatablesUrl + '?' + new URLSearchParams(params).toString(),
@@ -1474,17 +1433,17 @@ var lizAttributeTable = function() {
                             }
                         }
                         ,columns: columns
-                        ,initComplete: function(settings, json) {
-                            const api = new $.fn.dataTable.Api(settings);
-                            const tableId = api.table().node().id;
-                            const featureType = tableId.split('attribute-layer-table-')[1];
+                        ,initComplete: function(settings) {
+                            // Refresh size of datatable after data has been loaded
+                            refreshDatatableSize('#'+$('#bottom-dock div.bottom-content.active div.attribute-layer-main').attr('id'));
 
                             // Trigger event telling attribute table is ready
-                            lizMap.events.triggerEvent("attributeLayerContentReady",
-                                {
-                                    'featureType': featureType
-                                }
-                            );
+                            const tableId = settings.api.table().node().id;
+                            const featureType = tableId.split('attribute-layer-table-')[1];
+
+                            lizMap.events.triggerEvent("attributeLayerContentReady",{
+                                'featureType': featureType,
+                            });
                         }
                         ,order: [[ firstDisplayedColIndex, "asc" ]]
                         ,language: { url:globalThis['lizUrls']["dataTableLanguage"] }
@@ -1502,43 +1461,35 @@ var lizAttributeTable = function() {
                                 thumbnail.setAttribute('src', lizUrls.media+'?repository='+lizUrls.params.repository+'&project='+lizUrls.params.project+'&path='+thumbnail.dataset.src);
                             }
                         }
-                        ,dom: myDom
                         ,pageLength: 50
-                        ,scrollY: '95%'
-                        ,scrollX: '100%'
-                    } );
-
-                    var oTable = $( aTable ).dataTable();
-
-                    if( !searchWhileTyping )
-                        $('#attribute-layer-search-' + cleanName).hide();
-
-                    // Bind button which clears top-left search input content
-                    $('#attribute-layer-search-' + cleanName).next('.clear-layer-search').click(function(){
-                        $('#attribute-layer-search-' + cleanName).val('').focus().keyup();
+                        ,scrollY: '95%' // Used to init but refreshDatatableSize() does the job of setting the height
+                        ,layout: {
+                            topStart: null,
+                            topEnd: null,
+                            bottomStart: ['info', 'pageLength'],
+                            bottomEnd: {
+                                paging: {
+                                    firstLast: false
+                                }
+                            },
+                        }
                     });
 
                     // Unbind previous events on page
-                    $( aTable ).on( 'page.dt', function() {
+                    oTable.on( 'page', function() {
                         // unbind previous events
                         $(aTable +' tr').unbind('click');
                         $(aTable +' tr td button').unbind('click');
                     });
 
                     // Bind events when drawing table
-                    $( aTable ).on( 'draw.dt', function() {
+                    oTable.on( 'draw', function() {
 
                         $(aTable +' tr').unbind('click');
                         $(aTable +' tr td button').unbind('click');
 
                         // Bind event when users click anywhere on the table line to highlight
                         bindTableLineClick(aName, aTable);
-
-                        // Refresh size
-                        var mycontainerId = $('#bottom-dock div.bottom-content.active div.attribute-layer-main').attr('id');
-
-                        refreshDatatableSize('#' + mycontainerId);
-
                         return false;
 
                     });
@@ -1552,8 +1503,6 @@ var lizAttributeTable = function() {
                 if (canEdit || canDelete) {
                     lizMap.mainLizmap.edition.fetchEditableFeatures([lConfig.id],[exp_f]);
                 }
-
-                refreshDatatableSize('#'+$('#bottom-dock div.bottom-content.active div.attribute-layer-main').attr('id'))
 
                 if (aCallback)
                     aCallback(aName,aTable);
@@ -2075,7 +2024,7 @@ var lizAttributeTable = function() {
                     var tableLayerName = $(this).parents('div.dataTables_wrapper:first').prev('input.attribute-table-hidden-layer').val()
                     // Get parent table for the feature type
                     if ( tableLayerName
-                        && $.fn.dataTable.isDataTable( $(this) )
+                        && DataTable.isDataTable( $(this) )
                         && lizMap.cleanName( featureType ) == tableLayerName
                     ){
 
@@ -2938,7 +2887,7 @@ var lizAttributeTable = function() {
                     var tableLayerName = $(this).parents('div.dataTables_wrapper:first').prev('input.attribute-table-hidden-layer').val()
 
                     if ( tableLayerName
-                        && $.fn.dataTable.isDataTable( $(this) )
+                        && DataTable.isDataTable( $(this) )
                         && lizMap.cleanName( featureType ) == tableLayerName
                     ){
                         var zTable = '#' + tableId;
@@ -3045,14 +2994,10 @@ var lizAttributeTable = function() {
                 var h = $(container + ' div.attribute-layer-content').height() ? $(container + ' div.attribute-layer-content').height() : 0;
 
                 h -= $(container + ' thead').height() ? $(container + ' thead').height() : 0;
-                h -= $(container + ' div.dataTables_paginate').height() ? $(container + ' div.dataTables_paginate').height() : 0;
-                h -= $(container + ' div.dataTables_filter').height() ? $(container + ' div.dataTables_filter').height() : 0;
-                h -= 20;
+                h -= $(container + ' div.dt-paging').height() ? $(container + ' div.dt-paging').height() : 0;
+                h -= 25;
 
-                dtable.parent('div.dataTables_scrollBody').height(h);
-
-                // Width : adapt columns size
-                dtable.DataTable().tables().columns.adjust();
+                dtable.parent('div.dt-scroll-body').height(h);
             }
 
             /**
@@ -3531,35 +3476,10 @@ var lizAttributeTable = function() {
                     }
                 },
 
-                bottomdocksizechanged: function(evt) {
+                bottomdocksizechanged: function() {
                     var mycontainerId = $('#bottom-dock div.bottom-content.active div.attribute-layer-main').attr('id');
                     refreshDatatableSize('#'+mycontainerId);
-                },
-                dockopened: function(evt) {
-                    if($('#mapmenu li.attributeLayers').hasClass('active')){
-                        var mycontainerId = $('#bottom-dock div.bottom-content.active div.attribute-layer-main').attr('id');
-                        refreshDatatableSize('#'+mycontainerId);
-                    }
-                },
-                dockclosed: function(evt) {
-                    if($('#mapmenu li.attributeLayers').hasClass('active')){
-                        var mycontainerId = $('#bottom-dock div.bottom-content.active div.attribute-layer-main').attr('id');
-                        refreshDatatableSize('#'+mycontainerId);
-                    }
-                },
-                rightdockopened: function(evt) {
-                    if($('#mapmenu li.attributeLayers').hasClass('active')){
-                        var mycontainerId = $('#bottom-dock div.bottom-content.active div.attribute-layer-main').attr('id');
-                        refreshDatatableSize('#'+mycontainerId);
-                    }
-                },
-                rightdockclosed: function(evt) {
-                    if($('#mapmenu li.attributeLayers').hasClass('active')){
-                        var mycontainerId = $('#bottom-dock div.bottom-content.active div.attribute-layer-main').attr('id');
-                        refreshDatatableSize('#'+mycontainerId);
-                    }
                 }
-
             }); // lizMap.events.on end
 
             // Extend lizMap API
@@ -3567,5 +3487,4 @@ var lizAttributeTable = function() {
 
         } // uicreated
     });
-
 }();
