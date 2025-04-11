@@ -5,6 +5,7 @@
  * @license MPL-2.0
  */
 
+import DataTable from 'datatables.net-bs5';
 import DOMPurify from 'dompurify';
 import '../images/svg/filter-square.svg';
 
