@@ -37,6 +37,7 @@
     "cypress": "<10.0.0",
     "cypress-file-upload": "^5.0.x",
     "dompurify": "^3.2.x",
+    "datatables.net-bs5": "^2.2.2",
     "eslint-plugin-jsdoc": "^60.2.x",
     "flatgeobuf": "^4.3.x",
     "jsts": "^2.11.x",
