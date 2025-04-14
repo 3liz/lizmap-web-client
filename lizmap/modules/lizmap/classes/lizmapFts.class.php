@@ -123,29 +123,35 @@ class lizmapFts
     }
 
     /**
-     * Method called by the autocomplete input field for taxon search.
+     * Method called by the autocomplete input field for place search.
      *
      * @param Project $project
      * @param string  $term    Searched term
+     * @param bool    $debug   If the debug mode is ON
      * @param int     $limit   default 40
      *
-     * @return List of matching taxons
+     * @return List of matching places
      */
-    public function getData($project, $term, $limit = 40)
+    public function getData($project, $term, $debug, $limit = 40)
     {
         $sql = $this->getSql($project);
         $data = array();
 
         try {
             // Format words into {foo,bar}
-            $result = $this->query(
-                $sql,
-                array(
-                    'term' => trim($term),
-                    'proj' => $project->getKey(),
-                    'lim' => $limit,
-                )
+            $params = array(
+                'term' => trim($term),
+                'proj' => $project->getKey(),
+                'lim' => $limit,
             );
+            if ($debug) {
+                jLog::log(
+                    'Debug Lizmap search, SQL query : '.$sql.' with parameters → '.json_encode($params),
+                    'lizmapadmin'
+                );
+            }
+
+            $result = $this->query($sql, $params);
 
             // Limitations
             $limit_tot = 60;

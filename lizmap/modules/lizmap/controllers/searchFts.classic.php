@@ -12,10 +12,9 @@
 class searchFtsCtrl extends jController
 {
     /**
-     * Query a database.
+     * Query a database with lizmap_search SQL table.
      *
      * @urlparam text $query A SQL query on objects
-     * @urlparam text $bbox A bounding box in EPSG:4326 Optionnal
      *
      * @return jResponseJson geoJSON
      */
@@ -80,7 +79,7 @@ class searchFtsCtrl extends jController
 
         // Run query
         $fts = jClasses::getService('lizmap~lizmapFts');
-        $data = $fts->getData($lproj, $pquery);
+        $data = $fts->getData($lproj, $pquery, $this->boolParam('debug'));
 
         $rep->data = $data;
 
