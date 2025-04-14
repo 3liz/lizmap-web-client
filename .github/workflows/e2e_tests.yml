@@ -342,7 +342,8 @@ jobs:
           sha: ${{ steps.checkout.outputs.commit }}
           token: ${{ secrets.BOT_HUB_TOKEN }}
           body: |
-            The latest **weekly** run of end2end "playwright" tests failed with this latest commit on the branch **${{ env.BRANCH }}** 😣
+            The latest **weekly** run of end2end "playwright" tests failed with this latest commit on the branch
+            **${{ env.BRANCH }} ${{ matrix.name }}** 😣
 
             CC @nboisteault and @Gustry, please have a look to the logs. Maybe it's a false positive ?
 
@@ -405,7 +406,8 @@ jobs:
           sha: ${{ steps.checkout.outputs.commit }}
           token: ${{ secrets.BOT_HUB_TOKEN }}
           body: |
-            The latest **weekly** run of end2end "cypress" tests failed with this latest commit on the branch **${{ env.BRANCH }}** 😣
+            The latest **weekly** run of end2end "cypress" tests failed with this latest commit on the branch
+            **${{ env.BRANCH }} ${{ matrix.name }}** 😣
 
             CC @nboisteault and @Gustry, please have a look to the logs. Maybe it's a false positive ?
 
