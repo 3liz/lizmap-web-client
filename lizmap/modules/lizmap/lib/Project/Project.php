@@ -522,7 +522,7 @@ class Project
     }
 
     /**
-     * Get the WMS GetCapabilities Url.
+     * Get the WMS GetCapabilities URL.
      *
      * @return string
      */
@@ -541,7 +541,7 @@ class Project
     }
 
     /**
-     * Get the WMTS GetCapabilities Url.
+     * Get the WMTS GetCapabilities URL.
      *
      * @return string
      */
@@ -560,7 +560,7 @@ class Project
     }
 
     /**
-     * Get the WFS GetCapabilities Url.
+     * Get the WFS GetCapabilities URL.
      *
      * @return string
      */
@@ -2294,7 +2294,7 @@ class Project
         $metadataTpl = new \jTpl();
         // Get the WMS information
         $wmsInfo = $this->qgis->getWMSInformation();
-        // WMS GetCapabilities Url
+        // WMS GetCapabilities URL
         $wmsGetCapabilitiesUrl = $this->appContext->aclCheck(
             'lizmap.tools.displayGetCapabilitiesLinks',
             $this->repository->getKey()

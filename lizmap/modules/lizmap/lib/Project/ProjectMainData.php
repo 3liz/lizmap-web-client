@@ -217,7 +217,7 @@ class ProjectMainData
     }
 
     /**
-     * The url of WMS GetCapabilities.
+     * The URL of WMS GetCapabilities.
      *
      * @return string
      */
@@ -227,7 +227,7 @@ class ProjectMainData
     }
 
     /**
-     * The url of WMTS GetCapabilities.
+     * The URL of WMTS GetCapabilities.
      *
      * @return string
      */
@@ -237,7 +237,7 @@ class ProjectMainData
     }
 
     /**
-     * The url of WFS GetCapabilities.
+     * The URL of WFS GetCapabilities.
      *
      * @return string
      */
