@@ -99,7 +99,6 @@ export default class Search {
                     "repository": globalThis['lizUrls'].params.repository,
                     "project": globalThis['lizUrls'].params.project,
                     "query": $('#search-query').val(),
-                    "bbox": extent.toBBOX()
                 }
                 , (results) => {
                     var text = '';
