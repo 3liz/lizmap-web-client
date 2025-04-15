@@ -52,7 +52,10 @@ class datatablesCtrl extends jController
         $DTOrderColumnDirection = $DTOrder[0]['dir'] == 'desc' ? 'd' : '';
         $DTOrderColumnName = $DTColumns[$DTOrderColumnIndex]['data'];
 
-        $DTSearch = $this->param('search');
+        $DTSearchBuilder = '';
+        if ($this->param('searchBuilder')) {
+            $DTSearchBuilder = $this->param('searchBuilder');
+        }
 
         $lproj = lizmap::getProject($repository.'~'.$project);
         $layer = $lproj->getLayer($layerId);
@@ -60,17 +63,20 @@ class datatablesCtrl extends jController
 
         $jsonFeatures = array();
 
-        // Get total number of features
-        $hits = 0;
-        $wfsParamsHits = array(
+        $wfsParamsData = array(
             'SERVICE' => 'WFS',
             'VERSION' => '1.0.0',
             'REQUEST' => 'GetFeature',
             'TYPENAME' => $typeName,
+        );
+
+        // Get total number of features
+        $hits = 0;
+        $wfsParamsHits = array(
             'RESULTTYPE' => 'hits',
         );
 
-        $wfsrequest = new WFSRequest($lproj, $wfsParamsHits, lizmap::getServices());
+        $wfsrequest = new WFSRequest($lproj, array_merge($wfsParamsData, $wfsParamsHits), lizmap::getServices());
         $wfsresponse = $wfsrequest->process();
         $hitsData = $wfsresponse->getBodyAsString();
         preg_match('/numberOfFeatures="([0-9]+)"/', $hitsData, $matches);
@@ -79,18 +85,6 @@ class datatablesCtrl extends jController
         if (count($filteredFeatureIDs) > 0) {
             $recordsFiltered = count($filteredFeatureIDs);
         }
-
-        // Get features
-        $wfsParamsData = array(
-            'SERVICE' => 'WFS',
-            'VERSION' => '1.0.0',
-            'REQUEST' => 'GetFeature',
-            'TYPENAME' => $typeName,
-            'OUTPUTFORMAT' => 'GeoJSON',
-            'MAXFEATURES' => $DTLength,
-            'SORTBY' => $DTOrderColumnName.' '.$DTOrderColumnDirection,
-            'STARTINDEX' => $DTStart,
-        );
 
         if ($moveSelectedToTop == 'true') {
             $featureIds = array();
@@ -124,6 +118,108 @@ class datatablesCtrl extends jController
             $wfsParamsData['EXP_FILTER'] = '$id IN ('.implode(' , ', $filteredFeatureIDs).')';
         }
 
+        // Handle search made by searchBuilder
+        if ($DTSearchBuilder) {
+            foreach ($DTSearchBuilder['criteria'] as $criteria) {
+                $column = $criteria['data'];
+                $condition = $criteria['condition'];
+                $value = '';
+                $value1 = isset($criteria['value1']) ? addslashes($criteria['value1']) : '';
+                $value2 = isset($criteria['value2']) ? addslashes($criteria['value2']) : '';
+
+                // Map DataTables operators to QGIS Server operators
+                switch ($condition) {
+                    case '=':
+                    case '!=':
+                    case '<':
+                    case '<=':
+                    case '>':
+                    case '>=':
+                        $qgisOperator = $condition;
+                        if ($criteria['type'] == 'num') {
+                            $value = $value1;
+                        } else {
+                            $value = '\''.$value1.'\'';
+                        }
+
+                        break;
+
+                    case 'starts':
+                        $qgisOperator = 'ILIKE';
+                        $value = '\''.$value1.'%\'';
+
+                        break;
+
+                    case '!starts':
+                        $qgisOperator = 'NOT ILIKE';
+                        $value = '\''.$value1.'%\'';
+
+                        break;
+
+                    case 'contains':
+                        $qgisOperator = 'ILIKE';
+                        $value = '\'%'.$value1.'%\'';
+
+                        break;
+
+                    case '!contains':
+                        $qgisOperator = 'NOT ILIKE';
+                        $value = '\'%'.$value1.'%\'';
+
+                        break;
+
+                    case 'ends':
+                        $qgisOperator = 'ILIKE';
+                        $value = '\'%'.$value1.'\'';
+
+                        break;
+
+                    case '!ends':
+                        $qgisOperator = 'NOT ILIKE';
+                        $value = '\'%'.$value1.'\'';
+
+                        break;
+
+                    case 'null':
+                        $qgisOperator = 'IS NULL';
+
+                        break;
+
+                    case '!null':
+                        $qgisOperator = 'IS NOT NULL';
+
+                        break;
+
+                    case 'between':
+                        $qgisOperator = 'BETWEEN';
+                        if ($criteria['type'] == 'num') {
+                            $value = $value1.' AND '.$value2;
+                        } else {
+                            $value = '\''.$value1.'\' AND \''.$value2.'\'';
+                        }
+
+                        break;
+
+                    case '!between':
+                        $qgisOperator = 'NOT BETWEEN';
+                        if ($criteria['type'] == 'num') {
+                            $value = $value1.' AND '.$value2;
+                        } else {
+                            $value = '\''.$value1.'\' AND \''.$value2.'\'';
+                        }
+
+                        break;
+                }
+                // Append the filter to the exp_filter string
+                if (!empty($expFilter)) {
+                    $logic = isset($DTSearchBuilder['logic']) ? $DTSearchBuilder['logic'] : 'AND';
+                    $expFilter .= " {$logic} ";
+                }
+
+                $expFilter .= "{$column} {$qgisOperator} {$value}";
+            }
+        }
+
         if ($expFilter) {
             $wfsParamsData['EXP_FILTER'] = $expFilter;
         }
@@ -134,28 +230,28 @@ class datatablesCtrl extends jController
             $bboxString = implode(',', $bbox);
             $wfsParamsData['BBOX'] = $bboxString;
             $wfsParamsData['SRSNAME'] = $srsName;
+        }
 
-            // Get total number of features in the bounding box
-            $wfsParamsFilterByExtentHits = array(
-                'SERVICE' => 'WFS',
-                'VERSION' => '1.0.0',
-                'REQUEST' => 'GetFeature',
-                'TYPENAME' => $typeName,
-                'RESULTTYPE' => 'hits',
-                'BBOX' => $bboxString,
-                'SRSNAME' => $srsName,
-            );
+        $wfsParamsPaginated = array(
+            'OUTPUTFORMAT' => 'GeoJSON',
+            'MAXFEATURES' => $DTLength,
+            'STARTINDEX' => $DTStart,
+            'SORTBY' => $DTOrderColumnName.' '.$DTOrderColumnDirection,
+        );
 
-            $wfsrequest = new WFSRequest($lproj, $wfsParamsFilterByExtentHits, lizmap::getServices());
+        $wfsrequest = new WFSRequest($lproj, array_merge($wfsParamsData, $wfsParamsPaginated), lizmap::getServices());
+        $wfsresponse = $wfsrequest->process();
+        $featureData = $wfsresponse->getBodyAsString();
+
+        // Get hits when data is filtered
+        if ($expFilter || count($bbox) == 4) {
+
+            $wfsrequest = new WFSRequest($lproj, array_merge($wfsParamsData, $wfsParamsHits), lizmap::getServices());
             $wfsresponse = $wfsrequest->process();
             $filterByExtentHitsData = $wfsresponse->getBodyAsString();
             preg_match('/numberOfFeatures="([0-9]+)"/', $filterByExtentHitsData, $matches);
             $recordsFiltered = $matches[1];
         }
-
-        $wfsrequest = new WFSRequest($lproj, $wfsParamsData, lizmap::getServices());
-        $wfsresponse = $wfsrequest->process();
-        $featureData = $wfsresponse->getBodyAsString();
 
         $returnedData = array(
             'draw' => (int) $this->param('draw'),
