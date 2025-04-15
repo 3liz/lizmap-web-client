@@ -15,7 +15,14 @@ class lizmapFts
 {
     protected $sql;
 
-    protected function generateSql($project)
+    /**
+     * Generate the SQL for lizmap_search according to the given project.
+     *
+     * @param Project $project The QGIS project
+     *
+     * @return string The SQL query
+     */
+    protected static function generateSql($project)
     {
 
         // Build search query.
@@ -78,12 +85,20 @@ class lizmapFts
         ORDER BY sim DESC, item_label
         LIMIT :lim;
         ';
-        $this->sql = $sql;
+
+        return $sql;
     }
 
+    /**
+     * Get SQL for the given project.
+     *
+     * @param Project $project The QGIS project
+     *
+     * @return string The SQL query
+     */
     protected function getSql($project)
     {
-        $this->generateSql($project);
+        $this->sql = $this->generateSql($project);
 
         return $this->sql;
     }
@@ -97,7 +112,7 @@ class lizmapFts
      *
      * @return array<object> as an array
      */
-    protected function query($sql, $filterParams, $profile = null)
+    protected static function query($sql, $filterParams, $profile = null)
     {
         if (!$profile) {
             $profile = 'search';
@@ -111,16 +126,11 @@ class lizmapFts
             $profile = null;
         }
 
-        try {
-            $cnx = jDb::getConnection($profile);
-            $resultset = $cnx->prepare($sql);
-            $resultset->execute($filterParams);
-            $result = $resultset->fetchAll();
-        } catch (Exception $e) {
-            $result = array();
-        }
+        $cnx = jDb::getConnection($profile);
+        $resultSet = $cnx->prepare($sql);
+        $resultSet->execute($filterParams);
 
-        return $result;
+        return $resultSet->fetchAll();
     }
 
     /**
@@ -192,6 +202,11 @@ class lizmapFts
             }
         } catch (Exception $e) {
             $data = array();
+            jLog::log(
+                'An error has been raised when executing lizmap_search on "'.$project->getKey().'":'.$e->getMessage(),
+                'lizmapadmin'
+            );
+            jLog::logEx($e, 'error');
         }
 
         return $data;

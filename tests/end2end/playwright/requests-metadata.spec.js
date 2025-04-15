@@ -1,6 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { requestWithAdminBasicAuth, getAuthStorageStatePath } from './globals';
+import { checkJson as coreCheckJson, requestWithAdminBasicAuth, getAuthStorageStatePath } from './globals';
 
 /**
  * Playwright Page
@@ -15,10 +15,7 @@ const url = 'index.php/view/app/metadata';
  * @returns {Promise<any>} The JSON response
  */
 export async function checkJson(response) {
-    expect(response.ok()).toBeTruthy();
-    expect(response.status()).toBe(200);
-    expect(response.headers()['content-type']).toBe('application/json');
-    const json = await response.json();
+    const json = await coreCheckJson(response);
 
     // LWC metadata are always accessible...
     expect(json.info.version).toBeDefined();

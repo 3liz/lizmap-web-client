@@ -10,6 +10,11 @@ import * as path from 'path';
  */
 
 /**
+ * Playwright Page
+ * @typedef {import('@playwright/test').APIResponse} APIResponse
+ */
+
+/**
  * Integer
  * @typedef {number} int
  */
@@ -236,6 +241,21 @@ export async function expectToHaveLengthCompare(title, parameters, expectedLengt
             Debug  : ${expectedParameters.join(', ')}\n
             Debug count : ${expectedParameters.length} items`
     ).toHaveLength(expectedLength);
+}
+
+/**
+ * Check for a JSON response
+ * @param {APIResponse} response The response object
+ * @param {int} status The expected HTTP status code
+ * @returns {Promise<any>} The JSON response
+ */
+export async function checkJson(response, status = 200) {
+    if (status < 400){
+        expect(response.ok()).toBeTruthy();
+    }
+    expect(response.status()).toBe(status);
+    expect(response.headers()['content-type']).toBe('application/json');
+    return await response.json();
 }
 
 /* eslint-disable jsdoc/check-types */
