@@ -4,7 +4,7 @@ hideSensitiveServicesProperties=0
 ;Services
 ;list the different map services (servers, generic parameters, etc.)
 [services]
-;Wms map server
+;URL to QGIS Server for OGC web services
 wmsServerURL="http://map:8080/ows/"
 ;WMS subdomain URLs list (optional)
 wmsPublicUrlList=
