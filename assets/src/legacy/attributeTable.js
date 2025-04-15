@@ -1487,7 +1487,8 @@ var lizAttributeTable = function() {
                                 extend: 'searchBuilder',
                                 config: {
                                     liveSearch: false,
-                                    columns: '.dt-orderable-asc'
+                                    columns: '.dt-orderable-asc',
+                                    depthLimit: 1
                                 }
                             }
                         ]
