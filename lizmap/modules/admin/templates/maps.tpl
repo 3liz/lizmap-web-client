@@ -33,8 +33,16 @@
                                         <th>{@admin~admin.form.admin_section.repository.$prop.label@}</th><td>{$d}</td>
                                     {/if}
                                 {else}
-                                    <!-- FIXME don't use getData() which is deprecated -->
-                                    <th>{@admin~admin.form.admin_section.repository.$prop.label@}</th><td>{$repo->getData($prop)}</td>
+                                    {* FIXME don't use getData() which is deprecated *}
+                                    {assign $value = $repo->getData($prop)}
+                                    {if $prop == 'allowUserDefinedThemes'}
+                                        {if $value == 1}
+                                            {assign $value = '✔️'}
+                                        {else}
+                                            {assign $value = '-'}
+                                        {/if}
+                                    {/if}
+                                <th>{@admin~admin.form.admin_section.repository.$prop.label@}</th><td>{$value}</td>
                                 {/if}
                             </tr>
                         {/foreach}
@@ -59,18 +67,37 @@
             <div class="form-actions">
                 <!-- View repository page -->
                 {ifacl2 'lizmap.repositories.view', $repo->getKey()}
-                    <a class="btn" href="{jurl 'view~default:index', array('repository'=>$repo->getKey())}" target="_blank">{@admin~admin.configuration.button.view.repository.label@}</a>
+                    <a
+                        class="btn"
+                        href="{jurl 'view~default:index', array('repository'=>$repo->getKey())}"
+                        target="_blank"
+                        title="{@admin~admin.configuration.button.view.repository.tooltip@}"
+                    >{@admin~admin.configuration.button.view.repository.label@}</a>
                 {/ifacl2}
                 <!-- Modify -->
                 {ifacl2 'lizmap.admin.repositories.update'}
-                    <a class="btn" href="{jurl 'admin~maps:modifySection', array('repository'=>$repo->getKey())}">{@admin~admin.configuration.button.modify.repository.label@}</a>
+                    <a
+                        class="btn"
+                        href="{jurl 'admin~maps:modifySection', array('repository'=>$repo->getKey())}"
+                        title="{@admin~admin.configuration.button.modify.repository.tooltip@}"
+                    >{@admin~admin.configuration.button.modify.repository.label@}</a>
                 {/ifacl2}
                 <!-- Remove -->
                 {ifacl2 'lizmap.admin.repositories.delete'}
-                    <a class="btn" href="{jurl 'admin~maps:removeSection', array('repository'=>$repo->getKey())}" onclick="return confirm(`{@admin~admin.configuration.button.remove.repository.confirm.label@}`)">{@admin~admin.configuration.button.remove.repository.label@}</a>
+                    <a
+                        class="btn"
+                        href="{jurl 'admin~maps:removeSection', array('repository'=>$repo->getKey())}"
+                        onclick="return confirm(`{@admin~admin.configuration.button.remove.repository.confirm.label@}`)"
+                        title="{@admin~admin.configuration.button.remove.repository.tooltip@}"
+                    >{@admin~admin.configuration.button.remove.repository.label@}</a>
                 {/ifacl2}
                 {ifacl2 'lizmap.admin.repositories.delete'}
-                    <a class="btn" href="{jurl 'admin~maps:removeCache', array('repository'=>$repo->getKey())}" onclick="return confirm(`{@admin~admin.cache.button.remove.repository.cache.confirm.label@}`)">{@admin~admin.cache.button.remove.repository.cache.label@}</a>
+                    <a
+                        class="btn"
+                        href="{jurl 'admin~maps:removeCache', array('repository'=>$repo->getKey())}"
+                        onclick="return confirm(`{@admin~admin.cache.button.remove.repository.cache.confirm.label@}`)"
+                        title="{@admin~admin.cache.button.remove.repository.cache.tooltip@}"
+                    >{@admin~admin.cache.button.remove.repository.cache.label@}</a>
                 {/ifacl2}
             </div>
 
