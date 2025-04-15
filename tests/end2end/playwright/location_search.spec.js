@@ -1,6 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { gotoMap } from './globals';
+import { checkJson, gotoMap } from './globals';
 
 test.describe('Location search', () => {
 
@@ -104,3 +104,40 @@ test.describe('Location search', () => {
     });
 
 });
+
+
+test.describe('Lizmap Search HTTP code',
+    {
+        tag: ['@requests', '@readonly'],
+    }, () => {
+
+        test('Check wrong requests', async ({request}) => {
+            let params = {
+                'repository': 'testsrepository',
+                'project': 'location_search',
+                'query': 'Montpellier',
+            }
+            let response = await request.get('/index.php/lizmap/searchFts/get?',{params});
+            await checkJson(response);
+
+            params['query'] = 'Tokyo';
+            response = await request.get('/index.php/lizmap/searchFts/get?',{params});
+            await checkJson(response, 200);
+
+            params['query'] = '';
+            response = await request.get('/index.php/lizmap/searchFts/get?',{params});
+            await checkJson(response, 400);
+
+            params['query'] = 'Montpellier';
+            params['project'] = 'does_not_exist';
+            response = await request.get('/index.php/lizmap/searchFts/get?',{params});
+            await checkJson(response, 400);
+
+            params['query'] = 'Montpellier';
+            params['project'] = 'location_search';
+            params['repository'] = null;
+            response = await request.get('/index.php/lizmap/searchFts/get?',{params});
+            await checkJson(response, 400);
+        });
+    }
+);

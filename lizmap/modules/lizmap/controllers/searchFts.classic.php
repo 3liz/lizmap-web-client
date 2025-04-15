@@ -1,4 +1,8 @@
 <?php
+
+use Lizmap\Project\UnknownLizmapProjectException;
+use Lizmap\Request\Proxy;
+
 /**
  * Php proxy to access database search.
  *
@@ -28,19 +32,24 @@ class searchFtsCtrl extends jController
         // Parameters
         $pquery = htmlspecialchars(strip_tags($this->param('query')), ENT_NOQUOTES);
         if (!$pquery) {
+            jLog::log('Invalid "query" parameter in lizmap_search', 'lizmapadmin');
+            $rep->setHttpStatus(400, Proxy::getHttpStatusMsg(400));
+
             return $rep;
         }
 
         $repository = $this->param('repository');
         if (!$repository) {
-            // The parameter repository is mandatory !
+            jLog::log('Invalid "repository" parameter in lizmap_search', 'lizmapadmin');
+            $rep->setHttpStatus(400, Proxy::getHttpStatusMsg(400));
 
             return $rep;
         }
 
         $project = $this->param('project');
         if (!$project) {
-            // The parameter project is mandatory !
+            jLog::log('Invalid "project" parameter in lizmap_search', 'lizmapadmin');
+            $rep->setHttpStatus(400, Proxy::getHttpStatusMsg(400));
 
             return $rep;
         }
@@ -48,7 +57,8 @@ class searchFtsCtrl extends jController
         // Check repository
         $lrep = lizmap::getRepository($repository);
         if ($lrep == null) {
-            jLog::log('The repository '.$repository.' does not exist !', 'lizmapadmin');
+            jLog::log('The repository "'.$repository.'"" does not exist.', 'lizmapadmin');
+            $rep->setHttpStatus(400, Proxy::getHttpStatusMsg(400));
 
             return $rep;
         }
@@ -59,13 +69,15 @@ class searchFtsCtrl extends jController
         try {
             $lproj = lizmap::getProject($repository.'~'.$project);
             if ($lproj == null) {
-                jLog::log('The lizmap project '.$project.' does not exist !', 'lizmapadmin');
+                jLog::log('The lizmap project "'.$project.'" does not exist.', 'lizmapadmin');
+                $rep->setHttpStatus(400, Proxy::getHttpStatusMsg(400));
 
                 return $rep;
             }
         } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
             jLog::logEx($e, 'error');
-            jLog::log('The lizmap project '.$project.' does not exist !', 'lizmapadmin');
+            jLog::log('The lizmap project "'.$project.'" does not exist.', 'lizmapadmin');
+            $rep->setHttpStatus(400, Proxy::getHttpStatusMsg(400));
 
             return $rep;
         }
@@ -73,6 +85,7 @@ class searchFtsCtrl extends jController
         // Redirect if no rights to access this repository
         if (!$lproj->checkAcl()) {
             // jMessage::add(jLocale::get('view~default.repository.access.denied'), 'AuthorizationRequired');
+            $rep->setHttpStatus(403, Proxy::getHttpStatusMsg(403));
 
             return $rep;
         }

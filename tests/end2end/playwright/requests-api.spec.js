@@ -1,25 +1,8 @@
 // @ts-check
 import {expect, test} from '@playwright/test';
-import { requestWithAdminBasicAuth } from './globals';
-
-/**
- * Playwright Page
- * @typedef {import('@playwright/test').APIResponse} APIResponse
- */
+import { checkJson, requestWithAdminBasicAuth } from './globals';
 
 const url = 'api.php/admin';
-
-/**
- * Check for a JSON response about the metadata
- * @param {APIResponse} response The response object
- * @returns {Promise<any>} The JSON response
- */
-export async function checkJson(response) {
-    expect(response.ok()).toBeTruthy();
-    expect(response.status()).toBe(200);
-    expect(response.headers()['content-type']).toBe('application/json');
-    return await response.json();
-}
 
 test.describe('Not connected',
     {
