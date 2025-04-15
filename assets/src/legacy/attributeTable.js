@@ -6,6 +6,9 @@
  */
 
 import DataTable from 'datatables.net-bs5';
+import 'datatables.net-buttons-bs5';
+import DateTime from 'datatables.net-datetime';
+import 'datatables.net-searchbuilder-bs5';
 import DOMPurify from 'dompurify';
 import '../images/svg/filter-square.svg';
 
@@ -1469,6 +1472,28 @@ var lizAttributeTable = function() {
                         }
                     });
 
+                    // Add searchBuilder button
+                    // Disable live search to avoid searching on each keystroke
+                    // Only display columns that are sortable for search
+                    const searchBuilderButton = new DataTable.Buttons(oTable, {
+                        buttons: [
+                            {
+                                extend: 'searchBuilder',
+                                config: {
+                                    liveSearch: false,
+                                    columns: '.dt-orderable-asc'
+                                }
+                            }
+                        ]
+                    });
+
+                    // Attach searchBuilder button to attribute-layer-action-bar
+                    const actionBar = document.querySelector(aTable)
+                    .closest('.attribute-layer-content')
+                    .previousElementSibling;
+
+                    actionBar.insertAdjacentElement('afterbegin', searchBuilderButton.container()[0]);
+
                     // Unbind previous events on page
                     oTable.on( 'page', function() {
                         // unbind previous events
@@ -1521,7 +1546,7 @@ var lizAttributeTable = function() {
                     data: "lizSelected",
                     width: "25px",
                     searchable: false,
-                    sortable: true,
+                    sortable: false,
                     visible: false
                 });
                 firstDisplayedColIndex+=1;
