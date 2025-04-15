@@ -88,12 +88,14 @@ class project_restCtrl extends RestApiCtrl
     {
         try {
             $proj = $repo->getProject($this->param('proj'));
+            $projInfos = $proj->getFirstQgisConfigLine();
         } catch (Throwable $e) {
             return Error::setError($rep, 404, $e->getMessage());
         }
 
         $response = array(
             'id' => $proj->getKey(),
+            'projectname' => $projInfos['projectname'],
             'title' => $proj->getTitle(),
             'abstract' => $proj->getAbstract(),
             'keywordList' => $proj->getKeywordsList(),
@@ -103,6 +105,10 @@ class project_restCtrl extends RestApiCtrl
             'acl' => $proj->checkAcl(),
             'wmsGetCapabilitiesUrl' => $proj->getWMSGetCapabilitiesUrl(),
             'wmtsGetCapabilitiesUrl' => $proj->getWMTSGetCapabilitiesUrl(),
+            'version' => $projInfos['version'],
+            'saveDateTime' => $projInfos['saveDateTime'],
+            'saveUser' => $projInfos['saveUser'],
+            'saveUserFull' => $projInfos['saveUserFull'],
         );
 
         $rep->data = $response;
