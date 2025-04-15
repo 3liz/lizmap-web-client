@@ -717,13 +717,21 @@ SubDock
 }
 
 .attribute-layer-action-bar{
-  height:30px;
+  height:33px;
   border-bottom: 1px solid lightgrey;
 }
 
 .attribute-layer-action-bar .export-formats .dropdown-menu{
   max-height: 110px;
   overflow: auto;
+}
+
+.attribute-layer-action-bar .dt-buttons{
+  margin-right: 4px;
+}
+
+.attribute-layer-action-bar .dt-buttons > .btn {
+    padding: 2px 6px;
 }
 
 .btn-filterbyextent-attributeTable svg {
