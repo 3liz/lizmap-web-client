@@ -72,22 +72,6 @@
                             <dd>{$p->abstract|nl2br}&nbsp;</dd>
                         </div>
                     </dl>
-                    <dl class="row">
-                        <div class="col text-end">
-                            <dt>{@default.project.projection.label@}</dt>
-                        </div>
-                        <div class="col-8">
-                            <dd><span class="proj">{$p->proj}</span>&nbsp;</dd>
-                        </div>
-                    </dl>
-                    <dl class="row">
-                        <div class="col text-end">
-                            <dt>{@default.project.bbox.label@}</dt>
-                        </div>
-                        <div class="col-8">
-                            <dd><span class="bbox">{$p->bbox}</span></dd>
-                        </div>
-                    </dl>
                     {if $p->wmsGetCapabilitiesUrl}
                     <dl class="row">
                         <div class="col text-end">
