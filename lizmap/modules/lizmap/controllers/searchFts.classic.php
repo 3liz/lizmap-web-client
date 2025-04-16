@@ -69,12 +69,12 @@ class searchFtsCtrl extends jController
         try {
             $lproj = lizmap::getProject($repository.'~'.$project);
             if ($lproj == null) {
-                jLog::log('The lizmap project "'.$project.'" does not exist.', 'lizmapadmin');
+                jLog::log('Error while loading "'.$project.'" project', 'lizmapadmin');
                 $rep->setHttpStatus(400, Proxy::getHttpStatusMsg(400));
 
                 return $rep;
             }
-        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
+        } catch (UnknownLizmapProjectException $e) {
             jLog::logEx($e, 'error');
             jLog::log('The lizmap project "'.$project.'" does not exist.', 'lizmapadmin');
             $rep->setHttpStatus(400, Proxy::getHttpStatusMsg(400));
@@ -92,7 +92,7 @@ class searchFtsCtrl extends jController
 
         // Run query
         $fts = jClasses::getService('lizmap~lizmapFts');
-        $data = $fts->getData($lproj, $pquery, $this->boolParam('debug'));
+        $data = $fts::getData($lproj, $pquery, $this->boolParam('debug'));
 
         $rep->data = $data;
 
