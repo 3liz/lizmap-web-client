@@ -13,9 +13,14 @@ use Lizmap\Project\Project;
 
 class lizmapFts
 {
-    protected $sql;
-
-    protected function generateSql($project)
+    /**
+     * Generate the SQL for lizmap_search according to the given project.
+     *
+     * @param Project $project The QGIS project
+     *
+     * @return string The SQL query
+     */
+    protected static function generateSql($project)
     {
 
         // Build search query.
@@ -78,49 +83,8 @@ class lizmapFts
         ORDER BY sim DESC, item_label
         LIMIT :lim;
         ';
-        $this->sql = $sql;
-    }
 
-    protected function getSql($project)
-    {
-        $this->generateSql($project);
-
-        return $this->sql;
-    }
-
-    /**
-     * Get data from database and return an array.
-     *
-     * @param string      $sql          Query to run
-     * @param mixed       $filterParams
-     * @param null|string $profile      Name of the DB profile
-     *
-     * @return array<object> as an array
-     */
-    protected function query($sql, $filterParams, $profile = null)
-    {
-        if (!$profile) {
-            $profile = 'search';
-        }
-
-        try {
-            // try to get the specific search profile to do not rebuild it
-            jProfiles::get('jdb', $profile, true);
-        } catch (Exception $e) {
-            // else use default
-            $profile = null;
-        }
-
-        try {
-            $cnx = jDb::getConnection($profile);
-            $resultset = $cnx->prepare($sql);
-            $resultset->execute($filterParams);
-            $result = $resultset->fetchAll();
-        } catch (Exception $e) {
-            $result = array();
-        }
-
-        return $result;
+        return $sql;
     }
 
     /**
@@ -133,9 +97,9 @@ class lizmapFts
      *
      * @return List of matching places
      */
-    public function getData($project, $term, $debug, $limit = 40)
+    public static function getData($project, $term, $debug, $limit = 40)
     {
-        $sql = $this->getSql($project);
+        $sql = lizmapFts::generateSql($project);
         $data = array();
 
         try {
@@ -152,7 +116,21 @@ class lizmapFts
                 );
             }
 
-            $result = $this->query($sql, $params);
+            $profile = 'search';
+
+            try {
+                // try to get the specific search profile to do not rebuild it
+                jProfiles::get('jdb', $profile, true);
+            } catch (Exception $e) {
+                // else use default
+                $profile = null;
+            }
+
+            $cnx = jDb::getConnection($profile);
+            $resultSet = $cnx->prepare($sql);
+            $resultSet->execute($params);
+
+            $result = $resultSet->fetchAll();
 
             // Limitations
             $limit_tot = 60;
@@ -192,6 +170,11 @@ class lizmapFts
             }
         } catch (Exception $e) {
             $data = array();
+            jLog::log(
+                'An error has been raised when executing lizmap_search on "'.$project->getKey().'":'.$e->getMessage(),
+                'lizmapadmin'
+            );
+            jLog::logEx($e, 'error');
         }
 
         return $data;
