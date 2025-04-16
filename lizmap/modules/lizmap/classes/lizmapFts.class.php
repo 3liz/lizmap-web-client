@@ -13,8 +13,6 @@ use Lizmap\Project\Project;
 
 class lizmapFts
 {
-    protected $sql;
-
     /**
      * Generate the SQL for lizmap_search according to the given project.
      *
@@ -90,50 +88,6 @@ class lizmapFts
     }
 
     /**
-     * Get SQL for the given project.
-     *
-     * @param Project $project The QGIS project
-     *
-     * @return string The SQL query
-     */
-    protected function getSql($project)
-    {
-        $this->sql = $this->generateSql($project);
-
-        return $this->sql;
-    }
-
-    /**
-     * Get data from database and return an array.
-     *
-     * @param string      $sql          Query to run
-     * @param mixed       $filterParams
-     * @param null|string $profile      Name of the DB profile
-     *
-     * @return array<object> as an array
-     */
-    protected static function query($sql, $filterParams, $profile = null)
-    {
-        if (!$profile) {
-            $profile = 'search';
-        }
-
-        try {
-            // try to get the specific search profile to do not rebuild it
-            jProfiles::get('jdb', $profile, true);
-        } catch (Exception $e) {
-            // else use default
-            $profile = null;
-        }
-
-        $cnx = jDb::getConnection($profile);
-        $resultSet = $cnx->prepare($sql);
-        $resultSet->execute($filterParams);
-
-        return $resultSet->fetchAll();
-    }
-
-    /**
      * Method called by the autocomplete input field for place search.
      *
      * @param Project $project
@@ -143,9 +97,9 @@ class lizmapFts
      *
      * @return List of matching places
      */
-    public function getData($project, $term, $debug, $limit = 40)
+    public static function getData($project, $term, $debug, $limit = 40)
     {
-        $sql = $this->getSql($project);
+        $sql = lizmapFts::generateSql($project);
         $data = array();
 
         try {
@@ -162,7 +116,21 @@ class lizmapFts
                 );
             }
 
-            $result = $this->query($sql, $params);
+            $profile = 'search';
+
+            try {
+                // try to get the specific search profile to do not rebuild it
+                jProfiles::get('jdb', $profile, true);
+            } catch (Exception $e) {
+                // else use default
+                $profile = null;
+            }
+
+            $cnx = jDb::getConnection($profile);
+            $resultSet = $cnx->prepare($sql);
+            $resultSet->execute($params);
+
+            $result = $resultSet->fetchAll();
 
             // Limitations
             $limit_tot = 60;
