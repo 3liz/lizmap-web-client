@@ -157,14 +157,17 @@ Example:
 export LZMPGPORT=8150
 export LZMWEBPORT=8151
 export LZMQGSRVPORT=8152
+export QGSRVAPIPORT=8134
 
 ./run-docker up -d
 
-# you can then open browser at http://localhost:8151/
+# you can then open browser at :
+# http://localhost:8151/ for Lizmap Web Client
+# http://localhost:8134/ for Py-QGIS-Server
 
 ```
 
-## Changing PHP, postgresql and QGIS versions
+## Changing PHP, PostgreSQL and QGIS versions
 
 You can change the version of some softwares to use, by setting
 some environment variables:
