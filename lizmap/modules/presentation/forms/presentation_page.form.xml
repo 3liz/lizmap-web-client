@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://jelix.org/ns/forms/1.1">
+
+    <hidden ref="id"></hidden>
+    <hidden ref="uuid"></hidden>
+    <hidden ref="presentation_id"></hidden>
+    <hidden ref="presentation_uuid"></hidden>
+    <hidden ref="repository"></hidden>
+    <hidden ref="project"></hidden>
+    <hidden ref="page_order"></hidden>
+    <hidden ref="map_extent"></hidden>
+    <hidden ref="tree_state"></hidden>
+    <hidden ref="illustration_feature"></hidden>
+
+    <hidden ref="submit_button" defaultvalue="submit"></hidden>
+    <hidden ref="item_type" defaultvalue="page"></hidden>
+
+
+    <group ref="identification">
+        <label locale="presentation~presentation.form.presentation_page.group.identification.label"/>
+
+        <input ref="title" type="string" required="true">
+            <label locale="presentation~presentation.form.presentation_page.title.label" />
+            <hint locale="presentation~presentation.form.presentation_page.title.hint" />
+        </input>
+
+        <checkbox ref="title_visible" required="false">
+            <label locale="presentation~presentation.form.presentation_page.title_visible.label" />
+            <hint locale="presentation~presentation.form.presentation_page.title_visible.hint" />
+        </checkbox>
+
+        <menulist ref="title_align" required="false">
+            <label locale="presentation~presentation.form.presentation_page.title_align.label" />
+            <hint locale="presentation~presentation.form.presentation_page.title_align.hint" />
+            <item locale="presentation~presentation.form.presentation_page.title_align.left.label" value="left" selected="true"/>
+            <item locale="presentation~presentation.form.presentation_page.title_align.center.label" value="center" />
+            <item locale="presentation~presentation.form.presentation_page.title_align.right.label" value="right" />
+        </menulist>
+
+        <htmleditor ref="description" required="true" rows="5" config="default" >
+            <label locale="presentation~presentation.form.presentation_page.description.label" />
+            <hint locale="presentation~presentation.form.presentation_page.description.hint" />
+        </htmleditor>
+
+        <menulist ref="model" required="true">
+            <label locale="presentation~presentation.form.presentation_page.model.label" />
+            <hint locale="presentation~presentation.form.presentation_page.model.hint" />
+            <item locale="presentation~presentation.form.presentation_page.model.text.label" value="text" selected="true"/>
+            <item locale="presentation~presentation.form.presentation_page.model.media.label" value="media" />
+            <item locale="presentation~presentation.form.presentation_page.model.text-left-media.label" value="text-left-media" />
+            <item locale="presentation~presentation.form.presentation_page.model.media-left-text.label" value="media-left-text" />
+            <item locale="presentation~presentation.form.presentation_page.model.text-above-media.label" value="text-above-media" />
+            <item locale="presentation~presentation.form.presentation_page.model.media-above-text.label" value="media-above-text" />
+        </menulist>
+    </group>
+
+
+
+    <group ref="map">
+        <label locale="presentation~presentation.form.presentation_page.group.map.label"/>
+
+    </group>
+
+
+    <group ref="illustration">
+        <label locale="presentation~presentation.form.presentation_page.group.illustration.label"/>
+
+        <menulist ref="illustration_type" required="false">
+            <label locale="presentation~presentation.form.presentation_page.illustration_type.label" />
+            <hint locale="presentation~presentation.form.presentation_page.illustration_type.hint" />
+            <item locale="presentation~presentation.form.presentation_page.illustration_type.image.label" value="image" selected="true" />
+            <item locale="presentation~presentation.form.presentation_page.illustration_type.video.label" value="video" />
+            <!-- <item locale="presentation~presentation.form.presentation_page.illustration_type.iframe.label" value="iframe" />
+            <item locale="presentation~presentation.form.presentation_page.illustration_type.popup.label" value="popup" /> -->
+        </menulist>
+
+        <upload2 ref="illustration_media" mimetype="image/jpeg;image/jpg;image/png;image/webp;video/mp4;video/webm;video/mp4" maxsize="20971520">
+            <label locale="presentation~presentation.form.presentation_page.illustration_media.label"/>
+            <hint locale="presentation~presentation.form.presentation_page.illustration_media.hint" />
+        </upload2>
+
+        <input ref="illustration_url" type="url" required="false">
+            <label locale="presentation~presentation.form.presentation_page.illustration_url.label" />
+            <hint locale="presentation~presentation.form.presentation_page.illustration_url.hint" />
+        </input>
+
+        <menulist ref="illustration_display" required="false">
+            <label locale="presentation~presentation.form.presentation_page.illustration_display.label"/>
+            <hint locale="presentation~presentation.form.presentation_page.illustration_display.hint" />
+            <item value="cover" selected="true" locale="presentation~presentation.form.presentation_page.illustration_display.cover"/>
+            <item value="contain" locale="presentation~presentation.form.presentation_page.illustration_display.contain"/>
+            <item value="stretch" locale="presentation~presentation.form.presentation_page.illustration_display.stretch"/>
+        </menulist>
+    </group>
+
+
+
+    <group ref="background">
+        <label locale="presentation~presentation.form.presentation_page.group.background.label"/>
+
+        <input ref="text_color" type="string" required="false" defaultvalue="#000000" >
+            <label locale="presentation~presentation.form.presentation_page.text_color.label" />
+            <hint locale="presentation~presentation.form.presentation_page.text_color.hint" />
+        </input>
+
+        <input ref="background_color" type="string" required="false" defaultvalue="#FFFFFF">
+            <label locale="presentation~presentation.form.presentation_page.background_color.label" />
+            <hint locale="presentation~presentation.form.presentation_page.background_color.hint" />
+        </input>
+
+        <image ref="background_image" mimetype="image/jpeg;image/jpg;image/png;image/webp" maxsize="5242880" maxWidth="2000" maxHeight="2000">
+            <label locale="presentation~presentation.form.presentation_page.background_image.label"/>
+            <hint locale="presentation~presentation.form.presentation_page.background_image.hint" />
+        </image>
+
+        <menulist ref="background_display" required="false">
+            <label locale="presentation~presentation.form.presentation_page.background_display.label"/>
+            <hint locale="presentation~presentation.form.presentation_page.background_display.hint" />
+            <item value="cover" selected="true" locale="presentation~presentation.form.presentation_page.background_display.cover"/>
+            <item value="contain" locale="presentation~presentation.form.presentation_page.background_display.contain"/>
+            <item value="stretch" locale="presentation~presentation.form.presentation_page.background_display.stretch"/>
+        </menulist>
+
+
+    </group>
+
+
+
+    <reset ref="reinit">
+        <label locale="presentation~presentation.form.presentation_page.reinit.label" />
+    </reset>
+
+    <submit ref="cancel">
+        <label locale="presentation~presentation.form.presentation_page.cancel.label" />
+    </submit>
+
+    <submit ref="submit">
+        <label locale="presentation~presentation.form.presentation_page.submit.label" />
+    </submit>
+</form>

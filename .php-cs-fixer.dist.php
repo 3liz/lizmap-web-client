@@ -11,6 +11,7 @@ $finder = Finder::create()
         __DIR__.'/lizmap/modules/dataviz',
         __DIR__.'/lizmap/modules/filter',
         __DIR__.'/lizmap/modules/lizmap',
+        __DIR__.'/lizmap/modules/presentation',
         __DIR__.'/lizmap/modules/view',
         __DIR__.'/lizmap/plugins/',
         __DIR__.'/lizmap/app/responses',

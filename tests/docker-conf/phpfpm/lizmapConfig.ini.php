@@ -59,6 +59,11 @@ path="/srv/lzm/tests/qgis-projects/tests/"
 allowUserDefinedThemes=1
 accessControlAllowOrigin="http://othersite.local:8130"
 
+[repository:presentations]
+label="Presentations"
+path="/srv/lzm/tests/qgis-projects/presentations/"
+allowUserDefinedThemes=1
+
 [repository:private]
 label="Private repository"
 path="/srv/lzm/tests/qgis-projects/CONFIDENTIAL/"
