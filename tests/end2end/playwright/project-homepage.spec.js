@@ -1,7 +1,7 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 
-test.describe('Projects homepage', function () {
+test.describe('Projects homepage @readonly', function () {
 
     test.beforeEach(async ({ page }) => {
         const url = '/index.php/view/';
@@ -10,56 +10,66 @@ test.describe('Projects homepage', function () {
 
     test('should display project metadata (cold cache)', async function ({ page }) {
 
-        const allmetadata = page.locator('.liz-project-desc').filter({ hasText: 'Test tags: nature, flower' });
-        await expect(allmetadata).not.toBeVisible();
+        let project = page.locator('.liz-project').filter({ hasText: 'Test tags: nature, flower' });
+        await expect(project).toHaveAttribute(
+            "data-lizmap-proj",'EPSG:4326');
+        await expect(project).toHaveAttribute(
+            "data-lizmap-bbox", '-1.2459627329192546, -1.0, 1.2459627329192546, 1.0');
 
-        await page.getByRole('link').filter({ has: allmetadata }).hover();
-        await expect(allmetadata).toBeVisible();
-        await expect(allmetadata.locator('.title')).toContainText('Test tags: nature, flower');
-        await expect(allmetadata.locator('.abstract')).toContainText('This is an abstract');
-        await expect(allmetadata.locator('.keywordList')).toContainText('nature, flower');
-        await expect(allmetadata.locator('.proj')).toContainText('EPSG:4326');
-        await expect(allmetadata.locator('.bbox')).toContainText('-1.2459627329192546, -1.0, 1.2459627329192546, 1.0');
+        const allMetadata = await project.locator('.liz-project-desc');
+        await expect(allMetadata).not.toBeVisible();
+
+        await project.hover();
+        await expect(allMetadata).toBeVisible();
+        await expect(allMetadata.locator('.title')).toContainText('Test tags: nature, flower');
+        await expect(allMetadata.locator('.abstract')).toContainText('This is an abstract');
+        await expect(allMetadata.locator('.keywordList')).toContainText('nature, flower');
 
         // hover on header
         await page.locator('#headermenu').hover();
-        await expect(allmetadata).not.toBeVisible();
+        await expect(allMetadata).not.toBeVisible();
 
         // another project
-        const allmetadataTree = page.locator('.liz-project-desc').filter({ hasText: 'Tests tags: nature, tree' });
-        await expect(allmetadataTree).not.toBeVisible();
+        project = page.locator('.liz-project').filter({ hasText: 'Tests tags: nature, tree' });
+        await expect(project).toHaveAttribute(
+            "data-lizmap-proj",'EPSG:4326');
+        await expect(project).toHaveAttribute(
+            "data-lizmap-bbox", '-1.2459627329192546, -1.0, 1.2459627329192546, 1.0');
 
-        await page.getByRole('link').filter({ has: allmetadataTree }).hover();
-        await expect(allmetadataTree).toBeVisible();
-        await expect(allmetadataTree.locator('.title')).toContainText('Tests tags: nature, tree');
-        await expect(allmetadataTree.locator('.abstract')).toContainText('Tags: nature, tree');
-        await expect(allmetadataTree.locator('.keywordList')).toContainText('nature, tree');
-        await expect(allmetadataTree.locator('.proj')).toContainText('EPSG:4326');
-        await expect(allmetadataTree.locator('.bbox')).toContainText('-1.2459627329192546, -1.0, 1.2459627329192546, 1.0');
+        const allMetadataTree = project.locator('.liz-project-desc');
+        await expect(allMetadataTree).not.toBeVisible();
+
+        await project.hover();
+        await expect(allMetadataTree).toBeVisible();
+        await expect(allMetadataTree.locator('.title')).toContainText('Tests tags: nature, tree');
+        await expect(allMetadataTree.locator('.abstract')).toContainText('Tags: nature, tree');
+        await expect(allMetadataTree.locator('.keywordList')).toContainText('nature, tree');
 
         // hover on header
         await page.locator('#headermenu').hover();
-        await expect(allmetadataTree).not.toBeVisible();
+        await expect(allMetadataTree).not.toBeVisible();
 
     });
 
     test('should display project metadata (hot cache)', async function ({ page }) {
 
+        const project = page.locator('.liz-project').filter({ hasText: 'Test tags: nature, flower' });
+        await expect(project).toHaveAttribute(
+            "data-lizmap-proj",'EPSG:4326');
+        await expect(project).toHaveAttribute(
+            "data-lizmap-bbox", '-1.2459627329192546, -1.0, 1.2459627329192546, 1.0');
+        const allMetadata = project.locator('.liz-project-desc');
+        await expect(allMetadata).not.toBeVisible();
 
-        const allmetadata = page.locator('.liz-project-desc').filter({ hasText: 'Test tags: nature, flower' });
-        await expect(allmetadata).not.toBeVisible();
-
-        await page.getByRole('link').filter({ has: allmetadata }).hover();
-        await expect(allmetadata).toBeVisible();
-        await expect(allmetadata.locator('.title')).toContainText('Test tags: nature, flower');
-        await expect(allmetadata.locator('.abstract')).toContainText('This is an abstract');
-        await expect(allmetadata.locator('.keywordList')).toContainText('nature, flower');
-        await expect(allmetadata.locator('.proj')).toContainText('EPSG:4326');
-        await expect(allmetadata.locator('.bbox')).toContainText('-1.2459627329192546, -1.0, 1.2459627329192546, 1.0');
+        await project.hover();
+        await expect(allMetadata).toBeVisible();
+        await expect(allMetadata.locator('.title')).toContainText('Test tags: nature, flower');
+        await expect(allMetadata.locator('.abstract')).toContainText('This is an abstract');
+        await expect(allMetadata.locator('.keywordList')).toContainText('nature, flower');
 
         // hover on header
         await page.locator('#headermenu').hover();
-        await expect(allmetadata).not.toBeVisible();
+        await expect(allMetadata).not.toBeVisible();
 
     });
 });
