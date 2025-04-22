@@ -1,7 +1,7 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 import { gotoMap } from './globals';
-import {ProjectPage} from "./pages/project";
+import { ProjectPage } from "./pages/project";
 
 test.describe('Dataviz in popup', () => {
     test('Check lizmap feature toolbar', async ({ page }) => {
@@ -235,7 +235,7 @@ test.describe('Raster identify',
             const project = new ProjectPage(page, 'rasters');
             await project.open();
 
-            let getFeatureInfoPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true);
+            let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
 
             await project.clickOnMap(510, 415);
 
