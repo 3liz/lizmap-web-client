@@ -16,6 +16,7 @@
       <div id="liz-project-{$mi->id}-{$p->id}" class="liz-project"
         data-lizmap-repository="{$mi->id}"
         data-lizmap-project="{$p->id}"
+        data-lizmap-keywords="{$p->keywordList}"
         data-lizmap-bbox="{$p->bbox}"
         data-lizmap-proj="{$p->proj}">
         <a class="liz-project-view" href="{$p->url}{if $hide_header}&h=0{/if}">
@@ -26,9 +27,6 @@
             <br/><b>{@default.project.abstract.label@}</b>&nbsp;: <span class="abstract">{$p->abstract|strip_tags|truncate:100}</span>
             <br/>
             <br/><b>{@default.project.keywordList.label@}</b>&nbsp;: <span class="keywordList">{$p->keywordList}</span>
-            <br/>
-            <br/><b>{@default.project.projection.label@}</b>&nbsp;: <span class="proj">{$p->proj}</span>
-            <br/><b>{@default.project.bbox.label@}</b>&nbsp;: <span class="bbox">{$p->bbox}</span>
           </p>
         </a>
       </div>
