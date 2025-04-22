@@ -43,6 +43,7 @@ const optionalProperties = {
     'opacity': {type: 'number', default:1},
     'noLegendImage': {type: 'boolean', default:false},
     'legend_image_option': {type: 'string', nullable: true},
+    'children_lizmap_features_table': {type: 'boolean', default:false},
     'mutuallyExclusive': {type: 'boolean', default: false},
     'externalWmsToggle': {type: 'boolean', default: false},
     'externalAccess': {type: 'object'},
@@ -86,6 +87,7 @@ export class LayerConfig extends BaseObjectConfig {
      * @param {number}   [cfg.opacity]             - the layer opacity defined in QGIS project
      * @param {boolean}  [cfg.noLegendImage]       - the layer no legend image activation
      * @param {string}   [cfg.legend_image_option] - the layer legend image option
+     * @param {boolean}  [cfg.children_lizmap_features_table] - the layer popup display children as lizmap-features-table
      * @param {boolean}  [cfg.mutuallyExclusive]   - the layer mutuallyExclusive (only group type)
      * @param {boolean}  [cfg.externalWmsToggle]   - the layer provides parameters for external access
      * @param {object}   [cfg.externalAccess]      - the layer external access
@@ -244,6 +246,14 @@ export class LayerConfig extends BaseObjectConfig {
      */
     get popupDisplayChildren() {
         return this._popupDisplayChildren;
+    }
+
+    /**
+     * The layer popup display children as lizmap-features-table activation
+     * @type {boolean}
+     */
+    get childrenLizmapFeaturesTable() {
+        return this._children_lizmap_features_table;
     }
 
     /**

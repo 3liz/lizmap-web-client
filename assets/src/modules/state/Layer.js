@@ -854,6 +854,14 @@ export class LayerVectorState extends LayerLayerState {
     }
 
     /**
+     * The layer popup display children as lizmap-features-table activation
+     * @type {boolean}
+     */
+    get childrenLizmapFeaturesTable() {
+        return this.layerConfig.childrenLizmapFeaturesTable;
+    }
+
+    /**
      * Vector layer has selected features
      * The selected features is not empty
      * @type {boolean}
