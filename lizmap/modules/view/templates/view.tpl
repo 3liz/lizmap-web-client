@@ -17,17 +17,12 @@
         data-lizmap-repository="{$mi->id}"
         data-lizmap-project="{$p->id}"
         data-lizmap-keywords="{$p->keywordList}"
+        data-lizmap-title="{$p->title}"
+        data-lizmap-abstract="{$p->abstract}"
         data-lizmap-bbox="{$p->bbox}"
         data-lizmap-proj="{$p->proj}">
         <a class="liz-project-view" href="{$p->url}{if $hide_header}&h=0{/if}">
           <img width="250" height="250" loading="lazy" src="{$p->img}" alt="project image" class="_liz-project-img img-fluid">
-          <p class="liz-project-desc" >
-            <b class="title">{$p->title}</b>
-            <br/>
-            <br/><b>{@default.project.abstract.label@}</b>&nbsp;: <span class="abstract">{$p->abstract|strip_tags|truncate:100}</span>
-            <br/>
-            <br/><b>{@default.project.keywordList.label@}</b>&nbsp;: <span class="keywordList">{$p->keywordList}</span>
-          </p>
         </a>
       </div>
       <h5 class="liz-project-title">{$p->title}</h5>

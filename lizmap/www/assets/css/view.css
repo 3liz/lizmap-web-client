@@ -20,27 +20,8 @@
   max-width:100%;
 }
 
-.liz-project-desc {
-  color: white;
-  font-size: 0;
-  line-height: 0em;
-  position: absolute;
-  bottom:-1px;
-  right:0;
-  left:0;
-  text-align: left;
-  text-transform: none;
-  background-color: rgb(0 0 0 / 50%);
-  padding:0;
-  margin:0;
-  overflow-wrap: break-word;
-}
-
-.liz-project:hover .liz-project-desc {
-  line-height: 0.8em;
-  transition: line-height 300ms ease-in;
-  padding:5px;
-  font-size: 0.8em;
+.liz-project:hover {
+  background-color: #f8faff;
 }
 
 
