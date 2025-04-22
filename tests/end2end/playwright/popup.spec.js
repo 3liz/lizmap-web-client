@@ -289,6 +289,31 @@ test.describe('Popup',
             await expect(project.map.locator('#liz_layer_popup .lizmapPopupChildren .lizmapPopupSingleFeature')).toHaveCount(2);
         });
 
+        test('displays children in lizmap-features-table', async ({ page }) => {
+            await page.route('**/service/getProjectConfig*', async route => {
+                const response = await route.fetch();
+                const json = await response.json();
+                json.layers.dnd_popup['children_lizmap_features_table'] = true;
+                json.layers.dnd_popup['popupDisplayChildren'] = 'False';
+                await route.fulfill({ response, json });
+            });
+
+            const project = new ProjectPage(page, 'popup');
+            await project.open();
+
+            let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
+
+            await project.clickOnMap(510, 415);
+            await getFeatureInfoPromise;
+            await expect(await project.map.locator('#liz_layer_popup lizmap-features-table')).toHaveCount(1);
+            const lizmapFeaturesTable = await project.map.locator('#liz_layer_popup lizmap-features-table');
+            await expect(lizmapFeaturesTable).toHaveAttribute('layerId');
+            await expect(lizmapFeaturesTable).toHaveAttribute('layerTitle', 'children_layer');
+            await expect(lizmapFeaturesTable).toHaveAttribute('uniqueField', 'id');
+            await expect(lizmapFeaturesTable).toHaveAttribute('expressionFilter', 'parent_id = \'1\'');
+            await page.unroute('**/service/getProjectConfig*');
+        });
+
         test('getFeatureInfo request should contain a FILTERTOKEN parameter when the layer is filtered', async ({ page }) => {
             const project = new ProjectPage(page, 'popup');
             await project.open();
