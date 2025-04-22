@@ -246,7 +246,10 @@ test.describe('Raster identify',
     });
 });
 
-test.describe('Popup', () => {
+test.describe('Popup',
+    {
+        tag: ['@readonly'],
+    },() => {
 
     test('click on the shape to show the popup', async ({ page }) => {
         const project = new ProjectPage(page, 'popup');
