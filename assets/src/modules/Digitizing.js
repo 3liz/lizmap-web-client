@@ -392,7 +392,7 @@ export class Digitizing {
             minidockopened: (e) => {
                 if (e.id == 'measure') {
                     this.toolSelected = this._tools[0];
-                } else if (['draw', 'selectiontool', 'print'].includes(e.id)) {
+                } else if (['draw', 'print'].includes(e.id)) {
                     // Display draw for print redlining
                     this.context = e.id === 'print' ? 'draw' : e.id;
                 }
