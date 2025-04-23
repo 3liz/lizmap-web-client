@@ -84,20 +84,28 @@ export default class Digitizing extends HTMLElement {
 
     connectedCallback() {
 
+        // Update available tools from attribute
         if (this.hasAttribute('available-tools')) {
             const attrAvailableTools = this.getAttribute('available-tools')
                 .split(',')
                 .map((item) => item.trim())
                 .filter((item) => this._availableTools.includes(item));
+            // update only if available tools will not be empty
             if (attrAvailableTools.length > 0) {
                 this._availableTools = attrAvailableTools;
             }
         }
+        // Update selected tool from attribute
         if (this.hasAttribute('selected-tool')) {
             const attrToolSelected = this.getAttribute('selected-tool');
+            // update only if the selected tool is known
             if (this._availableTools.includes(attrToolSelected)) {
                 this._toolSelected = attrToolSelected;
             }
+        }
+        // Set selected tool if only one tool is available
+        if (this._availableTools.length === 1) {
+            this._toolSelected = this._availableTools[0];
         }
 
         const svgToolIconTemplate = (tool) => {
@@ -107,6 +115,56 @@ export default class Digitizing extends HTMLElement {
                 </svg>
             `;
         }
+
+        const toolButtonTemplate = (availableTools, toolSelected) => html`
+            <div
+                class="digitizing-buttons btn-group dropend"
+                data-bs-toggle="tooltip"
+                data-bs-title="${lizDict['digitizing.toolbar.drawTools']}"
+                >
+                <button
+                    type="button"
+                    class="digitizing-selected-tool btn ${this.deactivate ? '' : 'active btn-primary'}"
+                    value="${toolSelected}"
+                    @click=${(event) => {this.toggleToolSelected(event)}}
+                    >
+                    <svg>
+                        <use xlink:href="#pencil"></use>
+                    </svg>
+                    <!-- Display selected tool -->
+                    ${availableTools
+                        .filter(tool => toolSelected === tool)
+                        .map(tool => html`
+                            ${svgToolIconTemplate(tool)}
+                        `)
+                    }
+                </button>
+                ${availableTools.length != 1 ? html`
+                <button
+                    type="button"
+                    class="btn dropdown-toggle dropdown-toggle-split"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                    >
+                    <span class="visually-hidden">Toggle Dropdown</span>
+                </button>
+                <ul class="dropdown-menu">
+                    ${availableTools
+                        .map(tool => html`
+                        <li
+                            class="digitizing-${tool} btn ${toolSelected === tool ? 'active btn-primary' : ''}"
+                            @click=${(event) => this.selectTool(event.currentTarget.dataset.value)}
+                            data-value="${tool}"
+                            data-bs-toggle="tooltip"
+                            data-bs-title="${lizDict['digitizing.toolbar.'+tool]}"
+                            >
+                            ${svgToolIconTemplate(tool)}
+                        </li>
+                        `)
+                    }
+                </ul>` : ''}
+            </div>
+        `;
 
         const measureButtonTemplate = (hasMeasureVisible) => html`
             <button
@@ -205,52 +263,7 @@ export default class Digitizing extends HTMLElement {
 
         const mainTemplate = (toolSelected) => html`
         <div class="digitizing">
-            <div
-                class="digitizing-buttons btn-group dropend"
-                data-bs-toggle="tooltip"
-                data-bs-title="${lizDict['digitizing.toolbar.drawTools']}"
-                >
-                <button
-                    type="button"
-                    class="digitizing-selected-tool btn ${this.deactivate ? '' : 'active btn-primary'}"
-                    value="${toolSelected}"
-                    @click=${(event) => {this.toggleToolSelected(event)}}
-                    >
-                    <svg>
-                        <use xlink:href="#pencil"></use>
-                    </svg>
-                    <!-- Display selected tool -->
-                    ${this._availableTools
-                        .filter(tool => toolSelected === tool)
-                        .map(tool => html`
-                            ${svgToolIconTemplate(tool)}
-                        `)
-                    }
-                </button>
-                <button
-                    type="button"
-                    class="btn dropdown-toggle dropdown-toggle-split"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                    >
-                    <span class="visually-hidden">Toggle Dropdown</span>
-                </button>
-                <ul class="dropdown-menu">
-                    ${this._availableTools
-                        .map(tool => html`
-                        <li
-                            class="digitizing-${tool} btn ${toolSelected === tool ? 'active btn-primary' : ''}"
-                            @click=${(event) => this.selectTool(event.currentTarget.dataset.value)}
-                            data-value="${tool}"
-                            data-bs-toggle="tooltip"
-                            data-bs-title="${lizDict['digitizing.toolbar.'+tool]}"
-                            >
-                            ${svgToolIconTemplate(tool)}
-                        </li>
-                        `)
-                    }
-                </ul>
-            </div>
+            ${toolButtonTemplate(this._availableTools, toolSelected)}
             <input
                 type="color"
                 class="digitizing-color btn"
