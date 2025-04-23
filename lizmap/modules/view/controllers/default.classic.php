@@ -124,6 +124,12 @@ class defaultCtrl extends jController
             $requiredQgisVersion = jApp::config()->minimumRequiredVersion['qgisServer'];
             $currentQgisVersion = $server->getQgisServerVersion();
 
+            // Check QGIS server wrapper
+            $isQgisWrapperOk = $server->checkQgisServerWrapper();
+            if (!$isQgisWrapperOk) {
+                $checkServerInformation = true;
+            }
+
             // Check Lizmap server status
             $requiredLizmapVersion = jApp::config()->minimumRequiredVersion['lizmapServerPlugin'];
             $currentLizmapVersion = $server->getLizmapPluginServerVersion();
