@@ -50,6 +50,13 @@ lizmapDesktopPluginDate="2025-02-14"
 ; 3 versions behind the current version of LWC
 lizmapWebClientTargetVersion=30600
 
+[qgisWrapper]
+; If off, FCGI is not allowed, only Py-QGIS-Server or QJazz
+; https://docs.lizmap.com/current/en/install/py-qgis-server.html
+; https://docs.3liz.org/py-qgis-server/
+; https://github.com/3liz/qjazz
+allowFcgi=off
+
 [lizmap]
 ; CSP header for the map interface
 ; Exemple value: "default-src 'self' http: https:;connect-src 'self' http: https:;script-src http: https: 'unsafe-inline' 'unsafe-eval'; style-src http: https: 'unsafe-inline';object-src 'none';font-src https:;base-uri 'self';form-action 'self' http: https:;img-src http: https: data: blob:;frame-ancestors http: https:"
