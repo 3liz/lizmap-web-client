@@ -6,7 +6,7 @@
  * @license MPL-2.0
  */
 
-import {mainLizmap} from '../modules/Globals.js';
+import { mainLizmap, mainEventDispatcher} from '../modules/Globals.js';
 
 /**
  * @class
@@ -83,9 +83,16 @@ export default class ActionSelector extends HTMLElement {
         // Get the selected action name
         const actionName = select.value;
 
-        // Change the status of the deactivate button
-        host.querySelector('button.action-run-button').disabled = (!actionName);
-        host.querySelector('button.action-deactivate-button').disabled = (!actionName);
+        // Deactivate button
+        host.querySelector('button.action-run-button').disabled = true;
+        host.querySelector('button.action-deactivate-button').disabled = true;
+
+        // Deactivate digitizing
+        mainLizmap.digitizing.toolSelected = 'deactivate';
+        mainLizmap.digitizing.toggleVisibility(false);
+        // Add feature drawn listener
+        mainEventDispatcher.removeListener(host.onDigitizingFeatureDrawn.bind(host), 'digitizing.featureDrawn');
+        mainEventDispatcher.removeListener(host.onDigitizingFeatureErase.bind(host), 'digitizing.erase.all');
 
         // Build the description
         const descriptionSpan = host.querySelector('.action-description');
@@ -98,18 +105,20 @@ export default class ActionSelector extends HTMLElement {
                 description = action.description;
             }
             if (action?.geometry) {
+                // Add digitizing component
                 const actionDigitizing = `<div id="action-digitizing"><lizmap-digitizing context="action" selected-tool="${action.geometry}" available-tools="${action.geometry}"></lizmap-digitizing><div id="action-message-html"></div></div>`;
                 document.querySelector('.action-selector-container').insertAdjacentHTML('afterend', actionDigitizing);
+                // Activate digitizing module
                 mainLizmap.digitizing.context = "action";
                 mainLizmap.digitizing.singlePartGeometry = true;
                 mainLizmap.digitizing.toggleVisibility(true);
+                // Add feature drawn listener
+                mainEventDispatcher.addListener(host.onDigitizingFeatureDrawn.bind(host), 'digitizing.featureDrawn');
+                mainEventDispatcher.addListener(host.onDigitizingFeatureErase.bind(host), 'digitizing.erase.all');
             } else {
-                mainLizmap.digitizing.toolSelected = 'deactivate';
-                mainLizmap.digitizing.toggleVisibility(false);
+                // Activate Run button
+                host.querySelector('button.action-run-button').disabled = false;
             }
-        } else {
-            mainLizmap.digitizing.toolSelected = 'deactivate';
-            mainLizmap.digitizing.toggleVisibility(false);
         }
 
         descriptionSpan.textContent = description;
@@ -126,16 +135,39 @@ export default class ActionSelector extends HTMLElement {
         const actionName = select.value;
 
         if (actionName) {
-            mainLizmap.action.runLizmapAction(actionName, host.scope, host.layerId, null, null);
+            mainLizmap.action
+                .runLizmapAction(actionName, host.scope, host.layerId, null, null)
+                .then(() => host.querySelector('button.action-deactivate-button').disabled = false);
         } else {
             lizMap.addMessage(host.noSelectionWarning, 'warning', true).attr('id', 'lizmap-action-message');
         }
     }
 
-    onActionDeactivateClick() {
+    onActionDeactivateClick(event) {
         // Deactivate the current active action
-        mainLizmap.digitizing.eraseAll();
+        if (mainLizmap.digitizing.context === "action") {
+            mainLizmap.digitizing.eraseAll();
+        }
         mainLizmap.action.resetLizmapAction();
+
+        // Get the host component
+        let host = event.target.closest("lizmap-action-selector");
+        // Disable deactivate button
+        host.querySelector('button.action-deactivate-button').disabled = true;
+    }
+
+    onDigitizingFeatureDrawn() {
+        // Activate run button in case of digitizing context
+        if (mainLizmap.digitizing.context === "action" && mainLizmap.digitizing.visibility) {
+            this.querySelector('button.action-run-button').disabled = false;
+        }
+    }
+
+    onDigitizingFeatureErase() {
+        // Disable run button in case of digitizing context
+        if (mainLizmap.digitizing.context === "action" && mainLizmap.digitizing.visibility) {
+            this.querySelector('button.action-run-button').disabled = true;
+        }
     }
 
     disconnectedCallback() {
@@ -150,6 +182,7 @@ export default class ActionSelector extends HTMLElement {
         // Add change event on the select
         const select = this.querySelector('select.action-select');
         select.removeEventListener('change', this.onActionSelectChange);
+        select.removeEventListener('change', this.onActionDeactivateClick);
     }
 
 
