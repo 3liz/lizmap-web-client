@@ -55,6 +55,7 @@ export default class ActionSelector extends HTMLElement {
         deactivateButton.addEventListener("click", this.onActionDeactivateClick);
 
         // Add change event on the select
+        select.addEventListener('change', this.onActionDeactivateClick);
         select.addEventListener('change', this.onActionSelectChange);
     }
 
