@@ -100,13 +100,14 @@ export default class ActionSelector extends HTMLElement {
                 const actionDigitizing = `<div id="action-digitizing"><lizmap-digitizing context="action" selected-tool="${action.geometry}" available-tools="${action.geometry}"></lizmap-digitizing><div id="action-message-html"></div></div>`;
                 document.querySelector('.action-selector-container').insertAdjacentHTML('afterend', actionDigitizing);
                 mainLizmap.digitizing.context = "action";
+                mainLizmap.digitizing.singlePartGeometry = true;
                 mainLizmap.digitizing.toggleVisibility(true);
             } else {
-                mainLizmap.digitizing.toolSelected = 'deactivate'
+                mainLizmap.digitizing.toolSelected = 'deactivate';
                 mainLizmap.digitizing.toggleVisibility(false);
             }
         } else {
-            mainLizmap.digitizing.toolSelected = 'deactivate'
+            mainLizmap.digitizing.toolSelected = 'deactivate';
             mainLizmap.digitizing.toggleVisibility(false);
         }
 
