@@ -55,6 +55,37 @@ CREATE TABLE tests_projects.sousquartiers (
 
 
 --
+-- Name: BAD designed table; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects."BAD designed table" (
+    id integer NOT NULL,
+    "BAD column name is'nt it ?" integer NOT NULL,
+    action text NOT NULL,
+    geom public.geometry(Point,3857)
+);
+
+
+--
+-- Name: BAD designed table_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
+--
+
+CREATE SEQUENCE tests_projects."BAD designed table_id_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    MAXVALUE 2147483647
+    CACHE 1;
+
+
+--
+-- Name: BAD designed table_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
+--
+
+ALTER SEQUENCE tests_projects."BAD designed table_id_seq" OWNED BY tests_projects."BAD designed table".id;
+
+
+--
 -- Name: attribute_table; Type: TABLE; Schema: tests_projects; Owner: -
 --
 
@@ -2537,6 +2568,13 @@ ALTER SEQUENCE tests_projects.xss_id_seq OWNED BY tests_projects.xss.id;
 
 
 --
+-- Name: BAD designed table id; Type: DEFAULT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects."BAD designed table" ALTER COLUMN id SET DEFAULT nextval('tests_projects."BAD designed table_id_seq"'::regclass);
+
+
+--
 -- Name: attribute_table id; Type: DEFAULT; Schema: tests_projects; Owner: -
 --
 
@@ -3073,6 +3111,14 @@ ALTER TABLE ONLY tests_projects.triple_geom ALTER COLUMN id SET DEFAULT nextval(
 --
 
 ALTER TABLE ONLY tests_projects.xss ALTER COLUMN id SET DEFAULT nextval('tests_projects.xss_id_seq'::regclass);
+
+
+--
+-- Data for Name: BAD designed table; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects."BAD designed table" (id, "BAD column name is'nt it ?", action, geom) FROM stdin;
+\.
 
 
 --
@@ -3959,6 +4005,13 @@ COPY tests_projects.xss (id, geom, description) FROM stdin;
 
 
 --
+-- Name: BAD designed table_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects."BAD designed table_id_seq"', 1, false);
+
+
+--
 -- Name: attribute_table_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
 --
 
@@ -4509,6 +4562,14 @@ SELECT pg_catalog.setval('tests_projects.triple_geom_id_seq', 1, true);
 --
 
 SELECT pg_catalog.setval('tests_projects.xss_id_seq', 2, true);
+
+
+--
+-- Name: BAD designed table BAD designed table_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects."BAD designed table"
+    ADD CONSTRAINT "BAD designed table_pkey" PRIMARY KEY (id);
 
 
 --
