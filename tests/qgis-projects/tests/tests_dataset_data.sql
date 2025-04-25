@@ -16,6 +16,14 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
+-- Data for Name: BAD designed table; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects."BAD designed table" (id, "BAD column name is'nt it ?", action, geom) FROM stdin;
+\.
+
+
+--
 -- Data for Name: attribute_table; Type: TABLE DATA; Schema: tests_projects; Owner: -
 --
 
