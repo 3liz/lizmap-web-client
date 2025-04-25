@@ -1,7 +1,14 @@
 // @ts-check
+import * as path from 'path';
+import * as fs from 'fs/promises'
+import { existsSync } from 'node:fs';
 import { test, expect } from '@playwright/test';
 import { PrintPage } from './pages/printpage';
 import { gotoMap, expectParametersToContain, expectToHaveLengthCompare } from './globals';
+
+// To update OSM and GeoPF tiles in the mock directory
+// IMPORTANT, this must not be set to `true` while committing, on GitHub. Set to `false`.
+const UPDATE_MOCK_FILES = false;
 
 test.describe('Print', () => {
 
@@ -422,9 +429,9 @@ test.describe(
 
             // opacity notes:
             // setting the opacity to 60% on `Group_a` causes:
-            // - `single_wms_points_group` layer to have a final total opacity of 24% (0.4*0.6) 
+            // - `single_wms_points_group` layer to have a final total opacity of 24% (0.4*0.6)
             //              -> OPACITIES PARAM = 255*0.24 ~= 61
-            // - `single_wms_polygons_group_as_layer` layer to have a final total opacity of 48% (0.8*0.6) 
+            // - `single_wms_polygons_group_as_layer` layer to have a final total opacity of 48% (0.8*0.6)
             //              -> OPACITIES PARAM = 255*0.48 ~= 122
             // other layers have opacity 100%, except for `raster` layer which has a 80% opacity by default,
             // resulting in a OPACITIES PARAM = 255*0.8 = 204
@@ -849,12 +856,44 @@ test.describe('Print 3857', () => {
 
 test.describe('Print base layers', () => {
     test.beforeEach(async ({ page }) => {
+        // Catch openstreetmap requests to mock them
+        let GetTiles = [];
+        await page.route('https://tile.openstreetmap.org/*/*/*.png', async (route) => {
+            const request = route.request();
+            GetTiles.push(request.url());
+
+            // Build path file in mock directory
+            const pathFile = path.join(__dirname, 'mock/base_layers/osm/tiles' + (new URL(request.url()).pathname));
+            if (UPDATE_MOCK_FILES && GetTiles.length <= 6) {
+                // Save file in mock directory for 6 tiles maximum
+                const response = await route.fetch();
+                await fs.mkdir(path.dirname(pathFile), { recursive: true })
+                await fs.writeFile(pathFile, await response.body())
+            } else if (existsSync(pathFile)) {
+                // fulfill route's request with mock file
+                await route.fulfill({
+                    path: pathFile
+                })
+            } else {
+                // fulfill route's request with default transparent tile
+                await route.fulfill({
+                    path: path.join(__dirname, 'mock/transparent_tile.png')
+                })
+            }
+        });
+
         const url = '/index.php/view/map/?repository=testsrepository&project=base_layers';
         await gotoMap(url, page)
 
         await page.locator('#button-print').click();
 
         await page.locator('#print-scale').selectOption('72224');
+
+        while (GetTiles.length < 6) {
+            await page.waitForTimeout(100);
+        }
+        await expect(GetTiles.length).toBeGreaterThanOrEqual(6);
+        await page.unroute('https://tile.openstreetmap.org/*/*/*.png');
     });
 
     test('Print requests', async ({ page }) => {
@@ -955,13 +994,46 @@ test.describe('Print base layers', () => {
         await expect(getPrintResponse?.headers()['content-type']).toBe('application/pdf');
 
         // Print quartiers not open-topo-map
+        // Catch opentopomap request to mock them
+        let GetTiles = [];
+        await page.route('https://*.tile.opentopomap.org/*/*/*.png', async (route) => {
+            const request = route.request();
+            GetTiles.push(request.url());
+
+            // Build path file in mock directory
+            const pathFile = path.join(__dirname, 'mock/base_layers/opentopomap/tiles' + (new URL(request.url()).pathname));
+            if (UPDATE_MOCK_FILES && GetTiles.length <= 6) {
+                // Save file in mock directory for 6 tiles maximum
+                try {
+                    const response = await route.fetch();
+                    await fs.mkdir(path.dirname(pathFile), { recursive: true })
+                    await fs.writeFile(pathFile, await response.body())
+                } catch {
+
+                    // fulfill route's request with default transparent tile
+                    await route.fulfill({
+                        path: path.join(__dirname, 'mock/transparent_tile.png')
+                    })
+                }
+            } else if (existsSync(pathFile)) {
+                // fulfill route's request with mock file
+                await route.fulfill({
+                    path: pathFile
+                })
+            } else {
+                // fulfill route's request with default transparent tile
+                await route.fulfill({
+                    path: path.join(__dirname, 'mock/transparent_tile.png')
+                })
+            }
+        });
         await page.locator('#switcher-baselayer').getByRole('combobox').selectOption('open-topo-map');
 
-        await page.waitForResponse(
-            response =>
-                response.status() === 200 &&
-                response.headers()['content-type'] === 'image/png'
-        );
+        while (GetTiles.length < 6) {
+            await page.waitForTimeout(100);
+        }
+        await expect(GetTiles.length).toBeGreaterThanOrEqual(6);
+        await page.unroute('https://*.tile.opentopomap.org/*/*/*.png');
 
         getPrintRequestPromise = page.waitForRequest(
             request =>
