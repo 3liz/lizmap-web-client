@@ -95,6 +95,6 @@ export class DrawPage extends ProjectPage {
     async deleteAllDrawings(){
         this.page.once('dialog', (dialog) => dialog.accept());
 
-        await this.drawPanel.locator('.digitizing-all').click();
+        await this.drawPanel.locator('.digitizing-erase-all').click();
     }
 }
