@@ -85,6 +85,8 @@ describe('Filter layer data by polygon for groups', function () {
                 res.headers['cache-control'] = 'no-store'
             })
         }).as('getFeature')
+
+        cy.intercept('/index.php/lizmap/datatables*').as('datatables')
     })
 
     afterEach(function () {
@@ -146,22 +148,22 @@ describe('Filter layer data by polygon for groups', function () {
         cy.get('#button-attributeLayers').click()
 
         cy.get('button[value="shop_bakery"].btn-open-attribute-layer').click({ force: true })
-        cy.wait('@getFeature')
-        cy.get('#attribute-layer-table-shop_bakery tbody tr').should('have.length', 0)
+        cy.wait('@datatables')
+        cy.get('#attribute-layer-table-shop_bakery tbody tr td.dt-empty').should('have.length', 1)
 
         cy.get('#nav-tab-attribute-summary').click()
         cy.get('button[value="townhalls_EPSG2154"].btn-open-attribute-layer').click({ force: true })
-        cy.wait('@getFeature')
-        cy.get('#attribute-layer-table-townhalls_EPSG2154 tbody tr').should('have.length', 0)
+        cy.wait('@datatables')
+        cy.get('#attribute-layer-table-townhalls_EPSG2154 tbody tr td.dt-empty').should('have.length', 1)
 
         cy.get('#nav-tab-attribute-summary').click()
         cy.get('button[value="shop_bakery_pg"].btn-open-attribute-layer').click({ force: true })
-        cy.wait('@getFeature')
-        cy.get('#attribute-layer-table-shop_bakery_pg tbody tr').should('have.length', 0)
+        cy.wait('@datatables')
+        cy.get('#attribute-layer-table-shop_bakery_pg tbody tr td.dt-empty').should('have.length', 1)
 
         cy.get('#nav-tab-attribute-summary').click()
         cy.get('button[value="townhalls_pg"].btn-open-attribute-layer').click({ force: true })
-        cy.wait('@getFeature')
+        cy.wait('@datatables')
         cy.get('#attribute-layer-table-townhalls_pg tbody tr').should('have.length', 16)
 
         // The user cannot edit the data, even for the layer townhalls_pg
@@ -239,22 +241,22 @@ describe('Filter layer data by polygon for groups', function () {
         cy.get('#button-attributeLayers').click()
 
         cy.get('button[value="shop_bakery"].btn-open-attribute-layer').click({ force: true })
-        cy.wait('@getFeature')
+        cy.wait('@datatables')
         cy.get('#attribute-layer-table-shop_bakery tbody tr').should('have.length', 5)
 
         cy.get('#nav-tab-attribute-summary').click()
         cy.get('button[value="townhalls_EPSG2154"].btn-open-attribute-layer').click({ force: true })
-        cy.wait('@getFeature')
+        cy.wait('@datatables')
         cy.get('#attribute-layer-table-townhalls_EPSG2154 tbody tr').should('have.length', 4)
 
         cy.get('#nav-tab-attribute-summary').click()
         cy.get('button[value="shop_bakery_pg"].btn-open-attribute-layer').click({ force: true })
-        cy.wait('@getFeature')
+        cy.wait('@datatables')
         cy.get('#attribute-layer-table-shop_bakery_pg tbody tr').should('have.length', 4)
 
         cy.get('#nav-tab-attribute-summary').click()
         cy.get('button[value="townhalls_pg"].btn-open-attribute-layer').click({ force: true })
-        cy.wait('@getFeature')
+        cy.wait('@datatables')
         cy.get('#attribute-layer-table-townhalls_pg tbody tr').should('have.length', 16)
 
         // The user can only edit 5 features for the layer townhalls_pg (16 - 5 = 11 are hidden)
@@ -376,22 +378,22 @@ describe('Filter layer data by polygon for groups', function () {
         cy.get('#button-attributeLayers').click()
 
         cy.get('button[value="shop_bakery"].btn-open-attribute-layer').click({ force: true })
-        cy.wait('@getFeature')
+        cy.wait('@datatables')
         cy.get('#attribute-layer-table-shop_bakery tbody tr').should('have.length', 25)
 
         cy.get('#nav-tab-attribute-summary').click()
         cy.get('button[value="townhalls_EPSG2154"].btn-open-attribute-layer').click({ force: true })
-        cy.wait('@getFeature')
+        cy.wait('@datatables')
         cy.get('#attribute-layer-table-townhalls_EPSG2154 tbody tr').should('have.length', 17)
 
         cy.get('#nav-tab-attribute-summary').click()
         cy.get('button[value="shop_bakery_pg"].btn-open-attribute-layer').click({ force: true })
-        cy.wait('@getFeature')
+        cy.wait('@datatables')
         cy.get('#attribute-layer-table-shop_bakery_pg tbody tr').should('have.length', 17)
 
         cy.get('#nav-tab-attribute-summary').click()
         cy.get('button[value="townhalls_pg"].btn-open-attribute-layer').click({ force: true })
-        cy.wait('@getFeature')
+        cy.wait('@datatables')
         cy.get('#attribute-layer-table-townhalls_pg tbody tr').should('have.length', 16)
 
         // The user can edit all features for the layer townhalls_pg
