@@ -351,9 +351,9 @@ export default class Search {
                     evt.preventDefault();
                     const linkClicked = evt.currentTarget;
                     var bbox = linkClicked.getAttribute('href').replace('#', '');
-                    var bbox = OpenLayers.Bounds.fromString(bbox);
+                    bbox = OpenLayers.Bounds.fromString(bbox);
                     bbox.transform(wgs84, this._map.getProjectionObject());
-                    this._map.zoomToExtent(bbox);
+                    lizMap.mainLizmap.map.getView().fit(bbox.toArray());
 
                     var feat = new OpenLayers.Feature.Vector(bbox.toGeometry().getCentroid());
                     var geomWKT = linkClicked.dataset.wkt;
