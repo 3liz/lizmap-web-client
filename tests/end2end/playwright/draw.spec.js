@@ -277,7 +277,7 @@ test.describe('Draw', () => {
         expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toHaveLength(2);
 
         page.on('dialog', dialog => dialog.accept());
-        await page.locator('.digitizing-all').click();
+        await page.locator('.digitizing-erase-all').click();
 
         expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toBeNull();
     });

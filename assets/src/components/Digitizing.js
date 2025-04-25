@@ -271,7 +271,7 @@ export default class Digitizing extends HTMLElement {
             </button>
             <button
                 type="button"
-                class="digitizing-all btn"
+                class="digitizing-erase-all btn"
                 ?disabled=${!mainLizmap.digitizing.featureDrawn}
                 @click=${() => this.eraseAll()}
                 data-original-title="${lizDict['digitizing.toolbar.erase.all']}"
