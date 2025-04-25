@@ -361,7 +361,7 @@ export default class Search {
                     var bbox = linkClicked.getAttribute('href').replace('#', '');
                     bbox = OpenLayers.Bounds.fromString(bbox);
                     bbox.transform(wgs84, this._lizmap3.map.getProjectionObject());
-                    this._lizmap3.map.zoomToExtent(bbox);
+                    lizMap.mainLizmap.map.getView().fit(bbox.toArray());
 
                     var feat = new OpenLayers.Feature.Vector(bbox.toGeometry().getCentroid());
                     var geomWKT = linkClicked.dataset.wkt;
