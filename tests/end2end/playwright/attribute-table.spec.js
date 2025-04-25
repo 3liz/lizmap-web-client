@@ -54,19 +54,19 @@ test.describe('Attribute table @readonly', () => {
         let getFeatureResponse = await getFeatureRequest.response();
         responseExpect(getFeatureResponse).toBeGeoJson();
         let tableWrapper = project.attributeTableWrapper(layerName);
-        await expect(tableWrapper.locator('div.dataTables_scrollHead th'))
+        await expect(tableWrapper.locator('div.dt-scroll-head th'))
             .toHaveCount(6);
-        await expect(tableWrapper.locator('div.dataTables_scrollHead th').nth(0))
+        await expect(tableWrapper.locator('div.dt-scroll-head th').nth(0))
             .toHaveText('');
-        await expect(tableWrapper.locator('div.dataTables_scrollHead th').nth(1))
+        await expect(tableWrapper.locator('div.dt-scroll-head th').nth(1))
             .toHaveText('quartmno');
-        await expect(tableWrapper.locator('div.dataTables_scrollHead th').nth(2))
+        await expect(tableWrapper.locator('div.dt-scroll-head th').nth(2))
             .toHaveText('libquart');
-        await expect(tableWrapper.locator('div.dataTables_scrollHead th').nth(3))
+        await expect(tableWrapper.locator('div.dt-scroll-head th').nth(3))
             .toHaveText('photo');
-        await expect(tableWrapper.locator('div.dataTables_scrollHead th').nth(4))
+        await expect(tableWrapper.locator('div.dt-scroll-head th').nth(4))
             .toHaveText('url');
-        await expect(tableWrapper.locator('div.dataTables_scrollHead th').nth(5))
+        await expect(tableWrapper.locator('div.dt-scroll-head th').nth(5))
             .toHaveText('thumbnail');
         await project.closeAttributeTable();
 
@@ -75,21 +75,21 @@ test.describe('Attribute table @readonly', () => {
         getFeatureResponse = await getFeatureRequest.response();
         responseExpect(getFeatureResponse).toBeGeoJson();
         tableWrapper = project.attributeTableWrapper(layerName);
-        await expect(tableWrapper.locator('div.dataTables_scrollHead th'))
+        await expect(tableWrapper.locator('div.dt-scroll-head th'))
             .toHaveCount(7);
-        await expect(tableWrapper.locator('div.dataTables_scrollHead th').nth(0))
+        await expect(tableWrapper.locator('div.dt-scroll-head th').nth(0))
             .toHaveText('');
-        await expect(tableWrapper.locator('div.dataTables_scrollHead th').nth(1))
+        await expect(tableWrapper.locator('div.dt-scroll-head th').nth(1))
             .toHaveText('quartier');
-        await expect(tableWrapper.locator('div.dataTables_scrollHead th').nth(2))
+        await expect(tableWrapper.locator('div.dt-scroll-head th').nth(2))
             .toHaveText('quartmno');
-        await expect(tableWrapper.locator('div.dataTables_scrollHead th').nth(3))
+        await expect(tableWrapper.locator('div.dt-scroll-head th').nth(3))
             .toHaveText('libquart');
-        await expect(tableWrapper.locator('div.dataTables_scrollHead th').nth(4))
+        await expect(tableWrapper.locator('div.dt-scroll-head th').nth(4))
             .toHaveText('thumbnail');
-        await expect(tableWrapper.locator('div.dataTables_scrollHead th').nth(5))
+        await expect(tableWrapper.locator('div.dt-scroll-head th').nth(5))
             .toHaveText('url');
-        await expect(tableWrapper.locator('div.dataTables_scrollHead th').nth(6))
+        await expect(tableWrapper.locator('div.dt-scroll-head th').nth(6))
             .toHaveText('photo');
         await project.closeAttributeTable();
     });
