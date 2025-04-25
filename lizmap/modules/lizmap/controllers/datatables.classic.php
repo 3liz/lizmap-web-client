@@ -253,11 +253,22 @@ class datatablesCtrl extends jController
             $recordsFiltered = $matches[1];
         }
 
+        // Handle editable features
+        $editableFeaturesRep = $layer->editableFeatures(array_merge($wfsParamsData, $wfsParamsPaginated), false);
+        $editableFeaturesIds = array();
+        foreach ($editableFeaturesRep['features'] as $feature) {
+            $editableFeaturesIds[] = (int) explode('.', $feature['id'])[1];
+        }
+
+        unset($editableFeaturesRep['features']);
+        $editableFeaturesRep['featuresids'] = $editableFeaturesIds;
+
         $returnedData = array(
             'draw' => (int) $this->param('draw'),
             'recordsTotal' => $hits,
             'recordsFiltered' => $recordsFiltered,
             'data' => json_decode($featureData),
+            'editableFeatures' => $editableFeaturesRep,
         );
 
         $rep->content = json_encode($returnedData);

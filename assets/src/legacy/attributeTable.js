@@ -1421,12 +1421,24 @@ var lizAttributeTable = function() {
                                     return formatedData;
                                 }
 
+                                // Get editable features
+                                const editableFeatures = json.editableFeatures;
+
                                 for (const feature of json.data.features) {
-                                    const featID = feature.id.split('.').pop();
+                                    const featID = parseInt(feature.id.split('.').pop());
+                                    let editionRestricted = '';
+                                    if (editableFeatures.status === 'restricted') {
+                                        editionRestricted = 'edition-restricted="true"';
+                                        if (editableFeatures.featuresids.includes(featID)) {
+                                            editionRestricted = 'edition-restricted="false"';
+                                        }
+                                    }
+                                    const ftb = `<lizmap-feature-toolbar ${editionRestricted} value="${lConfig.id + '.' + featID}" ${isChild ? `parent-layer-id="${parentLayerID}"` : ''} ${pivotReference ? `pivot-layer="${pivotReference}"` : ''}></lizmap-feature-toolbar>`;
+
                                     formatedData.push(Object.assign({
                                         'DT_RowId': featID,
                                         'lizSelected': '',
-                                        'featureToolbar': '',
+                                        'featureToolbar': ftb,
                                     }, feature.properties));
 
                                     // Copy received features to config
@@ -1478,28 +1490,29 @@ var lizAttributeTable = function() {
                         }
                     });
 
-                    // Add searchBuilder button
-                    // Disable live search to avoid searching on each keystroke
-                    // Only display columns that are sortable for search
-                    const searchBuilderButton = new DataTable.Buttons(oTable, {
-                        buttons: [
-                            {
-                                extend: 'searchBuilder',
-                                config: {
-                                    liveSearch: false,
-                                    columns: '.dt-orderable-asc',
-                                    depthLimit: 1
-                                }
-                            }
-                        ]
-                    });
-
-                    // Attach searchBuilder button to attribute-layer-action-bar
+                    // Attach searchBuilder button to attribute-layer-action-bar if exists
                     const actionBar = document.querySelector(aTable)
-                    .closest('.attribute-layer-content')
-                    .previousElementSibling;
+                    ?.closest('.attribute-layer-content')
+                    ?.previousElementSibling;
 
-                    actionBar.insertAdjacentElement('afterbegin', searchBuilderButton.container()[0]);
+                    if (actionBar) {
+                        // Add searchBuilder button
+                        // Disable live search to avoid searching on each keystroke
+                        // Only display columns that are sortable for search
+                        const searchBuilderButton = new DataTable.Buttons(oTable, {
+                            buttons: [
+                                {
+                                    extend: 'searchBuilder',
+                                    config: {
+                                        liveSearch: false,
+                                        columns: '.dt-orderable-asc',
+                                        depthLimit: 1
+                                    }
+                                }
+                            ]
+                        });
+                        actionBar.insertAdjacentElement('afterbegin', searchBuilderButton.container()[0]);
+                    }
 
                     // Unbind previous events on page
                     oTable.on( 'page', function() {
@@ -1523,11 +1536,6 @@ var lizAttributeTable = function() {
                     // Table already created, just redraw it
                     const table = new DataTable(aTable);
                     table.draw();
-                }
-
-                // Check editable features
-                if (canEdit || canDelete) {
-                    lizMap.mainLizmap.edition.fetchEditableFeatures([lConfig.id],[exp_f]);
                 }
 
                 if (aCallback)
@@ -1563,13 +1571,13 @@ var lizAttributeTable = function() {
                     width: "25px",
                     searchable: false,
                     sortable: false,
-                    render: (data, type, row, meta) => {
-                        const layerId = config.layers[aName].id;
-                        const fid = row['DT_RowId'];
-                        return `
-                            <lizmap-feature-toolbar value="${layerId + '.' + fid}" ${isChild ? `parent-layer-id="${parentLayerID}"` : ''} ${pivotReference ? `pivot-layer="${pivotReference}"` : ''}>
-                            </lizmap-feature-toolbar>`;
-                    }
+                    // render: (data, type, row, meta) => {
+                    //     const layerId = config.layers[aName].id;
+                    //     const fid = row['DT_RowId'];
+                    //     return `
+                    //         <lizmap-feature-toolbar value="${layerId + '.' + fid}" ${isChild ? `parent-layer-id="${parentLayerID}"` : ''} ${pivotReference ? `pivot-layer="${pivotReference}"` : ''}>
+                    //         </lizmap-feature-toolbar>`;
+                    // }
                 });
                 firstDisplayedColIndex += 1;
 
@@ -1915,19 +1923,20 @@ var lizAttributeTable = function() {
                     }
 
                     // Bind events when drawing table
-                    $( childTable ).one( 'draw.dt', function() {
+                    const DTchildTable = new DataTable(childTable);
+                    DTchildTable.one('draw', function() {
 
                         if( canEdit ) {
                             // Add property on lizmap-feature-toolbar to edit children feature linked to a parent feature
                             const parentFeatId = $(childTable).parents('div.tab-pane.attribute-layer-child-content')
                                 .find('input.attribute-table-hidden-parent-feature-id').val();
-                            $(childTable).DataTable().cells().nodes()
+                                DTchildTable.cells().nodes()
                                 .to$().children('lizmap-feature-toolbar').attr('parent-feature-id', parentFeatId);
                         }
 
                         if ( canCreateChildren ) {
                             // Button to create feature linked to parent
-                            const createHeader = $($(childTable).DataTable().column(1).header());
+                            const createHeader = $(DTchildTable.column(1).header());
                             if ( createHeader.find('button.attribute-layer-feature-create').length == 0 ) {
                                 createHeader
                                     .append(`<button class="btn btn-mini attribute-layer-feature-create" value="-1" title="${lizDict['attributeLayers.toolbar.btn.data.createFeature.title']}">
