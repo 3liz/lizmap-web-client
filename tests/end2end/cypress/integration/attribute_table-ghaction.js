@@ -61,7 +61,7 @@ describe('Attribute table', () => {
                 .to.contain('OUTPUTFORMAT=JSON')
         })
 
-        cy.get('#attribute-layer-table-quartiers_shp_wrapper div.dataTables_scrollHead th').then(theaders => {
+        cy.get('#attribute-layer-table-quartiers_shp_wrapper div.dt-scroll-head th').then(theaders => {
             const headers = [...theaders].map(t => t.innerText)
             const correct_column_order = ['', 'quartmno', 'libquart', 'photo', 'url', 'thumbnail'];
 
@@ -82,7 +82,7 @@ describe('Attribute table', () => {
                 .to.contain('OUTPUTFORMAT=JSON')
         })
 
-        cy.get('#attribute-layer-table-Les_quartiers_a_Montpellier_wrapper div.dataTables_scrollHead th').then(theaders => {
+        cy.get('#attribute-layer-table-Les_quartiers_a_Montpellier_wrapper div.dt-scroll-head th').then(theaders => {
             const headers = [...theaders].map(t => t.innerText)
             const correct_column_order = ['', 'quartier', 'quartmno', 'libquart', 'thumbnail', 'url', 'photo'];
 
