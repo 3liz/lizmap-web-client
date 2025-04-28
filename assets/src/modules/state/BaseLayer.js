@@ -25,7 +25,7 @@ export class BaseLayerState extends EventDispatcher {
      */
     constructor(baseLayerCfg, itemState = null ) {
         if (itemState !== null && baseLayerCfg.name !== itemState.name) {
-            throw new TypeError('Base layer config and layer item sate have not the same name!\n- `'+baseLayerCfg.name+'` for base layer config\n- `'+itemState.name+'` for layer item state');
+            throw new TypeError('Base layer config and layer item state have not the same name!\n- `'+baseLayerCfg.name+'` for base layer config\n- `'+itemState.name+'` for layer item state');
         }
         super()
         this._baseLayerConfig = baseLayerCfg;

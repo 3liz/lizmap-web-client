@@ -83,7 +83,7 @@ describe('BaseLayerState', function () {
             baselayer = new BaseLayerState(blConfig, baseLayers.selectedBaseLayer.itemState)
         } catch (error) {
             expect(error.name).to.be.eq('TypeError')
-            expect(error.message).to.be.eq('Base layer config and layer item sate have not the same name!\n- `name` for base layer config\n- `Stamen Watercolor` for layer item state')
+            expect(error.message).to.be.eq('Base layer config and layer item state have not the same name!\n- `name` for base layer config\n- `Stamen Watercolor` for layer item state')
             expect(error).to.be.instanceOf(TypeError)
         }
         expect(baselayer).to.be.null
