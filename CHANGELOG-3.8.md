@@ -8,6 +8,21 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Funders
+
+* **[Valabre](https://www.valabre.com/)**
+
+### Added
+
+* A new flag `DEBUG=TRUE` to `lizmap_search` to ease a little bit the debugging
+* UX - Add tooltips on buttons in the "maps management" page and also for the project switcher button
+
+### Fixed
+
+* Fix UI regression: Clear popup geometry
+* Tile WMS layer has no loading status updated
+* Webpack: set publicPath:auto to get JS assets with a correct path
+
 ## 3.8.7 - 2025-04-01
 
 ### Funders
