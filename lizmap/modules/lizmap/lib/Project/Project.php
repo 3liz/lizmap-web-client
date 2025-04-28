@@ -2673,4 +2673,12 @@ class Project
 
         return false;
     }
+
+    /**
+     * Retrieve the first QGIS config line as array.
+     */
+    public function getFirstQgisConfigLine()
+    {
+        return $this->qgis->getFirstQgisConfigLine();
+    }
 }
