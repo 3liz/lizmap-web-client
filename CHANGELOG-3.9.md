@@ -8,6 +8,37 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Funders
+
+* **[Etra](https://www.etraspa.it/)**, and developed by **[Faunalia](https://www.faunalia.eu/fr)** with @mind84
+* **[Syslor](https://syslor.net/)**
+* **[WPD](https://www.wpd.fr/)**
+
+### Added
+
+* Enable `lizmap-features-table` for children in popup according to a new setting in the plugin
+* Layer export capabilities based on attribute layers configuration, for groups
+* Evaluate QGIS expressions which are in `lizmap-field`, in the `lizmap-features-table`
+* Lizmap API REST, see Swagger documentation
+* A new flag `DEBUG=TRUE` to `lizmap_search` to ease a little bit the debugging
+* UX - Add tooltips on buttons in the "maps management" page and also for the project switcher button
+
+### Removed
+
+* Remove BBOX and projection name from the landing page
+
+### Changed
+
+* Popup: Improve styling of drag-and-drop designed popups
+
+### Fixed
+
+* Atlas: features were not projected to map
+* Search: IGN French address search uses map view instead of maxExtent
+* Fix UI regression: Clear popup geometry
+* Tile WMS layer has no loading status updated
+* Webpack: set publicPath:auto to get JS assets with a correct path
+
 ## 3.9.0-beta.2 - 2025-03-14
 
 ### Fixed
