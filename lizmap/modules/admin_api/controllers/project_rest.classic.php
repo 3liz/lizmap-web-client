@@ -95,7 +95,7 @@ class project_restCtrl extends RestApiCtrl
 
         $response = array(
             'id' => $proj->getKey(),
-            'projectname' => $projInfos['projectname'],
+            'projectName' => $projInfos['projectName'],
             'title' => $proj->getTitle(),
             'abstract' => $proj->getAbstract(),
             'keywordList' => $proj->getKeywordsList(),
