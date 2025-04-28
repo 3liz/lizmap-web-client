@@ -10,6 +10,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ### Funders
 
+* **[Syslor](https://syslor.net/)**
 * **[Valabre](https://www.valabre.com/)**
 
 ### Added
