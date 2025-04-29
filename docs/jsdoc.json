@@ -1,4 +1,10 @@
 {
+    "plugins": [
+        "plugins/markdown"
+    ],
+    "templates": {
+        "cleverLinks": true
+    },
     "source": {
         "include": [
             "assets/src/"
