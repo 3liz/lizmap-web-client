@@ -1,16 +1,11 @@
 /**
  * @module modules/FeaturesTable.js
- * @name FeaturesTable
  * @copyright 2024 3Liz
  * @license MPL-2.0
  */
 import { Config } from './Config.js';
 import { Utils } from './Utils.js';
 
-/**
- * @class
- * @name FeaturesTable
- */
 export default class FeaturesTable {
 
     /**

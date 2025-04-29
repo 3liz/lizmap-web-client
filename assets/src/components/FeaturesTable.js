@@ -12,25 +12,34 @@ import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import GeoJSON from 'ol/format/GeoJSON.js';
 
 /**
- * @class
- * @name FeaturesTable
  * @summary Allows to display a compact list of vector layer features labels
  * @augments HTMLElement
- * @description lizmap-features-table
- * @fires FeaturesTable#features.table.item.highlighted
- * @fires FeaturesTable#features.table.item.dragged
- * @fires FeaturesTable#features.table.rendered
+ * @description By default, the display expression is used: Layer properties → Display tab → Display name.
+ *
+ * Additional <code><lizmap-field></code> elements can be added to the template to display additional fields.
+ * It can be QGIS expressions.
+ * @fires featuresTableItemHighlighted
+ * @fires featuresTableItemDragged
+ * @fires featuresTableRendered
  * @example <caption>Example of use</caption>
- * <lizmap-features-table draggable="yes" sortingOrder="asc" sortingField="libsquart"
- *                        withGeometry="1" expressionFilter="quartmno = 'HO'"
- *                        uniqueField="id" layerId="subdistrict_24ceec66_e7fe_46a2_b57a_af5c50389649"
- *                        layerTitle="child sub-districts"
- *                        (optional) data-show-highlighted-feature-geometry="true"
- *                        (optional) data-center-to-highlighted-feature-geometry="true"
- *                        (optional) data-max-features="100"
- *                        (optional) data-active-item-feature-id="5"
- *                        >
- *      <lizmap-field data-alias="District's name" data-description="Label of district's name">
+ * <lizmap-features-table
+ *      draggable="yes"
+ *      sortingOrder="asc"
+ *      sortingField="libsquart"
+ *      withGeometry="1"
+ *      expressionFilter="quartmno = 'HO'"
+ *      uniqueField="id"
+ *      layerId="subdistrict_24ceec66_e7fe_46a2_b57a_af5c50389649"
+ *      layerTitle="child sub-districts"
+ *      (optional) data-show-highlighted-feature-geometry="true"
+ *      (optional) data-center-to-highlighted-feature-geometry="true"
+ *      (optional) data-max-features="100"
+ *      (optional) data-active-item-feature-id="5"
+ * >
+ *      <lizmap-field
+ *          data-alias="District's name"
+ *          data-description="Label of district's name"
+ *      >
  *         "libsquart"
  *      </lizmap-field>
  * </lizmap-features-table>
@@ -176,9 +185,18 @@ export default class FeaturesTable extends HTMLElement {
 
         /**
          * When the table has been successfully displayed. The event carries the lizmap-features-table HTML element ID
-         * @event features.table.rendered
+         * @event featuresTableRendered
          * @property {string} elementId HTML element ID
          * @property {string} itemLayerId The layer ID of the selected item
+         */
+        mainEventDispatcher.dispatch({
+            type: 'featuresTableRendered',
+            elementId: this.id,
+            itemLayerId: this.layerId,
+        });
+
+        /**
+         * @deprecated Since LWC 3.8.8, use "featuresTableRendered" instead.
          */
         mainEventDispatcher.dispatch({
             type: 'features.table.rendered',
@@ -292,10 +310,27 @@ export default class FeaturesTable extends HTMLElement {
             // Dispatch event
             /**
              * When the user has selected an item and highlighted it
-             * @event features.table.item.highlighted
+             * @event featuresTableItemHighlighted
              * @property {string} elementId The element ID
              * @property {string} itemFeatureId The feature ID of the selected item
              * @property {string} itemLayerId The layer ID of the selected item
+             * @example
+             * lizMap.mainEventDispatcher.addListener((lizmapEvent) => {
+             *         // Log the lizmap-features-table web component HTML element ID
+             *         console.log(`lizmap-features-table rendered, ID = ${lizmapEvent.elementId}`);
+             *     },
+             *     ['featuresTableRendered']
+             * );
+             */
+            mainEventDispatcher.dispatch({
+                type: 'featuresTableItemHighlighted',
+                elementId: this.id,
+                itemFeatureId: activeItemFeatureId,
+                itemLayerId: this.layerId,
+            });
+
+            /**
+             * @deprecated Since LWC 3.8.8, use "featuresTableItemHighlighted" instead
              */
             mainEventDispatcher.dispatch({
                 type: 'features.table.item.highlighted',
@@ -500,10 +535,19 @@ export default class FeaturesTable extends HTMLElement {
 
             /**
              * When the user has dropped an item in a new position
-             * @event features.table.item.dragged
+             * @event featuresTableItemDragged
              * @property {string} itemFeatureId The vector feature ID
              * @property {string} itemOldLineId The original line ID before dropping the item
              * @property {string} itemNewLineId The new line ID after dropping the item in a new position
+             */
+            mainEventDispatcher.dispatch({
+                type: 'featuresTableItemDragged',
+                itemFeatureId: movedFeatureId,
+                itemOldLineId: dropped.dataset.lineId,
+                itemNewLineId: newItem.dataset.lineId
+            });
+            /**
+             * @deprecated Since LWC 3.8.8, use "featuresTableItemDragged" instead
              */
             mainEventDispatcher.dispatch({
                 type: 'features.table.item.dragged',
