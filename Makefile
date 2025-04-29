@@ -215,7 +215,7 @@ php-doc:
 
 js-doc:
 	rm -rf docs/js
-	npx jsdoc -c docs/jsdoc.json
+	npx jsdoc -c docs/jsdoc.json -R docs/jsdoc.md
 
 docker-build: debug $(GENERIC_PACKAGE_PATH) docker-build-ci
 
