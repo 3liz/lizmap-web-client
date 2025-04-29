@@ -92,7 +92,12 @@ test.describe('Landing page content', {
                 }
                 const homePage = new HomePage(await context.newPage());
                 await homePage.open();
-                await expect(homePage.page.getByRole('link', { name: 'project_acl' })).toHaveCount(count);
+                await expect(
+                    homePage.page.locator(
+                        '.liz-repository-project-item'
+                    ).filter(
+                        { hasText: 'project_acl' }
+                    )).toHaveCount(count);
             });
     });
 });
