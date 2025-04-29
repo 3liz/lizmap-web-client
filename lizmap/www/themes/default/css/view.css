@@ -3,10 +3,9 @@
 }
 
 .liz-project-desc {
-  color: white;
-  background-color: rgb(0 0 0 / 50%);
+  display: none;
 }
 
-.tab-pane .liz-project-desc {
-  display: none;
+.liz-project:hover {
+  background-color: #f8faff;
 }
