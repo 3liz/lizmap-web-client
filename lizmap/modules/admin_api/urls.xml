@@ -4,4 +4,6 @@
     <url pathinfo="/repositories/:repo" action="repository_rest:get"/>
     <url pathinfo="/repositories/:repo/projects" action="project_rest:get"/>
     <url pathinfo="/repositories/:repo/projects/:proj" action="project_rest:get"/>
+
+    <url pathinfo="/right/:method/:repo" action="repository_rights_rest:get"/>
 </suburls>
