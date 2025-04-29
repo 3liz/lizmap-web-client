@@ -9,6 +9,7 @@
  * @license   https://www.mozilla.org/MPL/ Mozilla Public Licence
  */
 
+use Lizmap\App\VersionTools;
 use LizmapApi\Credentials;
 use LizmapApi\Error;
 use LizmapApi\RestApiCtrl;
@@ -106,6 +107,7 @@ class project_restCtrl extends RestApiCtrl
             'wmsGetCapabilitiesUrl' => $proj->getWMSGetCapabilitiesUrl(),
             'wmtsGetCapabilitiesUrl' => $proj->getWMTSGetCapabilitiesUrl(),
             'version' => $projInfos['version'],
+            'versionInt' => VersionTools::qgisVersionWithNameToInt($projInfos['version']),
             'saveDateTime' => $projInfos['saveDateTime'],
             'saveUser' => $projInfos['saveUser'],
             'saveUserFull' => $projInfos['saveUserFull'],
