@@ -178,10 +178,12 @@ export default class FeaturesTable extends HTMLElement {
          * When the table has been successfully displayed. The event carries the lizmap-features-table HTML element ID
          * @event features.table.rendered
          * @property {string} elementId HTML element ID
+         * @property {string} itemLayerId The layer ID of the selected item
          */
         mainEventDispatcher.dispatch({
             type: 'features.table.rendered',
-            elementId: this.id
+            elementId: this.id,
+            itemLayerId: this.layerId,
         });
 
     }
@@ -257,7 +259,7 @@ export default class FeaturesTable extends HTMLElement {
 
             // Get the WFS feature
             const activeFeature = this.getFeatureById(activeItemFeatureId);
-            // If no feature corresponds, we should deactivate the features detail
+            // If no feature corresponds, we should deactivate the feature detail
             if (!activeFeature) {
                 this.setAttribute("data-active-item-feature-id", "");
 
@@ -291,11 +293,15 @@ export default class FeaturesTable extends HTMLElement {
             /**
              * When the user has selected an item and highlighted it
              * @event features.table.item.highlighted
+             * @property {string} elementId The element ID
              * @property {string} itemFeatureId The feature ID of the selected item
+             * @property {string} itemLayerId The layer ID of the selected item
              */
             mainEventDispatcher.dispatch({
                 type: 'features.table.item.highlighted',
+                elementId: this.id,
                 itemFeatureId: activeItemFeatureId,
+                itemLayerId: this.layerId,
             });
 
         }
@@ -455,7 +461,7 @@ export default class FeaturesTable extends HTMLElement {
             cancelDefault(e)
 
             // Change the target element's style back to default
-            // Celui sur lequel on a lâché l'item déplacé
+            // The one on which we have dropped the moved item
             e.currentTarget.style.background = "";
 
             // Get item
@@ -503,7 +509,7 @@ export default class FeaturesTable extends HTMLElement {
                 type: 'features.table.item.dragged',
                 itemFeatureId: movedFeatureId,
                 itemOldLineId: dropped.dataset.lineId,
-                itemNewLineId: newItem.dataset.lineId
+                itemNewLineId: newItem.dataset.lineId,
             });
         }
 
@@ -566,8 +572,7 @@ export default class FeaturesTable extends HTMLElement {
 
         // Template
         this._template = () => html`
-            <div class="lizmap-features-table" data-features-count="${this.features.length}"
-                title="${lizDict['bob']}">
+            <div class="lizmap-features-table" data-features-count="${this.features.length}">
                 <h4>${this.layerTitle}</h4>
                 <div class="lizmap-features-table-toolbar">
                     <button class="btn btn-mini previous-popup"
