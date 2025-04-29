@@ -261,6 +261,20 @@ export default class Digitizing extends HTMLElement {
             </div>
             `;
 
+        const textToolsTemplate = (hasEditedFeatures) => html`
+            <form class="digitizing-text-tools ${hasEditedFeatures ? '' : 'hide'}">
+                <details>
+                    <summary>
+                        ${lizDict['digitizing.toolbar.text']}
+                    </summary>
+                    ${lizDict['digitizing.toolbar.text.hint']}
+                </details>
+                ${textContentInputTemplate()}
+                ${textRotationInputTemplate()}
+                ${textScaleInputTemplate()}
+            </form>
+            `;
+
         const mainTemplate = (toolSelected) => html`
         <div class="digitizing">
             ${toolButtonTemplate(this._availableTools, toolSelected)}
@@ -460,17 +474,7 @@ export default class Digitizing extends HTMLElement {
                     <span class="add-on">°</span>
                 </div>
             </div>
-            <form class="digitizing-text-tools ${mainLizmap.digitizing.editedFeatures.length ? '' : 'hide'}">
-                <details>
-                    <summary>
-                        ${lizDict['digitizing.toolbar.text']}
-                    </summary>
-                    ${lizDict['digitizing.toolbar.text.hint']}
-                </details>
-                ${textContentInputTemplate()}
-                ${textRotationInputTemplate()}
-                ${textScaleInputTemplate()}
-            </form>
+            ${textToolsTemplate(mainLizmap.digitizing.editedFeatures.length != 0)}
         </div>`;
 
         render(
