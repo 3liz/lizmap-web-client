@@ -1324,23 +1324,25 @@ var lizAttributeTable = function() {
 
                 if( cFeatures && cFeatures.length > 0 ){
                     // Format features for datatable
-                    var ff = formatDatatableFeatures(
+                    formatDatatableFeatures(
                         cFeatures,
                         isChild,
                         hiddenFields,
                         lConfig['selectedFeatures'],
                         lConfig['id'],
-                        parentLayerID);
-                    var foundFeatures = ff.foundFeatures;
-                    var dataSet = ff.dataSet;
+                        parentLayerID
+                    ).then((ff) => {
+                        var foundFeatures = ff.foundFeatures;
+                        var dataSet = ff.dataSet;
 
-                    // Datatable configuration
-                    if ( $.fn.dataTable.isDataTable( aTable ) ) {
-                        var oTable = $( aTable ).dataTable();
-                        oTable.fnClearTable();
-                        oTable.fnAddData( dataSet );
-                    }
-                    lConfig['features'] = foundFeatures;
+                        // Datatable configuration
+                        if ( $.fn.dataTable.isDataTable( aTable ) ) {
+                            var oTable = $( aTable ).dataTable();
+                            oTable.fnClearTable();
+                            oTable.fnAddData( dataSet );
+                        }
+                        lConfig['features'] = foundFeatures;
+                    });
                 }
 
                 if ( !cFeatures || cFeatures.length == 0 ){
@@ -1482,147 +1484,150 @@ var lizAttributeTable = function() {
                     var firstDisplayedColIndex = cdc.firstDisplayedColIndex;
 
                     // Format features for datatable
-                    var ff = formatDatatableFeatures(
+                    formatDatatableFeatures(
                         atFeatures,
                         isChild,
                         hiddenFields,
                         lConfig['selectedFeatures'],
                         lConfig['id'],
                         parentLayerID,
-                        pivotReference);
-                    var foundFeatures = ff.foundFeatures;
-                    var dataSet = ff.dataSet;
+                        pivotReference
+                    ).then((ff) => {
+                        var foundFeatures = ff.foundFeatures;
+                        var dataSet = ff.dataSet;
 
-                    // Fill in the features object
-                    // only when necessary : object is empty or is not child or (is child and no full features list in the object)
-                    var refillFeatures = false;
-                    var dLen = lConfig['features'] ? Object.keys(lConfig['features']).length : 0;
-                    if( dLen == 0 ){
-                        refillFeatures = true;
-                        if( !isChild ){
-                            lConfig['featuresFullSet'] = true;
+                        // Fill in the features object
+                        // only when necessary : object is empty or is not child or (is child and no full features list in the object)
+                        var refillFeatures = false;
+                        var dLen = lConfig['features'] ? Object.keys(lConfig['features']).length : 0;
+                        if( dLen == 0 ){
+                            refillFeatures = true;
+                            if( !isChild ){
+                                lConfig['featuresFullSet'] = true;
+                            }
                         }
-                    }
-                    else{
-                        if( isChild ){
-                            if( !lConfig['featuresFullSet'] ){
+                        else{
+                            if( isChild ){
+                                if( !lConfig['featuresFullSet'] ){
+                                    refillFeatures = true;
+                                }
+                            }else{
+                                lConfig['featuresFullSet'] = true;
                                 refillFeatures = true;
                             }
-                        }else{
-                            lConfig['featuresFullSet'] = true;
-                            refillFeatures = true;
                         }
-                    }
-                    if( refillFeatures  ) {
-                        lConfig['features'] = foundFeatures;
-                    }
-
-                    lConfig['alias'] = cAliases;
-                    // Datatable configuration
-                    if ( $.fn.dataTable.isDataTable( aTable ) ) {
-                        var oTable = $( aTable ).dataTable();
-                        oTable.fnClearTable();
-                        oTable.fnAddData( dataSet );
-                    }
-                    else {
-                        // Search while typing in text input
-                        // Deactivate if too many items
-                        var searchWhileTyping = true;
-                        if( dataLength > 500000 ){
-                            searchWhileTyping = false;
+                        if( refillFeatures  ) {
+                            lConfig['features'] = foundFeatures;
                         }
 
-                        var myDom = '<<t>ipl>';
-                        if( searchWhileTyping ) {
-                            $('#attribute-layer-search-' + cleanName).on( 'keyup', function (e){
-                                var searchVal = this.value;
-                                lizdelay(function(){
-                                    oTable.fnFilter( searchVal );
-                                }, 500 );
-                            });
-                        }else{
-                            myDom = '<<t>ipl>';
+                        lConfig['alias'] = cAliases;
+                        // Datatable configuration
+                        if ( $.fn.dataTable.isDataTable( aTable ) ) {
+                            var oTable = $( aTable ).dataTable();
+                            oTable.fnClearTable();
+                            oTable.fnAddData( dataSet );
                         }
+                        else {
+                            // Search while typing in text input
+                            // Deactivate if too many items
+                            var searchWhileTyping = true;
+                            if( dataLength > 500000 ){
+                                searchWhileTyping = false;
+                            }
 
-                        $( aTable ).dataTable( {
-                            data: dataSet
-                            ,columns: columns
-                            ,initComplete: function(settings, json) {
-                                const api = new $.fn.dataTable.Api(settings);
-                                const tableId = api.table().node().id;
-                                const featureType = tableId.split('attribute-layer-table-')[1];
+                            var myDom = '<<t>ipl>';
+                            if( searchWhileTyping ) {
+                                $('#attribute-layer-search-' + cleanName).on( 'keyup', function (e){
+                                    var searchVal = this.value;
+                                    lizdelay(function(){
+                                        oTable.fnFilter( searchVal );
+                                    }, 500 );
+                                });
+                            }else{
+                                myDom = '<<t>ipl>';
+                            }
 
-                                // Trigger event telling attribute table is ready
-                                lizMap.events.triggerEvent("attributeLayerContentReady",
-                                    {
-                                        'featureType': featureType
+                            $( aTable ).dataTable( {
+                                data: dataSet
+                                ,columns: columns
+                                ,initComplete: function(settings, json) {
+                                    const api = new $.fn.dataTable.Api(settings);
+                                    const tableId = api.table().node().id;
+                                    const featureType = tableId.split('attribute-layer-table-')[1];
+
+                                    // Trigger event telling attribute table is ready
+                                    lizMap.events.triggerEvent("attributeLayerContentReady",
+                                        {
+                                            'featureType': featureType
+                                        }
+                                    );
+                                }
+                                ,order: [[ firstDisplayedColIndex, "asc" ]]
+                                ,language: { url:globalThis['lizUrls']["dataTableLanguage"] }
+                                ,deferRender: true
+                                ,createdRow: function ( row, data, dataIndex ) {
+                                    if ( $.inArray( data.DT_RowId.toString(), lConfig['selectedFeatures'] ) != -1
+                                    ) {
+                                        $(row).addClass('selected');
+                                        data.lizSelected = 'a';
                                     }
-                                );
-                            }
-                            ,order: [[ firstDisplayedColIndex, "asc" ]]
-                            ,language: { url:globalThis['lizUrls']["dataTableLanguage"] }
-                            ,deferRender: true
-                            ,createdRow: function ( row, data, dataIndex ) {
-                                if ( $.inArray( data.DT_RowId.toString(), lConfig['selectedFeatures'] ) != -1
-                                ) {
-                                    $(row).addClass('selected');
-                                    data.lizSelected = 'a';
                                 }
-                            }
-                            ,drawCallback: function (settings) {
-                                // rendering ok, find img with data-attr-thumbnail
-                                const thumbnailColl = document.getElementsByClassName('data-attr-thumbnail');
-                                for(let thumbnail of thumbnailColl) {
-                                    thumbnail.setAttribute('src', lizUrls.media+'?repository='+lizUrls.params.repository+'&project='+lizUrls.params.project+'&path='+thumbnail.dataset.src);
+                                ,drawCallback: function (settings) {
+                                    // rendering ok, find img with data-attr-thumbnail
+                                    const thumbnailColl = document.getElementsByClassName('data-attr-thumbnail');
+                                    for(let thumbnail of thumbnailColl) {
+                                        thumbnail.setAttribute('src', lizUrls.media+'?repository='+lizUrls.params.repository+'&project='+lizUrls.params.project+'&path='+thumbnail.dataset.src);
+                                    }
                                 }
-                            }
-                            ,dom: myDom
-                            ,pageLength: 50
-                            ,scrollY: '95%'
-                            ,scrollX: '100%'
+                                ,dom: myDom
+                                ,pageLength: 50
+                                ,scrollY: '95%'
+                                ,scrollX: '100%'
 
-                        } );
+                            } );
 
-                        var oTable = $( aTable ).dataTable();
+                            var oTable = $( aTable ).dataTable();
 
-                        if( !searchWhileTyping )
-                            $('#attribute-layer-search-' + cleanName).hide();
+                            if( !searchWhileTyping )
+                                $('#attribute-layer-search-' + cleanName).hide();
 
-                        // Bind button which clears top-left search input content
-                        $('#attribute-layer-search-' + cleanName).next('.clear-layer-search').click(function(){
-                            $('#attribute-layer-search-' + cleanName).val('').focus().keyup();
-                        });
+                            // Bind button which clears top-left search input content
+                            $('#attribute-layer-search-' + cleanName).next('.clear-layer-search').click(function(){
+                                $('#attribute-layer-search-' + cleanName).val('').focus().keyup();
+                            });
 
-                        // Unbind previous events on page
-                        $( aTable ).on( 'page.dt', function() {
-                            // unbind previous events
-                            $(aTable +' tr').unbind('click');
-                            $(aTable +' tr td button').unbind('click');
-                        });
+                            // Unbind previous events on page
+                            $( aTable ).on( 'page.dt', function() {
+                                // unbind previous events
+                                $(aTable +' tr').unbind('click');
+                                $(aTable +' tr td button').unbind('click');
+                            });
 
-                        // Bind events when drawing table
-                        $( aTable ).on( 'draw.dt', function() {
+                            // Bind events when drawing table
+                            $( aTable ).on( 'draw.dt', function() {
 
-                            $(aTable +' tr').unbind('click');
-                            $(aTable +' tr td button').unbind('click');
+                                $(aTable +' tr').unbind('click');
+                                $(aTable +' tr td button').unbind('click');
 
-                            // Bind event when users click anywhere on the table line to highlight
-                            bindTableLineClick(aName, aTable);
+                                // Bind event when users click anywhere on the table line to highlight
+                                bindTableLineClick(aName, aTable);
 
-                            // Refresh size
-                            var mycontainerId = $('#bottom-dock div.bottom-content.active div.attribute-layer-main').attr('id');
+                                // Refresh size
+                                var mycontainerId = $('#bottom-dock div.bottom-content.active div.attribute-layer-main').attr('id');
 
-                            refreshDatatableSize('#' + mycontainerId);
+                                refreshDatatableSize('#' + mycontainerId);
 
-                            return false;
+                                return false;
 
-                        });
-                    }
+                            });
+                        }
 
-                    // Check editable features
-                    if (canEdit || canDelete) {
-                        lizMap.mainLizmap.edition.fetchEditableFeatures([lConfig.id]);
-                    }
+                        // Check editable features
+                        if (canEdit || canDelete) {
+                            lizMap.mainLizmap.edition.fetchEditableFeatures([lConfig.id]);
+                        }
+
+                    });
                 }
 
                 if ( !cFeatures || cFeatures.length == 0 ){
@@ -1884,45 +1889,86 @@ var lizAttributeTable = function() {
              * @param layerId
              * @param parentLayerID
              * @param pivotId
+             *
+             * @returns {Promise}
              */
             function formatDatatableFeatures(atFeatures, isChild, hiddenFields, selectedFeatures, layerId, parentLayerID, pivotId = null){
-                var dataSet = [];
-                var foundFeatures = {};
-                atFeatures.forEach(function(feat) {
-                    var line = {};
+                const waitForIt = (delay) => {
+                    return new Promise((resolve) => setTimeout(resolve, delay));
+                }
+                const mapFeatures = (features, isChild, hiddenFields, selectedFeatures, layerId, parentLayerID, pivotId = null) => {
+                    return new Promise((resolve) => {
+                        const dataSet = [];
+                        const foundFeatures = {};
 
-                    // add feature to layer global data
-                    var fid = feat.id.split('.')[1];
-                    foundFeatures[fid] = feat;
+                        features.forEach(function(feat) {
+                            const line = {};
 
-                    // Add row ID
-                    line['DT_RowId'] = fid;
-                    line['lizSelected'] = 'z';
+                            // add feature to layer global data
+                            const fid = feat.id.split('.')[1];
+                            foundFeatures[fid] = feat;
 
-                    if( selectedFeatures && $.inArray( fid, selectedFeatures ) != -1 )
-                        line.lizSelected = 'a';
-                    line['featureToolbar'] = `<lizmap-feature-toolbar value="${layerId + '.' + fid}" ${isChild ? `parent-layer-id="${parentLayerID}"`: ''} ${pivotId ? `pivot-layer="${pivotId}"`: ''}></lizmap-feature-toolbar>`;
+                            // Add row ID
+                            line['DT_RowId'] = fid;
+                            line['lizSelected'] = 'z';
 
-                    // Build table lines
-                    for (var idx in feat.properties){
-                        if( ($.inArray(idx, hiddenFields) > -1) )
-                            continue;
-                        var prop = feat.properties[idx];
-                        if (typeof prop == 'string') {
-                            prop = DOMPurify.sanitize(prop, {
-                                ADD_ATTR: ['target']
-                            });
+                            if( selectedFeatures && selectedFeatures.indexOf(fid) != -1 )
+                                line.lizSelected = 'a';
+                            line['featureToolbar'] =
+                                `<lizmap-feature-toolbar ` +
+                                `value="${layerId + '.' + fid}" ` +
+                                `${isChild ? `parent-layer-id="${parentLayerID}"`: ''} ` +
+                                `${pivotId ? `pivot-layer="${pivotId}"`: ''}>` +
+                                `</lizmap-feature-toolbar>`;
+
+                            // Build table lines
+                            for (var idx in feat.properties){
+                                if( (hiddenFields.indexOf(idx) > -1) )
+                                    continue;
+                                var prop = feat.properties[idx];
+                                if (typeof prop == 'string') {
+                                    prop = DOMPurify.sanitize(prop, {
+                                        ADD_ATTR: ['target']
+                                    });
+                                }
+                                line[idx] = prop;
+                            }
+
+
+                            dataSet.push( line );
+                        });
+
+                        resolve({
+                            'dataSet': dataSet,
+                            'foundFeatures': foundFeatures
+                        });
+                    });
+                }
+                return new Promise(async (resolve) => {
+                    const step = 500;
+                    let start = 0;
+                    let end = start+step;
+                    let found = -1;
+                    const timeout = 10;
+                    var dataSet = [];
+                    var foundFeatures = {};
+                    do {
+                        const features = atFeatures.slice(start, end);
+                        found = features.length;
+                        if (found != 0) {
+                            const result = await mapFeatures(features, isChild, hiddenFields, selectedFeatures, layerId, parentLayerID, pivotId);
+                            Object.assign(foundFeatures, result.foundFeatures);
+                            dataSet = dataSet.concat(result.dataSet);
+                            await waitForIt(timeout);
+                            start = end;
+                            end = start+step;
                         }
-                        line[idx] = prop;
-                    }
-
-
-                    dataSet.push( line );
+                    } while (found == 0);
+                    resolve({
+                        'dataSet': dataSet,
+                        'foundFeatures': foundFeatures
+                    });
                 });
-                return {
-                    'dataSet': dataSet,
-                    'foundFeatures': foundFeatures
-                };
             }
 
             /**
