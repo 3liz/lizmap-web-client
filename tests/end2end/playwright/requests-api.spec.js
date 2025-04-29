@@ -75,7 +75,7 @@ test.describe('Connected',
             const json = await checkJson(response);
 
             expect(json.id).toBe("attribute_table");
-            expect(json.projectname).toBeDefined();
+            expect(json.projectName).toBeDefined();
             expect(json.title).toBe("attribute_table");
             expect(json.abstract).toBe("");
             expect(json.keywordList).toBe("");

@@ -1705,9 +1705,9 @@ class QgisProject
     }
 
     /**
-     * Retrieve the first QGIS config line as array.
+     * Retrieve the first QGIS config line as an array.
      *
-     * @return array Array filled with version, projectname, saveDateTime, saveUser and saveUserFull
+     * @return array Array filled with "version", "projectName", "saveDateTime", "saveUser" and "saveUserFull"
      *
      * @throws \Exception
      *
@@ -1716,7 +1716,7 @@ class QgisProject
      *   saveUserFull="Chandler Bing" version="3.34.12-Prizren"
      * >
      */
-    public function getFirstQgisConfigLine()
+    public function getFirstQgisConfigLine(): array
     {
         $xmlReader = App\XmlTools::xmlReaderFromFile($this->path);
 
@@ -1732,7 +1732,7 @@ class QgisProject
                 && $xmlReader->localName == 'qgis') {
                 $data = array(
                     'version' => $xmlReader->getAttribute('version'),
-                    'projectname' => $xmlReader->getAttribute('projectname'),
+                    'projectName' => $xmlReader->getAttribute('projectname'),
                     'saveDateTime' => $xmlReader->getAttribute('saveDateTime'),
                     'saveUser' => $xmlReader->getAttribute('saveUser'),
                     'saveUserFull' => $xmlReader->getAttribute('saveUserFull'),
