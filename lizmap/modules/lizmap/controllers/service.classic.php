@@ -161,7 +161,7 @@ class serviceCtrl extends jController
         /** @var jResponseText $resp */
         $resp = $this->getResponse('text');
         if ($this->request->header('Origin')) {
-            $resp->addHttpHeader('Access-Control-Allow-Methods', 'GET,POST');
+            $resp->addHttpHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
             $resp->addHttpHeader('Access-Control-Request-Headers', $this->request->header('Access-Control-Request-Headers'));
             $resp->addHttpHeader('Access-Control-Allow-Credentials', 'true');
             $resp->addHttpHeader('Access-Control-Max-Age', '3600');
