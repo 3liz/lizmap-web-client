@@ -75,4 +75,19 @@ class VersionTools
 
         return $majorVersion.'.'.$minorVersion.'.'.$patchVersion;
     }
+
+    /**
+     * Transform a QGIS version with its name to a sortable int version.
+     *
+     * Transform "3.34.12-Prizren" into "33412"
+     *
+     * @param string $versionString Name of the version
+     */
+    public static function qgisVersionWithNameToInt(string $versionString): int
+    {
+        $version = VersionTools::dropBuildId($versionString);
+        $version = explode('.', $version);
+
+        return intval(intval($version[0]) * 10000 + intval($version[1]) * 100 + intval($version[2]));
+    }
 }
