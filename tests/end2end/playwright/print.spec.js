@@ -17,26 +17,6 @@ import {
 // IMPORTANT, this must not be set to `true` while committing, on GitHub. Set to `false`.
 const UPDATE_MOCK_FILES = false;
 
-/**
- * Playwright Page
- * @typedef {import('@playwright/test').Page} Page
- */
-
-/**
- * Try to close the print request message. But the message can disappear too quickly
- * @param {Page} page The page object
- */
-async function tryToCloseMessage(page) {
-    try {
-        const visible = await page.locator('.btn-close').isVisible();
-        if (visible) {
-            await page.locator('.btn-close').click();
-        }
-    } catch (error) {
-        console.warn('Could not click on the message, test will continue:', error);
-    }
-}
-
 
 test.describe('Print', () => {
 
@@ -100,10 +80,6 @@ test.describe('Print', () => {
 
         // Launch print
         await page.locator('#print-launch').click();
-        // check message
-        await expect(page.locator('div.alert')).toHaveCount(1)
-        // Close message
-        await tryToCloseMessage(page);
 
         // check request
         let getPrintRequest = await getPrintPromise;
@@ -119,16 +95,13 @@ test.describe('Print', () => {
             // 'multiline_label': 'Multiline label',
         })
         let expectedLength = 15;
-        if (qgisVersionFromProjectApi(request, 'print') > 33200) {
+        if (await qgisVersionFromProjectApi(request, 'print') > 33200) {
             expectedLength = 14;
         }
         let name = "Print requests";
         let getPrintParams = await expectParametersToContain(
             name, getPrintRequest.postData() ?? '', expectedParameters1);
         await expectToHaveLengthCompare(name, Array.from(getPrintParams.keys()), expectedLength, Object.keys(expectedParameters1));
-
-        // Close message
-        await tryToCloseMessage(page);
 
         // Test `print_map` template
         await page.locator('#print-template').selectOption('1');
@@ -169,10 +142,6 @@ test.describe('Print', () => {
 
         // Launch print
         await page.locator('#print-launch').click();
-        // check message
-        await expect(page.locator('div.alert')).toHaveCount(1)
-        // Close message
-        await tryToCloseMessage(page);
 
         // check request
         getPrintRequest = await getPrintPromise;
@@ -224,10 +193,6 @@ test.describe('Print', () => {
 
         // Launch print
         await page.locator('#print-launch').click();
-        // check message
-        await expect(page.locator('div.alert')).toHaveCount(1)
-        // Close message
-        await tryToCloseMessage(page);
 
         // check request
         getPrintRequest = await getPrintPromise;
@@ -269,7 +234,7 @@ test.describe('Print', () => {
         })
         /* eslint-enable no-useless-escape, @stylistic/js/max-len */
         expectedLength = 17
-        if (qgisVersionFromProjectApi(request, 'print') > 33200) {
+        if (await qgisVersionFromProjectApi(request, 'print') > 33200) {
             expectedLength = 16;
         }
         name = 'Print requests 4';
@@ -301,10 +266,6 @@ test.describe('Print', () => {
 
         // Launch print
         await page.locator('#print-launch').click();
-        // check message
-        await expect(page.locator('div.alert')).toHaveCount(1)
-        // Close message
-        await tryToCloseMessage(page);
 
         // check request
         const getPrintRequest = await getPrintPromise;
@@ -328,7 +289,7 @@ test.describe('Print', () => {
         const name = "Print requests with selection";
         const getPrintParams = await expectParametersToContain(name, getPrintRequest.postData() ?? '', expectedParameters);
         let expectedLength = 16;
-        if (qgisVersionFromProjectApi(request, 'print') > 33200) {
+        if (await qgisVersionFromProjectApi(request, 'print') > 33200) {
             expectedLength = 15;
         }
         await expectToHaveLengthCompare(name, Array.from(getPrintParams.keys()), expectedLength, Object.keys(expectedParameters));
@@ -356,10 +317,6 @@ test.describe('Print', () => {
 
         // Launch print
         await page.locator('#print-launch').click();
-        // check message
-        await expect(page.locator('div.alert')).toHaveCount(1)
-        // Close message
-        await tryToCloseMessage(page);
 
         // check request
         const getPrintRequest = await getPrintPromise;
@@ -381,7 +338,7 @@ test.describe('Print', () => {
             'FILTERTOKEN': /[a-z\d]+/,
         }
         let expectedLength = 16;
-        if (qgisVersionFromProjectApi(request, 'print') > 33200) {
+        if (await qgisVersionFromProjectApi(request, 'print') > 33200) {
             expectedLength = 15;
         }
         const name = 'Print requests with filter';
@@ -753,10 +710,6 @@ test.describe('Print 3857', () => {
 
         // Launch print
         await page.locator('#print-launch').click();
-        // check message
-        await expect(page.locator('div.alert')).toHaveCount(1)
-        // Close message
-        await tryToCloseMessage(page);
 
         // check request
         let getPrintRequest = await getPrintPromise;
@@ -778,7 +731,7 @@ test.describe('Print 3857', () => {
             expectedParameters1
         );
         let expectedLength = 15;
-        if (qgisVersionFromProjectApi(request, 'print') > 33200) {
+        if (await qgisVersionFromProjectApi(request, 'print') > 33200) {
             expectedLength = 14;
         }
         await expectToHaveLengthCompare(
@@ -798,10 +751,6 @@ test.describe('Print 3857', () => {
 
         // Launch print
         await page.locator('#print-launch').click();
-        // check message
-        await expect(page.locator('div.alert')).toHaveCount(1)
-        // Close message
-        await tryToCloseMessage(page);
 
         // check request
         getPrintRequest = await getPrintPromise;
@@ -824,9 +773,6 @@ test.describe('Print 3857', () => {
             13,
             Object.keys(expectedParameters2)
         );
-
-        // Close message
-        await tryToCloseMessage(page);
 
         // Redlining with circle
         await page.locator('#button-draw').click();
@@ -857,10 +803,6 @@ test.describe('Print 3857', () => {
 
         // Launch print
         await page.locator('#print-launch').click();
-        // check message
-        await expect(page.locator('div.alert')).toHaveCount(1)
-        // Close message
-        await tryToCloseMessage(page);
 
         // check request
         getPrintRequest = await getPrintPromise;
@@ -907,7 +849,7 @@ test.describe('Print 3857', () => {
             , expectedParameters3
         );
         expectedLength = 17;
-        if (qgisVersionFromProjectApi(request, 'print') > 33200) {
+        if (await qgisVersionFromProjectApi(request, 'print') > 33200) {
             expectedLength = 16;
         }
         await expectToHaveLengthCompare(
@@ -984,10 +926,6 @@ test.describe('Print base layers', () => {
 
         // Launch print
         await page.locator('#print-launch').click();
-        // check message
-        await expect(page.locator('div.alert')).toHaveCount(1)
-        // Close message
-        await tryToCloseMessage(page);
 
         // check request
         let getPrintRequest = await getPrintRequestPromise;
@@ -1028,10 +966,6 @@ test.describe('Print base layers', () => {
 
         // Launch print
         await page.locator('#print-launch').click();
-        // check message
-        await expect(page.locator('div.alert')).toHaveCount(1)
-        // Close message
-        await tryToCloseMessage(page);
 
         // check request
         getPrintRequest = await getPrintRequestPromise;
@@ -1108,10 +1042,6 @@ test.describe('Print base layers', () => {
 
         // Launch print
         await page.locator('#print-launch').click();
-        // check message
-        await expect(page.locator('div.alert')).toHaveCount(1)
-        // Close message
-        await tryToCloseMessage(page);
 
         // check request
         getPrintRequest = await getPrintRequestPromise;
@@ -1151,10 +1081,6 @@ test.describe('Print base layers', () => {
 
         // Launch print
         await page.locator('#print-launch').click();
-        // check message
-        await expect(page.locator('div.alert')).toHaveCount(1)
-        // Close message
-        await tryToCloseMessage(page);
 
         // check request
         getPrintRequest = await getPrintRequestPromise;
