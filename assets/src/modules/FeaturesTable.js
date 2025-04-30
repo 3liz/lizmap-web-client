@@ -1,29 +1,25 @@
 /**
- * @module modules/FeaturesTable.js
+ * @module modules/FeaturesTable
  * @copyright 2024 3Liz
  * @license MPL-2.0
  */
 import { Config } from './Config.js';
 import { Utils } from './Utils.js';
 
+/**
+ * @see {@link module:components/FeaturesTable}
+ */
 export default class FeaturesTable {
 
     /**
-     * Create a features table instance
-     * @param {Config} initialConfig - The lizmap initial config instance
-     * @param {object} lizmap3   - The old lizmap object
+     * Create a "features table" instance
+     * @param {Config} initialConfig - The Lizmap initial config instance
+     * @param {object} lizmap3   - The old Lizmap object
      */
     constructor(initialConfig, lizmap3) {
         this._initialConfig = initialConfig;
         this._lizmap3 = lizmap3;
     }
-
-    /**
-     * Get the list of features containing the display expression
-     * @param
-     * @returns {Promise} features - Promise with the JSON list of features
-     */
-
 
     /**
      * Get the list of features containing the display expression

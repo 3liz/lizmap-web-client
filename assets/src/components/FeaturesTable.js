@@ -1,6 +1,5 @@
 /**
- * @module components/FeaturesTable.js
- * @name FeaturesTable
+ * @module components/FeaturesTable
  * @copyright 2024 3Liz
  * @author DOUCHIN Michaël
  * @license MPL-2.0
@@ -12,6 +11,8 @@ import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import GeoJSON from 'ol/format/GeoJSON.js';
 
 /**
+ * @name components/FeaturesTable
+ * @see {@link module:modules/FeaturesTable}
  * @summary Allows to display a compact list of vector layer features labels
  * @augments HTMLElement
  * @description By default, the display expression is used: Layer properties → Display tab → Display name.

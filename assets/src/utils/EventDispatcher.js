@@ -1,6 +1,7 @@
 /**
  * UI components or any other components can be notified by this object of some
- * application events, in order to update their state or to do something
+ * application events, to update their state or to do something
+ * @class
  * @version 0.1.0
  * @author Laurent Jouanneau
  * @license MIT
@@ -10,7 +11,6 @@
 import { hashCode } from './../modules/utils/Converters.js'
 
 /**
- * @class
  * Dispatch some application events to listeners
  * @name EventDispatcher
  */
@@ -23,10 +23,18 @@ export default class EventDispatcher {
     }
 
     /**
-     * add a listener that will be called for one or several given events
+     * Add a listener that will be called for one or several given events
      * @param {Function} listener - Callback
      * @param {Array | string | object} supportedEvents events on which the listener will
      *                       be called. if undefined or "*", it will be called for any events
+     * @description
+     * ```JavaScript
+     * lizMap.mainEventDispatcher.addListener((lizmapEvent) => {
+     *      // Log the lizmap-features-table web component HTML element ID
+     *      console.log(`lizmap-features-table rendered, ID = ${lizmapEvent.elementId}`);
+     *   },
+     *   ['featuresTableRendered']
+     * );
      */
     addListener(listener, supportedEvents) {
 
@@ -59,7 +67,7 @@ export default class EventDispatcher {
     }
 
     /**
-     * remove a listener that is associated for one or several given events
+     * Remove a listener that is associated for one or several given events
      * @param {Function} listenerToRemove - Callback
      * @param {Array | string} supportedEvents list of events from which the listener
      *                       will be removed. if undefined or "*", it will be removed from any events
