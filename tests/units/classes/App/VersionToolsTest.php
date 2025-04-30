@@ -24,6 +24,16 @@ class VersionToolsTest extends TestCase
         $this->assertEquals('1.40', VersionTools::qgisMajMinHumanVersion('1040')); // Fixme when QGIS 10 is released :)
     }
 
+    public function testQgisVersionWithNameToInt(): void
+    {
+        $this->assertEquals(33410, VersionTools::qgisVersionWithNameToInt('3.34.10-Bratislava'));
+        $this->assertEquals(34006, VersionTools::qgisVersionWithNameToInt('3.40.6-Bratislava'));
+        $this->assertEquals(34010, VersionTools::qgisVersionWithNameToInt('3.40.10-Prizren'));
+        $this->assertEquals(40000, VersionTools::qgisVersionWithNameToInt('4.0.0-Prizren'));
+        $this->assertEquals(40400, VersionTools::qgisVersionWithNameToInt('4.4.0-Prizren'));
+        $this->assertEquals(33412, VersionTools::qgisVersionWithNameToInt('03.34.12'));
+    }
+
     public function testIntVersionToSortableString(): void
     {
         $this->assertEquals('01.01.02', VersionTools::intVersionToSortableString('01.01.02'));

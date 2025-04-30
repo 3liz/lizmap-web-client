@@ -119,7 +119,7 @@ components:
           type: string
           description: Project key
           example: montpellier
-        projectname:
+        projectName:
           type: string
           description: Project name
           example: Montpellier-Transports
