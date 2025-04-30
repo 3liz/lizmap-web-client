@@ -14,9 +14,13 @@ test.describe('Draw', () => {
 
     test('All draw tools', async ({ page }) => {
         await page.locator('#dock-close').click();
+        // Deactivate
+        await expect(page.locator('#draw button.digitizing-selected-tool')).toHaveAttribute('value', 'deactivate');
+
         // Point
         await page.locator('#draw button.dropdown-toggle:nth-child(2)').click();
         await page.locator('.digitizing-point > svg').click();
+        await expect(page.locator('#draw button.digitizing-selected-tool')).toHaveAttribute('value', 'point');
         await page.locator('#newOlMap').click({
             position: {
                 x: 200,
@@ -27,6 +31,7 @@ test.describe('Draw', () => {
         // Linestring
         await page.locator('#draw button.dropdown-toggle:nth-child(2)').click();
         await page.locator('.digitizing-line > svg').click();
+        await expect(page.locator('#draw button.digitizing-selected-tool')).toHaveAttribute('value', 'line');
         await page.locator('#newOlMap').click({
             position: {
                 x: 230,
@@ -50,6 +55,7 @@ test.describe('Draw', () => {
         // Polygon
         await page.locator('#draw button.dropdown-toggle:nth-child(2)').click();
         await page.locator('.digitizing-polygon > svg').click();
+        await expect(page.locator('#draw button.digitizing-selected-tool')).toHaveAttribute('value', 'polygon');
         await page.locator('#newOlMap').click({
             position: {
                 x: 290,
@@ -73,6 +79,7 @@ test.describe('Draw', () => {
         // Box
         await page.locator('#draw button.dropdown-toggle:nth-child(2)').click();
         await page.locator('.digitizing-box > svg').click();
+        await expect(page.locator('#draw button.digitizing-selected-tool')).toHaveAttribute('value', 'box');
         await page.locator('#newOlMap').click({
             position: {
                 x: 340,
@@ -89,6 +96,7 @@ test.describe('Draw', () => {
         // Circle
         await page.locator('#draw button.dropdown-toggle:nth-child(2)').click();
         await page.locator('.digitizing-circle > svg').click();
+        await expect(page.locator('#draw button.digitizing-selected-tool')).toHaveAttribute('value', 'circle');
         await page.locator('#newOlMap').click({
             position: {
                 x: 450,
