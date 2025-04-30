@@ -184,8 +184,9 @@ export default class Digitizing extends HTMLElement {
                 class="digitizing-buttons btn-group"
                 data-original-title="${lizDict['digitizing.toolbar.drawTools']}"
                 >
-                <a href="#"
+                <button href="#"
                     class="digitizing-selected-tool btn dropdown-toggle ${this.deactivate ? '' : 'active btn-primary'}"
+                    value="${toolSelected}"
                     @click=${(event) => {this.toggleToolSelected(event)}}
                     data-toggle="dropdown"
                     >
@@ -199,10 +200,10 @@ export default class Digitizing extends HTMLElement {
                             ${svgToolIconTemplate(tool)}
                         `)
                     }
-                </a>
-                <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                </button>
+                <button class="btn dropdown-toggle" data-toggle="dropdown" href="#">
                     <span class="caret"></span>
-                </a>
+                </button>
                 <ul class="dropdown-menu">
                     ${this._availableTools
                         .map(tool => html`
