@@ -482,3 +482,93 @@ test.describe('Measure',
             await(expect(drawProject.mapAnnotationToolTipStatic)).toHaveText('3 km');
         });
     });
+
+
+test.describe('Draw text tools', () => {
+
+    test('Point', async ({ page }) => {
+
+        const drawProject = new DrawPage(page, 'draw');
+        // open page
+        await drawProject.open();
+        // open draw panel
+        await drawProject.openDrawPanel();
+        // Deactivate
+        await expect(await drawProject.selectedToolLocator()).toHaveAttribute('value', 'deactivate');
+        // select geometry to draw
+        await drawProject.selectGeometry('point');
+        // Point
+        await expect(await drawProject.selectedToolLocator()).toHaveAttribute('value', 'point');
+        await expect(await drawProject.selectedToolLocator()).toHaveClass(/active/);
+
+        // Draw point
+        await drawProject.clickOnMap(300, 150);
+
+        // Toggle edit, one geometry is available, the text tools are visible
+        await drawProject.toggleEdit();
+        await expect(await drawProject.textContentLocator()).toBeVisible();
+        await expect(await drawProject.textRotationLocator()).toBeVisible();
+        await expect(await drawProject.textScaleLocator()).toBeVisible();
+
+        // Check text content
+        await expect(await drawProject.textContentLocator()).toHaveValue('');
+        await drawProject.setTextContentValue('test');
+        await expect(await drawProject.textContentLocator()).toHaveValue('test');
+
+        // Check text rotation
+        await expect(await drawProject.textRotationLocator()).toHaveValue('');
+        await drawProject.setTextRotationValue('45');
+        await expect(await drawProject.textRotationLocator()).toHaveValue('45');
+
+        // Check text scale
+        await expect(await drawProject.textScaleLocator()).toHaveValue('1');
+        await drawProject.setTextScaleValue('2');
+        await expect(await drawProject.textScaleLocator()).toHaveValue('2');
+
+        // Toggle point
+        await expect(await drawProject.selectedToolLocator()).toHaveAttribute('value', 'point');
+        await expect(await drawProject.selectedToolLocator()).not.toHaveClass(/active/);
+        await drawProject.toggleSelectedTool();
+        await expect(await drawProject.selectedToolLocator()).toHaveClass(/active/);
+
+        // Draw second point
+        await drawProject.clickOnMap(350, 150);
+
+        // Toggle edit, two geometries are available, the text tools are not visible
+        await drawProject.toggleEdit();
+        await expect(await drawProject.textContentLocator()).not.toBeVisible();
+        await expect(await drawProject.textRotationLocator()).not.toBeVisible();
+        await expect(await drawProject.textScaleLocator()).not.toBeVisible();
+
+        // Edit second point By clicking on the map
+        await page.waitForTimeout(1000);
+        await drawProject.clickOnMap(350, 150);
+        await expect(await drawProject.textContentLocator()).toBeVisible();
+        await expect(await drawProject.textRotationLocator()).toBeVisible();
+        await expect(await drawProject.textScaleLocator()).toBeVisible();
+        // Check text content
+        await expect(await drawProject.textContentLocator()).toHaveValue('');
+        // Check text rotation
+        await expect(await drawProject.textRotationLocator()).toHaveValue('');
+        // Check text scale
+        await expect(await drawProject.textScaleLocator()).toHaveValue('1');
+
+        // Edit first point
+        await page.waitForTimeout(1000);
+        await drawProject.clickOnMap(300, 150);
+        await expect(await drawProject.textContentLocator()).toBeVisible();
+        await expect(await drawProject.textRotationLocator()).toBeVisible();
+        await expect(await drawProject.textScaleLocator()).toBeVisible();
+        // Check text content
+        await expect(await drawProject.textContentLocator()).toHaveValue('test');
+        // Check text rotation
+        await expect(await drawProject.textRotationLocator()).toHaveValue('45');
+        // Check text scale
+        await expect(await drawProject.textScaleLocator()).toHaveValue('2');
+
+        // Erase all
+        await drawProject.deleteAllDrawings();
+        // close draw panel
+        await drawProject.closeDrawPanel();
+    });
+});
