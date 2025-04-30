@@ -190,6 +190,7 @@ export default class Digitizing extends HTMLElement {
                 <button
                     type="button"
                     class="digitizing-selected-tool btn ${this.deactivate ? '' : 'active btn-primary'}"
+                    value="${toolSelected}"
                     @click=${(event) => {this.toggleToolSelected(event)}}
                     >
                     <svg>
@@ -285,7 +286,7 @@ export default class Digitizing extends HTMLElement {
             </button>
             <button
                 type="button"
-                class="digitizing-all btn"
+                class="digitizing-erase-all btn"
                 ?disabled=${!mainLizmap.digitizing.featureDrawn}
                 @click=${() => this.eraseAll()}
                 data-bs-toggle="tooltip"
