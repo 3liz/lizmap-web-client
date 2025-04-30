@@ -11,6 +11,6 @@
     </h3>
 
     <div class="menu-content">
-        <lizmap-digitizing context="draw" save import-export measure></lizmap-digitizing>
+        <lizmap-digitizing context="draw" save import-export measure text-tools></lizmap-digitizing>
     </div>
 </div>

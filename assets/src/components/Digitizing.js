@@ -44,8 +44,9 @@ import '../images/svg/file-upload.svg';
  *  selected-tool - Start selected drawing tools one of DigitizingAvailableTools or available-tools
  *  available-tools - List of available drawing tools based on DigitizingAvailableTools
  *  save - Enable save capability
- *  measure - Enable measure capability
  *  import-export - Enable import / export capabilities
+ *  measure - Enable measure capability
+ *  text-tools - Enable text tools
  * @example <caption>Example of use</caption>
  * <lizmap-digitizing
  *     context="draw"
@@ -54,6 +55,7 @@ import '../images/svg/file-upload.svg';
  *     save
  *     import-export
  *     measure
+ *     text-tools
  *     ></lizmap-digitizing>
  *
  * @listens Digitizing#digitizingDrawColor
@@ -449,7 +451,9 @@ export default class Digitizing extends HTMLElement {
                     <span class="add-on">°</span>
                 </div>
             </div>
-            ${textToolsTemplate(mainLizmap.digitizing.editedFeatures.length != 0)}
+            ${this.textToolsAvailable ? textToolsTemplate(
+                mainLizmap.digitizing.editedFeatures.length != 0
+            ) : ''}
         </div>`;
 
         render(
@@ -565,6 +569,15 @@ export default class Digitizing extends HTMLElement {
      */
     get importExportAvailable() {
         return this.hasAttribute('import-export');
+    }
+
+    /**
+     * Text tools are available
+     * The element has attribute: text-tools
+     * @type {boolean}
+     */
+    get textToolsAvailable() {
+        return this.hasAttribute('text-tools');
     }
 
     /**
