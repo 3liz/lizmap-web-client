@@ -102,6 +102,14 @@ export class DrawPage extends ProjectPage {
     }
 
     /**
+     * Get edit button locator
+     * @returns {Promise<Locator>} The edit button locator
+     */
+    async editLocator() {
+        return this.drawPanel.locator('button.digitizing-edit');
+    }
+
+    /**
      * toggleEdit function
      * Toggle the edit tool
      */
@@ -110,11 +118,65 @@ export class DrawPage extends ProjectPage {
     }
 
     /**
+     * Get input color locator
+     * @returns {Promise<Locator>} The input color locator
+     */
+    async inputColorLocator() {
+        return this.drawPanel.locator('input[type="color"]');
+    }
+
+    /**
+     * set input color value
+     * @param {string} color The color value
+     */
+    async setInputColorValue(color) {
+        await this.drawPanel.locator('input[type="color"]').fill(color);
+    }
+
+    /**
+     * Get erase button locator
+     * @returns {Promise<Locator>} The erase button locator
+     */
+    async eraseLocator() {
+        return this.drawPanel.locator('button.digitizing-erase');
+    }
+
+    /**
+     * Toggle the erase tool
+     */
+    async toggleErase() {
+        await this.drawPanel.locator('button.digitizing-erase').click();
+    }
+
+    /**
+     * Get measure button locator
+     * @returns {Promise<Locator>} The measure button locator
+     */
+    async measureLocator() {
+        return this.drawPanel.locator('button.digitizing-toggle-measure');
+    }
+
+    /**
      * toggleMeasure function
      * Toggle the measure tool
      */
     async toggleMeasure() {
         await this.drawPanel.locator('.digitizing-toggle-measure').click();
+    }
+
+    /**
+     * Get save button locator
+     * @returns {Promise<Locator>} The save button locator
+     */
+    async saveLocator() {
+        return this.drawPanel.locator('button.digitizing-save');
+    }
+
+    /**
+     * Toggle the save tool
+     */
+    async toggleSave() {
+        await this.drawPanel.locator('button.digitizing-save').click();
     }
 
     /**
