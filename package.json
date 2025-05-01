@@ -36,7 +36,7 @@
     "cypress-file-upload": "^5.0.8",
     "dompurify": "^3.1.6",
     "eslint-plugin-jsdoc": "^50.6.x",
-    "flatgeobuf": "^3.37.x",
+    "flatgeobuf": "^4.0.x",
     "jsts": "^2.11.0",
     "lit-html": "^3.1.1",
     "mocha": "^11.1.0",
