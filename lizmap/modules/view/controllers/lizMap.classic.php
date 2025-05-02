@@ -293,7 +293,7 @@ class lizMapCtrl extends jController
             'onlyMaps' => $lser->onlyMaps,
         ), $wmsInfo);
 
-        // WMS GetCapabilities Url
+        // WMS GetCapabilities URL
         $wmsGetCapabilitiesUrl = jAcl2::check(
             'lizmap.tools.displayGetCapabilitiesLinks',
             $lrep->getKey()

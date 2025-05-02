@@ -52,7 +52,7 @@ class main_viewZone extends jZone
             if ($lrep->hasValidPath()) {
                 $mrep = new lizmapMainViewItem($r, $lrep->getLabel());
 
-                // WMS GetCapabilities Url
+                // WMS GetCapabilities URL
                 $wmsGetCapabilitiesUrl = jAcl2::check(
                     'lizmap.tools.displayGetCapabilitiesLinks',
                     $lrep->getKey()
@@ -83,6 +83,7 @@ class main_viewZone extends jZone
                     if ($wmsGetCapabilitiesUrl) {
                         $wmsGetCapabilitiesUrl = $meta->getWMSGetCapabilitiesUrl();
                         $wmtsGetCapabilitiesUrl = $meta->getWMTSGetCapabilitiesUrl();
+                        $wfsGetCapabilitiesUrl = $meta->getWFSGetCapabilitiesUrl();
                     }
 
                     // Allowed image types lower or upper case
@@ -115,7 +116,8 @@ class main_viewZone extends jZone
                             $r,
                             'map',
                             $wmsGetCapabilitiesUrl,
-                            $wmtsGetCapabilitiesUrl
+                            $wmtsGetCapabilitiesUrl,
+                            $wfsGetCapabilitiesUrl
                         );
                     }
                 }
