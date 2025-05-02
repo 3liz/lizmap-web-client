@@ -1,191 +1,147 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { gotoMap, reloadMap } from './globals';
-import {DrawPage} from "./pages/drawpage";
+import { reloadMap } from './globals';
+import { DrawPage } from "./pages/drawpage";
+
+/**
+ * Playwright Page
+ * @typedef {import('@playwright/test').Page} Page
+ */
+
+/**
+ * Init draw project page as draw page
+ * @param {Page} page The playwright page
+ * @returns {Promise<DrawPage>} The draw page
+ */
+const initDrawProject = async (page) => {
+    const drawProject = new DrawPage(page, 'draw');
+    // open page
+    await drawProject.open();
+    // open draw panel
+    await drawProject.openDrawPanel();
+
+    return drawProject;
+}
 
 test.describe('Draw', () => {
 
-    test.beforeEach(async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=draw';
-        await gotoMap(url, page);
-
-        await page.locator('#button-draw').click();
-    });
-
     test('All draw tools', async ({ page }) => {
-        await page.locator('#dock-close').click();
+        const drawProject = await initDrawProject(page);
+
+        // Close left dock
+        await drawProject.closeLeftDock();
+        // Deactivate
+        await expect(await drawProject.selectedToolLocator()).toHaveAttribute('value', 'deactivate');
+        // select point to draw
+        await drawProject.selectGeometry('point');
         // Point
-        await page.locator('#draw').getByRole('link').nth(1).click();
-        await page.locator('.digitizing-point > svg').click();
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 200,
-                y: 50
-            }
-        });
+        await expect(await drawProject.selectedToolLocator()).toHaveAttribute('value', 'point');
+        await expect(await drawProject.selectedToolLocator()).toHaveClass(/active/);
 
-        // Linestring
-        await page.locator('#draw').getByRole('link').nth(1).click();
-        await page.locator('.digitizing-line > svg').click();
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 230,
-                y: 50
-            }
-        });
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 280,
-                y: 50
-            }
-        });
+        // Draw point
+        await drawProject.clickOnMap(200, 50);
 
-        await page.locator('#newOlMap').dblclick({
-            position: {
-                x: 280,
-                y: 115
-            }
-        });
+        // select line to draw
+        await drawProject.selectGeometry('line');
+        // LineString
+        await expect(await drawProject.selectedToolLocator()).toHaveAttribute('value', 'line');
+        await expect(await drawProject.selectedToolLocator()).toHaveClass(/active/);
 
+        // Draw line
+        await drawProject.clickOnMap(230, 50);
+        await drawProject.clickOnMap(280, 50);
+        await drawProject.dblClickOnMap(280, 115);
+
+        // select polygon to draw
+        await drawProject.selectGeometry('polygon');
         // Polygon
-        await page.locator('#draw').getByRole('link').nth(1).click();
-        await page.locator('.digitizing-polygon > svg').click();
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 290,
-                y: 50
-            }
-        });
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 330,
-                y: 50
-            }
-        });
+        await expect(await drawProject.selectedToolLocator()).toHaveAttribute('value', 'polygon');
+        await expect(await drawProject.selectedToolLocator()).toHaveClass(/active/);
 
-        await page.locator('#newOlMap').dblclick({
-            position: {
-                x: 330,
-                y: 115
-            }
-        });
+        // Draw polygon
+        await drawProject.clickOnMap(290, 50);
+        await drawProject.clickOnMap(330, 50);
+        await drawProject.dblClickOnMap(330, 115);
 
+        // select box to draw
+        await drawProject.selectGeometry('box');
         // Box
-        await page.locator('#draw').getByRole('link').nth(1).click();
-        await page.locator('.digitizing-box > svg').click();
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 340,
-                y: 50
-            }
-        });
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 390,
-                y: 115
-            }
-        });
+        await expect(await drawProject.selectedToolLocator()).toHaveAttribute('value', 'box');
+        await expect(await drawProject.selectedToolLocator()).toHaveClass(/active/);
 
+        // Draw box
+        await drawProject.clickOnMap(340, 50);
+        await drawProject.clickOnMap(390, 115);
+
+        // select circle to draw
+        await drawProject.selectGeometry('circle');
         // Circle
-        await page.locator('#draw').getByRole('link').nth(1).click();
-        await page.locator('.digitizing-circle > svg').click();
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 450,
-                y: 75
-            }
-        });
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 480,
-                y: 115
-            }
-        });
+        await expect(await drawProject.selectedToolLocator()).toHaveAttribute('value', 'circle');
+        await expect(await drawProject.selectedToolLocator()).toHaveClass(/active/);
+
+        // Draw circle
+        await drawProject.clickOnMap(450, 75);
+        await drawProject.clickOnMap(480, 115);
 
         // Hide all elements but #map, #newOlMap and their children
         await page.$eval("*", el => el.style.visibility = 'hidden');
         await page.$eval("#newOlMap, #newOlMap *", el => el.style.visibility = 'visible');
 
-        expect(await page.locator('#newOlMap').screenshot()).toMatchSnapshot('draw-all-tools.png');
+        expect(await drawProject.map.screenshot()).toMatchSnapshot('draw-all-tools.png');
     });
 
     test('Edition', async ({ page }) => {
+        const drawProject = await initDrawProject(page);
+
+        // Deactivate
+        await expect(await drawProject.selectedToolLocator()).toHaveAttribute('value', 'deactivate');
+        await expect(await drawProject.selectedToolLocator()).not.toHaveClass(/active/);
+        // select polygon to draw
+        await drawProject.selectGeometry('polygon');
         // Polygon
-        await page.locator('#draw').getByRole('link').nth(1).click();
-        await page.locator('.digitizing-polygon > svg').click();
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 290,
-                y: 50
-            }
-        });
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 330,
-                y: 50
-            }
-        });
+        await expect(await drawProject.selectedToolLocator()).toHaveAttribute('value', 'polygon');
+        await expect(await drawProject.selectedToolLocator()).toHaveClass(/active/);
 
-        await page.locator('#newOlMap').dblclick({
-            position: {
-                x: 330,
-                y: 115
-            }
-        });
+        // Draw polygon
+        await drawProject.clickOnMap(290, 50);
+        await drawProject.clickOnMap(330, 50);
+        await drawProject.dblClickOnMap(330, 115);
 
+        // select box to draw
+        await drawProject.selectGeometry('box');
         // Box
-        await page.locator('#draw').getByRole('link').nth(1).click();
-        await page.locator('.digitizing-box > svg').click();
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 340,
-                y: 50
-            }
-        });
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 390,
-                y: 115
-            }
-        });
+        await expect(await drawProject.selectedToolLocator()).toHaveAttribute('value', 'box');
+        await expect(await drawProject.selectedToolLocator()).toHaveClass(/active/);
+
+        // Draw box
+        await drawProject.clickOnMap(340, 50);
+        await drawProject.clickOnMap(390, 115);
 
         // Edition
-        await page.locator('.digitizing-edit').click();
-
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 370,
-                y: 100
-            }
-        });
+        await expect(await drawProject.editLocator()).not.toHaveClass(/active/);
+        await drawProject.toggleEdit();
+        await expect(await drawProject.editLocator()).toHaveClass(/active/);
+        await expect(await drawProject.selectedToolLocator()).not.toHaveClass(/active/);
+        await drawProject.clickOnMap(370, 100);
 
         await page.waitForTimeout(300);
 
         // Change color
-        await page.locator('input[type="color"]').evaluate(input => {
-            input.value = '#000'; // Cast input to HTMLInputElement for TypeScript
-            let event = new Event('input', {
-                bubbles: true,
-                cancelable: true,
-            });
-
-            input.dispatchEvent(event);
-        });
+        await expect(await drawProject.inputColorLocator()).toHaveValue('#ff0000');
+        await drawProject.setInputColorValue('#000000');
+        await expect(await drawProject.inputColorLocator()).toHaveValue('#000000');
 
         expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toHaveLength(2);
 
+        // Activate erase tool
+        await expect(await drawProject.eraseLocator()).not.toHaveClass(/active/);
+        await drawProject.toggleErase();
+        await expect(await drawProject.eraseLocator()).toHaveClass(/active/);
+        await expect(await drawProject.editLocator()).not.toHaveClass(/active/);
+
         // Delete polygon
-        await page.locator('.digitizing-erase').click();
-
         page.on('dialog', dialog => dialog.accept());
-
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 315,
-                y: 60
-            }
-        });
-
+        await drawProject.clickOnMap(315, 60);
         await page.waitForTimeout(300);
 
         expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toHaveLength(1);
@@ -203,7 +159,12 @@ test.describe('Draw', () => {
         await expect(drawn[0][4]).toHaveLength(2);
         await expect(drawn[0][5]).toHaveLength(2);
 
-        await page.locator('.digitizing-save').click();
+        // Save drawn features
+        await expect(await drawProject.saveLocator()).not.toHaveClass(/active/);
+        await drawProject.toggleSave();
+        await expect(await drawProject.saveLocator()).toHaveClass(/active/);
+        // Erase tool is still active
+        await expect(await drawProject.eraseLocator()).toHaveClass(/active/);
 
         // Get the JSON has been stored
         const json_stored = await page.evaluate(() => localStorage.getItem('testsrepository_draw_draw_drawLayer'));
@@ -231,78 +192,68 @@ test.describe('Draw', () => {
         await page.$eval("*", el => el.style.visibility = 'hidden');
         await page.$eval("#newOlMap, #newOlMap *", el => el.style.visibility = 'visible');
 
-        expect(await page.locator('#newOlMap').screenshot()).toMatchSnapshot('draw-edition.png');
+        expect(await drawProject.map.screenshot()).toMatchSnapshot('draw-edition.png');
     });
 
     test('Erase all', async ({ page }) => {
+        const drawProject = await initDrawProject(page);
+
+        // select polygon to draw
+        await drawProject.selectGeometry('polygon');
         // Polygon
-        await page.locator('#draw').getByRole('link').nth(1).click();
-        await page.locator('.digitizing-polygon > svg').click();
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 290,
-                y: 50
-            }
-        });
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 330,
-                y: 50
-            }
-        });
+        await expect(await drawProject.selectedToolLocator()).toHaveAttribute('value', 'polygon');
+        await expect(await drawProject.selectedToolLocator()).toHaveClass(/active/);
 
-        await page.locator('#newOlMap').dblclick({
-            position: {
-                x: 330,
-                y: 115
-            }
-        });
+        // Draw polygon
+        await drawProject.clickOnMap(290, 50);
+        await drawProject.clickOnMap(330, 50);
+        await drawProject.dblClickOnMap(330, 115);
 
+        // select box to draw
+        await drawProject.selectGeometry('box');
         // Box
-        await page.locator('#draw').getByRole('link').nth(1).click();
-        await page.locator('.digitizing-box > svg').click();
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 340,
-                y: 50
-            }
-        });
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 390,
-                y: 115
-            }
-        });
+        await expect(await drawProject.selectedToolLocator()).toHaveAttribute('value', 'box');
+        await expect(await drawProject.selectedToolLocator()).toHaveClass(/active/);
+
+        // Draw box
+        await drawProject.clickOnMap(340, 50);
+        await drawProject.clickOnMap(390, 115);
 
         expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toHaveLength(2);
 
-        page.on('dialog', dialog => dialog.accept());
-        await page.locator('.digitizing-all').click();
+        await drawProject.deleteAllDrawings();
 
         expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toBeNull();
     });
 
     test('Circular geometry measure', async ({ page }) => {
-        await page.locator('#draw').getByRole('link').nth(1).click();
-        await page.locator('.digitizing-circle > svg').click();
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 450,
-                y: 75
-            }
-        });
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 480,
-                y: 115
-            }
-        });
-        await page.locator('#draw button.digitizing-toggle-measure').click();
+        const drawProject = await initDrawProject(page);
+
+        // select circle to draw
+        await drawProject.selectGeometry('circle');
+        // Circle
+        await expect(await drawProject.selectedToolLocator()).toHaveAttribute('value', 'circle');
+        await expect(await drawProject.selectedToolLocator()).toHaveClass(/active/);
+
+        // Draw circle
+        await drawProject.clickOnMap(450, 75);
+        await drawProject.clickOnMap(480, 115);
+
+        // Toggle measure
+        await expect(await drawProject.measureLocator()).not.toHaveClass(/active/);
+        await drawProject.toggleMeasure();
+        await expect(await drawProject.measureLocator()).toHaveClass(/active/);
+        // Draw is still active
+        await expect(await drawProject.selectedToolLocator()).toHaveClass(/active/);
+
+        // Check measure display
         await expect(page.locator('.ol-tooltip.ol-tooltip-static')).toBeVisible();
         await expect(page.locator('.ol-tooltip.ol-tooltip-static')).toHaveText('3.3 km34.27 km2');
     })
 
     test('From local storage', async ({ page }) => {
+        const drawProject = await initDrawProject(page);
+
         const the_json = '[{"type":"Polygon","color":"#000000","coords":[[[764321.0416656,6290805.935670358],[767628.3399468632,6290805.935670358],[767628.3399468632,6295105.423436],[764321.0416656,6295105.423436],[764321.0416656,6290805.935670358],[764321.0416656,6290805.935670358]]]}]';
         await page.evaluate(token => localStorage.setItem('testsrepository_draw_draw_drawLayer', token), the_json);
         const json_stored = await page.evaluate(() => localStorage.getItem('testsrepository_draw_draw_drawLayer'));
@@ -311,11 +262,12 @@ test.describe('Draw', () => {
         // Reload
         await reloadMap(page);
         // Display
-        await page.locator('#button-draw').click();
-        await expect(page.locator('.digitizing-save')).toHaveClass(/active/);
+        await drawProject.openDrawPanel();
+        await expect(await drawProject.saveLocator()).toHaveClass(/active/);
 
         // Clear local storage
-        await page.locator('.digitizing-save').click();
+        await drawProject.toggleSave();
+        await expect(await drawProject.saveLocator()).not.toHaveClass(/active/);
         expect(await page.evaluate(() => localStorage.getItem('testsrepository_draw_draw_drawLayer'))).toBeNull;
 
         // Check the geometry has been drawn
@@ -335,21 +287,29 @@ test.describe('Draw', () => {
         await expect(drawn[0][5]).toHaveLength(2);
 
         // check measure initialization
-        await page.locator('#draw button.digitizing-toggle-measure').click();
+        await expect(await drawProject.measureLocator()).not.toHaveClass(/active/);
+        await drawProject.toggleMeasure();
+        await expect(await drawProject.measureLocator()).toHaveClass(/active/);
+
+        // Check measure display
         await expect(page.locator('.ol-tooltip.ol-tooltip-static')).toBeVisible();
         await expect(page.locator('.ol-tooltip.ol-tooltip-static')).toHaveText('15.2 km14.19 km2');
+
         // hide measure
-        await page.locator('#draw button.digitizing-toggle-measure').click();
+        await drawProject.toggleMeasure();
+        await expect(await drawProject.measureLocator()).not.toHaveClass(/active/);
 
         // Hide all elements but #map, #newOlMap and their children
         await page.$eval("*", el => el.style.visibility = 'hidden');
         await page.$eval("#newOlMap, #newOlMap *", el => el.style.visibility = 'visible');
 
         // Check rendering
-        expect(await page.locator('#newOlMap').screenshot()).toMatchSnapshot('draw-edition.png');
+        expect(await drawProject.map.screenshot()).toMatchSnapshot('draw-edition.png');
     });
 
     test('WKT found in local storage', async ({ page }) => {
+        const drawProject = await initDrawProject(page);
+
         // Save WKT to the old local storage
         const wkt = 'POINT(770737.2003016905 6279832.319974077)';
         await page.evaluate(token => localStorage.setItem('testsrepository_draw_drawLayer', token), wkt);
@@ -373,8 +333,8 @@ test.describe('Draw', () => {
         expect(await page.evaluate(() => localStorage.getItem('testsrepository_draw_drawLayer'))).toBeNull;
 
         // Save to local storage
-        await page.locator('#button-draw').click();
-        await expect(page.locator('.digitizing-save')).toHaveClass(/active/);
+        await drawProject.openDrawPanel();
+        await expect(await drawProject.saveLocator()).toHaveClass(/active/);
 
         // The JSON has been stored
         const json_stored = await page.evaluate(() => localStorage.getItem('testsrepository_draw_draw_drawLayer'));
@@ -397,6 +357,8 @@ test.describe('Draw', () => {
     });
 
     test('Not well formed data in local storage', async ({ page }) => {
+        await initDrawProject(page);
+
         // Save not well formed data in local storage
         const bad_wkt = 'foobar POINT(770737.2003016905 6279832.319974077)';
         await page.evaluate(token => localStorage.setItem('testsrepository_draw_drawLayer', token), bad_wkt);
@@ -420,12 +382,8 @@ test.describe('Measure',
     () => {
 
         test('Length and angle constraints', async ({ page }) => {
+            const drawProject = await initDrawProject(page);
 
-            const drawProject = new DrawPage(page, 'draw');
-            // open page
-            await drawProject.open();
-            // open draw panel
-            await drawProject.openDrawPanel();
             // select geometry to draw
             await drawProject.selectGeometry('line');
             // toggleMeasure
@@ -474,3 +432,89 @@ test.describe('Measure',
             await(expect(drawProject.mapAnnotationToolTipStatic)).toHaveText('3 km');
         });
     });
+
+
+test.describe('Draw text tools', () => {
+
+    test('Point', async ({ page }) => {
+        const drawProject = await initDrawProject(page);
+
+        // Deactivate
+        await expect(await drawProject.selectedToolLocator()).toHaveAttribute('value', 'deactivate');
+        // select geometry to draw
+        await drawProject.selectGeometry('point');
+        // Point
+        await expect(await drawProject.selectedToolLocator()).toHaveAttribute('value', 'point');
+        await expect(await drawProject.selectedToolLocator()).toHaveClass(/active/);
+
+        // Draw point
+        await drawProject.clickOnMap(300, 150);
+
+        // Toggle edit, one geometry is available, the text tools are visible
+        await drawProject.toggleEdit();
+        await expect(await drawProject.textContentLocator()).toBeVisible();
+        await expect(await drawProject.textRotationLocator()).toBeVisible();
+        await expect(await drawProject.textScaleLocator()).toBeVisible();
+
+        // Check text content
+        await expect(await drawProject.textContentLocator()).toHaveValue('');
+        await drawProject.setTextContentValue('test');
+        await expect(await drawProject.textContentLocator()).toHaveValue('test');
+
+        // Check text rotation
+        await expect(await drawProject.textRotationLocator()).toHaveValue('');
+        await drawProject.setTextRotationValue('45');
+        await expect(await drawProject.textRotationLocator()).toHaveValue('45');
+
+        // Check text scale
+        await expect(await drawProject.textScaleLocator()).toHaveValue('1');
+        await drawProject.setTextScaleValue('2');
+        await expect(await drawProject.textScaleLocator()).toHaveValue('2');
+
+        // Toggle point
+        await expect(await drawProject.selectedToolLocator()).toHaveAttribute('value', 'point');
+        await expect(await drawProject.selectedToolLocator()).not.toHaveClass(/active/);
+        await drawProject.toggleSelectedTool();
+        await expect(await drawProject.selectedToolLocator()).toHaveClass(/active/);
+
+        // Draw second point
+        await drawProject.clickOnMap(350, 150);
+
+        // Toggle edit, two geometries are available, the text tools are not visible
+        await drawProject.toggleEdit();
+        await expect(await drawProject.textContentLocator()).not.toBeVisible();
+        await expect(await drawProject.textRotationLocator()).not.toBeVisible();
+        await expect(await drawProject.textScaleLocator()).not.toBeVisible();
+
+        // Edit second point By clicking on the map
+        await page.waitForTimeout(1000);
+        await drawProject.clickOnMap(350, 150);
+        await expect(await drawProject.textContentLocator()).toBeVisible();
+        await expect(await drawProject.textRotationLocator()).toBeVisible();
+        await expect(await drawProject.textScaleLocator()).toBeVisible();
+        // Check text content
+        await expect(await drawProject.textContentLocator()).toHaveValue('');
+        // Check text rotation
+        await expect(await drawProject.textRotationLocator()).toHaveValue('');
+        // Check text scale
+        await expect(await drawProject.textScaleLocator()).toHaveValue('1');
+
+        // Edit first point
+        await page.waitForTimeout(1000);
+        await drawProject.clickOnMap(300, 150);
+        await expect(await drawProject.textContentLocator()).toBeVisible();
+        await expect(await drawProject.textRotationLocator()).toBeVisible();
+        await expect(await drawProject.textScaleLocator()).toBeVisible();
+        // Check text content
+        await expect(await drawProject.textContentLocator()).toHaveValue('test');
+        // Check text rotation
+        await expect(await drawProject.textRotationLocator()).toHaveValue('45');
+        // Check text scale
+        await expect(await drawProject.textScaleLocator()).toHaveValue('2');
+
+        // Erase all
+        await drawProject.deleteAllDrawings();
+        // close draw panel
+        await drawProject.closeDrawPanel();
+    });
+});

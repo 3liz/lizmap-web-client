@@ -347,8 +347,8 @@ test.describe('Popup',
             await page.getByRole('link', { name: '✖' }).click();
 
             // Activate draw
-            await page.locator('#selectiontool').getByRole('link').nth(1).click();
-            await page.locator('.selectiontool .digitizing-point > svg > use').click();
+            await page.locator('#selectiontool .digitizing-buttons > button.dropdown-toggle:nth-child(2)').click();
+            await page.locator('#selectiontool .selectiontool .digitizing-point > svg > use').click();
 
             // Popup disable but selection done
             let getSelectionTokenRequestPromise = page.waitForRequest(
@@ -361,7 +361,7 @@ test.describe('Popup',
             await expect(project.map.locator('#liz_layer_popup')).not.toBeVisible();
 
             // Deactivate draw
-            await page.locator('#selectiontool').getByRole('link').first().click();
+            await page.locator('#selectiontool .digitizing-buttons > button').first().click();
 
             // Popup available again
             getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest();
@@ -389,8 +389,8 @@ test.describe('Popup',
             await page.getByRole('link', { name: '✖' }).click();
 
             // Activate draw
-            await page.locator('#draw').getByRole('link').nth(1).click();
-            await page.locator('.draw .digitizing-point > svg > use').click();
+            await page.locator('#draw .digitizing-buttons > button.dropdown-toggle:nth-child(2)').click();
+            await page.locator('#draw .draw .digitizing-point > svg').click();
 
             // Popup disable
             await project.clickOnMap(510, 415);
@@ -398,7 +398,7 @@ test.describe('Popup',
             await expect(project.map.locator('#liz_layer_popup')).not.toBeVisible();
 
             // Deactivate draw
-            await page.locator('#draw').getByRole('link').first().click();
+            await page.locator('#draw .draw > .menu-content > lizmap-digitizing > .digitizing > .digitizing-buttons > button').first().click();
 
             // Popup available again
             getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest();
