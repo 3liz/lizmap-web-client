@@ -21,6 +21,7 @@ import '../images/svg/text.svg';
 import '../images/svg/pencil.svg';
 import '../images/svg/edit.svg';
 import '../images/svg/rotate.svg';
+import '../images/svg/scaling.svg';
 import '../images/svg/split.svg';
 import '../images/svg/eraser.svg';
 import '../images/svg/eraser-all.svg';
@@ -262,6 +263,18 @@ export default class Digitizing extends HTMLElement {
             </button>
             <button
                 type="button"
+                class="digitizing-scaling btn ${mainLizmap.digitizing.isScaling ? 'active btn-primary' : ''}"
+                ?disabled=${!mainLizmap.digitizing.featureDrawn}
+                @click=${() => mainLizmap.digitizing.toggleScaling()}
+                data-bs-toggle="tooltip"
+                data-bs-title="${lizDict['digitizing.toolbar.scaling']}"
+                >
+                <svg>
+                    <use xlink:href="#scaling"/>
+                </svg>
+            </button>
+            <button
+                type="button"
                 class="digitizing-split btn ${mainLizmap.digitizing.isSplitting ? 'active btn-primary' : ''}"
                 ?disabled=${!mainLizmap.digitizing.featureDrawn}
                 @click=${() => mainLizmap.digitizing.toggleSplit()}
@@ -462,6 +475,7 @@ export default class Digitizing extends HTMLElement {
                 'digitizing.featureDrawn',
                 'digitizing.measure',
                 'digitizing.rotate',
+                'digitizing.scaling',
                 'digitizing.save',
                 'digitizing.split',
                 'digitizing.toolSelected',

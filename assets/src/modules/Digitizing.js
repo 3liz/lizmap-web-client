@@ -230,9 +230,14 @@ export class Digitizing {
             hitTolerance: 20
         });
 
-        this._transformInteraction = new Transform({
+        this._transformRotateInteraction = new Transform({
             rotate: true,
             scale: false,
+        });
+
+        this._transformScaleInteraction = new Transform({
+            rotate: false,
+            scale: true,
         });
 
         this._drawStyleFunction = (feature) => {
@@ -571,6 +576,7 @@ export class Digitizing {
                 this.isEdited = false;
                 this.isErasing = false;
                 this.isRotate = false;
+                this.isScaling = false;
                 this.isSplitting = false;
             }
 
@@ -633,6 +639,7 @@ export class Digitizing {
                 this.toolSelected = 'deactivate';
                 this.isErasing = false;
                 this.isRotate = false;
+                this.isScaling = false;
                 this.isSplitting = false;
 
                 mainEventDispatcher.dispatch('digitizing.editionBegins');
@@ -662,14 +669,39 @@ export class Digitizing {
                 this.toolSelected = 'deactivate';
                 this.isErasing = false;
                 this.isEdited = false;
+                this.isScaling = false;
                 this.isSplitting = false;
 
-                this._map.addInteraction(this._transformInteraction);
+                this._map.addInteraction(this._transformRotateInteraction);
             } else {
-                this._map.removeInteraction(this._transformInteraction);
+                this._map.removeInteraction(this._transformRotateInteraction);
             }
 
             mainEventDispatcher.dispatch('digitizing.rotate');
+        }
+    }
+
+    get isScaling() {
+        return this._isScaling;
+    }
+
+    set isScaling(isScaling) {
+        if (this._isScaling !== isScaling) {
+            this._isScaling = isScaling;
+
+            if (this._isScaling) {
+                this.toolSelected = 'deactivate';
+                this.isErasing = false;
+                this.isEdited = false;
+                this.isRotate = false;
+                this.isSplitting = false;
+
+                this._map.addInteraction(this._transformScaleInteraction);
+            } else {
+                this._map.removeInteraction(this._transformScaleInteraction);
+            }
+
+            mainEventDispatcher.dispatch('digitizing.scaling');
         }
     }
 
@@ -686,6 +718,7 @@ export class Digitizing {
                 this.toolSelected = 'deactivate';
                 this.isEdited = false;
                 this.isRotate = false;
+                this.isScaling = false;
                 this.isErasing = false;
 
                 this._splitInteraction = new Draw({
@@ -810,6 +843,7 @@ export class Digitizing {
                 this.toolSelected = 'deactivate';
                 this.isEdited = false;
                 this.isRotate = false;
+                this.isScaling = false;
                 this.isSplitting = false;
 
                 this._erasingCallBack = event => {
@@ -1303,6 +1337,10 @@ export class Digitizing {
 
     toggleRotate() {
         this.isRotate = !this.isRotate;
+    }
+
+    toggleScaling() {
+        this.isScaling = !this.isScaling;
     }
 
     toggleMeasure() {
