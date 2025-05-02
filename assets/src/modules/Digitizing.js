@@ -672,6 +672,10 @@ export class Digitizing {
                 this.isScaling = false;
                 this.isSplitting = false;
 
+                // Automatically scaling the feature if unique
+                if (this.featureDrawn.length === 1) {
+                    this._transformRotateInteraction.getFeatures().push(this.featureDrawn[0]);
+                }
                 this._map.addInteraction(this._transformRotateInteraction);
             } else {
                 this._map.removeInteraction(this._transformRotateInteraction);
@@ -696,6 +700,10 @@ export class Digitizing {
                 this.isRotate = false;
                 this.isSplitting = false;
 
+                // Automatically scaling the feature if unique
+                if (this.featureDrawn.length === 1) {
+                    this._transformScaleInteraction.getFeatures().push(this.featureDrawn[0]);
+                }
                 this._map.addInteraction(this._transformScaleInteraction);
             } else {
                 this._map.removeInteraction(this._transformScaleInteraction);
@@ -873,6 +881,16 @@ export class Digitizing {
 
                 this._map.on('singleclick', this._erasingCallBack );
                 mainEventDispatcher.dispatch('digitizing.erasingBegins');
+
+                // Automatically erase the feature if unique
+                if (this.featureDrawn.length === 1) {
+                    const coord = this.featureDrawn[0].getGeometry().getFirstCoordinate();
+                    const pixel = this._map.getPixelFromCoordinate(coord);
+                    this._map.dispatchEvent({
+                        type: 'singleclick',
+                        pixel: pixel,
+                    });
+                }
             } else {
                 this._map.un('singleclick', this._erasingCallBack );
                 mainEventDispatcher.dispatch('digitizing.erasingEnds');
