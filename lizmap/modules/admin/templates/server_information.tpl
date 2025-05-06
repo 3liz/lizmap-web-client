@@ -13,6 +13,11 @@
           {@admin.server.information.installation.not.complete.html@}
       </div>
     {/if}
+    {if !$checkQgisServerWrapper}
+      <div class="alert alert-danger" role="alert">
+          {$qgisServerWrapperLabel}
+      </div>
+    {/if}
     <table class="table table-striped table-bordered table-server-info table-lizmap-web-client">
         <tr>
             <th>{@admin.server.information.lizmap.info.version@}</th>

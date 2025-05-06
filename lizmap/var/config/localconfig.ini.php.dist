@@ -15,6 +15,12 @@
 ;; see documentation to complete the ldap configuration
 ;ldapdao.enable=on
 
+[qgisWrapper]
+; If off, FCGI is not allowed, only Py-QGIS-Server or QJazz
+; https://docs.lizmap.com/current/en/install/py-qgis-server.html
+; https://docs.3liz.org/py-qgis-server/
+; https://github.com/3liz/qjazz
+; allowFcgi=off
 
 [coordplugin_auth]
 ;; uncomment it if you want to use ldap for authentication

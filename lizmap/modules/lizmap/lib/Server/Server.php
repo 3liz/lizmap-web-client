@@ -75,6 +75,35 @@ class Server
         return $this->metadata['qgis_server_info']['metadata']['version'];
     }
 
+    /** Check if QGIS Server wrapper FCGI is allowed.
+     * According to the setting "qgisWrapper/allowFcgi",
+     * if 'off' then Py-QGIS-Server or QJazz are checked and must be used.
+     *
+     * @return bool boolean If Py-QGIS-Server or QJazz must be used
+     */
+    public function checkQgisServerWrapper()
+    {
+        if (\jApp::config()->qgisWrapper['allowFcgi'] == 'on') {
+            // FCGI is allowed, we do not check further the installation.
+            // QGIS Server must be OK. There is another check about the state of QGIS with its Lizmap plugin.
+            return true;
+        }
+
+        // FCGI is not allowed, we check if Py-QGIS-Server or QJazz is correctly installed.
+
+        // As of 05/05/2025, with QJazz, it is also included inside the "py_qgis_server" JSON section.
+        // Maybe it will be changed soon.
+        if (!array_key_exists('py_qgis_server', $this->metadata['qgis_server_info'])) {
+            return false;
+        }
+
+        if (!array_key_exists('found', $this->metadata['qgis_server_info']['py_qgis_server'])) {
+            return false;
+        }
+
+        return $this->metadata['qgis_server_info']['py_qgis_server']['found'];
+    }
+
     /** Check if a QGIS server plugin needs to be updated.
      *
      * @param string $currentVersion  The current version to check
