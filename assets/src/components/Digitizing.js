@@ -31,19 +31,21 @@ import '../images/svg/file-download.svg';
 import '../images/svg/file-upload.svg';
 
 /**
- * Digitizing element
- * Provides user interface for digitizing shapes and text
- * Attributes:
- *  context - The digitizing context to linked element to Digitizing module context
+ * @summary Provides user interface for digitizing shapes and text
+ * @augments HTMLElement
+ * @description By default, it provides a toolbar with draw tools, editing tools
+ * (update, rotate, scale, split, delete, delete all), save, import and export tools.
+ *
+ * The context attribute is used to link the digitizing context to the Digitizing module context.
+ * It is mandatory and provide a way to use this element for different contexts.
+ *
+ * The other attributes are:
  *  selected-tool - Start selected drawing tools one of DigitizingAvailableTools or available-tools
  *  available-tools - List of available drawing tools based on DigitizingAvailableTools
  *  save - Enable save capability
  *  measure - Enable measure capability
  *  import-export - Enable import / export capabilities
- * @class
- * @name Digitizing
- * @augments HTMLElement
- * @example
+ * @example <caption>Example of use</caption>
  * <lizmap-digitizing
  *     context="draw"
  *     selected-tool="box"
@@ -586,13 +588,21 @@ export default class Digitizing extends HTMLElement {
         event.stopPropagation();
     }
 
+    /**
+     * Erase all features
+     * @returns {boolean} - False if the user cancels the action
+     */
     eraseAll() {
         if (!confirm(lizDict['digitizing.confirm.erase.all'])) {
             return false;
         }
         mainLizmap.digitizing.eraseAll();
+        return true;
     }
 
+    /*
+     * Toggle save state
+     */
     toggleSave() {
         mainLizmap.digitizing.toggleSave();
         if (mainLizmap.digitizing.isSaved) {
