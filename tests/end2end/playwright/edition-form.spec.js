@@ -219,14 +219,14 @@ test.describe('Multiple geometry layers', () => {
 
         const num_rec = 3;
 
-        let getFeatureRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeature') === true);
+        let datatablesRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('draw') === true);
 
         // DOUBLE_GEOM_GEOM
         // open main layer attribute table panel
         await page.locator('#attribute-layer-list button[value="double_geom_geom"]').click();
-        await getFeatureRequestPromise;
+        await datatablesRequestPromise;
 
-        let double_geom_geom_attr_table_head = page.locator("#attribute-layer-table-double_geom_geom_wrapper .dataTables_scrollHead table");
+        let double_geom_geom_attr_table_head = page.locator("#attribute-layer-table-double_geom_geom_wrapper .dt-scroll-head table");
         let double_geom_geom_attr_table = page.locator("#attribute-layer-table-double_geom_geom");
 
         await expect(double_geom_geom_attr_table_head.locator("thead th").nth(1)).toHaveText("id");
@@ -250,9 +250,9 @@ test.describe('Multiple geometry layers', () => {
         // open main layer attribute table panel
         await page.locator('#nav-tab-attribute-summary').click();
         await page.locator('#attribute-layer-list button[value="double_geom_geom_d"]').click();
-        await getFeatureRequestPromise;
+        await datatablesRequestPromise;
 
-        let double_geom_geom_d_attr_table_head = page.locator("#attribute-layer-table-double_geom_geom_d_wrapper .dataTables_scrollHead table");
+        let double_geom_geom_d_attr_table_head = page.locator("#attribute-layer-table-double_geom_geom_d_wrapper .dt-scroll-head table");
         let double_geom_geom_d_attr_table = page.locator("#attribute-layer-table-double_geom_geom_d");
 
         await expect(double_geom_geom_d_attr_table_head.locator("thead th").nth(1)).toHaveText("id");
@@ -398,14 +398,14 @@ test.describe('Multiple geometry layers', () => {
 
         const num_rec = 4;
 
-        let getFeatureRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeature') === true);
+        let datatablesRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('draw') === true);
 
         // TRIPLE_GEOM_POINT
         // open main layer attribute table panel
         await page.locator('#attribute-layer-list button[value="triple_geom_geom"]').click();
-        await getFeatureRequestPromise;
+        await datatablesRequestPromise;
 
-        let triple_geom_geom_attr_table_head = page.locator("#attribute-layer-table-triple_geom_geom_wrapper .dataTables_scrollHead table");
+        let triple_geom_geom_attr_table_head = page.locator("#attribute-layer-table-triple_geom_geom_wrapper .dt-scroll-head table");
         let triple_geom_geom_attr_table = page.locator("#attribute-layer-table-triple_geom_geom");
 
         await expect(triple_geom_geom_attr_table_head.locator("thead th").nth(1)).toHaveText("id");
@@ -439,9 +439,9 @@ test.describe('Multiple geometry layers', () => {
         await page.locator('#nav-tab-attribute-summary').click();
         await page.locator('#attribute-layer-list button[value="triple_geom_geom_l"]').click();
 
-        await getFeatureRequestPromise;
+        await datatablesRequestPromise;
 
-        let triple_geom_geom_l_attr_table_head = page.locator("#attribute-layer-table-triple_geom_geom_l_wrapper .dataTables_scrollHead table");
+        let triple_geom_geom_l_attr_table_head = page.locator("#attribute-layer-table-triple_geom_geom_l_wrapper .dt-scroll-head table");
         let triple_geom_geom_l_attr_table = page.locator("#attribute-layer-table-triple_geom_geom_l");
 
         await expect(triple_geom_geom_l_attr_table_head.locator("thead th").nth(1)).toHaveText("id");
@@ -474,9 +474,9 @@ test.describe('Multiple geometry layers', () => {
         await page.locator('#nav-tab-attribute-summary').click();
         await page.locator('#attribute-layer-list button[value="triple_geom_geom_p"]').click();
 
-        await getFeatureRequestPromise;
+        await datatablesRequestPromise;
 
-        let triple_geom_geom_p_attr_table_head = page.locator("#attribute-layer-table-triple_geom_geom_p_wrapper .dataTables_scrollHead table");
+        let triple_geom_geom_p_attr_table_head = page.locator("#attribute-layer-table-triple_geom_geom_p_wrapper .dt-scroll-head table");
         let triple_geom_geom_p_attr_table = page.locator("#attribute-layer-table-triple_geom_geom_p");
 
         await expect(triple_geom_geom_p_attr_table_head.locator("thead th").nth(1)).toHaveText("id");
