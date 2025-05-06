@@ -93,6 +93,7 @@ export const DigitizingAvailableTools = deepFreeze([
 /**
  * @class
  * @name Digitizing
+ * @fires digitizingFeatureDrawn
  */
 export class Digitizing {
     /**
@@ -418,12 +419,16 @@ export class Digitizing {
              * @event digitizingEditedFeatureText
              * @type {object}
              * @property {string} type - digitizing.editedFeatureText
+             * @property {string} text - The text set for the edited feature
              * @example
-             * lizMap.mainEventDispatcher.addListener(() => {
-             *     console.log('The edited feature text has been updated');
+             * lizMap.mainEventDispatcher.addListener((lizmapEvent) => {
+             *     console.log('The edited feature text has been updated: '+lizmapEvent.text);
              * }, 'digitizing.editedFeatureText');
              */
-            mainEventDispatcher.dispatch('digitizing.editedFeatureText');
+            mainEventDispatcher.dispatch({
+                type:'digitizing.editedFeatureText',
+                text: text,
+            });
         }
     }
 
@@ -452,11 +457,14 @@ export class Digitizing {
              * @type {object}
              * @property {string} type - digitizing.editedFeatureRotation
              * @example
-             * lizMap.mainEventDispatcher.addListener(() => {
-             *     console.log('The edited feature rotation has been changed');
+             * lizMap.mainEventDispatcher.addListener((lizmapEvent) => {
+             *     console.log('The edited feature rotation has been changed: '+lizmapEvent.rotation);
              * }, 'digitizing.editedFeatureRotation');
              */
-            mainEventDispatcher.dispatch('digitizing.editedFeatureRotation');
+            mainEventDispatcher.dispatch({
+                type: 'digitizing.editedFeatureRotation',
+                rotation: rotation,
+            });
         }
     }
 
@@ -488,11 +496,14 @@ export class Digitizing {
              * @type {object}
              * @property {string} type - digitizing.editedFeatureScale
              * @example
-             * lizMap.mainEventDispatcher.addListener(() => {
-             *     console.log('The edited feature text scale has been changed');
+             * lizMap.mainEventDispatcher.addListener((lizmapEvent) => {
+             *     console.log('The edited feature text scale has been changed: '+lizmapEvent.scale);
              * }, 'digitizing.editedFeatureScale');
              */
-            mainEventDispatcher.dispatch('digitizing.editedFeatureScale');
+            mainEventDispatcher.dispatch({
+                type: 'digitizing.editedFeatureScale',
+                scale: scale,
+            });
         }
     }
 
@@ -687,11 +698,14 @@ export class Digitizing {
              * @type {object}
              * @property {string} type - digitizing.toolSelected
              * @example
-             * lizMap.mainEventDispatcher.addListener(() => {
-             *     console.log('The digitizing selected tool has changed');
+             * lizMap.mainEventDispatcher.addListener((lizmapEvent) => {
+             *     console.log('The digitizing selected tool has changed: '+lizmapEvent.tool);
              * }, 'digitizing.toolSelected');
              */
-            mainEventDispatcher.dispatch('digitizing.toolSelected');
+            mainEventDispatcher.dispatch({
+                type: 'digitizing.toolSelected',
+                tool: this._toolSelected,
+            });
         }
     }
 
@@ -718,11 +732,14 @@ export class Digitizing {
          * @type {object}
          * @property {string} type - digitizing.drawColor
          * @example
-         * lizMap.mainEventDispatcher.addListener(() => {
-         *     console.log('The digitizing draw color has changed');
+         * lizMap.mainEventDispatcher.addListener((lizmapEvent) => {
+         *     console.log('The digitizing draw color has changed: '+lizmapEvent.color);
          * }, 'digitizing.drawColor');
          */
-        mainEventDispatcher.dispatch('digitizing.drawColor');
+        mainEventDispatcher.dispatch({
+            type: 'digitizing.drawColor',
+            color: this._drawColor,
+        });
     }
 
     /**
@@ -857,11 +874,14 @@ export class Digitizing {
              * @type {object}
              * @property {string} type - digitizing.rotate
              * @example
-             * lizMap.mainEventDispatcher.addListener(() => {
-             *     console.log('The digitizing rotation tool is active or not');
+             * lizMap.mainEventDispatcher.addListener((lizmapEvent) => {
+             *     console.log('The digitizing rotation tool is active or not? '+lizmapEvent.isRotate);
              * }, 'digitizing.rotate');
              */
-            mainEventDispatcher.dispatch('digitizing.rotate');
+            mainEventDispatcher.dispatch({
+                type: 'digitizing.rotate',
+                isRotate: this._isRotate,
+            });
         }
     }
 
@@ -903,11 +923,14 @@ export class Digitizing {
              * @type {object}
              * @property {string} type - digitizing.scaling
              * @example
-             * lizMap.mainEventDispatcher.addListener(() => {
-             *     console.log('The digitizing scaling tool is active or not');
+             * lizMap.mainEventDispatcher.addListener((lizmapEvent) => {
+             *     console.log('The digitizing scaling tool is active or not? '+lizmapEvent.isScaling);
              * }, 'digitizing.rotate');
              */
-            mainEventDispatcher.dispatch('digitizing.scaling');
+            mainEventDispatcher.dispatch({
+                type: 'digitizing.scaling',
+                isScaling: this._isScaling,
+            });
         }
     }
 
@@ -1046,11 +1069,14 @@ export class Digitizing {
              * @type {object}
              * @property {string} type - digitizing.split
              * @example
-             * lizMap.mainEventDispatcher.addListener(() => {
-             *     console.log('The digitizing split tool is active or not');
+             * lizMap.mainEventDispatcher.addListener((lizmapEvent) => {
+             *     console.log('The digitizing split tool is active or not? '+lizmapEvent.isSplitting);
              * }, 'digitizing.split');
              */
-            mainEventDispatcher.dispatch('digitizing.split');
+            mainEventDispatcher.dispatch({
+                type: 'digitizing.split',
+                isSplitting: this._isSplitting,
+            });
         }
     }
 
@@ -1176,11 +1202,14 @@ export class Digitizing {
          * @type {object}
          * @property {string} type - digitizing.measure
          * @example
-         * lizMap.mainEventDispatcher.addListener(() => {
-         *     console.log('The digitizing measure tool is active or not');
+         * lizMap.mainEventDispatcher.addListener((lizmapEvent) => {
+         *     console.log('The digitizing measure tool is active or not? '+lizmapEvent.visible);
          * }, 'digitizing.measure');
          */
-        mainEventDispatcher.dispatch('digitizing.measure');
+        mainEventDispatcher.dispatch({
+            type: 'digitizing.measure',
+            visible: this._hasMeasureVisible
+        });
     }
 
     /**
@@ -1269,7 +1298,10 @@ export class Digitizing {
         // Save color
         localStorage.setItem(this._repoAndProjectString + '_drawColor', this._drawColor);
 
-        mainEventDispatcher.dispatch('digitizing.drawColor');
+        mainEventDispatcher.dispatch({
+            type: 'digitizing.drawColor',
+            color: this._drawColor,
+        });
     }
 
     /**
@@ -1699,11 +1731,14 @@ export class Digitizing {
          * @type {object}
          * @property {string} type - digitizing.visibility
          * @example
-         * lizMap.mainEventDispatcher.addListener(() => {
-         *     console.log('The digitizing visibility has changed');
+         * lizMap.mainEventDispatcher.addListener((lizmapEvent) => {
+         *     console.log('The digitizing visibility has changed: '+lizmapEvent.visible);
          * }, 'digitizing.visibility');
          */
-        mainEventDispatcher.dispatch('digitizing.visibility');
+        mainEventDispatcher.dispatch({
+            type: 'digitizing.visibility',
+            visible: visible,
+        });
     }
 
     /**
@@ -1763,11 +1798,14 @@ export class Digitizing {
          * @type {object}
          * @property {string} type - digitizing.save
          * @example
-         * lizMap.mainEventDispatcher.addListener(() => {
-         *     console.log('The digitizing save tool is active or not');
+         * lizMap.mainEventDispatcher.addListener((lizmapEvent) => {
+         *     console.log('The digitizing save tool is active or not: '+lizmapEvent.isSaved);
          * }, 'digitizing.save');
          */
-        mainEventDispatcher.dispatch('digitizing.save');
+        mainEventDispatcher.dispatch({
+            type: 'digitizing.save',
+            isSaved: this._isSaved,
+        });
     }
 
     /**
