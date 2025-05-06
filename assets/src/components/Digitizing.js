@@ -21,6 +21,7 @@ import '../images/svg/text.svg';
 import '../images/svg/pencil.svg';
 import '../images/svg/edit.svg';
 import '../images/svg/rotate.svg';
+import '../images/svg/scaling.svg';
 import '../images/svg/split.svg';
 import '../images/svg/eraser.svg';
 import '../images/svg/eraser-all.svg';
@@ -30,19 +31,22 @@ import '../images/svg/file-download.svg';
 import '../images/svg/file-upload.svg';
 
 /**
- * Digitizing element
- * Provides user interface for digitizing shapes and text
- * Attributes:
- *  context - The digitizing context to linked element to Digitizing module context
+ * @summary Provides user interface for digitizing shapes and text
+ * @augments HTMLElement
+ *
+ * @description By default, it provides a toolbar with draw tools, editing tools
+ * (update, rotate, scale, split, delete, delete all), save, import and export tools.
+ *
+ * The context attribute is used to link the digitizing context to the Digitizing module context.
+ * It is mandatory and provide a way to use this element for different contexts.
+ *
+ * The other attributes are:
  *  selected-tool - Start selected drawing tools one of DigitizingAvailableTools or available-tools
  *  available-tools - List of available drawing tools based on DigitizingAvailableTools
  *  save - Enable save capability
  *  measure - Enable measure capability
  *  import-export - Enable import / export capabilities
- * @class
- * @name Digitizing
- * @augments HTMLElement
- * @example
+ * @example <caption>Example of use</caption>
  * <lizmap-digitizing
  *     context="draw"
  *     selected-tool="box"
@@ -51,6 +55,25 @@ import '../images/svg/file-upload.svg';
  *     import-export
  *     measure
  *     ></lizmap-digitizing>
+ *
+ * @listens Digitizing#digitizingDrawColor
+ * @listens Digitizing#digitizingEditedFeatureRotation
+ * @listens Digitizing#digitizingEditedFeatureScale
+ * @listens Digitizing#digitizingEditedFeatureText
+ * @listens Digitizing#digitizingEditionBegins
+ * @listens Digitizing#digitizingEditionEnds
+ * @listens Digitizing#digitizingErase
+ * @listens Digitizing#digitizingErase.all
+ * @listens Digitizing#digitizingErasingBegins
+ * @listens Digitizing#digitizingErasingEnds
+ * @listens Digitizing#digitizingFeatureDrawn
+ * @listens Digitizing#digitizingMeasure
+ * @listens Digitizing#digitizingRotate
+ * @listens Digitizing#digitizingScaling
+ * @listens Digitizing#digitizingSave
+ * @listens Digitizing#digitizingSplit
+ * @listens Digitizing#digitizingToolSelected
+ * @listens Digitizing#digitizingVisibility
  */
 export default class Digitizing extends HTMLElement {
     constructor() {
@@ -262,6 +285,18 @@ export default class Digitizing extends HTMLElement {
             </button>
             <button
                 type="button"
+                class="digitizing-scaling btn ${mainLizmap.digitizing.isScaling ? 'active btn-primary' : ''}"
+                ?disabled=${!mainLizmap.digitizing.featureDrawn}
+                @click=${() => mainLizmap.digitizing.toggleScaling()}
+                data-bs-toggle="tooltip"
+                data-bs-title="${lizDict['digitizing.toolbar.scaling']}"
+                >
+                <svg>
+                    <use xlink:href="#scaling"/>
+                </svg>
+            </button>
+            <button
+                type="button"
                 class="digitizing-split btn ${mainLizmap.digitizing.isSplitting ? 'active btn-primary' : ''}"
                 ?disabled=${!mainLizmap.digitizing.featureDrawn}
                 @click=${() => mainLizmap.digitizing.toggleSplit()}
@@ -462,6 +497,7 @@ export default class Digitizing extends HTMLElement {
                 'digitizing.featureDrawn',
                 'digitizing.measure',
                 'digitizing.rotate',
+                'digitizing.scaling',
                 'digitizing.save',
                 'digitizing.split',
                 'digitizing.toolSelected',
@@ -597,13 +633,21 @@ export default class Digitizing extends HTMLElement {
         event.stopPropagation();
     }
 
+    /**
+     * Erase all features
+     * @returns {boolean} - False if the user cancels the action
+     */
     eraseAll() {
         if (!confirm(lizDict['digitizing.confirm.erase.all'])) {
             return false;
         }
         mainLizmap.digitizing.eraseAll();
+        return true;
     }
 
+    /*
+     * Toggle save state
+     */
     toggleSave() {
         mainLizmap.digitizing.toggleSave();
         if (mainLizmap.digitizing.isSaved) {

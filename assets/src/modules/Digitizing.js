@@ -8,6 +8,7 @@ import { mainEventDispatcher } from '../modules/Globals.js';
 import { deepFreeze } from './config/Tools.js';
 import { createEnum } from './utils/Enums.js';
 import { Utils } from './Utils.js';
+import map from './map.js';
 
 import GeoJSON from 'ol/format/GeoJSON.js';
 import GPX from 'ol/format/GPX.js';
@@ -92,9 +93,15 @@ export const DigitizingAvailableTools = deepFreeze([
 /**
  * @class
  * @name Digitizing
+ * @fires digitizingFeatureDrawn
  */
 export class Digitizing {
-
+    /**
+     * Build the lizmap Digitizing instance
+     * @param {map}           map           - OpenLayers map
+     * @param {object}        lizmap3       - The old lizmap object
+     * @fires digitizingFeatureDrawn
+     */
     constructor(map, lizmap3) {
 
         this._map = map;
@@ -230,9 +237,14 @@ export class Digitizing {
             hitTolerance: 20
         });
 
-        this._transformInteraction = new Transform({
+        this._transformRotateInteraction = new Transform({
             rotate: true,
             scale: false,
+        });
+
+        this._transformScaleInteraction = new Transform({
+            rotate: false,
+            scale: true,
         });
 
         this._drawStyleFunction = (feature) => {
@@ -296,6 +308,15 @@ export class Digitizing {
 
             // Save features drawn in localStorage
             this.saveFeatureDrawn();
+            /**
+             * @event digitizingFeatureDrawn
+             * @type {object}
+             * @property {string} type - digitizing.featureDrawn
+             * @example
+             * lizMap.mainEventDispatcher.addListener(() => {
+             *     console.log('A feature has been drawn');
+             * }, 'digitizing.featureDrawn');
+             */
             mainEventDispatcher.dispatch('digitizing.featureDrawn');
         });
 
@@ -356,18 +377,28 @@ export class Digitizing {
         });
     }
 
+    /**
+     * Get the draw layer
+     * @type {VectorLayer}
+     * @readonly
+     */
     get drawLayer() {
         return this._drawLayer;
     }
 
-    get context() {
-        return this._context;
-    }
-
+    /**
+     * Get the edited features
+     * @type {Array<Feature>}
+     * @readonly
+     */
     get editedFeatures() {
         return this._selectInteraction.getFeatures().getArray();
     }
 
+    /**
+     * Get the edited feature text
+     * @type {string}
+     */
     get editedFeatureText() {
         if (this.editedFeatures.length === 1) {
             return this.editedFeatures[0].get('text') || '';
@@ -375,13 +406,36 @@ export class Digitizing {
         return '';
     }
 
+    /**
+     * Set the edited feature text
+     * @type {string}
+     * @param {string} text - The text to set for the edited feature
+     * @fires digitizingEditedFeatureText
+     */
     set editedFeatureText(text) {
         if (this.editedFeatures.length !== 0) {
             this.editedFeatures.forEach(feature => feature.set('text', text));
-            mainEventDispatcher.dispatch('digitizing.editedFeatureText');
+            /**
+             * @event digitizingEditedFeatureText
+             * @type {object}
+             * @property {string} type - digitizing.editedFeatureText
+             * @property {string} text - The text set for the edited feature
+             * @example
+             * lizMap.mainEventDispatcher.addListener((lizmapEvent) => {
+             *     console.log('The edited feature text has been updated: '+lizmapEvent.text);
+             * }, 'digitizing.editedFeatureText');
+             */
+            mainEventDispatcher.dispatch({
+                type:'digitizing.editedFeatureText',
+                text: text,
+            });
         }
     }
 
+    /**
+     * Get the edited feature text rotation
+     * @type {string}
+     */
     get editedFeatureTextRotation() {
         if (this.editedFeatures.length === 1) {
             return this.editedFeatures[0].get('rotation') || '';
@@ -389,13 +443,35 @@ export class Digitizing {
         return '';
     }
 
+    /**
+     * Set the edited feature text rotation
+     * @type {string}
+     * @param {string} rotation - The rotation to set for the edited feature
+     * @fires digitizingEditedFeatureRotation
+     */
     set editedFeatureTextRotation(rotation) {
         if (this.editedFeatures.length !== 0) {
             this.editedFeatures.forEach(feature => feature.set('rotation', rotation));
-            mainEventDispatcher.dispatch('digitizing.editedFeatureRotation');
+            /**
+             * @event digitizingEditedFeatureRotation
+             * @type {object}
+             * @property {string} type - digitizing.editedFeatureRotation
+             * @example
+             * lizMap.mainEventDispatcher.addListener((lizmapEvent) => {
+             *     console.log('The edited feature rotation has been changed: '+lizmapEvent.rotation);
+             * }, 'digitizing.editedFeatureRotation');
+             */
+            mainEventDispatcher.dispatch({
+                type: 'digitizing.editedFeatureRotation',
+                rotation: rotation,
+            });
         }
     }
 
+    /**
+     * Get the edited feature text scale
+     * @type {number}
+     */
     get editedFeatureTextScale() {
         if (this.editedFeatures.length !== 0) {
             return this.editedFeatures[0].get('scale') || 1;
@@ -403,16 +479,48 @@ export class Digitizing {
         return 1;
     }
 
+    /**
+     * Set the edited feature text scale
+     * @type {number}
+     * @param {number} scale - The scale to set for the edited feature
+     * @fires digitizingEditedFeatureScale
+     */
     set editedFeatureTextScale(scale) {
         if(isNaN(scale)){
             scale = 1;
         }
         if (this.editedFeatures.length !== 0) {
             this.editedFeatures.forEach(feature => feature.set('scale', scale));
-            mainEventDispatcher.dispatch('digitizing.editedFeatureScale');
+            /**
+             * @event digitizingEditedFeatureScale
+             * @type {object}
+             * @property {string} type - digitizing.editedFeatureScale
+             * @example
+             * lizMap.mainEventDispatcher.addListener((lizmapEvent) => {
+             *     console.log('The edited feature text scale has been changed: '+lizmapEvent.scale);
+             * }, 'digitizing.editedFeatureScale');
+             */
+            mainEventDispatcher.dispatch({
+                type: 'digitizing.editedFeatureScale',
+                scale: scale,
+            });
         }
     }
 
+
+    /**
+     * Get the context
+     * @type {string}
+     */
+    get context() {
+        return this._context;
+    }
+
+    /**
+     * Set the context
+     * @type {string}
+     * @param {string} aContext - The context to set
+     */
     set context(aContext) {
         if (this._context == aContext) {
             return;
@@ -443,10 +551,20 @@ export class Digitizing {
         }
     }
 
+    /**
+     * Get the selected tool
+     * @type {string}
+     */
     get toolSelected() {
         return this._toolSelected;
     }
 
+    /**
+     * Set the selected too
+     * @type {string}
+     * @param {string} tool - The tool to select
+     * @fires digitizingToolSelected
+     */
     set toolSelected(tool) {
         if (this._tools.includes(tool)) {
             // Disable all tools
@@ -571,24 +689,63 @@ export class Digitizing {
                 this.isEdited = false;
                 this.isErasing = false;
                 this.isRotate = false;
+                this.isScaling = false;
                 this.isSplitting = false;
             }
 
-            mainEventDispatcher.dispatch('digitizing.toolSelected');
+            /**
+             * @event digitizingToolSelected
+             * @type {object}
+             * @property {string} type - digitizing.toolSelected
+             * @example
+             * lizMap.mainEventDispatcher.addListener((lizmapEvent) => {
+             *     console.log('The digitizing selected tool has changed: '+lizmapEvent.tool);
+             * }, 'digitizing.toolSelected');
+             */
+            mainEventDispatcher.dispatch({
+                type: 'digitizing.toolSelected',
+                tool: this._toolSelected,
+            });
         }
     }
 
+    /**
+     * Get the drawing color
+     * @type {string}
+     */
     get drawColor() {
         return this._drawColor;
     }
 
+    /**
+     * Set the drawing color
+     * @type {string}
+     * @param {string} color - The color to set
+     * @fires digitizingDrawColor
+     */
     set drawColor(color) {
         this._drawColor = color;
         // Save color
         localStorage.setItem(this._repoAndProjectString + '_drawColor', this._drawColor);
-        mainEventDispatcher.dispatch('digitizing.drawColor');
+        /**
+         * @event digitizingDrawColor
+         * @type {object}
+         * @property {string} type - digitizing.drawColor
+         * @example
+         * lizMap.mainEventDispatcher.addListener((lizmapEvent) => {
+         *     console.log('The digitizing draw color has changed: '+lizmapEvent.color);
+         * }, 'digitizing.drawColor');
+         */
+        mainEventDispatcher.dispatch({
+            type: 'digitizing.drawColor',
+            color: this._drawColor,
+        });
     }
 
+    /**
+     * Get the features drawn
+     * @type {Array<Feature>|null}
+     */
     get featureDrawn() {
         const features = this._drawLayer.getSource().getFeatures();
         if (features.length) {
@@ -598,7 +755,7 @@ export class Digitizing {
     }
 
     /**
-     * Is digitizing tool active or not
+     * Is digitizing tool active or not?
      * @todo active state should be set on UI's events
      * @readonly
      * @memberof Digitizing
@@ -609,10 +766,20 @@ export class Digitizing {
         return isActive ? true : false;
     }
 
+    /**
+     * Is digitizing edit tool active or not?
+     * @type {boolean}
+     */
     get isEdited() {
         return this._isEdited;
     }
 
+    /**
+     * Set the digitizing edit tool is active or not
+     * @type {boolean}
+     * @fires digitizingEditionBegins
+     * @fires digitizingEditionEnds
+     */
     set isEdited(edited) {
         if (this._isEdited !== edited) {
             this._isEdited = edited;
@@ -633,8 +800,18 @@ export class Digitizing {
                 this.toolSelected = 'deactivate';
                 this.isErasing = false;
                 this.isRotate = false;
+                this.isScaling = false;
                 this.isSplitting = false;
 
+                /**
+                 * @event digitizingEditionBegins
+                 * @type {object}
+                 * @property {string} type - digitizing.editionBegins
+                 * @example
+                 * lizMap.mainEventDispatcher.addListener(() => {
+                 *     console.log('Edition begins');
+                 * }, 'digitizing.editionBegins');
+                 */
                 mainEventDispatcher.dispatch('digitizing.editionBegins');
             } else {
                 // Clear selection
@@ -645,15 +822,33 @@ export class Digitizing {
 
                 this.saveFeatureDrawn();
 
+                /**
+                 * @event digitizingEditionEnds
+                 * @type {object}
+                 * @property {string} type - digitizing.editionEnds
+                 * @example
+                 * lizMap.mainEventDispatcher.addListener(() => {
+                 *     console.log('Edition ends');
+                 * }, 'digitizing.editionEnds');
+                 */
                 mainEventDispatcher.dispatch('digitizing.editionEnds');
             }
         }
     }
 
+    /**
+     * Is the digitizing rotation tool active or not?
+     * @type {boolean}
+     */
     get isRotate() {
         return this._isRotate;
     }
 
+    /**
+     * Set the digitizing rotation tool is active or not
+     * @type {boolean}
+     * @fires digitizingRotate
+     */
     set isRotate(isRotate) {
         if (this._isRotate !== isRotate) {
             this._isRotate = isRotate;
@@ -662,21 +857,96 @@ export class Digitizing {
                 this.toolSelected = 'deactivate';
                 this.isErasing = false;
                 this.isEdited = false;
+                this.isScaling = false;
                 this.isSplitting = false;
 
-                this._map.addInteraction(this._transformInteraction);
+                // Automatically scaling the feature if unique
+                if (this.featureDrawn.length === 1) {
+                    this._transformRotateInteraction.getFeatures().push(this.featureDrawn[0]);
+                }
+                this._map.addInteraction(this._transformRotateInteraction);
             } else {
-                this._map.removeInteraction(this._transformInteraction);
+                this._map.removeInteraction(this._transformRotateInteraction);
             }
 
-            mainEventDispatcher.dispatch('digitizing.rotate');
+            /**
+             * @event digitizingRotate
+             * @type {object}
+             * @property {string} type - digitizing.rotate
+             * @example
+             * lizMap.mainEventDispatcher.addListener((lizmapEvent) => {
+             *     console.log('The digitizing rotation tool is active or not? '+lizmapEvent.isRotate);
+             * }, 'digitizing.rotate');
+             */
+            mainEventDispatcher.dispatch({
+                type: 'digitizing.rotate',
+                isRotate: this._isRotate,
+            });
         }
     }
 
+    /**
+     * Is the digitizing scale tool active or not?
+     * @type {boolean}
+     */
+    get isScaling() {
+        return this._isScaling;
+    }
+
+    /**
+     * Set the digitizing scale tool is active or not
+     * @type {boolean}
+     * @fires digitizingScaling
+     */
+    set isScaling(isScaling) {
+        if (this._isScaling !== isScaling) {
+            this._isScaling = isScaling;
+
+            if (this._isScaling) {
+                this.toolSelected = 'deactivate';
+                this.isErasing = false;
+                this.isEdited = false;
+                this.isRotate = false;
+                this.isSplitting = false;
+
+                // Automatically scaling the feature if unique
+                if (this.featureDrawn.length === 1) {
+                    this._transformScaleInteraction.getFeatures().push(this.featureDrawn[0]);
+                }
+                this._map.addInteraction(this._transformScaleInteraction);
+            } else {
+                this._map.removeInteraction(this._transformScaleInteraction);
+            }
+
+            /**
+             * @event digitizingScaling
+             * @type {object}
+             * @property {string} type - digitizing.scaling
+             * @example
+             * lizMap.mainEventDispatcher.addListener((lizmapEvent) => {
+             *     console.log('The digitizing scaling tool is active or not? '+lizmapEvent.isScaling);
+             * }, 'digitizing.rotate');
+             */
+            mainEventDispatcher.dispatch({
+                type: 'digitizing.scaling',
+                isScaling: this._isScaling,
+            });
+        }
+    }
+
+    /**
+     * Is the digitizing split tool active or not?
+     * @type {boolean}
+     */
     get isSplitting() {
         return this._isSplitting;
     }
 
+    /**
+     * Set the digitizing split tool is active or not
+     * @type {boolean}
+     * @fires digitizingSplit
+     */
     set isSplitting(isSplitting) {
         if (this._isSplitting !== isSplitting) {
             this._isSplitting = isSplitting;
@@ -686,6 +956,7 @@ export class Digitizing {
                 this.toolSelected = 'deactivate';
                 this.isEdited = false;
                 this.isRotate = false;
+                this.isScaling = false;
                 this.isErasing = false;
 
                 this._splitInteraction = new Draw({
@@ -793,14 +1064,37 @@ export class Digitizing {
                 this._map.removeInteraction(this._splitInteraction);
             }
 
-            mainEventDispatcher.dispatch('digitizing.split');
+            /**
+             * @event digitizingSplit
+             * @type {object}
+             * @property {string} type - digitizing.split
+             * @example
+             * lizMap.mainEventDispatcher.addListener((lizmapEvent) => {
+             *     console.log('The digitizing split tool is active or not? '+lizmapEvent.isSplitting);
+             * }, 'digitizing.split');
+             */
+            mainEventDispatcher.dispatch({
+                type: 'digitizing.split',
+                isSplitting: this._isSplitting,
+            });
         }
     }
 
+    /**
+     * Is the digitizing erase tool active or not?
+     * @type {boolean}
+     */
     get isErasing() {
         return this._isErasing;
     }
 
+    /**
+     * Set the digitizing erase tool is active or not
+     * @type {boolean}
+     * @fires digitizingErasingBegins
+     * @fires digitizingErase
+     * @fires digitizingErasingEnds
+     */
     set isErasing(isErasing) {
         if (this._isErasing !== isErasing) {
             this._isErasing = isErasing;
@@ -810,6 +1104,7 @@ export class Digitizing {
                 this.toolSelected = 'deactivate';
                 this.isEdited = false;
                 this.isRotate = false;
+                this.isScaling = false;
                 this.isSplitting = false;
 
                 this._erasingCallBack = event => {
@@ -833,48 +1128,144 @@ export class Digitizing {
 
                         this.saveFeatureDrawn();
 
+                        /**
+                         * @event digitizingErase
+                         * @type {object}
+                         * @property {string} type - digitizing.erase
+                         * @example
+                         * lizMap.mainEventDispatcher.addListener(() => {
+                         *     console.log('A drawn feature has been erased');
+                         * }, 'digitizing.erase');
+                         */
                         mainEventDispatcher.dispatch('digitizing.erase');
                     }
                 };
 
                 this._map.on('singleclick', this._erasingCallBack );
+                /**
+                 * @event digitizingErasingBegins
+                 * @type {object}
+                 * @property {string} type - digitizing.erasingBegins
+                 * @example
+                 * lizMap.mainEventDispatcher.addListener(() => {
+                 *     console.log('The digitizing erasing tool begins');
+                 * }, 'digitizing.erasingBegins');
+                 */
                 mainEventDispatcher.dispatch('digitizing.erasingBegins');
+
+                // Automatically erase the feature if unique
+                if (this.featureDrawn.length === 1) {
+                    const coord = this.featureDrawn[0].getGeometry().getFirstCoordinate();
+                    const pixel = this._map.getPixelFromCoordinate(coord);
+                    this._map.dispatchEvent({
+                        type: 'singleclick',
+                        pixel: pixel,
+                    });
+                }
             } else {
                 this._map.un('singleclick', this._erasingCallBack );
+                /**
+                 * @event digitizingErasingEnds
+                 * @type {object}
+                 * @property {string} type - digitizing.erasingEnds
+                 * @example
+                 * lizMap.mainEventDispatcher.addListener(() => {
+                 *     console.log('The digitizing erasing tool ends');
+                 * }, 'digitizing.erasingEnds');
+                 */
                 mainEventDispatcher.dispatch('digitizing.erasingEnds');
             }
         }
     }
 
+    /**
+     * Is the digitizing measure tool visible or not
+     * @type {boolean}
+     */
     get hasMeasureVisible() {
         return this._hasMeasureVisible;
     }
 
+    /**
+     * Set the digitizing measure tool is active or not
+     * @type {boolean}
+     * @fires digitizingMeasure
+     */
     set hasMeasureVisible(visible) {
         this._hasMeasureVisible = visible;
         for (const overlays of this._measureTooltips) {
             overlays[0].getElement().classList.toggle('hide', !visible);
             overlays[1].getElement().classList.toggle('hide', !visible);
         }
-        mainEventDispatcher.dispatch('digitizing.measure');
+        /**
+         * @event digitizingMeasure
+         * @type {object}
+         * @property {string} type - digitizing.measure
+         * @example
+         * lizMap.mainEventDispatcher.addListener((lizmapEvent) => {
+         *     console.log('The digitizing measure tool is active or not? '+lizmapEvent.visible);
+         * }, 'digitizing.measure');
+         */
+        mainEventDispatcher.dispatch({
+            type: 'digitizing.measure',
+            visible: this._hasMeasureVisible
+        });
     }
 
+    /**
+     * Is the digitizing constraints panel visible or not
+     * @type {boolean}
+     */
     get hasConstraintsPanelVisible() {
         return this._hasMeasureVisible && ['line', 'polygon'].includes(this.toolSelected);
     }
 
+    /**
+     * Is the digitizing save tool active or not?
+     * @type {boolean}
+     */
     get isSaved() {
         return this._isSaved;
     }
 
+    /**
+     * Get the distance constraint
+     * @type {number}
+     */
+    get distanceConstraint(){
+        return this._distanceConstraint;
+    }
+
+    /**
+     * Set the distance constraint
+     * @type {number}
+     */
     set distanceConstraint(distanceConstraint){
         this._distanceConstraint = parseInt(distanceConstraint)
     }
 
+    /**
+     * Get the angle constraint
+     * @type {number}
+     */
+    get angleConstraint(){
+        return this._angleConstraint;
+    }
+
+    /**
+     * Set the angle constraint
+     * @type {number}
+     */
     set angleConstraint(angleConstraint){
         this._angleConstraint = parseInt(angleConstraint)
     }
 
+    /**
+     * Erase a feature from the draw source
+     * @private
+     * @param {Feature} feature - the feature to erase
+     * @returns {void}
+     */
     _eraseFeature(feature) {
         const totalOverlay = feature.getGeometry().get('totalOverlay');
         if (totalOverlay) {
@@ -891,6 +1282,12 @@ export class Digitizing {
         this._drawSource.removeFeature(feature);
     }
 
+    /**
+     * User changed the color of the drawing
+     * @private
+     * @param {string} color - the color to set
+     * @fires digitizingDrawColor
+     */
     _userChangedColor(color) {
         this._drawColor = color;
 
@@ -901,9 +1298,20 @@ export class Digitizing {
         // Save color
         localStorage.setItem(this._repoAndProjectString + '_drawColor', this._drawColor);
 
-        mainEventDispatcher.dispatch('digitizing.drawColor');
+        mainEventDispatcher.dispatch({
+            type: 'digitizing.drawColor',
+            color: this._drawColor,
+        });
     }
 
+    /**
+     * The constraints handler
+     * @private
+     * @param {*} coords   - the mouse coordinates
+     * @param {*} geom     - the geometry
+     * @param {*} geomType - the geometry type
+     * @returns {void}
+     */
     _contraintsHandler(coords, geom, geomType) {
         // Create geom if undefined
         if (!geom) {
@@ -1032,7 +1440,14 @@ export class Digitizing {
         return geom;
     }
 
-    // Display draw measures in tooltips
+    /**
+     * The tooltips handler
+     * @private
+     * @param {*} coords   - the mouse coordinates
+     * @param {*} geom     - the geometry
+     * @param {*} geomType - the geometry type
+     * @returns {void}
+     */
     _updateTooltips(coords, geom, geomType) {
         // Current segment length
         let segmentTooltipContent = this.formatLength(
@@ -1072,6 +1487,15 @@ export class Digitizing {
         }
     }
 
+    /**
+     * The tooltips measure handler
+     * @private
+     * @param {*} coords   - the mouse coordinates
+     * @param {*} geom     - the geometry
+     * @param {*} geomType - the geometry type
+     * @param {*} overlay  - the overlay
+     * @returns {void}
+     */
     _updateTotalMeasureTooltip(coords, geom, geomType, overlay) {
         if (geomType === 'Polygon') {
             // Close LinearRing to get its perimeter
@@ -1221,7 +1645,11 @@ export class Digitizing {
         this._map.addOverlay(totalOverlay);
     }
 
-    // Get SLD for featureDrawn[index]
+    /**
+     * Get the SLD for the drawn feature at the index
+     * @param {number} index - The index of the drawn feature
+     * @returns {null|string} The SLD for the drawn feature or null if the feature does not exist at the index
+     */
     getFeatureDrawnSLD(index) {
         if (!this.featureDrawn[index]) {
             return null;
@@ -1279,6 +1707,10 @@ export class Digitizing {
         return sld.replace('    ', '');
     }
 
+    /**
+     * Get the drawing layer visibility
+     * @returns {boolean} - true if visible
+     */
     get visibility(){
         return this._drawLayer.getVisible();
     }
@@ -1294,37 +1726,94 @@ export class Digitizing {
             overlays[1].getElement().classList.toggle('hide', !(this._hasMeasureVisible && visible));
         }
 
-        mainEventDispatcher.dispatch('digitizing.visibility');
+        /**
+         * @event digitizingVisibility
+         * @type {object}
+         * @property {string} type - digitizing.visibility
+         * @example
+         * lizMap.mainEventDispatcher.addListener((lizmapEvent) => {
+         *     console.log('The digitizing visibility has changed: '+lizmapEvent.visible);
+         * }, 'digitizing.visibility');
+         */
+        mainEventDispatcher.dispatch({
+            type: 'digitizing.visibility',
+            visible: visible,
+        });
     }
 
+    /**
+     * Toggle edit mode
+     */
     toggleEdit() {
         this.isEdited = !this.isEdited;
     }
 
+    /**
+     * Toggle rotate mode
+     */
     toggleRotate() {
         this.isRotate = !this.isRotate;
     }
 
+    /**
+     * Toggle scaling mode
+     */
+    toggleScaling() {
+        this.isScaling = !this.isScaling;
+    }
+
+    /**
+     * Toggle measure mode
+     */
     toggleMeasure() {
         this.hasMeasureVisible = !this.hasMeasureVisible;
     }
 
+    /**
+     * Toggle split mode
+     */
     toggleSplit() {
         this.isSplitting = !this._isSplitting;
     }
 
+    /**
+     * Toggle erase mode
+     */
     toggleErasing() {
         this.isErasing = !this._isErasing;
     }
 
+    /**
+     * Toggle save mode
+     * @returns {void}
+     * @fires digitizingSave
+     */
     toggleSave() {
         this._isSaved = !this._isSaved;
 
         this.saveFeatureDrawn();
 
-        mainEventDispatcher.dispatch('digitizing.save');
+        /**
+         * @event digitizingSave
+         * @type {object}
+         * @property {string} type - digitizing.save
+         * @example
+         * lizMap.mainEventDispatcher.addListener((lizmapEvent) => {
+         *     console.log('The digitizing save tool is active or not: '+lizmapEvent.isSaved);
+         * }, 'digitizing.save');
+         */
+        mainEventDispatcher.dispatch({
+            type: 'digitizing.save',
+            isSaved: this._isSaved,
+        });
     }
 
+    /**
+     * Erase all drawn features
+     * @returns {void}
+     * @fires digitizingEraseAll
+     * @fires digitizingErase
+     */
     eraseAll() {
         this.isEdited = false;
         this.isRotate = false
@@ -1340,12 +1829,22 @@ export class Digitizing {
 
         this.saveFeatureDrawn();
 
+        /**
+         * @event digitizingEraseAll
+         * @type {object}
+         * @property {string} type - digitizing.erase.all
+         * @example
+         * lizMap.mainEventDispatcher.addListener(() => {
+         *     console.log('All drawn features have been erased');
+         * }, 'digitizing.erase.all');
+         */
         mainEventDispatcher.dispatch('digitizing.erase.all');
         mainEventDispatcher.dispatch('digitizing.erase');
     }
 
     /**
      * Save all drawn features in local storage
+     * @returns {void}
      */
     saveFeatureDrawn() {
         if (this._isSaved) {
@@ -1383,6 +1882,7 @@ export class Digitizing {
 
     /**
      * Load all drawn features from local storage
+     * @returns {void}
      */
     loadFeatureDrawnToMap() {
         // get saved data without context for draw
@@ -1458,6 +1958,11 @@ export class Digitizing {
         }
     }
 
+    /**
+     * Download the drawn features
+     * @param {*} format - the format to download the drawn features
+     * @returns {void}
+     */
     download(format) {
         if (this.featureDrawn) {
             const options = {
@@ -1487,6 +1992,11 @@ export class Digitizing {
         }
     }
 
+    /**
+     * Import file to draw features stored in it
+     * @param {*} file - the file to draw
+     * @returns {void}
+     */
     import(file) {
         const reader = new FileReader();
 
