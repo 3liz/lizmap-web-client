@@ -5,6 +5,15 @@
  * @license MPL-2.0
  */
 
+/**
+ * Split and clean a keyword string and return an array of keywords.
+ * @param {string} keywords A string having keywords separated by commas.
+ * @returns {string[]}
+ */
+function cleanKeywords(keywords) {
+    return keywords.split(",").map(item => item.trim());
+}
+
 var searchProjects = function(){
     // Hide search if there are no projects
     if ($("#content.container li .liz-project-title").length === 0) {
@@ -44,11 +53,11 @@ var searchProjects = function(){
     // Get unique keywords for visible projects
     var getVisibleProjectsKeywords = function() {
         var keywordList = [];
-        var selector = '.liz-repository-project-item :visible .keywordList';
+        var selector = '.liz-repository-project-item :visible .liz-project';
 
         $(selector).each(function () {
-            if ($(this).text() !== '') {
-                var keywordsSplitByComma = $(this).text().toUpperCase().split(', ');
+            const keywordsSplitByComma = cleanKeywords($(this).attr('data-lizmap-keywords'));
+            if (keywordsSplitByComma.length > 0) {
                 if (isGraph) {
                     for (var index = 0; index < keywordsSplitByComma.length; index++) {
                         keywordList = keywordList.concat(keywordsSplitByComma[index].split('/'));
@@ -66,9 +75,10 @@ var searchProjects = function(){
     var getEdges = function () {
         var edgeList = [];
 
-        $('.liz-repository-project-item :visible .keywordList').each(function () {
-            if ($(this).text() !== '') {
-                var keywordsSplitByComma = $(this).text().toUpperCase().split(', ');
+        $('.liz-repository-project-item :visible .liz-project').each(function () {
+            const keywordsSplitByComma = cleanKeywords($(this).attr('data-lizmap-keywords'));
+
+            if (keywordsSplitByComma.length > 0) {
                 for (var index = 0; index < keywordsSplitByComma.length; index++) {
                     var keywordsInGraph = keywordsSplitByComma[index].split('/');
 
@@ -95,9 +105,9 @@ var searchProjects = function(){
             $("#content.container .liz-repository-title").hide();
 
             // Show project when its keywords match all keywords in selectedKeywords
-            $('.keywordList').each(function () {
+            $('.liz-project').each(function () {
                 var showProject = false;
-                var keywordListSplitByComma = $(this).text().toUpperCase().split(', ');
+                const keywordListSplitByComma = cleanKeywords($(this).attr('data-lizmap-keywords'));
 
                 // Graph
                 if (isGraph) {

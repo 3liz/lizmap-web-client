@@ -20,10 +20,6 @@
   max-width:100%;
 }
 
-.liz-project-desc {
-  display: none;
-}
-
 .liz-project:hover {
   background-color: #f8faff;
 }
