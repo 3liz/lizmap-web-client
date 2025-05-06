@@ -188,7 +188,7 @@ import { getCenter } from 'ol/extent.js';
                             }
                         }
                         // build select options
-                        const options = '<option value="-1"> --- </option>';
+                        let options = '<option value="-1"> --- </option>';
                         for (let i in lizAtlasConfig['features_sorted']) {
                             const item = lizAtlasConfig['features_sorted'][i];
 
