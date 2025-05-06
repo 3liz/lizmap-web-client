@@ -48,7 +48,12 @@ test.describe('WebDAV Server',
 
             await expect(attrTable.locator("tr[id='" + id + "']").locator("td").nth(1)).toHaveText(id);
             await expect(attrTable.locator("tr[id='" + id + "']").locator("td").nth(2)).toHaveText("remote");
-            await expect(attrTable.locator("tr[id='" + id + "']").locator("td").nth(2).locator("a")).toHaveAttribute("href", "/index.php/view/media/getMedia?repository=testsrepository&project=form_upload_webdav&path=dav/remoteData/test_upload_attribute_table.txt");
+            await expect(
+                attrTable.locator("tr[id='" + id + "']").locator("td").nth(2).locator("a")
+            ).toHaveAttribute(
+                "href",
+                "/index.php/view/media/getMedia?repository=testsrepository&project=form_upload_webdav&path=dav/remoteData/test_upload_attribute_table.txt"
+            );
 
         });
 
@@ -131,7 +136,12 @@ test.describe('WebDAV Server',
 
             await expect(attrTable.locator("tr[id='" + id + "']").locator("td").nth(1)).toHaveText(id);
             await expect(attrTable.locator("tr[id='" + id + "']").locator("td").nth(2)).toHaveText("remote");
-            await expect(attrTable.locator("tr[id='" + id + "']").locator("td").nth(2).locator("a")).toHaveAttribute("href", "/index.php/view/media/getMedia?repository=testsrepository&project=form_upload_webdav&path=dav/remoteData/test_upload_attribute_table_keep.txt");
+            await expect(
+                attrTable.locator("tr[id='" + id + "']").locator("td").nth(2).locator("a")
+            ).toHaveAttribute(
+                "href",
+                "/index.php/view/media/getMedia?repository=testsrepository&project=form_upload_webdav&path=dav/remoteData/test_upload_attribute_table_keep.txt"
+            );
 
             await page.locator("#jforms_view_edition_remote_path_jf_action_new").click();
             await expect(page.locator("#jforms_view_edition_remote_path_jf_action_new")).toBeChecked();
@@ -148,7 +158,12 @@ test.describe('WebDAV Server',
 
             await expect(attrTable.locator("tr[id='" + id + "']").locator("td").nth(1)).toHaveText(id);
             await expect(attrTable.locator("tr[id='" + id + "']").locator("td").nth(2)).toHaveText("remote");
-            await expect(attrTable.locator("tr[id='" + id + "']").locator("td").nth(2).locator("a")).toHaveAttribute("href", "/index.php/view/media/getMedia?repository=testsrepository&project=form_upload_webdav&path=dav/remoteData/test_upload_replace.txt");
+            await expect(
+                attrTable.locator("tr[id='" + id + "']").locator("td").nth(2).locator("a")
+            ).toHaveAttribute(
+                "href",
+                "/index.php/view/media/getMedia?repository=testsrepository&project=form_upload_webdav&path=dav/remoteData/test_upload_replace.txt"
+            );
 
         });
 
@@ -186,7 +201,12 @@ test.describe('WebDAV Server',
 
             await expect(attrTable.locator("tr[id='" + id + "']").locator("td").nth(1)).toHaveText(id);
             await expect(attrTable.locator("tr[id='" + id + "']").locator("td").nth(2)).toHaveText("remote");
-            await expect(attrTable.locator("tr[id='" + id + "']").locator("td").nth(2).locator("a")).toHaveAttribute("href", "/index.php/view/media/getMedia?repository=testsrepository&project=form_upload_webdav&path=dav/remoteData/test_upload_delete.txt");
+            await expect(
+                attrTable.locator("tr[id='" + id + "']").locator("td").nth(2).locator("a")
+            ).toHaveAttribute(
+                "href",
+                "/index.php/view/media/getMedia?repository=testsrepository&project=form_upload_webdav&path=dav/remoteData/test_upload_delete.txt"
+            );
 
             await page.locator("#jforms_view_edition_remote_path_jf_action_del").click();
             await expect(page.locator("#jforms_view_edition_remote_path_jf_action_del")).toBeChecked();
