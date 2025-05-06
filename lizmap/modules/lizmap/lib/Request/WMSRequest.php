@@ -21,7 +21,7 @@ class WMSRequest extends OGCRequest
 {
     protected $tplExceptions = 'lizmap~wms_exception';
 
-    protected static $regexp_media_urls = '#["\']((\.\./)?media/.+?\.\w{3,10})["\']{1}#';
+    protected static $regexp_media_urls = '#["\']((\.\./)?media/.+?\.\w{2,10})["\']{1}#';
 
     private $forceRequest = false;
 

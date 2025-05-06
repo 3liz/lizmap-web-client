@@ -284,6 +284,18 @@ class WMSRequestTest extends TestCase
             $maptipValue,
         );
 
+        // Accepted extensions with 2 characters
+        preg_match(
+            $wms->getRegexpMediaUrlsForTests(),
+            'src="media/foobar.7z"',
+            $matches,
+        );
+        $this->assertCount(2, $matches);
+        $this->assertEquals(
+            'media/foobar.7z',
+            $matches[1],
+        );
+
         // does not match directory
         preg_match(
             $wms->getRegexpMediaUrlsForTests(),
@@ -308,6 +320,13 @@ class WMSRequestTest extends TestCase
         preg_match(
             $wms->getRegexpMediaUrlsForTests(),
             'src="media/.bar"',
+            $matches,
+        );
+        $this->assertCount(0, $matches);
+        // does not match extension with 1 character
+        preg_match(
+            $wms->getRegexpMediaUrlsForTests(),
+            'src="media/foobar.z"',
             $matches,
         );
         $this->assertCount(0, $matches);
