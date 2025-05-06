@@ -41,6 +41,13 @@ class server_informationCtrl extends jController
         $currentQgisVersion = $server->getQgisServerVersion();
         $currentLizmapVersion = $server->getLizmapPluginServerVersion();
 
+        // Check QGIS server wrapper
+        $checkQgisServerWrapper = $server->checkQgisServerWrapper();
+        $qgisServerWrapperLabel = jLocale::get('admin.server.information.qgis.wrapper.force.html');
+        if (!$checkQgisServerWrapper) {
+            jLog::log($qgisServerWrapperLabel, 'lizmapadmin');
+        }
+
         // Check their status
         if (is_null($currentQgisVersion) || is_null($currentLizmapVersion)) {
             // Either QGIS server or Lizmap QGIS server were not found
@@ -84,6 +91,8 @@ class server_informationCtrl extends jController
             'installationComplete' => $modules->compareLizmapCoreModulesVersions($data['info']['version']),
             'qgisServerNeedsUpdate' => $qgisServerNeedsUpdate,
             'updateQgisServer' => $updateQgisServer,
+            'checkQgisServerWrapper' => $checkQgisServerWrapper,
+            'qgisServerWrapperLabel' => $qgisServerWrapperLabel,
             'lizmapQgisServerNeedsUpdate' => $lizmapQgisServerNeedsUpdate,
             'lizmapPluginUpdate' => $updateLizmapPlugin,
             'minimumQgisVersion' => $qgisMinimumVersionRequired,

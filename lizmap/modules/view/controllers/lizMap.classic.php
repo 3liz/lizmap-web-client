@@ -7,7 +7,7 @@ use Lizmap\Request\RemoteStorageRequest;
 use Lizmap\Server\Server;
 
 /**
- * Displays a full featured map based on one Qgis project.
+ * Displays a full featured map based on one QGIS project.
  *
  * @author    3liz
  * @copyright 2011 3liz
@@ -83,6 +83,13 @@ class lizMapCtrl extends jController
         // Check if they are found and also their versions
         if ($server->versionCompare($currentQgisVersion, $requiredQgisVersion)
             || $server->pluginServerNeedsUpdate($currentLizmapVersion, $requiredLizmapVersion)) {
+            jMessage::add(jLocale::get('view~default.server.information.error'), 'error');
+
+            return $rep;
+        }
+
+        // Check QGIS Server wrapper
+        if (!$server->checkQgisServerWrapper()) {
             jMessage::add(jLocale::get('view~default.server.information.error'), 'error');
 
             return $rep;
