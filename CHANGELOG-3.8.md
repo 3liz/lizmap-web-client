@@ -10,6 +10,10 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ### Funders
 
+* **[Agence des 50 pas de Guadeloupe](https://www.50pasguadeloupe.fr/)**
+* **[Cartophyl](http://www.cartophyl.com/)**
+* **[FM Projet](https://fmprojet.fr/)**
+* **[SMICA](https://www.smica.fr/)**
 * **[Syslor](https://syslor.net/)**
 * **[Valabre](https://www.valabre.com/)**
 
@@ -17,12 +21,16 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 * A new flag `DEBUG=TRUE` to `lizmap_search` to ease a little bit the debugging
 * UX - Add tooltips on buttons in the "maps management" page and also for the project switcher button
+* Add layer ID in the "highlighted" signal from [Lizmap features table](https://docs.3liz.org/lizmap-web-client/js/module-FeaturesTable.html) component
 
 ### Fixed
 
+* When using the quick search menu, you can't zoom back to a feature after moving the map
+* Attribute table: format big data
 * Fix UI regression: Clear popup geometry
 * Tile WMS layer has no loading status updated
 * Webpack: set publicPath:auto to get JS assets with a correct path
+* Fix CORS allow methods when OPTIONS Request
 
 ## 3.8.7 - 2025-04-01
 
