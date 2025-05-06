@@ -39,7 +39,13 @@ test.describe('Legend tests', () => {
     });
 
     test("Switching layer's style should switch layer's legend", async ({ page }) => {
-        await expect(page.getByTestId('tramway_lines').locator('.legend')).toHaveAttribute('src', 'data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADCeZ2D+T4kBTJS6YOANGAXDAgAAI0UB2Uim7V8AAAAASUVORK5CYII=');
+
+        await expect(
+            page.getByTestId('tramway_lines').locator('.legend')
+        ).toHaveAttribute(
+            'src',
+            'data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADCeZ2D+T4kBTJS6YOANGAXDAgAAI0UB2Uim7V8AAAAASUVORK5CYII='
+        );
 
         // Switch layer's style
         await page.getByTestId('tramway_lines').locator('.icon-info-sign').click({ force: true });
@@ -50,11 +56,21 @@ test.describe('Legend tests', () => {
         expect(await page.getByTestId('tramway_lines').locator('.expandable').count()).toEqual(1);
         await page.getByTestId('tramway_lines').locator('.expandable').click();
 
-        await expect(page.getByTestId('tramway_lines').locator('.symbols .legend').first()).toHaveAttribute('src', 'data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADAan9//nxIDmCh1wcAbMAqGBQAAu7ICyNmWVC0AAAAASUVORK5CYII=');
-        await expect(page.getByTestId('tramway_lines').locator('.symbols .legend').nth(1)).toHaveAttribute('src', 'data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADC+uSbynxIDmCh1wcAbMAqGBQAA95MC3blCR58AAAAASUVORK5CYII=');
+        await expect(
+            page.getByTestId('tramway_lines').locator('.symbols .legend').first()
+        ).toHaveAttribute(
+            'src',
+            'data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADAan9//nxIDmCh1wcAbMAqGBQAAu7ICyNmWVC0AAAAASUVORK5CYII='
+        );
+        await expect(
+            page.getByTestId('tramway_lines').locator('.symbols .legend').nth(1)
+        ).toHaveAttribute(
+            'src',
+            'data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAIElEQVQ4jWNgGAXDADC+uSbynxIDmCh1wcAbMAqGBQAA95MC3blCR58AAAAASUVORK5CYII='
+        );
     });
 
-    test("Layer's rule based symbologie with scales", async ({ page }) => {
+    test("Layer's rule based symbology with scales", async ({ page }) => {
         // Display layer's rule based legend
         await page.getByTestId('layer_legend_ruled').locator('.expandable').first().click()
 

@@ -174,7 +174,40 @@ test.describe('Draw', () => {
         expect(await page.evaluate(() => localStorage.getItem('testsrepository_draw_draw_drawLayer'))).toBeNull;
 
         // Check the JSON
-        // '[{"type":"Polygon","color":"#000000","coords":[[[764321.0416656,6290805.935670358],[767628.3399468632,6290805.935670358],[767628.3399468632,6295105.423436],[764321.0416656,6295105.423436],[764321.0416656,6290805.935670358],[764321.0416656,6290805.935670358]]]}]'
+        // [
+        //     {
+        //         "type": "Polygon",
+        //         "color": "#000000",
+        //         "coords": [
+        //             [
+        //                 [
+        //                     764321.0416656,
+        //                     6290805.935670358
+        //                 ],
+        //                 [
+        //                     767628.3399468632,
+        //                     6290805.935670358
+        //                 ],
+        //                 [
+        //                     767628.3399468632,
+        //                     6295105.423436
+        //                 ],
+        //                 [
+        //                     764321.0416656,
+        //                     6295105.423436
+        //                 ],
+        //                 [
+        //                     764321.0416656,
+        //                     6290805.935670358
+        //                 ],
+        //                 [
+        //                     764321.0416656,
+        //                     6290805.935670358
+        //                 ]
+        //             ]
+        //         ]
+        //     }
+        // ]
         await expect(json_stored).toContain('Polygon');
         await expect(json_stored).not.toContain('Point');
         await expect(json_stored).not.toContain('LineString');
@@ -219,11 +252,15 @@ test.describe('Draw', () => {
         await drawProject.clickOnMap(340, 50);
         await drawProject.clickOnMap(390, 115);
 
-        expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toHaveLength(2);
+        expect(
+            await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)
+        ).toHaveLength(2);
 
         await drawProject.deleteAllDrawings();
 
-        expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toBeNull();
+        expect(
+            await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)
+        ).toBeNull();
     });
 
     test('Circular geometry measure', async ({ page }) => {
@@ -254,6 +291,7 @@ test.describe('Draw', () => {
     test('From local storage', async ({ page }) => {
         const drawProject = await initDrawProject(page);
 
+        // eslint-disable-next-line @stylistic/js/max-len
         const the_json = '[{"type":"Polygon","color":"#000000","coords":[[[764321.0416656,6290805.935670358],[767628.3399468632,6290805.935670358],[767628.3399468632,6295105.423436],[764321.0416656,6295105.423436],[764321.0416656,6290805.935670358],[764321.0416656,6290805.935670358]]]}]';
         await page.evaluate(token => localStorage.setItem('testsrepository_draw_draw_drawLayer', token), the_json);
         const json_stored = await page.evaluate(() => localStorage.getItem('testsrepository_draw_draw_drawLayer'));
