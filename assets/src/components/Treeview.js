@@ -206,7 +206,17 @@ export default class Treeview extends HTMLElement {
     disconnectedCallback() {
         mainLizmap.state.layerTree.removeListener(
             this._onChange,
-            ['layer.load.status.changed', 'layer.visibility.changed', 'group.visibility.changed', 'layer.style.changed', 'layer.symbology.changed', 'layer.filter.changed', 'layer.expanded.changed', 'group.expanded.changed', 'layer.symbol.expanded.changed']
+            [
+                'group.expanded.changed',
+                'group.visibility.changed',
+                'layer.expanded.changed',
+                'layer.filter.changed',
+                'layer.load.status.changed',
+                'layer.style.changed',
+                'layer.symbol.expanded.changed',
+                'layer.symbology.changed',
+                'layer.visibility.changed',
+            ]
         );
 
         mainEventDispatcher.removeListener(
