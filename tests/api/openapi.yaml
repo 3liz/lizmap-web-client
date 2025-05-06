@@ -95,6 +95,44 @@ components:
           example: https://example.com
         rightsGroup:
           $ref: '#/components/schemas/RepositoryRightsGroup'
+    RepositoryCreation:
+      type: object
+      properties:
+        key:
+          type: string
+          description: String representing the ID of the new repository
+          example: newtests
+        label:
+          type: string
+          description: Clean name of the new repository
+          example: A new test repository
+        path:
+          type: string
+          description: Path to the new repository
+          example: tests/
+        allowUserDefinedThemes:
+          type: boolean
+          description: Indicate if user defined themes are allowed
+          example: null
+        isCreated:
+          type: boolean
+          description: Indicate if the repository is created
+          example: true
+    RepositoryEditRight:
+      type: object
+      properties:
+        key:
+          type: string
+          description: String representing the ID of a repository
+          example: montpellier
+        group:
+          type: string
+          description: The group that will be edited
+          example: admins
+        right:
+          type: string
+          description: The right to be added or removed
+          example: lizmap.tools.edition.use
     ProjectMainData:
       type: array
       items:
@@ -237,6 +275,113 @@ paths:
       tags:
         - repositories
       summary: Get a specific repository
+    post:
+      parameters:
+        - name: repository_key
+          in: path
+          description: The repository key that will be created.
+          required: true
+          schema:
+            type: string
+        - name: label
+          in: query
+          description: The clean name of the repository
+          required: true
+          schema:
+            type: string
+        - name: path
+          in: query
+          description: The path of the repository
+          required: true
+          schema:
+            type: string
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RepositoryCreation'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - basicAuth: []
+      tags:
+        - repositories
+      summary: Create a specific repository
+  /admin/right/{method}/{repository_key}:
+    post:
+      parameters:
+        - name: method
+          in: path
+          description: The method to use 'add' or 'remove' a right.
+          required: true
+          schema:
+            type: string
+        - name: repository_key
+          in: path
+          description: The repository that will be target.
+          required: true
+          schema:
+            type: string
+        - name: group
+          in: query
+          description: The group ID to act on.
+          required: true
+          schema:
+            type: string
+        - name: right
+          in: query
+          description: The right to add or remove.
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RepositoryEditRight'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        501:
+          description: Not Implemented
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - basicAuth: []
+      tags:
+        - repositories
+      summary: Add or remove a specific right to a group on a specific repository
   /admin/repositories/{repository_key}/projects:
     get:
       parameters:
