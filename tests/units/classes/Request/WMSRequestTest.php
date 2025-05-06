@@ -248,4 +248,115 @@ class WMSRequestTest extends TestCase
         $this->assertEquals($expectedUseCache, $useCache);
         $this->assertEquals($expectedWmsClient, $wmsClient);
     }
+
+    public function testRegexpMediaUrls(): void
+    {
+        $testContext = new ContextForTests();
+        $wms = new WMSRequestForTests(new ProjectForOGCForTests($testContext), array(), null);
+
+        // src attribute for media directory
+        preg_match(
+            $wms->getRegexpMediaUrlsForTests(),
+            'src="media/foo.bar"',
+            $matches,
+        );
+        $this->assertCount(2, $matches);
+        $this->assertEquals(
+            'media/foo.bar',
+            $matches[1],
+        );
+        // href attribute for media directory
+        preg_match(
+            $wms->getRegexpMediaUrlsForTests(),
+            'href="media/foo.bar"',
+            $matches,
+        );
+        $this->assertCount(2, $matches);
+        $this->assertEquals(
+            'media/foo.bar',
+            $matches[1],
+        );
+
+        // src attribute for parent media directory
+        preg_match(
+            $wms->getRegexpMediaUrlsForTests(),
+            'src="../media/foo.bar"',
+            $matches,
+        );
+        $this->assertCount(3, $matches);
+        $this->assertEquals(
+            '../media/foo.bar',
+            $matches[1],
+        );
+
+        // href attribute for parent media directory
+        preg_match(
+            $wms->getRegexpMediaUrlsForTests(),
+            'href="../media/foo.bar"',
+            $matches,
+        );
+        $this->assertCount(3, $matches);
+        $this->assertEquals(
+            '../media/foo.bar',
+            $matches[1],
+        );
+
+        // multiple attributes like in a maptip
+        $maptipValue = preg_replace_callback(
+            $wms->getRegexpMediaUrlsForTests(),
+            array($wms, 'replaceMediaPathByMediaUrlForTests'),
+            '<a href="media/foo.bar"><img src="media/foo.bar"></a>',
+        );
+        $this->assertEquals(
+            '<a href="getMedia?path=media/foo.bar"><img src="getMedia?path=media/foo.bar"></a>',
+            $maptipValue,
+        );
+
+        // Accepted extensions with 2 characters
+        preg_match(
+            $wms->getRegexpMediaUrlsForTests(),
+            'src="media/foobar.7z"',
+            $matches,
+        );
+        $this->assertCount(2, $matches);
+        $this->assertEquals(
+            'media/foobar.7z',
+            $matches[1],
+        );
+
+        // does not match directory
+        preg_match(
+            $wms->getRegexpMediaUrlsForTests(),
+            'src="media/"',
+            $matches,
+        );
+        $this->assertCount(0, $matches);
+        preg_match(
+            $wms->getRegexpMediaUrlsForTests(),
+            'src="media/foo/bar/"',
+            $matches,
+        );
+        $this->assertCount(0, $matches);
+        // does not match no extension
+        preg_match(
+            $wms->getRegexpMediaUrlsForTests(),
+            'src="media/foo/bar"',
+            $matches,
+        );
+        $this->assertCount(0, $matches);
+        // does not match only extension
+        preg_match(
+            $wms->getRegexpMediaUrlsForTests(),
+            'src="media/.bar"',
+            $matches,
+        );
+        $this->assertCount(0, $matches);
+        // does not match extension with 1 character
+        preg_match(
+            $wms->getRegexpMediaUrlsForTests(),
+            'src="media/foobar.z"',
+            $matches,
+        );
+        $this->assertCount(0, $matches);
+    }
 }
