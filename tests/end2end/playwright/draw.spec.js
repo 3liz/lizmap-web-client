@@ -310,6 +310,12 @@ test.describe('Draw', () => {
     test('WKT found in local storage', async ({ page }) => {
         const drawProject = await initDrawProject(page);
 
+        // Clear local storage
+        await page.evaluate(() => localStorage.removeItem('testsrepository_draw_drawLayer'));
+        expect(await page.evaluate(() => localStorage.getItem('testsrepository_draw_drawLayer'))).toBeNull;
+        await page.evaluate(() => localStorage.removeItem('testsrepository_draw_draw_drawLayer'));
+        expect(await page.evaluate(() => localStorage.getItem('testsrepository_draw_draw_drawLayer'))).toBeNull;
+
         // Save WKT to the old local storage
         const wkt = 'POINT(770737.2003016905 6279832.319974077)';
         await page.evaluate(token => localStorage.setItem('testsrepository_draw_drawLayer', token), wkt);
