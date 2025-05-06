@@ -11,11 +11,13 @@ with some extra keywords: backend, tests, test, translation, funders, important
 ### Funders
 
 * **[Agence des 50 pas de Guadeloupe](https://www.50pasguadeloupe.fr/)**
+* **[AUDIAR](https://www.audiar.org/)**
 * **[Cartophyl](http://www.cartophyl.com/)**
 * **[Etra](https://www.etraspa.it/)**, and developed by **[Faunalia](https://www.faunalia.eu/fr)** with @mind84
 * **[FM Projet](https://fmprojet.fr/)**
 * **[SMICA](https://www.smica.fr/)**
 * **[Syslor](https://syslor.net/)**
+* **[TDPA](https://www.terredeprovence-agglo.com/)**
 * **[Valabre](https://www.valabre.com/)**
 * **[WPD](https://www.wpd.fr/)**
 
@@ -43,6 +45,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 ### Changed
 
 * Internal refactoring of the drawing box tool, which can lead to some UX changes
+  * Simplify the UI if only one tool is available
 * Popup: Improve styling of drag-and-drop designed popups
 
 ### Fixed
@@ -55,6 +58,10 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Fix UI regression: Clear popup geometry
 * Tile WMS layer has no loading status updated
 * Webpack: set publicPath:auto to get JS assets with a correct path
+* Use media in a popup :
+  * Fix incorrect replacement in `<a href="media/"><img src="media/"></a>`
+  * Fix the regular expression if the extension has two characters
+* Lizmap Atlas: Keep the current selected feature after layer updates
 
 ### Backend
 
