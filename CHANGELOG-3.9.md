@@ -10,9 +10,19 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ### Funders
 
+* **[Agence des 50 pas de Guadeloupe](https://www.50pasguadeloupe.fr/)**
+* **[Cartophyl](http://www.cartophyl.com/)**
 * **[Etra](https://www.etraspa.it/)**, and developed by **[Faunalia](https://www.faunalia.eu/fr)** with @mind84
+* **[FM Projet](https://fmprojet.fr/)**
+* **[SMICA](https://www.smica.fr/)**
 * **[Syslor](https://syslor.net/)**
+* **[Valabre](https://www.valabre.com/)**
 * **[WPD](https://www.wpd.fr/)**
+
+### Important
+
+* Py-QGIS-Server is now required by default.
+  Read in `lizmap/var/config/localconfig.ini.php.dist` if necessary about QGIS wrapper.
 
 ### Added
 
@@ -22,22 +32,34 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Lizmap API REST, see Swagger documentation
 * A new flag `DEBUG=TRUE` to `lizmap_search` to ease a little bit the debugging
 * UX - Add tooltips on buttons in the "maps management" page and also for the project switcher button
+* Add layer ID in the "highlighted" signal from [Lizmap features table](https://docs.3liz.org/lizmap-web-client/js/module-FeaturesTable.html) component
+* Feature JS Digitizing: Add scaling tool
 
 ### Removed
 
-* Remove BBOX and projection name from the landing page
+* Remove BBOX and projection name from the landing page and the project information panel
+* Drop support of QGIS FCGI by default, see important note above
 
 ### Changed
 
+* Internal refactoring of the drawing box tool, which can lead to some UX changes
 * Popup: Improve styling of drag-and-drop designed popups
 
 ### Fixed
 
+* When using the quick search menu, you can't zoom back to a feature after moving the map
+* Attribute table: format big data
+* Fix CORS allow methods when OPTIONS Request
 * Atlas: features were not projected to map
 * Search: IGN French address search uses map view instead of maxExtent
 * Fix UI regression: Clear popup geometry
 * Tile WMS layer has no loading status updated
 * Webpack: set publicPath:auto to get JS assets with a correct path
+
+### Backend
+
+* Update library EsLint JS to 9.25.1
+* Update library FlatGeobuf 4.0.1
 
 ## 3.9.0-beta.2 - 2025-03-14
 
