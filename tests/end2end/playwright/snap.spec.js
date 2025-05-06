@@ -27,8 +27,10 @@ test.describe('Snap on edition', () => {
         // move to digitization panel
         await page.getByRole('link', { name: 'Digitization' }).click()
 
-        let getSnappingPointFeatureRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('GetFeature') === true && request.postData()?.includes('form_edition_snap_point') === true);
-        let getSnappingPointDescribeFeatureRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('DescribeFeatureType') === true && request.postData()?.includes('form_edition_snap_point') === true);
+        let getSnappingPointFeatureRequestPromise = page.waitForRequest(
+            request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('GetFeature') === true && request.postData()?.includes('form_edition_snap_point') === true);
+        let getSnappingPointDescribeFeatureRequestPromise = page.waitForRequest(
+            request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('DescribeFeatureType') === true && request.postData()?.includes('form_edition_snap_point') === true);
 
         //activate snapping
         await page.getByRole('button', { name: 'Start' }).click();
@@ -94,8 +96,10 @@ test.describe('Snap on edition', () => {
         // activate snap on line and refresh snap
         await page.locator("#edition-point-coord-form-group .snap-layers-list .snap-layer").nth(0).locator("input").check()
 
-        let getSnappingLineFeatureRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('GetFeature') === true && request.postData()?.includes('form_edition_snap_line') === true);
-        let getSnappingLineDescribeFeatureRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('DescribeFeatureType') === true && request.postData()?.includes('form_edition_snap_line') === true);
+        let getSnappingLineFeatureRequestPromise = page.waitForRequest(
+            request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('GetFeature') === true && request.postData()?.includes('form_edition_snap_line') === true);
+        let getSnappingLineDescribeFeatureRequestPromise = page.waitForRequest(
+            request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('DescribeFeatureType') === true && request.postData()?.includes('form_edition_snap_line') === true);
 
         await page.locator("#edition-point-coord-form-group").getByRole("button").nth(2).click()
 
@@ -143,8 +147,10 @@ test.describe('Snap on edition', () => {
         // activate snap on polygon and refresh snap
         await page.locator("#edition-point-coord-form-group .snap-layers-list .snap-layer").nth(2).locator("input").check()
 
-        let getSnappingPolygonFeatureRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('GetFeature') === true && request.postData()?.includes('form_edition_snap_polygon') === true);
-        let getSnappingPolygonDescribeFeatureRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('DescribeFeatureType') === true && request.postData()?.includes('form_edition_snap_polygon') === true);
+        let getSnappingPolygonFeatureRequestPromise = page.waitForRequest(
+            request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('GetFeature') === true && request.postData()?.includes('form_edition_snap_polygon') === true);
+        let getSnappingPolygonDescribeFeatureRequestPromise = page.waitForRequest(
+            request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('DescribeFeatureType') === true && request.postData()?.includes('form_edition_snap_polygon') === true);
 
         await page.locator("#edition-point-coord-form-group").getByRole("button").nth(2).click()
 
