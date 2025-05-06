@@ -18,24 +18,24 @@ test.describe('N to M relations',
             // maximize panel
             await page.getByRole('button', { name: 'Maximize' }).click();
 
-            let getFeatureRequestPromise = page.waitForRequest(
+            let datatablesRequestPromise = page.waitForRequest(
                 request => request.method() === 'POST'
-                && request.postData()?.includes('GetFeature') === true
+                && request.postData()?.includes('draw') === true
             );
 
             // open main layer attribute table panel
             await page.locator('#attribute-layer-list button[value="natural_areas"]').click();
-            await getFeatureRequestPromise;
+            await datatablesRequestPromise;
 
             // open birds spots attribute table panel
             await page.locator('#nav-tab-attribute-summary').click();
             await page.locator('#attribute-layer-list button[value="birds_spots"]').click();
-            await getFeatureRequestPromise;
+            await datatablesRequestPromise;
 
             // open birds attribute table panel
             await page.locator('#nav-tab-attribute-summary').click();
             await page.locator('#attribute-layer-list button[value="birds"]').click();
-            await getFeatureRequestPromise;
+            await datatablesRequestPromise;
 
             //back to natural areas panel
             await page.locator('#nav-tab-attribute-layer-natural_areas').click();
@@ -73,7 +73,7 @@ test.describe('N to M relations',
 
             // click on first row of main table and open "m" layer attribute table
             await attrTable.locator("tbody tr").nth(0).click();
-            await getFeatureRequestPromise;
+            await datatablesRequestPromise;
 
             let nRelatedAttrTable = page.locator("#attribute-layer-table-natural_areas-birds");
             await expect(attrTable).toHaveCount(1);
@@ -105,7 +105,7 @@ test.describe('N to M relations',
 
             // change main record
             await attrTable.locator("tbody tr").nth(1).click();
-            await getFeatureRequestPromise;
+            await datatablesRequestPromise;
 
             // inspect new list of birds
             await expect(nRelatedAttrTable.locator("tbody tr")).toHaveCount(3);
@@ -250,7 +250,7 @@ test.describe('N to M relations',
 
             // click on last inserted record and check child attribute table
             await birdsTable.locator("tbody tr").nth(8).click();
-            await getFeatureRequestPromise;
+            await datatablesRequestPromise;
 
             let childNaturalAreasTable = page.locator("#attribute-layer-table-birds-natural_areas");
             await expect(childNaturalAreasTable.locator("tbody tr")).toHaveCount(1);
