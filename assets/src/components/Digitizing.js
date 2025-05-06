@@ -33,6 +33,7 @@ import '../images/svg/file-upload.svg';
 /**
  * @summary Provides user interface for digitizing shapes and text
  * @augments HTMLElement
+ *
  * @description By default, it provides a toolbar with draw tools, editing tools
  * (update, rotate, scale, split, delete, delete all), save, import and export tools.
  *
@@ -54,6 +55,25 @@ import '../images/svg/file-upload.svg';
  *     import-export
  *     measure
  *     ></lizmap-digitizing>
+ *
+ * @listens Digitizing#digitizingDrawColor
+ * @listens Digitizing#digitizingEditedFeatureRotation
+ * @listens Digitizing#digitizingEditedFeatureScale
+ * @listens Digitizing#digitizingEditedFeatureText
+ * @listens Digitizing#digitizingEditionBegins
+ * @listens Digitizing#digitizingEditionEnds
+ * @listens Digitizing#digitizingErase
+ * @listens Digitizing#digitizingErase.all
+ * @listens Digitizing#digitizingErasingBegins
+ * @listens Digitizing#digitizingErasingEnds
+ * @listens Digitizing#digitizingFeatureDrawn
+ * @listens Digitizing#digitizingMeasure
+ * @listens Digitizing#digitizingRotate
+ * @listens Digitizing#digitizingScaling
+ * @listens Digitizing#digitizingSave
+ * @listens Digitizing#digitizingSplit
+ * @listens Digitizing#digitizingToolSelected
+ * @listens Digitizing#digitizingVisibility
  */
 export default class Digitizing extends HTMLElement {
     constructor() {
