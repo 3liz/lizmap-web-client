@@ -11,10 +11,12 @@ with some extra keywords: backend, tests, test, translation, funders, important
 ### Funders
 
 * **[Agence des 50 pas de Guadeloupe](https://www.50pasguadeloupe.fr/)**
+* **[AUDIAR](https://www.audiar.org/)**
 * **[Cartophyl](http://www.cartophyl.com/)**
 * **[FM Projet](https://fmprojet.fr/)**
 * **[SMICA](https://www.smica.fr/)**
 * **[Syslor](https://syslor.net/)**
+* **[TDPA](https://www.terredeprovence-agglo.com/)**
 * **[Valabre](https://www.valabre.com/)**
 
 ### Added
@@ -31,6 +33,10 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Tile WMS layer has no loading status updated
 * Webpack: set publicPath:auto to get JS assets with a correct path
 * Fix CORS allow methods when OPTIONS Request
+* Use media in a popup :
+  * Fix incorrect replacement in `<a href="media/"><img src="media/"></a>`
+  * Fix the regular expression if the extension has two characters
+* Lizmap Atlas: Keep the current selected feature after layer updates
 
 ## 3.8.7 - 2025-04-01
 
