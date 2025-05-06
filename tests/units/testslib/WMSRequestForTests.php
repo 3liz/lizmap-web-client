@@ -19,4 +19,14 @@ class WMSRequestForTests extends WMSRequest
     {
         return $this->useCache($configLayer, $params, $profile);
     }
+
+    public function getRegexpMediaUrlsForTests()
+    {
+        return self::$regexp_media_urls;
+    }
+
+    public function replaceMediaPathByMediaUrlForTests($matches)
+    {
+        return '"getMedia?path='.$matches[1].'"';
+    }
 }
