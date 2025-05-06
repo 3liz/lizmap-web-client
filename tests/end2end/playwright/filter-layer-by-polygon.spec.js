@@ -146,8 +146,6 @@ test.describe('Filter layer data polygon - admin - @readonly', () => {
         // Attribute table
         // shop_bakery
         let tableName = 'shop_bakery';
-        let datatablesRequestPromise = project.waitForDatatablesRequest();
-        await project.openAttributeTable(tableName);
         let datatablesRequest = await project.openAttributeTable(tableName);
         let datatablesResponse = await datatablesRequest.response();
         responseExpect(datatablesResponse).toBeJson();

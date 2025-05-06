@@ -38,9 +38,9 @@ test.describe(
         test('With non spatial data creation, not remove data', async function ({ page }) {
             const project = new ProjectPage(page, 'dnd_form');
             await project.open();
-            let getFeatureRequest = await project.openAttributeTable('dnd_form');
-            let getFeatureResponse = await getFeatureRequest.response();
-            responseExpect(getFeatureResponse).toBeGeoJson();
+            let datatablesRequest = await project.openAttributeTable('dnd_form');
+            let datatablesResponse = await datatablesRequest.response();
+            responseExpect(datatablesResponse).toBeJson();
 
             await project.bottomDock.locator(".btn-createFeature-attributeTable").click();
             await expect(project.dock).toBeVisible();
@@ -65,9 +65,9 @@ test.describe(
         test('With editing existing data, not remove data', async function ({ page }) {
             const project = new ProjectPage(page, 'dnd_form');
             await project.open();
-            let getFeatureRequest = await project.openAttributeTable('dnd_form_geom');
-            let getFeatureResponse = await getFeatureRequest.response();
-            responseExpect(getFeatureResponse).toBeGeoJson();
+            let datatablesRequest = await project.openAttributeTable('dnd_form_geom');
+            let datatablesResponse = await datatablesRequest.response();
+            responseExpect(datatablesResponse).toBeJson();
 
             // Button detail to open the popup inside the attribute table panel
             await page.locator('.btn-detail-attributeTable').click();
@@ -76,8 +76,8 @@ test.describe(
             // The popup inside the attribute table panel
             const popup = project.bottomDock.locator('.lizmapPopupSingleFeature > div > table > tbody');
             // First should be the test data, without any new feature, in theory
-            const firstLine = await project.attributeTableHtml('dnd_form_geom').locator("tbody tr").first();
-            const featureEdit = await firstLine.locator('.feature-edit').first();
+            const firstLine = project.attributeTableHtml('dnd_form_geom').locator("tbody tr").first();
+            const featureEdit = firstLine.locator('.feature-edit').first();
 
             await firstLine.click();
 
