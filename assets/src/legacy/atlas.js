@@ -169,18 +169,40 @@ import { getCenter } from 'ol/extent.js';
                         lizAtlasConfig['features'] = aFeatures;
                         prepareFeatures(lizAtlasConfig);
 
-                        var options = '<option value="-1"> --- </option>';
-                        var pkey_field = lizAtlasConfig['primaryKey'];
-                        for (var i in lizAtlasConfig['features_sorted']) {
-                            var item = lizAtlasConfig['features_sorted'][i];
+                        // default select value if the current one is not in the new list
+                        let val = -1;
+                        // get current primary key value corresponding to the current select value
+                        const currentVal = $('#liz-atlas-select').val();
+                        const pkey_field = lizAtlasConfig['primaryKey'];
+                        let pkey_value = null;
+                        if (currentVal) {
+                            const i = parseInt(currentVal);
+                            const len = lizAtlasConfig['features_sorted'].length;
+
+                            if (i && i >= 0 && i < len) {
+                                const item = lizAtlasConfig['features_sorted'][i];
+
+                                if (item[pkey_field]) {
+                                    pkey_value = item[pkey_field];
+                                }
+                            }
+                        }
+                        // build select options
+                        const options = '<option value="-1"> --- </option>';
+                        for (let i in lizAtlasConfig['features_sorted']) {
+                            const item = lizAtlasConfig['features_sorted'][i];
 
                             // Add option
                             options += '<option value="' + i + '">';
                             options += item[lizAtlasConfig['titleField']];
                             options += '</option>';
+
+                            // Check if it is the current one
+                            if (pkey_value != null && item[pkey_field] == pkey_value) {
+                                val = i;
+                            }
                         }
 
-                        var val = $('#liz-atlas-select').val();
                         $('#liz-atlas-select').html(DOMPurify.sanitize(options));
                         // reset val
                         $('#liz-atlas-select').val(val);
