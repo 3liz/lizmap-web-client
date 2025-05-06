@@ -167,18 +167,12 @@ test.describe('Layer export permissions ACL', () => {
     test('Layer export request ACL', {
         tag: '@readonly',
     }, async ({page}) => {
-        await page.route('**/service/getProjectConfig*', async route => {
-            const response = await route.fetch();
-            const json = await response.json();
-            json.options['limitDataToBbox'] = 'True';
-            await route.fulfill({ response, json });
-        });
-
         const project = new ProjectPage(page, 'enable_export_acl');
         await project.open();
         await project.openAttributeTable('single_wms_points');
+        await page.locator('.btn-filterbyextent-attributeTable').click();
 
-        // launche export
+        // launch export
         const getFeatureRequest = await project.launchExport('single_wms_points','GeoJSON');
 
         const expectedParameters = {
