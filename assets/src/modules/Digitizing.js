@@ -8,6 +8,7 @@ import { mainEventDispatcher } from '../modules/Globals.js';
 import { deepFreeze } from './config/Tools.js';
 import { createEnum } from './utils/Enums.js';
 import { Utils } from './Utils.js';
+import map from './map.js';
 
 import GeoJSON from 'ol/format/GeoJSON.js';
 import GPX from 'ol/format/GPX.js';
@@ -94,7 +95,11 @@ export const DigitizingAvailableTools = deepFreeze([
  * @name Digitizing
  */
 export class Digitizing {
-
+    /**
+     * Build the lizmap Digitizing instance
+     * @param {map}           map           - OpenLayers map
+     * @param {object}        lizmap3       - The old lizmap object
+     */
     constructor(map, lizmap3) {
 
         this._map = map;
@@ -361,18 +366,28 @@ export class Digitizing {
         });
     }
 
+    /**
+     * Get the draw layer
+     * @type {VectorLayer}
+     * @readonly
+     */
     get drawLayer() {
         return this._drawLayer;
     }
 
-    get context() {
-        return this._context;
-    }
-
+    /**
+     * Get the edited features
+     * @type {Array<Feature>}
+     * @readonly
+     */
     get editedFeatures() {
         return this._selectInteraction.getFeatures().getArray();
     }
 
+    /**
+     * Get the edited feature text
+     * @type {string}
+     */
     get editedFeatureText() {
         if (this.editedFeatures.length === 1) {
             return this.editedFeatures[0].get('text') || '';
@@ -380,6 +395,11 @@ export class Digitizing {
         return '';
     }
 
+    /**
+     * Set the edited feature text
+     * @type {string}
+     * @param {string} text - The text to set for the edited feature
+     */
     set editedFeatureText(text) {
         if (this.editedFeatures.length !== 0) {
             this.editedFeatures.forEach(feature => feature.set('text', text));
@@ -387,6 +407,10 @@ export class Digitizing {
         }
     }
 
+    /**
+     * Get the edited feature text rotation
+     * @type {string}
+     */
     get editedFeatureTextRotation() {
         if (this.editedFeatures.length === 1) {
             return this.editedFeatures[0].get('rotation') || '';
@@ -394,6 +418,11 @@ export class Digitizing {
         return '';
     }
 
+    /**
+     * Set the edited feature text rotation
+     * @type {string}
+     * @param {string} rotation - The rotation to set for the edited feature
+     */
     set editedFeatureTextRotation(rotation) {
         if (this.editedFeatures.length !== 0) {
             this.editedFeatures.forEach(feature => feature.set('rotation', rotation));
@@ -401,6 +430,10 @@ export class Digitizing {
         }
     }
 
+    /**
+     * Get the edited feature text scale
+     * @type {number}
+     */
     get editedFeatureTextScale() {
         if (this.editedFeatures.length !== 0) {
             return this.editedFeatures[0].get('scale') || 1;
@@ -408,6 +441,11 @@ export class Digitizing {
         return 1;
     }
 
+    /**
+     * Set the edited feature text scale
+     * @type {number}
+     * @param {number} scale - The scale to set for the edited feature
+     */
     set editedFeatureTextScale(scale) {
         if(isNaN(scale)){
             scale = 1;
@@ -418,6 +456,20 @@ export class Digitizing {
         }
     }
 
+
+    /**
+     * Get the context
+     * @type {string}
+     */
+    get context() {
+        return this._context;
+    }
+
+    /**
+     * Set the context
+     * @type {string}
+     * @param {string} aContext - The context to set
+     */
     set context(aContext) {
         if (this._context == aContext) {
             return;
@@ -448,10 +500,19 @@ export class Digitizing {
         }
     }
 
+    /**
+     * Get the selected tool
+     * @type {string}
+     */
     get toolSelected() {
         return this._toolSelected;
     }
 
+    /**
+     * Set the selected too
+     * @type {string}
+     * @param {string} tool - The tool to select
+     */
     set toolSelected(tool) {
         if (this._tools.includes(tool)) {
             // Disable all tools
@@ -584,10 +645,19 @@ export class Digitizing {
         }
     }
 
+    /**
+     * Get the drawing color
+     * @type {string}
+     */
     get drawColor() {
         return this._drawColor;
     }
 
+    /**
+     * Set the drawing color
+     * @type {string}
+     * @param {string} color - The color to set
+     */
     set drawColor(color) {
         this._drawColor = color;
         // Save color
@@ -595,6 +665,10 @@ export class Digitizing {
         mainEventDispatcher.dispatch('digitizing.drawColor');
     }
 
+    /**
+     * Get the features drawn
+     * @type {Array<Feature>|null}
+     */
     get featureDrawn() {
         const features = this._drawLayer.getSource().getFeatures();
         if (features.length) {
@@ -604,7 +678,7 @@ export class Digitizing {
     }
 
     /**
-     * Is digitizing tool active or not
+     * Is digitizing tool active or not?
      * @todo active state should be set on UI's events
      * @readonly
      * @memberof Digitizing
@@ -615,10 +689,18 @@ export class Digitizing {
         return isActive ? true : false;
     }
 
+    /**
+     * Is digitizing edit tool active or not?
+     * @type {boolean}
+     */
     get isEdited() {
         return this._isEdited;
     }
 
+    /**
+     * Set the digitizing edit tool is active or not
+     * @type {boolean}
+     */
     set isEdited(edited) {
         if (this._isEdited !== edited) {
             this._isEdited = edited;
@@ -657,10 +739,18 @@ export class Digitizing {
         }
     }
 
+    /**
+     * Is the digitizing rotation tool active or not?
+     * @type {boolean}
+     */
     get isRotate() {
         return this._isRotate;
     }
 
+    /**
+     * Set the digitizing rotation tool is active or not
+     * @type {boolean}
+     */
     set isRotate(isRotate) {
         if (this._isRotate !== isRotate) {
             this._isRotate = isRotate;
@@ -685,10 +775,18 @@ export class Digitizing {
         }
     }
 
+    /**
+     * Is the digitizing scale tool active or not?
+     * @type {boolean}
+     */
     get isScaling() {
         return this._isScaling;
     }
 
+    /**
+     * Set the digitizing scale tool is active or not
+     * @type {boolean}
+     */
     set isScaling(isScaling) {
         if (this._isScaling !== isScaling) {
             this._isScaling = isScaling;
@@ -713,10 +811,18 @@ export class Digitizing {
         }
     }
 
+    /**
+     * Is the digitizing split tool active or not?
+     * @type {boolean}
+     */
     get isSplitting() {
         return this._isSplitting;
     }
 
+    /**
+     * Set the digitizing split tool is active or not
+     * @type {boolean}
+     */
     set isSplitting(isSplitting) {
         if (this._isSplitting !== isSplitting) {
             this._isSplitting = isSplitting;
@@ -838,10 +944,18 @@ export class Digitizing {
         }
     }
 
+    /**
+     * Is the digitizing erase tool active or not?
+     * @type {boolean}
+     */
     get isErasing() {
         return this._isErasing;
     }
 
+    /**
+     * Set the digitizing erase tool is active or not
+     * @type {boolean}
+     */
     set isErasing(isErasing) {
         if (this._isErasing !== isErasing) {
             this._isErasing = isErasing;
@@ -898,10 +1012,18 @@ export class Digitizing {
         }
     }
 
+    /**
+     * Is the digitizing measure tool visible or not
+     * @type {boolean}
+     */
     get hasMeasureVisible() {
         return this._hasMeasureVisible;
     }
 
+    /**
+     * Set the digitizing measure tool is active or not
+     * @type {boolean}
+     */
     set hasMeasureVisible(visible) {
         this._hasMeasureVisible = visible;
         for (const overlays of this._measureTooltips) {
@@ -911,22 +1033,60 @@ export class Digitizing {
         mainEventDispatcher.dispatch('digitizing.measure');
     }
 
+    /**
+     * Is the digitizing constraints panel visible or not
+     * @type {boolean}
+     */
     get hasConstraintsPanelVisible() {
         return this._hasMeasureVisible && ['line', 'polygon'].includes(this.toolSelected);
     }
 
+    /**
+     * Is the digitizing save tool active or not?
+     * @type {boolean}
+     */
     get isSaved() {
         return this._isSaved;
     }
 
+    /**
+     * Get the distance constraint
+     * @type {number}
+     */
+    get distanceConstraint(){
+        return this._distanceConstraint;
+    }
+
+    /**
+     * Set the distance constraint
+     * @type {number}
+     */
     set distanceConstraint(distanceConstraint){
         this._distanceConstraint = parseInt(distanceConstraint)
     }
 
+    /**
+     * Get the angle constraint
+     * @type {number}
+     */
+    get angleConstraint(){
+        return this._angleConstraint;
+    }
+
+    /**
+     * Set the angle constraint
+     * @type {number}
+     */
     set angleConstraint(angleConstraint){
         this._angleConstraint = parseInt(angleConstraint)
     }
 
+    /**
+     * Erase a feature from the draw source
+     * @private
+     * @param {Feature} feature - the feature to erase
+     * @returns {void}
+     */
     _eraseFeature(feature) {
         const totalOverlay = feature.getGeometry().get('totalOverlay');
         if (totalOverlay) {
@@ -943,6 +1103,11 @@ export class Digitizing {
         this._drawSource.removeFeature(feature);
     }
 
+    /**
+     * User changed the color of the drawing
+     * @private
+     * @param {string} color - the color to set
+     */
     _userChangedColor(color) {
         this._drawColor = color;
 
@@ -956,6 +1121,14 @@ export class Digitizing {
         mainEventDispatcher.dispatch('digitizing.drawColor');
     }
 
+    /**
+     * The constraints handler
+     * @private
+     * @param {*} coords   - the mouse coordinates
+     * @param {*} geom     - the geometry
+     * @param {*} geomType - the geometry type
+     * @returns {void}
+     */
     _contraintsHandler(coords, geom, geomType) {
         // Create geom if undefined
         if (!geom) {
@@ -1084,7 +1257,14 @@ export class Digitizing {
         return geom;
     }
 
-    // Display draw measures in tooltips
+    /**
+     * The tooltips handler
+     * @private
+     * @param {*} coords   - the mouse coordinates
+     * @param {*} geom     - the geometry
+     * @param {*} geomType - the geometry type
+     * @returns {void}
+     */
     _updateTooltips(coords, geom, geomType) {
         // Current segment length
         let segmentTooltipContent = this.formatLength(
@@ -1124,6 +1304,15 @@ export class Digitizing {
         }
     }
 
+    /**
+     * The tooltips measure handler
+     * @private
+     * @param {*} coords   - the mouse coordinates
+     * @param {*} geom     - the geometry
+     * @param {*} geomType - the geometry type
+     * @param {*} overlay  - the overlay
+     * @returns {void}
+     */
     _updateTotalMeasureTooltip(coords, geom, geomType, overlay) {
         if (geomType === 'Polygon') {
             // Close LinearRing to get its perimeter
@@ -1273,7 +1462,11 @@ export class Digitizing {
         this._map.addOverlay(totalOverlay);
     }
 
-    // Get SLD for featureDrawn[index]
+    /**
+     * Get the SLD for the drawn feature at the index
+     * @param {number} index - The index of the drawn feature
+     * @returns {null|string} The SLD for the drawn feature or null if the feature does not exist at the index
+     */
     getFeatureDrawnSLD(index) {
         if (!this.featureDrawn[index]) {
             return null;
@@ -1331,6 +1524,10 @@ export class Digitizing {
         return sld.replace('    ', '');
     }
 
+    /**
+     * Get the drawing layer visibility
+     * @returns {boolean} - true if visible
+     */
     get visibility(){
         return this._drawLayer.getVisible();
     }
@@ -1349,30 +1546,51 @@ export class Digitizing {
         mainEventDispatcher.dispatch('digitizing.visibility');
     }
 
+    /**
+     * Toggle edit mode
+     */
     toggleEdit() {
         this.isEdited = !this.isEdited;
     }
 
+    /**
+     * Toggle rotate mode
+     */
     toggleRotate() {
         this.isRotate = !this.isRotate;
     }
 
+    /**
+     * Toggle scaling mode
+     */
     toggleScaling() {
         this.isScaling = !this.isScaling;
     }
 
+    /**
+     * Toggle measure mode
+     */
     toggleMeasure() {
         this.hasMeasureVisible = !this.hasMeasureVisible;
     }
 
+    /**
+     * Toggle split mode
+     */
     toggleSplit() {
         this.isSplitting = !this._isSplitting;
     }
 
+    /**
+     * Toggle erase mode
+     */
     toggleErasing() {
         this.isErasing = !this._isErasing;
     }
 
+    /**
+     * Toggle save mode
+     */
     toggleSave() {
         this._isSaved = !this._isSaved;
 
@@ -1381,6 +1599,10 @@ export class Digitizing {
         mainEventDispatcher.dispatch('digitizing.save');
     }
 
+    /**
+     * Erase all drawn features
+     * @returns {void}
+     */
     eraseAll() {
         this.isEdited = false;
         this.isRotate = false
@@ -1402,6 +1624,7 @@ export class Digitizing {
 
     /**
      * Save all drawn features in local storage
+     * @returns {void}
      */
     saveFeatureDrawn() {
         if (this._isSaved) {
@@ -1439,6 +1662,7 @@ export class Digitizing {
 
     /**
      * Load all drawn features from local storage
+     * @returns {void}
      */
     loadFeatureDrawnToMap() {
         // get saved data without context for draw
@@ -1514,6 +1738,11 @@ export class Digitizing {
         }
     }
 
+    /**
+     * Download the drawn features
+     * @param {*} format - the format to download the drawn features
+     * @returns {void}
+     */
     download(format) {
         if (this.featureDrawn) {
             const options = {
@@ -1543,6 +1772,11 @@ export class Digitizing {
         }
     }
 
+    /**
+     * Import file to draw features stored in it
+     * @param {*} file - the file to draw
+     * @returns {void}
+     */
     import(file) {
         const reader = new FileReader();
 
