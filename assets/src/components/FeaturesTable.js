@@ -186,17 +186,16 @@ export default class FeaturesTable extends HTMLElement {
         /**
          * When the table has been successfully displayed. The event carries the lizmap-features-table HTML element ID
          * @event featuresTableRendered
-         * @property {string} elementId HTML element ID
+         * @property {string} type        features.table.rendered
+         * @property {string} elementId   HTML element ID
          * @property {string} itemLayerId The layer ID of the selected item
-         */
-        mainEventDispatcher.dispatch({
-            type: 'featuresTableRendered',
-            elementId: this.id,
-            itemLayerId: this.layerId,
-        });
-
-        /**
-         * @deprecated Since LWC 3.8.8, use "featuresTableRendered" instead.
+         * @example
+         * lizMap.mainEventDispatcher.addListener((lizmapEvent) => {
+         *         // Log the lizmap-features-table web component HTML element ID
+         *         console.log(`lizmap-features-table rendered, ID = ${lizmapEvent.elementId}`);
+         *     },
+         *     ['features.table.rendered']
+         * );
          */
         mainEventDispatcher.dispatch({
             type: 'features.table.rendered',
@@ -311,26 +310,17 @@ export default class FeaturesTable extends HTMLElement {
             /**
              * When the user has selected an item and highlighted it
              * @event featuresTableItemHighlighted
-             * @property {string} elementId The element ID
+             * @property {string} type          features.table.item.highlighted
+             * @property {string} elementId     The element ID
              * @property {string} itemFeatureId The feature ID of the selected item
-             * @property {string} itemLayerId The layer ID of the selected item
+             * @property {string} itemLayerId   The layer ID of the selected item
              * @example
              * lizMap.mainEventDispatcher.addListener((lizmapEvent) => {
              *         // Log the lizmap-features-table web component HTML element ID
-             *         console.log(`lizmap-features-table rendered, ID = ${lizmapEvent.elementId}`);
+             *         console.log(`lizmap-features-table item highlighted, ID = ${lizmapEvent.elementId}`);
              *     },
-             *     ['featuresTableRendered']
+             *     ['features.table.item.highlighted']
              * );
-             */
-            mainEventDispatcher.dispatch({
-                type: 'featuresTableItemHighlighted',
-                elementId: this.id,
-                itemFeatureId: activeItemFeatureId,
-                itemLayerId: this.layerId,
-            });
-
-            /**
-             * @deprecated Since LWC 3.8.8, use "featuresTableItemHighlighted" instead
              */
             mainEventDispatcher.dispatch({
                 type: 'features.table.item.highlighted',
@@ -536,18 +526,17 @@ export default class FeaturesTable extends HTMLElement {
             /**
              * When the user has dropped an item in a new position
              * @event featuresTableItemDragged
+             * @property {string} type          features.table.item.dragged
              * @property {string} itemFeatureId The vector feature ID
              * @property {string} itemOldLineId The original line ID before dropping the item
              * @property {string} itemNewLineId The new line ID after dropping the item in a new position
-             */
-            mainEventDispatcher.dispatch({
-                type: 'featuresTableItemDragged',
-                itemFeatureId: movedFeatureId,
-                itemOldLineId: dropped.dataset.lineId,
-                itemNewLineId: newItem.dataset.lineId
-            });
-            /**
-             * @deprecated Since LWC 3.8.8, use "featuresTableItemDragged" instead
+             * @example
+             * lizMap.mainEventDispatcher.addListener((lizmapEvent) => {
+             *         // Log the lizmap-features-table web component HTML element ID
+             *         console.log(`lizmap-features-table item dragged, ID = ${lizmapEvent.elementId}`);
+             *     },
+             *     ['features.table.item.dragged']
+             * );
              */
             mainEventDispatcher.dispatch({
                 type: 'features.table.item.dragged',
