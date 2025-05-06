@@ -54,10 +54,6 @@
           <dd>{$p->title}&nbsp;</dd>
           <dt>{@default.project.abstract.label@}</dt>
           <dd>{$p->abstract|nl2br}&nbsp;</dd>
-          <dt>{@default.project.projection.label@}</dt>
-          <dd><span class="proj">{$p->proj}</span>&nbsp;</dd>
-          <dt>{@default.project.bbox.label@}</dt>
-          <dd><span class="bbox">{$p->bbox}</span></dd>
           {if $p->wmsGetCapabilitiesUrl}
           <dt>{@view~map.metadata.properties.wmsGetCapabilitiesUrl@}</dt>
           <dd><small><a href="{$p->wmsGetCapabilitiesUrl}" target="_blank">WMS Url</a></small></dd>
