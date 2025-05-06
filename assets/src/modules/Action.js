@@ -485,7 +485,7 @@ export default class Action {
              * @property {string} featureId Feature ID of the current feature
              * @property {Array<*>} features List of features returned in the map projection
              */
-            lizMap.events.triggerEvent("actionResultReceived",
+            this._lizmap3.events.triggerEvent("actionResultReceived",
                 {
                     'action': action,
                     'layerId': layerId,

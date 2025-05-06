@@ -116,13 +116,7 @@ export default class SelectionTool {
         mainEventDispatcher.addListener(
             () => {
                 if(this.isActive && this._digitizing.featureDrawn){
-                    // We only handle a single drawn feature currently
-                    if (this._digitizing.featureDrawn.length > 1){
-                        // Erase the previous feature
-                        this._digitizing._eraseFeature(this._digitizing.featureDrawn[0]);
-                        this._digitizing.saveFeatureDrawn();
-                    }
-
+                    // The digitizing is configured to provide only one feature
                     let selectionFeature = this._digitizing.featureDrawn[0];
 
                     if (selectionFeature) {
@@ -189,9 +183,17 @@ export default class SelectionTool {
         );
 
         this._lizmap3.events.on({
+            minidockopened: (event) => {
+                if (event.id === 'selectiontool'){
+                    this._digitizing.context = event.id;
+                    this._digitizing.singlePartGeometry = true;
+                    this._digitizing.toggleVisibility(true);
+                }
+            },
             minidockclosed: (event) => {
                 if (event.id === 'selectiontool'){
                     this._digitizing.toolSelected = 'deactivate';
+                    this._digitizing.toggleVisibility(false);
                 }
             }
         });

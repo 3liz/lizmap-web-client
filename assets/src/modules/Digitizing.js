@@ -122,6 +122,8 @@ export class Digitizing {
         // Set draw color to value in local storage if any or default (red)
         this._drawColor = localStorage.getItem(this._repoAndProjectString + '_drawColor') || '#ff0000';
 
+        this._singlePartGeometry = false;
+
         this._isEdited = false;
         this._isRotate = false;
         this._hasMeasureVisible = false;
@@ -292,12 +294,16 @@ export class Digitizing {
 
         this._drawSource = new VectorSource({ wrapX: false });
 
-        this._drawSource.on('addfeature', (event) => {
+        // Listener for color
+        this._addFeatureColorListener = (event) => {
             // Set main color if feature does not have one
             if(!event.feature.get('color')){
                 event.feature.set('color', this._drawColor);
             }
+        };
 
+        // Listener for text
+        this._addFeatureTextListener = (event) => {
             // Launch edition mode when text tool is selected
             if (this._toolSelected === 'text') {
                 event.feature.set('text', lizDict['digitizing.toolbar.newText']);
@@ -305,7 +311,20 @@ export class Digitizing {
                 event.feature.set('mode', 'textonly');
                 this.isEdited = true;
             }
+        };
 
+        // Listener for single part geometry
+        this._addFeatureSinglePartGeometryListener = (event) => {
+            if (this.singlePartGeometry) {
+                const features = event.target.getFeatures();
+                if (features.length > 1) {
+                    event.target.removeFeatures(features.filter((f) => f != event.feature));
+                }
+            }
+        };
+
+        // Listener for save feature drawn
+        this._addFeatureSaveDispatchListener = () => {
             // Save features drawn in localStorage
             this.saveFeatureDrawn();
             /**
@@ -318,7 +337,11 @@ export class Digitizing {
              * }, 'digitizing.featureDrawn');
              */
             mainEventDispatcher.dispatch('digitizing.featureDrawn');
-        });
+        };
+
+        this._drawSource.on('addfeature', this._addFeatureColorListener);
+        this._drawSource.on('addfeature', this._addFeatureTextListener);
+        this._drawSource.on('addfeature', this._addFeatureSaveDispatchListener);
 
         this._drawLayer = new VectorLayer({
             source: this._drawSource,
@@ -369,7 +392,7 @@ export class Digitizing {
             minidockopened: (e) => {
                 if (e.id == 'measure') {
                     this.toolSelected = this._tools[0];
-                } else if (['draw', 'selectiontool', 'print'].includes(e.id)) {
+                } else if (['draw', 'print'].includes(e.id)) {
                     // Display draw for print redlining
                     this.context = e.id === 'print' ? 'draw' : e.id;
                 }
@@ -540,6 +563,7 @@ export class Digitizing {
         });
         this._drawLayer.getSource().clear();
         this._context = aContext;
+        this._singlePartGeometry = false;
         if (this._contextFeatures[this._context]) {
             const OL6features = this._contextFeatures[this._context];
             if (OL6features) {
@@ -569,6 +593,10 @@ export class Digitizing {
         if (this._tools.includes(tool)) {
             // Disable all tools
             this._map.removeInteraction(this._drawInteraction);
+            this._drawSource.un('addfeature', this._addFeatureColorListener);
+            this._drawSource.un('addfeature', this._addFeatureTextListener);
+            this._drawSource.un('addfeature', this._addFeatureSinglePartGeometryListener);
+            this._drawSource.un('addfeature', this._addFeatureSaveDispatchListener);
 
             // If tool === 'deactivate' or current selected tool is selected again => deactivate
             if (tool === this._toolSelected || tool === this._tools[0]) {
@@ -682,6 +710,10 @@ export class Digitizing {
                 });
 
                 this._map.addInteraction(this._drawInteraction);
+                this._drawSource.on('addfeature', this._addFeatureColorListener);
+                this._drawSource.on('addfeature', this._addFeatureTextListener);
+                this._drawSource.on('addfeature', this._addFeatureSinglePartGeometryListener);
+                this._drawSource.on('addfeature', this._addFeatureSaveDispatchListener);
 
                 this._toolSelected = tool;
 
@@ -740,6 +772,22 @@ export class Digitizing {
             type: 'digitizing.drawColor',
             color: this._drawColor,
         });
+    }
+
+    /**
+     * Is digitizing single part geometry ?
+     * @type {boolean}
+     */
+    get singlePartGeometry() {
+        return this._singlePartGeometry;
+    }
+
+    /**
+     * Update is digitizing single part geometry ?
+     * @param {boolean} isSinglePart the digitizing single part geometry value
+     */
+    set singlePartGeometry(isSinglePart) {
+        this._singlePartGeometry = isSinglePart;
     }
 
     /**
