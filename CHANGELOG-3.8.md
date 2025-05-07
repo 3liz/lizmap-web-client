@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.8.7 - 2025-05-07
+
 ### Funders
 
 * **[Agence des 50 pas de Guadeloupe](https://www.50pasguadeloupe.fr/)**
