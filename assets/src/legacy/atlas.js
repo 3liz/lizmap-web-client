@@ -165,11 +165,6 @@ import DOMPurify from 'dompurify';
                 // Get data
                 lizMap.getFeatureData(lizAtlasConfig['featureType'], lizAtlasConfig['featureType'] + ':', null, 'geom', false, null, null,
                     function (aName, aFilter, aFeatures, aAliases) {
-                        lizAtlasConfig['features'] = aFeatures;
-                        prepareFeatures(lizAtlasConfig);
-
-                        // default select value if the current one is not in the new list
-                        let val = -1;
                         // get current primary key value corresponding to the current select value
                         const currentVal = $('#liz-atlas-select').val();
                         const pkey_field = lizAtlasConfig['primaryKey'];
@@ -186,6 +181,12 @@ import DOMPurify from 'dompurify';
                                 }
                             }
                         }
+
+                        lizAtlasConfig['features'] = aFeatures;
+                        prepareFeatures(lizAtlasConfig);
+
+                        // default select value if the current one is not in the new list
+                        let val = -1;
                         // build select options
                         let options = '<option value="-1"> --- </option>';
                         for (let i in lizAtlasConfig['features_sorted']) {
