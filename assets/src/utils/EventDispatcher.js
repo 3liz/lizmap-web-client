@@ -10,6 +10,31 @@
 import { hashCode } from './../modules/utils/Converters.js'
 
 /**
+ * The lizmap event object to dispatch to listeners
+ *
+ * @typedef {object} EventToDispatch
+ * @property {string} type - Event type, the event name to listen to, example : "edition.layer.modified"
+ */
+
+/**
+ * The lizmap event object dispatched to listeners
+ *
+ * @typedef {EventToDispatch} EventDispatched
+ * @property {string}          type        - Event type, the event name to listen to, example : "edition.layer.modified"
+ * @property {string}          __eventid__ - Immutable event unique id (used to avoid infinite loop when event is
+ *                                           propagated to other dispatchers)
+ * @property {EventDispatcher} target      - Immutable event first dispatcher (used to identify the event source when
+ *                                           event is propagated to other dispatchers)
+ */
+
+/**
+ * The lizmap event listener callback
+ *
+ * @callback EventListener
+ * @param {EventDispatched} event - The event object dispatched to listeners
+ */
+
+/**
  * @class
  * Dispatch some application events to listeners
  * @name EventDispatcher
@@ -24,9 +49,9 @@ export default class EventDispatcher {
 
     /**
      * add a listener that will be called for one or several given events
-     * @param {Function} listener - Callback
-     * @param {Array | string | object} supportedEvents events on which the listener will
-     *                       be called. if undefined or "*", it will be called for any events
+     * @param {EventListener}        listener        - Callback
+     * @param {Array<string>|string} supportedEvents - events on which the listener will be called. if undefined or "*",
+     *                                                 it will be called for any events
      */
     addListener(listener, supportedEvents) {
 
@@ -60,9 +85,9 @@ export default class EventDispatcher {
 
     /**
      * remove a listener that is associated for one or several given events
-     * @param {Function} listenerToRemove - Callback
-     * @param {Array | string} supportedEvents list of events from which the listener
-     *                       will be removed. if undefined or "*", it will be removed from any events
+     * @param {EventListener}        listenerToRemove - Callback
+     * @param {Array<string>|string} supportedEvents  - list of events from which the listener will be removed. if
+     *                                                  undefined or "*", it will be removed from any events
      */
     removeListener(listenerToRemove, supportedEvents) {
 
@@ -111,10 +136,8 @@ export default class EventDispatcher {
 
     /**
      * Call listeners associated with the given event
-     * @param {object | string} event  an event name, or an object with a 'type'
-     *                               property having the event name. In this
-     *                               case other properties are parameters for
-     *                               listeners.
+     * @param {EventToDispatch|string} event - an event name, or an object with a 'type' property having the event name.
+     *                                         In this case other properties are parameters for listeners.
      */
     dispatch(event) {
         if ('string' == typeof event) {
