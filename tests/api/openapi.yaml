@@ -119,6 +119,10 @@ components:
           type: string
           description: Project key
           example: montpellier
+        projectname:
+          type: string
+          description: Project name
+          example: Montpellier-Transports
         title:
           type: string
           description: Human name of a project
@@ -155,6 +159,22 @@ components:
           type: string
           description: WMTS GetCapabilities URL
           example: http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=montpellier&SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetCapabilities
+        version:
+          type: string
+          description: QGIS version
+          example: 3.28.13-Firenze
+        saveDateTime:
+          type: string
+          description: Date and time when the project was last saved
+          example: 2024-07-04T09:20:17
+        saveUser:
+          type: string
+          description: User name that did the last save
+          example: jean
+        saveUserFull:
+          type: string
+          description: Full user name that did the last save
+          example: Jean Jacques
   securitySchemes:
     basicAuth:
       type: http
