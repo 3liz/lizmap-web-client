@@ -17,7 +17,7 @@
         "latest_release_version": "3.9.0-rc.1",
         "qgis_max_version_recommended": 39900,
         "qgis_min_version_recommended": 33400,
-        "status": "dev"
+        "status": "feature_freeze"
     },
     {
         "branch": "3.8",
