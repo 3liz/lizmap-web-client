@@ -2,10 +2,6 @@
   background-color: white;
 }
 
-.liz-project-desc {
-  display: none;
-}
-
 .liz-project:hover {
   background-color: #f8faff;
 }
