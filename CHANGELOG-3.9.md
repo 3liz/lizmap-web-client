@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.9.0-rc.1 - 2025-05-07
+
 ### Funders
 
 * **[Agence des 50 pas de Guadeloupe](https://www.50pasguadeloupe.fr/)**
@@ -24,7 +26,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 ### Important
 
 * Py-QGIS-Server is now required by default.
-  Read in `lizmap/var/config/localconfig.ini.php.dist` if necessary about QGIS wrapper.
+  Read in `lizmap/var/config/localconfig.ini.php.dist` if necessary about QGIS wrapper and
+  in the [documentation](https://docs.lizmap.com/current/en/install/py-qgis-server.html).
 
 ### Added
 
