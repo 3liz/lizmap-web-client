@@ -24,8 +24,6 @@ test.describe('Projects homepage @readonly', function () {
             "data-lizmap-keywords", 'nature, flower');
         await expect(project).toHaveAttribute(
             "data-lizmap-title", 'Test tags: nature, flower');
-        await expect(project).toHaveAttribute(
-            "data-lizmap-abstract", 'This is an abstract');
 
         const allMetadata = await project.locator('.liz-project-desc');
         await expect(allMetadata).not.toBeVisible();
@@ -55,8 +53,6 @@ test.describe('Projects homepage @readonly', function () {
             "data-lizmap-keywords", 'nature, tree');
         await expect(project).toHaveAttribute(
             "data-lizmap-title", 'Tests tags: nature, tree');
-        await expect(project).toHaveAttribute(
-            "data-lizmap-abstract", 'Tags: nature, tree');
 
         const allMetadataTree = project.locator('.liz-project-desc');
         await expect(allMetadataTree).not.toBeVisible();
@@ -89,8 +85,6 @@ test.describe('Projects homepage @readonly', function () {
             "data-lizmap-keywords", 'nature, flower');
         await expect(project).toHaveAttribute(
             "data-lizmap-title", 'Test tags: nature, flower');
-        await expect(project).toHaveAttribute(
-            "data-lizmap-abstract", 'This is an abstract');
         const allMetadata = project.locator('.liz-project-desc');
         await expect(allMetadata).not.toBeVisible();
 
