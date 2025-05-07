@@ -94,7 +94,7 @@ const mapStateProperties = {
 /**
  * Map state ready.
  * @event MapStateReady
- * @type {object}
+ * @type {EventDispatcher.EventDispatched}
  * @property {string} type   - map.state.ready
  * @property {boolean} ready - true
  */
@@ -102,7 +102,7 @@ const mapStateProperties = {
 /**
  * Map state changed
  * @event MapStateChanged
- * @type {object}
+ * @type {EventDispatcher.EventDispatched}
  * @property {string}   type                    - map.state.changed
  * @property {string}   [projection]            - the map projection code if it changed
  * @property {number[]} [center]                - the map center if it changed
@@ -123,8 +123,8 @@ const mapStateProperties = {
 export class MapState extends EventDispatcher {
 
     /**
-     * Creating the map state
-     * @param {OptionsConfig}     [options]         - main configuration options
+     * Create a lizmap Map State instance
+     * @param {OptionsConfig}    [options]         - main configuration options
      * @param {string|undefined} [startupFeatures] - The features to highlight at startup in GeoJSON
      */
     constructor(options, startupFeatures) {
@@ -198,7 +198,9 @@ export class MapState extends EventDispatcher {
                             throw new ValidationError('The value for `'+prop+'` has to be an array!');
                         }
                         if (oldValue.length != evt[prop].length) {
-                            throw new ValidationError('The length for `'+prop+'` is not expected! It has to be: '+oldValue.length);
+                            throw new ValidationError(
+                                'The length for `'+prop+'` is not expected! It has to be: '+oldValue.length
+                            );
                         }
                         this['_'+prop] = new Extent(...evt[prop]);
                         break;
@@ -233,7 +235,9 @@ export class MapState extends EventDispatcher {
             const newProjection = updatedProperties['projection']
             // The initial extent
             if (this._initialExtent && !this._initialExtent.equals([0,0,0,0])) {
-                this._initialExtent = new Extent(...(transformExtent(this._initialExtent, oldProjection, newProjection)));
+                this._initialExtent = new Extent(
+                    ...(transformExtent(this._initialExtent, oldProjection, newProjection))
+                );
             }
             // The extent if it has not been yet updated
             if (!updatedProperties.hasOwnProperty('extent') && this._extent && !this._extent.equals([0,0,0,0])) {
@@ -247,7 +251,9 @@ export class MapState extends EventDispatcher {
         // Dispatch event only if something have changed
         if (Object.getOwnPropertyNames(updatedProperties).length != 0) {
             const neededProperties = ['center', 'size', 'extent', 'resolution'];
-            if (!this._ready && Object.getOwnPropertyNames(updatedProperties).filter(v => neededProperties.includes(v)).length == 4) {
+            if (!this._ready &&
+                Object.getOwnPropertyNames(updatedProperties).filter(v => neededProperties.includes(v)).length == 4
+            ) {
                 this._ready = true;
                 this.dispatch({
                     type: 'map.state.ready',
