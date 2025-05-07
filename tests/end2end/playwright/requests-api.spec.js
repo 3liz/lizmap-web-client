@@ -1,6 +1,11 @@
 // @ts-check
 import {expect, test} from '@playwright/test';
-import { checkJson, requestWithAdminBasicAuth } from './globals';
+import {
+    checkJson,
+    requestGETWithAdminBasicAuth,
+    requestPOSTWithAdminBasicAuth,
+    requestDELETEWithAdminBasicAuth
+} from './globals';
 
 const url = 'api.php/admin';
 
@@ -27,7 +32,7 @@ test.describe('Connected',
     }, () => {
 
         test('GET repositories', async ({request}) => {
-            const response = await requestWithAdminBasicAuth(request, url + "/repositories")
+            const response = await requestGETWithAdminBasicAuth(request, url + "/repositories")
 
             const json = await checkJson(response);
 
@@ -37,13 +42,13 @@ test.describe('Connected',
         });
 
         test('GET specific repository wrong key', async ({request}) => {
-            const response = await requestWithAdminBasicAuth(request, url + "/repositories/test")
+            const response = await requestGETWithAdminBasicAuth(request, url + "/repositories/test")
 
             expect(response.status()).toBe(404)
         });
 
         test('GET specific repository good key', async ({request}) => {
-            const response = await requestWithAdminBasicAuth(request, url + "/repositories/testsrepository")
+            const response = await requestGETWithAdminBasicAuth(request, url + "/repositories/testsrepository")
 
             const json = await checkJson(response);
 
@@ -60,7 +65,7 @@ test.describe('Connected',
         });
 
         test('GET all projects from a specific repository', async ({request}) => {
-            const response = await requestWithAdminBasicAuth(request, url + "/repositories/testsrepository/projects")
+            const response = await requestGETWithAdminBasicAuth(request, url + "/repositories/testsrepository/projects")
 
             const json = await checkJson(response);
 
@@ -70,7 +75,7 @@ test.describe('Connected',
         });
 
         test('GET a specific project from a specific repository', async ({request}) => {
-            const response = await requestWithAdminBasicAuth(request, url + "/repositories/testsrepository/projects/attribute_table")
+            const response = await requestGETWithAdminBasicAuth(request, url + "/repositories/testsrepository/projects/attribute_table")
 
             const json = await checkJson(response);
 
@@ -89,6 +94,106 @@ test.describe('Connected',
             expect(json.saveDateTime).toBeDefined();
             expect(json.saveUser).toBeDefined();
             expect(json.saveUserFull).toBeDefined();
+        });
+
+        test('POST request to create a repository', async ({request}) => {
+            const before = await requestGETWithAdminBasicAuth(request, url + "/repositories")
+            const listRepoBefore = await checkJson(before);
+            const amountRepoBefore = listRepoBefore.length;
+
+            const response = await requestPOSTWithAdminBasicAuth(
+                request,
+                url + "/repositories/lyon",
+                {
+                    label: 'New repo',
+                    path: "demoqgis/",
+                    allowUserDefinedThemes: "false"
+                }
+            )
+            const json = await checkJson(response, 201);
+
+            const after = await requestGETWithAdminBasicAuth(request, url + "/repositories")
+            const listRepoAfter = await checkJson(after);
+            const amountRepoAfter = listRepoAfter.length;
+
+            expect(json.isCreated).toBeTruthy();
+            expect(amountRepoBefore).toEqual(amountRepoAfter - 1);
+        });
+
+        test('GET all paths used for repositories', async ({request}) => {
+            const response = await requestGETWithAdminBasicAuth(request, url + "/paths")
+
+            const json = await checkJson(response);
+
+            expect(json.length).toBeGreaterThan(0);
+        });
+
+        test('GET all groups', async ({request}) => {
+            const response = await requestGETWithAdminBasicAuth(request, url + "/groups")
+
+            const json = await checkJson(response);
+
+            expect(json.length).toBeGreaterThan(0);
+        });
+
+        test('GET all rights', async ({request}) => {
+            const response = await requestGETWithAdminBasicAuth(request, url + "/rights")
+
+            const json = await checkJson(response);
+
+            expect(json).toEqual([
+                "lizmap.tools.edition.use",
+                "lizmap.repositories.view",
+                "lizmap.tools.loginFilteredLayers.override",
+                "lizmap.tools.displayGetCapabilitiesLinks",
+                "lizmap.tools.layer.export"
+            ]);
+        });
+
+        test('ADD (POST) and DELETE a specific right on a repository for a group', async ({request}) => {
+            const createRepo = await requestPOSTWithAdminBasicAuth(
+                request,
+                url + "/repositories/nancy",
+                {
+                    label: 'Test repo',
+                    path: "demoqgis/",
+                    allowUserDefinedThemes: "false"
+                }
+            )
+            await checkJson(createRepo, 201);
+
+            const addRight = await requestPOSTWithAdminBasicAuth(
+                request,
+                url + "/rights/nancy",
+                {
+                    group: 'admins',
+                    right: 'lizmap.tools.edition.use'
+                }
+            )
+            await checkJson(addRight);
+
+            let response = await requestGETWithAdminBasicAuth(request, url + "/repositories/nancy")
+            let json = await checkJson(response);
+
+
+            expect(json.rightsGroup["lizmap.tools.edition.use"]).toEqual(["admins"]);
+
+
+            const deleteRight = await requestDELETEWithAdminBasicAuth(
+                request,
+                url + "/rights/nancy",
+                {
+                    group: 'admins',
+                    right: 'lizmap.tools.edition.use'
+                }
+            )
+            await checkJson(deleteRight, 200);
+
+            response = await requestGETWithAdminBasicAuth(request, url + "/repositories/nancy")
+            json = await checkJson(response);
+
+
+            expect(json.rightsGroup["lizmap.tools.edition.use"]).toBeUndefined();
         });
     }
 );

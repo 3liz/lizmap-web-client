@@ -251,7 +251,7 @@ export async function expectToHaveLengthCompare(title, parameters, expectedLengt
  * @returns {Promise<any>} The JSON response
  */
 export async function jsonFromProjectApi(request, project, repository = 'testsrepository') {
-    return await requestWithAdminBasicAuth(
+    return await requestGETWithAdminBasicAuth(
         request,
         `/api.php/admin/repositories/${repository}/projects/${project}`
     );
@@ -334,12 +334,46 @@ export async function expectParametersToContain(title, parameters, expectedParam
  * @param {string} url URL to do a GET request on
  * @returns {Promise<import("playwright-core/types/types.js").APIResponse>} Response
  */
-export async function requestWithAdminBasicAuth(request, url) {
+export async function requestGETWithAdminBasicAuth(request, url) {
     return await request.get(url,
         {
             headers: {
                 authorization: 'Basic YWRtaW46YWRtaW4=' // admin:admin
             }
+        });
+}
+
+/**
+ * Create a POST request on a given URL with Basic authentication admin:admin
+ * @param {import("playwright-core/types/types.js").APIRequestContext} request Request to use
+ * @param {string} url URL to do a POST request on
+ * @param {object} data parameters for the request
+ * @returns {Promise<import("playwright-core/types/types.js").APIResponse>} Response
+ */
+export async function requestPOSTWithAdminBasicAuth(request, url, data) {
+    return await request.post(url,
+        {
+            headers: {
+                authorization: 'Basic YWRtaW46YWRtaW4=' // admin:admin
+            },
+            data: data
+        });
+}
+
+/**
+ * Create a DELETE request on a given URL with Basic authentication admin:admin
+ * @param {import("playwright-core/types/types.js").APIRequestContext} request Request to use
+ * @param {string} url URL to do a DELETE request on
+ * @param {object} data parameters for the request
+ * @returns {Promise<import("playwright-core/types/types.js").APIResponse>} Response
+ */
+export async function requestDELETEWithAdminBasicAuth(request, url, data) {
+    return await request.delete(url,
+        {
+            headers: {
+                authorization: 'Basic YWRtaW46YWRtaW4=' // admin:admin
+            },
+            data: data
         });
 }
 /* eslint-enable jsdoc/check-types */
