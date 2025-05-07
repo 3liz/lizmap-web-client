@@ -15,6 +15,10 @@ import { Utils } from '../Utils.js';
 import { get as getProjection, transformExtent } from 'ol/proj.js';
 
 /**
+ * @import { EventDispatched } from './../../utils/EventDispatcher.js'
+ */
+
+/**
  * Build scales
  * @param {OptionsConfig} [options] - main configuration options
  * @returns {number[]} scales in descending order
@@ -94,7 +98,7 @@ const mapStateProperties = {
 /**
  * Map state ready.
  * @event MapStateReady
- * @type {EventDispatcher.EventDispatched}
+ * @type {EventDispatched}
  * @property {string} type   - map.state.ready
  * @property {boolean} ready - true
  */
@@ -102,7 +106,7 @@ const mapStateProperties = {
 /**
  * Map state changed
  * @event MapStateChanged
- * @type {EventDispatcher.EventDispatched}
+ * @type {EventDispatched}
  * @property {string}   type                    - map.state.changed
  * @property {string}   [projection]            - the map projection code if it changed
  * @property {number[]} [center]                - the map center if it changed
@@ -171,8 +175,8 @@ export class MapState extends EventDispatcher {
      * @param {number}   [evt.scaleDenominator]      - the map scale denominator
      * @param {number}   [evt.pointResolution]       - the map resolution (calculate from the center)
      * @param {number}   [evt.pointScaleDenominator] - the map scale denominator (calculate from the center)
-     * @fires MapState#MapStateReady
-     * @fires MapState#MapStateChanged
+     * @fires MapStateReady
+     * @fires MapStateChanged
      */
     update(evt) {
         const oldProjection = this._projection;
