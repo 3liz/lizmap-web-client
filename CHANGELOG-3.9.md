@@ -8,6 +8,21 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.9.0-rc.2 - 2025-05-12
+
+### Added
+
+* Add login into the registration email
+* In the login form, show the button to see the password
+
+### Fixed
+
+* Fix regression in Jelix about rights during a user deletion
+
+### Backend
+
+* Upgrade Jelix to 1.8.18.1
+
 ## 3.9.0-rc.1 - 2025-05-07
 
 ### Funders
