@@ -9,7 +9,10 @@
         {hook 'JauthLoginFormExtraAuthenticated'}
     {else}
     {hook 'JauthLoginFormExtraBefore'}
-    {form $form, 'jcommunity~login:in', array(), 'htmlbootstrap'}
+    {form $form, 'jcommunity~login:in', array(), 'htmlbootstrap', array(
+        'plugins'=> array(
+            'auth_password'=> 'password_htmlbootstrap'
+        ))}
         <fieldset>
             <div class="control-group">
                 {ctrl_label 'auth_login'}

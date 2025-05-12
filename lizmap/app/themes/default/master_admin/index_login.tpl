@@ -24,6 +24,7 @@
             <span class="text"><b>{@view~default.home.title@}</b></span>
           </a>
         </li>
+      </ul>
     </div>
   </div>
 

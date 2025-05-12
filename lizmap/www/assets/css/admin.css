@@ -270,3 +270,8 @@ table.lizmap_project_list tr td.lizmap-project-qgis-log pre {
 .copy-to-clipboard svg {
     pointer-events: none;
 }
+
+
+#jforms_jcommunity_login_auth_password {
+    flex: 3 3;
+}
