@@ -730,7 +730,9 @@ var lizAttributeTable = function() {
                             eFormat = 'GML3';
                         var cleanName = $(this).parents('div.attribute-layer-main:first').attr('id').replace('attribute-layer-main-', '');
                         var eName = attributeLayersDic[ cleanName ];
-                        lizMap.exportVectorLayer( eName, eFormat );
+                        const limitDataToBbox =
+                            document.querySelector('.btn-filterbyextent-attributeTable.active[value="' + cleanName + '"]') ? true : false;
+                        lizMap.exportVectorLayer(eName, eFormat, limitDataToBbox);
                         $(this).blur();
                         return false;
                     });
@@ -1853,51 +1855,53 @@ var lizAttributeTable = function() {
              * @param {string} aTable The HTML table selector
              */
             function bindTableLineClick(aName, aTable){
-                $(aTable +' tr').click(function() {
+                document.querySelectorAll(aTable +' tr').forEach(line => {
+                    line.addEventListener('click', evt => {
+                        const thisLine = evt.currentTarget;
+                        $(aTable +' tr').removeClass('active');
+                        thisLine.classList.add('active');
 
-                    $(aTable +' tr').removeClass('active');
-                    $(this).addClass('active');
+                        // Get corresponding feature
+                        var featId = thisLine.querySelector('lizmap-feature-toolbar').fid;
 
-                    // Get corresponding feature
-                    var featId = this.querySelector('lizmap-feature-toolbar').fid;
+                        // Send signal
+                        lizMap.events.triggerEvent("layerfeaturehighlighted",
+                            { 'sourceTable': aTable, 'featureType': aName, 'fid': featId}
+                        );
 
-                    // Send signal
-                    lizMap.events.triggerEvent("layerfeaturehighlighted",
-                        { 'sourceTable': aTable, 'featureType': aName, 'fid': featId}
-                    );
+                        // Display popup for the feature
+                        var lConfig = config.layers[aName];
+                        if( lConfig && lConfig['popup'] == 'True' ){
+                            var feat = lConfig['features'][featId];
 
-                    // Display popup for the feature
-                    var lConfig = config.layers[aName];
-                    if( lConfig && lConfig['popup'] == 'True' ){
-                        var feat = lConfig['features'][featId];
+                            var parentLayerCleanName = aTable.replace('#attribute-layer-table-', '').split('-');
+                            parentLayerCleanName = parentLayerCleanName[0];
 
-                        var parentLayerCleanName = aTable.replace('#attribute-layer-table-', '').split('-');
-                        parentLayerCleanName = parentLayerCleanName[0];
+                            $('#attribute-table-panel-' + parentLayerCleanName ).html('');
 
-                        $('#attribute-table-panel-' + parentLayerCleanName ).html('');
+                            lizMap.getFeaturePopupContent( aName, feat, function(data){
+                                $('#attribute-table-panel-' + parentLayerCleanName ).html(data);
+                                // Add the missing Bootstrap classes
+                                $('#attribute-table-panel-' + parentLayerCleanName + ' table').addClass('table table-condensed table-striped table-bordered');
 
-                        lizMap.getFeaturePopupContent( aName, feat, function(data){
-                            $('#attribute-table-panel-' + parentLayerCleanName ).html(data);
-                            // Add the missing Bootstrap classes
-                            $('#attribute-table-panel-' + parentLayerCleanName + ' table').addClass('table table-condensed table-striped table-bordered');
+                                // Trigger event
+                                lizMap.events.triggerEvent('lizmappopupdisplayed_inattributetable'
+                                );
 
-                            // Trigger event
-                            lizMap.events.triggerEvent('lizmappopupdisplayed_inattributetable'
-                            );
+                                var closeButton = '<a class="close-attribute-feature-panel pull-right" href="#"><i class="icon-remove"></i></a>'
+                                $('#attribute-table-panel-' + parentLayerCleanName + ' h4').append(closeButton);
 
-                            var closeButton = '<a class="close-attribute-feature-panel pull-right" href="#"><i class="icon-remove"></i></a>'
-                            $('#attribute-table-panel-' + parentLayerCleanName + ' h4').append(closeButton);
+                                $('#attribute-table-panel-' + parentLayerCleanName + ' h4 a.close-attribute-feature-panel').click(function(){
+                                    // Hide panel
+                                    $('#attribute-layer-main-' + parentLayerCleanName ).removeClass('reduced');
+                                    $('#attribute-table-panel-' + parentLayerCleanName ).removeClass('visible').html('');
+                                    // Deactivate Detail button
+                                    $('#attribute-layer-'+ parentLayerCleanName + ' button.btn-detail-attributeTable').removeClass('btn-primary');
 
-                            $('#attribute-table-panel-' + parentLayerCleanName + ' h4 a.close-attribute-feature-panel').click(function(){
-                                // Hide panel
-                                $('#attribute-layer-main-' + parentLayerCleanName ).removeClass('reduced');
-                                $('#attribute-table-panel-' + parentLayerCleanName ).removeClass('visible').html('');
-                                // Deactivate Detail button
-                                $('#attribute-layer-'+ parentLayerCleanName + ' button.btn-detail-attributeTable').removeClass('btn-primary');
-
+                                });
                             });
-                        });
-                    }
+                        }
+                    });
                 });
             }
 
@@ -3133,6 +3137,9 @@ var lizAttributeTable = function() {
                 },
 
                 lizmapeditionfeaturecreated: function(e){
+                    if (!e.primaryKeys) {
+                        return;
+                    }
                     const layerId = e.layerId;
                     const layerConfig = lizMap.getLayerConfigById(layerId);
                     const [key, value] = Object.entries(e.primaryKeys)[0];
@@ -3160,10 +3167,14 @@ var lizAttributeTable = function() {
                         }
                         // Update the line_filter for the deleted feature
                         if (layerConfig[1].line_filter) {
-                            layerConfig[1].line_filter = layerConfig[1].line_filter
+                            let newLineFilter = layerConfig[1].line_filter
                             .split(' OR ')
                             .filter((filterPart) => !filterPart.includes(`'${e.featureId}'`))
                             .join(' OR ');
+                            if (newLineFilter == '') {
+                                newLineFilter = '$id = -99999999';
+                            }
+                            layerConfig[1].line_filter = newLineFilter;
                         }
                         const dTable = new DataTable('table[data-layerid=' + layerId + ']');
                         dTable.draw();
