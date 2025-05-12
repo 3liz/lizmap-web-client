@@ -20,7 +20,6 @@ $(document).ready(function () {
         }
     }
 
-    console.log('map-projects');
     $('#map-projects .thumbnail a.liz-project-show-desc').each(function (i, e) { $(e).attr('onclick', ''); });
     $('#map-projects .thumbnail a.liz-project-show-desc').click(function () {
         var self = $(this);
