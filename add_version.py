@@ -7,7 +7,7 @@ from datetime import datetime
 
 
 if len(sys.argv) != 2:
-    print('One argument is required.')
+    print('One argument is required with the version number, like 3.9.0')
     exit(0)
 
 tag_name = sys.argv[1]
@@ -24,26 +24,35 @@ with open(json_file, 'r') as f:
     versions = json.load(f)
 
 for version in versions:
-    if version['branch'] == f'{major}.{minor}':
-        date = datetime.today().strftime('%Y-%m-%d')
-        version['latest_release_date'] = date
+    if version['branch'] != f'{major}.{minor}':
+        continue
 
-        if not version['first_release_date']:
-            # First stable release on the branch
-            print(f'First release for branch for {major}.{minor}')
-            # 'bugfix' variable must be equal to 0
-            version['first_release_date'] = date
-            if len(tag) == 3:
-                # major.minor.bugfix
-                if version['status'] in ('dev', 'feature_freeze', 'stable') and len(tag) == 3:
-                    # We only update if the status is not retired or security_bugfix_only
-                    version['status'] = "stable"
-            elif len(tag) == 4 and 'rc' in tag[2] and version['status'] in ('dev', 'feature_freeze'):
-                # major.minor.bugfix-rc.1
-                version['status'] = "feature_freeze"
+    # Current date of the release
+    date = datetime.today().strftime('%Y-%m-%d')
 
-        version['latest_release_version'] = f'{tag_name}'
-        break
+    # As the script is running, it is currently the latest release for this branch
+    version['latest_release_date'] = date
+    version['latest_release_version'] = f'{tag_name}'
+
+    # Update "status" if possible automatically, based on version name
+    if len(tag) == 3:
+        # major.minor.bugfix
+        if version['status'] in ('dev', 'feature_freeze', 'stable') and len(tag) == 3:
+            print("Update to 'stable' as the status is neither 'retired' nor 'security_bugfix_only'")
+            version['status'] = "stable"
+    elif len(tag) == 4 and 'rc' in tag[2] and version['status'] in ('dev', 'feature_freeze'):
+        # major.minor.bugfix-rc.1
+        print("Update to 'feature_freeze' as it seems an RC version")
+        version['status'] = "feature_freeze"
+
+    # Date of the first release should be the "first stable release".
+    # So until the version is not "stable", the date is updated
+    if not version['first_release_date'] or version['status'] in ('dev', 'feature_freeze') or tag_name.endswith('.0'):
+        print(f'Update the first release for branch for {major}.{minor}')
+        # 'bugfix' variable must be equal to 0
+        version['first_release_date'] = date
+
+    break
 else:
     print(f'Branch for {tag_name} is not found.')
     exit(0)
