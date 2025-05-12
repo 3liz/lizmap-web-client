@@ -197,7 +197,6 @@ deploy-release:
     - fabric
   only:
     - tags
-  when: manual
 
 docker-release:
   image: ${REGISTRY_URL}/factory-ci-runner:factory-ci
@@ -208,7 +207,6 @@ docker-release:
     name: production
   dependencies:
     - docker-image-release
-  when: manual
   only:
     - tags
   tags:
