@@ -17,9 +17,8 @@ class datatablesCtrl extends jController
 {
     public function index()
     {
-        $rep = $this->getResponse('binary');
-        $rep->outputFileName = 'datatables.json';
-        $rep->mimeType = 'application/json';
+        /** @var jResponseJson $rep */
+        $rep = $this->getResponse('json');
 
         // Lizmap parameters
         $repository = $this->param('repository');
@@ -58,6 +57,8 @@ class datatablesCtrl extends jController
         }
 
         $lproj = lizmap::getProject($repository.'~'.$project);
+
+        /** @var qgisVectorLayer $layer */
         $layer = $lproj->getLayer($layerId);
         $typeName = $layer->getWfsTypeName();
 
@@ -128,6 +129,8 @@ class datatablesCtrl extends jController
                 $value2 = isset($criteria['value2']) ? addslashes($criteria['value2']) : '';
 
                 // Map DataTables operators to QGIS Server operators
+                $qgisOperator = '';
+
                 switch ($condition) {
                     case '=':
                     case '!=':
@@ -271,7 +274,7 @@ class datatablesCtrl extends jController
             'editableFeatures' => $editableFeaturesRep,
         );
 
-        $rep->content = json_encode($returnedData);
+        $rep->data = $returnedData;
 
         return $rep;
     }
