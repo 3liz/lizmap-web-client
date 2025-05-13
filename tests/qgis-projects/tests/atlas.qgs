@@ -716,7 +716,7 @@ def my_form_open(dialog, layer, feature):
     <WMSPrecision type="QString">8</WMSPrecision>
     <WMSRootName type="QString">atlas</WMSRootName>
     <WMSSegmentizeFeatureInfoGeometry type="bool">false</WMSSegmentizeFeatureInfoGeometry>
-    <WMSServiceAbstract type="QString"></WMSServiceAbstract>
+    <WMSServiceAbstract type="QString"><strong>Abstract with HTML</strong></WMSServiceAbstract>
     <WMSServiceCapabilities type="bool">true</WMSServiceCapabilities>
     <WMSServiceTitle type="QString">atlas</WMSServiceTitle>
     <WMSTileBuffer type="int">0</WMSTileBuffer>
