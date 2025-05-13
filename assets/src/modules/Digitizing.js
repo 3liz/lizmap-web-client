@@ -391,10 +391,16 @@ export class Digitizing {
         this._lizmap3.events.on({
             minidockopened: (e) => {
                 if (e.id == 'measure') {
-                    this.toolSelected = this._tools[0];
+                    this.toolSelected = this._tools[0]; // DigitizingTools.Deactivate
                 } else if (['draw', 'print'].includes(e.id)) {
                     // Display draw for print redlining
                     this.context = e.id === 'print' ? 'draw' : e.id;
+                    this.toggleVisibility(true);
+                }
+            },
+            minidockclosed: (e) => {
+                if (e.id == 'draw') {
+                    this.toolSelected = this._tools[0]; // DigitizingTools.Deactivate
                 }
             }
         });
