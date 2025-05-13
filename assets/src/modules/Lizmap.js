@@ -73,7 +73,7 @@ export default class Lizmap {
                 proj4.defs("CRS:84","+proj=longlat +datum=WGS84 +no_defs +type=crs");
                 register(proj4);
                 // Update project projection if its axis orientation is not ENU
-                if (configProj.ref !== "") {
+                if (configProj.ref !== "" && Array.isArray(wmsCapabilities.Capability.Layer.BoundingBox)) {
                     // loop through bounding boxes of the project provided by WMS capabilities
                     for (const bbox of wmsCapabilities.Capability.Layer.BoundingBox) {
                         // If the BBOX CRS is not the same of the project projection, continue.
