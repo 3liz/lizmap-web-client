@@ -18,6 +18,7 @@
         data-lizmap-project="{$p->id}"
         data-lizmap-keywords="{$p->keywordList}"
         data-lizmap-title="{$p->title}"
+        data-lizmap-abstract="{$p->abstract|strip_tags}"
         data-lizmap-bbox="{$p->bbox}"
         data-lizmap-proj="{$p->proj}">
         <a class="liz-project-view" href="{$p->url}{if $hide_header}&h=0{/if}">
