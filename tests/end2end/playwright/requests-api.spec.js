@@ -4,12 +4,13 @@ import {
     checkJson,
     requestGETWithAdminBasicAuth,
     requestPOSTWithAdminBasicAuth,
-    requestDELETEWithAdminBasicAuth
+    requestDELETEWithAdminBasicAuth,
+    getAuthStorageStatePath
 } from './globals';
 
 const url = 'api.php/admin';
 
-test.describe('Not connected',
+test.describe('Not connected via context or Basic auth',
     {
         tag: ['@requests', '@readonly'],
     }, () => {
@@ -26,7 +27,19 @@ test.describe('Not connected',
     }
 );
 
-test.describe('Connected',
+test.describe('Connected from context, as an admin',
+    () => {
+
+        test.use({ storageState: getAuthStorageStatePath('admin') });
+
+        test('Request metadata', async ({ request }) => {
+            const response = await request.get(url + "/repositories");
+
+            expect(response.status()).toBe(401)
+        });
+    });
+
+test.describe('Connected via Basic auth',
     {
         tag: ['@requests', '@readonly'],
     }, () => {

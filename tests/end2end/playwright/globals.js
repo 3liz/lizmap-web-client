@@ -328,6 +328,8 @@ export async function expectParametersToContain(title, parameters, expectedParam
     return searchParams;
 }
 
+const adminPassword = "Basic " + btoa("admin:admin");
+
 /**
  * Create a GET request on a given URL with Basic authentication admin:admin
  * @param {import("playwright-core/types/types.js").APIRequestContext} request Request to use
@@ -338,7 +340,7 @@ export async function requestGETWithAdminBasicAuth(request, url) {
     return await request.get(url,
         {
             headers: {
-                authorization: 'Basic YWRtaW46YWRtaW4=' // admin:admin
+                authorization: adminPassword
             }
         });
 }
@@ -354,7 +356,7 @@ export async function requestPOSTWithAdminBasicAuth(request, url, data) {
     return await request.post(url,
         {
             headers: {
-                authorization: 'Basic YWRtaW46YWRtaW4=' // admin:admin
+                authorization: adminPassword
             },
             data: data
         });
@@ -371,7 +373,7 @@ export async function requestDELETEWithAdminBasicAuth(request, url, data) {
     return await request.delete(url,
         {
             headers: {
-                authorization: 'Basic YWRtaW46YWRtaW4=' // admin:admin
+                authorization: adminPassword
             },
             data: data
         });
