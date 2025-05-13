@@ -210,7 +210,7 @@
     <WMSPrecision type="QString">8</WMSPrecision>
     <WMSRootName type="QString">Lizmap_tag</WMSRootName>
     <WMSSegmentizeFeatureInfoGeometry type="bool">false</WMSSegmentizeFeatureInfoGeometry>
-    <WMSServiceAbstract type="QString">Tags: nature, tree</WMSServiceAbstract>
+    <WMSServiceAbstract type="QString">Tags: <strong>nature</strong>, tree</WMSServiceAbstract>
     <WMSServiceCapabilities type="bool">true</WMSServiceCapabilities>
     <WMSServiceTitle type="QString">Tests tags: nature, tree</WMSServiceTitle>
     <WMSTileBuffer type="int">0</WMSTileBuffer>
