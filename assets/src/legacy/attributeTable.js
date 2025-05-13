@@ -489,7 +489,7 @@ var lizAttributeTable = function() {
                     selClass= ' hidden';
                 var filClass= '';
                 if( config.layers[lname]['filteredFeatures'].length > 0 )
-                    filClass= ' active btn-primary';
+                    filClass= ' active';
                 else
                     filClass = selClass
 
@@ -707,7 +707,7 @@ var lizAttributeTable = function() {
                     $('#attribute-layer-'+ cleanName + ' button.btn-filter-attributeTable')
                         .click(function(){
                             var aName = attributeLayersDic[ $(this).val() ];
-                            if( $(this).hasClass('btn-primary') ) {
+                            if( $(this).hasClass('active') ) {
                                 lizMap.events.triggerEvent( "layerfeatureremovefilter",
                                     { 'featureType': aName}
                                 );
@@ -2889,8 +2889,8 @@ var lizAttributeTable = function() {
 
                 // Filter button
 
-                // Hide it first and remove active classes
-                $('button.btn-filter-attributeTable[value="'+cleanName+'"]').addClass('hidden').removeClass('btn-primary');
+                // Hide it first and remove `active` classe
+                $('button.btn-filter-attributeTable[value="'+cleanName+'"]').addClass('hidden').removeClass('active');
 
                 // Then display it only if:
                 // * no other features is active and selected items exists for this layer
@@ -2902,7 +2902,7 @@ var lizAttributeTable = function() {
 
                     // Show button as activated if some filter exists
                     if( filIds && filIds.length > 0 )
-                        $('button.btn-filter-attributeTable[value="'+cleanName+'"]').addClass('btn-primary');
+                        $('button.btn-filter-attributeTable[value="'+cleanName+'"]').addClass('active');
                 }
 
             }
