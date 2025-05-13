@@ -2214,10 +2214,6 @@ var lizAttributeTable = function() {
                     applyEmptyLayerFilter( typeName, typeNamePile, typeNameFilter, typeNameDone, cascade );
                 }
 
-                // Refresh attributeTable
-                const table = new DataTable('#attribute-layer-table-' + lizMap.cleanName(typeName));
-                table.draw();
-
                 $('#layerActionUnfilter').toggle((lizMap.lizmapLayerFilterActive !== null));
             }
 
@@ -3128,6 +3124,12 @@ var lizAttributeTable = function() {
                         cascadeToChildren = e.cascade;
                     updateMapLayerDrawing( e.featureType, cascadeToChildren );
 
+                },
+
+                layerFilterParamChanged: function(e) {
+                    const layerId = config.layers[e.featureType]['id'];
+                    const dTable = new DataTable('table[data-layerid=' + layerId + ']');
+                    dTable.draw();
                 },
 
                 lizmapeditionfeaturecreated: function(e){
