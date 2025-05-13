@@ -330,7 +330,7 @@ test.describe('Feature toolbar in popup @readonly', () => {
             .toHaveCount(1);
         let actionBar = project.attributeTableActionBar('parent_layer');
         await expect(actionBar.locator('.btn-filter-attributeTable'))
-            .toContainClass('btn-primary');
+            .toContainClass('active'); //.toContainClass('btn-primary');
 
         // An other click on select Button to remove filter
         getMapRequestPromise = project.waitForGetMapRequest();
@@ -342,7 +342,7 @@ test.describe('Feature toolbar in popup @readonly', () => {
         await expect(project.attributeTableHtml('parent_layer').locator('tbody tr'))
             .not.toHaveCount(1);
         await expect(actionBar.locator('.btn-filter-attributeTable'))
-            .not.toContainClass('btn-primary');
+            .not.toContainClass('active'); //.not.toContainClass('btn-primary');
     });
 
     test('should display working custom action', async ({ page }) => {
