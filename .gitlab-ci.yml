@@ -207,7 +207,6 @@ deploy-release:
     - fabric
   only:
     - tags
-  when: manual
 
 docker-release:
   stage: release
@@ -217,7 +216,6 @@ docker-release:
     name: production
   dependencies:
     - docker-image-release
-  when: manual
   only:
     - tags
   tags:
