@@ -223,7 +223,7 @@ describe('Feature Toolbar in popup', function () {
         // TODO: Test feature is selected on last map bu looking at server's request
 
         // Test feature is selected on popup
-        cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"] .feature-select').should('have.class', 'btn-primary')
+        cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"] .feature-select').should('have.class', 'active')
 
         // Open parent_layer in attribute table
         cy.get('#button-attributeLayers').click()
@@ -231,7 +231,7 @@ describe('Feature Toolbar in popup', function () {
 
         // Test feature is selected on attribute table
         cy.get('#attribute-layer-table-parent_layer tbody tr:first').should('have.class', 'selected')
-        cy.get('#attribute-layer-table-parent_layer lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"] .feature-select').should('have.class', 'btn-primary')
+        cy.get('#attribute-layer-table-parent_layer lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"] .feature-select').should('have.class', 'active')
     })
 
     it('should filter', function () {
@@ -260,7 +260,7 @@ describe('Feature Toolbar in popup', function () {
         cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"] .feature-filter').click()
 
         // Test feature is filtered on popup
-        cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"] .feature-filter').should('have.class', 'btn-primary')
+        cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"] .feature-filter').should('have.class', 'active')
 
         // Open parent_layer in attribute table
         cy.get('#button-attributeLayers').click()
@@ -268,16 +268,16 @@ describe('Feature Toolbar in popup', function () {
         cy.wait(300)
 
         // Test feature is filtered on attribute table
-        cy.get('#attribute-layer-main-parent_layer .btn-filter-attributeTable').should('have.class', 'btn-primary')
+        cy.get('#attribute-layer-main-parent_layer .btn-filter-attributeTable').should('have.class', 'active')
 
         // Disable filter
         cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"] .feature-filter').click()
 
         // Test feature is not filtered on popup
-        cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"] .feature-filter').should('not.have.class', 'btn-primary')
+        cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"] .feature-filter').should('not.have.class', 'active')
 
         // Test feature is not filtered on attribute table
-        cy.get('#attribute-layer-main-parent_layer .btn-filter-attributeTable').should('not.have.class', 'btn-primary')
+        cy.get('#attribute-layer-main-parent_layer .btn-filter-attributeTable').should('not.have.class', 'active')
     })
 
     it('should unlink/link', function () {
@@ -357,7 +357,7 @@ describe('Feature Toolbar in popup', function () {
         cy.get('#popupcontent lizmap-feature-toolbar button.popup-action[value="buffer_500.parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"]').click()
 
         // Test feature is selected on popup
-        cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"] .feature-select').should('have.class', 'btn-primary')
+        cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.1"] .feature-select').should('have.class', 'active')
 
         cy.on('window:confirm', () => true);
 
