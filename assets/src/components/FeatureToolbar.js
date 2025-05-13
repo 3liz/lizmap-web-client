@@ -50,7 +50,7 @@ export default class FeatureToolbar extends HTMLElement {
         <div class="feature-toolbar">
             <button
                 type="button"
-                class="btn btn-sm feature-select ${this.attributeTableConfig ? '' : 'hide'} ${this.isSelected ? 'btn-primary' : ''}"
+                class="btn btn-sm feature-select ${this.attributeTableConfig ? '' : 'hide'} ${this.isSelected ? 'active' : ''}"
                 @click=${() => this.select()}
                 data-bs-toggle="tooltip"
                 data-bs-title="${lizDict['attributeLayers.btn.select.title']}"
@@ -58,7 +58,7 @@ export default class FeatureToolbar extends HTMLElement {
             </button>
             <button
                 type="button"
-                class="btn btn-sm feature-filter ${this.attributeTableConfig && this.hasFilter ? '' : 'hide'} ${this.isFiltered ? 'btn-primary' : ''}"
+                class="btn btn-sm feature-filter ${this.attributeTableConfig && this.hasFilter ? '' : 'hide'} ${this.isFiltered ? 'active' : ''}"
                 @click=${() => this.filter()}
                 data-bs-toggle="tooltip"
                 data-bs-title="${lizDict['attributeLayers.toolbar.btn.data.filter.title']}"
