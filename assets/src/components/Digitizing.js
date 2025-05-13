@@ -644,6 +644,11 @@ export default class Digitizing extends HTMLElement {
      */
     selectTool(tool) {
         this.toolSelected = tool;
+        const btn = this.querySelector('.digitizing-selected-tool');
+        // Close dropdown if opened
+        if (btn.getAttribute('aria-expanded') === 'true') {
+            bootstrap.Dropdown.getOrCreateInstance(btn).toggle();
+        }
         return this.toolSelected === tool;
     }
 
@@ -654,7 +659,9 @@ export default class Digitizing extends HTMLElement {
     toggleToolSelected(event) {
         const firstAvailableTools = DigitizingAvailableTools[0];
         if (this.toolSelected === firstAvailableTools) {
+            // Open dropdown to select a tool if no tool is selected
             bootstrap.Dropdown.getOrCreateInstance(event.currentTarget).toggle();
+            return;
         } else if (mainLizmap.digitizing.toolSelected !== firstAvailableTools) {
             mainLizmap.digitizing.toolSelected = firstAvailableTools;
         } else {
