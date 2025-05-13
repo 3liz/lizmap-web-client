@@ -166,6 +166,7 @@ jobs:
           if [[ "$qgis_info" != "null" ]]; then
               echo "QGIS Server is not well configured"
               echo "::warning QGIS Server was not up"
+              exit 1
           else
               echo "JSON metadata OK about QGIS Server"
           fi
