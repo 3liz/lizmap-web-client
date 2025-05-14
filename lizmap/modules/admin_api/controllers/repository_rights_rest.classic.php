@@ -10,6 +10,7 @@
  */
 
 use LizmapAdmin\RepositoryRightsService;
+use LizmapApi\ApiException;
 use LizmapApi\Credentials;
 use LizmapApi\Error;
 use LizmapApi\LizmapRights;
@@ -36,8 +37,10 @@ class repository_rights_restCtrl extends RestApiCtrl
         if ($this->param('repo')) {
             try {
                 $rep->data = $this->getRepoRights();
-            } catch (Exception $e) {
+            } catch (ApiException $e) {
                 return Error::setError($rep, $e->getCode(), $e->getMessage());
+            } catch (Exception $e) {
+                return Error::setError($rep, 500, $e->getMessage());
             }
         } else {
             $rep->data = LizmapRights::getLWCRights();
@@ -51,14 +54,14 @@ class repository_rights_restCtrl extends RestApiCtrl
      *
      * @return array Response array containing rights on a specific repository
      *
-     * @throws Exception
+     * @throws ApiException
      */
     protected function getRepoRights(): array
     {
         $repo = lizmap::getRepository($this->param('repo'));
 
         if ($repo == null) {
-            throw new Exception("The repository doesn't exist !", 404);
+            throw new ApiException("The repository doesn't exist !", 404);
         }
 
         return RepositoryRightsService::getRights($repo->getKey());
@@ -85,8 +88,10 @@ class repository_rights_restCtrl extends RestApiCtrl
 
         try {
             Utils::verifyVars($group, $right, $key);
-        } catch (Exception $e) {
+        } catch (ApiException $e) {
             return Error::setError($rep, $e->getCode(), $e->getMessage());
+        } catch (Exception $e) {
+            return Error::setError($rep, 500, $e->getMessage());
         }
 
         $isAdded = false;
@@ -128,8 +133,10 @@ class repository_rights_restCtrl extends RestApiCtrl
 
         try {
             Utils::verifyVars($group, $right, $key);
-        } catch (Exception $e) {
+        } catch (ApiException $e) {
             return Error::setError($rep, $e->getCode(), $e->getMessage());
+        } catch (Exception $e) {
+            return Error::setError($rep, 500, $e->getMessage());
         }
 
         $isRemoved = false;

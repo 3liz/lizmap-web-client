@@ -11,6 +11,7 @@
 
 use Lizmap\Request\Proxy;
 use LizmapAdmin\RepositoryRightsService;
+use LizmapApi\ApiException;
 use LizmapApi\Credentials;
 use LizmapApi\Error;
 use LizmapApi\RepoCreator;
@@ -83,7 +84,7 @@ class repository_restCtrl extends RestApiCtrl
             $repo = lizmap::getRepository($this->param('repo'));
 
             if ($repo == null) {
-                throw new Exception(code: 404);
+                throw new ApiException("The repository doesn't exist.", 404);
             }
 
             $referer = $this->request->header('Referer');
@@ -98,8 +99,10 @@ class repository_restCtrl extends RestApiCtrl
                 'accessControlAllowOrigin' => $repo->getACAOHeaderValue($referer),
                 'rightsGroup' => $rights,
             );
-        } catch (Throwable $e) {
-            return Error::setError($rep, $e->getCode());
+        } catch (ApiException $e) {
+            return Error::setError($rep, $e->getCode(), $e->getMessage());
+        } catch (Exception $e) {
+            return Error::setError($rep, 500, $e->getMessage());
         }
         $rep->data = $response;
 
@@ -142,8 +145,10 @@ class repository_restCtrl extends RestApiCtrl
                 201,
                 Proxy::getHttpStatusMsg(201),
             );
-        } catch (Exception $e) {
+        } catch (ApiException $e) {
             return Error::setError($rep, $e->getCode(), $e->getMessage());
+        } catch (Exception $e) {
+            return Error::setError($rep, 500, $e->getMessage());
         }
 
         return $rep;

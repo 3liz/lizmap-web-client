@@ -51,20 +51,20 @@ class Utils
      * @param null|string $right the name of the right to validate
      * @param string      $key   the key used to fetch the list of rights
      *
-     * @throws \Exception
+     * @throws ApiException
      */
     public static function verifyVars(?string $group, ?string $right, string $key): void
     {
         if (!\lizmap::getRepository($key)) {
-            throw new \Exception("The repository '{$key}' doesn't exists.", 404);
+            throw new ApiException("The repository '{$key}' doesn't exists.", 404);
         }
 
         if (!$group) {
-            throw new \Exception("'group' parameter is required !", 400);
+            throw new ApiException("'group' parameter is required !", 400);
         }
 
         if (!$right) {
-            throw new \Exception("'right' parameter is required !", 400);
+            throw new ApiException("'right' parameter is required !", 400);
         }
 
         $manager = new \jAcl2DbAdminUIManager();
@@ -83,7 +83,7 @@ class Utils
         }
 
         if (!$isGroupValid) {
-            throw new \Exception("'{$group}' group doesn't exist !", 404);
+            throw new ApiException("'{$group}' group doesn't exist !", 404);
         }
 
         $allRights = LizmapRights::getLWCRights();
@@ -91,7 +91,7 @@ class Utils
         in_array($right, $allRights) ? $isRightValid = true : $isRightValid = false;
 
         if (!$isRightValid) {
-            throw new \Exception("'{$right}' right doesn't exist !", 404);
+            throw new ApiException("'{$right}' right doesn't exist !", 404);
         }
 
     }

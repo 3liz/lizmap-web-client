@@ -15,7 +15,7 @@ class RepoCreator
      *
      * @return bool returns true if the repository is successfully created
      *
-     * @throws \Exception if the repository creation fails
+     * @throws ApiException if the repository creation fails
      */
     public static function createRepository(
         string $key,
@@ -25,15 +25,15 @@ class RepoCreator
         bool $createDirectory
     ): bool {
         if (\lizmap::getRepository($key)) {
-            throw new \Exception("The repository '{$key}' already exists.", 409);
+            throw new ApiException("The repository '{$key}' already exists.", 409);
         }
 
         if (!$label) {
-            throw new \Exception('The repository label is not set.', 400);
+            throw new ApiException('The repository label is not set.', 400);
         }
 
         if (!$path) {
-            throw new \Exception('The repository path is not set.', 400);
+            throw new ApiException('The repository path is not set.', 400);
         }
 
         $data = array(
@@ -47,6 +47,8 @@ class RepoCreator
         // Testing a relative path and updating it if needed
         try {
             $path = self::testRelativePath($path, $rootRepositories);
+        } catch (ApiException $e) {
+            throw new ApiException($e->getMessage(), $e->getCode());
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage(), $e->getCode());
         }
@@ -57,20 +59,20 @@ class RepoCreator
                 $isCreated = mkdir($path, 0775, true);
                 umask($oldUmask);
                 if (!$isCreated) {
-                    throw new \Exception(
+                    throw new ApiException(
                         "Unable to create directory '{$path}'".
                         " Maybe you don't have enough permissions.",
                         500
                     );
                 }
             } else {
-                throw new \Exception(
+                throw new ApiException(
                     "The path provided ({$path}) doesn't exist or is not a directory ! ",
                     400
                 );
             }
         } elseif ($createDirectory) {
-            throw new \Exception(
+            throw new ApiException(
                 'The directory you want to create already exists ! ',
                 409
             );
@@ -87,7 +89,7 @@ class RepoCreator
 
         $repo = \lizmap::createRepository($key, $data);
         if (!$repo) {
-            throw new \Exception("Repository can't be created !", 500);
+            throw new ApiException("Repository can't be created !", 500);
         }
 
         return true;
@@ -101,7 +103,7 @@ class RepoCreator
      *
      * @return string returns the path
      *
-     * @throws \Exception if the provided relative path is not authorized
+     * @throws ApiException if the provided relative path is not authorized
      */
     private static function testRelativePath(string $path, string $rootRepo): string
     {
@@ -113,7 +115,7 @@ class RepoCreator
                 }
                 $path = $rootRepo.$path;
             } else {
-                throw new \Exception("The path provided is not authorized as there's no root repository !", 400);
+                throw new ApiException("The path provided is not authorized as there's no root repository !", 400);
             }
         }
 
