@@ -129,8 +129,50 @@ test.describe('Connected via Basic auth',
             const listRepoAfter = await checkJson(after);
             const amountRepoAfter = listRepoAfter.length;
 
-            expect(json.isCreated).toBeTruthy();
-            expect(amountRepoBefore).toEqual(amountRepoAfter - 1);
+            expect(json.newDirectoryCreated).toBeFalsy();
+            expect(json.repoCreated).toBeTruthy();
+            expect(amountRepoBefore).toBeLessThan(amountRepoAfter);
+        });
+
+        test('POST request to create a repository with a new folder', async ({request}) => {
+            const before = await requestGETWithAdminBasicAuth(request, url + "/repositories")
+            const listRepoBefore = await checkJson(before);
+            const amountRepoBefore = listRepoBefore.length;
+
+            const response = await requestPOSTWithAdminBasicAuth(
+                request,
+                url + "/repositories/grenoble",
+                {
+                    label: 'Grenoble',
+                    path: "grenoble_agglo/",
+                    allowUserDefinedThemes: "false",
+                    createDirectory: "true"
+                }
+            )
+            const json = await checkJson(response, 201);
+
+            const after = await requestGETWithAdminBasicAuth(request, url + "/repositories")
+            const listRepoAfter = await checkJson(after);
+            const amountRepoAfter = listRepoAfter.length;
+
+            expect(json.newDirectoryCreated).toBeTruthy();
+            expect(json.repoCreated).toBeTruthy();
+            expect(amountRepoBefore).toBeLessThan(amountRepoAfter);
+        });
+
+        test('POST request to create a repository with a creation of folder but already existing', async ({request}) => {
+            const response = await requestPOSTWithAdminBasicAuth(
+                request,
+                url + "/repositories/tours",
+                {
+                    label: 'Tours',
+                    path: "demoqgis/",
+                    allowUserDefinedThemes: "false",
+                    createDirectory: "true"
+                }
+            )
+
+            expect(response.status()).toBe(409);
         });
 
         test('GET all paths used for repositories', async ({request}) => {

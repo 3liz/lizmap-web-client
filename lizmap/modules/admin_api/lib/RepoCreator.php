@@ -11,13 +11,19 @@ class RepoCreator
      * @param string $label                  the display name of the repository
      * @param string $path                   the path to the repository directory
      * @param string $allowUserDefinedThemes whether user-defined themes are allowed for the repository
+     * @param bool   $createDirectory        whether to create the repository directory
      *
      * @return bool returns true if the repository is successfully created
      *
      * @throws \Exception if the repository creation fails
      */
-    public static function createRepository(string $key, string $label, string $path, string $allowUserDefinedThemes): bool
-    {
+    public static function createRepository(
+        string $key,
+        string $label,
+        string $path,
+        string $allowUserDefinedThemes,
+        bool $createDirectory
+    ): bool {
         if (\lizmap::getRepository($key)) {
             throw new \Exception("The repository '{$key}' already exists.", 409);
         }
@@ -45,20 +51,39 @@ class RepoCreator
             throw new \Exception($e->getMessage(), $e->getCode());
         }
 
-        if (!file_exists($path) or !is_dir($path)) {
+        if (!is_dir($path)) {
+            if ($createDirectory) {
+                $oldUmask = umask(0002);
+                $isCreated = mkdir($path, 0775, true);
+                umask($oldUmask);
+                if (!$isCreated) {
+                    throw new \Exception(
+                        "Unable to create directory '{$path}'".
+                        " Maybe you don't have enough permissions.",
+                        500
+                    );
+                }
+            } else {
+                throw new \Exception(
+                    "The path provided ({$path}) doesn't exist or is not a directory ! ",
+                    400
+                );
+            }
+        } elseif ($createDirectory) {
             throw new \Exception(
-                "The path provided doesn't exist or is not a directory ! ".
-                "It has to be a folder in '{$rootRepositories}'.",
-                400
+                'The directory you want to create already exists ! ',
+                409
             );
         }
+
         // Add a trailing / if needed
         if (!str_ends_with($path, '/')) {
             $path .= '/';
         }
+
         $data['path'] = $path;
 
-        $data['allowUserDefinedThemes'] = self::isValidBooleanValue($allowUserDefinedThemes);
+        $data['allowUserDefinedThemes'] = Utils::isValidBooleanValue($allowUserDefinedThemes);
 
         $repo = \lizmap::createRepository($key, $data);
         if (!$repo) {
@@ -69,15 +94,14 @@ class RepoCreator
     }
 
     /**
-     * Validates and resolves a relative path to an absolute path based on the specified root repository.
+     * Tests and validates a relative path.
      *
-     * @param string $path     The path to validate and resolve. It can be a relative or absolute path.
+     * @param string $path     The path to validate. It can be a relative or absolute path.
      * @param string $rootRepo the root repository directory used as a base for paths
      *
      * @return string returns the path
      *
-     * @throws \Exception if the provided relative path is not authorized or cannot be resolved within
-     *                    the root repository
+     * @throws \Exception if the provided relative path is not authorized
      */
     private static function testRelativePath(string $path, string $rootRepo): string
     {
@@ -87,40 +111,12 @@ class RepoCreator
                 if (!str_ends_with($rootRepo, '/')) {
                     $rootRepo .= '/';
                 }
-                $npath = realpath($rootRepo.$path);
-
-                if (!str_starts_with($npath, $rootRepo)) {
-                    // Error message
-                    throw new \Exception('The path provided is not authorized !', 400);
-                }
-
-                $path = $npath;
+                $path = $rootRepo.$path;
+            } else {
+                throw new \Exception("The path provided is not authorized as there's no root repository !", 400);
             }
         }
 
         return $path;
-    }
-
-    /**
-     * Validates whether the given value represents a boolean true value.
-     *
-     * @param mixed $value The value to validate. Can be of any data type.
-     *
-     * @return bool returns true if the value represents a boolean true value, otherwise false
-     */
-    private static function isValidBooleanValue(mixed $value): bool
-    {
-        if (empty($value)) {
-            return false;
-        }
-
-        if (is_bool($value)) {
-            return $value;
-        }
-
-        $strVal = strtolower((string) $value);
-        $validTrueValues = array('true', 't', 'on', '1');
-
-        return in_array($strVal, $validTrueValues, true);
     }
 }

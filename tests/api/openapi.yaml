@@ -114,7 +114,11 @@ components:
           type: boolean
           description: Indicate if user defined themes are allowed
           example: null
-        isCreated:
+        newDirectoryCreated:
+          type: boolean
+          description: Indicate if a directory has been created
+          example: true
+        repoCreated:
           type: boolean
           description: Indicate if the repository is created
           example: true
@@ -564,6 +568,12 @@ paths:
           in: query
           description: Indicate if user defined themes are allowed
           required: true
+          schema:
+            type: string
+        - name: createDirectory
+          in: query
+          description: Indicate if we want to create a directory depending in the path given
+          required: false
           schema:
             type: string
       responses:

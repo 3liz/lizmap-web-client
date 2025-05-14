@@ -95,4 +95,27 @@ class Utils
         }
 
     }
+
+    /**
+     * Validates whether the given value represents a boolean true value.
+     *
+     * @param mixed $value The value to validate. Can be of any data type.
+     *
+     * @return bool returns true if the value represents a boolean true value, otherwise false
+     */
+    public static function isValidBooleanValue(mixed $value): bool
+    {
+        if (empty($value)) {
+            return false;
+        }
+
+        if (is_bool($value)) {
+            return $value;
+        }
+
+        $strVal = strtolower((string) $value);
+        $validTrueValues = array('true', 't', 'on', '1');
+
+        return in_array($strVal, $validTrueValues, true);
+    }
 }

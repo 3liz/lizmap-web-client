@@ -124,16 +124,18 @@ class repository_restCtrl extends RestApiCtrl
         $label = $this->param('label');
         $path = $this->param('path');
         $allowUserDefinedThemes = $this->param('allowUserDefinedThemes', null);
+        $createDirectory = Utils::isValidBooleanValue($this->param('createDirectory'));
 
         try {
-            $isCreated = RepoCreator::createRepository($key, $label, $path, $allowUserDefinedThemes);
+            $isCreated = RepoCreator::createRepository($key, $label, $path, $allowUserDefinedThemes, $createDirectory);
 
             $rep->data = array(
                 'key' => $key,
                 'label' => $label,
                 'path' => $path,
                 'allowUserDefinedThemes' => $allowUserDefinedThemes,
-                'isCreated' => $isCreated,
+                'newDirectoryCreated' => $createDirectory,
+                'repoCreated' => $isCreated,
             );
 
             $rep->setHttpStatus(
