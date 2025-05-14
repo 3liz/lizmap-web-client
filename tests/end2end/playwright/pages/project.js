@@ -155,6 +155,7 @@ export class ProjectPage extends BasePage {
         this.switcher = page.locator('#button-switcher');
         this.baseLayerSelect = page.locator('#switcher-baselayer').getByRole('combobox')
         this.buttonEditing = page.locator('#button-edition');
+        this.buttonMetadata = page.locator('#button-metadata');
         this.editionForm = page.locator('#jforms_view_edition');
     }
 

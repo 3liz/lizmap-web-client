@@ -49,3 +49,7 @@ setup('authenticate as publisher', async ({page}) => {
 setup('authenticate as user_in_group_b', async ({page}) => {
     await auth_using_login(page, 'user_in_group_b', 'admin', getAuthStorageStatePath('user_in_group_b'));
 });
+
+setup('authenticate as read only', async ({page}) => {
+    await auth_using_login(page, 'user_read_only', 'admin', getAuthStorageStatePath('user_read_only'));
+});

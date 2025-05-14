@@ -100,7 +100,8 @@ test.describe('Connected from context, as a publisher',
                     "admins",
                     "group_a",
                     "group_b",
-                    "publishers"
+                    "publishers",
+                    "read_only"
                 ].sort()
             );
             expect(json.repositories.testsrepository.authorized_groups.sort()).toStrictEqual(
@@ -109,7 +110,8 @@ test.describe('Connected from context, as a publisher',
                     "admins",
                     "group_a",
                     "group_b",
-                    "publishers"
+                    "publishers",
+                    "read_only"
                 ].sort()
             );
             expect(json.repositories.testsrepository.projects.events.title).toBe('Touristic events around Montpellier, France');
@@ -134,6 +136,9 @@ test.describe('Connected from context, as a publisher',
                     },
                     "publishers": {
                         "label": "Publishers"
+                    },
+                    "read_only": {
+                        "label": "read_only"
                     },
                     "users": {
                         "label": "users"
@@ -176,7 +181,8 @@ test.describe('Request JSON metadata as admin, connected from context',
                     "admins",
                     "group_a",
                     "group_b",
-                    "publishers"
+                    "publishers",
+                    "read_only"
                 ].sort()
             );
             expect(json.repositories.testsrepository.authorized_groups.sort()).toStrictEqual(
@@ -185,7 +191,8 @@ test.describe('Request JSON metadata as admin, connected from context',
                     "admins",
                     "group_a",
                     "group_b",
-                    "publishers"
+                    "publishers",
+                    "read_only"
                 ].sort()
             );
             expect(json.repositories.montpellier.projects).toStrictEqual(
@@ -219,6 +226,9 @@ test.describe('Request JSON metadata as admin, connected from context',
                     },
                     "publishers": {
                         "label": "Publishers"
+                    },
+                    "read_only": {
+                        "label": "read_only",
                     },
                     "users": {
                         "label": "users"
