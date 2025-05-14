@@ -49,10 +49,6 @@ class RepoCreator
             $path = self::testRelativePath($path, $rootRepositories);
         } catch (ApiException $e) {
             throw new ApiException($e->getMessage(), $e->getCode());
-        } catch (\Exception $e) {
-            \jLog::logEx($e, 'error');
-
-            throw new \Exception($e->getMessage(), $e->getCode());
         }
 
         if (!is_dir($path)) {

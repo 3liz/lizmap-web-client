@@ -39,10 +39,6 @@ class repository_rights_restCtrl extends RestApiCtrl
                 $rep->data = $this->getRepoRights();
             } catch (ApiException $e) {
                 return Error::setError($rep, $e->getCode(), $e->getMessage());
-            } catch (Exception $e) {
-                jLog::logEx($e, 'error');
-
-                return Error::setError($rep, 500, $e->getMessage());
             }
         } else {
             $rep->data = LizmapRights::getLWCRights();
@@ -92,10 +88,6 @@ class repository_rights_restCtrl extends RestApiCtrl
             Utils::verifyVars($group, $right, $key);
         } catch (ApiException $e) {
             return Error::setError($rep, $e->getCode(), $e->getMessage());
-        } catch (Exception $e) {
-            jLog::logEx($e, 'error');
-
-            return Error::setError($rep, 500, $e->getMessage());
         }
 
         $isAdded = false;
@@ -141,10 +133,6 @@ class repository_rights_restCtrl extends RestApiCtrl
             Utils::verifyVars($group, $right, $key);
         } catch (ApiException $e) {
             return Error::setError($rep, $e->getCode(), $e->getMessage());
-        } catch (Exception $e) {
-            jLog::logEx($e, 'error');
-
-            return Error::setError($rep, 500, $e->getMessage());
         }
 
         $isRemoved = false;
