@@ -50,6 +50,8 @@ class RepoCreator
         } catch (ApiException $e) {
             throw new ApiException($e->getMessage(), $e->getCode());
         } catch (\Exception $e) {
+            \jLog::logEx($e, 'error');
+
             throw new \Exception($e->getMessage(), $e->getCode());
         }
 
@@ -61,7 +63,7 @@ class RepoCreator
                 if (!$isCreated) {
                     throw new ApiException(
                         "Unable to create directory '{$path}'".
-                        " Maybe you don't have enough permissions.",
+                        ' Maybe the process running Lizmap does not have enough permissions.',
                         500
                     );
                 }

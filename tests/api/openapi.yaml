@@ -572,7 +572,7 @@ paths:
             type: string
         - name: createDirectory
           in: query
-          description: Indicate if we want to create a directory depending in the path given
+          description: Indicate if we want to create the directory on the file system
           required: false
           schema:
             type: string

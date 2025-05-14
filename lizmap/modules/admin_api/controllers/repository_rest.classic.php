@@ -102,6 +102,8 @@ class repository_restCtrl extends RestApiCtrl
         } catch (ApiException $e) {
             return Error::setError($rep, $e->getCode(), $e->getMessage());
         } catch (Exception $e) {
+            jLog::logEx($e, 'error');
+
             return Error::setError($rep, 500, $e->getMessage());
         }
         $rep->data = $response;
@@ -148,6 +150,8 @@ class repository_restCtrl extends RestApiCtrl
         } catch (ApiException $e) {
             return Error::setError($rep, $e->getCode(), $e->getMessage());
         } catch (Exception $e) {
+            jLog::logEx($e, 'error');
+
             return Error::setError($rep, 500, $e->getMessage());
         }
 

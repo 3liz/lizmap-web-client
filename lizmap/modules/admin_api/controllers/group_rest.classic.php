@@ -33,6 +33,8 @@ class group_restCtrl extends RestApiCtrl
             $manager = new jAcl2DbAdminUIManager();
             $groups = $manager->getGroupRights();
         } catch (Exception $e) {
+            jLog::logEx($e, 'error');
+
             return Error::setError($rep, 500, $e->getMessage());
         }
 

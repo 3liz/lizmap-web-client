@@ -40,6 +40,8 @@ class repository_rights_restCtrl extends RestApiCtrl
             } catch (ApiException $e) {
                 return Error::setError($rep, $e->getCode(), $e->getMessage());
             } catch (Exception $e) {
+                jLog::logEx($e, 'error');
+
                 return Error::setError($rep, 500, $e->getMessage());
             }
         } else {
@@ -91,6 +93,8 @@ class repository_rights_restCtrl extends RestApiCtrl
         } catch (ApiException $e) {
             return Error::setError($rep, $e->getCode(), $e->getMessage());
         } catch (Exception $e) {
+            jLog::logEx($e, 'error');
+
             return Error::setError($rep, 500, $e->getMessage());
         }
 
@@ -99,6 +103,8 @@ class repository_rights_restCtrl extends RestApiCtrl
         try {
             $isAdded = jAcl2DbManager::addRight($group, $right, $key);
         } catch (Exception $e) {
+            jLog::logEx($e, 'error');
+
             return Error::setError($rep, 500, $e->getMessage());
         }
 
@@ -136,6 +142,8 @@ class repository_rights_restCtrl extends RestApiCtrl
         } catch (ApiException $e) {
             return Error::setError($rep, $e->getCode(), $e->getMessage());
         } catch (Exception $e) {
+            jLog::logEx($e, 'error');
+
             return Error::setError($rep, 500, $e->getMessage());
         }
 
@@ -146,6 +154,8 @@ class repository_rights_restCtrl extends RestApiCtrl
             // removeRight() has no return not like addRight()
             $isRemoved = true;
         } catch (Exception $e) {
+            jLog::logEx($e, 'error');
+
             return Error::setError($rep, 500, $e->getMessage());
         }
 

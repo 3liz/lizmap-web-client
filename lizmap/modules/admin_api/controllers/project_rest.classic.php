@@ -42,6 +42,8 @@ class project_restCtrl extends RestApiCtrl
         } catch (ApiException $e) {
             return Error::setError($rep, $e->getCode(), $e->getMessage());
         } catch (Exception $e) {
+            jLog::logEx($e, 'error');
+
             return Error::setError($rep, 500, $e->getMessage());
         }
 
@@ -94,6 +96,8 @@ class project_restCtrl extends RestApiCtrl
             $proj = $repo->getProject($this->param('proj'));
             $projInfos = $proj->getFirstQgisConfigLine();
         } catch (Exception $e) {
+            jLog::logEx($e, 'error');
+
             return Error::setError($rep, $e->getCode(), $e->getMessage());
         }
 
