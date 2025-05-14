@@ -62,6 +62,7 @@
             <dd><small class="bbox">{$WMSExtent}</small></dd>
             <br/>
 
+            {ifacl2 'lizmap.tools.displayGetCapabilitiesLinks', $repository}
             {if $wmsGetCapabilitiesUrl}
             <dt>{@view~map.metadata.properties.wmsGetCapabilitiesUrl@}</dt>
             <dd>
@@ -76,8 +77,17 @@
               </small>
               {usemacro 'copy_to_clipboard', $wmtsGetCapabilitiesUrl}
             </dd>
+            {ifacl2 'lizmap.tools.layer.export', $repository}
+              <dd>
+                <small>
+                  <a href="{$wfsGetCapabilitiesUrl}" target="_blank">WFS URL</a>
+                </small>
+                {usemacro 'copy_to_clipboard', $wfsGetCapabilitiesUrl}
+              </dd>
+            {/ifacl2}
             <br/>
             {/if}
+            {/ifacl2}
           </dl>
         </p>
       </div>
