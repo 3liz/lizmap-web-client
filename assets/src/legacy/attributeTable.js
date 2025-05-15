@@ -50,7 +50,6 @@ var lizAttributeTable = function() {
             var wfsTypenameMap = {};
             var mediaLinkPrefix = globalThis['lizUrls'].media + '?' + new URLSearchParams(globalThis['lizUrls'].params);
             var startupFilter = false;
-            let moveSelectedToTop = false;
             if( !( typeof lizLayerFilter === 'undefined' ) ){
                 startupFilter = true;
                 lizMap.lizmapLayerFilterActive = true;
@@ -500,16 +499,22 @@ var lizAttributeTable = function() {
                 html+= '<button class="btn-select-searched btn btn-mini" value="'+cleanName+'" title="'+lizDict['attributeLayers.toolbar.btn.select.searched.title']+'"><i class="icon-star"></i></button>';
 
                 // Unselect button
-                html+= '    <button class="btn-unselect-attributeTable btn btn-mini' + selClass + '" value="' + cleanName + '" title="'+lizDict['attributeLayers.toolbar.btn.data.unselect.title']+'"><i class="icon-star-empty"></i></button>';
+                html+= '<button class="btn-unselect-attributeTable btn btn-mini' + selClass + '" value="' + cleanName + '" title="'+lizDict['attributeLayers.toolbar.btn.data.unselect.title']+'"><i class="icon-star-empty"></i></button>';
 
                 // 'Move selected to top' button
-                html+= '    <button class="btn-moveselectedtotop-attributeTable btn btn-mini' + selClass + '" value="' + cleanName + '" title="'+lizDict['attributeLayers.toolbar.btn.data.moveselectedtotop.title']+'"><i class="icon-arrow-up"></i></button>';
+                html+= `
+                <button
+                    class="btn-moveselectedtotop-attributeTable btn btn-mini ${selClass}"
+                    data-layerid="${config.layers[lname].id}"
+                    value="${cleanName}"
+                    title="${lizDict['attributeLayers.toolbar.btn.data.moveselectedtotop.title']}"
+                    ><i class="icon-arrow-up"></i>
+                </button>`;
 
                 // Filter button : only if no filter applied at startup
                 if( !startupFilter
-                    && ( !lizMap.lizmapLayerFilterActive || lizMap.lizmapLayerFilterActive == lname )
-                ){
-                    html+= '    <button class="btn-filter-attributeTable btn btn-mini' + filClass + '" value="' + cleanName + '" title="'+lizDict['attributeLayers.toolbar.btn.data.filter.title']+'"><i class="icon-filter"></i></button>';
+                    && ( !lizMap.lizmapLayerFilterActive || lizMap.lizmapLayerFilterActive == lname )){
+                    html+= '<button class="btn-filter-attributeTable btn btn-mini' + filClass + '" value="' + cleanName + '" title="'+lizDict['attributeLayers.toolbar.btn.data.filter.title']+'"><i class="icon-filter"></i></button>';
                 }
 
                 // Filter data by extent button
@@ -691,9 +696,7 @@ var lizAttributeTable = function() {
                 document.querySelector(moveSelectedToTopSelector).addEventListener('click', (e) => {
                     const dTableSelector = '#attribute-layer-table-' + e.currentTarget.value;
                     const dTable = new DataTable(dTableSelector);
-                    moveSelectedToTop = true;
                     dTable.draw();
-                    moveSelectedToTop = false;
 
                     // Scroll to top
                     document.querySelector(dTableSelector).parentElement.scroll({
@@ -1385,9 +1388,8 @@ var lizAttributeTable = function() {
                             type: 'POST',
                             data: (d) => {
                                 // Handle selected features moved to top
-                                if (moveSelectedToTop) {
-                                    d.moveselectedtotop = true;
-                                    d.selectedfeatureids = lConfig['selectedFeatures'].join();
+                                if (document.querySelector('.btn-moveselectedtotop-attributeTable.active[data-layerid="' + lConfig.id + '"]')) {
+                                    d.filteredfeatureids = lConfig['selectedFeatures'].join();
                                 }
 
                                 // Handle filtered features
@@ -3103,20 +3105,25 @@ var lizAttributeTable = function() {
                     const selectedFeatures = config.layers[e.featureType].selectedFeatures;
                     const table = new DataTable('table[data-layerid=' + layerId + ']');
 
-                    table.rows().every(function (rowIdx) {
-                        var data = this.data();
-                        if ((selectedFeatures.includes(data.DT_RowId.toString()))) {
-                            this.row(rowIdx).node().classList.add('selected');
-                            data.lizSelected = 'a';
-                        } else {
-                            this.row(rowIdx).node().classList.remove('selected');
-                            data.lizSelected = 'z';
-                        }
-                    });
+                    if (document.querySelector('.btn-moveselectedtotop-attributeTable.active[data-layerid="' + layerId + '"]')) {
+                        table.draw();
+                    } else {
+                        table.rows().every(function (rowIdx) {
+                            var data = this.data();
+                            if ((selectedFeatures.includes(data.DT_RowId.toString()))) {
+                                this.row(rowIdx).node().classList.add('selected');
+                                data.lizSelected = 'a';
+                            } else {
+                                this.row(rowIdx).node().classList.remove('selected');
+                                data.lizSelected = 'z';
+                            }
+                        });
+                    }
 
                     // Update openlayers layer drawing
-                    if( e.updateDrawing )
+                    if( e.updateDrawing ){
                         updateMapLayerSelection( e.featureType );
+                    }
                 },
 
                 layerFilteredFeaturesChanged: function(e) {
