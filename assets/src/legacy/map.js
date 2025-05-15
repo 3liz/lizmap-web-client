@@ -3164,6 +3164,14 @@ window.lizMap = function() {
          * Method: init
          */
         init: function() {
+            var self = this;
+            // defined an attribute initialized
+            // to launch this method only one
+            if (self.initialized) {
+                return;
+            }
+            self.initialized = true;
+
             // Initialize global variables
             const lizmapVariablesJSON = document.getElementById('lizmap-vars')?.innerText;
             if (lizmapVariablesJSON) {
@@ -3176,8 +3184,6 @@ window.lizMap = function() {
                     console.warn('JSON for Lizmap global variables is not valid!');
                 }
             }
-
-            var self = this;
 
             // Get config
             const configRequest = fetch(globalThis['lizUrls'].config + '?' + new URLSearchParams(globalThis['lizUrls'].params)).then(function (response) {
