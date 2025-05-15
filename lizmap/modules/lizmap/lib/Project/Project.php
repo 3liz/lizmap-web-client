@@ -534,8 +534,27 @@ class Project
                 'repository' => $this->repository->getKey(),
                 'project' => $this->key,
                 'SERVICE' => 'WMS',
-                'VERSION' => '1.3.0',
                 'REQUEST' => 'GetCapabilities',
+                'VERSION' => '1.3.0',
+            )
+        );
+    }
+
+    /**
+     * Get the WMS GetCapabilities Url.
+     *
+     * @return string
+     */
+    public function getWFSGetCapabilitiesUrl()
+    {
+        return $this->appContext->getFullUrl(
+            'lizmap~service:index',
+            array(
+                'repository' => $this->repository->getKey(),
+                'project' => $this->key,
+                'SERVICE' => 'WFS',
+                'REQUEST' => 'GetCapabilities',
+                'VERSION' => '1.0.0',
             )
         );
     }
@@ -553,8 +572,8 @@ class Project
                 'repository' => $this->repository->getKey(),
                 'project' => $this->key,
                 'SERVICE' => 'WMTS',
-                'VERSION' => '1.0.0',
                 'REQUEST' => 'GetCapabilities',
+                'VERSION' => '1.0.0',
             )
         );
     }
