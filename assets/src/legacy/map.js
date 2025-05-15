@@ -3624,6 +3624,7 @@ lizMap.events.on({
     }
 });
 
+// Do some User interface changes
 $(document).ready(function () {
     // start waiting
     $('body').css('cursor', 'wait');
@@ -3639,9 +3640,6 @@ $(document).ready(function () {
         .children('.ui-dialog-titlebar').removeClass('ui-corner-all');
     // configurate OpenLayers
     OpenLayers.DOTS_PER_INCH = 96;
-
-    // initialize LizMap
-    lizMap.init();
 
     // Init bootstrap tooltips
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
