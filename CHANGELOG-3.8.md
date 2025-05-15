@@ -8,6 +8,19 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Funders
+
+* **[Avignon](https://www.avignon.fr/)**
+* **[DVPSolar](https://dvpsolar.com/)**
+* **[TDPA](https://www.terredeprovence-agglo.com/)**
+* **[WPD](https://www.wpd.fr/)**
+
+### Fixed
+
+* The WMS Capability root layer has no bounding boxes
+* Digitizing module: deactivate it when the drawing box is closed
+* Regression about the attribute table being limited to 500 features
+
 ## 3.8.9 - 2025-05-12
 
 ### Added
