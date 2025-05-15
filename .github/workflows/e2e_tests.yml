@@ -89,7 +89,7 @@ jobs:
         env:
           ACTIONS_STEP_DEBUG: true
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          username: "3liz"
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Checkout
