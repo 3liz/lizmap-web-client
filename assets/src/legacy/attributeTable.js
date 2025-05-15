@@ -1948,7 +1948,7 @@ var lizAttributeTable = function() {
                             start = end;
                             end = start+step;
                         }
-                    } while (found == 0);
+                    } while (found !== 0);
                     resolve({
                         'dataSet': dataSet,
                         'foundFeatures': foundFeatures

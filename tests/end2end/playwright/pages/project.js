@@ -105,6 +105,14 @@ export class ProjectPage extends BasePage {
     warningMessage;
 
     /**
+     * Attribute table wrapper for the given layer name
+     * @param {string} name Name of the layer
+     * @returns {Locator} Locator for attribute table wrapper
+     */
+    attributeTableWrapper = (name) =>
+        this.page.locator(`#attribute-layer-table-${name}_wrapper`);
+
+    /**
      * Attribute table for the given layer name
      * @param {string} name Name of the layer
      * @returns {Locator}
