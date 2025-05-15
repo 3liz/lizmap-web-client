@@ -16,7 +16,10 @@
     },
     "autoload": {
         "classmap": ["../../lizmap/modules/lizmap/classes/" ],
-        "psr-4": {"Lizmap\\": "../../lizmap/modules/lizmap/lib/"}
+        "psr-4": {
+            "Lizmap\\": "../../lizmap/modules/lizmap/lib/",
+            "LizmapApi\\": "../../lizmap/modules/admin_api/lib/"
+        }
     },
     "minimum-stability": "stable",
     "scripts": {

@@ -45,10 +45,9 @@ class RepoCreator
         $rootRepositories = \lizmap::getServices()->getRootRepositories();
 
         // Testing a relative path and updating it if needed
-        try {
-            $path = self::testRelativePath($path, $rootRepositories);
-        } catch (ApiException $e) {
-            throw new ApiException($e->getMessage(), $e->getCode());
+        $path = self::testRelativePath($path, $rootRepositories);
+        if (!$path) {
+            throw new ApiException("The path provided is not authorized as there's no root repository !", 400);
         }
 
         if (!is_dir($path)) {
@@ -99,11 +98,9 @@ class RepoCreator
      * @param string $path     The path to validate. It can be a relative or absolute path.
      * @param string $rootRepo the root repository directory used as a base for paths
      *
-     * @return string returns the path
-     *
-     * @throws ApiException if the provided relative path is not authorized
+     * @return false|string returns the path
      */
-    private static function testRelativePath(string $path, string $rootRepo): string
+    public static function testRelativePath(string $path, string $rootRepo): false|string
     {
         if ($path[0] != '/' and $path[1] != ':') {
             if ($rootRepo != '') {
@@ -113,7 +110,7 @@ class RepoCreator
                 }
                 $path = $rootRepo.$path;
             } else {
-                throw new ApiException("The path provided is not authorized as there's no root repository !", 400);
+                return false;
             }
         }
 
