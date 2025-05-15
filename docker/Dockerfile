@@ -1,10 +1,10 @@
 ARG REGISTRY_PREFIX=''
-FROM ${REGISTRY_PREFIX}alpine:3.17 AS build
+FROM ${REGISTRY_PREFIX}alpine:3.21 AS build
 
 COPY lizmap_web_client.zip .
 RUN unzip lizmap_web_client.zip
 
-FROM alpine:3.17
+FROM alpine:3.21
 LABEL org.opencontainers.image.authors="David Marteau <david.marteau@3liz.com>"
 LABEL Description="Lizmap web client" Vendor="3liz.org" Version="23.02.0"
 
