@@ -10,6 +10,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ### Funders
 
+* **[Digi-Studio](https://digi-stud.io/)**
+
 ### Important
 
 * PHP 8.2 minimum is required
@@ -18,7 +20,10 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ### Changed
 
+* Migrate datatables from client to server side
+
 ### Backend
 
 * Update to Bootstrap 5
 * Raise PHP to version 8.2
+* Raise docker from Alpine 17 to 21
