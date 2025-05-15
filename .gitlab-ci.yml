@@ -7,6 +7,9 @@ stages:
 - release
 - post-release
 
+variables:
+  PHP_VERSION: "8.1"
+
 cache:
   key: "$CI_COMMIT_REF_SLUG"
   paths:
@@ -14,7 +17,7 @@ cache:
     - assets/node_modules/
 
 build:
-  image: ${REGISTRY_URL}/factory-ci-runner:fabric-ci
+  image: ${REGISTRY_URL}/factory-ci-runner:fabric-ci-php${PHP_VERSION}
   stage: build
   script:
     - make build
@@ -65,7 +68,7 @@ build:
     - fabric
 
 tests:
-  image: ${REGISTRY_URL}/factory-ci-runner:fabric-ci
+  image: ${REGISTRY_URL}/factory-ci-runner:fabric-ci-php${PHP_VERSION}
   stage: tests
   script:
     - make tests
@@ -82,7 +85,7 @@ tests:
     - fabric
 
 package:
-  image: ${REGISTRY_URL}/factory-ci-runner:fabric-ci
+  image: ${REGISTRY_URL}/factory-ci-runner:fabric-ci-php${PHP_VERSION}
   stage: package
   script:
     - make clean ci_package
@@ -141,7 +144,7 @@ docker-image-release:
     - factory-dind
 
 deploy-package-unstable:
-  image: ${REGISTRY_URL}/factory-ci-runner:fabric-ci
+  image: ${REGISTRY_URL}/factory-ci-runner:fabric-ci-php${PHP_VERSION}
   stage: deploy
   script:
     - make deploy_download
@@ -176,7 +179,7 @@ deploy-docker-unstable:
     - factory-dind
 
 deploy-quick-release:
-  image: ${REGISTRY_URL}/factory-ci-runner:fabric-ci
+  image: ${REGISTRY_URL}/factory-ci-runner:fabric-ci-php${PHP_VERSION}
   stage: release
   script:
     - make saas_release DO_RELEASE=y
@@ -194,7 +197,7 @@ deploy-quick-release:
 
 
 deploy-release:
-  image: ${REGISTRY_URL}/factory-ci-runner:fabric-ci
+  image: ${REGISTRY_URL}/factory-ci-runner:fabric-ci-php${PHP_VERSION}
   stage: release
   script:
     - make deploy_download_stable
