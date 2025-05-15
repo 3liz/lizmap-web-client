@@ -8,6 +8,33 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Funders
+
+* **[Avignon](https://www.avignon.fr/)**
+* **[DVPSolar](https://dvpsolar.com/)**
+* **[TDPA](https://www.terredeprovence-agglo.com/)**
+* **[WPD](https://www.wpd.fr/)**
+
+### Added
+
+* Metadata: Add the WFS link if the user has enough rights
+* Add the project abstract in data attributes on the landing page
+
+### Fixed
+
+* The WMS Capability root layer has no bounding boxes
+* Digitizing module: deactivate it when the drawing box is closed
+* Regression about the attribute table being limited to 500 features
+
+### Changed
+
+* UX - Rephrase the error message about the QGIS wrapper
+
+### Backend
+
+* Update lit-html to 3.3.0
+* Update dompurify to 3.2.5
+
 ## 3.9.0-rc.2 - 2025-05-12
 
 ### Added
