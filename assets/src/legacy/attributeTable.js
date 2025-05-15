@@ -1375,6 +1375,7 @@ var lizAttributeTable = function() {
                     const params = globalThis['lizUrls'].params;
                     params['layerId'] = lConfig.id;
 
+                    DataTable.defaults.column.orderSequence = ['asc', 'desc'];
                     const oTable = new DataTable(aTable, {
                         serverSide: true
                         ,ajax: {
