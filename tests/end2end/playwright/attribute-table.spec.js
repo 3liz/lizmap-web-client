@@ -4,24 +4,47 @@ import { ProjectPage } from './pages/project';
 import { gotoMap } from './globals';
 
 test.describe('Attribute table', () => {
-    test.beforeEach(async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=attribute_table';
-        await gotoMap(url, page)
-    });
 
     test('Thumbnail class generate img with good path', async ({ page }) => {
         const project = new ProjectPage(page, 'attribute_table');
+        await project.open();
         const layerName = 'Les_quartiers_a_Montpellier';
 
         await project.openAttributeTable(layerName);
-        await expect(project.attributeTableHtml(layerName).locator('tbody tr')).toHaveCount(7);
+        await expect(project.attributeTableWrapper(layerName).locator('div.dataTables_info'))
+            .toContainText('Showing 1 to 7 of 7 entries');
+        await expect(project.attributeTableHtml(layerName).locator('tbody tr'))
+            .toHaveCount(7);
         // mediaFile as stored in data-src attributes
-        const mediaFile = await project.attributeTableHtml(layerName).locator('img.data-attr-thumbnail').first().getAttribute('data-src');
+        const mediaFile = await project.attributeTableHtml(layerName)
+            .locator('img.data-attr-thumbnail').first().getAttribute('data-src');
         expect(mediaFile).not.toBeNull
         // ensure src contain "dynamic" mediaFile
-        await expect(project.attributeTableHtml(layerName).locator('img.data-attr-thumbnail').first()).toHaveAttribute('src', new RegExp(mediaFile ?? ''));
+        await expect(project.attributeTableHtml(layerName).locator('img.data-attr-thumbnail').first())
+            .toHaveAttribute('src', new RegExp(mediaFile ?? ''));
         // ensure src contain getMedia and projet URL
-        await expect(project.attributeTableHtml(layerName).locator('img.data-attr-thumbnail').first()).toHaveAttribute('src', /getMedia\?repository=testsrepository&project=attribute_table&/);
+        await expect(project.attributeTableHtml(layerName).locator('img.data-attr-thumbnail').first())
+            .toHaveAttribute('src', /getMedia\?repository=testsrepository&project=attribute_table&/);
+    });
+
+    test('More than 500 features loaded in attribute table', async ({ page }) => {
+        const project = new ProjectPage(page, 'attribute_table');
+        await project.open();
+        await project.closeLeftDock();
+        const layerName = 'random_points';
+
+        await project.openAttributeTable(layerName);
+        await expect(project.attributeTableWrapper(layerName).locator('div.dataTables_info'))
+            .toContainText('Showing 1 to 50 of 700 entries');
+        await expect(project.attributeTableHtml(layerName).locator('tbody tr'))
+            .toHaveCount(50);
+        await expect(project.attributeTableWrapper(layerName).locator('ul.pagination > li.paginate_button'))
+            .toHaveCount(9);
+        // click on last page which is the previous last paginate_button
+        await project.attributeTableWrapper(layerName).hover();
+        project.attributeTableWrapper(layerName).locator('ul.pagination > li.paginate_button:nth-last-child(-0n+2)').dispatchEvent('click');
+        await expect(project.attributeTableWrapper(layerName).locator('div.dataTables_info'))
+            .toContainText('Showing 651 to 700 of 700 entries');
     });
 });
 
