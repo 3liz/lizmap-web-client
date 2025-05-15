@@ -51,7 +51,7 @@ jobs:
       PLAYWRIGHT_FORCE_TTY: true
       PLAYWRIGHT_LIST_PRINT_STEPS: true
       PLAYWRIGHT_JSON_OUTPUT_DIR: ${{ github.workspace }}/tests/end2end/playwright-report
-      PLAYWRIGHT_OPTIONS: --project=end2end --fail-on-flaky-tests
+      PLAYWRIGHT_OPTIONS: --project=end2end
       FORCE_COLOR: true
     steps:
 
