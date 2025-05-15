@@ -3684,6 +3684,7 @@ lizMap.events.on({
     }
 });
 
+// Do some User interface changes
 $(document).ready(function () {
     // start waiting
     $('body').css('cursor', 'wait');
@@ -3700,7 +3701,5 @@ $(document).ready(function () {
     // configurate OpenLayers
     OpenLayers.DOTS_PER_INCH = 96;
 
-    // initialize LizMap
-    lizMap.init();
     $( "#loading" ).css('min-height','128px');
 });
