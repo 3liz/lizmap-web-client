@@ -57,6 +57,11 @@ class Error
                 'message' => 'Unauthorized. Basic authentication is required to access this resource.',
                 'http' => true,
             ),
+            '403' => array(
+                'code' => 403,
+                'message' => 'Forbidden.',
+                'http' => true,
+            ),
             '404' => array(
                 'code' => 404,
                 'message' => 'Resource not found. Please provide a valid entry.',

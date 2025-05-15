@@ -175,6 +175,43 @@ test.describe('Connected via Basic auth',
             expect(response.status()).toBe(409);
         });
 
+        test('POST request to create a repository with a creation of folder but wrong syntax', async ({request}) => {
+            const response = await requestPOSTWithAdminBasicAuth(
+                request,
+                url + "/repositories/tours",
+                {
+                    label: 'Tours',
+                    path: "/demoqgis",
+                    allowUserDefinedThemes: "false",
+                    createDirectory: "true"
+                }
+            )
+            const response2 = await requestPOSTWithAdminBasicAuth(
+                request,
+                url + "/repositories/tours",
+                {
+                    label: 'Tours',
+                    path: "folder/demoqgis",
+                    allowUserDefinedThemes: "false",
+                    createDirectory: "true"
+                }
+            )
+            const response3 = await requestPOSTWithAdminBasicAuth(
+                request,
+                url + "/repositories/tours",
+                {
+                    label: 'Tours',
+                    path: "../demoqgis/",
+                    allowUserDefinedThemes: "false",
+                    createDirectory: "true"
+                }
+            )
+
+            expect(response.status()).toBeGreaterThanOrEqual(400);
+            expect(response2.status()).toBeGreaterThanOrEqual(400);
+            expect(response3.status()).toBeGreaterThanOrEqual(400);
+        });
+
         test('GET all paths used for repositories', async ({request}) => {
             const response = await requestGETWithAdminBasicAuth(request, url + "/paths")
 

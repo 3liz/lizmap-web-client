@@ -10,7 +10,7 @@ class RepoCreator
      * @param string $key                    The unique identifier for the repository. Must not yet exist.
      * @param string $label                  the display name of the repository
      * @param string $path                   the path to the repository directory
-     * @param string $allowUserDefinedThemes whether user-defined themes are allowed for the repository
+     * @param bool   $allowUserDefinedThemes whether user-defined themes are allowed for the repository
      * @param bool   $createDirectory        whether to create the repository directory
      *
      * @return bool returns true if the repository is successfully created
@@ -21,7 +21,7 @@ class RepoCreator
         string $key,
         string $label,
         string $path,
-        string $allowUserDefinedThemes,
+        bool $allowUserDefinedThemes,
         bool $createDirectory
     ): bool {
         if (\lizmap::getRepository($key)) {
@@ -44,28 +44,28 @@ class RepoCreator
 
         $rootRepositories = \lizmap::getServices()->getRootRepositories();
 
-        // Testing a relative path and updating it if needed
-        $path = self::testRelativePath($path, $rootRepositories);
-        if (!$path) {
-            throw new ApiException("The path provided is not authorized as there's no root repository !", 400);
+        if ($rootRepositories == '' and $createDirectory) {
+            throw new ApiException('The root repository is not set, and you want to create a directory.', 403);
+        }
+
+        try {
+            $path = self::pathValidator($path, $rootRepositories);
+        } catch (ApiException $e) {
+            throw new ApiException($e->getMessage(), $e->getCode());
         }
 
         if (!is_dir($path)) {
-            if ($createDirectory) {
+            if ($createDirectory) { // Root Repo is filled
                 $oldUmask = umask(0002);
-                $isCreated = mkdir($path, 0775, true);
+                $isCreated = mkdir($path, 0775, false);
                 umask($oldUmask);
                 if (!$isCreated) {
-                    throw new ApiException(
-                        "Unable to create directory '{$path}'".
-                        ' Maybe the process running Lizmap does not have enough permissions.',
-                        500
-                    );
+                    throw new ApiException("Unable to create directory '{$path}'", 500);
                 }
             } else {
                 throw new ApiException(
-                    "The path provided ({$path}) doesn't exist or is not a directory ! ",
-                    400
+                    "The path provided doesn't exist or is not a directory ! ",
+                    404
                 );
             }
         } elseif ($createDirectory) {
@@ -73,11 +73,6 @@ class RepoCreator
                 'The directory you want to create already exists ! ',
                 409
             );
-        }
-
-        // Add a trailing / if needed
-        if (!str_ends_with($path, '/')) {
-            $path .= '/';
         }
 
         $data['path'] = $path;
@@ -93,27 +88,68 @@ class RepoCreator
     }
 
     /**
-     * Tests and validates a relative path.
+     * Tests and validates a path to create a repository.
      *
      * @param string $path     The path to validate. It can be a relative or absolute path.
      * @param string $rootRepo the root repository directory used as a base for paths
      *
-     * @return false|string returns the path
+     * @return string Returns the path
+     *
+     * @throws ApiException If the path is incorrect
      */
-    public static function testRelativePath(string $path, string $rootRepo): false|string
+    public static function pathValidator(string $path, string $rootRepo): string
     {
-        if ($path[0] != '/' and $path[1] != ':') {
-            if ($rootRepo != '') {
-
-                if (!str_ends_with($rootRepo, '/')) {
-                    $rootRepo .= '/';
-                }
-                $path = $rootRepo.$path;
-            } else {
-                return false;
+        if ($rootRepo == '') {  // createDirectory = false
+            if (!str_starts_with($path, '/')) {
+                throw new ApiException(
+                    "The path provided is not authorized as there's no root repository !",
+                    400
+                );
             }
+        } else {
+            if (self::countPartSlashes($path) > 1) {
+                throw new ApiException(
+                    'The path provided is not authorized, it needs to be a single repository !',
+                    400
+                );
+            }
+            if (str_starts_with($path, '/') or str_starts_with($path, '.')) {
+                throw new ApiException(
+                    "The path provided is not authorized because there's a root repository !",
+                    400
+                );
+            }
+
+            if (!str_ends_with($rootRepo, '/')) {
+                $rootRepo .= '/';
+            }
+            $path = $rootRepo.$path;
+        }
+
+        if (!str_ends_with($path, '/')) {
+            $path .= '/';
         }
 
         return $path;
+    }
+
+    /**
+     * Counts the number of non-empty parts in a string separated by slashes.
+     *
+     * @param string $str the input string to be split and analyzed
+     *
+     * @return int returns the count of non-empty parts in the input string
+     */
+    public static function countPartSlashes(string $str): int
+    {
+        $list = explode('/', $str);
+        $amountPart = 0;
+        foreach ($list as $part) {
+            if (strlen($part) > 0) {
+                ++$amountPart;
+            }
+        }
+
+        return $amountPart;
     }
 }

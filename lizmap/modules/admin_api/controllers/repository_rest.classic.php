@@ -128,7 +128,7 @@ class repository_restCtrl extends RestApiCtrl
         $key = $this->param('repo');
         $label = $this->param('label');
         $path = $this->param('path');
-        $allowUserDefinedThemes = $this->param('allowUserDefinedThemes', null);
+        $allowUserDefinedThemes = Utils::isValidBooleanValue($this->param('allowUserDefinedThemes', false));
         $createDirectory = Utils::isValidBooleanValue($this->param('createDirectory'));
 
         try {
