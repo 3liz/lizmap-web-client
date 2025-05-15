@@ -72,10 +72,24 @@ export default class Lizmap {
                 // Add CRS:84 projection, same as EPSG:4326 but with ENU axis orientation
                 proj4.defs("CRS:84","+proj=longlat +datum=WGS84 +no_defs +type=crs");
                 register(proj4);
+
+                // With QGIS 3.40, the root WMS Layer has more easily no bounding boxes.
+                // To check if the project projection is NEU and not ENU, Lizmap can use a
+                // child which could be a layer or a group.
+                let wmsLayer = wmsCapabilities.Capability.Layer;
+                while (wmsLayer.BoundingBox === undefined) {
+                    for (const wmsChildLayer of wmsLayer.Layer) {
+                        if (Array.isArray(wmsChildLayer.BoundingBox)) {
+                            wmsLayer = wmsChildLayer;
+                            break;
+                        }
+                    }
+                }
+
                 // Update project projection if its axis orientation is not ENU
-                if (configProj.ref !== "" && Array.isArray(wmsCapabilities.Capability.Layer.BoundingBox)) {
+                if (configProj.ref !== "" && Array.isArray(wmsLayer.BoundingBox)) {
                     // loop through bounding boxes of the project provided by WMS capabilities
-                    for (const bbox of wmsCapabilities.Capability.Layer.BoundingBox) {
+                    for (const bbox of wmsLayer.BoundingBox) {
                         // If the BBOX CRS is not the same of the project projection, continue.
                         if (bbox.crs !== configProj.ref) {
                             continue;
@@ -87,7 +101,7 @@ export default class Lizmap {
                             break;
                         }
                         // Transform geographic extent to project projection
-                        const extent = olTransformExtent(wmsCapabilities.Capability.Layer.EX_GeographicBoundingBox, 'CRS:84', bbox.crs);
+                        const extent = olTransformExtent(wmsLayer.EX_GeographicBoundingBox, 'CRS:84', bbox.crs);
                         // Check closest coordinates
                         if (Math.abs(extent[0] - bbox.extent[1]) < Math.abs(extent[0] - bbox.extent[0])
                             && Math.abs(extent[1] - bbox.extent[0]) < Math.abs(extent[1] - bbox.extent[1])
@@ -108,7 +122,7 @@ export default class Lizmap {
                         // Transform extent from project projection to CRS:84
                         const geoExtent = olTransformExtent(bbox.extent, bbox.crs, 'CRS:84');
                         // Check intersects between transform extent and provided extent by WMS Capapbilities
-                        if (!olExtentIntersects(geoExtent, wmsCapabilities.Capability.Layer.EX_GeographicBoundingBox)) {
+                        if (!olExtentIntersects(geoExtent, wmsLayer.EX_GeographicBoundingBox)) {
                             // if extents do not intersect, we have to update the projection definition
                             proj4.defs(configProj.ref, configProj.proj4+' +axis=neu');
                             clearAllProjections();
