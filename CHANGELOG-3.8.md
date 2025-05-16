@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.8.10 - 2025-05-16
+
 ### Funders
 
 * **[Avignon](https://www.avignon.fr/)**
@@ -20,6 +22,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * The WMS Capability root layer has no bounding boxes
 * Digitizing module: deactivate it when the drawing box is closed
 * Regression about the attribute table being limited to 500 features
+* Improve reading GetCapabilities with QGIS 3.40 about a possible null in the bounding box
 
 ## 3.8.9 - 2025-05-12
 
