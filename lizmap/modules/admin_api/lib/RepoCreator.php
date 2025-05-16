@@ -4,6 +4,10 @@ namespace LizmapApi;
 
 class RepoCreator
 {
+    protected static $regexWindowsAbsolutePath = '/^[A-Z][:][\\/][a-zA-Z0-9_\\/]+/';
+    protected static $regexLinuxAbsolutePath = '/^[\\/][a-zA-Z0-9_\\/]+/';
+    protected static $regexFolderName = '/^[a-zA-Z0-9_]+$/';
+
     /**
      * Creates a new repository with the given properties.
      *
@@ -45,7 +49,11 @@ class RepoCreator
         $rootRepositories = \lizmap::getServices()->getRootRepositories();
 
         if ($rootRepositories == '' and $createDirectory) {
-            throw new ApiException('The root repository is not set, and you want to create a directory.', 403);
+            throw new ApiException(
+                'The root repository folder is not set on this instance,
+                 it is not possible to create a folder on the file system without this setting.',
+                403
+            );
         }
 
         try {
@@ -100,22 +108,28 @@ class RepoCreator
     public static function pathValidator(string $path, string $rootRepo): string
     {
         if ($rootRepo == '') {  // createDirectory = false
-            if (!str_starts_with($path, '/')) {
+            if (
+                !preg_match(self::$regexWindowsAbsolutePath, $path)   // WINDOWS
+                and !preg_match(self::$regexLinuxAbsolutePath, $path)         // LINUX
+            ) {
                 throw new ApiException(
                     "The path provided is not authorized as there's no root repository !",
                     400
                 );
             }
         } else {
-            if (self::countPartSlashes($path) > 1) {
-                throw new ApiException(
-                    'The path provided is not authorized, it needs to be a single repository !',
-                    400
-                );
-            }
             if (str_starts_with($path, '/') or str_starts_with($path, '.')) {
                 throw new ApiException(
                     "The path provided is not authorized because there's a root repository !",
+                    400
+                );
+            }
+
+            $path = trim($path, '/');
+
+            if (!preg_match(self::$regexFolderName, $path)) {
+                throw new ApiException(
+                    'The path provided is not authorized ! It needs to be a single repository.',
                     400
                 );
             }
@@ -131,25 +145,5 @@ class RepoCreator
         }
 
         return $path;
-    }
-
-    /**
-     * Counts the number of non-empty parts in a string separated by slashes.
-     *
-     * @param string $str the input string to be split and analyzed
-     *
-     * @return int returns the count of non-empty parts in the input string
-     */
-    public static function countPartSlashes(string $str): int
-    {
-        $list = explode('/', $str);
-        $amountPart = 0;
-        foreach ($list as $part) {
-            if (strlen($part) > 0) {
-                ++$amountPart;
-            }
-        }
-
-        return $amountPart;
     }
 }

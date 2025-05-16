@@ -17,6 +17,7 @@ class repoCreatorTest extends TestCase
         '/demoqgis',
         'projects/city',
         '/srv/lzm/tests/qgis-projects/demoqgis',
+        'B:/windows/folder',
     );
 
     public function testPathValidator(): void
@@ -35,40 +36,21 @@ class repoCreatorTest extends TestCase
             '/srv/lzm/tests/qgis-projects/demoqgis/',
             RepoCreator::pathValidator($this->listPath[4], '')
         );
+        $this->assertEquals(
+            'B:/windows/folder/',
+            RepoCreator::pathValidator($this->listPath[5], '')
+        );
 
         $this->expectException(ApiException::class);
 
         RepoCreator::pathValidator($this->listPath[2], $rootRepo);
         RepoCreator::pathValidator($this->listPath[3], $rootRepo);
         RepoCreator::pathValidator($this->listPath[4], $rootRepo);
+        RepoCreator::pathValidator($this->listPath[5], $rootRepo);
 
         RepoCreator::pathValidator($this->listPath[0], '');
         RepoCreator::pathValidator($this->listPath[1], '');
         RepoCreator::pathValidator($this->listPath[2], '');
         RepoCreator::pathValidator($this->listPath[3], '');
-    }
-
-    public function testCountPartSlashes(): void
-    {
-        $this->assertEquals(
-            1,
-            RepoCreator::countPartSlashes($this->listPath[0])
-        );
-        $this->assertEquals(
-            1,
-            RepoCreator::countPartSlashes($this->listPath[1])
-        );
-        $this->assertEquals(
-            1,
-            RepoCreator::countPartSlashes($this->listPath[2])
-        );
-        $this->assertEquals(
-            2,
-            RepoCreator::countPartSlashes($this->listPath[3])
-        );
-        $this->assertEquals(
-            5,
-            RepoCreator::countPartSlashes($this->listPath[4])
-        );
     }
 }
