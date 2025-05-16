@@ -190,7 +190,7 @@
             <th style="width:20%;">{$name}</th>
             {/if}
             <td style="width:20%;">
-                {if $version['repository']}
+                {if array_key_exists('repository', $version) && $version['repository']}
                     {if $version['commitNumber'] == 1}
                         {* commitNumber == 1, it means the package is coming from a git tag *}
                         <a href="{$version['repository']}/releases/tag/{$version['version']}" target="_blank">{$version['version']}</a>
