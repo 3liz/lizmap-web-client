@@ -13,7 +13,7 @@ describe('Projects homepage', function () {
         cy.get('.liz-repository-project-item:visible').its('length').as('totalProjects')
         // Insert value in search input
         cy.get('#search-project').type('nature')
-        // CHeck the number of title projects that contains the serach value
+        // Check the number of title projects that contains the search value
         cy.get('.liz-repository-project-item:visible').should('length', 2)
         // Clear the search input
         cy.get('#search-project').clear()
