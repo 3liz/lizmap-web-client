@@ -87,8 +87,13 @@ class Utils
         }
 
         $allRights = LizmapRights::getLWCRights();
+        $listRights = array();
 
-        in_array($right, $allRights) ? $isRightValid = true : $isRightValid = false;
+        foreach ($allRights as $right => $label) {
+            $listRights[] = $right;
+        }
+
+        in_array($right, $listRights) ? $isRightValid = true : $isRightValid = false;
 
         if (!$isRightValid) {
             throw new ApiException("'{$right}' right doesn't exist !", 404);

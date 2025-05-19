@@ -9,15 +9,17 @@
  * @license   https://www.mozilla.org/MPL/ Mozilla Public Licence
  */
 
+use LizmapApi\ApiException;
 use LizmapApi\Credentials;
 use LizmapApi\Error;
+use LizmapApi\LizmapPaths;
 use LizmapApi\RestApiCtrl;
-use LizmapApi\Utils;
 
 class path_restCtrl extends RestApiCtrl
 {
     /**
-     * Retrieves a list of unique repository paths available in Lizmap.
+     * Retrieves a list of unique repository paths.
+     * They are available if not already registered in a Lizmap repository.
      *
      * @return object a JSON response object containing the list of unique repository paths
      *                or an error response in case of authentication failure
@@ -31,19 +33,11 @@ class path_restCtrl extends RestApiCtrl
             return Error::setError($rep, 401);
         }
 
-        $listRepo = lizmap::getRepositoryList();
-
-        $response = array();
-
-        for ($i = 0; $i < count($listRepo); ++$i) {
-            $repo = lizmap::getRepository($listRepo[$i]);
-            $path = Utils::getLastPartPath($repo->getOriginalPath());
-            if (!in_array($path, $response)) {
-                $response[] = $path;
-            }
+        try {
+            $rep->data = LizmapPaths::getPaths();
+        } catch (ApiException $e) {
+            return Error::setError($rep, $e->getCode(), $e->getMessage());
         }
-
-        $rep->data = $response;
 
         return $rep;
     }

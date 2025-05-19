@@ -13,7 +13,6 @@ use LizmapAdmin\RepositoryRightsService;
 use LizmapApi\ApiException;
 use LizmapApi\Credentials;
 use LizmapApi\Error;
-use LizmapApi\LizmapRights;
 use LizmapApi\RestApiCtrl;
 use LizmapApi\Utils;
 
@@ -21,9 +20,11 @@ class repository_rights_restCtrl extends RestApiCtrl
 {
     /**
      * Retrieves all the rights used in Lizmap Web Client.
-     * If 'repo' is defined, it retrieves rights on a specific repository.
+     * Labels are display depending on the local chosen.
      *
      * @return object The response object containing data or an error message
+     *
+     * @throws Exception
      */
     public function get(): object
     {
@@ -34,14 +35,10 @@ class repository_rights_restCtrl extends RestApiCtrl
             return Error::setError($rep, 401);
         }
 
-        if ($this->param('repo')) {
-            try {
-                $rep->data = $this->getRepoRights();
-            } catch (ApiException $e) {
-                return Error::setError($rep, $e->getCode(), $e->getMessage());
-            }
-        } else {
-            $rep->data = LizmapRights::getLWCRights();
+        try {
+            $rep->data = $this->getRepoRights();
+        } catch (ApiException $e) {
+            return Error::setError($rep, $e->getCode(), $e->getMessage());
         }
 
         return $rep;

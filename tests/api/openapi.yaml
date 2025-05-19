@@ -203,10 +203,17 @@ components:
           description: Full user name that did the last save
           example: Jean Jacques
     Paths:
-      type: array
-      items:
+      type: object
+      additionalProperties:
         type: string
-      example: ["tests/", "demoqgis/", "demoqgis_intranet/"]
+        enum: [ "Available", "Reserved" ]
+        description: Availability of the path
+      example:
+        "ProJets 1982*!/": "Available"
+        "a/": "Available"
+        "b/": "Available"
+        "media/": "Reserved"
+        "tests/": "Reserved"
     Groups:
       type: array
       items:
@@ -229,16 +236,16 @@ components:
             description: Indicate the owner of the group
             example: null
     RightsList:
-      type: array
-      items:
+      type: object
+      additionalProperties:
         type: string
-      example: [
-        "lizmap.tools.edition.use",
-        "lizmap.repositories.view",
-        "lizmap.tools.loginFilteredLayers.override",
-        "lizmap.tools.displayGetCapabilitiesLinks",
-        "lizmap.tools.layer.export"
-      ]
+        description: Label for rights
+      example:
+        "lizmap.repositories.view": "View projects in the repository"
+        "lizmap.tools.displayGetCapabilitiesLinks": "Display projects WMS links"
+        "lizmap.tools.edition.use": "Use the Edition tool"
+        "lizmap.tools.layer.export": "Allow export of vector layers"
+        "lizmap.tools.loginFilteredLayers.override": "See all the data of the filtered layers (attribute or spatial filters)"
     RepositoryAddRight:
       type: object
       properties:
@@ -286,6 +293,13 @@ security:
 paths:
   /admin/rights:
     get:
+      parameters:
+        - name: locale
+          in: path
+          description: The locale to translate rights labels.
+          required: false
+          schema:
+            type: string
       responses:
         200:
           description: successful operation
@@ -304,151 +318,6 @@ paths:
       tags:
         - rights
       summary: Get all applicable rights on Lizmap Web Client
-  /admin/rights/{repository_key}:
-    get:
-      parameters:
-        - name: repository_key
-          in: path
-          description: The repository key to get repository rights.
-          required: true
-          schema:
-            type: string
-      responses:
-        200:
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RepositoryRightsGroup'
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        404:
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      security:
-        - basicAuth: [ ]
-      tags:
-        - rights
-      summary: Get list rights of a specific repository
-    post:
-      parameters:
-        - name: repository_key
-          in: path
-          description: The repository that will be edited.
-          required: true
-          schema:
-            type: string
-        - name: group
-          in: query
-          description: The group that will be edited
-          required: true
-          schema:
-            type: string
-        - name: right
-          in: query
-          description: The right to be added
-          required: true
-          schema:
-            type: string
-      responses:
-        200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RepositoryAddRight'
-        400:
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        404:
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        500:
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      security:
-        - basicAuth: [ ]
-      tags:
-        - rights
-      summary: Add a right to a group on a repository
-    delete:
-      parameters:
-        - name: repository_key
-          in: path
-          description: The repository that will be edited.
-          required: true
-          schema:
-            type: string
-        - name: group
-          in: query
-          description: The group that will be edited
-          required: true
-          schema:
-            type: string
-        - name: right
-          in: query
-          description: The right to be removed
-          required: true
-          schema:
-            type: string
-      responses:
-        200:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RepositoryRemoveRight'
-        400:
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        401:
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        404:
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        500:
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      security:
-        - basicAuth: [ ]
-      tags:
-        - rights
-      summary: Remove a right to a group on a repository
   /admin/groups:
     get:
       responses:
@@ -484,11 +353,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
       security:
         - basicAuth: [ ]
       tags:
         - paths
-      summary: Get all distinct paths
+      summary: Get all distinct paths available and reserved in the root repository
   /admin/repositories:
     get:
       responses:
@@ -612,6 +487,151 @@ paths:
       tags:
         - repositories
       summary: Create a specific repository
+  /admin/repositories/{repository_key}/rights:
+    get:
+      parameters:
+        - name: repository_key
+          in: path
+          description: The repository key to get repository rights.
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RepositoryRightsGroup'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - basicAuth: [ ]
+      tags:
+        - repositories
+      summary: Get list rights of a specific repository
+    post:
+      parameters:
+        - name: repository_key
+          in: path
+          description: The repository that will be edited.
+          required: true
+          schema:
+            type: string
+        - name: group
+          in: query
+          description: The group that will be edited
+          required: true
+          schema:
+            type: string
+        - name: right
+          in: query
+          description: The right to be added
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RepositoryAddRight'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - basicAuth: [ ]
+      tags:
+        - repositories
+      summary: Add a right to a group on a repository
+    delete:
+      parameters:
+        - name: repository_key
+          in: path
+          description: The repository that will be edited.
+          required: true
+          schema:
+            type: string
+        - name: group
+          in: query
+          description: The group that will be edited
+          required: true
+          schema:
+            type: string
+        - name: right
+          in: query
+          description: The right to be removed
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RepositoryRemoveRight'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - basicAuth: [ ]
+      tags:
+        - repositories
+      summary: Remove a right to a group on a repository
   /admin/repositories/{repository_key}/projects:
     get:
       parameters:

@@ -4,8 +4,8 @@ namespace LizmapApi;
 
 class RepoCreator
 {
-    protected static $regexWindowsAbsolutePath = '/^[A-Z][:][\\/][a-zA-Z0-9_\\/]+/';
-    protected static $regexLinuxAbsolutePath = '/^[\\/][a-zA-Z0-9_\\/]+/';
+    protected static $regexWindowsAbsolutePath = '/^[A-Z][:][\/][a-zA-Z0-9_\/]+/';
+    protected static $regexLinuxAbsolutePath = '/^[\/][a-zA-Z0-9_\/]+/';
     protected static $regexFolderName = '/^[a-zA-Z0-9_]+$/';
 
     /**
@@ -79,6 +79,15 @@ class RepoCreator
         } elseif ($createDirectory) {
             throw new ApiException(
                 'The directory you want to create already exists ! ',
+                409
+            );
+        }
+
+        $listPaths = LizmapPaths::getPaths();
+
+        if ($listPaths[Utils::getLastPartPath($path)] == 'Reserved') {
+            throw new ApiException(
+                'The path you provided is already reserved for a repository !',
                 409
             );
         }
