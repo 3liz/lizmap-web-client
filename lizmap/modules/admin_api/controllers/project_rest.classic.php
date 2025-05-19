@@ -98,7 +98,7 @@ class project_restCtrl extends RestApiCtrl
         } catch (Exception $e) {
             jLog::logEx($e, 'error');
 
-            return Error::setError($rep, $e->getCode(), $e->getMessage());
+            return Error::setError($rep, 500, $e->getMessage());
         }
 
         $response = array(
