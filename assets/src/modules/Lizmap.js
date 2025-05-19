@@ -78,7 +78,7 @@ export default class Lizmap {
                 // child which could be a layer or a group.
                 let wmsLayer = wmsCapabilities.Capability.Layer;
                 while (wmsLayer.BoundingBox === undefined) {
-                    for (const wmsChildLayer of wmsLayer.Layer) {
+                    for (const wmsChildLayer of wmsLayer.Layer || {}) {
                         if (Array.isArray(wmsChildLayer.BoundingBox)) {
                             wmsLayer = wmsChildLayer;
                             break;
@@ -89,7 +89,7 @@ export default class Lizmap {
                 // Update project projection if its axis orientation is not ENU
                 if (configProj.ref !== "" && Array.isArray(wmsLayer.BoundingBox)) {
                     // loop through bounding boxes of the project provided by WMS capabilities
-                    for (const bbox of wmsLayer.BoundingBox) {
+                    for (const bbox of wmsLayer.BoundingBox || {}) {
                         // If the BBOX CRS is not the same of the project projection, continue.
                         if (bbox.crs !== configProj.ref) {
                             continue;
