@@ -525,6 +525,9 @@ export default class Action {
         if (removeMessage) {
             let previousMessage = document.getElementById('lizmap-action-message');
             if (previousMessage) previousMessage.remove();
+
+            let previousHtmlMessage = document.getElementById('action-message-html');
+            if (previousHtmlMessage) previousHtmlMessage.innerHTML = '';
         }
 
         // Remove all btn-primary classes in the target objects
