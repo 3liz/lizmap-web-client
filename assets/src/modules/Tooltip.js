@@ -6,10 +6,12 @@
  */
 import { mainEventDispatcher } from '../modules/Globals.js';
 import { TooltipLayersConfig } from './config/Tooltip.js';
+import WMS from '../modules/WMS.js';
 import GeoJSON from 'ol/format/GeoJSON.js';
 import VectorLayer from 'ol/layer/Vector.js';
 import VectorSource from 'ol/source/Vector.js';
 import { Circle, Fill, Stroke, Style } from 'ol/style.js';
+import { Reader, createOlStyleFunction, getLayer, getStyle } from '@nieuwlandgeo/sldreader/src/index.js';
 
 /**
  * @class
@@ -48,6 +50,7 @@ export default class Tooltip {
         const layerName = layerTooltipCfg.name;
         const tooltipLayer = this._tooltipLayers.get(layerName);
         this._displayGeom = layerTooltipCfg.displayGeom;
+        this._displayLayerStyle = layerTooltipCfg.displayLayerStyle;
 
         // Styles
         const fill = new Fill({
@@ -119,6 +122,34 @@ export default class Tooltip {
                 style: vectorStyle
             });
 
+
+            // Handle points layers with QGIS style
+            if (this._displayLayerStyle) {
+                const wmsParams = {
+                    LAYERS: layerName
+                };
+
+                const wms = new WMS();
+
+                wms.getStyles(wmsParams).then((response) => {
+                    const sldObject = Reader(response);
+
+                    const sldLayer = getLayer(sldObject);
+                    const style = getStyle(sldLayer);
+                    const featureTypeStyle = style.featuretypestyles[0];
+
+                    const olStyleFunction = createOlStyleFunction(featureTypeStyle, {
+                        imageLoadedCallback: () => {
+                            // Signal OpenLayers to redraw the layer when an image icon has loaded.
+                            // On redraw, the updated symbolizer with the correct image scale will be used to draw the icon.
+                            this._activeTooltipLayer.changed();
+                        },
+                    });
+
+                    this._activeTooltipLayer.setStyle(olStyleFunction);
+                });
+            }
+
             // Load tooltip layer
             this._activeTooltipLayer.once('sourceready', () => {
                 mainEventDispatcher.dispatch('tooltip.loaded');
@@ -167,6 +198,30 @@ export default class Tooltip {
                 // Set hover style if `Display geom` is true
                 if (this._displayGeom){
                     feature.setStyle(hoverStyle);
+                }
+                // Increase point size on hover
+                else if (this._displayLayerStyle){
+                    const olStyleFunction = this._activeTooltipLayer.getStyleFunction();
+                    const mapResolution = this._map.getView().getResolution();
+                    const olStyle = olStyleFunction(feature, mapResolution);
+
+                    const newStyle = [];
+                    for (const style of olStyle) {
+                        const clonedStyle = style.clone();
+                        // If the style is a Circle, increase its radius
+                        // We could increase the scale but pixels are blurry
+                        const newRadius = clonedStyle.getImage().getRadius?.() * 1.5;
+                        if (newRadius) {
+                            clonedStyle.getImage().setRadius(newRadius);
+                        } else {
+                            // If the style is not a Circle, we can still increase the scale
+                            const newScale = clonedStyle.getImage().getScale() * 1.5;
+                            clonedStyle.getImage().setScale(newScale);
+                        }
+                        newStyle.push(clonedStyle);
+                    }
+
+                    feature.setStyle(newStyle);
                 }
 
                 // Display tooltip
