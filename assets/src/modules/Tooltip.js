@@ -42,7 +42,7 @@ export default class Tooltip {
         }
 
         // Remove previous layer if any
-        this._map.removeLayer(this._activeTooltipLayer);
+        this._map.removeToolLayer(this._activeTooltipLayer);
 
         const layerTooltipCfg = this._tooltipLayersConfig.layerConfigs[layerOrder];
         const layerName = layerTooltipCfg.name;
