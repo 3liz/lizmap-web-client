@@ -5,5 +5,11 @@
     <url pathinfo="/repositories/:repo/projects" action="project_rest:get"/>
     <url pathinfo="/repositories/:repo/projects/:proj" action="project_rest:get"/>
 
-    <url pathinfo="/right/:method/:repo" action="repository_rights_rest:get"/>
+    <url pathinfo="/repositories/:repo/rights" action="repository_rights_rest:get"/>
+
+    <url pathinfo="/paths" action="path_rest:get"/>
+
+    <url pathinfo="/groups" action="group_rest:get"/>
+
+    <url pathinfo="/rights" action="rights_rest:get"/>
 </suburls>

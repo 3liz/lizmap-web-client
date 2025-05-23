@@ -9,11 +9,12 @@
  * @license   https://www.mozilla.org/MPL/ Mozilla Public Licence
  */
 
-use Lizmap\CliHelpers\RepositoryCreator;
 use Lizmap\Request\Proxy;
 use LizmapAdmin\RepositoryRightsService;
+use LizmapApi\ApiException;
 use LizmapApi\Credentials;
 use LizmapApi\Error;
+use LizmapApi\RepoCreator;
 use LizmapApi\RestApiCtrl;
 use LizmapApi\Utils;
 
@@ -83,7 +84,7 @@ class repository_restCtrl extends RestApiCtrl
             $repo = lizmap::getRepository($this->param('repo'));
 
             if ($repo == null) {
-                throw new Exception(code: 404);
+                throw new ApiException("The repository doesn't exist.", 404);
             }
 
             $referer = $this->request->header('Referer');
@@ -98,8 +99,12 @@ class repository_restCtrl extends RestApiCtrl
                 'accessControlAllowOrigin' => $repo->getACAOHeaderValue($referer),
                 'rightsGroup' => $rights,
             );
-        } catch (Throwable $e) {
-            return Error::setError($rep, $e->getCode());
+        } catch (ApiException $e) {
+            return Error::setError($rep, $e->getCode(), $e->getMessage());
+        } catch (Exception $e) {
+            jLog::logEx($e, 'error');
+
+            return Error::setError($rep, 500, $e->getMessage());
         }
         $rep->data = $response;
 
@@ -113,56 +118,41 @@ class repository_restCtrl extends RestApiCtrl
      */
     public function post(): object
     {
+        /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
 
         if (!Credentials::handle()) {
             return Error::setError($rep, 401);
         }
 
-        $repo = $this->param('repo');
-
-        if (lizmap::getRepository($repo)) {
-            return Error::setError($rep, 400, "The repository '{$repo}' already exists.");
-        }
-
-        return $this->createRepo($rep);
-    }
-
-    /**
-     * Creates a new repository with the specified parameters.
-     *
-     * @param object $rep the response object to populate with the repository creation result
-     *
-     * @return object the updated response object containing the creation status
-     *                and repository details if successful, or an error message if failed
-     */
-    public function createRepo($rep): object
-    {
-        $repoCreator = new RepositoryCreator();
-
         $key = $this->param('repo');
         $label = $this->param('label');
         $path = $this->param('path');
-        $allowUserDefinedThemes = $this->param('allowUserDefinedThemes', null);
+        $allowUserDefinedThemes = Utils::isValidBooleanValue($this->param('allowUserDefinedThemes', false));
+        $createDirectory = Utils::isValidBooleanValue($this->param('createDirectory'));
 
         try {
-            $isCreated = $repoCreator->create($key, $label, $path, $allowUserDefinedThemes);
+            $isCreated = RepoCreator::createRepository($key, $label, $path, $allowUserDefinedThemes, $createDirectory);
 
             $rep->data = array(
                 'key' => $key,
                 'label' => $label,
                 'path' => $path,
                 'allowUserDefinedThemes' => $allowUserDefinedThemes,
-                'isCreated' => $isCreated,
+                'newDirectoryCreated' => $createDirectory,
+                'repoCreated' => $isCreated,
             );
 
             $rep->setHttpStatus(
                 201,
                 Proxy::getHttpStatusMsg(201),
             );
-
+        } catch (ApiException $e) {
+            return Error::setError($rep, $e->getCode(), $e->getMessage());
         } catch (Exception $e) {
-            return Error::setError($rep, 400, $e->getMessage());
+            jLog::logEx($e, 'error');
+
+            return Error::setError($rep, 500, $e->getMessage());
         }
 
         return $rep;
