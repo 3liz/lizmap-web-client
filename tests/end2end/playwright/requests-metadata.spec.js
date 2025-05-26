@@ -1,6 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { checkJson as coreCheckJson, requestWithAdminBasicAuth, getAuthStorageStatePath } from './globals';
+import { checkJson as coreCheckJson, requestGETWithAdminBasicAuth, getAuthStorageStatePath } from './globals';
 
 /**
  * Playwright Page
@@ -51,7 +51,7 @@ test.describe('Not connected from context, so testing basic auth',
         });
 
         test('As admin', async ({request}) => {
-            const response = await requestWithAdminBasicAuth(request, url);
+            const response = await requestGETWithAdminBasicAuth(request, url);
             const json = await checkJson(response);
             // Only testing the access to qgis_server_info
             expect(json.qgis_server_info.metadata.name).toBeDefined();
