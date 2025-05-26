@@ -294,7 +294,7 @@ export default class LocateByLayer {
                 locate.features[featElement.id.toString()] = featElement;
                 if ( !('filterFieldName' in locate) )
                     options += '<option value="' + featElement.id + '">'
-                        + DOMPurify.sanitize(featElement.properties[locate.fieldName])
+                        + DOMPurify.sanitize(featElement.properties[locate.fieldName].toString())
                         + '</option>';
             }
             document.getElementById('locate-layer-'+layerName).innerHTML = options;
@@ -480,7 +480,7 @@ export default class LocateByLayer {
         for (var featureElementId in features) {
             var featureElement = features[featureElementId];
             options += '<option value="' + featureElement.id + '">'
-                + DOMPurify.sanitize(featureElement.properties[locate.fieldName])
+                + DOMPurify.sanitize(featureElement.properties[locate.fieldName].toString())
                 + '</option>';
         }
         // add option list
