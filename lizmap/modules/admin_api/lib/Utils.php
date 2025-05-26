@@ -2,8 +2,6 @@
 
 namespace LizmapApi;
 
-use LizmapAdmin\RepositoryRightsService;
-
 class Utils
 {
     /**
@@ -53,23 +51,20 @@ class Utils
      * @param null|string $right the name of the right to validate
      * @param string      $key   the key used to fetch the list of rights
      *
-     * @return array an associative array containing a boolean under the key 'bool' indicating success or failure,
-     *               and a message under the key 'message' describing the result or error
+     * @throws ApiException
      */
-    public static function verifyVars(?string $group, ?string $right, string $key): array
+    public static function verifyVars(?string $group, ?string $right, string $key): void
     {
+        if (!\lizmap::getRepository($key)) {
+            throw new ApiException("The repository '{$key}' doesn't exists.", 404);
+        }
+
         if (!$group) {
-            return array(
-                'bool' => false,
-                'message' => "'group' parameter is required !",
-            );
+            throw new ApiException("'group' parameter is required !", 400);
         }
 
         if (!$right) {
-            return array(
-                'bool' => false,
-                'message' => "'right' parameter is required !",
-            );
+            throw new ApiException("'right' parameter is required !", 400);
         }
 
         $manager = new \jAcl2DbAdminUIManager();
@@ -88,26 +83,44 @@ class Utils
         }
 
         if (!$isGroupValid) {
-            return array(
-                'bool' => false,
-                'message' => "'{$group}' group doesn't exist !",
-            );
+            throw new ApiException("'{$group}' group doesn't exist !", 404);
         }
 
-        $allRights = RepositoryRightsService::getRights($key);
+        $allRights = LizmapRights::getLWCRights();
+        $listRights = array();
 
-        array_key_exists($right, $allRights) ? $isRightValid = true : $isRightValid = false;
+        foreach ($allRights as $right => $label) {
+            $listRights[] = $right;
+        }
+
+        in_array($right, $listRights) ? $isRightValid = true : $isRightValid = false;
 
         if (!$isRightValid) {
-            return array(
-                'bool' => false,
-                'message' => "'{$right}' right doesn't exist !",
-            );
+            throw new ApiException("'{$right}' right doesn't exist !", 404);
         }
 
-        return array(
-            'bool' => true,
-            'message' => '',
-        );
+    }
+
+    /**
+     * Validates whether the given value represents a boolean true value.
+     *
+     * @param mixed $value The value to validate. Can be of any data type.
+     *
+     * @return bool returns true if the value represents a boolean true value, otherwise false
+     */
+    public static function isValidBooleanValue(mixed $value): bool
+    {
+        if (empty($value)) {
+            return false;
+        }
+
+        if (is_bool($value)) {
+            return $value;
+        }
+
+        $strVal = strtolower((string) $value);
+        $validTrueValues = array('true', 't', 'on', '1');
+
+        return in_array($strVal, $validTrueValues, true);
     }
 }
