@@ -528,7 +528,7 @@ var lizLayerFilterTool = function () {
                     }
 
                     for (const feat of result) {
-                        globalThis['filterConfig'][field_item.order]['items'][DOMPurify.sanitize(feat['v'])] = feat['c'];
+                        globalThis['filterConfig'][field_item.order]['items'][DOMPurify.sanitize(feat['v'].toString())] = feat['c'];
                     }
 
                     var dhtml = '';
