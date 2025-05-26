@@ -47,14 +47,34 @@ class Error
         // This structure is made like this id we want to add custom error codes
         // which would not be defined by a traditional HTTP Error code
         $errorsArray = array(
+            '400' => array(
+                'code' => 400,
+                'message' => 'The request cannot be fulfilled due to bad syntax.',
+                'http' => true,
+            ),
             '401' => array(
                 'code' => 401,
                 'message' => 'Unauthorized. Basic authentication is required to access this resource.',
                 'http' => true,
             ),
+            '403' => array(
+                'code' => 403,
+                'message' => 'Forbidden.',
+                'http' => true,
+            ),
             '404' => array(
                 'code' => 404,
                 'message' => 'Resource not found. Please provide a valid entry.',
+                'http' => true,
+            ),
+            '409' => array(
+                'code' => 409,
+                'message' => 'The request cannot be fulfilled due to conflict.',
+                'http' => true,
+            ),
+            '500' => array(
+                'code' => 500,
+                'message' => 'The server encountered an error.',
                 'http' => true,
             ),
             '501' => array(
