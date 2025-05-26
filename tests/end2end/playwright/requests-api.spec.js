@@ -75,6 +75,7 @@ test.describe('Connected',
             const json = await checkJson(response);
 
             expect(json.id).toBe("attribute_table");
+            expect(json.projectName).toBeDefined();
             expect(json.title).toBe("attribute_table");
             expect(json.abstract).toBe("");
             expect(json.keywordList).toBe("");
@@ -84,6 +85,10 @@ test.describe('Connected',
             expect(json.acl).toBeTruthy();
             expect(json.wmsGetCapabilitiesUrl).toBe("http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=attribute_table&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities");
             expect(json.wmtsGetCapabilitiesUrl).toBe("http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=attribute_table&SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetCapabilities");
+            expect(json.version).toBeDefined();
+            expect(json.saveDateTime).toBeDefined();
+            expect(json.saveUser).toBeDefined();
+            expect(json.saveUserFull).toBeDefined();
         });
     }
 );

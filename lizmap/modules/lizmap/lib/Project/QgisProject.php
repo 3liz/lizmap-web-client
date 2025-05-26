@@ -1429,6 +1429,56 @@ class QgisProject
     }
 
     /**
+     * Read the users names of the QGS file.
+     *
+     * @param string $qgs_path the path to the QGS file
+     *
+     * @return array the name and full name
+     */
+    protected function readUsers($qgs_path)
+    {
+        $fp = fopen($qgs_path, 'r');
+        $names = array(
+            'saveUser' => '',
+            'saveUserFull' => '',
+        );
+        for ($i = 0; $i < 5; ++$i) {
+            $line = fgets($fp);
+            if (preg_match('/saveUser="([^"]*)"/', $line, $matches)) {
+                $names['saveUser'] = $matches[1];
+            }
+            if (preg_match('/saveUserFull="([^"]*)"/', $line, $matches)) {
+                $names['saveUserFull'] = $matches[1];
+            }
+        }
+        fclose($fp);
+
+        return $names;
+    }
+
+    /**
+     * Read the project name of the QGS file.
+     *
+     * @param string $qgs_path the path to the QGS file
+     *
+     * @return string the project name
+     */
+    protected function readProjectName($qgs_path)
+    {
+        $fp = fopen($qgs_path, 'r');
+        $projectName = '';
+        for ($i = 0; $i < 5; ++$i) {
+            $line = fgets($fp);
+            if (preg_match('/projectname="([^"]*)"/', $line, $matches)) {
+                $projectName = $matches[1];
+            }
+        }
+        fclose($fp);
+
+        return $projectName;
+    }
+
+    /**
      * @param \SimpleXMLElement $xml
      *
      * @return string
@@ -2449,5 +2499,28 @@ class QgisProject
         }
 
         return $props;
+    }
+
+    /**
+     * Retrieve the first QGIS config line as an array.
+     *
+     * @return array Array filled with "version", "projectName", "saveDateTime", "saveUser" and "saveUserFull"
+     *
+     *@example <qgis
+     *   projectname="" saveDateTime="2024-11-06T14:13:16" saveUser="chandler"
+     *   saveUserFull="Chandler Bing" version="3.34.12-Prizren"
+     * >
+     */
+    public function getFirstQgisConfigLine(): array
+    {
+        $names = $this->readUsers($this->path);
+
+        return array(
+            'version' => $this->getQgisProjectVersion(),
+            'projectName' => $this->readProjectName($this->path),
+            'saveDateTime' => $this->readLastSaveDateTime($this->path),
+            'saveUser' => $names['saveUser'],
+            'saveUserFull' => $names['saveUserFull'],
+        );
     }
 }
