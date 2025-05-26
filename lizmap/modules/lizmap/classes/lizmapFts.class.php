@@ -16,20 +16,21 @@ class lizmapFts
     /**
      * Generate the SQL for lizmap_search according to the given project.
      *
-     * @param Project $project The QGIS project
+     * @param Project $project    The QGIS project
+     * @param int     $termsCount How many terms are in the searched string
      *
      * @return string The SQL query
      */
-    protected static function generateSql($project)
+    protected static function generateSql($project, $termsCount)
     {
 
-        // Build search query.
+        // Build search query
 
         // SELECT
         $sql = "
         SELECT
         item_layer, item_label, concat('EPSG:', ST_SRID(geom)) AS item_epsg, ST_AsText(geom) AS item_wkt,
-        similarity(trim( :term ), item_label) AS sim
+        similarity(trim( :searchedString ), item_label) AS sim
         ";
 
         // FROM
@@ -42,18 +43,12 @@ class lizmapFts
         WHERE True';
 
         // Filter by given terms
-        // We need to create a search array for the ILIKE ALL filter:
-        // a blue car ->  {%a%,%blue%,%car%}
         // We compare the unaccentuated terms with the unaccentuated item_label
-        $sql .= "
-        AND f_unaccent(item_label) ILIKE ALL (
-            string_to_array(
-                '%' || regexp_replace( f_unaccent( trim( :term ) ), '[^0-9a-zA-Z]+', '%,%', 'g') || '%',
-                ',',
-                ' '
-            )
-        )
-        ";
+        for ($i = 0; $i < $termsCount; ++$i) {
+            $sql .= "
+            AND f_unaccent(item_label) ILIKE '%' || f_unaccent( :term".$i." ) || '%'
+            ";
+        }
 
         // Add filter by projects
         $sql .= "
@@ -91,24 +86,30 @@ class lizmapFts
      * Method called by the autocomplete input field for place search.
      *
      * @param Project $project
-     * @param string  $term    Searched term
-     * @param bool    $debug   If the debug mode is ON
-     * @param int     $limit   default 40
+     * @param string  $searchedString Searched string
+     * @param bool    $debug          If the debug mode is ON
+     * @param int     $limit          default 40
      *
      * @return List of matching places
      */
-    public static function getData($project, $term, $debug, $limit = 40)
+    public static function getData($project, $searchedString, $debug, $limit = 40)
     {
-        $sql = lizmapFts::generateSql($project);
+        $terms = preg_split('/\s+/', $searchedString);
+        $sql = lizmapFts::generateSql($project, count($terms));
         $data = array();
 
         try {
             // Format words into {foo,bar}
             $params = array(
-                'term' => trim($term),
+                'searchedString' => $searchedString,
                 'proj' => $project->getKey(),
                 'lim' => $limit,
             );
+
+            foreach ($terms as $i => $term) {
+                $params['term'.$i] = $term;
+            }
+
             if ($debug) {
                 jLog::log(
                     'Debug Lizmap search, SQL query : '.$sql.' with parameters → '.json_encode($params),
