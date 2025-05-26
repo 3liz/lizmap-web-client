@@ -9,6 +9,8 @@
  * @license   https://www.mozilla.org/MPL/ Mozilla Public Licence
  */
 
+use LizmapAdmin\RepositoryRightsService;
+use LizmapApi\ApiException;
 use LizmapApi\Credentials;
 use LizmapApi\Error;
 use LizmapApi\RestApiCtrl;
@@ -17,68 +19,136 @@ use LizmapApi\Utils;
 class repository_rights_restCtrl extends RestApiCtrl
 {
     /**
-     * Handles the edition of group rules on repositories.
+     * Retrieves all the rights used in a specific Lizmap Web Client repository.
+     * Labels are display depending on the local chosen ones.
      *
-     * @return object a JSON response object
+     * @return object The response object containing data or an error message
+     *
+     * @throws Exception
      */
-    public function post(): object
+    public function get(): object
     {
+        /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
 
         if (!Credentials::handle()) {
             return Error::setError($rep, 401);
         }
 
-        $repo = $this->param('repo');
-
-        if (!lizmap::getRepository($repo)) {
-            return Error::setError($rep, 404, "The repository '{$repo}' doesn't exists.");
-        }
-
-        $action = $this->param('method');
-
-        if ($action == 'add' || $action == 'remove') {
-            $rep = $this->editRights($rep);
-        } else {
-            return Error::setError($rep, 501, "'{$action}' is not implemented.");
+        try {
+            $rep->data = $this->getRepoRights();
+        } catch (ApiException $e) {
+            return Error::setError($rep, $e->getCode(), $e->getMessage());
         }
 
         return $rep;
     }
 
     /**
-     * Modifies access rights for a specified group on a repository.
+     * Return rights to a specific repository.
      *
-     * @param object $rep the JSON response object to be modified
+     * @return array Response array containing rights on a specific repository
      *
-     * @return object the modified JSON response object
+     * @throws ApiException
      */
-    private function editRights(object $rep): object
+    protected function getRepoRights(): array
     {
+        $repo = lizmap::getRepository($this->param('repo'));
+
+        if ($repo == null) {
+            throw new ApiException("The repository doesn't exist !", 404);
+        }
+
+        return RepositoryRightsService::getRights($repo->getKey());
+    }
+
+    /**
+     * Adds a specific right for a group to a repository.
+     *
+     * @return object the response object containing the details of the operation,
+     *                or an error message if the operation fails
+     */
+    public function post(): object
+    {
+        /** @var jResponseJson $rep */
+        $rep = $this->getResponse('json');
+
+        if (!Credentials::handle()) {
+            return Error::setError($rep, 401);
+        }
+
         $key = $this->param('repo');
         $group = $this->param('group');
         $right = $this->param('right');
 
-        $isValid = Utils::verifyVars($group, $right, $key);
-
-        if (!$isValid['bool']) {
-            return Error::setError($rep, 400, $isValid['message']);
+        try {
+            Utils::verifyVars($group, $right, $key);
+        } catch (ApiException $e) {
+            return Error::setError($rep, $e->getCode(), $e->getMessage());
         }
 
+        $isAdded = false;
+
         try {
-            if ($this->param('method') == 'add') {
-                jAcl2DbManager::addRight($group, $right, $key);
-            } else {
-                jAcl2DbManager::removeRight($group, $right, $key);
-            }
+            $isAdded = jAcl2DbManager::addRight($group, $right, $key);
         } catch (Exception $e) {
-            return Error::setError($rep, 400, $e->getMessage());
+            jLog::logEx($e, 'error');
+
+            return Error::setError($rep, 500, $e->getMessage());
         }
 
         $rep->data = array(
             'key' => $key,
             'group' => $group,
             'right' => $right,
+            'isAdded' => $isAdded,
+        );
+
+        return $rep;
+    }
+
+    /**
+     * Removes a specific right for a group to a repository.
+     *
+     * @return object the response object containing the details of the operation,
+     *                or an error message if the operation fails
+     */
+    public function delete(): object
+    {
+        /** @var jResponseJson $rep */
+        $rep = $this->getResponse('json');
+
+        if (!Credentials::handle()) {
+            return Error::setError($rep, 401);
+        }
+
+        $key = $this->param('repo');
+        $group = $this->param('group');
+        $right = $this->param('right');
+
+        try {
+            Utils::verifyVars($group, $right, $key);
+        } catch (ApiException $e) {
+            return Error::setError($rep, $e->getCode(), $e->getMessage());
+        }
+
+        $isRemoved = false;
+
+        try {
+            jAcl2DbManager::removeRight($group, $right, $key);
+            // removeRight() has no return not like addRight()
+            $isRemoved = true;
+        } catch (Exception $e) {
+            jLog::logEx($e, 'error');
+
+            return Error::setError($rep, 500, $e->getMessage());
+        }
+
+        $rep->data = array(
+            'key' => $key,
+            'group' => $group,
+            'right' => $right,
+            'isRemoved' => $isRemoved,
         );
 
         return $rep;
