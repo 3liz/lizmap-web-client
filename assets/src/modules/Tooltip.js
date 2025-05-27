@@ -197,7 +197,7 @@ export default class Tooltip {
      * Deactivate tooltip
      */
     deactivate() {
-        this._map.removeLayer(this._activeTooltipLayer);
+        this._map.removeToolLayer(this._activeTooltipLayer);
         if (this._onPointerMove) {
             this._map.un('pointermove', this._onPointerMove);
         }
