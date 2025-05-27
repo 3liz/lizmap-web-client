@@ -12,9 +12,13 @@ export default class Tooltip extends HTMLElement {
 
         this._template = () => html`
             <select @change=${ event => { mainLizmap.tooltip.activate(event.target.value) }}>
-                <option value="">---</option>
+                <option value="" .selected=${mainLizmap.tooltip.activeLayerOrder === null}>---</option>
                 ${this._tooltipLayersCfgs.map(tooltipLayerCfg =>
-                    html`<option ?selected=${this._tooltipLayersCfgs.length === 1} value="${tooltipLayerCfg.order}">${mainLizmap.state.layersAndGroupsCollection.getLayerByName(tooltipLayerCfg.name).title}</option>`
+                    html`<option
+                            .selected=${tooltipLayerCfg.order === mainLizmap.tooltip.activeLayerOrder}
+                            value="${tooltipLayerCfg.order}">
+                            ${mainLizmap.state.layersAndGroupsCollection.getLayerByName(tooltipLayerCfg.name).title}
+                        </option>`
                 )}
             </select>
         `;
@@ -44,6 +48,13 @@ export default class Tooltip extends HTMLElement {
                 this.classList.remove('spinner');
             },
             ['tooltip.loaded']
+        );
+
+        mainEventDispatcher.addListener(
+            () => {
+                render(this._template(), this);
+            },
+            ['tooltip.activated', 'tooltip.deactivated']
         );
 
         render(this._template(), this);
