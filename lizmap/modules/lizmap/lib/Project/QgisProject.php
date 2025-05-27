@@ -86,11 +86,39 @@ class QgisProject
     protected $qgisProjectVersion;
 
     /**
+     * Version of QGIS which wrote the project.
+     *
+     * @var string
+     */
+    protected $qgisEditorVersion;
+
+    /**
+     * Name of the QGIS project.
+     *
+     * @var string
+     */
+    protected $qgisProjectName;
+
+    /**
      * Last saved date time in the QGIS file.
      *
      * @var string the last saved date contained in the QGS file
      */
     protected $lastSaveDateTime;
+
+    /**
+     * Last saved user in the QGIS file.
+     *
+     * @var string the last saved user contained in the QGS file
+     */
+    protected $lastSaveUser;
+
+    /**
+     * Last saved user full name in the QGIS file.
+     *
+     * @var string the last saved user full name contained in the QGS file
+     */
+    protected $lastSaveUserFull;
 
     /**
      * @var array<string, mixed> contains WMS info
@@ -158,7 +186,11 @@ class QgisProject
         'layers',
         'data',
         'qgisProjectVersion',
+        'qgisEditorVersion',
+        'qgisProjectName',
         'lastSaveDateTime',
+        'lastSaveUser',
+        'lastSaveUserFull',
         'customProjectVariables',
     );
 
@@ -279,9 +311,35 @@ class QgisProject
         return $this->getData('wmsMaxHeight');
     }
 
-    public function getQgisProjectVersion()
+    /**
+     * QGIS Project version converted to an integer.
+     * For example, 30400 for 3.4.0.
+     *
+     * @return int the QGIS project version converted to an integer
+     */
+    public function getQgisProjectVersion(): int
     {
         return $this->qgisProjectVersion;
+    }
+
+    /**
+     * QGIS Editor version as a string.
+     *
+     * @return string the QGIS Editor project version as a string
+     */
+    public function getQgisEditorVersion(): string
+    {
+        return $this->qgisEditorVersion;
+    }
+
+    /**
+     * QGIS project name.
+     *
+     * @return string the QGIS project name
+     */
+    public function getQgisProjectName(): string
+    {
+        return $this->qgisProjectName;
     }
 
     /**
@@ -289,9 +347,29 @@ class QgisProject
      *
      * @return string the last saved date contained in the QGS file
      */
-    public function getLastSaveDateTime()
+    public function getLastSaveDateTime(): string
     {
         return $this->lastSaveDateTime;
+    }
+
+    /**
+     * Last saved user in the QGIS file.
+     *
+     * @return string the last saved user contained in the QGS file
+     */
+    public function getLastSaveUser(): string
+    {
+        return $this->lastSaveUser;
+    }
+
+    /**
+     * Last saved user full name in the QGIS file.
+     *
+     * @return string the last saved user full name contained in the QGS file
+     */
+    public function getLastSaveUserFull(): string
+    {
+        return $this->lastSaveUserFull;
     }
 
     /**
@@ -1085,7 +1163,11 @@ class QgisProject
 
         // get QGIS project version
         $this->qgisProjectVersion = $this->convertQgisProjectVersion($project->version);
+        $this->qgisEditorVersion = $project->version;
+        $this->qgisProjectName = $project->projectname;
         $this->lastSaveDateTime = $project->saveDateTime;
+        $this->lastSaveUser = $project->saveUser;
+        $this->lastSaveUserFull = $project->saveUserFull;
 
         $this->WMSInformation = $project->getWmsInformationsAsKeyArray();
         $this->canvasColor = $project->properties->Gui->getCanvasColor();
@@ -1718,30 +1800,12 @@ class QgisProject
      */
     public function getFirstQgisConfigLine(): array
     {
-        $xmlReader = App\XmlTools::xmlReaderFromFile($this->path);
-
-        $data = array();
-
-        /*
-         * We use a 'do while' because initializing $xmlReader make it read the first node,
-         * we need to check it before call $xmlReader->read.
-         */
-        do {
-            if ($xmlReader->nodeType == \XMLReader::ELEMENT
-                && $xmlReader->depth == 0
-                && $xmlReader->localName == 'qgis') {
-                $data = array(
-                    'version' => $xmlReader->getAttribute('version'),
-                    'projectName' => $xmlReader->getAttribute('projectname'),
-                    'saveDateTime' => $xmlReader->getAttribute('saveDateTime'),
-                    'saveUser' => $xmlReader->getAttribute('saveUser'),
-                    'saveUserFull' => $xmlReader->getAttribute('saveUserFull'),
-                );
-
-                break;
-            }
-        } while ($xmlReader->read());
-
-        return $data;
+        return array(
+            'version' => $this->qgisEditorVersion,
+            'projectName' => $this->qgisProjectName,
+            'saveDateTime' => $this->lastSaveDateTime,
+            'saveUser' => $this->lastSaveUser,
+            'saveUserFull' => $this->lastSaveUserFull,
+        );
     }
 }

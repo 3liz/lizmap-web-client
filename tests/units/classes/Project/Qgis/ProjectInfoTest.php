@@ -22,6 +22,8 @@ class ProjectInfoTest extends TestCase
             'version' => '3.10.5-A Coruña',
             'projectname' => 'Montpellier - Transports',
             'saveDateTime' => '',
+            'saveUser' => '',
+            'saveUserFull' => '',
             'title' => 'Montpellier - Transports',
         );
         foreach ($data as $prop => $value) {
@@ -199,6 +201,8 @@ Data is licensed under ODbl, OpenStreetMap contributors',
             'version' => '3.10.5-A Coruña',
             'projectname' => 'Montpellier - Transports',
             'saveDateTime' => '',
+            'saveUser' => '',
+            'saveUserFull' => '',
             'title' => 'Montpellier - Transports',
         );
         foreach ($data as $prop => $value) {
@@ -218,6 +222,8 @@ Data is licensed under ODbl, OpenStreetMap contributors',
             'version' => '3.28.7-Firenze',
             'projectname' => '',
             'saveDateTime' => '2023-09-27T15:15:59',
+            'saveUser' => 'riccardo',
+            'saveUserFull' => 'riccardo',
             'title' => '',
         );
         foreach ($data as $prop => $value) {

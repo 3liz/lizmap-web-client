@@ -23,6 +23,8 @@ use Lizmap\Project;
  * @property string                                    $projectname
  * @property string                                    $title
  * @property null|string                               $saveDateTime
+ * @property null|string                               $saveUser
+ * @property null|string                               $saveUserFull
  * @property SpatialRefSys                             $projectCrs
  * @property ProjectProperties                         $properties
  * @property LayerTreeRoot                             $layerTreeRoot
@@ -87,6 +89,8 @@ class ProjectInfo extends BaseQgisXmlObject
         'version',
         'projectname',
         'saveDateTime',
+        'saveUser',
+        'saveUserFull',
         'title',
         'projectCrs',
         'properties',
@@ -455,6 +459,8 @@ class ProjectInfo extends BaseQgisXmlObject
             'version' => $oXmlReader->getAttribute('version'),
             'projectname' => $oXmlReader->getAttribute('projectname'),
             'saveDateTime' => $oXmlReader->getAttribute('saveDateTime'),
+            'saveUser' => $oXmlReader->getAttribute('saveUser'),
+            'saveUserFull' => $oXmlReader->getAttribute('saveUserFull'),
         );
     }
 
