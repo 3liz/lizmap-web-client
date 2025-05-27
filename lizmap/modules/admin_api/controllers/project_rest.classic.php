@@ -9,6 +9,8 @@
  * @license   https://www.mozilla.org/MPL/ Mozilla Public Licence
  */
 
+use Lizmap\App\VersionTools;
+use LizmapApi\ApiException;
 use LizmapApi\Credentials;
 use LizmapApi\Error;
 use LizmapApi\RestApiCtrl;
@@ -35,10 +37,14 @@ class project_restCtrl extends RestApiCtrl
             $repo = lizmap::getRepository($this->param('repo'));
 
             if ($repo == null) {
-                throw new Exception("Valid repository is needed", 404);
+                throw new ApiException("The repository doesn't exist.", 404);
             }
-        } catch (Throwable $e) {
-            return Error::setError($rep, $e->getCode());
+        } catch (ApiException $e) {
+            return Error::setError($rep, $e->getCode(), $e->getMessage());
+        } catch (Exception $e) {
+            jLog::logEx($e, 'error');
+
+            return Error::setError($rep, 500, $e->getMessage());
         }
 
         if ($this->param('proj') != null) {
@@ -89,8 +95,10 @@ class project_restCtrl extends RestApiCtrl
         try {
             $proj = $repo->getProject($this->param('proj'));
             $projInfos = $proj->getFirstQgisConfigLine();
-        } catch (Throwable $e) {
-            return Error::setError($rep, 404, $e->getMessage());
+        } catch (Exception $e) {
+            jLog::logEx($e, 'error');
+
+            return Error::setError($rep, 500, $e->getMessage());
         }
 
         $response = array(
