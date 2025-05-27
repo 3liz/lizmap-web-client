@@ -32,6 +32,7 @@ export default class Tooltip {
         this._lizmap3 = lizmap3;
         this._activeTooltipLayer;
         this._tooltipLayers = new Map();
+        this.activeLayerOrder = null;
     }
 
     /**
@@ -39,6 +40,7 @@ export default class Tooltip {
      * @param {number} layerOrder a layer order
      */
     activate(layerOrder) {
+        // If the layer order is empty, deactivate the tooltip
         if (layerOrder === "") {
             this.deactivate();
             return;
@@ -248,6 +250,10 @@ export default class Tooltip {
         };
 
         this._map.getTargetElement().addEventListener('pointerleave', this._onPointerLeave);
+
+        // Dispatch event to notify that the tooltip is activated
+        this.activeLayerOrder = layerOrder;
+        mainEventDispatcher.dispatch('tooltip.activated', { layerOrder: layerOrder });
     }
 
     /**
@@ -261,5 +267,9 @@ export default class Tooltip {
         if (this._onPointerLeave) {
             this._map.getTargetElement().removeEventListener('pointerleave', this._onPointerLeave);
         }
+
+        // Dispatch event to notify that the tooltip is deactivated
+        this.activeLayerOrder = null;
+        mainEventDispatcher.dispatch('tooltip.deactivated');
     }
 }
