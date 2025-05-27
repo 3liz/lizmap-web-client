@@ -29,12 +29,6 @@ export default class Tooltip extends HTMLElement {
                     // Activate last selected tooltip layer
                     mainLizmap.tooltip.activate(this.querySelector('select').value);
                 }
-            },
-            minidockclosed: event => {
-                if ( event.id === 'tooltip-layer' ) {
-                    // Deactivate tooltip on close
-                    mainLizmap.tooltip.deactivate();
-                }
             }
         });
 
