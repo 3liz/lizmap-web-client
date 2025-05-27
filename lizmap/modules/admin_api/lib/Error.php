@@ -15,7 +15,7 @@ class Error
      *
      * @return object returns the updated response object containing the error details
      */
-    public static function setError(object $rep, mixed $errorCode, string $errorCustomMessage = ''): object
+    public static function setError(object $rep, $errorCode, string $errorCustomMessage = ''): object
     {
         $error = Error::getErrorFromCode($errorCode);
 

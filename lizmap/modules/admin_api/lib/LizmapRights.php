@@ -38,11 +38,11 @@ class LizmapRights
      *
      * @throws \Exception
      */
-    public static function getLabel(string $labelKey, $locale): string
+    public static function getLabel(string $labelKey, mixed $locale): string
     {
         if ($labelKey) {
             try {
-                return \jLocale::get($labelKey, locale: $locale);
+                return \jLocale::get($labelKey, null, $locale);
             } catch (\Exception $e) {
                 throw new \Exception($e->getMessage(), $e->getCode());
             }

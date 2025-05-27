@@ -108,7 +108,7 @@ class Utils
      *
      * @return bool returns true if the value represents a boolean true value, otherwise false
      */
-    public static function isValidBooleanValue(mixed $value): bool
+    public static function isValidBooleanValue($value): bool
     {
         if (empty($value)) {
             return false;
