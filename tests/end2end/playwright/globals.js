@@ -187,32 +187,6 @@ export async function expectToHaveLengthCompare(title, parameters, expectedLengt
 }
 
 /**
- * Get the JSON for the given project using the API
- * @param {import("playwright-core/types/types.js").APIRequestContext} request Request to use
- * @param {string} project The project name
- * @param {string} repository The repository name, default to "testsrepository".
- * @returns {Promise<any>} The JSON response
- */
-export async function jsonFromProjectApi(request, project, repository = 'testsrepository') {
-    return await requestGETWithAdminBasicAuth(
-        request,
-        `/api.php/admin/repositories/${repository}/projects/${project}`
-    );
-}
-
-/**
- * Get the version of QGIS written in the project
- * @param {import("playwright-core/types/types.js").APIRequestContext} request Request to use
- * @param {string} project The project name
- * @returns {int} The QGIS version, written as "34004" for QGIS 3.40.4, to be easily sortable.
- */
-export async function qgisVersionFromProjectApi(request, project) {
-    const response = await jsonFromProjectApi(request, project);
-    const json = await checkJson(response);
-    return json.versionInt;
-}
-
-/**
  * Check for a JSON response
  * @param {APIResponse} response The response object
  * @param {int} status The expected HTTP status code

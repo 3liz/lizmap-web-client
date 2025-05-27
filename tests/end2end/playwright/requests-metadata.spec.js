@@ -1,6 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { checkJson as coreCheckJson, requestGETWithAdminBasicAuth, getAuthStorageStatePath } from './globals';
+import { checkJson as coreCheckJson, requestGETWithAdminBasicAuth } from './globals';
 
 /**
  * Playwright Page

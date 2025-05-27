@@ -4,8 +4,7 @@ import {
     checkJson,
     requestGETWithAdminBasicAuth,
     requestPOSTWithAdminBasicAuth,
-    requestDELETEWithAdminBasicAuth,
-    getAuthStorageStatePath
+    requestDELETEWithAdminBasicAuth
 } from './globals';
 
 const url = 'api.php/admin';
@@ -30,7 +29,7 @@ test.describe('Not connected via context or Basic auth',
 test.describe('Connected from context, as an admin',
     () => {
 
-        test.use({ storageState: getAuthStorageStatePath('admin') });
+        test.use({ storageState: 'playwright/.auth/admin.json' });
 
         test('Request metadata', async ({ request }) => {
             const response = await request.get(url + "/repositories");
