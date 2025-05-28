@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpdocumentor
+        configVersion="3"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="https://www.phpdoc.org"
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/phpDocumentor/phpDocumentor/master/data/xsd/phpdoc.xsd"
+>
+    <!-- VERSION is updated by the Makefile command -->
+    <title>Lizmap Web Client VERSION</title>
+    <paths>
+        <output>php</output>
+        <cache>.build/cache</cache>
+    </paths>
+    <!-- VERSION is updated by the Makefile command -->
+    <version number="VERSION">
+        <api>
+            <source dsn="../lizmap/">
+                <path>modules</path>
+            </source>
+        </api>
+    </version>
+</phpdocumentor>

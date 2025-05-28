@@ -1,12 +1,15 @@
 <?php
+
 /**
  * @author       Laurent Jouanneau
+ *
  * @contributor  Dominique Papin, Julien Issler, Brunto, DSDenes
  *
  * @copyright    2007-2010 Laurent Jouanneau, 2007 Dominique Papin
  * @copyright    2008-2010 Julien Issler, 2010 Brunto, 2009 DSDenes
  *
  * @see         http://www.jelix.org
+ *
  * @licence      GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
  *
  * @param mixed $tpl

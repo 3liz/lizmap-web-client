@@ -1,10 +1,10 @@
-;<?php die(''); ?>
+;<?php exit(''); ?>
 ;for security reasons , don't remove or modify the first line
 hideSensitiveServicesProperties=0
 ;Services
 ;list the different map services (servers, generic parameters, etc.)
 [services]
-;Wms map server
+;URL to QGIS Server for OGC web services
 wmsServerURL="http://map:8080/ows/"
 ;WMS subdomain URLs list (optional)
 wmsPublicUrlList=
@@ -12,7 +12,7 @@ wmsPublicUrlList=
 lizmapPluginAPIURL="http://map:8080/lizmap/"
 
 onlyMaps=off
-defaultRepository=montpellier
+defaultRepository=testsrepository
 defaultProject=
 
 ; cache configuration for tiles
@@ -44,27 +44,27 @@ rootRepositories="/srv/lzm/tests/qgis-projects"
 relativeWMSPath=on
 
 appName=Lizmap
-qgisServerVersion=3.0
 wmsMaxWidth=3000
 wmsMaxHeight=3000
 projectSwitcher=off
 requestProxyEnabled=0
 requestProxyType=http
 requestProxyNotForDomain="localhost,127.0.0.1"
-adminContactEmail="laurent@jelix.org"
+adminContactEmail="root@localhost.org"
 proxyHttpBackend=curl
-
-[repository:montpellier]
-label=Demo
-path="demoqgis/"
-allowUserDefinedThemes=1
-
-[repository:intranet]
-label="Demo - Intranet"
-path="demoqgis_intranet/"
-allowUserDefinedThemes=0
 
 [repository:testsrepository]
 label="Tests repository"
 path="/srv/lzm/tests/qgis-projects/tests/"
+allowUserDefinedThemes=1
+accessControlAllowOrigin="http://othersite.local:8130"
+
+[repository:private]
+label="Private repository"
+path="/srv/lzm/tests/qgis-projects/CONFIDENTIAL/"
+allowUserDefinedThemes=1
+
+[repository:badrepository]
+label="Repository with bad path"
+path="/srv/lzm/tests/qgis-projects/bad/"
 allowUserDefinedThemes=0

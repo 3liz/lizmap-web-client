@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Lizmap administration.
  *
@@ -29,6 +30,7 @@ class aclCtrl extends jController
 
     public function removegroup()
     {
+        /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
 
         $login = $this->param('user');
@@ -55,6 +57,7 @@ class aclCtrl extends jController
 
     public function addgroup()
     {
+        /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
 
         $login = $this->param('user');

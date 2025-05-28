@@ -1,4 +1,7 @@
 <?php
+
+use Lizmap\App\FileTools;
+
 /**
  * Lizmap administration : logs.
  *
@@ -13,14 +16,26 @@ class logsCtrl extends jController
 {
     // Configure access via jacl2 rights management
     public $pluginParams = array(
-        '*' => array('jacl2.right' => 'lizmap.admin.access'),
+        '*' => array('jacl2.right' => 'lizmap.admin.lizmap.log.view'),
+        'emptyCounter' => array(
+            'jacl2.right.and' => array('lizmap.admin.lizmap.log.view', 'lizmap.admin.lizmap.log.delete'),
+        ),
+        'emptyDetail' => array(
+            'jacl2.right.and' => array('lizmap.admin.lizmap.log.view', 'lizmap.admin.lizmap.log.delete'),
+        ),
+        'eraseError' => array(
+            'jacl2.right.and' => array('lizmap.admin.lizmap.log.view', 'lizmap.admin.lizmap.log.delete'),
+        ),
     );
 
     /**
      * Display a summary of the logs.
+     *
+     * @return jResponseHtml
      */
     public function index()
     {
+        /** @var jResponseHtml $rep */
         $rep = $this->getResponse('html');
 
         // Get counter count
@@ -33,18 +48,22 @@ class logsCtrl extends jController
         $conditions = jDao::createConditions();
         $detailNumber = $dao->countBy($conditions);
 
-        // Get last error log
-        $logPath = jApp::varPath('log/errors.log');
+        // Number of lines for logs
+        $maxLinesToFetch = 200;
+
+        // Get last admin log
+        $lizmapLogPath = jApp::logPath('lizmap-admin.log');
+        $lizmapLog = FileTools::tail($lizmapLogPath, $maxLinesToFetch);
+        $lizmapLogTextArea = $this->logLinesDisplayTextArea($lizmapLog);
+
+        $errorLogDisplay = !lizmap::getServices()->hideSensitiveProperties();
+        $errorLogPath = jApp::logPath('errors.log');
         $errorLog = '';
-        $lines = 50;
-        if (is_file($logPath)) {
-            // Only display content if the file is small to avoid memory issues
-            if (filesize($logPath) > 512000) {
-                $errorLog = 'toobig';
-            } else {
-                $errorLog = trim(implode('', array_slice(file($logPath), -$lines)));
-                $errorLog = htmlentities($errorLog);
-            }
+        $errorLogTextArea = '';
+        if ($errorLogDisplay) {
+            // Get last error log
+            $errorLog = FileTools::tail($errorLogPath, $maxLinesToFetch);
+            $errorLogTextArea = $this->logLinesDisplayTextArea($errorLog);
         }
 
         // Display content via templates
@@ -52,7 +71,13 @@ class logsCtrl extends jController
         $assign = array(
             'counterNumber' => $counterNumber,
             'detailNumber' => $detailNumber,
+            'lizmapLog' => $lizmapLog,
+            'lizmapLogBaseName' => basename($lizmapLogPath),
+            'lizmapLogTextArea' => $lizmapLogTextArea,
+            'errorLogDisplay' => $errorLogDisplay,
             'errorLog' => $errorLog,
+            'errorLogBaseName' => basename($errorLogPath),
+            'errorLogTextArea' => $errorLogTextArea,
         );
         $tpl->assign($assign);
         $rep->body->assign('MAIN', $tpl->fetch('logs_view'));
@@ -62,10 +87,41 @@ class logsCtrl extends jController
     }
 
     /**
+     * Compute the height of the text area to use by default.
+     *
+     * @param string $log the log content
+     *
+     * @return int the number of lines for the text area
+     */
+    private function logLinesDisplayTextArea($log)
+    {
+        $maxLinesTextArea = 30;
+        $minLinesTextArea = 10;
+
+        $numberLines = substr_count($log, "\n");
+
+        if ($numberLines < $minLinesTextArea) {
+            // Log file < 10
+            return $minLinesTextArea;
+        }
+
+        if ($numberLines < $maxLinesTextArea) {
+            // 10 <= log file < 30
+            return $numberLines;
+        }
+
+        // log file >= 30
+        return $maxLinesTextArea;
+    }
+
+    /**
      * Display the logs counter.
+     *
+     * @return jResponseHtml
      */
     public function counter()
     {
+        /** @var jResponseHtml $rep */
         $rep = $this->getResponse('html');
 
         // Get counter
@@ -86,19 +142,21 @@ class logsCtrl extends jController
 
     /**
      * Empty the counter logs table.
+     *
+     * @return jResponseRedirect
      */
     public function emptyCounter()
     {
+        /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
 
         // Get counter
-        $cnx = jDb::getConnection('lizlog');
-
         try {
+            $cnx = jDb::getConnection('lizlog');
             $cnx->exec('DELETE FROM log_counter;');
             jMessage::add(jLocale::get('admin~admin.logs.empty.ok', array('log_counter')));
         } catch (Exception $e) {
-            jLog::log('Error while emptying table log_counter ');
+            jLog::log('Error while emptying table log_counter', 'error');
         }
 
         $rep->action = 'admin~logs:index';
@@ -108,9 +166,12 @@ class logsCtrl extends jController
 
     /**
      * Display the detailed logs.
+     *
+     * @return jResponseHtml
      */
     public function detail()
     {
+        /** @var jResponseHtml $rep */
         $rep = $this->getResponse('html');
 
         $maxvisible = 50;
@@ -139,6 +200,8 @@ class logsCtrl extends jController
 
     /**
      * Export the detailed logs in CSV.
+     *
+     * @return jResponseBinary|jResponseRedirect
      */
     public function export()
     {
@@ -152,6 +215,7 @@ class logsCtrl extends jController
             $conditions = jDao::createConditions();
             $nblogs = $dao->countBy($conditions);
         } catch (Exception $e) {
+            /** @var jResponseRedirect $rep */
             $rep = $this->getResponse('redirect');
             jMessage::add('Error : '.$e->getMessage(), 'error');
             $rep->action = 'admin~logs:index';
@@ -189,8 +253,9 @@ class logsCtrl extends jController
         // Closing file
         fclose($fp);
 
-        // Create response
+        /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
+        // Create response
         $rep->mimeType = 'text/csv';
         $rep->addHttpHeader('charset', 'UTF-8');
         $rep->doDownload = true;
@@ -203,19 +268,21 @@ class logsCtrl extends jController
 
     /**
      * Empty the detail logs table.
+     *
+     * @return jResponseRedirect
      */
     public function emptyDetail()
     {
+        /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
 
         // Get counter
-        $cnx = jDb::getConnection('lizlog');
-
         try {
+            $cnx = jDb::getConnection('lizlog');
             $cnx->exec('DELETE FROM log_detail;');
             jMessage::add(jLocale::get('admin~admin.logs.empty.ok', array('log_detail')));
         } catch (Exception $e) {
-            jLog::log('Error while emptying table log_detail ');
+            jLog::log('Error while emptying table log_detail', 'error');
         }
 
         $rep->action = 'admin~logs:index';
@@ -223,18 +290,22 @@ class logsCtrl extends jController
         return $rep;
     }
 
-    // Erase the error log file
+    /** Erase the error log file.
+     *
+     * @return jResponseRedirect
+     */
     public function eraseError()
     {
+        /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
 
         // Erase the log file
         try {
-            $logPath = jApp::varPath('log/errors.log');
+            $logPath = jApp::logPath('lizmap-admin.log');
             jFile::write($logPath, '');
             jMessage::add(jLocale::get('admin~admin.logs.error.file.erase.ok', array('log_detail')));
         } catch (Exception $e) {
-            jLog::log('Error while emptying the error log file');
+            jLog::log('Error while emptying the error log file', 'error');
         }
 
         $rep->action = 'admin~logs:index';

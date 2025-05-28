@@ -1,8 +1,16 @@
+{include 'lizmap~copy_to_clipboard'}
+
     <div>
       <div>
         <p>
-          <img src="{jurl 'view~media:illustration', array('repository'=>$repository,'project'=>$project)}" alt="project image" class="img-polaroid liz-project-img" width="200" height="200" loading="lazy">
-
+          <img
+                  src="{jurl 'view~media:illustration', array('repository'=>$repository,'project'=>$project)}"
+                  alt="project image"
+                  class="img-polaroid liz-project-img"
+                  width="200"
+                  height="200"
+                  loading="lazy"
+          >
 
           <dl class="dl-vertical">
             {if $WMSServiceTitle}
@@ -54,14 +62,33 @@
             <dd><small class="bbox">{$WMSExtent}</small></dd>
             <br/>
 
+            {ifacl2 'lizmap.tools.displayGetCapabilitiesLinks', $repository}
             {if $wmsGetCapabilitiesUrl}
             <dt>{@view~map.metadata.properties.wmsGetCapabilitiesUrl@}</dt>
-            <dd><small><a href="{$wmsGetCapabilitiesUrl}" target="_blank">WMS Url</a></small></dd>
-            <dd><small><a id="metadata-wmts-getcapabilities-url" href="{$wmtsGetCapabilitiesUrl}" target="_blank">WMTS Url</a></small></dd>
+            <dd>
+              <small>
+                <a href="{$wmsGetCapabilitiesUrl}" target="_blank">WMS URL</a>
+              </small>
+              {usemacro 'copy_to_clipboard', $wmsGetCapabilitiesUrl}
+            </dd>
+            <dd>
+              <small>
+                <a id="metadata-wmts-getcapabilities-url" href="{$wmtsGetCapabilitiesUrl}" target="_blank">WMTS URL</a>
+              </small>
+              {usemacro 'copy_to_clipboard', $wmtsGetCapabilitiesUrl}
+            </dd>
+            {ifacl2 'lizmap.tools.layer.export', $repository}
+              <dd>
+                <small>
+                  <a href="{$wfsGetCapabilitiesUrl}" target="_blank">WFS URL</a>
+                </small>
+                {usemacro 'copy_to_clipboard', $wfsGetCapabilitiesUrl}
+              </dd>
+            {/ifacl2}
             <br/>
             {/if}
+            {/ifacl2}
           </dl>
         </p>
       </div>
     </div>
-

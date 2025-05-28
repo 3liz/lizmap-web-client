@@ -1,0 +1,700 @@
+openapi: 3.0.4
+info:
+  title: Lizmap Admin API
+  version: 3.10.0-pre
+servers:
+  - url: http://localhost:8130/api.php
+tags:
+  - name: repositories
+    description: Requests onto repositories located in Lizmap
+  - name: projects
+    description: Requests onto projects located in a specific repository in Lizmap
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          description: The HTTP response code message
+          example: Not Found
+        status:
+          type: integer
+          format: int32
+          description: The HTTP response code status
+          example: 404
+        message:
+          type: string
+          description: Message describing the error
+          example: Resource not found. Please provide a valid entry.
+    RepositoryMainData:
+      type: object
+      properties:
+        key:
+          type: string
+          description: String representing the ID of a repository
+          example: testsrepository
+        label:
+          type: string
+          description: Clean name of a repository
+          example: Tests repository
+        path:
+          type: string
+          description: Path to a repository
+          example: tests/
+    RepositoryRightsGroup:
+      type: object
+      properties:
+        lizmap.tools.edition.use:
+          type: array
+          items:
+            type: string
+            example: admins
+        lizmap.repositories.view:
+          type: array
+          items:
+            type: string
+            example: admins
+        lizmap.tools.loginFilteredLayers.override:
+          type: array
+          items:
+            type: string
+            example: anonymous
+        lizmap.tools.displayGetCapabilitiesLinks:
+          type: array
+          items:
+            type: string
+            example: anonymous
+        lizmap.tools.layer.export:
+          type: array
+          items:
+            type: string
+            example: lizadmins
+    Repository:
+      type: object
+      properties:
+        key:
+          type: string
+          description: String representing the ID of a repository
+          example: testsrepository
+        label:
+          type: string
+          description: Clean name of a repository
+          example: Tests repository
+        path:
+          type: string
+          description: Path to a repository
+          example: tests/
+        allowUserDefinedThemes:
+          type: boolean
+          description: Indicate if user defined themes are allowed
+          example: true
+        accessControlAllowOrigin:
+          type: string
+          description: Value of the Access-Control-Allow-Origin HTTP header
+          example: https://example.com
+        rightsGroup:
+          $ref: '#/components/schemas/RepositoryRightsGroup'
+    RepositoryCreation:
+      type: object
+      properties:
+        key:
+          type: string
+          description: String representing the ID of the new repository
+          example: newtests
+        label:
+          type: string
+          description: Clean name of the new repository
+          example: A new test repository
+        path:
+          type: string
+          description: Path to the new repository
+          example: tests/
+        allowUserDefinedThemes:
+          type: boolean
+          description: Indicate if user defined themes are allowed
+          example: null
+        newDirectoryCreated:
+          type: boolean
+          description: Indicate if a directory has been created
+          example: true
+        repoCreated:
+          type: boolean
+          description: Indicate if the repository is created
+          example: true
+    ProjectMainData:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: string
+            description: Project key
+            example: montpellier
+          title:
+            type: string
+            description: Human name of a project
+            example: Montpellier - Transports
+          abstract:
+            type: string
+            description: Abstract of a project
+            example: Demo project with bus and tramway lines in Montpellier, France.
+    Project:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Project key
+          example: montpellier
+        projectName:
+          type: string
+          description: Project name
+          example: Montpellier-Transports
+        title:
+          type: string
+          description: Human name of a project
+          example: Montpellier - Transports
+        abstract:
+          type: string
+          description: Abstract of a project
+          example: Demo project with bus and tramway lines in Montpellier, France.
+        keywordList:
+          type: string
+          description: List of keywords defining a project
+          example: EU, demo, GPS, stats
+        proj:
+          type: string
+          description: Project projection
+          example: EPSG:3857
+        bbox:
+          type: string
+          description: Extent of the project
+          example: 417006.61369999998714775, 5394910.3409000001847744, 447158.04889999999431893, 5414844.99480000045150518
+        needsUpdateError:
+          type: boolean
+          description: If the project needs an update which lead to an error.
+          example: false
+        acl:
+          type: boolean
+          description: ACL rights on the project.
+          example: true
+        wmsGetCapabilitiesUrl:
+          type: string
+          description: WMS GetCapabilities URL
+          example: http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=montpellier&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities
+        wmtsGetCapabilitiesUrl:
+          type: string
+          description: WMTS GetCapabilities URL
+          example: http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=montpellier&SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetCapabilities
+        version:
+          type: string
+          description: QGIS version
+          example: 3.28.13-Firenze
+        saveDateTime:
+          type: string
+          description: Date and time when the project was last saved
+          example: 2024-07-04T09:20:17
+        saveUser:
+          type: string
+          description: User name that did the last save
+          example: jean
+        saveUserFull:
+          type: string
+          description: Full user name that did the last save
+          example: Jean Jacques
+    Paths:
+      type: object
+      additionalProperties:
+        type: string
+        enum: [ "Available", "Reserved" ]
+        description: Availability of the path
+      example:
+        "ProJets 1982*!/": "Available"
+        "a/": "Available"
+        "b/": "Available"
+        "media/": "Reserved"
+        "tests/": "Reserved"
+    Groups:
+      type: array
+      items:
+        type: object
+        properties:
+          id_aclgrp:
+            type: string
+            description: Identification for the group
+            example: intranet
+          name:
+            type: string
+            description: Clean name for the group
+            example: Intranet demos group
+          grouptype:
+            type: string
+            description: Indicate the type of the group
+            example: 0
+          ownerlogin:
+            type: string
+            description: Indicate the owner of the group
+            example: null
+    RightsList:
+      type: object
+      additionalProperties:
+        type: string
+        description: Label for rights
+      example:
+        "lizmap.repositories.view": "View projects in the repository"
+        "lizmap.tools.displayGetCapabilitiesLinks": "Display projects WMS links"
+        "lizmap.tools.edition.use": "Use the Edition tool"
+        "lizmap.tools.layer.export": "Allow export of vector layers"
+        "lizmap.tools.loginFilteredLayers.override": "See all the data of the filtered layers (attribute or spatial filters)"
+    RepositoryAddRight:
+      type: object
+      properties:
+        key:
+          type: string
+          description: String representing the ID of a repository
+          example: montpellier
+        group:
+          type: string
+          description: The group that will be edited
+          example: admins
+        right:
+          type: string
+          description: The right to be added
+          example: lizmap.tools.edition.use
+        isAdded:
+          type: boolean
+          description: Indicate if the right was successfully added
+          example: true
+    RepositoryRemoveRight:
+      type: object
+      properties:
+        key:
+          type: string
+          description: String representing the ID of a repository
+          example: montpellier
+        group:
+          type: string
+          description: The group that will be edited
+          example: admins
+        right:
+          type: string
+          description: The right to be removed
+          example: lizmap.tools.edition.use
+        isRemoved:
+          type: boolean
+          description: Indicate if the right was successfully removed
+          example: true
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+security:
+  - basicAuth: []
+paths:
+  /admin/rights:
+    get:
+      parameters:
+        - name: locale
+          in: path
+          description: The locale to translate rights labels.
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RightsList'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - basicAuth: [ ]
+      tags:
+        - rights
+      summary: Get all applicable rights on Lizmap Web Client
+  /admin/groups:
+    get:
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Groups'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - basicAuth: [ ]
+      tags:
+        - groups
+      summary: Get all groups
+  /admin/paths:
+    get:
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Paths'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - basicAuth: [ ]
+      tags:
+        - paths
+      summary: Get all distinct paths available and reserved in the root repository
+  /admin/repositories:
+    get:
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RepositoryMainData'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - basicAuth: []
+      tags:
+        - repositories
+      summary: Get all repositories
+  /admin/repositories/{repository_key}:
+    get:
+      parameters:
+        - name: repository_key
+          in: path
+          description: The repository key to get repository data.
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Repository'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - basicAuth: []
+      tags:
+        - repositories
+      summary: Get a specific repository
+    post:
+      parameters:
+        - name: repository_key
+          in: path
+          description: The repository key that will be created.
+          required: true
+          schema:
+            type: string
+        - name: label
+          in: query
+          description: The clean name of the repository
+          required: true
+          schema:
+            type: string
+        - name: path
+          in: query
+          description: The path of the repository
+          required: true
+          schema:
+            type: string
+        - name: allowUserDefinedThemes
+          in: query
+          description: Indicate if user defined themes are allowed
+          required: true
+          schema:
+            type: string
+        - name: createDirectory
+          in: query
+          description: Indicate if we want to create the directory on the file system
+          required: false
+          schema:
+            type: string
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RepositoryCreation'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - basicAuth: []
+      tags:
+        - repositories
+      summary: Create a specific repository
+  /admin/repositories/{repository_key}/rights:
+    get:
+      parameters:
+        - name: repository_key
+          in: path
+          description: The repository key to get repository rights.
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RepositoryRightsGroup'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - basicAuth: [ ]
+      tags:
+        - repositories
+      summary: Get list rights of a specific repository
+    post:
+      parameters:
+        - name: repository_key
+          in: path
+          description: The repository that will be edited.
+          required: true
+          schema:
+            type: string
+        - name: group
+          in: query
+          description: The group that will be edited
+          required: true
+          schema:
+            type: string
+        - name: right
+          in: query
+          description: The right to be added
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RepositoryAddRight'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - basicAuth: [ ]
+      tags:
+        - repositories
+      summary: Add a right to a group on a repository
+    delete:
+      parameters:
+        - name: repository_key
+          in: path
+          description: The repository that will be edited.
+          required: true
+          schema:
+            type: string
+        - name: group
+          in: query
+          description: The group that will be edited
+          required: true
+          schema:
+            type: string
+        - name: right
+          in: query
+          description: The right to be removed
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RepositoryRemoveRight'
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - basicAuth: [ ]
+      tags:
+        - repositories
+      summary: Remove a right to a group on a repository
+  /admin/repositories/{repository_key}/projects:
+    get:
+      parameters:
+        - name: repository_key
+          in: path
+          description: The repository key to get repository data.
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectMainData'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - basicAuth: []
+      tags:
+        - projects
+      summary: Get all projects from a specific repository
+  /admin/repositories/{repository_key}/projects/{project_id}:
+    get:
+      parameters:
+        - name: repository_key
+          in: path
+          description: The repository key to get repository data.
+          required: true
+          schema:
+            type: string
+        - name: project_id
+          in: path
+          description: The project ID to get project data.
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - basicAuth: []
+      tags:
+        - projects
+      summary: Get a specific project from a specific repository

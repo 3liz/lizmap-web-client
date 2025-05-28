@@ -1,4 +1,4 @@
-;<?php die(''); ?>
+;<?php exit(''); ?>
 ;for security reasons, don't remove or modify the first line
 
 [jdb]
@@ -153,5 +153,3 @@ driver=file
 ;port=6379
 ;db=2
 ;ttl=0
-
-

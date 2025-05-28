@@ -1,8 +1,8 @@
 #!/bin/bash
 ROOTDIR="/srv/lzm"
 APPDIR="$ROOTDIR/lizmap"
-APP_USER=usertest
-APP_GROUP=grouptest
+APP_USER=userphp
+APP_GROUP=groupphp
 
 COMMAND="$1"
 
@@ -30,36 +30,12 @@ function cleanTmp() {
 
 
 function resetApp() {
-    if [ -f $APPDIR/var/config/CLOSED ]; then
-        rm -f $APPDIR/var/config/CLOSED
-    fi
+
+    $APPDIR/install/reset.sh reset
 
     if [ ! -d $APPDIR/var/log ]; then
         mkdir $APPDIR/var/log
         chown $APP_USER:$APP_GROUP $APPDIR/var/log
-    fi
-
-    echo "parametre resetApp: $1"
-
-    if [ "$1" == "sqlite" ]; then
-      cp $ROOTDIR/tests/docker-conf/phpfpm/profiles-sqlite.ini.php $APPDIR/var/config/profiles.ini.php
-    else
-      cp $ROOTDIR/tests/docker-conf/phpfpm/profiles.ini.php $APPDIR/var/config/profiles.ini.php
-    fi
-
-    cp $ROOTDIR/tests/docker-conf/phpfpm/localconfig.ini.php $APPDIR/var/config/localconfig.ini.php
-    cp $ROOTDIR/tests/docker-conf/phpfpm/lizmapConfig.ini.php $APPDIR/var/config/lizmapConfig.ini.php
-
-    chown -R $APP_USER:$APP_GROUP $APPDIR/var/config/profiles.ini.php $APPDIR/var/config/localconfig.ini.php $APPDIR/var/config/lizmapConfig.ini.php
-
-    if [ -f $APPDIR/var/config/installer.ini.php ]; then
-        rm -f $APPDIR/var/config/installer.ini.php
-    fi
-    if [ -f $APPDIR/var/config/liveconfig.ini.php ]; then
-        rm -f $APPDIR/var/config/liveconfig.ini.php
-    fi
-    if [ -f $APPDIR/var/config/localframework.ini.php ]; then
-        rm -f $APPDIR/var/config/localframework.ini.php
     fi
     rm -rf $APPDIR/var/log/*
     rm -rf $APPDIR/var/db/*
@@ -72,16 +48,26 @@ function resetApp() {
 
     php /srv/lzm/tests/docker-conf/phpfpm/resetpgsql.php
 
-    cleanTmp
-    setRights
-    launchInstaller
-    setupAdmin
+    launch "$1"
+}
+
+
+function launchConfigure() {
+    su $APP_USER -c "php $APPDIR/install/configurator.php"
 }
 
 
 function launchInstaller() {
     php /srv/lzm/tests/docker-conf/phpfpm/initpgsql.php
-    su $APP_USER -c "php $APPDIR/install/installer.php"
+    su $APP_USER -c "php $APPDIR/install/installer.php -v"
+}
+
+function launchScript() {
+    su $APP_USER -c "php $APPDIR/scripts/script.php $*"
+}
+
+function launchConsole() {
+    su $APP_USER -c "php $APPDIR/console.php $*"
 }
 
 function setRights() {
@@ -126,6 +112,10 @@ function composerInstall() {
 
 }
 
+function composerRun() {
+    composer --working-dir=$ROOTDIR/tests/units/ run $*
+}
+
 function composerUpdate() {
     composer update --prefer-dist --no-progress --no-ansi --no-interaction --working-dir=$APPDIR
     chown -R $APP_USER:$APP_GROUP $APPDIR/vendor $APPDIR/composer.lock
@@ -160,7 +150,11 @@ function setupAdmin() {
 
 function launch() {
     if [ ! -f $APPDIR/var/config/profiles.ini.php ]; then
-        cp $ROOTDIR/tests/docker-conf/phpfpm/profiles.ini.php $APPDIR/var/config/profiles.ini.php
+       if [ "$1" == "sqlite" ]; then
+         cp $ROOTDIR/tests/docker-conf/phpfpm/profiles-sqlite.ini.php $APPDIR/var/config/profiles.ini.php
+       else
+         cp $ROOTDIR/tests/docker-conf/phpfpm/profiles.ini.php $APPDIR/var/config/profiles.ini.php
+       fi
     fi
     if [ ! -f $APPDIR/var/config/localconfig.ini.php ]; then
         cp $ROOTDIR/tests/docker-conf/phpfpm/localconfig.ini.php $APPDIR/var/config/localconfig.ini.php
@@ -175,18 +169,26 @@ function launch() {
       composerInstall
     fi
 
-    if [ ! -d "$ROOTDIR/assets/node_modules/" ]; then
+    if [ ! -d "$ROOTDIR/node_modules/" ]; then
       (
-        cd "$ROOTDIR/assets/";
-        npm install
+        cd "$ROOTDIR/";
+        su $APP_USER -c "npm install"
       )
     fi
 
-    if [ ! -f "$APPDIR/www/assets/js/lizmap.js" ]; then
+    cd "$ROOTDIR/";
+    if [[ -z "${CYPRESS_CI}" ]]; then
       (
-        cd "$ROOTDIR/assets/";
-        npm run build
+        su $APP_USER -c "npm run build"
       )
+    else
+      (
+        su $APP_USER -c "npm run watch"
+      )
+    fi
+
+    if [ ! -d $APPDIR/lizmap-modules/lizmapdemo ]; then
+        su $APP_USER -c "$APPDIR/install/demo.sh install --no-installer"
     fi
 
     launchInstaller
@@ -213,12 +215,20 @@ case $COMMAND in
         resetApp sqlite;;
     launch)
         launch;;
+    configure)
+        launchConfigure;;
     install)
         launchInstaller;;
+    script)
+        launchScript ${*:2};;
+    console)
+        launchConsole ${*:2};;
     rights)
         setRights;;
     composer_install)
         composerInstall;;
+    composer_run)
+        composerRun ${*:2};;
     composer_update)
         composerUpdate;;
     unittests)
@@ -230,4 +240,3 @@ case $COMMAND in
         exit 2
         ;;
 esac
-

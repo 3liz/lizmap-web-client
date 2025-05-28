@@ -1,8 +1,7 @@
 {jmessage_bootstrap}
-
   <div>
     <h2>{@admin~admin.logs.counter.title@}</h2>
-    
+
     <table class="table table-bordered table-striped">
       <thead>
         <tr>

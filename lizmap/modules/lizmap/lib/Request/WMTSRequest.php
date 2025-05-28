@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Manage OGC request.
  *
@@ -21,17 +22,27 @@ class WMTSRequest extends OGCRequest
 
     private $forceRequest = false;
 
+    /**
+     * @return bool
+     */
     public function getForceRequest()
     {
         return $this->forceRequest;
     }
 
+    /**
+     * @param bool $forced
+     *
+     * @return bool
+     */
     public function setForceRequest($forced)
     {
         return $this->forceRequest = $forced;
     }
 
     /**
+     * @return OGCResponse
+     *
      * @see https://en.wikipedia.org/wiki/Web_Map_Tile_Service#Requests.
      */
     protected function process_getcapabilities()
@@ -43,7 +54,7 @@ class WMTSRequest extends OGCRequest
         } catch (\Exception $e) {
             // if default profile does not exist, or if there is an
             // other error about the cache, let's log it
-            $this->appContext->logException($e, 'error');
+            $this->appContext->logException($e, 'lizmapadmin');
             // Error message
             \jMessage::add('The WMTS Service can\'t be initialized!', 'ServiceError');
 
@@ -72,21 +83,18 @@ class WMTSRequest extends OGCRequest
         $tpl->assign('tileMatrixSetList', $tileCapabilities->tileMatrixSetList);
         $tpl->assign('layers', $tileCapabilities->layerTileInfoList);
 
-        return (object) array(
-            'code' => 200,
-            'mime' => 'text/xml; charset=utf-8',
-            'data' => $tpl->fetch('lizmap~wmts_capabilities'),
-            'cached' => false,
-        );
+        return new OGCResponse(200, 'text/xml; charset=utf-8', $tpl->fetch('lizmap~wmts_capabilities'));
     }
 
     /**
+     * @return OGCResponse
+     *
      * @see https://en.wikipedia.org/wiki/Web_Map_Tile_Service#Requests.
      */
     protected function process_gettile()
     {
-        //\jLog::log('GetTile '.http_build_query($this->params));
-        // Get the layer
+        // \jLog::log('GetTile '.http_build_query($this->params));
+        // Get the parameters values
         $params = array(
             'LayerName' => 'Layer',
             'Format' => 'Format',
@@ -95,6 +103,21 @@ class WMTSRequest extends OGCRequest
             'TileRow' => 'TileRow',
             'TileCol' => 'TileCol',
         );
+
+        // Default values
+        /** @var null|string $LayerName */
+        $LayerName = null;
+
+        /** @var null|string $Format */
+        $Format = null;
+
+        /** @var null|string $TileMatrixSetId */
+        $TileMatrixSetId = null;
+
+        /** @var null|string $TileMatrixId */
+        $TileMatrixId = null;
+        $TileRow = -1;
+        $TileCol = -1;
 
         foreach ($params as $var => $param) {
             ${$var} = $this->param($param);
@@ -115,7 +138,7 @@ class WMTSRequest extends OGCRequest
         } catch (\Exception $e) {
             // if default profile does not exist, or if there is an
             // other error about the cache, let's log it
-            $this->appContext->logException($e, 'error');
+            $this->appContext->logException($e, 'lizmapadmin');
             // Error message
             \jMessage::add('The WMTS Service can\'t be initialized!', 'ServiceError');
 
@@ -176,6 +199,7 @@ class WMTSRequest extends OGCRequest
         $wmsParams['width'] = $tileWidth;
         $wmsParams['height'] = $tileHeight;
         $wmsParams['dpi'] = '96';
+        $wmsParams['tiled'] = 'true';
         if (preg_match('#png#', $Format)) {
             $wmsParams['transparent'] = 'true';
         }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Lizmap administration.
  *
@@ -20,35 +21,45 @@ class configCtrl extends jController
         'saveServices' => array('jacl2.right' => 'lizmap.admin.services.update'),
     );
 
-    protected function prepareServicesForm(jFormsBase $form, LizmapServices $services)
+    protected function prepareServicesForm(jFormsBase $form, lizmapServices $services)
     {
         // Set form data values
         foreach ($services->getProperties() as $ser) {
             switch ($ser) {
-              case 'allowUserAccountRequests':
-                  $form->setReadOnly('allowUserAccountRequests', $services->isLdapEnabled());
-                  // no break
-              case 'onlyMaps':
-                  $form->setData($ser, $services->{$ser} ? 'on' : 'off');
+                case 'allowUserAccountRequests':
+                    $form->setReadOnly('allowUserAccountRequests', $services->isLdapEnabled());
 
-                  break;
+                    // no break
+                case 'onlyMaps':
+                    $form->setData($ser, $services->{$ser} ? 'on' : 'off');
 
-              case 'projectSwitcher':
-                  $form->setData($ser, $services->{$ser} ? 'on' : 'off');
+                    break;
 
-                  break;
+                case 'projectSwitcher':
+                    $form->setData($ser, $services->{$ser} ? 'on' : 'off');
 
-              default:
-                  if ($form->getControl($ser)) {
-                      $form->setData($ser, $services->{$ser});
-                  }
-          }
+                    break;
+
+                default:
+                    /** @var null|jFormsControl $ctrl */
+                    $ctrl = $form->getControl($ser);
+                    if ($ctrl) {
+                        $form->setData($ser, $services->{$ser});
+                    }
+            }
         }
 
         // hide sensitive services properties
         if ($services->hideSensitiveProperties()) {
             foreach ($services->getSensitiveProperties() as $ser) {
-                if ($form->getControl($ser)) {
+                /** @var null|jFormsControl $ctrl */
+                $ctrl = $form->getControl($ser);
+                if (!$ctrl) {
+                    continue;
+                }
+                if ($ser == 'adminSenderEmail') {
+                    $form->setReadOnly($ser, true);
+                } else {
                     $form->deactivate($ser);
                 }
             }
@@ -57,9 +68,12 @@ class configCtrl extends jController
 
     /**
      * Display a summary of the information taken from the ~ configuration file.
+     *
+     * @return jResponseHtml
      */
     public function index()
     {
+        /** @var jResponseHtml $rep */
         $rep = $this->getResponse('html');
 
         // Get Lizmap version from project.xml
@@ -93,7 +107,7 @@ class configCtrl extends jController
     public function modifyServices()
     {
 
-    // Get the data
+        // Get the data
         $services = lizmap::getServices();
 
         // Create the form
@@ -107,8 +121,9 @@ class configCtrl extends jController
             $form->setData('cacheRootDirectory', sys_get_temp_dir());
         }
 
-        // redirect to the form display action
+        /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
+        // redirect to the form display action
         $rep->action = 'admin~config:editServices';
 
         return $rep;
@@ -117,16 +132,19 @@ class configCtrl extends jController
     /**
      * Display the form to modify the services.
      *
-     * @return jResponse display the form
+     * @return jResponseHtml|jResponseRedirect display the form
      */
     public function editServices()
     {
+        /** @var jResponseHtml $rep */
         $rep = $this->getResponse('html');
 
         // Get the form
         $form = jForms::get('admin~config_services');
 
+        /** @var null|jFormsBase $form */
         if ($form) {
+            $hasSenderEmail = ($form->getData('adminSenderEmail') != '');
             if (lizmap::getServices()->isLdapEnabled()) {
                 $ctrl = $form->getControl('allowUserAccountRequests');
                 $ctrl->help = jLocale::get('admin~admin.configuration.services.allowUserAccountRequests.help.deactivated');
@@ -136,14 +154,30 @@ class configCtrl extends jController
             ) {
                 $form->getControl('adminSenderEmail')->required = true;
             }
-            if (lizmap::getServices()->hideSensitiveProperties() && $form->getData('adminSenderEmail') === '') {
-                $form->getControl('allowUserAccountRequests')->setReadOnly();
-                $form->getControl('allowUserAccountRequests')->help = jLocale::get('admin~admin.config.services.allowUserAccountRequest.noemail');
+            if (lizmap::getServices()->hideSensitiveProperties()) {
+                if (!$hasSenderEmail) {
+                    $form->getControl('allowUserAccountRequests')->setReadOnly();
+                    $form->getControl('allowUserAccountRequests')->help = jLocale::get('admin~admin.config.services.allowUserAccountRequest.noemail');
+                }
+                $form->getControl('adminSenderEmail')->help = jLocale::get('admin~admin.form.admin_services.adminSenderEmail.readonly.help');
             }
+
+            $qgisMinimumVersionRequired = jApp::config()->minimumRequiredVersion['qgisServer'];
+            $lizmapPluginMinimumVersionRequired = jApp::config()->minimumRequiredVersion['lizmapServerPlugin'];
+            $form->getControl('lizmapPluginAPIURL')->help = jLocale::get(
+                'admin~admin.form.admin_services.lizmapPluginAPIURL.help',
+                array(
+                    $qgisMinimumVersionRequired,
+                    $lizmapPluginMinimumVersionRequired,
+                )
+            );
+
             // Display form
             $tpl = new jTpl();
             $tpl->assign('form', $form);
+            $tpl->assign('hasSenderEmail', $hasSenderEmail);
             $tpl->assign('showSystem', !lizmap::getServices()->hideSensitiveProperties());
+            $tpl->assign('smtpEnabled', lizmap::getServices()->isSmtpEnabled());
             $rep->body->assign('MAIN', $tpl->fetch('admin~config_services'));
             $rep->body->assign('selectedMenuItem', 'lizmap_configuration');
 
@@ -151,6 +185,8 @@ class configCtrl extends jController
         }
         // redirect to default page
         jMessage::add('error in editServices');
+
+        /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
         $rep->action = 'admin~config:index';
 
@@ -160,19 +196,22 @@ class configCtrl extends jController
     /**
      * Save the data for the services section.
      *
-     * @return jResponse redirect to the index
+     * @return jResponseRedirect redirect to the index
      */
     public function saveServices()
     {
 
         // If the section does exists in the ini file : get the data
         $services = lizmap::getServices();
+
+        /** @var null|jFormsBase $form */
         $form = jForms::get('admin~config_services');
 
         // token
         $token = $this->param('__JFORMS_TOKEN__');
+        // redirection vers la page d'erreur
         if (!$token) {
-            // redirection vers la page d'erreur
+            /** @var jResponseRedirect $rep */
             $rep = $this->getResponse('redirect');
             $rep->action = 'admin~config:index';
 
@@ -181,6 +220,7 @@ class configCtrl extends jController
 
         // If the form is not defined, redirection
         if (!$form) {
+            /** @var jResponseRedirect $rep */
             $rep = $this->getResponse('redirect');
             $rep->action = 'admin~config:index';
 
@@ -193,7 +233,9 @@ class configCtrl extends jController
         // force sensitive services properties
         if ($services->hideSensitiveProperties()) {
             foreach ($services->getSensitiveProperties() as $ser) {
-                if ($form->getControl($ser)) {
+                /** @var null|jFormsControl $ctrl */
+                $ctrl = $form->getControl($ser);
+                if ($ctrl) {
                     $form->setData($ser, $services->{$ser});
                 }
             }
@@ -224,8 +266,8 @@ class configCtrl extends jController
             }
         }
 
-        // Check that cacheExpiration  is between 0 and 2592000 seconds
-        if ($form->getData('cacheExpiration') < 0 or $form->getData('cacheExpiration') > 2592000) {
+        // Check that cacheExpiration is between 0 and 2592000 seconds
+        if (intval($form->getData('cacheExpiration')) < 0 or intval($form->getData('cacheExpiration')) > 2592000) {
             $ok = false;
             $form->setErrorOn(
                 'cacheExpiration',
@@ -253,8 +295,9 @@ class configCtrl extends jController
             }
         }
 
+        // Errors : redirection to the display action
         if (!$ok) {
-            // Errors : redirection to the display action
+            /** @var jResponseRedirect $rep */
             $rep = $this->getResponse('redirect');
             $rep->action = 'admin~config:editServices';
             $rep->params['errors'] = '1';
@@ -265,7 +308,9 @@ class configCtrl extends jController
         // Save the data
         $data = array();
         foreach ($services->getProperties() as $prop) {
-            if ($form->getControl($prop)) {
+            /** @var null|jFormsControl $ctrl */
+            $ctrl = $form->getControl($prop);
+            if ($ctrl) {
                 $data[$prop] = $form->getData($prop);
             }
         }
@@ -280,8 +325,9 @@ class configCtrl extends jController
 
         jForms::destroy('admin~config_services');
 
-        // Redirect to the validation page
+        /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
+        // Redirect to the validation page
         $rep->action = 'admin~config:index';
 
         return $rep;

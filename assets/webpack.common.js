@@ -1,13 +1,27 @@
-const path = require('path');
+import {resolve, dirname} from 'path';
+import { fileURLToPath } from 'url';
 
-module.exports = {
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+export default {
     entry: {
-        lizmap: './src/index.js'
+        lizmap: './assets/src/index.js',
+        map: './assets/src/legacy/map.js',
+        attributeTable: './assets/src/legacy/attributeTable.js',
+        edition: './assets/src/legacy/edition.js',
+        filter: './assets/src/legacy/filter.js',
+        atlas: './assets/src/legacy/atlas.js',
+        'switcher-layers-actions': './assets/src/legacy/switcher-layers-actions.js',
+        timemanager: './assets/src/legacy/timemanager.js',
+        view: './assets/src/legacy/view.js',
+        'bottom-dock': './assets/src/legacy/bottom-dock.js',
+        'map-projects': './assets/src/legacy/map-projects.js',
     },
     output: {
-        filename: '../../lizmap/www/assets/js/[name].js',
+        filename: '[name].js',
         chunkFilename: '[name].bundle.js',
-        path: path.resolve(__dirname, 'dist')
+        publicPath: 'auto',
+        path: resolve(__dirname, '../lizmap/www/assets/js/')
     },
     module: {
         rules: [

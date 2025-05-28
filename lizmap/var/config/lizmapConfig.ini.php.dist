@@ -1,10 +1,10 @@
-;<?php die(''); ?>
-;for security reasons , don't remove or modify the first line
+;<?php exit(''); ?>
+;for security reasons , don't remove or modify the previous line
 
 ;Services
 ;list the different map services (servers, generic parameters, etc.)
 [services]
-;Wms map server
+;URL to QGIS Server for OGC web services
 wmsServerURL="http://127.0.0.1/cgi-bin/qgis_mapserv.fcgi"
 ;WMS subdomain URLs list (optional)
 wmsPublicUrlList=
@@ -39,5 +39,11 @@ cacheRootDirectory="/tmp/"
 
 ; path to find repositories
 ;rootRepositories="path"
+
+; path to find the QGIS projects private data
+; created by Lizmap or other tools, related to Qgis projects
+; if empty, rootRepositories is used.
+qgisProjectsPrivateDataFolder=""
+
 ; Does the server use relative path from root folder? 0/1
 ;relativeWMSPath=0

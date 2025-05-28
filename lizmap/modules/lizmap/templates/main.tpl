@@ -3,8 +3,6 @@
   <div id="abstract"></div>
 </div>
 <div id="content">
-  {jmessage} 
+  {jmessage}
   {$center}
 </div>
-
-

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class for items in the main view list.
  *
@@ -98,7 +99,7 @@ function mapDockItemsMerge($itemsA, $itemsB)
         $maps[$item->id] = $item;
     }
     $items = array();
-    foreach ($maps as $id => $item) {
+    foreach ($maps as $item) {
         $items[] = $item;
     }
     usort($items, 'mapDockItemSort');

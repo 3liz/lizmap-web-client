@@ -1,4 +1,7 @@
 <?php
+
+use Lizmap\Form\WidgetTrait;
+
 /**
  * @author    3liz
  * @copyright 2018 3liz
@@ -11,7 +14,7 @@ require_once JELIX_LIB_PATH.'plugins/formwidget/checkbox_html/checkbox_html.form
 
 class checkbox_htmlbootstrapFormWidget extends checkbox_htmlFormWidget
 {
-    use \Lizmap\Form\WidgetTrait;
+    use WidgetTrait;
 
     protected function outputJs()
     {
@@ -64,7 +67,7 @@ class checkbox_htmlbootstrapFormWidget extends checkbox_htmlFormWidget
             } elseif ($this->ctrl->valueOnUncheck == $this->getValue()) {
                 $attr['checked'] = 'checked';
             }
-            $attr['value'] = ''; //In the HTML form uncheck is equal to no value $this->ctrl->valueOnUncheck;
+            $attr['value'] = ''; // In the HTML form uncheck is equal to no value $this->ctrl->valueOnUncheck;
             $attr['id'] = $attrid.'_'.$this->ctrl->valueOnUncheck;
 
             echo '<input';

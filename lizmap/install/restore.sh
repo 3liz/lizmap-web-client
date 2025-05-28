@@ -9,53 +9,39 @@ SCRIPTDIR=$(dirname $0)
 LIZMAP=$SCRIPTDIR/..
 
 if  [ -d $BACKUPDIR ]; then
-    if [ -f $BACKUPDIR/jauth.db ]; then
-        cp -p $BACKUPDIR/jauth.db                   $LIZMAP/var/db/jauth.db
+  if  [ ! -d $BACKUPDIR/db ]; then
+    # lizmap <=3.5 backups
+    if [ -f $BACKUPDIR/jauth.db -o -f $BACKUPDIR/logs.db ]; then
+        cp -Rp $BACKUPDIR/*.db $LIZMAP/var/db/
     fi
-    if [ -f $BACKUPDIR/logs.db ]; then
-        cp -p $BACKUPDIR/logs.db                    $LIZMAP/var/db/logs.db
+  else
+    cp -Rp $BACKUPDIR/db $LIZMAP/var/
+  fi
+
+  if  [ ! -d $BACKUPDIR/config ]; then
+    # lizmap <=3.5 backups
+    if [ -f $BACKUPDIR/installer.ini.php ]; then
+      cp -Rp $BACKUPDIR/*.ini.php $LIZMAP/var/config/
     fi
-    if [ -f $BACKUPDIR/cacheTemplate.db ]; then
-        cp -p $BACKUPDIR/cacheTemplate.db           $LIZMAP/var/cacheTemplate.db
-    fi
-    if [ -f $BACKUPDIR/localconfig.ini.php ]; then
-        cp -p $BACKUPDIR/localconfig.ini.php        $LIZMAP/var/config/
-    else
-        cp -p $LIZMAP/var/config/localconfig.ini.php.dist   $LIZMAP/var/config/localconfig.ini.php
-    fi
-    if [ -f $BACKUPDIR/liveconfig.ini.php ]; then
-        cp -p $BACKUPDIR/liveconfig.ini.php        $LIZMAP/var/config/
-    fi
-    if [ -f $BACKUPDIR/localframework.ini.php ]; then
-        cp -p $BACKUPDIR/localframework.ini.php        $LIZMAP/var/config/
-    fi
-    if [ -f $BACKUPDIR/lizmapLogConfig.ini.php ]; then
-        cp -p $BACKUPDIR/lizmapLogConfig.ini.php    $LIZMAP/var/config/lizmapLogConfig.ini.php
-    fi
-    if [ -f $BACKUPDIR/authldap.coord.ini.php ]; then
-        cp -p $BACKUPDIR/authldap.coord.ini.php     $LIZMAP/var/config/authldap.coord.ini.php
-        cp -p $BACKUPDIR/mainconfig.ini.php         $LIZMAP/var/config/mainconfig.ini.php
-        cp -p $BACKUPDIR/admin/config.ini.php       $LIZMAP/var/config/admin/config.ini.php
-        cp -p $BACKUPDIR/index/config.ini.php       $LIZMAP/var/config/index/config.ini.php
-    fi 
-    if [ -d $BACKUPDIR/lizmap-theme-config ]; then
-        cp -Rp $BACKUPDIR/lizmap-theme-config       $LIZMAP/var/
-    fi
-    cp -p $BACKUPDIR/lizmapConfig.ini.php           $LIZMAP/var/config/lizmapConfig.ini.php
-    cp -p $BACKUPDIR/installer.ini.php              $LIZMAP/var/config/installer.ini.php
-    cp -p $BACKUPDIR/profiles.ini.php               $LIZMAP/var/config/profiles.ini.php
-    if [ -d $BACKUPDIR/my-packages ]; then
-        cp -Rp $BACKUPDIR/my-packages       $LIZMAP/
-    fi
-    if [ -d $BACKUPDIR/lizmap-modules ]; then
-        cp -Rp $BACKUPDIR/lizmap-modules       $LIZMAP/
-    fi
-    if [ -f $BACKUPDIR/mapBuilder.ini.php ]; then
-        cp -p $BACKUPDIR/mapBuilder.ini.php        $LIZMAP/var/config/
-    fi
-    if [ -f $BACKUPDIR/altiProfil.ini.php ]; then
-        cp -p $BACKUPDIR/altiProfil.ini.php        $LIZMAP/var/config/
-    fi
+  else
+    cp -Rp $BACKUPDIR/config $LIZMAP/var/
+  fi
+
+  if [ -d $BACKUPDIR/lizmap-theme-config ]; then
+      cp -Rp $BACKUPDIR/lizmap-theme-config       $LIZMAP/var/
+  fi
+
+  if [ -d $BACKUPDIR/my-packages ]; then
+      cp -Rp $BACKUPDIR/my-packages       $LIZMAP/
+  fi
+  if [ -d $BACKUPDIR/lizmap-modules ]; then
+      cp -Rp $BACKUPDIR/lizmap-modules       $LIZMAP/
+  fi
+
+  if [ ! -f $LIZMAP/var/config/localconfig.ini.php ]; then
+      cp -p $LIZMAP/var/config/localconfig.ini.php.dist   $LIZMAP/var/config/localconfig.ini.php
+  fi
+
 else
     echo "backup directory does not exists"
     exit 1

@@ -1,23 +1,27 @@
 <?php
+
 /**
  * Manage and give access to lizmap configuration.
  *
  * @author    3liz
- * @copyright 2012 3liz
+ * @copyright 2012-2022 3liz
  *
  * @see      http://3liz.com
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
 
+use Jelix\IniFile\IniModifier;
+use Lizmap\App\JelixContext;
 use Lizmap\Logger as Log;
+use Lizmap\Logger\Config as LogConfig;
+use Lizmap\Logger\Item as LogItem;
+use Lizmap\Project\Project;
 
 /**
  * @deprecated
  */
-class UnknownLizmapProjectException extends Exception
-{
-}
+class UnknownLizmapProjectException extends Exception {}
 
 class lizmap
 {
@@ -41,21 +45,19 @@ class lizmap
     protected static $lizmapServicesInstance;
 
     /**
-     * @var lizmapLogConfig The lizmapLogConfig instance for the singleton
+     * @var LogConfig The Lizmap Logger Config instance for the singleton
      */
     protected static $lizmapLogConfigInstance;
 
     /**
-     * @var lizmapJelixContext The jelixContext instance for the singleton
+     * @var JelixContext The jelixContext instance for the singleton
      */
     protected static $appContext;
 
     /**
      * this is a static class, so private constructor.
      */
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 
     /**
      * @return lizmapServices
@@ -63,7 +65,7 @@ class lizmap
     public static function getServices()
     {
         if (!isset(self::$lizmapServicesInstance)) {
-            $lizmapConfigTab = parse_ini_file(jApp::configPath('lizmapConfig.ini.php'), true);
+            $lizmapConfigTab = parse_ini_file(jApp::varConfigPath('lizmapConfig.ini.php'), true);
             $globalConfig = jApp::config();
             $ldapEnabled = jApp::isModuleEnabled('ldapdao');
             $varPath = jApp::varPath();
@@ -73,10 +75,13 @@ class lizmap
         return self::$lizmapServicesInstance;
     }
 
+    /**
+     * @return JelixContext The lizmap application jelixContext
+     */
     public static function getAppContext()
     {
         if (!self::$appContext) {
-            self::$appContext = new \Lizmap\App\JelixContext();
+            self::$appContext = new JelixContext();
         }
 
         return self::$appContext;
@@ -84,8 +89,8 @@ class lizmap
 
     public static function saveServices()
     {
-        $ini = new jIniFileModifier(jApp::configPath('lizmapConfig.ini.php'));
-        $liveIni = new jIniFileModifier(jApp::configPath('liveconfig.ini.php'));
+        $ini = new IniModifier(jApp::varConfigPath('lizmapConfig.ini.php'));
+        $liveIni = new IniModifier(jApp::varConfigPath('liveconfig.ini.php'));
 
         $services = self::getServices();
         $services->saveIntoIni($ini, $liveIni);
@@ -135,6 +140,7 @@ class lizmap
     {
         trigger_error('This method is deprecated. Please use the lizmapRepository::getProperties() method.', E_DEPRECATED);
 
+        // @phpstan-ignore deadCode.unreachable
         return lizmapRepository::$properties;
     }
 
@@ -148,6 +154,7 @@ class lizmap
     {
         trigger_error('This method is deprecated. Please use the lizmapRepository::getPropertiesOptions() method.', E_DEPRECATED);
 
+        // @phpstan-ignore deadCode.unreachable
         return lizmapRepository::$propertiesOptions;
     }
 
@@ -195,15 +202,15 @@ class lizmap
 
                             $filePath = $rootRepositories.$file.'/';
                             if (is_dir($filePath)) {
-                                $allreadyUsed = false;
+                                $allReadyUsed = false;
                                 foreach ($repositories as $repo) {
                                     if ($repo->getPath() == $filePath) {
-                                        $allreadyUsed = true;
+                                        $allReadyUsed = true;
 
                                         break;
                                     }
                                 }
-                                if (!$allreadyUsed) {
+                                if (!$allReadyUsed) {
                                     $data[$filePath] = $file;
                                 }
                             }
@@ -220,6 +227,9 @@ class lizmap
             }
             $ctrl->required = $propertiesOptions[$k]['required'];
             $ctrl->label = jLocale::get('admin~admin.form.admin_section.repository.'.$k.'.label');
+            if ($k != 'allowUserDefinedThemes') {
+                $ctrl->help = jLocale::get('admin~admin.form.admin_section.repository.'.$k.'.help');
+            }
             $ctrl->size = 100;
             $form->addControl($ctrl);
         }
@@ -244,7 +254,7 @@ class lizmap
      *
      * @param string $key Key of the repository to get
      *
-     * @return lizmapRepository
+     * @return null|lizmapRepository
      */
     public static function getRepository($key)
     {
@@ -271,7 +281,7 @@ class lizmap
      * @param string $key  the repository name
      * @param array  $data list of properties for the repository
      *
-     * @return lizmapRepository
+     * @return null|lizmapRepository
      */
     public static function createRepository($key, $data)
     {
@@ -306,8 +316,8 @@ class lizmap
         }
 
         // Get access to the ini file
-        $iniFile = jApp::configPath('lizmapConfig.ini.php');
-        $ini = new jIniFileModifier($iniFile);
+        $iniFile = jApp::varConfigPath('lizmapConfig.ini.php');
+        $ini = new IniModifier($iniFile);
 
         // Remove the section corresponding to the repository
         $section = 'repository:'.$key;
@@ -326,7 +336,7 @@ class lizmap
     }
 
     /**
-     * Uptade a repository.
+     * Update a repository.
      *
      * @param string $key  the repository name
      * @param array  $data the repository data
@@ -336,12 +346,12 @@ class lizmap
      */
     public static function updateRepository($key, $data)
     {
-        if (!key_exists($key, self::$repositoryInstances)) {
+        if (!array_key_exists($key, self::$repositoryInstances)) {
             return false;
         }
 
-        $iniFile = jApp::configPath('lizmapConfig.ini.php');
-        $ini = new jIniFileModifier($iniFile);
+        $iniFile = jApp::varConfigPath('lizmapConfig.ini.php');
+        $ini = new IniModifier($iniFile);
         $rep = self::$repositoryInstances[$key];
 
         $modified = $rep->update($data, $ini);
@@ -355,14 +365,17 @@ class lizmap
      *
      * @param string $key the project name
      *
-     * @return null|Lizmap\Project\Project null if it does not exist
+     * @return null|Project null if it does not exist
+     *
+     * @throws Lizmap\Project\UnknownLizmapProjectException
+     *
      * @FIXME all calls to getProject construct $key. Why not to
      * deliver directly $rep and $project? It could avoid
      * a preg_match
      */
     public static function getProject($key)
     {
-        $match = preg_match('/(?P<rep>\w+)~(?P<proj>[\w-]+)/', $key, $matches);
+        $match = preg_match('/(?P<rep>\w+)~(?P<proj>[-\.\s\w]+)/', $key, $matches);
         if ($match != 1) {
             return null;
         }
@@ -378,13 +391,13 @@ class lizmap
     /**
      * Get global configuration for logs.
      *
-     * @return lizmapLogConfig
+     * @return LogConfig
      */
     public static function getLogConfig()
     {
         if (!self::$lizmapLogConfigInstance) {
             $readConfigPath = parse_ini_file(jApp::varPath().self::$lizmapLogConfig, true);
-            self::$lizmapLogConfigInstance = new Log\Config($readConfigPath, self::getAppContext(), jApp::configPath('lizmapLogConfig.ini.php'));
+            self::$lizmapLogConfigInstance = new LogConfig($readConfigPath, self::getAppContext(), jApp::varConfigPath('lizmapLogConfig.ini.php'));
         }
 
         return self::$lizmapLogConfigInstance;
@@ -397,7 +410,7 @@ class lizmap
      */
     public static function getLogItemProperties()
     {
-        return Log\Item::getSProperties();
+        return LogItem::getSProperties();
     }
 
     /**
@@ -405,7 +418,7 @@ class lizmap
      *
      * @param string $key Key of the log item to get
      *
-     * @return lizmapLogItem
+     * @return LogItem
      *
      * @deprecated
      */

@@ -1,6 +1,10 @@
 # IDE
 .idea
 .vscode/
+*.code-workspace
+
+# Git
+.worktrees/
 
 *.orig
 *.rej
@@ -14,7 +18,9 @@
 
 # Build
 build/
-assets/node_modules/
+node_modules/
+assets/dist/
+*.bundle.js
 
 # Config
 lizmap/var/config/lizmapConfig.ini.php
@@ -23,6 +29,8 @@ lizmap/var/config/liveconfig.ini.php
 lizmap/var/config/localframework.ini.php
 lizmap/var/config/profiles.ini.php
 lizmap/var/config/installer.ini.php
+lizmap/var/config/installer.bak.ini.php
+lizmap/var/config/localurls.xml
 lizmap/var/db/*.db
 lizmap/var/lizmap-theme-config/*
 !lizmap/var/lizmap-theme-config/.empty
@@ -36,9 +44,30 @@ lizmap/www/cache/images/*
 !lizmap/www/cache/images/.empty
 lizmap/www/live/images/home/*
 !lizmap/www/live/images/home/.empty
+
+# Built JS files
+lizmap/www/assets/js/*.js.LICENSE.txt
+lizmap/www/assets/js/*.js.map
 lizmap/www/assets/js/lizmap.js
-lizmap/www/assets/js/lizmap.js.map
-lizmap/www/assets/js/lizmap.js.LICENSE.txt
+lizmap/www/assets/js/atlas.js
+lizmap/www/assets/js/attributeTable.js
+lizmap/www/assets/js/action.js
+lizmap/www/assets/js/bottom-dock.js
+lizmap/www/assets/js/edition.js
+lizmap/www/assets/js/filter.js
+lizmap/www/assets/js/map.js
+lizmap/www/assets/js/map-projects.js
+lizmap/www/assets/js/popupQgisAtlas.js
+lizmap/www/assets/js/search.js
+lizmap/www/assets/js/switcher-layers-actions.js
+lizmap/www/assets/js/timemanager.js
+lizmap/www/assets/js/view.js
+
+# Docs
+docs/.build
+docs/js
+docs/php
+
 temp/lizmap/*
 !temp/lizmap/.empty
 lizmap/vendor/
@@ -48,8 +77,8 @@ lizmap/lizmap-modules/*
 lizmap/my-packages/*
 !lizmap/my-packages/composer.json.dist
 !lizmap/my-packages/README.md
-.php_cs
-.php_cs.cache
+.php-cs-fixer.php
+.php-cs-fixer.cache
 .phpstan.cache
 
 .drafts
@@ -61,22 +90,42 @@ docker/*.zip
 .venv
 venv
 
+# Files coming from QGIS
+*_attachments.zip
+*.gpkg-shm
+*.gpkg-wal
+
 # Tests
 tests/units/vendor/
 tests/units/composer.lock
 tests/units/.phpunit.result.cache
 tests/qgis-projects/*
 !tests/qgis-projects/tests
-tests/qgis-projects/tests/media
+!tests/qgis-projects/webdav
+tests/qgis-projects/webdav/test/*
+!tests/qgis-projects/webdav/test/logo.png
+!tests/qgis-projects/webdav/test/test_upload.conf
+!tests/qgis-projects/webdav/test/test_upload.txt
+!tests/qgis-projects/ProJets 1982*!
+tests/qgis-projects/tests/media/
+!tests/qgis-projects/tests/media/js/javascript_error/invalid_javascript.js
+tests/qgis-projects/tests/*_attachments.zip
 tests/qgis-server-plugins/*
-!tests/qgis-server-plugins/.empty
-tests/end2end/node_modules/
+!tests/qgis-server-plugins/upgrade_projects.py
+tests/lizmap-qgis-plugin.master.zip
 tests/end2end/cypress/downloads/
 tests/end2end/cypress/screenshots/
 tests/.env
-.vscode/
+tests/end2end/playwright-report/
+tests/end2end/ctrf/
+tests/end2end/playwright/.auth
+tests/end2end/test-results*
+
+# Keep them a little bit, when we come back from a legacy branch, to be removed soon
+tests/js-units/node_modules/
+tests/end2end/node_modules/
+assets/node_modules/
+
+
 /.composer
 /.npm
-
-
-*.code-workspace

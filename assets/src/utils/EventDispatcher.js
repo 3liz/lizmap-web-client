@@ -1,28 +1,57 @@
 /**
  * UI components or any other components can be notified by this object of some
  * application events, in order to update their state or to do something
- *
- * @version 0.1
+ * @version 0.1.0
  * @author Laurent Jouanneau
- * @licence MIT
+ * @license MIT
  * @copyright 3Liz 2019
  */
 
+import { hashCode } from './../modules/utils/Converters.js'
+
 /**
+ * The lizmap event object to dispatch to listeners
+ *
+ * @typedef {object} EventToDispatch
+ * @property {string} type - Event type, the event name to listen to, example : "edition.layer.modified"
+ */
+
+/**
+ * The lizmap event object dispatched to listeners
+ *
+ * @typedef {EventToDispatch} EventDispatched
+ * @property {string}          type        - Event type, the event name to listen to, example : "edition.layer.modified"
+ * @property {string}          __eventid__ - Immutable event unique id (used to avoid infinite loop when event is
+ *                                           propagated to other dispatchers)
+ * @property {EventDispatcher} target      - Immutable event first dispatcher (used to identify the event source when
+ *                                           event is propagated to other dispatchers)
+ */
+
+/**
+ * The lizmap event listener callback
+ *
+ * @callback EventListener
+ * @param {EventDispatched} event - The event object dispatched to listeners
+ */
+
+/**
+ * @class
  * Dispatch some application events to listeners
+ * @name EventDispatcher
  */
 export default class EventDispatcher {
 
     constructor() {
         this._listeners = {};
+        this._stackEventId = [];
+        this._serial = 0;
     }
 
     /**
      * add a listener that will be called for one or several given events
-     *
-     * @param {Function} listener - Callback
-     * @param {Array|String|Object} supportedEvents events on which the listener will
-     *                       be called. if undefined or "*", it will be called for any events
+     * @param {EventListener}        listener        - Callback
+     * @param {Array<string>|string} supportedEvents - events on which the listener will be called. if undefined or "*",
+     *                                                 it will be called for any events
      */
     addListener(listener, supportedEvents) {
 
@@ -56,10 +85,9 @@ export default class EventDispatcher {
 
     /**
      * remove a listener that is associated for one or several given events
-     *
-     * @param {Function} listenerToRemove - Callback
-     * @param {Array|String} supportedEvents list of events from which the listener
-     *                       will be removed. if undefined or "*", it will be removed from any events
+     * @param {EventListener}        listenerToRemove - Callback
+     * @param {Array<string>|string} supportedEvents  - list of events from which the listener will be removed. if
+     *                                                  undefined or "*", it will be removed from any events
      */
     removeListener(listenerToRemove, supportedEvents) {
 
@@ -108,11 +136,8 @@ export default class EventDispatcher {
 
     /**
      * Call listeners associated with the given event
-     *
-     * @param {Object|String} event  an event name, or an object with a 'type'
-     *                               property having the event name. In this
-     *                               case other properties are parameters for
-     *                               listeners.
+     * @param {EventToDispatch|string} event - an event name, or an object with a 'type' property having the event name.
+     *                                         In this case other properties are parameters for listeners.
      */
     dispatch(event) {
         if ('string' == typeof event) {
@@ -123,6 +148,50 @@ export default class EventDispatcher {
 
         if (event.type == '*') {
             throw Error('Notification for all events is not allowed');
+        }
+
+        // Define an __eventid__ property and do not dispatch an already dispatched event
+        if (!event.hasOwnProperty('__eventid__')) {
+            this._serial += 1;
+            // Add the immutable __eventid__ property
+            Object.defineProperty(event, "__eventid__", {
+                value: hashCode(JSON.stringify(event)) +'-'+ Date.now() +'-'+ this._serial,
+                enumerable: false,
+                // This could go either way, depending on your
+                // interpretation of what an "id" is
+                writable: false
+            });
+            // Add the immutable target property
+            Object.defineProperty(event, "target", {
+                value: this,
+                enumerable: false,
+                // This could go either way, depending on your
+                // interpretation of what an "id" is
+                writable: false
+            });
+            // Add it to the stack
+            this._stackEventId.unshift(event['__eventid__']);
+            // Limit the stack to 10 events
+            if (this._stackEventId.length > 10) {
+                this._stackEventId.pop();
+            }
+        } else {
+            // Get the index in the dispatched event stack
+            const eventIdIdx = this._stackEventId.indexOf(event['__eventid__']);
+            if ( eventIdIdx == -1) {
+                // if the eventid is unknown add it to the stack
+                this._stackEventId.unshift(event['__eventid__']);
+                // Limit the stack to 10 events
+                if (this._stackEventId.length > 10) {
+                    this._stackEventId.pop();
+                }
+            } else {
+                // The eventid is already in the stack
+                // move it to the top and do not dispatch
+                this._stackEventId.slice(eventIdIdx, 1);
+                this._stackEventId.unshift(event['__eventid__']);
+                return;
+            }
         }
 
         if (event.type in this._listeners) {
@@ -143,7 +212,10 @@ export default class EventDispatcher {
             });
         }
         if ('*' in this._listeners) {
-            this._listeners['*'].forEach((listener) => listener(event));
+            this._listeners['*'].forEach((item) => {
+                const [listener, ] = item;
+                listener(event);
+            });
         }
     }
 }

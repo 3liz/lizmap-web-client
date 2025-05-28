@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Properties of a Form field.
  *
@@ -34,6 +35,11 @@ class QgisFormControlProperties
      * @var array
      */
     protected $attributes = array();
+
+    /**
+     * @var array
+     */
+    protected $attributeLowerNames = array();
 
     /**
      * @var bool
@@ -93,6 +99,10 @@ class QgisFormControlProperties
         }
 
         $this->attributes = $attributes;
+
+        foreach (array_keys($attributes) as $name) {
+            $this->attributeLowerNames[strtolower($name)] = $name;
+        }
     }
 
     /**
@@ -121,12 +131,29 @@ class QgisFormControlProperties
     /**
      * @param string $attrName
      *
+     * @return bool
+     */
+    public function hasEditAttribute($attrName)
+    {
+        $lowerName = strtolower($attrName);
+
+        return isset($this->attributes[$attrName]) || isset($this->attributeLowerNames[$lowerName]);
+    }
+
+    /**
+     * @param string $attrName
+     *
      * @return null|mixed
      */
     public function getEditAttribute($attrName)
     {
         if (isset($this->attributes[$attrName])) {
             return $this->attributes[$attrName];
+        }
+
+        $lowerName = strtolower($attrName);
+        if (isset($this->attributeLowerNames[$lowerName])) {
+            return $this->attributes[$this->attributeLowerNames[$lowerName]];
         }
 
         return null;
@@ -180,6 +207,7 @@ class QgisFormControlProperties
             'allowNull' => $this->getEditAttribute('AllowNull'),
             'orderByValue' => $this->getEditAttribute('OrderByValue'),
             'layer' => $this->getEditAttribute('Layer'),
+            'layerName' => $this->getEditAttribute('LayerName'),
             'key' => $this->getEditAttribute('Key'),
             'value' => $this->getEditAttribute('Value'),
             'allowMulti' => $this->getEditAttribute('AllowMulti'),
@@ -191,13 +219,17 @@ class QgisFormControlProperties
 
     public function getRelationReference()
     {
+        // TODO Remove orderByValue when QGIS 3.32 will be the minimum version for allowing a QGIS project
         return array(
             'allowNull' => $this->getEditAttribute('AllowNull'),
-            'orderByValue' => $this->getEditAttribute('OrderByValue'),
+            'orderByValue' => $this->hasEditAttribute('OrderByValue') ? $this->getEditAttribute('OrderByValue') : true, // OrderByValue has been removed from XML since QGIS 3.32
             'relation' => $this->getEditAttribute('Relation'),
             'mapIdentification' => $this->getEditAttribute('MapIdentification'),
             'filters' => $this->getEditAttribute('filters'),
+            'filterExpression' => $this->getEditAttribute('FilterExpression'),
             'chainFilters' => $this->getEditAttribute('chainFilters'),
+            'referencedLayerName' => $this->getEditAttribute('ReferencedLayerName'),
+            'referencedLayerId' => $this->getEditAttribute('ReferencedLayerId'),
         );
     }
 

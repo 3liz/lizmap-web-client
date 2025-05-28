@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Manage and give access to lizmap configuration.
  *
@@ -10,7 +11,10 @@
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
 
-use Lizmap\Project;
+use Lizmap\Project\Project;
+use Lizmap\Project\ProjectMetadata;
+use Lizmap\Project\Repository;
+use Lizmap\Project\UnknownLizmapProjectException;
 
 /**
  * @deprecated
@@ -21,23 +25,23 @@ use Lizmap\Project;
 class lizmapProject
 {
     /**
-     * @var Project\Project
+     * @var Project
      */
     protected $proj;
 
     /**
      * constructor.
      *
-     * @param string             $key      : the project name
-     * @param Project\Repository $rep      : the repository
-     * @param mixed              $context
-     * @param mixed              $services
+     * @param string     $key      : the project name
+     * @param Repository $rep      : the repository
+     * @param mixed      $context
+     * @param mixed      $services
      */
     public function __construct($key, $rep, $context, $services)
     {
         try {
-            $this->proj = new \Lizmap\Project\Project($key, $rep, $context, $services);
-        } catch (Project\UnknownLizmapProjectException $e) {
+            $this->proj = new Project($key, $rep, $context, $services);
+        } catch (UnknownLizmapProjectException $e) {
             throw $e;
         }
     }
@@ -138,7 +142,7 @@ class lizmapProject
     }
 
     /**
-     * @param $layerId
+     * @param string $layerId
      *
      * @return SimpleXMLElement[]
      *
@@ -152,7 +156,7 @@ class lizmapProject
     /**
      * Get the minimum needed project information for some pages (landing page, admin project listing).
      *
-     * @return Lizmap\Project\ProjectMetadata
+     * @return ProjectMetadata
      */
     public function getMetadata()
     {
@@ -214,14 +218,6 @@ class lizmapProject
         return $this->proj->hasAtlasEnabled();
     }
 
-    /**
-     * @return mixed
-     */
-    public function getQgisServerPlugins()
-    {
-        return $this->proj->getQgisServerPlugins();
-    }
-
     public function hasTooltipLayers()
     {
         return $this->proj->hasTooltipLayers();
@@ -263,7 +259,7 @@ class lizmapProject
     }
 
     /**
-     * @param $layerId
+     * @param string $layerId
      *
      * @return null|object
      */
@@ -288,7 +284,7 @@ class lizmapProject
     /**
      * Get login filtered configs with the build expressions.
      *
-     * @param Array[string] $layers  : layers' name list
+     * @param array<string> $layers  : layers' name list
      * @param bool          $edition : get login filters for edition
      *
      * @return array the login filtered configs with build expressions
@@ -371,7 +367,7 @@ class lizmapProject
     }
 
     /**
-     * @return false|string the JSON object corresponding to the configuration
+     * @return object the updated JSON object corresponding to the configuration
      */
     public function getUpdatedConfig()
     {
@@ -379,7 +375,7 @@ class lizmapProject
     }
 
     /**
-     * @return object
+     * @return object the full JSON object corresponding to the configuration
      */
     public function getFullCfg()
     {
@@ -387,9 +383,9 @@ class lizmapProject
     }
 
     /**
-     * @throws jExceptionSelector
-     *
      * @return lizmapMapDockItem[]
+     *
+     * @throws jExceptionSelector
      */
     public function getDefaultDockable()
     {
@@ -397,10 +393,10 @@ class lizmapProject
     }
 
     /**
+     * @return lizmapMapDockItem[]
+     *
      * @throws jException
      * @throws jExceptionSelector
-     *
-     * @return lizmapMapDockItem[]
      */
     public function getDefaultMiniDockable()
     {
@@ -408,13 +404,33 @@ class lizmapProject
     }
 
     /**
-     * @throws jExceptionSelector
-     *
      * @return lizmapMapDockItem[]
+     *
+     * @throws jExceptionSelector
      */
     public function getDefaultBottomDockable()
     {
         return $this->proj->getDefaultBottomDockable();
+    }
+
+    /**
+     * Check if the project needs an update in the QGIS desktop plugin.
+     *
+     * @return bool true if the project needs an update
+     */
+    public function needsUpdateError()
+    {
+        return $this->proj->needsUpdateError();
+    }
+
+    /**
+     * Check if the project needs an update in the QGIS desktop plugin.
+     *
+     * @return bool true if the project needs an update
+     */
+    public function needsUpdateWarning()
+    {
+        return $this->proj->needsUpdateWarning();
     }
 
     /**
@@ -430,10 +446,5 @@ class lizmapProject
     public function checkAclByUser($login)
     {
         return $this->proj->checkAclByUser($login);
-    }
-
-    public function getSpatialiteExtension()
-    {
-        return $this->proj->getSpatialiteExtension();
     }
 }

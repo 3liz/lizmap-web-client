@@ -10,17 +10,19 @@
         <label locale="admin~admin.form.admin_services.onlyMaps.label"/>
         <item value="off" selected="true" locale="admin~admin.form.admin_services.off.label"/>
         <item value="on" locale="admin~admin.form.admin_services.on.label"/>
+        <help locale="admin~admin.form.admin_services.onlyMaps.help"/>
     </menulist>
 
     <menulist ref="projectSwitcher" required="true">
         <label locale="admin~admin.form.admin_services.projectSwitcher.label"/>
         <item value="off" selected="true" locale="admin~admin.form.admin_services.off.label"/>
         <item value="on" locale="admin~admin.form.admin_services.on.label"/>
+        <help locale="admin~admin.form.admin_services.projectSwitcher.help"/>
     </menulist>
 
-    <input ref="googleAnalyticsID" type="string" pattern="/^UA-\d+-\d+$/">
-        <label locale="admin~admin.form.admin_services.googleAnalyticsID.label"/>
-        <help locale="admin~admin.form.admin_services.googleAnalyticsID.help"/>
+    <input ref="googleTag" type="string" pattern="/^G-\w+$/">
+        <label locale="admin~admin.form.admin_services.googleTag.label"/>
+        <help locale="admin~admin.form.admin_services.googleTag.help"/>
     </input>
 
     <!-- projects -->
@@ -37,14 +39,6 @@
     <menulist ref="defaultProject">
         <label locale="admin~admin.form.admin_services.defaultProject.label"/>
         <datasource class="admin~listProjectDatasource" criteriafrom="defaultRepository"/>
-    </menulist>
-
-    <!-- Qgis -->
-    <menulist ref="qgisServerVersion" required="true">
-      <label locale="admin~admin.form.admin_services.qgisServerVersion.label"/>
-      <item value="2.14" locale="admin~admin.form.admin_services.qgisServerVersion.214.label"/>
-      <item value="2.18" selected="true" locale="admin~admin.form.admin_services.qgisServerVersion.218.label"/>
-      <item value="3.0" locale="admin~admin.form.admin_services.qgisServerVersion.300.label"/>
     </menulist>
 
     <input ref="wmsServerURL" type="string" required="true" defaultvalue="http://127.0.0.1/cgi-bin/qgis_mapserv.fcgi">
@@ -71,7 +65,6 @@
 
     <input ref="lizmapPluginAPIURL" type="string">
         <label locale="admin~admin.form.admin_services.lizmapPluginAPIURL.label"/>
-        <help locale="admin~admin.form.admin_services.lizmapPluginAPIURL.help"/>
     </input>
 
     <!-- cache -->
@@ -149,6 +142,17 @@
 
 
     <!-- emails -->
+    <input ref="adminSenderEmail" type="email">
+        <label locale="admin~admin.form.admin_services.adminSenderEmail.label"/>
+        <help locale="admin~admin.form.admin_services.adminSenderEmail.help"/>
+        <alert type="required" locale="admin~admin.form.admin_services.adminSenderEmail.error.required"/>
+    </input>
+
+    <input ref="adminSenderName" maxlength="250">
+        <label locale="admin~admin.form.admin_services.adminSenderName.label"/>
+        <help locale="admin~admin.form.admin_services.adminSenderName.help"/>
+    </input>
+
 
     <menulist ref="allowUserAccountRequests">
       <label locale="admin~admin.form.admin_services.allowUserAccountRequests.label"/>
@@ -159,17 +163,6 @@
     <input ref="adminContactEmail" type="email">
         <label locale="admin~admin.form.admin_services.adminContactEmail.label"/>
         <help locale="admin~admin.form.admin_services.adminContactEmail.help"/>
-    </input>
-
-    <input ref="adminSenderEmail" type="email">
-        <label locale="admin~admin.form.admin_services.adminSenderEmail.label"/>
-        <help locale="admin~admin.form.admin_services.adminSenderEmail.help"/>
-        <alert type="required" locale="admin~admin.form.admin_services.adminSenderEmail.error.required"/>
-    </input>
-
-    <input ref="adminSenderName" maxlength="250">
-        <label locale="admin~admin.form.admin_services.adminSenderName.label"/>
-        <help locale="admin~admin.form.admin_services.adminSenderName.help"/>
     </input>
 
     <!-- uploaded images properties -->

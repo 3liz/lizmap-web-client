@@ -1,0 +1,1559 @@
+{
+  "locateByLayer": {
+    "Quartiers": {
+      "layerId": "VilleMTP_MTP_Quartiers_2011_432620130116112610876",
+      "fieldName": "LIBQUART",
+      "displayGeom": "True",
+      "minLength": 1,
+      "filterOnLocate": "False",
+      "order": 0,
+      "fieldAlias": "Name"
+    },
+    "SousQuartiers": {
+      "layerId": "SousQuartiers20160121124316563",
+      "fieldName": "LIBSQUART",
+      "displayGeom": "True",
+      "minLength": 0,
+      "filterOnLocate": "False",
+      "order": 1,
+      "fieldAlias": "Name",
+      "vectorjoins": [
+        {
+          "joinFieldName": "QUARTMNO",
+          "targetFieldName": "QUARTMNO",
+          "joinLayerId": "VilleMTP_MTP_Quartiers_2011_432620130116112610876"
+        }
+      ]
+    },
+    "tramway": {
+      "layerId": "tramway20150328114206278",
+      "fieldName": "name",
+      "displayGeom": "False",
+      "minLength": 0,
+      "filterOnLocate": "True",
+      "order": 2,
+      "fieldAlias": "Line"
+    }
+  },
+  "formFilterLayers": {},
+  "attributeLayers": {
+    "tramstop": {
+      "layerId": "tramstop20150328114203878",
+      "primaryKey": "osm_id",
+      "pivot": "False",
+      "hideAsChild": "False",
+      "hideLayer": "False",
+      "custom_config": "False",
+      "order": 0
+    },
+    "tramway_pivot": {
+      "layerId": "jointure_tram_stop20150328114216806",
+      "primaryKey": "OGC_FID",
+      "pivot": "True",
+      "hideAsChild": "False",
+      "hideLayer": "False",
+      "custom_config": "False",
+      "order": 1
+    },
+    "tram_stop_work": {
+      "layerId": "tram_stop_work20150416102656130",
+      "primaryKey": "work_id",
+      "pivot": "False",
+      "hideAsChild": "False",
+      "hideLayer": "True",
+      "custom_config": "False",
+      "order": 2
+    },
+    "publicbuildings": {
+      "layerId": "publicbuildings20150420100958543",
+      "primaryKey": "b_id",
+      "pivot": "False",
+      "hideAsChild": "False",
+      "hideLayer": "False",
+      "custom_config": "False",
+      "order": 3
+    },
+    "publicbuildings_tramstop": {
+      "layerId": "publicbuildings_tramstop20150420095614071",
+      "primaryKey": "r_id",
+      "pivot": "True",
+      "hideAsChild": "False",
+      "hideLayer": "False",
+      "custom_config": "False",
+      "order": 4
+    },
+    "tramway_ref": {
+      "layerId": "tramway_ref20150612171109044",
+      "primaryKey": "ref_id",
+      "pivot": "False",
+      "hideAsChild": "False",
+      "hideLayer": "True",
+      "custom_config": "False",
+      "order": 5
+    },
+    "tramway": {
+      "layerId": "tramway20150328114206278",
+      "primaryKey": "osm_id",
+      "pivot": "False",
+      "hideAsChild": "True",
+      "hideLayer": "False",
+      "custom_config": "False",
+      "order": 6
+    },
+    "Quartiers": {
+      "layerId": "VilleMTP_MTP_Quartiers_2011_432620130116112610876",
+      "primaryKey": "QUARTMNO",
+      "pivot": "False",
+      "hideAsChild": "False",
+      "hideLayer": "False",
+      "custom_config": "True",
+      "order": 7,
+      "attributetableconfig": {
+        "attributes": {
+          "sortExpression": "",
+          "actionWidgetStyle": "dropDown",
+          "sortOrder": "0"
+        },
+        "columns": {
+          "column": [
+            {
+              "attributes": {
+                "hidden": "1",
+                "name": "QUARTIER",
+                "type": "field",
+                "width": "-1"
+              }
+            },
+            {
+              "attributes": {
+                "hidden": "1",
+                "name": "QUARTMNO",
+                "type": "field",
+                "width": "-1"
+              }
+            },
+            {
+              "attributes": {
+                "hidden": "1",
+                "name": "SQUARTMNO",
+                "type": "field",
+                "width": "-1"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "SousQuartiers": {
+      "layerId": "SousQuartiers20160121124316563",
+      "primaryKey": "SQUARTMNO",
+      "pivot": "False",
+      "hideAsChild": "False",
+      "hideLayer": "True",
+      "custom_config": "False",
+      "order": 8
+    },
+    "points_of_interest": {
+      "layerId": "edition_point20130118171631518",
+      "primaryKey": "pkuid",
+      "pivot": "False",
+      "hideAsChild": "False",
+      "hideLayer": "False",
+      "custom_config": "True",
+      "order": 9,
+      "attributetableconfig": {
+        "attributes": {
+          "sortExpression": "",
+          "actionWidgetStyle": "dropDown",
+          "sortOrder": "0"
+        },
+        "columns": {
+          "column": [
+            {
+              "attributes": {
+                "hidden": "1",
+                "name": "user",
+                "type": "field",
+                "width": "-1"
+              }
+            },
+            {
+              "attributes": {
+                "hidden": "0",
+                "name": "pkuid",
+                "type": "field",
+                "width": "-1"
+              }
+            },
+            {
+              "attributes": {
+                "hidden": "0",
+                "name": "name",
+                "type": "field",
+                "width": "-1"
+              }
+            },
+            {
+              "attributes": {
+                "hidden": "0",
+                "name": "description",
+                "type": "field",
+                "width": "-1"
+              }
+            },
+            {
+              "attributes": {
+                "hidden": "0",
+                "name": "date",
+                "type": "field",
+                "width": "-1"
+              }
+            },
+            {
+              "attributes": {
+                "hidden": "0",
+                "name": "type",
+                "type": "field",
+                "width": "-1"
+              }
+            },
+            {
+              "attributes": {
+                "hidden": "0",
+                "name": "photo",
+                "type": "field",
+                "width": "-1"
+              }
+            },
+            {
+              "attributes": {
+                "hidden": "1",
+                "type": "actions",
+                "width": "-1"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "layers": {
+    "Edition": {
+      "id": "Edition",
+      "name": "Edition",
+      "type": "group",
+      "title": "Edition layers",
+      "abstract": "",
+      "link": "",
+      "minScale": 1,
+      "maxScale": 1000000000000,
+      "toggled": "True",
+      "popup": "False",
+      "popupFrame": null,
+      "popupSource": "lizmap",
+      "popupTemplate": "",
+      "popupMaxFeatures": 10,
+      "popupDisplayChildren": "False",
+      "popup_allow_download": true,
+      "noLegendImage": "False",
+      "groupAsLayer": "False",
+      "baseLayer": "False",
+      "displayInLegend": "True",
+      "singleTile": "False",
+      "imageFormat": "image/png",
+      "cached": "False",
+      "serverFrame": null,
+      "clientCacheExpiration": 300
+    },
+    "points_of_interest": {
+      "id": "edition_point20130118171631518",
+      "name": "points_of_interest",
+      "type": "layer",
+      "geometryType": "point",
+      "extent": [
+        3.8454151330219495,
+        43.594383,
+        3.8956343529661015,
+        43.64203625857223
+      ],
+      "crs": "EPSG:4326",
+      "title": "Points of interest",
+      "abstract": "",
+      "link": "",
+      "minScale": 1,
+      "maxScale": 1000000000000,
+      "toggled": "False",
+      "popup": "False",
+      "popupFrame": null,
+      "popupSource": "auto",
+      "popupTemplate": "",
+      "popupMaxFeatures": 10,
+      "popupDisplayChildren": "False",
+      "popup_allow_download": true,
+      "noLegendImage": "False",
+      "groupAsLayer": "False",
+      "baseLayer": "False",
+      "displayInLegend": "True",
+      "singleTile": "True",
+      "imageFormat": "image/png",
+      "cached": "False",
+      "serverFrame": null,
+      "clientCacheExpiration": 300,
+      "layerType": "vector"
+    },
+    "edition_line": {
+      "id": "edition_line20130409161630329",
+      "name": "edition_line",
+      "type": "layer",
+      "geometryType": "line",
+      "extent": [
+        3.831298,
+        43.571914305945946,
+        3.907530105945947,
+        43.670510184864874
+      ],
+      "crs": "EPSG:4326",
+      "title": "Bicycle rides",
+      "abstract": "",
+      "link": "",
+      "minScale": 1,
+      "maxScale": 1000000000000,
+      "toggled": "True",
+      "popup": "True",
+      "popupFrame": null,
+      "popupSource": "auto",
+      "popupTemplate": "",
+      "popupMaxFeatures": 10,
+      "popupDisplayChildren": "False",
+      "popup_allow_download": true,
+      "noLegendImage": "False",
+      "groupAsLayer": "False",
+      "baseLayer": "False",
+      "displayInLegend": "True",
+      "singleTile": "False",
+      "imageFormat": "image/png",
+      "cached": "False",
+      "serverFrame": null,
+      "clientCacheExpiration": 0,
+      "layerType": "vector"
+    },
+    "areas_of_interest": {
+      "id": "edition_polygon20130409114333776",
+      "name": "areas_of_interest",
+      "type": "layer",
+      "geometryType": "polygon",
+      "extent": [
+        3.862278,
+        43.606014,
+        3.8948940000000003,
+        43.649005999999986
+      ],
+      "crs": "EPSG:4326",
+      "title": "Areas of interest",
+      "abstract": "",
+      "link": "",
+      "minScale": 1,
+      "maxScale": 1000000000000,
+      "toggled": "False",
+      "popup": "False",
+      "popupFrame": null,
+      "popupSource": "lizmap",
+      "popupTemplate": "",
+      "popupMaxFeatures": 10,
+      "popupDisplayChildren": "False",
+      "popup_allow_download": true,
+      "noLegendImage": "False",
+      "groupAsLayer": "False",
+      "baseLayer": "False",
+      "displayInLegend": "True",
+      "singleTile": "False",
+      "imageFormat": "image/png",
+      "cached": "False",
+      "serverFrame": null,
+      "clientCacheExpiration": 300,
+      "layerType": "vector"
+    },
+    "datalayers": {
+      "id": "datalayers",
+      "name": "datalayers",
+      "type": "group",
+      "title": "Transport",
+      "abstract": "",
+      "link": "media/pdf/transport_map.pdf",
+      "minScale": 1,
+      "maxScale": 1000000000000,
+      "toggled": "True",
+      "popup": "False",
+      "popupFrame": null,
+      "popupSource": "lizmap",
+      "popupTemplate": "",
+      "popupMaxFeatures": 10,
+      "popupDisplayChildren": "False",
+      "popup_allow_download": true,
+      "noLegendImage": "False",
+      "groupAsLayer": "False",
+      "baseLayer": "False",
+      "displayInLegend": "True",
+      "singleTile": "False",
+      "imageFormat": "image/png",
+      "cached": "False",
+      "serverFrame": null,
+      "clientCacheExpiration": 300
+    },
+    "Bus": {
+      "id": "Bus",
+      "name": "Bus",
+      "type": "group",
+      "title": "Bus",
+      "abstract": "Lignes et arrêts de bus de Montpellier",
+      "link": "http://www.montpellier-agglo.com/tam/page.php?id_rubrique=29",
+      "minScale": 1,
+      "maxScale": 1000000000000,
+      "toggled": "True",
+      "popup": "False",
+      "popupFrame": null,
+      "popupSource": "lizmap",
+      "popupTemplate": "",
+      "popupMaxFeatures": 10,
+      "popupDisplayChildren": "False",
+      "popup_allow_download": true,
+      "noLegendImage": "False",
+      "groupAsLayer": "False",
+      "baseLayer": "False",
+      "displayInLegend": "True",
+      "singleTile": "False",
+      "imageFormat": "image/png",
+      "cached": "False",
+      "serverFrame": null,
+      "clientCacheExpiration": 300
+    },
+    "bus_stops": {
+      "id": "bus_stops20121106170806413",
+      "name": "bus_stops",
+      "type": "layer",
+      "geometryType": "point",
+      "extent": [
+        3.55326,
+        43.526928,
+        4.039131,
+        43.752341
+      ],
+      "crs": "EPSG:4326",
+      "title": "Stops",
+      "abstract": "",
+      "link": "",
+      "minScale": 0,
+      "maxScale": 15000,
+      "toggled": "False",
+      "popup": "True",
+      "popupFrame": null,
+      "popupSource": "auto",
+      "popupTemplate": "",
+      "popupMaxFeatures": 10,
+      "popupDisplayChildren": "False",
+      "popup_allow_download": true,
+      "noLegendImage": "False",
+      "groupAsLayer": "True",
+      "baseLayer": "False",
+      "displayInLegend": "True",
+      "singleTile": "True",
+      "imageFormat": "image/png",
+      "cached": "False",
+      "serverFrame": null,
+      "clientCacheExpiration": 3600,
+      "layerType": "vector"
+    },
+    "bus": {
+      "id": "bus20121102133611751",
+      "name": "bus",
+      "type": "layer",
+      "geometryType": "line",
+      "extent": [
+        3.698123,
+        43.5265,
+        4.081239,
+        43.761579
+      ],
+      "crs": "EPSG:4326",
+      "title": "Bus lines",
+      "abstract": "",
+      "link": "",
+      "minScale": 0,
+      "maxScale": 40001,
+      "toggled": "False",
+      "popup": "True",
+      "popupFrame": null,
+      "popupSource": "lizmap",
+      "popupTemplate": "<div style=\"background-color:#44433E; color:white; height:100%;\">\n\n  <p style=\"background-color:{$color}\">\n  <b>LINE</b> : {$ref} - {$name}\n  <p/>\n  \n  <p><b>Operator</b> : {$operator}</p>\n\n  <p>\n  <img width=\"60px\"  src=\"media/image/logo_bus.png\" border=\"0\"/>\n  </p>\n\n</div>",
+      "popupMaxFeatures": 10,
+      "popupDisplayChildren": "False",
+      "popup_allow_download": true,
+      "noLegendImage": "False",
+      "groupAsLayer": "False",
+      "baseLayer": "False",
+      "displayInLegend": "True",
+      "singleTile": "True",
+      "imageFormat": "image/png",
+      "cached": "False",
+      "serverFrame": null,
+      "clientCacheExpiration": 3600,
+      "layerType": "vector"
+    },
+    "Tramway": {
+      "id": "Tramway",
+      "name": "Tramway",
+      "type": "group",
+      "title": "Tramway",
+      "abstract": "Lignes et arrêts de tramway de montpellier",
+      "link": "http://www.montpellier-agglo.com/tam/page.php?id_rubrique=32",
+      "minScale": 1,
+      "maxScale": 1000000000000,
+      "toggled": "False",
+      "popup": "False",
+      "popupFrame": null,
+      "popupSource": "lizmap",
+      "popupTemplate": "",
+      "popupMaxFeatures": 10,
+      "popupDisplayChildren": "False",
+      "popup_allow_download": true,
+      "noLegendImage": "False",
+      "groupAsLayer": "False",
+      "baseLayer": "False",
+      "displayInLegend": "True",
+      "singleTile": "False",
+      "imageFormat": "image/png",
+      "cached": "False",
+      "serverFrame": null,
+      "clientCacheExpiration": 300
+    },
+    "tramway_ref": {
+      "id": "tramway_ref20150612171109044",
+      "name": "tramway_ref",
+      "type": "layer",
+      "geometryType": "none",
+      "extent": [
+        1.7976931348623157e+308,
+        1.7976931348623157e+308,
+        -1.7976931348623157e+308,
+        -1.7976931348623157e+308
+      ],
+      "crs": "EPSG:4326",
+      "title": "tramway_ref",
+      "abstract": "",
+      "link": "",
+      "minScale": 1,
+      "maxScale": 1000000000000,
+      "toggled": "True",
+      "popup": "False",
+      "popupFrame": null,
+      "popupSource": "lizmap",
+      "popupTemplate": "",
+      "popupMaxFeatures": 10,
+      "popupDisplayChildren": "False",
+      "popup_allow_download": true,
+      "noLegendImage": "False",
+      "groupAsLayer": "False",
+      "baseLayer": "False",
+      "displayInLegend": "False",
+      "singleTile": "False",
+      "imageFormat": "image/png",
+      "cached": "False",
+      "serverFrame": null,
+      "clientCacheExpiration": 300,
+      "layerType": "vector"
+    },
+    "tramway_pivot": {
+      "id": "jointure_tram_stop20150328114216806",
+      "name": "tramway_pivot",
+      "type": "layer",
+      "geometryType": "none",
+      "extent": [
+        1.7976931348623157e+308,
+        1.7976931348623157e+308,
+        -1.7976931348623157e+308,
+        -1.7976931348623157e+308
+      ],
+      "crs": "EPSG:4326",
+      "title": "Table pivot tramway",
+      "abstract": "",
+      "link": "",
+      "minScale": 1,
+      "maxScale": 1000000000000,
+      "toggled": "False",
+      "popup": "True",
+      "popupFrame": null,
+      "popupSource": "auto",
+      "popupTemplate": "",
+      "popupMaxFeatures": 10,
+      "popupDisplayChildren": "False",
+      "popup_allow_download": true,
+      "noLegendImage": "False",
+      "groupAsLayer": "False",
+      "baseLayer": "False",
+      "displayInLegend": "False",
+      "singleTile": "False",
+      "imageFormat": "image/png",
+      "cached": "False",
+      "serverFrame": null,
+      "clientCacheExpiration": 300,
+      "layerType": "vector"
+    },
+    "tram_stop_work": {
+      "id": "tram_stop_work20150416102656130",
+      "name": "tram_stop_work",
+      "type": "layer",
+      "geometryType": "none",
+      "extent": [
+        1.7976931348623157e+308,
+        1.7976931348623157e+308,
+        -1.7976931348623157e+308,
+        -1.7976931348623157e+308
+      ],
+      "crs": "EPSG:4326",
+      "title": "Tram stop works",
+      "abstract": "",
+      "link": "",
+      "minScale": 1,
+      "maxScale": 1000000000000,
+      "toggled": "False",
+      "popup": "False",
+      "popupFrame": null,
+      "popupSource": "lizmap",
+      "popupTemplate": "",
+      "popupMaxFeatures": 10,
+      "popupDisplayChildren": "False",
+      "popup_allow_download": true,
+      "noLegendImage": "False",
+      "groupAsLayer": "False",
+      "baseLayer": "False",
+      "displayInLegend": "False",
+      "singleTile": "False",
+      "imageFormat": "image/png",
+      "cached": "False",
+      "serverFrame": null,
+      "clientCacheExpiration": 300,
+      "layerType": "vector"
+    },
+    "tramstop": {
+      "id": "tramstop20150328114203878",
+      "name": "tramstop",
+      "type": "layer",
+      "geometryType": "point",
+      "extent": [
+        3.8101056,
+        43.5579423,
+        3.9636474,
+        43.6545596
+      ],
+      "crs": "EPSG:4326",
+      "title": "Tram stops",
+      "abstract": "",
+      "link": "",
+      "minScale": 1,
+      "maxScale": 1000000000000,
+      "toggled": "True",
+      "popup": "True",
+      "popupFrame": null,
+      "popupSource": "auto",
+      "popupTemplate": "",
+      "popupMaxFeatures": 10,
+      "popupDisplayChildren": "False",
+      "popup_allow_download": true,
+      "noLegendImage": "False",
+      "groupAsLayer": "False",
+      "baseLayer": "False",
+      "displayInLegend": "True",
+      "singleTile": "True",
+      "imageFormat": "image/png",
+      "cached": "False",
+      "serverFrame": null,
+      "clientCacheExpiration": 0,
+      "layerType": "vector"
+    },
+    "tramway": {
+      "id": "tramway20150328114206278",
+      "name": "tramway",
+      "type": "layer",
+      "geometryType": "line",
+      "extent": [
+        3.8097468,
+        43.5576091,
+        3.9639244,
+        43.6546121
+      ],
+      "crs": "EPSG:4326",
+      "styles": [
+        "black",
+        "colored"
+      ],
+      "title": "Tram lines",
+      "abstract": "",
+      "link": "",
+      "minScale": 1,
+      "maxScale": 1000000000000,
+      "toggled": "True",
+      "popup": "True",
+      "popupFrame": null,
+      "popupSource": "lizmap",
+      "popupTemplate": "{$html}",
+      "popupMaxFeatures": 10,
+      "popupDisplayChildren": "False",
+      "popup_allow_download": true,
+      "noLegendImage": "False",
+      "groupAsLayer": "False",
+      "baseLayer": "False",
+      "displayInLegend": "True",
+      "singleTile": "True",
+      "imageFormat": "image/png",
+      "cached": "False",
+      "serverFrame": null,
+      "clientCacheExpiration": 0,
+      "showFeatureCount": "True",
+      "layerType": "vector"
+    },
+    "Buildings": {
+      "id": "Buildings",
+      "name": "Buildings",
+      "type": "group",
+      "title": "Buildings",
+      "abstract": "",
+      "link": "",
+      "minScale": 1,
+      "maxScale": 1000000000000,
+      "toggled": "True",
+      "popup": "False",
+      "popupFrame": null,
+      "popupSource": "lizmap",
+      "popupTemplate": "",
+      "popupMaxFeatures": 10,
+      "popupDisplayChildren": "False",
+      "popup_allow_download": true,
+      "noLegendImage": "False",
+      "groupAsLayer": "False",
+      "baseLayer": "False",
+      "displayInLegend": "True",
+      "singleTile": "False",
+      "imageFormat": "image/png",
+      "cached": "False",
+      "serverFrame": null,
+      "clientCacheExpiration": 300
+    },
+    "publicbuildings": {
+      "id": "publicbuildings20150420100958543",
+      "name": "publicbuildings",
+      "type": "layer",
+      "geometryType": "point",
+      "extent": [
+        431114.8420873464,
+        5403527.322277083,
+        433783.14982034185,
+        5406274.451355163
+      ],
+      "crs": "EPSG:3857",
+      "title": "public buildings",
+      "abstract": "",
+      "link": "",
+      "minScale": 1,
+      "maxScale": 1000000000000,
+      "toggled": "True",
+      "popup": "True",
+      "popupFrame": null,
+      "popupSource": "auto",
+      "popupTemplate": "",
+      "popupMaxFeatures": 10,
+      "popupDisplayChildren": "False",
+      "popup_allow_download": true,
+      "noLegendImage": "False",
+      "groupAsLayer": "False",
+      "baseLayer": "False",
+      "displayInLegend": "True",
+      "singleTile": "True",
+      "imageFormat": "image/png",
+      "cached": "False",
+      "serverFrame": null,
+      "clientCacheExpiration": 0,
+      "layerType": "vector"
+    },
+    "publicbuildings_tramstop": {
+      "id": "publicbuildings_tramstop20150420095614071",
+      "name": "publicbuildings_tramstop",
+      "type": "layer",
+      "geometryType": "none",
+      "extent": [
+        1.7976931348623157e+308,
+        1.7976931348623157e+308,
+        -1.7976931348623157e+308,
+        -1.7976931348623157e+308
+      ],
+      "crs": "EPSG:4326",
+      "title": "Pivot tramstops / Buildings",
+      "abstract": "",
+      "link": "",
+      "minScale": 1,
+      "maxScale": 1000000000000,
+      "toggled": "True",
+      "popup": "True",
+      "popupFrame": null,
+      "popupSource": "auto",
+      "popupTemplate": "",
+      "popupMaxFeatures": 10,
+      "popupDisplayChildren": "False",
+      "popup_allow_download": true,
+      "noLegendImage": "False",
+      "groupAsLayer": "False",
+      "baseLayer": "False",
+      "displayInLegend": "False",
+      "singleTile": "False",
+      "imageFormat": "image/png",
+      "cached": "False",
+      "serverFrame": null,
+      "clientCacheExpiration": 300,
+      "layerType": "vector"
+    },
+    "donnes_sociodemo_sous_quartiers": {
+      "id": "donnes_sociodemo_sous_quartiers20160121144525075",
+      "name": "donnes_sociodemo_sous_quartiers",
+      "type": "layer",
+      "geometryType": "none",
+      "extent": [
+        1.7976931348623157e+308,
+        1.7976931348623157e+308,
+        -1.7976931348623157e+308,
+        -1.7976931348623157e+308
+      ],
+      "crs": "EPSG:4326",
+      "title": "Repartition of owners and tenants",
+      "abstract": "This plot shows the repartition of owners and tenants per subdistrict in Montpellier, France.",
+      "link": "",
+      "minScale": 1,
+      "maxScale": 1000000000000,
+      "toggled": "True",
+      "popup": "False",
+      "popupFrame": null,
+      "popupSource": "lizmap",
+      "popupTemplate": "",
+      "popupMaxFeatures": 10,
+      "popupDisplayChildren": "False",
+      "popup_allow_download": true,
+      "noLegendImage": "False",
+      "groupAsLayer": "False",
+      "baseLayer": "False",
+      "displayInLegend": "False",
+      "singleTile": "True",
+      "imageFormat": "image/png",
+      "cached": "False",
+      "serverFrame": null,
+      "clientCacheExpiration": 300,
+      "layerType": "vector"
+    },
+    "SousQuartiers": {
+      "id": "SousQuartiers20160121124316563",
+      "name": "SousQuartiers",
+      "type": "layer",
+      "geometryType": "polygon",
+      "extent": [
+        765145.8823,
+        6274561.2223,
+        776031.667,
+        6284189.5206
+      ],
+      "crs": "EPSG:2154",
+      "title": "Sous-Quartiers",
+      "abstract": "",
+      "link": "",
+      "minScale": 1,
+      "maxScale": 1000000000000,
+      "toggled": "False",
+      "popup": "True",
+      "popupFrame": null,
+      "popupSource": "auto",
+      "popupTemplate": "",
+      "popupMaxFeatures": 10,
+      "popupDisplayChildren": "False",
+      "popup_allow_download": true,
+      "noLegendImage": "False",
+      "groupAsLayer": "False",
+      "baseLayer": "False",
+      "displayInLegend": "True",
+      "singleTile": "True",
+      "imageFormat": "image/png",
+      "cached": "False",
+      "serverFrame": null,
+      "clientCacheExpiration": 300,
+      "layerType": "vector"
+    },
+    "Quartiers": {
+      "id": "VilleMTP_MTP_Quartiers_2011_432620130116112610876",
+      "name": "Quartiers",
+      "type": "layer",
+      "geometryType": "polygon",
+      "extent": [
+        3.807070366959713,
+        43.5667040954502,
+        3.941330680605673,
+        43.653371224492886
+      ],
+      "crs": "EPSG:4326",
+      "title": "Quartiers",
+      "abstract": "<b>Districts of Montpellier</b>",
+      "link": "http://opendata.montpelliernumerique.fr/Quartiers",
+      "minScale": 1,
+      "maxScale": 1000000000000,
+      "toggled": "True",
+      "popup": "True",
+      "popupFrame": null,
+      "popupSource": "auto",
+      "popupTemplate": "",
+      "popupMaxFeatures": 10,
+      "popupDisplayChildren": "True",
+      "popup_allow_download": true,
+      "noLegendImage": "False",
+      "groupAsLayer": "False",
+      "baseLayer": "False",
+      "displayInLegend": "True",
+      "singleTile": "True",
+      "imageFormat": "image/png",
+      "cached": "False",
+      "serverFrame": null,
+      "clientCacheExpiration": 300,
+      "layerType": "vector"
+    },
+    "Overview": {
+      "id": "Overview",
+      "name": "Overview",
+      "type": "group",
+      "title": "Overview",
+      "abstract": "",
+      "link": "",
+      "minScale": 1,
+      "maxScale": 1000000000000,
+      "toggled": "True",
+      "popup": "False",
+      "popupFrame": null,
+      "popupSource": "lizmap",
+      "popupTemplate": "",
+      "popupMaxFeatures": 10,
+      "popupDisplayChildren": "False",
+      "popup_allow_download": true,
+      "noLegendImage": "False",
+      "groupAsLayer": "False",
+      "baseLayer": "False",
+      "displayInLegend": "True",
+      "singleTile": "False",
+      "imageFormat": "image/png",
+      "cached": "True",
+      "serverFrame": null,
+      "cacheExpiration": 0,
+      "clientCacheExpiration": 3600
+    },
+    "VilleMTP_MTP_Quartiers_2011_4326": {
+      "id": "VilleMTP_MTP_Quartiers_2011_432620130116112351546",
+      "name": "VilleMTP_MTP_Quartiers_2011_4326",
+      "type": "layer",
+      "geometryType": "polygon",
+      "extent": [
+        3.807070366959713,
+        43.5667040954502,
+        3.941330680605673,
+        43.653371224492886
+      ],
+      "crs": "EPSG:4326",
+      "title": "VilleMTP_MTP_Quartiers_2011_4326",
+      "abstract": "",
+      "link": "",
+      "minScale": 0,
+      "maxScale": 100000000,
+      "toggled": "False",
+      "popup": "False",
+      "popupFrame": null,
+      "popupSource": "lizmap",
+      "popupTemplate": "",
+      "popupMaxFeatures": 10,
+      "popupDisplayChildren": "False",
+      "popup_allow_download": true,
+      "noLegendImage": "False",
+      "groupAsLayer": "False",
+      "baseLayer": "False",
+      "displayInLegend": "True",
+      "singleTile": "False",
+      "imageFormat": "image/png",
+      "cached": "False",
+      "serverFrame": null,
+      "clientCacheExpiration": 300,
+      "layerType": "vector"
+    },
+    "Hidden": {
+      "id": "Hidden",
+      "name": "Hidden",
+      "type": "group",
+      "title": "Hidden",
+      "abstract": "",
+      "link": "",
+      "minScale": 1,
+      "maxScale": 1000000000000,
+      "toggled": "True",
+      "popup": "False",
+      "popupFrame": null,
+      "popupSource": "lizmap",
+      "popupTemplate": "",
+      "popupMaxFeatures": 10,
+      "popupDisplayChildren": "False",
+      "popup_allow_download": true,
+      "noLegendImage": "False",
+      "groupAsLayer": "False",
+      "baseLayer": "False",
+      "displayInLegend": "True",
+      "singleTile": "False",
+      "imageFormat": "image/png",
+      "cached": "False",
+      "serverFrame": null,
+      "clientCacheExpiration": 300,
+      "mutuallyExclusive": "True"
+    },
+    "osm-mapnik": {
+      "id": "osm_mapnik20180315181738526",
+      "name": "osm-mapnik",
+      "type": "layer",
+      "extent": [
+        -20037508.342789244,
+        -20037508.342789255,
+        20037508.342789244,
+        20037508.342789244
+      ],
+      "crs": "EPSG:3857",
+      "title": "osm-mapnik",
+      "abstract": "",
+      "link": "",
+      "minScale": 1,
+      "maxScale": 1000000000000,
+      "toggled": "True",
+      "popup": "False",
+      "popupFrame": null,
+      "popupSource": "lizmap",
+      "popupTemplate": "",
+      "popupMaxFeatures": 10,
+      "popupDisplayChildren": "False",
+      "popup_allow_download": true,
+      "noLegendImage": "False",
+      "groupAsLayer": "False",
+      "baseLayer": "False",
+      "displayInLegend": "True",
+      "singleTile": "False",
+      "imageFormat": "image/png",
+      "cached": "False",
+      "serverFrame": null,
+      "clientCacheExpiration": 300,
+      "layerType": "raster",
+      "externalWmsToggle": "True",
+      "externalAccess": {
+        "crs": "EPSG:3857",
+        "format": "",
+        "type": "xyz",
+        "url": "http://tile.openstreetmap.org/{z}/{x}/{y}.png"
+      }
+    },
+    "osm-stamen-toner": {
+      "id": "osm_stamen_toner20180315181710198",
+      "name": "osm-stamen-toner",
+      "type": "layer",
+      "extent": [
+        -20037508.342789244,
+        -20037508.342789255,
+        20037508.342789244,
+        20037508.342789244
+      ],
+      "crs": "EPSG:3857",
+      "title": "osm-stamen-toner",
+      "abstract": "",
+      "link": "",
+      "minScale": 1,
+      "maxScale": 1000000000000,
+      "toggled": "True",
+      "popup": "False",
+      "popupFrame": null,
+      "popupSource": "lizmap",
+      "popupTemplate": "",
+      "popupMaxFeatures": 10,
+      "popupDisplayChildren": "False",
+      "popup_allow_download": true,
+      "noLegendImage": "False",
+      "groupAsLayer": "False",
+      "baseLayer": "False",
+      "displayInLegend": "True",
+      "singleTile": "False",
+      "imageFormat": "image/png",
+      "cached": "False",
+      "serverFrame": null,
+      "clientCacheExpiration": 300,
+      "layerType": "raster",
+      "externalWmsToggle": "True",
+      "externalAccess": {
+        "crs": "EPSG:3857",
+        "format": "",
+        "type": "xyz",
+        "url": "http://tile.stamen.com/toner-lite/{z}/{x}/{y}.png"
+      }
+    }
+  },
+  "timemanagerLayers": {},
+  "atlas": {},
+  "tooltipLayers": {
+    "tramstop": {
+      "layerId": "tramstop20150328114203878",
+      "fields": "osm_id,name",
+      "displayGeom": "True",
+      "colorGeom": "red",
+      "order": 0
+    },
+    "Quartiers": {
+      "layerId": "VilleMTP_MTP_Quartiers_2011_432620130116112610876",
+      "fields": "LIBQUART",
+      "displayGeom": "True",
+      "colorGeom": "black",
+      "order": 1
+    }
+  },
+  "layouts": {},
+  "loginFilteredLayers": {},
+  "filter_by_polygon": {
+    "config": {
+      "polygon_layer_id": "SousQuartiers20160121124316563",
+      "group_field": ""
+    },
+    "layers": []
+  },
+  "datavizLayers": {
+    "layers": [
+      {
+        "plot_id": 0,
+        "layer_id": "SousQuartiers20160121124316563",
+        "title": "Average income (€)",
+        "plot": {
+          "type": "bar",
+          "x_field": "LIBSQUART",
+          "aggregation": "sum",
+          "display_when_layer_visible": "False",
+          "traces": [
+            {
+              "color": "#00aaff",
+              "colorfield": "",
+              "y_field": "socio_average_income"
+            }
+          ],
+          "display_legend": true,
+          "stacked": false,
+          "horizontal": false
+        },
+        "popup_display_child_plot": "True",
+        "only_show_child": "False",
+        "abstract": "",
+        "trigger_filter": true
+      },
+      {
+        "plot_id": 1,
+        "layer_id": "SousQuartiers20160121124316563",
+        "title": "Repartition between tenants & owners",
+        "plot": {
+          "type": "bar",
+          "x_field": "LIBSQUART",
+          "aggregation": "sum",
+          "display_when_layer_visible": "False",
+          "traces": [
+            {
+              "color": "blue",
+              "colorfield": "",
+              "y_field": "socio_prop_percentage"
+            },
+            {
+              "color": "orange",
+              "colorfield": "",
+              "y_field": "socio_loc_percentage"
+            }
+          ],
+          "display_legend": true,
+          "stacked": false,
+          "horizontal": false
+        },
+        "popup_display_child_plot": "False",
+        "only_show_child": "False",
+        "abstract": "",
+        "trigger_filter": true
+      },
+      {
+        "plot_id": 2,
+        "layer_id": "SousQuartiers20160121124316563",
+        "title": "Population box plot",
+        "plot": {
+          "type": "box",
+          "aggregation": "",
+          "display_when_layer_visible": "False",
+          "traces": [
+            {
+              "color": "#f938ff",
+              "colorfield": "",
+              "y_field": "socio_population_2009"
+            }
+          ],
+          "display_legend": true,
+          "stacked": false,
+          "horizontal": false
+        },
+        "popup_display_child_plot": "False",
+        "only_show_child": "False",
+        "abstract": "",
+        "trigger_filter": true
+      }
+    ],
+    "dataviz": {
+      "location": "bottomdock",
+      "theme": "light"
+    },
+    "locale": "fr_FR"
+  },
+  "metadata": {
+    "qgis_desktop_version": 31615,
+    "lizmap_plugin_version": "3.7.7",
+    "lizmap_web_client_target_version": 30500
+  },
+  "options": {
+    "projection": {
+      "proj4": "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs +type=crs",
+      "ref": ""
+    },
+    "bbox": [
+      "417006.61373760335845873",
+      "5394910.34090302512049675",
+      "447158.04891100589884445",
+      "5414844.99480544030666351"
+    ],
+    "mapScales": [
+      1000,
+      2500,
+      5000,
+      10000,
+      25000,
+      50000,
+      100000,
+      150000
+    ],
+    "minScale": 1000,
+    "maxScale": 150000,
+    "initialExtent": [
+      417006.613738,
+      5394910.3409,
+      447158.048911,
+      5414844.99481
+    ],
+    "osmMapnik": "True",
+    "osmStamenToner": "True",
+    "hideGroupCheckbox": "True",
+    "popupLocation": "dock",
+    "print": "True",
+    "measure": "True",
+    "zoomHistory": "True",
+    "geolocation": "True",
+    "pointTolerance": 25,
+    "lineTolerance": 10,
+    "polygonTolerance": 5,
+    "tmTimeFrameSize": 10,
+    "tmTimeFrameType": "seconds",
+    "tmAnimationFrameLength": 1000,
+    "emptyBaselayer": "True",
+    "startupBaselayer": "osm-stamen-toner",
+    "datavizLocation": "bottomdock",
+    "datavizTemplate": "<div class=\"container-fluid\">   \n    <div class=\"row-fluid\"> \n       <div class=\"span6\">$0</div>\n       <div class=\"span6\">$2</div>\n    </div>     \n<div class=\"row-fluid\"> \n       <div class=\"span12\">$1</div>\n    </div></div>",
+    "theme": "light",
+    "fixed_scale_overview_map": true,
+    "atlasLayer": "VilleMTP_MTP_Quartiers_2011_432620130116112610876",
+    "atlasPrimaryKey": "QUARTMNO",
+    "atlasDisplayLayerDescription": "True",
+    "atlasFeatureLabel": "LIBQUART",
+    "atlasSortField": "LIBQUART",
+    "atlasHighlightGeometry": "True",
+    "atlasZoom": "center",
+    "atlasDisplayPopup": "True",
+    "atlasTriggerFilter": "True",
+    "atlasDuration": 5,
+    "atlasEnabled": "True",
+    "atlasMaxWidth": 25,
+    "wmsMaxWidth": "3000",
+    "wmsMaxHeight": "3000",
+    "searches": [
+      {
+        "type": "externalSearch",
+        "service": "nominatim",
+        "url": "/index.php/lizmap/osm/nominatim"
+      },
+      {
+        "type": "QuickFinder",
+        "service": "lizmapQuickFinder",
+        "url": "/index.php/lizmap/search/get"
+      },
+      {
+        "type": "Fts",
+        "service": "lizmapFts",
+        "url": "/index.php/lizmap/searchFts/get"
+      }
+    ]
+  },
+  "printTemplates": [
+    {
+      "title": "Landscape A4",
+      "width": 297,
+      "height": 210,
+      "maps": [
+        {
+          "id": "map0",
+          "uuid": "{2ebf76e3-6f6b-4c34-95f1-3d642932cfb3}",
+          "width": 60,
+          "height": 45,
+          "overviewMap": "{2835ecbd-6089-4454-b22e-707b558ecef1}"
+        },
+        {
+          "id": "map1",
+          "uuid": "{2835ecbd-6089-4454-b22e-707b558ecef1}",
+          "width": 237,
+          "height": 191
+        }
+      ],
+      "labels": [
+        {
+          "id": "description",
+          "htmlState": 0,
+          "text": "Description"
+        },
+        {
+          "id": "title",
+          "htmlState": 0,
+          "text": "Map's title"
+        }
+      ],
+      "atlas": {
+        "enabled": "0",
+        "coverageLayer": ""
+      }
+    },
+    {
+      "title": "District card",
+      "width": 297,
+      "height": 210,
+      "maps": [
+        {
+          "id": "map0",
+          "uuid": "{a50537f9-5e73-4610-955e-31b092d81b94}",
+          "width": 60,
+          "height": 45,
+          "overviewMap": "{a228885d-4d7a-4ae0-af9b-02a4fe7cd814}"
+        },
+        {
+          "id": "map1",
+          "uuid": "{a228885d-4d7a-4ae0-af9b-02a4fe7cd814}",
+          "width": 237,
+          "height": 191
+        }
+      ],
+      "labels": [
+        {
+          "id": "description",
+          "htmlState": 0,
+          "text": "Description"
+        }
+      ],
+      "atlas": {
+        "enabled": "1",
+        "coverageLayer": "VilleMTP_MTP_Quartiers_2011_432620130116112610876"
+      }
+    }
+  ],
+  "relations": {
+    "VilleMTP_MTP_Quartiers_2011_432620130116112610876": [
+      {
+        "referencingLayer": "SousQuartiers20160121124316563",
+        "referencedField": "QUARTMNO",
+        "referencingField": "QUARTMNO",
+        "previewField": "LIBQUART",
+        "relationName": "Subdistricts by district",
+        "relationId": "SousQuartiers20160121124316563_QUARTMNO_VilleMTP_MTP_Quartiers_2011_432620130116112610876_QUARTMNO"
+      }
+    ],
+    "tramstop20150328114203878": [
+      {
+        "referencingLayer": "jointure_tram_stop20150328114216806",
+        "referencedField": "osm_id",
+        "referencingField": "stop_id",
+        "previewField": "unique_name",
+        "relationName": "Tram stop -> pivot tram stop/tram line",
+        "relationId": "jointure_tram_stop20150328114216806_stop_id_tramstop20150328114203878_osm_id"
+      },
+      {
+        "referencingLayer": "publicbuildings_tramstop20150420095614071",
+        "referencedField": "osm_id",
+        "referencingField": "stop_id",
+        "previewField": "unique_name",
+        "relationName": "Tram stops -> pivot tram stop/building",
+        "relationId": "publicbuildings_tramstop20150420095614071_stop_id_tramstop20150328114203878_osm_id"
+      },
+      {
+        "referencingLayer": "tram_stop_work20150416102656130",
+        "referencedField": "osm_id",
+        "referencingField": "tram_stop_id",
+        "previewField": "unique_name",
+        "relationName": "Tram stops -> tram stop works",
+        "relationId": "tram_stop_work20150416102656130_tram_stop_id_tramstop20150328114203878_osm_id"
+      }
+    ],
+    "tramway20150328114206278": [
+      {
+        "referencingLayer": "jointure_tram_stop20150328114216806",
+        "referencedField": "osm_id",
+        "referencingField": "tram_id",
+        "previewField": "name",
+        "relationName": "Tramway -> pivot tram stop/tram line",
+        "relationId": "jointure_tram_stop20150328114216806_tram_id_tramway20150328114206278_osm_id"
+      }
+    ],
+    "publicbuildings20150420100958543": [
+      {
+        "referencingLayer": "publicbuildings_tramstop20150420095614071",
+        "referencedField": "b_id",
+        "referencingField": "b_id",
+        "previewField": "b_name",
+        "relationName": "Public buildings -> pivot tram stop/building",
+        "relationId": "publicbuildings_tramstop20150420095614071_b_id_publicbuildings20150420100958543_b_id"
+      }
+    ],
+    "tramway_ref20150612171109044": [
+      {
+        "referencingLayer": "tramway20150328114206278",
+        "referencedField": "ref_id",
+        "referencingField": "ref",
+        "previewField": "ref_id",
+        "relationName": "Tramway Ref / tramway",
+        "relationId": "tramway20150328114206278_ref_tramway_ref20150612171109044_ref_id"
+      }
+    ],
+    "pivot": {
+      "jointure_tram_stop20150328114216806": {
+        "tramstop20150328114203878": "stop_id",
+        "tramway20150328114206278": "tram_id"
+      },
+      "publicbuildings_tramstop20150420095614071": {
+        "publicbuildings20150420100958543": "b_id",
+        "tramstop20150328114203878": "stop_id"
+      }
+    }
+  },
+  "themes": {
+    "Administrative": {
+      "layers": {
+        "SousQuartiers20160121124316563": {
+          "style": "default",
+          "expanded": "1"
+        },
+        "donnes_sociodemo_sous_quartiers20160121144525075": {
+          "style": "default",
+          "expanded": "1"
+        },
+        "publicbuildings20150420100958543": {
+          "style": "default",
+          "expanded": "1"
+        },
+        "VilleMTP_MTP_Quartiers_2011_432620130116112610876": {
+          "style": "default",
+          "expanded": "0"
+        }
+      },
+      "expandedGroupNode": [
+        "Edition",
+        "datalayers/Tramway",
+        "datalayers/Bus",
+        "datalayers/Buildings",
+        "Overview",
+        "datalayers",
+        "Hidden"
+      ]
+    },
+    "Editable layers": {
+      "layers": {
+        "SousQuartiers20160121124316563": {
+          "style": "default",
+          "expanded": "1"
+        },
+        "donnes_sociodemo_sous_quartiers20160121144525075": {
+          "style": "default",
+          "expanded": "1"
+        },
+        "publicbuildings20150420100958543": {
+          "style": "default",
+          "expanded": "1"
+        },
+        "edition_polygon20130409114333776": {
+          "style": "default",
+          "expanded": "0"
+        },
+        "edition_line20130409161630329": {
+          "style": "default",
+          "expanded": "0"
+        },
+        "edition_point20130118171631518": {
+          "style": "default",
+          "expanded": "0"
+        }
+      },
+      "expandedGroupNode": [
+        "Edition",
+        "datalayers/Tramway",
+        "datalayers/Bus",
+        "datalayers/Buildings",
+        "Overview",
+        "datalayers",
+        "Hidden"
+      ]
+    },
+    "Transport": {
+      "layers": {
+        "tramway20150328114206278": {
+          "style": "black",
+          "expanded": "1"
+        },
+        "donnes_sociodemo_sous_quartiers20160121144525075": {
+          "style": "default",
+          "expanded": "1"
+        },
+        "tramway_ref20150612171109044": {
+          "style": "default",
+          "expanded": "1"
+        },
+        "jointure_tram_stop20150328114216806": {
+          "style": "default",
+          "expanded": "1"
+        },
+        "tramstop20150328114203878": {
+          "style": "default",
+          "expanded": "1"
+        },
+        "tram_stop_work20150416102656130": {
+          "style": "default",
+          "expanded": "1"
+        },
+        "bus_stops20121106170806413": {
+          "style": "default",
+          "expanded": "0"
+        },
+        "bus20121102133611751": {
+          "style": "default",
+          "expanded": "0"
+        }
+      },
+      "expandedGroupNode": [
+        "Edition",
+        "datalayers/Tramway",
+        "datalayers/Bus",
+        "datalayers/Buildings",
+        "Overview",
+        "datalayers",
+        "Hidden"
+      ]
+    }
+  }
+}

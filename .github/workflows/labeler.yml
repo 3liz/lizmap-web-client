@@ -1,0 +1,26 @@
+name: "🌈 Labeler"
+
+on:
+  pull_request_target:
+    types: [ opened, synchronize, reopened ]
+    branches:
+      - master
+      - release_3_*
+
+jobs:
+  triage:
+    name: "Triage"
+    permissions:
+      contents: read
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Sleep for 5 minutes
+        # The action is not going to conflict with manually set labels when creating the PR
+        run: sleep 5m
+        shell: bash
+
+      - uses: actions/labeler@v5
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"

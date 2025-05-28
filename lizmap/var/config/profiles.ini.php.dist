@@ -1,4 +1,4 @@
-;<?php die(''); ?>
+;<?php exit(''); ?>
 ;for security reasons, don't remove or modify the first line
 
 [jdb]
@@ -89,10 +89,10 @@ searchGroupBaseDN=""
 [jcache]
 
 ; name of the default profil to use for cache
-default=myapp
+default=lizmap
+; the other jcache could be : qgisprojects, acl2db, tiles, requests
 
-
-[jcache:myapp]
+[jcache:lizmap]
 ; disable or enable cache for this profile
 enabled=1
 ; driver type (file, db, memcached)
@@ -127,17 +127,78 @@ cache_file_umask=
 ; dao used (default 'jelix~jcache')
 ;dao = ""
 ; dbprofil (optional)
-;dbprofile = "" 
+;dbprofile = ""
 
 
 ; Parameters for memcached driver :
 
-; Memcached servers. 
+; Memcached servers.
 ; Can be a list e.g
 ;servers = memcache_host1:11211,memcache_host2:11211,memcache_host3:11211 i.e HOST_NAME:PORT
-;servers = 
+;servers =
 
 [jcache:qgisprojects]
 enabled=1
-driver=file
 ttl=0
+driver=file
+
+;driver=redis_ext
+; docker host
+;host=redis
+; local host
+;host=127.0.0.1
+;port=6379
+;db=1
+
+;[jcache:acl2db]
+;enabled=1
+;driver=redis_ext
+;host=redis
+;port=6379
+;db=2
+;ttl=0
+
+
+[jcache:requests]
+enabled=1
+ttl=0
+driver=file
+
+;driver=redis_ext
+; docker host
+;host=redis
+; local host
+;host=127.0.0.1
+;port=6379
+;db=0
+
+[smtp:mailer]
+;; to send emails via smtp, uncomment these lines and indicate all needed values.
+;; In localconfig.ini, set mailerType=smtp in the [mailer] section.
+;host=localhost
+;port=25,
+;; "" or "ssl" or "tls"
+;secure_protocol=
+;helo=
+;auth_enabled=true
+;username=
+;password=
+;timeout=10
+
+;; Connection profile to webdav server
+;; To use remote webdav storage for store files uncomment the following lines
+;; This configuration must mirror the 'Attachment widget' settings in the qgis project:
+;;
+;; baseUri -> must be the root of webdav server (must end with '/')
+;; e.g. if the QGIS store url is set as 'http(s)://webdavserver.tld/shapeData/'||file_name(@selected_file_path) baseUri should be 'http(s)://webdavserver.tld/'
+;;
+;; WARNING: the 'baseUri' will be exposed on the web client
+;;
+;; user -> same as configured in the Authentication section of External storage configuration (Attachment widget)
+;; password -> same as configured in the Authentication section of External storage configuration (Attachment widget)
+;;
+[webdav:default]
+;baseUri=
+;enabled=1
+;user=
+;password=

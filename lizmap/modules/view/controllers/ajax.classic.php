@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Displays the list of projects for ajax request.
  *
@@ -11,6 +12,4 @@
  */
 include jApp::getModulePath('view').'controllers/lizAjax.classic.php';
 
-class ajaxCtrl extends lizAjaxCtrl
-{
-}
+class ajaxCtrl extends lizAjaxCtrl {}

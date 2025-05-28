@@ -5,6 +5,7 @@
         <thead>
             {foreach $allFeatureAttributes as $featureAttributes}
             <tr>
+                <th></th>
                 {foreach $featureAttributes as $attribute}
                     {if $attribute['name'] != 'geometry' && $attribute['name'] != 'maptip' && $attribute['value'] != ''}
                         <th>{$attribute['name']}</th>
@@ -16,11 +17,12 @@
         </thead>
 
         <tbody>
-            {foreach $allFeatureAttributes as $featureAttributes}
+            {foreach $allFeatureAttributes as $key=>$featureAttributes}
                 <tr>
+                <td>{$allFeatureToolbars[$key]}</td>
                 {foreach $featureAttributes as $attribute}
                     {if $attribute['name'] != 'geometry' && $attribute['name'] != 'maptip' && $attribute['value'] != ''}
-                        <td>{$attribute['name']|featurepopup:$attribute['value'],$repository,$project}</td>
+                        <td>{$attribute['name']|featurepopup:$attribute['value'],$repository,$project,$remoteStorageProfile}</td>
                     {/if}
                 {/foreach}
                 </tr>

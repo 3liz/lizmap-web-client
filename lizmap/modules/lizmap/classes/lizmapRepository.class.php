@@ -1,9 +1,15 @@
 <?php
+
+use Jelix\IniFile\IniModifier;
+use Lizmap\Project\Project;
+use Lizmap\Project\ProjectMetadata;
+use Lizmap\Project\Repository;
+
 /**
  * Manage and give access to lizmap configuration.
  *
  * @author    3liz
- * @copyright 2012-2020 3liz
+ * @copyright 2012-2022 3liz
  *
  * @see      https://3liz.com
  *
@@ -12,7 +18,7 @@
 
 /**
  * @deprecated
- * @see \Lizmap\Project\Repository
+ * @see Repository
  */
 class lizmapRepository
 {
@@ -20,24 +26,27 @@ class lizmapRepository
      * services properties.
      *
      * @deprecated
+     * @see \Lizmap\Project\Repository::$properties
      */
     public static $properties = array(
         'label',
         'path',
         'allowUserDefinedThemes',
+        'accessControlAllowOrigin',
     );
 
     /**
      * services properties options.
      *
      * @deprecated
+     * @see \Lizmap\Project\Repository::$propertiesOptions
      */
     public static $propertiesOptions = array(
-        'label' => array(
+        'path' => array(
             'fieldType' => 'text',
             'required' => true,
         ),
-        'path' => array(
+        'label' => array(
             'fieldType' => 'text',
             'required' => true,
         ),
@@ -45,10 +54,14 @@ class lizmapRepository
             'fieldType' => 'checkbox',
             'required' => false,
         ),
+        'accessControlAllowOrigin' => array(
+            'fieldType' => 'text',
+            'required' => false,
+        ),
     );
 
     /**
-     * @var \Lizmap\Project\Repository The repository instance
+     * @var Repository The repository instance
      */
     protected $repo;
 
@@ -65,7 +78,7 @@ class lizmapRepository
      */
     public function __construct($key, $data, $varPath, $context, $services)
     {
-        $this->repo = new \Lizmap\Project\Repository($key, $data, $varPath, $context, $services);
+        $this->repo = new Repository($key, $data, $varPath, $context, $services);
     }
 
     public function getKey()
@@ -105,7 +118,7 @@ class lizmapRepository
 
     public function getPropertiesOptions()
     {
-        return $this->repo->getPropertiesOptions();
+        return $this->repo::getPropertiesOptions();
     }
 
     public function getData($key)
@@ -114,10 +127,10 @@ class lizmapRepository
     }
 
     /**
-     * Update a repository in a jIniFilemodifier object.
+     * Update a repository in a \Jelix\IniFile\IniModifier object.
      *
-     * @param array            $data the repository data
-     * @param jIniFileModifier $ini  the object to edit the ini file
+     * @param array       $data the repository data
+     * @param IniModifier $ini  the object to edit the ini file
      *
      * @return bool true if there is at least one valid data in $data
      */
@@ -132,7 +145,7 @@ class lizmapRepository
      * @param string $key           the project key
      * @param bool   $keepReference if we need to keep reference in projectInstances
      *
-     * @return null|Lizmap\Project\Project null if it does not exist
+     * @return null|Project null if it does not exist
      */
     public function getProject($key, $keepReference = true)
     {
@@ -142,7 +155,7 @@ class lizmapRepository
     /**
      * Get the repository projects.
      *
-     * @return Lizmap\Project\Project[]
+     * @return Project[]
      */
     public function getProjects()
     {
@@ -152,10 +165,34 @@ class lizmapRepository
     /**
      * Get the repository projects metadata.
      *
-     * @return Lizmap\Project\ProjectMetadata[]
+     * @param bool $checkAcl If the ACL must be checked, according to the current user, default to true
+     *
+     * @return ProjectMetadata[]
      */
-    public function getProjectsMetadata()
+    public function getProjectsMetadata($checkAcl = true)
     {
-        return $this->repo->getProjectsMetadata();
+        return $this->repo->getProjectsMetadata($checkAcl);
+    }
+
+    public function getProjectsMainData()
+    {
+        return $this->repo->getProjectsMainData();
+    }
+
+    /**
+     * Return the value of the Access-Control-Allow-Origin HTTP header.
+     *
+     * @param $referer The referer
+     *
+     * @return string the value of the ACAO header. If empty, the header should not be set.
+     */
+    public function getACAOHeaderValue($referer)
+    {
+        return $this->repo->getACAOHeaderValue($referer);
+    }
+
+    public function hasValidPath()
+    {
+        return $this->repo->getPath() !== false;
     }
 }

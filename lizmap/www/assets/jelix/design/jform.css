@@ -41,12 +41,57 @@ label.jforms-error, span.jforms-error {font-style:italic; color:red;}
 .ui-datepicker-trigger { cursor:pointer;}
 .ui-datepicker-reset { vertical-align:text-bottom; cursor:pointer;}
 
-.jforms-choice{
-list-style-type:none;
-margin:0;
-padding:0;
+.jforms-choice {
+    list-style-type:none;
+    margin:0;
+    padding:0;
 }
 .jforms-choice .jforms-item-controls{
-display:block;
-margin:0.2em 0 0.2em 1.8em;
+    display:block;
+    margin:0.2em 0 0.2em 1.8em;
+}
+
+table.jforms-table th, table.jforms-table td  {
+    vertical-align:top;
+}
+
+table.jforms-table th {
+    text-align:right;
+}
+
+table.jforms-table th.jforms-group {
+    text-align: center;
+}
+
+.jforms-password-editor {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+}
+
+.jforms-password-buttons {
+    margin-left: -1px;
+    display: flex;
+}
+
+.jforms-password-score {
+    display:inline-block;
+    padding: 0 0.5em;
+}
+
+.jforms-password-score.score-strong {
+    color: green;
+}
+
+.jforms-password-score.score-good {
+    color: cadetblue;
+}
+.jforms-password-score.score-weak {
+    color: darkorange;
+}
+.jforms-password-score.score-poor,
+.jforms-password-score.score-badpass
+{
+    color: red;
 }

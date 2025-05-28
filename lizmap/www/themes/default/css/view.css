@@ -1,7 +1,11 @@
 .thumbnail {
   background-color: white;
 }
+
 .liz-project-desc {
-  color: white;
-  background-color: rgba(0, 0, 0, 0.5);
+  display: none;
+}
+
+.liz-project:hover {
+  background-color: #f8faff;
 }

@@ -1,6 +1,25 @@
-{"type": "FeatureCollection",
- "bbox": [ 3.89068614, 43.60807056, 4.02093568, 43.61070378],
- "features": [
-  {"geometry":{"coordinates":[4.020936,43.609558],"type":"Point"},"id":"parent_layer.2","properties":{"id":2},"type":"Feature"}
- ]
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "id": "parent_layer.2",
+            "bbox": [
+                4.02093567652278,
+                43.6095583303477,
+                4.02093567652278,
+                43.6095583303477
+            ],
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    4.02093567652278,
+                    43.6095583303477
+                ]
+            },
+            "properties": {
+                "id": 2
+            }
+        }
+    ]
 }

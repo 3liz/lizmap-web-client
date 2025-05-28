@@ -7,13 +7,9 @@
 * @link         http://www.jelix.org
 * @licence      GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
 */
-
-function jelix_datepicker_default(aControl, config){
-
-    var me = this;
-
-    this._initControl = function(control) {
-
+var jelix_datepicker_default_Manager = {
+    _config : null,
+    _initControl : function(control) {
         var disabled = false;
 
         if(control.multiFields){
@@ -35,7 +31,7 @@ function jelix_datepicker_default(aControl, config){
             showButtonPanel: true,
             showOn: "button",
             buttonImageOnly: true,
-            buttonImage: me._config.jelixWWWPath+'design/jforms/calendar.gif',
+            buttonImage: this._config.jelixWWWPath+'design/jforms/calendar.gif',
             onSelect : function(date){
                 if(!control.multiFields)
                     return;
@@ -83,7 +79,7 @@ function jelix_datepicker_default(aControl, config){
         var triggerIcon = elt.parent().children('img.ui-datepicker-trigger').eq(0);
 
         if(!control.required && triggerIcon){
-            triggerIcon.after(' <img class="ui-datepicker-reset" src="'+me._config.jelixWWWPath+'design/jforms/cross.png" alt="'+elt.datepicker('option','resetButtonText')+'"  title="'+elt.datepicker('option','resetButtonText')+'" />');
+            triggerIcon.after(' <img class="ui-datepicker-reset" src="'+this._config.jelixWWWPath+'design/jforms/cross.png" alt="'+elt.datepicker('option','resetButtonText')+'"  title="'+elt.datepicker('option','resetButtonText')+'" />');
             var cleanTriggerIcon = elt.parent().children('img').eq(1);
             cleanTriggerIcon.click(function(e){
                 if(elt.datepicker('isDisabled'))
@@ -118,42 +114,41 @@ function jelix_datepicker_default(aControl, config){
 
         elt.trigger('jFormsActivateControl', !disabled);
         elt.blur();
-    };
+    },
+    _scriptReady: false,
+    _controls : [],
 
-    if(typeof this._scriptLoaded === 'undefined') {
-        this._scriptLoaded = false;
-    }
-
-    if (typeof this._controls !== 'undefined') {
-        if (this._scriptLoaded) {
-            // for forms or control that are generated dynamically, if scripts
-            // are already loaded, we can init the datepicker
+    declareControl : function(aControl) {
+        if (this._scriptReady) {
+            // for forms or control that are generated dynamically, if the script
+            // is already ready, we can init the datepicker
             this._initControl(aControl);
         }
         else {
-            // scripts are not already loaded, we push
+            // script is not ready yet, we push
             // the control into the stack
             this._controls.push(aControl);
         }
-        return;
-    }
-
-    // here, this is the first call of jelix_datepicker_default
-    this._controls = [];
-    this._controls.push(aControl);
-
-    this._config = config;
-
-    this._start = function(){
-        me._scriptLoaded = true;
-        var datapickCtrl = me._controls.shift();
+    },
+    _start : function() {
+        var datapickCtrl = this._controls.shift();
         while(datapickCtrl ) {
-            me._initControl(datapickCtrl);
-            datapickCtrl = me._controls.shift();
+            this._initControl(datapickCtrl);
+            datapickCtrl = this._controls.shift();
         }
-    };
+        this._scriptReady = true;
+    }
+};
 
-    jQuery(document).ready(function(){
-        me._start();
-    });
+function jelix_datepicker_default(aControl, config) {
+    jelix_datepicker_default_Manager.declareControl(aControl);
+
+    if (jelix_datepicker_default_Manager._controls.length <= 1) {
+        // first control, we will wait after the page loading
+        jelix_datepicker_default_Manager._config = config;
+
+        jQuery(document).ready(function(){
+            jelix_datepicker_default_Manager._start();
+        });
+    }
 }

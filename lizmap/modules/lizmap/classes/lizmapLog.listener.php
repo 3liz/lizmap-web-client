@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Log lizmap actions.
  *
@@ -14,9 +15,7 @@ class lizmapLogListener extends jEventListener
     /**
      * When a user logs in.
      *
-     * @param string $login The login
-     * @param object $user  jAuth user
-     * @param mixed  $event
+     * @param mixed $event
      */
     public function onAuthCanLogin($event)
     {
@@ -34,11 +33,7 @@ class lizmapLogListener extends jEventListener
     /**
      * Event emitted by lizmap controllers.
      *
-     * @param string $key        Key of the log item
-     * @param string $content    Content to log (optional)
-     * @param string $repository Lizmap repository key (optional)
-     * @param string $project    Lizmap project key (optional)
-     * @param mixed  $event
+     * @param mixed $event
      */
     public function onLizLogItem($event)
     {
@@ -78,13 +73,13 @@ class lizmapLogListener extends jEventListener
 
             // user who modified the line
             if (!array_key_exists('user', $data)) {
-                $juser = \jAuth::getUserSession();
+                $juser = jAuth::getUserSession();
                 $data['user'] = $juser->login;
             }
 
             // Add IP if needed
             if ($logItem->getData('logIp')) {
-                $data['ip'] = $_SERVER['REMOTE_ADDR'];
+                $data['ip'] = jApp::coord()->request->getIP();
             }
 
             // Insert log
@@ -107,10 +102,8 @@ class lizmapLogListener extends jEventListener
     /**
      * Send an email to the administrator.
      *
-     * @param string $subject Email subject
-     * @param string $body    Email body
-     * @param mixed  $key
-     * @param mixed  $data
+     * @param mixed $key
+     * @param mixed $data
      */
     private function sendEmail($key, $data)
     {
@@ -118,7 +111,7 @@ class lizmapLogListener extends jEventListener
         // Build subject and body
         $subject = '['.$services->appName.'] '.jLocale::get('admin~admin.logs.email.subject');
 
-        $body = jLocale::get("admin~admin.logs.email.${key}.body");
+        $body = jLocale::get("admin~admin.logs.email.{$key}.body");
 
         foreach ($data as $k => $v) {
             if (empty($v)) {
@@ -138,7 +131,7 @@ class lizmapLogListener extends jEventListener
                     }
                 }
             } else {
-                $body .= "\r\n"."  * ${k} = ${v}";
+                $body .= "\r\n  * {$k} = {$v}";
             }
         }
 

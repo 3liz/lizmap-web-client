@@ -1,13 +1,16 @@
 <?php
+
 /**
  * @author     Laurent Jouanneau
  * @copyright  2007 Laurent Jouanneau
+ *
  * @contributor Christian Tritten (christian.tritten@laposte.net), Bruno PERLES
  *
  * @copyright  2007 Christian Tritten
  * @copyright  2011 Bruno Perles
  *
  * @see        http://www.jelix.org
+ *
  * @licence    GNU Lesser General Public Licence see LICENCE file or http://www.gnu.org/licenses/lgpl.html
  *
  * @param mixed $tpl

@@ -1,4 +1,7 @@
 <?php
+
+use Lizmap\Request\Proxy;
+
 /**
  * Proxy for map services.
  *
@@ -12,9 +15,7 @@
 /**
  * dummy class for compatibility.
  *
- * @see \Lizmap\Request\Proxy
+ * @see Proxy
  * @deprecated
  */
-class lizmapProxy extends \Lizmap\Request\Proxy
-{
-}
+class lizmapProxy extends Proxy {}

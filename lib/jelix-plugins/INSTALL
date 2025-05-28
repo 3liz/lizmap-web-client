@@ -1,7 +1,0 @@
-Installing plugins of this directory :
-
-add the path 'lib:jelix-plugins/' to the pluginsPath parameter in your
-mainconfig.ini.php file. Exemple:
-
- pluginsPath = app:plugins/,lib:jelix-plugins/
-

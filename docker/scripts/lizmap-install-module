@@ -21,7 +21,6 @@ composer_file=/www/lizmap/my-packages/composer.json
 composer --working-dir=/www/lizmap/my-packages require "$package_name"
 
 # Reset ownership if running as root
-if [ "$(id -u)" -eq "0" ] && [ ! -z "$LIZMAP_USER" ]; then
-    chown -R $LIZMAP_USER:$LIZMAP_USER /www/lizmap/my-packages
+if [ "$(id -u)" -eq "0" ]; then
+    chown -R $LIZMAP_USER:$LIZMAP_GROUP /www/lizmap/my-packages
 fi
-

@@ -9,4 +9,3 @@ CREATE TABLE IF NOT EXISTS geobookmark(
 
 DROP INDEX IF EXISTS idx_geobookmark_usr_login;
 CREATE INDEX idx_geobookmark_usr_login ON geobookmark( usr_login );
-

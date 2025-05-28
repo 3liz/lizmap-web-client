@@ -1,14 +1,16 @@
 <?php
-use PHPUnit\Framework\TestCase;
+
 use Lizmap\Project;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 class projectConfigTest extends TestCase
 {
-    public function getConstructData()
+    public static function getConstructData()
     {
         $file = __DIR__.'/Ressources/events.qgs.cfg';
         $json = json_decode(file_get_contents($file));
@@ -20,6 +22,10 @@ class projectConfigTest extends TestCase
         $expected->tooltipLayers = new stdClass();
         $expected->loginFilteredLayers = new stdClass();
         $expected->filter_by_polygon = new stdClass();
+        $expected->metadata = new stdClass();
+        $expected->layouts = new stdClass();
+        $expected->warnings = new stdClass();
+
         return array(
             array($json, $expected),
         );
@@ -31,28 +37,28 @@ class projectConfigTest extends TestCase
      * @param mixed $data
      * @param mixed $expectedData
      */
-    public function testConstruct($data, $expectedData)
+    public function testConstruct($data, $expectedData): void
     {
         $testCfg = new Project\ProjectConfig($data);
         $this->assertEquals($expectedData, $testCfg->getConfigContent());
     }
 
-    public function testConstructCache()
+    public function testConstructCache(): void
     {
         $file = __DIR__.'/Ressources/events.qgs.cfg';
         $data = json_decode(file_get_contents($file));
         $cachedProperties = array('layersOrder', 'locateByLayer', 'formFilterLayers', 'editionLayers',
-            'attributeLayers', 'options', 'layers', );
+            'attributeLayers', 'options', 'layers', 'metadata', 'warnings');
         $testCfg = new Project\ProjectConfig($data);
         foreach ($cachedProperties as $prop) {
             if (property_exists($data, $prop)) {
                 $meth = 'get'.ucfirst($prop);
-                $this->assertEquals($data->$prop, $testCfg->$meth(), 'failed Prop = '.$prop);
+                $this->assertEquals($data->{$prop}, $testCfg->{$meth}(), 'failed Prop = '.$prop);
             }
         }
     }
 
-    public function getFindLayerData()
+    public static function getFindLayerData()
     {
         $file = __DIR__.'/Ressources/events.qgs.cfg';
         $layers = json_decode(file_get_contents($file));
@@ -77,7 +83,7 @@ class projectConfigTest extends TestCase
      * @param mixed $key
      * @param mixed $layerName
      */
-    public function testFindLayer($layers, $key, $layerName)
+    public function testFindLayer($layers, $key, $layerName): void
     {
         $testCfg = new Project\ProjectConfig($layers);
         if ($layerName) {
@@ -87,7 +93,7 @@ class projectConfigTest extends TestCase
         }
     }
 
-    public function getEditionLayerByNameData()
+    public static function getEditionLayerByNameData()
     {
         $file = __DIR__.'/Ressources/montpellier.qgs.cfg';
         $eLayer = json_decode(file_get_contents($file));
@@ -106,7 +112,7 @@ class projectConfigTest extends TestCase
      * @param mixed $eLayers
      * @param mixed $name
      */
-    public function testGetEditionLayerByName($eLayers, $name)
+    public function testGetEditionLayerByName($eLayers, $name): void
     {
         $testCfg = new Project\ProjectConfig($eLayers);
         if ($name) {
@@ -116,7 +122,7 @@ class projectConfigTest extends TestCase
         }
     }
 
-    public function getEditionLayerByLayerIdData()
+    public static function getEditionLayerByLayerIdData()
     {
         $file = __DIR__.'/Ressources/montpellier.qgs.cfg';
         $eLayer = json_decode(file_get_contents($file));
@@ -138,20 +144,20 @@ class projectConfigTest extends TestCase
      * @param mixed $id
      * @param mixed $eLayerName
      */
-    public function testGetEditionLayerByLayerId($eLayers, $id, $eLayerName)
+    public function testGetEditionLayerByLayerId($eLayers, $id, $eLayerName): void
     {
         $testCfg = new Project\ProjectConfig($eLayers);
         if ($eLayerName) {
-            $this->assertSame($eLayers->editionLayers->$eLayerName, $testCfg->getEditionLayerByLayerId($id));
+            $this->assertSame($eLayers->editionLayers->{$eLayerName}, $testCfg->getEditionLayerByLayerId($id));
         } else {
             $this->assertNull($testCfg->getEditionLayerByLayerId($id));
         }
     }
 
-    public function getOptionsValues()
+    public static function getOptionsValues()
     {
         return array(
-            array('mapScales', [
+            array('mapScales', array(
                 1000,
                 2500,
                 5000,
@@ -159,18 +165,18 @@ class projectConfigTest extends TestCase
                 25000,
                 50000,
                 100000,
-                150000
-            ]),
+                150000,
+            )),
             array('minScale', 1000),
             array('maxScale', 150000),
-            array('initialExtent',  [
+            array('initialExtent',  array(
                 417006.613738,
                 5394910.3409,
                 447158.048911,
-                5414844.99481
-            ]),
-            array('osmMapnik', "True"),
-            array('measure', "True"),
+                5414844.99481,
+            )),
+            array('osmMapnik', 'True'),
+            array('measure', 'True'),
             array('atlasDuration', 5),
         );
     }
@@ -181,7 +187,7 @@ class projectConfigTest extends TestCase
      * @param mixed $option
      * @param mixed $expectedValue
      */
-    public function testGetOption($option, $expectedValue)
+    public function testGetOption($option, $expectedValue): void
     {
         $file = __DIR__.'/Ressources/montpellier.qgs.cfg';
         $data = json_decode(file_get_contents($file));
@@ -189,9 +195,7 @@ class projectConfigTest extends TestCase
         $this->assertEquals($expectedValue, $testCfg->getOption($option));
     }
 
-    /**
-     */
-    public function testGetBooleanOption()
+    public function testGetBooleanOption(): void
     {
         $file = __DIR__.'/Ressources/events.qgs.cfg';
         $data = json_decode(file_get_contents($file));
@@ -201,11 +205,11 @@ class projectConfigTest extends TestCase
     }
 
     /**
-     * Test an empty project config
+     * Test an empty project config.
      */
-    public function testEmptyConfig()
+    public function testEmptyConfig(): void
     {
-        $testCfg = new Project\ProjectConfig(new StdClass());
+        $testCfg = new Project\ProjectConfig(new stdClass());
         $this->assertEquals(new stdClass(), $testCfg->getLayers());
         $this->assertNull($testCfg->getLayer('SousQuartiers'));
         $this->assertEquals(new stdClass(), $testCfg->getAttributeLayers());

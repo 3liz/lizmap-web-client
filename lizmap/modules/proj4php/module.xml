@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://jelix.org/ns/module/1.0">
     <info id="proj4php3liz.com" name="proj4php" createdate="2015-03-13">
-        <version date="2020-11-23">3.6.0-pre</version>
+        <version date="2024-06-06">3.10.0-pre</version>
         <label lang="en_US">proj4php</label>
         <description lang="en_US"/>
         <license URL="https://www.gnu.org/licenses/lgpl.html">GNU LESSER GENERAL PUBLIC LICENSE Version 3</license>
-        <copyright>2011-2022 3liz</copyright>
+        <copyright>2011-2025 3liz</copyright>
         <creator name="3liz" email="info@3liz.com"/>
-        <homepageURL>http://3liz.com</homepageURL>
+        <homepageURL>https://3liz.com</homepageURL>
     </info>
     <dependencies>
-        <jelix minversion="1.6.2" maxversion="1.6.*"/>
+        <jelix minversion="1.6.2" maxversion="1.8.*"/>
     </dependencies>
 </module>

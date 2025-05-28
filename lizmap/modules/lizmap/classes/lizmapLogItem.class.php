@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Manage and give access to lizmap log item.
  *
@@ -10,6 +11,7 @@
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
 
+use Jelix\IniFile\IniModifier;
 use Lizmap\App;
 use Lizmap\Logger as Log;
 
@@ -89,8 +91,8 @@ class lizmapLogItem
     public function update($data)
     {
         // Get access to the ini file
-        $iniFile = jApp::configPath('lizmapLogConfig.ini.php');
-        $ini = new jIniFileModifier($iniFile);
+        $iniFile = jApp::varConfigPath('lizmapLogConfig.ini.php');
+        $ini = new IniModifier($iniFile);
 
         // Set section
         $section = 'item:'.$this->item->getKey();

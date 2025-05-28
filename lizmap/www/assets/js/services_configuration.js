@@ -21,7 +21,8 @@ var ServiceConfiguration = {
                 // or adminContactEmail are set. jFormsJQ will then check the requirement
                 // and will show errors
                 var accountRequestEnabled = (jFormsJQ.getValue(f.element.elements["allowUserAccountRequests"]) === 'on');
-                var notificationEnabled = (jFormsJQ.getValue(f.element.elements["adminContactEmail"]) != '');
+                var adminContactEmail = jFormsJQ.getValue(f.element.elements["adminContactEmail"]);
+                var notificationEnabled = ( adminContactEmail !== '' && adminContactEmail !== null);
                 f.getControl("adminSenderEmail").required = (accountRequestEnabled || notificationEnabled);
                 return true;
             }, true);

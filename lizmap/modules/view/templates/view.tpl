@@ -7,61 +7,92 @@
 {foreach $mapitems as $mi}
 {if $mi->type == 'rep'}
 <h2 class="liz-repository-title">{$mi->title}</h2>
-<ul class="liz-repository-project-list">
+<ul id="liz-repository-{$mi->id}" class="liz-repository-project-list" data-lizmap-repository="{$mi->id}">
   {foreach $mi->childItems as $p}
   {assign $idm = $idm + 1}
   <li class="liz-repository-project-item">
     <a name="link-projet-{$idm}"></a>
     <div class="thumbnail">
-      <div class="liz-project">
-        <img width="250" height="250" src="{$p->img}" alt="project image" class="liz-project-img">
-        <p class="liz-project-desc" style="display:none;">
-          <b class="title">{$p->title}</b>
-          <br/>
-          <br/><b>{@default.project.abstract.label@}</b>&nbsp;: <span class="abstract">{$p->abstract|strip_tags|truncate:100}</span>
-          <br/>
-          <br/><b>{@default.project.keywordList.label@}</b>&nbsp;: <span class="keywordList">{$p->keywordList}</span>
-          <br/>
-          <br/><b>{@default.project.projection.label@}</b>&nbsp;: <span class="proj">{$p->proj}</span>
-          <br/><b>{@default.project.bbox.label@}</b>&nbsp;: <span class="bbox">{$p->bbox}</span>
-        </p>
+      <div id="liz-project-{$mi->id}-{$p->id}" class="liz-project"
+        data-lizmap-repository="{$mi->id}"
+        data-lizmap-project="{$p->id}"
+        data-lizmap-keywords="{$p->keywordList}"
+        data-lizmap-title="{$p->title}"
+        data-lizmap-abstract="{$p->abstract|strip_tags}"
+        data-lizmap-bbox="{$p->bbox}"
+        data-lizmap-proj="{$p->proj}">
+        <a class="liz-project-view" href="{$p->url}{if $hide_header}&h=0{/if}">
+          <img width="250" height="250" loading="lazy" src="{$p->img}" alt="project image" class="_liz-project-img img-fluid">
+          <p class="liz-project-desc" >
+            <!-- This block is deprecated, use dataset attributes -->
+            <b class="title">{$p->title}</b>
+            <br/>
+            <br/><b>{@default.project.abstract.label@}</b>&nbsp;: <span class="abstract">{$p->abstract|strip_tags|truncate:100}</span>
+            <br/>
+            <br/><b>{@default.project.keywordList.label@}</b>&nbsp;: <span class="keywordList">{$p->keywordList}</span>
+          </p>
+        </a>
       </div>
       <h5 class="liz-project-title">{$p->title}</h5>
       <p>
-        <a class="btn liz-project-view" href="{$p->url}{if $hide_header}&h=0{/if}">{@default.project.open.map@}</a>
-        <a class="btn liz-project-show-desc" href="#link-projet-{$idm}" onclick="$('#liz-project-modal-{$idm}').modal('show'); return false;">{@default.project.open.map.metadata@}</a>
+        <a class="btn btn-sm liz-project-view" href="{$p->url}{if $hide_header}&h=0{/if}">{@default.project.open.map@}</a>
+        <button type="button" class="btn btn-sm liz-project-show-desc" data-bs-toggle="modal" data-bs-target="#liz-project-modal-{$idm}" data-lizmap-modal="{$idm}">{@default.project.open.map.metadata@}</button>
       </p>
     </div>
 
-    <div id="liz-project-modal-{$idm}" class="modal fade hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-show="false" data-keyboard="false" data-backdrop="static">
-
-      <div class="modal-header">
-        <a class="close" data-dismiss="modal">×</a>
-        <h3>{$p->title}</h3>
-      </div>
-      <div class="modal-body">
-        <dl class="dl-horizontal">
-          <dt>{@view~map.metadata.h2.illustration@}</dt>
-          <dd><img src="{$p->img}" alt="project image" width="150" height="150"></dd>
-          <dt>{@default.project.title.label@}</dt>
-          <dd>{$p->title}&nbsp;</dd>
-          <dt>{@default.project.abstract.label@}</dt>
-          <dd>{$p->abstract|nl2br}&nbsp;</dd>
-          <dt>{@default.project.projection.label@}</dt>
-          <dd><span class="proj">{$p->proj}</span>&nbsp;</dd>
-          <dt>{@default.project.bbox.label@}</dt>
-          <dd><span class="bbox">{$p->bbox}</span></dd>
-          {if $p->wmsGetCapabilitiesUrl}
-          <dt>{@view~map.metadata.properties.wmsGetCapabilitiesUrl@}</dt>
-          <dd><small><a href="{$p->wmsGetCapabilitiesUrl}" target="_blank">WMS Url</a></small></dd>
-          <dd><small><a href="{$p->wmtsGetCapabilitiesUrl}" target="_blank">WMTS Url</a></small></dd>
-          {/if}
-        </dl>
-      </div>
-      <div class="modal-footer">
-        <a class="btn liz-project-view" href="{$p->url}{if $hide_header}&h=0{/if}">{@default.project.open.map@}</a>
-        <a href="#" class="btn" data-dismiss="modal">{@default.project.close.map.metadata@}</a>
-      </div>
+    <div id="liz-project-modal-{$idm}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>{$p->title}</h3>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <dl class="row">
+                        <div class="col text-end">
+                            <dt>{@view~map.metadata.h2.illustration@}</dt>
+                        </div>
+                        <div class="col-8">
+                            <dd><img src="{$p->img}" alt="project image" width="150" height="150"></dd>
+                        </div>
+                    </dl>
+                    <dl class="row">
+                        <div class="col text-end">
+                            <dt>{@default.project.title.label@}</dt>
+                        </div>
+                        <div class="col-8">
+                            <dd>{$p->title}&nbsp;</dd>
+                        </div>
+                    </dl>
+                    <dl class="row">
+                        <div class="col text-end">
+                            <dt>{@default.project.abstract.label@}</dt>
+                        </div>
+                        <div class="col-8">
+                            <dd>{$p->abstract|nl2br}&nbsp;</dd>
+                        </div>
+                    </dl>
+                    {if $p->wmsGetCapabilitiesUrl}
+                    <dl class="row">
+                        <div class="col text-end">
+                            <dt>{@view~map.metadata.properties.wmsGetCapabilitiesUrl@}</dt>
+                        </div>
+                        <div class="col-8">
+                            <dd><small><a href="{$p->wmsGetCapabilitiesUrl}" target="_blank">WMS URL</a></small></dd>
+                            <dd><small><a href="{$p->wmtsGetCapabilitiesUrl}" target="_blank">WMTS URL</a></small></dd>
+                            {ifacl2 'lizmap.tools.layer.export', $mi->id}
+                            <dd><small><a href="{$p->wfsGetCapabilitiesUrl}" target="_blank">WFS URL</a></small></dd>
+                            {/ifacl2}
+                        </div>
+                    </dl>
+                    {/if}
+                </div>
+                <div class="modal-footer">
+                    <a class="btn btn-sm liz-project-view" href="{$p->url}{if $hide_header}&h=0{/if}">{@default.project.open.map@}</a>
+                    <button class="btn btn-sm" data-bs-dismiss="modal">{@default.project.close.map.metadata@}</button>
+                </div>
+            </div>
+        </div>
     </div>
   </li>
   {/foreach}

@@ -1,0 +1,25 @@
+<!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
+<qgis projectname="" version="3.22.4-Białowieża">
+  <visibility-presets>
+    <visibility-preset has-checked-group-info="1" name="theme1" has-expanded-info="1">
+      <layer visible="1" expanded="1" id="quartiers_ef5b13e3_36db_4e0d_98b3_990de580367d" style="style1"/>
+      <expanded-legend-nodes id="quartiers_ef5b13e3_36db_4e0d_98b3_990de580367d"/>
+      <checked-group-nodes/>
+      <expanded-group-nodes>
+        <expanded-group-node id="group1"/>
+      </expanded-group-nodes>
+    </visibility-preset>
+    <visibility-preset has-checked-group-info="1" name="theme2" has-expanded-info="1">
+      <layer visible="1" expanded="1" id="sousquartiers_7c49d0fc_0ee0_4308_a66d_45c144e59872" style="défaut"/>
+      <expanded-legend-nodes id="sousquartiers_7c49d0fc_0ee0_4308_a66d_45c144e59872"/>
+      <layer visible="1" expanded="1" id="quartiers_ef5b13e3_36db_4e0d_98b3_990de580367d" style="style2"/>
+      <expanded-legend-nodes id="quartiers_ef5b13e3_36db_4e0d_98b3_990de580367d"/>
+      <checked-group-nodes>
+        <checked-group-node id="group1"/>
+      </checked-group-nodes>
+      <expanded-group-nodes>
+        <expanded-group-node id="group1"/>
+      </expanded-group-nodes>
+    </visibility-preset>
+  </visibility-presets>
+</qgis>

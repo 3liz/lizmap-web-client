@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Manage OGC request.
  *
@@ -13,6 +14,8 @@
 namespace Lizmap\Request;
 
 use Lizmap\App;
+use Lizmap\Project\Project;
+use Lizmap\Project\Repository;
 
 /**
  * @see https://en.wikipedia.org/wiki/Open_Geospatial_Consortium.
@@ -22,12 +25,12 @@ use Lizmap\App;
 abstract class OGCRequest
 {
     /**
-     * @var \Lizmap\Project\Project
+     * @var Project
      */
     protected $project;
 
     /**
-     * @var \Lizmap\Project\Repository
+     * @var Repository
      */
     protected $repository;
 
@@ -59,14 +62,14 @@ abstract class OGCRequest
     /**
      * constructor.
      *
-     * @param \Lizmap\Project\Project $project    the project
-     * @param array                   $params     the params array
-     * @param \lizmapServices         $services
-     * @param string                  $requestXml the params array
+     * @param Project         $project    the project
+     * @param array           $params     the params array
+     * @param \lizmapServices $services
+     * @param null|string     $requestXml the params array
      */
     public function __construct($project, $params, $services, $requestXml = null)
     {
-        //print_r( $project != null );
+        // print_r( $project != null );
         $this->project = $project;
         $this->repository = $project->getRepository();
 
@@ -186,38 +189,144 @@ abstract class OGCRequest
     }
 
     /**
+     * Generate a string to identify the target of the HTTP request.
+     *
+     * @param array $parameters The list of HTTP parameters in the query
+     * @param int   $code       The HTTP code of the request
+     *
+     * @return string The string to identify the HTTP request, with main OGC parameters first such as MAP, SERVICE...
+     */
+    private function formatHttpErrorString($parameters, $code)
+    {
+        // Clone parameters array to perform unset without modify it
+        $params = array_merge(array(), $parameters);
+
+        // Ordered list of params to fetch first
+        $mainParamsToLog = array('map', 'repository', 'project', 'service', 'request');
+
+        $output = array();
+        foreach ($mainParamsToLog as $paramName) {
+            if (array_key_exists($paramName, $params)) {
+                $output[] = '"'.strtoupper($paramName).'" = '."'".$params[$paramName]."'";
+                unset($params[$paramName]);
+            }
+        }
+
+        // First implode with main parameters
+        $message = implode(' & ', $output);
+
+        if ($params) {
+            // Ideally, we want two lines, one with main parameters, the second one with secondary parameters
+            // It does not work in jLog
+            // $message .= '\n';
+            $message .= ' & ';
+        }
+
+        // For remaining parameters in the array, which are not in the main list
+        $output = array();
+        foreach ($params as $key => $value) {
+            $output[] = '"'.strtoupper($key).'" = '."'".$value."'";
+        }
+
+        $message .= implode(' & ', $output);
+
+        return 'HTTP code '.$code.' on '.$message;
+    }
+
+    /**
+     * Log if the HTTP code is a 4XX or 5XX error code.
+     *
+     * @param int                   $code    The HTTP code of the request
+     * @param array<string, string> $headers The headers of the response
+     */
+    protected function logRequestIfError($code, $headers)
+    {
+        if ($code < 400) {
+            return;
+        }
+
+        $message = 'The HTTP OGC request to QGIS Server ended with an error.';
+
+        $xRequestId = Proxy::httpRequestId($headers);
+        if ($xRequestId !== '') {
+            $message .= ' The X-Request-Id `'.$xRequestId.'`.';
+        }
+
+        // The master error with MAP parameter
+        // This user must have an access to QGIS Server logs
+        $params = $this->parameters();
+        \jLog::log($message.' Check logs on QGIS Server. '.$this->formatHttpErrorString($params, $code), 'error');
+
+        // The admin error without the MAP parameter
+        // but replaced by REPOSITORY and PROJECT parameters
+        // This user might not have an access to QGIS Server logs
+        unset($params['map']);
+        $params['repository'] = $this->project->getRepository()->getKey();
+        $params['project'] = $this->project->getKey();
+        \jLog::log($message.' '.$this->formatHttpErrorString($params, $code), 'lizmapadmin');
+    }
+
+    /**
      * Request QGIS Server.
      *
-     * @param bool $post Force to use POST request
+     * @param bool $post   Force to use POST request
+     * @param bool $stream Get data as stream
      *
-     * @return object The request result with HTTP code, response mime-type and response data
-     *                (properties $code, $mime, $data)
+     * @return OGCResponse The request result with HTTP code, response mime-type and response data
+     *                     (properties $code, $mime, $data)
      */
-    protected function request($post = false)
+    protected function request($post = false, $stream = false)
     {
         $querystring = $this->constructUrl();
+        $headers = array(
+            'X-Qgis-Service-Url' => $this->project->getOgcServiceUrl(),
+        );
+        // If the OGC request is provided from command line the request is null
+        $browserRequest = $this->appContext->getCoord()->request;
+        if ($browserRequest) {
+            $host = $browserRequest->getDomainName();
+            $proto = $browserRequest->getProtocol();
+            $headers = array_merge(
+                $headers,
+                array(
+                    'X-Forwarded-Host' => $host,
+                    'X-Forwarded-Proto' => $proto,
+                    'Forwarded' => 'host='.$host.';proto='.$proto,
+                ),
+            );
+        }
 
         $options = array();
         if ($this->requestXml !== null) {
             $options = array(
                 'method' => 'post',
-                'headers' => array('Content-Type' => 'text/xml'),
                 'body' => $this->requestXml,
+            );
+            $headers = array_merge(
+                array('Content-Type' => 'text/xml'),
+                $headers,
             );
         } elseif ($post) {
             $options = array('method' => 'post');
         }
+        $options['headers'] = $headers;
 
         // Add login filtered override info
         $options['loginFilteredOverride'] = \jAcl2::check('lizmap.tools.loginFilteredLayers.override', $this->repository->getKey());
 
-        list($data, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($querystring, $options);
+        if ($stream) {
+            $response = Proxy::getRemoteDataAsStream($querystring, $options);
 
-        return (object) array(
-            'code' => $code,
-            'mime' => $mime,
-            'data' => $data,
-        );
+            $this->logRequestIfError($response->getCode(), $response->getHeaders());
+
+            return new OGCResponse($response->getCode(), $response->getMime(), $response->getBodyAsStream());
+        }
+
+        list($data, $mime, $code, $headers) = Proxy::getRemoteData($querystring, $options);
+
+        $this->logRequestIfError($code, $headers);
+
+        return new OGCResponse($code, $mime, $data);
     }
 
     /**
@@ -225,8 +334,8 @@ abstract class OGCRequest
      *
      * @param int $code The HTTP code to return
      *
-     * @return object The request result with HTTP code, response mime-type, response data
-     *                (properties $code, $mime, $data, $cached)
+     * @return OGCResponse The request result with HTTP code, response mime-type, response data
+     *                     (properties $code, $mime, $data, $cached)
      */
     protected function serviceException($code = 400)
     {
@@ -247,19 +356,14 @@ abstract class OGCRequest
         }
         \jMessage::clearAll();
 
-        return (object) array(
-            'code' => $code,
-            'mime' => $mime,
-            'data' => $data,
-            'cached' => false,
-        );
+        return new OGCResponse($code, $mime, $data);
     }
 
     /**
      * Perform an OGC GetCapabilities Request.
      *
-     * @return object The request result with HTTP code, response mime-type, response data
-     *                (properties $code, $mime, $data, $cached)
+     * @return OGCResponse The request result with HTTP code, response mime-type, response data
+     *                     (properties $code, $mime, $data, $cached)
      */
     protected function process_getcapabilities()
     {
@@ -268,6 +372,10 @@ abstract class OGCRequest
         // the cache should be unique between each user/service because the
         // request content depends on rights of the user
         $key = session_id().'-'.$this->param('service');
+        $version = $this->param('version');
+        if ($version) {
+            $key .= '-'.$version;
+        }
         if ($appContext->UserIsConnected()) {
             $juser = $appContext->getUserSession();
             $key .= '-'.$juser->login;
@@ -284,12 +392,7 @@ abstract class OGCRequest
         }
         // return cached data
         if ($cached !== false) {
-            return (object) array(
-                'code' => $cached['code'],
-                'mime' => $cached['mime'],
-                'data' => $cached['data'],
-                'cached' => true,
-            );
+            return new OGCResponse($cached['code'], $cached['mime'], $cached['data'], true);
         }
 
         // Get remote data
@@ -310,12 +413,7 @@ abstract class OGCRequest
             $cached = $this->project->getCacheHandler()->setProjectRelatedDataCache($key, $cachedContent, 3600);
         }
 
-        return (object) array(
-            'code' => $response->code,
-            'mime' => $response->mime,
-            'data' => $response->data,
-            'cached' => $cached,
-        );
+        return new OGCResponse($response->code, $response->mime, $response->data, $cached);
     }
 
     /*
@@ -337,7 +435,7 @@ abstract class OGCRequest
             $errormsg = '\n'.$xmldata.'\n'.$xml;
             $errormsg = '\n'.http_build_query($this->params).$errormsg;
             $errormsg = 'An error has been raised when loading '.$name.':'.$errormsg;
-            \jLog::log($errormsg, 'error');
+            \jLog::log($errormsg, 'lizmapadmin');
 
             return null;
         }

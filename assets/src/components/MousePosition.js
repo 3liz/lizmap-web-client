@@ -1,8 +1,25 @@
+/**
+ * @module components/MousePosition.js
+ * @name MousePosition
+ * @copyright 2023 3Liz
+ * @author BOISTEAULT Nicolas
+ * @license MPL-2.0
+ */
+
 import { mainLizmap } from '../modules/Globals.js';
 import { html, render } from 'lit-html';
 
-import { transform, get as getProjection } from 'ol/proj';
+import { transform, get as getProjection } from 'ol/proj.js';
 
+import { forward } from '../dependencies/mgrs.js';
+
+import MGRS from '../modules/MGRS.js';
+
+/**
+ * @class
+ * @name MousePosition
+ * @augments HTMLElement
+ */
 export default class MousePosition extends HTMLElement {
     constructor() {
         super();
@@ -24,24 +41,34 @@ export default class MousePosition extends HTMLElement {
         this._latInput;
     }
 
-    // Render editablePositionTemplate and readonlyPositionTemplate apart because values change a lot
     // Don't add line break between <input>s or it adds a space in UI
-    editablePositionTemplate(lon, lat){
-        return html`<input type="number" step="any" placeholder="longitude" @input=${(event) => this._lonInput = parseFloat(event.target.value)} @keydown=${(event) => { if (event.key === 'Enter') { this._centerToCoords(); } }} .value=${lon}><input type="number" step="any" placeholder="latitude" @input=${(event) => this._latInput = parseFloat(event.target.value)} @keydown=${(event) => { if (event.key === 'Enter') { this._centerToCoords(); } }} .value=${lat}>`;
-    }
-
-    readonlyPositionTemplate(lon, lat) {
-        return html`
-            <span>${lon}</span>
-            <span>${lat}</span>`;
-    }
-
     mainTemplate(lon, lat){
+        const inputLongitude = html`<input
+            type="number"
+            step="any"
+            placeholder="longitude"
+            @input=${(event) => this._lonInput = parseFloat(event.target.value)}
+            @keydown=${(event) => { if (event.key === 'Enter') { this._centerToCoords(); } }}
+            .value=${isNaN(lon) ? 0 : lon}
+        >`;
+        const inputLatitude = html`<input
+            type="number"
+            step="any"
+            placeholder="latitude"
+            @input=${(event) => this._latInput = parseFloat(event.target.value)}
+            @keydown=${(event) => { if (event.key === 'Enter') { this._centerToCoords(); } }}
+            .value=${isNaN(lat) ? 0 : lat}
+        >`;
         return html`
             <div class="mouse-position">
-                <div class="editable-position ${['dm', 'dms'].includes(this._displayUnit) ? 'hide' : ''}">${this.editablePositionTemplate(lon, lat)}</div>
-                <div class="readonly-position ${['dm', 'dms'].includes(this._displayUnit) ? '' : 'hide'}">${this.readonlyPositionTemplate(lon, lat)}</div>
-                <button class="btn btn-mini" title="${lizDict['mouseposition.removeCenterPoint']}" @click=${() => this._removeCenterPoint()}><i class="icon-refresh"></i></button>
+                <div class="editable-position ${['dm', 'dms', 'mgrs'].includes(this._displayUnit) ? 'hide' : ''}">
+                    ${inputLongitude}${inputLatitude}
+                </div>
+                <div class="readonly-position ${['dm', 'dms', 'mgrs'].includes(this._displayUnit) ? '' : 'hide'}">
+                    <span>${lon}</span>
+                    <span>${lat}</span>
+                </div>
+                <button class="btn btn-sm" title="${lizDict['mouseposition.removeCenterPoint']}" @click=${() => this._removeCenterPoint()}><i class="icon-refresh"></i></button>
             </div>
             <div class="coords-unit">
                 <select title="${lizDict['mouseposition.select']}" @change=${(event) => { this.displayUnit = event.target.value }}>
@@ -49,10 +76,11 @@ export default class MousePosition extends HTMLElement {
                     <option selected value="m">${lizDict['mouseposition.units.m']}</option>` : ''}
                     ${ ['ft', 'us-ft'].includes(this._qgisProjectProjectionUnits) ? html`
                     <option selected value="f">${lizDict['mouseposition.units.f']}</option>` : ''}
-                
+
                     <option value="degrees">${lizDict['mouseposition.units.d']}</option>
                     <option value="dm">${lizDict['mouseposition.units.dm']}</option>
                     <option value="dms">${lizDict['mouseposition.units.dms']}</option>
+                    <option value="mgrs">MGRS</option>
                 </select>
             </div>`;
     }
@@ -70,19 +98,18 @@ export default class MousePosition extends HTMLElement {
 
             mainLizmap.center = lonlatInputInMapProj;
             // Display point
-            const centerPoint = new OpenLayers.Geometry.Point(lonlatInputInMapProj[0], lonlatInputInMapProj[1]);
-            const locateLayer = mainLizmap.lizmap3.map.getLayersByName('locatelayer')[0];
-            locateLayer.removeAllFeatures();
-            locateLayer.addFeatures(new OpenLayers.Feature.Vector(centerPoint));
+            const featureAsWKT = `POINT(${lonlatInputInMapProj[0]} ${lonlatInputInMapProj[1]})`;
+            mainLizmap.map.setHighlightFeatures(featureAsWKT,"wkt", mainLizmap.projection);
         }
     }
 
     _removeCenterPoint() {
-        mainLizmap.lizmap3.map.getLayersByName('locatelayer')[0].removeAllFeatures();
+        mainLizmap.map.clearHighlightFeatures();
     }
 
     /**
-     * @param {string} unit
+     * Update the display unit of the mouse position
+     * @param {string} unit - Unit to display 'm', 'mgrs' ...
      */
     set displayUnit(unit){
         unit === 'm' ? this._numDigits = 0 : this._numDigits = 5;
@@ -90,7 +117,23 @@ export default class MousePosition extends HTMLElement {
 
         if (this._longitude && this._latitude){
             this.redraw(this._longitude, this._latitude);
-            render(this.mainTemplate(this._longitude, this._latitude), this);
+        }
+
+        if(unit === 'mgrs'){
+            if(!this._MGRS){
+                this._MGRS = new MGRS({
+                    showLabels: true,
+                    wrapX: false,
+                });
+                this._MGRS.setProperties({
+                    name: 'LizmapMousePositionMGRS'
+                });
+            }
+            mainLizmap.map.addToolLayer(this._MGRS);
+        } else {
+            if(this._MGRS){
+                mainLizmap.map.removeToolLayer(this._MGRS);
+            }
         }
     }
 
@@ -102,7 +145,11 @@ export default class MousePosition extends HTMLElement {
             let lon,lat;
             // OL2
             if(evt.xy){
-                ({ lon, lat } = mainLizmap.lizmap3.map.getLonLatFromPixel(evt.xy));
+                const lonlat = mainLizmap.lizmap3.map.getLonLatFromPixel(evt.xy);
+                if (lonlat !== null) {
+                    lon = lonlat.lon;
+                    lat = lonlat.lat;
+                }
             } else if (evt.pixel){ //OL6
                 [lon, lat ] = mainLizmap.map.getCoordinateFromPixel(evt.pixel);
             }
@@ -116,33 +163,40 @@ export default class MousePosition extends HTMLElement {
         }
     }
 
-    redraw(lon, lat){
+    redraw(lon, lat) {
         let lonLatToDisplay = [lon, lat];
 
-        // Display in degree, degree minute, degree minute second
-        if (['degrees', 'dm', 'dms'].includes(this._displayUnit)) {
+        // Display in degree, degree minute, degree minute second or MGRS
+        if (['degrees', 'dm', 'dms', 'mgrs'].includes(this._displayUnit)) {
             // If map projection is not yet in degrees => reproject to EPSG:4326
-            if (mainLizmap.lizmap3.map.projection.getUnits() !== 'degrees'){
+            if (mainLizmap.lizmap3.map.projection.getUnits() !== 'degrees') {
                 lonLatToDisplay = transform(lonLatToDisplay, mainLizmap.projection, 'EPSG:4326');
             }
 
             // If in degrees, lon/lat are editable
-            if (this._displayUnit === 'degrees'){
-                render(this.editablePositionTemplate(lonLatToDisplay[0].toFixed(this._numDigits), lonLatToDisplay[1].toFixed(this._numDigits)),
-                    this.querySelector('.mouse-position > .editable-position'));
+            if (this._displayUnit === 'degrees') {
+                render(this.mainTemplate(lonLatToDisplay[0].toFixed(this._numDigits), lonLatToDisplay[1].toFixed(this._numDigits)), this);
+            } else if (this._displayUnit === 'mgrs') {
+                let mgrsCoords = '';
+                try {
+                    mgrsCoords = forward(lonLatToDisplay);
 
-            }else{
+                    mgrsCoords = mgrsCoords.slice(0, -12) + ' ' + mgrsCoords.slice(-12, -10) + ' ' + mgrsCoords.slice(-10, -5) + ' ' + mgrsCoords.slice(-5);
+                } catch (error) {
+                    console.error(error);
+                }
+
+                render(this.mainTemplate(mgrsCoords, ''), this);
+            } else {
                 lonLatToDisplay[0] = this.getFormattedLonLat(lonLatToDisplay[0], 'lon', this._displayUnit);
                 lonLatToDisplay[1] = this.getFormattedLonLat(lonLatToDisplay[1], 'lat', this._displayUnit);
 
-                render(this.readonlyPositionTemplate(lonLatToDisplay[0], lonLatToDisplay[1]),
-                    this.querySelector('.mouse-position > .readonly-position'));
+                render(this.mainTemplate(lonLatToDisplay[0], lonLatToDisplay[1]), this);
             }
-        }else{
+        } else {
             lonLatToDisplay = transform(lonLatToDisplay, mainLizmap.projection, mainLizmap.qgisProjectProjection);
 
-            render(this.editablePositionTemplate(lonLatToDisplay[0].toFixed(this._numDigits), lonLatToDisplay[1].toFixed(this._numDigits)),
-                this.querySelector('.mouse-position > .editable-position'));
+            render(this.mainTemplate(lonLatToDisplay[0].toFixed(this._numDigits), lonLatToDisplay[1].toFixed(this._numDigits)), this);
         }
 
         this._lonInput = lonLatToDisplay[0];

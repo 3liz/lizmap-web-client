@@ -6,53 +6,29 @@ class QgisProjectForTests extends QgisProject
 {
     public function __construct($data = null)
     {
-        if ($data) {
-            parent::__construct(null, new lizmapServices(null, null, false, '', ''), new ContextForTests(), $data);
+        if ($data !== null) {
+            parent::__construct(null, new lizmapServices(null, (object) array(), false, '', ''), new ContextForTests(), $data);
         }
     }
 
-    public function readWMSInfoTest($xml)
+    public function readXMLProjectTest($file)
     {
-        return $this->readWMSInformation($xml);
+        return $this->readXMLProject($file);
     }
 
-    public function readCanvasColorTest($xml)
+    public function getLayers()
     {
-        return $this->readCanvasColor($xml);
+        return $this->layers;
     }
 
-    public function readAllProj4Test($xml)
+    public function getRelations()
     {
-        return $this->readAllProj4($xml);
+        return $this->relations;
     }
 
-    public function readUseLayersIDsTest($xml)
+    public function getRelationsFields()
     {
-        return $this->readUseLayerIDs($xml);
-    }
-
-    public function readThemesForTests($xml)
-    {
-        return $this->readThemes($xml);
-    }
-
-    public function readCustomProjectVariablesForTests($xml)
-    {
-        return $this->readCustomProjectVariables($xml);
-    }
-
-    public function readLayersForTests($xml)
-    {
-        // readLayers() needs $this->qgisProjectVersion to be set
-        $this->qgisProjectVersion = $this->readQgisProjectVersion($xml);
-
-        return $this->readLayers($xml);
-    }
-
-    public function readRelationsForTests($xml)
-    {
-        $this->xml = $xml;
-        return $this->readRelations($xml);
+        return $this->relationsFields;
     }
 
     public function setShortNamesForTest($cfg)
@@ -65,9 +41,34 @@ class QgisProjectForTests extends QgisProject
         return $this->setLayerOpacity($cfg);
     }
 
-    public function setXml($xml)
+    public function setLayerGroupDataForTest($cfg)
+    {
+        return $this->setLayerGroupData($cfg);
+    }
+
+    public function setLayerShowFeatureCountForTest($cfg)
+    {
+        return $this->setLayerShowFeatureCount($cfg);
+    }
+
+    public function getTheXmlAttribute()
+    {
+        return $this->xml;
+    }
+
+    public function getXmlForTest()
+    {
+        return $this->getXml();
+    }
+
+    public function setXmlForTest($xml)
     {
         $this->xml = $xml;
+    }
+
+    public function setPath($path)
+    {
+        $this->path = $path;
     }
 
     public function setLayers($layers)
@@ -78,6 +79,11 @@ class QgisProjectForTests extends QgisProject
     public function readEditionLayersForTest($eLayer)
     {
         $this->readEditionLayers($eLayer);
+    }
+
+    public function readEditionFormsForTest($eLayer, $prj)
+    {
+        $this->readEditionForms($eLayer, $prj);
     }
 
     public function readAttributeLayersForTest($aLayer)

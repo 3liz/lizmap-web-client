@@ -1,0 +1,136 @@
+name: 📖 Documentation
+
+on:
+  push:
+#    tags:
+#      - '*'
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+      - release_3_*
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: "21"
+
+permissions:
+  id-token: write
+  pages: write
+
+jobs:
+  jsdoc:
+    name: "🟨 JS-Doc"
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: "Setup Node ${{ env.NODE_VERSION }}"
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: ${{ github.workspace }}/package.json
+
+      - name: Change tokens about versions
+        run: |
+          make version-doc
+          echo "FULL_VERSION=${FULL_VERSION}" >> $GITHUB_ENV
+
+      - name: Building JS docs
+        run: |
+          make js-doc
+
+      - name: Upload JS artifacts
+        uses: actions/upload-artifact@master
+        with:
+          name: js
+          path: docs/js/assets/${{ env.FULL_VERSION }}
+
+  phpdoc:
+    name: "🐘 PHP-Doc"
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Change tokens about versions
+        run: make version-doc
+
+      - name: Building PHP docs
+        run: make php-doc
+
+      - name: Upload PHP artifacts
+        uses: actions/upload-artifact@master
+        with:
+          name: php
+          path: docs/php
+
+  deploy:
+    needs: [ jsdoc, phpdoc ]
+    name: "📤 Deploy"
+    if: github.repository == '3liz/lizmap-web-client' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Change tokens about versions
+        run: make version-doc
+
+      - name: Download PHP artifacts
+        uses: actions/download-artifact@master
+        with:
+          name: php
+          path: docs/php/
+
+      - name: Download JS artifacts
+        uses: actions/download-artifact@master
+        with:
+          name: js
+          path: docs/js/
+
+      - name: Upload all docs artifacts
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+#      - name: Branch name
+#        id: branch-name
+#        run: make debug | grep SHORT_VERSION= >> "$GITHUB_OUTPUT"
+#
+#      - name: Install multi deploy version
+#        run: npm i @koumoul/gh-pages-multi
+#
+#      - name: Token
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.TOKEN_TEST }}
+#        run: git remote set-url origin https://${{ secrets.TOKEN_TEST }}@github.com/Gustry/lizmap-web-client.git
+#
+#      - name: Deploy build
+#        env:
+#          BRANCH_NAME: ${{ steps.branch-name.outputs.SHORT_VERSION }}
+#        run: |
+#          git config --global user.name "Bot"
+#          git config --global user.email "no@mail.org"
+#          ./node_modules/.bin/gh-pages-multi deploy -s docs/js/assets/1.0.0/ -t $BRANCH_NAME -v
+
+      - name: Summary
+        run: |
+          echo "
+            ### Published ! :rocket:
+
+            [Visit the doc](https://docs.3liz.org/lizmap-web-client/)
+          " >> $GITHUB_STEP_SUMMARY

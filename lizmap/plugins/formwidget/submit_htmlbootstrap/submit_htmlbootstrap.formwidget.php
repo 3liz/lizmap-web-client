@@ -1,5 +1,7 @@
 <?php
 
+use Lizmap\Form\WidgetTrait;
+
 /**
  * @author    3liz
  * @copyright 2018 3liz
@@ -12,5 +14,5 @@ require_once JELIX_LIB_PATH.'plugins/formwidget/submit_html/submit_html.formwidg
 
 class submit_htmlbootstrapFormWidget extends submit_htmlFormWidget
 {
-    use \Lizmap\Form\WidgetTrait;
+    use WidgetTrait;
 }

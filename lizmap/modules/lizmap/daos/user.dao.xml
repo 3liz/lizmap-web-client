@@ -5,7 +5,7 @@
     </datasources>
     <record>
         <property name="login" fieldname="usr_login"
-                  required="yes" datatype="string"  maxlength="50" />
+                  required="yes" datatype="string"  maxlength="255" />
 
         <property name="email" fieldname="usr_email"
                   datatype="string" required="yes" maxlength="255" />
@@ -54,6 +54,22 @@
 
             <conditions>
                 <eq property="login" expr="$login" />
+            </conditions>
+        </method>
+
+        <method name="getByLoginOrEmail" type="selectfirst">
+            <parameter name="login" />
+
+            <conditions logic="or">
+                <eq property="login" expr="$login" />
+                <eq property="email" expr="$login" />
+            </conditions>
+        </method>
+
+        <method name="getByEmail" type="select">
+            <parameter name="email" />
+            <conditions>
+                <eq property="email" expr="$email" />
             </conditions>
         </method>
 

@@ -1,14 +1,36 @@
-import {mainLizmap, mainEventDispatcher} from '../modules/Globals.js';
-import {transform} from 'ol/proj';
+/**
+ * @module modules/State.js
+ * @name State
+ * @copyright 2023 3Liz
+ * @license MPL-2.0
+ */
 
+import {mainEventDispatcher} from '../modules/Globals.js';
+import Edition from './Edition.js';
+import Geolocation from './Geolocation.js';
+import {transform} from 'ol/proj.js';
+
+/**
+ * @class
+ * @name GeolocationSurvey
+ */
 export default class GeolocationSurvey {
 
-    constructor() {
+    /**
+     * Create a geolocation survey instance
+     * @param {Geolocation} geolocation - The Lizmap geolocation instance
+     * @param {Edition}     edition     - The Lizmap edition instance
+     * @param {object}      lizmap3     - The old lizmap object
+     */
+    constructor(geolocation, edition, lizmap3) {
 
         this.distanceLimit = 0;
         this.timeLimit = 0;
         this.accuracyLimit = 0;
         this.averageRecordLimit = 0;
+        this._geolocation = geolocation;
+        this._edition = edition;
+        this._lizmap3 = lizmap3;
         this._distanceMode = false;
         this._timeMode = false;
         this._timePauseMode = false;
@@ -26,13 +48,13 @@ export default class GeolocationSurvey {
 
     // Private method to insert a point at current or average position
     _insertPoint() {
-        if (mainLizmap.geolocation.isTracking && (!this.accuracyMode || (mainLizmap.geolocation.accuracy <= this.accuracyLimit))) {
+        if (this._geolocation.isTracking && (!this.accuracyMode || (this._geolocation.accuracy <= this.accuracyLimit))) {
 
             if (this.averageRecordMode && this.positionAverageInMapCRS !== undefined) {
-                mainLizmap.edition.drawControl.handler.insertXY(this.positionAverageInMapCRS);
+                this._edition.drawControl.handler.insertXY(this.positionAverageInMapCRS);
             } else {
-                const node = mainLizmap.edition.drawControl.handler.point.geometry;
-                mainLizmap.edition.drawControl.handler.insertXY(node.x, node.y);
+                const node = this._edition.drawControl.handler.point.geometry;
+                this._edition.drawControl.handler.insertXY(node.x, node.y);
             }
 
             // Beep
@@ -72,7 +94,7 @@ export default class GeolocationSurvey {
         if (this._distanceModeCallback === undefined) {
             this._distanceModeCallback = () => {
                 // Insert automatically a point when lastSegmentLength >= distanceLimit
-                if (this._distanceMode && mainLizmap.edition.lastSegmentLength >= this.distanceLimit) {
+                if (this._distanceMode && this._edition.lastSegmentLength >= this.distanceLimit) {
                     this._insertPoint();
                 }
             };
@@ -103,7 +125,7 @@ export default class GeolocationSurvey {
         if (this._timeModeCallback === undefined) {
             this._timeModeCallback = () => {
                 // Disable time mode when edition or geolocation end
-                if (!mainLizmap.edition.drawFeatureActivated || !mainLizmap.geolocation.isTracking) {
+                if (!this._edition.drawFeatureActivated || !this._geolocation.isTracking) {
                     this.toggleTimeMode(false);
                 }
             };
@@ -113,7 +135,7 @@ export default class GeolocationSurvey {
         if (this._timeMode) {
             this._intervalID = window.setInterval(() => {
                 // Count taking care of accuracy if mode is active and pause mode
-                if (!this.timePauseMode && (!this.accuracyMode || (mainLizmap.geolocation.accuracy <= this.accuracyLimit))) {
+                if (!this.timePauseMode && (!this.accuracyMode || (this._geolocation.accuracy <= this.accuracyLimit))) {
                     this.timeCount = this.timeCount + 1;
 
                     // Insert automatically a point when timeCount >= timeLimit
@@ -203,8 +225,9 @@ export default class GeolocationSurvey {
                     count++;
                 }
             }
+            const qgisProjectProjection = this._lizmap3.map.getProjection();
 
-            return transform([sumX / count, sumY / count], 'EPSG:4326', mainLizmap.projection);
+            return transform([sumX / count, sumY / count], 'EPSG:4326', qgisProjectProjection);
         } else {
             return undefined;
         }
@@ -229,8 +252,8 @@ export default class GeolocationSurvey {
                     }
 
                     // Record point taking care of accuracy if mode is active
-                    if (!this.accuracyMode || (mainLizmap.geolocation.accuracy <= this.accuracyLimit)) {
-                        this._positionPointsRecord[now] = mainLizmap.geolocation.position;
+                    if (!this.accuracyMode || (this._geolocation.accuracy <= this.accuracyLimit)) {
+                        this._positionPointsRecord[now] = this._geolocation.position;
                     }
                 }
             };

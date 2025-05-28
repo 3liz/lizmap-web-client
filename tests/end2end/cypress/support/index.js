@@ -15,6 +15,21 @@
 
 // Import commands.js using ES2015 syntax:
 import './commands'
+import { rmErrorsLog } from './function'
 
-// Alternatively you can use CommonJS syntax:
-// require('./commands')
+beforeEach(function () {
+    // Clear errors
+    rmErrorsLog()
+})
+
+afterEach(function () {
+    // Check errors
+    cy.exec('./../lizmap-ctl docker-exec cat /srv/lzm/lizmap/var/log/errors.log', {failOnNonZeroExit: false})
+        .then((result) => {
+            if (result.code == 0) {
+                expect(result.stdout).to.be.empty
+            } else {
+                expect(result.stderr).to.contain('errors.log: No such file or directory')
+            }
+        })
+})

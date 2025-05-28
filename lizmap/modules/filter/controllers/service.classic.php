@@ -1,5 +1,11 @@
 <?php
+
+use Violet\StreamingJsonEncoder\BufferJsonEncoder;
+use Violet\StreamingJsonEncoder\JsonStream;
+
 /**
+ * PHP proxy to execute filter request.
+ *
  * @author    3liz
  * @copyright 2017 3liz
  *
@@ -9,18 +15,32 @@
  */
 class serviceCtrl extends jController
 {
+    /**
+     * @var null|string the lizmap repository key
+     */
     private $repository;
+
+    /**
+     * @var null|string the qgis project key
+     */
     private $project;
+
+    /**
+     * @var filterConfig
+     */
     private $config;
 
-    public function __construct($request)
-    {
-        parent::__construct($request);
-    }
-
+    /**
+     * Redirect to the appropriate action depending on the REQUEST parameter.
+     *
+     * @urlparam $REPOSITORY Name of the repository
+     * @urlparam $PROJECT Name of the project
+     * @urlparam $REQUEST Request type
+     *
+     * @return jResponseJson the request response
+     */
     public function index()
     {
-        $rep = $this->getResponse('json');
 
         // Check project
         $repository = $this->param('repository');
@@ -65,23 +85,37 @@ class serviceCtrl extends jController
                 break;
         }
 
-        $rep->data = array();
-
-        return $rep;
+        return $this->error(
+            array(
+                'title' => 'Not supported request',
+                'detail' => 'The request "'.$request.'" is not supported!',
+            ),
+        );
     }
 
+    /**
+     * Provide errors.
+     *
+     * @param mixed $errors
+     *
+     * @return jResponseJson the errors response
+     */
     public function error($errors)
     {
+        /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
         $rep->data = array('errors' => $errors);
 
         return $rep;
     }
 
+    /**
+     * Get feature count.
+     *
+     * @return jResponseJson the feature count response
+     */
     public function getFeatureCount()
     {
-        $rep = $this->getResponse('json');
-
         // Get params
         $repository = $this->param('repository');
         $project = $this->param('project');
@@ -91,15 +125,18 @@ class serviceCtrl extends jController
         // Get data
         jClasses::inc('filter~filterDatasource');
         $f = new filterDatasource($repository, $project, $layerId);
-        $rep->data = $f->getFeatureCount($filter);
+        $streamedData = $f->getFeatureCount($filter);
 
-        return $rep;
+        return $this->streamResponse($streamedData);
     }
 
+    /**
+     * Get unique values.
+     *
+     * @return jResponseJson the unique values response
+     */
     public function getUniqueValues()
     {
-        $rep = $this->getResponse('json');
-
         // Get params
         $repository = $this->param('repository');
         $project = $this->param('project');
@@ -110,15 +147,18 @@ class serviceCtrl extends jController
         // Get data
         jClasses::inc('filter~filterDatasource');
         $f = new filterDatasource($repository, $project, $layerId);
-        $rep->data = $f->getUniqueValues($fieldname, $filter);
+        $streamedData = $f->getUniqueValues($fieldname, $filter);
 
-        return $rep;
+        return $this->streamResponse($streamedData);
     }
 
+    /**
+     * Get min and max values.
+     *
+     * @return jResponseJson the min and max values response
+     */
     public function getMinAndMaxValues()
     {
-        $rep = $this->getResponse('json');
-
         // Get params
         $repository = $this->param('repository');
         $project = $this->param('project');
@@ -129,15 +169,18 @@ class serviceCtrl extends jController
         // Get data
         jClasses::inc('filter~filterDatasource');
         $f = new filterDatasource($repository, $project, $layerId);
-        $rep->data = $f->getMinAndMaxValues($fieldname, $filter);
+        $streamedData = $f->getMinAndMaxValues($fieldname, $filter);
 
-        return $rep;
+        return $this->streamResponse($streamedData);
     }
 
+    /**
+     * Get extent.
+     *
+     * @return jResponseJson the extent response
+     */
     public function getExtent()
     {
-        $rep = $this->getResponse('json');
-
         // Get params
         $repository = $this->param('repository');
         $project = $this->param('project');
@@ -148,8 +191,47 @@ class serviceCtrl extends jController
         // Get data
         jClasses::inc('filter~filterDatasource');
         $f = new filterDatasource($repository, $project, $layerId);
-        $rep->data = $f->getExtent($crs, $filter);
+        $streamedData = $f->getExtent($crs, $filter);
 
-        return $rep;
+        return $this->streamResponse($streamedData);
+    }
+
+    /**
+     * stream $streamData in a jResponseStreamed
+     * if data is iterable
+     * otherwise simple jResponseJson.
+     *
+     * @param mixed $streamedData
+     *
+     * @return jResponseBinary|jResponseJson response
+     */
+    protected function streamResponse($streamedData)
+    {
+        if (is_iterable($streamedData)) {
+            /**
+             * @var jResponseBinary $response
+             */
+            $response = $this->getResponse('binary');
+            $response->mimeType = 'application/json';
+            $encoder = (new BufferJsonEncoder($streamedData))
+                ->setOptions(JSON_PRETTY_PRINT)
+            ;
+
+            $stream = new JsonStream($encoder);
+
+            $response->setContentGenerator((function () use ($stream) {
+                while (!$stream->eof()) {
+                    yield $stream->read(1024 * 8);
+                }
+            })());
+        } else {
+            /**
+             * @var jResponseJson $response
+             */
+            $response = $this->getResponse('json');
+            $response->data = $streamedData;
+        }
+
+        return $response;
     }
 }

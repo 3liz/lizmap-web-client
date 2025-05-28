@@ -1,4 +1,7 @@
 <?php
+
+use Lizmap\Project\UnknownLizmapProjectException;
+
 /**
  * Displays the list of projects for ajax request.
  *
@@ -14,10 +17,11 @@ class lizAjaxCtrl extends jController
     /**
      * Return 404.
      *
-     * @param mixed $message
+     * @param string $message
      */
     protected function error404($message)
     {
+        /** @var jResponseHtmlFragment $rep */
         $rep = $this->getResponse('htmlfragment');
         $content = '<p>404 not found (wrong action)</p>';
         $content .= '<p>'.$message.'</p>';
@@ -36,10 +40,13 @@ class lizAjaxCtrl extends jController
     /**
      * Return 403.
      *
-     * @param mixed $message
+     * @param string $message
+     *
+     * @return jResponseHtmlFragment
      */
     protected function error403($message)
     {
+        /** @var jResponseHtmlFragment $rep */
         $rep = $this->getResponse('htmlfragment');
         $content = '<p>403 forbidden (you\'re not allowed to access to this content)</p>';
         $content .= '<p>'.$message.'</p>';
@@ -52,10 +59,13 @@ class lizAjaxCtrl extends jController
     /**
      * Return 401.
      *
-     * @param mixed $message
+     * @param string $message
+     *
+     * @return jResponseHtmlFragment
      */
     protected function error401($message)
     {
+        /** @var jResponseHtmlFragment $rep */
         $rep = $this->getResponse('htmlfragment');
         $content = '<p>401 Unauthorized (authentication is required)</p>';
         $content .= '<p>'.$message.'</p>';
@@ -68,12 +78,11 @@ class lizAjaxCtrl extends jController
     /**
      * Displays the list of project for a given repository for ajax request.
      *
-     * @param string $repository. Name of the repository.
-     *
-     * @return Html fragment with a list of projects
+     * @return jResponseHtmlFragment fragment with a list of projects
      */
     public function index()
     {
+        /** @var jResponseHtmlFragment $rep */
         $rep = $this->getResponse('htmlfragment');
 
         // Get repository data
@@ -98,18 +107,15 @@ class lizAjaxCtrl extends jController
     /**
      * Displays map for ajax request.
      *
-     * @param string $repository. Name of the repository.
-     * @param string $project.    Name of the project.
-     *
-     * @return Html fragment with a list of projects
+     * @return jResponseHtmlFragment fragment with a list of projects
      */
     public function map()
     {
+        /** @var jResponseHtmlFragment $rep */
         $rep = $this->getResponse('htmlfragment');
 
         // Get the project
-        $project = filter_var($this->param('project'), FILTER_SANITIZE_STRING);
-
+        $project = htmlspecialchars(strip_tags($this->param('project')));
         // Get repository data
         $repository = $this->param('repository');
 
@@ -161,6 +167,7 @@ class lizAjaxCtrl extends jController
         $lizUrls = array(
             'params' => array('repository' => $repository, 'project' => $project),
             'config' => jUrl::getFull('lizmap~service:getProjectConfig'),
+            'keyValueConfig' => jUrl::getFull('lizmap~service:getKeyValueConfig'),
             'wms' => jUrl::getFull('lizmap~service:index'),
             'media' => jUrl::getFull('view~media:getMedia'),
             'nominatim' => jUrl::getFull('lizmap~osm:nominatim'),
@@ -183,6 +190,9 @@ class lizAjaxCtrl extends jController
             $lizUrls['removeCache'] = jUrl::getFull('admin~maps:removeLayerCache');
         }
 
+        if (jAcl2::check('lizmap.admin.access') || jAcl2::check('lizmap.admin.server.information.view')) {
+            $lizUrls['repositoryAdmin'] = jUrl::getFull('admin~maps:index');
+        }
         $content = '<script type="text/javascript" src="'.jUrl::getFull('view~translate:index').'"/>'."\n";
         $content .= '<script type="text/javascript">// <![CDATA['."\n";
         $content .= 'var lizUrls = '.json_encode($lizUrls).";\n";
@@ -192,12 +202,6 @@ class lizAjaxCtrl extends jController
 
         // Get the WMS information
         $wmsInfo = $lproj->getWMSInformation();
-        // Set page title from projet title
-        if ($wmsInfo['WMSServiceTitle'] != '') {
-            $rep->title = $wmsInfo['WMSServiceTitle'];
-        } else {
-            $rep->title = $repository.' - '.$project;
-        }
 
         $assign = array_merge(array(
             'repositoryLabel' => $lrep->getLabel(),

@@ -1,4 +1,7 @@
 <?php
+
+use Lizmap\Project\UnknownLizmapProjectException;
+
 /**
  * Php proxy to access OpenStreetMap services.
  *
@@ -53,11 +56,10 @@ class searchCtrl extends jController
         }
 
         // Parameters
-        $pquery = $this->param('query');
+        $pquery = htmlspecialchars(strip_tags($this->param('query')), ENT_NOQUOTES);
         if (!$pquery) {
             return $rep;
         }
-        $pquery = filter_var($pquery, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
 
         // Get FTS searches
         $ftsSearches = $lproj->hasFtsSearches();
@@ -107,7 +109,7 @@ class searchCtrl extends jController
             $sql_search = $sql.' AND search_id = '.$cnx->quote($skey);
             $limit = $limit_search;
             $sql_search .= ' LIMIT '.$limit;
-            //jLog::log($sql_search);
+            // jLog::log($sql_search);
 
             // Run query
             $res = $cnx->query($sql_search);

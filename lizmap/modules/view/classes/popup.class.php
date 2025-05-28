@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class with methods relative to Lizmap Popups.
  *
@@ -9,20 +10,24 @@
  *
  * @license    Mozilla Public License : http://www.mozilla.org/MPL/
  */
+
+use Lizmap\Request\RemoteStorageRequest;
+
 class popup
 {
     /**
      * Replace a feature attribute value by its html representation.
      *
-     * @param string $attributeName       feature Attribute name
-     * @param string $attributeValue      feature Attribute value
-     * @param string $repository          lizmap Repository
-     * @param string $project             name of the project
-     * @param string $popupFeatureContent Content of the popup template (created by lizmap plugin) and passed several times. IF false, return only modified attribute.
+     * @param string $attributeName        feature Attribute name
+     * @param string $attributeValue       feature Attribute value
+     * @param string $repository           lizmap Repository
+     * @param string $project              name of the project
+     * @param string $popupFeatureContent  Content of the popup template (created by lizmap plugin) and passed several times. IF false, return only modified attribute.
+     * @param array  $remoteStorageProfile webDav profile
      *
      * @return string the html for the feature attribute
      */
-    public function getHtmlFeatureAttribute($attributeName, $attributeValue, $repository, $project, $popupFeatureContent = null)
+    public function getHtmlFeatureAttribute($attributeName, $attributeValue, $repository, $project, $popupFeatureContent = null, $remoteStorageProfile = null)
     {
 
         // Force $attributeValue to be a string
@@ -39,8 +44,14 @@ class popup
         $mediaRegex = '/^(..\/|\/)?media\//';
         $mediaTextRegex = '/\.(txt|htm|html)$/i';
 
+        $isWebDav = false;
+        if ($remoteStorageProfile && preg_match('#'.$remoteStorageProfile['baseUri'].'#', $attributeValue)) {
+            $attributeValue = preg_replace('#'.$remoteStorageProfile['baseUri'].'#', RemoteStorageRequest::$davUrlRootPrefix, $attributeValue);
+            $isWebDav = true;
+        }
+
         // Remote urls and images
-        if (preg_match($urlRegex, $attributeValue)) {
+        if (preg_match($urlRegex, $attributeValue) && !$isWebDav) {
             if (preg_match($imageRegex, $attributeValue)) {
                 $attributeValue = '<img src="'.$attributeValue.'" border="0"/>';
             } elseif (!$popupFeatureContent) { // only if no template is passed by the user
@@ -56,7 +67,7 @@ class popup
         }
 
         // Media = file stored in the repository media folder
-        if (preg_match($mediaRegex, $attributeValue)) {
+        if (preg_match($mediaRegex, $attributeValue) || $isWebDav) {
             $sharps = array();
             preg_match('/(.+)#(page=[0-9]+)$/i', $attributeValue, $sharps);
             if (count($sharps) == 3) {
@@ -96,7 +107,7 @@ class popup
 
                 $n_repositoryPath = str_replace('\\', '/', $repositoryPath);
                 $n_abspath = $n_repositoryPath.'/'.trim($attributeValue, '/');
-                //manually canonize path to authorize symlink
+                // manually canonize path to authorize symlink
                 $n_abspath = explode('/', $n_abspath);
                 $n_keys = array_keys($n_abspath, '..');
                 foreach ($n_keys as $keypos => $key) {
@@ -146,6 +157,7 @@ class popup
                 $popupFeatureContent
             );
         }
+
         // Return the modified attributeValue
         return $attributeValue;
     }

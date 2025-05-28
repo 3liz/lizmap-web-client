@@ -1,0 +1,7 @@
+{
+  "name": "js-test",
+  "description": "Unit Test Lizmap JavaScript",
+  "type": "module",
+  "author": "3Liz",
+  "license": "ISC"
+}

@@ -2,8 +2,8 @@
 
 use Lizmap\Request\WFSRequest;
 
-class WFSRequestForTests extends WFSRequest {
-
+class WFSRequestForTests extends WFSRequest
+{
     public $datasource;
 
     public $selectFields;
@@ -12,8 +12,12 @@ class WFSRequestForTests extends WFSRequest {
 
     public $appContext;
 
-    public function __construct()
-    {}
+    public function __construct() {}
+
+    public function getFeatureIdFilterExpForTests($featureid, $typename, $qgisLayer)
+    {
+        return $this->getFeatureIdFilterExp($featureid, $typename, $qgisLayer);
+    }
 
     public function buildQueryBaseForTests($cnx, $params, $wfsFields)
     {
@@ -32,12 +36,19 @@ class WFSRequestForTests extends WFSRequest {
 
     public function parseFeatureIdForTests($cnx, $params)
     {
+        $this->params = $params;
+
         return $this->parseFeatureId($cnx, $params);
     }
 
     public function getQueryOrderForTests($cnx, $params, $wfsFields)
     {
         return $this->getQueryOrder($cnx, $params, $wfsFields);
+    }
+
+    public function validateExpressionFilterForTests($filter)
+    {
+        return $this->validateExpressionFilter($filter);
     }
 
     public function validateFilterForTests($filter)

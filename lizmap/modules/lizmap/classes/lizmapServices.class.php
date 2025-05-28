@@ -1,4 +1,7 @@
 <?php
+
+use Lizmap\Server\Server;
+
 /**
  * Manage and give access to lizmap configuration.
  *
@@ -26,7 +29,6 @@ class lizmapServices
      */
     private $properties = array(
         'appName',
-        'qgisServerVersion',
         'wmsServerURL',
         'wmsPublicUrlList',
         'wmsMaxWidth',
@@ -39,6 +41,7 @@ class lizmapServices
         'onlyMaps',
         'projectSwitcher',
         'rootRepositories',
+        'qgisProjectsPrivateDataFolder',
         'relativeWMSPath',
         'proxyHttpBackend',
         'requestProxyEnabled',
@@ -58,7 +61,7 @@ class lizmapServices
         'adminContactEmail',
         'adminSenderEmail',
         'adminSenderName',
-        'googleAnalyticsID',
+        'googleTag',
         'uploadedImageMaxWidthHeight',
     );
 
@@ -67,7 +70,6 @@ class lizmapServices
      * when hideSensitiveServicesProperties is set to 1.
      */
     private $sensitiveProperties = array(
-        'qgisServerVersion',
         'wmsServerURL',
         'wmsPublicUrlList',
         'wmsMaxWidth',
@@ -76,6 +78,7 @@ class lizmapServices
         'cacheStorageType',
         'cacheExpiration',
         'rootRepositories',
+        'qgisProjectsPrivateDataFolder',
         'relativeWMSPath',
         'requestProxyEnabled',
         'requestProxyHost',
@@ -91,7 +94,6 @@ class lizmapServices
         'cacheRedisDb',
         'cacheRedisKeyPrefix',
         'adminSenderEmail',
-        'adminSenderName',
         'proxyHttpBackend',
     );
 
@@ -124,39 +126,130 @@ class lizmapServices
     private $varPath = '';
     private $globalConfig;
 
-    // Wms map server
+    /**
+     * Application name.
+     *
+     * @var string
+     */
     public $appName = 'Lizmap';
-    // QGIS Server version
+
+    /**
+     * QGIS Server version
+     * For external modules only, which are still using the variable.
+     *
+     * @see https://github.com/3liz/lizmap-cadastre-module/issues/94
+     *
+     * @var string
+     *
+     * @deprecated 3.7.0 Use the {@see Server}
+     */
     public $qgisServerVersion = '3.0';
-    // Wms map server
+
+    /**
+     * QGIS Server URL.
+     *
+     * @var string
+     */
     public $wmsServerURL = '';
-    // headers to send to Wms map server
+
+    /**
+     * Headers to send to WMS map server.
+     *
+     * @var array
+     */
     public $wmsServerHeaders = array();
-    // Public Wms url list
+
+    /**
+     * Public WMS list.
+     *
+     * @var string
+     */
     public $wmsPublicUrlList = '';
-    // Wms max width
+
+    /**
+     * WMS max width.
+     *
+     * @var int
+     */
     public $wmsMaxWidth = 3000;
-    // Wms max width
+
+    /**
+     * WMS max height.
+     *
+     * @var int
+     */
     public $wmsMaxHeight = 3000;
 
-    // URL to the API exposed by the Lizmap plugin for QGIS Server
+    /**
+     * QGIS server JSON metadata file name.
+     *
+     * @var string
+     */
+    public static $qgisServerMetadata = '/server.json';
+
+    /**
+     * Custom URL to the API exposed by the Lizmap plugin for QGIS Server.
+     * Property which can be an empty string if QGIS FCGI is used.
+     *
+     * @var string
+     */
     public $lizmapPluginAPIURL = '';
 
-    // map cache server
+    /**
+     * Map cache server type.
+     *
+     * @var string
+     */
     public $cacheStorageType = '';
-    // default repository
+
+    /**
+     * Default repository.
+     *
+     * @var string
+     */
     public $defaultRepository = '';
-    // default project in default repository
+
+    /**
+     * Default project in default repository.
+     *
+     * @var string
+     */
     public $defaultProject = '';
-    // Do not display Lizmap projects page
+
+    /**
+     * Do not display Lizmap projects page.
+     */
     public $onlyMaps = '';
-    // Show projects switcher in maps page
+
+    /**
+     * Show projects switcher in maps page.
+     */
     public $projectSwitcher = '';
-    // display all project in maps
+
+    /**
+     * Display all project in maps.
+     */
     public $allInMap = '';
-    // Root folder of repositories
+
+    /**
+     * Root folder of repositories.
+     *
+     * @var string
+     */
     public $rootRepositories = '';
-    // Does the server use relative Path from root folder?
+
+    /**
+     * Root folder of QGIS project inspection data output files (qgis-project-validator).
+     *
+     * @var string
+     */
+    public $qgisProjectsPrivateDataFolder = '';
+
+    /**
+     * Does the server use relative Path from root folder?
+     *
+     * @var string
+     */
     public $relativeWMSPath = '0';
 
     /**
@@ -168,42 +261,149 @@ class lizmapServices
      */
     public $proxyHttpBackend = '';
 
+    /**
+     * Map cache server.
+     *
+     * @var bool
+     */
     public $requestProxyEnabled = false;
+
+    /**
+     * Proxy host.
+     *
+     * @var string
+     */
     public $requestProxyHost = '';
+
+    /**
+     * Proxy port.
+     *
+     * @var string
+     */
     public $requestProxyPort = '';
+
+    /**
+     * Proxy user.
+     *
+     * @var string
+     */
     public $requestProxyUser = '';
+
+    /**
+     * Proxy password.
+     *
+     * @var string
+     */
     public $requestProxyPassword = '';
-    // proxy type: 'http' or 'socks5'. Only used with the curl proxyHttpBackend
+
+    /**
+     * Proxy type: 'http' or 'socks5'. Only used with the curl proxyHttpBackend.
+     *
+     * @var string
+     */
     public $requestProxyType = 'http';
-    // list of domains separated by a comma, to which the proxy is not used
+
+    /**
+     * List of domains separated by a comma, to which the proxy is not used.
+     *
+     * @var string
+     */
     public $requestProxyNotForDomain = 'localhost,127.0.0.1';
 
-    // debug mode : none or log
+    /**
+     * Debug mode : none or log.
+     */
     public $debugMode = '';
-    // Cache root directory
-    public $cacheRootDirectory = '';
-    // Redis host
-    public $cacheRedisHost = 'localhost';
-    // Redis port
-    public $cacheRedisPort = '6379';
-    // Redis db
-    public $cacheRedisDb = '';
-    // Redis key prefix
-    public $cacheRedisKeyPrefix = '';
-    // cache Expiration
-    public $cacheExpiration = '';
-    // method to flush keys when $cacheRedisKeyPrefix is set. See Jelix documentation
-    public $cacheRedisKeyPrefixFlushMethod = '';
-    // if we allow to view the form to request an account
-    public $allowUserAccountRequests = '';
-    // admin contact email
-    public $adminContactEmail = '';
-    // admin sender email
-    public $adminSenderEmail = '';
-    public $adminSenderName = '';
-    // application id for google analytics
-    public $googleAnalyticsID = '';
 
+    /**
+     * Cache root directory.
+     *
+     * @var string
+     */
+    public $cacheRootDirectory = '';
+
+    /**
+     * Redis host.
+     *
+     * @var string
+     */
+    public $cacheRedisHost = 'localhost';
+
+    /**
+     * Redis port.
+     *
+     * @var string
+     */
+    public $cacheRedisPort = '6379';
+
+    /**
+     * Redis DB.
+     *
+     * @var string
+     */
+    public $cacheRedisDb = '';
+
+    /**
+     * Redis key prefix.
+     *
+     * @var string
+     */
+    public $cacheRedisKeyPrefix = '';
+
+    /**
+     * Cache expiration.
+     *
+     * @var string
+     */
+    public $cacheExpiration = '';
+
+    /**
+     * Method to flush keys when $cacheRedisKeyPrefix is set.
+     *
+     * @see https://docs.jelix.org/en/manual
+     *
+     * @var string
+     */
+    public $cacheRedisKeyPrefixFlushMethod = '';
+
+    /**
+     * If we allow to view the form to request an account.
+     */
+    public $allowUserAccountRequests = '';
+
+    /**
+     * Admin contact email.
+     *
+     * @var string
+     */
+    public $adminContactEmail = '';
+
+    /**
+     * Administrator sender email.
+     *
+     * @var string
+     */
+    public $adminSenderEmail = '';
+
+    /**
+     * Administrator sender name.
+     *
+     * @var string
+     */
+    public $adminSenderName = '';
+
+    /**
+     * Google Tag for Analytics.
+     *
+     * @var string
+     */
+    public $googleTag = '';
+
+    /**
+     * Uploaded image maximum width and height.
+     *
+     * @var int
+     */
     public $uploadedImageMaxWidthHeight = 1920;
 
     /**
@@ -282,20 +482,32 @@ class lizmapServices
             $this->allowUserAccountRequests = false;
         }
 
-        // set it for external requests, needed for file_get_contents
-        $userAgent = 'Lizmap';
+        // set user_agent for external requests, needed for file_get_contents
         if (isset($readConfigPath['services']['userAgent'])) {
             // may be set to false if already set in the php.ini
             $userAgent = $readConfigPath['services']['userAgent'];
+        } elseif (property_exists($globalConfig, 'lizmap')) {
+            $userAgent = $globalConfig->lizmap['version'];
+        } else {
+            $userAgent = 'lizmap';
         }
-        if ($userAgent) {
-            ini_set('user_agent', 'Lizmap');
+        if ($userAgent && !ini_get('user_agent')) {
+            ini_set('user_agent', $userAgent);
         }
     }
 
     public function isLdapEnabled()
     {
         return $this->isUsingLdap;
+    }
+
+    public function isSmtpEnabled()
+    {
+        $config = jApp::config()->mailer;
+
+        return $config['mailerType'] == 'smtp'
+            && $config['smtpHost'] != ''
+            && $config['smtpPort'] != '';
     }
 
     /**
@@ -315,7 +527,7 @@ class lizmapServices
     {
         if (isset($this->data['hideSensitiveServicesProperties'])
           && $this->data['hideSensitiveServicesProperties'] != '0'
-      ) {
+        ) {
             return true;
         }
 
@@ -337,12 +549,38 @@ class lizmapServices
                 $rootRepositories = realpath($this->varPath.$rootRepositories);
             }
             // add a trailing slash if needed
-            if (!preg_match('#/$#', $rootRepositories) && $rootRepositories !== false) {
-                $rootRepositories .= '/';
+            if ($rootRepositories !== false) {
+                $rootRepositories = rtrim($rootRepositories, '/').'/';
             }
         }
 
         return $rootRepositories;
+    }
+
+    /**
+     * Get the path where the inspection data generated by qgis-project-validator
+     * tool are stored. If not found, use the rootRepositories folder.
+     *
+     * @return string Path of the folder containing the inspection data
+     */
+    public function getQgisProjectsPrivateDataFolder()
+    {
+        $qgisProjectsPrivateDataFolder = $this->qgisProjectsPrivateDataFolder;
+
+        if ($qgisProjectsPrivateDataFolder != '') {
+            // if path is relative, get full path
+            if ($qgisProjectsPrivateDataFolder[0] != '/' and $qgisProjectsPrivateDataFolder[1] != ':') {
+                $qgisProjectsPrivateDataFolder = realpath($this->varPath.$qgisProjectsPrivateDataFolder);
+            }
+            // add a trailing slash if needed
+            if ($qgisProjectsPrivateDataFolder !== false) {
+                $qgisProjectsPrivateDataFolder = rtrim($qgisProjectsPrivateDataFolder, '/').'/';
+            }
+        } else {
+            $qgisProjectsPrivateDataFolder = $this->getRootRepositories();
+        }
+
+        return $qgisProjectsPrivateDataFolder;
     }
 
     public function isRelativeWMSPath()
@@ -383,6 +621,33 @@ class lizmapServices
         return $modified;
     }
 
+    /**
+     * Host URL to the Lizmap QGIS Server API, taking care of the QGIS Server context : FCGI, QJazz, etc.
+     *
+     * @return string the host part of the Lizmap API
+     */
+    public function getHostLizmapAPI()
+    {
+        if (empty($this->lizmapPluginAPIURL)) {
+            // When the Lizmap API URL is not set, we use the WMS server URL only
+            // and we add '/lizmap' at then end
+            return rtrim($this->wmsServerURL, '/').'/lizmap';
+        }
+
+        // When the Lizmap API URL is set
+        return rtrim($this->lizmapPluginAPIURL, '/');
+    }
+
+    /**
+     * URL to the JSON QGIS Server metadata, taking care of the QGIS Server context : FCGI, QJazz, etc.
+     *
+     * @return string the URL to the QGIS Server JSON metadata file
+     */
+    public function getUrlLizmapQgisServerMetadata()
+    {
+        return $this->getHostLizmapAPI().self::$qgisServerMetadata;
+    }
+
     public function saveIntoIni($ini, $liveIni)
     {
         $dontSaveSensitiveProps = $this->hideSensitiveProperties();
@@ -400,6 +665,13 @@ class lizmapServices
                 $liveIni->setValue($key, $this->{$prop}, $section);
             } elseif ($this->{$prop} != '') {
                 $ini->setValue($prop, $this->{$prop}, 'services');
+                if ($prop == 'adminContactEmail') {
+                    if ($this->globalConfig->lizmap['setAdminContactEmailAsReplyTo']) {
+                        $liveIni->setValue('replyTo', $this->{$prop}, 'mailer');
+                    }
+                    // for jCommunity 1.4+
+                    $liveIni->setValue('notificationReceiverEmail', $this->{$prop}, 'jcommunity');
+                }
             } else {
                 $ini->removeValue($prop, 'services');
             }
@@ -419,15 +691,16 @@ class lizmapServices
             try {
                 $mail->Send();
             } catch (Exception $e) {
-                jLog::log('error while sending email to admin: '.$e->getMessage(), 'error');
+                jLog::log('error while sending email to admin: '.$e->getMessage(), 'lizmapadmin');
+                jLog::logEx($e, 'error');
             }
         } else {
             if (!$sender && !$email) {
-                jLog::log('Notification cannot be send: no sender email nor notification email have been configured', 'warning');
+                jLog::log('Notification cannot be send: no sender email nor notification email have been configured', 'lizmapadmin');
             } elseif (!$email) {
-                jLog::log('Notification cannot be send: no notification email has been configured', 'warning');
-            } elseif (!$sender) {
-                jLog::log('Notification cannot be send: no sender email has been configured', 'warning');
+                jLog::log('Notification cannot be send: no notification email has been configured', 'lizmapadmin');
+            } else {
+                jLog::log('Notification cannot be send: no sender email has been configured', 'lizmapadmin');
             }
         }
     }

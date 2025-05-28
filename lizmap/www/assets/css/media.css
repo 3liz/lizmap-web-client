@@ -1,15 +1,15 @@
 /* #### Mobile Phones Portrait #### */
-@media screen and (max-device-width: 480px) and (orientation: portrait){
+@media screen and (device-width <= 480px) and (orientation: portrait){
   /* some CSS here */
 }
 
 /* #### Mobile Phones Landscape #### */
-@media screen and (max-device-width: 640px) and (orientation: landscape){
+@media screen and (device-width <= 640px) and (orientation: landscape){
   /* some CSS here */
 }
 
 /* #### Mobile Phones Portrait or Landscape #### */
-@media screen and (max-device-width: 480px){
+@media screen and (device-width <= 480px){
   #search-query{
     width: 85px;
   }
@@ -17,8 +17,6 @@
   #search-query{
     padding-left: 8px;
     padding-right: 8px;
-    -webkit-transition: all .5s;
-    -moz-transition: all .5s;
     transition: all .5s;
   }
 
@@ -61,8 +59,28 @@
     width: 40px;
   }
 
+  /* snap panel */
+  #edition-point-coord-form-group .control-group div.snap-panel-controls {
+    display:flex;
+    flex-direction: column;
+    margin: 10px;
+    text-align: left;
+  }
+
+  #edition-point-coord-form-group .control-group div.snap-layers-list {
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+  }
+
+  #edition-point-coord-form-group .control-group div.snap-layer {
+    text-align: left;
+    display: flex;
+  }
 }
-@media screen and (max-device-width: 640px){
+
+@media screen and (device-width <= 640px){
   #attributeLayers-tabs > li > a {
     padding: 2px;
   }
@@ -75,75 +93,86 @@
 
 /* #### Retina screen (iphone4, samsung note, etc.) Portrait or Landscape #### */
 @media
-only screen and (-webkit-min-device-pixel-ratio: 2),
-only screen and (   min--moz-device-pixel-ratio: 2),
-only screen and (     -o-min-device-pixel-ratio: 2/1),
 only screen and (        min-device-pixel-ratio: 2),
-only screen and (                min-resolution: 192dpi),
-only screen and (                min-resolution: 2dppx),
-only screen and (                   max-height : 640px) ,
-only screen and (                   max-device-height : 640px) {
-
+only screen and (                resolution >= 192dpi),
+only screen and (                resolution >= 2dppx),
+only screen and (                   height <= 640px) ,
+only screen and (                   device-height <= 640px) {
   /* Retina-specific stuff here */
   body{
     padding-top : 60px;
   }
+
   #header {
     height : 30px;
   }
+
+    .jacl2-list.jacl2-list-sticky-heads thead,
+    .jacl2-list-user.jacl2-list-sticky-heads thead
+    {
+        top: 35px;
+    }
+
   #logo {
     height : 30px;
-    margin: 0px 5px;
+    margin: 0 5px;
     min-width:30px;
   }
+
   #logo h1 {
     font-size : 1.5em;
     margin-left: 10px;
-    margin: 5px 5px;
+    margin: 5px;
     line-height: 20px;
   }
+
   #title{
     height : 30px;
-    margin : 0px 5px;
+    margin : 0 5px;
     padding-right:5px;
   }
+
   #title h1 {
-    margin : 0px 5px;
+    margin : 0 5px;
     font-size : 1.5em;
     line-height: 30px;
   }
+
   #headermenu{
     height:30px;
     position: fixed;
-    top: 0px;
+    top: 0;
     padding-right: 20px;
   }
+
   #headermenu.mobile #auth form#nominatim-search {
     position:absolute;
     right:50px;
     top:30px;
   }
+
   #headermenu.mobile #auth ul.nav {
     position: absolute;
     left:auto;
-    right: 0px;
+    right: 0;
   }
+
   #headermenu.mobile .btn-locate-clear.icon {
   background-color: transparent;
-  background-position: -850px 0px;
+  background-position: -850px 0;
   margin-top: 3px;
   }
 
   .navbar-inner {
     min-height:30px;
-    padding: 0px 10px;
+    padding: 0 10px;
   }
 
   #search{
     top: 30px;
   }
 
-  /*  for ie*/
+  /*  for ie */
   .navbar-inner ul li{
     display:inline\9;
   }
@@ -159,22 +188,23 @@ only screen and (                   max-device-height : 640px) {
 }
 
 /* #### Tablets Portrait or Landscape #### */
-@media screen and (min-device-width: 768px) and (max-device-width: 1024px){
+@media screen and (device-width >= 768px) and (device-width <= 1024px){
   /* some CSS here */
 }
 
 /* #### Desktops #### */
-@media screen and (min-width: 1024px){
+@media screen and (width >= 1024px){
   /* some CSS here */
 }
 
-@media screen and (max-width: 900px), screen and (max-height: 400px){
+@media screen and (width <= 900px), screen and (height <= 400px){
   #navbar .slider{
     display: none;
   }
 }
+
 /* smartphones, touchscreens */
-@media (hover: none) and (pointer: coarse) {
+@media (pointer: coarse) {
   #navbar button.btn{
     height : 40px;
     width : 40px;
@@ -184,15 +214,19 @@ only screen and (                   max-device-height : 640px) {
   #navbar .btn.pan {
   background-position : 5px -25px;
   }
+
   #navbar .btn.zoom {
     background-position : -25px -25px;
   }
+
   #navbar .btn.zoom-extent {
     background-position : -25px -55px;
   }
+
   #navbar .btn.zoom-out {
     background-position : -25px 5px;
   }
+
   #navbar .btn.zoom-in {
     background-position : 5px 5px;
   }
@@ -245,7 +279,7 @@ only screen and (                   max-device-height : 640px) {
   }
 
   #mapmenu > div > ul li{
-    background: #444444;
+    background: #444;
     border-radius: 6px;
     margin-top: 10px;
     padding-left: 15px;
@@ -287,8 +321,7 @@ only screen and (                   max-device-height : 640px) {
 
   #docks-wrapper{
     left: -1px;
-    width: 80%;
-    padding-top: 45px;
+    width: 100%;
     box-sizing: border-box;
   }
 
@@ -306,7 +339,7 @@ only screen and (                   max-device-height : 640px) {
     top: 4px;
     left: 4px;
     z-index: 9000;
-    -webkit-user-select: none;
+    user-select: none;
     user-select: none;
     padding: 7px;
     border-radius: 8px;
@@ -323,7 +356,7 @@ only screen and (                   max-device-height : 640px) {
     background: white;
     border-radius: 3px;
     z-index: 1;
-    transform-origin: 4px 0px;
+    transform-origin: 4px 0;
     transition: transform 0.3s cubic-bezier(0.77,0.2,0.05,1.0);
   }
 
@@ -346,7 +379,7 @@ only screen and (                   max-device-height : 640px) {
   /* Transform all the slices of hamburger into a crossmark. */
   #menuToggle.opened span{
     opacity: 1;
-    transform: rotate(45deg) translate(0px, -5px);
+    transform: rotate(45deg) translate(0, -5px);
   }
 
   /* Hide the middle one */
@@ -366,54 +399,67 @@ only screen and (                   max-device-height : 640px) {
 
   /* Overload dock icons. TODO : change sprite with SVG */
   #mapmenu .nav-list > li.home.active .icon {
-  background-position: -25px 0px;
+  background-position: -25px 0;
   }
+
   #mapmenu .nav-list > li.projects.active .icon {
-    background-position: -925px 0px;
+    background-position: -925px 0;
   }
+
   #mapmenu .nav-list > li.metadata.active .icon {
-    background-position: -125px 0px;
+    background-position: -125px 0;
   }
+
   #mapmenu .nav-list > li.switcher.active .icon {
-    background-position: -75px 0px;
+    background-position: -75px 0;
   }
+
   #mapmenu .nav-list > li.legend.active .icon {
-    background-position: -75px 0px;
+    background-position: -75px 0;
   }
+
   #mapmenu .nav-list > li.locate.active .icon {
-    background-position: -175px 0px;
+    background-position: -175px 0;
   }
+
   #mapmenu .nav-list > li.print.active .icon {
-    background-position: -375px 0px;
+    background-position: -375px 0;
   }
+
   #mapmenu .nav-list > li.measure.active .icon {
-    background-position: -275px 0px;
+    background-position: -275px 0;
   }
+
   #mapmenu .nav-list > li.edition.active .icon {
-    background-position: -475px 0px;
+    background-position: -475px 0;
   }
+
   #mapmenu .nav-list > li.geolocation.active .icon {
-    background-position: -325px 0px;
+    background-position: -325px 0;
   }
+
   #mapmenu .nav-list > li.attributeLayers.active .icon {
-    background-position: -525px 0px;
+    background-position: -525px 0;
   }
+
   #mapmenu .nav-list > li.permaLink.active .icon {
-    background-position: -675px 0px;
+    background-position: -675px 0;
   }
+
   #mapmenu .nav-list > li.tooltip-layer.active .icon {
-    background-position: -775px 0px;
+    background-position: -775px 0;
   }
+
   #mapmenu .nav-list > li.timemanager.active .icon {
-    background-position: -625px 0px;
+    background-position: -625px 0;
   }
 
   .nav .active > a .icon-white, .nav li > a:hover .icon-white, .nav li > a:focus .icon-white {
-    background-image: url(images/glyphicons-halflings-white.png);
+    background-image: url("images/glyphicons-halflings-white.png");
   }
 
-  #right-dock{
-    margin: 0;
+  #dock{
+    margin-top: 45px;
   }
 
   .digitizing .btn {
@@ -422,12 +468,21 @@ only screen and (                   max-device-height : 640px) {
     box-sizing: border-box;
     padding: 12px;
   }
+
+  lizmap-treeview .icon-info-sign {
+    display: block;
+  }
+
+  .tooltip-layer {
+    display: none;
+  }
 }
 
-@media (hover: none) and (pointer: coarse) and (orientation: portrait){
+@media (pointer: coarse) and (orientation: portrait){
   #docks-wrapper{
     flex-direction: column;
   }
+
   #sub-dock{
     width: 100%;
   }

@@ -1,12 +1,18 @@
 <?php
 
 use Lizmap\Project\Repository;
-use PHPUnit\Framework\TestCase;
+use Lizmap\Request\OGCResponse;
 use Lizmap\Request\WMSRequest;
+use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class WMSRequestTest extends TestCase
 {
-    public function testParameters()
+    public function testParameters(): void
     {
         $params = array(
             'request' => 'falseRequest',
@@ -38,27 +44,32 @@ class WMSRequestTest extends TestCase
         $this->assertEquals($expectedParams, $wms->parameters());
     }
 
-    public function getParametersWithFilterData()
+    public static function getParametersWithFilterData()
     {
         $loginFilters = array(
             'layer1' => array(
                 'filter' => 'test',
             ),
             'layer2' => array(
-                'filter' => 'other test'
-            )
+                'filter' => 'other test',
+            ),
         );
+
         return array(
             array(array(), null, null),
             array(array('layer' => array('filter' => '')), 'layer:filter', 'layer:filter'),
-            array($loginFilters, 'layer1:filter;layer:dontExists', 'layer1:filter;layer:dontExists')
+            array($loginFilters, 'layer1:filter;layer:dontExists', 'layer1:filter;layer:dontExists'),
         );
     }
 
     /**
      * @dataProvider getParametersWithFilterData
+     *
+     * @param mixed $loginFilter
+     * @param mixed $filter
+     * @param mixed $expectedFilter
      */
-    public function testParametersWithFilters($loginFilter, $filter, $expectedFilter)
+    public function testParametersWithFilters($loginFilter, $filter, $expectedFilter): void
     {
         $testContext = new ContextForTests();
         $testContext->setResult(array('lizmap.tools.loginFilteredLayers.override' => false));
@@ -82,30 +93,36 @@ class WMSRequestTest extends TestCase
         }
     }
 
-    public function getGetContextData()
+    public static function getGetContextData()
     {
-        $responseNoUrl = (object)array(
+        $responseNoUrl = new OGCResponse(
+            200,
+            'text/xml',
+            '<whatever><nourl/></whatever>'
+        );
+
+        $expectedResponseNoUrl = (object) array(
             'code' => 200,
             'mime' => 'text/xml',
             'data' => '<whatever><nourl/></whatever>',
         );
 
-        $responseSimpleUrl = (object)array(
-            'code' => 200,
-            'mime' => 'text/xml',
-            'data' => '<whatever><location xlink:href="test.google.com"/></whatever>',
+        $responseSimpleUrl = new OGCResponse(
+            200,
+            'text/xml',
+            '<whatever><location xlink:href="test.google.com"/></whatever>',
         );
 
-        $expectedResponseSimpleUrl = (object)array(
+        $expectedResponseSimpleUrl = (object) array(
             'code' => 200,
             'mime' => 'text/xml',
             'data' => '<whatever><location xlink:href="http://localhost?repo=test&amp;project=test&amp;&amp;"/></whatever>',
         );
 
-        $responseMultiplesUrl = (object)array(
-            'code' => 200,
-            'mime' => 'text/xml',
-            'data' => '<xml>
+        $responseMultiplesUrl = new OGCResponse(
+            200,
+            'text/xml',
+            '<xml>
             <tagtest xlink:href="http://localhost?test=test&otherTest=test"/>
             <otherTagTest>
             <just to=see if=itsworking xlink:href=""/>
@@ -113,7 +130,7 @@ class WMSRequestTest extends TestCase
             </xml>',
         );
 
-        $expectedResponseMultiplesUrl = (object)array(
+        $expectedResponseMultiplesUrl = (object) array(
             'code' => 200,
             'mime' => 'text/xml',
             'data' => '<xml>
@@ -125,7 +142,7 @@ class WMSRequestTest extends TestCase
         );
 
         return array(
-            array($responseNoUrl, 'http://localhost?repo=test&project=test', $responseNoUrl),
+            array($responseNoUrl, 'http://localhost?repo=test&project=test', $expectedResponseNoUrl),
             array($responseSimpleUrl, 'http://localhost?repo=test&project=test', $expectedResponseSimpleUrl),
             array($responseSimpleUrl, 'http://localhost?repo=test&project=test', $expectedResponseSimpleUrl),
         );
@@ -133,8 +150,12 @@ class WMSRequestTest extends TestCase
 
     /**
      * @dataProvider getGetContextData
+     *
+     * @param mixed $response
+     * @param mixed $url
+     * @param mixed $expectedResponse
      */
-    public function testGetContext($response, $url, $expectedResponse)
+    public function testGetContext($response, $url, $expectedResponse): void
     {
         $testContext = new ContextForTests();
         $testContext->setResult(array('fullUrl' => $url));
@@ -143,17 +164,18 @@ class WMSRequestTest extends TestCase
         $proj->setKey('proj');
         $proj->setRepo(new Repository('key', array(), '', null, $testContext));
         $wmsMock = $this->getMockBuilder(WMSRequestForTests::class)
-                        ->setMethods(['request'])
-                        ->setConstructorArgs([$proj, array(), null])
-                        ->getMock();
+            ->onlyMethods(array('request'))
+            ->setConstructorArgs(array($proj, array(), null))
+            ->getMock()
+        ;
         $wmsMock->method('request')->willReturn($response);
         $newResponse = $wmsMock->getContextForTests();
-        foreach($expectedResponse as $prop => $value) {
-            $this->assertEquals($value, $newResponse->$prop);
+        foreach ($expectedResponse as $prop => $value) {
+            $this->assertEquals($value, $newResponse->{$prop});
         }
     }
 
-    public function getCheckMaximumWidthHeightData()
+    public static function getCheckMaximumWidthHeightData()
     {
         return array(
             array(50, 25, 50, 25, false, false),
@@ -167,19 +189,26 @@ class WMSRequestTest extends TestCase
 
     /**
      * @dataProvider getCheckMaximumWidthHeightData
+     *
+     * @param mixed $width
+     * @param mixed $maxWidth
+     * @param mixed $height
+     * @param mixed $maxHeight
+     * @param mixed $useServices
+     * @param mixed $expectedBool
      */
-    public function testCheckMaximumWidthHeight($width, $maxWidth, $height, $maxHeight, $useServices, $expectedBool)
+    public function testCheckMaximumWidthHeight($width, $maxWidth, $height, $maxHeight, $useServices, $expectedBool): void
     {
         $params = array(
             'width' => $width,
-            'height' => $height
+            'height' => $height,
         );
         $proj = new ProjectForOGCForTests();
         $proj->setWMSMaxWidthHeight(
             $useServices ? '' : $maxWidth,
             $useServices ? '' : $maxHeight
         );
-        $services = (object)array(
+        $services = (object) array(
             'wmsMaxWidth' => $useServices ? $maxWidth : '',
             'wmsMaxHeight' => $useServices ? $maxHeight : '',
         );
@@ -187,7 +216,7 @@ class WMSRequestTest extends TestCase
         $this->assertEquals($expectedBool, $wms->checkMaximumWidthHeightForTests());
     }
 
-    public function getUseCacheData()
+    public static function getUseCacheData()
     {
         return array(
             array(array(), null, false, false, 'web'),
@@ -202,15 +231,132 @@ class WMSRequestTest extends TestCase
 
     /**
      * @dataProvider getUseCacheData
+     *
+     * @param mixed $params
+     * @param mixed $cacheDriver
+     * @param mixed $cached
+     * @param mixed $expectedUseCache
+     * @param mixed $expectedWmsClient
      */
-    public function testUseCache($params, $cacheDriver, $cached, $expectedUseCache, $expectedWmsClient)
+    public function testUseCache($params, $cacheDriver, $cached, $expectedUseCache, $expectedWmsClient): void
     {
         $testContext = new ContextForTests();
         $testContext->setResult(array('cacheDriver' => $cacheDriver));
         $wms = new WMSRequestForTests(new ProjectForOGCForTests($testContext), array(), null);
-        $configLayer = (object)array('cached' => $cached);
+        $configLayer = (object) array('cached' => $cached);
         list($useCache, $wmsClient) = $wms->useCacheForTests($configLayer, $params, '');
         $this->assertEquals($expectedUseCache, $useCache);
         $this->assertEquals($expectedWmsClient, $wmsClient);
+    }
+
+    public function testRegexpMediaUrls(): void
+    {
+        $testContext = new ContextForTests();
+        $wms = new WMSRequestForTests(new ProjectForOGCForTests($testContext), array(), null);
+
+        // src attribute for media directory
+        preg_match(
+            $wms->getRegexpMediaUrlsForTests(),
+            'src="media/foo.bar"',
+            $matches,
+        );
+        $this->assertCount(2, $matches);
+        $this->assertEquals(
+            'media/foo.bar',
+            $matches[1],
+        );
+        // href attribute for media directory
+        preg_match(
+            $wms->getRegexpMediaUrlsForTests(),
+            'href="media/foo.bar"',
+            $matches,
+        );
+        $this->assertCount(2, $matches);
+        $this->assertEquals(
+            'media/foo.bar',
+            $matches[1],
+        );
+
+        // src attribute for parent media directory
+        preg_match(
+            $wms->getRegexpMediaUrlsForTests(),
+            'src="../media/foo.bar"',
+            $matches,
+        );
+        $this->assertCount(3, $matches);
+        $this->assertEquals(
+            '../media/foo.bar',
+            $matches[1],
+        );
+
+        // href attribute for parent media directory
+        preg_match(
+            $wms->getRegexpMediaUrlsForTests(),
+            'href="../media/foo.bar"',
+            $matches,
+        );
+        $this->assertCount(3, $matches);
+        $this->assertEquals(
+            '../media/foo.bar',
+            $matches[1],
+        );
+
+        // multiple attributes like in a maptip
+        $maptipValue = preg_replace_callback(
+            $wms->getRegexpMediaUrlsForTests(),
+            array($wms, 'replaceMediaPathByMediaUrlForTests'),
+            '<a href="media/foo.bar"><img src="media/foo.bar"></a>',
+        );
+        $this->assertEquals(
+            '<a href="getMedia?path=media/foo.bar"><img src="getMedia?path=media/foo.bar"></a>',
+            $maptipValue,
+        );
+
+        // Accepted extensions with 2 characters
+        preg_match(
+            $wms->getRegexpMediaUrlsForTests(),
+            'src="media/foobar.7z"',
+            $matches,
+        );
+        $this->assertCount(2, $matches);
+        $this->assertEquals(
+            'media/foobar.7z',
+            $matches[1],
+        );
+
+        // does not match directory
+        preg_match(
+            $wms->getRegexpMediaUrlsForTests(),
+            'src="media/"',
+            $matches,
+        );
+        $this->assertCount(0, $matches);
+        preg_match(
+            $wms->getRegexpMediaUrlsForTests(),
+            'src="media/foo/bar/"',
+            $matches,
+        );
+        $this->assertCount(0, $matches);
+        // does not match no extension
+        preg_match(
+            $wms->getRegexpMediaUrlsForTests(),
+            'src="media/foo/bar"',
+            $matches,
+        );
+        $this->assertCount(0, $matches);
+        // does not match only extension
+        preg_match(
+            $wms->getRegexpMediaUrlsForTests(),
+            'src="media/.bar"',
+            $matches,
+        );
+        $this->assertCount(0, $matches);
+        // does not match extension with 1 character
+        preg_match(
+            $wms->getRegexpMediaUrlsForTests(),
+            'src="media/foobar.z"',
+            $matches,
+        );
+        $this->assertCount(0, $matches);
     }
 }

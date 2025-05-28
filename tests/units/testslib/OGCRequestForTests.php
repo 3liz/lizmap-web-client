@@ -2,6 +2,4 @@
 
 use Lizmap\Request\OGCRequest;
 
-class OGCRequestForTests extends OGCRequest
-{
-}
+class OGCRequestForTests extends OGCRequest {}

@@ -1,5 +1,7 @@
 <?php
 
+use Jelix\IniFile\IniModifier;
+
 class lizmapModuleUpgrader_configjcommunity extends jInstallerModule
 {
     public $targetVersions = array(
@@ -10,7 +12,7 @@ class lizmapModuleUpgrader_configjcommunity extends jInstallerModule
     public function install()
     {
         if ($this->firstExec('configchange')) {
-            $lzmIni = new jIniFileModifier(jApp::configPath('lizmapConfig.ini.php'));
+            $lzmIni = new IniModifier(jApp::varConfigPath('lizmapConfig.ini.php'));
 
             $liveIni = $this->entryPoint->liveConfigIni;
 
@@ -20,7 +22,7 @@ class lizmapModuleUpgrader_configjcommunity extends jInstallerModule
             } else {
                 $lzmIni->removeValue('allowUserAccountRequests', 'services');
             }
-            $liveIni->setValue('registrationEnabled', ($val ? 'on' : 'off'), 'jcommunity');
+            $liveIni->setValue('registrationEnabled', $val ? 'on' : 'off', 'jcommunity');
 
             $adminSenderEmail = $this->entryPoint->config->mailer['webmasterEmail'];
             if ($adminSenderEmail == 'root@localhost' || $adminSenderEmail == 'root@localhost.localdomain') {

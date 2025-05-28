@@ -2,7 +2,9 @@
 name: "☝️ Feature request"
 about: Suggest an idea for a new feature or an improvement. 3Liz's paid software development => https://www.3liz.com/services.html#software-dev
 title: ''
-labels: enhancement
+labels:
+  - 'enhancement'
+  - 'Sponsor or PR needed'
 assignees: ''
 
 ---

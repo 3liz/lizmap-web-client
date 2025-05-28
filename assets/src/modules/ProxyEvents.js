@@ -1,30 +1,37 @@
+/**
+ * @module modules/ProxyEvents.js
+ * @name ProxyEvents
+ * @copyright 2023 3Liz
+ * @license MPL-2.0
+ */
+
 import { mainEventDispatcher } from '../modules/Globals.js';
 
 /**
  * Proxy old Lizmap events to new ones
- *
- * @export
  * @class ProxyEvents
  */
 export default class ProxyEvents {
     constructor() {
         lizMap.events.on({
-            layerSelectionChanged: (e) => {
+            layerSelectionChanged: e => {
                 mainEventDispatcher.dispatch({
                     type: 'selection.changed',
-                    properties : e
+                    properties : {
+                        'featureType': e.featureType,
+                        'featureIds': e.featureIds,
+                        'updateDrawing': e.updateDrawing
+                    }
                 });
             },
-            layerSelectionChanged: (e) => {
-                mainEventDispatcher.dispatch({
-                    type:'selection.changed',
-                    properties: e
-                });
-            },
-            layerFilteredFeaturesChanged: (e) => {
+            layerFilteredFeaturesChanged: e => {
                 mainEventDispatcher.dispatch({
                     type: 'filteredFeatures.changed',
-                    properties: e
+                    properties: {
+                        'featureType': e.featureType,
+                        'featureIds': e.featureIds,
+                        'updateDrawing': e.updateDrawing
+                    }
                 });
             }
         });

@@ -3,19 +3,21 @@ description: Report errors and problems. The more precise is your bug report, th
 title: "[Bug]: "
 labels: [bug]
 body:
+
   - type: markdown
     attributes:
       value: |
         Thanks for taking the time to fill out this bug report!
         Tip: small projects and screenshots/gifs help a lot debugging ;)
-        QGIS project must be valid. Project => Properties => QGIS Server => Test Configuration => Launch
+
   - type: textarea
     id: what
     attributes:
-      label: What is the bug?
+      label: What is the bug? (in English)
       placeholder: When clicking on button...
     validations:
       required: true
+
   - type: textarea
     id: steps
     attributes:
@@ -27,19 +29,26 @@ body:
         4. See error
     validations:
       required: true
+
   - type: textarea
-    id: lizmap-version
+    id: versions
     attributes:
-      label: Versions
+      label: Versions, safeguards, check summary etc
       description: |
-        In QGIS Desktop, then Lizmap plugin, right click on your server, then "Copy versions in the clipboard". Finally paste here. There isn't any personal data provided.
+        You must go in QGIS Desktop, then Lizmap plugin, right click on your server, then "Copy versions in the clipboard for a support request". Finally paste here. There isn't any personal data provided.
+        Check any messages displayed by the plugin if any. Read https://docs.lizmap.com/current/en/publish/lizmap_plugin/information.html#request-for-support
+        Do not make a screenshot, it's not a searchable by a search engine for instance.
     validations:
       required: true
-  - type: input
-    id: qgis-server-version
+
+  - type: checkboxes
+    id: lizmap-plugin
     attributes:
-      label: QGIS server version, only if the section above doesn't mention the QGIS Server version
-      placeholder: 3.16.8
+      label: Check Lizmap plugin
+      options:
+        - label: I have done the step just before in the Lizmap QGIS desktop plugin before opening this ticket. Otherwise, my ticket is not considered valid and might get closed.
+#          required: true
+
   - type: input
     id: os
     attributes:
@@ -47,6 +56,7 @@ body:
       placeholder: Ubuntu 20.04, Windows 10, ...
     validations:
       required: true
+
   - type: dropdown
     id: browsers
     attributes:
@@ -59,6 +69,7 @@ body:
         - Microsoft Edge
     validations:
       required: true
+
   - type: input
     id: browsers-version
     attributes:
@@ -66,6 +77,7 @@ body:
       placeholder: Firefox 89, Chrome 90, ...
     validations:
       required: true
+
   - type: textarea
     id: logs
     attributes:

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Manage and give access to lizmap configuration.
  *
@@ -89,7 +90,7 @@ class filterDatasource
         $block_items = array();
 
         if (preg_match('#'.implode('|', $this->blockSqlWords).'#i', $filter, $block_items)) {
-            jLog::log('The EXP_FILTER param contains dangerous chars : '.implode(', ', $block_items));
+            jLog::log('The EXP_FILTER param contains dangerous chars : '.implode(', ', $block_items), 'lizmapadmin');
 
             return null;
         }
@@ -99,17 +100,21 @@ class filterDatasource
         return str_replace('$geometry', '"'.$this->datasource->geocol.'"', $filter);
     }
 
+    /**
+     * return data as jDbResultSet or errors as array.
+     *
+     * @param mixed $sql
+     *
+     * @return array|jDbResultSet
+     */
     protected function getData($sql)
     {
         $data = array();
 
         try {
             $q = $this->cnx->query($sql);
-            foreach ($q as $d) {
-                $data[] = $d;
-            }
         } catch (Exception $e) {
-            jLog::log($e->getMessage(), 'error');
+            jLog::log($e->getMessage(), 'lizmapadmin');
 
             $this->errors = array(
                 'status' => 'error',
@@ -120,7 +125,7 @@ class filterDatasource
             return $this->errors;
         }
 
-        return $data;
+        return $q;
     }
 
     public function getFeatureCount($filter = null)

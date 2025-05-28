@@ -17,7 +17,10 @@ if [ "$CMD" == "reset" ]; then
     make reset
     exit 0
 elif [ "$CMD" == "build" ]; then
+    # install or update base images, to be sure we have the latest images
+    docker compose pull
+    # install or update plugins, to be sure we have the latest plugins
     make build-plugins
 fi
 
-docker-compose $CMD "$@"  
+docker compose $CMD "$@"

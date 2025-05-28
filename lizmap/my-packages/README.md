@@ -9,7 +9,3 @@ Keep the package `jelix/composer-module-setup` into the list.
 Then run `composer install`. If some packages are modules, probably you'll
 have to declare them into `var/config/localconfig.ini.php`. Read their respective
 documentation.
-
-
-
-

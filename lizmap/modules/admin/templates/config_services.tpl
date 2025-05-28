@@ -1,12 +1,13 @@
-{meta_html js $j_basepath.'assets/js/services_configuration.js'}
+{meta_html js $j_basepath.'assets/js/services_configuration.js', ['defer' => '']}
 
 {jmessage_bootstrap}
+
 <h1>{@admin~admin.form.admin_services.h1@}</h1>
 {form $form, 'admin~config:saveServices', array(), 'htmlbootstrap'}
     <div>
         <h2>{@admin~admin.configuration.services.section.interface.label@}</h2>
         <table class="table services-table">
-            {formcontrols array('appName', 'onlyMaps', 'projectSwitcher', 'googleAnalyticsID')}
+            {formcontrols array('appName', 'onlyMaps', 'projectSwitcher', 'googleTag')}
                 <tr>
                     <th>{ctrl_label}</th><td>{ctrl_control}</td>
                 </tr>
@@ -16,8 +17,18 @@
 
     <div>
         <h2>{@admin~admin.configuration.services.section.emails.label@}</h2>
+        {if $showSystem}
+            <p>{@admin~admin.form.admin_services.emails.help@}</p>
+            {if !$smtpEnabled}
+                <p>{@admin~admin.form.admin_services.emails.server.help@}</p>
+            {/if}
+        {else}
+            {if !$hasSenderEmail}
+                <p>{@admin~admin.form.admin_services.emails.no.server@}</p>
+            {/if}
+        {/if}
         <table class="table services-table">
-            {formcontrols array('allowUserAccountRequests', 'adminContactEmail', 'adminSenderEmail', 'adminSenderName')}
+            {formcontrols array( 'adminSenderEmail', 'adminSenderName', 'allowUserAccountRequests', 'adminContactEmail')}
                 <tr>
                     <th>{ctrl_label}</th><td>{ctrl_control}</td>
                 </tr>
@@ -63,7 +74,7 @@
     <div>
         <h2>{@admin~admin.configuration.services.section.qgis.label@}</h2>
         <table class="table services-table">
-            {formcontrols array('qgisServerVersion', 'wmsServerURL', 'wmsPublicUrlList', 'relativeWMSPath', 'wmsMaxWidth', 'wmsMaxHeight', 'lizmapPluginAPIURL')}
+            {formcontrols array('wmsServerURL', 'wmsPublicUrlList', 'relativeWMSPath', 'wmsMaxWidth', 'wmsMaxHeight', 'lizmapPluginAPIURL')}
                 <tr>
                     <th>{ctrl_label}</th><td>{ctrl_control}</td>
                 </tr>

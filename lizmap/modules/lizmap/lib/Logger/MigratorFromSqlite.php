@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author    3liz
  * @copyright 2019 3liz
@@ -12,12 +13,10 @@ namespace Lizmap\Logger;
 
 class MigratorFromSqlite
 {
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
-    const MIGRATE_RES_OK = 1;
-    const MIGRATE_RES_ALREADY_MIGRATED = 2;
+    public const MIGRATE_RES_OK = 1;
+    public const MIGRATE_RES_ALREADY_MIGRATED = 2;
 
     protected function copyTable($daoSelector, $oldProfile, $newProfile, $updateSequence = true)
     {
@@ -49,14 +48,14 @@ class MigratorFromSqlite
                 $sequence = $rec->sequence_name;
                 if ($sequence) {
                     $conn->query('SELECT setval('.$conn->quote($sequence).',
-                    (SELECT max('.$conn->encloseName($idField).') 
+                    (SELECT max('.$conn->encloseName($idField).')
                     FROM '.$conn->encloseName($table).'))');
                 }
             }
         }
     }
 
-    public function migrateLog($profileName = 'lizlog')
+    public function migrateLog($profileName = 'lizlog', $resetBefore = false)
     {
         $profile = \jProfiles::get('jdb', $profileName);
         if (!$profile) {
@@ -84,7 +83,13 @@ class MigratorFromSqlite
         $daoCounterNew = \jDao::create('lizmap~logCounter', $profileName);
         $daoDetailsNew = \jDao::get('lizmap~logDetail', $profileName);
 
-        if ($daoCounterNew->countAll() > 0 || $daoDetailsNew->countAll() > 0) {
+        if ($resetBefore) {
+            $db = \jDb::getConnection($profileName);
+            $table = $daoCounterNew->getTables()[$daoCounterNew->getPrimaryTable()]['realname'];
+            $db->exec('DELETE FROM '.$db->prefixTable($table));
+            $table = $daoDetailsNew->getTables()[$daoDetailsNew->getPrimaryTable()]['realname'];
+            $db->exec('DELETE FROM '.$db->prefixTable($table));
+        } elseif ($daoCounterNew->countAll() > 0 || $daoDetailsNew->countAll() > 0) {
             return self::MIGRATE_RES_ALREADY_MIGRATED;
         }
 

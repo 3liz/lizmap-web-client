@@ -2,7 +2,6 @@
 
 use Lizmap\Request\WMSRequest;
 
-
 class WMSRequestForTests extends WMSRequest
 {
     public function getContextForTests()
@@ -18,5 +17,15 @@ class WMSRequestForTests extends WMSRequest
     public function useCacheForTests($configLayer, $params, $profile)
     {
         return $this->useCache($configLayer, $params, $profile);
+    }
+
+    public function getRegexpMediaUrlsForTests()
+    {
+        return self::$regexp_media_urls;
+    }
+
+    public function replaceMediaPathByMediaUrlForTests($matches)
+    {
+        return '"getMedia?path='.$matches[1].'"';
     }
 }

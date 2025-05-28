@@ -1,4 +1,7 @@
 <?php
+
+use Jelix\IniFile\IniModifier;
+
 /**
  * @author    3liz
  * @copyright 2011 3liz
@@ -11,9 +14,9 @@ class lizmapModuleInstaller extends jInstallerModule
 {
     public function install()
     {
-        $lizmapConfFile = jApp::configPath('lizmapConfig.ini.php');
+        $lizmapConfFile = jApp::varConfigPath('lizmapConfig.ini.php');
         if (!file_exists($lizmapConfFile)) {
-            $lizmapConfFileDist = jApp::configPath('lizmapConfig.ini.php.dist');
+            $lizmapConfFileDist = jApp::varConfigPath('lizmapConfig.ini.php.dist');
             if (file_exists($lizmapConfFileDist)) {
                 copy($lizmapConfFileDist, $lizmapConfFile);
             } else {
@@ -21,16 +24,16 @@ class lizmapModuleInstaller extends jInstallerModule
             }
         }
 
-        $localConfig = jApp::configPath('localconfig.ini.php');
+        $localConfig = jApp::varConfigPath('localconfig.ini.php');
         if (!file_exists($localConfig)) {
-            $localConfigDist = jApp::configPath('localconfig.ini.php.dist');
+            $localConfigDist = jApp::varConfigPath('localconfig.ini.php.dist');
             if (file_exists($localConfigDist)) {
                 copy($localConfigDist, $localConfig);
             } else {
-                file_put_contents($localConfig, ';<'.'?php die(\'\');?'.'>');
+                file_put_contents($localConfig, ';<?php die(\'\');?>');
             }
         }
-        $ini = new jIniFileModifier($localConfig);
+        $ini = new IniModifier($localConfig);
         $ini->setValue('lizmap', 'lizmapConfig.ini.php', 'coordplugins');
         $ini->save();
 

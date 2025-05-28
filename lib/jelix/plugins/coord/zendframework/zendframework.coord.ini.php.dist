@@ -1,5 +1,0 @@
-;<?php die('');?>
-; for security reasons, don't remove or modify the first line
-
-; edit the realpath to the library directory of the zend framework
-zendLibPath = "/path/to/zend/framework/"

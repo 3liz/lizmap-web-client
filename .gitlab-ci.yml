@@ -7,6 +7,9 @@ stages:
 - release
 - post-release
 
+variables:
+  PHP_VERSION: "8.2"
+
 cache:
   key: "$CI_COMMIT_REF_SLUG"
   paths:
@@ -14,6 +17,7 @@ cache:
     - assets/node_modules/
 
 build:
+  image: ${REGISTRY_URL}/factory-ci-runner:fabric-ci-php${PHP_VERSION}
   stage: build
   script:
     - make build
@@ -24,10 +28,47 @@ build:
     paths:
       - lizmap/www/assets/js/lizmap.js
       - lizmap/www/assets/js/lizmap.js.map
+      - lizmap/www/assets/js/atlas.js
+      - lizmap/www/assets/js/atlas.js.map
+      - lizmap/www/assets/js/attributeTable.js
+      - lizmap/www/assets/js/attributeTable.js.map
+      - lizmap/www/assets/js/bottom-dock.js
+      - lizmap/www/assets/js/bottom-dock.js.map
+      - lizmap/www/assets/js/edition.js
+      - lizmap/www/assets/js/edition.js.map
+      - lizmap/www/assets/js/filter.js
+      - lizmap/www/assets/js/filter.js.map
+      - lizmap/www/assets/js/map.js
+      - lizmap/www/assets/js/map.js.map
+      - lizmap/www/assets/js/map-projects.js
+      - lizmap/www/assets/js/map-projects.js.map
+      - lizmap/www/assets/js/switcher-layers-actions.js
+      - lizmap/www/assets/js/switcher-layers-actions.js.map
+      - lizmap/www/assets/js/timemanager.js
+      - lizmap/www/assets/js/timemanager.js.map
+      - lizmap/www/assets/js/view.js
+      - lizmap/www/assets/js/view.js.map
+      - lizmap/www/assets/js/137.bundle.js
+      - lizmap/www/assets/js/137.bundle.js.map
+      - lizmap/www/assets/js/492.bundle.js
+      - lizmap/www/assets/js/492.bundle.js.map
+      - lizmap/www/assets/js/498.bundle.js
+      - lizmap/www/assets/js/498.bundle.js.map
+      - lizmap/www/assets/js/BufferOp.bundle.js
+      - lizmap/www/assets/js/BufferOp.bundle.js.map
+      - lizmap/www/assets/js/OLparser.bundle.js
+      - lizmap/www/assets/js/OLparser.bundle.js.map
+      - lizmap/www/assets/js/UnionOp.bundle.js
+      - lizmap/www/assets/js/UnionOp.bundle.js.map
+      - lizmap/www/assets/js/Polygonizer.bundle.js
+      - lizmap/www/assets/js/Polygonizer.bundle.js.map
+      - lizmap/www/assets/js/lineSplit.bundle.js
+      - lizmap/www/assets/js/lineSplit.bundle.js.map
   tags:
     - fabric
 
 tests:
+  image: ${REGISTRY_URL}/factory-ci-runner:fabric-ci-php${PHP_VERSION}
   stage: tests
   script:
     - make tests
@@ -44,9 +85,10 @@ tests:
     - fabric
 
 package:
+  image: ${REGISTRY_URL}/factory-ci-runner:fabric-ci-php${PHP_VERSION}
   stage: package
   script:
-    - make clean ci_package saas_package
+    - make clean ci_package
   environment:
     name: snap
   dependencies:
@@ -83,7 +125,7 @@ docker-image-unstable:
   except:
     - tags
   tags:
-    - infrav3
+    - factory-dind
 
 docker-image-release:
   stage: docker-image
@@ -99,9 +141,10 @@ docker-image-release:
   only:
     - tags
   tags:
-    - infrav3
+    - factory-dind
 
 deploy-package-unstable:
+  image: ${REGISTRY_URL}/factory-ci-runner:fabric-ci-php${PHP_VERSION}
   stage: deploy
   script:
     - make deploy_download
@@ -119,9 +162,10 @@ deploy-package-unstable:
     - fabric
 
 deploy-docker-unstable:
+  image: ${REGISTRY_URL}/factory-ci-runner:factory-ci
   stage: deploy
   script:
-    - $HOME/bin/lzmservicectl update -C MUTU lizmap  --annotate="Updated image ($CI_COMMIT_SHORT_SHA)"
+    - update-service lizmap
   environment:
     name: snap
   dependencies:
@@ -132,9 +176,10 @@ deploy-docker-unstable:
   except:
     - tags
   tags:
-    - infrav3
+    - factory-dind
 
 deploy-quick-release:
+  image: ${REGISTRY_URL}/factory-ci-runner:fabric-ci-php${PHP_VERSION}
   stage: release
   script:
     - make saas_release DO_RELEASE=y
@@ -152,6 +197,7 @@ deploy-quick-release:
 
 
 deploy-release:
+  image: ${REGISTRY_URL}/factory-ci-runner:fabric-ci-php${PHP_VERSION}
   stage: release
   script:
     - make deploy_download_stable
@@ -164,7 +210,6 @@ deploy-release:
     - fabric
   only:
     - tags
-  when: manual
 
 docker-release:
   stage: release
@@ -174,18 +219,17 @@ docker-release:
     name: production
   dependencies:
     - docker-image-release
-  when: manual
   only:
     - tags
   tags:
-    - infrav3
+    - factory-dind
 
 tickets:
   stage: release
   only:
     - tags
   image:
-    name: registry.snap.lizlan:5000/infra/ci-tools:latest
+    name: $REGISTRY_URI/infra/ci-tools:latest
   script:
     - create_ticket.py
   tags:
@@ -201,7 +245,7 @@ github_release:
   only:
     - tags
   image:
-    name: registry.snap.lizlan:5000/infra/ci-tools:latest
+    name: $REGISTRY_URI/infra/ci-tools:latest
   script:
     - lwc_release.py
   tags:

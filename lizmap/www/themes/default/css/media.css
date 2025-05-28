@@ -1,70 +1,79 @@
 /* #### Mobile Phones Portrait #### */
-@media screen and (max-device-width: 480px) and (orientation: portrait){
+@media screen and (device-width <= 480px) and (orientation: portrait){
   /* some CSS here */
 }
 
 /* #### Mobile Phones Landscape #### */
-@media screen and (max-device-width: 640px) and (orientation: landscape){
+@media screen and (device-width <= 640px) and (orientation: landscape){
   /* some CSS here */
 }
 
 /* #### Mobile Phones Portrait or Landscape #### */
-@media screen and (max-device-width: 640px){
+@media screen and (device-width <= 640px){
   /* some CSS here */
 }
 
 /* #### Retina screen (iphone4, samsung note, etc.) Portrait or Landscape #### */
 @media
-only screen and (-webkit-min-device-pixel-ratio: 2),
-only screen and (   min--moz-device-pixel-ratio: 2),
-only screen and (     -o-min-device-pixel-ratio: 2/1),
+only screen and (min-device-pixel-ratio: 2),
+only screen and (   min-device-pixel-ratio: 2),
+only screen and (     min-device-pixel-ratio: 2/1),
 only screen and (        min-device-pixel-ratio: 2),
-only screen and (                min-resolution: 192dpi),
-only screen and (                min-resolution: 2dppx),
-only screen and (                   max-height : 640px) ,
-only screen and (                   max-device-height : 640px) {
-
+only screen and (                resolution >= 192dpi),
+only screen and (                resolution >= 2dppx),
+only screen and (                   height <= 640px) ,
+only screen and (                   device-height <= 640px) {
   /* Retina-specific stuff here */
   body{
     padding-top : 60px;
   }
+
   #header {
     height : 30px;
   }
+
   #logo {
     height : 30px;
-    margin: 0px 5px;
+    margin: 0 5px;
   }
+
   #logo h1 {
     font-size : 1.5em;
     margin: 5px 5px 5px 40px;
     line-height: 20px;
   }
+
   #title{
     height : 30px;
-    margin : 0px 5px;
+    margin : 0 5px;
     padding-right:5px;
   }
+
   #title h1 {
-    margin : 0px 5px;
+    margin : 0 5px;
     font-size : 1.5em;
     line-height: 30px;
   }
+
   #headermenu{
     height:30px;
     position: fixed;
   }
+
   .navbar-inner {
     min-height:30px;
-    padding: 0px 10px;
+    padding: 0 10px;
   }
 
-  /*  for ie*/
-/*  .navbar-inner ul {*/
-/*    height:30px\9;*/
-/*  }*/
+  /*  for ie */
 
-  /*  for ie*/
+/*  .navbar-inner ul { */
+
+/*    height:30px\9; */
+
+/*  } */
+
+  /*  for ie */
   .navbar-inner ul li{
     display:inline\9;
   }
@@ -78,10 +87,12 @@ only screen and (                   max-device-height : 640px) {
     width: 100%;
     height: auto;
   }
+
   #bottom-dock.visible {
     height: 100%;
     opacity: 1;
   }
+
   #bottom-dock.half-transparent {
     height: 100%;
     opacity: 1;
@@ -90,11 +101,11 @@ only screen and (                   max-device-height : 640px) {
 }
 
 /* #### Tablets Portrait or Landscape #### */
-@media screen and (min-device-width: 768px) and (max-device-width: 1024px){
+@media screen and (device-width >= 768px) and (device-width <= 1024px){
   /* some CSS here */
 }
 
 /* #### Desktops #### */
-@media screen and (min-width: 1024px){
+@media screen and (width >= 1024px){
   /* some CSS here */
 }

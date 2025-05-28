@@ -1,4 +1,5 @@
 <?php
+
 /**
  * app context informations inside a Jelix environment.
  *
@@ -12,7 +13,7 @@
 
 namespace Lizmap\App;
 
-use jIniFileModifier;
+use Jelix\IniFile\IniModifier;
 
 class JelixContext implements AppContextInterface
 {
@@ -26,7 +27,7 @@ class JelixContext implements AppContextInterface
 
     public function appConfigPath($file = '')
     {
-        return \jApp::configPath($file);
+        return \jApp::varConfigPath($file);
     }
 
     public function appVarPath($file = '')
@@ -44,13 +45,12 @@ class JelixContext implements AppContextInterface
      *
      * @param string $right    the key of the right to check
      * @param string $resource the id of a resource if any
-     * @param mixed  $role
      *
      * @return bool The result of jAcl2::check()
      */
-    public function aclCheck($role, $resource = null)
+    public function aclCheck($right, $resource = null)
     {
-        return \jAcl2::check($role, $resource);
+        return \jAcl2::check($right, $resource);
     }
 
     /**
@@ -217,8 +217,7 @@ class JelixContext implements AppContextInterface
      * Log an Exception.
      *
      * @param \Exception $exception The exception to log
-     * @param string The category of the logged Exception
-     * @param mixed $cat
+     * @param string     $cat       The category of the logged Exception
      */
     public function logException($exception, $cat = 'default')
     {
@@ -254,13 +253,10 @@ class JelixContext implements AppContextInterface
     /**
      * Return the properties of a profile by calling jProfile::get().
      *
-     * @param string The profile category
-     * @param string the profile name
-     * @param bool If true and if the profile doesn't exist, throw an error
-     * instead of getting the default profile
-     * @param mixed $category
-     * @param mixed $name
-     * @param mixed $noDefault
+     * @param string $category  The profile category
+     * @param string $name      the profile name
+     * @param bool   $noDefault If true and if the profile doesn't exist, throw an error
+     *                          instead of getting the default profile
      *
      * @return array properties
      */
@@ -272,10 +268,8 @@ class JelixContext implements AppContextInterface
     /**
      * Call jEvent::notify().
      *
-     * @param string The name of the event
-     * @param array the parameters of the event
-     * @param mixed $name
-     * @param mixed $params
+     * @param string $name   The name of the event
+     * @param array  $params the parameters of the event
      *
      * @return \jEvent
      */
@@ -328,17 +322,14 @@ class JelixContext implements AppContextInterface
         return \jDao::createRecord($dao, $profile);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function createJelixForm($formSel, $formId = null)
     {
         return \jForms::create($formSel, $formId);
     }
 
-    public function getUrl($selector)
+    public function getUrl($selector, $params = array())
     {
-        return \jUrl::get($selector);
+        return \jUrl::get($selector, $params);
     }
 
     public function getFullUrl($selector, $params = array())
@@ -348,7 +339,7 @@ class JelixContext implements AppContextInterface
 
     public function getIniModifier($ini)
     {
-        return new jIniFileModifier($ini);
+        return new IniModifier($ini);
     }
 
     public function getFormPath()

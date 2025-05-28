@@ -1,9 +1,12 @@
 <?php
+
+use Lizmap\Request\Proxy;
+
 /**
  * Php proxy to access OpenStreetMap services.
  *
  * @author    3liz
- * @copyright 2011-2019 3liz
+ * @copyright 2011-2023 3liz
  *
  * @see      http://3liz.com
  *
@@ -50,30 +53,30 @@ class banCtrl extends jController
         }
 
         $url .= http_build_query($params);
-        list($content, $mime, $code) = \Lizmap\Request\Proxy::getRemoteData($url, array(
+        list($content, $mime, $code) = Proxy::getRemoteData($url, array(
             'method' => 'get',
             'referer' => jUrl::getFull('view~default:index'),
         ));
 
         $var = json_decode($content);
-        if ($var === null) {
+        if ($var === null || !is_object($var) || !isset($var->features)) {
             $rep->content = '[]';
 
             return $rep;
         }
-        $obj = $var->features;
-        //$licence = 'Data © '.$obj->attribution.', '.$obj->licence;
+
+        // $licence = 'Data © '.$obj->attribution.', '.$obj->licence;
         $res = array();
         $res['search_name'] = 'BAN';
         $res['layer_name'] = 'ban';
         $res['srid'] = 'EPSG:4326';
         $res['features'] = array();
-        foreach ($obj as $key) {
+        foreach ($var->features as $feat) {
             /*
-            $lat = $key->geometry->coordinates[1];
-            $lon = $key->geometry->coordinates[0];
+            $lat = $feat->geometry->coordinates[1];
+            $lon = $feat->geometry->coordinates[0];
             $boundingbox = [strval($lat),strval($lat),strval($lon),strval($lon)];
-            $display_name = $key->properties->label.', '.$key->properties->context;
+            $display_name = $feat->properties->label.', '.$feat->properties->context;
             $return["licence"]= $licence;
             $return["display_name"]= $display_name;
             $return["lat"] = strval($lat);
@@ -81,9 +84,9 @@ class banCtrl extends jController
             $return["boundingbox"]= $boundingbox;
             array_push($res,$return);
             */
-            $lat = $key->geometry->coordinates[1];
-            $lon = $key->geometry->coordinates[0];
-            $display_name = $key->properties->label.', '.$key->properties->context;
+            $lat = $feat->geometry->coordinates[1];
+            $lon = $feat->geometry->coordinates[0];
+            $display_name = $feat->properties->label.', '.$feat->properties->context;
 
             $d = array();
             $d['label'] = $display_name;

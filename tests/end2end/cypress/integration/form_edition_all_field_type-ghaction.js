@@ -56,6 +56,8 @@ describe('Form edition all field type', function() {
     })
 
     it('expects error, string in integer field', function(){
+        // force as input type text to allow form validation
+        cy.get('#jforms_view_edition_integer_field').invoke('attr', 'type', 'text');
         // Typing text `foo` in `integer_field` and submit
         cy.get('#jforms_view_edition_integer_field').type('foo')
         cy.get('#jforms_view_edition__submit_submit').click()
@@ -64,6 +66,8 @@ describe('Form edition all field type', function() {
     })
 
     it('expects error, value too big', function(){
+        // force as input type text to allow form validation
+        cy.get('#jforms_view_edition_integer_field').invoke('attr', 'type', 'text');
         // Typing `2147483648` value (too big) in `integer_field` and submit
         cy.get('#jforms_view_edition_integer_field').type('2147483648')
         cy.get('#jforms_view_edition__submit_submit').click()
@@ -72,6 +76,8 @@ describe('Form edition all field type', function() {
     })
 
     it('expects error, negative value too big', function(){
+        // force as input type text to allow form validation
+        cy.get('#jforms_view_edition_integer_field').invoke('attr', 'type', 'text');
         // Typing `-2147483649` value (negative too big) in `integer_field` and submit
         cy.get('#jforms_view_edition_integer_field').type('-2147483649')
         cy.get('#jforms_view_edition__submit_submit').click()
@@ -81,7 +87,7 @@ describe('Form edition all field type', function() {
 
     it('success, negative value', function(){
         // Typing negative value `-1` in `integer_field` and submit
-        cy.get('#jforms_view_edition_integer_field').type('-1')
+        cy.get('#jforms_view_edition_integer_field').type('-5')
         cy.get('#jforms_view_edition__submit_submit').click()
         // A message should confirm form had been saved
         cy.get('#lizmap-edition-message').should('be.visible')
@@ -97,23 +103,10 @@ describe('Form edition all field type', function() {
 
     it('success, positive value', function(){
         // Typing positive value (e.g. '1') in `integer_field` and submit
-        cy.get('#jforms_view_edition_integer_field').type('1')
+        cy.get('#jforms_view_edition_integer_field').type('5')
         cy.get('#jforms_view_edition__submit_submit').click()
         // A message should confirm form had been saved
         cy.get('#lizmap-edition-message').should('be.visible')
-    })
-
-    it('boolean, dropdown menu', function () {
-        // `boolean_nullable` should show a dropdown menu with :
-        // * an empty value
-        cy.get('#jforms_view_edition_boolean_nullable').select('')
-        cy.get('#jforms_view_edition_boolean_nullable').should('have.value', '')
-        // * a true value
-        cy.get('#jforms_view_edition_boolean_nullable').select('True')
-        cy.get('#jforms_view_edition_boolean_nullable').should('have.value', 'true')
-        // * a false value
-        cy.get('#jforms_view_edition_boolean_nullable').select('False')
-        cy.get('#jforms_view_edition_boolean_nullable').should('have.value', 'false')
     })
 
     it('boolean, not null', function () {
@@ -142,6 +135,19 @@ describe('Form edition all field type', function() {
         // * a value 2
         cy.get('#jforms_view_edition_value_map_integer').select('three')
         cy.get('#jforms_view_edition_value_map_integer').should('have.value', '3')
+    })
+
+    it('multiline text field', function () {
+        // The html_text field must be a textarea (multiline is checked)
+        cy.get('textarea#jforms_view_edition_html_text').should('have.length', 1)
+    })
+
+    it('multiline HTML field, must show WYSIWIG tools', function () {
+        // The html_text field must be a textarea (multiline is checked)
+        cy.get('textarea#jforms_view_edition_multiline_text').should('have.length', 1)
+
+        // The WYSIWYG tools must be activated
+
     })
 
 

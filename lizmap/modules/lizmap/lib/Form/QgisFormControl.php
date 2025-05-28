@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Create and set jForms controls based on QGIS form edit type.
  *
@@ -12,16 +13,15 @@
 
 namespace Lizmap\Form;
 
+use Jelix\FileUtilities\Path;
 use Lizmap\App;
-
-require_once JELIX_LIB_UTILS_PATH.'FileUtilities/Path.php';
 
 class QgisFormControl
 {
     public $ref = '';
 
     /**
-     * @var\jFormsControl
+     * @var \jFormsControl|\jFormsControlDatasource
      */
     public $ctrl;
 
@@ -48,7 +48,7 @@ class QgisFormControl
      */
     public $rendererCategories = '';
 
-    // Qgis data type (text, float, integer, etc.)
+    // Qgis data type (text, decimal, integer, etc.)
     public $fieldDataType = '';
 
     // Read-only
@@ -66,7 +66,13 @@ class QgisFormControl
 
     public $DefaultRoot;
 
-    const QGIS_NULL_VALUE = '{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}';
+    public $rootPathExpression;
+
+    public $isWebDAV;
+
+    public $webDavStorageUrl;
+
+    public const QGIS_NULL_VALUE = '{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}';
 
     // Table mapping QGIS and jelix forms
     protected static $qgisEdittypeMap = array(
@@ -138,12 +144,12 @@ class QgisFormControl
     );
 
     // Table to map arbitrary data types to expected ones
-    const castDataType = array(
-        'float' => 'float',
-        'real' => 'float',
-        'double' => 'float',
-        'double decimal' => 'float',
-        'numeric' => 'float',
+    public const castDataType = array(
+        'float' => 'decimal',
+        'real' => 'decimal',
+        'double' => 'decimal',
+        'double decimal' => 'decimal',
+        'numeric' => 'decimal',
         'int' => 'integer',
         'integer' => 'integer',
         'int4' => 'integer',
@@ -175,6 +181,7 @@ class QgisFormControl
         'timestamp' => 'datetime',
         'timestamptz' => 'datetime',
         'time' => 'time',
+        'uuid' => 'text',
     );
 
     /** @var App\AppContextInterface */
@@ -189,12 +196,11 @@ class QgisFormControl
      * Create an jForms control object based on a qgis edit widget.
      * And add it to the passed form.
      *
-     * @param string                    $ref          name of the control
-     * @param QgisFormControlProperties $properties
-     * @param \jDbFieldProperties       $prop         Jelix object with field properties (datatype, required, etc.)
-     * @param array|object|string       $aliasXml     simplexml object corresponding to the QGIS alias for this field
-     * @param null|string               $defaultValue the QGIS expression of the default value
-     * @param null|array                $constraints  the QGIS constraints
+     * @param string                         $ref          name of the control
+     * @param null|QgisFormControlProperties $properties
+     * @param \jDbFieldProperties            $prop         Jelix object with field properties (datatype, required, etc.)
+     * @param null|string                    $defaultValue the QGIS expression of the default value
+     * @param null|array                     $constraints  the QGIS constraints
      */
     public function __construct($ref, $properties, $prop, $defaultValue, $constraints, App\AppContextInterface $appContext)
     {
@@ -243,7 +249,11 @@ class QgisFormControl
                     || $this->fieldEditType === 'Range'
                     || $this->fieldEditType === 'EditRange'
                 ) {
-                    $this->ctrl->datatype = new \jDatatypeDecimal();
+                    if ($this->fieldDataType == 'integer') {
+                        $this->ctrl->datatype = new \jDatatypeInteger();
+                    } else {
+                        $this->ctrl->datatype = new \jDatatypeDecimal();
+                    }
                     $min = $this->getEditAttribute('Min');
                     if ($min !== null) {
                         $this->ctrl->datatype->addFacet('minValue', $min);
@@ -252,13 +262,29 @@ class QgisFormControl
                     if ($max !== null) {
                         $this->ctrl->datatype->addFacet('maxValue', $max);
                     }
+                    $step = $this->getEditAttribute('Step');
+                    $precision = $this->getEditAttribute('Precision');
+                    // step cast as integer, use only if datatype is integer
+                    if ($step !== null && $this->fieldDataType == 'integer') {
+                        $this->ctrl->setAttribute('stepValue', $step);
+                    } elseif ($this->fieldDataType == 'decimal' && $precision !== null) {
+                        // use precision as stepValue (will override untrustable step Value)
+                        $this->ctrl->setAttribute('stepValue', pow(10, -intval($precision)));
+                    }
+                } elseif (!$properties || !$properties->useHtml()) {
+                    // we don't want HTML into this input
+                    $this->ctrl->datatype->addFacet('filterHtml', true);
+                } elseif ($properties->useHtml()) {
+                    // html is accepted, but will be sanitized
+                    $this->ctrl->datatype = new \jDatatypeHtml();
                 }
 
                 break;
 
             case 'time':
-                //$this->ctrl = new \jFormsControlDatetime($this->ref);
                 $this->ctrl = new \jFormsControlInput($this->ref);
+                // we don't want HTML into this input
+                $this->ctrl->datatype->addFacet('filterHtml', true);
 
                 break;
 
@@ -273,11 +299,15 @@ class QgisFormControl
 
                 break;
 
+            case 'htmleditor':
+                $this->ctrl = new \jFormsControlHtmlEditor($this->ref);
+
+                break;
+
             case 'menulist':
             case 'hidden':
             case 'checkboxes':
             case 'textarea':
-            case 'htmlEditor':
             case 'date':
             case 'datetime':
                 $class = '\jFormsControl'.ucfirst($markup);
@@ -287,12 +317,27 @@ class QgisFormControl
                     if ($this->fieldDataType === 'boolean' && $prop->notNull) {
                         $this->reworkBooleanControl($markup);
                     }
+                } elseif ($markup == 'textarea') {
+                    if ($properties && $properties->useHtml()) {
+                        // html is accepted, but will be sanitized
+                        $this->ctrl->datatype = new \jDatatypeHtml();
+                    } else {
+                        // we don't want HTML into this input
+                        $this->ctrl->datatype->addFacet('filterHtml', true);
+                    }
                 }
 
                 break;
 
             default:
                 $this->ctrl = new \jFormsControlInput($this->ref);
+                if ($properties && $properties->useHtml()) {
+                    // html is accepted, but will be sanitized
+                    $this->ctrl->datatype = new \jDatatypeHtml();
+                } else {
+                    // we don't want HTML into this input
+                    $this->ctrl->datatype->addFacet('filterHtml', true);
+                }
 
                 break;
         }
@@ -333,6 +378,29 @@ class QgisFormControl
         $upload->accept = $this->properties->getUploadAccept();
         $upload->capture = $this->properties->getUploadCapture();
         $this->DefaultRoot = $this->getEditAttribute('DefaultRoot');
+
+        // WebDAV External Resource
+        if ($this->getEditAttribute('StorageType') == 'WebDAV') {
+            $this->isWebDAV = true;
+            $this->webDavStorageUrl = $this->getEditAttribute('webDAVStorageUrl');
+        }
+
+        // Test if the root path must be calculated with a QGIS expression
+        $propertyCollection = $this->getEditAttribute('PropertyCollection');
+        if (
+            isset(
+                $propertyCollection,
+                $propertyCollection['properties'],
+                $propertyCollection['properties']['propertyRootPath'],
+                $propertyCollection['properties']['propertyRootPath']['expression'],
+                $propertyCollection['properties']['propertyRootPath']['active'],
+            )
+            && !empty(trim($propertyCollection['properties']['propertyRootPath']['expression']))
+            && $propertyCollection['properties']['propertyRootPath']['active'] == true
+        ) {
+            $this->rootPathExpression = trim($propertyCollection['properties']['propertyRootPath']['expression']);
+        }
+
         $this->ctrl = $upload;
     }
 
@@ -388,7 +456,6 @@ class QgisFormControl
     */
     protected function setControlMainProperties()
     {
-
         // Label
         $alias = $this->getFieldAlias();
         if ($alias) {
@@ -401,15 +468,11 @@ class QgisFormControl
         if ($this->ctrl->datatype instanceof \jDatatypeString) {
             // let's change datatype when control has the default one, \jDatatypeString
             // we don't want to change datatype that are specific to a control type, like in\jFormsControlHtmlEditor,
-            //\jFormsControlDate etc..
-            $typeTab = array('Integer', 'float', 'Date', 'DateTime', 'Time', 'Boolean');
+            // \jFormsControlDate etc..
+            $typeTab = array('Integer', 'Decimal', 'Date', 'DateTime', 'Time', 'Boolean');
             foreach ($typeTab as $type) {
                 if ($this->fieldDataType === strtolower($type)) {
-                    if ($this->fieldDataType === 'float') {
-                        $class = '\jDatatype'.'Decimal';
-                    } else {
-                        $class = '\jDatatype'.$type;
-                    }
+                    $class = '\jDatatype'.$type;
                     $this->ctrl->datatype = new $class();
                 }
             }
@@ -417,7 +480,7 @@ class QgisFormControl
 
         // Read-only
         if ($this->fieldDataType != 'geometry') {
-            if ($this->fieldEditType !== '' && array_key_exists('readonly', self::$qgisEdittypeMap[$this->fieldEditType]['jform'])) {
+            if ($this->fieldEditType !== '' && is_array(self::$qgisEdittypeMap[$this->fieldEditType]) && array_key_exists('readonly', self::$qgisEdittypeMap[$this->fieldEditType]['jform'])) {
                 $this->isReadOnly = true;
             }
             if ($this->properties !== null && !$this->properties->isEditable()) {
@@ -456,6 +519,7 @@ class QgisFormControl
         $this->ctrl->valueOnCheck = $checked;
         $this->ctrl->valueOnUncheck = $unchecked;
         $this->required = false; // As there is only a value, even if the checkbox is unchecked
+        $this->ctrl->defaultValue = $unchecked; // defined a default value to one of the possible value
     }
 
     /*
@@ -464,7 +528,6 @@ class QgisFormControl
     */
     protected function fillControlDatasource()
     {
-
         // Create a datasource for some types : menulist
         $dataSource = new \jFormsStaticDatasource();
 
@@ -478,7 +541,6 @@ class QgisFormControl
         }
 
         switch ($this->fieldEditType) {
-
             // Enumeration
             case -1:
             case 'Enumeration':
@@ -486,7 +548,7 @@ class QgisFormControl
 
                 break;
 
-              // Unique Values
+                // Unique Values
             case 2:
             case 'UniqueValuesEditable':
             case 'UniqueValues':
@@ -500,19 +562,40 @@ class QgisFormControl
 
                 break;
 
-            // Value map
+                // Value map
             case 3:
             case 'ValueMap':
                 $valueMap = $this->properties->getValueMap();
                 if (is_array($valueMap)) {
-                    // remove the QGIS null value if the control value is not
-                    // required, as the widget will have a possibility to choose
-                    // no value (so null value... ?)
-                    if (!$this->required
-                        && $this->fieldDataType == 'boolean'
-                        && isset($valueMap[self::QGIS_NULL_VALUE])
-                    ) {
-                        unset($valueMap[self::QGIS_NULL_VALUE]);
+                    // Override values for boolean
+                    if ($this->fieldDataType == 'boolean') {
+                        // remove the QGIS null value if the control value is not
+                        // required, as the widget will have a possibility to choose
+                        // no value (so null value... ?)
+                        if (!$this->required
+                            && isset($valueMap[self::QGIS_NULL_VALUE])
+                        ) {
+                            unset($valueMap[self::QGIS_NULL_VALUE]);
+                        }
+                        // transform values from QGIS ValueMap to Postgres Boolean
+                        $booleanValues = array();
+                        foreach ($valueMap as $v => $label) {
+                            $strV = strtolower($v);
+                            if ($v === self::QGIS_NULL_VALUE) {
+                                $booleanValues[self::QGIS_NULL_VALUE] = $label;
+                            } elseif ($strV === 'true' || $strV === 't'
+                                || intval($v) === 1 || $strV === 'on') {
+                                // Postgres true
+                                $booleanValues['t'] = $label;
+                            } elseif ($strV === 'false' || $strV === 'f'
+                                || intval($v) === 0 || $strV === 'off') {
+                                // Postgres false
+                                $booleanValues['f'] = $label;
+                            } else {
+                                $booleanValues[$strV] = $label;
+                            }
+                        }
+                        $valueMap = $booleanValues;
                     }
                     // we don't use array_merge, because this function reindexes keys if they are
                     // numerical values, and this is not what we want.
@@ -521,14 +604,14 @@ class QgisFormControl
 
                 break;
 
-            // Classification
+                // Classification
             case 4:
             case 'Classification':
                 $data = $this->properties->getRendererCategories();
 
                 break;
 
-            // Range
+                // Range
             case 5:
             case 'Range':
             case 'EditRange':
@@ -538,7 +621,7 @@ class QgisFormControl
                 $min = $this->getEditAttribute('Min');
                 $max = $this->getEditAttribute('Max');
                 $step = $this->getEditAttribute('Step');
-                if ($this->fieldDataType != 'float') {
+                if ($this->fieldDataType != 'decimal') {
                     // XXX why ?
                     $min = (int) $min;
                     $max = (int) $max;
@@ -552,7 +635,7 @@ class QgisFormControl
 
                 break;
 
-            // Value relation
+                // Value relation
             case 15:
             case 'ValueRelation':
                 $this->valueRelationData = $this->properties->getValueRelationData();
@@ -563,7 +646,6 @@ class QgisFormControl
                 $this->relationReferenceData = $this->properties->getRelationReference();
 
                 break;
-
         }
 
         $dataSource->data = $data;
@@ -695,11 +777,12 @@ class QgisFormControl
     /**
      * gets the path where to store the file.
      *
-     * @param \qgisVectorLayer $layer the layer which have the column corresponding to the control
+     * @param \qgisVectorLayer $layer         the layer which have the column corresponding to the control
+     * @param string           $alternatePath an alternate path to store the file, depending on the field
      *
      * @return string[] the relative path to the project path, and the full path
      */
-    public function getStoragePath($layer)
+    public function getStoragePath($layer, $alternatePath = '')
     {
         $project = $layer->getProject();
         $dtParams = $layer->getDatasourceParameters();
@@ -708,22 +791,25 @@ class QgisFormControl
         // If not default root is set, use the old method media/upload/projectname/tablename/
         $targetPath = 'media/upload/'.$project->getKey().'/'.$dtParams->tablename.'/'.$this->ref.'/';
         $targetFullPath = $repPath.$targetPath;
+
         // Else use given root, but only if it is a child or brother of the repository path
-        if (!empty($this->DefaultRoot)) {
-            $fullPath = \Jelix\FileUtilities\Path::normalizePath(
-                $repPath.$this->DefaultRoot,
-                \Jelix\FileUtilities\Path::NORM_ADD_TRAILING_SLASH
+        if (!empty($alternatePath)) {
+            $fullPath = Path::normalizePath(
+                $repPath.$alternatePath,
+                Path::NORM_ADD_TRAILING_SLASH
             );
             $parentPath = realpath($repPath.'../');
             if (strpos($fullPath, $repPath) === 0
                 || strpos($fullPath, $parentPath) === 0
             ) {
-                $targetPath = $this->DefaultRoot;
+                $targetPath = $alternatePath;
                 $targetFullPath = $fullPath;
             }
         }
 
-        if (!is_dir($targetFullPath)) {
+        // Create directory if needed
+        // Avoid to create local directory if the files will be stored on remote WEBDAV server
+        if (!is_dir($targetFullPath) && !$this->isWebDAV) {
             \jFile::createDir($targetFullPath);
         }
 

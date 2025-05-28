@@ -1,6 +1,6 @@
 <?php
 
-require_once JELIX_LIB_PATH.'forms/jFormsDatasource.class.php';
+use Lizmap\Project\UnknownLizmapProjectException;
 
 class listProjectDatasource extends jFormsDynamicDatasource
 {
@@ -28,7 +28,7 @@ class listProjectDatasource extends jFormsDynamicDatasource
         if ($criteria && array_key_exists($criteria, $this->data)) {
             $rep = lizmap::getRepository($criteria);
             // Get projects metadata
-            $metadata = $rep->getProjectsMetadata();
+            $metadata = $rep->getProjectsMainData();
             foreach ($metadata as $meta) {
                 if ($meta->getHidden()) {
                     continue;
@@ -52,10 +52,10 @@ class listProjectDatasource extends jFormsDynamicDatasource
             } catch (UnknownLizmapProjectException $e) {
                 jLog::logEx($e, 'error');
 
-                return null;
+                return '';
             }
         }
 
-        return null;
+        return '';
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class for items in the main view list.
  *
@@ -24,11 +25,26 @@ class lizmapMainViewItem
     public $type = '';
     public $wmsGetCapabilitiesUrl = '';
     public $wmtsGetCapabilitiesUrl = '';
+    public $wfsGetCapabilitiesUrl = '';
 
     public $childItems = array();
 
-    public function __construct($id, $title, $abstract = '', $keywordList = '', $proj = '', $bbox = '', $url = '', $img = '', $order = 0, $parentId = '', $type = 'rep', $wmsGetCapabilitiesUrl = '', $wmtsGetCapabilitiesUrl = '')
-    {
+    public function __construct(
+        $id,
+        $title,
+        $abstract = '',
+        $keywordList = '',
+        $proj = '',
+        $bbox = '',
+        $url = '',
+        $img = '',
+        $order = 0,
+        $parentId = '',
+        $type = 'rep',
+        $wmsGetCapabilitiesUrl = '',
+        $wmtsGetCapabilitiesUrl = '',
+        $wfsGetCapabilitiesUrl = ''
+    ) {
         $this->id = $id;
         $this->parentId = $parentId;
         $this->title = $title;
@@ -42,6 +58,7 @@ class lizmapMainViewItem
         $this->type = $type;
         $this->wmsGetCapabilitiesUrl = $wmsGetCapabilitiesUrl;
         $this->wmtsGetCapabilitiesUrl = $wmtsGetCapabilitiesUrl;
+        $this->wfsGetCapabilitiesUrl = $wfsGetCapabilitiesUrl;
     }
 
     public function copyFrom($item)

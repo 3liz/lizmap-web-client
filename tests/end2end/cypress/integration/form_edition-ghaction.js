@@ -17,7 +17,7 @@ describe('Form edition', function () {
         cy.wait('@editFeature')
         cy.wait(200)
 
-        cy.get('.edition-tabs a[href="#tabdigitization"]').should('not.be.visible')
+        cy.get('.edition-tabs button[data-bs-target="#tabdigitization"]').should('not.be.visible')
     })
 
     it('must show digitization tab for geom layers', function () {
@@ -32,7 +32,7 @@ describe('Form edition', function () {
         cy.wait('@editFeature')
         cy.wait(200)
 
-        cy.get('.edition-tabs a[href="#tabdigitization"]').should('be.visible')
+        cy.get('.edition-tabs button[data-bs-target="#tabdigitization"]').should('be.visible')
     })
 
     it('must save feature without geom and allow geom creation when not existing', function () {
@@ -47,14 +47,14 @@ describe('Form edition', function () {
 
         // Assert success message is displayed
         cy.get('#message .jelix-msg-item-success').should('be.visible')
-        
+
         // Allow geom creation when not existing
         cy.get('button[value="end2end_form_edition_geom"].btn-open-attribute-layer').click({ force: true })
         cy.get('button.feature-edit:first').click({ force: true })
-        cy.get('.edition-tabs a[href="#tabdigitization"]').should('be.visible')
+        cy.get('.edition-tabs button[data-bs-target="#tabdigitization"]').should('be.visible')
 
         // Draw point
-        cy.get('#map').click(600, 250)
+        cy.ol2MapClick(630, 325)
 
         // Save feature with new geom point
         cy.get('#jforms_view_edition__submit_submit').click()
@@ -77,7 +77,7 @@ describe('Form edition', function () {
         cy.wait(200)
 
         // Assert form is displayed
-        cy.get('#edition').should('have.class', 'active')
+        cy.get('#edition').should('be.visible')
 
         cy.get('#jforms_view_edition_value').type('42')
         cy.get('#jforms_view_edition__submit_submit').click()
@@ -94,7 +94,6 @@ describe('Form edition', function () {
         cy.get('button.feature-edit:first').click({ force: true })
 
         // Assert form is displayed
-        cy.get('#edition').should('have.class', 'active')
         cy.get('#edition').should('be.visible')
 
     })

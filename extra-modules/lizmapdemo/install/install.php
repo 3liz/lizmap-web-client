@@ -1,37 +1,46 @@
 <?php
+
+use Jelix\IniFile\IniModifier;
+use Jelix\Installer\Module\API\InstallHelpers;
+use Jelix\Installer\Module\Installer;
+
 /**
  * @author    3liz
- * @copyright 2011-2020 3liz
+ * @copyright 2011-2022 3liz
  *
  * @see      http://3liz.com
  *
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
-class lizmapdemoModuleInstaller extends jInstallerModule
+class lizmapdemoModuleInstaller extends Installer
 {
-    public function install()
+    public function install(InstallHelpers $helpers)
     {
-
-        if (!$this->firstExec('acl2')) {
-            return;
-        }
-        $this->useDbProfile('auth');
+        $helpers->database()->useDbProfile('auth');
 
         // create group
-        jAcl2DbUserGroup:: createGroup('lizadmins');
-        jAcl2DbUserGroup:: createGroup('Intranet demos group', 'intranet');
+        jAcl2DbUserGroup::createGroup('lizadmins');
+        jAcl2DbUserGroup::createGroup('Intranet demos group', 'intranet');
 
         // create user in jAuth
         require_once JELIX_LIB_PATH.'auth/jAuth.class.php';
+
         require_once JELIX_LIB_PATH.'plugins/auth/db/db.auth.php';
 
-        $authconfig = $this->config->getValue('auth', 'coordplugins');
-        $confIni = parse_ini_file(jApp::configPath($authconfig), true);
-        $authConfig = jAuth::loadConfig($confIni);
-        $driverConfig = $authConfig[$authConfig['driver']];
-        if ($authConfig['driver'] == 'Db' ||
-            (isset($driverConfig['compatiblewithdb']) &&
-                $driverConfig['compatiblewithdb'])
+        // $configIni = $helpers->getEntryPointsById('index')->getConfigIni();
+
+        /** @var \Jelix\IniFile\IniModifier $authConfig */
+        // list($authConfig, $authSection) = $helpers->getCoordPluginConfig('auth', $configIni);
+
+        /*$driver = $authConfig->getValue('driver', $authSection);
+        $driverConfig = $authConfig->getValues($driver);*/
+
+        $authConfig = jAuth::loadConfig();
+        $driver = $authConfig['driver'];
+        $driverConfig = jAuth::getDriverConfig();
+        if ($driver == 'Db'
+            || (isset($driverConfig['compatiblewithdb'])
+                && $driverConfig['compatiblewithdb'])
         ) {
             $daoSelector = $driverConfig['dao'];
             $daoProfile = $driverConfig['profile'];
@@ -48,13 +57,13 @@ class lizmapdemoModuleInstaller extends jInstallerModule
                 $user->street = '';
                 $user->postcode = '';
                 $user->city = '';
-                $user->nickname = $user->login = 'lizadmin';
+                $user->login = 'lizadmin';
                 $user->password = $passwordHash1;
                 $user->email = 'lizadmin@nomail.nomail';
                 $user->status = 1;
                 $dao->insert($user);
 
-                $user->nickname = $user->login = 'logintranet';
+                $user->login = 'logintranet';
                 $user->password = $passwordHash2;
                 $user->email = 'logintranet@nomail.nomail';
                 $dao->insert($user);
@@ -125,8 +134,8 @@ class lizmapdemoModuleInstaller extends jInstallerModule
         jAcl2DbManager::addRight('__anonymous', 'lizmap.tools.displayGetCapabilitiesLinks', 'montpellier');
 
         // declare the repositories of demo in the configuration
-        $lizmapConfFile = jApp::configPath('lizmapConfig.ini.php');
-        $ini = new jIniFileModifier($lizmapConfFile);
+        $lizmapConfFile = jApp::varConfigPath('lizmapConfig.ini.php');
+        $ini = new IniModifier($lizmapConfFile);
 
         $sourceDemo = realpath(__DIR__.'/../qgis-projects/').'/';
 
@@ -135,8 +144,7 @@ class lizmapdemoModuleInstaller extends jInstallerModule
             jFile::copyDirectoryContent($sourceDemo, $rootRepo, true);
             $demoPath = $rootRepo.'/demoqgis';
             $demoIntranetPath = $rootRepo.'/demoqgis_intranet';
-        }
-        else {
+        } else {
             $demoPath = $sourceDemo.'demoqgis';
             $demoIntranetPath = $sourceDemo.'demoqgis_intranet';
         }

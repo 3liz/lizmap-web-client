@@ -2,15 +2,110 @@
 
 ## Unreleased
 
+## 3.4.14 - 2022-10-18
+
 ### Fixed
 
+* Fix wrong host URL when the WMS is used in another GIS client such as QGIS
+
+### Backend
+
+* Upgrade Jelix to version 1.6.39
+
+## 3.4.13 - 2022-09-20
+
+### Fixed
+
+* Form filter - Use OR between the uniques values of the same field
+* Fix some requests to QGIS Server
+* New configuration to set up the Content Security Policy header
+
+### Translations
+
+* Update from Transifex about translated strings
+
+### Tests
+
+* Add more tests about Cypress
+
+### Backend
+
+* Update Jelix to version 1.6.38
+
+## 3.4.12 - 2022-07-01
+
+### Added
+
+* New `-dry-run` for the cache generation to see how many tiles might be generated
+
+### Changed
+
+* Improve the table in the right's management panel when having a dozen of groups
+* Add tolerance for clicking on mobile to get the popup
+
+### Fixed
+
+* Fix the download of files (layer export, PDF) depending on the web-browser (and its version)
+* CLI tool about cache : fix an issue about the `-bbox` parameter out of the tile matrix limit
+* Provide the dataviz button in the left menu only there is at least one non filtered dataviz
+* The style was not updated when the layer has a shortname and was included in a QGIS theme
+* Javascript error when clicking on an atlas link when no feature ID was found
+* Fix infinite HTTP loop when the user hasn't any access to the default project
+* Fix the attribute table order defined in QGIS desktop
+* Fix the "zoom to layer" button when the layer is in EPSG:4326 (Funded by Geocobet)
+
+### Backend
+
+* Update Jelix to version 1.6.38-pre
+
+### Translations
+
+* Update from Transifex about translated strings
+
+### Tests
+
+* Update end-to-end Cypress tests about continuous integration
+
+## 3.4.11 - 2022-04-29
+
+### Fixed
+
+* Allow a project thumbnail with capital letters in the extension
+* Open a PDF in a new tab when possible on Firefox instead of the internal viewer
+* Fix about dataviz panel : plot order and custom plot layout, contribution from @tethysgeco
+* Fix some exports issues when there is a selection
+* Fix an issue about editing capabilities when using a geometry involved in a QGIS expression
+* Fix about some WFS requests about vector data
+* Fix about QGIS 3.22 when a group has a shortname
+* Fix about QGIS 3.22 with the "Show feature count"
+* Fix about geometries in WKT when it's multipart.
+
+### Translations
+
+* Update from Transifex about translated strings
+
+### Backend
+
+* Update of Jelix 1.6
+
+## 3.4.10 - 2022-03-24
+
+### Fixed
+
+- Fix when an attribute name is starting with a capital name
+- Fix editing feature having an ID equal to 0
+- Do not show custom labels when printing from a popup about `lizmap_user` and `lizmap_user_groups`
 - Check version attribute in WxS request in XML to return error
-- Fix: GetProj4 request to get proj4 CRS defintion from QGIS project
+- Fix the GetProj4 request to get proj4 CRS definition from QGIS project
 - Speed up GetProjectConfig request by using cache for QGIS Server plugins data
 - Do not send private user group to QGIS Server for access control
 - Fix regression in form - empty value is added to required menu list field
 - Check Version parameters in WxS request to return error
 - Fix the GetProjectConfig mime-type as application/json
+
+### Backend
+
+- Upgrade jelix to 1.6.36
 
 ## 3.4.9 - 2022-02-04
 

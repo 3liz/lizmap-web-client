@@ -1,29 +1,30 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
 use Lizmap\Form\QgisFormControl;
+use Lizmap\Form\QgisFormControlProperties;
+use PHPUnit\Framework\TestCase;
 
-require_once __DIR__.'/../../../../lib/jelix/forms/jFormsBase.class.php';
+require_once __DIR__.'/../../../../lizmap/vendor/jelix/jelix/lib/jelix/forms/jFormsBase.class.php';
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 class QgisFormControlTest extends TestCase
 {
-    public function testSetControlMainProperties()
+    public function testSetControlMainProperties(): void
     {
-        $ctrl = new \jFormsControlInput('test');
-        $ctrl->datatype = new \jDatatypeDecimal();
-
+        $ctrl = new jFormsControlInput('test');
+        $ctrl->datatype = new jDatatypeDecimal();
 
         $control = new QgisFormControlForTests();
-        $properties = new \Lizmap\Form\QgisFormControlProperties(
+        $properties = new QgisFormControlProperties(
             'test',
             'Immutable',
             'intput',
             array(
-                'Editable' => true
+                'Editable' => true,
             )
         );
         $control->fieldDataType = 'Immutable';
@@ -34,13 +35,13 @@ class QgisFormControlTest extends TestCase
         $this->assertTrue($control->isReadOnly);
         $this->assertFalse($control->required);
 
-        $control->ctrl->datatype = new \jDatatypeString();
-        $properties = new \Lizmap\Form\QgisFormControlProperties(
+        $control->ctrl->datatype = new jDatatypeString();
+        $properties = new QgisFormControlProperties(
             'test',
             'TextEdit',
             'intput',
             array(
-                'Editable' => false
+                'Editable' => false,
             )
         );
         $control->fieldDataType = 'date';
@@ -50,16 +51,16 @@ class QgisFormControlTest extends TestCase
         $this->assertFalse($control->required);
         $this->assertInstanceOf(jDatatypeDate::class, $control->ctrl->datatype);
 
-        $properties = new \Lizmap\Form\QgisFormControlProperties(
+        $properties = new QgisFormControlProperties(
             'test',
             'TextEdit',
             'intput',
             array(
-                'Editable' => true
+                'Editable' => true,
             )
         );
-        $control->ctrl->datatype = new \jDatatypeString();
-        $control->fieldDataType = 'float';
+        $control->ctrl->datatype = new jDatatypeString();
+        $control->fieldDataType = 'decimal';
         $control->isReadOnly = false;
         $control->required = true;
         $control->setControlMainPropertiesForTests($properties);
@@ -69,16 +70,16 @@ class QgisFormControlTest extends TestCase
         $this->assertInstanceOf(jDatatypeDecimal::class, $control->ctrl->datatype);
     }
 
-    public function testConstructGeometry()
+    public function testConstructGeometry(): void
     {
         $appContext = new ContextForTests();
-        # DB properties - Point
+        // DB properties - Point
         $prop = (object) array(
             'type' => 'Point',
-            'autoIncrement' => False,
-            'notNull' => True,
+            'autoIncrement' => false,
+            'notNull' => true,
         );
-        # QGIS Constraints
+        // QGIS Constraints
         $constraints = array(
             'constraints' => 0,
             'notNull' => false,
@@ -95,72 +96,72 @@ class QgisFormControlTest extends TestCase
         $this->assertFalse($control->isReadOnly);
         $this->assertTrue($control->required);
 
-        # DB properties - MultiPoint
+        // DB properties - MultiPoint
         $prop->type = 'MultiPoint';
         $control = new QgisFormControl('geom', null, $prop, null, $constraints, $appContext);
         $this->assertEquals($control->fieldDataType, 'geometry');
 
-        # DB properties - LINE
+        // DB properties - LINE
         $prop->type = 'LINE';
         $control = new QgisFormControl('geom', null, $prop, null, $constraints, $appContext);
         $this->assertEquals($control->fieldDataType, 'geometry');
 
-        # DB properties - LineString
+        // DB properties - LineString
         $prop->type = 'LineString';
         $control = new QgisFormControl('geom', null, $prop, null, $constraints, $appContext);
         $this->assertEquals($control->fieldDataType, 'geometry');
 
-        # DB properties - MultiLineString
+        // DB properties - MultiLineString
         $prop->type = 'MultiLineString';
         $control = new QgisFormControl('geom', null, $prop, null, $constraints, $appContext);
         $this->assertEquals($control->fieldDataType, 'geometry');
 
-        # DB properties - Polygon
+        // DB properties - Polygon
         $prop->type = 'Polygon';
         $control = new QgisFormControl('geom', null, $prop, null, $constraints, $appContext);
         $this->assertEquals($control->fieldDataType, 'geometry');
 
-        # DB properties - MultiPolygon
+        // DB properties - MultiPolygon
         $prop->type = 'MultiPolygon';
         $control = new QgisFormControl('geom', null, $prop, null, $constraints, $appContext);
         $this->assertEquals($control->fieldDataType, 'geometry');
 
-        # DB properties - Geometry
+        // DB properties - Geometry
         $prop->type = 'Geometry';
         $control = new QgisFormControl('geom', null, $prop, null, $constraints, $appContext);
         $this->assertEquals($control->fieldDataType, 'geometry');
 
-        # DB properties - GeometryCollection
+        // DB properties - GeometryCollection
         $prop->type = 'GeometryCollection';
         $control = new QgisFormControl('geom', null, $prop, null, $constraints, $appContext);
         $this->assertEquals($control->fieldDataType, 'geometry');
     }
 
-    public function testConstructPrimaryKey()
+    public function testConstructPrimaryKey(): void
     {
         $appContext = new ContextForTests();
-        # DB properties - Text
+        // DB properties - Text
         $prop = (object) array(
             'type' => 'int',
-            'autoIncrement' => True,
-            'notNull' => True,
+            'autoIncrement' => true,
+            'notNull' => true,
         );
-        # QGIS properties
-        $properties = new \Lizmap\Form\QgisFormControlProperties(
+        // QGIS properties
+        $properties = new QgisFormControlProperties(
             'id',
             'TextEdit',
             'input',
             array(
                 'IsMultiline' => false,
                 'UseHtml' => false,
-                'Editable' => true
+                'Editable' => true,
             )
         );
-        # QGIS Constraints
-        # constraints is the number of contraints, 0 for no constraints
-        # notNull defined if the not null contraint is activated
-        # unique defined if the unique contraint is activated
-        # exp defined if the expression contraint is activated
+        // QGIS Constraints
+        // constraints is the number of contraints, 0 for no constraints
+        // notNull defined if the not null contraint is activated
+        // unique defined if the unique contraint is activated
+        // exp defined if the expression contraint is activated
         $constraints = array(
             'constraints' => 0,
             'notNull' => false,
@@ -177,15 +178,15 @@ class QgisFormControlTest extends TestCase
         $this->assertFalse($control->isReadOnly);
         $this->assertFalse($control->required);
 
-        # QGIS properties - not editable
-        $properties = new \Lizmap\Form\QgisFormControlProperties(
+        // QGIS properties - not editable
+        $properties = new QgisFormControlProperties(
             'id',
             'TextEdit',
             'input',
             array(
                 'IsMultiline' => false,
                 'UseHtml' => false,
-                'Editable' => false
+                'Editable' => false,
             )
         );
         $control = new QgisFormControl('id', $properties, $prop, null, $constraints, $appContext);
@@ -193,31 +194,31 @@ class QgisFormControlTest extends TestCase
         $this->assertFalse($control->required);
     }
 
-    public function testConstructInput()
+    public function testConstructInput(): void
     {
         $appContext = new ContextForTests();
-        # DB properties - Text
+        // DB properties - Text
         $prop = (object) array(
             'type' => 'text',
-            'autoIncrement' => False,
-            'notNull' => False,
+            'autoIncrement' => false,
+            'notNull' => false,
         );
-        # QGIS properties
-        $properties = new \Lizmap\Form\QgisFormControlProperties(
+        // QGIS properties
+        $properties = new QgisFormControlProperties(
             'label',
             'TextEdit',
             'input',
             array(
                 'IsMultiline' => false,
                 'UseHtml' => false,
-                'Editable' => true
+                'Editable' => true,
             )
         );
-        # QGIS Constraints
-        # constraints is the number of contraints, 0 for no constraints
-        # notNull defined if the not null contraint is activated
-        # unique defined if the unique contraint is activated
-        # exp defined if the expression contraint is activated
+        // QGIS Constraints
+        // constraints is the number of contraints, 0 for no constraints
+        // notNull defined if the not null contraint is activated
+        // unique defined if the unique contraint is activated
+        // exp defined if the expression contraint is activated
         $constraints = array(
             'constraints' => 0,
             'notNull' => false,
@@ -234,54 +235,54 @@ class QgisFormControlTest extends TestCase
         $this->assertFalse($control->isReadOnly);
         $this->assertFalse($control->required);
 
-        # DB properties - Text - not null
-        $prop->notNull = True;
-        # QGIS constraints
+        // DB properties - Text - not null
+        $prop->notNull = true;
+        // QGIS constraints
         $constraints['constraints'] = 0;
-        $constraints['notNull'] = False;
+        $constraints['notNull'] = false;
         $control = new QgisFormControl('label', $properties, $prop, null, $constraints, $appContext);
         $this->assertTrue($control->required);
 
-        # DB properties - Text
-        $prop->notNull = False;
-        # QGIS constraints - not null
+        // DB properties - Text
+        $prop->notNull = false;
+        // QGIS constraints - not null
         $constraints['constraints'] = 1;
-        $constraints['notNull'] = True;
+        $constraints['notNull'] = true;
         $control = new QgisFormControl('label', $properties, $prop, null, $constraints, $appContext);
         $this->assertTrue($control->required);
 
-        # DB properties - Text
-        $prop->notNull = False;
-        # QGIS properties
-        $properties = new \Lizmap\Form\QgisFormControlProperties(
+        // DB properties - Text
+        $prop->notNull = false;
+        // QGIS properties
+        $properties = new QgisFormControlProperties(
             'label',
             'TextEdit',
             'input',
             array(
                 'IsMultiline' => false,
                 'UseHtml' => false,
-                'Editable' => false
+                'Editable' => false,
             )
         );
-        # QGIS constraints
+        // QGIS constraints
         $constraints['constraints'] = 0;
-        $constraints['notNull'] = False;
+        $constraints['notNull'] = false;
         $control = new QgisFormControl('label', $properties, $prop, null, $constraints, $appContext);
         $this->assertTrue($control->isReadOnly);
         $this->assertFalse($control->required);
     }
 
-    public function testConstructCheckbox()
+    public function testConstructCheckbox(): void
     {
         $appContext = new ContextForTests();
-        # DB properties - Bool
+        // DB properties - Bool
         $prop = (object) array(
             'type' => 'bool',
-            'autoIncrement' => False,
-            'notNull' => True,
+            'autoIncrement' => false,
+            'notNull' => true,
         );
-        # QGIS properties
-        $properties = new \Lizmap\Form\QgisFormControlProperties(
+        // QGIS properties
+        $properties = new QgisFormControlProperties(
             'checked',
             'CheckBox',
             'checkbox',
@@ -290,7 +291,7 @@ class QgisFormControlTest extends TestCase
                 'UncheckedState' => 'f',
             )
         );
-        # QGIS Constraints
+        // QGIS Constraints
         $constraints = array(
             'constraints' => 0,
             'notNull' => false,
@@ -309,10 +310,10 @@ class QgisFormControlTest extends TestCase
         $this->assertFalse($control->isReadOnly);
         $this->assertFalse($control->required);
 
-        # DB properties - int
+        // DB properties - int
         $prop->type = 'int';
-        # QGIS properties
-        $properties = new \Lizmap\Form\QgisFormControlProperties(
+        // QGIS properties
+        $properties = new QgisFormControlProperties(
             'checked',
             'CheckBox',
             'checkbox',
@@ -327,10 +328,10 @@ class QgisFormControlTest extends TestCase
         $this->assertEquals($control->ctrl->valueOnCheck, '1');
         $this->assertEquals($control->ctrl->valueOnUncheck, '0');
 
-        # DB properties - text
+        // DB properties - text
         $prop->type = 'text';
-        # QGIS properties
-        $properties = new \Lizmap\Form\QgisFormControlProperties(
+        // QGIS properties
+        $properties = new QgisFormControlProperties(
             'checked',
             'CheckBox',
             'checkbox',
@@ -345,21 +346,21 @@ class QgisFormControlTest extends TestCase
         $this->assertEquals($control->ctrl->valueOnCheck, 'y');
         $this->assertEquals($control->ctrl->valueOnUncheck, 'n');
 
-        # Test Rework ValueMap to CheckBox for nor null boolean field
+        // Test Rework ValueMap to CheckBox for nor null boolean field
         $prop->type = 'boolean';
-        $prop->notNull = True;
-        # QGIS properties
-        $properties = new \Lizmap\Form\QgisFormControlProperties(
+        $prop->notNull = true;
+        // QGIS properties
+        $properties = new QgisFormControlProperties(
             'checked',
             'ValueMap',
             'menulist',
             array(
                 'valueMap' => array(
-                     'true' => 'Yes',
-                     'false' => 'No',
-                     '{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}' => '<NULL>',
+                    'true' => 'Yes',
+                    'false' => 'No',
+                    '{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}' => '<NULL>',
                 ),
-                'Editable' => 1
+                'Editable' => 1,
             )
         );
 
@@ -367,9 +368,9 @@ class QgisFormControlTest extends TestCase
         $this->assertEquals($control->fieldDataType, 'boolean');
         $this->assertEquals($control->fieldEditType, 'CheckBox');
         $this->assertEquals($control->ctrl->getWidgetType(), 'checkbox');
-        $this->assertEquals($control->ctrl->valueOnCheck, 'true');
+        $this->assertEquals($control->ctrl->valueOnCheck, 't');
         $this->assertEquals($control->ctrl->valueLabelOnCheck, 'Yes');
-        $this->assertEquals($control->ctrl->valueOnUncheck, 'false');
+        $this->assertEquals($control->ctrl->valueOnUncheck, 'f');
         $this->assertEquals($control->ctrl->valueLabelOnUncheck, 'No');
     }
 }

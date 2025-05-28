@@ -91,6 +91,11 @@ if [ -f $LIZMAP/var/config/installer.ini.php ]; then
 fi
 
 if [ "$KEEP_CONFIG" = "N" ]; then
+
+    if [ -f $LIZMAP/var/config/CLOSED ]; then
+        rm -f $LIZMAP/var/config/CLOSED
+    fi
+
     if [ -f $LIZMAP/var/config/profiles.ini.php ]; then
         rm -f $LIZMAP/var/config/profiles.ini.php
     fi
@@ -106,6 +111,13 @@ if [ "$KEEP_CONFIG" = "N" ]; then
     if [ -f $LIZMAP/var/config/localconfig.ini.php ]; then
         rm -f $LIZMAP/var/config/localconfig.ini.php
     fi
+    if [ -f $LIZMAP/var/config/localurls.xml ]; then
+        rm -f $LIZMAP/var/config/localurls.xml
+    fi
+    if [ -f $LIZMAP/var/config/installer.bak.ini.php ]; then
+        rm -f $LIZMAP/var/config/installer.bak.ini.php
+    fi
+    $SCRIPTDIR/demo.sh remove --no-installer
 fi
 
 if [ "$ACTION" = "install" ]; then
@@ -115,51 +127,13 @@ if [ "$ACTION" = "install" ]; then
     if [ ! -f $LIZMAP/var/config/profiles.ini.php ]; then
         cp $LIZMAP/var/config/profiles.ini.php.dist $LIZMAP/var/config/profiles.ini.php
     fi
+    if [ ! -f $LIZMAP/var/config/lizmapConfig.ini.php ]; then
+        cp $LIZMAP/var/config/lizmapConfig.ini.php.dist $APPDIR/var/config/lizmapConfig.ini.php
+    fi
 
     if [ "$WITH_DEMO" = "Y" ]; then
-        if [ ! -d $SCRIPTDIR/../../extra-modules/lizmapdemo ]; then
-            if [ ! -d $SCRIPTDIR/lizmapdemo ]; then
-              HAS_UNZIP=$(command -v unzip)
-              if [ "$HAS_UNZIP" = "" ]; then
-                echo "Error: cannot install the lizmapdemo module: unzip is not installed"
-                exit 1
-              fi
-
-              LZM_VERSION=$(sed -n 's:.*<version[^>]*>\(.*\)</version>.*:\1:p' $SCRIPTDIR/../project.xml)
-              MAJOR_VERSION=$(echo $LZM_VERSION | cut -d'.' -f 1)
-              MINOR_VERSION=$(echo $LZM_VERSION | cut -d'.' -f 2)
-              STABILITY=$(echo $LZM_VERSION | cut -d'-' -f 2)
-              if [ "$STABILITY" = "$LZM_VERSION" ]; then
-                URL="https://packages.3liz.org/pub/lizmap/release"
-              else
-                URL="https://packages.3liz.org/pub/lizmap/unstable"
-              fi
-              URL=$URL/${MAJOR_VERSION}.${MINOR_VERSION}/lizmapdemo-module-${MAJOR_VERSION}.${MINOR_VERSION}.zip
-              if [ ! -f lizmapdemo.zip ]; then
-                HAS_WGET=$(command -v wget)
-                HAS_CURL=$(command -v curl)
-                if [ "$HAS_WGET" != "" ]; then
-                  wget -O lizmapdemo.zip $URL
-                else
-                  if [ "$HAS_CURL" != "" ]; then
-                    curl $URL -L -o lizmapdemo.zip
-                  else
-                    echo "Error: cannot download the lizmapdemo module: wget or curl is not installed"
-                    exit 2
-                  fi
-                fi
-              fi
-              unzip lizmapdemo.zip
-            fi
-            php $SCRIPTDIR/../../lib/jelix-scripts/inifile.php $LIZMAP/var/config/localconfig.ini.php lizmapdemo.path "app:install/lizmapdemo" modules
-            php $SCRIPTDIR/../../lib/jelix-scripts/inifile.php $LIZMAP/var/config/localconfig.ini.php lizmapdemo.access 2 modules
-        else
-            php $SCRIPTDIR/../../lib/jelix-scripts/inifile.php $LIZMAP/var/config/localconfig.ini.php lizmapdemo.path "app:../extra-modules/lizmapdemo" modules
-            php $SCRIPTDIR/../../lib/jelix-scripts/inifile.php $LIZMAP/var/config/localconfig.ini.php lizmapdemo.access 2 modules
-        fi
+        $SCRIPTDIR/demo.sh install
     else
-        php $SCRIPTDIR/../../lib/jelix-scripts/inifile.php $LIZMAP/var/config/localconfig.ini.php lizmapdemo.path "" modules
-        php $SCRIPTDIR/../../lib/jelix-scripts/inifile.php $LIZMAP/var/config/localconfig.ini.php lizmapdemo.access 0 modules
+        $SCRIPTDIR/demo.sh remove
     fi
-    (cd $LIZMAP/install && php installer.php)
 fi

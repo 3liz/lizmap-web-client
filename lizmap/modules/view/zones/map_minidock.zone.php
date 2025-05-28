@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Construct the toolbar content.
  *
@@ -13,7 +14,5 @@ class map_minidockZone extends jZone
 {
     protected $_tplname = 'map_minidock';
 
-    protected function _prepareTpl()
-    {
-    }
+    protected function _prepareTpl() {}
 }

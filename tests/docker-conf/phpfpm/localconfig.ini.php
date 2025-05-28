@@ -1,4 +1,4 @@
-;<?php die(''); ?>
+;<?php exit(''); ?>
 ;for security reasons , don't remove or modify the first line
 
 ; put here configuration variables that are specific to this installation
@@ -8,9 +8,6 @@
 ;chmodDir=0775
 
 [modules]
-lizmapdemo.path = "app:../extra-modules/lizmapdemo"
-lizmapdemo.access = 2
-
 ;; to use ldap for authentication
 ;; 1. set ldapdao.access=2
 ;; 2. set driver=ldapdao below
@@ -31,6 +28,8 @@ plugins = debugbar
 
 [mailer]
 mailerType = file
+webmasterEmail="root@localhost.org"
+webmasterName="root"
 
 [logger]
 default = file
@@ -39,9 +38,14 @@ warning = file
 notice = file
 deprecated = file
 auth = file
+echoproxy = file
+
+[fileLogger]
+echoproxy = echoproxy.log
 
 [jcommunity]
 registrationEnabled=off
+notificationReceiverEmail="root@localhost.org"
 
 [error_handling]
 messageLogFormat = "[%code%]\t%msg%\n  %file%\t%line%\n %url%\n %params%\n ref:%referer%\n%trace%\n\n"

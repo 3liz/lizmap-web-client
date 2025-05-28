@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author    3liz
  * @copyright 2017 3liz
@@ -13,10 +14,10 @@ class actionModuleInstaller extends jInstallerModule
     {
 
         // Copy CSS and JS assets
-        //$this->copyDirectoryContent('www', jApp::wwwPath());
+        // $this->copyDirectoryContent('www', jApp::wwwPath());
 
-        //if ($this->firstDbExec())
-            //$this->execSQLScript('sql/install');
+        // if ($this->firstDbExec())
+        // $this->execSQLScript('sql/install');
 
         /*if ($this->firstExec('acl2')) {
             jAcl2DbManager::addSubject('my.subject', 'action~acl.my.subject', 'subject.group.id');

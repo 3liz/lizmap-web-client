@@ -1,0 +1,1017 @@
+{
+    "version": "1.3.0",
+    "Service": {
+        "Name": "WMS",
+        "Title": "layer_legends",
+        "KeywordList": [
+            "infoMapAccessService"
+        ],
+        "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=layer_legends",
+        "Fees": "conditions unknown",
+        "AccessConstraints": "None",
+        "MaxWidth": 3000,
+        "MaxHeight": 3000
+    },
+    "Capability": {
+        "Request": {
+            "GetCapabilities": {
+                "Format": [
+                    "text/xml"
+                ],
+                "DCPType": [
+                    {
+                        "HTTP": {
+                            "Get": {
+                                "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=layer_legends&"
+                            }
+                        }
+                    }
+                ]
+            },
+            "GetMap": {
+                "Format": [
+                    "image/jpeg",
+                    "image/png",
+                    "image/png; mode=16bit",
+                    "image/png; mode=8bit",
+                    "image/png; mode=1bit",
+                    "application/dxf"
+                ],
+                "DCPType": [
+                    {
+                        "HTTP": {
+                            "Get": {
+                                "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=layer_legends&"
+                            }
+                        }
+                    }
+                ]
+            },
+            "GetFeatureInfo": {
+                "Format": [
+                    "text/plain",
+                    "text/html",
+                    "text/xml",
+                    "application/vnd.ogc.gml",
+                    "application/vnd.ogc.gml/3.1.1",
+                    "application/json",
+                    "application/geo+json"
+                ],
+                "DCPType": [
+                    {
+                        "HTTP": {
+                            "Get": {
+                                "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=layer_legends&"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        "Exception": [
+            "XML"
+        ],
+        "Layer": {
+            "Name": "layer_legends",
+            "Title": "layer_legends",
+            "KeywordList": [
+                "infoMapAccessService"
+            ],
+            "CRS": [
+                "CRS:84",
+                "EPSG:4326",
+                "EPSG:3857",
+                "EPSG:2154"
+            ],
+            "EX_GeographicBoundingBox": [
+                3.675972,
+                43.560148,
+                3.949168,
+                43.766889
+            ],
+            "BoundingBox": [
+                {
+                    "crs": "EPSG:2154",
+                    "extent": [
+                        754633.028,
+                        6273911.456,
+                        776441.31,
+                        6296664.501
+                    ],
+                    "res": [
+                        null,
+                        null
+                    ]
+                },
+                {
+                    "crs": "EPSG:3857",
+                    "extent": [
+                        409207.373,
+                        5397624.582,
+                        439619.269,
+                        5429438.244
+                    ],
+                    "res": [
+                        null,
+                        null
+                    ]
+                },
+                {
+                    "crs": "EPSG:4326",
+                    "extent": [
+                        43.560148,
+                        3.675972,
+                        43.766889,
+                        3.949168
+                    ],
+                    "res": [
+                        null,
+                        null
+                    ]
+                }
+            ],
+            "Layer": [
+                {
+                    "Name": "layer_legend_single_symbol",
+                    "Title": "layer_legend_single_symbol",
+                    "CRS": [
+                        "CRS:84",
+                        "EPSG:4326",
+                        "EPSG:3857",
+                        "EPSG:2154",
+                        "CRS:84",
+                        "EPSG:4326",
+                        "EPSG:3857",
+                        "EPSG:2154"
+                    ],
+                    "EX_GeographicBoundingBox": [
+                        3.675972,
+                        43.560148,
+                        3.949168,
+                        43.766889
+                    ],
+                    "BoundingBox": [
+                        {
+                            "crs": "EPSG:2154",
+                            "extent": [
+                                754633.028,
+                                6273911.456,
+                                776441.31,
+                                6296664.501
+                            ],
+                            "res": [
+                                null,
+                                null
+                            ]
+                        },
+                        {
+                            "crs": "EPSG:3857",
+                            "extent": [
+                                409207.373,
+                                5397624.582,
+                                439619.269,
+                                5429438.244
+                            ],
+                            "res": [
+                                null,
+                                null
+                            ]
+                        },
+                        {
+                            "crs": "EPSG:4326",
+                            "extent": [
+                                43.560148,
+                                3.675972,
+                                43.766889,
+                                3.949168
+                            ],
+                            "res": [
+                                null,
+                                null
+                            ]
+                        }
+                    ],
+                    "Style": [
+                        {
+                            "Name": "défaut",
+                            "Title": "défaut",
+                            "LegendURL": [
+                                {
+                                    "Format": "image/png",
+                                    "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=layer_legends&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=layer_legend_single_symbol&FORMAT=image/png&STYLE=défaut&SLD_VERSION=1.1.0",
+                                    "size": [
+                                        null,
+                                        null
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Name": "proportional",
+                            "Title": "proportional",
+                            "LegendURL": [
+                                {
+                                    "Format": "image/png",
+                                    "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=layer_legends&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=layer_legend_single_symbol&FORMAT=image/png&STYLE=proportional&SLD_VERSION=1.1.0",
+                                    "size": [
+                                        null,
+                                        null
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "queryable": true,
+                    "opaque": false,
+                    "noSubsets": false
+                },
+                {
+                    "Name": "layer_legend_categorized",
+                    "Title": "layer_legend_categorized",
+                    "CRS": [
+                        "CRS:84",
+                        "EPSG:4326",
+                        "EPSG:3857",
+                        "EPSG:2154",
+                        "CRS:84",
+                        "EPSG:4326",
+                        "EPSG:3857",
+                        "EPSG:2154"
+                    ],
+                    "EX_GeographicBoundingBox": [
+                        3.675972,
+                        43.560148,
+                        3.949168,
+                        43.766889
+                    ],
+                    "BoundingBox": [
+                        {
+                            "crs": "EPSG:2154",
+                            "extent": [
+                                754633.028,
+                                6273911.456,
+                                776441.31,
+                                6296664.501
+                            ],
+                            "res": [
+                                null,
+                                null
+                            ]
+                        },
+                        {
+                            "crs": "EPSG:3857",
+                            "extent": [
+                                409207.373,
+                                5397624.582,
+                                439619.269,
+                                5429438.244
+                            ],
+                            "res": [
+                                null,
+                                null
+                            ]
+                        },
+                        {
+                            "crs": "EPSG:4326",
+                            "extent": [
+                                43.560148,
+                                3.675972,
+                                43.766889,
+                                3.949168
+                            ],
+                            "res": [
+                                null,
+                                null
+                            ]
+                        }
+                    ],
+                    "Style": [
+                        {
+                            "Name": "défaut",
+                            "Title": "défaut",
+                            "LegendURL": [
+                                {
+                                    "Format": "image/png",
+                                    "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=layer_legends&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=layer_legend_categorized&FORMAT=image/png&STYLE=défaut&SLD_VERSION=1.1.0",
+                                    "size": [
+                                        null,
+                                        null
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "queryable": true,
+                    "opaque": false,
+                    "noSubsets": false
+                },
+                {
+                    "Name": "layer_legend_ruled",
+                    "Title": "layer_legend_ruled",
+                    "CRS": [
+                        "CRS:84",
+                        "EPSG:4326",
+                        "EPSG:3857",
+                        "EPSG:2154",
+                        "CRS:84",
+                        "EPSG:4326",
+                        "EPSG:3857",
+                        "EPSG:2154"
+                    ],
+                    "EX_GeographicBoundingBox": [
+                        3.675972,
+                        43.560148,
+                        3.949168,
+                        43.766889
+                    ],
+                    "BoundingBox": [
+                        {
+                            "crs": "EPSG:2154",
+                            "extent": [
+                                754633.028,
+                                6273911.456,
+                                776441.31,
+                                6296664.501
+                            ],
+                            "res": [
+                                null,
+                                null
+                            ]
+                        },
+                        {
+                            "crs": "EPSG:3857",
+                            "extent": [
+                                409207.373,
+                                5397624.582,
+                                439619.269,
+                                5429438.244
+                            ],
+                            "res": [
+                                null,
+                                null
+                            ]
+                        },
+                        {
+                            "crs": "EPSG:4326",
+                            "extent": [
+                                43.560148,
+                                3.675972,
+                                43.766889,
+                                3.949168
+                            ],
+                            "res": [
+                                null,
+                                null
+                            ]
+                        }
+                    ],
+                    "Style": [
+                        {
+                            "Name": "défaut",
+                            "Title": "défaut",
+                            "LegendURL": [
+                                {
+                                    "Format": "image/png",
+                                    "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=layer_legends&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=layer_legend_ruled&FORMAT=image/png&STYLE=défaut&SLD_VERSION=1.1.0",
+                                    "size": [
+                                        null,
+                                        null
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "queryable": true,
+                    "opaque": false,
+                    "noSubsets": false
+                },
+                {
+                    "Name": "tramway_lines",
+                    "Title": "tramway_lines",
+                    "CRS": [
+                        "CRS:84",
+                        "EPSG:4326",
+                        "EPSG:3857",
+                        "EPSG:2154",
+                        "CRS:84",
+                        "EPSG:4326",
+                        "EPSG:3857",
+                        "EPSG:2154"
+                    ],
+                    "EX_GeographicBoundingBox": [
+                        3.752357,
+                        43.61614,
+                        3.881924,
+                        43.679598
+                    ],
+                    "BoundingBox": [
+                        {
+                            "crs": "EPSG:2154",
+                            "extent": [
+                                760748.213,
+                                6280073.414,
+                                771133.11,
+                                6287018.728
+                            ],
+                            "res": [
+                                null,
+                                null
+                            ]
+                        },
+                        {
+                            "crs": "EPSG:3857",
+                            "extent": [
+                                417710.515,
+                                5406229.863,
+                                432133.751,
+                                5415992.229
+                            ],
+                            "res": [
+                                null,
+                                null
+                            ]
+                        },
+                        {
+                            "crs": "EPSG:4326",
+                            "extent": [
+                                43.61614,
+                                3.752357,
+                                43.679598,
+                                3.881924
+                            ],
+                            "res": [
+                                null,
+                                null
+                            ]
+                        }
+                    ],
+                    "Style": [
+                        {
+                            "Name": "a_single",
+                            "Title": "a_single",
+                            "LegendURL": [
+                                {
+                                    "Format": "image/png",
+                                    "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=layer_legends&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=tramway_lines&FORMAT=image/png&STYLE=a_single&SLD_VERSION=1.1.0",
+                                    "size": [
+                                        null,
+                                        null
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Name": "categorized",
+                            "Title": "categorized",
+                            "LegendURL": [
+                                {
+                                    "Format": "image/png",
+                                    "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=layer_legends&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=tramway_lines&FORMAT=image/png&STYLE=categorized&SLD_VERSION=1.1.0",
+                                    "size": [
+                                        null,
+                                        null
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "queryable": true,
+                    "opaque": false,
+                    "noSubsets": false
+                },
+                {
+                    "Name": "legend_option_test",
+                    "Title": "legend_option_test",
+                    "CRS": [
+                        "CRS:84",
+                        "EPSG:4326",
+                        "EPSG:3857",
+                        "EPSG:2154",
+                        "CRS:84",
+                        "EPSG:4326",
+                        "EPSG:3857",
+                        "EPSG:2154"
+                    ],
+                    "EX_GeographicBoundingBox": [
+                        3.675972,
+                        43.560148,
+                        3.949168,
+                        43.766889
+                    ],
+                    "BoundingBox": [
+                        {
+                            "crs": "EPSG:2154",
+                            "extent": [
+                                754633.028,
+                                6273911.456,
+                                776441.31,
+                                6296664.501
+                            ],
+                            "res": [
+                                null,
+                                null
+                            ]
+                        },
+                        {
+                            "crs": "EPSG:3857",
+                            "extent": [
+                                409207.373,
+                                5397624.582,
+                                439619.269,
+                                5429438.244
+                            ],
+                            "res": [
+                                null,
+                                null
+                            ]
+                        },
+                        {
+                            "crs": "EPSG:4326",
+                            "extent": [
+                                43.560148,
+                                3.675972,
+                                43.766889,
+                                3.949168
+                            ],
+                            "res": [
+                                null,
+                                null
+                            ]
+                        }
+                    ],
+                    "Layer": [
+                        {
+                            "Name": "expand_at_startup",
+                            "Title": "expand_at_startup",
+                            "CRS": [
+                                "CRS:84",
+                                "EPSG:4326",
+                                "EPSG:3857",
+                                "EPSG:2154",
+                                "CRS:84",
+                                "EPSG:4326",
+                                "EPSG:3857",
+                                "EPSG:2154"
+                            ],
+                            "EX_GeographicBoundingBox": [
+                                3.675972,
+                                43.560148,
+                                3.949168,
+                                43.766889
+                            ],
+                            "BoundingBox": [
+                                {
+                                    "crs": "EPSG:2154",
+                                    "extent": [
+                                        754633.028,
+                                        6273911.456,
+                                        776441.31,
+                                        6296664.501
+                                    ],
+                                    "res": [
+                                        null,
+                                        null
+                                    ]
+                                },
+                                {
+                                    "crs": "EPSG:3857",
+                                    "extent": [
+                                        409207.373,
+                                        5397624.582,
+                                        439619.269,
+                                        5429438.244
+                                    ],
+                                    "res": [
+                                        null,
+                                        null
+                                    ]
+                                },
+                                {
+                                    "crs": "EPSG:4326",
+                                    "extent": [
+                                        43.560148,
+                                        3.675972,
+                                        43.766889,
+                                        3.949168
+                                    ],
+                                    "res": [
+                                        null,
+                                        null
+                                    ]
+                                }
+                            ],
+                            "Style": [
+                                {
+                                    "Name": "défaut",
+                                    "Title": "défaut",
+                                    "LegendURL": [
+                                        {
+                                            "Format": "image/png",
+                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=layer_legends&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=expand_at_startup&FORMAT=image/png&STYLE=défaut&SLD_VERSION=1.1.0",
+                                            "size": [
+                                                null,
+                                                null
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ],
+                            "queryable": true,
+                            "opaque": false,
+                            "noSubsets": false
+                        },
+                        {
+                            "Name": "disabled",
+                            "Title": "disabled",
+                            "CRS": [
+                                "CRS:84",
+                                "EPSG:4326",
+                                "EPSG:3857",
+                                "EPSG:2154",
+                                "CRS:84",
+                                "EPSG:4326",
+                                "EPSG:3857",
+                                "EPSG:2154"
+                            ],
+                            "EX_GeographicBoundingBox": [
+                                3.675972,
+                                43.560148,
+                                3.949168,
+                                43.766889
+                            ],
+                            "BoundingBox": [
+                                {
+                                    "crs": "EPSG:2154",
+                                    "extent": [
+                                        754633.028,
+                                        6273911.456,
+                                        776441.31,
+                                        6296664.501
+                                    ],
+                                    "res": [
+                                        null,
+                                        null
+                                    ]
+                                },
+                                {
+                                    "crs": "EPSG:3857",
+                                    "extent": [
+                                        409207.373,
+                                        5397624.582,
+                                        439619.269,
+                                        5429438.244
+                                    ],
+                                    "res": [
+                                        null,
+                                        null
+                                    ]
+                                },
+                                {
+                                    "crs": "EPSG:4326",
+                                    "extent": [
+                                        43.560148,
+                                        3.675972,
+                                        43.766889,
+                                        3.949168
+                                    ],
+                                    "res": [
+                                        null,
+                                        null
+                                    ]
+                                }
+                            ],
+                            "Style": [
+                                {
+                                    "Name": "défaut",
+                                    "Title": "défaut",
+                                    "LegendURL": [
+                                        {
+                                            "Format": "image/png",
+                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=layer_legends&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=disabled&FORMAT=image/png&STYLE=défaut&SLD_VERSION=1.1.0",
+                                            "size": [
+                                                null,
+                                                null
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ],
+                            "queryable": true,
+                            "opaque": false,
+                            "noSubsets": false
+                        },
+                        {
+                            "Name": "hide_at_startup",
+                            "Title": "hide_at_startup",
+                            "CRS": [
+                                "CRS:84",
+                                "EPSG:4326",
+                                "EPSG:3857",
+                                "EPSG:2154",
+                                "CRS:84",
+                                "EPSG:4326",
+                                "EPSG:3857",
+                                "EPSG:2154"
+                            ],
+                            "EX_GeographicBoundingBox": [
+                                3.675972,
+                                43.560148,
+                                3.949168,
+                                43.766889
+                            ],
+                            "BoundingBox": [
+                                {
+                                    "crs": "EPSG:2154",
+                                    "extent": [
+                                        754633.028,
+                                        6273911.456,
+                                        776441.31,
+                                        6296664.501
+                                    ],
+                                    "res": [
+                                        null,
+                                        null
+                                    ]
+                                },
+                                {
+                                    "crs": "EPSG:3857",
+                                    "extent": [
+                                        409207.373,
+                                        5397624.582,
+                                        439619.269,
+                                        5429438.244
+                                    ],
+                                    "res": [
+                                        null,
+                                        null
+                                    ]
+                                },
+                                {
+                                    "crs": "EPSG:4326",
+                                    "extent": [
+                                        43.560148,
+                                        3.675972,
+                                        43.766889,
+                                        3.949168
+                                    ],
+                                    "res": [
+                                        null,
+                                        null
+                                    ]
+                                }
+                            ],
+                            "Style": [
+                                {
+                                    "Name": "défaut",
+                                    "Title": "défaut",
+                                    "LegendURL": [
+                                        {
+                                            "Format": "image/png",
+                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=layer_legends&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=hide_at_startup&FORMAT=image/png&STYLE=défaut&SLD_VERSION=1.1.0",
+                                            "size": [
+                                                null,
+                                                null
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ],
+                            "queryable": true,
+                            "opaque": false,
+                            "noSubsets": false
+                        }
+                    ],
+                    "queryable": true,
+                    "opaque": false,
+                    "noSubsets": false
+                },
+                {
+                    "Name": "Group_as_layer",
+                    "Title": "Group as layer",
+                    "CRS": [
+                        "CRS:84",
+                        "EPSG:4326",
+                        "EPSG:3857",
+                        "EPSG:2154",
+                        "CRS:84",
+                        "EPSG:4326",
+                        "EPSG:3857",
+                        "EPSG:2154"
+                    ],
+                    "EX_GeographicBoundingBox": [
+                        3.675972,
+                        43.560148,
+                        3.949168,
+                        43.766889
+                    ],
+                    "BoundingBox": [
+                        {
+                            "crs": "EPSG:2154",
+                            "extent": [
+                                754633.028,
+                                6273911.456,
+                                776441.31,
+                                6296664.501
+                            ],
+                            "res": [
+                                null,
+                                null
+                            ]
+                        },
+                        {
+                            "crs": "EPSG:3857",
+                            "extent": [
+                                409207.373,
+                                5397624.582,
+                                439619.269,
+                                5429438.244
+                            ],
+                            "res": [
+                                null,
+                                null
+                            ]
+                        },
+                        {
+                            "crs": "EPSG:4326",
+                            "extent": [
+                                43.560148,
+                                3.675972,
+                                43.766889,
+                                3.949168
+                            ],
+                            "res": [
+                                null,
+                                null
+                            ]
+                        }
+                    ],
+                    "Layer": [
+                        {
+                            "Name": "points",
+                            "Title": "points",
+                            "CRS": [
+                                "CRS:84",
+                                "EPSG:4326",
+                                "EPSG:3857",
+                                "EPSG:2154",
+                                "CRS:84",
+                                "EPSG:4326",
+                                "EPSG:3857",
+                                "EPSG:2154"
+                            ],
+                            "EX_GeographicBoundingBox": [
+                                3.675972,
+                                43.560148,
+                                3.949168,
+                                43.766889
+                            ],
+                            "BoundingBox": [
+                                {
+                                    "crs": "EPSG:2154",
+                                    "extent": [
+                                        754633.028,
+                                        6273911.456,
+                                        776441.31,
+                                        6296664.501
+                                    ],
+                                    "res": [
+                                        null,
+                                        null
+                                    ]
+                                },
+                                {
+                                    "crs": "EPSG:3857",
+                                    "extent": [
+                                        409207.373,
+                                        5397624.582,
+                                        439619.269,
+                                        5429438.244
+                                    ],
+                                    "res": [
+                                        null,
+                                        null
+                                    ]
+                                },
+                                {
+                                    "crs": "EPSG:4326",
+                                    "extent": [
+                                        43.560148,
+                                        3.675972,
+                                        43.766889,
+                                        3.949168
+                                    ],
+                                    "res": [
+                                        null,
+                                        null
+                                    ]
+                                }
+                            ],
+                            "Style": [
+                                {
+                                    "Name": "default",
+                                    "Title": "default",
+                                    "LegendURL": [
+                                        {
+                                            "Format": "image/png",
+                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=layer_legends&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=points&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0",
+                                            "size": [
+                                                null,
+                                                null
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ],
+                            "queryable": true,
+                            "opaque": false,
+                            "noSubsets": false
+                        },
+                        {
+                            "Name": "Lines",
+                            "Title": "Lines",
+                            "CRS": [
+                                "CRS:84",
+                                "EPSG:4326",
+                                "EPSG:3857",
+                                "EPSG:2154",
+                                "CRS:84",
+                                "EPSG:4326",
+                                "EPSG:3857",
+                                "EPSG:2154"
+                            ],
+                            "EX_GeographicBoundingBox": [
+                                3.752357,
+                                43.61614,
+                                3.881924,
+                                43.679598
+                            ],
+                            "BoundingBox": [
+                                {
+                                    "crs": "EPSG:2154",
+                                    "extent": [
+                                        760748.213,
+                                        6280073.414,
+                                        771133.11,
+                                        6287018.728
+                                    ],
+                                    "res": [
+                                        null,
+                                        null
+                                    ]
+                                },
+                                {
+                                    "crs": "EPSG:3857",
+                                    "extent": [
+                                        417710.515,
+                                        5406229.863,
+                                        432133.751,
+                                        5415992.229
+                                    ],
+                                    "res": [
+                                        null,
+                                        null
+                                    ]
+                                },
+                                {
+                                    "crs": "EPSG:4326",
+                                    "extent": [
+                                        43.61614,
+                                        3.752357,
+                                        43.679598,
+                                        3.881924
+                                    ],
+                                    "res": [
+                                        null,
+                                        null
+                                    ]
+                                }
+                            ],
+                            "Style": [
+                                {
+                                    "Name": "default",
+                                    "Title": "default",
+                                    "LegendURL": [
+                                        {
+                                            "Format": "image/png",
+                                            "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=layer_legends&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=Lines&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0",
+                                            "size": [
+                                                null,
+                                                null
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ],
+                            "queryable": true,
+                            "opaque": false,
+                            "noSubsets": false
+                        }
+                    ],
+                    "queryable": true,
+                    "opaque": false,
+                    "noSubsets": false
+                }
+            ]
+        }
+    }
+}

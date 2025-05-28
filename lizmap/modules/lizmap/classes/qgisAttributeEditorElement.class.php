@@ -1,4 +1,7 @@
 <?php
+
+use Lizmap\Form\QgisFormControlsInterface;
+
 /**
  * @author    3liz
  * @copyright 2019 3liz
@@ -14,10 +17,13 @@ class qgisAttributeEditorElement
     protected $parentId;
 
     protected $htmlId = '';
+    protected $label = '';
 
     protected $_isContainer = false;
     protected $_isGroupBox = false;
     protected $_isTabPanel = false;
+    protected $_isRelationWidget = false;
+    protected $_isTextWidget = false;
 
     protected $_isVisibilityExpressionEnabled = false;
     protected $_visibilityExpression = '';
@@ -27,9 +33,10 @@ class qgisAttributeEditorElement
     protected $childrenBeforeTab = array();
     protected $tabChildren = array();
     protected $childrenAfterTab = array();
+    protected $_textWidgetText = '';
 
     public function __construct(
-        Lizmap\Form\QgisFormControlsInterface $formControls,
+        QgisFormControlsInterface $formControls,
         SimpleXMLElement $node,
         $parentId,
         $idx = 0,
@@ -47,10 +54,33 @@ class qgisAttributeEditorElement
         }
 
         $name = $node->getName();
-        $this->_isContainer = ($name != 'attributeEditorField');
+
+        // Label
+        $getLabel = $this->getAttribute('label');
+        if ($getLabel !== null) {
+            $this->label = $getLabel;
+        }
+
+        $this->_isContainer = ($name != 'attributeEditorField' && $name != 'attributeEditorRelation' && $name != 'attributeEditorTextElement');
         if (!$this->_isContainer) {
+            // Field
             $this->htmlId = $parentId.'-'.$idx;
+
+            // Relation table
+            if ($name == 'attributeEditorRelation') {
+                // Get the relation detail (referencingLayer, referencedLayer, etc.)
+                $this->htmlId = $parentId.'-relation'.$idx;
+                $this->_isRelationWidget = true;
+            }
+            if ($name == 'attributeEditorTextElement') {
+                $this->htmlId = $parentId.'-text'.$idx;
+                $this->_isTextWidget = true;
+                $this->ctrlRef = $this->getName();
+                $stringNode = (string) $node;
+                $this->_textWidgetText = $stringNode;
+            }
         } else {
+            // Manage containers: form, group or tab
             if ($name == 'attributeEditorForm') {
                 $this->htmlId = $parentId;
             } else {
@@ -68,6 +98,7 @@ class qgisAttributeEditorElement
                 }
             }
 
+            // Check if the visibility of the object depends on QGIS expressions
             if ($this->getAttribute('visibilityExpressionEnabled') === '1') {
                 $this->_isVisibilityExpressionEnabled = true;
                 $this->_visibilityExpression = $this->getAttribute('visibilityExpression');
@@ -79,6 +110,8 @@ class qgisAttributeEditorElement
                 if ($name != 'attributeEditorContainer'
                     && $name != 'attributeEditorForm'
                     && $name != 'attributeEditorField'
+                    && $name != 'attributeEditorRelation'
+                    && $name != 'attributeEditorTextElement'
                 ) {
                     ++$childIdx;
 
@@ -87,7 +120,8 @@ class qgisAttributeEditorElement
                 $child = new qgisAttributeEditorElement($formControls, $child, $this->htmlId, $childIdx, $depth + 1);
 
                 if (!$child->isContainer()) {
-                    if ($child->getCtrlRef() !== null) {
+                    // Child is a Field input OR a relation widget
+                    if ($child->getCtrlRef() !== null || $child->isRelationWidget() || $child->isTextWidget()) {
                         if (count($this->tabChildren)) {
                             $this->childrenAfterTab[] = $child;
                         } else {
@@ -115,6 +149,11 @@ class qgisAttributeEditorElement
         return $this->getAttribute('name');
     }
 
+    public function getLabel()
+    {
+        return $this->getAttribute('label');
+    }
+
     public function getHtmlId()
     {
         return $this->htmlId;
@@ -139,9 +178,29 @@ class qgisAttributeEditorElement
         return null;
     }
 
+    /**
+     * Returns the _textWidgetText property value.
+     *
+     * @return string
+     */
+    public function getTextWidgetText()
+    {
+        return $this->_textWidgetText;
+    }
+
     public function isContainer()
     {
         return $this->_isContainer;
+    }
+
+    /**
+     * Returns the _isTextWidget property value, that is, whether the element is a text widget or not.
+     *
+     * @return bool
+     */
+    public function isTextWidget()
+    {
+        return $this->_isTextWidget;
     }
 
     public function isGroupBox()
@@ -152,6 +211,11 @@ class qgisAttributeEditorElement
     public function isTabPanel()
     {
         return $this->_isTabPanel;
+    }
+
+    public function isRelationWidget()
+    {
+        return $this->_isRelationWidget;
     }
 
     public function isVisibilityExpressionEnabled()
@@ -229,6 +293,59 @@ class qgisAttributeEditorElement
                 $fields = array_merge($fields, $child->getFields());
             } else {
                 $fields[] = $child->getName();
+            }
+        }
+
+        return $fields;
+    }
+
+    /**
+     * Returns the text widget fields configuration.
+     *
+     * @return array<mixed|string>[]
+     */
+    public function getTextWidgetFields()
+    {
+        $fields = array();
+        if (!$this->hasChildren() && $this->isTextWidget() == true) {
+            $fields[$this->getName()] = array(
+                'label' => $this->getName(),
+                'name' => $this->getName(),
+                'value' => $this->getTextWidgetText(),
+            );
+
+            return $fields;
+        }
+
+        foreach ($this->getChildrenBeforeTab() as $child) {
+            if ($child->isGroupBox()) {
+                $fields = array_merge($fields, $child->getTextWidgetFields());
+            } else {
+                if ($child->isTextWidget() == true) {
+                    $fields[$child->getName()] = array(
+                        'label' => $child->getName(),
+                        'name' => $child->getName(),
+                        'value' => $child->getTextWidgetText(),
+                    );
+                }
+            }
+        }
+
+        foreach ($this->getTabChildren() as $child) {
+            $fields = array_merge($fields, $child->getTextWidgetFields());
+        }
+
+        foreach ($this->getChildrenAfterTab() as $child) {
+            if ($child->isGroupBox()) {
+                $fields = array_merge($fields, $child->getTextWidgetFields());
+            } else {
+                if ($this->isTextWidget() == true) {
+                    $fields[$child->getName()] = array(
+                        'label' => $child->getName(),
+                        'name' => $child->getName(),
+                        'value' => $child->getTextWidgetText(),
+                    );
+                }
             }
         }
 

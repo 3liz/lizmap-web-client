@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author    3liz
  * @copyright 2017 3liz
@@ -13,9 +14,9 @@ class filterModuleInstaller extends jInstallerModule
     {
 
         // Copy CSS and JS assets
-        //$this->copyDirectoryContent('www', jApp::wwwPath());
+        // $this->copyDirectoryContent('www', jApp::wwwPath());
 
-        //if ($this->firstDbExec())
+        // if ($this->firstDbExec())
         //    $this->execSQLScript('sql/install');
 
         /*if ($this->firstExec('acl2')) {

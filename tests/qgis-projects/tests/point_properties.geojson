@@ -1,0 +1,11 @@
+{
+"type": "FeatureCollection",
+"name": "point_properties",
+"features": [
+{ "type": "Feature", "properties": { "fid": 1, "fid_point": 1, "users_num": 10, "date": "2024-04-04" }, "geometry": null },
+{ "type": "Feature", "properties": { "fid": 2, "fid_point": 1, "users_num": 15, "date": "2024-04-18" }, "geometry": null },
+{ "type": "Feature", "properties": { "fid": 3, "fid_point": 1, "users_num": 1, "date": "2024-04-30" }, "geometry": null },
+{ "type": "Feature", "properties": { "fid": 4, "fid_point": 2, "users_num": 45, "date": "2024-04-04" }, "geometry": null },
+{ "type": "Feature", "properties": { "fid": 5, "fid_point": 2, "users_num": 89, "date": "2024-04-30" }, "geometry": null }
+]
+}

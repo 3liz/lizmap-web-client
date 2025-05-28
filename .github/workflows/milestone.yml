@@ -1,0 +1,56 @@
+name: 🚓 Milestone and labels
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - reopened
+      - synchronize
+
+jobs:
+  pr:
+    runs-on: ubuntu-latest
+    if: github.repository == '3liz/lizmap-web-client'
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 'master'
+          fetch-depth: 0
+          token: ${{ secrets.BOT_HUB_TOKEN || github.token  }}  # Important to launch CI on a commit from a bot
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Get milestone
+        id: milestone
+        run: ./.github/auto_milestone.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_BASE: ${{ github.event.pull_request.base.ref }}
+
+      - name: Get previous labels and "Funded by" if possible
+        id: labels
+        run: ./.github/previous_pr_metadata.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_PR_REF: ${{ github.event.number }}
+
+      - name: Update PR information
+        uses: octokit/request-action@v2.x
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          route: PATCH /repos/${{ github.repository }}/issues/${{github.event.number}}
+          pull_number: ${{github.event.number}}
+          milestone: ${{ steps.milestone.outputs.milestone_number }}
+          labels: ${{ steps.labels.outputs.labels }}
+
+      - uses: mshick/add-pr-comment@v2.8.2
+        if: ${{ steps.labels.outputs.sponsor }}
+        with:
+          message: ${{ steps.labels.outputs.sponsor }}

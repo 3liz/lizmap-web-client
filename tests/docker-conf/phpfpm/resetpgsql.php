@@ -3,15 +3,17 @@
 echo "Delete all tables from the postgresql database lizmap\n";
 $tryAgain = true;
 
-while($tryAgain) {
+while ($tryAgain) {
 
     $cnx = @pg_connect("host='pgsql' port='5432' dbname='lizmap' user='lizmap' password='lizmap1234!' ");
     if (!$cnx) {
         echo "  postgresql is not ready yet\n";
         sleep(1);
+
         continue;
     }
     $tryAgain = false;
+    pg_query($cnx, 'drop table if exists mapcontext cascade');
     pg_query($cnx, 'drop table if exists jacl2_subject_group cascade');
     pg_query($cnx, 'drop table if exists jacl2_user_group cascade');
     pg_query($cnx, 'drop table if exists jacl2_group cascade');
@@ -25,4 +27,3 @@ while($tryAgain) {
 }
 
 echo "  tables deleted\n";
-

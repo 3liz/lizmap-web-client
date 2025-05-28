@@ -8,7 +8,7 @@ class datavizListener extends jEventListener
 
         // Add JS and CSS for dataviz module
         $js = array();
-        $jscode = array();
+        $jsVars = array();
         $css = array();
 
         // Check dataviz config
@@ -18,18 +18,16 @@ class datavizListener extends jEventListener
         if ($dv->getStatus()) {
             $locale = substr(jApp::config()->locale, 0, 2);
             $js = array(
-                $bp.'assets/js/dataviz/plotly-latest.min.js',
+                $bp.'assets/js/dataviz/plotly-custom.min.js',
                 $bp.'assets/js/dataviz/dataviz.js',
             );
             if (in_array($locale, array('de', 'el', 'es', 'fr', 'it', 'nl', 'ro'))) {
-                $js[] = $bp.'assets/js/dataviz/plotly-locale-'.$locale.'-latest.js';
+                $js[] = $bp.'assets/js/dataviz/plotly-locale-'.$locale.'.js';
             }
             $datavizConfig = array(
                 'url' => jUrl::get('dataviz~service:index', array('repository' => $event->repository, 'project' => $event->project)),
             );
-            $jscode = array(
-                'var datavizConfig = '.json_encode($datavizConfig),
-            );
+            $jsVars['datavizConfig'] = $datavizConfig;
             $css = array(
                 $bp.'assets/css/dataviz/dataviz.css',
             );
@@ -37,7 +35,7 @@ class datavizListener extends jEventListener
         $event->add(
             array(
                 'js' => $js,
-                'jscode' => $jscode,
+                'jsvars' => $jsVars,
                 'css' => $css,
             )
         );

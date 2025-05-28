@@ -14,7 +14,7 @@
         updatepattern="" insertpattern="" selectpattern=""/>-->
     </record>
     <factory>
-    
+
       <method name="getSortedCounter" type="select">
         <order>
          <orderitem property="key" way="asc" />
@@ -22,7 +22,7 @@
          <orderitem property="project" way="asc" />
         </order>
       </method>
-    
+
       <method name="getSortedCounterByKey" type="select">
         <parameter name="key"/>
         <conditions logic="and">
@@ -34,7 +34,7 @@
          <orderitem property="project" way="asc" />
         </order>
       </method>
-      
+
       <method name="getDistinctCounter" type="selectfirst">
         <parameter name="key"/>
         <parameter name="repository"/>

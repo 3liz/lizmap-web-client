@@ -1,0 +1,444 @@
+name: "🎳 End2end"
+on:
+#  pull_request_target:
+  pull_request:
+    types: [ labeled, opened, synchronize, reopened ]
+    branches:
+      - master
+      - release_3_*
+  workflow_dispatch:
+  repository_dispatch:
+    types: [ run-e2e-branches ]
+
+env:
+  NODE_VERSION: "21"
+
+#concurrency:
+#  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+#  cancel-in-progress: true
+
+jobs:
+  end2end:
+    # The first condition is triggered when we set the new label
+    # The second one when we update the PR with new commits without changing labels
+    # The third one when external workflow
+    # The fourth one is for the manual button
+    if: |
+      github.event.label.name == 'run end2end' ||
+      contains(github.event.pull_request.labels.*.name, 'run end2end') ||
+      github.event_name == 'repository_dispatch' ||
+      github.event_name == 'workflow_dispatch'
+    name: "E2E QGIS ${{ matrix.qgis-server }} PG ${{ matrix.pg-postgis }} PHP ${{ matrix.php }}"
+    permissions:
+      issues: write
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tests
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: "LEGACY"
+            php: "8.1"
+            pg-postgis: "14-3"
+            qgis-server: "3.34"
+            update-projects: "FALSE"
+          - name: "BLEEDING_EDGE"
+            php: "8.3"
+            pg-postgis: "17-3"
+            qgis-server: "3.40"
+            update-projects: "TRUE"
+    env:
+      CYPRESS_CI: TRUE
+      PLAYWRIGHT_FORCE_TTY: true
+      PLAYWRIGHT_LIST_PRINT_STEPS: true
+      PLAYWRIGHT_JSON_OUTPUT_DIR: ${{ github.workspace }}/tests/end2end/playwright-report
+      PLAYWRIGHT_OPTIONS: --project=end2end
+      FORCE_COLOR: true
+    steps:
+
+#      - name: Debug
+#        working-directory: .
+#        run: |
+#            echo ${{ github.event.pull_request.head.sha }}
+#            echo ${{ github.head_ref }}
+#            echo ${{ github.ref_name }}
+
+      - name: Define branch name from env for the checkout
+        working-directory: .
+        run: |
+          if ${{ github.event_name == 'repository_dispatch' }}
+          then
+            # repository_dispatch is from an external workflow, for instance a cron workflow
+            echo "Set branch from manual input: ${{ github.event.client_payload.branch }}"
+            BRANCH="${{ github.event.client_payload.branch }}"
+          elif ${{ github.event_name == 'workflow_dispatch' }}
+          then
+            # workflow_dispatch is the the button in UI
+            echo "Set branch from default value: ${{ github.ref }}"
+            BRANCH="${{ github.ref }}"
+          else
+            # From a PR
+            echo "Event type ${{ github.event_name }}"
+            echo "Set branch from default value : ${{ github.event.pull_request.head.sha }} "
+            BRANCH="${{ github.event.pull_request.head.sha }}"
+          fi
+          echo "BRANCH=${BRANCH}" >> $GITHUB_ENV
+
+      - name: Login to Docker Hub
+        if: ${{ github.secret_source == 'Actions' }}
+        uses: docker/login-action@v3
+        env:
+          ACTIONS_STEP_DEBUG: true
+        with:
+          username: "3liz"
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        id: checkout
+        with:
+          ref: ${{ env.BRANCH }}
+          token: ${{ secrets.BOT_HUB_TOKEN || github.token  }}  # Important to launch CI on a commit from a bot
+
+      - name: Branch name
+        run: echo running on branch ${GITHUB_REF##*/} with CYPRESS = ${CYPRESS_CI} and commit ${{ steps.checkout.outputs.commit }}
+
+      - name: Make environment and show Lizmap versions
+        env:
+          PHP_VERSION: ${{ matrix.php }}
+          LZMPOSTGISVERSION: ${{ matrix.pg-postgis }}
+          LZMQGSRVVERSION: ${{ matrix.qgis-server }}
+        run: |
+          mkdir -p ${{env.PLAYWRIGHT_JSON_OUTPUT_DIR}}
+          make env
+          cat .env
+
+      - name: Read environment file and set variables
+        uses: cosq-network/dotenv-loader@v1.0.2
+        with:
+          # Somehow, the working-directory is not taken into account
+          env-file: tests/.env
+
+       # For testing only
+      - name: Update all QGIS projects to QGIS Desktop ${{ matrix.qgis-server }} by opening them and rewriting them
+        if: |
+          matrix.update-projects == 'TRUE'
+        run: |
+          make upgrade-projects
+          git status
+          git diff qgis-projects/tests/
+
+      - name: Install QGIS server plugins
+        run: make build-plugins
+
+      - name: Show QGIS server environment
+        run: |
+          make show-qgis-server-versions
+
+      - name: Pull docker images
+        run: ./run-docker pull
+
+      - name: Build and start docker images
+        run: ./run-docker up --build -d
+
+      - name: Wait 30 secondes for docker images to be ready
+        run: |
+          sleep 30
+
+      - name: Install Lizmap
+        # Quick dirty hack "| true" about duplicated key
+        # Error: An error occured during the installation of the module lizmapdemo:
+        # invalid query (ERROR: duplicate key value violates unique constraint "jacl2_group_id_aclgrp_pk"
+        # DETAIL: Key (id_aclgrp)=(__priv_lizadmin) already exists.(INSERT INTO "jacl2_group" (
+        # "id_aclgrp","name","grouptype","ownerlogin"
+        # ) VALUES (
+        # '__priv_lizadmin', 'lizadmin', 2, 'lizadmin'
+        # )))
+        # Installation is finished
+        run: |
+          ./lizmap-ctl install | true
+
+      - name: Wait and check about QGIS Server status
+        run: |
+          curl \
+            --user 'admin:admin' \
+            --retry 30 \
+            --retry-delay 5 \
+            -N \
+            "http://localhost:8130/index.php/view/app/metadata" \
+            -o /tmp/test-qgis-server.json
+          cat /tmp/test-qgis-server.json | jq .qgis_server_info
+          qgis_info=$(cat /tmp/test-qgis-server.json | jq --raw-output '.qgis_server_info.error')
+          echo $qgis_info
+          if [[ "$qgis_info" != "null" ]]; then
+              echo "QGIS Server is not well configured"
+              echo "::warning QGIS Server was not up"
+              exit 1
+          else
+              echo "JSON metadata OK about QGIS Server"
+          fi
+
+      - name: Check about updated files after a build (PHP or JS)
+        run: |
+          if [[ -z $(git status --porcelain -uno) ]]; then
+              echo "No updated files 👍"
+          else
+              echo "Updated files"
+              git status
+              echo "::warning Git status is not clean"
+          #    exit 1
+          fi
+
+      - name: Load SQL data
+        run: |
+          cd qgis-projects/tests
+          ./load_sql.sh
+
+      - name: Add hosts to /etc/hosts
+        run: |
+            sudo echo "127.0.0.1 othersite.local" | sudo tee -a /etc/hosts
+
+      - name: "Setup Node ${{ env.NODE_VERSION }}"
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: ${{ github.workspace }}/package.json
+
+      - name: Install dependencies
+        working-directory: ./
+        run: |
+          npm ci
+
+      - name: Install Playwright
+        working-directory: tests/end2end
+        run: |
+          npx playwright install --with-deps chromium
+
+      - name: Run Playwright tests tagged "@readonly"
+        id: test-playwright-read-only
+        working-directory: tests/end2end
+        env:
+          CRTF_JSON_FILE: playwright-tagged-readonly.json
+          PLAYWRIGHT_JSON_OUTPUT_NAME: tests-results-readonly.json
+        run: |
+          npx playwright test --grep @readonly ${{ env.PLAYWRIGHT_OPTIONS }}
+
+      - name: Prepare the database diff from Playwright "@readonly" tests
+        if: |
+          success() ||
+          steps.test-playwright-read-only.outcome != 'success'
+        run: |
+          ./lizmap-ctl dump-pgsql
+          git diff --exit-code qgis-projects/tests/tests_dataset.sql
+          db_diff=$?
+          echo "db_diff=${db_diff}" >> "$GITHUB_OUTPUT"
+          if [[ -z ${db_diff} ]]; then
+                echo "No updated files 👍"
+          else
+                echo "Updated files"
+                git diff qgis-projects/tests/tests_dataset.sql > qgis-projects/tests/tests_dataset.patch
+                git restore qgis-projects/tests/tests_dataset.sql
+                echo "::warning Git status is not clean after running tests about the DB"
+                exit 0
+          fi
+
+      - name: Upload DB results
+        if: |
+          success() ||
+          steps.test-playwright-read-only.outcome != 'success'
+        uses: actions/upload-artifact@master
+        with:
+          name: ${{ matrix.name }}-DB-diff-read-only
+          if-no-files-found: 'ignore'
+          path: |
+            ${{ github.workspace }}/tests/qgis-projects/tests/tests_dataset.patch
+
+      - name: Check about updated files after read only tests
+        if: |
+          success() ||
+          steps.test-playwright-read-only.outcome != 'success'
+        run: |
+          if [[ -z $(git status --porcelain -uno) ]]; then
+              echo "No updated files 👍"
+          else
+              echo "Updated files"
+              git status
+              echo "::warning Git status is not clean after running tests about tracked files"
+          fi
+
+      - name: Run Playwright tests tagged neither "@readonly" nor "@write"
+        id: test-playwright-no-tag
+        working-directory: tests/end2end
+        env:
+          CRTF_JSON_FILE: playwright-no-tag.json
+          PLAYWRIGHT_JSON_OUTPUT_NAME: tests-results-no-tag.json
+        if: |
+          success() ||
+          steps.test-playwright-read-only.outcome != 'success'
+        run: |
+          npx playwright test --workers 1 --grep-invert "(?=.*@write|.*@readonly)" ${{ env.PLAYWRIGHT_OPTIONS }}
+
+      - name: Run Playwright tests tagged "@write"
+        id: test-playwright-write
+        working-directory: tests/end2end
+        env:
+          CRTF_JSON_FILE: playwright-tagged-write.json
+          PLAYWRIGHT_JSON_OUTPUT_NAME: tests-results-write.json
+        if: |
+          success() ||
+          steps.test-playwright-read-only.outcome != 'success' ||
+          steps.test-playwright-no-tag.outcome != 'success'
+        run: |
+          npx playwright test --workers 1 --grep @write ${{ env.PLAYWRIGHT_OPTIONS }}
+
+      - name: Debug
+        if: always()
+        working-directory: tests
+        run: |
+          find . -type d -name "test-results"
+          echo $GITHUB_WORKSPACE
+          echo ${{ github.workspace }}
+          echo ${{ github.workspace }}/tests/end2end/test-results/
+          ls -l $GITHUB_WORKSPACE/tests/end2end/test-results/
+          ls ${{ github.workspace }}/tests/end2end/test-results/
+
+      - name: Send screenshots if necessary about all Playwright tests, if one failed
+        if: |
+          failure() &&
+          steps.test-playwright-read-only.outcome != 'success' ||
+          steps.test-playwright-no-tag.outcome != 'success' ||
+          steps.test-playwright-write.outcome != 'success'
+        uses: actions/upload-artifact@master
+        with:
+          name: ${{ matrix.name }}-screenshots-readonly
+          if-no-files-found: 'ignore'
+          path: |
+            ${{ github.workspace }}/tests/end2end/test-results/
+
+      - name: Publish test report
+        continue-on-error: true
+        if: |
+          success() ||
+          steps.test-playwright-read-only.outcome != 'success' ||
+          steps.test-playwright-no-tag.outcome != 'success' ||
+          steps.test-playwright-write.outcome != 'success'
+        uses: ctrf-io/github-test-reporter@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.BOT_HUB_TOKEN || github.token  }}
+        with:
+          report-path: './tests/end2end/ctrf/*.json'
+          summary-report: true
+          flaky-report: true
+          flaky-rate-report: true
+          summary: true
+          title: All Playwright tests ${{ matrix.NAME }}
+          # pull-request-report: true
+          # pull-request: true
+          # annotate: false
+          # overwrite-comment: true
+          # comment-tag: '${{ github.workflow }}-${{ github.job }}'
+
+      - name: Notify in case of playwright failure, from mainstream branches only
+        # Check for playwright tests with and without tags "readonly"
+        uses: peter-evans/commit-comment@v3
+        if: |
+          github.repository == '3liz/lizmap-web-client' &&
+          failure() &&
+          (
+          steps.test-playwright-read-only.outcome != 'success' ||
+          steps.test-playwright-write.outcome != 'success' ||
+          steps.test-playwright-not-tagged.outcome != 'success') &&
+          github.event_name == 'repository_dispatch'
+        with:
+          sha: ${{ steps.checkout.outputs.commit }}
+          token: ${{ secrets.BOT_HUB_TOKEN }}
+          body: |
+            The latest **weekly** run of end2end "playwright" tests failed with this latest commit on the branch
+            **${{ env.BRANCH }} ${{ matrix.name }}** 😣
+
+            CC @nboisteault and @Gustry, please have a look to the logs. Maybe it's a false positive ?
+
+            Visit ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+      - name: Upload test results
+        if: |
+          success() ||
+          steps.test-playwright-read-only.outcome != 'success' ||
+          steps.test-playwright-no-tag.outcome != 'success' ||
+          steps.test-playwright-write.outcome != 'success'
+        uses: actions/upload-artifact@master
+        with:
+          if-no-files-found: 'ignore'
+          name: ${{ matrix.name }}-playwright-report
+          path: ${{ github.workspace }}/tests/end2end/playwright-report
+
+      - name: Cypress run
+        id: test-cypress
+        if: |
+          success() ||
+          steps.test-playwright-read-only.outcome != 'success' ||
+          steps.test-playwright-no-tag.outcome != 'success' ||
+          steps.test-playwright-write.outcome != 'success'
+        uses: cypress-io/github-action@v6.9.0
+        with:
+          install: false
+          browser: chrome
+          headed: true
+          working-directory: tests/end2end
+          spec: cypress/integration/*-ghaction.js
+          wait-on: http://localhost:8130
+
+      - name: Export some logs to files
+        if: always()
+        run: |
+          mkdir -p /tmp/e2e/lwc
+          mkdir -p /tmp/e2e/docker
+          docker logs lizmap${{ env.LZMBRANCH }}_test_qgis &> /tmp/e2e/docker/qgis-server.log | true
+          docker logs lizmap${{ env.LZMBRANCH }}_test_php &> /tmp/e2e/docker/php.log | true
+          docker logs lizmap${{ env.LZMBRANCH }}_test_nginx &> /tmp/e2e/docker/nginx.log | true
+          cp -r ../lizmap/var/log /tmp/e2e/lwc/
+
+      - name: Upload all logs as artifact
+        uses: actions/upload-artifact@master
+        if: always()
+        with:
+          name: ${{ matrix.name }}-E2E-all-logs
+          path: |
+            /tmp/e2e/
+
+      - name: Notify in case of cypress failure, from mainstream branches only
+        uses: peter-evans/commit-comment@v3
+        if: |
+          github.repository == '3liz/lizmap-web-client' &&
+          failure() &&
+          steps.test-cypress.outcome != 'success' &&
+          github.event_name == 'repository_dispatch'
+        with:
+          sha: ${{ steps.checkout.outputs.commit }}
+          token: ${{ secrets.BOT_HUB_TOKEN }}
+          body: |
+            The latest **weekly** run of end2end "cypress" tests failed with this latest commit on the branch
+            **${{ env.BRANCH }} ${{ matrix.name }}** 😣
+
+            CC @nboisteault and @Gustry, please have a look to the logs. Maybe it's a false positive ?
+
+            Visit ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+      - name: Save screenshots as artifacts if a test fails to ease debug
+        uses: actions/upload-artifact@master
+        if: |
+          failure() &&
+          steps.test-cypress.outcome != 'success'
+        with:
+          name: ${{ matrix.name }}-cypress-screenshots
+          if-no-files-found: 'ignore'
+          path: |
+            tests/end2end/cypress/screenshots
+            tests/end2end/cypress/downloads
+
+      - name: Database diff check after readonly tests
+        run:
+          exit ${{ env.db_diff }}

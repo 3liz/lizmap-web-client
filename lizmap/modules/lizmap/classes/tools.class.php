@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Some generic methods.
  *
@@ -31,22 +32,20 @@ class tools
      *
      * @param string $string     String passed
      * @param bool   $accent     Replace the accents ?
-     * @param bool   $speciaux   Replace special chars with underscores ?
-     * @param bool   $accent     Delete underscores ?
-     * @param bool   $accent     Replace capital letters ?
-     * @param mixed  $underscore
-     * @param mixed  $majuscule
+     * @param bool   $special    Replace special chars with underscores ?
+     * @param bool   $underscore Delete underscores ?
+     * @param bool   $capital    Replace capital letters ?
      *
      * @return string
      */
-    public function stringSimplify($string, $accent, $speciaux, $underscore, $majuscule)
+    public function stringSimplify($string, $accent, $special, $underscore, $capital)
     {
         // accents
         if ($accent) {
             $string = $this->unaccent($string);
         }
         // special chars
-        if ($speciaux) {
+        if ($special) {
             $search = array('@[^a-zA-Z0-9_]@');
             $replace = array('_');
             $string = preg_replace($search, $replace, $string);
@@ -58,7 +57,7 @@ class tools
             $string = str_replace($search, $replace, $string);
         }
         // capital
-        if ($majuscule) {
+        if ($capital) {
             $string = strtolower($string);
         }
 
@@ -69,23 +68,23 @@ class tools
      * Human readable file size.
      * Replace octets with appropriate value. Ex : 1024 -> 1 Mo.
      *
-     * @param string $fichier File from which to display the size
+     * @param string $file File from which to display the size
      *
-     * @return string $taille Formated file size
+     * @return string $filesize Formated file size
      */
-    public function displayFileSize($fichier)
+    public function displayFileSize($file)
     {
-        $taille_fichier = filesize($fichier);
-        if ($taille_fichier >= 1073741824) {
-            $taille_fichier = round($taille_fichier / 1073741824 * 100) / 100 .' Go';
-        } elseif ($taille_fichier >= 1048576) {
-            $taille_fichier = round($taille_fichier / 1048576 * 100) / 100 .' Mo';
-        } elseif ($taille_fichier >= 1024) {
-            $taille_fichier = round($taille_fichier / 1024 * 100) / 100 .' Ko';
+        $filesize = filesize($file);
+        if ($filesize >= 1073741824) {
+            $filesize = round($filesize / 1073741824 * 100) / 100 .' Go';
+        } elseif ($filesize >= 1048576) {
+            $filesize = round($filesize / 1048576 * 100) / 100 .' Mo';
+        } elseif ($filesize >= 1024) {
+            $filesize = round($filesize / 1024 * 100) / 100 .' Ko';
         } else {
-            $taille_fichier = $taille_fichier.' o';
+            $filesize .= ' o';
         }
 
-        return $taille_fichier;
+        return $filesize;
     }
 }

@@ -4,11 +4,11 @@ class jDbConnectionForTests
 {
     public function encloseName($name)
     {
-        return $name;
+        return '"'.$name.'"';
     }
 
     public function quote($name)
     {
-        return '"'.$name.'"';
+        return "'".str_replace("'", "\\'", $name)."'";
     }
 }

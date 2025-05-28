@@ -1,4 +1,4 @@
-name: "Lint"
+name: "🔤 Lint"
 
 on:
   push:
@@ -10,13 +10,85 @@ on:
       - master
       - release_3_*
 
+env:
+  PHP_VERSION: "8.2"
+  NODE_VERSION: "21"
+
 jobs:
   php-cs-fixer:
     name: "PHP-CS-Fixer"
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: "PHP-CS-Fixer"
-      uses: docker://oskarstark/php-cs-fixer-ga:2.19.0
-      with:
-        args: --config=.php_cs.dist --allow-risky=yes --dry-run --diff -- lizmap/modules
+
+      - name: "Checkout"
+        uses: actions/checkout@v4
+
+      - name: "PHP-CS-Fixer"
+        # Version must match the one from the Makefile
+        uses: docker://ghcr.io/php-cs-fixer/php-cs-fixer:3.69-php8.1
+        with:
+          args: check --allow-risky=yes --diff
+
+  stylelint:
+    name: "StyleLint 🎨‌"
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: "Checkout"
+        uses: actions/checkout@v4
+
+      - name: "Setup Node ${{ env.NODE_VERSION }}"
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: ${{ github.workspace }}/package.json
+
+      - name: Install modules
+        run: npm install
+
+      - name: Run StyleLint
+        run: npm run style-check
+
+  eslint:
+      name: "ESLint 🇯‌🇸‌"
+      runs-on: ubuntu-latest
+      steps:
+
+      - name: "Checkout"
+        uses: actions/checkout@v4
+
+      - name: "Setup Node ${{ env.NODE_VERSION }}"
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: ${{ github.workspace }}/package.json
+
+      - name: Install modules
+        run: npm install
+
+      - name: Run ESLint
+        run: npm run pretest-fix
+
+  rector:
+      name: "Rector 🛠️"
+      runs-on: ubuntu-latest
+      steps:
+
+      - name: "Checkout"
+        uses: actions/checkout@v4
+
+      - name: "Setup PHP ${{ env.PHP_VERSION }}"
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+
+      - name: "Install composer tools in tests/units"
+        uses: ramsey/composer-install@v3
+        with:
+          working-directory: "tests/units"
+
+      - name: "Execute Rector"
+        working-directory: "tests/units"
+        run: composer rector

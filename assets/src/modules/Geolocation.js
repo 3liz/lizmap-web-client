@@ -1,22 +1,68 @@
-import {mainLizmap, mainEventDispatcher} from '../modules/Globals.js';
+/**
+ * @module modules/Geolocation.js
+ * @name Geolocation
+ * @copyright 2023 3Liz
+ * @license MPL-2.0
+ */
+import { mainEventDispatcher } from '../modules/Globals.js';
 import olGeolocation from 'ol/Geolocation.js';
-import {transform} from 'ol/proj';
+import { transform } from 'ol/proj.js';
+import { Vector as VectorSource } from 'ol/source.js';
+import { Vector as VectorLayer } from 'ol/layer.js';
+import Point from 'ol/geom/Point.js';
+import Circle from 'ol/geom/Circle.js';
+import Feature from 'ol/Feature.js';
 
+/**
+ * @class
+ * @name Geolocation
+ */
 export default class Geolocation {
 
-    constructor() {
+    /**
+     * Create a geolocation instance
+     * @param {Map}    map           - OpenLayers map
+     * @param {object}   lizmap3   - The old lizmap object
+     */
+    constructor(map, lizmap3) {
+        const color = 'rgb(3, 149, 214)';
+        const fillColor = 'rgba(3, 149, 214, 0.1)';
+        const strokeWidth = 1;
+        this._geolocationLayer = new VectorLayer({
+            source: new VectorSource({
+                wrapX: false
+            }),
+            style: {
+                'circle-radius': 3,
+                'circle-stroke-color': color,
+                'circle-stroke-width': strokeWidth,
+                'circle-fill-color': color,
+                'stroke-color': color,
+                'stroke-width': strokeWidth,
+                'fill-color': fillColor,
+            }
+        });
+        this._geolocationLayer.setProperties({
+            name: 'LizmapGeolocationGeolocationDrawLayer'
+        });
+
+        map.addToolLayer(this._geolocationLayer);
+
+        this._lizmap3 = lizmap3;
+        this._map = map;
         this._firstGeolocation = true;
         this._isBind = false;
         this._bindIntervalID = 0;
         this._bindIntervalInSecond = 10;
         this._isLinkedToEdition = false;
 
+        const qgisProjectProjection = lizmap3.map.getProjection();
         this._geolocation = new olGeolocation({
-            // enableHighAccuracy must be set to true to have the heading value.
+            // `enableHighAccuracy` must be set to true to have the heading value
             trackingOptions: {
                 enableHighAccuracy: true
             },
-            projection: mainLizmap.projection
+            projection: qgisProjectProjection
         });
 
         this._geolocation.on('change:position', () => {
@@ -28,10 +74,7 @@ export default class Geolocation {
 
         this._geolocation.on('change:tracking', () => {
             // FIXME : later we'll need an object listening to 'geolocation.isTracking' event and setting visibility accordingly
-            const geolocationLayer = mainLizmap._lizmap3.map.getLayersByName('geolocation')[0];
-            if (geolocationLayer) {
-                geolocationLayer.setVisibility(this.isTracking);
-            }
+            this._geolocationLayer.setVisible(this.isTracking);
 
             if(this.isBind){
                 if (this.isTracking) {
@@ -51,7 +94,8 @@ export default class Geolocation {
         this._geolocation.on('change:accuracyGeometry', () => {
             // Zoom on accuracy geometry extent when geolocation is activated for the first time
             if (this._firstGeolocation) {
-                mainLizmap.extent = this._geolocation.getAccuracyGeometry().getExtent();
+                const bounds = this._geolocation.getAccuracyGeometry().getExtent();
+                map.getView().fit(bounds, {nearest: true});
                 this.center();
                 this._firstGeolocation = false;
 
@@ -60,13 +104,14 @@ export default class Geolocation {
         });
 
         // Handle geolocation error
-        this._geolocation.on('error', function(error) {
-            mainLizmap.displayMessage(error.message, 'error', true);
+        this._geolocation.on('error', error => {
+            this._lizmap3.addMessage(error.message, 'danger', true);
         });
     }
 
     center() {
-        mainLizmap.center = this._geolocation.getPosition();
+        const center = this._geolocation.getPosition();
+        this._map.getView().setCenter(center);
     }
 
     toggleBind() {
@@ -105,7 +150,8 @@ export default class Geolocation {
             return this.position;
         } else {
             const position = this._geolocation.getPosition();
-            return transform(position, mainLizmap.projection, crs);
+            const qgisProjectProjection = this._lizmap3.map.getProjection();
+            return transform(position, qgisProjectProjection, crs);
         }
     }
 
@@ -117,7 +163,8 @@ export default class Geolocation {
     get position() {
         const position = this._geolocation.getPosition();
         if (position) {
-            const position4326 = transform(position, mainLizmap.projection, 'EPSG:4326');
+            const qgisProjectProjection = this._lizmap3.map.getProjection();
+            const position4326 = transform(position, qgisProjectProjection, 'EPSG:4326');
             return [parseFloat(position4326[0].toFixed(6)), parseFloat(position4326[1].toFixed(6))];
         }
         return undefined;
@@ -135,6 +182,7 @@ export default class Geolocation {
     }
 
     /**
+     * Set tracking status
      * @param {boolean} isTracking - Enable tracking.
      */
     set isTracking(isTracking) {
@@ -146,6 +194,7 @@ export default class Geolocation {
     }
 
     /**
+     * Set bind status
      * @param {boolean} isBind - Enable map view always centered on current position.
      */
     set isBind(isBind) {
@@ -159,6 +208,7 @@ export default class Geolocation {
     }
 
     /**
+     * Set linkedToEdition status
      * @param {boolean} isLinkedToEdition - Link edition and geolocation to draw features based on GPS position
      */
     set isLinkedToEdition(isLinkedToEdition) {
@@ -172,8 +222,9 @@ export default class Geolocation {
     }
 
     /**
-    * @param  {number} interval - Interval in second
-    */
+     * Set the interval in second for the bind
+     * @param  {number} interval - Interval in second
+     */
     set bindIntervalInSecond(interval) {
         this._bindIntervalInSecond = interval;
 
@@ -181,66 +232,15 @@ export default class Geolocation {
     }
 
     moveGeolocationPointAndCircle(coordinates) {
-        let geolocationLayer = mainLizmap._lizmap3.map.getLayersByName('geolocation')[0];
-        const circleStyle = {
-            fillColor: '#0395D6',
-            fillOpacity: 0.1,
-            strokeColor: '#0395D6',
-            strokeWidth: 1
-        };
+        const positionFeature = new Feature({
+            geometry: new Point(coordinates)
+        });
 
-        // Create layer if it does not exist
-        if (geolocationLayer === undefined) {
-            geolocationLayer = new OpenLayers.Layer.Vector('geolocation');
+        const accuracyFeature = new Feature({
+            geometry: new Circle(coordinates, this._geolocation.getAccuracy() / 2)
+        });
 
-            geolocationLayer.addFeatures([
-                new OpenLayers.Feature.Vector(
-                    // Point
-                    new OpenLayers.Geometry.Point(coordinates[0], coordinates[1]),
-                    {},
-                    {
-                        graphicName: 'circle',
-                        strokeColor: '#0395D6',
-                        strokeWidth: 1,
-                        fillOpacity: 1,
-                        fillColor: '#0395D6',
-                        pointRadius: 3
-                    }
-                ),
-                // circle
-                new OpenLayers.Feature.Vector(
-                    OpenLayers.Geometry.Polygon.createRegularPolygon(
-                        new OpenLayers.Geometry.Point(coordinates[0], coordinates[1]),
-                        this._geolocation.getAccuracy() / 2,
-                        40,
-                        0
-                    ),
-                    {},
-                    circleStyle
-                )
-            ]);
-            mainLizmap._lizmap3.map.addLayer(geolocationLayer);
-        } else {
-            const geolocationPoint = geolocationLayer.features[0];
-
-            geolocationPoint.geometry.x = coordinates[0];
-            geolocationPoint.geometry.y = coordinates[1];
-            geolocationPoint.geometry.clearBounds();
-            geolocationLayer.drawFeature(geolocationPoint);
-
-            let geolocationCircle = geolocationLayer.features[1];
-            geolocationLayer.destroyFeatures([geolocationCircle]);
-            geolocationCircle = new OpenLayers.Feature.Vector(
-                OpenLayers.Geometry.Polygon.createRegularPolygon(
-                    new OpenLayers.Geometry.Point(coordinates[0], coordinates[1]),
-                    this._geolocation.getAccuracy() / 2,
-                    40,
-                    0
-                ),
-                {},
-                circleStyle
-            );
-            geolocationLayer.addFeatures([geolocationCircle]);
-        }
+        this._geolocationLayer.getSource().clear();
+        this._geolocationLayer.getSource().addFeatures([positionFeature, accuracyFeature]);
     }
 }

@@ -36,5 +36,3 @@ dn: cn=group2,ou=groups,dc=tests,dc=lizmap
 objectClass: groupOfNames
 cn: group2
 member: uid=john,ou=people,dc=tests,dc=lizmap
-
-

@@ -1,7 +1,20 @@
+/**
+ * @module components/GeolocationSurvey.js
+ * @name GeolocationSurvey
+ * @copyright 2023 3Liz
+ * @author BOISTEAULT Nicolas
+ * @license MPL-2.0
+ */
+
 import {mainLizmap, mainEventDispatcher} from '../modules/Globals.js';
 import {html, render} from 'lit-html';
 import '../images/svg/device-mobile-vibration.svg';
 
+/**
+ * @class
+ * @name GeolocationSurvey
+ * @augments HTMLElement
+ */
 export default class GeolocationSurvey extends HTMLElement {
     constructor() {
         super();

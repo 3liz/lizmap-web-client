@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Lizmap administration : theme.
  *
@@ -13,14 +14,22 @@ class themeCtrl extends jController
 {
     // Configure access via jacl2 rights management
     public $pluginParams = array(
-        '*' => array('jacl2.right' => 'lizmap.admin.access'),
+        '*' => array('jacl2.right' => 'lizmap.admin.theme.view'),
+        'modify' => array('jacl2.right' => 'lizmap.admin.theme.update'),
+        'edit' => array('jacl2.right' => 'lizmap.admin.theme.update'),
+        'save' => array('jacl2.right' => 'lizmap.admin.theme.update'),
+        'validate' => array('jacl2.right' => 'lizmap.admin.theme.update'),
+        'removeThemeImage' => array('jacl2.right' => 'lizmap.admin.theme.update'),
     );
 
     /**
      * Display a summary of the theme.
+     *
+     * @return jResponseHtml
      */
     public function index()
     {
+        /** @var jResponseHtml $rep */
         $rep = $this->getResponse('html');
 
         // Get the data
@@ -54,9 +63,12 @@ class themeCtrl extends jController
 
     /**
      * Modify the theme.
+     *
+     * @return jResponseRedirect
      */
     public function modify()
     {
+        /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
 
         // Get the data
@@ -82,14 +94,16 @@ class themeCtrl extends jController
     /**
      * Display the form to modify the theme.
      *
-     * @return Display the form
+     * @return jResponseHtml|jResponseRedirect the form
      */
     public function edit()
     {
+        /** @var jResponseHtml $rep */
         $rep = $this->getResponse('html');
 
-        // Get the form
+        /** @var null|jFormsBase $form */
         $form = jForms::get('theme');
+        // Get the form
 
         if ($form) {
             // Display form
@@ -102,6 +116,8 @@ class themeCtrl extends jController
         }
         // redirect to default page
         jMessage::add('error in theme edition');
+
+        /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
         $rep->action = 'theme:index';
 
@@ -111,19 +127,21 @@ class themeCtrl extends jController
     /**
      * Save the data for the theme section.
      *
-     * @return Redirect to the index
+     * @return jResponseRedirect to the index
      */
     public function save()
     {
-
         // If the section does exists in the ini file : get the data
         $theme = lizmap::getTheme();
+
+        /** @var null|jFormsBase $form */
         $form = jForms::get('theme');
 
         // token
         $token = $this->param('__JFORMS_TOKEN__');
+        // redirection vers la page d'erreur
         if (!$token) {
-            // redirection vers la page d'erreur
+            /** @var jResponseRedirect $rep */
             $rep = $this->getResponse('redirect');
             $rep->action = 'theme:index';
 
@@ -132,6 +150,7 @@ class themeCtrl extends jController
 
         // If the form is not defined, redirection
         if (!$form) {
+            /** @var jResponseRedirect $rep */
             $rep = $this->getResponse('redirect');
             $rep->action = 'theme:index';
 
@@ -147,8 +166,9 @@ class themeCtrl extends jController
             $ok = false;
         }
 
+        // Errors : redirection to the display action
         if (!$ok) {
-            // Errors : redirection to the display action
+            /** @var jResponseRedirect $rep */
             $rep = $this->getResponse('redirect');
             $rep->action = 'theme:edit';
             $rep->params['errors'] = '1';
@@ -182,13 +202,13 @@ class themeCtrl extends jController
         }
 
         // Modify class properties
-        $modifytheme = $theme->update($data);
-        if ($modifytheme) {
+        if ($theme->update($data)) {
             jMessage::add(jLocale::get('admin~admin.form.admin_theme.message.data.saved'));
         }
 
-        // Redirect to the validation page
+        /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
+        // Redirect to the validation page
         $rep->action = 'theme:validate';
 
         return $rep;
@@ -197,23 +217,28 @@ class themeCtrl extends jController
     /**
      * Validate the data for the theme section : destroy form and redirect.
      *
-     * @return Redirect to the index
+     * @return jResponseRedirect to the index
      */
     public function validate()
     {
-
-    // Destroy the form
-        if ($form = jForms::get('theme')) {
+        /** @var null|jFormsBase $form */
+        $form = jForms::get('theme');
+        // Destroy the form
+        if ($form) {
             jForms::destroy('theme');
         }
 
-        // Redirect to the index
+        /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
+        // Redirect to the index
         $rep->action = 'theme:index';
 
         return $rep;
     }
 
+    /**
+     * @return jResponseRedirect
+     */
     public function removeThemeImage()
     {
         $theme = lizmap::getTheme();
@@ -236,10 +261,11 @@ class themeCtrl extends jController
         }
 
         // update theme
-        $modifytheme = $theme->update($data);
+        $theme->update($data);
 
-        // Redirect to the index
+        /** @var jResponseRedirect $rep */
         $rep = $this->getResponse('redirect');
+        // Redirect to the index
         $rep->action = 'theme:index';
 
         return $rep;

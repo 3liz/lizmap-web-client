@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Displays a full featured map based on one Qgis project.
  *
@@ -13,6 +14,9 @@ include jApp::getModulePath('view').'controllers/lizMap.classic.php';
 
 class mapCtrl extends lizMapCtrl
 {
+    /**
+     * @return jResponseHtml|jResponseRedirect
+     */
     public function index()
     {
         $rep = parent::index();
@@ -20,33 +24,34 @@ class mapCtrl extends lizMapCtrl
         // Get repository key
         $repository = $this->param('repository');
         // Get the project key
-        $project = filter_var($this->param('project'), FILTER_SANITIZE_STRING);
+        $project = htmlspecialchars(strip_tags($this->param('project')));
 
         $url_params = array(
             'repository' => $repository,
             'project' => $project,
         );
         // other map params
-        if ($this->param('layers')) {
-            $url_params['layers'] = $this->param('layers');
-        }
-        if ($this->param('bbox')) {
-            $url_params['bbox'] = $this->param('bbox');
-        }
-        if ($this->param('crs')) {
-            $url_params['crs'] = $this->param('crs');
-        }
-        if ($this->param('filter')) {
-            $url_params['filter'] = $this->param('filter');
-        }
-        if ($this->param('layerStyles')) {
-            $url_params['layerStyles'] = $this->param('layerStyles');
-        }
-        if ($this->param('layerOpacities')) {
-            $url_params['layerOpacities'] = $this->param('layerOpacities');
+        $knownKeyParams = array(
+            'layers',
+            'bbox',
+            'crs',
+            'filter',
+            'layerStyles',
+            'layerOpacities',
+            'mapTheme',
+        );
+        // Get redirection parameters
+        $redirectKeyParams = jEvent::notify('getRedirectKeyParams', array('repository' => $repository, 'project' => $project))->getResponse();
+        $keyParams = array_unique(array_merge($knownKeyParams, $redirectKeyParams), SORT_REGULAR);
+        $params = $this->params();
+        foreach ($keyParams as $key) {
+            if (array_key_exists($key, $params)) {
+                $url_params[$key] = $params[$key];
+            }
         }
 
         if ($rep->getType() === 'html') {
+            // @var jResponseHtml $rep
             $url_params['repository'] = $this->repositoryKey;
             $url_params['project'] = $this->projectKey;
 
@@ -55,6 +60,7 @@ class mapCtrl extends lizMapCtrl
             return $rep;
         }
 
+        /** @var jResponseRedirect $rep */
         if ($rep->getType() === 'redirect' && $rep->action === 'jcommunity~login:index') {
             $rep->params['auth_url_return'] = jUrl::get('view~map:index', $url_params);
         }

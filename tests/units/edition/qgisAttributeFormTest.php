@@ -1,6 +1,7 @@
 <?php
-use PHPUnit\Framework\TestCase;
+
 use Lizmap\Form;
+use PHPUnit\Framework\TestCase;
 
 class dummyQgisFormControls implements Form\QgisFormControlsInterface
 {
@@ -37,11 +38,12 @@ class dummyQgisFormControls implements Form\QgisFormControlsInterface
 
 /**
  * @internal
+ *
  * @coversNothing
  */
 class qgisAttributeFormTest extends TestCase
 {
-    public function testSimpleContainer()
+    public function testSimpleContainer(): void
     {
         $xml = '<attributeEditorForm>
             <attributeEditorField showLabel="1" index="0" name="pkuid"/>
@@ -107,7 +109,7 @@ class qgisAttributeFormTest extends TestCase
         $this->assertEquals('foo', $cc->getParentId());
     }
 
-    public function testSimpleGroupBox()
+    public function testSimpleGroupBox(): void
     {
         $xml = '<attributeEditorForm>
            <attributeEditorContainer showLabel="1" visibilityExpressionEnabled="0" visibilityExpression="" name="Generic" groupBox="1" columnCount="0">
@@ -190,7 +192,7 @@ class qgisAttributeFormTest extends TestCase
         $this->assertEquals('foo-group0', $cc->getParentId());
     }
 
-    public function testTabAttributesForm()
+    public function testTabAttributesForm(): void
     {
         $xml = '<attributeEditorForm>
         <attributeEditorContainer showLabel="1" visibilityExpressionEnabled="0" visibilityExpression="" name="Description" groupBox="0" columnCount="0">

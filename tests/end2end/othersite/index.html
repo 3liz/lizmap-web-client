@@ -1,0 +1,26 @@
+<!DOCTYPE HTML>
+<html lang="fr-FR">
+<head>
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type"/>
+    <title>Other site</title>
+    <script src="main.js"></script>
+</head>
+<body >
+    <h2>CORS test on an authorized API</h2>
+    <p>Request on a project from the "testsrepository" repository</p>
+    <button type="button" id="launch-request">Launch request</button>
+    <input type="checkbox" id="cache-disabled"/> with http cache disabled
+
+    <p>Response: code=<span id="status"></span></p>
+    <textarea id="response"></textarea>
+
+    <h2>CORS test on an unauthorized API</h2>
+    <p>Request on project from the "montpellier" repository</p>
+    <button type="button" id="launch-request-bad">Launch request</button>
+    <p>You should see CORS errors into the console.</p>
+    <p style="display:none">Response: code=<span id="status_bad"></span></p>
+    <textarea id="response_bad"></textarea>
+
+
+
+</body>

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Manage and give access to lizmap log item.
  *
@@ -137,7 +138,7 @@ class Item
         try {
             $dao->insert($rec);
         } catch (\Exception $e) {
-            $this->appContext->logMessage('Error while inserting a new line in log_detail :'.$e->getMessage());
+            $this->appContext->logMessage('Error while inserting a new line in log_detail :'.$e->getMessage(), 'error');
         }
     }
 
@@ -171,7 +172,7 @@ class Item
                 $dao->insert($rec);
             }
         } catch (\Exception $e) {
-            $this->appContext->logMessage('Error while increasing log counter:'.$e->getMessage());
+            $this->appContext->logMessage('Error while increasing log counter:'.$e->getMessage(), 'error');
         }
     }
 }

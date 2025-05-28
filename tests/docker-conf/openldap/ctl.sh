@@ -23,5 +23,3 @@ case $COMMAND in
         exit 2
         ;;
 esac
-
-

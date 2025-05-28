@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author    3liz
  * @copyright 2011 3liz
@@ -12,9 +13,9 @@ class viewModuleInstaller extends jInstallerModule
     public function install()
     {
 
-        //if ($this->firstDbExec()) {
-            //$this->useDbProfile('auth');
-            //$this->execSQLScript('sql/install');
-        //}
+        // if ($this->firstDbExec()) {
+        // $this->useDbProfile('auth');
+        // $this->execSQLScript('sql/install');
+        // }
     }
 }

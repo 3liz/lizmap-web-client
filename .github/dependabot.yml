@@ -11,19 +11,15 @@ updates:
     directory: "/lizmap"
     schedule:
       interval: "monthly"
-    assignees:
-      - "laurentj"
 
-  - package-ecosystem: "docker"
-    directory: "/tests"
+  - package-ecosystem: "composer"
+    directory: "/tests/units"
     schedule:
       interval: "monthly"
-    assignees:
-      - "dmarteau"
 
   - package-ecosystem: "npm"
-    directory: "/assets"
+    directory: "/"
     schedule:
       interval: "monthly"
-    assignees:
-      - "nboisteault"
+#    assignees:
+#      - "nboisteault"

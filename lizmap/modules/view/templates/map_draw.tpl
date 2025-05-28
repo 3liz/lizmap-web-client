@@ -1,7 +1,7 @@
 <div class="draw">
     <h3>
         <span class="title">
-            <button class="btn-draw-clear btn btn-mini btn-error btn-link"
+            <button class="btn-draw-clear btn btn-sm btn-error btn-link"
                 title="{@view~map.toolbar.content.stop@}" onclick="document.querySelector('#button-draw').click();">×</button>
             <svg>
                 <use xlink:href="#pencil"></use>
@@ -11,6 +11,6 @@
     </h3>
 
     <div class="menu-content">
-        <lizmap-digitizing import-export></lizmap-digitizing>
+        <lizmap-digitizing context="draw" save import-export measure text-tools></lizmap-digitizing>
     </div>
 </div>

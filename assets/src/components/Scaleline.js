@@ -1,23 +1,31 @@
-import { mainLizmap } from '../modules/Globals.js';
-import ScaleLine from 'ol/control/ScaleLine';
+/**
+ * @module components/Scaleline.js
+ * @name Scaleline
+ * @copyright 2023 3Liz
+ * @author BOISTEAULT Nicolas
+ * @license MPL-2.0
+ */
 
+import { mainLizmap } from '../modules/Globals.js';
+import { ADJUSTED_DPI } from '../utils/Constants.js';
+import ScaleLine from 'ol/control/ScaleLine.js';
+
+/**
+ * @class
+ * @name Scaleline
+ * @augments HTMLElement
+ */
 export default class Scaleline extends HTMLElement {
     constructor() {
         super();
     }
 
     connectedCallback() {
-
-        // Adjust OL2 to OL6 DPI value
-        // We use 25.40005080010160020 for inch to meter conversion as it is more precise
-        // const ADJUSTED_DPI = 96 * 25.4 / 25.40005080010160020;
-        const ADJUSTED_DPI = 95.999808;
-
         this._olScaleline = new ScaleLine({
             target: this,
             minWidth: 76,
             bar: true,
-            text: true,
+            text: !mainLizmap.initialConfig.options.hide_numeric_scale_value,
             dpi: ADJUSTED_DPI
         });
 

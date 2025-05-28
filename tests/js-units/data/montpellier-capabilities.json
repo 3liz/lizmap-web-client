@@ -1,0 +1,2050 @@
+{
+  "version": "1.3.0",
+  "Service": {
+    "Name": "WMS",
+    "Title": "Montpellier - Transports",
+    "Abstract": "Demo project with bus and tramway lines in Montpellier, France.\nData is licensed under ODbl, OpenStreetMap contributors",
+    "KeywordList": [
+      "infoMapAccessService"
+    ],
+    "OnlineResource": "http://www.3liz.com/lizmap.html",
+    "ContactInformation": {
+      "ContactPersonPrimary": {
+        "ContactPerson": "3liz",
+        "ContactOrganization": "3liz"
+      },
+      "ContactVoiceTelephone": "+334 67 16 64 51",
+      "ContactElectronicMailAddress": "info@3liz.com"
+    },
+    "Fees": "conditions unknown",
+    "AccessConstraints": "None",
+    "MaxWidth": 3000,
+    "MaxHeight": 3000
+  },
+  "Capability": {
+    "Request": {
+      "GetCapabilities": {
+        "Format": [
+          "text/xml"
+        ],
+        "DCPType": [
+          {
+            "HTTP": {
+              "Get": {
+                "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=montpellier&"
+              }
+            }
+          }
+        ]
+      },
+      "GetMap": {
+        "Format": [
+          "image/jpeg",
+          "image/png",
+          "image/png; mode=16bit",
+          "image/png; mode=8bit",
+          "image/png; mode=1bit",
+          "application/dxf"
+        ],
+        "DCPType": [
+          {
+            "HTTP": {
+              "Get": {
+                "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=montpellier&"
+              }
+            }
+          }
+        ]
+      },
+      "GetFeatureInfo": {
+        "Format": [
+          "text/plain",
+          "text/html",
+          "text/xml",
+          "application/vnd.ogc.gml",
+          "application/vnd.ogc.gml/3.1.1",
+          "application/json",
+          "application/geo+json"
+        ],
+        "DCPType": [
+          {
+            "HTTP": {
+              "Get": {
+                "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=montpellier&"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "Exception": [
+      "XML"
+    ],
+    "Layer": {
+      "Name": "Montpellier-Transports",
+      "Title": "Montpellier - Transports",
+      "Abstract": "Demo project with bus and tramway lines in Montpellier, France.\nData is licensed under ODbl, OpenStreetMap contributors",
+      "KeywordList": [
+        "infoMapAccessService"
+      ],
+      "CRS": [
+        "CRS:84",
+        "EPSG:2154",
+        "EPSG:4326",
+        "EPSG:3857"
+      ],
+      "EX_GeographicBoundingBox": [
+        43.542477,
+        3.746034,
+        43.672144,
+        4.01689
+      ],
+      "BoundingBox": [
+        {
+          "crs": "EPSG:3857",
+          "extent": [
+            417006.613,
+            5394910.34,
+            447158.049,
+            5414844.995
+          ],
+          "res": [
+            null,
+            null
+          ]
+        },
+        {
+          "crs": "EPSG:4326",
+          "extent": [
+            3.746034,
+            43.542477,
+            4.01689,
+            43.672144
+          ],
+          "res": [
+            null,
+            null
+          ]
+        },
+        {
+          "crs": "EPSG:2154",
+          "extent": [
+            417006.613,
+            5394910.34,
+            447158.049,
+            5414844.995
+          ],
+          "res": [
+            null,
+            null
+          ]
+        }
+      ],
+      "Layer": [
+        {
+          "Name": "Edition",
+          "Title": "Edition",
+          "CRS": [
+            "CRS:84",
+            "EPSG:2154",
+            "EPSG:4326",
+            "EPSG:3857",
+            "CRS:84",
+            "EPSG:2154",
+            "EPSG:4326",
+            "EPSG:3857"
+          ],
+          "EX_GeographicBoundingBox": [
+            43.571914,
+            3.831297,
+            43.670511,
+            3.907531
+          ],
+          "BoundingBox": [
+            {
+              "crs": "EPSG:3857",
+              "extent": [
+                426498.141,
+                5399432.172,
+                434984.262,
+                5414593.657
+              ],
+              "res": [
+                null,
+                null
+              ]
+            },
+            {
+              "crs": "EPSG:4326",
+              "extent": [
+                3.831297,
+                43.571914,
+                3.907531,
+                43.670511
+              ],
+              "res": [
+                null,
+                null
+              ]
+            },
+            {
+              "crs": "EPSG:2154",
+              "extent": [
+                426498.141,
+                5399432.172,
+                434984.262,
+                5414593.657
+              ],
+              "res": [
+                null,
+                null
+              ]
+            }
+          ],
+          "Layer": [
+            {
+              "Name": "points_of_interest",
+              "Title": "Points of interest",
+              "CRS": [
+                "CRS:84",
+                "EPSG:2154",
+                "EPSG:4326",
+                "EPSG:3857",
+                "CRS:84",
+                "EPSG:2154",
+                "EPSG:4326",
+                "EPSG:3857"
+              ],
+              "EX_GeographicBoundingBox": [
+                3.845415,
+                43.594383,
+                3.895635,
+                43.642037
+              ],
+              "BoundingBox": [
+                {
+                  "crs": "EPSG:3857",
+                  "extent": [
+                    428069.654,
+                    5402885.088,
+                    433660.033,
+                    5410212.553
+                  ],
+                  "res": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "crs": "EPSG:4326",
+                  "extent": [
+                    43.594383,
+                    3.845415,
+                    43.642037,
+                    3.895635
+                  ],
+                  "res": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "crs": "EPSG:2154",
+                  "extent": [
+                    768232.115,
+                    6277624.103,
+                    772345.131,
+                    6282964.615
+                  ],
+                  "res": [
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "Style": [
+                {
+                  "Name": "default",
+                  "Title": "default",
+                  "LegendURL": [
+                    {
+                      "Format": "image/png",
+                      "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=montpellier&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=points_of_interest&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0",
+                      "size": [
+                        null,
+                        null
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "queryable": true,
+              "opaque": false,
+              "noSubsets": false
+            },
+            {
+              "Name": "edition_line",
+              "Title": "Bicycle rides",
+              "CRS": [
+                "CRS:84",
+                "EPSG:2154",
+                "EPSG:4326",
+                "EPSG:3857",
+                "CRS:84",
+                "EPSG:2154",
+                "EPSG:4326",
+                "EPSG:3857"
+              ],
+              "EX_GeographicBoundingBox": [
+                3.831298,
+                43.571914,
+                3.907531,
+                43.670511
+              ],
+              "BoundingBox": [
+                {
+                  "crs": "EPSG:3857",
+                  "extent": [
+                    426498.142,
+                    5399432.173,
+                    434984.262,
+                    5414593.656
+                  ],
+                  "res": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "crs": "EPSG:4326",
+                  "extent": [
+                    43.571914,
+                    3.831298,
+                    43.670511,
+                    3.907531
+                  ],
+                  "res": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "crs": "EPSG:2154",
+                  "extent": [
+                    767059.472,
+                    6275114.929,
+                    773334.672,
+                    6286139.847
+                  ],
+                  "res": [
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "Style": [
+                {
+                  "Name": "default",
+                  "Title": "default",
+                  "LegendURL": [
+                    {
+                      "Format": "image/png",
+                      "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=montpellier&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=edition_line&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0",
+                      "size": [
+                        null,
+                        null
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "queryable": true,
+              "opaque": false,
+              "noSubsets": false
+            },
+            {
+              "Name": "areas_of_interest",
+              "Title": "Areas of interest",
+              "CRS": [
+                "CRS:84",
+                "EPSG:2154",
+                "EPSG:4326",
+                "EPSG:3857",
+                "CRS:84",
+                "EPSG:2154",
+                "EPSG:4326",
+                "EPSG:3857"
+              ],
+              "EX_GeographicBoundingBox": [
+                3.862278,
+                43.606014,
+                3.894895,
+                43.649006
+              ],
+              "BoundingBox": [
+                {
+                  "crs": "EPSG:3857",
+                  "extent": [
+                    429946.82,
+                    5404673.008,
+                    433577.617,
+                    5411284.751
+                  ],
+                  "res": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "crs": "EPSG:4326",
+                  "extent": [
+                    43.606014,
+                    3.862278,
+                    43.649006,
+                    3.894895
+                  ],
+                  "res": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "crs": "EPSG:2154",
+                  "extent": [
+                    769584.579,
+                    6278931.428,
+                    772270.682,
+                    6283738.483
+                  ],
+                  "res": [
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "Style": [
+                {
+                  "Name": "default",
+                  "Title": "default",
+                  "LegendURL": [
+                    {
+                      "Format": "image/png",
+                      "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=montpellier&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=areas_of_interest&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0",
+                      "size": [
+                        null,
+                        null
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "queryable": true,
+              "opaque": false,
+              "noSubsets": false
+            }
+          ],
+          "queryable": true,
+          "opaque": false,
+          "noSubsets": false
+        },
+        {
+          "Name": "datalayers",
+          "Title": "datalayers",
+          "CRS": [
+            "CRS:84",
+            "EPSG:2154",
+            "EPSG:4326",
+            "EPSG:3857",
+            "CRS:84",
+            "EPSG:2154",
+            "EPSG:4326",
+            "EPSG:3857"
+          ],
+          "EX_GeographicBoundingBox": [
+            43.526499,
+            3.553259,
+            43.76158,
+            4.08124
+          ],
+          "BoundingBox": [
+            {
+              "crs": "EPSG:3857",
+              "extent": [
+                395547.093,
+                5392456.983,
+                454321.449,
+                5428619.815
+              ],
+              "res": [
+                null,
+                null
+              ]
+            },
+            {
+              "crs": "EPSG:4326",
+              "extent": [
+                3.553259,
+                43.526499,
+                4.08124,
+                43.76158
+              ],
+              "res": [
+                null,
+                null
+              ]
+            },
+            {
+              "crs": "EPSG:2154",
+              "extent": [
+                395547.093,
+                5392456.983,
+                454321.449,
+                5428619.816
+              ],
+              "res": [
+                null,
+                null
+              ]
+            }
+          ],
+          "Layer": [
+            {
+              "Name": "Bus",
+              "Title": "Bus",
+              "CRS": [
+                "CRS:84",
+                "EPSG:2154",
+                "EPSG:4326",
+                "EPSG:3857",
+                "CRS:84",
+                "EPSG:2154",
+                "EPSG:4326",
+                "EPSG:3857"
+              ],
+              "EX_GeographicBoundingBox": [
+                43.526499,
+                3.553259,
+                43.76158,
+                4.08124
+              ],
+              "BoundingBox": [
+                {
+                  "crs": "EPSG:3857",
+                  "extent": [
+                    395547.093,
+                    5392456.984,
+                    454321.449,
+                    5428619.815
+                  ],
+                  "res": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "crs": "EPSG:4326",
+                  "extent": [
+                    3.553259,
+                    43.526499,
+                    4.08124,
+                    43.76158
+                  ],
+                  "res": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "crs": "EPSG:2154",
+                  "extent": [
+                    395547.093,
+                    5392456.984,
+                    454321.449,
+                    5428619.815
+                  ],
+                  "res": [
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "Layer": [
+                {
+                  "Name": "bus_stops",
+                  "Title": "bus_stops",
+                  "CRS": [
+                    "CRS:84",
+                    "EPSG:2154",
+                    "EPSG:4326",
+                    "EPSG:3857",
+                    "CRS:84",
+                    "EPSG:2154",
+                    "EPSG:4326",
+                    "EPSG:3857"
+                  ],
+                  "EX_GeographicBoundingBox": [
+                    3.55326,
+                    43.526928,
+                    4.039132,
+                    43.752341
+                  ],
+                  "BoundingBox": [
+                    {
+                      "crs": "EPSG:3857",
+                      "extent": [
+                        395547.093,
+                        5392522.697,
+                        449634.007,
+                        5427196.032
+                      ],
+                      "res": [
+                        null,
+                        null
+                      ]
+                    },
+                    {
+                      "crs": "EPSG:4326",
+                      "extent": [
+                        43.526928,
+                        3.55326,
+                        43.752341,
+                        4.039132
+                      ],
+                      "res": [
+                        null,
+                        null
+                      ]
+                    },
+                    {
+                      "crs": "EPSG:2154",
+                      "extent": [
+                        744567.335,
+                        6269918.107,
+                        784034.151,
+                        6295363.936
+                      ],
+                      "res": [
+                        null,
+                        null
+                      ]
+                    }
+                  ],
+                  "Style": [
+                    {
+                      "Name": "default",
+                      "Title": "default",
+                      "LegendURL": [
+                        {
+                          "Format": "image/png",
+                          "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=montpellier&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=bus_stops&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0",
+                          "size": [
+                            null,
+                            null
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "MinScaleDenominator": 0,
+                  "MaxScaleDenominator": 15000,
+                  "queryable": true,
+                  "opaque": false,
+                  "noSubsets": false
+                },
+                {
+                  "Name": "bus",
+                  "Title": "Bus lines",
+                  "CRS": [
+                    "CRS:84",
+                    "EPSG:2154",
+                    "EPSG:4326",
+                    "EPSG:3857",
+                    "CRS:84",
+                    "EPSG:2154",
+                    "EPSG:4326",
+                    "EPSG:3857"
+                  ],
+                  "EX_GeographicBoundingBox": [
+                    3.698123,
+                    43.5265,
+                    4.081239,
+                    43.761579
+                  ],
+                  "BoundingBox": [
+                    {
+                      "crs": "EPSG:3857",
+                      "extent": [
+                        411673.169,
+                        5392456.985,
+                        454321.448,
+                        5428619.814
+                      ],
+                      "res": [
+                        null,
+                        null
+                      ]
+                    },
+                    {
+                      "crs": "EPSG:4326",
+                      "extent": [
+                        43.5265,
+                        3.698123,
+                        43.761579,
+                        4.081239
+                      ],
+                      "res": [
+                        null,
+                        null
+                      ]
+                    },
+                    {
+                      "crs": "EPSG:2154",
+                      "extent": [
+                        756227.288,
+                        6269963.369,
+                        787439.853,
+                        6296435.987
+                      ],
+                      "res": [
+                        null,
+                        null
+                      ]
+                    }
+                  ],
+                  "Style": [
+                    {
+                      "Name": "default",
+                      "Title": "default",
+                      "LegendURL": [
+                        {
+                          "Format": "image/png",
+                          "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=montpellier&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=bus&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0",
+                          "size": [
+                            null,
+                            null
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "MinScaleDenominator": -4.65661e-10,
+                  "MaxScaleDenominator": 40001,
+                  "queryable": true,
+                  "opaque": false,
+                  "noSubsets": false
+                }
+              ],
+              "queryable": true,
+              "opaque": false,
+              "noSubsets": false
+            },
+            {
+              "Name": "Tramway",
+              "Title": "Tramway",
+              "CRS": [
+                "CRS:84",
+                "EPSG:2154",
+                "EPSG:4326",
+                "EPSG:3857",
+                "CRS:84",
+                "EPSG:2154",
+                "EPSG:4326",
+                "EPSG:3857"
+              ],
+              "EX_GeographicBoundingBox": [
+                43.557609,
+                3.809746,
+                43.654613,
+                3.963925
+              ],
+              "BoundingBox": [
+                {
+                  "crs": "EPSG:3857",
+                  "extent": [
+                    424099.073,
+                    5397234.467,
+                    441262.047,
+                    5412147.262
+                  ],
+                  "res": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "crs": "EPSG:4326",
+                  "extent": [
+                    3.809746,
+                    43.557609,
+                    3.963925,
+                    43.654613
+                  ],
+                  "res": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "crs": "EPSG:2154",
+                  "extent": [
+                    424099.073,
+                    5397234.467,
+                    441262.047,
+                    5412147.262
+                  ],
+                  "res": [
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "Layer": [
+                {
+                  "Name": "tramway_ref",
+                  "Title": "tramway_ref",
+                  "Style": [
+                    {
+                      "Name": "default",
+                      "Title": "default",
+                      "LegendURL": [
+                        {
+                          "Format": "image/png",
+                          "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=montpellier&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=tramway_ref&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0",
+                          "size": [
+                            null,
+                            null
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "queryable": true,
+                  "opaque": false,
+                  "noSubsets": false,
+                  "CRS": [
+                    "CRS:84",
+                    "EPSG:2154",
+                    "EPSG:4326",
+                    "EPSG:3857"
+                  ],
+                  "EX_GeographicBoundingBox": [
+                    43.557609,
+                    3.809746,
+                    43.654613,
+                    3.963925
+                  ],
+                  "BoundingBox": [
+                    {
+                      "crs": "EPSG:3857",
+                      "extent": [
+                        424099.073,
+                        5397234.467,
+                        441262.047,
+                        5412147.262
+                      ],
+                      "res": [
+                        null,
+                        null
+                      ]
+                    },
+                    {
+                      "crs": "EPSG:4326",
+                      "extent": [
+                        3.809746,
+                        43.557609,
+                        3.963925,
+                        43.654613
+                      ],
+                      "res": [
+                        null,
+                        null
+                      ]
+                    },
+                    {
+                      "crs": "EPSG:2154",
+                      "extent": [
+                        424099.073,
+                        5397234.467,
+                        441262.047,
+                        5412147.262
+                      ],
+                      "res": [
+                        null,
+                        null
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Name": "tramway_pivot",
+                  "Title": "tramway_pivot",
+                  "Style": [
+                    {
+                      "Name": "default",
+                      "Title": "default",
+                      "LegendURL": [
+                        {
+                          "Format": "image/png",
+                          "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=montpellier&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=tramway_pivot&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0",
+                          "size": [
+                            null,
+                            null
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "queryable": true,
+                  "opaque": false,
+                  "noSubsets": false,
+                  "CRS": [
+                    "CRS:84",
+                    "EPSG:2154",
+                    "EPSG:4326",
+                    "EPSG:3857"
+                  ],
+                  "EX_GeographicBoundingBox": [
+                    43.557609,
+                    3.809746,
+                    43.654613,
+                    3.963925
+                  ],
+                  "BoundingBox": [
+                    {
+                      "crs": "EPSG:3857",
+                      "extent": [
+                        424099.073,
+                        5397234.467,
+                        441262.047,
+                        5412147.262
+                      ],
+                      "res": [
+                        null,
+                        null
+                      ]
+                    },
+                    {
+                      "crs": "EPSG:4326",
+                      "extent": [
+                        3.809746,
+                        43.557609,
+                        3.963925,
+                        43.654613
+                      ],
+                      "res": [
+                        null,
+                        null
+                      ]
+                    },
+                    {
+                      "crs": "EPSG:2154",
+                      "extent": [
+                        424099.073,
+                        5397234.467,
+                        441262.047,
+                        5412147.262
+                      ],
+                      "res": [
+                        null,
+                        null
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Name": "tram_stop_work",
+                  "Title": "Tram stop works",
+                  "Style": [
+                    {
+                      "Name": "default",
+                      "Title": "default",
+                      "LegendURL": [
+                        {
+                          "Format": "image/png",
+                          "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=montpellier&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=tram_stop_work&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0",
+                          "size": [
+                            null,
+                            null
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "queryable": true,
+                  "opaque": false,
+                  "noSubsets": false,
+                  "CRS": [
+                    "CRS:84",
+                    "EPSG:2154",
+                    "EPSG:4326",
+                    "EPSG:3857"
+                  ],
+                  "EX_GeographicBoundingBox": [
+                    43.557609,
+                    3.809746,
+                    43.654613,
+                    3.963925
+                  ],
+                  "BoundingBox": [
+                    {
+                      "crs": "EPSG:3857",
+                      "extent": [
+                        424099.073,
+                        5397234.467,
+                        441262.047,
+                        5412147.262
+                      ],
+                      "res": [
+                        null,
+                        null
+                      ]
+                    },
+                    {
+                      "crs": "EPSG:4326",
+                      "extent": [
+                        3.809746,
+                        43.557609,
+                        3.963925,
+                        43.654613
+                      ],
+                      "res": [
+                        null,
+                        null
+                      ]
+                    },
+                    {
+                      "crs": "EPSG:2154",
+                      "extent": [
+                        424099.073,
+                        5397234.467,
+                        441262.047,
+                        5412147.262
+                      ],
+                      "res": [
+                        null,
+                        null
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Name": "tramstop",
+                  "Title": "Tram stops",
+                  "CRS": [
+                    "CRS:84",
+                    "EPSG:2154",
+                    "EPSG:4326",
+                    "EPSG:3857",
+                    "CRS:84",
+                    "EPSG:2154",
+                    "EPSG:4326",
+                    "EPSG:3857"
+                  ],
+                  "EX_GeographicBoundingBox": [
+                    3.810105,
+                    43.557942,
+                    3.963648,
+                    43.65456
+                  ],
+                  "BoundingBox": [
+                    {
+                      "crs": "EPSG:3857",
+                      "extent": [
+                        424139.015,
+                        5397285.651,
+                        441231.211,
+                        5412139.184
+                      ],
+                      "res": [
+                        null,
+                        null
+                      ]
+                    },
+                    {
+                      "crs": "EPSG:4326",
+                      "extent": [
+                        43.557942,
+                        3.810105,
+                        43.65456,
+                        3.963648
+                      ],
+                      "res": [
+                        null,
+                        null
+                      ]
+                    },
+                    {
+                      "crs": "EPSG:2154",
+                      "extent": [
+                        765368.162,
+                        6273544.321,
+                        777888.068,
+                        6284420.938
+                      ],
+                      "res": [
+                        null,
+                        null
+                      ]
+                    }
+                  ],
+                  "Style": [
+                    {
+                      "Name": "default",
+                      "Title": "default",
+                      "LegendURL": [
+                        {
+                          "Format": "image/png",
+                          "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=montpellier&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=tramstop&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0",
+                          "size": [
+                            null,
+                            null
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "queryable": true,
+                  "opaque": false,
+                  "noSubsets": false
+                },
+                {
+                  "Name": "tramway",
+                  "Title": "Tram lines",
+                  "CRS": [
+                    "CRS:84",
+                    "EPSG:2154",
+                    "EPSG:4326",
+                    "EPSG:3857",
+                    "CRS:84",
+                    "EPSG:2154",
+                    "EPSG:4326",
+                    "EPSG:3857"
+                  ],
+                  "EX_GeographicBoundingBox": [
+                    3.809746,
+                    43.557609,
+                    3.963925,
+                    43.654613
+                  ],
+                  "BoundingBox": [
+                    {
+                      "crs": "EPSG:3857",
+                      "extent": [
+                        424099.073,
+                        5397234.468,
+                        441262.046,
+                        5412147.262
+                      ],
+                      "res": [
+                        null,
+                        null
+                      ]
+                    },
+                    {
+                      "crs": "EPSG:4326",
+                      "extent": [
+                        43.557609,
+                        3.809746,
+                        43.654613,
+                        3.963925
+                      ],
+                      "res": [
+                        null,
+                        null
+                      ]
+                    },
+                    {
+                      "crs": "EPSG:2154",
+                      "extent": [
+                        765339.152,
+                        6273506.993,
+                        777910.908,
+                        6284427.046
+                      ],
+                      "res": [
+                        null,
+                        null
+                      ]
+                    }
+                  ],
+                  "Style": [
+                    {
+                      "Name": "black",
+                      "Title": "black",
+                      "LegendURL": [
+                        {
+                          "Format": "image/png",
+                          "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=montpellier&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=tramway&FORMAT=image/png&STYLE=black&SLD_VERSION=1.1.0",
+                          "size": [
+                            null,
+                            null
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "Name": "colored",
+                      "Title": "colored",
+                      "LegendURL": [
+                        {
+                          "Format": "image/png",
+                          "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=montpellier&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=tramway&FORMAT=image/png&STYLE=colored&SLD_VERSION=1.1.0",
+                          "size": [
+                            null,
+                            null
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "queryable": true,
+                  "opaque": false,
+                  "noSubsets": false
+                }
+              ],
+              "queryable": true,
+              "opaque": false,
+              "noSubsets": false
+            },
+            {
+              "Name": "Buildings",
+              "Title": "Buildings",
+              "CRS": [
+                "CRS:84",
+                "EPSG:2154",
+                "EPSG:4326",
+                "EPSG:3857",
+                "CRS:84",
+                "EPSG:2154",
+                "EPSG:4326",
+                "EPSG:3857"
+              ],
+              "EX_GeographicBoundingBox": [
+                43.598561,
+                3.87277,
+                43.616431,
+                3.896741
+              ],
+              "BoundingBox": [
+                {
+                  "crs": "EPSG:3857",
+                  "extent": [
+                    431114.842,
+                    5403527.321,
+                    433783.15,
+                    5406274.452
+                  ],
+                  "res": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "crs": "EPSG:4326",
+                  "extent": [
+                    3.87277,
+                    43.598561,
+                    3.896741,
+                    43.616431
+                  ],
+                  "res": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "crs": "EPSG:2154",
+                  "extent": [
+                    431114.842,
+                    5403527.321,
+                    433783.15,
+                    5406274.452
+                  ],
+                  "res": [
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "Layer": [
+                {
+                  "Name": "publicbuildings",
+                  "Title": "public buildings",
+                  "CRS": [
+                    "CRS:84",
+                    "EPSG:2154",
+                    "EPSG:4326",
+                    "EPSG:3857",
+                    "CRS:84",
+                    "EPSG:2154",
+                    "EPSG:4326",
+                    "EPSG:3857"
+                  ],
+                  "EX_GeographicBoundingBox": [
+                    3.87277,
+                    43.598561,
+                    3.896741,
+                    43.616431
+                  ],
+                  "BoundingBox": [
+                    {
+                      "crs": "EPSG:3857",
+                      "extent": [
+                        431114.842,
+                        5403527.322,
+                        433783.15,
+                        5406274.452
+                      ],
+                      "res": [
+                        null,
+                        null
+                      ]
+                    },
+                    {
+                      "crs": "EPSG:4326",
+                      "extent": [
+                        43.598561,
+                        3.87277,
+                        43.616431,
+                        3.896741
+                      ],
+                      "res": [
+                        null,
+                        null
+                      ]
+                    },
+                    {
+                      "crs": "EPSG:2154",
+                      "extent": [
+                        770471.291,
+                        6278112.483,
+                        772429.19,
+                        6280119.982
+                      ],
+                      "res": [
+                        null,
+                        null
+                      ]
+                    }
+                  ],
+                  "Style": [
+                    {
+                      "Name": "default",
+                      "Title": "default",
+                      "LegendURL": [
+                        {
+                          "Format": "image/png",
+                          "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=montpellier&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=publicbuildings&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0",
+                          "size": [
+                            null,
+                            null
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "queryable": true,
+                  "opaque": false,
+                  "noSubsets": false
+                },
+                {
+                  "Name": "publicbuildings_tramstop",
+                  "Title": "Pivot tramstops / Buildings",
+                  "Style": [
+                    {
+                      "Name": "default",
+                      "Title": "default",
+                      "LegendURL": [
+                        {
+                          "Format": "image/png",
+                          "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=montpellier&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=publicbuildings_tramstop&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0",
+                          "size": [
+                            null,
+                            null
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "queryable": true,
+                  "opaque": false,
+                  "noSubsets": false,
+                  "CRS": [
+                    "CRS:84",
+                    "EPSG:2154",
+                    "EPSG:4326",
+                    "EPSG:3857"
+                  ],
+                  "EX_GeographicBoundingBox": [
+                    43.598561,
+                    3.87277,
+                    43.616431,
+                    3.896741
+                  ],
+                  "BoundingBox": [
+                    {
+                      "crs": "EPSG:3857",
+                      "extent": [
+                        431114.842,
+                        5403527.321,
+                        433783.15,
+                        5406274.452
+                      ],
+                      "res": [
+                        null,
+                        null
+                      ]
+                    },
+                    {
+                      "crs": "EPSG:4326",
+                      "extent": [
+                        3.87277,
+                        43.598561,
+                        3.896741,
+                        43.616431
+                      ],
+                      "res": [
+                        null,
+                        null
+                      ]
+                    },
+                    {
+                      "crs": "EPSG:2154",
+                      "extent": [
+                        431114.842,
+                        5403527.321,
+                        433783.15,
+                        5406274.452
+                      ],
+                      "res": [
+                        null,
+                        null
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "queryable": true,
+              "opaque": false,
+              "noSubsets": false
+            }
+          ],
+          "queryable": true,
+          "opaque": false,
+          "noSubsets": false
+        },
+        {
+          "Name": "donnes_sociodemo_sous_quartiers",
+          "Title": "Repartition of owners and tenants",
+          "Abstract": "This plot shows the repartition of owners and tenants per subdistrict in Montpellier, France.",
+          "Style": [
+            {
+              "Name": "default",
+              "Title": "default",
+              "LegendURL": [
+                {
+                  "Format": "image/png",
+                  "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=montpellier&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=donnes_sociodemo_sous_quartiers&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0",
+                  "size": [
+                    null,
+                    null
+                  ]
+                }
+              ]
+            }
+          ],
+          "queryable": true,
+          "opaque": false,
+          "noSubsets": false,
+          "CRS": [
+            "CRS:84",
+            "EPSG:2154",
+            "EPSG:4326",
+            "EPSG:3857"
+          ],
+          "EX_GeographicBoundingBox": [
+            43.542477,
+            3.746034,
+            43.672144,
+            4.01689
+          ],
+          "BoundingBox": [
+            {
+              "crs": "EPSG:3857",
+              "extent": [
+                417006.613,
+                5394910.34,
+                447158.049,
+                5414844.995
+              ],
+              "res": [
+                null,
+                null
+              ]
+            },
+            {
+              "crs": "EPSG:4326",
+              "extent": [
+                3.746034,
+                43.542477,
+                4.01689,
+                43.672144
+              ],
+              "res": [
+                null,
+                null
+              ]
+            },
+            {
+              "crs": "EPSG:2154",
+              "extent": [
+                417006.613,
+                5394910.34,
+                447158.049,
+                5414844.995
+              ],
+              "res": [
+                null,
+                null
+              ]
+            }
+          ]
+        },
+        {
+          "Name": "SousQuartiers",
+          "Title": "SousQuartiers",
+          "CRS": [
+            "CRS:84",
+            "EPSG:2154",
+            "EPSG:4326",
+            "EPSG:3857",
+            "CRS:84",
+            "EPSG:2154",
+            "EPSG:4326",
+            "EPSG:3857"
+          ],
+          "EX_GeographicBoundingBox": [
+            3.806121,
+            43.566038,
+            3.942233,
+            43.65375
+          ],
+          "BoundingBox": [
+            {
+              "crs": "EPSG:3857",
+              "extent": [
+                423695.483,
+                5398529.409,
+                438847.345,
+                5412014.611
+              ],
+              "res": [
+                null,
+                null
+              ]
+            },
+            {
+              "crs": "EPSG:4326",
+              "extent": [
+                43.566038,
+                3.806121,
+                43.65375,
+                3.942233
+              ],
+              "res": [
+                null,
+                null
+              ]
+            },
+            {
+              "crs": "EPSG:2154",
+              "extent": [
+                765145.882,
+                6274561.222,
+                776031.667,
+                6284189.521
+              ],
+              "res": [
+                null,
+                null
+              ]
+            }
+          ],
+          "Style": [
+            {
+              "Name": "default",
+              "Title": "default",
+              "LegendURL": [
+                {
+                  "Format": "image/png",
+                  "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=montpellier&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=SousQuartiers&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0",
+                  "size": [
+                    null,
+                    null
+                  ]
+                }
+              ]
+            }
+          ],
+          "queryable": true,
+          "opaque": false,
+          "noSubsets": false
+        },
+        {
+          "Name": "Quartiers",
+          "Title": "Quartiers",
+          "CRS": [
+            "CRS:84",
+            "EPSG:2154",
+            "EPSG:4326",
+            "EPSG:3857",
+            "CRS:84",
+            "EPSG:2154",
+            "EPSG:4326",
+            "EPSG:3857"
+          ],
+          "EX_GeographicBoundingBox": [
+            3.80707,
+            43.566704,
+            3.941331,
+            43.653372
+          ],
+          "BoundingBox": [
+            {
+              "crs": "EPSG:3857",
+              "extent": [
+                423801.134,
+                5398631.67,
+                438746.925,
+                5411956.343
+              ],
+              "res": [
+                null,
+                null
+              ]
+            },
+            {
+              "crs": "EPSG:4326",
+              "extent": [
+                43.566704,
+                3.80707,
+                43.653372,
+                3.941331
+              ],
+              "res": [
+                null,
+                null
+              ]
+            },
+            {
+              "crs": "EPSG:2154",
+              "extent": [
+                765124.605,
+                6274515.572,
+                776072.767,
+                6284267.155
+              ],
+              "res": [
+                null,
+                null
+              ]
+            }
+          ],
+          "Style": [
+            {
+              "Name": "default",
+              "Title": "default",
+              "LegendURL": [
+                {
+                  "Format": "image/png",
+                  "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=montpellier&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=Quartiers&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0",
+                  "size": [
+                    null,
+                    null
+                  ]
+                }
+              ]
+            }
+          ],
+          "queryable": true,
+          "opaque": false,
+          "noSubsets": false
+        },
+        {
+          "Name": "Overview",
+          "Title": "Overview",
+          "CRS": [
+            "CRS:84",
+            "EPSG:2154",
+            "EPSG:4326",
+            "EPSG:3857",
+            "CRS:84",
+            "EPSG:2154",
+            "EPSG:4326",
+            "EPSG:3857"
+          ],
+          "EX_GeographicBoundingBox": [
+            43.566704,
+            3.80707,
+            43.653372,
+            3.941331
+          ],
+          "BoundingBox": [
+            {
+              "crs": "EPSG:3857",
+              "extent": [
+                423801.134,
+                5398631.67,
+                438746.925,
+                5411956.343
+              ],
+              "res": [
+                null,
+                null
+              ]
+            },
+            {
+              "crs": "EPSG:4326",
+              "extent": [
+                3.80707,
+                43.566704,
+                3.941331,
+                43.653372
+              ],
+              "res": [
+                null,
+                null
+              ]
+            },
+            {
+              "crs": "EPSG:2154",
+              "extent": [
+                423801.134,
+                5398631.67,
+                438746.925,
+                5411956.343
+              ],
+              "res": [
+                null,
+                null
+              ]
+            }
+          ],
+          "Layer": [
+            {
+              "Name": "VilleMTP_MTP_Quartiers_2011_4326",
+              "Title": "VilleMTP_MTP_Quartiers_2011_4326",
+              "CRS": [
+                "CRS:84",
+                "EPSG:2154",
+                "EPSG:4326",
+                "EPSG:3857",
+                "CRS:84",
+                "EPSG:2154",
+                "EPSG:4326",
+                "EPSG:3857"
+              ],
+              "EX_GeographicBoundingBox": [
+                3.80707,
+                43.566704,
+                3.941331,
+                43.653372
+              ],
+              "BoundingBox": [
+                {
+                  "crs": "EPSG:3857",
+                  "extent": [
+                    423801.134,
+                    5398631.67,
+                    438746.925,
+                    5411956.343
+                  ],
+                  "res": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "crs": "EPSG:4326",
+                  "extent": [
+                    43.566704,
+                    3.80707,
+                    43.653372,
+                    3.941331
+                  ],
+                  "res": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "crs": "EPSG:2154",
+                  "extent": [
+                    765124.605,
+                    6274515.572,
+                    776072.767,
+                    6284267.155
+                  ],
+                  "res": [
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "Style": [
+                {
+                  "Name": "default",
+                  "Title": "default",
+                  "LegendURL": [
+                    {
+                      "Format": "image/png",
+                      "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=montpellier&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=VilleMTP_MTP_Quartiers_2011_4326&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0",
+                      "size": [
+                        null,
+                        null
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "MinScaleDenominator": 0,
+              "MaxScaleDenominator": 100000000,
+              "queryable": true,
+              "opaque": false,
+              "noSubsets": false
+            }
+          ],
+          "queryable": true,
+          "opaque": false,
+          "noSubsets": false
+        },
+        {
+          "Name": "Hidden",
+          "Title": "Hidden",
+          "CRS": [
+            "CRS:84",
+            "EPSG:2154",
+            "EPSG:4326",
+            "EPSG:3857",
+            "CRS:84",
+            "EPSG:2154",
+            "EPSG:4326",
+            "EPSG:3857"
+          ],
+          "EX_GeographicBoundingBox": [
+            -85.051129,
+            -180,
+            85.051129,
+            180
+          ],
+          "BoundingBox": [
+            {
+              "crs": "EPSG:3857",
+              "extent": [
+                -20037508.343,
+                -20037508.343,
+                20037508.343,
+                20037508.343
+              ],
+              "res": [
+                null,
+                null
+              ]
+            },
+            {
+              "crs": "EPSG:4326",
+              "extent": [
+                -180,
+                -85.051129,
+                180,
+                85.051129
+              ],
+              "res": [
+                null,
+                null
+              ]
+            },
+            {
+              "crs": "EPSG:2154",
+              "extent": [
+                -20037508.343,
+                -20037508.343,
+                20037508.343,
+                20037508.343
+              ],
+              "res": [
+                null,
+                null
+              ]
+            }
+          ],
+          "Layer": [
+            {
+              "Name": "osm-mapnik",
+              "Title": "osm-mapnik",
+              "CRS": [
+                "CRS:84",
+                "EPSG:2154",
+                "EPSG:4326",
+                "EPSG:3857",
+                "CRS:84",
+                "EPSG:2154",
+                "EPSG:4326",
+                "EPSG:3857"
+              ],
+              "EX_GeographicBoundingBox": [
+                -180,
+                -85.051129,
+                180,
+                85.051129
+              ],
+              "BoundingBox": [
+                {
+                  "crs": "EPSG:3857",
+                  "extent": [
+                    -20037508.343,
+                    -20037508.343,
+                    20037508.343,
+                    20037508.343
+                  ],
+                  "res": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "crs": "EPSG:4326",
+                  "extent": [
+                    -85.051129,
+                    -180,
+                    85.051129,
+                    180
+                  ],
+                  "res": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "crs": "EPSG:2154",
+                  "extent": [
+                    -113604282.603,
+                    -101583928.923,
+                    114773529.379,
+                    83711011.772
+                  ],
+                  "res": [
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "Style": [
+                {
+                  "Name": "default",
+                  "Title": "default",
+                  "LegendURL": [
+                    {
+                      "Format": "image/png",
+                      "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=montpellier&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=osm-mapnik&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0",
+                      "size": [
+                        null,
+                        null
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "queryable": true,
+              "opaque": false,
+              "noSubsets": false
+            },
+            {
+              "Name": "osm-stamen-toner",
+              "Title": "osm-stamen-toner",
+              "CRS": [
+                "CRS:84",
+                "EPSG:2154",
+                "EPSG:4326",
+                "EPSG:3857",
+                "CRS:84",
+                "EPSG:2154",
+                "EPSG:4326",
+                "EPSG:3857"
+              ],
+              "EX_GeographicBoundingBox": [
+                -180,
+                -85.051129,
+                180,
+                85.051129
+              ],
+              "BoundingBox": [
+                {
+                  "crs": "EPSG:3857",
+                  "extent": [
+                    -20037508.343,
+                    -20037508.343,
+                    20037508.343,
+                    20037508.343
+                  ],
+                  "res": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "crs": "EPSG:4326",
+                  "extent": [
+                    -85.051129,
+                    -180,
+                    85.051129,
+                    180
+                  ],
+                  "res": [
+                    null,
+                    null
+                  ]
+                },
+                {
+                  "crs": "EPSG:2154",
+                  "extent": [
+                    -113604282.603,
+                    -101583928.923,
+                    114773529.379,
+                    83711011.772
+                  ],
+                  "res": [
+                    null,
+                    null
+                  ]
+                }
+              ],
+              "Style": [
+                {
+                  "Name": "default",
+                  "Title": "default",
+                  "LegendURL": [
+                    {
+                      "Format": "image/png",
+                      "OnlineResource": "http://localhost:8130/index.php/lizmap/service?repository=montpellier&project=montpellier&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=osm-stamen-toner&FORMAT=image/png&STYLE=default&SLD_VERSION=1.1.0",
+                      "size": [
+                        null,
+                        null
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "queryable": true,
+              "opaque": false,
+              "noSubsets": false
+            }
+          ],
+          "queryable": true,
+          "opaque": false,
+          "noSubsets": false
+        }
+      ]
+    }
+  }
+}

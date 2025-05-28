@@ -1,15 +1,33 @@
-import {mainLizmap, mainEventDispatcher} from '../modules/Globals.js';
+/**
+ * @module modules/Edition.js
+ * @name Edition
+ * @copyright 2023 3Liz
+ * @author DHONT René-Luc
+ * @license MPL-2.0
+ */
 
+import { mainEventDispatcher } from '../modules/Globals.js';
+
+/**
+ * @class
+ * @name Edition
+ */
 export default class Edition {
 
-    constructor() {
+    /**
+     * Create an edition instance
+     * @param {object}   lizmap3   - The old lizmap object
+     */
+    constructor(lizmap3) {
+        this._lizmap3 = lizmap3;
+
         this.drawFeatureActivated = false;
         this._layerId = undefined;
         this.layerGeometry = undefined;
         this.drawControl = undefined;
         this._lastSegmentLength = undefined;
 
-        lizMap.events.on({
+        lizmap3.events.on({
             lizmapeditiondrawfeatureactivated: (properties) => {
                 this.drawFeatureActivated = true;
                 this.layerGeometry = properties.editionConfig.geometryType;
@@ -38,11 +56,11 @@ export default class Edition {
     }
 
     get hasEditionLayers() {
-        return 'editionLayers' in mainLizmap.lizmap3.config;
+        return 'editionLayers' in this._lizmap3.config;
     }
 
     get editLayer() {
-        const editLayer = mainLizmap.lizmap3.map.getLayersByName('editLayer');
+        const editLayer = this._lizmap3.map.getLayersByName('editLayer');
         if (editLayer.length === 1) {
             return editLayer[0];
         } else {
@@ -51,7 +69,7 @@ export default class Edition {
     }
 
     get modifyFeatureControl(){
-        const modifyFeatureCtrls = mainLizmap.lizmap3.map.getControlsByClass('OpenLayers.Control.ModifyFeature');
+        const modifyFeatureCtrls = this._lizmap3.map.getControlsByClass('OpenLayers.Control.ModifyFeature');
         return (modifyFeatureCtrls.filter(ctrl => ctrl.layer.name === "editLayer"))[0];
     }
 
@@ -70,17 +88,17 @@ export default class Edition {
 
     /**
      * Fetch editable features for given array of layer IDs
-     * @param {array} layerIds
+     * @param {Array} layerIds - Array of layer IDs
      */
     fetchEditableFeatures(layerIds){
         if (Array.isArray(layerIds)){
             const fetchers = [];
             for (const layerId of layerIds) {
-                fetchers.push(fetch(lizUrls.edition.replace('getFeature', 'editableFeatures'),{
+                fetchers.push(fetch(globalThis['lizUrls'].edition.replace('getFeature', 'editableFeatures'),{
                     "method": "POST",
                     "body": new URLSearchParams({
-                        repository: lizUrls.params.repository,
-                        project: lizUrls.params.project,
+                        repository: globalThis['lizUrls'].params.repository,
+                        project: globalThis['lizUrls'].params.project,
                         layerId: layerId
                     })
                 }).then(response => {

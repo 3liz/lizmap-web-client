@@ -1,15 +1,21 @@
 <?php
 
+use Lizmap\Project\Repository;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ *
+ * @coversNothing
+ */
 class OGCRequestTest extends TestCase
 {
-    public function testParam()
+    public function testParam(): void
     {
         $params = array(
             'request' => 'getmap',
             'service' => 'WMS',
-            'empty' => ''
+            'empty' => '',
         );
         $ogc = new OGCRequestForTests(new ProjectForOGCForTests(), $params, null);
         foreach ($params as $key => $value) {
@@ -21,21 +27,21 @@ class OGCRequestTest extends TestCase
         $this->assertEquals($default, $ogc->param('empty', $default, true));
     }
 
-    public function testParameters()
+    public function testParameters(): void
     {
         $params = array(
             'request' => 'getmap',
             'service' => 'WMS',
         );
         $contextResult = array(
-            'userIsConnected' => false
+            'userIsConnected' => false,
         );
         $expectedParameters = array(
             'request' => 'getmap',
             'service' => 'WMS',
             'map' => null,
             'Lizmap_User' => '',
-            'Lizmap_User_Groups' => ''
+            'Lizmap_User_Groups' => '',
         );
         $testContext = new ContextForTests();
         $testContext->setResult($contextResult);
@@ -44,12 +50,11 @@ class OGCRequestTest extends TestCase
         $parameters = $ogc->parameters();
         $this->assertEquals($expectedParameters, $parameters);
 
-
         $proj = new ProjectForOGCForTests($testContext);
-        $proj->setRepo(new Lizmap\Project\Repository('test', array(), '', null, $testContext));
+        $proj->setRepo(new Repository('test', array(), '', null, $testContext));
         $contextResult = array(
             'userIsConnected' => true,
-            'userSession' => (object)array('login' => 'alagroy-'),
+            'userSession' => (object) array('login' => 'alagroy-'),
             'groups' => array('admins', 'users'),
         );
         $testContext->setResult($contextResult);
@@ -59,33 +64,35 @@ class OGCRequestTest extends TestCase
             'map' => null,
             'Lizmap_User' => 'alagroy-',
             'Lizmap_User_Groups' => 'admins, users',
-            'Lizmap_Override_Filter' => true
+            'Lizmap_Override_Filter' => true,
         );
         $ogc = new OGCRequestForTests($proj, $params, null);
         $parameters = $ogc->parameters();
         $this->assertEquals($expectedParameters, $parameters);
     }
 
-    public function testProcess()
+    public function testProcess(): void
     {
         $params = array(
             'service' => 'WMS',
-            'request' => 'getcapabilities'
+            'request' => 'getcapabilities',
         );
         $ogc = $this->getMockBuilder(OGCRequestForTests::class)
-            ->setMethods(['process_getcapabilities'])
-            ->setConstructorArgs([new ProjectForOGCForTests(), $params, null])
-            ->getMock();
+            ->onlyMethods(array('process_getcapabilities'))
+            ->setConstructorArgs(array(new ProjectForOGCForTests(), $params, null))
+            ->getMock()
+        ;
         $ogc->expects($this->once())->method('process_getcapabilities');
         $ogc->process();
         $params = array(
             'service' => 'WMS',
-            'request' => 'not existing method'
+            'request' => 'not existing method',
         );
         $ogc = $this->getMockBuilder(OGCRequestForTests::class)
-            ->setMethods(['serviceException'])
-            ->setConstructorArgs([new ProjectForOGCForTests(), $params, null])
-            ->getMock();
+            ->onlyMethods(array('serviceException'))
+            ->setConstructorArgs(array(new ProjectForOGCForTests(), $params, null))
+            ->getMock()
+        ;
         $ogc->expects($this->once())->method('serviceException')->with(501);
         $testMock = $ogc->process();
     }

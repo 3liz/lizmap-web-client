@@ -52,7 +52,7 @@ class ProjectCache
      * So you'll be sure that the cache will be updated when Lizmap code source
      * is updated on a server
      */
-    const CACHE_FORMAT_VERSION = 9;
+    public const CACHE_FORMAT_VERSION = 10;
 
     /**
      * Initialize the cache of a Qgis project.
@@ -77,8 +77,6 @@ class ProjectCache
     /**
      * Returns the Project data stored in Cache.
      *
-     * @param array $props The properties to get from the cache
-     *
      * @return array|bool
      */
     public function retrieveProjectData()
@@ -90,6 +88,7 @@ class ProjectCache
         try {
             $data = $this->appContext->getCache($this->fileKey, $this->profile);
             if ($data === false
+                || is_null($data)
                 || $data['qgsmtime'] < $this->qgsMtime
                 || $data['qgscfgmtime'] < $this->qgsCfgMtime
                 || !isset($data['format_version'])
@@ -162,9 +161,9 @@ class ProjectCache
      *
      * @param string $layerId
      *
-     * @throws \Exception
-     *
      * @return QgisFormControlProperties[]
+     *
+     * @throws \Exception
      */
     public function getEditableLayerFormCache($layerId)
     {

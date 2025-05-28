@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 
 COMMAND="$1"
+EXTRA="${*:2}"
 shift
 
 SCRIPTDIR="$( cd "$(dirname "$0")" ; pwd -P )"
 APPDIR="$SCRIPTDIR/../lizmap/"
 
 if [ "$LZMBRANCH" == "" ]; then
-  LZMBRANCH=$(git rev-parse --abbrev-ref HEAD)
+  LZMBRANCH=$(git rev-parse --abbrev-ref HEAD | tr '[:upper:]' '[:lower:]')
 fi
 
 if [ "$LZMPGPORT" == "" ]; then
@@ -23,28 +24,14 @@ if [ "$COMMAND" == "" ]; then
     echo "Error: command is missing"
     echo "Possible commands: "
     echo " - clean, clean-tmp, reset, reset-sqlite, ldap-reset, rights"
-    echo " - install,  composer-install, composer-update"
+    echo " - install, composer-install, composer-update"
+    echo " - composer-run [Any command in the 'tests/units/composer.json' 'scripts' section]"
     echo " - psql, redis-cli, shell, shell-root, shell-pgsql, shell-nginx"
     echo " - phpstan, unit-tests, ldap-users"
     exit 1;
 fi
 
 function resetfiles() {
-  if [ -f $APPDIR/var/config/installer.ini.php ]; then
-    rm -f $APPDIR/var/config/installer.ini.php
-  fi
-  if [ -f $APPDIR/var/config/liveconfig.ini.php ]; then
-    rm -f $APPDIR/var/config/liveconfig.ini.php
-  fi
-  if [ -f $APPDIR/var/config/localframework.ini.php ]; then
-    rm -f $APPDIR/var/config/localframework.ini.php
-  fi
-  if [ -f $APPDIR/var/config/localconfig.ini.php ]; then
-    rm -f $APPDIR/var/config/localconfig.ini.php
-  fi
-  if [ -f $APPDIR/var/config/profiles.ini.php ]; then
-    rm -f $APPDIR/var/config/profiles.ini.php
-  fi
 
   if [ -d $APPDIR/vendor ]; then
     rm -rf $APPDIR/vendor
@@ -52,6 +39,14 @@ function resetfiles() {
 
   if [ -f $APPDIR/composer.lock ]; then
     rm -f $APPDIR/composer.lock
+  fi
+
+  if [ -d $APPDIR/my-packages/vendor ]; then
+    rm -rf $APPDIR/my-packages/vendor
+  fi
+
+  if [ -f $APPDIR/my-packages/composer.lock ]; then
+    rm -f $APPDIR/my-packages/composer.lock
   fi
 
   if [ -f $APPDIR/www/assets/js/lizmap.js ]; then
@@ -73,6 +68,8 @@ function resetfiles() {
     rm -rf $SCRIPTDIR/../assets/node_modules
   fi
 
+  $APPDIR/install/reset.sh reset
+
 }
 
 function execInPhp() {
@@ -81,10 +78,8 @@ function execInPhp() {
     echo "ERROR: The lizmap container is not running"
     exit 1
   fi
-  docker exec -i $CONTAINER appctl.sh $1
+  docker exec -i $CONTAINER appctl.sh $*
 }
-
-
 
 case $COMMAND in
     clean)
@@ -98,18 +93,26 @@ case $COMMAND in
        execInPhp reset-sqlite;;
     install)
         execInPhp install;;
+    script)
+        execInPhp script $EXTRA;;
+    console)
+        execInPhp console $EXTRA;;
     rights)
         execInPhp rights;;
     composer-install | composer_install)
         execInPhp composer_install;;
+    composer-run | composer_run)
+        execInPhp composer_run $EXTRA;;
     composer-update | composer_update)
         execInPhp composer_update;;
     unit-tests | unittests)
         execInPhp unittests;;
     phpstan)
         execInPhp phpstan;;
+    docker-exec)
+        docker exec lizmap${LZMBRANCH}_test_php $EXTRA;;
     shell)
-       docker exec -it --user usertest lizmap${LZMBRANCH}_test_php  /bin/bash -l;;
+       docker exec -it --user userphp lizmap${LZMBRANCH}_test_php  /bin/bash -l;;
     shell-root | shellroot)
        docker exec -it lizmap${LZMBRANCH}_test_php /bin/bash  -l;;
     shell-nginx)
@@ -126,6 +129,14 @@ case $COMMAND in
     shell-pgsql)
        docker exec -it --user postgres -e PGPASSWORD="lizmap1234!" lizmap${LZMBRANCH}_test_pgsql /bin/bash  -l
        ;;
+    dump-pgsql)
+       docker exec -i -e PGPASSWORD="lizmap1234!" lizmap${LZMBRANCH}_test_pgsql pg_dump -U lizmap --no-owner --no-acl -n tests_projects -f /srv/lzm/tests/qgis-projects/tests/tests_dataset.sql
+       docker exec -i -e PGPASSWORD="lizmap1234!" lizmap${LZMBRANCH}_test_pgsql sed -i '/^-- Dumped/ d' /srv/lzm/tests/qgis-projects/tests/tests_dataset.sql
+       docker exec -i -e PGPASSWORD="lizmap1234!" lizmap${LZMBRANCH}_test_pgsql sed -i '/^SET idle_in_transaction_session_timeout/ d' /srv/lzm/tests/qgis-projects/tests/tests_dataset.sql
+       docker exec -i -e PGPASSWORD="lizmap1234!" lizmap${LZMBRANCH}_test_pgsql sed -i '/^SET transaction_timeout/ d' /srv/lzm/tests/qgis-projects/tests/tests_dataset.sql
+       # It removes one extra line at the end of the file, a single one is enough
+       docker exec -i -e PGPASSWORD="lizmap1234!" lizmap${LZMBRANCH}_test_pgsql sed -i -e :a -e '/^\n*$/{$d;N;ba' -e '}' /srv/lzm/tests/qgis-projects/tests/tests_dataset.sql
+       ;;
     redis-cli)
       docker exec -it lizmap${LZMBRANCH}_test_redis redis-cli
       ;;
@@ -134,4 +145,3 @@ case $COMMAND in
         exit 2
         ;;
 esac
-
