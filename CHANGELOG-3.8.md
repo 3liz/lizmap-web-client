@@ -8,6 +8,23 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Funders
+
+* Antoviscomi
+* **[Lozère province](https://lozere.fr/)**
+* **[DVP SOLAR](https://dvpsolar.com/)**
+
+### Added
+
+* REST API on Lizmap repositories and projects
+
+### Fixed
+
+* Fixed a JavaScript error, contribution on the source code from @Antoviscomi
+* Tooltip: fix tooltip layer not removed as a tool layer
+* Optimize FTS query to use the index
+* Fix: 0 integer is transformed to an empty string by DOMPurify.sanitize()
+
 ## 3.8.10 - 2025-05-16
 
 ### Funders
