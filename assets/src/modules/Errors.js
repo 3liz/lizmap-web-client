@@ -10,11 +10,15 @@
  * Representing a network error with message, resource and options fetched
  * @class
  * @augments Error
+ * @property {string} name - Error name: NetworkError
+ * @property {string} message - Error message
+ * @property {string} resource - The resource has been fetched
+ * @property {string} options - The resource options
  */
-class NetworkError extends Error {
+export class NetworkError extends Error {
 
     /**
-     * Creating an HTTP error with message and status code
+     * Creating an HTTP error with message, resource and options fetched
      * @param {string} message    - Error message
      * @param {string} resource   - The resource has been fetched
      * @param {string} options    - The resource options
@@ -30,9 +34,14 @@ class NetworkError extends Error {
 /**
  * Representing an HTTP error with message, status code, resource and options fetched
  * @class
- * @augments Error
+ * @augments NetworkError
+ * @property {string} name - Error name: HttpError
+ * @property {string} message - Error message
+ * @property {string} resource - The resource has been fetched
+ * @property {string} options - The resource options
+ * @property {number} statusCode - HTTP Error status code
  */
-class HttpError extends NetworkError {
+export class HttpError extends NetworkError {
 
     /**
      * Creating an HTTP error with message and status code
@@ -42,34 +51,36 @@ class HttpError extends NetworkError {
      * @param {string} options    - The resource options
      */
     constructor(message, statusCode, resource, options) {
-        super(message);
+        super(message, resource, options);
         this.name = "HttpError";
         this.statusCode = statusCode;
-        this.resource = resource;
-        this.options = options;
     }
 }
 
 /**
- * Representing an HTTP error with message, response, resource and options fetched
+ * Representing an response error with message, response, resource and options fetched
  * @class
- * @augments Error
+ * @augments HttpError
+ * @property {string} name - Error name: ResponseError
+ * @property {string} message - Error message
+ * @property {string} resource - The resource has been fetched
+ * @property {string} options - The resource options
+ * @property {number} statusCode - HTTP Error status code
+ * @property {Response} response - Response object from fetch
  */
-class ResponseError extends NetworkError {
+export class ResponseError extends HttpError {
 
     /**
      * Creating an HTTP error with message and status code
      * @param {string}   message    - Error message
-     * @param {Response} response - HTTP Error status code
+     * @param {Response} response   - Response object from fetch
      * @param {string}   resource   - The resource has been fetched
      * @param {string}   options    - The resource options
      */
     constructor(message, response, resource, options) {
-        super(message);
+        super(message, response.status, resource, options);
         this.name = "ResponseError";
         this.response = response;
-        this.resource = resource;
-        this.options = options;
     }
 }
 
@@ -78,7 +89,7 @@ class ResponseError extends NetworkError {
  * @class
  * @augments Error
  */
-class ConversionError extends Error {
+export class ConversionError extends Error {
 
     /**
      * Creating a conversion error
@@ -96,7 +107,7 @@ class ConversionError extends Error {
  * @class
  * @augments Error
  */
-class ValidationError extends Error {
+export class ValidationError extends Error {
 
     /**
      * Creating a validation error
@@ -114,7 +125,7 @@ class ValidationError extends Error {
  * @class
  * @augments ValidationError
  */
-class PropertyRequiredError extends ValidationError {
+export class PropertyRequiredError extends ValidationError {
 
     /**
      * @param {string} property - The object property in error
@@ -125,5 +136,3 @@ class PropertyRequiredError extends ValidationError {
     }
 
 }
-
-export { NetworkError, HttpError, ResponseError, ConversionError, ValidationError, PropertyRequiredError };
