@@ -75,9 +75,14 @@ export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 
         if (waitForGetLegendGraphics) {
             // Wait for WMS GetLegendGraphic promise
             const getLegendGraphicPromise = page.waitForRequest(
-                request => request.method() === 'POST' &&
+                request => (
+                    request.method() === 'POST' &&
                     request.postData() != null &&
                     request.postData()?.includes('GetLegendGraphic') === true
+                ) || (
+                    request.method() === 'GET' &&
+                    request.url().includes('GetLegendGraphic') === true
+                )
             );
             // Normal check about the map
             // Wait for WMS GetLegendGraphic
@@ -119,10 +124,14 @@ export async function reloadMap(page, check = true) {
     if (check) {
         // Wait for WMS GetLegendGraphic promise
         const getLegendGraphicPromise = page.waitForRequest(
-            request =>
+            request => (
                 request.method() === 'POST' &&
                 request.postData() != null &&
                 request.postData()?.includes('GetLegendGraphic') === true
+            ) || (
+                request.method() === 'GET' &&
+                request.url().includes('GetLegendGraphic') === true
+            )
         );
         // Normal check about the map
         // Wait for WMS GetLegendGraphic
