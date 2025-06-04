@@ -311,6 +311,8 @@ export default class Print extends HTMLElement {
         const highlightLabelBufferColor = [];
         const highlightLabelBufferSize = [];
         const highlightLabelRotation = [];
+        const highlightLabelHorizontal = [];
+        const highlightLabelVertical = [];
 
         mainLizmap.digitizing.featureDrawn?.forEach((featureDrawn, index) => {
 
@@ -351,6 +353,8 @@ export default class Print extends HTMLElement {
             highlightLabelBufferSize.push(1.5);
 
             highlightLabelRotation.push(featureDrawn.get('rotation') ?? 0);
+            highlightLabelHorizontal.push('center');
+            highlightLabelVertical.push('half');
         });
 
         if (highlightGeom.length && highlightSymbol.length) {
@@ -364,6 +368,8 @@ export default class Print extends HTMLElement {
             wmsParams[this._mainMapID + ':HIGHLIGHT_LABELBUFFERCOLOR'] = highlightLabelBufferColor.join(';');
             wmsParams[this._mainMapID + ':HIGHLIGHT_LABELBUFFERSIZE'] = highlightLabelBufferSize.join(';');
             wmsParams[this._mainMapID + ':HIGHLIGHT_LABEL_ROTATION'] = highlightLabelRotation.join(';');
+            wmsParams[this._mainMapID + ':HIGHLIGHT_LABEL_HORIZONTAL_ALIGNMENT'] = highlightLabelHorizontal.join(';');
+            wmsParams[this._mainMapID + ':HIGHLIGHT_LABEL_VERTICAL_ALIGNMENT'] = highlightLabelVertical.join(';');
         }
 
         // Grid
