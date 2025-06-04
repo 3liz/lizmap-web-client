@@ -47,7 +47,11 @@
     "ol-wfs-capabilities": "^2.0.0",
     "playwright-ctrf-json-reporter": "^0.0.x",
     "postcss-lit": "^1.2.0",
+<<<<<<< HEAD
     "proj4": "^2.19.X",
+=======
+    "proj4rs": "^0.1.8",
+>>>>>>> af1aa978e (JS: Replace proj4js by proj4rs WASM)
     "shpjs": "^6.1.0",
     "stylelint": "^16.15.x",
     "stylelint-config-standard": "^38.0.x",
