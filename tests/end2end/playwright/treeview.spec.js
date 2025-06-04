@@ -205,8 +205,14 @@ test.describe('Treeview mocked', () => {
             await page.route('**/service*', async route => {
                 const request = await route.request();
                 if (request.method() !== 'POST') {
-                    // GetLegendGraphic is a POST request
-                    // Continue the request for non POST requests
+                    // GetLegendGraphic is a GET request for single layer
+                    const searchParams = new URLSearchParams(request.url().split('?')[1]);
+                    if (searchParams.get('SERVICE') === 'WMS' &&
+                        searchParams.has('REQUEST') &&
+                        searchParams.get('REQUEST') === 'GetLegendGraphic') {
+                        GetLegends.push(searchParams);
+                    }
+                    // Continue the request
                     await route.continue();
                     return;
                 }
