@@ -24,6 +24,10 @@ test.describe('QGIS Requests', () => {
         expect(response.status()).toBe(200);
         // check content-type header
         expect(response.headers()['content-type']).toBe('application/json');
+        // check headers
+        expect(response.headers()).toHaveProperty('cache-control');
+        expect(response.headers()['cache-control']).toBe('no-cache');
+        expect(response.headers()).toHaveProperty('etag');
         // check body
         const single = await response.json()
         // check root
@@ -58,6 +62,10 @@ test.describe('QGIS Requests', () => {
         expect(response.status()).toBe(200);
         // check content-type header
         expect(response.headers()['content-type']).toBe('application/json');
+        // check headers
+        expect(response.headers()).toHaveProperty('cache-control');
+        expect(response.headers()['cache-control']).toBe('no-cache');
+        expect(response.headers()).toHaveProperty('etag');
         // check body
         const categorized = await response.json();
         // check root
@@ -93,6 +101,10 @@ test.describe('QGIS Requests', () => {
         expect(response.status()).toBe(200);
         // check content-type header
         expect(response.headers()['content-type']).toBe('application/json');
+        // check headers
+        expect(response.headers()).toHaveProperty('cache-control');
+        expect(response.headers()['cache-control']).toBe('no-cache');
+        expect(response.headers()).toHaveProperty('etag');
         // check body
         const group = await response.json();
         // check root
@@ -132,6 +144,10 @@ test.describe('QGIS Requests', () => {
         expect(response.status()).toBe(200);
         // check content-type header
         expect(response.headers()['content-type']).toBe('application/json');
+        // check headers
+        expect(response.headers()).toHaveProperty('cache-control');
+        expect(response.headers()['cache-control']).toBe('no-cache');
+        expect(response.headers()).toHaveProperty('etag');
         // check body
         const combined = await response.json();
         // check root
@@ -187,6 +203,10 @@ test.describe('QGIS Requests', () => {
         expect(response.status()).toBe(200);
         // check content-type header
         expect(response.headers()['content-type']).toBe('application/json');
+        // check headers
+        expect(response.headers()).toHaveProperty('cache-control');
+        expect(response.headers()['cache-control']).toBe('no-store, no-cache, must-revalidate');
+        expect(response.headers()).not.toHaveProperty('etag');
         // check body
         const combinedPost = await response.json();
         // check root
