@@ -15,6 +15,11 @@ import * as path from 'path';
  */
 
 /**
+ * Playwright APIRequestContext
+ * @typedef {import('@playwright/test').APIRequestContext} APIRequestContext
+ */
+
+/**
  * Integer
  * @typedef {number} int
  */
@@ -122,7 +127,7 @@ export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 
 
     await expect(async () => {
         const response = await page.goto(url);
-        expect(response.status()).toBeLessThan(400);
+        expect(response?.status()).toBeLessThan(400);
     }).toPass({
         intervals: [1_000, 2_000, 10_000],
         timeout: 60_000
@@ -134,9 +139,14 @@ export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 
         if (waitForGetLegendGraphic) {
             // Wait for WMS GetLegendGraphic promise
             const getLegendGraphicPromise = page.waitForRequest(
-                request => request.method() === 'POST' &&
+                request => (
+                    request.method() === 'POST' &&
                     request.postData() != null &&
                     request.postData()?.includes('GetLegendGraphic') === true
+                ) || (
+                    request.method() === 'GET' &&
+                    request.url().includes('GetLegendGraphic') === true
+                )
             );
             // Normal check about the map
             // Wait for WMS GetLegendGraphic
@@ -167,7 +177,7 @@ export async function reloadMap(page, check = true) {
 
     await expect(async () => {
         const response = await page.reload();
-        expect(response.status()).toBeLessThan(400);
+        expect(response?.status()).toBeLessThan(400);
     }).toPass({
         intervals: [1_000, 2_000, 10_000],
         timeout: 60_000
@@ -178,10 +188,14 @@ export async function reloadMap(page, check = true) {
     if (check) {
         // Wait for WMS GetLegendGraphic promise
         const getLegendGraphicPromise = page.waitForRequest(
-            request =>
+            request => (
                 request.method() === 'POST' &&
                 request.postData() != null &&
                 request.postData()?.includes('GetLegendGraphic') === true
+            ) || (
+                request.method() === 'GET' &&
+                request.url().includes('GetLegendGraphic') === true
+            )
         );
         // Normal check about the map
         // Wait for WMS GetLegendGraphic
@@ -245,7 +259,7 @@ export async function expectToHaveLengthCompare(title, parameters, expectedLengt
 
 /**
  * Get the JSON for the given project using the API
- * @param {import("playwright-core/types/types.js").APIRequestContext} request Request to use
+ * @param {APIRequestContext} request Request to use
  * @param {string} project The project name
  * @param {string} repository The repository name, default to "testsrepository".
  * @returns {Promise<any>} The JSON response
@@ -259,9 +273,9 @@ export async function jsonFromProjectApi(request, project, repository = 'testsre
 
 /**
  * Get the version of QGIS written in the project
- * @param {import("playwright-core/types/types.js").APIRequestContext} request Request to use
+ * @param {APIRequestContext} request Request to use
  * @param {string} project The project name
- * @returns {int} The QGIS version, written as "34004" for QGIS 3.40.4, to be easily sortable.
+ * @returns {Promise<int>} The QGIS version, written as "34004" for QGIS 3.40.4, to be easily sortable.
  */
 export async function qgisVersionFromProjectApi(request, project) {
     const response = await jsonFromProjectApi(request, project);
@@ -284,12 +298,11 @@ export async function checkJson(response, status = 200) {
     return await response.json();
 }
 
-/* eslint-disable jsdoc/check-types */
 /**
  * Check parameters against an object containing expected parameters
  * @param {string}                        title Check title, for testing and debug
  * @param {string}                        parameters List of parameters to check
- * @param {Object<string, string|RegExp>} expectedParameters List of expected parameters
+ * @param {{[key: string]: string|RegExp}} expectedParameters List of expected parameters
  * @returns {Promise<URLSearchParams>}    List of promise with parameters
  */
 export async function expectParametersToContain(title, parameters, expectedParameters) {
@@ -332,9 +345,9 @@ const adminPassword = "Basic " + btoa("admin:admin");
 
 /**
  * Create a GET request on a given URL with Basic authentication admin:admin
- * @param {import("playwright-core/types/types.js").APIRequestContext} request Request to use
+ * @param {APIRequestContext} request Request to use
  * @param {string} url URL to do a GET request on
- * @returns {Promise<import("playwright-core/types/types.js").APIResponse>} Response
+ * @returns {Promise<APIResponse>} Response
  */
 export async function requestGETWithAdminBasicAuth(request, url) {
     return await request.get(url,
@@ -347,10 +360,10 @@ export async function requestGETWithAdminBasicAuth(request, url) {
 
 /**
  * Create a POST request on a given URL with Basic authentication admin:admin
- * @param {import("playwright-core/types/types.js").APIRequestContext} request Request to use
+ * @param {APIRequestContext} request Request to use
  * @param {string} url URL to do a POST request on
  * @param {object} data parameters for the request
- * @returns {Promise<import("playwright-core/types/types.js").APIResponse>} Response
+ * @returns {Promise<APIResponse>} Response
  */
 export async function requestPOSTWithAdminBasicAuth(request, url, data) {
     return await request.post(url,
@@ -364,10 +377,10 @@ export async function requestPOSTWithAdminBasicAuth(request, url, data) {
 
 /**
  * Create a DELETE request on a given URL with Basic authentication admin:admin
- * @param {import("playwright-core/types/types.js").APIRequestContext} request Request to use
+ * @param {APIRequestContext} request Request to use
  * @param {string} url URL to do a DELETE request on
  * @param {object} data parameters for the request
- * @returns {Promise<import("playwright-core/types/types.js").APIResponse>} Response
+ * @returns {Promise<APIResponse>} Response
  */
 export async function requestDELETEWithAdminBasicAuth(request, url, data) {
     return await request.delete(url,
@@ -378,4 +391,3 @@ export async function requestDELETEWithAdminBasicAuth(request, url, data) {
             data: data
         });
 }
-/* eslint-enable jsdoc/check-types */

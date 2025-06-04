@@ -94,14 +94,14 @@ describe('WMS', function () {
         });
     })
 
-    it('getLegendGraphic', async function () {
+    it('getLegendGraphic POST with multiple layers', async function () {
         client
         .intercept({
             path: /\/index.php\/lizmap\/service/,
             method: 'POST',
         })
         .reply(200, replyPost, {headers: {'content-type': 'application/json'}});
-        const data = await wms.getLegendGraphic({Name:'test'});
+        const data = await wms.getLegendGraphic({LAYER:'test1,test2'});
         expect(data).to.deep.eq({
             "body": {
                 SERVICE: 'WMS',
@@ -110,12 +110,50 @@ describe('WMS', function () {
                 FORMAT: 'application/json',
                 "project": "test",
                 "repository": "test",
-                "Name": "test",
+                LAYER: "test1,test2",
             },
             "method": "POST",
             "origin": "http://localhost:8130",
             "params": {},
             "pathname": "/index.php/lizmap/service",
         });
+    })
+
+    it('getLegendGraphic GET with single layer', async function () {
+        client
+        .intercept({
+            path: /\/index.php\/lizmap\/service/,
+            method: 'GET',
+        })
+        .reply(200, replyGet, {headers: {'content-type': 'application/json'}});
+        const data = await wms.getLegendGraphic({LAYER:'test'});
+        expect(data).to.deep.eq({
+            "method": "GET",
+            "origin": "http://localhost:8130",
+            "params": {
+                SERVICE: 'WMS',
+                REQUEST: 'GetLegendGraphic',
+                VERSION: '1.3.0',
+                FORMAT: 'application/json',
+                "project": "test",
+                "repository": "test",
+                LAYER: "test",
+            },
+            "pathname": "/index.php/lizmap/service",
+        });
+    })
+
+    it('getLegendGraphic Request error', async function () {
+        try {
+            await wms.getLegendGraphic({Name:'test'});
+        } catch (error) {
+            expect(error.name).to.be.eq('RequestError');
+            expect(error.message).to.be.eq(
+                'LAYERS or LAYER parameter is required for getLegendGraphic request'
+            );
+            expect(error.parameters).to.deep.eq({
+                Name:'test',
+            });
+        }
     })
 })
