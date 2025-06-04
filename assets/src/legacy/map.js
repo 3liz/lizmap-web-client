@@ -654,8 +654,9 @@ window.lizMap = function() {
                 var wmsBbox = firstLayer.bbox[proj.ref].bbox;
                 var wmsBounds = OpenLayers.Bounds.fromArray( wmsBbox );
                 var initBounds = OpenLayers.Bounds.fromArray( config.options.initialExtent );
-                if ( !initBounds.intersectsBounds( wmsBounds ) )
+                if ( !initBounds.intersectsBounds( wmsBounds ) ) {
                     OpenLayers.Projection.defaults[proj.ref].yx = true;
+                }
             }
         }
     }
