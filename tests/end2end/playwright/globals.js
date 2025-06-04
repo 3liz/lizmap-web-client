@@ -63,7 +63,7 @@ export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 
 
     await expect(async () => {
         const response = await page.goto(url);
-        expect(response.status()).toBeLessThan(400);
+        expect(response?.status()).toBeLessThan(400);
     }).toPass({
         intervals: [1_000, 2_000, 10_000],
         timeout: 60_000
@@ -113,7 +113,7 @@ export async function reloadMap(page, check = true) {
 
     await expect(async () => {
         const response = await page.reload();
-        expect(response.status()).toBeLessThan(400);
+        expect(response?.status()).toBeLessThan(400);
     }).toPass({
         intervals: [1_000, 2_000, 10_000],
         timeout: 60_000
