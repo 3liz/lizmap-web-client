@@ -1,19 +1,31 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { gotoMap } from './globals';
 
 test.describe('QGIS Requests', () => {
-    test('WMS Get Legend Graphic JSON', async ({ page }) => {
-        const url = '/index.php/view/map?repository=testsrepository&project=layer_legends';
-        await gotoMap(url, page)
-
-        const single = await page.evaluate(async () => {
-            return await fetch(
-                "/index.php/lizmap/service?repository=testsrepository&project=layer_legends&" +
-                "SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=layer_legend_single_symbol&STYLE=&" +
-                "EXCEPTIONS=application/vnd.ogc.se_inimage&FORMAT=application/json&TRANSPARENT=TRUE&DPI=96"
-            ).then(r => r.ok ? r.json() : Promise.reject(r))
-        })
+    test('WMS Get Legend Graphic JSON', async ({ request }) => {
+        // GetLegendGraphic request for a layer with a single symbol
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'layer_legends',
+            SERVICE: 'WMS',
+            VERSION: '1.3.0',
+            REQUEST: 'GetLegendGraphic',
+            LAYER: 'layer_legend_single_symbol',
+            STYLE: '',
+            EXCEPTIONS: 'application/vnd.ogc.se_inimage',
+            FORMAT: 'application/json',
+            TRANSPARENT: 'TRUE',
+            DPI: '96',
+        });
+        let url = `/index.php/lizmap/service?${params}`;
+        let response = await request.get(url, {});
+        // check response
+        expect(response.ok()).toBeTruthy();
+        expect(response.status()).toBe(200);
+        // check content-type header
+        expect(response.headers()['content-type']).toBe('application/json');
+        // check body
+        const single = await response.json()
         // check root
         expect(single.nodes).toHaveLength(1)
         expect(single.title).toBe('')
@@ -25,13 +37,29 @@ test.describe('QGIS Requests', () => {
         expect(singleNode.icon).not.toBeUndefined()
         expect(singleNode.symbols).toBeUndefined()
 
-        const categorized = await page.evaluate(async () => {
-            return await fetch(
-                "/index.php/lizmap/service?repository=testsrepository&project=layer_legends&" +
-                "SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=layer_legend_categorized&STYLE=&" +
-                "EXCEPTIONS=application/vnd.ogc.se_inimage&FORMAT=application/json&TRANSPARENT=TRUE&DPI=96"
-            ).then(r => r.ok ? r.json() : Promise.reject(r))
-        })
+        // GetLegendGraphic request for a layer with categorized symbols
+        params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'layer_legends',
+            SERVICE: 'WMS',
+            VERSION: '1.3.0',
+            REQUEST: 'GetLegendGraphic',
+            LAYER: 'layer_legend_categorized',
+            STYLE: '',
+            EXCEPTIONS: 'application/vnd.ogc.se_inimage',
+            FORMAT: 'application/json',
+            TRANSPARENT: 'TRUE',
+            DPI: '96',
+        });
+        url = `/index.php/lizmap/service?${params}`;
+        response = await request.get(url, {});
+        // check response
+        expect(response.ok()).toBeTruthy();
+        expect(response.status()).toBe(200);
+        // check content-type header
+        expect(response.headers()['content-type']).toBe('application/json');
+        // check body
+        const categorized = await response.json();
         // check root
         expect(categorized.nodes).toHaveLength(1)
         expect(categorized.title).toBe('')
@@ -44,13 +72,29 @@ test.describe('QGIS Requests', () => {
         expect(categorizedNode.symbols).not.toBeUndefined()
         expect(categorizedNode.symbols).toHaveLength(2)
 
-        const group = await page.evaluate(async () => {
-            return await fetch(
-                "/index.php/lizmap/service?repository=testsrepository&project=layer_legends&" +
-                "SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=legend_option_test&STYLE=" +
-                "&EXCEPTIONS=application/vnd.ogc.se_inimage&FORMAT=application/json&TRANSPARENT=TRUE&DPI=96"
-            ).then(r => r.ok ? r.json() : Promise.reject(r))
-        })
+        // GetLegendGraphic request for a group
+        params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'layer_legends',
+            SERVICE: 'WMS',
+            VERSION: '1.3.0',
+            REQUEST: 'GetLegendGraphic',
+            LAYER: 'legend_option_test',
+            STYLE: '',
+            EXCEPTIONS: 'application/vnd.ogc.se_inimage',
+            FORMAT: 'application/json',
+            TRANSPARENT: 'TRUE',
+            DPI: '96',
+        });
+        url = `/index.php/lizmap/service?${params}`;
+        response = await request.get(url, {});
+        // check response
+        expect(response.ok()).toBeTruthy();
+        expect(response.status()).toBe(200);
+        // check content-type header
+        expect(response.headers()['content-type']).toBe('application/json');
+        // check body
+        const group = await response.json();
         // check root
         expect(group.nodes).toHaveLength(1)
         expect(group.title).toBe('')
@@ -64,16 +108,32 @@ test.describe('QGIS Requests', () => {
         expect(groupNode.nodes).not.toBeUndefined()
         expect(groupNode.nodes).toHaveLength(3)
 
-        const combined = await page.evaluate(async () => {
-            // To get layer_legend_single_symbol first, layer_legend_categorized second and legend_option_test third
-            // LAYER parameter has to be the inverse: legend_option_test,layer_legend_categorized,layer_legend_single_symbol
-            return await fetch(
-                "/index.php/lizmap/service?repository=testsrepository&project=layer_legends&" +
-                "SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&" +
-                "LAYER=legend_option_test,layer_legend_categorized,layer_legend_single_symbol&STYLE=&" +
-                "EXCEPTIONS=application/vnd.ogc.se_inimage&FORMAT=application/json&TRANSPARENT=TRUE&DPI=96"
-            ).then(r => r.ok ? r.json() : Promise.reject(r))
-        })
+        // GetLegendGraphic request for multiple layers
+        // To get layer_legend_single_symbol first, layer_legend_categorized second and legend_option_test third
+        // LAYER parameter has to be the inverse: legend_option_test,layer_legend_categorized,layer_legend_single_symbol
+        // GetLegendGraphic request for a group
+        params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'layer_legends',
+            SERVICE: 'WMS',
+            VERSION: '1.3.0',
+            REQUEST: 'GetLegendGraphic',
+            LAYER: 'legend_option_test,layer_legend_categorized,layer_legend_single_symbol',
+            STYLE: '',
+            EXCEPTIONS: 'application/vnd.ogc.se_inimage',
+            FORMAT: 'application/json',
+            TRANSPARENT: 'TRUE',
+            DPI: '96',
+        });
+        url = `/index.php/lizmap/service?${params}`;
+        response = await request.get(url, {});
+        // check response
+        expect(response.ok()).toBeTruthy();
+        expect(response.status()).toBe(200);
+        // check content-type header
+        expect(response.headers()['content-type']).toBe('application/json');
+        // check body
+        const combined = await response.json();
         // check root
         expect(combined.nodes).toHaveLength(3)
         expect(combined.title).toBe('')
@@ -102,5 +162,34 @@ test.describe('QGIS Requests', () => {
         expect(thirdNode.nodes).not.toBeUndefined()
         expect(thirdNode.nodes).toHaveLength(3)
         expect(thirdNode.nodes).toMatchObject(groupNode.nodes)
+
+        // GetLegendGraphic request for multiple layers as POST
+        params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'layer_legends',
+        });
+
+        let formData = {
+            SERVICE: 'WMS',
+            VERSION: '1.3.0',
+            REQUEST: 'GetLegendGraphic',
+            LAYER: 'legend_option_test,layer_legend_categorized,layer_legend_single_symbol',
+            STYLE: '',
+            EXCEPTIONS: 'application/vnd.ogc.se_inimage',
+            FORMAT: 'application/json',
+            TRANSPARENT: 'TRUE',
+            DPI: '96',
+        };
+        url = `/index.php/lizmap/service?${params}`;
+        response = await request.post(url, {form:formData});
+        // check response
+        expect(response.ok()).toBeTruthy();
+        expect(response.status()).toBe(200);
+        // check content-type header
+        expect(response.headers()['content-type']).toBe('application/json');
+        // check body
+        const combinedPost = await response.json();
+        // check root
+        expect(combinedPost.nodes).toHaveLength(3)
     });
 });
