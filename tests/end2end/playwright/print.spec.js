@@ -3,7 +3,8 @@ import { dirname } from 'path';
 import * as fs from 'fs/promises'
 import { existsSync } from 'node:fs';
 import { test, expect } from '@playwright/test';
-import {PrintPage} from "./pages/printpage";
+import { PrintPage } from "./pages/printpage";
+import { DrawPage } from "./pages/drawpage";
 import {
     gotoMap,
     expectParametersToContain,
@@ -772,43 +773,56 @@ test.describe('Print 3857', () => {
             13,
             Object.keys(expectedParameters2)
         );
+    });
 
-        // Redlining with circle
-        await page.locator('#button-draw').click();
-        await page.getByRole('button', { name: 'Toggle Dropdown' }).click();
-        await page.locator('#draw .digitizing-circle > svg').click();
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 610,
-                y: 302
-            }
-        });
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 722,
-                y: 300
-            }
-        });
+    test('Print requests with redlining', async ({ request, page }) => {
+        const printPage = new PrintPage(page, 'draw');
+        const drawProject = new DrawPage(page, 'draw');
+        // Close left dock
+        await drawProject.closeLeftDock();
+        // open draw panel
+        await drawProject.openDrawPanel();
 
-        await page.locator('#button-print').click();
-        await page.locator('#print-scale').selectOption('72224');
+        // select circle to draw
+        await drawProject.selectGeometry('circle');
 
-        getPrintPromise = page.waitForRequest(
+        // Draw circle
+        await drawProject.clickOnMap(610, 302);
+        await drawProject.clickOnMap(722, 300);
+
+
+        await printPage.openPrintPanel();
+        await printPage.setPrintScale('72224');
+
+        let getPrintPromise = page.waitForRequest(
             request =>
                 request.method() === 'POST' &&
                 request.postData()?.includes('GetPrint') === true
         );
 
         // Launch print
-        await page.locator('#print-launch').click();
+        await printPage.launchPrint();
 
         // check request
-        getPrintRequest = await getPrintPromise;
-        // Extend and update GetPrint parameters
+        let getPrintRequest = await getPrintPromise;
+
+        // Required GetPrint parameters
+        const expectedParameters = {
+            'SERVICE': 'WMS',
+            'REQUEST': 'GetPrint',
+            'VERSION': '1.3.0',
+            'FORMAT': 'pdf',
+            'TRANSPARENT': 'true',
+            'CRS': 'EPSG:3857',
+            'DPI': '100',
+            'TEMPLATE': 'print_labels',
+        }
+
+        // Expected GetPrint parameters
         /* eslint-disable no-useless-escape, @stylistic/js/max-len --
          * Block of SLD
         **/
-        const expectedParameters3 = Object.assign({}, expectedParameters, {
+        const expectedParameters1 = Object.assign({}, expectedParameters, {
             'map0:EXTENT': /423093.\d+,5399873.\d+,439487.\d+,5410707.\d+/,
             'map0:SCALE': '72224',
             'map0:LAYERS': 'OpenStreetMap,quartiers,sousquartiers',
@@ -840,13 +854,13 @@ test.describe('Print 3857', () => {
             // 'multiline_label': 'Multiline label',
         })
         /* eslint-enable no-useless-escape, @stylistic/js/max-len */
-        name = 'Print requests 3';
-        getPrintParams = await expectParametersToContain(
+        let name = 'Print requests redlining 1';
+        let getPrintParams = await expectParametersToContain(
             name,
             getPrintRequest.postData() ?? ''
-            , expectedParameters3
+            , expectedParameters1
         );
-        expectedLength = 17;
+        let expectedLength = 17;
         if (await qgisVersionFromProjectApi(request, 'print') > 33200) {
             expectedLength = 16;
         }
@@ -854,8 +868,145 @@ test.describe('Print 3857', () => {
             name,
             Array.from(getPrintParams.keys()),
             expectedLength,
+            Object.keys(expectedParameters1)
+        );
+
+        let getPrintResponse = await getPrintRequest.response();
+        await expect(getPrintResponse?.status()).toBe(200)
+        await expect(getPrintResponse?.headers()['content-type']).toBe('application/pdf');
+
+        // open draw panel
+        await drawProject.openDrawPanel();
+        // select point to draw
+        await drawProject.selectGeometry('point');
+        // Draw point
+        await drawProject.clickOnMap(480, 300);
+
+        // Toggle edit, two geometries are available, the text tools are not visible
+        await drawProject.toggleEdit();
+
+        // Edit second point By clicking on the map
+        await page.waitForTimeout(1000);
+        await drawProject.clickOnMap(480, 300);
+        await drawProject.setTextContentValue('test');
+
+        await printPage.openPrintPanel();
+        await printPage.setPrintScale('72224');
+
+        getPrintPromise = page.waitForRequest(
+            request =>
+                request.method() === 'POST' &&
+                request.postData()?.includes('GetPrint') === true
+        );
+
+        // Launch print
+        await printPage.launchPrint();
+
+        // check request
+        getPrintRequest = await getPrintPromise;
+
+        // Expected GetPrint parameters
+        const expectedParameters2 = Object.assign({}, expectedParameters, {
+            'map0:EXTENT': /423093.\d+,5399873.\d+,439487.\d+,5410707.\d+/,
+            'map0:SCALE': '72224',
+            'map0:LAYERS': 'OpenStreetMap,quartiers,sousquartiers',
+            'map0:STYLES': 'default,défaut,défaut',
+            'map0:OPACITIES': '204,255,255',
+            'map0:HIGHLIGHT_SYMBOL': /.*/,
+            'map0:HIGHLIGHT_GEOM': /CURVEPOLYGON\(CIRCULARSTRING\([\s\d.,]*\)\);POINT\([\s\d.,]*\)/,
+            'map0:HIGHLIGHT_LABELSTRING': ' ;test',
+            'map0:HIGHLIGHT_LABELSIZE': '10;10',
+            'map0:HIGHLIGHT_LABELBUFFERCOLOR': '#FFFFFF;#FFFFFF',
+            'map0:HIGHLIGHT_LABELBUFFERSIZE': '1.5;1.5',
+            'map0:HIGHLIGHT_LABEL_ROTATION': '0;0',
+            'map0:HIGHLIGHT_LABEL_HORIZONTAL_ALIGNMENT': 'center;center',
+            'map0:HIGHLIGHT_LABEL_VERTICAL_ALIGNMENT': 'half;half',
+        });
+
+        name = 'Print requests redlining 2';
+        getPrintParams = await expectParametersToContain(
+            name,
+            getPrintRequest.postData() ?? ''
+            , expectedParameters2
+        );
+        expectedLength = 24;
+        if (await qgisVersionFromProjectApi(request, 'print') > 33200) {
+            expectedLength = 23;
+        }
+        await expectToHaveLengthCompare(
+            name,
+            Array.from(getPrintParams.keys()),
+            expectedLength,
+            Object.keys(expectedParameters2)
+        );
+
+        getPrintResponse = await getPrintRequest.response();
+        await expect(getPrintResponse?.status()).toBe(200)
+        await expect(getPrintResponse?.headers()['content-type']).toBe('application/pdf');
+
+        // open draw panel
+        await drawProject.openDrawPanel();
+        // Activate erase tool
+        await drawProject.toggleErase();
+
+        // Delete circle
+        page.on('dialog', dialog => dialog.accept());
+        await drawProject.clickOnMap(610, 302);
+        await page.waitForTimeout(300);
+
+        await printPage.openPrintPanel();
+        await printPage.setPrintScale('72224');
+
+        getPrintPromise = page.waitForRequest(
+            request =>
+                request.method() === 'POST' &&
+                request.postData()?.includes('GetPrint') === true
+        );
+
+        // Launch print
+        await printPage.launchPrint();
+
+        // check request
+        getPrintRequest = await getPrintPromise;
+
+        // Expected GetPrint parameters
+        const expectedParameters3 = Object.assign({}, expectedParameters, {
+            'map0:EXTENT': /423093.\d+,5399873.\d+,439487.\d+,5410707.\d+/,
+            'map0:SCALE': '72224',
+            'map0:LAYERS': 'OpenStreetMap,quartiers,sousquartiers',
+            'map0:STYLES': 'default,défaut,défaut',
+            'map0:OPACITIES': '204,255,255',
+            'map0:HIGHLIGHT_SYMBOL': /.*/,
+            'map0:HIGHLIGHT_GEOM': /POINT\([\s\d.,]*\)/,
+            'map0:HIGHLIGHT_LABELSTRING': 'test',
+            'map0:HIGHLIGHT_LABELSIZE': '10',
+            'map0:HIGHLIGHT_LABELBUFFERCOLOR': '#FFFFFF',
+            'map0:HIGHLIGHT_LABELBUFFERSIZE': '1.5',
+            'map0:HIGHLIGHT_LABEL_ROTATION': '0',
+            'map0:HIGHLIGHT_LABEL_HORIZONTAL_ALIGNMENT': 'center',
+            'map0:HIGHLIGHT_LABEL_VERTICAL_ALIGNMENT': 'half',
+        });
+
+        name = 'Print requests redlining 3';
+        getPrintParams = await expectParametersToContain(
+            name,
+            getPrintRequest.postData() ?? ''
+            , expectedParameters3
+        );
+        expectedLength = 24;
+        if (await qgisVersionFromProjectApi(request, 'print') > 33200) {
+            expectedLength = 23;
+        }
+        await expectToHaveLengthCompare(
+            name,
+            Array.from(getPrintParams.keys()),
+            expectedLength,
             Object.keys(expectedParameters3)
         );
+
+        getPrintResponse = await getPrintRequest.response();
+        await expect(getPrintResponse?.status()).toBe(200)
+        await expect(getPrintResponse?.headers()['content-type']).toBe('application/pdf');
     });
 });
 

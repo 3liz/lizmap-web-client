@@ -311,6 +311,8 @@ export default class Print extends HTMLElement {
         const highlightLabelBufferColor = [];
         const highlightLabelBufferSize = [];
         const highlightLabelRotation = [];
+        const highlightLabelHorizontal = [];
+        const highlightLabelVertical = [];
 
         mainLizmap.digitizing.featureDrawn?.forEach((featureDrawn, index) => {
 
@@ -338,10 +340,10 @@ export default class Print extends HTMLElement {
             highlightSymbol.push(mainLizmap.digitizing.getFeatureDrawnSLD(index));
 
             // Labels
-            const label = featureDrawn.get('text') ? featureDrawn.get('text') : ' ';
+            const label = featureDrawn.get('text') ?? ' ';
             highlightLabelString.push(label);
             // Font size is 10px by default (https://github.com/openlayers/openlayers/blob/v8.1.0/src/ol/style/Text.js#L30)
-            let scale = featureDrawn.get('scale');
+            let scale = featureDrawn.get('scale') ?? 1;
             if (scale) {
                 scale = scale * 10;
             }
@@ -350,7 +352,9 @@ export default class Print extends HTMLElement {
             highlightLabelBufferColor.push('#FFFFFF');
             highlightLabelBufferSize.push(1.5);
 
-            highlightLabelRotation.push(featureDrawn.get('rotation'));
+            highlightLabelRotation.push(featureDrawn.get('rotation') ?? 0);
+            highlightLabelHorizontal.push('center');
+            highlightLabelVertical.push('half');
         });
 
         if (highlightGeom.length && highlightSymbol.length) {
@@ -364,6 +368,8 @@ export default class Print extends HTMLElement {
             wmsParams[this._mainMapID + ':HIGHLIGHT_LABELBUFFERCOLOR'] = highlightLabelBufferColor.join(';');
             wmsParams[this._mainMapID + ':HIGHLIGHT_LABELBUFFERSIZE'] = highlightLabelBufferSize.join(';');
             wmsParams[this._mainMapID + ':HIGHLIGHT_LABEL_ROTATION'] = highlightLabelRotation.join(';');
+            wmsParams[this._mainMapID + ':HIGHLIGHT_LABEL_HORIZONTAL_ALIGNMENT'] = highlightLabelHorizontal.join(';');
+            wmsParams[this._mainMapID + ':HIGHLIGHT_LABEL_VERTICAL_ALIGNMENT'] = highlightLabelVertical.join(';');
         }
 
         // Grid
