@@ -919,6 +919,8 @@ test.describe('Print 3857', () => {
             'map0:HIGHLIGHT_LABELBUFFERCOLOR': '#FFFFFF;#FFFFFF',
             'map0:HIGHLIGHT_LABELBUFFERSIZE': '1.5;1.5',
             'map0:HIGHLIGHT_LABEL_ROTATION': '0;0',
+            'map0:HIGHLIGHT_LABEL_HORIZONTAL_ALIGNMENT': 'center;center',
+            'map0:HIGHLIGHT_LABEL_VERTICAL_ALIGNMENT': 'half;half',
         });
 
         name = 'Print requests redlining 2';
@@ -927,9 +929,9 @@ test.describe('Print 3857', () => {
             getPrintRequest.postData() ?? ''
             , expectedParameters2
         );
-        expectedLength = 22;
+        expectedLength = 24;
         if (await qgisVersionFromProjectApi(request, 'print') > 33200) {
-            expectedLength = 21;
+            expectedLength = 23;
         }
         await expectToHaveLengthCompare(
             name,
@@ -981,6 +983,8 @@ test.describe('Print 3857', () => {
             'map0:HIGHLIGHT_LABELBUFFERCOLOR': '#FFFFFF',
             'map0:HIGHLIGHT_LABELBUFFERSIZE': '1.5',
             'map0:HIGHLIGHT_LABEL_ROTATION': '0',
+            'map0:HIGHLIGHT_LABEL_HORIZONTAL_ALIGNMENT': 'center',
+            'map0:HIGHLIGHT_LABEL_VERTICAL_ALIGNMENT': 'half',
         });
 
         name = 'Print requests redlining 3';
@@ -989,9 +993,9 @@ test.describe('Print 3857', () => {
             getPrintRequest.postData() ?? ''
             , expectedParameters3
         );
-        expectedLength = 22;
+        expectedLength = 24;
         if (await qgisVersionFromProjectApi(request, 'print') > 33200) {
-            expectedLength = 21;
+            expectedLength = 23;
         }
         await expectToHaveLengthCompare(
             name,
