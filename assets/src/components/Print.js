@@ -338,10 +338,10 @@ export default class Print extends HTMLElement {
             highlightSymbol.push(mainLizmap.digitizing.getFeatureDrawnSLD(index));
 
             // Labels
-            const label = featureDrawn.get('text') ? featureDrawn.get('text') : ' ';
+            const label = featureDrawn.get('text') ?? ' ';
             highlightLabelString.push(label);
             // Font size is 10px by default (https://github.com/openlayers/openlayers/blob/v8.1.0/src/ol/style/Text.js#L30)
-            let scale = featureDrawn.get('scale');
+            let scale = featureDrawn.get('scale') ?? 1;
             if (scale) {
                 scale = scale * 10;
             }
@@ -350,7 +350,7 @@ export default class Print extends HTMLElement {
             highlightLabelBufferColor.push('#FFFFFF');
             highlightLabelBufferSize.push(1.5);
 
-            highlightLabelRotation.push(featureDrawn.get('rotation'));
+            highlightLabelRotation.push(featureDrawn.get('rotation') ?? 0);
         });
 
         if (highlightGeom.length && highlightSymbol.length) {

@@ -72,6 +72,21 @@ export class DrawPage extends ProjectPage {
     }
 
     /**
+     * toggleEdit function
+     * Toggle the edit tool
+     */
+    async toggleEdit() {
+        await this.drawPanel.locator('.digitizing-edit').click();
+    }
+
+    /**
+     * Toggle the erase tool
+     */
+    async toggleErase() {
+        await this.drawPanel.locator('.digitizing-erase').click();
+    }
+
+    /**
      * toggleMeasure function
      * Toggle the measure tool
      */
@@ -96,5 +111,14 @@ export class DrawPage extends ProjectPage {
         this.page.once('dialog', (dialog) => dialog.accept());
 
         await this.drawPanel.locator('.digitizing-all').click();
+    }
+
+    /**
+     * Set text content value
+     * @param {string} text The text content value
+     * @returns {Promise<void>}
+     */
+    async setTextContentValue(text) {
+        return this.drawPanel.locator('#textContent').fill(text);
     }
 }
