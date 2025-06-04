@@ -6,6 +6,7 @@
  */
 
 import Utils from './Utils.js';
+import { RequestError } from './Errors.js';
 
 /**
  * @class
@@ -52,15 +53,35 @@ export default class WMS {
     /**
      * @param {object} options - optional parameters which can override this._defaultGetLegendGraphicsParameters
      * @returns {Promise} Promise object represents data
+     * @throws {HttpError} In case of not successful response (status not in the range 200 – 299)
+     * @throws {NetworkError} In case of catch exceptions
      * @memberof WMS
      */
     async getLegendGraphic(options) {
+        const layers = options['LAYERS'] ?? options['LAYER'];
+        // Check if layer is specified
+        if (!layers) {
+            return Promise.reject(
+                new RequestError(
+                    'LAYERS or LAYER parameter is required for getLegendGraphic request',
+                    options,
+                )
+            );
+        }
+        const params = new URLSearchParams({
+            ...this._defaultGetLegendGraphicParameters,
+            ...options
+        });
+        // Check if multiple layers are specified
+        if ((Array.isArray(layers) && layers.length == 1) ||
+            (!Array.isArray(layers) && layers.split(',').length == 1)) {
+            // Use GET request for single layer
+            return Utils.fetchJSON(`${globalThis['lizUrls'].wms}?${params}`);
+        }
+        // Use POST request for multiple layers
         return Utils.fetchJSON(globalThis['lizUrls'].wms, {
             method: "POST",
-            body: new URLSearchParams({
-                ...this._defaultGetLegendGraphicParameters,
-                ...options
-            })
+            body: params,
         });
     }
 }

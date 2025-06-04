@@ -7,6 +7,28 @@
  */
 
 /**
+ * Representing a request error with message and parameters before fetching
+ * @class
+ * @augments Error
+ * @property {string} name       - Error name: RequestError
+ * @property {string} message    - Error message
+ * @property {object} parameters - The request parameters
+ */
+export class RequestError extends Error {
+
+    /**
+     * Creating a request error with message and parameters before fetching
+     * @param {string} message    - Error message
+     * @param {object} params     - The request parameters
+     */
+    constructor(message, params) {
+        super(message);
+        this.name = "RequestError";
+        this.parameters = params;
+    }
+}
+
+/**
  * Representing a network error with message, resource and options fetched
  * @class
  * @augments Error
