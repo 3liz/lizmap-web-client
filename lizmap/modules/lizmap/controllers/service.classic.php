@@ -671,11 +671,24 @@ class serviceCtrl extends jController
      */
     protected function GetLegendGraphics($wmsRequest)
     {
-        $result = $wmsRequest->process();
-
         /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
+        // Etag header and cache control
+        $etag = $this->buildEtag('GetLegendGraphic');
+        $respCanBeCached = $this->canBeCached();
+        if ($respCanBeCached && $rep->isValidCache(null, $etag)) {
+            $this->setACAOHeader($rep);
+
+            return $rep;
+        }
+
+        $result = $wmsRequest->process();
         $this->setupBinaryResponse($rep, $result, 'qgis_server_legend');
+
+        if ($respCanBeCached) {
+            $this->setEtagCacheHeaders($rep, $etag);
+            $this->setACAOHeader($rep);
+        }
 
         return $rep;
     }
