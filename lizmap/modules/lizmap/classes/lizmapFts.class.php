@@ -66,12 +66,12 @@ class lizmapFts
             $appContext = $project->getAppContext();
             $userGroups = $appContext->aclUserPublicGroupsId();
             foreach ($userGroups as $g) {
-                $sql .= " OR item_filter = '".$g."'";
+                $sql .= " OR '".$g."' = ANY ( string_to_array(item_filter, ',', ' ') )";
             }
             // Ok if user matches
             $user = jAuth::getUserSession();
             $login = $user->login;
-            $sql .= " OR item_filter = '".$login."'";
+            $sql .= " OR '".$login."' = ANY ( string_to_array(item_filter, ',', ' ') )";
         }
         $sql .= ' )';
         $sql .= '
