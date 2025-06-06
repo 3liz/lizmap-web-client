@@ -1487,8 +1487,13 @@ var lizLayerFilterTool = function () {
                 if (!bounds || abounds.length != 4) {
                     return false;
                 }
+                abounds = abounds.map(function (item) {
+                    return parseFloat(item);
+                });
+                if (isNaN(abounds[0]) || isNaN(abounds[1]) || isNaN(abounds[2]) || isNaN(abounds[3])) {
+                    return false;
+                }
                 lizMap.mainLizmap.map.zoomToGeometryOrExtent(abounds);
-                return false;
             }
 
             // Launch LayerFilter feature
