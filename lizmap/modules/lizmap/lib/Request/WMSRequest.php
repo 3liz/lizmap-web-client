@@ -302,6 +302,36 @@ class WMSRequest extends OGCRequest
             );
             // If only one layer do not change the request
             if (count($layers) == 1) {
+                $appContext = $this->appContext;
+                // Get cached session
+                // the cache should be unique between each user/service because the
+                // request content depends on rights of the user
+                $key = session_id().'-'.$this->param('service');
+                $version = $this->param('version');
+                if ($version) {
+                    $key .= '-'.$version;
+                }
+                $key .= '-'.$this->param('layers', $this->param('layer', ''));
+                $key .= '-'.$this->param('styles', $this->param('style', ''));
+                if ($appContext->UserIsConnected()) {
+                    $juser = $appContext->getUserSession();
+                    $key .= '-'.$juser->login;
+                }
+                $key = 'getlegendgraphic-'.sha1($key);
+                $cached = false;
+
+                try {
+                    $cached = $this->project->getCacheHandler()->getProjectRelatedDataCache($key);
+                } catch (\Exception $e) {
+                    // if qgisprojects profile does not exist, or if there is an
+                    // other error about the cache, let's log it
+                    \jLog::logEx($e, 'error');
+                }
+                // return cached data
+                if ($cached !== false) {
+                    return new OGCResponse($cached['code'], $cached['mime'], $cached['data'], true);
+                }
+
                 $result = $this->request(true);
                 if ($result->code == 200) {
                     $layer = $this->project->findLayerByAnyName($layerName);
@@ -326,6 +356,13 @@ class WMSRequest extends OGCRequest
                         $node->layerName = $layer->name;
                         $legends['nodes'][] = $node;
                     }
+
+                    $cachedContent = array(
+                        'code' => 200,
+                        'mime' => 'application/json',
+                        'data' => json_encode($legends),
+                    );
+                    $cached = $this->project->getCacheHandler()->setProjectRelatedDataCache($key, $cachedContent, 3600);
 
                     return new OGCResponse(200, 'application/json', json_encode($legends));
                 }
