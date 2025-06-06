@@ -74,7 +74,6 @@ const initLizmapApp = () => {
 
         },
         uicreated: () => {
-            console.log('ui created');
             window.customElements.define('lizmap-geolocation', Geolocation);
             window.customElements.define('lizmap-geolocation-survey', GeolocationSurvey);
             window.customElements.define('lizmap-features-table', FeaturesTable);
