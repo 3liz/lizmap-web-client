@@ -14,6 +14,8 @@
 namespace Lizmap\Request;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
@@ -439,6 +441,7 @@ class Proxy
 
         // Define request options
         $requestOptions = array(
+            // disable throwing exceptions on an HTTP protocol errors (i.e., 4xx and 5xx responses)
             'http_errors' => false,
         );
 
@@ -475,8 +478,22 @@ class Proxy
             );
         }
 
-        // Send request
-        $response = $client->send($request, $requestOptions);
+        try {
+            // Send request
+            $response = $client->send($request, $requestOptions);
+        } catch (ConnectException $e) {
+            // Handle connection timeout
+            \jLog::log('Connection failed: '.$e->getMessage(), 'error');
+            $response = new Response(504, array(), null, '1.1', 'HTTP/1.1 504 Gateway Timeout');
+        } catch (RequestException $e) {
+            // Handle transfer timeout
+            // throwing exceptions on an HTTP protocol errors (i.e., 4xx and 5xx responses) has been disabled
+            \jLog::log('Request failed: '.$e->getMessage(), 'error');
+            if ($e->hasResponse()) {
+                $response = $e->getResponse();
+            }
+            $response = new Response(504, array(), null, '1.1', 'HTTP/1.1 504 Gateway Timeout');
+        }
 
         // Log if error
         self::logRequestIfError($response->getStatusCode(), $url, $response->getHeaders());
