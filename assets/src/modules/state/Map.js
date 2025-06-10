@@ -281,6 +281,22 @@ export class MapState extends EventDispatcher {
     }
 
     /**
+     * Set the map is ready
+     * @type {boolean}
+     */
+    set isReady(ready) {
+        const _ready = convertBoolean(ready);
+        if (_ready && this._ready != _ready) {
+            this._ready = _ready;
+
+            this.dispatch({
+                type: 'map.state.ready',
+                ready: true,
+            });
+        }
+    }
+
+    /**
      * Map projection code
      * @type {string}
      */
