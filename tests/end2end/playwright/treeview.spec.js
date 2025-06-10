@@ -254,9 +254,10 @@ test.describe('Treeview mocked', () => {
             await getCapabilitiesWMSPromise;
 
             // Wait for WMS GetLegendGraphic
-            // 1 timed out request and at least 2 GetLegendGraphic requests on 6
+            // At least 2 GetLegendGraphic requests on 6
+            // no more timed out request because no more POST requests
             let timeCount = 0;
-            while (timedOutRequest.length < 1 || GetLegends.length < 2) {
+            while (GetLegends.length < 2) {
                 timeCount += 100;
                 if (timeCount > 1000) {
                     break;
@@ -264,7 +265,7 @@ test.describe('Treeview mocked', () => {
                 await page.waitForTimeout(100);
             }
 
-            await expect(timedOutRequest.length).toBeGreaterThanOrEqual(1);
+            await expect(timedOutRequest.length).toBeGreaterThanOrEqual(0);
             await expect(GetLegends.length).toBeGreaterThanOrEqual(2);
             await expect(GetLegends.length).toBeLessThanOrEqual(6);
 
