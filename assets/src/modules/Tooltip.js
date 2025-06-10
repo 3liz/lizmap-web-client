@@ -4,7 +4,7 @@
  * @copyright 2024 3Liz
  * @license MPL-2.0
  */
-import { mainEventDispatcher } from '../modules/Globals.js';
+import { mainEventDispatcher, mainLizmap } from '../modules/Globals.js';
 import { TooltipLayersConfig } from './config/Tooltip.js';
 import WMS from '../modules/WMS.js';
 import GeoJSON from 'ol/format/GeoJSON.js';
@@ -32,6 +32,13 @@ export default class Tooltip {
         this._activeTooltipLayer;
         this._tooltipLayers = new Map();
         this.activeLayerOrder = null;
+
+        mainLizmap.state.rootMapGroup.addListener(
+            evt => {
+                this._applyFilter(evt.name);
+            },
+            'layer.filter.token.changed'
+        );
     }
 
     /**
@@ -103,6 +110,7 @@ export default class Tooltip {
 
         if (tooltipLayer) {
             this._activeTooltipLayer = tooltipLayer;
+            this._applyFilter(layerName);
         } else {
             const url = `${lizUrls.service.replace('service?','features/tooltips?')}&layerId=${layerTooltipCfg.id}`;
 
@@ -116,14 +124,17 @@ export default class Tooltip {
                 stroke: stroke,
             });
 
+            // Initially hidden, will be set to 1 when features are loaded and filter is applied
+            // to avoid visual flickering
+            // Using the visible property of the layer does not work
             this._activeTooltipLayer = new VectorLayer({
+                opacity: 0,
                 source: new VectorSource({
                     url: url,
                     format: new GeoJSON(),
                 }),
                 style: vectorStyle
             });
-
 
             // Handle points layers with QGIS style
             if (this._displayLayerStyle) {
@@ -154,6 +165,7 @@ export default class Tooltip {
 
             // Load tooltip layer
             this._activeTooltipLayer.once('sourceready', () => {
+                this._applyFilter(layerName);
                 mainEventDispatcher.dispatch('tooltip.loaded');
             });
 
@@ -269,5 +281,55 @@ export default class Tooltip {
         // Dispatch event to notify that the tooltip is deactivated
         this.activeLayerOrder = null;
         mainEventDispatcher.dispatch('tooltip.deactivated');
+    }
+
+    _applyFilter(layerName) {
+        const tooltipLayer = this._tooltipLayers.get(layerName);
+
+        if (!tooltipLayer) {
+            // No tooltip layer for this feature type
+            return;
+        }
+
+        const expFilter = mainLizmap.state.rootMapGroup.getMapLayerByName(layerName).itemState.expressionFilter;
+        let featureIds = [];
+
+        const hideFilteredFeatures = () => {
+            for (const feature of tooltipLayer.getSource().getFeatures()) {
+                // If the feature id is not in the list, hide it
+                if (featureIds.length === 0 || featureIds.includes(feature.getId())) {
+                    feature.setStyle(null);
+                } else {
+                    feature.setStyle(new Style({}));
+                }
+            }
+            // Display the layer now all styles are applied
+            tooltipLayer.setOpacity(1);
+        };
+
+        if(!expFilter) {
+            hideFilteredFeatures();
+            return;
+        }
+
+        if (expFilter.startsWith('$id IN ')) {
+            const re = /[() ]/g;
+            featureIds = expFilter.replace('$id IN ', '').replace(re, '').split(',').map(Number);
+            hideFilteredFeatures();
+        } else {
+            const wfsParams = {
+                TYPENAME: layerName,
+                // No geometry needed
+                GEOMETRYNAME: 'none',
+                // Force to return only the featureId
+                PROPERTYNAME: 'no_feature_properties',
+                // Filter
+                EXP_FILTER: expFilter
+            };
+            mainLizmap.wfs.getFeature(wfsParams).then(result => {
+                featureIds = result.features.map(f => parseInt(f.id.split('.')[1]));
+                hideFilteredFeatures();
+            });
+        }
     }
 }
