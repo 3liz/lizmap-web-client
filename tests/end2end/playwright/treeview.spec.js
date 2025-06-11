@@ -11,16 +11,20 @@ test.describe('Treeview', () => {
         // Wait for WMS GetCapabilities promise
         let getCapabilitiesWMSPromise = page.waitForRequest(/SERVICE=WMS&REQUEST=GetCapabilities/);
 
+        const GetMaps = [];
         const GetLegends = [];
         await page.route('**/service*', async route => {
             const request = await route.request();
             if (request.method() !== 'POST') {
-                // GetLegendGraphic are GET requests
+                // GetMap and GetLegendGraphic are GET requests
                 const searchParams = new URLSearchParams(request.url().split('?')[1]);
                 if (searchParams.get('SERVICE') === 'WMS' &&
-                    searchParams.has('REQUEST') &&
-                    searchParams.get('REQUEST') === 'GetLegendGraphic') {
-                    GetLegends.push(searchParams);
+                    searchParams.has('REQUEST')) {
+                    if (searchParams.get('REQUEST') === 'GetLegendGraphic') {
+                        GetLegends.push(searchParams);
+                    } else if (searchParams.get('REQUEST') === 'GetMap') {
+                        GetMaps.push(searchParams);
+                    }
                 }
             }
             // Continue the request
@@ -31,8 +35,19 @@ test.describe('Treeview', () => {
         // Wait for WMS GetCapabilities
         await getCapabilitiesWMSPromise;
 
-        // Wait for WMS all GetLegendGraphic
+        // Wait for WMS GetMap
+        // at least 2 GetMap requests are expected
         let timeCount = 0;
+        while (GetMaps.length < 2) {
+            timeCount += 100;
+            if (timeCount > 1000) {
+                break;
+            }
+            await page.waitForTimeout(100);
+        }
+
+        // Wait for WMS all GetLegendGraphic
+        timeCount = 0;
         while (GetLegends.length < 6) {
             timeCount += 100;
             if (timeCount > 1000) {
@@ -41,6 +56,7 @@ test.describe('Treeview', () => {
             await page.waitForTimeout(100);
         }
 
+        await expect(GetMaps.length).toBeGreaterThanOrEqual(2);
         await expect(GetLegends).toHaveLength(6);
 
         // Check that the map scale is the right one
@@ -307,6 +323,127 @@ test.describe('Treeview mocked', () => {
                 expect(searchParams.get('STYLES')).toContain(',');
             });
             */
+
+            await page.unroute('**/service*');
+        });
+
+    test('Catch GetMap requests and GetLegendGraphic requests to check order',
+        {
+            tag: ['@mock', '@readonly'],
+        }, async ({ page }) => {
+            // we can't use Project page, because we are making GetLegendGraphic failing on purpose
+            const timedOutRequest = [];
+            const GetMaps = [];
+            const GetLegends = [];
+            await page.route('**/service*', async route => {
+                const request = await route.request();
+                if (request.method() !== 'POST') {
+                    // GetLegendGraphic is a GET request for single layer
+                    const searchParams = new URLSearchParams(request.url().split('?')[1]);
+                    if (searchParams.get('SERVICE') === 'WMS' &&
+                        searchParams.has('REQUEST')) {
+                        if (searchParams.get('REQUEST') === 'GetLegendGraphic') {
+                            GetLegends.push(searchParams);
+                        } else if (searchParams.get('REQUEST') === 'GetMap') {
+                            GetMaps.push(searchParams);
+                        }
+                    }
+                    // Continue the request
+                    await route.continue();
+                    return;
+                }
+                const searchParams = new URLSearchParams(request.postData() ?? '');
+                if (searchParams.get('SERVICE') !== 'WMS' ||
+                    !searchParams.has('REQUEST') ||
+                    searchParams.get('REQUEST') !== 'GetLegendGraphic') {
+                    // Continue the request for non GetLegendGraphic requests
+                    await route.continue();
+                    return;
+                }
+                if (!searchParams.has('LAYER')) {
+                    // Continue the request for GetLegendGraphic without LAYER parameter
+                    await route.continue();
+                    return;
+                }
+                const layers = searchParams.get('LAYER')?.split(',');
+                if (layers?.length == 1) {
+                    // Continue the request for GetLegendGraphic with one layer
+                    GetLegends.push(searchParams);
+                    await route.continue();
+                    return;
+                }
+                timedOutRequest.push(searchParams);
+                // Timeout on GetLegendGraphic with multi layers
+                await route.fulfill({
+                    status: 504,
+                    contentType: 'text/plain',
+                    body: 'Timeout',
+                });
+            });
+            const url = '/index.php/view/map/?repository=testsrepository&project=treeview';
+            // Wait for WMS GetCapabilities promise
+            let getCapabilitiesWMSPromise = page.waitForRequest(/SERVICE=WMS&REQUEST=GetCapabilities/);
+
+            await page.goto(url);
+
+            // Wait for WMS GetCapabilities
+            await getCapabilitiesWMSPromise;
+
+            // Wait for WMS GetMap
+            // At least 2 GetMap requests
+            let timeCount = 0;
+            while (GetMaps.length < 2) {
+                timeCount += 100;
+                if (timeCount > 1000) {
+                    break;
+                }
+                await page.waitForTimeout(100);
+            }
+
+            await expect(timedOutRequest.length).toBe(0);
+            await expect(GetMaps.length).toBeGreaterThanOrEqual(2);
+            await expect(GetMaps.length).toBeLessThanOrEqual(6);
+            await expect(GetLegends.length).toBe(0);
+
+            // Check that the GetLegendGraphic requests are well formed
+            GetMaps.forEach((searchParams) => {
+                expect(searchParams.get('SERVICE')).toBe('WMS');
+                expect(searchParams.get('REQUEST')).toBe('GetMap');
+                expect(searchParams.get('VERSION')).toBe('1.3.0');
+                expect(searchParams.get('FORMAT')).toContain('image/png');
+                expect(searchParams.get('LAYERS')).toBeDefined();
+                expect(searchParams.get('LAYERS')).not.toContain(',');
+                expect(searchParams.get('STYLES')).toBeDefined();
+                expect(searchParams.get('STYLES')).not.toContain(',');
+            });
+
+            // Wait for WMS GetLegendGraphic
+            // At least 2 GetLegendGraphic requests on 6
+            // no more timed out request because no more POST requests
+            timeCount = 0;
+            while (GetLegends.length < 2) {
+                timeCount += 100;
+                if (timeCount > 1000) {
+                    break;
+                }
+                await page.waitForTimeout(100);
+            }
+
+            await expect(timedOutRequest.length).toBeGreaterThanOrEqual(0);
+            await expect(GetLegends.length).toBeGreaterThanOrEqual(2);
+            await expect(GetLegends.length).toBeLessThanOrEqual(6);
+
+            // Check that the GetLegendGraphic requests are well formed
+            GetLegends.forEach((searchParams) => {
+                expect(searchParams.get('SERVICE')).toBe('WMS');
+                expect(searchParams.get('REQUEST')).toBe('GetLegendGraphic');
+                expect(searchParams.get('VERSION')).toBe('1.3.0');
+                expect(searchParams.get('FORMAT')).toBe('application/json');
+                expect(searchParams.get('LAYER')).toBeDefined();
+                expect(searchParams.get('LAYER')).not.toContain(',');
+                expect(searchParams.get('STYLES')).toBeDefined();
+                expect(searchParams.get('STYLES')).not.toContain(',');
+            });
 
             await page.unroute('**/service*');
         });
