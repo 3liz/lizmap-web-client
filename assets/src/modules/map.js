@@ -675,17 +675,67 @@ export default class map extends olMap {
                     mapLayer.loadStatus = MapLayerLoadStatus.Error;
                 });
             } else if (source instanceof TileWMS || source instanceof WMTS) {
+                source.setProperties({
+                    loadingtiles: 0,
+                    errortiles: 0,
+                });
                 source.on('tileloadstart', event => {
-                    const mapLayer = rootMapGroup.getMapLayerByName(event.target.get('name'))
+                    // New tile is loading
+                    event.target.setProperties({
+                        loadingtiles: event.target.get('loadingtiles')+1,
+                    });
+                    // The layer is in loading status
+                    const mapLayer = rootMapGroup.getMapLayerByName(event.target.get('name'));
                     mapLayer.loadStatus = MapLayerLoadStatus.Loading;
                 });
                 source.on('tileloadend', event => {
-                    const mapLayer = rootMapGroup.getMapLayerByName(event.target.get('name'))
-                    mapLayer.loadStatus = MapLayerLoadStatus.Ready;
+                    // A tile has been loaded
+                    event.target.setProperties({
+                        loadingtiles: event.target.get('loadingtiles')-1,
+                    });
+                    // Checking if all tiles are loaded
+                    const mapLayer = rootMapGroup.getMapLayerByName(event.target.get('name'));
+                    if (event.target.get('loadingtiles') == 0) {
+                        // No more tiles to load
+                        if (event.target.get('errortiles') != 0) {
+                            // Some tiles have not been loaded
+                            // The layer is in error status
+                            mapLayer.loadStatus = MapLayerLoadStatus.Error;
+                            // Reset the error tiles counter
+                            event.target.setProperties({
+                                errortiles: 0,
+                            });
+                        } else {
+                            // All tiles have been loaded
+                            // The layer is in ready status
+                            mapLayer.loadStatus = MapLayerLoadStatus.Ready;
+                        }
+                    }
                 });
                 source.on('tileloaderror', event => {
-                    const mapLayer = rootMapGroup.getMapLayerByName(event.target.get('name'))
-                    mapLayer.loadStatus = MapLayerLoadStatus.Error;
+                    // A tile has not been loaded
+                    event.target.setProperties({
+                        loadingtiles: event.target.get('loadingtiles')-1,
+                        errortiles: event.target.get('errortiles')-1,
+                    });
+                    // Checking if all tiles are loaded
+                    const mapLayer = rootMapGroup.getMapLayerByName(event.target.get('name'));
+                    if (event.target.get('loadingtiles') == 0) {
+                        // No more tiles to load
+                        if (event.target.get('errortiles') != 0) {
+                            // Some tiles have not been loaded
+                            // The layer is in error status
+                            mapLayer.loadStatus = MapLayerLoadStatus.Error;
+                            // Reset the error tiles counter
+                            event.target.setProperties({
+                                errortiles: 0,
+                            });
+                        } else {
+                            // All tiles have been loaded
+                            // The layer is in ready status
+                            mapLayer.loadStatus = MapLayerLoadStatus.Ready;
+                        }
+                    }
                 });
             }
         }
