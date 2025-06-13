@@ -10,13 +10,16 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ### Funders
 
-* Antoviscomi
-* **[Lozère province](https://lozere.fr/)**
+* **Antonio Viscomi**
 * **[DVP SOLAR](https://dvpsolar.com/)**
+* **[Klein und Leber Gbr](https://www.gisgeometer.de/)**
+* **[Lozère province](https://lozere.fr/)**
+* **[SMICA](https://www.smica.fr/)**
 
 ### Added
 
 * REST API on Lizmap repositories and projects
+* Upgrade `item_filter` to accept a comma separated list of values in Lizmap search, contribution from @meyerlor Klein und Leber Gbr
 
 ### Fixed
 
@@ -24,6 +27,17 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Tooltip: fix tooltip layer not removed as a tool layer
 * Optimize FTS query to use the index
 * Fix: 0 integer is transformed to an empty string by DOMPurify.sanitize()
+* Fix: Printing with text drawing/labels is broken
+* QGIS Server GetPrint Highlight Label Alignment
+* Add Etag to WMS GetLegendGraphic Request
+* WMS GetLegendGraphic:
+  * Perform GET request for single layer
+  * Put single layer request in project cache
+  * JS initialize Lizmap Application from not legacy code
+  * JS legacy map: defined an initialized property
+* Catching Guzzle client exceptions
+* Fix: zoomToFeatures in filter
+* Fix setting projection axis orientation in a simple way
 
 ## 3.8.10 - 2025-05-16
 
