@@ -143,9 +143,9 @@ jobs:
       - name: Build and start docker images
         run: ./run-docker up --build -d
 
-      - name: Wait 30 secondes for docker images to be ready
+      - name: Wait 120 secondes for docker images to be ready
         run: |
-          sleep 30
+          sleep 120
 
       - name: Install Lizmap
         # Quick dirty hack "| true" about duplicated key
