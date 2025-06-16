@@ -405,6 +405,10 @@ test.describe('Treeview mocked', () => {
             await expect(GetMaps.length).toBeLessThanOrEqual(6);
             await expect(GetLegends.length).toBe(0);
 
+            // Layer tree view already visible
+            await expect(page.locator('#switcher')).toBeVisible();
+            await expect(page.locator('#switcher lizmap-treeview div.group > input')).toHaveCount(4);
+
             // Check that the GetLegendGraphic requests are well formed
             GetMaps.forEach((searchParams) => {
                 expect(searchParams.get('SERVICE')).toBe('WMS');
