@@ -322,10 +322,22 @@ export class MapGroupState extends MapItemState {
                     continue;
                 }
                 // Build layer
-                const layer = new MapLayerState(layerItem, this)
+                const layer = new MapLayerState(layerItem, this);
                 // Store layer not display in layer tree if we are not at the root level
                 if (!layerItem.displayInLegend && this._parentMapGroup != null) {
                     this._notInLayerTree.push(layer);
+                    layer.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
+                    layer.addListener(this.dispatch.bind(this), 'layer.symbology.changed');
+                    layer.addListener(this.dispatch.bind(this), 'layer.opacity.changed');
+                    layer.addListener(this.dispatch.bind(this), 'layer.loading.changed');
+                    layer.addListener(this.dispatch.bind(this), 'layer.load.status.changed');
+                    layer.addListener(this.dispatch.bind(this), 'layer.style.changed');
+                    layer.addListener(this.dispatch.bind(this), 'layer.symbol.checked.changed');
+                    layer.addListener(this.dispatch.bind(this), 'layer.symbol.expanded.changed');
+                    layer.addListener(this.dispatch.bind(this), 'layer.selection.changed');
+                    layer.addListener(this.dispatch.bind(this), 'layer.selection.token.changed');
+                    layer.addListener(this.dispatch.bind(this), 'layer.filter.changed');
+                    layer.addListener(this.dispatch.bind(this), 'layer.filter.token.changed');
                 } else {
                     this._items.push(layer);
                     layer.addListener(this.dispatch.bind(this), 'layer.visibility.changed');
