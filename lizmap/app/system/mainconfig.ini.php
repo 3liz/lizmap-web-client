@@ -33,7 +33,7 @@ fallbackLocale=en_US
 ; Versions on the server, for the system administrator
 ; The minimum version required about external software to make Lizmap Web Client happy
 ; QGIS server required minimum version
-qgisServer="3.34"
+qgisServer="3.40"
 ; Lizmap server QGIS plugin required minimum version
 lizmapServerPlugin="2.13.0"
 ; Lizmap QGIS desktop plugin required/recommended minimum version for newly or updated project only
@@ -48,7 +48,7 @@ lizmapDesktopPluginDate="2025-02-14"
 ; Lizmap CFG files with a lower target version are not displayed in the landing page, but displayed in the administration panel to warn the GIS administrator
 ; Lizmap CFG files with this target version are still displayed in the landing page, but have a warning in the administration panel
 ; 3 versions behind the current version of LWC
-lizmapWebClientTargetVersion=30600
+lizmapWebClientTargetVersion=30700
 
 [qgisWrapper]
 ; If off, FCGI is not allowed, only Py-QGIS-Server or QJazz
