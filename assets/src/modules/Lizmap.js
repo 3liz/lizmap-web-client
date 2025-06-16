@@ -6,6 +6,7 @@
  */
 import {Config} from './Config.js';
 import {State} from './State.js';
+import EventDispatcher from './../utils/EventDispatcher.js'
 import map from './map.js';
 import Edition from './Edition.js';
 import FeaturesTable from './FeaturesTable.js';
@@ -51,7 +52,8 @@ import { MapLayerLoadStatus } from './state/MapLayer.js';
  */
 export default class Lizmap {
 
-    constructor() {
+    constructor(eventDispatcher) {
+        this._eventDispatcher = eventDispatcher;
         lizMap.events.on({
             configsloaded: (configs) => {
                 const wmsParser = new WMSCapabilities();
@@ -161,20 +163,17 @@ export default class Lizmap {
                 this.wfs = new WFS();
                 this.wms = new WMS();
                 this.featureStorage = new FeatureStorage();
-                // The Geolocation module has to be initiate for the component
-                this.geolocation = new Geolocation(this.map, this.lizmap3);
-                // The SelectionTool module has to be initiate for the component
-                // and required Digitizing module
-                this.digitizing = new Digitizing(this.map, this.lizmap3);
-                this.selectionTool = new SelectionTool(this.map, this.digitizing, this.initialConfig, this.lizmap3);
                 // init Legend module and others when the map is ready
-                // to load legend and features after the map has changed once
+                // to load legend and features after the map has started to load
                 const initOtherModules = () => {
                     if (this.legend === undefined) {
                         this.legend = new Legend(this.state.layerTree);
                         this.edition = new Edition(this._lizmap3);
-                        this.geolocationSurvey = new GeolocationSurvey(this.geolocation, this.edition);
                         this.featuresTable = new FeaturesTable(this.initialConfig, this.lizmap3);
+                        this.geolocation = new Geolocation(this.map, this.lizmap3);
+                        this.geolocationSurvey = new GeolocationSurvey(this.geolocation, this.edition);
+                        this.digitizing = new Digitizing(this.map, this.lizmap3);
+                        this.selectionTool = new SelectionTool(this.map, this.digitizing, this.initialConfig, this.lizmap3);
                         this.snapping = new Snapping(this.edition, this.state.rootMapGroup, this.state.layerTree, this.lizmap3);
                         this.action = new Action(this.map, this.selectionTool, this.digitizing, this.lizmap3);
                         this.popup = new Popup(this.initialConfig, this.state, this.map, this.digitizing);
@@ -186,6 +185,18 @@ export default class Lizmap {
                             this.map,
                             this._lizmap3
                         );
+                        /**
+                         * Modules initialized.
+                         * @event ModulesInitialized
+                         * @property {string} type lizmap.modules.initialized
+                         * @example
+                         * lizMap.mainEventDispatcher.addListener((lizmapEvent) => {
+                         *         console.log('Modules initialized');
+                         *     },
+                         *     ['lizmap.modules.initialized']
+                         * );
+                         */
+                        eventDispatcher.dispatch('lizmap.modules.initialized');
                     }
                 };
                 const visibleLayers = this.state.rootMapGroup.findMapLayers().filter(layer => layer.visibility);
@@ -219,6 +230,14 @@ export default class Lizmap {
                 }
             }
         });
+    }
+
+    /**
+     * The main event dispatcher
+     * @type {EventDispatcher}
+     */
+    get eventDispatcher() {
+        return this._eventDispatcher;
     }
 
     /**
