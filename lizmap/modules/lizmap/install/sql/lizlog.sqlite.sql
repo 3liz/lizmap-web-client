@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS "log_detail" (
     "log_content" TEXT,
     "log_repository" VARCHAR,
     "log_project" VARCHAR,
-    "log_ip" VARCHAR);
+    "log_ip" VARCHAR,
+    "user_agent" VARCHAR);
 
 CREATE TABLE IF NOT EXISTS "log_counter" (
     "id" INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL ,
