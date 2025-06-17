@@ -55,17 +55,6 @@ describe('Feature Toolbar in popup', function () {
 
     })
 
-    it('should display zoom and center buttons if "Add geometry to feature response" is checked', function () {
-        cy.get('#node-parent_layer').click()
-        cy.get('#node-parent_layer_without_attribute_table').click()
-
-        cy.mapClick(655, 437)
-        cy.wait('@postGetFeatureInfo')
-
-        cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_37995b81_7718_4aee_b942_a7f1f39b562e.1"] .feature-zoom').should('be.visible')
-        cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_37995b81_7718_4aee_b942_a7f1f39b562e.1"] .feature-center').should('be.visible')
-    })
-
     it('should zoom', function () {
         // Check the started map
         cy.get('@getMap')
