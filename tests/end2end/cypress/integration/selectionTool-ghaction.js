@@ -236,7 +236,7 @@ describe('Selection tool connected as user a', function () {
 describe('Selection tool connected as admin', function () {
     beforeEach(function () {
         cy.loginAsAdmin()
-        cy.visit('index.php/view/map/?repository=testsrepository&project=selection')
+        cy.visit('index.php/view/map/?repository=testsrepository&project=selection&skip_plugin_update_warning=true')
     })
 
     it('selects features intersecting a polygon', function () {
