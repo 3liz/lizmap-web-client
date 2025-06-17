@@ -20,11 +20,13 @@ class lizmapLogListener extends jEventListener
     public function onAuthCanLogin($event)
     {
         $key = 'login';
+        $userAgent = $_SERVER['HTTP_USER_AGENT'];
         $data = array(
             'key' => $key,
             'user' => $event->getParam('login'),
             'repository' => null,
             'project' => null,
+            'user_agent' => (preg_match('#QGIS/\d+/#', $userAgent) ? 'QGIS' : ''),
         );
 
         $this->addLog($key, $data);

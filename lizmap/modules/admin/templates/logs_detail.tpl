@@ -11,6 +11,7 @@
           <th>{@admin~admin.logs.repository@}</th>
           <th>{@admin~admin.logs.project@}</th>
           <th>{@admin~admin.logs.ip@}</th>
+          <th>{@admin~admin.logs.user_agent@}</th>
         </tr>
       </thead>
       <tbody>
@@ -23,6 +24,7 @@
           <td>{$item->repository}</td>
           <td>{$item->project}</td>
           <td>{$item->ip}</td>
+          <td>{$item->user_agent}</td>
         </tr>
         {/foreach}
       </tbody>

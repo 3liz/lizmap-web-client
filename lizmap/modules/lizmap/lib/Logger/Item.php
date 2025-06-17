@@ -40,6 +40,7 @@ class Item
         'project',
         'ip',
         'email',
+        'user_agent',
     );
 
     protected $appContext;
