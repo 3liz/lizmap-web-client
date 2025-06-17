@@ -218,6 +218,7 @@ test.describe('Selection tool', {tag: ['@readonly'],},() => {
             getFeatureRequest.postData() ?? '',
             {
                 TYPENAME: 'selection_polygon',
+                EXP_FILTER: ' $id NOT IN ( 2 ) ',
             },
         );
 

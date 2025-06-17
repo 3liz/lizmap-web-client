@@ -372,12 +372,41 @@ export default class SelectionTool {
     invert(mfeatureType) {
         const featureType = mfeatureType ? mfeatureType : this.allFeatureTypeSelected[0];
 
-        if (featureType in this._lizmap3.config.layers &&
-            'selectedFeatures' in this._lizmap3.config.layers[featureType]
-            && this._lizmap3.config.layers[featureType]['selectedFeatures'].length) {
+        if (!(featureType in this._lizmap3.config.layers))
+            return;
+        const lConfig = this._lizmap3.config.layers[featureType];
+
+        if ('selectedFeatures' in lConfig &&
+            lConfig['selectedFeatures'].length) {
+
+            const intRegex = /^[0-9]+$/;
+
+            const sqlEscapeFilter = (value, alwaysQuoteString) => {
+                if (Array.isArray(value)) {
+                    // The values must be separated by comma AND spaces
+                    // since QGIS controls the syntax for the FILTER parameter
+                    return value.map(v => sqlEscapeFilter(v, alwaysQuoteString)).join(" , ");
+                }
+
+                if (typeof value === 'string') {
+                    if (!alwaysQuoteString && intRegex.test(value) ) {
+                        // value is a string but represents an integer
+                        // return unquoted string
+                        return value;
+                    }
+
+                    // surround value with simple quotes and escape existing single-quote
+                    return `'${value.replaceAll("'", "''")}'`
+                }
+
+                // fallback: return value as-is
+                return value;
+            }
+
+            const cFilter = ' $id NOT IN ( ' + sqlEscapeFilter(lConfig['selectedFeatures']) + ' ) ';
 
             // Get all features
-            this._lizmap3.getFeatureData(featureType, null, null, 'extent', false, null, null,
+            this._lizmap3.getFeatureData(featureType, cFilter, null, 'extent', false, null, null,
                 (aName, aFilter, cFeatures) => {
                     const invertSelectionIds = [];
                     for (const feat of cFeatures) {
