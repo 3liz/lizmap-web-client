@@ -697,3 +697,62 @@ test.describe(
             await project.checkEditionFormTextField('Name check', 'text insert', 'Name check', true);
         });
     });
+
+test.describe('Form edition without creation', {tag: ['@readonly'],},() => {
+
+    test('must allow modification without creation', async ({ page }) => {
+        const project = new ProjectPage(page, 'form_edition_without_creation');
+        await project.open();
+
+        await expect(page.locator('#button-edition')).toBeVisible();
+        await page.locator('#button-edition').click();
+
+        await expect(page.locator('#edition-modification-msg')).toBeVisible();
+        await expect(page.locator('#edition-creation')).not.toBeVisible();
+
+        // Click on a feature then launch its edition form
+        let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
+        await project.clickOnMap(630, 325);
+        let getFeatureInfoRequest = await getFeatureInfoPromise;
+        await getFeatureInfoRequest.response();
+
+        const featureToolbar = await project.popupContent.locator('lizmap-feature-toolbar[value^="quartiers_"][value$=".6"]');
+        await expect(featureToolbar).toBeDefined();
+        await expect(featureToolbar).toBeVisible();
+        await expect(await featureToolbar.locator('button.feature-edit')).toBeVisible();
+
+        let editFeatureRequestPromise = page.waitForRequest(
+            request => request.method() === 'GET' &&
+            request.url().includes('editFeature') === true &&
+            request.url().includes('layerId=quartiers_') === true &&
+            request.url().includes('featureId=6') === true
+        );
+        await featureToolbar.locator('button.feature-edit').click();
+        let editFeatureRequest = await editFeatureRequestPromise;
+        await editFeatureRequest.response();
+
+        // Only edition form should be visible...
+        await expect(page.locator('#edition-modification-msg')).not.toBeVisible();
+        await expect(page.locator('#edition-creation')).not.toBeVisible();
+        await expect(page.locator('#edition-form-container')).toBeVisible();
+
+        // ... even after toggling dock visibility
+        await project.closeLeftDock();
+        await expect(page.locator('#edition-form-container')).not.toBeVisible();
+        await page.locator('#button-edition').click();
+
+        await expect(page.locator('#edition-modification-msg')).not.toBeVisible();
+        await expect(page.locator('#edition-creation')).not.toBeVisible();
+        await expect(page.locator('#edition-form-container')).toBeVisible();
+
+        // Cancel form edition...
+        page.on('dialog', dialog => dialog.accept());
+        await page.locator('#jforms_view_edition__submit_cancel').click();
+
+        // ...returns back to initial state
+        await expect(page.locator('#edition-modification-msg')).toBeVisible();
+        await expect(page.locator('#edition-creation')).not.toBeVisible();
+        await expect(page.locator('#edition-form-container')).not.toBeVisible();
+    });
+
+});
