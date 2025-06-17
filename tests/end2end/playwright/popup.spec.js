@@ -440,6 +440,21 @@ test.describe('Popup Geometry',
         tag: ['@readonly'],
     },() => {
 
+
+        test('should display zoom and center buttons if "Add geometry to feature response" is checked', async ({ page }) => {
+            const project = new ProjectPage(page, 'feature_toolbar');
+            await project.open();
+            // Click on a point
+            let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
+            await project.clickOnMap(436, 290);
+            let getFeatureInfoRequest = await getFeatureInfoPromise;
+            await getFeatureInfoRequest.response();
+
+            const featureToolbar = await project.popupContent.locator('lizmap-feature-toolbar[value^="parent_layer_"][value$=".1"]');
+            await expect(await featureToolbar.locator('button.feature-zoom')).toBeVisible();
+            await expect(await featureToolbar.locator('button.feature-center')).toBeVisible();
+        });
+
         test('Show/hide the geometry on open/close dock', async ({ page }) => {
             const project = new ProjectPage(page, 'feature_toolbar');
             await project.open();
