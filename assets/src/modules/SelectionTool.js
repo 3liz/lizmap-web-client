@@ -390,7 +390,7 @@ export default class SelectionTool {
 
                     this._lizmap3.config.layers[featureType]['selectedFeatures'] = invertSelectionIds;
 
-                    this._lizmap3.lizmap3.events.triggerEvent('layerSelectionChanged',
+                    this._lizmap3.events.triggerEvent('layerSelectionChanged',
                         {
                             'featureType': featureType,
                             'featureIds': this._lizmap3.config.layers[featureType]['selectedFeatures'],
