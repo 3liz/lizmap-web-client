@@ -184,6 +184,7 @@ export class ProjectPage extends BasePage {
     async waitForGetFeatureInfoRequest() {
         return this.page.waitForRequest(
             request => request.method() === 'POST' &&
+            request.postData()?.includes('WMS') === true &&
             request.postData()?.includes('GetFeatureInfo') === true
         );
     }
