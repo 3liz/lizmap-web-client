@@ -173,7 +173,11 @@ export class ProjectPage extends BasePage {
      * @returns {Promise<Request>} The GetMap request
      */
     async waitForGetMapRequest() {
-        return this.page.waitForRequest(/GetMap/);
+        return this.page.waitForRequest(
+            request => request.method() === 'GET' &&
+            request.url().includes('WMS') === true &&
+            request.url().includes('GetMap') === true
+        );
     }
 
     /**
