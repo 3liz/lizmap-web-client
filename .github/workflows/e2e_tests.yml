@@ -1,14 +1,9 @@
 name: "🎳 End2end"
 on:
-  #  pull_request_target:
   pull_request:
-    types: [ labeled, opened, synchronize, reopened ]
     branches:
       - master
       - release_3_*
-  workflow_dispatch:
-  repository_dispatch:
-    types: [ run-e2e-branches ]
 
 #concurrency:
 #  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -16,15 +11,6 @@ on:
 
 jobs:
   end2end:
-    # The first condition is triggered when we set the new label
-    # The second one when we update the PR with new commits without changing labels
-    # The third one when external workflow
-    # The fourth one is for the manual button
-    if: |
-      github.event.label.name == 'run end2end' ||
-      contains(github.event.pull_request.labels.*.name, 'run end2end') ||
-      github.event_name == 'repository_dispatch' ||
-      github.event_name == 'workflow_dispatch'
     name: "E2E QGIS ${{ matrix.qgis-server }} PG ${{ matrix.pg-postgis }} PHP ${{ matrix.php }}"
     permissions:
       issues: write
@@ -62,27 +48,6 @@ jobs:
       #            echo ${{ github.head_ref }}
       #            echo ${{ github.ref_name }}
 
-      - name: Define branch name from env for the checkout
-        working-directory: .
-        run: |
-          if ${{ github.event_name == 'repository_dispatch' }}
-          then
-            # repository_dispatch is from an external workflow, for instance a cron workflow
-            echo "Set branch from manual input: ${{ github.event.client_payload.branch }}"
-            BRANCH="${{ github.event.client_payload.branch }}"
-          elif ${{ github.event_name == 'workflow_dispatch' }}
-          then
-            # workflow_dispatch is the the button in UI
-            echo "Set branch from default value: ${{ github.ref }}"
-            BRANCH="${{ github.ref }}"
-          else
-            # From a PR
-            echo "Event type ${{ github.event_name }}"
-            echo "Set branch from default value : ${{ github.event.pull_request.head.sha }} "
-            BRANCH="${{ github.event.pull_request.head.sha }}"
-          fi
-          echo "BRANCH=${BRANCH}" >> $GITHUB_ENV
-
       - name: Login to Docker Hub
         if: ${{ github.secret_source == 'Actions' }}
         uses: docker/login-action@v3
@@ -94,12 +59,6 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: ${{ env.BRANCH }}
-          token: ${{ secrets.BOT_HUB_TOKEN || github.token  }}  # Important to launch CI on a commit from a bot
-
-      - name: Branch name
-        run: echo running on branch ${GITHUB_REF##*/} with CYPRESS = ${CYPRESS_CI}
 
       - name: Make environment and show Lizmap versions
         env:
@@ -316,27 +275,6 @@ jobs:
           # overwrite-comment: true
           # comment-tag: '${{ github.workflow }}-${{ github.job }}'
 
-      - name: Notify in case of playwright failure, from mainstream branches only
-        # Check for playwright tests with and without tags "readonly"
-        uses: peter-evans/commit-comment@v3
-        if: |
-          github.repository == '3liz/lizmap-web-client' &&
-          failure() &&
-          (
-          steps.test-playwright-read-only.outcome != 'success' ||
-          steps.test-playwright-write.outcome != 'success' ||
-          steps.test-playwright-not-tagged.outcome != 'success') &&
-          github.event_name == 'repository_dispatch'
-        with:
-          token: ${{ secrets.BOT_HUB_TOKEN }}
-          body: |
-            The latest **weekly** run of end2end "playwright" tests failed with this latest commit on the branch
-            **${{ env.BRANCH }} ${{ matrix.name }}** 😣
-
-            CC @nboisteault and @Gustry, please have a look to the logs. Maybe it's a false positive ?
-
-            Visit ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-
       - name: Upload test results
         if: |
           success() ||
@@ -382,23 +320,6 @@ jobs:
           name: ${{ matrix.name }}-E2E-all-logs
           path: |
             /tmp/e2e/
-
-      - name: Notify in case of cypress failure, from mainstream branches only
-        uses: peter-evans/commit-comment@v3
-        if: |
-          github.repository == '3liz/lizmap-web-client' &&
-          failure() &&
-          steps.test-cypress.outcome != 'success' &&
-          github.event_name == 'repository_dispatch'
-        with:
-          token: ${{ secrets.BOT_HUB_TOKEN }}
-          body: |
-            The latest **weekly** run of end2end "cypress" tests failed with this latest commit on the branch
-            **${{ env.BRANCH }} ${{ matrix.name }}** 😣
-
-            CC @nboisteault and @Gustry, please have a look to the logs. Maybe it's a false positive ?
-
-            Visit ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
       - name: Save screenshots as artifacts if a test fails to ease debug
         uses: actions/upload-artifact@v4.6.1
