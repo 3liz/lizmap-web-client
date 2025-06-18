@@ -40,7 +40,7 @@ jobs:
       matrix:
         include:
           - name: "LEGACY"
-            php: "8.1"
+            php: "8.2"
             pg-postgis: "14-3"
             qgis-server: "3.34"
             update-projects: "FALSE"
@@ -139,10 +139,6 @@ jobs:
 
       - name: Run docker compose
         run: ./run-docker
-
-      - name: Wait 30 secondes for docker images to be ready
-        run: |
-          sleep 30
 
       - name: Wait and check about QGIS Server status
         run: |
