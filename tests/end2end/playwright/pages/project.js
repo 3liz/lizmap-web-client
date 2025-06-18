@@ -168,23 +168,50 @@ export class ProjectPage extends BasePage {
     }
 
     /**
-     * waitForGetMapRequest function
-     * waits for a GetMap request
+     * Waits for a GetMap request
      * @returns {Promise<Request>} The GetMap request
      */
     async waitForGetMapRequest() {
-        return this.page.waitForRequest(/GetMap/);
+        return this.page.waitForRequest(
+            request => request.method() === 'GET' &&
+            request.url().includes('WMS') === true &&
+            request.url().includes('GetMap') === true
+        );
     }
 
     /**
-     * waitForGetFeatureInfoRequest function
-     * waits for a GetFeatureInfo request
+     * Waits for a GetFeatureInfo request
      * @returns {Promise<Request>} The GetFeatureInfo request
      */
     async waitForGetFeatureInfoRequest() {
         return this.page.waitForRequest(
             request => request.method() === 'POST' &&
+            request.postData()?.includes('WMS') === true &&
             request.postData()?.includes('GetFeatureInfo') === true
+        );
+    }
+
+    /**
+     * Waits for a GetSelectionToken request
+     * @returns {Promise<Request>} The GetSelectionToken request
+     */
+    async waitForGetSelectionTokenRequest() {
+        return this.page.waitForRequest(
+            request => request.method() === 'POST' &&
+            request.postData()?.includes('WMS') === true &&
+            request.postData()?.includes('GETSELECTIONTOKEN') === true
+        );
+    }
+
+    /**
+     * Waits for a GetFeature request
+     * @returns {Promise<Request>} The GetFeature request
+     */
+    async waitForGetFeatureRequest() {
+        return this.page.waitForRequest(
+            request => request.method() === 'POST' &&
+            request.postData()?.includes('WFS') === true &&
+            request.postData()?.includes('GetFeature') === true
         );
     }
 
