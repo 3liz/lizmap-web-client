@@ -140,13 +140,6 @@ jobs:
       - name: Run docker compose
         run: ./run-docker
 
-#      - name: Install with composer
-#        run: ./lizmap-ctl composer-install
-
-      - name: Wait 30 secondes for docker images to be ready
-        run: |
-          sleep 30
-
       - name: Wait and check about QGIS Server status
         run: |
           curl \
