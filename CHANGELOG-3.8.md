@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.8.11 - 2025-06-18
+
 ### Funders
 
 * **Antonio Viscomi**
