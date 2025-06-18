@@ -101,7 +101,7 @@ export default class SelectionInvert extends HTMLElement {
                 this.hidden ? 'hide' : '',
                 this.disabled,
                 this.title,
-                this.click
+                this.click.bind(this), // bind this to the click handler to be able to use this in the handler
             ),
             this
         );
@@ -123,7 +123,7 @@ export default class SelectionInvert extends HTMLElement {
                         this.hidden ? 'hide' : '',
                         this.disabled,
                         this.title,
-                        this.click
+                        this.click.bind(this), // bind this to the click handler to be able to use this in the handler
                     ),
                     this
                 );
@@ -206,7 +206,7 @@ export default class SelectionInvert extends HTMLElement {
         // to invert selection
         let layerName = this.layerName;
         if (!layerName &&
-            mainLizmap.selectionTool.allFeatureTypeSelected.length > 1) {
+            mainLizmap.selectionTool.allFeatureTypeSelected.length == 1) {
             layerName = mainLizmap.selectionTool.allFeatureTypeSelected[0];
         }
         // Invert selection if layer name is defined
