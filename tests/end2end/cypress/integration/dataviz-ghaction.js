@@ -205,12 +205,16 @@ describe('Dataviz tests', function () {
 
     it('Test filtered dataviz plots are rendered in a popup', function () {
         cy.visit('/index.php/view/map/?repository=testsrepository&project=dataviz_filtered_in_popup')
+        // Wait for map displayed 2 layers are displayed
+        cy.wait(['@getMap', '@getMap'])
+        cy.wait(100)
 
         // Dataviz button does not exist because every dataviz has to be displayed in popup
         cy.get('#button-dataviz').should('not.exist')
 
         // Popup
         cy.mapClick(550, 400)
+        cy.wait(['@getPlot', '@getPlot'])
         cy.get('#popupcontent').should('be.visible')
 
         // We also test that the title in the popup is specific
