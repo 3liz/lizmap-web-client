@@ -21,6 +21,16 @@
         <method name="getDetailRange" type="select">
             <parameter name="offset"/>
             <parameter name="limit"/>
+            <conditions >
+                <neq property="key" value="qgis-login" />
+            </conditions>
+            <order>
+                <orderitem property="id" way="desc" />
+            </order>
+            <limit offset="$offset" count="$limit"/>
+        </method>
+        <method name="getDetailRangeUnfiltered" type="select"><parameter name="offset"/>
+            <parameter name="limit"/>
             <order>
                 <orderitem property="id" way="desc" />
             </order>
