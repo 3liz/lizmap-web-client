@@ -4,6 +4,8 @@ on:
     branches:
       - master
       - release_3_*
+  # allow to run manually
+  workflow_dispatch:
 
 #concurrency:
 #  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
