@@ -182,13 +182,17 @@ class ConfigTest extends TestCase
                 'label' => 'label3',
                 'logCounter' => 'on',
             ),
+            'item:testNotExisting' => array(
+                'label' => 'testNotExisting',
+                'logCounter' => 'on',
+            ),
         );
 
         return array(
             array($data, 'test', true),
             array($data, 'test2', true),
             array($data, 'test3', true),
-            array($data, 'testNotExisting', false),
+            array($data, 'testNotExisting', true),
         );
     }
 

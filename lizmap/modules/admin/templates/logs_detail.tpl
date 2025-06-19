@@ -1,6 +1,10 @@
 <div>
     <h2>{@admin~admin.logs.detail.title@}</h2>
 
+    {assign $localeShowHide = ($showqgis ? "hide" : 'show')}
+    <p>
+    <a class='btn' href='{jurl 'admin~logs:detail', array('page'=>$page, 'showqgis' => (!$showqgis))}'>{@admin~admin.log.qgis_login.$localeShowHide@}</a>
+    </p>
     <table class="table table-bordered table-striped">
       <thead>
         <tr>
@@ -32,9 +36,9 @@
 
   <div class="pagination">
     <ul>
-      <li><a href="{jurl 'admin~logs:detail', array('page'=>1)}">{@admin~admin.logs.first_page@}</a></li>
-      <li><a href="{jurl 'admin~logs:detail', array('page'=>$page-1)}">{@admin~admin.logs.previous_page@}</a></li>
-      <li><a href="{jurl 'admin~logs:detail', array('page'=>$page+1)}">{@admin~admin.logs.next_page@}</a></li>
+      <li><a href="{jurl 'admin~logs:detail', array('page'=>1, 'showqgis' => $showqgis)}">{@admin~admin.logs.first_page@}</a></li>
+      <li><a href="{jurl 'admin~logs:detail', array('page'=>$page-1, 'showqgis' => $showqgis)}">{@admin~admin.logs.previous_page@}</a></li>
+      <li><a href="{jurl 'admin~logs:detail', array('page'=>$page+1, 'showqgis' => $showqgis)}">{@admin~admin.logs.next_page@}</a></li>
     </ul>
   </div>
 
