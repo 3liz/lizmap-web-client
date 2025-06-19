@@ -52,13 +52,11 @@ describe('Feature Toolbar in popup', function () {
 
         // Wait for map displayed
         cy.wait('@getMap')
+        cy.wait(100)
 
     })
 
     it('should zoom', function () {
-        // Check the started map
-        cy.get('@getMap')
-
         // Click feature with id=1 on the map
         cy.mapClick(655, 437)
         cy.wait('@postGetFeatureInfo')
@@ -90,9 +88,6 @@ describe('Feature Toolbar in popup', function () {
     })
 
     it('should center', function () {
-        // Check the started map
-        cy.get('@getMap')
-
         // Click feature with id=1 on the map
         cy.mapClick(655, 437)
         cy.wait('@postGetFeatureInfo')
@@ -329,7 +324,6 @@ describe('Feature Toolbar in popup', function () {
     })
 
     it('should display working custom action for the popup feature', function () {
-
         // Click feature with id=1 on the map
         cy.mapClick(655, 437)
         cy.wait('@postGetFeatureInfo')
@@ -360,7 +354,6 @@ describe('Feature Toolbar in popup', function () {
     })
 
     it('should display working project action selector', function () {
-
         // Get the project action
         // Check the dock is visible
         cy.get('a#button-action').should('have.length', 1)
