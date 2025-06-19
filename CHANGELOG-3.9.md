@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.9.0 - 2025-06-19
+
 ### Funders
 
 * **[Andromède Océanologie](https://www.andromede-ocean.com/)**
