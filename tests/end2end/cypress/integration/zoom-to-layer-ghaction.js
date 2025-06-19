@@ -51,6 +51,7 @@ describe('Zoom to layer', function() {
     it('Projection EPSG:4326', function(){
         // Go to world 4326
         cy.visit('/index.php/view/map/?repository=testsrepository&project=world-4326')
+        cy.wait(['@getMap', '@getMap'])
 
         // Zoom to 'rectangle' layer
         cy.get('#node-rectangle ~ .node .layer-actions .icon-info-sign').click({force: true})
@@ -84,6 +85,7 @@ describe('Zoom to layer', function() {
     it('Projection EPSG:3857', function(){
         // Go to world 3857
         cy.visit('/index.php/view/map/?repository=testsrepository&project=world-3857')
+        cy.wait(['@getMap', '@getMap'])
 
         // Zoom to layer rectangle
         cy.get('#node-rectangle ~ .node .layer-actions .icon-info-sign').click({force: true})
