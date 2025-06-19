@@ -101,9 +101,11 @@ class Config
     {
         if (!array_key_exists($key, $this->logItems)) {
             if (!array_key_exists('item:'.$key, $this->data)) {
-                return null;
+                $item = new Item($key, Item::buildDefault($key), $this->appContext);
+            } else {
+                $item = new Item($key, $this->data['item:'.$key], $this->appContext);
             }
-            $this->logItems[$key] = new Item($key, $this->data['item:'.$key], $this->appContext);
+            $this->logItems[$key] = $item;
         }
 
         return $this->logItems[$key];
