@@ -20,6 +20,10 @@ class lizmapLogListener extends jEventListener
     public function onAuthCanLogin($event)
     {
         $key = 'login';
+        // if user-agent is QGIS, change event key
+        if (preg_match('#QGIS/\d+/#', $_SERVER['HTTP_USER_AGENT'])) {
+            $key = 'qgis-login';
+        }
         $data = array(
             'key' => $key,
             'user' => $event->getParam('login'),
