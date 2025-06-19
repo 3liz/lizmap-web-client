@@ -42,7 +42,7 @@ jobs:
           - name: "LEGACY"
             php: "8.2"
             pg-postgis: "14-3"
-            qgis-server: "3.34"
+            qgis-server: "3.40"
             update-projects: "FALSE"
           - name: "BLEEDING_EDGE"
             php: "8.3"
