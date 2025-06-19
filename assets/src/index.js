@@ -54,6 +54,28 @@ const waitFor = async function waitFor(maxWait, sleepStep, f){
     return waitingTime;
 };
 
+const definedCustomElements = () => {
+    window.customElements.define('lizmap-geolocation', Geolocation);
+    window.customElements.define('lizmap-geolocation-survey', GeolocationSurvey);
+    window.customElements.define('lizmap-features-table', FeaturesTable);
+    window.customElements.define('lizmap-selection-tool', SelectionTool);
+    window.customElements.define('lizmap-selection-invert', SelectionInvert);
+    window.customElements.define('lizmap-snapping', Snapping);
+    window.customElements.define('lizmap-scaleline', Scaleline);
+    window.customElements.define('lizmap-mouse-position', MousePosition);
+    window.customElements.define('lizmap-digitizing', Digitizing);
+    window.customElements.define('lizmap-overviewmap', OverviewMap);
+    window.customElements.define('lizmap-feature-toolbar', FeatureToolbar);
+    window.customElements.define('lizmap-reverse-geom', ReverseGeom);
+    window.customElements.define('lizmap-paste-geom', PasteGeom);
+    window.customElements.define('lizmap-action-selector', ActionSelector);
+    window.customElements.define('lizmap-print', Print);
+    window.customElements.define('lizmap-fullscreen', FullScreen);
+    window.customElements.define('lizmap-navbar', NavBar);
+    window.customElements.define('lizmap-tooltip', Tooltip);
+    window.customElements.define('lizmap-message', Message);
+}
+
 /**
  * Init Lizmap application
  * This function is called when the Lizmap application is ready to be initialized.
@@ -74,27 +96,19 @@ const initLizmapApp = () => {
 
         },
         uicreated: () => {
-            window.customElements.define('lizmap-geolocation', Geolocation);
-            window.customElements.define('lizmap-geolocation-survey', GeolocationSurvey);
-            window.customElements.define('lizmap-features-table', FeaturesTable);
-            window.customElements.define('lizmap-selection-tool', SelectionTool);
-            window.customElements.define('lizmap-selection-invert', SelectionInvert);
-            window.customElements.define('lizmap-snapping', Snapping);
-            window.customElements.define('lizmap-scaleline', Scaleline);
-            window.customElements.define('lizmap-mouse-position', MousePosition);
-            window.customElements.define('lizmap-digitizing', Digitizing);
-            window.customElements.define('lizmap-overviewmap', OverviewMap);
-            window.customElements.define('lizmap-feature-toolbar', FeatureToolbar);
-            window.customElements.define('lizmap-reverse-geom', ReverseGeom);
-            window.customElements.define('lizmap-paste-geom', PasteGeom);
-            window.customElements.define('lizmap-action-selector', ActionSelector);
-            window.customElements.define('lizmap-print', Print);
-            window.customElements.define('lizmap-fullscreen', FullScreen);
-            window.customElements.define('lizmap-base-layers', BaseLayers);
+            // Display the layer tree view at the startup
+            // Layers legend will be displayed after the map started to load
             window.customElements.define('lizmap-treeview', Treeview);
-            window.customElements.define('lizmap-navbar', NavBar);
-            window.customElements.define('lizmap-tooltip', Tooltip);
-            window.customElements.define('lizmap-message', Message);
+            window.customElements.define('lizmap-base-layers', BaseLayers);
+            // The other custom elements will be initialized after the modules are
+            if (lizMap.mainLizmap.legend !== undefined) {
+                definedCustomElements();
+            } else {
+                lizMap.mainEventDispatcher.addListener(
+                    definedCustomElements,
+                    'lizmap.modules.initialized'
+                );
+            }
         }
     });
 

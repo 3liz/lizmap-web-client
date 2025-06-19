@@ -6,7 +6,30 @@
  */
 
 import { NetworkError, HttpError, ResponseError } from './Errors.js';
+import { createEnum } from './utils/Enums.js';
 import DOMPurify from 'dompurify';
+
+/**
+ * Enum for HTTP request methods
+ * @readonly
+ * @enum {string}
+ * @property {string} GET  - The GET method requests a representation of the specified resource
+ * @property {string} HEAD - The HEAD method asks for a response identical to a GET request,
+ *                           but without a response body
+ * @property {string} POST - The POST method submits an entity to the specified resource,
+ *                           often causing a change in state or side effects on the server
+ * @property {string} PUT  - The PUT method replaces all current representations of the target
+ *                           resource with the request content
+ * @property {string} DELETE  - The DELETE method deletes the specified resource
+ * @see {@link https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods|HTTP request methods}
+ */
+export const HttpRequestMethods = createEnum({
+    'GET': 'GET',
+    'HEAD': 'HEAD',
+    'POST': 'POST',
+    'PUT': 'PUT',
+    'DELETE': 'DELETE',
+});
 
 /**
  * The main utils methods

@@ -629,15 +629,10 @@ export default class map extends olMap {
         });
 
         this.on('moveend', () => {
-            this._dispatchMapStateChanged();
-
             if (!this._newOlMap) {
                 lizMap.map.setCenter(undefined,this.getView().getZoom(), false, false);
             }
         });
-
-        // Init view
-        this.syncNewOLwithOL2View();
 
         // Listen/Dispatch events
         this.getView().on('change', () => {
@@ -675,24 +670,74 @@ export default class map extends olMap {
                     mapLayer.loadStatus = MapLayerLoadStatus.Error;
                 });
             } else if (source instanceof TileWMS || source instanceof WMTS) {
+                source.setProperties({
+                    loadingtiles: 0,
+                    errortiles: 0,
+                });
                 source.on('tileloadstart', event => {
-                    const mapLayer = rootMapGroup.getMapLayerByName(event.target.get('name'))
+                    // New tile is loading
+                    event.target.setProperties({
+                        loadingtiles: event.target.get('loadingtiles')+1,
+                    });
+                    // The layer is in loading status
+                    const mapLayer = rootMapGroup.getMapLayerByName(event.target.get('name'));
                     mapLayer.loadStatus = MapLayerLoadStatus.Loading;
                 });
                 source.on('tileloadend', event => {
-                    const mapLayer = rootMapGroup.getMapLayerByName(event.target.get('name'))
-                    mapLayer.loadStatus = MapLayerLoadStatus.Ready;
+                    // A tile has been loaded
+                    event.target.setProperties({
+                        loadingtiles: event.target.get('loadingtiles')-1,
+                    });
+                    // Checking if all tiles are loaded
+                    const mapLayer = rootMapGroup.getMapLayerByName(event.target.get('name'));
+                    if (event.target.get('loadingtiles') == 0) {
+                        // No more tiles to load
+                        if (event.target.get('errortiles') != 0) {
+                            // Some tiles have not been loaded
+                            // The layer is in error status
+                            mapLayer.loadStatus = MapLayerLoadStatus.Error;
+                            // Reset the error tiles counter
+                            event.target.setProperties({
+                                errortiles: 0,
+                            });
+                        } else {
+                            // All tiles have been loaded
+                            // The layer is in ready status
+                            mapLayer.loadStatus = MapLayerLoadStatus.Ready;
+                        }
+                    }
                 });
                 source.on('tileloaderror', event => {
-                    const mapLayer = rootMapGroup.getMapLayerByName(event.target.get('name'))
-                    mapLayer.loadStatus = MapLayerLoadStatus.Error;
+                    // A tile has not been loaded
+                    event.target.setProperties({
+                        loadingtiles: event.target.get('loadingtiles')-1,
+                        errortiles: event.target.get('errortiles')-1,
+                    });
+                    // Checking if all tiles are loaded
+                    const mapLayer = rootMapGroup.getMapLayerByName(event.target.get('name'));
+                    if (event.target.get('loadingtiles') == 0) {
+                        // No more tiles to load
+                        if (event.target.get('errortiles') != 0) {
+                            // Some tiles have not been loaded
+                            // The layer is in error status
+                            mapLayer.loadStatus = MapLayerLoadStatus.Error;
+                            // Reset the error tiles counter
+                            event.target.setProperties({
+                                errortiles: 0,
+                            });
+                        } else {
+                            // All tiles have been loaded
+                            // The layer is in ready status
+                            mapLayer.loadStatus = MapLayerLoadStatus.Ready;
+                        }
+                    }
                 });
             }
         }
 
         rootMapGroup.addListener(
             evt => {
-                // if the layer is loaded ad single WMS, the visibility events are managed by the dedicated class
+                // if the layer is loaded as single WMS, the visibility events are managed by the dedicated class
                 if (this.isSingleWMSLayer(evt.name)) return;
 
                 const olLayerOrGroup = this.getLayerOrGroupByName(evt.name);
@@ -801,30 +846,6 @@ export default class map extends olMap {
             }, ['ext-group.removed']
         );
 
-        // Create the highlight layer
-        // used to display features on top of all layers
-        const styleColor = 'rgba(255,255,0,0.8)';
-        const styleWidth = 3;
-        this._highlightLayer = new VectorLayer({
-            source: new VectorSource({
-                wrapX: false
-            }),
-            style: {
-                'circle-stroke-color': styleColor,
-                'circle-stroke-width': styleWidth,
-                'circle-radius': 6,
-                'stroke-color': styleColor,
-                'stroke-width': styleWidth,
-            }
-        });
-        this.addToolLayer(this._highlightLayer);
-
-        // Add startup features to map if any
-        const startupFeatures = mapState.startupFeatures;
-        if (startupFeatures) {
-            this.setHighlightFeatures(startupFeatures, "geojson");
-        }
-
         mapState.addListener(
             evt => {
                 const view = this.getView();
@@ -853,6 +874,42 @@ export default class map extends olMap {
             },
             ['map.state.changed']
         );
+
+        // Create the highlight layer
+        // used to display features on top of all layers
+        const styleColor = 'rgba(255,255,0,0.8)';
+        const styleWidth = 3;
+        this._highlightLayer = new VectorLayer({
+            source: new VectorSource({
+                wrapX: false
+            }),
+            style: {
+                'circle-stroke-color': styleColor,
+                'circle-stroke-width': styleWidth,
+                'circle-radius': 6,
+                'stroke-color': styleColor,
+                'stroke-width': styleWidth,
+            }
+        });
+        this.addToolLayer(this._highlightLayer);
+
+        // Init view
+        this.syncNewOLwithOL2View();
+
+        // Add startup features to map if any
+        const startupFeatures = mapState.startupFeatures;
+        if (startupFeatures) {
+            this.setHighlightFeatures(startupFeatures, "geojson");
+        }
+
+        // Dispatch properties
+        this._dispatchMapStateChanged();
+        // Set the ready state for map
+        mapState.isReady = true;
+        // Listen to map's move to update properties
+        this.on('moveend', () => {
+            this._dispatchMapStateChanged();
+        });
     }
 
     get hasEmptyBaseLayer() {

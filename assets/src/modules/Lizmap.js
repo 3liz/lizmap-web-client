@@ -6,6 +6,7 @@
  */
 import {Config} from './Config.js';
 import {State} from './State.js';
+import EventDispatcher from './../utils/EventDispatcher.js'
 import map from './map.js';
 import Edition from './Edition.js';
 import FeaturesTable from './FeaturesTable.js';
@@ -37,6 +38,8 @@ import { register } from 'ol/proj/proj4.js';
 import proj4 from 'proj4';
 import ProxyEvents from './ProxyEvents.js';
 
+import { MapLayerLoadStatus } from './state/MapLayer.js';
+
 /**
  * A projection as Projection, SRS identifier string or undefined.
  * @typedef {import("ol/proj/Projection").default | string | undefined} ProjectionLike
@@ -49,7 +52,8 @@ import ProxyEvents from './ProxyEvents.js';
  */
 export default class Lizmap {
 
-    constructor() {
+    constructor(eventDispatcher) {
+        this._eventDispatcher = eventDispatcher;
         lizMap.events.on({
             configsloaded: (configs) => {
                 const wmsParser = new WMSCapabilities();
@@ -154,29 +158,71 @@ export default class Lizmap {
                 // Create Lizmap modules
                 this.permalink = new Permalink();
                 this.map = new map('newOlMap', this.initialConfig, this.serviceURL, this.state.map, this.state.baseLayers, this.state.rootMapGroup, this.lizmap3);
-                this.edition = new Edition(this._lizmap3);
-                this.featuresTable = new FeaturesTable(this.initialConfig, this.lizmap3);
-                this.geolocation = new Geolocation(this.map, this.lizmap3);
-                this.geolocationSurvey = new GeolocationSurvey(this.geolocation, this.edition);
-                this.digitizing = new Digitizing(this.map, this.lizmap3);
-                this.selectionTool = new SelectionTool(this.map, this.digitizing, this.initialConfig, this.lizmap3);
-                this.snapping = new Snapping(this.edition, this.state.rootMapGroup, this.state.layerTree, this.lizmap3);
                 this.layers = new Layers();
                 this.proxyEvents = new ProxyEvents();
                 this.wfs = new WFS();
                 this.wms = new WMS();
-                this.action = new Action(this.map, this.selectionTool, this.digitizing, this.lizmap3);
                 this.featureStorage = new FeatureStorage();
-                this.popup = new Popup(this.initialConfig, this.state, this.map, this.digitizing);
-                this.legend = new Legend(this.state.layerTree);
-                this.search = new Search(this.map, this.lizmap3);
-                this.tooltip = new Tooltip(this.map, this.initialConfig.tooltipLayers, this.lizmap3);
-                this.locateByLayer = new LocateByLayer(
-                    this.initialConfig.locateByLayer,
-                    this.initialConfig.vectorLayerFeatureTypeList,
-                    this.map,
-                    this._lizmap3
-                );
+                // init Legend module and others when the map is ready
+                // to load legend and features after the map has started to load
+                const initOtherModules = () => {
+                    if (this.legend === undefined) {
+                        this.legend = new Legend(this.state.layerTree);
+                        this.edition = new Edition(this._lizmap3);
+                        this.featuresTable = new FeaturesTable(this.initialConfig, this.lizmap3);
+                        this.geolocation = new Geolocation(this.map, this.lizmap3);
+                        this.geolocationSurvey = new GeolocationSurvey(this.geolocation, this.edition);
+                        this.digitizing = new Digitizing(this.map, this.lizmap3);
+                        this.selectionTool = new SelectionTool(this.map, this.digitizing, this.initialConfig, this.lizmap3);
+                        this.snapping = new Snapping(this.edition, this.state.rootMapGroup, this.state.layerTree, this.lizmap3);
+                        this.action = new Action(this.map, this.selectionTool, this.digitizing, this.lizmap3);
+                        this.popup = new Popup(this.initialConfig, this.state, this.map, this.digitizing);
+                        this.search = new Search(this.map, this.lizmap3);
+                        this.tooltip = new Tooltip(this.map, this.initialConfig.tooltipLayers, this.lizmap3);
+                        this.locateByLayer = new LocateByLayer(
+                            this.initialConfig.locateByLayer,
+                            this.initialConfig.vectorLayerFeatureTypeList,
+                            this.map,
+                            this._lizmap3
+                        );
+                        /**
+                         * Modules initialized.
+                         * @event ModulesInitialized
+                         * @property {string} type lizmap.modules.initialized
+                         * @example
+                         * lizMap.mainEventDispatcher.addListener((lizmapEvent) => {
+                         *         console.log('Modules initialized');
+                         *     },
+                         *     ['lizmap.modules.initialized']
+                         * );
+                         */
+                        eventDispatcher.dispatch('lizmap.modules.initialized');
+                    }
+                };
+                const visibleLayers = this.state.rootMapGroup.findMapLayers().filter(layer => layer.visibility);
+                if (visibleLayers.length == 0) {
+                    if (this.state.map.isReady) {
+                        initOtherModules();
+                    } else {
+                        this.state.map.addListener(initOtherModules, 'map.state.ready');
+                    }
+                } else {
+                    const waitingLayers = visibleLayers.filter(layer => {
+                        return ( layer.loadStatus == MapLayerLoadStatus.Loading ||
+                            layer.loadStatus == MapLayerLoadStatus.Undefined)
+                    });
+                    if (waitingLayers.length == 0) {
+                        initOtherModules();
+                    } else {
+                        this.state.rootMapGroup.addListener(
+                            evt => {
+                                if (evt.loadStatus != MapLayerLoadStatus.Loading) {
+                                    initOtherModules();
+                                }
+                            },
+                            'layer.load.status.changed');
+                    }
+                }
 
                 // Removed unusable button
                 if (!this.config['printTemplates'] || this.config.printTemplates.length == 0 ) {
@@ -184,6 +230,14 @@ export default class Lizmap {
                 }
             }
         });
+    }
+
+    /**
+     * The main event dispatcher
+     * @type {EventDispatcher}
+     */
+    get eventDispatcher() {
+        return this._eventDispatcher;
     }
 
     /**
