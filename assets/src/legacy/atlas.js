@@ -410,7 +410,7 @@ import DOMPurify from 'dompurify';
                 // Only if features in layer
                 if (lizAtlasConfig.features.length != 0) {
                     // Activate filter
-                    if (lizAtlasConfig.triggerFilter && lizAtlasConfig.hideFeaturesAtStratup) {
+                    if (lizAtlasConfig.triggerFilter && lizAtlasConfig.hideFeaturesAtStartup) {
                         // Select feature
                         lizMap.events.triggerEvent('layerfeatureselected',
                             { 'featureType': lizAtlasConfig.featureType, 'fid': -99999, 'updateDrawing': false }
@@ -647,7 +647,7 @@ import DOMPurify from 'dompurify';
 
                 // Deactivate filter
                 if (lizAtlasConfig.triggerFilter && lizMap.lizmapLayerFilterActive) {
-                    if (lizAtlasConfig.hideFeaturesAtStratup) {
+                    if (lizAtlasConfig.hideFeaturesAtStartup) {
                         // Select feature
                         lizMap.events.triggerEvent('layerfeatureselected',
                             { 'featureType': lizAtlasConfig.featureType, 'fid': -99999, 'updateDrawing': false }
