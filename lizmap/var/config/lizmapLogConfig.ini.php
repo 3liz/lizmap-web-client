@@ -3,10 +3,14 @@ active=true
 profile=lizlog
 
 [item:login]
-label="User logs in"    ;label of the action to log.
-logCounter=on           ;activate counter for this action
-logDetail=on           ;activate detailed log for this action = 1 new line per action
-logIp=off               ;log ip address for detailed log
+;label of the action to log.
+label="User logs in"
+;activate counter for this action
+logCounter=on
+;activate detailed log for this action = 1 new line per action
+logDetail=on
+;log ip address for detailed log
+logIp=off
 logEmail=off
 
 [item:viewmap]
@@ -39,6 +43,13 @@ logEmail=off
 
 [item:editionDeleteFeature]
 label="Delete a feature"
+logCounter=on
+logDetail=on
+logIp=off
+logEmail=off
+
+[item:qgis-login]
+label="QGIS logs in"
 logCounter=on
 logDetail=on
 logIp=off
