@@ -475,11 +475,6 @@ parameters:
       path: lizmap/modules/lizmap/lib/Form/QgisFormValueRelationDynamicDatasource.php
 
     -
-      message: "#^Method Lizmap\\\\Logger\\\\Config\\:\\:getLogItem\\(\\) should return Lizmap\\\\Logger\\\\Item but returns null\\.$#"
-      count: 1
-      path: lizmap/modules/lizmap/lib/Logger/Config.php
-
-    -
       message: "#^Cannot access property \\$sequence_name on object\\|true\\.$#"
       count: 1
       path: lizmap/modules/lizmap/lib/Logger/MigratorFromSqlite.php

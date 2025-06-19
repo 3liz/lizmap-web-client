@@ -175,4 +175,21 @@ class Item
             $this->appContext->logMessage('Error while increasing log counter:'.$e->getMessage(), 'error');
         }
     }
+
+    /**
+     * build default properties for Item, using item key,
+     * usefull when no config exists in lizmapLogConfig.ini.
+     *
+     * @param string $key the item key
+     *
+     * @return array Logger Item properties
+     */
+    public static function buildDefault($key)
+    {
+        return array('logCounter' => true,
+            'logDetail' => true,
+            'logIp' => false,
+            'logEmail' => false,
+            'label' => $key);
+    }
 }

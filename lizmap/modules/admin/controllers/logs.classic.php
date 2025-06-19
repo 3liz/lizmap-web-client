@@ -176,6 +176,7 @@ class logsCtrl extends jController
 
         $maxvisible = 50;
         $page = $this->intParam('page');
+        $showQgisLogin = $this->intParam('showqgis', 0);
         if (!$page) {
             $page = 1;
         }
@@ -183,13 +184,17 @@ class logsCtrl extends jController
 
         // Get details
         $dao = jDao::get('lizmap~logDetail', 'lizlog');
-        $detail = $dao->getDetailRange($offset, $maxvisible);
-
+        if ($showQgisLogin != 0) {
+            $detail = $dao->getDetailRangeUnfiltered($offset, $maxvisible);
+        } else {
+            $detail = $dao->getDetailRange($offset, $maxvisible);
+        }
         // Display content via templates
         $tpl = new jTpl();
         $assign = array(
             'detail' => $detail,
             'page' => $page,
+            'showqgis' => $showQgisLogin,
         );
         $tpl->assign($assign);
         $rep->body->assign('MAIN', $tpl->fetch('logs_detail'));
