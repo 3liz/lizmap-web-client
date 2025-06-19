@@ -10,31 +10,60 @@ test.describe('Treeview', () => {
         const url = '/index.php/view/map/?repository=testsrepository&project=treeview';
         // Wait for WMS GetCapabilities promise
         let getCapabilitiesWMSPromise = page.waitForRequest(/SERVICE=WMS&REQUEST=GetCapabilities/);
-        // Wait for WMS GetLegendGraphic promise
-        const getLegendGraphicPromise = page.waitForRequest(
-            request => request.method() === 'POST' &&
-            request.postData() != null &&
-            request.postData()?.includes('GetLegendGraphic') === true
-        );
+
+        const GetMaps = [];
+        const GetLegends = [];
+        await page.route('**/service*', async route => {
+            const request = await route.request();
+            if (request.method() !== 'POST') {
+                // GetMap and GetLegendGraphic are GET requests
+                const searchParams = new URLSearchParams(request.url().split('?')[1]);
+                if (searchParams.get('SERVICE') === 'WMS' &&
+                    searchParams.has('REQUEST')) {
+                    if (searchParams.get('REQUEST') === 'GetLegendGraphic') {
+                        GetLegends.push(searchParams);
+                    } else if (searchParams.get('REQUEST') === 'GetMap') {
+                        GetMaps.push(searchParams);
+                    }
+                }
+            }
+            // Continue the request
+            await route.continue();
+            return;
+        });
         await page.goto(url);
         // Wait for WMS GetCapabilities
         await getCapabilitiesWMSPromise;
-        // Wait for WMS GetLegendGraphic
-        let getLegendGraphicRequest = await getLegendGraphicPromise;
 
-        // Check WMS GetLegendGraphic postData
-        const searchParams = new URLSearchParams(getLegendGraphicRequest.postData() ?? '');
-        expect(searchParams.get('SERVICE')).toBe('WMS');
-        expect(searchParams.get('REQUEST')).toBe('GetLegendGraphic');
-        expect(searchParams.get('LAYER')).toBe(
-            'sousquartiers,quartiers,shop_bakery_pg,tramway_lines,group_as_layer_1,group_as_layer_2'
-        );
+        // Wait for WMS GetMap
+        // at least 2 GetMap requests are expected
+        let timeCount = 0;
+        while (GetMaps.length < 2) {
+            timeCount += 100;
+            if (timeCount > 1000) {
+                break;
+            }
+            await page.waitForTimeout(100);
+        }
+
+        // Wait for WMS all GetLegendGraphic
+        timeCount = 0;
+        while (GetLegends.length < 6) {
+            timeCount += 100;
+            if (timeCount > 1000) {
+                break;
+            }
+            await page.waitForTimeout(100);
+        }
+
+        await expect(GetMaps.length).toBeGreaterThanOrEqual(2);
+        await expect(GetLegends).toHaveLength(6);
 
         // Check that the map scale is the right one
         await expect(page.locator('#overview-bar .ol-scale-text')).toHaveText('1 : ' + (100180).toLocaleString(locale))
 
-        // Wait to be sure the map is ready
-        await page.waitForTimeout(1000)
+        // Stop listening to WMS requests
+        await page.unroute('**/service*');
     });
 
     test('layer/group UI', async ({ page }) => {
@@ -195,7 +224,7 @@ test.describe('Treeview mocked', () => {
         await expect(page.locator('lizmap-treeview div.group > input')).toHaveCount(0);
     });
 
-    test('Timeout on GetLegendGraphic with multi layers',
+    test('Catch GetLegendGraphic requests and timeout on GetLegendGraphic with multi layers',
         {
             tag: ['@mock', '@readonly'],
         }, async ({ page }) => {
@@ -254,9 +283,10 @@ test.describe('Treeview mocked', () => {
             await getCapabilitiesWMSPromise;
 
             // Wait for WMS GetLegendGraphic
-            // 1 timed out request and at least 2 GetLegendGraphic requests on 6
+            // At least 2 GetLegendGraphic requests on 6
+            // no more timed out request because no more POST requests
             let timeCount = 0;
-            while (timedOutRequest.length < 1 || GetLegends.length < 2) {
+            while (GetLegends.length < 3) {
                 timeCount += 100;
                 if (timeCount > 1000) {
                     break;
@@ -264,7 +294,7 @@ test.describe('Treeview mocked', () => {
                 await page.waitForTimeout(100);
             }
 
-            await expect(timedOutRequest.length).toBeGreaterThanOrEqual(1);
+            await expect(timedOutRequest.length).toBeGreaterThanOrEqual(0);
             await expect(GetLegends.length).toBeGreaterThanOrEqual(2);
             await expect(GetLegends.length).toBeLessThanOrEqual(6);
 
@@ -280,6 +310,7 @@ test.describe('Treeview mocked', () => {
                 expect(searchParams.get('STYLES')).not.toContain(',');
             });
 
+            /* No more timed out request because no more POST requests
             // Check that the timed out GetLegendGraphic requests are well formed
             timedOutRequest.forEach((searchParams) => {
                 expect(searchParams.get('SERVICE')).toBe('WMS');
@@ -291,22 +322,33 @@ test.describe('Treeview mocked', () => {
                 expect(searchParams.get('STYLES')).toBeDefined();
                 expect(searchParams.get('STYLES')).toContain(',');
             });
+            */
 
             await page.unroute('**/service*');
         });
 
-    test('Error on GetLegendGraphic',
+    test('Catch GetMap requests and GetLegendGraphic requests to check order',
         {
             tag: ['@mock', '@readonly'],
         }, async ({ page }) => {
             // we can't use Project page, because we are making GetLegendGraphic failing on purpose
-            const abortedRequest = [];
+            const timedOutRequest = [];
+            const GetMaps = [];
             const GetLegends = [];
             await page.route('**/service*', async route => {
                 const request = await route.request();
                 if (request.method() !== 'POST') {
-                    // GetLegendGraphic is a POST request
-                    // Continue the request for non POST requests
+                    // GetLegendGraphic is a GET request for single layer
+                    const searchParams = new URLSearchParams(request.url().split('?')[1]);
+                    if (searchParams.get('SERVICE') === 'WMS' &&
+                        searchParams.has('REQUEST')) {
+                        if (searchParams.get('REQUEST') === 'GetLegendGraphic') {
+                            GetLegends.push(searchParams);
+                        } else if (searchParams.get('REQUEST') === 'GetMap') {
+                            GetMaps.push(searchParams);
+                        }
+                    }
+                    // Continue the request
                     await route.continue();
                     return;
                 }
@@ -330,12 +372,14 @@ test.describe('Treeview mocked', () => {
                     await route.continue();
                     return;
                 }
-                abortedRequest.push(searchParams);
-                // Abort the request for GetLegendGraphic with multiple layers
-                await route.abort();
-                //await route.abort('failed');
+                timedOutRequest.push(searchParams);
+                // Timeout on GetLegendGraphic with multi layers
+                await route.fulfill({
+                    status: 504,
+                    contentType: 'text/plain',
+                    body: 'Timeout',
+                });
             });
-
             const url = '/index.php/view/map/?repository=testsrepository&project=treeview';
             // Wait for WMS GetCapabilities promise
             let getCapabilitiesWMSPromise = page.waitForRequest(/SERVICE=WMS&REQUEST=GetCapabilities/);
@@ -345,12 +389,10 @@ test.describe('Treeview mocked', () => {
             // Wait for WMS GetCapabilities
             await getCapabilitiesWMSPromise;
 
-            // Wait for WMS GetLegendGraphic
-            // 1 aborted request and at least 2 potential GetLegendGraphic requests on 6
-            // even if we do not have to get all the GetLegendGraphic requests
-            // we have to wait to be sure that no more GetLegendGraphic requests are done
+            // Wait for WMS GetMap
+            // At least 2 GetMap requests
             let timeCount = 0;
-            while (abortedRequest.length < 1 || GetLegends.length < 2) {
+            while (GetMaps.length < 2) {
                 timeCount += 100;
                 if (timeCount > 1000) {
                     break;
@@ -358,20 +400,53 @@ test.describe('Treeview mocked', () => {
                 await page.waitForTimeout(100);
             }
 
-            // Check if the GetLegendGraphic requests were all aborted
+            await expect(timedOutRequest.length).toBe(0);
+            await expect(GetMaps.length).toBeGreaterThanOrEqual(2);
+            await expect(GetMaps.length).toBeLessThanOrEqual(6);
             await expect(GetLegends.length).toBe(0);
-            await expect(abortedRequest.length).toBe(1);
 
-            // Check that the aborted GetLegendGraphic requests are well formed
-            abortedRequest.forEach((searchParams) => {
+            // Layer tree view already visible
+            await expect(page.locator('#switcher')).toBeVisible();
+            await expect(page.locator('#switcher lizmap-treeview div.group > input')).toHaveCount(4);
+
+            // Check that the GetLegendGraphic requests are well formed
+            GetMaps.forEach((searchParams) => {
+                expect(searchParams.get('SERVICE')).toBe('WMS');
+                expect(searchParams.get('REQUEST')).toBe('GetMap');
+                expect(searchParams.get('VERSION')).toBe('1.3.0');
+                expect(searchParams.get('FORMAT')).toContain('image/png');
+                expect(searchParams.get('LAYERS')).toBeDefined();
+                expect(searchParams.get('LAYERS')).not.toContain(',');
+                expect(searchParams.get('STYLES')).toBeDefined();
+                expect(searchParams.get('STYLES')).not.toContain(',');
+            });
+
+            // Wait for WMS GetLegendGraphic
+            // At least 2 GetLegendGraphic requests on 6
+            // no more timed out request because no more POST requests
+            timeCount = 0;
+            while (GetLegends.length < 2) {
+                timeCount += 100;
+                if (timeCount > 1000) {
+                    break;
+                }
+                await page.waitForTimeout(100);
+            }
+
+            await expect(timedOutRequest.length).toBeGreaterThanOrEqual(0);
+            await expect(GetLegends.length).toBeGreaterThanOrEqual(2);
+            await expect(GetLegends.length).toBeLessThanOrEqual(6);
+
+            // Check that the GetLegendGraphic requests are well formed
+            GetLegends.forEach((searchParams) => {
                 expect(searchParams.get('SERVICE')).toBe('WMS');
                 expect(searchParams.get('REQUEST')).toBe('GetLegendGraphic');
                 expect(searchParams.get('VERSION')).toBe('1.3.0');
                 expect(searchParams.get('FORMAT')).toBe('application/json');
                 expect(searchParams.get('LAYER')).toBeDefined();
-                expect(searchParams.get('LAYER')).toContain(',');
+                expect(searchParams.get('LAYER')).not.toContain(',');
                 expect(searchParams.get('STYLES')).toBeDefined();
-                expect(searchParams.get('STYLES')).toContain(',');
+                expect(searchParams.get('STYLES')).not.toContain(',');
             });
 
             await page.unroute('**/service*');
