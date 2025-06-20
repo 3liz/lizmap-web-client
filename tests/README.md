@@ -34,22 +34,19 @@ git pull
 
 ### With Linux
 
-You must install Docker on your machine first. Then you should execute
-the `run-docker` script.
+You must install Docker on your machine first. Then execute `make run`
 
 To launch containers for the first time, with your current user:
 
 ```bash
-./lizmap-ctl clean
-./run-docker build
+make clean
+make build
 ```
 
 Then:
 
 ```bash
-./run-docker
-./lizmap-ctl install
-./qgis-projects/tests/load_sql.sh # to populate PostgreSQL database with testing data
+make install
 ```
 
 Then, in your browser, go to `http://localhost:8130/`. (see below to change the port)
@@ -67,7 +64,7 @@ Then, in your browser, go to `http://lizmap.local:8130/`. (see below to change t
 To stop containers:
 
 ```bash
-./run-docker stop
+make stop
 ```
 
 You may have to close connections to the postgresql database if you are using
@@ -142,7 +139,7 @@ If you want to update this page, you can modify the [./api/openapi.yaml](./api/o
 ## Admin User Account Setup
 
 Default admin credentials are `admin`/`admin`, to modify it, set these variables in your environment,
-default values are provided in `run-docker` :
+default values provided:
 - `LIZMAP_ADMIN_LOGIN`: Login of the admin user
 - `LIZMAP_ADMIN_EMAIL`: Email address of the admin user, it will be used by the password reset process.
 - `LIZMAP_ADMIN_DEFAULT_PASSWORD_SOURCE`: The password source to user for the admin user, it can either be:
@@ -165,7 +162,7 @@ export LZMWEBPORT=8151
 export LZMQGSRVPORT=8152
 export QGSRVAPIPORT=8134
 
-./run-docker up -d
+make up
 
 # you can then open browser at :
 # http://localhost:8151/ for Lizmap Web Client
@@ -189,7 +186,7 @@ You must set these (optional) environment variables, **before** building the sta
 export PHP_VERSION=8.2
 export LZMQGSRVVERSION=3.24
 export LZMPOSTGISVERSION=14-3
-./run-docker build
+make build
 ```
 
 ## Running different docker stack for each branch
@@ -197,15 +194,14 @@ export LZMPOSTGISVERSION=14-3
 By default, name of containers are different for each branch, so you can build
 and run a docker stack for each branch of the repository. Name of containers
 are made with the name of the current branch. You set a different name by creating
-an environment variable `LZMBRANCH` before running `run-docker` or `lizmap-ctl`.
+an environment variable `LZMBRANCH` before running `make run` or `lizmap-ctl`.
 
 Example:
 
 ```bash
 export LZMBRANCH=another-name
 
-./run-docker build
-./run-docker up -d
+make build up
 ./lizmap-ctl reset
 # etc...
 
