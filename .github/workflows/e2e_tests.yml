@@ -99,7 +99,9 @@ jobs:
           make show-qgis-server-versions
 
       - name: Run docker compose
-        run: ./run-docker
+        run: |
+          make env
+          docker compose up -d 
 
       - name: Wait and check about QGIS Server status
         run: |
