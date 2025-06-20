@@ -37,8 +37,8 @@ describe('Editing relational data', function() {
                 })
             }).as('getMap')
 
-        // Wait for map displayed
-        cy.wait('@getMap')
+        // Wait for map to be displayed
+        cy.wait(['@getMap', '@getMap'])
     })
 
     it('Check the child table has been moved in the expected div', function () {
