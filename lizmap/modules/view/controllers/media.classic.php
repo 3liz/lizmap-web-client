@@ -266,6 +266,12 @@ class mediaCtrl extends jController
         // Prepare the file to return
         $rep->doDownload = false;
         $rep->fileName = $finalPath;
+        // For HEAD request, we need to set the content length
+        $fileSize = filesize($finalPath);
+        $rep->addHttpHeader('Content-Length', $fileSize);
+        if (!$isWebDavResource) {
+            $rep->addHttpHeader('Accept-Ranges', 'bytes');
+        }
 
         // Get the name of the file
         $path_parts = pathinfo($finalPath);
@@ -302,6 +308,33 @@ class mediaCtrl extends jController
         }
 
         $rep->mimeType = $mime;
+
+        $rep->setExpires('+1 days');
+
+        // Get the range header.
+        $range = $_SERVER['HTTP_RANGE'] ?? '';
+        // Parse the range header.
+        if (!$isWebDavResource && $range && preg_match('/bytes=(\d+)-(\d+)?/', $range, $matches)) {
+            // Get the start and end byte.
+            $startByte = intval($matches[1]);
+            $endByte = isset($matches[2]) ? intval($matches[2]) : $fileSize - 1;
+
+            // Calculate the content length.
+            $contentLength = $endByte - $startByte + 1;
+
+            // Set the response headers.
+            $rep->setHttpStatus('206', 'Partial Content');
+            $rep->addHttpHeader('Content-Range', 'bytes '.$startByte.'-'.$endByte.'/'.$fileSize);
+            $rep->addHttpHeader('Content-Length', $fileSize);
+
+            $rep->fileName = '';
+            $fh = fopen($finalPath, 'rb');
+            fseek($fh, $startByte);
+            $rep->content = fread($fh, $contentLength);
+            fclose($fh);
+
+            return $rep;
+        }
 
         $mimeTextArray = array('text/html', 'text/text');
         if (in_array($mime, $mimeTextArray)) {
