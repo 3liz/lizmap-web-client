@@ -526,5 +526,362 @@ test.describe('Media', () => {
         //        var response = await page.request.get(baseUrl + '../media/specific_media_folder/random-4.jpg');
         //        await expect(response).toBeFalsy();
 
-    })
+    });
+
+    test('Range requests @readonly', async ({ request }) => {
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'form_edition_all_field_type',
+            path: 'media/raster.asc',
+        });
+        let url = `/index.php/view/media/getMedia?${params}`;
+        let response = await request.head(url, {});
+        // check response
+        expect(response.ok()).toBeTruthy();
+        expect(response.status()).toBe(200);
+        // check content-type header
+        expect(response.headers()['content-type']).toBe('application/octet-stream');
+        // check headers
+        expect(response.headers()).toHaveProperty('etag');
+        let etag = response.headers()['etag'];
+        expect(etag).not.toBe('');
+        expect(etag).toHaveLength(40);
+        expect(response.headers()).toHaveProperty('content-disposition');
+        expect(response.headers()['content-disposition']).toBe('inline; filename="raster.asc"');
+        expect(response.headers()).toHaveProperty('content-length');
+        expect(response.headers()['content-length']).toBe('407');
+        expect(response.headers()).toHaveProperty('accept-ranges');
+        expect(response.headers()['accept-ranges']).toBe('bytes');
+
+        // From 0 to 100
+        response = await request.get(url, {
+            headers: {
+                'Range': 'bytes=0-100',
+            }
+        });
+        // check response
+        expect(response.ok()).toBeTruthy();
+        expect(response.status()).toBe(206);
+        // check content-type header
+        expect(response.headers()['content-type']).toBe('application/octet-stream');
+        // check headers
+        expect(response.headers()).toHaveProperty('cache-control');
+        expect(response.headers()['cache-control']).toBe('no-cache');
+        expect(response.headers()).toHaveProperty('pragma');
+        expect(response.headers()['pragma']).toBe('');
+        expect(response.headers()).toHaveProperty('expires');
+        expect(response.headers()['expires']).toBe('');
+        expect(response.headers()).toHaveProperty('etag');
+        expect(response.headers()['etag']).not.toBe('');
+        expect(response.headers()['etag']).toHaveLength(40);
+        expect(response.headers()['etag']).toBe(etag);
+        expect(response.headers()).toHaveProperty('content-disposition');
+        expect(response.headers()['content-disposition']).toBe('inline; filename="raster.asc"');
+        expect(response.headers()).toHaveProperty('content-length');
+        expect(response.headers()['content-length']).toBe('101');
+        expect(response.headers()).toHaveProperty('content-range');
+        expect(response.headers()['content-range']).toBe('bytes 0-100/407');
+
+        expect(await response.body()).toBeInstanceOf(Buffer);
+        expect((await response.body()).length).toBe(101);
+
+        // From 201 to 300
+        response = await request.get(url, {
+            headers: {
+                'Range': 'bytes=201-300',
+            }
+        });
+        // check response
+        expect(response.ok()).toBeTruthy();
+        expect(response.status()).toBe(206);
+        // check content-type header
+        expect(response.headers()['content-type']).toBe('application/octet-stream');
+        // check headers
+        expect(response.headers()).toHaveProperty('cache-control');
+        expect(response.headers()['cache-control']).toBe('no-cache');
+        expect(response.headers()).toHaveProperty('pragma');
+        expect(response.headers()['pragma']).toBe('');
+        expect(response.headers()).toHaveProperty('expires');
+        expect(response.headers()['expires']).toBe('');
+        expect(response.headers()).toHaveProperty('etag');
+        expect(response.headers()['etag']).not.toBe('');
+        expect(response.headers()['etag']).toHaveLength(40);
+        expect(response.headers()['etag']).toBe(etag);
+        expect(response.headers()).toHaveProperty('content-disposition');
+        expect(response.headers()['content-disposition']).toBe('inline; filename="raster.asc"');
+        expect(response.headers()).toHaveProperty('content-length');
+        expect(response.headers()['content-length']).toBe('100');
+        expect(response.headers()).toHaveProperty('content-range');
+        expect(response.headers()['content-range']).toBe('bytes 201-300/407');
+
+        expect(await response.body()).toBeInstanceOf(Buffer);
+        expect((await response.body()).length).toBe(100);
+
+        // get last 100 bytes
+        response = await request.get(url, {
+            headers: {
+                'Range': 'bytes=-100',
+            }
+        });
+        // check response
+        expect(response.ok()).toBeTruthy();
+        expect(response.status()).toBe(206);
+        // check content-type header
+        expect(response.headers()['content-type']).toBe('application/octet-stream');
+        // check headers
+        expect(response.headers()).toHaveProperty('cache-control');
+        expect(response.headers()['cache-control']).toBe('no-cache');
+        expect(response.headers()).toHaveProperty('pragma');
+        expect(response.headers()['pragma']).toBe('');
+        expect(response.headers()).toHaveProperty('expires');
+        expect(response.headers()['expires']).toBe('');
+        expect(response.headers()).toHaveProperty('etag');
+        expect(response.headers()['etag']).not.toBe('');
+        expect(response.headers()['etag']).toHaveLength(40);
+        expect(response.headers()['etag']).toBe(etag);
+        expect(response.headers()).toHaveProperty('content-disposition');
+        expect(response.headers()['content-disposition']).toBe('inline; filename="raster.asc"');
+        expect(response.headers()).toHaveProperty('content-length');
+        expect(response.headers()['content-length']).toBe('100');
+        expect(response.headers()).toHaveProperty('content-range');
+        expect(response.headers()['content-range']).toBe('bytes 307-406/407');
+
+        expect(await response.body()).toBeInstanceOf(Buffer);
+        expect((await response.body()).length).toBe(100);
+
+        // Get the last bytes from 306
+        response = await request.get(url, {
+            headers: {
+                'Range': 'bytes=306-',
+            }
+        });
+        // check response
+        expect(response.ok()).toBeTruthy();
+        expect(response.status()).toBe(206);
+        // check content-type header
+        expect(response.headers()['content-type']).toBe('application/octet-stream');
+        // check headers
+        expect(response.headers()).toHaveProperty('cache-control');
+        expect(response.headers()['cache-control']).toBe('no-cache');
+        expect(response.headers()).toHaveProperty('pragma');
+        expect(response.headers()['pragma']).toBe('');
+        expect(response.headers()).toHaveProperty('expires');
+        expect(response.headers()['expires']).toBe('');
+        expect(response.headers()).toHaveProperty('etag');
+        expect(response.headers()['etag']).not.toBe('');
+        expect(response.headers()['etag']).toHaveLength(40);
+        expect(response.headers()['etag']).toBe(etag);
+        expect(response.headers()).toHaveProperty('content-disposition');
+        expect(response.headers()['content-disposition']).toBe('inline; filename="raster.asc"');
+        expect(response.headers()).toHaveProperty('content-length');
+        expect(response.headers()['content-length']).toBe('101');
+        expect(response.headers()).toHaveProperty('content-range');
+        expect(response.headers()['content-range']).toBe('bytes 306-406/407');
+
+        expect(await response.body()).toBeInstanceOf(Buffer);
+        expect((await response.body()).length).toBe(101);
+
+        // Get 1 byte
+        response = await request.get(url, {
+            headers: {
+                'Range': 'bytes=210-210',
+            }
+        });
+        // check response
+        expect(response.ok()).toBeTruthy();
+        expect(response.status()).toBe(206);
+        // check content-type header
+        expect(response.headers()['content-type']).toBe('application/octet-stream');
+        // check headers
+        expect(response.headers()).toHaveProperty('cache-control');
+        expect(response.headers()['cache-control']).toBe('no-cache');
+        expect(response.headers()).toHaveProperty('pragma');
+        expect(response.headers()['pragma']).toBe('');
+        expect(response.headers()).toHaveProperty('expires');
+        expect(response.headers()['expires']).toBe('');
+        expect(response.headers()).toHaveProperty('etag');
+        expect(response.headers()['etag']).not.toBe('');
+        expect(response.headers()['etag']).toHaveLength(40);
+        expect(response.headers()['etag']).toBe(etag);
+        expect(response.headers()).toHaveProperty('content-disposition');
+        expect(response.headers()['content-disposition']).toBe('inline; filename="raster.asc"');
+        expect(response.headers()).toHaveProperty('content-length');
+        expect(response.headers()['content-length']).toBe('1');
+        expect(response.headers()).toHaveProperty('content-range');
+        expect(response.headers()['content-range']).toBe('bytes 210-210/407');
+
+        expect(await response.body()).toBeInstanceOf(Buffer);
+        expect((await response.body()).length).toBe(1);
+    });
+
+    test('Range requests if-range @readonly', async ({ request }) => {
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'form_edition_all_field_type',
+            path: 'media/raster.asc',
+        });
+        let url = `/index.php/view/media/getMedia?${params}`;
+        let response = await request.head(url, {});
+        // check response
+        expect(response.ok()).toBeTruthy();
+        expect(response.status()).toBe(200);
+        // check content-type header
+        expect(response.headers()['content-type']).toBe('application/octet-stream');
+        // check headers
+        expect(response.headers()).toHaveProperty('etag');
+        let etag = response.headers()['etag'];
+        expect(etag).not.toBe('');
+        expect(etag).toHaveLength(40);
+        expect(response.headers()).toHaveProperty('content-disposition');
+        expect(response.headers()['content-disposition']).toBe('inline; filename="raster.asc"');
+        expect(response.headers()).toHaveProperty('content-length');
+        expect(response.headers()['content-length']).toBe('407');
+        expect(response.headers()).toHaveProperty('accept-ranges');
+        expect(response.headers()['accept-ranges']).toBe('bytes');
+
+        // From 0 to 99 with valid if-range header
+        response = await request.get(url, {
+            headers: {
+                'Range': 'bytes=0-99',
+                'If-Range': etag,
+            }
+        });
+        // check response
+        expect(response.ok()).toBeTruthy();
+        expect(response.status()).toBe(206);
+        // check content-type header
+        expect(response.headers()['content-type']).toBe('application/octet-stream');
+        // check headers
+        expect(response.headers()).toHaveProperty('cache-control');
+        expect(response.headers()['cache-control']).toBe('no-cache');
+        expect(response.headers()).toHaveProperty('pragma');
+        expect(response.headers()['pragma']).toBe('');
+        expect(response.headers()).toHaveProperty('expires');
+        expect(response.headers()['expires']).toBe('');
+        expect(response.headers()).toHaveProperty('etag');
+        expect(response.headers()['etag']).not.toBe('');
+        expect(response.headers()['etag']).toHaveLength(40);
+        expect(response.headers()['etag']).toBe(etag);
+        expect(response.headers()).toHaveProperty('content-disposition');
+        expect(response.headers()['content-disposition']).toBe('inline; filename="raster.asc"');
+        expect(response.headers()).toHaveProperty('content-length');
+        expect(response.headers()['content-length']).toBe('100');
+        expect(response.headers()).toHaveProperty('content-range');
+        expect(response.headers()['content-range']).toBe('bytes 0-99/407');
+
+        expect(await response.body()).toBeInstanceOf(Buffer);
+        expect((await response.body()).length).toBe(100);
+
+        // From 0 to 99 with invalid if-range header
+        // Get the full file
+        response = await request.get(url, {
+            headers: {
+                'Range': 'bytes=0-99',
+                'If-Range': 'foo-bar',
+            }
+        });
+        // check response
+        expect(response.ok()).toBeTruthy();
+        expect(response.status()).toBe(200);
+        // check content-type header
+        expect(response.headers()['content-type']).toBe('application/octet-stream');
+        // check headers
+        expect(response.headers()).toHaveProperty('cache-control');
+        expect(response.headers()['cache-control']).toBe('no-cache');
+        expect(response.headers()).toHaveProperty('pragma');
+        expect(response.headers()['pragma']).toBe('');
+        expect(response.headers()).toHaveProperty('expires');
+        expect(response.headers()['expires']).toBe('');
+        expect(response.headers()).toHaveProperty('etag');
+        expect(response.headers()['etag']).not.toBe('');
+        expect(response.headers()['etag']).toHaveLength(40);
+        expect(response.headers()['etag']).toBe(etag);
+        expect(response.headers()).toHaveProperty('content-disposition');
+        expect(response.headers()['content-disposition']).toBe('inline; filename="raster.asc"');
+        expect(response.headers()).toHaveProperty('content-length');
+        expect(response.headers()['content-length']).toBe('407');
+
+        expect(await response.body()).toBeInstanceOf(Buffer);
+        expect((await response.body()).length).toBe(407);
+    });
+
+    test('Range requests errors @readonly', async ({ request }) => {
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'form_edition_all_field_type',
+            path: 'media/raster.asc',
+        });
+        let url = `/index.php/view/media/getMedia?${params}`;
+        let response = await request.head(url, {});
+        // check response
+        expect(response.ok()).toBeTruthy();
+        expect(response.status()).toBe(200);
+        // check content-type header
+        expect(response.headers()['content-type']).toBe('application/octet-stream');
+        // check headers
+        expect(response.headers()).toHaveProperty('etag');
+        let etag = response.headers()['etag'];
+        expect(etag).not.toBe('');
+        expect(etag).toHaveLength(40);
+        expect(response.headers()).toHaveProperty('content-disposition');
+        expect(response.headers()['content-disposition']).toBe('inline; filename="raster.asc"');
+        expect(response.headers()).toHaveProperty('content-length');
+        expect(response.headers()['content-length']).toBe('407');
+        expect(response.headers()).toHaveProperty('accept-ranges');
+        expect(response.headers()['accept-ranges']).toBe('bytes');
+
+        // Get bytes outside file
+        response = await request.get(url, {
+            headers: {
+                'Range': 'bytes=500-600',
+            }
+        });
+        // check response
+        expect(response.ok()).not.toBeTruthy();
+        expect(response.status()).toBe(416);
+        expect(response.headers()).toHaveProperty('content-range');
+        expect(response.headers()['content-range']).toBe('bytes */407');
+
+        // Get not valid bytes order
+        response = await request.get(url, {
+            headers: {
+                'Range': 'bytes=210-209',
+            }
+        });
+        // check response
+        expect(response.ok()).not.toBeTruthy();
+        expect(response.status()).toBe(416);
+        expect(response.headers()).toHaveProperty('content-range');
+        expect(response.headers()['content-range']).toBe('bytes */407');
+
+        // If Range header is not well formed, the server should return the full file
+        response = await request.get(url, {
+            headers: {
+                'Range': 'bytes=foo-bar',
+            }
+        });
+        // check response
+        expect(response.ok()).toBeTruthy();
+        expect(response.status()).toBe(200);
+        // check content-type header
+        expect(response.headers()['content-type']).toBe('application/octet-stream');
+        // check headers
+        expect(response.headers()).toHaveProperty('cache-control');
+        expect(response.headers()['cache-control']).toBe('no-cache');
+        expect(response.headers()).toHaveProperty('pragma');
+        expect(response.headers()['pragma']).toBe('');
+        expect(response.headers()).toHaveProperty('expires');
+        expect(response.headers()['expires']).toBe('');
+        expect(response.headers()).toHaveProperty('etag');
+        expect(response.headers()['etag']).not.toBe('');
+        expect(response.headers()['etag']).toHaveLength(40);
+        expect(response.headers()['etag']).toBe(etag);
+        expect(response.headers()).toHaveProperty('content-disposition');
+        expect(response.headers()['content-disposition']).toBe('inline; filename="raster.asc"');
+        expect(response.headers()).toHaveProperty('content-length');
+        expect(response.headers()['content-length']).toBe('407');
+
+        expect(await response.body()).toBeInstanceOf(Buffer);
+        expect((await response.body()).length).toBe(407);
+    });
 })
