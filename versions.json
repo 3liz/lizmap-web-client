@@ -1,12 +1,22 @@
 [
     {
+        "branch": "3.11",
+        "changelog": {},
+        "first_release_date": "",
+        "latest_release_date": "",
+        "latest_release_version": "",
+        "qgis_max_version_recommended": 39900,
+        "qgis_min_version_recommended": 34000,
+        "status": "dev"
+    },
+    {
         "branch": "3.10",
         "changelog": {},
         "first_release_date": "",
         "latest_release_date": "",
         "latest_release_version": "",
         "qgis_max_version_recommended": 39900,
-        "qgis_min_version_recommended": 33400,
+        "qgis_min_version_recommended": 34000,
         "status": "dev"
     },
     {
