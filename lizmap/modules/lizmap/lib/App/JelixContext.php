@@ -14,6 +14,7 @@
 namespace Lizmap\App;
 
 use Jelix\IniFile\IniModifier;
+use Lizmap\Logger\Logger;
 
 class JelixContext implements AppContextInterface
 {
@@ -210,7 +211,11 @@ class JelixContext implements AppContextInterface
      */
     public function logMessage($message, $cat = 'default')
     {
-        \jLog::log($message, $cat);
+        if (in_array($cat, Logger::LogLevels)) {
+            \lizmap::getLogger()->log($cat, $message);
+        } else {
+            \jLog::log($message, $cat);
+        }
     }
 
     /**
@@ -221,7 +226,13 @@ class JelixContext implements AppContextInterface
      */
     public function logException($exception, $cat = 'default')
     {
-        \jLog::logEx($exception, $cat);
+        if (in_array($cat, Logger::LogLevels)) {
+            if (\lizmap::getLogger()->isLevelHighEnough($cat)) {
+                \jLog::logEx($exception, $cat);
+            }
+        } else {
+            \jLog::logEx($exception, $cat);
+        }
     }
 
     /**
