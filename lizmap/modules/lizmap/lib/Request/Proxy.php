@@ -128,7 +128,7 @@ class Proxy
             if (!is_object($xml)) {
                 $errormsg = '\n'.$requestXml.'\n'.$xml;
                 $errormsg = 'An error has been raised when loading requestXml:'.$errormsg;
-                \jLog::log($errormsg, 'lizmapadmin');
+                self::getAppContext()->logMessage($errormsg, 'lizmapadmin');
                 $requestXml = null;
             } else {
                 $request = $xml->getName();
@@ -373,7 +373,7 @@ class Proxy
             $error .= ' → '.$url;
         }
         \jLog::log($lizmapAdmin, 'lizmapadmin');
-        \jLog::log($error, 'error');
+        \lizmap::getLogger()->error($error);
     }
 
     /**
@@ -470,12 +470,12 @@ class Proxy
             $response = $client->send($request, $requestOptions);
         } catch (ConnectException $e) {
             // Handle connection timeout
-            \jLog::log('Connection failed: '.$e->getMessage(), 'error');
+            \lizmap::getLogger()->error('Connection failed: '.$e->getMessage());
             $response = new Response(504, array(), null, '1.1', 'HTTP/1.1 504 Gateway Timeout');
         } catch (RequestException $e) {
             // Handle transfer timeout
             // throwing exceptions on an HTTP protocol errors (i.e., 4xx and 5xx responses) has been disabled
-            \jLog::log('Request failed: '.$e->getMessage(), 'error');
+            \lizmap::getLogger()->error('Request failed: '.$e->getMessage());
             if ($e->hasResponse()) {
                 $response = $e->getResponse();
             }
@@ -689,7 +689,10 @@ class Proxy
         $cacheRootDirectory = $ser->cacheRootDirectory;
         if ($cacheStorageType != 'redis') {
             if (!is_dir($cacheRootDirectory) or !is_writable($cacheRootDirectory)) {
-                \jLog::log('cacheRootDirectory "'.$cacheRootDirectory.'" is not a directory or is not writable!', 'lizmapadmin');
+                self::getAppContext()->logMessage(
+                    'cacheRootDirectory "'.$cacheRootDirectory.'" is not a directory or is not writable!',
+                    'lizmapadmin'
+                );
                 $cacheRootDirectory = sys_get_temp_dir();
             }
         }
