@@ -44,7 +44,7 @@ class RequestCacheStorage implements CacheStorageInterface
                 return $cache;
             }
         } catch (\Exception $ignored) {
-            \jLog::logEx($ignored, 'error');
+            \lizmap::getAppContext()->logException($ignored, 'error');
 
             return null;
         }
@@ -80,7 +80,7 @@ class RequestCacheStorage implements CacheStorageInterface
             }
         } catch (\Exception $ignored) {
             // No fail if we can't save it the storage
-            \jLog::logEx($ignored, 'error');
+            \lizmap::getAppContext()->logException($ignored, 'error');
         }
 
         return false;
