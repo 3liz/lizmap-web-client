@@ -123,12 +123,12 @@ class WMSRequest extends OGCRequest
         $data = $result->data;
         if (empty($data) or floor($result->code / 100) >= 4) {
             if (empty($data)) {
-                \jLog::log(
+                \lizmap::getAppContext()->logMessage(
                     'Error in project '.$this->repository->getKey().'/'.$this->project->getKey().': GetCapabilities empty data',
                     'lizmapadmin'
                 );
             } else {
-                \jLog::log(
+                \lizmap::getAppContext()->logMessage(
                     'Error in project '.$this->repository->getKey().'/'.$this->project->getKey().': GetCapabilities result code: '.$result->code,
                     'lizmapadmin'
                 );
@@ -325,7 +325,7 @@ class WMSRequest extends OGCRequest
                 } catch (\Exception $e) {
                     // if qgisprojects profile does not exist, or if there is an
                     // other error about the cache, let's log it
-                    \jLog::logEx($e, 'error');
+                    \lizmap::getAppContext()->logException($e, 'error');
                 }
                 // return cached data
                 if ($cached !== false) {
@@ -1033,7 +1033,7 @@ class WMSRequest extends OGCRequest
                     return array('error', 'text/plain');
                 }
             } catch (UnknownLizmapProjectException $e) {
-                \jLog::logEx($e, 'error');
+                \lizmap::getAppContext()->logException($e, 'error');
                 \jMessage::add('The lizmap project '.strtoupper($project).' does not exist !', 'ProjectNotDefined');
 
                 return array('error', 'text/plain');
@@ -1069,7 +1069,7 @@ class WMSRequest extends OGCRequest
                     $useCache = false;
                 }
             } catch (\Exception $e) {
-                \jLog::logEx($e, 'error');
+                \lizmap::getAppContext()->logException($e, 'error');
                 $useCache = false;
             }
         }
@@ -1111,7 +1111,7 @@ class WMSRequest extends OGCRequest
             try {
                 $tile = $this->appContext->getCache($key, $profile);
             } catch (\Exception $e) {
-                \jLog::logEx($e, 'error');
+                \lizmap::getAppContext()->logException($e, 'error');
                 $tile = false;
             }
             if ($tile) {
@@ -1348,7 +1348,7 @@ class WMSRequest extends OGCRequest
         // Store into cache if needed
         $cached = false;
         if ($useCache) {
-            // ~ \jLog::log( ' Store into cache');
+            \lizmap::getLogger()->debug(' Store into cache');
             $cacheExpiration = (int) $this->services->cacheExpiration;
             if (property_exists($configLayer, 'cacheExpiration')) {
                 $cacheExpiration = (int) $configLayer->cacheExpiration;
@@ -1362,7 +1362,7 @@ class WMSRequest extends OGCRequest
                     'qgisParams' => $params,
                 ));
             } catch (\Exception $e) {
-                \jLog::logEx($e, 'error');
+                \lizmap::getAppContext()->logException($e, 'error');
                 $cached = false;
             }
         }
