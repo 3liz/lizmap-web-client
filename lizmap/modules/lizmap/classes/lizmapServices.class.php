@@ -1,6 +1,8 @@
 <?php
 
+use Lizmap\Logger\Logger;
 use Lizmap\Server\Server;
+use Psr\Log\LogLevel;
 
 /**
  * Manage and give access to lizmap configuration.
@@ -52,6 +54,7 @@ class lizmapServices
         'requestProxyType',
         'requestProxyNotForDomain',
         'debugMode',
+        'logLevel',
         'cacheRootDirectory',
         'cacheRedisHost',
         'cacheRedisPort',
@@ -316,6 +319,13 @@ class lizmapServices
     public $debugMode = '';
 
     /**
+     * @var string Log level
+     *
+     * @see LogLevel
+     */
+    public $logLevel = Logger::DefaultLevel;
+
+    /**
      * Cache root directory.
      *
      * @var string
@@ -451,6 +461,9 @@ class lizmapServices
                 $this->{$prop} = $readConfigPath['services'][$prop];
             }
         }
+
+        // Check log level property
+        $this->checkLogLevel();
 
         if (!is_array($this->wmsServerHeaders)) {
             $this->wmsServerHeaders = array();
@@ -618,7 +631,31 @@ class lizmapServices
             }
         }
 
+        $this->checkLogLevel();
+
         return $modified;
+    }
+
+    /**
+     * Checking the log level property and update it if necessary.
+     */
+    protected function checkLogLevel(): string
+    {
+        // check log level
+        if (is_numeric($this->logLevel)) {
+            $logLevel = (int) $this->logLevel;
+            if ($logLevel < 0) {
+                $this->logLevel = Logger::LogLevels[0];
+            } elseif ($logLevel > 7) {
+                $this->logLevel = Logger::LogLevels[7];
+            } else {
+                $this->logLevel = Logger::LogLevels[$logLevel];
+            }
+        } elseif (!in_array($this->logLevel, Logger::LogLevels)) {
+            $this->logLevel = Logger::DefaultLevel;
+        }
+
+        return $this->logLevel;
     }
 
     /**
