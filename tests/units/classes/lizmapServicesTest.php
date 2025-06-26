@@ -242,11 +242,23 @@ class lizmapServicesTest extends TestCase
             'adminContactEmail' => 'test.test@test.com',
             'debugMode' => 'off',
         );
+        $testModify4_1 = array(
+            'appName' => 'Lizmap',
+            'adminContactEmail' => 'test.test@test.com',
+            'logLevel' => 'debug',
+        );
+        $testModify5_1 = array(
+            'appName' => 'Lizmap',
+            'adminContactEmail' => 'test.test@test.com',
+            'logLevel' => '1',
+        );
 
         return array(
             array($testModify1, $testModify1_1, null, null, true),
             array($testModify1, $testModify2_1, 'adminContactEmail', 'test.test@3liz.org', true),
             array($testModify1, $testModify3_1, 'debugMode', 'off', true),
+            array($testModify1, $testModify4_1, 'logLevel', 'debug', true),
+            array($testModify1, $testModify5_1, 'logLevel', 'alert', true),
             array($testModify1, null, null, null, false),
             array($testModify2, $testModify1_1, 'adminContactEmail', 'test.test@test.com', true),
             array(null, $testModify1_1, 'adminContactEmail', 'test.test@test.com', true),
@@ -334,6 +346,7 @@ class lizmapServicesTest extends TestCase
             'requestProxyNotForDomain',
             'cacheRedisHost',
             'cacheRedisPort',
+            'logLevel',
         );
 
         $testLizmapServices = new LizmapServices(
