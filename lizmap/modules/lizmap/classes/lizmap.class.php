@@ -100,7 +100,7 @@ class lizmap
     public static function getLogger()
     {
         if (!self::$logger) {
-            self::$logger = new Logger();
+            self::$logger = new Logger(self::getServices()->logLevel);
         }
 
         return self::$logger;
