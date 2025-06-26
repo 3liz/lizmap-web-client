@@ -6,6 +6,7 @@ use Jelix\IniFile\IniModifier;
 
 /**
  * @param IniModifier $iniFileModifier
+ * @param mixed       $varname
  */
 function load_include_config($varname, $iniFileModifier)
 {
@@ -171,6 +172,12 @@ foreach (array(
 
 // DropIn capabilities: Merge all ini file in LIZMAP_LIZMAPCONFIG_INCLUDE
 load_include_config('LIZMAP_LIZMAPCONFIG_INCLUDE', $lizmapConfig);
+
+// Enable metrics
+$log_level = getenv('LIZMAP_LOGLEVEL');
+if (is_numeric($log_level) || $log_level !== '') {
+    $lizmapConfig->setValue('logLevel', $log_level, 'services');
+}
 
 // Enable metrics
 $logger_metric = getenv('LIZMAP_LOGMETRICS');
