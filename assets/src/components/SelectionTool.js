@@ -76,39 +76,42 @@ export default class SelectionTool extends HTMLElement {
             <option value="touches">${lizDict['selectiontool.toolbar.geomOperator.touches']}</option>
         </select>`;
 
-        const buttonsTypeTemplate = (newAddRemoveSelected) => html`
-        <div class="selectiontool-type-buttons btn-group">
-            <button
-                type="button"
-                value="refresh"
-                class="selectiontool-type-refresh btn btn-sm ${newAddRemoveSelected === 'new' ? 'active' : ''}"
-                data-bs-toggle="tooltip"
-                data-bs-title="${lizDict['selectiontool.toolbar.action.type.refresh']}"
-                @click=${() => newAddRemoveSelected = 'new'}
-                >
-                <i class="icon-refresh"></i>
-            </button>
-            <button
-                type="button"
-                value="plus"
-                class="selectiontool-type-plus btn btn-sm ${newAddRemoveSelected === 'add' ? 'active' : ''}"
-                data-bs-toggle="tooltip"
-                data-bs-title="${lizDict['selectiontool.toolbar.action.type.plus']}"
-                @click=${() => newAddRemoveSelected = 'add'}
-                >
-                <i class="icon-plus"></i>
-            </button>
-            <button
-                type="button"
-                value="minus"
-                class="selectiontool-type-minus btn btn-sm ${newAddRemoveSelected === 'remove' ? 'active' : ''}"
-                data-bs-toggle="tooltip"
-                data-bs-title="${lizDict['selectiontool.toolbar.action.type.minus']}"
-                @click=${() => newAddRemoveSelected = 'remove'}
-                >
-                <i class="icon-minus"></i>
-            </button>
-        </div>`;
+        const buttonsTypeTemplate = () => {
+            const selectMode = mainLizmap.selectionTool.newAddRemoveSelected;
+            return html`
+                <div class="selectiontool-type-buttons btn-group">
+                    <button
+                        type="button"
+                        value="refresh"
+                        class="selectiontool-type-refresh btn btn-sm ${selectMode === 'new' ? 'active' : ''}"
+                        data-bs-toggle="tooltip"
+                        data-bs-title="${lizDict['selectiontool.toolbar.action.type.refresh']}"
+                        @click=${() => mainLizmap.selectionTool.newAddRemoveSelected = 'new'}
+                        >
+                        <i class="icon-refresh"></i>
+                    </button>
+                    <button
+                        type="button"
+                        value="plus"
+                        class="selectiontool-type-plus btn btn-sm ${selectMode === 'add' ? 'active' : ''}"
+                        data-bs-toggle="tooltip"
+                        data-bs-title="${lizDict['selectiontool.toolbar.action.type.plus']}"
+                        @click=${() => mainLizmap.selectionTool.newAddRemoveSelected = 'add'}
+                        >
+                        <i class="icon-plus"></i>
+                    </button>
+                    <button
+                        type="button"
+                        value="minus"
+                        class="selectiontool-type-minus btn btn-sm ${selectMode === 'remove' ? 'active' : ''}"
+                        data-bs-toggle="tooltip"
+                        data-bs-title="${lizDict['selectiontool.toolbar.action.type.minus']}"
+                        @click=${() => mainLizmap.selectionTool.newAddRemoveSelected = 'remove'}
+                        >
+                        <i class="icon-minus"></i>
+                    </button>
+                </div>`
+        };
 
         const filterButtonTemplate = (isFilterDisabled, filteredFeaturesCount) => html`
         <button
@@ -147,7 +150,7 @@ export default class SelectionTool extends HTMLElement {
                 </ul>
             </div>` : '';
 
-        const mainTemplate = (isFilterDisabled, results, newAddRemoveSelected, filteredFeaturesCount) => html`
+        const mainTemplate = (isFilterDisabled, results, filteredFeaturesCount) => html`
         <div class="selectiontool">
             <h3>${titleTemplate()}</h3>
             <div class="menu-content">
@@ -175,7 +178,7 @@ export default class SelectionTool extends HTMLElement {
                 <div>${geomOperatorSelectTemplate()}</div>
                 <div class="selectiontool-results" style="padding:2px">${results}</div>
                 <div class="selectiontool-actions">
-                    ${buttonsTypeTemplate(newAddRemoveSelected)}
+                    ${buttonsTypeTemplate()}
                     <button
                         type="button"
                         class="selectiontool-unselect btn btn-sm"
@@ -197,7 +200,6 @@ export default class SelectionTool extends HTMLElement {
             mainTemplate(
                 this.isFilterDisabled,
                 this.results,
-                mainLizmap.selectionTool.newAddRemoveSelected,
                 mainLizmap.selectionTool.filteredFeaturesCount
             ),
             this
@@ -222,7 +224,6 @@ export default class SelectionTool extends HTMLElement {
                     mainTemplate(
                         this.isFilterDisabled,
                         this.results,
-                        mainLizmap.selectionTool.newAddRemoveSelected,
                         mainLizmap.selectionTool.filteredFeaturesCount
                     ),
                     this
