@@ -397,6 +397,9 @@ class mediaCtrl extends jController
         }
         $rep->mimeType = $mime;
 
+        // For HEAD request, we need to set the content length
+        $rep->addHttpHeader('Content-Length', filesize($rep->fileName));
+
         // Etag header and cache control
         $etag = '';
         if ($this->canBeCached()) {
@@ -411,7 +414,6 @@ class mediaCtrl extends jController
             return $rep;
         }
 
-        $rep->setExpires('+1 days');
         if ($etag !== '') {
             $this->setEtagCacheHeaders($rep, $etag);
         }
