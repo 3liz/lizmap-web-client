@@ -228,6 +228,48 @@ test.describe('Media', () => {
         expect(response.headers()['content-length']).toBe('27475');
     });
 
+    test ('Tests illustration errors @readonly', async ({ request }) => {
+        // Parameters with unknown repository
+        let params = new URLSearchParams({
+            repository: 'unknown',
+            project: 'world-3857',
+        });
+        let url = `/index.php/view/media/illustration?${params}`;
+
+        // GET request
+        let response = await request.get(url, {});
+        await expect(response).not.toBeOK();
+        expect(response.status()).toBe(404);
+        expect(response.statusText()).toBe('Not Found');
+        // check content-type header
+        expect(response.headers()['content-type']).toBe('application/json');
+        // check body
+        let body = await response.json();
+        expect(body).toHaveProperty('error');
+        expect(body['error']).toBe('404 not found (wrong action)');
+        expect(body).toHaveProperty('message');
+
+        // Parameters with unknown project
+        params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'unknown',
+        });
+        url = `/index.php/view/media/illustration?${params}`;
+
+        // GET request
+        response = await request.get(url, {});
+        await expect(response).not.toBeOK();
+        expect(response.status()).toBe(404);
+        expect(response.statusText()).toBe('Not Found');
+        // check content-type header
+        expect(response.headers()['content-type']).toBe('application/json');
+        // check body
+        body = await response.json();
+        expect(body).toHaveProperty('error');
+        expect(body['error']).toBe('404 not found (wrong action)');
+        expect(body).toHaveProperty('message');
+    });
+
     test ('Tests default illustration headers @readonly', async ({ request }) => {
         // default illustration image
         let url = `/index.php/view/media/defaultIllustration`;
