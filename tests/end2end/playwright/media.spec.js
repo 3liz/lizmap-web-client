@@ -331,6 +331,29 @@ test.describe('Media', () => {
         });
         await expect(response).not.toBeOK();
         expect(response.status()).toBe(304);
+
+        // Parameters to a project without illustration
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'form_edition_all_field_type',
+        });
+        url = `/index.php/view/media/illustration?${params}`;
+
+        // GET request
+        response = await request.head(url, {});
+        await expect(response).toBeOK();
+        expect(response.status()).toBe(200);
+        // check content-type header
+        expect(response.headers()['content-type']).toBe('image/jpeg');
+        // check headers
+        expect(response.headers()).toHaveProperty('etag');
+        expect(response.headers()['etag']).not.toBe('');
+        expect(response.headers()['etag']).toHaveLength(40);
+        expect(response.headers()['etag']).toBe(etag);
+        expect(response.headers()).toHaveProperty('content-disposition');
+        expect(response.headers()['content-disposition']).toBe('inline; filename="lizmap_mappemonde.jpg"');
+        expect(response.headers()).toHaveProperty('content-length');
+        expect(response.headers()['content-length']).toBe('9815');
     })
 
     test('Tests media are deleted', async ({ page }) => {
