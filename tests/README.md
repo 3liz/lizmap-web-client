@@ -128,6 +128,12 @@ password=lizmap1234!
 
 ## Accessing to Swagger for admin API
 
+Swagger is not launched by default so you need to start the stack this way:
+
+```bash
+docker compose --profile dev up -d
+```
+
 If you want to test or learn about the API, after having set up the stack, you can access
 to http://localhost:8133/ and find the Swagger page.
 
@@ -303,6 +309,12 @@ and check the JS console for errors.
 
 
 ## Using LDAP
+
+LDAP is not launched by default so you need to start the stack this way:
+
+```bash
+docker compose --profile dev up -d
+```
 
 Into `lizmap/var/config/localconfig.ini.php`:
 
