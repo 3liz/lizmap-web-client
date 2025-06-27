@@ -28,6 +28,7 @@ services:
       SLAPD_DOMAIN: "tests.lizmap"
     volumes:
       - { type: bind, source: ./docker-conf/openldap/ldif, target: /customldif }
+    profiles: ["dev"]
   lizmap:
     build:
       context: ./docker-conf/phpfpm
@@ -50,7 +51,6 @@ services:
     depends_on:
       - pgsql
       - redis
-      - openldap
   web:
     image: nginx:alpine
     container_name: "lizmap${LZMBRANCH}_test_nginx"
@@ -113,6 +113,7 @@ services:
       - { type: bind, source: ./api, target: /api }
     ports:
       - ${SWAGGER_PORT}:8080
+    profiles: ["dev"]
 volumes:
   pg_data:
     name: "lizmap${LZMBRANCH}_pg_data"
