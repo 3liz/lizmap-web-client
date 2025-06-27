@@ -24,9 +24,9 @@ jobs:
           - php-version: "8.2"
             php-unit: "11.5.2"
           - php-version: "8.3"
-            php-unit: "11.5.2"
+            php-unit: "12.2.5"
           - php-version: "8.4"
-            php-unit: "11.5.2"
+            php-unit: "12.2.5"
     steps:
 
       - name: Check out repository
