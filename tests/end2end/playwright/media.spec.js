@@ -131,6 +131,103 @@ test.describe('Media', () => {
         expect(response.headers()['content-length']).toBe('5773');
     });
 
+    test ('Tests illustration headers @readonly', async ({ request }) => {
+        // Parameters for the request to a project with illustration
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'world-3857',
+        });
+        let url = `/index.php/view/media/illustration?${params}`;
+
+        // HEAD request to get headers without body
+        let response = await request.head(url, {});
+        await expect(response).toBeOK();
+        expect(response.status()).toBe(200);
+        // check content-type header
+        expect(response.headers()['content-type']).toBe('image/jpeg');
+        // check headers
+        expect(response.headers()).toHaveProperty('cache-control');
+        expect(response.headers()['cache-control']).toBe('no-cache');
+        expect(response.headers()).toHaveProperty('pragma');
+        expect(response.headers()['pragma']).toBe('');
+        expect(response.headers()).toHaveProperty('expires');
+        expect(response.headers()['expires']).toBe('');
+        expect(response.headers()).toHaveProperty('etag');
+        let etag = response.headers()['etag'];
+        expect(etag).not.toBe('');
+        expect(etag).toHaveLength(40);
+        expect(response.headers()).toHaveProperty('content-disposition');
+        expect(response.headers()['content-disposition']).toBe('inline; filename="testsrepository_world-3857.jpg"');
+        expect(response.headers()).toHaveProperty('content-length');
+        expect(response.headers()['content-length']).toBe('20463');
+        // Check the body is empty
+        expect(await response.body()).toBeInstanceOf(Buffer);
+        expect((await response.body()).length).toBe(0);
+
+        // GET request to get the file
+        response = await request.get(url, {});
+        await expect(response).toBeOK();
+        expect(response.status()).toBe(200);
+        // check content-type header
+        expect(response.headers()['content-type']).toBe('image/jpeg');
+        // check headers
+        expect(response.headers()).toHaveProperty('cache-control');
+        expect(response.headers()['cache-control']).toBe('no-cache');
+        expect(response.headers()).toHaveProperty('pragma');
+        expect(response.headers()['pragma']).toBe('');
+        expect(response.headers()).toHaveProperty('expires');
+        expect(response.headers()['expires']).toBe('');
+        expect(response.headers()).toHaveProperty('etag');
+        expect(response.headers()['etag']).not.toBe('');
+        expect(response.headers()['etag']).toHaveLength(40);
+        expect(response.headers()['etag']).toBe(etag);
+        expect(response.headers()).toHaveProperty('content-disposition');
+        expect(response.headers()['content-disposition']).toBe('inline; filename="testsrepository_world-3857.jpg"');
+        expect(response.headers()).toHaveProperty('content-length');
+        expect(response.headers()['content-length']).toBe('20463');
+        // Check the body
+        expect(await response.body()).toBeInstanceOf(Buffer);
+        expect((await response.body()).length).toBe(20463);
+
+        // GET request with the etag
+        response = await request.get(url, {
+            headers: {
+                'If-None-Match': etag
+            }
+        });
+        await expect(response).not.toBeOK();
+        expect(response.status()).toBe(304);
+
+        // Parameters to an other project with illustration
+        params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'world-4326',
+        });
+        url = `/index.php/view/media/illustration?${params}`;
+
+        // HEAD request
+        response = await request.head(url, {});
+        await expect(response).toBeOK();
+        expect(response.status()).toBe(200);
+        // check content-type header
+        expect(response.headers()['content-type']).toBe('image/jpeg');
+        // check headers
+        expect(response.headers()).toHaveProperty('cache-control');
+        expect(response.headers()['cache-control']).toBe('no-cache');
+        expect(response.headers()).toHaveProperty('pragma');
+        expect(response.headers()['pragma']).toBe('');
+        expect(response.headers()).toHaveProperty('expires');
+        expect(response.headers()['expires']).toBe('');
+        expect(response.headers()).toHaveProperty('etag');
+        expect(response.headers()['etag']).not.toBe('');
+        expect(response.headers()['etag']).toHaveLength(40);
+        expect(response.headers()['etag']).not.toBe(etag);
+        expect(response.headers()).toHaveProperty('content-disposition');
+        expect(response.headers()['content-disposition']).toBe('inline; filename="testsrepository_world-4326.jpg"');
+        expect(response.headers()).toHaveProperty('content-length');
+        expect(response.headers()['content-length']).toBe('27475');
+    })
+
     test('Tests media are deleted', async ({ page }) => {
 
         const baseUrl = 'index.php/view/media/getMedia?repository=testsrepository&project=form_edition_all_field_type&path=';
