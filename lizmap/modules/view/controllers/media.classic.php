@@ -287,11 +287,24 @@ class mediaCtrl extends jController
             $rep->fileName = '';
             $rep->content = $content;
         }
-
-        $rep->setExpires('+1 days');
+        // For HEAD request, we need to set the content length
+        $fileSize = filesize($finalPath);
+        $rep->addHttpHeader('Content-Length', $fileSize);
 
         if ($isWebDavResource) {
+            $rep->setExpires('+1 days');
             $rep->deleteFileAfterSending = true;
+        } elseif ($this->canBeCached()) {
+            // Etag header and cache control
+            $etag = 'media';
+            $etag .= '-'.$lrep->getKey().'~'.$lproj->getKey();
+            $etag .= '-'.$path;
+            $etag .= '-'.filemtime($finalPath);
+            $etag = sha1($etag);
+            if ($rep->isValidCache(null, $etag)) {
+                return $rep;
+            }
+            $this->setEtagCacheHeaders($rep, $etag);
         }
 
         return $rep;
