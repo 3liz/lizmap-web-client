@@ -130,6 +130,92 @@ test.describe('Media', () => {
         expect(response.headers()['content-length']).toBe('5773');
     });
 
+    test ('Tests media errors @readonly', async ({ request }) => {
+        // Parameters with unknown repository
+        let params = new URLSearchParams({
+            repository: 'unknown',
+            project: 'form_edition_all_field_type',
+            path: 'media/raster.asc',
+        });
+        let url = `/index.php/view/media/getMedia?${params}`;
+
+        // GET request
+        let response = await request.get(url, {});
+        await expect(response).not.toBeOK();
+        expect(response.status()).toBe(404);
+        expect(response.statusText()).toBe('Not Found');
+        // check content-type header
+        expect(response.headers()['content-type']).toBe('application/json');
+        // check body
+        let body = await response.json();
+        expect(body).toHaveProperty('error');
+        expect(body['error']).toBe('404 not found (wrong action)');
+        expect(body).toHaveProperty('message');
+
+        // Parameters with unknown project
+        params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'unknown',
+            path: 'media/raster.asc',
+        });
+        url = `/index.php/view/media/getMedia?${params}`;
+
+        // GET request
+        response = await request.get(url, {});
+        await expect(response).not.toBeOK();
+        expect(response.status()).toBe(404);
+        expect(response.statusText()).toBe('Not Found');
+        // check content-type header
+        expect(response.headers()['content-type']).toBe('application/json');
+        // check body
+        body = await response.json();
+        expect(body).toHaveProperty('error');
+        expect(body['error']).toBe('404 not found (wrong action)');
+        expect(body).toHaveProperty('message');
+
+        // Parameters with unknown file
+        params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'form_edition_all_field_type',
+            path: 'media/unknown.asc',
+        });
+        url = `/index.php/view/media/getMedia?${params}`;
+
+        // GET request
+        response = await request.get(url, {});
+        await expect(response).not.toBeOK();
+        expect(response.status()).toBe(404);
+        expect(response.statusText()).toBe('Not Found');
+        // check content-type header
+        expect(response.headers()['content-type']).toBe('application/json');
+        // check body
+        body = await response.json();
+        expect(body).toHaveProperty('error');
+        expect(body['error']).toBe('404 not found (wrong action)');
+        expect(body).toHaveProperty('message');
+
+        // Parameters with known file not in media
+        params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'form_edition_all_field_type',
+            path: 'world-3857.qgs.jpg',
+        });
+        url = `/index.php/view/media/getMedia?${params}`;
+
+        // GET request
+        response = await request.get(url, {});
+        await expect(response).not.toBeOK();
+        expect(response.status()).toBe(404);
+        expect(response.statusText()).toBe('Not Found');
+        // check content-type header
+        expect(response.headers()['content-type']).toBe('application/json');
+        // check body
+        body = await response.json();
+        expect(body).toHaveProperty('error');
+        expect(body['error']).toBe('404 not found (wrong action)');
+        expect(body).toHaveProperty('message');
+    });
+
     test ('Tests illustration headers @readonly', async ({ request }) => {
         // Parameters for the request to a project with illustration
         let params = new URLSearchParams({
