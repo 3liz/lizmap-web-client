@@ -214,6 +214,25 @@ test.describe('Media', () => {
         expect(body).toHaveProperty('error');
         expect(body['error']).toBe('404 not found (wrong action)');
         expect(body).toHaveProperty('message');
+
+        // Parameters without any error
+        params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'form_edition_all_field_type',
+            path: 'media/raster.asc',
+        });
+        url = `/index.php/view/media/getMedia?${params}`;
+
+        // POST request not allowed
+        response = await request.post(url, {});
+        await expect(response).not.toBeOK();
+        expect(response.status()).toBe(405);
+        expect(response.statusText()).toBe('Method Not Allowed');
+        // check content-type header
+        expect(response.headers()['content-type']).toContain('text/plain');
+        // check headers
+        expect(response.headers()).toHaveProperty('allow');
+        expect(response.headers()['allow']).toBe('GET, HEAD');
     });
 
     test ('Tests illustration headers @readonly', async ({ request }) => {
@@ -353,6 +372,24 @@ test.describe('Media', () => {
         expect(body).toHaveProperty('error');
         expect(body['error']).toBe('404 not found (wrong action)');
         expect(body).toHaveProperty('message');
+
+        // Parameters without any error
+        params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'form_edition_all_field_type',
+        });
+        url = `/index.php/view/media/illustration?${params}`;
+
+        // POST request not allowed
+        response = await request.post(url, {});
+        await expect(response).not.toBeOK();
+        expect(response.status()).toBe(405);
+        expect(response.statusText()).toBe('Method Not Allowed');
+        // check content-type header
+        expect(response.headers()['content-type']).toContain('text/plain');
+        // check headers
+        expect(response.headers()).toHaveProperty('allow');
+        expect(response.headers()['allow']).toBe('GET, HEAD');
     });
 
     test ('Tests default illustration headers @readonly', async ({ request }) => {
@@ -440,6 +477,21 @@ test.describe('Media', () => {
         expect(response.headers()['content-disposition']).toBe('inline; filename="lizmap_mappemonde.jpg"');
         expect(response.headers()).toHaveProperty('content-length');
         expect(response.headers()['content-length']).toBe('9815');
+    });
+
+    test ('Tests default illustration errors @readonly', async ({ request }) => {
+        let url = `/index.php/view/media/defaultIllustration`;
+
+        // POST request not allowed
+        let response = await request.post(url, {});
+        await expect(response).not.toBeOK();
+        expect(response.status()).toBe(405);
+        expect(response.statusText()).toBe('Method Not Allowed');
+        // check content-type header
+        expect(response.headers()['content-type']).toContain('text/plain');
+        // check headers
+        expect(response.headers()).toHaveProperty('allow');
+        expect(response.headers()['allow']).toBe('GET, HEAD');
     })
 
     test('Tests media are deleted', async ({ page }) => {
