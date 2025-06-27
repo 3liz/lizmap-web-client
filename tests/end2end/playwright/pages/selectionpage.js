@@ -57,6 +57,30 @@ export class SelectionPage extends ProjectPage {
     }
 
     /**
+     * Gets the refresh button
+     * @returns {Promise<Locator>} The refresh button locator
+     */
+    async getRefreshButton() {
+        return this.selectionPanel.locator('.selectiontool-type-refresh');
+    }
+
+    /**
+     * Gets the plus button
+     * @returns {Promise<Locator>} The plus button locator
+     */
+    async getPlusButton() {
+        return this.selectionPanel.locator('.selectiontool-type-plus');
+    }
+
+    /**
+     * Gets the minus button
+     * @returns {Promise<Locator>} The minus button locator
+     */
+    async getMinusButton() {
+        return this.selectionPanel.locator('.selectiontool-type-minus');
+    }
+
+    /**
      * Gets the unselect button
      * @returns {Promise<Locator>} The unselect button locator
      */
