@@ -83,8 +83,7 @@ export default class SelectionTool extends HTMLElement {
                         type="button"
                         value="refresh"
                         class="selectiontool-type-refresh btn btn-mini ${selectMode === 'new' ? 'active' : ''}"
-                        data-bs-toggle="tooltip"
-                        data-bs-title="${lizDict['selectiontool.toolbar.action.type.refresh']}"
+                        data-original-title="${lizDict['selectiontool.toolbar.action.type.refresh']}"
                         @click=${() => mainLizmap.selectionTool.newAddRemoveSelected = 'new'}
                         >
                         <i class="icon-refresh"></i>
@@ -93,8 +92,7 @@ export default class SelectionTool extends HTMLElement {
                         type="button"
                         value="plus"
                         class="selectiontool-type-plus btn btn-mini ${selectMode === 'add' ? 'active' : ''}"
-                        data-bs-toggle="tooltip"
-                        data-bs-title="${lizDict['selectiontool.toolbar.action.type.plus']}"
+                        data-original-title="${lizDict['selectiontool.toolbar.action.type.plus']}"
                         @click=${() => mainLizmap.selectionTool.newAddRemoveSelected = 'add'}
                         >
                         <i class="icon-plus"></i>
@@ -103,8 +101,7 @@ export default class SelectionTool extends HTMLElement {
                         type="button"
                         value="minus"
                         class="selectiontool-type-minus btn btn-mini ${selectMode === 'remove' ? 'active' : ''}"
-                        data-bs-toggle="tooltip"
-                        data-bs-title="${lizDict['selectiontool.toolbar.action.type.minus']}"
+                        data-original-title="${lizDict['selectiontool.toolbar.action.type.minus']}"
                         @click=${() => mainLizmap.selectionTool.newAddRemoveSelected = 'remove'}
                         >
                         <i class="icon-minus"></i>
