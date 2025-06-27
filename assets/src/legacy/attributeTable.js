@@ -3299,7 +3299,9 @@ var lizAttributeTable = function() {
                         if(refAttributeLayerConf && refAttributeLayerConf[1]?.pivot == 'True'){
                             // check if pivot is in relations for both layers
                             const validRelation = [nlayerId,mLayerId].every((layerId)=>{
-                                return config.relations[layerId] && config.relations[layerId].filter((rlayer)=>{ return rlayer.referencingLayer == pivotId}).length == 1
+                                return config.relations[layerId] && config.relations[layerId].some((rlayer)=>{
+                                    return rlayer.referencingLayer == pivotId
+                                })
                             })
                             if (validRelation)
                                 return pivotId;
