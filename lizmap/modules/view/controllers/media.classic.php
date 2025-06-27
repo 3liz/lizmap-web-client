@@ -42,6 +42,24 @@ class mediaCtrl extends jController
         return $resp;
     }
 
+    /**
+     * @param jResponseBinary $rep
+     *
+     * @return bool true if the method is allowed, false otherwise
+     */
+    protected function isMethodAllowed($rep)
+    {
+        $allowed = in_array($_SERVER['REQUEST_METHOD'], array('GET', 'HEAD'));
+        if (!$allowed) {
+            $rep->setHttpStatus(405, 'Method Not Allowed');
+            $rep->addHttpHeader('Allow', 'GET, HEAD');
+            $rep->mimeType = 'text/plain';
+            $rep->content = '405 - Method Not Allowed';
+        }
+
+        return $allowed;
+    }
+
     protected function defaultIllustrationPath()
     {
         // default illustration
@@ -136,6 +154,12 @@ class mediaCtrl extends jController
      */
     public function getMedia()
     {
+        /** @var jResponseBinary $rep */
+        $rep = $this->getResponse('binary');
+        if (!$this->isMethodAllowed($rep)) {
+            return $rep;
+        }
+
         // Get repository data
         $repository = $this->param('repository');
 
@@ -238,8 +262,6 @@ class mediaCtrl extends jController
         }
 
         // Prepare the file to return
-        /** @var jResponseBinary $rep */
-        $rep = $this->getResponse('binary');
         $rep->doDownload = false;
         $rep->fileName = $finalPath;
 
@@ -317,6 +339,9 @@ class mediaCtrl extends jController
     {
         /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
+        if (!$this->isMethodAllowed($rep)) {
+            return $rep;
+        }
         $rep->doDownload = false;
 
         // Get repository data
@@ -428,6 +453,9 @@ class mediaCtrl extends jController
     {
         /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
+        if (!$this->isMethodAllowed($rep)) {
+            return $rep;
+        }
         $rep->doDownload = false;
 
         // default illustration
