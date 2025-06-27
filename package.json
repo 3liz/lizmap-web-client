@@ -14,7 +14,7 @@
     "tests/end2end"
   ],
   "scripts": {
-    "build": "webpack --config assets/webpack.prod.js",
+    "build": "rspack build --config assets/webpack.prod.js",
     "cy:open": "cypress open --project ./tests/end2end/",
     "cy:test": "cypress run --headed --project ./tests/end2end/",
     "js:test": "mocha --recursive ./tests/js-units/node",
@@ -24,11 +24,13 @@
     "pretest": "eslint -c eslint.config.mjs",
     "style-fix": "stylelint \"**/*.css\" --fix",
     "style-check": "stylelint \"**/*.css\"",
-    "watch": "webpack --watch --config assets/webpack.dev.js"
+    "watch": "rspack --watch --config assets/webpack.dev.js"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.x",
     "@playwright/test": "^1.53.x",
+    "@rspack/cli": "^1.4.1",
+    "@rspack/core": "^1.4.1",
     "@stylistic/eslint-plugin-js": "^4.2.x",
     "@turf/line-split": "^7.2.0",
     "chai": "^5.2.x",
@@ -53,8 +55,6 @@
     "svgo": "^3.2.0",
     "svgo-loader": "^4.0.0",
     "undici": "^6.21.x",
-    "webpack": "^5.98.x",
-    "webpack-cli": "^6.0.1",
     "webpack-merge": "^6.0.1"
   }
 }
