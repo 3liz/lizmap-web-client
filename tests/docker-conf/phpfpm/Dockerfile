@@ -8,8 +8,7 @@ ENV PHP_VERSION=${php_version}
 
 RUN set -eux; \
     apt-get update; \
-    apt-get -y install inotify-tools \
-    ldap-utils \
+    apt-get -y install ldap-utils \
     libsqlite3-mod-spatialite \
     php${PHP_VERSION}-xdebug \
     ; apt-get clean
