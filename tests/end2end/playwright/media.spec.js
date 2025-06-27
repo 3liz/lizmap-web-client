@@ -226,6 +226,70 @@ test.describe('Media', () => {
         expect(response.headers()['content-disposition']).toBe('inline; filename="testsrepository_world-4326.jpg"');
         expect(response.headers()).toHaveProperty('content-length');
         expect(response.headers()['content-length']).toBe('27475');
+    });
+
+    test ('Tests default illustration headers @readonly', async ({ request }) => {
+        // default illustration image
+        let url = `/index.php/view/media/defaultIllustration`;
+
+        // HEAD request to get headers without body
+        let response = await request.head(url, {});
+        await expect(response).toBeOK();
+        expect(response.status()).toBe(200);
+        // check content-type header
+        expect(response.headers()['content-type']).toBe('image/jpeg');
+        // check headers
+        expect(response.headers()).toHaveProperty('cache-control');
+        expect(response.headers()['cache-control']).toBe('no-cache');
+        expect(response.headers()).toHaveProperty('pragma');
+        expect(response.headers()['pragma']).toBe('');
+        expect(response.headers()).toHaveProperty('expires');
+        expect(response.headers()['expires']).toBe('');
+        expect(response.headers()).toHaveProperty('etag');
+        let etag = response.headers()['etag'];
+        expect(etag).not.toBe('');
+        expect(etag).toHaveLength(40);
+        expect(response.headers()).toHaveProperty('content-disposition');
+        expect(response.headers()['content-disposition']).toBe('inline; filename="lizmap_mappemonde.jpg"');
+        expect(response.headers()).toHaveProperty('content-length');
+        expect(response.headers()['content-length']).toBe('9815');
+        // Check the body is empty
+        expect(await response.body()).toBeInstanceOf(Buffer);
+        expect((await response.body()).length).toBe(0);
+
+        // GET request to get the file
+        response = await request.get(url, {});
+        await expect(response).toBeOK();
+        expect(response.status()).toBe(200);
+        // check content-type header
+        expect(response.headers()['content-type']).toBe('image/jpeg');
+        // check headers
+        expect(response.headers()).toHaveProperty('cache-control');
+        expect(response.headers()['cache-control']).toBe('no-cache');
+        expect(response.headers()).toHaveProperty('pragma');
+        expect(response.headers()['pragma']).toBe('');
+        expect(response.headers()).toHaveProperty('expires');
+        expect(response.headers()['expires']).toBe('');
+        expect(response.headers()).toHaveProperty('etag');
+        expect(response.headers()['etag']).not.toBe('');
+        expect(response.headers()['etag']).toHaveLength(40);
+        expect(response.headers()['etag']).toBe(etag);
+        expect(response.headers()).toHaveProperty('content-disposition');
+        expect(response.headers()['content-disposition']).toBe('inline; filename="lizmap_mappemonde.jpg"');
+        expect(response.headers()).toHaveProperty('content-length');
+        expect(response.headers()['content-length']).toBe('9815');
+        // Check the body
+        expect(await response.body()).toBeInstanceOf(Buffer);
+        expect((await response.body()).length).toBe(9815);
+
+        // GET request with the etag
+        response = await request.get(url, {
+            headers: {
+                'If-None-Match': etag
+            }
+        });
+        await expect(response).not.toBeOK();
+        expect(response.status()).toBe(304);
     })
 
     test('Tests media are deleted', async ({ page }) => {

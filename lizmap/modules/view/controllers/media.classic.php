@@ -434,12 +434,15 @@ class mediaCtrl extends jController
         $rep->fileName = $this->defaultIllustrationPath();
         $rep->outputFileName = 'lizmap_mappemonde.jpg';
         $rep->mimeType = 'image/jpeg';
+
+        // For HEAD request, we need to set the content length
+        $rep->addHttpHeader('Content-Length', filesize($rep->fileName));
+
         $etag = $this->defaultIllustrationEtag();
         if ($etag !== '' && $rep->isValidCache(null, $etag)) {
             return $rep;
         }
 
-        $rep->setExpires('+7 days');
         if ($etag !== '') {
             $this->setEtagCacheHeaders($rep, $etag);
         }
