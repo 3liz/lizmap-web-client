@@ -177,15 +177,7 @@ function launch() {
     fi
 
     cd "$ROOTDIR/";
-    if [[ -z "${CYPRESS_CI}" ]]; then
-      (
-        su $APP_USER -c "npm run build"
-      )
-    else
-      (
-        su $APP_USER -c "npm run watch"
-      )
-    fi
+    su $APP_USER -c "npm run build"
 
     if [ ! -d $APPDIR/lizmap-modules/lizmapdemo ]; then
         su $APP_USER -c "$APPDIR/install/demo.sh install --no-installer"
