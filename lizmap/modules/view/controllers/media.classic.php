@@ -42,6 +42,24 @@ class mediaCtrl extends jController
         return $resp;
     }
 
+    /**
+     * @param jResponseBinary $rep
+     *
+     * @return bool true if the method is allowed, false otherwise
+     */
+    protected function isMethodAllowed($rep)
+    {
+        $allowed = in_array($_SERVER['REQUEST_METHOD'], array('GET', 'HEAD'));
+        if (!$allowed) {
+            $rep->setHttpStatus(405, 'Method Not Allowed');
+            $rep->addHttpHeader('Allow', 'GET, HEAD');
+            $rep->mimeType = 'text/plain';
+            $rep->content = '405 - Method Not Allowed';
+        }
+
+        return $allowed;
+    }
+
     protected function defaultIllustrationPath()
     {
         // default illustration
@@ -136,6 +154,12 @@ class mediaCtrl extends jController
      */
     public function getMedia()
     {
+        /** @var jResponseBinary $rep */
+        $rep = $this->getResponse('binary');
+        if (!$this->isMethodAllowed($rep)) {
+            return $rep;
+        }
+
         // Get repository data
         $repository = $this->param('repository');
 
@@ -238,8 +262,6 @@ class mediaCtrl extends jController
         }
 
         // Prepare the file to return
-        /** @var jResponseBinary $rep */
-        $rep = $this->getResponse('binary');
         $rep->doDownload = false;
         $rep->fileName = $finalPath;
 
@@ -285,11 +307,24 @@ class mediaCtrl extends jController
             $rep->fileName = '';
             $rep->content = $content;
         }
-
-        $rep->setExpires('+1 days');
+        // For HEAD request, we need to set the content length
+        $fileSize = filesize($finalPath);
+        $rep->addHttpHeader('Content-Length', $fileSize);
 
         if ($isWebDavResource) {
+            $rep->setExpires('+1 days');
             $rep->deleteFileAfterSending = true;
+        } elseif ($this->canBeCached()) {
+            // Etag header and cache control
+            $etag = 'media';
+            $etag .= '-'.$lrep->getKey().'~'.$lproj->getKey();
+            $etag .= '-'.$path;
+            $etag .= '-'.filemtime($finalPath);
+            $etag = sha1($etag);
+            if ($rep->isValidCache(null, $etag)) {
+                return $rep;
+            }
+            $this->setEtagCacheHeaders($rep, $etag);
         }
 
         return $rep;
@@ -304,6 +339,9 @@ class mediaCtrl extends jController
     {
         /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
+        if (!$this->isMethodAllowed($rep)) {
+            return $rep;
+        }
         $rep->doDownload = false;
 
         // Get repository data
@@ -382,6 +420,9 @@ class mediaCtrl extends jController
         }
         $rep->mimeType = $mime;
 
+        // For HEAD request, we need to set the content length
+        $rep->addHttpHeader('Content-Length', filesize($rep->fileName));
+
         // Etag header and cache control
         $etag = '';
         if ($this->canBeCached()) {
@@ -396,7 +437,6 @@ class mediaCtrl extends jController
             return $rep;
         }
 
-        $rep->setExpires('+1 days');
         if ($etag !== '') {
             $this->setEtagCacheHeaders($rep, $etag);
         }
@@ -413,18 +453,24 @@ class mediaCtrl extends jController
     {
         /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
+        if (!$this->isMethodAllowed($rep)) {
+            return $rep;
+        }
         $rep->doDownload = false;
 
         // default illustration
         $rep->fileName = $this->defaultIllustrationPath();
         $rep->outputFileName = 'lizmap_mappemonde.jpg';
         $rep->mimeType = 'image/jpeg';
+
+        // For HEAD request, we need to set the content length
+        $rep->addHttpHeader('Content-Length', filesize($rep->fileName));
+
         $etag = $this->defaultIllustrationEtag();
         if ($etag !== '' && $rep->isValidCache(null, $etag)) {
             return $rep;
         }
 
-        $rep->setExpires('+7 days');
         if ($etag !== '') {
             $this->setEtagCacheHeaders($rep, $etag);
         }
