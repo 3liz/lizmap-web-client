@@ -45,20 +45,35 @@ class lizmapFtsSearchListener extends jEventListener
             return false;
         }
 
-        // Use a transaction to avoid: "ERROR: current transaction is aborted"
-        // https://github.com/3liz/lizmap-web-client/issues/2008
-        $cnx->beginTransaction();
+        // Check if lizmap_search table / view / materialized view exists
+        // in the search_path
+        $sql = "
+            SELECT EXISTS (
+            SELECT FROM
+                pg_catalog.pg_class c
+            JOIN
+                pg_catalog.pg_namespace n ON
+                n.oid = c.relnamespace
+            WHERE
+                n.nspname = ANY(current_schemas(FALSE)) AND
+                -- current_schemas(FALSE) returns the list of schemas in the search_path
+                c.relname = 'lizmap_search' AND
+                c.relkind = ANY(ARRAY['r', 'v', 'm', 'f', 'p'])
+                -- r = ordinary table, v = view, m = materialized view, f = foreign table, p = partitioned
+            ) AS lizmap_search_exists;
+        ";
 
-        // Try to get data from lizmap_fts table / view / materialized view
         try {
-            $cnx->query('SELECT * FROM lizmap_search LIMIT 0;');
-            $cnx->commit();
-            $ok = true;
+            $res = $cnx->query($sql);
+            foreach ($res as $r) {
+                return $r->lizmap_search_exists;
+            }
         } catch (Exception $e) {
-            $cnx->rollback();
-            $ok = false;
+            jLog::logEx($e, 'error');
+
+            return false;
         }
 
-        return $ok;
+        return false;
     }
 }
