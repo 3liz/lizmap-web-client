@@ -65,6 +65,17 @@ class ValueRelationConfig extends Qgis\BaseQgisObject
         'UseCompleter',
     );
 
+    /** @var array The default values */
+    protected $defaultValues = array(
+        'FilterExpression' => '',
+        'AllowMulti' => false,
+        'AllowNull' => true,
+        'NofColumns' => 1,
+        'OrderByValue' => false,
+        'UseCompleter' => false,
+        'Description' => '',
+    );
+
     protected function set(array $data): void
     {
         if (array_key_exists('AllowMulti', $data)) {
@@ -79,6 +90,10 @@ class ValueRelationConfig extends Qgis\BaseQgisObject
         if (array_key_exists('UseCompleter', $data)) {
             $data['UseCompleter'] = filter_var($data['UseCompleter'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
         }
+
+        /*if (array_key_exists('FilterExpression', $data) && $data['FilterExpression'] === null) {
+            $data['FilterExpression'] = '';
+        }*/
         parent::set($data);
     }
 }
