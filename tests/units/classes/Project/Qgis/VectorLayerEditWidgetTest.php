@@ -1,7 +1,8 @@
 <?php
 
 use Lizmap\App;
-use Lizmap\Project\Qgis;
+use Lizmap\Project\Qgis\Layer\EditWidget;
+use Lizmap\Project\Qgis\Layer\VectorLayerEditWidget;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -25,11 +26,11 @@ class VectorLayerEditWidgetTest extends TestCase
         </editWidget>
         ';
         $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
-        $editWidget = Qgis\Layer\VectorLayerEditWidget::fromXmlReader($oXml);
+        $editWidget = VectorLayerEditWidget::fromXmlReader($oXml);
 
         $this->assertEquals('TextEdit', $editWidget->type);
         $this->assertNotNull($editWidget->config);
-        $this->assertInstanceOf(Qgis\Layer\EditWidget\TextEditConfig::class, $editWidget->config);
+        $this->assertInstanceOf(EditWidget\TextEditConfig::class, $editWidget->config);
 
         $config = array(
             'IsMultiline' => false,
@@ -52,11 +53,11 @@ class VectorLayerEditWidgetTest extends TestCase
         </editWidget>
         ';
         $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
-        $editWidget = Qgis\Layer\VectorLayerEditWidget::fromXmlReader($oXml);
+        $editWidget = VectorLayerEditWidget::fromXmlReader($oXml);
 
         $this->assertEquals('TextEdit', $editWidget->type);
         $this->assertNotNull($editWidget->config);
-        $this->assertInstanceOf(Qgis\Layer\EditWidget\TextEditConfig::class, $editWidget->config);
+        $this->assertInstanceOf(EditWidget\TextEditConfig::class, $editWidget->config);
 
         $config = array(
             'IsMultiline' => false,
@@ -75,11 +76,11 @@ class VectorLayerEditWidgetTest extends TestCase
         </editWidget>
         ';
         $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
-        $editWidget = Qgis\Layer\VectorLayerEditWidget::fromXmlReader($oXml);
+        $editWidget = VectorLayerEditWidget::fromXmlReader($oXml);
 
         $this->assertEquals('TextEdit', $editWidget->type);
         $this->assertNotNull($editWidget->config);
-        $this->assertInstanceOf(Qgis\Layer\EditWidget\TextEditConfig::class, $editWidget->config);
+        $this->assertInstanceOf(EditWidget\TextEditConfig::class, $editWidget->config);
 
         $config = array(
             'IsMultiline' => false,
@@ -105,11 +106,11 @@ class VectorLayerEditWidgetTest extends TestCase
         </editWidget>
         ';
         $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
-        $editWidget = Qgis\Layer\VectorLayerEditWidget::fromXmlReader($oXml);
+        $editWidget = VectorLayerEditWidget::fromXmlReader($oXml);
 
         $this->assertEquals('CheckBox', $editWidget->type);
         $this->assertNotNull($editWidget->config);
-        $this->assertInstanceOf(Qgis\Layer\EditWidget\CheckBoxConfig::class, $editWidget->config);
+        $this->assertInstanceOf(EditWidget\CheckBoxConfig::class, $editWidget->config);
 
         $config = array(
             'CheckedState' => '1',
@@ -131,11 +132,11 @@ class VectorLayerEditWidgetTest extends TestCase
         </editWidget>
         ';
         $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
-        $editWidget = Qgis\Layer\VectorLayerEditWidget::fromXmlReader($oXml);
+        $editWidget = VectorLayerEditWidget::fromXmlReader($oXml);
 
         $this->assertEquals('CheckBox', $editWidget->type);
         $this->assertNotNull($editWidget->config);
-        $this->assertInstanceOf(Qgis\Layer\EditWidget\CheckBoxConfig::class, $editWidget->config);
+        $this->assertInstanceOf(EditWidget\CheckBoxConfig::class, $editWidget->config);
 
         $config = array(
             'CheckedState' => '1',
@@ -155,11 +156,11 @@ class VectorLayerEditWidgetTest extends TestCase
         </editWidget>
         ';
         $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
-        $editWidget = Qgis\Layer\VectorLayerEditWidget::fromXmlReader($oXml);
+        $editWidget = VectorLayerEditWidget::fromXmlReader($oXml);
 
         $this->assertEquals('CheckBox', $editWidget->type);
         $this->assertNotNull($editWidget->config);
-        $this->assertInstanceOf(Qgis\Layer\EditWidget\CheckBoxConfig::class, $editWidget->config);
+        $this->assertInstanceOf(EditWidget\CheckBoxConfig::class, $editWidget->config);
 
         $config = array(
             'CheckedState' => '',
@@ -188,11 +189,11 @@ class VectorLayerEditWidgetTest extends TestCase
         </editWidget>
         ';
         $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
-        $editWidget = Qgis\Layer\VectorLayerEditWidget::fromXmlReader($oXml);
+        $editWidget = VectorLayerEditWidget::fromXmlReader($oXml);
 
         $this->assertEquals('DateTime', $editWidget->type);
         $this->assertNotNull($editWidget->config);
-        $this->assertInstanceOf(Qgis\Layer\EditWidget\DateTimeConfig::class, $editWidget->config);
+        $this->assertInstanceOf(EditWidget\DateTimeConfig::class, $editWidget->config);
 
         $config = array(
             'allow_null' => false,
@@ -214,11 +215,11 @@ class VectorLayerEditWidgetTest extends TestCase
         </editWidget>
         ';
         $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
-        $editWidget = Qgis\Layer\VectorLayerEditWidget::fromXmlReader($oXml);
+        $editWidget = VectorLayerEditWidget::fromXmlReader($oXml);
 
         $this->assertEquals('DateTime', $editWidget->type);
         $this->assertNotNull($editWidget->config);
-        $this->assertInstanceOf(Qgis\Layer\EditWidget\DateTimeConfig::class, $editWidget->config);
+        $this->assertInstanceOf(EditWidget\DateTimeConfig::class, $editWidget->config);
 
         $config = array(
             'allow_null' => false,
@@ -250,11 +251,11 @@ class VectorLayerEditWidgetTest extends TestCase
         </editWidget>
         ';
         $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
-        $editWidget = Qgis\Layer\VectorLayerEditWidget::fromXmlReader($oXml);
+        $editWidget = VectorLayerEditWidget::fromXmlReader($oXml);
 
         $this->assertEquals('Range', $editWidget->type);
         $this->assertNotNull($editWidget->config);
-        $this->assertInstanceOf(Qgis\Layer\EditWidget\RangeConfig::class, $editWidget->config);
+        $this->assertInstanceOf(EditWidget\RangeConfig::class, $editWidget->config);
 
         $config = array(
             'AllowNull' => true,
@@ -277,11 +278,11 @@ class VectorLayerEditWidgetTest extends TestCase
         </editWidget>
         ';
         $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
-        $editWidget = Qgis\Layer\VectorLayerEditWidget::fromXmlReader($oXml);
+        $editWidget = VectorLayerEditWidget::fromXmlReader($oXml);
 
         $this->assertEquals('Range', $editWidget->type);
         $this->assertNotNull($editWidget->config);
-        $this->assertInstanceOf(Qgis\Layer\EditWidget\RangeConfig::class, $editWidget->config);
+        $this->assertInstanceOf(EditWidget\RangeConfig::class, $editWidget->config);
 
         $config = array(
             'AllowNull' => true,
@@ -298,6 +299,139 @@ class VectorLayerEditWidgetTest extends TestCase
         );
         foreach ($notSet as $not) {
             $this->assertFalse(isset($editWidget->config->{$not}), $not);
+        }
+    }
+
+    public function testValueRelationFromXmlReader(): void
+    {
+        // No filter Expression
+        $xmlStr = '
+        <editWidget type="ValueRelation">
+          <config>
+            <Option type="Map">
+              <Option type="bool" value="false" name="AllowMulti"/>
+              <Option value="true" name="AllowNull" type="bool"/>
+              <Option name="FilterExpression" type="invalid"/>
+              <Option value="es_id" name="Key" type="QString"/>
+              <Option value="espece20160621120237434" name="Layer" type="QString"/>
+              <Option value="espece" name="LayerName" type="QString"/>
+              <Option value="postgres" name="LayerProviderName" type="QString"/>
+              <Option value="service=\'PG_SERVICE\' sslmode=disable key=\'es_id\' estimatedmetadata=true checkPrimaryKeyUnicity=\'1\' table=&quot;observatoire&quot;.&quot;espece&quot; sql=" name="LayerSource" type="QString"/>
+              <Option value="1" name="NofColumns" type="int"/>
+              <Option value="true" name="OrderByValue" type="bool"/>
+              <Option value="false" name="UseCompleter" type="bool"/>
+              <Option value="es_nom_commun" name="Value" type="QString"/>
+            </Option>
+          </config>
+        </editWidget>
+        ';
+        $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
+        $editWidget = VectorLayerEditWidget::fromXmlReader($oXml);
+
+        $this->assertEquals('ValueRelation', $editWidget->type);
+        $this->assertNotNull($editWidget->config);
+        $this->assertInstanceOf(EditWidget\ValueRelationConfig::class, $editWidget->config);
+
+        $config = array(
+            'AllowMulti' => false,
+            'AllowNull' => true,
+            'FilterExpression' => '',
+            'Key' => 'es_id',
+            'Layer' => 'espece20160621120237434',
+            'LayerName' => 'espece',
+            'LayerProviderName' => 'postgres',
+            'NofColumns' => 1,
+            'OrderByValue' => true,
+            'UseCompleter' => false,
+            'Value' => 'es_nom_commun',
+        );
+        foreach ($config as $prop => $value) {
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
+        }
+
+        // Old Value relation
+        $xmlStr = '
+        <editWidget type="ValueRelation">
+          <config>
+            <Option type="Map">
+              <Option value="0" type="QString" name="AllowMulti"/>
+              <Option value="1" type="QString" name="AllowNull"/>
+              <Option value="" type="QString" name="FilterExpression"/>
+              <Option value="osm_id" type="QString" name="Key"/>
+              <Option value="tramway20150328114206278" type="QString" name="Layer"/>
+              <Option value="1" type="QString" name="OrderByValue"/>
+              <Option value="0" type="QString" name="UseCompleter"/>
+              <Option value="test" type="QString" name="Value"/>
+            </Option>
+          </config>
+        </editWidget>
+        ';
+        $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
+        $editWidget = VectorLayerEditWidget::fromXmlReader($oXml);
+
+        $this->assertSame('ValueRelation', $editWidget->type);
+        $this->assertNotNull($editWidget->config);
+        $this->assertInstanceOf(EditWidget\ValueRelationConfig::class, $editWidget->config);
+
+        $config = array(
+            'AllowMulti' => false,
+            'AllowNull' => true,
+            'FilterExpression' => '',
+            'Key' => 'osm_id',
+            'Layer' => 'tramway20150328114206278',
+            'LayerName' => null,
+            'LayerProviderName' => null,
+            'OrderByValue' => true,
+            'UseCompleter' => false,
+            'Value' => 'test',
+        );
+        foreach ($config as $prop => $value) {
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
+        }
+
+        // FilterExpression with geometry
+        $xmlStr = '
+        <editWidget type="ValueRelation">
+          <config>
+            <Option type="Map">
+              <Option value="false" type="bool" name="AllowMulti"/>
+              <Option value="true" type="bool" name="AllowNull"/>
+              <Option value="intersects(@current_geometry , $geometry)" type="QString" name="FilterExpression"/>
+              <Option value="code" type="QString" name="Key"/>
+              <Option value="form_edition_vr_list_934681e5_2397_4451_a9f4_37d292240173" type="QString" name="Layer"/>
+              <Option value="form_edition_vr_list" type="QString" name="LayerName"/>
+              <Option value="postgres" type="QString" name="LayerProviderName"/>
+              <Option value="service=\'lizmapdb\' sslmode=prefer key=\'id\' estimatedmetadata=true srid=4326 type=Polygon checkPrimaryKeyUnicity=\'0\' table=&quot;tests_projects&quot;.&quot;form_edition_vr_list&quot; (geom) sql=" type="QString" name="LayerSource"/>
+              <Option value="1" type="int" name="NofColumns"/>
+              <Option value="false" type="bool" name="OrderByValue"/>
+              <Option value="false" type="bool" name="UseCompleter"/>
+              <Option value="label" type="QString" name="Value"/>
+            </Option>
+          </config>
+        </editWidget>
+        ';
+        $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
+        $editWidget = VectorLayerEditWidget::fromXmlReader($oXml);
+
+        $this->assertSame('ValueRelation', $editWidget->type);
+        $this->assertNotNull($editWidget->config);
+        $this->assertInstanceOf(EditWidget\ValueRelationConfig::class, $editWidget->config);
+
+        $config = array(
+            'AllowMulti' => false,
+            'AllowNull' => true,
+            'FilterExpression' => 'intersects(@current_geometry , $geometry)',
+            'Key' => 'code',
+            'Layer' => 'form_edition_vr_list_934681e5_2397_4451_a9f4_37d292240173',
+            'LayerName' => 'form_edition_vr_list',
+            'LayerProviderName' => 'postgres',
+            'NofColumns' => 1,
+            'OrderByValue' => false,
+            'UseCompleter' => false,
+            'Value' => 'label',
+        );
+        foreach ($config as $prop => $value) {
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
         }
     }
 }

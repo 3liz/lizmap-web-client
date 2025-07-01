@@ -70,7 +70,7 @@ class VectorLayerEditWidget extends Qgis\BaseQgisXmlObject
             $data['config'] = new EditWidget\UniqueValuesConfig($data['config']);
         } elseif ($data['type'] == 'RelationReference') {
             $data['config'] = new EditWidget\RelationReferenceConfig($data['config']);
-        } elseif ($data['type'] == 'ExternalResource') {
+        } elseif ($data['type'] == 'ValueRelation') {
             $data['config'] = new EditWidget\ValueRelationConfig($data['config']);
         }
 
