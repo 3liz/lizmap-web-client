@@ -69,7 +69,13 @@ class RelationReferenceConfig extends Qgis\BaseQgisObject
 
     /** @var array The default values for properties */
     protected $defaultValues = array(
+        'AllowAddFeatures' => false,
+        'AllowNULL' => true,
+        'MapIdentification' => false,
         'OrderByValue' => true, // TODO Remove when QGIS 3.32 will be the minimum version for allowing a QGIS project
+        'ReadOnly' => false,
+        'ShowForm' => false,
+        'ShowOpenFormButton' => false,
     );
 
     protected function set(array $data): void

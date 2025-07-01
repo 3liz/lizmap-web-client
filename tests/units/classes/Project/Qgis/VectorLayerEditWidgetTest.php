@@ -434,4 +434,51 @@ class VectorLayerEditWidgetTest extends TestCase
             $this->assertSame($value, $editWidget->config->{$prop}, $prop);
         }
     }
+
+    public function testRelationReferenceFromXmlReader(): void
+    {
+        $xmlStr = '
+        <editWidget type="RelationReference">
+          <config>
+            <Option type="Map">
+              <Option type="bool" value="false" name="AllowAddFeatures"/>
+              <Option type="bool" value="true" name="AllowNULL"/>
+              <Option type="bool" value="false" name="MapIdentification"/>
+              <Option type="bool" value="false" name="OrderByValue"/>
+              <Option type="bool" value="false" name="ReadOnly"/>
+              <Option type="QString" value="service=lizmap sslmode=prefer key=\'fid\' checkPrimaryKeyUnicity=\'0\' table=&quot;lizmap_data&quot;.&quot;risque&quot;" name="ReferencedLayerDataSource"/>
+              <Option type="QString" value="risque_66cb8d43_86b7_4583_9217_f7ead54463c3" name="ReferencedLayerId"/>
+              <Option type="QString" value="risque" name="ReferencedLayerName"/>
+              <Option type="QString" value="postgres" name="ReferencedLayerProviderKey"/>
+              <Option type="QString" value="tab_demand_risque_risque_66c_risque" name="Relation"/>
+              <Option type="bool" value="false" name="ShowForm"/>
+              <Option type="bool" value="true" name="ShowOpenFormButton"/>
+            </Option>
+          </config>
+        </editWidget>
+        ';
+        $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
+        $editWidget = VectorLayerEditWidget::fromXmlReader($oXml);
+
+        $this->assertEquals('RelationReference', $editWidget->type);
+        $this->assertNotNull($editWidget->config);
+        $this->assertInstanceOf(EditWidget\RelationReferenceConfig::class, $editWidget->config);
+
+        $config = array(
+            'AllowAddFeatures' => false,
+            'AllowNULL' => true,
+            'MapIdentification' => false,
+            'OrderByValue' => false,
+            'ReadOnly' => false,
+            'ReferencedLayerId' => 'risque_66cb8d43_86b7_4583_9217_f7ead54463c3',
+            'ReferencedLayerName' => 'risque',
+            'ReferencedLayerProviderKey' => 'postgres',
+            'Relation' => 'tab_demand_risque_risque_66c_risque',
+            'ShowForm' => false,
+            'ShowOpenFormButton' => true,
+        );
+        foreach ($config as $prop => $value) {
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
+        }
+    }
 }
