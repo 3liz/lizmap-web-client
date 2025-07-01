@@ -481,4 +481,145 @@ class VectorLayerEditWidgetTest extends TestCase
             $this->assertSame($value, $editWidget->config->{$prop}, $prop);
         }
     }
+
+    public function testValueMapFromXmlReader(): void
+    {
+        $xmlStr = '
+        <editWidget type="ValueMap">
+          <config>
+            <Option type="Map">
+              <Option name="map" type="List">
+                <Option type="Map">
+                  <Option name="&lt;NULL>" type="QString" value="{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}"></Option>
+                </Option>
+                <Option type="Map">
+                  <Option name="True" type="QString" value="true"></Option>
+                </Option>
+                <Option type="Map">
+                  <Option name="False" type="QString" value="false"></Option>
+                </Option>
+              </Option>
+            </Option>
+          </config>
+        </editWidget>
+        ';
+        $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
+        $editWidget = VectorLayerEditWidget::fromXmlReader($oXml);
+
+        $this->assertEquals('ValueMap', $editWidget->type);
+        $this->assertNotNull($editWidget->config);
+        $this->assertInstanceOf(EditWidget\ValueMapConfig::class, $editWidget->config);
+        $this->assertNotNull($editWidget->config->map);
+
+        $config = array(
+            '{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}' => '<NULL>',
+            'true' => 'True',
+            'false' => 'False',
+        );
+        foreach ($config as $prop => $value) {
+            $this->assertSame($value, $editWidget->config->map[$prop], $prop);
+        }
+
+        $xmlStr = '
+        <editWidget type="ValueMap">
+          <config>
+            <Option type="Map">
+              <Option type="List" name="map">
+                <Option type="Map">
+                  <Option value="A" type="QString" name="Zone A"/>
+                </Option>
+                <Option type="Map">
+                  <Option value="B" type="QString" name="Zone B"/>
+                </Option>
+                <Option type="Map">
+                  <Option value="{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}" type="QString" name="No Zone"/>
+                </Option>
+              </Option>
+            </Option>
+          </config>
+        </editWidget>
+        ';
+        $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
+        $editWidget = VectorLayerEditWidget::fromXmlReader($oXml);
+
+        $this->assertEquals('ValueMap', $editWidget->type);
+        $this->assertNotNull($editWidget->config);
+        $this->assertInstanceOf(EditWidget\ValueMapConfig::class, $editWidget->config);
+        $this->assertNotNull($editWidget->config->map);
+
+        $config = array(
+            '{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}' => 'No Zone',
+            'A' => 'Zone A',
+            'B' => 'Zone B',
+        );
+        foreach ($config as $prop => $value) {
+            $this->assertSame($value, $editWidget->config->map[$prop], $prop);
+        }
+
+        $xmlStr = '
+        <editWidget type="ValueMap">
+          <config>
+            <Option type="Map">
+              <Option type="List" name="map">
+                <Option value="A" type="QString" name="Zone A"/>
+                <Option value="B" type="QString" name="Zone B"/>
+                <Option value="{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}" type="QString" name="No Zone"/>
+              </Option>
+            </Option>
+          </config>
+        </editWidget>
+        ';
+        $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
+        $editWidget = VectorLayerEditWidget::fromXmlReader($oXml);
+
+        $this->assertEquals('ValueMap', $editWidget->type);
+        $this->assertNotNull($editWidget->config);
+        $this->assertInstanceOf(EditWidget\ValueMapConfig::class, $editWidget->config);
+        $this->assertNotNull($editWidget->config->map);
+
+        $config = array(
+            '{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}' => 'No Zone',
+            'A' => 'Zone A',
+            'B' => 'Zone B',
+        );
+        foreach ($config as $prop => $value) {
+            $this->assertSame($value, $editWidget->config->map[$prop], $prop);
+        }
+
+        $xmlStr = '
+        <editWidget type="ValueMap">
+          <config>
+            <Option type="Map">
+              <Option name="map" type="List">
+                <Option type="Map">
+                  <Option name="one" type="QString" value="1"></Option>
+                </Option>
+                <Option type="Map">
+                  <Option name="two" type="QString" value="2"></Option>
+                </Option>
+                <Option type="Map">
+                  <Option name="three" type="QString" value="3"></Option>
+                </Option>
+              </Option>
+            </Option>
+          </config>
+        </editWidget>
+        ';
+        $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
+        $editWidget = VectorLayerEditWidget::fromXmlReader($oXml);
+
+        $this->assertEquals('ValueMap', $editWidget->type);
+        $this->assertNotNull($editWidget->config);
+        $this->assertInstanceOf(EditWidget\ValueMapConfig::class, $editWidget->config);
+        $this->assertNotNull($editWidget->config->map);
+
+        $config = array(
+            '1' => 'one',
+            '2' => 'two',
+            '3' => 'three',
+        );
+        foreach ($config as $prop => $value) {
+            $this->assertSame($value, $editWidget->config->map[$prop], $prop);
+        }
+    }
 }
