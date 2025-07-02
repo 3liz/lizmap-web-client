@@ -807,4 +807,30 @@ class VectorLayerEditWidgetTest extends TestCase
             $this->assertSame($value, $editWidget->config->PropertyCollection[$prop], $prop);
         }
     }
+
+    public function testUniqueValuesFromXmlReader(): void
+    {
+        $xmlStr = '
+        <editWidget type="UniqueValues">
+          <config>
+            <Option type="Map">
+              <Option value="1" type="QString" name="Editable"/>
+            </Option>
+          </config>
+        </editWidget>
+        ';
+        $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
+        $editWidget = VectorLayerEditWidget::fromXmlReader($oXml);
+
+        $this->assertEquals('UniqueValues', $editWidget->type);
+        $this->assertNotNull($editWidget->config);
+        $this->assertInstanceOf(EditWidget\UniqueValuesConfig::class, $editWidget->config);
+
+        $config = array(
+            'Editable' => true,
+        );
+        foreach ($config as $prop => $value) {
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
+        }
+    }
 }
