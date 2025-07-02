@@ -30,9 +30,9 @@ jobs:
             qgis-server: "3.40"
             update-projects: "FALSE"
           - name: "BLEEDING_EDGE"
-            php: "8.3"
+            php: "8.4"
             pg-postgis: "17-3"
-            qgis-server: "3.40"
+            qgis-server: "3.42"
             update-projects: "TRUE"
     env:
       CYPRESS_CI: TRUE
