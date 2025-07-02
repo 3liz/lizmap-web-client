@@ -622,4 +622,22 @@ class VectorLayerEditWidgetTest extends TestCase
             $this->assertSame($value, $editWidget->config->map[$prop], $prop);
         }
     }
+
+    public function testClassificationFromXmlReader(): void
+    {
+        $xmlStr = '
+        <editWidget type="Classification">
+          <config>
+            <Option/>
+          </config>
+        </editWidget>
+        ';
+        $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
+        $editWidget = VectorLayerEditWidget::fromXmlReader($oXml);
+
+        $this->assertEquals('Classification', $editWidget->type);
+        $this->assertNotNull($editWidget->config);
+        // Empty config
+        $this->assertCount(0, $editWidget->config);
+    }
 }
