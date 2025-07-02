@@ -30,7 +30,7 @@ jobs:
       run: ./add_version.py ${{ env.RELEASE_VERSION }}
 
     - name: Commit changes
-      uses: stefanzweifel/git-auto-commit-action@v5
+      uses: stefanzweifel/git-auto-commit-action@v6
       with:
         commit_message: "Publish ${{ env.RELEASE_VERSION }}"
         commit_user_name: ${{ secrets.BOT_NAME }}
