@@ -257,11 +257,20 @@ class lizMapCtrl extends jController
         if ($wmsInfo['WMSServiceTitle'] != '') {
             $title = $wmsInfo['WMSServiceTitle'];
         }
+        $openGraphTitle = $title;
 
         $title .= ' - '.$lrep->getLabel();
         $title .= ' - '.$lser->appName;
         $rep->title = $title;
 
+        // use addHeadContent to prevent url html escaping
+        $rep->addHeadContent('<meta property="og:image" content="'.jUrl::getFull('view~media:illustration', array('repository' => $this->param('repository'), 'project' => $this->param('project'))).'">');
+        $rep->addMeta(array('property' => 'og:title', 'content' => $openGraphTitle));
+        $rep->addMeta(array('property' => 'og:image:width', 'content' => '250'));
+        $rep->addMeta(array('property' => 'og:image:height', 'content' => '250'));
+        if (!empty($wmsInfo['WMSServiceAbstract'])) {
+            $rep->addMeta(array('property' => 'og:description', 'content' => $wmsInfo['WMSServiceAbstract']));
+        }
         // Add moment.js for timemanager
         if ($lproj->hasTimemanagerLayers()) {
             $rep->addJSLink($bp.'assets/js/moment.js', array('defer' => ''));
