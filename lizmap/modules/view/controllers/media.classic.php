@@ -266,6 +266,12 @@ class mediaCtrl extends jController
         // Prepare the file to return
         $rep->doDownload = false;
         $rep->fileName = $finalPath;
+        // For HEAD request, we need to set the content length
+        $fileSize = filesize($finalPath);
+        $rep->addHttpHeader('Content-Length', $fileSize);
+        if (!$isWebDavResource) {
+            $rep->addHttpHeader('Accept-Ranges', 'bytes');
+        }
 
         // Get the name of the file
         $path_parts = pathinfo($finalPath);
@@ -322,11 +328,62 @@ class mediaCtrl extends jController
             $etag .= '-'.$lrep->getKey().'~'.$lproj->getKey();
             $etag .= '-'.$path;
             $etag .= '-'.filemtime($finalPath);
+
+            // Hash the etag to avoid too long header
             $etag = sha1($etag);
             if ($rep->isValidCache(null, $etag)) {
                 return $rep;
             }
             $this->setEtagCacheHeaders($rep, $etag);
+
+            // Get the range header.
+            $range = $_SERVER['HTTP_RANGE'] ?? '';
+            $ifRange = $_SERVER['HTTP_IF_RANGE'] ?? '';
+            // Parse the range header && check the if-range header.
+            if ($range !== '' && preg_match('/bytes=(\d*)?-(\d*)?/', $range, $matches)
+               && ($ifRange === '' || $ifRange === $etag)) {
+                // Get the end byte.
+                $endByte = $matches[2] !== '' ? intval($matches[2]) : $fileSize - 1;
+                // Get the start byte.
+                if ($matches[1] === '') {
+                    // $endByte is the number of bytes to read from the end of the file.
+                    $startByte = $fileSize - $endByte;
+                    $endByte = $fileSize - 1;
+                } else {
+                    $startByte = intval($matches[1]);
+                }
+
+                // The start byte should be less than the file size
+                // or the end byte should be greater than the start byte
+                if ($startByte >= $fileSize || $endByte < $startByte) {
+                    $rep->setHttpStatus('416', 'Requested Range Not Satisfiable');
+                    $rep->addHttpHeader('Content-Range', 'bytes */'.$fileSize);
+                    $rep->mimeType = 'text/plain';
+                    $rep->content = '416 - Requested Range Not Satisfiable';
+
+                    return $rep;
+                }
+
+                // Calculate the content length.
+                $contentLength = $endByte - $startByte + 1;
+
+                // Reset file name to avoid reading information from file
+                $rep->fileName = '';
+
+                // Set the response headers.
+                $rep->setHttpStatus('206', 'Partial Content');
+                $rep->addHttpHeader('Content-Range', 'bytes '.$startByte.'-'.$endByte.'/'.$fileSize);
+                $rep->addHttpHeader('Content-Length', $contentLength);
+
+                $rep->setContentCallback(function () use ($finalPath, $startByte, $contentLength) {
+                    $fh = fopen($finalPath, 'rb');
+                    fseek($fh, $startByte);
+                    echo fread($fh, $contentLength);
+                    fclose($fh);
+                });
+
+                return $rep;
+            }
         }
 
         return $rep;
