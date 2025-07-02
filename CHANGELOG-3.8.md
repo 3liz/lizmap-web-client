@@ -8,6 +8,15 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Fixed
+
+* HTTP Etag for:
+  * media files get by GetMedia
+  * illustration files
+  * default illustration file
+* Media controller only allow GET and HEAD HTTP Method
+* Atlas: Typing error for hideFeaturesAtStartup
+
 ## 3.8.11 - 2025-06-18
 
 ### Funders
