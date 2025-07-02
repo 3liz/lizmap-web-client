@@ -91,9 +91,6 @@ class ValueRelationConfig extends Qgis\BaseQgisObject
             $data['UseCompleter'] = filter_var($data['UseCompleter'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
         }
 
-        /*if (array_key_exists('FilterExpression', $data) && $data['FilterExpression'] === null) {
-            $data['FilterExpression'] = '';
-        }*/
         parent::set($data);
     }
 }
