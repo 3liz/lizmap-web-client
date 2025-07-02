@@ -64,6 +64,23 @@ class ExternalResourceConfig extends Qgis\BaseQgisObject
         'StorageType',
     );
 
+    /** @var array The default values */
+    protected $defaultValues = array(
+        'DocumentViewer' => 0,
+        'DocumentViewerHeight' => 0,
+        'DocumentViewerWidth' => 0,
+        'FileWidget' => true,
+        'FileWidgetButton' => true,
+        'FileWidgetFilter' => '',
+        'UseLink' => false,
+        'FullUrl' => false,
+        'PropertyCollection' => array(),
+        'RelativeStorage' => 0,
+        'StorageAuthConfigId' => '',
+        'StorageType' => '',
+        'StorageMode' => 0,
+    );
+
     protected function set(array $data): void
     {
         if (array_key_exists('DocumentViewer', $data)) {
@@ -77,6 +94,9 @@ class ExternalResourceConfig extends Qgis\BaseQgisObject
         }
         if (array_key_exists('FileWidget', $data)) {
             $data['FileWidget'] = filter_var($data['FileWidget'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+        }
+        if (array_key_exists('FileWidgetButton', $data)) {
+            $data['FileWidgetButton'] = filter_var($data['FileWidgetButton'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
         }
         if (array_key_exists('UseLink', $data)) {
             $data['UseLink'] = filter_var($data['UseLink'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);

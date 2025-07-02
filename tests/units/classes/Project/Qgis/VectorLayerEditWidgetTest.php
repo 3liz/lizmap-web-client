@@ -640,4 +640,171 @@ class VectorLayerEditWidgetTest extends TestCase
         // Empty config
         $this->assertCount(0, $editWidget->config);
     }
+
+    public function testExternalResourceFromXmlReader(): void
+    {
+        $xmlStr = '
+        <editWidget type="ExternalResource">
+          <config>
+            <Option type="Map">
+              <Option type="int" name="DocumentViewer" value="0"/>
+              <Option type="int" name="DocumentViewerHeight" value="0"/>
+              <Option type="int" name="DocumentViewerWidth" value="0"/>
+              <Option type="bool" name="FileWidget" value="true"/>
+              <Option type="bool" name="FileWidgetButton" value="true"/>
+              <Option type="QString" name="FileWidgetFilter" value=""/>
+              <Option type="Map" name="PropertyCollection">
+                <Option type="QString" name="name" value=""/>
+                <Option type="invalid" name="properties"/>
+                <Option type="QString" name="type" value="collection"/>
+              </Option>
+              <Option type="int" name="RelativeStorage" value="0"/>
+              <Option type="QString" name="StorageAuthConfigId" value=""/>
+              <Option type="int" name="StorageMode" value="0"/>
+              <Option type="QString" name="StorageType" value=""/>
+            </Option>
+          </config>
+        </editWidget>
+        ';
+        $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
+        $editWidget = VectorLayerEditWidget::fromXmlReader($oXml);
+
+        $this->assertEquals('ExternalResource', $editWidget->type);
+        $this->assertNotNull($editWidget->config);
+        $this->assertInstanceOf(EditWidget\ExternalResourceConfig::class, $editWidget->config);
+
+        $config = array(
+            'DocumentViewer' => 0,
+            'DocumentViewerHeight' => 0,
+            'DocumentViewerWidth' => 0,
+            'FileWidget' => true,
+            'FileWidgetButton' => true,
+            'FileWidgetFilter' => '',
+            'UseLink' => false,
+            'FullUrl' => false,
+            'PropertyCollection' => array(
+                'name' => '',
+                'properties' => null,
+                'type' => 'collection',
+            ),
+            'RelativeStorage' => 0,
+            'StorageAuthConfigId' => '',
+            'StorageType' => '',
+            'StorageMode' => 0,
+        );
+        foreach ($config as $prop => $value) {
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
+        }
+
+        $xmlStr = '
+        <editWidget type="ExternalResource">
+          <config>
+            <Option type="Map">
+              <Option value="1" type="QString" name="DocumentViewer"/>
+              <Option value="400" type="QString" name="DocumentViewerHeight"/>
+              <Option value="400" type="QString" name="DocumentViewerWidth"/>
+              <Option value="1" type="QString" name="FileWidget"/>
+              <Option value="1" type="QString" name="FileWidgetButton"/>
+              <Option value="Images (*.gif *.jpeg *.jpg *.png)" type="QString" name="FileWidgetFilter"/>
+              <Option value="0" type="QString" name="StorageMode"/>
+            </Option>
+          </config>
+        </editWidget>
+        ';
+        $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
+        $editWidget = VectorLayerEditWidget::fromXmlReader($oXml);
+
+        $this->assertEquals('ExternalResource', $editWidget->type);
+        $this->assertNotNull($editWidget->config);
+        $this->assertInstanceOf(EditWidget\ExternalResourceConfig::class, $editWidget->config);
+
+        $config = array(
+            'DocumentViewer' => 1,
+            'DocumentViewerHeight' => 400,
+            'DocumentViewerWidth' => 400,
+            'FileWidget' => true,
+            'FileWidgetButton' => true,
+            'FileWidgetFilter' => 'Images (*.gif *.jpeg *.jpg *.png)',
+            'UseLink' => false,
+            'FullUrl' => false,
+            'PropertyCollection' => array(),
+            'RelativeStorage' => 0,
+            'StorageAuthConfigId' => '',
+            'StorageType' => '',
+            'StorageMode' => 0,
+        );
+        foreach ($config as $prop => $value) {
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
+        }
+
+        $xmlStr = '
+        <editWidget type="ExternalResource">
+          <config>
+            <Option type="Map">
+              <Option type="int" name="DocumentViewer" value="1"/>
+              <Option type="int" name="DocumentViewerHeight" value="0"/>
+              <Option type="int" name="DocumentViewerWidth" value="0"/>
+              <Option type="bool" name="FileWidget" value="true"/>
+              <Option type="bool" name="FileWidgetButton" value="true"/>
+              <Option type="QString" name="FileWidgetFilter" value=""/>
+              <Option type="Map" name="PropertyCollection">
+                <Option type="QString" name="name" value=""/>
+                <Option type="Map" name="properties">
+                  <Option type="Map" name="storageUrl">
+                    <Option type="bool" name="active" value="true"/>
+                    <Option type="QString" name="expression" value="\'http://webdav/shapeData/\'||file_name(@selected_file_path)"/>
+                    <Option type="int" name="type" value="3"/>
+                  </Option>
+                </Option>
+                <Option type="QString" name="type" value="collection"/>
+              </Option>
+              <Option type="int" name="RelativeStorage" value="0"/>
+              <Option type="QString" name="StorageAuthConfigId" value="k6k7lv8"/>
+              <Option type="int" name="StorageMode" value="0"/>
+              <Option type="QString" name="StorageType" value="WebDAV"/>
+            </Option>
+          </config>
+        </editWidget>
+        ';
+        $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
+        $editWidget = VectorLayerEditWidget::fromXmlReader($oXml);
+
+        $this->assertEquals('ExternalResource', $editWidget->type);
+        $this->assertNotNull($editWidget->config);
+        $this->assertInstanceOf(EditWidget\ExternalResourceConfig::class, $editWidget->config);
+
+        $config = array(
+            'DocumentViewer' => 1,
+            'DocumentViewerHeight' => 0,
+            'DocumentViewerWidth' => 0,
+            'FileWidget' => true,
+            'FileWidgetButton' => true,
+            'FileWidgetFilter' => '',
+            'UseLink' => false,
+            'FullUrl' => false,
+            'RelativeStorage' => 0,
+            'StorageAuthConfigId' => 'k6k7lv8',
+            'StorageType' => 'WebDAV',
+            'StorageMode' => 0,
+        );
+        foreach ($config as $prop => $value) {
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
+        }
+
+        $this->assertNotNull($editWidget->config->PropertyCollection);
+        $propertyCollection = array(
+            'name' => '',
+            'properties' => array(
+                'storageUrl' => array(
+                    'active' => true,
+                    'expression' => '\'http://webdav/shapeData/\'||file_name(@selected_file_path)',
+                    'type' => 3,
+                ),
+            ),
+            'type' => 'collection',
+        );
+        foreach ($propertyCollection as $prop => $value) {
+            $this->assertSame($value, $editWidget->config->PropertyCollection[$prop], $prop);
+        }
+    }
 }
