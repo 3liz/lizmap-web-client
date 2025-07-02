@@ -8,6 +8,34 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Funders
+
+* **[Faunalia](https://www.faunalia.eu/fr)**
+
+### Added
+
+* Support HTTP Range header for files in media with GetMedia
+* Add opengraph tag for map page, better link preview
+
+### Fixed
+
+* Fix ValueRelation edit widget parsing
+* Fix the way to check if the `lizmap_search` table is available
+* Allow the same pivot to be defined multiple times
+* Selection tool, fix "plus" and "minus" buttons
+* HTTP Etag for:
+  * media files get by GetMedia
+  * illustration files
+  * default illustration file
+* Media controller only allow GET and HEAD HTTP Method
+* Atlas: Typing error for hideFeaturesAtStartup
+
+### Backend
+
+* Update OL to 10.6.1
+* Update playwright to 1.53.x
+* Use "rspack" instead of "webpack"
+
 ## 3.9.0 - 2025-06-19
 
 ### Funders
