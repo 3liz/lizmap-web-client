@@ -189,22 +189,24 @@ class Parser
             } else {
                 $data[$name] = $options;
             }
+
+            return $data;
+        }
+
+        $value = $oXmlReader->getAttribute('value');
+        if ($type == 'bool') {
+            $value = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+        } elseif ($type == 'int') {
+            $value = (int) $value;
+        }
+        if ($extraction == self::MAP_ONLY_VALUES) {
+            $data[] = $value;
+        } elseif ($extraction == self::MAP_VALUES_AS_KEYS) {
+            $data[$value] = $name;
+        } elseif ($name) {
+            $data[$name] = $value;
         } else {
-            $value = $oXmlReader->getAttribute('value');
-            if ($type == 'bool') {
-                $value = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
-            } elseif ($type == 'int') {
-                $value = (int) $value;
-            }
-            if ($extraction == self::MAP_ONLY_VALUES) {
-                $data[] = $value;
-            } elseif ($extraction == self::MAP_VALUES_AS_KEYS) {
-                $data[$value] = $name;
-            } elseif ($name) {
-                $data[$name] = $value;
-            } else {
-                $data[] = $value;
-            }
+            $data[] = $value;
         }
 
         return $data;
