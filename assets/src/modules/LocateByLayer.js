@@ -291,10 +291,15 @@ export default class LocateByLayer {
             for (var j=0, featuresLen=features.length; j<featuresLen; j++) {
                 var featElement = features[j];
                 locate.features[featElement.id.toString()] = featElement;
-                if ( !('filterFieldName' in locate) )
+                if ( !('filterFieldName' in locate) ) {
+                    // add option
                     options += '<option value="' + featElement.id + '">'
-                        + DOMPurify.sanitize(featElement.properties[locate.fieldName].toString())
-                        + '</option>';
+                    // DOMPurify.sanitize needs a string
+                    options += featElement.properties[locate.fieldName] !== null ?
+                        DOMPurify.sanitize(featElement.properties[locate.fieldName].toString()) :
+                        featElement.properties[locate.fieldName]+''; // 'null' for null value
+                    options += '</option>';
+                }
             }
             document.getElementById('locate-layer-'+layerName).innerHTML = options;
             // listen to select changes
