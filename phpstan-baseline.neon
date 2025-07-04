@@ -98,26 +98,6 @@ parameters:
     -
       message: "#^If condition is always true\\.$#"
       count: 1
-      path: lizmap/modules/lizmap/classes/lizmap.class.php
-
-    -
-      message: "#^Left side of && is always true\\.$#"
-      count: 1
-      path: lizmap/modules/lizmap/classes/lizmap.class.php
-
-    -
-      message: "#^Negated boolean expression is always false\\.$#"
-      count: 2
-      path: lizmap/modules/lizmap/classes/lizmap.class.php
-
-    -
-      message: "#^Static property lizmap\\:\\:\\$lizmapServicesInstance \\(lizmapServices\\) in isset\\(\\) is not nullable\\.$#"
-      count: 1
-      path: lizmap/modules/lizmap/classes/lizmap.class.php
-
-    -
-      message: "#^If condition is always true\\.$#"
-      count: 1
       path: lizmap/modules/lizmap/classes/lizmapLog.listener.php
 
     -
