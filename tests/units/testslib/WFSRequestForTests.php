@@ -25,6 +25,11 @@ class WFSRequestForTests extends WFSRequest {
         return $this->buildQueryBase($cnx, $params, $wfsFields);
     }
 
+    public function getDatasourceSqlForTests()
+    {
+        return $this->getDatasourceSql();
+    }
+
     public function getBboxSqlForTests($params)
     {
         return $this->getBboxSql($params);
