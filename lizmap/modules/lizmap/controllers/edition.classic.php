@@ -340,6 +340,9 @@ class editionCtrl extends jController
                 'GEOMETRYNAME' => 'none',
                 'PROPERTYNAME' => implode(',', $propertyName),
                 'FEATUREID' => $featureId,
+                // In the editing context, we only need to get one single feature
+                // This could change in the future if we implement editing multiple features at once
+                'MAXFEATURES' => 1,
             );
 
             if ($exp_filter) {
