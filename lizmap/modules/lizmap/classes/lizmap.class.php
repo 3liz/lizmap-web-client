@@ -40,17 +40,17 @@ class lizmap
     protected static $repositoryInstances = array();
 
     /**
-     * @var lizmapServices The lizmapServices instance for the singleton
+     * @var null|lizmapServices The lizmapServices instance for the singleton
      */
     protected static $lizmapServicesInstance;
 
     /**
-     * @var LogConfig The Lizmap Logger Config instance for the singleton
+     * @var null|LogConfig The Lizmap Logger Config instance for the singleton
      */
     protected static $lizmapLogConfigInstance;
 
     /**
-     * @var JelixContext The jelixContext instance for the singleton
+     * @var null|JelixContext The jelixContext instance for the singleton
      */
     protected static $appContext;
 
@@ -161,8 +161,8 @@ class lizmap
     /**
      * Get the jForm for a repository.
      *
-     * @param lizmapRepository $rep
-     * @param jFormsBase       $form
+     * @param null|lizmapRepository $rep
+     * @param jFormsBase            $form
      *
      * @return jFormsBase
      */
