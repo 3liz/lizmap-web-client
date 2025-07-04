@@ -294,7 +294,7 @@ export default class LocateByLayer {
                 locate.features[featElement.id.toString()] = featElement;
                 if ( !('filterFieldName' in locate) ) {
                     // add option
-                    options += '<option value="' + featElement.id + '">'
+                    options += '<option value="' + featElement.id + '">';
                     // DOMPurify.sanitize needs a string
                     options += featElement.properties[locate.fieldName] !== null ?
                         DOMPurify.sanitize(featElement.properties[locate.fieldName].toString()) :
@@ -484,9 +484,13 @@ export default class LocateByLayer {
         var options = '<option value="-1" label="'+placeHolder+'"></option>';
         for (var featureElementId in features) {
             var featureElement = features[featureElementId];
-            options += '<option value="' + featureElement.id + '">'
-                + DOMPurify.sanitize(featureElement.properties[locate.fieldName].toString())
-                + '</option>';
+            // add option
+            options += '<option value="' + featureElement.id + '">';
+            // DOMPurify.sanitize needs a string
+            options += featElement.properties[locate.fieldName] !== null ?
+                DOMPurify.sanitize(featElement.properties[locate.fieldName].toString()) :
+                featElement.properties[locate.fieldName]+''; // 'null' for null value
+            options += '</option>';
         }
         // add option list
         $('#locate-layer-'+ this._lizmap3.cleanName(aName)).html(options);
