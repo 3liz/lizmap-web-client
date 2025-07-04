@@ -59,7 +59,7 @@ export default class Tooltip {
         const layerName = layerTooltipCfg.name;
         const tooltipLayer = this._tooltipLayers.get(layerName);
         this._displayGeom = layerTooltipCfg.displayGeom;
-        this._displayLayerStyle = layerTooltipCfg.displayLayerStyle;
+        this._displayLayerStyle = true;
 
         // Styles
         const fill = new Fill({
