@@ -3154,6 +3154,20 @@ window.lizMap = function() {
          * Method: init
          */
         init: function() {
+            // start waiting
+            $('body').css('cursor', 'wait');
+            $('#loading').dialog({
+                modal: true
+                , draggable: false
+                , resizable: false
+                , closeOnEscape: false
+                , dialogClass: 'liz-dialog-wait'
+                , minHeight: 128
+            })
+                .parent().removeClass('ui-corner-all')
+                .children('.ui-dialog-titlebar').removeClass('ui-corner-all');
+            $("#loading").css('min-height', '128px');
+
             var self = this;
             // defined an attribute initialized
             // to launch this method only one
@@ -3686,20 +3700,6 @@ lizMap.events.on({
 
 // Do some User interface changes
 $(document).ready(function () {
-    // start waiting
-    $('body').css('cursor', 'wait');
-    $('#loading').dialog({
-        modal: true
-        , draggable: false
-        , resizable: false
-        , closeOnEscape: false
-        , dialogClass: 'liz-dialog-wait'
-        , minHeight: 128
-    })
-        .parent().removeClass('ui-corner-all')
-        .children('.ui-dialog-titlebar').removeClass('ui-corner-all');
     // configurate OpenLayers
     OpenLayers.DOTS_PER_INCH = 96;
-
-    $( "#loading" ).css('min-height','128px');
 });
