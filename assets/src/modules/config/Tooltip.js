@@ -11,6 +11,7 @@ import { BaseObjectLayerConfig, BaseObjectLayersConfig } from './BaseObject.js';
 const requiredProperties = {
     'layerId': {type: 'string'},
     'displayGeom': {type: 'boolean'},
+    'displayLayerStyle': {type: 'boolean'},
     'order': {type: 'number'},
 };
 
@@ -49,6 +50,14 @@ export class TooltipLayerConfig extends BaseObjectLayerConfig {
      */
     get displayGeom() {
         return this._displayGeom;
+    }
+
+    /**
+     * The layer style will be displayed
+     * @type {boolean}
+     */
+    get displayLayerStyle() {
+        return this._displayLayerStyle;
     }
 
     /**
