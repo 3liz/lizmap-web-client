@@ -630,6 +630,24 @@ class WFSRequest extends OGCRequest
         return $sql;
     }
 
+    /**
+     * Get the SQL filter configured in QGIS layer datasource.
+     *
+     * @return string The SQL filter enclosed with parenthesis
+     */
+    protected function getDatasourceSql()
+    {
+        // Get the SQL filter from QGIS layer datasource
+        $dtsql = trim($this->datasource->sql);
+
+        // Add it
+        if (!empty($dtsql)) {
+            return ' AND ( '.trim($dtsql).' ) ';
+        }
+
+        return '';
+    }
+
     protected function parseExpFilter($cnx, $params)
     {
         $exp_filter = '';
@@ -778,10 +796,8 @@ class WFSRequest extends OGCRequest
         // WHERE
         $sql .= ' WHERE True';
 
-        $dtsql = trim($this->datasource->sql);
-        if (!empty($dtsql)) {
-            $sql .= ' AND '.$dtsql;
-        }
+        // Add datasource SQL filter
+        $sql .= $this->getDatasourceSql();
 
         // BBOX
         $sql .= $this->getbboxSql($params);
