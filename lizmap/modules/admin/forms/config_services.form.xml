@@ -114,6 +114,19 @@
         <item value="1" locale="admin~admin.form.admin_services.debugMode.1.label"/>
     </menulist>
 
+    <menulist ref="logLevel" required="true">
+        <label locale="admin~admin.form.admin_services.logLevel.label"/>
+        <help locale="admin~admin.form.admin_services.logLevel.help"/>
+        <item value="emergency" locale="admin~admin.form.admin_services.logLevel.emergency.label"/>
+        <item value="alert" locale="admin~admin.form.admin_services.logLevel.alert.label"/>
+        <item value="critical" locale="admin~admin.form.admin_services.logLevel.critical.label"/>
+        <item value="error" selected="true" locale="admin~admin.form.admin_services.logLevel.error.label"/>
+        <item value="warning" locale="admin~admin.form.admin_services.logLevel.warning.label"/>
+        <item value="notice" locale="admin~admin.form.admin_services.logLevel.notice.label"/>
+        <item value="info" locale="admin~admin.form.admin_services.logLevel.info.label"/>
+        <item value="debug" locale="admin~admin.form.admin_services.logLevel.debug.label"/>
+    </menulist>
+
     <group ref="requestProxyEnabled" withcheckbox="true">
         <oncheckvalue locale="admin~admin.form.admin_services.requestProxy.enabled" value="1"/>
         <onuncheckvalue locale="admin~admin.form.admin_services.requestProxy.disabled" value="0" />
