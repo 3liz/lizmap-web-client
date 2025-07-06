@@ -14,6 +14,7 @@
 use GuzzleHttp\Psr7\Utils as Psr7Utils;
 use Lizmap\Form;
 use Lizmap\Project\Project;
+use Lizmap\Project\Repository;
 use Lizmap\Project\UnknownLizmapProjectException;
 use Lizmap\Request\WFSRequest;
 
@@ -22,7 +23,7 @@ class editionCtrl extends jController
     /** @var null|Project */
     private $project;
 
-    /** @var lizmapRepository */
+    /** @var null|Repository */
     private $repository;
 
     /** @var string layer id in the QGIS project file */

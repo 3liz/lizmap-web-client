@@ -4,6 +4,7 @@ use GuzzleHttp\Psr7\Utils as Psr7Utils;
 use Lizmap\App\Checker;
 use Lizmap\Project\Project;
 
+use Lizmap\Project\Repository;
 use Lizmap\Project\UnknownLizmapProjectException;
 use Lizmap\Request\Proxy;
 use Lizmap\Request\WFSRequest;
@@ -29,7 +30,7 @@ class serviceCtrl extends jController
     protected $project;
 
     /**
-     * @var null|lizmapRepository
+     * @var null|Repository
      */
     protected $repository;
 

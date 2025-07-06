@@ -1,5 +1,6 @@
 <?php
 
+use Lizmap\Project\Repository;
 use Lizmap\Server\Server;
 
 /**
@@ -706,11 +707,11 @@ class lizmapServices
     }
 
     /**
-     * This method will create and return a lizmapRepository instance.
+     * This method will create and return a lizmap repository instance.
      *
      * @param string $key the name of the repository
      *
-     * @return lizmapRepository The lizmapRepository instance
+     * @return bool|Repository The lizmap repository instance
      */
     public function getLizmapRepository($key)
     {
@@ -727,6 +728,6 @@ class lizmapServices
             $data = array();
         }
 
-        return new lizmapRepository($key, $data, $this->varPath, $this, $this->appContext);
+        return new Repository($key, $data, $this->varPath, $this, $this->appContext);
     }
 }
