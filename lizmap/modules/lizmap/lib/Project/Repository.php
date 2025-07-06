@@ -18,7 +18,9 @@ use Lizmap\App\AppContextInterface;
 class Repository
 {
     /**
-     * services properties.
+     * Repository properties.
+     *
+     * @var string[]
      */
     private static $properties = array(
         'label',
@@ -29,7 +31,11 @@ class Repository
     );
 
     /**
-     * services properties options.
+     * Repository properties options.
+     *
+     * @var array<string, array<string, bool|string>>
+     *
+     * @phpstan-var array<string, array{fieldType: string, required: bool}>
      */
     private static $propertiesOptions = array(
         'label' => array(
@@ -56,26 +62,38 @@ class Repository
 
     /**
      * Lizmap repository key.
+     *
+     * @var string
      */
     private $key = '';
 
     /**
      * Lizmap repository configuration data.
+     *
+     * @var array
      */
     private $data = array();
 
     /**
-     * @var Project[] list of projects. keys are projects names
+     * @var array<string, Project> list of projects instances. keys are projects names
      */
     protected $projectInstances = array();
 
     /**
      * The configuration files folder path.
+     *
+     * @var string
      */
     private $varPath = '';
 
+    /**
+     * @var \lizmapServices
+     */
     protected $services;
 
+    /**
+     * @var AppContextInterface
+     */
     protected $appContext;
 
     /**
@@ -108,7 +126,7 @@ class Repository
     /**
      * @return string the technical name of the repository
      */
-    public function getKey()
+    public function getKey(): string
     {
         return $this->key;
     }
@@ -118,7 +136,7 @@ class Repository
      *
      * @return string the repository label
      */
-    public function getLabel()
+    public function getLabel(): string
     {
         return $this->getData('label');
     }
@@ -128,7 +146,7 @@ class Repository
      *
      * @return bool true if it is allowed
      */
-    public function allowUserDefinedThemes()
+    public function allowUserDefinedThemes(): bool
     {
         $value = $this->getData('allowUserDefinedThemes');
         if (empty($value)) {
@@ -214,6 +232,9 @@ class Repository
         return false;
     }
 
+    /**
+     * @var null|string the cleaned path of the repository, with a trailing slash
+     */
     protected $cleanedPath;
 
     /**
@@ -251,22 +272,51 @@ class Repository
         return $this->cleanedPath;
     }
 
-    public function getOriginalPath()
+    /**
+     * Get the original path.
+     */
+    public function getOriginalPath(): string
     {
         return $this->data['path'];
     }
 
-    public static function getProperties()
+    /**
+     * Check if the repository has a valid path.
+     */
+    public function hasValidPath(): bool
+    {
+        return $this->getPath() !== false;
+    }
+
+    /**
+     * Get the list of properties of a repository.
+     *
+     * @return string[]
+     */
+    public static function getProperties(): array
     {
         return self::$properties;
     }
 
-    public function getRepoProperties()
+    /**
+     * Get theR repository properties options.
+     *
+     * @return array<string, array{fieldType: string, required: bool}>
+     *
+     * @deprecated
+     * @see self::getPropertiesOptions()
+     */
+    public static function getRepoProperties(): array
     {
-        return self::$properties;
+        return self::$propertiesOptions;
     }
 
-    public static function getPropertiesOptions()
+    /**
+     * Get theR repository properties options.
+     *
+     * @return array<string, array{fieldType: string, required: bool}>
+     */
+    public static function getPropertiesOptions(): array
     {
         return self::$propertiesOptions;
     }
@@ -295,7 +345,7 @@ class Repository
      *
      * @return bool true if there is at least one valid data in $data
      */
-    public function update($data, $ini)
+    public function update($data, $ini): bool
     {
         // Set section
         $section = 'repository:'.$this->key;
@@ -327,6 +377,8 @@ class Repository
      * @param bool   $keepReference if we need to keep reference in the repository property projectInstances
      *
      * @return null|Project null if it does not exist
+     *
+     * @throws UnknownLizmapProjectException if the project does not exist
      */
     public function getProject($key, $keepReference = true)
     {
@@ -356,7 +408,7 @@ class Repository
      *
      * @return Project[]
      */
-    public function getProjects()
+    public function getProjects(): array
     {
         $projects = array();
         $dir = $this->getPath();
@@ -406,7 +458,7 @@ class Repository
      *
      * @return ProjectMetadata[]
      */
-    public function getProjectsMetadata($checkAcl = true)
+    public function getProjectsMetadata($checkAcl = true): array
     {
         $data = array();
         $dir = $this->getPath();
@@ -458,7 +510,7 @@ class Repository
      *
      * @return ProjectMainData[]
      */
-    public function getProjectsMainData()
+    public function getProjectsMainData(): array
     {
         $data = array();
         $dir = $this->getPath();
