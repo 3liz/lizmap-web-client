@@ -106,11 +106,6 @@ parameters:
       path: lizmap/modules/lizmap/classes/lizmapOGCRequest.class.php
 
     -
-      message: "#^Method lizmapServices\\:\\:getLizmapRepository\\(\\) should return lizmapRepository but returns false\\.$#"
-      count: 1
-      path: lizmap/modules/lizmap/classes/lizmapServices.class.php
-
-    -
       message: "#^Strict comparison using \\=\\=\\= between int\\|false and '1' will always evaluate to false\\.$#"
       count: 1
       path: lizmap/modules/lizmap/classes/lizmapServices.class.php
