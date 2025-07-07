@@ -90,4 +90,27 @@ class VersionTools
 
         return intval(intval($version[0]) * 10000 + intval($version[1]) * 100 + intval($version[2]));
     }
+
+    /**
+     * Transform int formatted version to a human readable string (remove useless 0),
+     * (remove patch version if 00).
+     *
+     * Transform "101" into "1.1"
+     * Transform "0590" into "5.90"
+     * Transform "250208 into 25.2.8
+     * Transform "031400 into 3.14
+     *
+     * @param string $intVersion a version number as int
+     *                           (major version on 1 or 2 digit, min and patch version on 2 digit)
+     *
+     * @return string the version as human readable string
+     */
+    public static function intVersionToHumanString(string $intVersion, bool $stripPatch = false): string
+    {
+        $intVersion6Digit = (strlen($intVersion) == 6 ? $intVersion : '0'.$intVersion);
+        list($majorVersion, $minorVersion, $patchVersion) = str_split($intVersion6Digit, 2);
+        $patchSuffix = ($stripPatch ? '' : '.'.intval($patchVersion));
+
+        return intval($majorVersion).'.'.intval($minorVersion).$patchSuffix;
+    }
 }
