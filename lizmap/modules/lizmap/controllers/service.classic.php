@@ -674,7 +674,8 @@ class serviceCtrl extends jController
         /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
         // Etag header and cache control
-        $etag = $this->buildEtag('GetLegendGraphic');
+        $etag = 'GetLegendGraphic-'.$wmsRequest->param('layer', $wmsRequest->param('layers', ''));
+        $etag = $this->buildEtag($etag);
         $respCanBeCached = $this->canBeCached();
         if ($respCanBeCached && $rep->isValidCache(null, $etag)) {
             $this->setACAOHeader($rep);
