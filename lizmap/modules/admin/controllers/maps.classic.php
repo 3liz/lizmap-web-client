@@ -1,6 +1,7 @@
 <?php
 
 use Jelix\FileUtilities\Path;
+use Lizmap\Project\Repository;
 use Lizmap\Project\UnknownLizmapProjectException;
 use Lizmap\Request\Proxy;
 use LizmapAdmin\RepositoryRightsService;
@@ -437,7 +438,7 @@ class mapsCtrl extends jController
         }
 
         // Check paths
-        if (in_array('path', lizmapRepository::getProperties())) {
+        if (in_array('path', Repository::getProperties())) {
             $npath = $form->getData('path');
             if ($npath[0] != '/' and $npath[1] != ':') {
                 $npath = jApp::varPath().$npath;
@@ -530,7 +531,7 @@ class mapsCtrl extends jController
 
         // Repository data
         $data = array();
-        foreach (lizmapRepository::getProperties() as $prop) {
+        foreach (Repository::getProperties() as $prop) {
             $data[$prop] = $form->getData($prop);
             // Check paths
             if ($prop == 'path') {
