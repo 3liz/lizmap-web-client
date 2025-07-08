@@ -819,7 +819,12 @@ window.lizMap = function() {
         var options = '<option value="-1" label="'+placeHolder+'"></option>';
         for (var fid in features) {
             var feat = features[fid];
-            options += '<option value="' + feat.id + '">' + DOMPurify.sanitize(feat.properties[locate.fieldName].toString()) + '</option>';
+            options += '<option value="' + feat.id + '">';
+            // DOMPurify.sanitize needs a string
+            options += feat.properties[locate.fieldName] !== null ?
+                DOMPurify.sanitize(feat.properties[locate.fieldName].toString()) :
+                feat.properties[locate.fieldName]+''; // 'null' for null value
+            options += '</option>';
         }
         // add option list
         $('#locate-layer-'+cleanName(aName)).html(options);
@@ -1046,8 +1051,14 @@ window.lizMap = function() {
             for (var i=0, len=features.length; i<len; i++) {
                 var feat = features[i];
                 locate.features[feat.id.toString()] = feat;
-                if ( !('filterFieldName' in locate) )
-                    options += '<option value="' + feat.id + '">' + DOMPurify.sanitize(feat.properties[locate.fieldName].toString()) + '</option>';
+                if ( !('filterFieldName' in locate) ) {
+                    options += '<option value="' + feat.id + '">';
+                    // DOMPurify.sanitize needs a string
+                    options += feat.properties[locate.fieldName] !== null ?
+                        DOMPurify.sanitize(feat.properties[locate.fieldName].toString()) :
+                        feat.properties[locate.fieldName]+''; // 'null' for null value
+                    options += '</option>';
+                }
             }
             // listen to select changes
             $('#locate-layer-'+layerName).html(options).change(function() {
