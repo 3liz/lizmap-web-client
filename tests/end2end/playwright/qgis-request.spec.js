@@ -28,6 +28,9 @@ test.describe('QGIS Requests', () => {
         expect(response.headers()).toHaveProperty('cache-control');
         expect(response.headers()['cache-control']).toBe('no-cache');
         expect(response.headers()).toHaveProperty('etag');
+        const etag = response.headers()['etag'];
+        expect(etag).not.toBe('');
+        expect(etag).toHaveLength(43);
         // check body
         const single = await response.json()
         // check root
@@ -66,6 +69,9 @@ test.describe('QGIS Requests', () => {
         expect(response.headers()).toHaveProperty('cache-control');
         expect(response.headers()['cache-control']).toBe('no-cache');
         expect(response.headers()).toHaveProperty('etag');
+        expect(response.headers()['etag']).not.toBe('');
+        expect(response.headers()['etag']).toHaveLength(43);
+        expect(response.headers()['etag']).not.toBe(etag);
         // check body
         const categorized = await response.json();
         // check root
@@ -105,6 +111,9 @@ test.describe('QGIS Requests', () => {
         expect(response.headers()).toHaveProperty('cache-control');
         expect(response.headers()['cache-control']).toBe('no-cache');
         expect(response.headers()).toHaveProperty('etag');
+        expect(response.headers()['etag']).not.toBe('');
+        expect(response.headers()['etag']).toHaveLength(43);
+        expect(response.headers()['etag']).not.toBe(etag);
         // check body
         const group = await response.json();
         // check root
@@ -148,6 +157,9 @@ test.describe('QGIS Requests', () => {
         expect(response.headers()).toHaveProperty('cache-control');
         expect(response.headers()['cache-control']).toBe('no-cache');
         expect(response.headers()).toHaveProperty('etag');
+        expect(response.headers()['etag']).not.toBe('');
+        expect(response.headers()['etag']).toHaveLength(43);
+        expect(response.headers()['etag']).not.toBe(etag);
         // check body
         const combined = await response.json();
         // check root
