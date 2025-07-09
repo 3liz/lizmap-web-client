@@ -317,4 +317,28 @@ class WFSRequestTest extends TestCase
         );
         $this->assertEquals($expectedFilter, $wfs->validateFilterForTests($filter));
     }
+
+    public static function getParseDatasourceSqlData()
+    {
+        return array(
+            array('', ''),
+            array('"field_a" > 30 ', ' AND ( "field_a" > 30 ) '),
+            array('  "field_a" > 30 OR "other" = 10       ', ' AND ( "field_a" > 30 OR "other" = 10 ) '),
+        );
+    }
+
+    /**
+     * @dataProvider getParseDatasourceSqlData
+     *
+     * @param mixed $sql
+     * @param mixed $expectedSql
+     */
+    public function testParseDatasourceSql($sql, $expectedSql): void
+    {
+        $wfs = new WFSRequestForTests();
+        $wfs->appContext = new ContextForTests();
+        $wfs->datasource = (object) array('sql' => $sql);
+        $result = $wfs->getDatasourceSqlForTests();
+        $this->assertEquals($expectedSql, $result);
+    }
 }
