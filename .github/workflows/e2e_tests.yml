@@ -272,10 +272,10 @@ jobs:
           summary: true
           title: All Playwright tests ${{ matrix.NAME }}
           # pull-request-report: true
-          # pull-request: true
+          pull-request: true
           # annotate: false
-          # overwrite-comment: true
-          # comment-tag: '${{ github.workflow }}-${{ github.job }}'
+          overwrite-comment: true
+          comment-tag: '${{ github.workflow }}-${{ github.job }}'
 
       - name: Upload test results
         if: |
