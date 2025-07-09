@@ -93,15 +93,18 @@ class VersionTools
 
     /**
      * Transform int formatted version to a human readable string (remove useless 0),
-     * (remove patch version if 00).
+     * optionnaly remove patch version.
+     * ! short version (342 for 3.42) are not handled.
      *
-     * Transform "101" into "1.1"
-     * Transform "0590" into "5.90"
-     * Transform "250208 into 25.2.8
-     * Transform "031400 into 3.14
+     * Transform "59000" into "5.90.00"
+     * Transform "059000" into "5.90.00"
+     * Transform "250208" into "25.2.8"
+     * Transform "250208" into "25.2" (strip patch set to true)
+     * Transform "031400" into "3.14" (strip patch set to true)
      *
      * @param string $intVersion a version number as int
      *                           (major version on 1 or 2 digit, min and patch version on 2 digit)
+     * @param bool   $stripPatch remove the patch version (default false)
      *
      * @return string the version as human readable string
      */
