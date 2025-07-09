@@ -83,6 +83,7 @@ class project_listZone extends jZone
             $maps[$r] = $lizmapViewItem;
         }
         $lizmapTargetVersionInt = jApp::config()->minimumRequiredVersion['lizmapWebClientTargetVersion'];
+        // 31500 - 100 → 31400 → 3.14
         $blockingLizmapVersionInt = ($lizmapTargetVersionInt - 100);
         $humanLizmapTargetVersion = VersionTools::intVersionToHumanString($lizmapTargetVersionInt, true);
         $humanBlockingLizmapTargetVersion = VersionTools::intVersionToHumanString($blockingLizmapVersionInt, true);
