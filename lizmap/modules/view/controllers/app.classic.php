@@ -50,7 +50,7 @@ class appCtrl extends jController
         if (!$serverInfoAccess) {
             $data['qgis_server_info'] = array('error' => 'NO_ACCESS');
             jLog::log(
-                'Accessing Lizmap metadata without enough rights for user : '.jAuth::getUserSession()->login,
+                'Rejecting Lizmap metadata access, because not enough rights for user : '.jAuth::getUserSession()->login,
                 'lizmapadmin'
             );
         }
@@ -59,7 +59,7 @@ class appCtrl extends jController
         // Return a different error to let the plugin differentiate the two cases
         if ($basicAuthUsed && !$logUser) {
             $data['qgis_server_info'] = array('error' => 'WRONG_CREDENTIALS');
-            jLog::log('Accessing Lizmap metadata without being authentified', 'lizmapadmin');
+            jLog::log('Rejecting Lizmap metadata access because not authorized', 'lizmapadmin');
         }
 
         // retrieves foreign metadata
