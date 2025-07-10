@@ -16,6 +16,7 @@ jobs:
     name: "E2E QGIS ${{ matrix.qgis-server }} PG ${{ matrix.pg-postgis }} PHP ${{ matrix.php }}"
     permissions:
       issues: write
+      pull-requests: write
     runs-on: ubuntu-latest
     defaults:
       run:
