@@ -33,6 +33,10 @@ class appCtrl extends jController
             $logUser = jAuth::login($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
         }
 
+        if ($this->boolParam('debug')) {
+            jLog::log('Processing request for Lizmap metadata : '.jAuth::getUserSession()->login, 'lizmapadmin');
+        }
+
         // Get server metadata from LWC and QGIS Server Lizmap plugin
         $server = new Server();
         $data = $server->getMetadata();
@@ -45,12 +49,17 @@ class appCtrl extends jController
         $serverInfoAccess = (jAcl2::check('lizmap.admin.access') || jAcl2::check('lizmap.admin.server.information.view'));
         if (!$serverInfoAccess) {
             $data['qgis_server_info'] = array('error' => 'NO_ACCESS');
+            jLog::log(
+                'Rejecting Lizmap metadata access, because not enough rights for user : '.jAuth::getUserSession()->login,
+                'lizmapadmin'
+            );
         }
 
         // If the user is not logged and has tried basic auth
         // Return a different error to let the plugin differentiate the two cases
         if ($basicAuthUsed && !$logUser) {
             $data['qgis_server_info'] = array('error' => 'WRONG_CREDENTIALS');
+            jLog::log('Rejecting Lizmap metadata access because not authorized', 'lizmapadmin');
         }
 
         // retrieves foreign metadata
