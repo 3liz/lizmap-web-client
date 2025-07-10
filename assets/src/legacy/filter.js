@@ -536,10 +536,8 @@ var lizLayerFilterTool = function () {
                         globalThis['filterConfig'][field_item.order]['items']
                     );
 
-                    // Order fkeys alphabetically (which means sort checkboxes for each field)
-                    fkeys.sort(function (a, b) {
-                        return a.localeCompare(b);
-                    });
+                    // Order fkeys alphanumerically (which means sort checkboxes for each field)
+                    fkeys.sort(new Intl.Collator(undefined, { numeric: true }).compare);
 
                     for (const f_val of fkeys) {
                         // Replace key by value if defined
