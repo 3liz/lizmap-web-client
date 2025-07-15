@@ -22,7 +22,7 @@
             <parameter name="offset"/>
             <parameter name="limit"/>
             <conditions >
-                <neq property="key" value="qgis-login" />
+                <notlike property="key" value="%-login" />
             </conditions>
             <order>
                 <orderitem property="id" way="desc" />
