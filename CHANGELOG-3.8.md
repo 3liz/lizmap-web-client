@@ -8,6 +8,12 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Funders
+
+* **[Cadageo](https://www.cadageo.com/)**
+* **[Faunalia](https://www.faunalia.eu/fr)** with @mind84
+* **[SMAVD](https://www.smavd.org/)**
+
 ### Fixed
 
 * HTTP Etag for:
@@ -16,6 +22,15 @@ with some extra keywords: backend, tests, test, translation, funders, important
   * default illustration file
 * Media controller only allow GET and HEAD HTTP Method
 * Atlas: Typing error for hideFeaturesAtStartup
+* Locate By Layer does not support NULL values because of `DOMPurify.sanitize`
+* Editing - Fix getting wrong feature when layer has an SQL filter
+* Fix GetLegendGraphic Etag by adding layer
+* Allow the same pivot to be defined multiple times
+* Fix: set alphanumeric order in form filter
+
+### Backend
+
+* CI: copy .bundle.js and .bundle.js.map files whatever their names are
 
 ## 3.8.11 - 2025-06-18
 
