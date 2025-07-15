@@ -10,7 +10,9 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ### Funders
 
-* **[Faunalia](https://www.faunalia.eu/fr)**
+* **[Cadageo](https://www.cadageo.com/)**
+* **[Faunalia](https://www.faunalia.eu/fr)** with @mind84
+* **[SMAVD](https://www.smavd.org/)**
 
 ### Added
 
@@ -19,6 +21,12 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ### Fixed
 
+* Locate By Layer does not support NULL values because of `DOMPurify.sanitize`
+* Editing - Fix getting wrong feature when layer has an SQL filter
+* Fix GetLegendGraphic Etag by adding layer
+* Allow the same pivot to be defined multiple times
+* Fix: set alphanumeric order in form filter
+* Fix: Modal is not closed when Lizmap is opened in a new tab from another page
 * Fix ValueRelation edit widget parsing
 * Fix the way to check if the `lizmap_search` table is available
 * Allow the same pivot to be defined multiple times
@@ -29,12 +37,14 @@ with some extra keywords: backend, tests, test, translation, funders, important
   * default illustration file
 * Media controller only allow GET and HEAD HTTP Method
 * Atlas: Typing error for hideFeaturesAtStartup
+* Admin - Show unsuccessful Lizmap Web Client metadata access, useful with `curl`, or from QGIS plugin
 
 ### Backend
 
 * Update OL to 10.6.1
 * Update playwright to 1.53.x
 * Use "rspack" instead of "webpack"
+* CI: copy .bundle.js and .bundle.js.map files whatever their names are
 
 ## 3.9.0 - 2025-06-19
 
