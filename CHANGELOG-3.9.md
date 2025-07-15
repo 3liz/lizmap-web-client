@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.9.1 - 2025-07-15
+
 ### Funders
 
 * **[Cadageo](https://www.cadageo.com/)**
