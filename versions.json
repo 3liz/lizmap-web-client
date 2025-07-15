@@ -23,8 +23,8 @@
         "branch": "3.9",
         "changelog": {},
         "first_release_date": "2025-06-19",
-        "latest_release_date": "2025-06-19",
-        "latest_release_version": "3.9.0",
+        "latest_release_date": "2025-07-15",
+        "latest_release_version": "3.9.1",
         "qgis_max_version_recommended": 39900,
         "qgis_min_version_recommended": 33400,
         "status": "stable"
