@@ -53,6 +53,20 @@ CREATE TABLE tests_projects.sousquartiers (
 
 
 --
+-- Name: BAD designed table; Type: TABLE; Schema: tests_projects; Owner: lizmap
+--
+
+CREATE TABLE tests_projects."BAD designed table" (
+    id integer NOT NULL,
+    "BAD column name is'nt it ?" integer NOT NULL,
+    action text NOT NULL,
+    geom public.geometry(Point,3857)
+);
+
+
+ALTER TABLE tests_projects."BAD designed table" OWNER TO lizmap;
+
+--
 -- Name: attribute_table; Type: TABLE; Schema: tests_projects; Owner: -
 --
 
