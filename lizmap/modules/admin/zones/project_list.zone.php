@@ -82,20 +82,18 @@ class project_listZone extends jZone
             }
             $maps[$r] = $lizmapViewItem;
         }
-        // Fixme, to move in VersionTools
         $lizmapTargetVersionInt = jApp::config()->minimumRequiredVersion['lizmapWebClientTargetVersion'];
-        $humanLizmapTargetVersion = substr($lizmapTargetVersionInt, 0, 1);  // Major
-        $humanLizmapTargetVersion .= '.'.ltrim(substr($lizmapTargetVersionInt, 2, 1), ''); // Minor
+        // 31500 - 100 → 31400 → 3.14
+        $blockingLizmapVersionInt = ($lizmapTargetVersionInt - 100);
+        $humanLizmapTargetVersion = VersionTools::intVersionToHumanString($lizmapTargetVersionInt, true);
+        $humanBlockingLizmapTargetVersion = VersionTools::intVersionToHumanString($blockingLizmapVersionInt, true);
 
-        // Fixme, to move in VersionTools
         $lizmapDesktopInt = jApp::config()->minimumRequiredVersion['lizmapDesktopPlugin'];
-        $lizmapDesktopRecommended = substr($lizmapDesktopInt, 0, 1);  // Major
-        $lizmapDesktopRecommended .= '.'.ltrim(substr($lizmapDesktopInt, 2, 1), '');  // Minor
-        $lizmapDesktopRecommended .= '.'.ltrim(substr($lizmapDesktopInt, 3, 2), '');  // Bugfix
-
+        $lizmapDesktopRecommended = VersionTools::intVersionToHumanString($lizmapDesktopInt);
         $this->_tpl->assign('mapItems', $maps);
         $this->_tpl->assign('hasInspectionData', $hasInspectionData);
         $this->_tpl->assign('minimumLizmapTargetVersionRequired', $humanLizmapTargetVersion);
+        $this->_tpl->assign('blockingLizmapTargetVersion', $humanBlockingLizmapTargetVersion);
 
         // Add an warning message when some projects cannot be displayed in LWC
         if ($hasSomeProjectsNotDisplayed) {
@@ -222,8 +220,7 @@ class project_listZone extends jZone
         $projectItem['qgis_version_int'] = (int) substr($qgisVersionInt, 0, 3);
 
         // Target Lizmap Web Client version
-        $targetVersion = substr($projectItem['lizmap_web_client_target_version'], 0, 1);
-        $targetVersion .= '.'.ltrim(substr($projectItem['lizmap_web_client_target_version'], 2, 1), '');
+        $targetVersion = VersionTools::intVersionToSortableString($projectItem['lizmap_web_client_target_version']);
         $projectItem['lizmap_web_client_target_version_display'] = $targetVersion;
         $projectItem['needs_update_error'] = $projectMetadata->needsUpdateError();
         $projectItem['needs_update_warning'] = $projectMetadata->needsUpdateWarning();
