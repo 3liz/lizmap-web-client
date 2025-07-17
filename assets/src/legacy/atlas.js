@@ -5,9 +5,6 @@
  * @license MPL-2.0
  */
 
-import DOMPurify from 'dompurify';
-import { getCenter } from 'ol/extent.js';
-
 (function () {
 
     lizMap.events.on({
@@ -204,7 +201,7 @@ import { getCenter } from 'ol/extent.js';
                             }
                         }
 
-                        $('#liz-atlas-select').html(DOMPurify.sanitize(options));
+                        $('#liz-atlas-select').html(lizMap.DOMPurify.sanitize(options));
                         // reset val
                         $('#liz-atlas-select').val(val);
                         // get popup
@@ -403,7 +400,7 @@ import { getCenter } from 'ol/extent.js';
                 // Get Atlas home
                 var home = getAtlasHome(lizAtlasConfig);
 
-                $("#atlas-content").html(DOMPurify.sanitize(home));
+                $("#atlas-content").html(lizMap.DOMPurify.sanitize(home));
 
                 // Add events
                 activateAtlasTrigger(lizAtlasConfig);
@@ -566,7 +563,7 @@ import { getCenter } from 'ol/extent.js';
                 if (lizAtlasConfig['zoom']) {
                     if (lizAtlasConfig['zoom'].toLowerCase() == 'center') {
                         // center
-                        const center = getCenter(olFeature.getGeometry().getExtent());
+                        const center = lizMap.ol.extent.getCenter(olFeature.getGeometry().getExtent());
                         lizMap.map.setCenter(center);
                     }
                     else {
