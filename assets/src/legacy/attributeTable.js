@@ -5,8 +5,6 @@
  * @license MPL-2.0
  */
 
-import DOMPurify from 'dompurify';
-
 var lizAttributeTable = function() {
 
     const intRegex = /^[0-9]+$/;
@@ -1927,7 +1925,7 @@ var lizAttributeTable = function() {
                                     continue;
                                 var prop = feat.properties[idx];
                                 if (typeof prop == 'string') {
-                                    prop = DOMPurify.sanitize(prop, {
+                                    prop = lizMap.DOMPurify.sanitize(prop, {
                                         ADD_ATTR: ['target']
                                     });
                                 }

@@ -32,6 +32,7 @@ import executeJSFromServer from './modules/ExecuteJSFromServer.js';
 
 import olDep from './dependencies/ol.js';
 import litHTMLDep from './dependencies/lit-html.js';
+import DOMPurify from 'dompurify';
 import proj4 from 'proj4';
 
 /**
@@ -86,6 +87,7 @@ const definedCustomElements = () => {
 const initLizmapApp = () => {
     lizMap.ol = olDep;
     lizMap.litHTML = litHTMLDep;
+    lizMap.DOMPurify = DOMPurify;
     lizMap.proj4 = proj4;
 
     lizMap.events.on({

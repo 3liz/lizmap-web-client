@@ -8,12 +8,6 @@
  * @license MPL-2.0
  */
 
-import { extend } from 'ol/extent.js';
-
-import WFS from '../modules/WFS.js';
-import WMS from '../modules/WMS.js';
-import { Utils } from '../modules/Utils.js';
-
 window.lizMap = function() {
     /**
      * PRIVATE Property: config
@@ -2082,7 +2076,7 @@ window.lizMap = function() {
         // Download file
         document.querySelectorAll('.exportLayer').forEach(el => el.disabled = true);
         mAddMessage(lizDict['layer.export.started'], 'info', true).addClass('export-in-progress');
-        Utils.downloadFile(getFeatureUrlData['url'], getFeatureUrlData['options'], () => {
+        lizMap.mainLizmap.utils.downloadFile(getFeatureUrlData['url'], getFeatureUrlData['options'], () => {
             document.querySelectorAll('.exportLayer').forEach(el => el.disabled = false);
             document.querySelector('#message .export-in-progress button').click();
         });
@@ -2301,8 +2295,8 @@ window.lizMap = function() {
             types: aConfig['types']
         };
 
-        const wfs = new WFS();
-        wfs.getFeature(getFeatureUrlData['options']).then(data => {
+        // get the data
+        lizMap.mainLizmap.wfs.getFeature(getFeatureUrlData['options']).then(data => {
             aConfig['featureCrs'] = 'EPSG:4326';
 
             if (aConfig?.['alias'] && aConfig?.['types']) {
@@ -2522,7 +2516,7 @@ window.lizMap = function() {
 
         // Query the server
         $.post(globalThis['lizUrls'].service, wmsOptions, function(data) {
-            aCallback(Utils.sanitizeGFIContent(data));
+            aCallback(lizMap.mainLizmap.utils.sanitizeGFIContent(data));
         });
     }
 
@@ -2596,7 +2590,7 @@ window.lizMap = function() {
         // Query the server
         $.post(globalThis['lizUrls'].service, wmsOptions, function(data) {
             if (aCallback) {
-                aCallback(globalThis['lizUrls'].service, wmsOptions, Utils.sanitizeGFIContent(data));
+                aCallback(globalThis['lizUrls'].service, wmsOptions, lizMap.mainLizmap.utils.sanitizeGFIContent(data));
             }
         });
     }
@@ -3249,17 +3243,15 @@ window.lizMap = function() {
             if(layerName && filter){
 
                 // Feature extent
-                const wfs = new WFS();
                 const wfsParams = {
                     TYPENAME: layerName,
                     EXP_FILTER: filter
                 };
 
-                featureExtentRequest = wfs.getFeature(wfsParams);
+                featureExtentRequest = lizMap.mainLizmap.wfs.getFeature(wfsParams);
 
                 // Feature info
                 if(urlParameters.get('popup') === 'true'){
-                    const wms = new WMS();
                     const wmsParams = {
                         QUERY_LAYERS: layerName,
                         LAYERS: layerName,
@@ -3267,7 +3259,7 @@ window.lizMap = function() {
                         FILTER: `${layerName}:${filter}`,
                     };
 
-                    getFeatureInfoRequest = wms.getFeatureInfo(wmsParams);
+                    getFeatureInfoRequest = lizMap.mainLizmap.wms.getFeatureInfo(wmsParams);
                 }
             }
 
@@ -3302,7 +3294,7 @@ window.lizMap = function() {
 
                 if(featuresExtent){
                     for (const feature of startupFeatures) {
-                        featuresExtent = extend(featuresExtent, feature.bbox);
+                        featuresExtent = lizMap.ol.extent.extend(featuresExtent, feature.bbox);
                     }
                 }
 

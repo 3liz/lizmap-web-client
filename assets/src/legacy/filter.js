@@ -5,8 +5,6 @@
  * @license MPL-2.0
  */
 
-import DOMPurify from 'dompurify';
-
 var lizLayerFilterTool = function () {
 
     lizMap.events.on({
@@ -528,7 +526,7 @@ var lizLayerFilterTool = function () {
                     }
 
                     for (const feat of result) {
-                        globalThis['filterConfig'][field_item.order]['items'][DOMPurify.sanitize(feat['v'].toString())] = feat['c'];
+                        globalThis['filterConfig'][field_item.order]['items'][lizMap.DOMPurify.sanitize(feat['v'].toString())] = feat['c'];
                     }
 
                     var dhtml = '';
