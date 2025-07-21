@@ -9,6 +9,7 @@
  */
 
 import { extend } from 'ol/extent.js';
+import GeoJSON from 'ol/format/GeoJSON.js';
 
 import WFS from '../modules/WFS.js';
 import WMS from '../modules/WMS.js';
@@ -3705,13 +3706,12 @@ window.lizMap = function() {
                 const wmsCapaData = responses[2].value;
                 const wmtsCapaData = responses[3].value;
                 const wfsCapaData = responses[4].value;
-                let featuresExtent = responses[5].value?.features?.[0]?.bbox;
-                let startupFeatures = responses[5].value?.features;
-
-                if(featuresExtent){
-                    for (const feature of startupFeatures) {
-                        featuresExtent = extend(featuresExtent, feature.bbox);
-                    }
+                const startupFeaturesData = responses[5].value;
+                let featuresExtent;
+                if (startupFeaturesData) {
+                    const startupFeatures = (new GeoJSON()).readFeatures(startupFeaturesData);
+                    featuresExtent = startupFeatures[0].getGeometry().getExtent();
+                    startupFeatures.forEach(feature => extend(featuresExtent, feature.getGeometry().getExtent()));
                 }
 
                 /**
