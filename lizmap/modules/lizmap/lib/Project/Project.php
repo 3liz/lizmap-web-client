@@ -370,6 +370,16 @@ class Project
     }
 
     /**
+     * Get the list of layer ids published in WFS.
+     *
+     * @return array<string>
+     */
+    public function getWfsLayerIds(): array
+    {
+        return $this->qgis->getWfsLayerIds();
+    }
+
+    /**
      * @param string $layerId
      *
      * @return null|MapLayerDef|VectorLayerDef

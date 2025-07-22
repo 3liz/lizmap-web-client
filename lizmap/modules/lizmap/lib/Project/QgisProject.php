@@ -168,6 +168,11 @@ class QgisProject
     protected $customProjectVariables = array();
 
     /**
+     * @var array<string> list of layer ids published in WFS
+     */
+    protected $wfsLayerIds = array();
+
+    /**
      * @var \lizmapServices
      */
     protected $services;
@@ -192,6 +197,7 @@ class QgisProject
         'lastSaveUser',
         'lastSaveUserFull',
         'customProjectVariables',
+        'wfsLayerIds',
     );
 
     /**
@@ -436,6 +442,16 @@ class QgisProject
     public function getCustomProjectVariables()
     {
         return $this->customProjectVariables;
+    }
+
+    /**
+     * Get the list of layer ids published in WFS.
+     *
+     * @return array<string>
+     */
+    public function getWfsLayerIds(): array
+    {
+        return $this->wfsLayerIds;
     }
 
     /**
@@ -1175,6 +1191,7 @@ class QgisProject
         $this->themes = $project->getVisibilityPresetsAsKeyArray();
         $this->customProjectVariables = $project->properties->Variables !== null ? $project->properties->Variables->getVariablesAsKeyArray() : array();
         $this->useLayerIDs = $project->properties->WMSUseLayerIDs !== null ? $project->properties->WMSUseLayerIDs : false;
+        $this->wfsLayerIds = $project->properties->WFSLayers !== null ? $project->properties->WFSLayers : array();
         $this->layers = $project->getLayersAsKeyArray();
         $this->relations = $project->getRelationsAsKeyArray();
         $this->relationsFields = $project->getRelationFieldsAsKeyArray();

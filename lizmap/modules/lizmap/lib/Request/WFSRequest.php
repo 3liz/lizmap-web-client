@@ -178,6 +178,79 @@ class WFSRequest extends OGCRequest
     }
 
     /**
+     * @return int An HTTP code
+     */
+    public function checkingTypename()
+    {
+        $wfsLayerIds = $this->project->getWfsLayerIds();
+        // No layers published in WFS
+        if (empty($wfsLayerIds)) {
+            \jMessage::add('No TYPENAME available', 'OperationNotSupported');
+
+            return 400;
+        }
+
+        $typenames = $this->requestedTypename();
+        // No typename given
+        if (!$typenames || !is_string($typenames)) {
+            if ($this->param('request') === 'getfeature') {
+                \jMessage::add('TYPENAME or FEATUREID is mandatory', 'RequestNotWellFormed');
+            } else {
+                \jMessage::add('TYPENAME is mandatory', 'RequestNotWellFormed');
+            }
+
+            return 400;
+        }
+
+        // Get user groups to check layouts, layers visibility and layers export permissions
+        $userGroups = array('');
+        if ($this->appContext->userIsConnected()) {
+            $userGroups = $this->appContext->aclUserGroupsId();
+        }
+
+        $typenames = explode(',', $typenames);
+        foreach ($typenames as $typename) {
+            $layer = $this->project->findLayerByAnyName($typename);
+            // Layer not found
+            if (!$layer) {
+                \jMessage::add('TYPENAME \''.$typename.'\' is not available', 'RequestNotWellFormed');
+
+                return 400;
+            }
+            // Layer not published in WFS
+            if (!in_array($layer->id, $wfsLayerIds)) {
+                \jMessage::add('TYPENAME \''.$typename.'\' is not available', 'RequestNotWellFormed');
+
+                return 400;
+            }
+
+            // no group_visibility config, nothing to do
+            if (!property_exists($layer, 'group_visibility')
+                || empty($layer->group_visibility)) {
+                continue;
+            }
+
+            // get group visibility as trimmed array
+            $groupVisibility = array_map('trim', $layer->group_visibility);
+            // check if user groups and the group visibility have no common values (disjoint)
+            if (count(array_intersect($userGroups, $groupVisibility)) == 0) {
+                if ($this->appContext->userIsConnected()) {
+                    // Forbidden : user has no right to see the layer
+                    \jMessage::add('Access forbidden to TYPENAME \''.$typename.'\'', 'Forbidden');
+
+                    return 403;
+                }
+                \jMessage::add('Unauthorized access to TYPENAME \''.$typename.'\'', 'AuthorizationRequired');
+
+                return 401;
+
+            }
+        }
+
+        return 200;
+    }
+
+    /**
      * @return OGCResponse
      *
      * @see https://en.wikipedia.org/wiki/Web_Feature_Service#Static_Interfaces.
@@ -218,6 +291,12 @@ class WFSRequest extends OGCRequest
      */
     protected function process_describefeaturetype()
     {
+        // Checking Typename which is mandatory for DescribeFeatureType
+        $typenameCheckingCode = $this->checkingTypename();
+        if ($typenameCheckingCode !== 200) {
+            return $this->serviceException($typenameCheckingCode);
+        }
+
         // Extensions to get aliases and type
         $returnJson = (strtolower($this->param('outputformat', '')) == 'json');
         if ($returnJson) {
@@ -283,13 +362,14 @@ class WFSRequest extends OGCRequest
             return $this->getfeatureQgis();
         }
 
+        // Checking Typename which is mandatory for DescribeFeatureType
+        $typenameCheckingCode = $this->checkingTypename();
+        if ($typenameCheckingCode !== 200) {
+            return $this->serviceException($typenameCheckingCode);
+        }
+
         // Get type name
         $typename = $this->requestedTypename();
-        if (!$typename) {
-            \jMessage::add('TYPENAME or FEATUREID is mandatory', 'RequestNotWellFormed');
-
-            return $this->serviceException();
-        }
 
         // add outputformat if not provided
         $output = $this->param('outputformat');
