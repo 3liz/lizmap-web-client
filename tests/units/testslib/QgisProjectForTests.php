@@ -33,6 +33,11 @@ class QgisProjectForTests extends QgisProject
         return $this->readWMSInformation($xml);
     }
 
+    public function readWfsLayersTest($xml)
+    {
+        return $this->readWfsLayers($xml);
+    }
+
     public function readCanvasColorTest($xml)
     {
         return $this->readCanvasColor($xml);

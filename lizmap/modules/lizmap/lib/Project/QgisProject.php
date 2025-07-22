@@ -139,6 +139,11 @@ class QgisProject
     protected $customProjectVariables = array();
 
     /**
+     * @var array<string> list of layer ids published in WFS
+     */
+    protected $wfsLayerIds = array();
+
+    /**
      * @var \lizmapServices
      */
     protected $services;
@@ -159,6 +164,7 @@ class QgisProject
         'qgisProjectVersion',
         'lastSaveDateTime',
         'customProjectVariables',
+        'wfsLayerIds',
     );
 
     /**
@@ -330,6 +336,16 @@ class QgisProject
     public function getCustomProjectVariables()
     {
         return $this->customProjectVariables;
+    }
+
+    /**
+     * Get the list of layer ids published in WFS.
+     *
+     * @return array<string>
+     */
+    public function getWfsLayerIds(): array
+    {
+        return $this->wfsLayerIds;
     }
 
     /**
@@ -1318,6 +1334,7 @@ class QgisProject
         $this->themes = $this->readThemes($qgsXml);
         $this->customProjectVariables = $this->readCustomProjectVariables($qgsXml);
         $this->useLayerIDs = $this->readUseLayerIDs($qgsXml);
+        $this->wfsLayerIds = $this->readWfsLayers($qgsXml);
         $this->layers = $this->readLayers($qgsXml);
         list($this->relations, $this->relationsFields) = $this->readRelations($qgsXml);
     }
@@ -1743,6 +1760,24 @@ class QgisProject
         $WMSUseLayerIDs = $xml->xpath('//properties/WMSUseLayerIDs');
 
         return $WMSUseLayerIDs && $WMSUseLayerIDs[0] == 'true';
+    }
+
+    /**
+     * @param \SimpleXMLElement $xml
+     *
+     * @return array<string>
+     */
+    protected function readWfsLayers($xml)
+    {
+        $wfsLayers = array();
+        $xmlWfsLayers = $xml->xpath('//properties/WFSLayers/value');
+        if ($xmlWfsLayers) {
+            foreach ($xmlWfsLayers as $xmlWfsLayer) {
+                $wfsLayers[] = (string) $xmlWfsLayer;
+            }
+        }
+
+        return $wfsLayers;
     }
 
     /**

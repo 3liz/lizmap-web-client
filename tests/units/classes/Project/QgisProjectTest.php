@@ -70,6 +70,29 @@ class QgisProjectTest extends TestCase
         $this->assertEquals($expectedWMS, $testQgis->readWMSInfoTest($xml));
     }
 
+
+    public function testReadWfsLayers()
+    {
+        $file = __DIR__.'/Ressources/events.qgs';
+        $xml = simplexml_load_file($file);
+        $testProj = new qgisProjectForTests();
+        $wfsLayers = $testProj->readWfsLayersTest($xml);
+        $expected = array(
+          'edition_polygon_34db893a_6765_42e5_aa9a_712b69e30dc2',
+          'events_4c3b47b8_3939_4c8c_8e91_55bdb13a2101',
+          'tramstop_4cdf2dad_6f48_4491_b318_693cc9184208',
+        );
+        $this->assertEquals(count($expected), count($wfsLayers));
+        $this->assertEquals($expected, $wfsLayers);
+
+        $file = __DIR__.'/Ressources/montpellier_intranet.qgs';
+        $xml = simplexml_load_file($file);
+        $testProj = new qgisProjectForTests();
+        $wfsLayers = $testProj->readWfsLayersTest($xml);
+        $expected = array();
+        $this->assertEquals(count($expected), count($wfsLayers));
+    }
+
     public function testReadCanvasColor()
     {
         $data = array(
@@ -376,7 +399,8 @@ class QgisProjectTest extends TestCase
     {
         $cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
             'relations', 'themes', 'useLayerIDs', 'layers', 'data',
-            'qgisProjectVersion', 'customProjectVariables', 'relationsFields');
+            'qgisProjectVersion', 'customProjectVariables', 'relationsFields',
+            'wfsLayerIds');
         $data = array();
 
         foreach ($cachedProperties as $prop) {
