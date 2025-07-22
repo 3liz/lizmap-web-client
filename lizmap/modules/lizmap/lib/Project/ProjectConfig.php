@@ -405,11 +405,7 @@ class ProjectConfig
      */
     public function hasEditionLayers()
     {
-        if (count((array) $this->editionLayers)) {
-            return true;
-        }
-
-        return false;
+        return (bool) count((array) $this->editionLayers);
     }
 
     /**

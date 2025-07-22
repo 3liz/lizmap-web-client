@@ -7,7 +7,7 @@ use Rector\Config\RectorConfig;
 // Set the level of type coverage
 $levelTypeCoverage = 5;
 $levelDeadCode = 1;
-$levelCodeQuality = 10;
+$levelCodeQuality = 11;
 
 function getLevelTypeCoverage(): int
 {
