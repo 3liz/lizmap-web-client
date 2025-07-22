@@ -753,11 +753,8 @@ class Project
     public function hasLocateByLayer()
     {
         $locate = $this->cfg->getLocateByLayer();
-        if ($locate && count((array) $locate)) {
-            return true;
-        }
 
-        return false;
+        return $locate && count((array) $locate);
     }
 
     /**
@@ -797,11 +794,8 @@ class Project
     public function hasFormFilterLayers()
     {
         $form = $this->cfg->getFormFilterLayers();
-        if ($form && count((array) $form)) {
-            return true;
-        }
 
-        return false;
+        return $form && count((array) $form);
     }
 
     public function getFormFilterLayersConfig()
@@ -812,11 +806,8 @@ class Project
     public function hasTimemanagerLayers()
     {
         $timeManager = $this->cfg->getTimemanagerLayers();
-        if ($timeManager && count((array) $timeManager)) {
-            return true;
-        }
 
-        return false;
+        return $timeManager && count((array) $timeManager);
     }
 
     public function hasAtlasEnabled()
@@ -824,22 +815,16 @@ class Project
         $atlasEnabled = $this->cfg->getBooleanOption('atlasEnabled');
         $atlas = $this->cfg->getAtlas();
 
-        if ($atlasEnabled // Legacy LWC < 3.4 (only one layer)
-            || ($atlas && property_exists($atlas, 'layers') && count((array) $atlas->layers) > 0)) { // Multiple atlas
-            return true;
-        }
-
-        return false;
+        // Multiple atlas
+        return $atlasEnabled // Legacy LWC < 3.4 (only one layer)
+            || ($atlas && property_exists($atlas, 'layers') && count((array) $atlas->layers) > 0);
     }
 
     public function hasTooltipLayers()
     {
         $tooltip = $this->cfg->getTooltipLayers();
-        if ($tooltip && count((array) $tooltip)) {
-            return true;
-        }
 
-        return false;
+        return $tooltip && count((array) $tooltip);
     }
 
     public function hasAttributeLayers($onlyDisplayedLayers = false)
@@ -963,11 +948,7 @@ class Project
             $this->readEditionLayersForCurrentUser();
         }
 
-        if (count($this->editionLayersForCurrentUser) != 0) {
-            return true;
-        }
-
-        return false;
+        return count($this->editionLayersForCurrentUser) != 0;
     }
 
     protected function readEditionLayersForCurrentUser()
@@ -1168,11 +1149,8 @@ class Project
     public function hasLoginFilteredLayers()
     {
         $login = (array) $this->cfg->getLoginFilteredLayers();
-        if (count((array) $login) > 0) {
-            return true;
-        }
 
-        return false;
+        return count((array) $login) > 0;
     }
 
     /**
@@ -1406,11 +1384,7 @@ class Project
             return false;
         }
 
-        if (array_key_exists('layers', $filter_config) && count($filter_config['layers']) > 0) {
-            return true;
-        }
-
-        return false;
+        return array_key_exists('layers', $filter_config) && count($filter_config['layers']) > 0;
     }
 
     /**
@@ -2554,11 +2528,8 @@ class Project
     public function needsUpdateError()
     {
         $requiredTargetLwcVersion = \jApp::config()->minimumRequiredVersion['lizmapWebClientTargetVersion'];
-        if ($this->getLizmapWebClientTargetVersion() < $requiredTargetLwcVersion) {
-            return true;
-        }
 
-        return false;
+        return $this->getLizmapWebClientTargetVersion() < $requiredTargetLwcVersion;
     }
 
     /**
@@ -2569,11 +2540,8 @@ class Project
     public function needsUpdateWarning()
     {
         $requiredTargetLwcVersion = \jApp::config()->minimumRequiredVersion['lizmapWebClientTargetVersion'];
-        if ($this->getLizmapWebClientTargetVersion() == $requiredTargetLwcVersion) {
-            return true;
-        }
 
-        return false;
+        return $this->getLizmapWebClientTargetVersion() == $requiredTargetLwcVersion;
     }
 
     /**
@@ -2660,11 +2628,8 @@ class Project
 
         // Check if configured groups white list and authenticated user groups list intersects
         $userGroups = $this->appContext->aclUserGroupsId();
-        if (array_intersect($aclGroups, $userGroups)) {
-            return true;
-        }
 
-        return false;
+        return (bool) array_intersect($aclGroups, $userGroups);
     }
 
     /**
@@ -2691,11 +2656,8 @@ class Project
 
         // Check if configured groups white list and authenticated user groups list intersects
         $userGroups = $this->appContext->aclGroupsIdByUser($login);
-        if (array_intersect($aclGroups, $userGroups)) {
-            return true;
-        }
 
-        return false;
+        return (bool) array_intersect($aclGroups, $userGroups);
     }
 
     /**

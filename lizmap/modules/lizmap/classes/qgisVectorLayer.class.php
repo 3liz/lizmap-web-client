@@ -1091,13 +1091,10 @@ class qgisVectorLayer extends qgisMapLayer
             // Return true or false depending of the resulting evaluation
             if ($results && count($results) == 1) {
                 $result = $results[0];
-                if (property_exists($result, 'properties')
-                    && property_exists($result->properties, 'filterByLogin')
-                    && $result->properties->filterByLogin === 1) {
-                    return true;
-                }
 
-                return false;
+                return property_exists($result, 'properties')
+                    && property_exists($result->properties, 'filterByLogin')
+                    && $result->properties->filterByLogin === 1;
             }
         }
 
@@ -1161,11 +1158,8 @@ class qgisVectorLayer extends qgisMapLayer
 
         $featureStream = Psr7StreamWrapper::getResource($result->getBodyAsStream());
         $features = JsonMachineItems::fromStream($featureStream, array('pointer' => '/features'));
-        if (iterator_count($features) !== 1) {
-            return false;
-        }
 
-        return true;
+        return iterator_count($features) === 1;
     }
 
     /**
