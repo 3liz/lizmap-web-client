@@ -21,11 +21,7 @@ class QgisFormValueRelationDynamicDatasource extends \jFormsDynamicDatasource
 
     public function getForceEmptyValue()
     {
-        if ($this->forceEmptyValue) {
-            return true;
-        }
-
-        return false;
+        return (bool) $this->forceEmptyValue;
     }
 
     public function setForceEmptyValue($forceEmptyValue)

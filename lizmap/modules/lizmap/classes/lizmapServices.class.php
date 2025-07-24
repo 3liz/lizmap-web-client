@@ -525,13 +525,8 @@ class lizmapServices
 
     public function hideSensitiveProperties()
     {
-        if (isset($this->data['hideSensitiveServicesProperties'])
-          && $this->data['hideSensitiveServicesProperties'] != '0'
-        ) {
-            return true;
-        }
-
-        return false;
+        return isset($this->data['hideSensitiveServicesProperties'])
+          && $this->data['hideSensitiveServicesProperties'] != '0';
     }
 
     public function getSensitiveProperties()
