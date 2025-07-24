@@ -246,18 +246,13 @@ jobs:
           ls -l $GITHUB_WORKSPACE/tests/end2end/test-results/
           ls ${{ github.workspace }}/tests/end2end/test-results/
 
-      - name: Send screenshots if necessary about all Playwright tests, if one failed
-        if: |
-          failure() &&
-          steps.test-playwright-read-only.outcome != 'success' ||
-          steps.test-playwright-no-tag.outcome != 'success' ||
-          steps.test-playwright-write.outcome != 'success'
+      - name: Send Playwright reports
+        if: ${{ !cancelled() }}
         uses: actions/upload-artifact@master
         with:
-          name: ${{ matrix.name }}-screenshots-readonly
-          if-no-files-found: 'ignore'
-          path: |
-            ${{ github.workspace }}/tests/end2end/test-results/
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
 
       - name: Publish test report
         continue-on-error: true
