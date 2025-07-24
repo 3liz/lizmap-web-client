@@ -270,12 +270,9 @@ class ProjectMetadata
 
         // We check against the hard coded version number
         $recommendedVersion = \jApp::config()->minimumRequiredVersion['lizmapDesktopPlugin'];
-        if ($recommendedVersion <= $lizmapProjectVersion) {
-            // Lizmap plugin version in the CFG file is newer than the hard coded version
-            return false;
-        }
 
-        return true;
+        // Lizmap plugin version in the CFG file is newer than the hard coded version
+        return $recommendedVersion > $lizmapProjectVersion;
     }
 
     /**

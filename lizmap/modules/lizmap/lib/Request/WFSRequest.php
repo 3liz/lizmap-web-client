@@ -71,9 +71,9 @@ class WFSRequest extends OGCRequest
      *
      * @return bool The edition context for request
      */
-    public function setEditingContext($editingContext)
+    public function setEditingContext(bool $editingContext): bool
     {
-        $this->editingContext = $editingContext ? true : false;
+        $this->editingContext = $editingContext;
 
         return $this->editingContext;
     }
