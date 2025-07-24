@@ -474,11 +474,8 @@ class ProjectMainData
 
         // Check if configured groups white list and authenticated user groups list intersects
         $userGroups = $appContext->aclUserGroupsId();
-        if (array_intersect($aclGroups, $userGroups)) {
-            return true;
-        }
 
-        return false;
+        return (bool) array_intersect($aclGroups, $userGroups);
     }
 
     /**

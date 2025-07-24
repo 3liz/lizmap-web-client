@@ -261,11 +261,8 @@ class WMSRequest extends OGCRequest
             $max = $this->services->wmsMaxHeight ?: 3000;
         }
         $dim = $this->param('height');
-        if ($dim == null || !is_numeric($dim) || intval($dim) > $max) {
-            return false;
-        }
 
-        return true;
+        return !($dim == null || !is_numeric($dim) || intval($dim) > $max);
     }
 
     /**
