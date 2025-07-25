@@ -10,10 +10,6 @@ on:
 env:
   NODE_VERSION: "21"
 
-#concurrency:
-#  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-#  cancel-in-progress: true
-
 jobs:
   end2end:
     name: "E2E QGIS ${{ matrix.qgis-server }} PG ${{ matrix.pg-postgis }} PHP ${{ matrix.php }}"
@@ -46,13 +42,6 @@ jobs:
       PLAYWRIGHT_OPTIONS: --project=end2end
       FORCE_COLOR: true
     steps:
-
-#      - name: Debug
-#        working-directory: .
-#        run: |
-#            echo ${{ github.event.pull_request.head.sha }}
-#            echo ${{ github.head_ref }}
-#            echo ${{ github.ref_name }}
 
       - name: Login to Docker Hub
         if: ${{ github.secret_source == 'Actions' }}
