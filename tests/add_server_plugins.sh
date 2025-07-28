@@ -2,6 +2,11 @@
 
 set -e
 
+if [[ ! -f "$QGIS_PLUGIN_MANAGER_SOURCES_FILE" ]]; then
+    echo "Please set QGIS_PLUGIN_MANAGER_SOURCES_FILE to a valid file (found \"$QGIS_PLUGIN_MANAGER_SOURCES_FILE\")"
+    exit 1
+fi
+
 # Remove legacy folders about qgis-plugin-manager
 if [ -d /srv/plugins/.cache_qgis_plugin_manager ]; then
   rm -rf /srv/plugins/.cache_qgis_plugin_manager
@@ -11,9 +16,7 @@ if [ -f /srv/plugins/sources.list ]; then
 fi
 
 echo "QGIS Server Lizmap and WfsOutputExtension plugins"
-echo "Unstable from https://packages.3liz.org"
-# qgis-plugin-manager init
-echo "https://packages.3liz.org/pub/server-plugins-repository/unstable/plugins.[VERSION].xml" > /tmp/sources-plugin-manager.list
+echo "Loading from $(cat $QGIS_PLUGIN_MANAGER_SOURCES_FILE)"
 qgis-plugin-manager update
 qgis-plugin-manager install -f "Lizmap server"
 qgis-plugin-manager install -f wfsOutputExtension
