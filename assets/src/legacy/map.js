@@ -3294,6 +3294,10 @@ window.lizMap = function() {
                     const startupFeatures = (new GeoJSON()).readFeatures(startupFeaturesData);
                     featuresExtent = startupFeatures[0].getGeometry().getExtent();
                     startupFeatures.forEach(feature => extend(featuresExtent, feature.getGeometry().getExtent()));
+                } else if (responses[5].status === 'rejected') {
+                    console.error('An error occurred while loading the features to zoom to at startup: '+responses[5].reason);
+                    mAddMessage(lizDict['startup.features.error'],'error',true)
+                        .attr('id','lizmap-startup-features-error-message');
                 }
 
                 /**
