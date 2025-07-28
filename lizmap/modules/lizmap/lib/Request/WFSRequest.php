@@ -184,6 +184,8 @@ class WFSRequest extends OGCRequest
         $wfsLayerIds = $this->project->getWfsLayerIds();
         // No layers published in WFS
         if (empty($wfsLayerIds)) {
+            \jLog::log('No WFS layer available in project', 'error');
+            // Add a message for service exception report
             \jMessage::add('No TYPENAME available', 'OperationNotSupported');
 
             return 400;
