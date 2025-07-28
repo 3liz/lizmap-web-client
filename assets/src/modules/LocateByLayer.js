@@ -482,13 +482,13 @@ export default class LocateByLayer {
         const placeHolder = this._lizmap3.config.layers[aName].title;
         var options = '<option value="-1" label="'+placeHolder+'"></option>';
         for (var featureElementId in features) {
-            var featureElement = features[featureElementId];
+            const featureElement = features[featureElementId];
             // add option
             options += '<option value="' + featureElement.id + '">';
             // DOMPurify.sanitize needs a string
-            options += featElement.properties[locate.fieldName] !== null ?
-                DOMPurify.sanitize(featElement.properties[locate.fieldName].toString()) :
-                featElement.properties[locate.fieldName]+''; // 'null' for null value
+            options += featureElement.properties[locate.fieldName] !== null ?
+                DOMPurify.sanitize(featureElement.properties[locate.fieldName].toString()) :
+                featureElement.properties[locate.fieldName]+''; // 'null' for null value
             options += '</option>';
         }
         // add option list
