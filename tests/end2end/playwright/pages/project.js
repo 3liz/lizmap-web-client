@@ -180,10 +180,25 @@ export class ProjectPage extends BasePage {
      */
     async open(skip_plugin_update_warning = false){
         // By default, do not display warnings about old QGIS plugin or outdated Action JSON file
+        await this.openWithExtraParams({skip_plugin_update_warning: skip_plugin_update_warning});
+    }
+
+    /**
+     * Open the URL for the given project and repository with extra parameters
+     * @param {object} params Parameters to add to the default repository and project parameters.
+     * Example: {skip_plugin_update_warning: true}
+     * @returns {Promise<void>}
+     */
+    async openWithExtraParams(params){
         const searchParams = new URLSearchParams();
         searchParams.set('repository', this.repository);
         searchParams.set('project', this.project);
-        searchParams.set('skip_plugin_update_warning', `${skip_plugin_update_warning}`);
+        // By default, do not display warnings about old QGIS plugin or outdated Action JSON file
+        // It could be superseeded by the params parameter
+        searchParams.set('skip_plugin_update_warning', 'false');
+        for (const [key, value] of Object.entries(params)) {
+            searchParams.set(key, value);
+        }
         await gotoMap(
             `/index.php/view/map?${searchParams.toString()}`,
             this.page,

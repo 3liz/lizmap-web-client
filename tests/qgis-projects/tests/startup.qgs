@@ -803,7 +803,9 @@ def my_form_open(dialog, layer, feature):
     </Variables>
     <WCSLayers type="QStringList"/>
     <WCSUrl type="QString"></WCSUrl>
-    <WFSLayers type="QStringList"/>
+    <WFSLayers type="QStringList">
+     <value>sousquartiers_5929c871_32c4_446d_b855_6499498e05d5</value>
+    </WFSLayers>
     <WFSLayersPrecision>
       <sousquartiers_5929c871_32c4_446d_b855_6499498e05d5 type="int">8</sousquartiers_5929c871_32c4_446d_b855_6499498e05d5>
     </WFSLayersPrecision>
