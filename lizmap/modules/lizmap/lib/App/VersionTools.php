@@ -92,7 +92,7 @@ class VersionTools
     }
 
     /**
-     * Transform int formatted version to a human readable string (remove useless 0),
+     * Transform int formatted version to a human readable string (remove useless 0 if needed),
      * optionnaly remove patch version.
      * ! short version (342 for 3.42) are not handled.
      *
