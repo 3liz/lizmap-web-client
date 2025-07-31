@@ -35,6 +35,7 @@ import GeoJSON from 'ol/format/GeoJSON.js';
  *      (optional) data-center-to-highlighted-feature-geometry="true"
  *      (optional) data-max-features="100"
  *      (optional) data-active-item-feature-id="5"
+ *      (optional) data-empty-message="This table is empty. There are no items to display."
  * >
  *      <lizmap-field
  *          data-alias="District's name"
@@ -607,6 +608,7 @@ export default class FeaturesTable extends HTMLElement {
         this._template = () => html`
             <div class="lizmap-features-table" data-features-count="${this.features.length}">
                 <h4>${this.layerTitle}</h4>
+                ${this.features.length > 0 ? html`
                 <div class="lizmap-features-table-toolbar">
                     <button class="btn btn-mini previous-popup"
                         title="${lizDict['featuresTable.toolbar.previous']}"
@@ -654,6 +656,11 @@ export default class FeaturesTable extends HTMLElement {
                     </tbody>
                 </table>
                 <div class="lizmap-features-table-item-popup"></div>
+                ` : html`
+                <div class="lizmap-features-table-empty">
+                    ${this.dataset.emptyMessage ? this.dataset.emptyMessage : lizDict['featuresTable.empty.message']}
+                </div>
+                `}
             </div>
         `;
 
