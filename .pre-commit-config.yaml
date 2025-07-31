@@ -16,19 +16,19 @@ repos:
       - id: check-added-large-files
 
   - repo: https://github.com/thibaudcolas/pre-commit-stylelint
-    rev: v16.14.1
+    rev: v16.15.0
     hooks:
       - id: stylelint
         args: [--fix]
 
   - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v9.20.1
+    rev: v9.30.1
     hooks:
       - id: eslint
         files: \.[jt]sx?$  # *.js, *.jsx, *.ts and *.tsx
         types: [ file ]
         additional_dependencies:
-          - eslint@9.21.0
+          - eslint@9.30.1
 
   - repo: local
     hooks:
