@@ -8,6 +8,8 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.53.1",
+    "@rspack/cli": "^1.4.11",
+    "@rspack/core": "^1.4.11",
     "@turf/line-split": "^7.2.0",
     "chai": "^5.2.x",
     "cypress": "<10.0.0",
@@ -30,15 +32,14 @@
     "svgo-loader": "^4.0.0",
     "undici": "^6.21.x",
     "webpack": "^5.98.x",
-    "webpack-cli": "^6.0.1",
     "webpack-merge": "^6.0.1"
   },
   "scripts": {
     "pretest": "eslint assets/src",
     "pretest-fix": "eslint --fix assets/src",
     "jsdoc": "make version-doc && make js-doc",
-    "build": "webpack --config assets/webpack.prod.js",
-    "watch": "webpack --watch --config assets/webpack.dev.js",
+    "build": "rspack build --config assets/webpack.prod.js",
+    "watch": "rspack --watch --config assets/webpack.dev.js",
     "js:test": "mocha --recursive ./tests/js-units/node",
     "pr:open": "playwright test --ui tests/end2end/",
     "cy:open": "cypress open --project ./tests/end2end/",
