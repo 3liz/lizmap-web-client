@@ -136,10 +136,18 @@ export class ProjectPage extends BasePage {
     /**
      * Editing field for the given field in the panel
      * @param {string} name Name of the field
-     * @returns {Locator} Locator for the input field
+     * @returns {Locator} Locator for the field (input, select, textarea)
      */
     editingField = (name) =>
-        this.page.locator(`#jforms_view_edition input[name="${name}"]`);
+        this.editionForm.locator(`input[name="${name}"], select[name="${name}"], textarea[name="${name}"]`);
+
+    /**
+     * Editing submit for the given type
+     * @param {string} type Submit type: submit or cancel
+     * @returns {Locator} Locator for the submit button
+     */
+    editingSubmit = (type) =>
+        this.editionForm.locator(`#jforms_view_edition__submit_${type}`);
 
     /**
      * Constructor for a QGIS project page
@@ -322,7 +330,7 @@ export class ProjectPage extends BasePage {
      */
     async editingSubmitForm(futureAction = 'close'){
         await this.page.locator('#jforms_view_edition_liz_future_action').selectOption(futureAction);
-        await this.page.locator('#jforms_view_edition__submit_submit').click();
+        await this.editingSubmit('submit').click();
         if (futureAction === 'close'){
             await expect(this.page.locator('#edition-form-container')).toBeHidden();
         } else {
