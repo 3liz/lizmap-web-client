@@ -356,6 +356,22 @@ abstract class OGCRequest
         }
         \jMessage::clearAll();
 
+        $message = 'The Lizmap OGC request returns a service exception with messages: '.$data.'.';
+
+        // The master error with MAP parameter
+        // This user must have an access to QGIS Server logs
+        $params = $this->parameters();
+        \jLog::log($message.' '.$this->formatHttpErrorString($params, $code), 'error');
+
+        // The admin error without the MAP parameter
+        // but replaced by REPOSITORY and PROJECT parameters
+        // This user might not have an access to QGIS Server logs
+        unset($params['map']);
+        $params['repository'] = $this->project->getRepository()->getKey();
+        $params['project'] = $this->project->getKey();
+        \jLog::log($message.' '.$this->formatHttpErrorString($params, $code), 'lizmapadmin');
+
+        // Return the response
         return new OGCResponse($code, $mime, $data);
     }
 

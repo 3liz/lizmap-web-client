@@ -101,7 +101,8 @@ class QgisProjectTest extends TestCase
     {
         $cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
             'relations', 'themes', 'useLayerIDs', 'layers', 'data',
-            'qgisProjectVersion', 'customProjectVariables', 'relationsFields');
+            'qgisProjectVersion', 'customProjectVariables', 'relationsFields',
+            'wfsLayerIds');
         $data = array();
 
         foreach ($cachedProperties as $prop) {
