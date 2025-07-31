@@ -1860,6 +1860,7 @@ lizmap-mouse-position > div.coords-unit > select{
   left : 50%;
   position : absolute;
   z-index : 6000;
+  min-height: 0;
 }
 #message.span6 {
   margin-left:-285px;
