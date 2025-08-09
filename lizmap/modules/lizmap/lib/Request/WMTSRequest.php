@@ -93,7 +93,7 @@ class WMTSRequest extends OGCRequest
      */
     protected function process_gettile()
     {
-        // \jLog::log('GetTile '.http_build_query($this->params));
+        \lizmap::getLogger()->debug('GetTile '.http_build_query($this->params));
         // Get the parameters values
         $params = array(
             'LayerName' => 'Layer',
