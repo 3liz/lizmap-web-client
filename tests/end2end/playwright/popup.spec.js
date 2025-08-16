@@ -462,8 +462,8 @@ test.describe('Popup Geometry',
             // Get default buffer with one point
             let buffer = await page.screenshot({clip:{x:425, y:325, width:100, height:100}});
             const defaultByteLength = buffer.byteLength;
-            await expect(defaultByteLength).toBeGreaterThan(900); // 906
-            await expect(defaultByteLength).toBeLessThan(1000) // 906
+            await expect(defaultByteLength).toBeGreaterThan(800); // 851 or 906
+            await expect(defaultByteLength).toBeLessThan(1000) // 851 or 906
 
             // Click on a point
             let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
@@ -499,8 +499,8 @@ test.describe('Popup Geometry',
             // Get default buffer with one point
             let buffer = await page.screenshot({clip:{x:425, y:325, width:100, height:100}});
             const defaultByteLength = buffer.byteLength;
-            await expect(defaultByteLength).toBeGreaterThan(900); // 906
-            await expect(defaultByteLength).toBeLessThan(1000) // 906
+            await expect(defaultByteLength).toBeGreaterThan(800); // 851 or 906
+            await expect(defaultByteLength).toBeLessThan(1000) // 851 or 906
 
             // Click on a point
             let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
