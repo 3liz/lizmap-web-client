@@ -4,7 +4,7 @@ export default defineConfig({
     testDir: './playwright',
     snapshotPathTemplate: '{testDir}/__screenshots__/{testFilePath}/{arg}{ext}',
     /* Maximum time one test can run for. */
-    timeout: 30 * 1000,
+    timeout: 10 * 1000,
     expect: {
         /**
          * Maximum time expect() should wait for the condition to be met.
@@ -17,7 +17,8 @@ export default defineConfig({
     /* Fail the build on CI if you accidentally left test.only in the source code. */
     forbidOnly: !!process.env.CI,
     /* Retry on CI only */
-    retries: process.env.CI ? 2 : 0,
+    /* retries: process.env.CI ? 2 : 0, */
+    retries: 0,
     /* Opt out of parallel tests on CI. */
     workers: process.env.CI ? 2 : undefined,
     /* Reporter to use.  */
