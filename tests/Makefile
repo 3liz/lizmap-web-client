@@ -90,9 +90,29 @@ upgrade-projects:
 up: env
 	docker compose up  -V --force-recreate -d
 
+# Alias for 'up'
+run: up
+
 stop:
 	docker compose stop
 
 reset:
 	docker compose down -v --remove-orphans
 	./lizmap-ctl clean
+
+# install or update base images, to be sure we have the latest images
+build:: env
+	docker compose pull
+
+# install or update plugins, to be sure we have the latest plugins
+build:: build-plugins
+
+clean:
+	./lizmap-ctl clean
+
+# run docker
+# prepare lizmap
+# populate PostgreSQL database with testing data
+install: run
+	./lizmap-ctl install
+	./qgis-projects/tests/load_sql.sh
