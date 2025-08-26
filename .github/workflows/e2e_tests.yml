@@ -30,10 +30,15 @@ jobs:
             pg-postgis: "14-3"
             qgis-server: "3.34"
             update-projects: "FALSE"
+          - name: "LTR"
+            php: "8.2"
+            pg-postgis: "15-3"
+            qgis-server: "3.40"
+            update-projects: "TRUE"
           - name: "BLEEDING_EDGE"
             php: "8.3"
             pg-postgis: "17-3"
-            qgis-server: "3.40"
+            qgis-server: "3.44"
             update-projects: "TRUE"
     env:
       CYPRESS_CI: TRUE
