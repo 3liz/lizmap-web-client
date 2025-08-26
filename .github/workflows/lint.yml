@@ -45,7 +45,7 @@ jobs:
           cache-dependency-path: ${{ github.workspace }}/package.json
 
       - name: Install modules
-        run: npm install
+        run: npm ci
 
       - name: Run StyleLint
         run: npm run style-check
@@ -66,7 +66,7 @@ jobs:
           cache-dependency-path: ${{ github.workspace }}/package.json
 
       - name: Install modules
-        run: npm install
+        run: npm ci
 
       - name: Run ESLint
         run: npm run pretest-fix
