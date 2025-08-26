@@ -28,7 +28,9 @@ test.describe('Not connected via context or Basic auth',
 );
 
 test.describe('Connected from context, as an admin',
-    () => {
+    {
+        tag: ['@requests', '@readonly'],
+    }, () => {
 
         test.use({ storageState: getAuthStorageStatePath('admin') });
 
