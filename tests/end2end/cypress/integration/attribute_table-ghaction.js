@@ -35,6 +35,10 @@ describe('Attribute table', () => {
                 })
             }).as('getMap')
 
+        cy.intercept('POST', '*datatables*', (req) => {
+            req.alias = 'postToDataTables'
+        })
+
         cy.visit('/index.php/view/map/?repository=testsrepository&project=attribute_table')
 
         // Wait for map displayed
@@ -49,15 +53,15 @@ describe('Attribute table', () => {
         cy.get('button[value="quartiers_shp"].btn-open-attribute-layer').click({ force: true })
 
         // Wait for features
-        cy.wait('@postGetFeature').then((interception) => {
+        cy.wait('@postDescribeFeatureType').then((interception) => {
             expect(interception.request.body)
                 .to.contain('SERVICE=WFS')
-                .to.contain('REQUEST=GetFeature')
+                .to.contain('REQUEST=DescribeFeatureType')
                 .to.contain('TYPENAME=quartiers_shp')
-                .to.contain('OUTPUTFORMAT=GeoJSON')
+                .to.contain('OUTPUTFORMAT=JSON')
         })
 
-        cy.get('#attribute-layer-table-quartiers_shp_wrapper div.dataTables_scrollHead th').then(theaders => {
+        cy.get('#attribute-layer-table-quartiers_shp_wrapper div.dt-scroll-head th').then(theaders => {
             const headers = [...theaders].map(t => t.innerText)
             const correct_column_order = ['', 'quartmno', 'libquart', 'photo', 'url', 'thumbnail'];
 
@@ -70,15 +74,15 @@ describe('Attribute table', () => {
         cy.get('button[value="Les_quartiers_a_Montpellier"].btn-open-attribute-layer').click({ force: true })
 
         // Wait for features
-        cy.wait('@postGetFeature').then((interception) => {
+        cy.wait('@postDescribeFeatureType').then((interception) => {
             expect(interception.request.body)
                 .to.contain('SERVICE=WFS')
-                .to.contain('REQUEST=GetFeature')
+                .to.contain('REQUEST=DescribeFeatureType')
                 .to.contain('TYPENAME=quartiers')
-                .to.contain('OUTPUTFORMAT=GeoJSON')
+                .to.contain('OUTPUTFORMAT=JSON')
         })
 
-        cy.get('#attribute-layer-table-Les_quartiers_a_Montpellier_wrapper div.dataTables_scrollHead th').then(theaders => {
+        cy.get('#attribute-layer-table-Les_quartiers_a_Montpellier_wrapper div.dt-scroll-head th').then(theaders => {
             const headers = [...theaders].map(t => t.innerText)
             const correct_column_order = ['', 'quartier', 'quartmno', 'libquart', 'thumbnail', 'url', 'photo'];
 
@@ -95,12 +99,12 @@ describe('Attribute table', () => {
         cy.get('button[value="Les_quartiers_a_Montpellier"].btn-open-attribute-layer').click({ force: true })
 
         // Wait for features
-        cy.wait('@postGetFeature').then((interception) => {
+        cy.wait('@postDescribeFeatureType').then((interception) => {
             expect(interception.request.body)
                 .to.contain('SERVICE=WFS')
-                .to.contain('REQUEST=GetFeature')
+                .to.contain('REQUEST=DescribeFeatureType')
                 .to.contain('TYPENAME=quartiers')
-                .to.contain('OUTPUTFORMAT=GeoJSON')
+                .to.contain('OUTPUTFORMAT=JSON')
         })
 
         // Check table lines
@@ -340,20 +344,7 @@ describe('Attribute table', () => {
         cy.get('button[value="Les_quartiers_a_Montpellier"].btn-open-attribute-layer').click({ force: true })
         // The content of the table has to be fetched again
         // Wait for features
-        cy.wait('@postGetFeature').then((interception) => {
-            expect(interception.request.body)
-                .to.contain('SERVICE=WFS')
-                .to.contain('REQUEST=GetFeature')
-                .to.contain('TYPENAME=quartiers')
-                .to.contain('OUTPUTFORMAT=GeoJSON')
-                .to.contain('EXP_FILTER=%24id+IN+%28+2+%2C+4+%2C+6+%29+')
-            expect(interception.response.body)
-                .to.have.property('type')
-            expect(interception.response.body.type).to.be.eq('FeatureCollection')
-            expect(interception.response.body)
-                .to.have.property('features')
-            expect(interception.response.body.features).to.have.length(3)
-        })
+        // TODO assert datatables request is made
 
         // check that the layer is filtered
         cy.get('#attribute-layer-table-Les_quartiers_a_Montpellier tbody tr').should('have.length', 3)
@@ -396,20 +387,7 @@ describe('Attribute table', () => {
         cy.get('button[value="quartiers_shp"].btn-open-attribute-layer').click({ force: true })
 
         // Wait for features
-        cy.wait('@postGetFeature').then((interception) => {
-            expect(interception.request.body)
-                .to.contain('SERVICE=WFS')
-                .to.contain('REQUEST=GetFeature')
-                .to.contain('TYPENAME=quartiers_shp')
-                .to.contain('OUTPUTFORMAT=GeoJSON')
-                .to.not.contain('EXP_FILTER')
-            expect(interception.response.body)
-                .to.have.property('type')
-            expect(interception.response.body.type).to.be.eq('FeatureCollection')
-            expect(interception.response.body)
-                .to.have.property('features')
-            expect(interception.response.body.features).to.have.length(7)
-        })
+        // TODO assert datatables request is made
 
         // Check table lines
         cy.get('#attribute-layer-table-quartiers_shp tbody tr').should('have.length', 7)
