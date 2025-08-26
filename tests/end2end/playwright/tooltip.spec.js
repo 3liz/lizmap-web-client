@@ -1,26 +1,83 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { gotoMap } from './globals';
+import { ProjectPage } from './pages/project';
 
-test.describe('Tooltip', () => {
+test.describe('Tooltip @readonly', () => {
 
     test('Test HTML template', async ({ page }) => {
-        const url = '/index.php/view/map?repository=testsrepository&project=tooltip';
-        await gotoMap(url, page);
+        const project = new ProjectPage(page, 'tooltip');
+        await project.open();
+
         await page.locator('#button-tooltip-layer').click();
 
+        // Create the promise to wait for tooltips response
+        const responsePromise = page.waitForResponse(/lizmap\/features\/tooltips/);
+        // choose a layer to activate tooltip
         await page.locator('#tooltip-layer').getByRole('combobox').selectOption('quartiers');
-        // To be continued
+        // wait for the response completed
+        const response = await responsePromise;
+        await response.finished();
+        await expect(response.status()).toBe(200);
+        expect(response.headers()['content-type']).toBe('application/json');
+        // check body
+        const body = await response.json();
+        expect(body).toHaveProperty('type');
+        expect(body['type']).toBe('FeatureCollection');
+        expect(body).toHaveProperty('features');
+        expect(body['features']).toHaveLength(7);
+        // check features (use soft assertion to test all properties)
+        for (const feature of body['features']) {
+            expect.soft(feature).toHaveProperty('id');
+            expect.soft(feature).toHaveProperty('geometry');
+            expect.soft(feature).toHaveProperty('properties');
+            expect.soft(feature['properties']).toHaveProperty('tooltip');
+        }
+        // NO error message displayed
+        await expect(page.locator('#message')).not.toBeVisible();
     });
 
     test('Test fields', async ({ page }) => {
-        const url = '/index.php/view/map?repository=testsrepository&project=tooltip';
-        await gotoMap(url, page);
+        const project = new ProjectPage(page, 'tooltip');
+        await project.open();
         await page.locator('#button-tooltip-layer').click();
 
+        // Create the promise to wait for tooltips response
+        const responsePromise = page.waitForResponse(/lizmap\/features\/tooltips/);
+        // choose a layer to activate tooltip
         await page.locator('#tooltip-layer').getByRole('combobox').selectOption('quartiers-fields');
-        // TODO to be fixed
+        // wait for the response completed
+        const response = await responsePromise;
+        await response.finished();
+        // TODO to be fixed - a message is displayed because fields is not translated to template
         await expect(page.locator('#message')).toBeVisible();
+    });
+
+    test('Mocking error', async ({ page }) => {
+        const project = new ProjectPage(page, 'tooltip');
+        await project.open();
+        await page.locator('#button-tooltip-layer').click();
+
+        // Mocking tooltips
+        await page.route('**/lizmap/features/tooltips*', async route => {
+            await route.fulfill({
+                status: 504,
+                contentType: 'text/plain',
+                body: 'Timeout',
+            });
+        });
+
+        // Create the promise to wait for tooltips response
+        const responsePromise = page.waitForResponse(/lizmap\/features\/tooltips/);
+        // choose a layer to activate tooltip
+        await page.locator('#tooltip-layer').getByRole('combobox').selectOption('quartiers');
+        // wait for the response completed
+        const response = await responsePromise;
+        await response.finished();
+        await expect(response.status()).toBe(504);
+        // An error message is displayed
+        await expect(page.locator('#message')).toBeVisible();
+
+        await page.unroute('**/lizmap/features/tooltips*');
     });
 
 });
