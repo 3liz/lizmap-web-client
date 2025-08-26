@@ -32,12 +32,26 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Get composer cache directory
+        id: get-composer-cache-dir
+        run: echo "composer_cache_dir=$(composer config cache-files-dir)" >> $GITHUB_ENV
+
       - name: Setup PHP with tools
         uses: shivammathur/setup-php@v2
         # About the PHP version, do not forget to change in PHP-Stan as well
         with:
           php-version: ${{ matrix.php-version }}
           tools: php-cs-fixer, phpunit
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.composer_cache_dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer install --working-dir=lizmap/ --prefer-dist --no-progress
 
       - name: Change the version of PHPUnit
 #        working-directory: tests/units
