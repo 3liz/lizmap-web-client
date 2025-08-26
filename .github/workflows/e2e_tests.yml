@@ -90,9 +90,10 @@ jobs:
       - name: Run docker compose
         run: |
           make env
-          docker compose up -d 
+          docker compose up -d
 
       - name: Wait and check about QGIS Server status
+        id: qgis-server-status
         run: |
           curl \
             --user 'admin:admin' \
@@ -149,6 +150,15 @@ jobs:
         run: |
           npx playwright install --with-deps chromium
 
+      - name: Run Playwright tests tagged "@requests" and "@readonly"
+        id: test-playwright-requests
+        working-directory: tests/end2end
+        env:
+          CRTF_JSON_FILE: playwright-tagged-requests.json
+          PLAYWRIGHT_JSON_OUTPUT_NAME: tests-results-requests.json
+        run: |
+          npx playwright test --grep "(?=.*@requests)(?=.*@readonly)" ${{ env.PLAYWRIGHT_OPTIONS }}
+
       - name: Run Playwright tests tagged "@readonly"
         id: test-playwright-read-only
         working-directory: tests/end2end
@@ -156,11 +166,12 @@ jobs:
           CRTF_JSON_FILE: playwright-tagged-readonly.json
           PLAYWRIGHT_JSON_OUTPUT_NAME: tests-results-readonly.json
         run: |
-          npx playwright test --grep @readonly ${{ env.PLAYWRIGHT_OPTIONS }}
+          npx playwright test --grep @readonly --grep-invert @requests ${{ env.PLAYWRIGHT_OPTIONS }}
 
       - name: Prepare the database diff from Playwright "@readonly" tests
         if: |
           success() ||
+          steps.test-playwright-requests.outcome != 'success' ||
           steps.test-playwright-read-only.outcome != 'success'
         run: |
           ./lizmap-ctl dump-pgsql
@@ -180,6 +191,7 @@ jobs:
       - name: Upload DB results
         if: |
           success() ||
+          steps.test-playwright-requests.outcome != 'success' ||
           steps.test-playwright-read-only.outcome != 'success'
         uses: actions/upload-artifact@master
         with:
@@ -191,6 +203,7 @@ jobs:
       - name: Check about updated files after read only tests
         if: |
           success() ||
+          steps.test-playwright-requests.outcome != 'success' ||
           steps.test-playwright-read-only.outcome != 'success'
         run: |
           if [[ -z $(git status --porcelain -uno) ]]; then
@@ -208,8 +221,10 @@ jobs:
           CRTF_JSON_FILE: playwright-no-tag.json
           PLAYWRIGHT_JSON_OUTPUT_NAME: tests-results-no-tag.json
         if: |
-          success() ||
-          steps.test-playwright-read-only.outcome != 'success'
+          steps.qgis-server-status.outcome == 'success' &&
+          ( success() ||
+          steps.test-playwright-requests.outcome != 'success' ||
+          steps.test-playwright-read-only.outcome != 'success' )
         run: |
           npx playwright test --workers 1 --grep-invert "(?=.*@write|.*@readonly)" ${{ env.PLAYWRIGHT_OPTIONS }}
 
@@ -220,9 +235,11 @@ jobs:
           CRTF_JSON_FILE: playwright-tagged-write.json
           PLAYWRIGHT_JSON_OUTPUT_NAME: tests-results-write.json
         if: |
-          success() ||
+          steps.qgis-server-status.outcome == 'success' &&
+          ( success() ||
+          steps.test-playwright-requests.outcome != 'success' ||
           steps.test-playwright-read-only.outcome != 'success' ||
-          steps.test-playwright-no-tag.outcome != 'success'
+          steps.test-playwright-no-tag.outcome != 'success' )
         run: |
           npx playwright test --workers 1 --grep @write ${{ env.PLAYWRIGHT_OPTIONS }}
 
@@ -240,9 +257,10 @@ jobs:
       - name: Send screenshots if necessary about all Playwright tests, if one failed
         if: |
           failure() &&
+          ( steps.test-playwright-requests.outcome != 'success' ||
           steps.test-playwright-read-only.outcome != 'success' ||
           steps.test-playwright-no-tag.outcome != 'success' ||
-          steps.test-playwright-write.outcome != 'success'
+          steps.test-playwright-write.outcome != 'success' )
         uses: actions/upload-artifact@master
         with:
           name: ${{ matrix.name }}-screenshots-readonly
@@ -254,6 +272,7 @@ jobs:
         continue-on-error: true
         if: |
           success() ||
+          steps.test-playwright-requests.outcome != 'success' ||
           steps.test-playwright-read-only.outcome != 'success' ||
           steps.test-playwright-no-tag.outcome != 'success' ||
           steps.test-playwright-write.outcome != 'success'
@@ -278,6 +297,7 @@ jobs:
       - name: Upload test results
         if: |
           success() ||
+          steps.test-playwright-requests.outcome != 'success' ||
           steps.test-playwright-read-only.outcome != 'success' ||
           steps.test-playwright-no-tag.outcome != 'success' ||
           steps.test-playwright-write.outcome != 'success'
@@ -290,10 +310,12 @@ jobs:
       - name: Cypress run
         id: test-cypress
         if: |
-          success() ||
+          steps.qgis-server-status.outcome == 'success' &&
+          ( success() ||
+          steps.test-playwright-requests.outcome != 'success' ||
           steps.test-playwright-read-only.outcome != 'success' ||
           steps.test-playwright-no-tag.outcome != 'success' ||
-          steps.test-playwright-write.outcome != 'success'
+          steps.test-playwright-write.outcome != 'success' )
         uses: cypress-io/github-action@v6.10.1
         with:
           install: false
