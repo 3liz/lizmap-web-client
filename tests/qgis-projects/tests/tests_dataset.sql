@@ -2,6 +2,8 @@
 -- PostgreSQL database dump
 --
 
+\restrict testse2elizmap
+
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -5049,3 +5051,5 @@ ALTER TABLE ONLY tests_projects.tramway_pivot
 --
 -- PostgreSQL database dump complete
 --
+
+\unrestrict testse2elizmap
