@@ -55,8 +55,10 @@ class featuresCtrl extends jController
             return $rep;
         }
 
+        /**
+         * @var null|qgisVectorLayer
+         */
         $qgisLayer = $lproj->getLayer($layerId);
-
         if (!$qgisLayer) {
             jMessage::add('The layer Id '.$layerId.' does not exist !', 'error');
 
@@ -65,17 +67,55 @@ class featuresCtrl extends jController
 
         $tooltipLayers = $lproj->getTooltipLayers();
         $layerName = $qgisLayer->getName();
+        if (!isset($tooltipLayers->{$layerName})) {
+            jMessage::add('No tooltip configuration has been found for the layer '.$layerName.' !', 'error');
 
-        if (isset($tooltipLayers->{$layerName}, $tooltipLayers->{$layerName}->{'template'})) {
-            $tooltip = array('tooltip' => $tooltipLayers->{$layerName}->{'template'});
-
-            $data = qgisExpressionUtils::replaceExpressionText(
-                $qgisLayer,
-                $tooltip,
-            );
-
-            $rep->data = $data;
+            return $rep;
         }
+
+        // Since LWC 3.8, tooltip can use HTML templates
+        // If no template is found but instead a list of fields,
+        // convert it to an HTML template
+        if (isset($tooltipLayers->{$layerName}->{'template'})
+            && !empty(trim($tooltipLayers->{$layerName}->{'template'}))
+        ) {
+            $template = trim($tooltipLayers->{$layerName}->{'template'});
+        } else {
+            // Default template : use layer display expressions
+            $template = '[% display_expression() %]';
+
+            // If some fields have been configured in the interface
+            // create a table listing fields values
+            if (isset($tooltipLayers->{$layerName}->{'fields'})) {
+                $fields = trim($tooltipLayers->{$layerName}->{'fields'});
+                $expFields = explode(',', $fields);
+                if (!empty($fields)) {
+                    // Build the table
+                    $template = '<table class="lizmapPopupTable table table-condensed table-bordered table-striped">';
+
+                    // Get fields aliases
+                    $aliases = $qgisLayer->getAliasFields();
+
+                    // Add each field as a table line
+                    foreach ($expFields as $field) {
+                        $template .= '<tr><th>'.($aliases[$field] ?: $field).'</th><td>[% "'.$field.'" %]</td></tr>';
+                    }
+                    $template .= '</table>';
+                }
+            }
+        }
+
+        $tooltip = array(
+            // Get tooltip in HTML
+            'tooltip' => $template,
+        );
+
+        $data = qgisExpressionUtils::replaceExpressionText(
+            $qgisLayer,
+            $tooltip,
+        );
+
+        $rep->data = $data;
 
         return $rep;
     }
