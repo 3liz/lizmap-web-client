@@ -3,7 +3,6 @@ import { test, expect } from '@playwright/test';
 import { ProjectPage } from './pages/project';
 import { expectParametersToContain, getAuthStorageStatePath } from './globals';
 import { AdminPage } from "./pages/admin";
-import { gotoMap } from './globals';
 
 test.describe('Attribute table', () => {
 
@@ -13,7 +12,7 @@ test.describe('Attribute table', () => {
         const layerName = 'Les_quartiers_a_Montpellier';
 
         await project.openAttributeTable(layerName);
-        await expect(project.attributeTableWrapper(layerName).locator('div.dataTables_info'))
+        await expect(project.attributeTableWrapper(layerName).locator('div.dt-info'))
             .toContainText('Showing 1 to 7 of 7 entries');
         await expect(project.attributeTableHtml(layerName).locator('tbody tr'))
             .toHaveCount(7);
@@ -36,21 +35,22 @@ test.describe('Attribute table', () => {
         const layerName = 'random_points';
 
         await project.openAttributeTable(layerName);
-        await expect(project.attributeTableWrapper(layerName).locator('div.dataTables_info'))
+        await expect(project.attributeTableWrapper(layerName).locator('div.dt-info'))
             .toContainText('Showing 1 to 50 of 700 entries');
         await expect(project.attributeTableHtml(layerName).locator('tbody tr'))
             .toHaveCount(50);
-        await expect(project.attributeTableWrapper(layerName).locator('ul.pagination > li.paginate_button'))
+        await expect(project.attributeTableWrapper(layerName).locator('ul.pagination > li.dt-paging-button'))
             .toHaveCount(9);
-        // click on last page which is the previous last paginate_button
+        // click on last page which is the previous last dt-paging-button
         await project.attributeTableWrapper(layerName).hover();
-        project.attributeTableWrapper(layerName).locator('ul.pagination > li.paginate_button:nth-last-child(-0n+2)').dispatchEvent('click');
-        await expect(project.attributeTableWrapper(layerName).locator('div.dataTables_info'))
+        project.attributeTableWrapper(layerName).locator('ul.pagination > li.dt-paging-button:nth-last-child(-0n+2) > button').dispatchEvent('click');
+        await expect(project.attributeTableWrapper(layerName).locator('div.dt-info'))
             .toContainText('Showing 651 to 700 of 700 entries');
     });
 
     test('Data filtered by extent', async ({ page }) => {
         const project = new ProjectPage(page, 'attribute_table');
+        await project.open();
         const layerName = 'Les_quartiers_a_Montpellier';
         const datatablesRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('draw') === true);
         await project.openAttributeTable(layerName);
