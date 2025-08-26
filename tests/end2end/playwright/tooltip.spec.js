@@ -48,8 +48,29 @@ test.describe('Tooltip @readonly', () => {
         // wait for the response completed
         const response = await responsePromise;
         await response.finished();
-        // TODO to be fixed - a message is displayed because fields is not translated to template
-        await expect(page.locator('#message')).toBeVisible();
+        await expect(response.status()).toBe(200);
+        expect(response.headers()['content-type']).toBe('application/json');
+        // check body
+        const body = await response.json();
+        expect(body).toHaveProperty('type');
+        expect(body['type']).toBe('FeatureCollection');
+        expect(body).toHaveProperty('features');
+        expect(body['features']).toHaveLength(7);
+        // check features (use soft assertion to test all properties)
+        for (const feature of body['features']) {
+            expect.soft(feature).toHaveProperty('id');
+            expect.soft(feature).toHaveProperty('geometry');
+            expect.soft(feature).toHaveProperty('properties');
+            expect.soft(feature['properties']).toHaveProperty('tooltip');
+            // Test content is a table
+            expect.soft(feature['properties']['tooltip']).toContain('<table');
+            // Test alias is used
+            expect.soft(feature['properties']['tooltip']).toContain(
+                `<th>ID</th><td>${feature['id']}</td>`
+            );
+        }
+        // NO error message displayed
+        await expect(page.locator('#message')).not.toBeVisible();
     });
 
     test('Mocking error', async ({ page }) => {
