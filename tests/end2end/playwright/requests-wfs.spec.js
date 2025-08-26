@@ -1,7 +1,7 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 
-test.describe('WFS Requests @readonly', () => {
+test.describe('WFS Requests @requests @readonly', () => {
     test('WFS Getcapabilities', async({ request }) => {
         let params = new URLSearchParams({
             repository: 'testsrepository',

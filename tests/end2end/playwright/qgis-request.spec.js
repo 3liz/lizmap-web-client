@@ -1,7 +1,7 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 
-test.describe('QGIS Requests', () => {
+test.describe('QGIS Requests @requests @readonly', () => {
     test('WMS Get Legend Graphic JSON', async ({ request }) => {
         // GetLegendGraphic request for a layer with a single symbol
         let params = new URLSearchParams({
