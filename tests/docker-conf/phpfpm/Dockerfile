@@ -19,7 +19,7 @@ RUN apt-get install -y ca-certificates curl gnupg \
     && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
     && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_18.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list \
     && apt-get update \
-    && apt-get install nodejs -y
+    && apt-get install nodejs libfcgi-bin -y
 
 RUN set -eux; \
     mkdir -p /etc/openldap/ /etc/ssl/ldap/; \
@@ -33,6 +33,17 @@ COPY lizmap-entrypoint.sh /bin/entrypoint.d/
 COPY appctl.sh /bin/
 COPY profile.start /etc/profile.d/start
 COPY xdebug.ini /etc/php/${PHP_VERSION}/fpm/conf.d/90-xdebug.ini
-RUN chmod 755 /bin/entrypoint.d/lizmap-entrypoint.sh /bin/appctl.sh
+
+## Install healtcheck script
+COPY php-fpm-healthcheck /usr/local/bin/
+
+RUN chmod 755 /bin/entrypoint.d/lizmap-entrypoint.sh /bin/appctl.sh /usr/local/bin/php-fpm-healthcheck
+
+HEALTHCHECK \
+    --interval=30s \
+    --timeout=30s \
+    --start-interval=2s \
+    --start-period=10s \
+    CMD php-fpm-healthcheck || exit 1
 
 WORKDIR /srv/lzm/

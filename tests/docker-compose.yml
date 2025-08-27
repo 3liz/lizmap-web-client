@@ -15,6 +15,12 @@ services:
       default:
         aliases:
           - db.lizmap.local
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready || exit 1"]
+      interval: 30s
+      timeout: 30s
+      start_interval: 2s
+      start_period: 10s
   redis:
     image: redis:7-alpine
     container_name: "lizmap${LZMBRANCH}_test_redis"
@@ -49,8 +55,12 @@ services:
       - { type: bind, source: ./docker-conf/pg_service.conf, target: /srv/etc/pg_service.conf }
       - { type: bind, source: ./docker-conf/phpfpm/admin.conf, target: /srv/etc/admin.conf }
     depends_on:
-      - pgsql
-      - redis
+      pgsql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      map:
+        condition: service_started
   web:
     image: nginx:alpine
     container_name: "lizmap${LZMBRANCH}_test_nginx"
@@ -66,7 +76,8 @@ services:
     ports:
       - ${LZMWEBPORT}:80
     depends_on:
-      - lizmap
+      lizmap:
+        condition: service_healthy
   map:
     container_name: "lizmap${LZMBRANCH}_test_qgis"
     image: 3liz/qgis-map-server:${LZMQGSRVVERSION}
