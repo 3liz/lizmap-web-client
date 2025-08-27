@@ -183,6 +183,41 @@ export class ProjectPage extends BasePage {
     }
 
     /**
+     * Waits for a GetSelectionToken request
+     * @returns {Promise<Request>} The GetSelectionToken request
+     */
+    async waitForGetSelectionTokenRequest() {
+        return this.page.waitForRequest(
+            request => request.method() === 'POST' &&
+            request.postData()?.includes('WMS') === true &&
+            request.postData()?.includes('GETSELECTIONTOKEN') === true
+        );
+    }
+
+    /**
+     * Waits for a GetFeature request
+     * @returns {Promise<Request>} The GetFeature request
+     */
+    async waitForGetFeatureRequest() {
+        return this.page.waitForRequest(
+            request => request.method() === 'POST' &&
+            request.postData()?.includes('WFS') === true &&
+            request.postData()?.includes('GetFeature') === true
+        );
+    }
+
+    /**
+     * Waits for a GetPlot request
+     * @returns {Promise<Request>} The GetFeature request
+     */
+    async waitForGetPlotRequest() {
+        return this.page.waitForRequest(
+            request => request.method() === 'POST' &&
+            request.postData()?.includes('getPlot') === true
+        );
+    }
+
+    /**
      * open function
      * Open the URL for the given project and repository
      * @param {boolean} skip_plugin_update_warning Skip UI warning about QGIS plugin version, false by default.

@@ -201,35 +201,6 @@ export async function expectToHaveLengthCompare(title, parameters, expectedLengt
 }
 
 /**
-<<<<<<< HEAD
-=======
- * Get the JSON for the given project using the API
- * @param {APIRequestContext} request Request to use
- * @param {string} project The project name
- * @param {string} repository The repository name, default to "testsrepository".
- * @returns {Promise<any>} The JSON response
- */
-export async function jsonFromProjectApi(request, project, repository = 'testsrepository') {
-    return await requestGETWithAdminBasicAuth(
-        request,
-        `/api.php/admin/repositories/${repository}/projects/${project}`
-    );
-}
-
-/**
- * Get the version of QGIS written in the project
- * @param {APIRequestContext} request Request to use
- * @param {string} project The project name
- * @returns {Promise<int>} The QGIS version, written as "34004" for QGIS 3.40.4, to be easily sortable.
- */
-export async function qgisVersionFromProjectApi(request, project) {
-    const response = await jsonFromProjectApi(request, project);
-    const json = await checkJson(response);
-    return json.versionInt;
-}
-
-/**
->>>>>>> e3f0efd95 (Tests e2e Playwright: global docstring and eslint check fixing)
  * Check for a JSON response
  * @param {APIResponse} response The response object
  * @param {int} status The expected HTTP status code
@@ -237,7 +208,7 @@ export async function qgisVersionFromProjectApi(request, project) {
  */
 export async function checkJson(response, status = 200) {
     if (status < 400){
-        expect(response.ok()).toBeTruthy();
+        expect(response.ok(), 'Status: '+response.status()+' Content: '+(await response.text())).toBeTruthy();
     }
     expect(response.status()).toBe(status);
     expect(response.headers()['content-type']).toBe('application/json');
