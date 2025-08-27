@@ -130,8 +130,14 @@ test.describe('Dataviz API tests',
 
             expect(json).toHaveProperty('layout')
         });
+    });
 
-        test('Test JSON data filtered for plot in popup - Number of bakeries by polygon', async ({request}) => {
+test.describe('Dataviz API tests JSON data filtered for plot in popup',
+    {
+        tag: ['@requests', '@readonly'],
+    }, () => {
+
+        test('Number of bakeries by polygon', async ({request}) => {
             const projParams = new URLSearchParams({
                 repository: 'testsrepository',
                 project: 'dataviz_filtered_in_popup',
@@ -160,6 +166,90 @@ test.describe('Dataviz API tests',
             expect(data[0].y).toEqual(expect.arrayContaining([73, 79, 126, 195]) );
 
             expect(json).toHaveProperty('layout')
+        });
+
+        test('popup_bar users of point 1', async ({request}) => {
+            const projParams = new URLSearchParams({
+                repository: 'testsrepository',
+                project: 'popup_bar',
+            });
+            const response = await request.get(
+                `${url}?${projParams}`,
+                {
+                    params:{
+                        'request': 'getPlot',
+                        'plot_id': '0',
+                        'exp_filter': `"fid_point" IN ('1')`,
+                    }
+                });
+            const json = await checkJson(response);
+
+            expect(json).toHaveProperty('title', 'users');
+            expect(json).toHaveProperty('data');
+
+            // check data
+            const data = json.data;
+            expect(data).toHaveLength(1);
+            expect(data[0]).toHaveProperty('type', 'scattergl');
+            expect(data[0]).toHaveProperty('x');
+            expect(data[0].x).toEqual(expect.arrayContaining(["2024-04-04", "2024-04-18", "2024-04-30"]));
+            expect(data[0]).toHaveProperty('y');
+            expect(data[0].y).toEqual(expect.arrayContaining([10, 15, 1]) );
+
+            expect(json).toHaveProperty('layout')
+        });
+
+        test('popup_bar users of point 2', async ({request}) => {
+            const projParams = new URLSearchParams({
+                repository: 'testsrepository',
+                project: 'popup_bar',
+            });
+            const response = await request.get(
+                `${url}?${projParams}`,
+                {
+                    params:{
+                        'request': 'getPlot',
+                        'plot_id': '0',
+                        'exp_filter': `"fid_point" IN ('2')`,
+                    }
+                });
+            const json = await checkJson(response);
+
+            expect(json).toHaveProperty('title', 'users');
+            expect(json).toHaveProperty('data');
+
+            // check data
+            const data = json.data;
+            expect(data).toHaveLength(1);
+            expect(data[0]).toHaveProperty('type', 'scattergl');
+            expect(data[0]).toHaveProperty('x');
+            expect(data[0].x).toEqual(expect.arrayContaining(["2024-04-04", "2024-04-30"]));
+            expect(data[0]).toHaveProperty('y');
+            expect(data[0].y).toEqual(expect.arrayContaining([45, 89]) );
+
+            expect(json).toHaveProperty('layout')
+        });
+
+        test('popup_bar users of point 3 - empty', async ({request}) => {
+            const projParams = new URLSearchParams({
+                repository: 'testsrepository',
+                project: 'popup_bar',
+            });
+            const response = await request.get(
+                `${url}?${projParams}`,
+                {
+                    params:{
+                        'request': 'getPlot',
+                        'plot_id': '0',
+                        'exp_filter': `"fid_point" IN ('3')`,
+                    }
+                });
+            const json = await checkJson(response, 404);
+            expect(json).toHaveProperty('errors');
+            // check errors
+            const errors = json.errors;
+            expect(errors).toHaveProperty('code', 404);
+            expect(errors).toHaveProperty('error_code', 'no_data');
         });
     });
 
