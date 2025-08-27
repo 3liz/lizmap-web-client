@@ -5,73 +5,117 @@ import { ProjectPage } from "./pages/project";
 
 test.describe('Dataviz in popup', () => {
     test('Check lizmap feature toolbar', async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=popup_bar';
-        await gotoMap(url, page);
+        const project = new ProjectPage(page, 'popup_bar');
+        await project.open();
 
-        await page.locator("#dock-close").click();
-
+        // Prepare the page
+        await project.closeLeftDock();
         await page.waitForTimeout(300);
 
-        let getPlot = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('getPlot') === true);
+        // Click on the map and wait for GetFeatureInfo
+        let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
+        await project.clickOnMap(355, 280);
+        let getFeatureInfo = await getFeatureInfoPromise;
+        await getFeatureInfo.response();
 
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 355,
-                y: 280
-            }
-        });
+        // Check the GetPlot request
+        let getPlot = project.waitForGetPlotRequest();
+        let getPlotRequest = await getPlot;
+        await expect(getPlotRequest.headers()).toHaveProperty('content-type', 'application/json');
+        let postData = getPlotRequest.postDataJSON();
+        await expect(postData).toHaveProperty('request', 'getPlot');
+        await expect(postData).toHaveProperty('plot_id', 0);
+        await expect(postData).toHaveProperty('exp_filter', `"fid_point" IN ('1')`);
+        await getPlotRequest.response();
 
-        await getPlot;
+        // inspect feature toolbar and dataviz, expect to find only one
+        await expect(project.popupContent.locator("div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > lizmap-feature-toolbar .feature-toolbar")).toHaveCount(1)
+        await expect(project.popupContent.locator("div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > div.lizdataviz")).toHaveCount(1)
+        await expect(project.popupContent.locator("div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > div.lizdataviz")).toBeVisible()
 
-        // inspect feature toolbar, expect to find only one
-        await expect(page.locator("#popupcontent > div.menu-content > div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > lizmap-feature-toolbar .feature-toolbar")).toHaveCount(1)
+        // click again on the same point and wait for GetFeatureInfo
+        getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
+        await project.clickOnMap(355, 280);
+        getFeatureInfo = await getFeatureInfoPromise;
+        await getFeatureInfo.response();
 
-        // click again on the same point
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 355,
-                y: 280
-            }
-        });
+        // Check that the GetPlot request is the same
+        getPlot = project.waitForGetPlotRequest();
+        getPlotRequest = await getPlot;
+        await expect(getPlotRequest.headers()).toHaveProperty('content-type', 'application/json');
+        postData = getPlotRequest.postDataJSON();
+        await expect(postData).toHaveProperty('request', 'getPlot');
+        await expect(postData).toHaveProperty('plot_id', 0);
+        await expect(postData).toHaveProperty('exp_filter', `"fid_point" IN ('1')`);
+        await getPlotRequest.response();
 
-        await getPlot;
-        // inspect feature toolbar, expect to find only one
-        await expect(page.locator("#popupcontent > div.menu-content > div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > lizmap-feature-toolbar .feature-toolbar")).toHaveCount(1)
+        // inspect feature toolbar and dataviz, expect to find only one
+        await expect(project.popupContent.locator("div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > lizmap-feature-toolbar .feature-toolbar")).toHaveCount(1)
+        await expect(project.popupContent.locator("div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > div.lizdataviz")).toHaveCount(1)
+        await expect(project.popupContent.locator("div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > div.lizdataviz")).toBeVisible()
 
-        // click on another point
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 410,
-                y: 216
-            }
-        });
+        // click on another point and wait for GetFeatureInfo
+        getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
+        await project.clickOnMap(410, 216);
+        getFeatureInfo = await getFeatureInfoPromise;
+        await getFeatureInfo.response();
 
-        await getPlot;
-        // inspect feature toolbar, expect to find only one
-        await expect(page.locator("#popupcontent > div.menu-content > div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > lizmap-feature-toolbar .feature-toolbar")).toHaveCount(1)
+        // Check that the GetPlot request is an other one
+        getPlot = project.waitForGetPlotRequest();
+        getPlotRequest = await getPlot;
+        await expect(getPlotRequest.headers()).toHaveProperty('content-type', 'application/json');
+        postData = getPlotRequest.postDataJSON();
+        await expect(postData).toHaveProperty('request', 'getPlot');
+        await expect(postData).toHaveProperty('plot_id', 0);
+        await expect(postData).toHaveProperty('exp_filter', `"fid_point" IN ('2')`);
+        await getPlotRequest.response();
 
-        // click where there is no feature
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 410,
-                y: 300
-            }
-        });
+        // inspect feature toolbar and dataviz, expect to find only one
+        await expect(project.popupContent.locator("div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > lizmap-feature-toolbar .feature-toolbar")).toHaveCount(1)
+        await expect(project.popupContent.locator("div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > div.lizdataviz")).toHaveCount(1)
+        await expect(project.popupContent.locator("div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > div.lizdataviz")).toBeVisible()
 
-        await page.waitForTimeout(500);
+        // click where there is a point without plot and wait for GetFeatureInfo
+        getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
+        await project.clickOnMap(410, 300);
+        getFeatureInfo = await getFeatureInfoPromise;
+        await getFeatureInfo.response();
 
-        // reopen previous popup
-        await page.locator('#newOlMap').click({
-            position: {
-                x: 410,
-                y: 216
-            }
-        });
+        // Check that the GetPlot request is an other one
+        getPlot = project.waitForGetPlotRequest();
+        getPlotRequest = await getPlot;
+        await expect(getPlotRequest.headers()).toHaveProperty('content-type', 'application/json');
+        postData = getPlotRequest.postDataJSON();
+        await expect(postData).toHaveProperty('request', 'getPlot');
+        await expect(postData).toHaveProperty('plot_id', 0);
+        await expect(postData).toHaveProperty('exp_filter', `"fid_point" IN ('3')`);
+        await getPlotRequest.response();
 
-        await getPlot;
-        // inspect feature toolbar, expect to find only one
-        await expect(page.locator("#popupcontent > div.menu-content > div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > lizmap-feature-toolbar .feature-toolbar")).toHaveCount(1)
+        // inspect feature toolbar and dataviz, expect to find one feature toolbar and no dataviz
+        await expect(project.popupContent.locator("div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > lizmap-feature-toolbar .feature-toolbar")).toHaveCount(1)
+        await expect(project.popupContent.locator("div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > div.lizdataviz")).toHaveCount(1)
+        await expect(project.popupContent.locator("div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > div.lizdataviz")).not.toBeVisible()
 
+        // reopen previous popup and wait for GetFeatureInfo
+        getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
+        await project.clickOnMap(410, 216);
+        getFeatureInfo = await getFeatureInfoPromise;
+        await getFeatureInfo.response();
+
+        // Check that the GetPlot request is the same as the last one
+        getPlot = project.waitForGetPlotRequest();
+        getPlotRequest = await getPlot;
+        await expect(getPlotRequest.headers()).toHaveProperty('content-type', 'application/json');
+        postData = getPlotRequest.postDataJSON();
+        await expect(postData).toHaveProperty('request', 'getPlot');
+        await expect(postData).toHaveProperty('plot_id', 0);
+        await expect(postData).toHaveProperty('exp_filter', `"fid_point" IN ('2')`);
+        await getPlotRequest.response();
+
+        // inspect feature toolbar and dataviz, expect to find only one
+        await expect(project.popupContent.locator("div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > lizmap-feature-toolbar .feature-toolbar")).toHaveCount(1)
+        await expect(project.popupContent.locator("div.lizmapPopupContent > div.lizmapPopupSingleFeature > div.lizmapPopupDiv > div.lizdataviz")).toHaveCount(1)
+        await expect(project.popupContent.locator("div.lizmapPopupSingleFeature > div.lizmapPopupDiv > div.lizdataviz")).toBeVisible()
 
     })
 })
