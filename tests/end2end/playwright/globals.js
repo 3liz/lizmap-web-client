@@ -134,7 +134,8 @@ export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 
     });
 
     // Wait for WMS GetCapabilities
-    await getCapabilitiesWMSPromise;
+    let getCapabilitiesWMSRequest = await getCapabilitiesWMSPromise;
+    await getCapabilitiesWMSRequest.response();
     if (mapMustLoad) {
         if (waitForGetLegendGraphic) {
             // Wait for WMS GetLegendGraphic promise
@@ -184,7 +185,9 @@ export async function reloadMap(page, check = true) {
     });
 
     // Wait for WMS GetCapabilities
-    await getCapabilitiesWMSPromise;
+    let getCapabilitiesWMSRequest = await getCapabilitiesWMSPromise;
+    await getCapabilitiesWMSRequest.response();
+
     if (check) {
         // Wait for WMS GetLegendGraphic promise
         const getLegendGraphicPromise = page.waitForRequest(
