@@ -49,7 +49,7 @@ env:
 	EOF
 
 build-plugins:
-	docker run \
+	docker run -q \
 	    -u $(LIZMAP_USER_ID):$(LIZMAP_GROUP_ID) \
 	    --rm -i \
 	    -e QGSRV_SERVER_PLUGINPATH=/srv/plugins \
@@ -61,12 +61,12 @@ build-plugins:
 	    3liz/qgis-map-server:${LZMQGSRVVERSION} \
 
 show-qgis-server-versions:
-	docker run \
+	@docker run -q \
 	    --rm -i \
 	    --entrypoint qgisserver \
 	    3liz/qgis-map-server:${LZMQGSRVVERSION} \
 	    --version
-	docker run \
+	@docker run -q \
 	    -u $(LIZMAP_USER_ID):$(LIZMAP_GROUP_ID) \
 	    --rm -i \
 	    -e QGSRV_SERVER_PLUGINPATH=/srv/plugins \
@@ -79,7 +79,7 @@ show-qgis-server-versions:
 
 upgrade-projects:
 	@echo "Upgrading all projects in qgis-projects/tests to ${LZMQGSRVVERSION}"
-	docker run \
+	@docker run -q \
 	    -u $(LIZMAP_USER_ID):$(LIZMAP_GROUP_ID) \
 	    --rm -i \
 	    -v $(shell pwd)/qgis-server-plugins:/srv/plugins \
