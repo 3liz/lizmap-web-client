@@ -32,8 +32,10 @@ test.describe('Treeview', () => {
             return;
         });
         await page.goto(url);
+
         // Wait for WMS GetCapabilities
-        await getCapabilitiesWMSPromise;
+        let getCapabilitiesWMSRequest = await getCapabilitiesWMSPromise;
+        await getCapabilitiesWMSRequest.response();
 
         // Wait for WMS GetMap
         // at least 2 GetMap requests are expected
@@ -280,7 +282,8 @@ test.describe('Treeview mocked', () => {
             await page.goto(url);
 
             // Wait for WMS GetCapabilities
-            await getCapabilitiesWMSPromise;
+            let getCapabilitiesWMSRequest = await getCapabilitiesWMSPromise;
+            await getCapabilitiesWMSRequest.response();
 
             // Wait for WMS GetLegendGraphic
             // At least 2 GetLegendGraphic requests on 6
@@ -387,7 +390,8 @@ test.describe('Treeview mocked', () => {
             await page.goto(url);
 
             // Wait for WMS GetCapabilities
-            await getCapabilitiesWMSPromise;
+            let getCapabilitiesWMSRequest = await getCapabilitiesWMSPromise;
+            await getCapabilitiesWMSRequest.response();
 
             // Wait for WMS GetMap
             // At least 2 GetMap requests
