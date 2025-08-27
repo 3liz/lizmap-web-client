@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 import { gotoMap } from './globals';
 import { ProjectPage } from "./pages/project";
 
-test.describe('Dataviz in popup', () => {
+test.describe('Dataviz in popup @readonly', () => {
     test('Check lizmap feature toolbar', async ({ page }) => {
         const project = new ProjectPage(page, 'popup_bar');
         await project.open();
