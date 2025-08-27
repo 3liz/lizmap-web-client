@@ -208,7 +208,7 @@ export async function expectToHaveLengthCompare(title, parameters, expectedLengt
  */
 export async function checkJson(response, status = 200) {
     if (status < 400){
-        expect(response.ok()).toBeTruthy();
+        expect(response.ok(), 'Status: '+response.status()+' Content: '+(await response.text())).toBeTruthy();
     }
     expect(response.status()).toBe(status);
     expect(response.headers()['content-type']).toBe('application/json');
