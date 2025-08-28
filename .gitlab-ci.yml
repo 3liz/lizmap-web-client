@@ -148,7 +148,7 @@ deploy-docker-unstable:
   image: ${REGISTRY_URL}/factory-ci-runner:factory-ci
   stage: deploy
   script:
-    - update-service lizmap
+    - update-service lizmap org/infrav3
   environment:
     name: snap
   dependencies:
