@@ -32,8 +32,10 @@ test.describe('Treeview', () => {
             return;
         });
         await page.goto(url);
+
         // Wait for WMS GetCapabilities
-        await getCapabilitiesWMSPromise;
+        let getCapabilitiesWMSRequest = await getCapabilitiesWMSPromise;
+        await getCapabilitiesWMSRequest.response();
 
         // Wait for WMS GetMap
         // at least 2 GetMap requests are expected
@@ -280,18 +282,20 @@ test.describe('Treeview mocked', () => {
             await page.goto(url);
 
             // Wait for WMS GetCapabilities
-            await getCapabilitiesWMSPromise;
+            let getCapabilitiesWMSRequest = await getCapabilitiesWMSPromise;
+            await getCapabilitiesWMSRequest.response();
 
             // Wait for WMS GetLegendGraphic
             // At least 2 GetLegendGraphic requests on 6
             // no more timed out request because no more POST requests
             let timeCount = 0;
+            let timeStep = 100;
             while (GetLegends.length < 3) {
-                timeCount += 100;
+                timeCount += timeStep;
                 if (timeCount > 1000) {
                     break;
                 }
-                await page.waitForTimeout(100);
+                await page.waitForTimeout(timeStep);
             }
 
             await expect(timedOutRequest.length).toBeGreaterThanOrEqual(0);
@@ -387,17 +391,19 @@ test.describe('Treeview mocked', () => {
             await page.goto(url);
 
             // Wait for WMS GetCapabilities
-            await getCapabilitiesWMSPromise;
+            let getCapabilitiesWMSRequest = await getCapabilitiesWMSPromise;
+            await getCapabilitiesWMSRequest.response();
 
             // Wait for WMS GetMap
             // At least 2 GetMap requests
             let timeCount = 0;
-            while (GetMaps.length < 2) {
-                timeCount += 100;
+            let timeStep = 100;
+            while (GetMaps.length < 3) {
+                timeCount += timeStep;
                 if (timeCount > 1000) {
                     break;
                 }
-                await page.waitForTimeout(100);
+                await page.waitForTimeout(timeStep);
             }
 
             await expect(timedOutRequest.length).toBe(0);
@@ -425,12 +431,12 @@ test.describe('Treeview mocked', () => {
             // At least 2 GetLegendGraphic requests on 6
             // no more timed out request because no more POST requests
             timeCount = 0;
-            while (GetLegends.length < 2) {
-                timeCount += 100;
+            while (GetLegends.length < 3) {
+                timeCount += timeStep;
                 if (timeCount > 1000) {
                     break;
                 }
-                await page.waitForTimeout(100);
+                await page.waitForTimeout(timeStep);
             }
 
             await expect(timedOutRequest.length).toBeGreaterThanOrEqual(0);
