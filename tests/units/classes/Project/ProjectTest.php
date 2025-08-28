@@ -2,6 +2,7 @@
 
 use Lizmap\Project;
 use Lizmap\Project\ProjectFilesFinder;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -55,6 +56,7 @@ class ProjectTest extends TestCase
      * @param mixed $key
      * @param mixed $expectedPath
      */
+    #[DataProvider('getQgisPathData')]
     public function testGetQgisPath($repPath, $key, $expectedPath): void
     {
         $rep = new Project\Repository($key, array('path' => $repPath), null, null, null);
@@ -81,6 +83,7 @@ class ProjectTest extends TestCase
      * @param mixed $file
      * @param mixed $expectedPath
      */
+    #[DataProvider('getRelativeQgisPathData')]
     public function testGetRelativeQgisPath($relative, $root, $file, $expectedPath): void
     {
         $services = new lizmapServices(
@@ -137,6 +140,7 @@ class ProjectTest extends TestCase
      * @param mixed $attributeLayers
      * @param mixed $expectedReturn
      */
+    #[DataProvider('getAttributeLayersData')]
     public function testHasAttributeLayer($only, $attributeLayers, $expectedReturn): void
     {
         $config = new Project\ProjectConfig((object) array('attributeLayers' => $attributeLayers));
@@ -206,6 +210,7 @@ class ProjectTest extends TestCase
      * @param mixed $unset
      * @param mixed $expectedRet
      */
+    #[DataProvider('getEditionLayersData')]
     public function testHasEditionLayers($editionLayers, $acl, $unset, $expectedRet): void
     {
         $eLayers = clone $editionLayers;
@@ -257,6 +262,7 @@ class ProjectTest extends TestCase
      * @param mixed $ln
      * @param mixed $expectedLn
      */
+    #[DataProvider('getLoginFilteredData')]
     public function testGetLoginFilteredConfig($lfLayers, $layers, $ln, $expectedLn): void
     {
         $config = new Project\ProjectConfig((object) array(
@@ -301,6 +307,7 @@ class ProjectTest extends TestCase
      * @param mixed $aclData
      * @param mixed $expectedFilters
      */
+    #[DataProvider('getFiltersData')]
     public function testGetLoginFilters($aclData, $expectedFilters): void
     {
         $data = array(
@@ -361,6 +368,7 @@ class ProjectTest extends TestCase
      * @param mixed $aclData
      * @param mixed $expectedFilters
      */
+    #[DataProvider('getFiltersDataNotMultiple')]
     public function testGetLoginFiltersNotMultiple($aclData, $expectedFilters): void
     {
         $data = array(
@@ -439,6 +447,7 @@ class ProjectTest extends TestCase
      * @param mixed $needGoogle
      * @param mixed $gKey
      */
+    #[DataProvider('getGoogleData')]
     public function testGoogle($options, $needGoogle, $gKey): void
     {
         $config = new Project\ProjectConfig((object) array('options' => $options));
@@ -493,6 +502,7 @@ class ProjectTest extends TestCase
      * @param mixed $options
      * @param mixed $expectedRet
      */
+    #[DataProvider('getCheckAclData')]
     public function testCheckAcl($aclData, $options, $expectedRet): void
     {
         $rep = new Project\Repository('key', array(), null, null, null);
@@ -547,6 +557,7 @@ class ProjectTest extends TestCase
      *
      * @param mixed $repoName
      */
+    #[DataProvider('userFiles4Projets')]
     public function testFinder(string $projectName, $repoName, array $projectData, array $expectedFiles): void
     {
         $repo = new Project\Repository(
@@ -740,6 +751,7 @@ class ProjectTest extends TestCase
      * @param mixed $attributeLayers
      * @param mixed $expectedResponse
      */
+    #[DataProvider('getAttributeLayersForExport')]
     public function testExportLayer($aclData, $groups, $attributeLayers, $expectedResponse): void
     {
         $context = new ContextForTests();

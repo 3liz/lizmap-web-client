@@ -3,6 +3,7 @@
 use Lizmap\Project\Repository;
 use Lizmap\Request\OGCResponse;
 use Lizmap\Request\WMSRequest;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -69,6 +70,7 @@ class WMSRequestTest extends TestCase
      * @param mixed $filter
      * @param mixed $expectedFilter
      */
+    #[DataProvider('getParametersWithFilterData')]
     public function testParametersWithFilters($loginFilter, $filter, $expectedFilter): void
     {
         $testContext = new ContextForTests();
@@ -155,6 +157,7 @@ class WMSRequestTest extends TestCase
      * @param mixed $url
      * @param mixed $expectedResponse
      */
+    #[DataProvider('getGetContextData')]
     public function testGetContext($response, $url, $expectedResponse): void
     {
         $testContext = new ContextForTests();
@@ -197,6 +200,7 @@ class WMSRequestTest extends TestCase
      * @param mixed $useServices
      * @param mixed $expectedBool
      */
+    #[DataProvider('getCheckMaximumWidthHeightData')]
     public function testCheckMaximumWidthHeight($width, $maxWidth, $height, $maxHeight, $useServices, $expectedBool): void
     {
         $params = array(
@@ -238,6 +242,7 @@ class WMSRequestTest extends TestCase
      * @param mixed $expectedUseCache
      * @param mixed $expectedWmsClient
      */
+    #[DataProvider('getUseCacheData')]
     public function testUseCache($params, $cacheDriver, $cached, $expectedUseCache, $expectedWmsClient): void
     {
         $testContext = new ContextForTests();
