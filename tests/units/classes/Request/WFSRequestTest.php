@@ -2,6 +2,7 @@
 
 use Lizmap\Project\Repository;
 use Lizmap\Request\WFSRequest;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -83,6 +84,7 @@ class WFSRequestTest extends TestCase
      * @param mixed $loginFilters
      * @param mixed $expectedParameters
      */
+    #[DataProvider('getParametersWithFiltersData')]
     public function testParametersWithFilters($params, $loginFilters, $expectedParameters): void
     {
         $testContext = new ContextForTests();
@@ -123,6 +125,7 @@ class WFSRequestTest extends TestCase
      * @param mixed $expectedExpFilter
      * @param mixed $layerOptions
      */
+    #[DataProvider('getGetFeatureIdFilterExpData')]
     public function testGetFeatureIdFilterExp($featureid, $typename, $expectedExpFilter, $layerOptions): void
     {
         $wfs = new WFSRequestForTests();
@@ -169,6 +172,7 @@ class WFSRequestTest extends TestCase
      * @param mixed $expectedSelectFields
      * @param mixed $expectedSql
      */
+    #[DataProvider('getBuildQueryBaseData')]
     public function testBuildQueryBase($params, $wfsFields, $expectedSelectFields, $expectedSql): void
     {
         $cnx = new jDbConnectionForTests();
@@ -201,6 +205,7 @@ class WFSRequestTest extends TestCase
      * @param mixed $params
      * @param mixed $expectedSql
      */
+    #[DataProvider('getGetBboxSqlData')]
     public function testGetBboxSql($geocol, $params, $expectedSql): void
     {
         $wfs = new WFSRequestForTests();
@@ -230,6 +235,7 @@ class WFSRequestTest extends TestCase
      * @param mixed $key
      * @param mixed $expectedSql
      */
+    #[DataProvider('getParseExpFilterData')]
     public function testParseExpFilter($params, $key, $expectedSql): void
     {
         $wfs = new WFSRequestForTests();
@@ -257,6 +263,7 @@ class WFSRequestTest extends TestCase
      * @param mixed $keys
      * @param mixed $expectedSql
      */
+    #[DataProvider('getParseFeatureData')]
     public function testParseFeatureId($typename, $featureId, $keys, $expectedSql): void
     {
         $params = array(
@@ -286,6 +293,7 @@ class WFSRequestTest extends TestCase
      * @param mixed $wfsFields
      * @param mixed $expectedSql
      */
+    #[DataProvider('getGetQueryOrderData')]
     public function testGetQueryOrder($params, $wfsFields, $expectedSql): void
     {
         $wfs = new WFSRequestForTests();
@@ -329,6 +337,7 @@ class WFSRequestTest extends TestCase
      * @param mixed $filter
      * @param mixed $expectedResult
      */
+    #[DataProvider('getValidateExpressionFilterData')]
     public function testValidateExpressionFilter($filter, $expectedResult): void
     {
         $wfs = new WFSRequestForTests();
@@ -353,6 +362,7 @@ class WFSRequestTest extends TestCase
      * @param mixed $filter
      * @param mixed $expectedFilter
      */
+    #[DataProvider('getValidateFilterData')]
     public function testValidateFilter($filter, $expectedFilter): void
     {
         $wfs = new WFSRequestForTests();
@@ -378,6 +388,7 @@ class WFSRequestTest extends TestCase
      * @param mixed $sql
      * @param mixed $expectedSql
      */
+    #[DataProvider('getParseDatasourceSqlData')]
     public function testParseDatasourceSql($sql, $expectedSql): void
     {
         $wfs = new WFSRequestForTests();
