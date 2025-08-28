@@ -48,13 +48,12 @@ env:
 	SWAGGER_PORT=$(SWAGGER_UI_PORT)
 	EOF
 
-
 build-plugins:
 	docker run \
 	    -u $(LIZMAP_USER_ID):$(LIZMAP_GROUP_ID) \
 	    --rm -i \
 	    -e QGSRV_SERVER_PLUGINPATH=/srv/plugins \
-	    -e QGIS_PLUGIN_MANAGER_SOURCES_FILE=/tmp/sources-plugin-manager.list \
+	    -e QGIS_PLUGIN_MANAGER_SOURCES_FILE=/src/docker-conf/unstable-plugin-sources.list \
 	    -e QGIS_PLUGIN_MANAGER_CACHE_DIR=/tmp/cache-plugin-manager \
 	    -v $(shell pwd)/qgis-server-plugins:/srv/plugins \
 	    -v $(shell pwd)/:/src \
@@ -91,9 +90,29 @@ upgrade-projects:
 up: env
 	docker compose up  -V --force-recreate -d
 
+# Alias for 'up'
+run: up
+
 stop:
 	docker compose stop
 
 reset:
 	docker compose down -v --remove-orphans
 	./lizmap-ctl clean
+
+# install or update base images, to be sure we have the latest images
+build:: env
+	docker compose pull
+
+# install or update plugins, to be sure we have the latest plugins
+build:: build-plugins
+
+clean:
+	./lizmap-ctl clean
+
+# run docker
+# prepare lizmap
+# populate PostgreSQL database with testing data
+install: run
+	./lizmap-ctl install
+	./qgis-projects/tests/load_sql.sh
