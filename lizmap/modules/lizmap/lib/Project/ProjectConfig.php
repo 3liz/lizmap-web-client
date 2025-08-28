@@ -649,7 +649,7 @@ class ProjectConfig
                 $active = ($n == 0) ? 'active' : '';
 
                 if ($debug) {
-                    \jLog::log("Node {$subNode->name} - n = {$n} ET active = {$active}");
+                    \lizmap::getLogger()->debug("Node {$subNode->name} - n = {$n} ET active = {$active}");
                 }
                 $item = $prefix.'    <li class="nav-item" role="presentation">';
                 $item .= $prefix.'    <button class="nav-link '.$active.'" data-bs-target="#dataviz-dnd-'.$level.'-'.md5($subNode->name);
