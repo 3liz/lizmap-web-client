@@ -9,9 +9,8 @@ test.describe('Overview',
     }, () => {
 
         test('EPSG:2154', async ({ page }) => {
-            const requestPromise = page.waitForRequest(/GetMap/);
-
             const project = new ProjectPage(page, 'overview-2154');
+            const requestPromise = project.waitForGetMapRequest();
             await project.open();
 
             const request = await requestPromise;
@@ -29,12 +28,13 @@ test.describe('Overview',
                 'BBOX': /758432.36\d*,6273694.3\d*,782221.64\d*,6284973.7\d*/,
             }
             await expectParametersToContain('GetMap', request.url(), expectedParameters);
+            await request.response();
         });
 
         test('EPSG:4326', async ({ page }) => {
-            const requestPromise = page.waitForRequest(/GetMap/);
 
             const project = new ProjectPage(page, 'overview-4326');
+            const requestPromise = project.waitForGetMapRequest();
             await project.open();
 
             const request = await requestPromise;
@@ -52,12 +52,12 @@ test.describe('Overview',
                 'BBOX': /43.559491\d*,3.765259\d*,43.659592\d*,3.976380\d*/,
             }
             await expectParametersToContain('GetMap', request.url(), expectedParameters);
+            await request.response();
         });
 
         test('EPSG:3857', async ({ page }) => {
-            const requestPromise = page.waitForRequest(/GetMap/);
-
             const project = new ProjectPage(page, 'overview-3857');
+            const requestPromise = project.waitForGetMapRequest();
             await project.open();
 
             const request = await requestPromise;
@@ -75,5 +75,6 @@ test.describe('Overview',
                 'BBOX': /411699.32\d*,5396012.89\d*,450848.73\d*,5414575.11\d*/,
             }
             await expectParametersToContain('GetMap', request.url(), expectedParameters);
+            await request.response();
         });
     });
