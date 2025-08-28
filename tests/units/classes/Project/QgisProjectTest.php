@@ -3,6 +3,7 @@
 use Lizmap\App;
 use Lizmap\Project;
 use Lizmap\Project\Qgis;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 use function PHPUnit\Framework\assertContains;
@@ -220,6 +221,7 @@ class QgisProjectTest extends TestCase
      * @param mixed $id
      * @param mixed $key
      */
+    #[DataProvider('getLayerData')]
     public function testGetLayerDefinition($layers, $id, $key): void
     {
         $testProj = new qgisProjectForTests();
@@ -262,6 +264,7 @@ class QgisProjectTest extends TestCase
      * @param mixed $fileName
      * @param mixed $expectedELayer
      */
+    #[DataProvider('getReadEditionLayersData')]
     public function testReadEditionLayers($fileName, $expectedELayer): void
     {
         $file = __DIR__.'/Ressources/'.$fileName.'.qgs';
@@ -523,6 +526,7 @@ class QgisProjectTest extends TestCase
      * @param mixed $lname
      * @param mixed $sname
      */
+    #[DataProvider('getShortNamesData')]
     public function testSetShortNames($file, $lname, $sname): void
     {
         $layers = array(

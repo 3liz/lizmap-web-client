@@ -1,6 +1,7 @@
 <?php
 
 use Lizmap\Request;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -49,6 +50,7 @@ class ProxyTest extends TestCase
      * @param mixed $requestXml
      * @param mixed $expectedClass
      */
+    #[DataProvider('getBuildData')]
     public function testBuild($params, $requestXml, $expectedClass): void
     {
         $project = new ProjectForOGCForTests();
@@ -100,6 +102,7 @@ class ProxyTest extends TestCase
      * @param mixed $params
      * @param mixed $expectedData
      */
+    #[DataProvider('getNormalizeParamsData')]
     public function testNormalizeParams($params, $expectedData): void
     {
         $data = Request\Proxy::normalizeParams($params);
@@ -135,6 +138,7 @@ class ProxyTest extends TestCase
      * @param mixed $expectedUrl
      * @param mixed $url
      */
+    #[DataProvider('getConstructUrlData')]
     public function testConstructUrl($params, $expectedUrl, $url): void
     {
         $services = (object) array(
@@ -191,6 +195,7 @@ class ProxyTest extends TestCase
      * @param mixed $debug
      * @param mixed $expectedResult
      */
+    #[DataProvider('getBuildOptionsData')]
     public function testBuildOptions($options, $method, $debug, $expectedResult): void
     {
         $services = (object) array(
@@ -261,6 +266,7 @@ class ProxyTest extends TestCase
      * @param mixed      $expectedBody
      * @param null|mixed $expectedUrl
      */
+    #[DataProvider('getBuildHeadersData')]
     public function testBuildHeaders($options, $expectedHeaders, $expectedBody, $expectedUrl = null): void
     {
         $url = 'http://localhost?test=test';
@@ -295,6 +301,7 @@ class ProxyTest extends TestCase
      * @param mixed $expectedUser
      * @param mixed $expectedGroups
      */
+    #[DataProvider('getUserHttpHeadersData')]
     public function testUserHttpHeader($connected, $userSession, $userGroups, $expectedUser, $expectedGroups): void
     {
         $contextResult = array(
