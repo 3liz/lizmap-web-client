@@ -1,6 +1,7 @@
 <?php
 
 use Lizmap\Project;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -37,6 +38,7 @@ class projectConfigTest extends TestCase
      * @param mixed $data
      * @param mixed $expectedData
      */
+    #[DataProvider('getConstructData')]
     public function testConstruct($data, $expectedData): void
     {
         $testCfg = new Project\ProjectConfig($data);
@@ -83,6 +85,7 @@ class projectConfigTest extends TestCase
      * @param mixed $key
      * @param mixed $layerName
      */
+    #[DataProvider('getFindLayerData')]
     public function testFindLayer($layers, $key, $layerName): void
     {
         $testCfg = new Project\ProjectConfig($layers);
@@ -112,6 +115,7 @@ class projectConfigTest extends TestCase
      * @param mixed $eLayers
      * @param mixed $name
      */
+    #[DataProvider('getEditionLayerByNameData')]
     public function testGetEditionLayerByName($eLayers, $name): void
     {
         $testCfg = new Project\ProjectConfig($eLayers);
@@ -144,6 +148,7 @@ class projectConfigTest extends TestCase
      * @param mixed $id
      * @param mixed $eLayerName
      */
+    #[DataProvider('getEditionLayerByLayerIdData')]
     public function testGetEditionLayerByLayerId($eLayers, $id, $eLayerName): void
     {
         $testCfg = new Project\ProjectConfig($eLayers);
@@ -187,6 +192,7 @@ class projectConfigTest extends TestCase
      * @param mixed $option
      * @param mixed $expectedValue
      */
+    #[DataProvider('getOptionsValues')]
     public function testGetOption($option, $expectedValue): void
     {
         $file = __DIR__.'/Ressources/montpellier.qgs.cfg';

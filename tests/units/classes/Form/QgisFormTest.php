@@ -4,6 +4,7 @@ use Lizmap\Form\QgisFormControl;
 use Lizmap\Form\QgisFormControlProperties;
 use Lizmap\Project;
 use Lizmap\Project\Repository;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 require_once __DIR__.'/../../../../lizmap/vendor/jelix/jelix/lib/jelix/forms/jFormsBase.class.php';
@@ -140,6 +141,7 @@ class QgisFormTest extends TestCase
      * @param mixed $projectKey
      * @param mixed $layer
      */
+    #[DataProvider('getConstructData')]
     public function testConstruct($projectKey, $layer, $fields): void
     {
         $layer = $this->setUpEnv($projectKey, $layer, $fields);
@@ -174,6 +176,7 @@ class QgisFormTest extends TestCase
      * @param mixed $expressionResult
      * @param mixed $expectedResult
      */
+    #[DataProvider('getDefaultValuesData')]
     public function testGetDefaultValues($defaultValue, $expressionResult, $expectedResult): void
     {
         $formMock = $this->getMockBuilder(QgisFormForTests::class)->onlyMethods(array('evaluateExpression'))->getMock();
@@ -259,6 +262,7 @@ class QgisFormTest extends TestCase
      * @param mixed $expectedResult
      * @param mixed $allowWithoutGeom
      */
+    #[DataProvider('getCheckData')]
     public function testCheck($dbFieldsInfo, $check, $data, $evaluateExpression, $constraints, $allowWithoutGeom, $expectedResult): void
     {
         $mockFuncs = array('getAttributesEditorForm', 'getFieldValue', 'getConstraints', 'evaluateExpression');
@@ -435,6 +439,7 @@ class QgisFormTest extends TestCase
      * @param mixed $insert
      * @param mixed $expectedFields
      */
+    #[DataProvider('getFieldListData')]
     public function testGetFieldsList($eCaps, $formFields, $insert, $expectedFields): void
     {
         $dataFields = (object) array(
@@ -500,6 +505,7 @@ class QgisFormTest extends TestCase
      * @param mixed $expectedData
      * @param mixed $expectedRequired
      */
+    #[DataProvider('getFillControlUniqueData')]
     public function testFillControlFromUniqueValue($uniqueValues, $required, $setAttribute, $expectedData, $expectedRequired): void
     {
         $dbFieldValues = array('foo', 'bar');

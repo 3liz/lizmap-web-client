@@ -3,6 +3,7 @@
 use Jelix\IniFile\IniModifier;
 
 use Lizmap\Logger as Log;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -60,6 +61,7 @@ class ConfigTest extends TestCase
      * @param mixed $newData
      * @param mixed $expectedReturnValue
      */
+    #[DataProvider('getTestModifyData')]
     public function testModify($data, $newData, $expectedReturnValue): void
     {
         $testLizmapLogConfig = new ConfigForTests($data, $this->context, null);
@@ -103,6 +105,7 @@ class ConfigTest extends TestCase
      * @param mixed $changedValue
      * @param mixed $expectedReturnValue
      */
+    #[DataProvider('getTestSaveData')]
     public function testSave($data, $expectedData, $changedProp, $changedValue, $expectedReturnValue): void
     {
         $iniFile = __DIR__.'/../../tmp/logConfig.ini.php';
@@ -159,6 +162,7 @@ class ConfigTest extends TestCase
      * @param mixed $data
      * @param mixed $expectedList
      */
+    #[DataProvider('getTestGetLogItemListData')]
     public function testGetLogItemList($data, $expectedList): void
     {
         $testLizmapLogConfig = new Log\Config($data, $this->context, null);
@@ -203,6 +207,7 @@ class ConfigTest extends TestCase
      * @param mixed $key
      * @param mixed $valid
      */
+    #[DataProvider('getTestGetLogItemData')]
     public function testGetLogItem($data, $key, $valid): void
     {
         $testLizmapLogConfig = new Log\Config($data, $this->context, null);
