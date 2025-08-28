@@ -17,6 +17,7 @@ use Lizmap\Logger as Log;
 use Lizmap\Logger\Config as LogConfig;
 use Lizmap\Logger\Item as LogItem;
 use Lizmap\Project\Project;
+use Lizmap\Project\Repository;
 
 /**
  * @deprecated
@@ -132,30 +133,34 @@ class lizmap
 
     /**
      * Get the list of properties for a generic repository.
-     * This method shouldn't be used, you should use lizmapRepository::getProperties() instead.
+     * This method shouldn't be used, you should use Repository::getProperties() instead.
+     *
+     * @return string[] List of properties names
      *
      * @deprecated
      */
     public static function getRepositoryProperties()
     {
-        trigger_error('This method is deprecated. Please use the lizmapRepository::getProperties() method.', E_DEPRECATED);
+        trigger_error('This method is deprecated. Please use the Repository::getProperties() method.', E_DEPRECATED);
 
         // @phpstan-ignore deadCode.unreachable
-        return lizmapRepository::$properties;
+        return Repository::$properties;
     }
 
     /**
      * Get the list of properties options for a generic repository.
-     * This method shouldn't be used, you should use lizmapRepository::getPropertiesOptions() instead.
+     * This method shouldn't be used, you should use Repository::getPropertiesOptions() instead.
+     *
+     * @return array<string, array<string, bool|string>>
      *
      * @deprecated
      */
     public static function getRepositoryPropertiesOptions()
     {
-        trigger_error('This method is deprecated. Please use the lizmapRepository::getPropertiesOptions() method.', E_DEPRECATED);
+        trigger_error('This method is deprecated. Please use the Repository::getPropertiesOptions() method.', E_DEPRECATED);
 
         // @phpstan-ignore deadCode.unreachable
-        return lizmapRepository::$propertiesOptions;
+        return Repository::$propertiesOptions;
     }
 
     /**
@@ -180,9 +185,9 @@ class lizmap
         }
 
         // reconstruct form fields based on repositoryPropertyList
-        $propertiesOptions = lizmapRepository::getRepoProperties();
+        $propertiesOptions = Repository::getPropertiesOptions();
 
-        foreach (lizmapRepository::getProperties() as $k) {
+        foreach (Repository::getProperties() as $k) {
             $ctrl = null;
             if ($propertiesOptions[$k]['fieldType'] == 'checkbox') {
                 $ctrl = new jFormsControlCheckbox($k);
@@ -234,7 +239,7 @@ class lizmap
             $form->addControl($ctrl);
         }
         if ($rep) {
-            foreach (lizmapRepository::getProperties() as $k) {
+            foreach (Repository::getProperties() as $k) {
                 // FIXME don't use getData() which is deprecated
                 $v = $rep->getData($k);
                 if ($k == 'path' && $rootRepositories != ''
