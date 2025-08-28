@@ -66,7 +66,12 @@ RUN chmod 755 /bin/lizmap-entrypoint.sh /bin/update-config.php /usr/local/bin/ph
 
 ENV PHP_INI_DIR=/etc/php82
 
-HEALTHCHECK --interval=60s --timeout=30s CMD php-fpm-healthcheck || exit 1
+HEALTHCHECK \
+    --interval=30s \
+    --timeout=30s \
+    --start-interval=2s \
+    --start-period=10s \
+    CMD php-fpm-healthcheck || exit 1
 
 WORKDIR /www
 ENTRYPOINT ["/bin/lizmap-entrypoint.sh"]

@@ -90,9 +90,14 @@ jobs:
       - name: Run docker compose
         run: |
           make env
-          docker compose up -d
+          docker compose version
+          echo "Building image"
+          docker compose build --quiet
+          echo "Starting docker stack - wait for healthy states"
+          docker compose up -d --quiet-pull
+          docker compose ps
 
-      - name: Wait and check about QGIS Server status
+      - name: Check about QGIS Server status
         id: qgis-server-status
         run: |
           curl \
@@ -102,6 +107,7 @@ jobs:
             -N \
             "http://localhost:8130/index.php/view/app/metadata" \
             -o /tmp/test-qgis-server.json
+
           cat /tmp/test-qgis-server.json | jq .qgis_server_info
           qgis_info=$(cat /tmp/test-qgis-server.json | jq --raw-output '.qgis_server_info.error')
           echo $qgis_info
@@ -110,7 +116,7 @@ jobs:
               echo "::warning QGIS Server was not up"
               exit 1
           else
-              echo "JSON metadata OK about QGIS Server"
+             echo "JSON metadata OK about QGIS Server"
           fi
 
       - name: Check about updated files after a build (PHP or JS)
