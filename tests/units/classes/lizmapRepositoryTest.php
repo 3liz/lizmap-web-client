@@ -1,6 +1,7 @@
 <?php
 
 use Jelix\IniFile\IniModifier;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -65,6 +66,7 @@ class lizmapRepositoryTest extends TestCase
      * @param mixed $varPath
      * @param mixed $expectedPath
      */
+    #[DataProvider('getTestGetPathData')]
     public function testGetPath($repo, $key, $varPath, $expectedPath): void
     {
         $services = new lizmapServices($repo, (object) array(), true, $varPath, null);
@@ -137,6 +139,7 @@ class lizmapRepositoryTest extends TestCase
      * @param mixed $changedValue
      * @param mixed $expectedReturnValue
      */
+    #[DataProvider('getTestUpdateData')]
     public function testUpdate($data, $expectedData, $changedProp, $changedValue, $expectedReturnValue): void
     {
         $iniFile = realpath(__DIR__.'/../tmp').'/config.ini.php';

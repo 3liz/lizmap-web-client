@@ -1,6 +1,7 @@
 <?php
 
 use Lizmap\Logger as Log;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -46,6 +47,7 @@ class ItemTest extends TestCase
      *
      * @param mixed $config
      */
+    #[DataProvider('getConstructData')]
     public function testConstruct($config): void
     {
         $props = Log\Item::getSProperties();
@@ -88,6 +90,7 @@ class ItemTest extends TestCase
      *
      * @param mixed $data
      */
+    #[DataProvider('getLogDetailData')]
     public function testInsertLogDetail($data): void
     {
         $context = new ContextForTests();
