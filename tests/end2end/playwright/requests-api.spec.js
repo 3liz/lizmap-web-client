@@ -37,7 +37,16 @@ test.describe('Connected from context, as an admin',
         test('Request metadata', async ({ request }) => {
             const response = await request.get(url + "/repositories");
 
-            expect(response.status()).toBe(401)
+            const json = await checkJson(response);
+
+            // Check number of repositories
+            expect(json).toHaveLength(5);
+
+            // Check first repository has expected
+            expect(json[0].key).toBeDefined();
+            expect(json[0].label).toBeDefined();
+            expect(json[0].path).toBeDefined();
+
         });
     });
 
