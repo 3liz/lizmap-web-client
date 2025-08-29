@@ -162,6 +162,14 @@ class mediaCtrl extends jController
             return $rep;
         }
 
+        // Optional BASIC authentication
+        if (isset($_SERVER['PHP_AUTH_USER'])) {
+            $ok = jAuth::login($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
+            if (!$ok) {
+                return $this->error403(jLocale::get('view~default.repository.access.denied'));
+            }
+        }
+
         // Get repository data
         $repository = $this->param('repository');
 
