@@ -9,15 +9,17 @@ class Checker
      *
      * @param array $serverVars Server variables, including authentication details
      *
-     * @return bool True if login is successful, false otherwise
+     * @return bool True if
+     *              * no BASIC authentication is needed
+     *              * authentication is OK with login & password from $_SERVER variable
+     *              False otherwise if $_SERVER login & password are incorrect
      */
     public static function checkCredentials($serverVars)
     {
         if (isset($serverVars['PHP_AUTH_USER'])) {
             return \jAuth::login($serverVars['PHP_AUTH_USER'], $serverVars['PHP_AUTH_PW']);
-            // FIXME we don't return an error if login fails?
         }
 
-        return false;
+        return true;
     }
 }
