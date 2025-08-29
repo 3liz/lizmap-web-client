@@ -90,4 +90,30 @@ class VersionTools
 
         return intval(intval($version[0]) * 10000 + intval($version[1]) * 100 + intval($version[2]));
     }
+
+    /**
+     * Transform int formatted version to a human readable string (remove useless 0 if needed),
+     * optionnaly remove patch version.
+     * ! short version (342 for 3.42) are not handled.
+     *
+     * Transform "59000" into "5.90.00"
+     * Transform "059000" into "5.90.00"
+     * Transform "250208" into "25.2.8"
+     * Transform "250208" into "25.2" (strip patch set to true)
+     * Transform "031400" into "3.14" (strip patch set to true)
+     *
+     * @param string $intVersion a version number as int
+     *                           (major version on 1 or 2 digit, min and patch version on 2 digit)
+     * @param bool   $stripPatch remove the patch version (default false)
+     *
+     * @return string the version as human readable string
+     */
+    public static function intVersionToHumanString(string $intVersion, bool $stripPatch = false): string
+    {
+        $intVersion6Digit = (strlen($intVersion) == 6 ? $intVersion : '0'.$intVersion);
+        list($majorVersion, $minorVersion, $patchVersion) = str_split($intVersion6Digit, 2);
+        $patchSuffix = ($stripPatch ? '' : '.'.intval($patchVersion));
+
+        return intval($majorVersion).'.'.intval($minorVersion).$patchSuffix;
+    }
 }
