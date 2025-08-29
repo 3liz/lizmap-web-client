@@ -4,16 +4,19 @@ namespace LizmapApi;
 
 use Lizmap\App\Checker;
 
-class Credentials{
-
+class Credentials
+{
     /**
      * Validates the user's credentials and updates the response object in case of failure.
      *
-     * @return bool True if the credentials are valid, false otherwise.
+     * @return bool true if the credentials are valid, false otherwise
      */
-    static public function handle(): bool
+    public static function handle(): bool
     {
-        return Checker::checkCredentials($_SERVER);
-    }
+        // Authenticate with BASIC authentication
+        Checker::checkCredentials($_SERVER);
 
+        // If no user is connected, do not authorize access
+        return \jAuth::isConnected();
+    }
 }
