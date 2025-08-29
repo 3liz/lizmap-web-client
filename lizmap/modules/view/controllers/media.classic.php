@@ -12,6 +12,7 @@
  */
 
 use Jelix\FileUtilities\File;
+use Lizmap\App\Checker;
 use Lizmap\Project\UnknownLizmapProjectException;
 use Lizmap\Request\RemoteStorageRequest;
 
@@ -160,6 +161,12 @@ class mediaCtrl extends jController
         $rep = $this->getResponse('binary');
         if (!$this->isMethodAllowed($rep)) {
             return $rep;
+        }
+
+        // Optional BASIC authentication
+        $ok = Checker::checkCredentials($_SERVER);
+        if (!$ok) {
+            return $this->error401(jLocale::get('view~default.service.access.wrong_credentials.title'));
         }
 
         // Get repository data
