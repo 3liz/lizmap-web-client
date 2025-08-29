@@ -29,8 +29,16 @@ class rights_restCtrl extends RestApiCtrl
         /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
 
+        // User must be authenticated with BASIC auth
         if (!Credentials::handle()) {
             return Error::setError($rep, 401);
+        }
+
+        // Check rights
+        if (!jAcl2::check('lizmap.admin.repositories.view')
+            || !jAcl2::check('lizmap.admin.repositories.update')
+        ) {
+            return Error::setError($rep, 403);
         }
 
         $locale = $this->param('locale', null);
