@@ -2,6 +2,7 @@
 import {expect, test} from '@playwright/test';
 import {
     checkJson,
+    expectParametersToContain,
     requestGETWithAdminBasicAuth,
     requestPOSTWithAdminBasicAuth,
     requestDELETEWithAdminBasicAuth
@@ -102,8 +103,32 @@ test.describe('Connected via Basic auth',
             expect(json.bbox).toMatch(new RegExp("^(\\d+\\.\\d+, ){3}\\d+\\.\\d+$"));
             expect(json.needsUpdateError).toBeFalsy();
             expect(json.acl).toBeTruthy();
-            expect(json.wmsGetCapabilitiesUrl).toBe("http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=attribute_table&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities");
-            expect(json.wmtsGetCapabilitiesUrl).toBe("http://localhost:8130/index.php/lizmap/service?repository=testsrepository&project=attribute_table&SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetCapabilities");
+            expect(json.wmsGetCapabilitiesUrl).toBeDefined();
+            const wmsGetCapabilitiesUrl = new URL(json.wmsGetCapabilitiesUrl);
+            expect(wmsGetCapabilitiesUrl.protocol).toBe('http:');
+            expect(wmsGetCapabilitiesUrl.host).toBe('localhost:8130');
+            expect(wmsGetCapabilitiesUrl.pathname).toBe('/index.php/lizmap/service');
+            const wmsGetCapabilitiesParams = {
+                'repository': 'testsrepository',
+                'project': 'attribute_table',
+                'SERVICE': 'WMS',
+                'VERSION': '1.3.0',
+                'REQUEST': 'GetCapabilities',
+            };
+            await expectParametersToContain('wmsGetCapabilitiesUrl', wmsGetCapabilitiesUrl.search, wmsGetCapabilitiesParams);
+            expect(json.wmtsGetCapabilitiesUrl).toBeDefined();
+            const wmtsGetCapabilitiesUrl = new URL(json.wmtsGetCapabilitiesUrl);
+            expect(wmtsGetCapabilitiesUrl.protocol).toBe('http:');
+            expect(wmtsGetCapabilitiesUrl.host).toBe('localhost:8130');
+            expect(wmtsGetCapabilitiesUrl.pathname).toBe('/index.php/lizmap/service');
+            const wmtsGetCapabilitiesParams = {
+                'repository': 'testsrepository',
+                'project': 'attribute_table',
+                'SERVICE': 'WMTS',
+                'VERSION': '1.0.0',
+                'REQUEST': 'GetCapabilities',
+            };
+            await expectParametersToContain('wmtsGetCapabilitiesUrl', wmtsGetCapabilitiesUrl.search, wmtsGetCapabilitiesParams);
             expect(json.version).toBeDefined();
             expect(json.saveDateTime).toBeDefined();
             expect(json.saveUser).toBeDefined();
