@@ -1,6 +1,9 @@
 <?php
 
 use Lizmap\App\Checker;
+use Lizmap\Project\Project;
+use Lizmap\Project\UnknownLizmapProjectException;
+use Lizmap\Request\Proxy;
 
 /**
  * PHP Dataviz service to get plot config.
@@ -25,7 +28,7 @@ class serviceCtrl extends jController
     private $project;
 
     /**
-     * @var null|Lizmap\Project\Project the Lizmap project
+     * @var null|Project the Lizmap project
      */
     private $lizmapProject;
 
@@ -114,7 +117,7 @@ class serviceCtrl extends jController
                     )
                 );
             }
-        } catch (\Lizmap\Project\UnknownLizmapProjectException $e) {
+        } catch (UnknownLizmapProjectException $e) {
             return $this->error(
                 array(
                     'code' => 404,
@@ -196,7 +199,7 @@ class serviceCtrl extends jController
             $code = (int) $errors['code'];
             $rep->setHttpStatus(
                 $code,
-                \Lizmap\Request\Proxy::getHttpStatusMsg($code)
+                Proxy::getHttpStatusMsg($code)
             );
         }
         $rep->data = array('errors' => $errors);
