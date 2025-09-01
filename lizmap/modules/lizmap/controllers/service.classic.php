@@ -61,7 +61,16 @@ class serviceCtrl extends jController
 
         lizmap::startMetric();
 
+        // Optional BASIC authentication
         $ok = Checker::checkCredentials($_SERVER);
+        if (!$ok) {
+            jMessage::add(
+                jLocale::get('view~default.service.access.wrong_credentials.title'),
+                'AuthorizationRequired'
+            );
+
+            return $this->serviceException();
+        }
 
         // Get parameters
         if (!$this->getServiceParameters()) {

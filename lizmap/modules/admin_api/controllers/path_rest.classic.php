@@ -29,8 +29,14 @@ class path_restCtrl extends RestApiCtrl
         /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
 
+        // User must be authenticated with BASIC auth
         if (!Credentials::handle()) {
             return Error::setError($rep, 401);
+        }
+
+        // Check rights
+        if (!jAcl2::check('lizmap.admin.repositories.view')) {
+            return Error::setError($rep, 403);
         }
 
         try {

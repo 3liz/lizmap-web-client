@@ -32,8 +32,14 @@ class repository_restCtrl extends RestApiCtrl
         /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
 
+        // User must be authenticated with BASIC auth
         if (!Credentials::handle()) {
             return Error::setError($rep, 401);
+        }
+
+        // Check rights
+        if (!jAcl2::check('lizmap.admin.repositories.view')) {
+            return Error::setError($rep, 403);
         }
 
         if ($this->param('repo') != null) {
@@ -121,8 +127,16 @@ class repository_restCtrl extends RestApiCtrl
         /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
 
+        // User must be authenticated with BASIC auth
         if (!Credentials::handle()) {
             return Error::setError($rep, 401);
+        }
+
+        // Check rights
+        if (!jAcl2::check('lizmap.admin.repositories.view')
+            || !jAcl2::check('lizmap.admin.repositories.create')
+        ) {
+            return Error::setError($rep, 403);
         }
 
         $key = $this->param('repo');
