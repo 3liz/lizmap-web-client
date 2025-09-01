@@ -2,6 +2,7 @@
 
 use Lizmap\App\VersionTools;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * @internal
@@ -49,6 +50,7 @@ class VersionToolsTest extends TestCase
     /**
      * @dataProvider intVersionToSortableProvider
      */
+    #[DataProvider('intVersionToSortableProvider')]
     public function testIntVersionToSortableString(string $intVersion, string $expected): void
     {
         $this->assertEquals($expected, VersionTools::intVersionToSortableString($intVersion));
@@ -69,6 +71,7 @@ class VersionToolsTest extends TestCase
     /**
      * @dataProvider intVersionToHumanProvider
      */
+    #[DataProvider('intVersionToHumanProvider')]
     public function testIntVersionToHumanString(string $intVersion, string $expected, bool $stripPatch): void
     {
         $this->assertEquals($expected, VersionTools::intVersionToHumanString($intVersion, $stripPatch));
