@@ -1,5 +1,6 @@
 <?php
 
+use Lizmap\App\Checker;
 use Lizmap\Project\Project;
 use Lizmap\Project\UnknownLizmapProjectException;
 use Lizmap\Request\Proxy;
@@ -70,19 +71,19 @@ class serviceCtrl extends jController
             jLog::log('Dataviz - repository: '.$repository.' - project: '.$project, 'lizmapadmin');
         }
 
-        // Connect from auth basic if necessary
+        // Optional BASIC authentication
+        $ok = Checker::checkCredentials($_SERVER);
+        if (!$ok) {
+            return $this->error(
+                array(
+                    'code' => 401,
+                    'error_code' => 'wrong_credentials',
+                    'title' => jLocale::get('dataviz~dataviz.log.wrong_credentials.title'),
+                    'detail' => jLocale::get('dataviz~dataviz.log.wrong_credentials.detail'),
+                )
+            );
+        }
         if (isset($_SERVER['PHP_AUTH_USER'])) {
-            $ok = jAuth::login($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
-            if (!$ok) {
-                return $this->error(
-                    array(
-                        'code' => 403,
-                        'error_code' => 'wrong_credentials',
-                        'title' => jLocale::get('dataviz~dataviz.log.wrong_credentials.title'),
-                        'detail' => jLocale::get('dataviz~dataviz.log.wrong_credentials.detail'),
-                    )
-                );
-            }
             $this->basicAuthUsed = true;
         }
 
