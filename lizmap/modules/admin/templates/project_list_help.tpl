@@ -13,7 +13,7 @@
             <li>{@admin.project.rules.list.blocking.html@}</li>
             <ul class="rules">
                 <li class="blocker">{jlocale "admin.project.rules.list.blocking.target.html",
-                    array($minimumLizmapTargetVersionRequired - 0.1)}</li>
+                    array($blockingLizmapTargetVersion)}</li>
             </ul>
 
             <li>{@admin.project.rules.list.warnings.html@}</li>
