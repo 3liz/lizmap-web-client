@@ -12,10 +12,11 @@ $(document).ready(function () {
         var columnDefs = [
             // Change lizmap plugin version display
             {
-                "targets": 'lizmap_plugin_version',
+                "targets": 5,
                 "render": function (data, type, row, meta) {
                     if (type == 'display') {
-                        return data.replace(/\.0/g, '.').replace(/^0/, '');
+                        // 03.09.00 => 3.9
+                        return data.substr(0, 5).replace(/\.0/g, '.').replace(/^0/, '');
                     }
                     return data;
                 }
