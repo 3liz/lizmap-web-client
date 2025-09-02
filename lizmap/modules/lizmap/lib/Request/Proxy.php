@@ -390,23 +390,6 @@ class Proxy
     {
         list($url, $options) = self::buildHeaders($url, $options);
 
-        // check is the env variable is set
-        if (getenv('ECHO_OGC_ORIGINAL_REQUEST')) {
-            // did the request has to be echoed ?
-            if (self::hasEchoInBody($options['body'])) {
-                $content = self::getEchoFromRequest($url, $options['body']);
-
-                // We do not perform the request, but return the content previously logged
-                return new Response(
-                    200,
-                    array('Content-Type' => 'text/json'),
-                    $content,
-                );
-            }
-            // All requests are logged
-            self::logRequestToEcho($url, $options['body']);
-        }
-
         if ($options['referer']) {
             $options['headers']['Referer'] = $options['referer'];
         }
@@ -423,6 +406,10 @@ class Proxy
         $stack = HandlerStack::create();
         $stack->push(new CacheMiddleware($strategy));
 
+        // check is the env variable is set
+        if (getenv('ECHO_OGC_ORIGINAL_REQUEST')) {
+            $stack->push(new EchoMiddleWare(self::getAppContext()));
+        }
         // Create Client
         $client = new Client(array(
             // You can set any number of default request options.
@@ -919,63 +906,6 @@ class Proxy
         $appContext->eventNotify('lizmapProxyClearLayerCache', array('repository' => $repository, 'project' => $project, 'layer' => $layer));
 
         return true;
-    }
-
-    /**
-     * check if $body contains a '__echo__=&' param.
-     *
-     * @return bool
-     */
-    public static function hasEchoInBody(string $body)
-    {
-        $encodedEchoParam = '%5F%5Fecho%5F%5F=&';
-
-        return strstr($body, $encodedEchoParam);
-    }
-
-    /**
-     * Log the URL and its body in the 'echoproxy' log file
-     * We add a md5 hash of the string to help retrieving it later
-     * NOTE : currently we log only the url & body, thus it doesn't really need to be logged
-     * because the same url & body are needed to retreive the content
-     * but the function will be useful when it will log additionnal content.
-     */
-    public static function logRequestToEcho(string $url, string $body)
-    {
-        $md5 = md5($url.'|'.$body);
-        \jLog::log($md5."\t".$url.'?'.$body, 'echoproxy');
-    }
-
-    /**
-     * return the content that was logged for the (url, body) params
-     * using a md5 hash to search it in the log file.
-     *
-     * @see logRequestToEcho()
-     */
-    public static function getEchoFromRequest(string $url, string $body): string
-    {
-        $encodedEchoParam = '%5F%5Fecho%5F%5F=&';
-        // md5 hash to search in the file
-        $md5ToSearch = md5($url.'|'.str_replace($encodedEchoParam, '', $body));
-
-        $logPath = \jApp::logPath('echoproxy.log');
-        if (is_file($logPath)) {
-            // retrieve the 50 last lines
-            $nLastLines = preg_split("/\r\n|\n|\r/", App\FileTools::tail($logPath, 50));
-            // key : md5 , value : usefull content
-            $md5Assoc = array();
-            foreach ($nLastLines as $line) {
-                $words = explode("\t", $line);
-                if (count($words) > 4
-                    && $md5ToSearch == $words[3]) {
-                    return $words[4];
-                }
-            }
-
-            return 'unfound '.$md5ToSearch;
-        }
-
-        return 'unfound echoproxy.log';
     }
 }
 
