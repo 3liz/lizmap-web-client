@@ -2,6 +2,7 @@
 
 use Lizmap\App\VersionTools;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * @internal
@@ -34,14 +35,45 @@ class VersionToolsTest extends TestCase
         $this->assertEquals(33412, VersionTools::qgisVersionWithNameToInt('03.34.12'));
     }
 
-    public function testIntVersionToSortableString(): void
+    public static function intVersionToSortableProvider() {
+        return [
+            'string version with starting 0' => ['01.01.02' , '01.01.02'],
+            'string version without starting 0' => ['1.01.02' , '01.01.02'],
+            'string version only 1 digit' => ['1.1.2' , '01.01.02'],
+            'int version (5char)' => ['10102' , '01.01.02'],
+            'int version (6 char)' => ['050912', '05.09.12'],
+            'master' =>['master', '00.00.00'],
+            'dev' =>['dev', '00.00.00'],
+        ];
+    }
+
+    /**
+     * @dataProvider intVersionToSortableProvider
+     */
+    #[DataProvider('intVersionToSortableProvider')]
+    public function testIntVersionToSortableString(string $intVersion, string $expected): void
     {
-        $this->assertEquals('01.01.02', VersionTools::intVersionToSortableString('01.01.02'));
-        $this->assertEquals('01.01.02', VersionTools::intVersionToSortableString('1.01.02'));
-        $this->assertEquals('01.01.02', VersionTools::intVersionToSortableString('1.1.2'));
-        $this->assertEquals('01.01.02', VersionTools::intVersionToSortableString('10102'));
-        $this->assertEquals('05.09.12', VersionTools::intVersionToSortableString('050912'));
-        $this->assertEquals('00.00.00', VersionTools::intVersionToSortableString('master'));
-        $this->assertEquals('00.00.00', VersionTools::intVersionToSortableString('dev'));
+        $this->assertEquals($expected, VersionTools::intVersionToSortableString($intVersion));
+    }
+
+    public static function intVersionToHumanProvider() {
+        return [
+            '1 digit (5char)' => ['10102' , '1.1.2', false],
+            '1 digit (6 char)' => ['050912', '5.9.12', false],
+            '2 digit' =>  ['311225' , '31.12.25', false],
+            '2 digit no patch' =>  ['031415' , '3.14', true],
+            'no patch version' => ['056000' , '5.60', true],
+            'only maj version' => ['600000' , '60.0.0', false],
+            'only maj version no patch' => ['600000' , '60.0', true],
+        ];
+    }
+
+    /**
+     * @dataProvider intVersionToHumanProvider
+     */
+    #[DataProvider('intVersionToHumanProvider')]
+    public function testIntVersionToHumanString(string $intVersion, string $expected, bool $stripPatch): void
+    {
+        $this->assertEquals($expected, VersionTools::intVersionToHumanString($intVersion, $stripPatch));
     }
 }
