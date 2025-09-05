@@ -8,6 +8,47 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## Funders
+
+* **[Le Grand Narbonne](https://www.legrandnarbonne.com/)**
+* **[FM Projet](https://fmprojet.fr/)**
+
+### Fixed
+
+* Replace lizmapRepository static properties usage by Repository static properties
+* Tooltip - Fix configured fields not used when HTML template is not defined
+* Check URL when submitting AccessControlAllowOrigin in admin Form
+* Fix locate by layer
+* WFS GetFeature on PostGIS does not checked if the layer is published
+* QGIS Project form_advanced: group visibility expression
+* Zoom to point features at startup
+* Fix version count
+* Api - improve rights
+
+### Changed
+
+* Use rspack instead of webpack
+* lizmap-features-table: Display a message when no features found
+* PHP: Apply simplify if return bool from Rector
+
+### Tests
+
+* e2e Playwright checkJSON: explicite response not ok
+* e2e: Porting Dataviz API form Cypress to Playwright
+* e2e playwright tests popup: default buffer length
+* e2e: enhancing tooltips tests
+* fix restrict key for dumping database
+* Improve docker containers startup
+* Deprecate run-docker
+* GH Action - Update PHP-Unit version for PHP 8.3 and 8.4
+* e2e playwright: enhancing Overview and Treeview tests
+* GH Action tests: add setup-node to get npm cache
+* Pre-commit: Update ESLint and StyleLint to have the same version as in package.json
+* e2e Playwright: enhancing group visibilities and filtered list
+* e2e Playwright: enhancing page.openEditingFormWithLayer to wait for form
+* refacto : move proxy echo feature to as guzzle middleware
+* e2e Playwright: enhancing checking Getcapabilities URL in API
+
 ## 3.9.1 - 2025-07-15
 
 ### Funders
