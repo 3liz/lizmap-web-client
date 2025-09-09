@@ -114,18 +114,19 @@ class QgisForm implements QgisFormControlsInterface
         $formInfos = $cacheHandler->getEditableLayerFormCache($layer->getId());
 
         foreach ($dataFields as $fieldName => $prop) {
+            $controlName = self::escapeFieldName($fieldName);
             $defaultValue = $this->getDefaultValue($fieldName);
 
             $constraints = $this->getConstraints($fieldName);
 
             if (isset($formInfos[$fieldName])) {
-                $formControl = new QgisFormControl($fieldName, $formInfos[$fieldName], $prop, $defaultValue, $constraints, $this->appContext);
+                $formControl = new QgisFormControl($controlName, $fieldName, $formInfos[$fieldName], $prop, $defaultValue, $constraints, $this->appContext);
             } else {
                 // The field is not present in the .XML
-                $formControl = new QgisFormControl($fieldName, null, $prop, null, $constraints, $this->appContext);
+                $formControl = new QgisFormControl($controlName, $fieldName,null, $prop, null, $constraints, $this->appContext);
             }
 
-            $this->fillFormControl($formControl, $fieldName, $form);
+            $this->fillFormControl($formControl, $controlName, $form);
 
             // Force readonly to not be required
             if ($formControl->isReadOnly && $formControl->ctrl->required) {
@@ -135,7 +136,7 @@ class QgisForm implements QgisFormControlsInterface
             // Add the control to the form
             $form->addControl($formControl->ctrl);
             // Set readonly if needed
-            $form->setReadOnly($fieldName, $formControl->isReadOnly);
+            $form->setReadOnly($controlName, $formControl->isReadOnly);
 
             // Hide when no modify capabilities, only for UPDATE cases ( when $this->featureId control exists )
             if (!empty($featureId)
@@ -148,7 +149,7 @@ class QgisForm implements QgisFormControlsInterface
                 }
             }
 
-            $this->formControls[$fieldName] = $formControl;
+            $this->formControls[$controlName] = $formControl;
         }
 
         // Deactivate undisplayed fields in Drag and Drop form
@@ -156,8 +157,8 @@ class QgisForm implements QgisFormControlsInterface
         if ($attributeEditorForm) {
             $attributeEditorFormFields = $attributeEditorForm->getFields();
             if (count($attributeEditorFormFields) > 0) {
-                foreach ($this->formControls as $fieldName => $formControl) {
-                    if (in_array($fieldName, $attributeEditorFormFields)) {
+                foreach ($this->formControls as $controlName => $formControl) {
+                    if (in_array($controlName, $attributeEditorFormFields)) {
                         continue;
                     }
                     if ($formControl->ctrl->type == 'hidden') {
@@ -607,14 +608,15 @@ class QgisForm implements QgisFormControlsInterface
         $form = $this->form;
         $values = $this->layer->getDbFieldValues($feature);
         foreach ($values as $ref => $value) {
-            if (($this->formControls[$ref]->fieldEditType === 7
-                or $this->formControls[$ref]->fieldEditType === 'CheckBox')
-                and $this->formControls[$ref]->fieldDataType === 'boolean'
+            $controlName = self::escapeFieldName($ref);
+            if (($this->formControls[$controlName]->fieldEditType === 7
+                or $this->formControls[$controlName]->fieldEditType === 'CheckBox')
+                and $this->formControls[$controlName]->fieldDataType === 'boolean'
             ) {
-                $form->getControl($ref)->setDataFromDao($value, 'boolean');
+                $form->getControl($controlName)->setDataFromDao($value, 'boolean');
             }
             // ValueRelation can be an array (i.e. {1,2,3} or {'foo', 'bar'})
-            elseif ($this->formControls[$ref]->isValueRelation() && is_string($value) && strpos($value, '{') === 0) {
+            elseif ($this->formControls[$controlName]->isValueRelation() && is_string($value) && strpos($value, '{') === 0) {
                 $arrayValue = explode(',', trim($value, '{}'));
                 // Depending on the QGIS version or values,
                 // QGIS also enclose each single value with double-quotes
@@ -623,11 +625,11 @@ class QgisForm implements QgisFormControlsInterface
                 };
                 $arrayValue = array_map($func, $arrayValue);
                 $form->setData($ref, $arrayValue);
-            } elseif ($this->formControls[$ref]->isUploadControl()) {
+            } elseif ($this->formControls[$controlName]->isUploadControl()) {
                 /** @var null|\jFormsControlUpload2 $ctrl */
-                $ctrl = $form->getControl($this->formControls[$ref]->getControlName());
+                $ctrl = $form->getControl($this->formControls[$controlName]->getControlName());
                 if ($ctrl) {
-                    if (!(empty($this->getQgisControl($ref)->rootPathExpression))) {
+                    if (!(empty($this->getQgisControl($controlName)->rootPathExpression))) {
                         list($targetPath, $targetFullPath) = $this->getStoragePathForControl($this->formControls[$ref], $values);
                         if ($targetPath) {
                             $this->formWidgetsAttributes[$ref]['uriActionParameters']['path'] = $targetPath.'%s';
@@ -640,8 +642,8 @@ class QgisForm implements QgisFormControlsInterface
                     }
                 }
             } else {
-                if (in_array(strtolower($this->formControls[$ref]->fieldEditType), array('date', 'time', 'datetime'))) {
-                    $format = $this->formControls[$ref]->getEditAttribute('field_format');
+                if (in_array(strtolower($this->formControls[$controlName]->fieldEditType), array('date', 'time', 'datetime'))) {
+                    $format = $this->formControls[$controlName]->getEditAttribute('field_format');
                     if ($format && $value) {
                         $format = $this->convertQgisFormatToPHP($format);
                         $date = \DateTime::createFromFormat($format, $value);
@@ -650,7 +652,7 @@ class QgisForm implements QgisFormControlsInterface
                         }
                     }
                 }
-                $form->setData($ref, $value);
+                $form->setData($controlName, $value);
             }
         }
 
@@ -703,7 +705,8 @@ class QgisForm implements QgisFormControlsInterface
         // even if they have already been set from the database objet (for UPDATE)
         $constraintExpressions = array();
         foreach ($formFields as $fieldName) {
-            $values[$fieldName] = $this->getFieldValue($fieldName, $form);
+            $controlName = self::escapeFieldName($fieldName);
+            $values[$fieldName] = $this->getFieldValue($controlName, $form);
             // Get expression constraint
             $constraints = $this->getConstraints($fieldName);
             if ($constraints && $constraints['exp'] && $constraints['exp_value'] !== '') {
@@ -726,21 +729,22 @@ class QgisForm implements QgisFormControlsInterface
         // We must do it here because we might need form values
         // to evaluate the path if it is calculated with a QGIS expression
         foreach ($dataFields as $fieldName => $prop) {
-            if ($form->getControl($fieldName) instanceof \jFormsControlUpload2) {
-                if ($this->getQgisControl($fieldName)->isWebDAV) {
+            $controlName = self::escapeFieldName($fieldName);
+            if ($form->getControl($controlName) instanceof \jFormsControlUpload2) {
+                if ($this->getQgisControl($controlName)->isWebDAV) {
                     // WEBDAV storage, no file path to check, but we need to check the connection
                     if (!RemoteStorageRequest::checkWebDAVStorageConnection()) {
                         $check = false;
-                        $form->setErrorOn($fieldName, 'WEBDAV storage unavailable');
+                        $form->setErrorOn($controlName, 'WEBDAV storage unavailable');
                     }
                 } else {
                     // Classical disk storage
                     // We may need to calculate the target path with an expression
-                    list($targetPath, $targetFullPath) = $this->getStoragePathForControl($this->getQgisControl($fieldName), $values);
+                    list($targetPath, $targetFullPath) = $this->getStoragePathForControl($this->getQgisControl($controlName), $values);
 
                     // if the target path to store the file is not valid: error
                     if ($targetFullPath == '' || !is_dir($targetFullPath) || !is_writable($targetFullPath)) {
-                        $form->setErrorOn($fieldName, \jLocale::get('view~edition.message.error.upload.layer', array($dtParams->tablename)));
+                        $form->setErrorOn($controlName, \jLocale::get('view~edition.message.error.upload.layer', array($dtParams->tablename)));
                     }
                 }
             }
@@ -976,8 +980,9 @@ class QgisForm implements QgisFormControlsInterface
         // In case of an UPDATE, we
         $form = $this->form;
         foreach ($fields as $ref) {
+            $controlName = self::escapeFieldName($ref);
             /** @var null|\jFormsControl $jCtrl */
-            $jCtrl = $form->getControl($ref);
+            $jCtrl = $form->getControl($controlName);
             // Field not in form
             if ($jCtrl === null) {
                 continue;
@@ -991,7 +996,7 @@ class QgisForm implements QgisFormControlsInterface
             }
 
             // Parse the given value and transform it into a usable value for the database field
-            $values[$ref] = $this->getParsedValue($ref, $geometryColumn);
+            $values[$ref] = $this->getParsedValue($controlName, $geometryColumn);
 
             // An error occurred, return false
             if ($values[$ref] === false) {
@@ -1007,7 +1012,8 @@ class QgisForm implements QgisFormControlsInterface
         // with given QGIS expressions depending on other field values
         // We must evaluate them now that we have the values for the other fields
         foreach ($fields as $ref) {
-            $jCtrl = $form->getControl($ref);
+            $controlName = self::escapeFieldName($ref);
+            $jCtrl = $form->getControl($controlName);
             // Field not in form
             if ($jCtrl === null) {
                 continue;
@@ -1017,7 +1023,7 @@ class QgisForm implements QgisFormControlsInterface
                 if (array_key_exists($ref, $this->formControls) && $this->formControls[$ref]->isWebDAV && isset($this->formControls[$ref]->webDavStorageUrl)) {
                     // WEBDAV
                     try {
-                        $values[$ref] = $this->processWebDavUploadFile($form, $ref);
+                        $values[$ref] = $this->processWebDavUploadFile($form, $controlName);
                     } catch (\Exception $e) {
                         // Need to catch Exception if operation on remote storage fails
                         $form->setErrorOn($ref, $e->getMessage());
@@ -1030,7 +1036,7 @@ class QgisForm implements QgisFormControlsInterface
                     // Normal type of UPLOAD.
                     // It can be a simple storage path, or a path calculated dynamically with a QGIS Expression
                     // We must pass the other field values
-                    $values[$ref] = $this->processUploadedFile($form, $ref, $databaseValues);
+                    $values[$ref] = $this->processUploadedFile($form, $controlName, $databaseValues);
                 }
             }
         }
@@ -1091,6 +1097,7 @@ class QgisForm implements QgisFormControlsInterface
         // Get list of fields which are not primary keys
         $fields = array();
         foreach ($dataFields as $fieldName => $prop) {
+            $controlName = self::escapeFieldName($fieldName);
             // For geometry column does not add it
             // if it's not an insert action
             // and no geometry modification capability
@@ -1114,7 +1121,7 @@ class QgisForm implements QgisFormControlsInterface
             if ($fieldName != $geometryColumn
                 && count($modifiedFields) != 0
                 && !in_array($fieldName, $modifiedFields)
-                && !in_array($this->getFormControlName($fieldName), $modifiedFields)) {
+                && !in_array($this->getFormControlName($controlName), $modifiedFields)) {
                 continue;
             }
 
@@ -1986,4 +1993,15 @@ class QgisForm implements QgisFormControlsInterface
             $form_feature
         );
     }
+
+    public static function escapeFieldName(string $fieldName)
+    {
+        $escapedFieldName = preg_replace('/\'/', '__escaped_quote__', $fieldName);
+        $escapedFieldName = preg_replace('/^action$/', '__escaped_action__', $escapedFieldName);
+        $escapedFieldName = preg_replace('/\?/', '__escaped_question__', $escapedFieldName);
+        $escapedFieldName = preg_replace('/ /', '__escaped_space__', $escapedFieldName);
+
+        return $escapedFieldName;
+    }
+
 }
