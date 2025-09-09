@@ -10,7 +10,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## 3.8.13 - 2025-09-09
 
-## Funders
+### Funders
 
 * **[Le Grand Narbonne](https://www.legrandnarbonne.com/)**
 * **[FM Projet](https://fmprojet.fr/)**
