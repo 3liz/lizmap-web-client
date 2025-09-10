@@ -10,6 +10,7 @@
  */
 
 use Lizmap\App\VersionTools;
+use Lizmap\Project\Repository;
 use LizmapApi\ApiException;
 use LizmapApi\Credentials;
 use LizmapApi\Error;
@@ -65,8 +66,8 @@ class project_restCtrl extends RestApiCtrl
     /**
      * Return a list of available projects and their basic information.
      *
-     * @param jResponseJson    $rep  response to fill
-     * @param lizmapRepository $repo repository
+     * @param jResponseJson $rep  response to fill
+     * @param Repository    $repo repository
      *
      * @return object a JSON response object containing projects
      */
@@ -91,8 +92,8 @@ class project_restCtrl extends RestApiCtrl
     /**
      * Return detailed information and user rights.
      *
-     * @param jResponseJson    $rep  response to fill
-     * @param lizmapRepository $repo repository
+     * @param jResponseJson $rep  response to fill
+     * @param Repository    $repo repository
      *
      * @return object a JSON response object containing a specific repository with rights
      */
