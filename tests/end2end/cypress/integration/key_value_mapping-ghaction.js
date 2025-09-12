@@ -13,7 +13,7 @@ describe('Key/value in attribute table', function () {
 
         cy.get('button[value="attribute_table"].btn-open-attribute-layer').click({ force: true })
 
-        cy.get('#attribute-layer-table-attribute_table_wrapper div.dataTables_scrollHead th').then(theaders => {
+        cy.get('#attribute-layer-table-attribute_table_wrapper div.dt-scroll-head th').then(theaders => {
             expect(theaders).to.have.length(11)
             const headers = [...theaders].map(t => t.innerText)
             expect(headers).to.have.length(11)
@@ -29,7 +29,7 @@ describe('Key/value in attribute table', function () {
                 'label from text (value map)',
                 'label from text (value relation)'
             ])
-            cy.get('#attribute-layer-table-attribute_table_wrapper div.dataTables_scrollBody tr[id="1"] td').then(tdata => {
+            cy.get('#attribute-layer-table-attribute_table_wrapper div.dt-scroll-body tr[id="1"] td').then(tdata => {
                 expect(tdata).to.have.length(11)
                 const data = [...tdata].map(t => t.innerText)
                 expect(data).to.have.length(11)
@@ -46,7 +46,7 @@ describe('Key/value in attribute table', function () {
                     'premier'
                 ])
             })
-            cy.get('#attribute-layer-table-attribute_table_wrapper div.dataTables_scrollBody tr[id="2"] td').then(tdata => {
+            cy.get('#attribute-layer-table-attribute_table_wrapper div.dt-scroll-body tr[id="2"] td').then(tdata => {
                 expect(tdata).to.have.length(11)
                 const data = [...tdata].map(t => t.innerText)
                 expect(data).to.have.length(11)
@@ -63,7 +63,7 @@ describe('Key/value in attribute table', function () {
                     'deuxième'
                 ])
             })
-            cy.get('#attribute-layer-table-attribute_table_wrapper div.dataTables_scrollBody tr[id="3"] td').then(tdata => {
+            cy.get('#attribute-layer-table-attribute_table_wrapper div.dt-scroll-body tr[id="3"] td').then(tdata => {
                 expect(tdata).to.have.length(11)
                 const data = [...tdata].map(t => t.innerText)
                 expect(data).to.have.length(11)
@@ -80,7 +80,7 @@ describe('Key/value in attribute table', function () {
                     'troisième'
                 ])
             })
-            cy.get('#attribute-layer-table-attribute_table_wrapper div.dataTables_scrollBody tr[id="4"] td').then(tdata => {
+            cy.get('#attribute-layer-table-attribute_table_wrapper div.dt-scroll-body tr[id="4"] td').then(tdata => {
                 expect(tdata).to.have.length(11)
                 const data = [...tdata].map(t => t.innerText)
                 expect(data).to.have.length(11)
@@ -105,13 +105,14 @@ describe('Key/value in attribute table', function () {
         cy.get('button[value="data_integers"].btn-open-attribute-layer').click({ force: true })
 
         // Main attribute table
-        cy.get('#attribute-layer-table-data_integers tbody tr').first().click({ force: true })
-        cy.wait(300)
+        // Datatables shows a loading message in a `td.dt-empty` when the table is loading
+        // We need to wait for the loading message to disappear
+        cy.get('#attribute-layer-table-data_integers tbody tr td:not(.dt-empty)').first().click({ force: true })
 
-        cy.get('#attribute-layer-table-data_integers-attribute_table_wrapper div.dataTables_scrollBody tbody tr')
+        cy.get('#attribute-layer-table-data_integers-attribute_table_wrapper div.dt-scroll-body tbody tr td:not(.dt-empty)').first().parent()
             .should('have.length', 1)
             .should('have.attr', 'id').and('equal', '1')
-        cy.get('#attribute-layer-table-data_integers-attribute_table_wrapper div.dataTables_scrollHead th').then(theaders => {
+        cy.get('#attribute-layer-table-data_integers-attribute_table_wrapper div.dt-scroll-head th').then(theaders => {
             expect(theaders).to.have.length(11)
             const headers = [...theaders].map(t => t.innerText)
             expect(headers).to.have.length(11)
@@ -127,7 +128,7 @@ describe('Key/value in attribute table', function () {
                 'label from text (value map)',
                 'label from text (value relation)'
             ])
-            return cy.get('#attribute-layer-table-data_integers-attribute_table_wrapper div.dataTables_scrollBody tbody tr td')
+            return cy.get('#attribute-layer-table-data_integers-attribute_table_wrapper div.dt-scroll-body tbody tr td')
         }).then(tdata => {
             expect(tdata).to.have.length(11)
             const data = [...tdata].map(t => t.innerText)
@@ -148,11 +149,10 @@ describe('Key/value in attribute table', function () {
 
         // click on a second line
         cy.get('#attribute-layer-table-data_integers tbody tr').first().next().click({ force: true })
-        cy.wait(300)
-        cy.get('#attribute-layer-table-data_integers-attribute_table_wrapper div.dataTables_scrollBody tbody tr')
+        cy.get('#attribute-layer-table-data_integers-attribute_table_wrapper div.dt-scroll-body tbody tr')
             .should('have.length', 1)
             .should('have.attr', 'id').and('equal', '2')
-        cy.get('#attribute-layer-table-data_integers-attribute_table_wrapper div.dataTables_scrollBody tbody tr td').then(tdata => {
+        cy.get('#attribute-layer-table-data_integers-attribute_table_wrapper div.dt-scroll-body tbody tr td').then(tdata => {
             expect(tdata).to.have.length(11)
             const data = [...tdata].map(t => t.innerText)
             expect(data).to.have.length(11)
@@ -164,7 +164,7 @@ describe('Key/value in attribute table', function () {
         // Attribute table in edition mode
         cy.get('#attribute-layer-table-data_integers tbody tr lizmap-feature-toolbar[value="data_integers_ae40b1b1_9f4f_411b_8815_6b29fa580f00.1"] .feature-edit').click({ force: true })
 
-        cy.get('#edition-table-data_integers-attribute_table_wrapper div.dataTables_scrollHead th').then(theaders => {
+        cy.get('#edition-table-data_integers-attribute_table_wrapper div.dt-scroll-head th').then(theaders => {
             expect(theaders).to.have.length(11)
             const headers = [...theaders].map(t => t.innerText)
             expect(headers).to.have.length(11)
@@ -180,7 +180,7 @@ describe('Key/value in attribute table', function () {
                 'label from text (value map)',
                 'label from text (value relation)'
             ])
-            cy.get('#edition-table-data_integers-attribute_table_wrapper div.dataTables_scrollBody tr[id="1"] td').then(tdata => {
+            cy.get('#edition-table-data_integers-attribute_table_wrapper div.dt-scroll-body tr[id="1"] td').then(tdata => {
                 expect(tdata).to.have.length(11)
                 const data = [...tdata].map(t => t.innerText)
                 expect(data).to.have.length(11)
@@ -204,7 +204,7 @@ describe('Key/value in attribute table', function () {
 
         cy.get('button[value="attribute_table_shortname"].btn-open-attribute-layer').click({ force: true })
 
-        cy.get('#attribute-layer-table-attribute_table_shortname_wrapper div.dataTables_scrollHead th').then(theaders => {
+        cy.get('#attribute-layer-table-attribute_table_shortname_wrapper div.dt-scroll-head th').then(theaders => {
             expect(theaders).to.have.length(11)
             const headers = [...theaders].map(t => t.innerText)
             expect(headers).to.have.length(11)
@@ -220,7 +220,7 @@ describe('Key/value in attribute table', function () {
                 'label from text (value map)',
                 'label from text (value relation)'
             ])
-            cy.get('#attribute-layer-table-attribute_table_shortname_wrapper div.dataTables_scrollBody tr[id="1"] td').then(tdata => {
+            cy.get('#attribute-layer-table-attribute_table_shortname_wrapper div.dt-scroll-body tr[id="1"] td').then(tdata => {
                 expect(tdata).to.have.length(11)
                 const data = [...tdata].map(t => t.innerText)
                 expect(data).to.have.length(11)
@@ -237,7 +237,7 @@ describe('Key/value in attribute table', function () {
                     'first'
                 ])
             })
-            cy.get('#attribute-layer-table-attribute_table_shortname_wrapper div.dataTables_scrollBody tr[id="2"] td').then(tdata => {
+            cy.get('#attribute-layer-table-attribute_table_shortname_wrapper div.dt-scroll-body tr[id="2"] td').then(tdata => {
                 expect(tdata).to.have.length(11)
                 const data = [...tdata].map(t => t.innerText)
                 expect(data).to.have.length(11)
@@ -254,7 +254,7 @@ describe('Key/value in attribute table', function () {
                     'second'
                 ])
             })
-            cy.get('#attribute-layer-table-attribute_table_shortname_wrapper div.dataTables_scrollBody tr[id="3"] td').then(tdata => {
+            cy.get('#attribute-layer-table-attribute_table_shortname_wrapper div.dt-scroll-body tr[id="3"] td').then(tdata => {
                 expect(tdata).to.have.length(11)
                 const data = [...tdata].map(t => t.innerText)
                 expect(data).to.have.length(11)
@@ -271,7 +271,7 @@ describe('Key/value in attribute table', function () {
                     'third'
                 ])
             })
-            cy.get('#attribute-layer-table-attribute_table_shortname_wrapper div.dataTables_scrollBody tr[id="4"] td').then(tdata => {
+            cy.get('#attribute-layer-table-attribute_table_shortname_wrapper div.dt-scroll-body tr[id="4"] td').then(tdata => {
                 expect(tdata).to.have.length(11)
                 const data = [...tdata].map(t => t.innerText)
                 expect(data).to.have.length(11)
