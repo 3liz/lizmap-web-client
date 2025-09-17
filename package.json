@@ -36,7 +36,7 @@
     "chai": "^5.2.x",
     "cypress": "<10.0.0",
     "cypress-file-upload": "^5.0.8",
-    "dompurify": "^3.2.6",
+    "dompurify": "^3.2.7",
     "eslint-plugin-jsdoc": "^51.3.x",
     "flatgeobuf": "^4.0.x",
     "jsts": "^2.11.0",
