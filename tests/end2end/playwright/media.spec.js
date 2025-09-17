@@ -215,6 +215,20 @@ test.describe('Media', () => {
         expect(body['error']).toBe('404 not found (wrong action)');
         expect(body).toHaveProperty('message');
 
+        // Parameters to a media file but from a projec requiring auth
+        params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'project_acl',
+            path: 'media/raster.asc',
+        });
+        url = `/index.php/view/media/getMedia?${params}`;
+        response = await request.head(url, {});
+        await expect(response).not.toBeOK();
+        expect(response.status()).toBe(401);
+        // We do not check the www-authenticate header
+        // since we are in the browser
+        // expect(response.headers()['www-authenticate']).toBe('Basic realm="LizmapWebClient", charset="UTF-8"');
+
         // Parameters without any error
         params = new URLSearchParams({
             repository: 'testsrepository',
