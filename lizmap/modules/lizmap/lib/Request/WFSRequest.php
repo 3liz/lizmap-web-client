@@ -364,10 +364,16 @@ class WFSRequest extends OGCRequest
             return $this->getfeatureQgis();
         }
 
-        // Checking Typename which is mandatory for DescribeFeatureType
-        $typenameCheckingCode = $this->checkingTypename();
-        if ($typenameCheckingCode !== 200) {
-            return $this->serviceException($typenameCheckingCode);
+        // Checking Typename which is mandatory for GetFeature
+        // Check only if we are not in the editing context
+        // To let editors not publish some vector layers in WFS/OAPIF
+        // to fill in the value relation or relation references
+        // of some form fields
+        if (!$this->editingContext) {
+            $typenameCheckingCode = $this->checkingTypename();
+            if ($typenameCheckingCode !== 200) {
+                return $this->serviceException($typenameCheckingCode);
+            }
         }
 
         // Get type name
