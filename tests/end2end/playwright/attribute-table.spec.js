@@ -3,7 +3,6 @@ import { test, expect } from '@playwright/test';
 import { ProjectPage } from './pages/project';
 import { expectParametersToContain, getAuthStorageStatePath } from './globals';
 import { AdminPage } from "./pages/admin";
-import { gotoMap } from './globals';
 
 test.describe('Attribute table', () => {
 
@@ -13,7 +12,7 @@ test.describe('Attribute table', () => {
         const layerName = 'Les_quartiers_a_Montpellier';
 
         await project.openAttributeTable(layerName);
-        await expect(project.attributeTableWrapper(layerName).locator('div.dataTables_info'))
+        await expect(project.attributeTableWrapper(layerName).locator('div.dt-info'))
             .toContainText('Showing 1 to 7 of 7 entries');
         await expect(project.attributeTableHtml(layerName).locator('tbody tr'))
             .toHaveCount(7);
@@ -36,51 +35,42 @@ test.describe('Attribute table', () => {
         const layerName = 'random_points';
 
         await project.openAttributeTable(layerName);
-        await expect(project.attributeTableWrapper(layerName).locator('div.dataTables_info'))
+        await expect(project.attributeTableWrapper(layerName).locator('div.dt-info'))
             .toContainText('Showing 1 to 50 of 700 entries');
         await expect(project.attributeTableHtml(layerName).locator('tbody tr'))
             .toHaveCount(50);
-        await expect(project.attributeTableWrapper(layerName).locator('ul.pagination > li.paginate_button'))
+        await expect(project.attributeTableWrapper(layerName).locator('ul.pagination > li.dt-paging-button'))
             .toHaveCount(9);
-        // click on last page which is the previous last paginate_button
+        // click on last page which is the previous last dt-paging-button
         await project.attributeTableWrapper(layerName).hover();
-        project.attributeTableWrapper(layerName).locator('ul.pagination > li.paginate_button:nth-last-child(-0n+2)').dispatchEvent('click');
-        await expect(project.attributeTableWrapper(layerName).locator('div.dataTables_info'))
+        project.attributeTableWrapper(layerName).locator('ul.pagination > li.dt-paging-button:nth-last-child(-0n+2) > button').dispatchEvent('click');
+        await expect(project.attributeTableWrapper(layerName).locator('div.dt-info'))
             .toContainText('Showing 651 to 700 of 700 entries');
     });
-});
 
-test.describe('Attribute table data restricted to map extent', () => {
-    test.beforeEach(async ({ page }) => {
-        await page.route('**/service/getProjectConfig*', async route => {
-            const response = await route.fetch();
-            const json = await response.json();
-            json.options['limitDataToBbox'] = 'True';
-            await route.fulfill({ response, json });
-        });
-        const url = '/index.php/view/map/?repository=testsrepository&project=attribute_table';
-        await gotoMap(url, page)
-    });
-
-    test('Data restriction and refresh button behaviour', async ({ page }) => {
+    test('Data filtered by extent', async ({ page }) => {
         const project = new ProjectPage(page, 'attribute_table');
+        await project.open();
         const layerName = 'Les_quartiers_a_Montpellier';
+        const datatablesRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('draw') === true);
         await project.openAttributeTable(layerName);
+        await datatablesRequestPromise;
+        await expect(project.attributeTableHtml(layerName).locator('tbody tr')).toHaveCount(7);
+        await page.locator('.btn-filterbyextent-attributeTable').click();
+        await expect(page.locator('.btn-filterbyextent-attributeTable')).toHaveClass(/active/);
+        await datatablesRequestPromise;
+        await expect(project.attributeTableHtml(layerName).locator('tbody tr')).toHaveCount(7);
 
-        await expect(page.locator('.btn-refresh-table')).not.toHaveClass(/btn-warning/);
-
-        const getMapPromise = page.waitForRequest(/GetMap/);
-
-        await page.locator('lizmap-feature-toolbar:nth-child(1) > div:nth-child(1) > button:nth-child(3)').first().click();
-
-        await getMapPromise;
-
-        await expect(page.locator('.btn-refresh-table')).toHaveClass(/btn-warning/);
-
-        // Refresh
-        await page.locator('.btn-refresh-table').click();
-
+        // Zoom and assert features are filtered by extent
+        await page.locator('.feature-zoom').first().click();
+        await datatablesRequestPromise;
         await expect(project.attributeTableHtml(layerName).locator('tbody tr')).toHaveCount(5);
+
+        // Unactivate filter by extent and assert all features are in the table
+        await page.locator('.btn-filterbyextent-attributeTable').click();
+        await expect(page.locator('.btn-filterbyextent-attributeTable')).not.toHaveClass(/active/);
+        await datatablesRequestPromise;
+        await expect(project.attributeTableHtml(layerName).locator('tbody tr')).toHaveCount(7);
     });
 });
 
@@ -200,18 +190,12 @@ test.describe('Layer export permissions ACL', () => {
     test('Layer export request ACL', {
         tag: '@readonly',
     }, async ({page}) => {
-        await page.route('**/service/getProjectConfig*', async route => {
-            const response = await route.fetch();
-            const json = await response.json();
-            json.options['limitDataToBbox'] = 'True';
-            await route.fulfill({ response, json });
-        });
-
         const project = new ProjectPage(page, 'enable_export_acl');
         await project.open();
         await project.openAttributeTable('single_wms_points');
+        await page.locator('.btn-filterbyextent-attributeTable').click();
 
-        // launche export
+        // launch export
         const getFeatureRequest = await project.launchExport('single_wms_points','GeoJSON');
 
         const expectedParameters = {

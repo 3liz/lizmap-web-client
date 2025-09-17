@@ -63,7 +63,14 @@ test.describe(
         test('With editing existing data, not remove data', async function ({ page }) {
             const project = new ProjectPage(page, 'dnd_form');
             await project.open();
+            const datatablesRequestPromise = page.waitForRequest(request =>
+                request.method() === 'POST' && request.postData()?.includes('draw') === true
+            );
             await project.openAttributeTable('dnd_form_geom');
+            await datatablesRequestPromise;
+
+            // Wait for the DT table to be loaded
+            await page.waitForTimeout(100);
 
             // Button detail to open the popup inside the attribute table panel
             await page.locator('.btn-detail-attributeTable').click();
@@ -72,8 +79,8 @@ test.describe(
             // The popup inside the attribute table panel
             const popup = project.bottomDock.locator('.lizmapPopupSingleFeature > div > table > tbody');
             // First should be the test data, without any new feature, in theory
-            const firstLine = await project.attributeTableHtml('dnd_form_geom').locator("tbody tr").first();
-            const featureEdit = await firstLine.locator('.feature-edit').first();
+            const firstLine = project.attributeTableHtml('dnd_form_geom').locator("tbody tr").first();
+            const featureEdit = firstLine.locator('.feature-edit').first();
 
             await firstLine.click();
 
