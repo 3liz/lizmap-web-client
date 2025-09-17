@@ -151,9 +151,12 @@ export default class FeaturesTable extends HTMLElement {
 
                 // If an error occurred, replace empty content with error
                 if (displayExpressions.status != 'success') {
-                    this.querySelector('table.lizmap-features-table-container').innerHTML = `<p style="padding: 3px;">
-                    ${displayExpressions.error}
-                    </p>`;
+                    const destinationTable = this.querySelector('table.lizmap-features-table-container');
+                    if (destinationTable) {
+                        destinationTable.innerHTML = `<p style="padding: 3px;">
+                        ${displayExpressions.error}
+                        </p>`;
+                    }
                 }
             })
             .catch(err => {
@@ -171,9 +174,7 @@ export default class FeaturesTable extends HTMLElement {
         render(this._template(), this);
 
         // If there is not features, add empty content in the container
-        if (this.features.length === 0) {
-            this.querySelector('table.lizmap-features-table-container').innerHTML = '&nbsp;';
-        } else {
+        if (this.features.length > 0) {
 
             // Add drag & drop capabilities if option is set
             if (this.itemsDraggable == 'yes') {
