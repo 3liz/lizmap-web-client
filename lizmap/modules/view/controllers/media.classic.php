@@ -145,6 +145,7 @@ class mediaCtrl extends jController
         $rep = $this->getResponse('json');
         $rep->data = array('error' => '401 Unauthorized (authentication is required)', 'message' => $message);
         $rep->setHttpStatus('401', 'Unauthorized');
+        $rep->addHttpHeader('WWW-Authenticate', 'Basic realm="LizmapWebClient", charset="UTF-8"');
 
         return $rep;
     }
@@ -166,7 +167,9 @@ class mediaCtrl extends jController
         // Optional BASIC authentication
         $ok = Checker::checkCredentials($_SERVER);
         if (!$ok) {
-            return $this->error401(jLocale::get('view~default.service.access.wrong_credentials.title'));
+            return $this->error401(
+                jLocale::get('view~default.service.access.wrong_credentials.title')
+            );
         }
 
         // Get repository data
@@ -177,6 +180,12 @@ class mediaCtrl extends jController
             return $this->error404('');
         }
         if (!jAcl2::check('lizmap.repositories.view', $lrep->getKey())) {
+            if (!jAuth::IsConnected()) {
+                return $this->error401(
+                    jLocale::get('view~default.service.access.unauthorized')
+                );
+            }
+
             return $this->error403(jLocale::get('view~default.repository.access.denied'));
         }
 
@@ -197,6 +206,12 @@ class mediaCtrl extends jController
 
         // Redirect if no right to access the project
         if (!$lproj->checkAcl()) {
+            if (!jAuth::IsConnected()) {
+                return $this->error401(
+                    jLocale::get('view~default.service.access.unauthorized')
+                );
+            }
+
             return $this->error403(jLocale::get('view~default.repository.access.denied'));
         }
 
