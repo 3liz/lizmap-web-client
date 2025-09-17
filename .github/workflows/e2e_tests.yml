@@ -322,7 +322,7 @@ jobs:
           steps.test-playwright-read-only.outcome != 'success' ||
           steps.test-playwright-no-tag.outcome != 'success' ||
           steps.test-playwright-write.outcome != 'success' )
-        uses: cypress-io/github-action@v6.10.1
+        uses: cypress-io/github-action@v6.10.2
         with:
           install: false
           browser: chrome
