@@ -20,8 +20,9 @@ class lizmapLogListener extends jEventListener
     public function onAuthCanLogin($event)
     {
         $key = 'login';
-        $entrypointFile = jApp::coord()->request->urlScriptName;
+        $entrypointFile = str_replace('/', '', $_SERVER['SCRIPT_NAME']);
         $entrypoint = substr($entrypointFile, 0, -4);
+        // entry point other than admin are provided by other module (webdav, ...), use different log key
         if ($entrypoint != 'admin') {
             $key = $entrypoint.'-login';
         }
