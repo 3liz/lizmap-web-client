@@ -41,6 +41,40 @@ test.describe('Datables Requests @requests @readonly', () => {
         expect(body.editableFeatures.featuresids).toHaveLength(0);
     });
 
+    test('Bbox request', async({ request }) => {
+        // Simple datatable request
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'attribute_table',
+            layerId: 'quartiers_5fe55662_2cbf_48f4_a505_498c61fe978c',
+        });
+        let url = `/index.php/lizmap/datatables?${params}`;
+        let response = await request.post(url, {
+            data: {
+                start: 0,
+                length: 50,
+                columns: [
+                    {'data': 'lizSelected'},
+                    {'data': 'featureToolbar'},
+                    {'data': 'quartier'},
+                ],
+                order: [{'column': 2, 'dir': 'asc'}],
+                bbox: '763699.512775506,6280476.5039667105,775413.9632877404,6284266.667797037',
+                srsname: 'EPSG:2154',
+            }
+        });
+
+        const body = await checkJson(response);
+        expect(body).toHaveProperty('draw');
+        expect(body).toHaveProperty('recordsTotal', '7');
+        expect(body).toHaveProperty('recordsFiltered', '5');
+        // Check data
+        expect(body).toHaveProperty('data');
+        expect(body.data).toHaveProperty('type', 'FeatureCollection');
+        expect(body.data).toHaveProperty('features');
+        expect(body.data.features).toHaveLength(5);
+    });
+
     test('Error: The parameters repository, project and layerId are mandatory.', async({ request }) => {
         // layerId is forgotten
         let params = new URLSearchParams({
