@@ -1,6 +1,12 @@
 <?php
 
-/**
+use Jelix\FileUtilities\File;
+use Lizmap\App\Checker;
+use Lizmap\App\ControllerTools;
+use Lizmap\Project\UnknownLizmapProjectException;
+use Lizmap\Request\RemoteStorageRequest;
+
+/*
  * Service to provide media (image, documents).
  *
  * @author    3liz
@@ -10,11 +16,6 @@
  *
  * @license    Mozilla Public License : http://www.mozilla.org/MPL/
  */
-
-use Jelix\FileUtilities\File;
-use Lizmap\App\Checker;
-use Lizmap\Project\UnknownLizmapProjectException;
-use Lizmap\Request\RemoteStorageRequest;
 
 class mediaCtrl extends jController
 {
@@ -145,6 +146,13 @@ class mediaCtrl extends jController
         $rep = $this->getResponse('json');
         $rep->data = array('error' => '401 Unauthorized (authentication is required)', 'message' => $message);
         $rep->setHttpStatus('401', 'Unauthorized');
+        // Add WWW-Authenticate header only for external clients
+        // To avoid web browser to ask for login/password when session expires
+        $addHeader = !ControllerTools::clientIsABrowser();
+        // Add WWW-Authenticate header
+        if ($addHeader) {
+            $rep->addHttpHeader('WWW-Authenticate', 'Basic realm="LizmapWebClient", charset="UTF-8"');
+        }
 
         return $rep;
     }
@@ -166,7 +174,9 @@ class mediaCtrl extends jController
         // Optional BASIC authentication
         $ok = Checker::checkCredentials($_SERVER);
         if (!$ok) {
-            return $this->error401(jLocale::get('view~default.service.access.wrong_credentials.title'));
+            return $this->error401(
+                jLocale::get('view~default.service.access.wrong_credentials.title')
+            );
         }
 
         // Get repository data
@@ -177,6 +187,12 @@ class mediaCtrl extends jController
             return $this->error404('');
         }
         if (!jAcl2::check('lizmap.repositories.view', $lrep->getKey())) {
+            if (!jAuth::IsConnected()) {
+                return $this->error401(
+                    jLocale::get('view~default.service.access.unauthorized')
+                );
+            }
+
             return $this->error403(jLocale::get('view~default.repository.access.denied'));
         }
 
@@ -197,6 +213,12 @@ class mediaCtrl extends jController
 
         // Redirect if no right to access the project
         if (!$lproj->checkAcl()) {
+            if (!jAuth::IsConnected()) {
+                return $this->error401(
+                    jLocale::get('view~default.service.access.unauthorized')
+                );
+            }
+
             return $this->error403(jLocale::get('view~default.repository.access.denied'));
         }
 
