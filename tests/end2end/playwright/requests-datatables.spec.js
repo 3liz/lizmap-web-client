@@ -34,6 +34,9 @@ test.describe('Datables Requests @requests @readonly', () => {
         expect(body.data).toHaveProperty('type', 'FeatureCollection');
         expect(body.data).toHaveProperty('features');
         expect(body.data.features).toHaveLength(7);
+        expect(body.data.features.map(feat => feat.properties.quartier)).toEqual(
+            [1,2,3,4,5,6,7]
+        );
         // Check editable features
         expect(body).toHaveProperty('editableFeatures');
         expect(body.editableFeatures).toHaveProperty('status', 'restricted');
@@ -73,6 +76,44 @@ test.describe('Datables Requests @requests @readonly', () => {
         expect(body.data).toHaveProperty('type', 'FeatureCollection');
         expect(body.data).toHaveProperty('features');
         expect(body.data.features).toHaveLength(5);
+        expect(body.data.features.map(feat => feat.properties.quartier)).toEqual(
+            [1,2,3,6,7]
+        );
+    });
+
+    test('Order request', async({ request }) => {
+        // Simple datatable request
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'attribute_table',
+            layerId: 'quartiers_5fe55662_2cbf_48f4_a505_498c61fe978c',
+        });
+        let url = `/index.php/lizmap/datatables?${params}`;
+        let response = await request.post(url, {
+            data: {
+                start: 0,
+                length: 50,
+                columns: [
+                    {'data': 'lizSelected'},
+                    {'data': 'featureToolbar'},
+                    {'data': 'quartier'},
+                ],
+                order: [{'column': 2, 'dir': 'desc'}],
+            }
+        });
+
+        const body = await checkJson(response);
+        expect(body).toHaveProperty('draw');
+        expect(body).toHaveProperty('recordsTotal', '7');
+        expect(body).toHaveProperty('recordsFiltered', '7');
+        // Check data
+        expect(body).toHaveProperty('data');
+        expect(body.data).toHaveProperty('type', 'FeatureCollection');
+        expect(body.data).toHaveProperty('features');
+        expect(body.data.features).toHaveLength(7);
+        expect(body.data.features.map(feat => feat.properties.quartier)).toEqual(
+            [1,2,3,4,5,6,7].reverse()
+        );
     });
 
     test('Error: The parameters repository, project and layerId are mandatory.', async({ request }) => {
