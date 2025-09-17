@@ -75,7 +75,7 @@ class datatablesCtrl extends jController
 
         // Extract info for DataTables parameters
         $DTOrderColumnIndex = $DTOrder[0]['column'];
-        $DTOrderColumnDirection = $DTOrder[0]['dir'] == 'desc' ? 'd' : '';
+        $DTOrderColumnDirection = $DTOrder[0]['dir'] == 'desc' ? 'DESC' : 'ASC';
         if (!array_key_exists($DTOrderColumnIndex, $DTColumns)) {
             return $this->setErrorResponse($rep, 400, 'The DataTables parameters order and columns are not compatible.');
         }
