@@ -61,7 +61,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Make environment and show Lizmap versions
         env:
@@ -147,7 +147,8 @@ jobs:
         run: |
           sudo echo "127.0.0.1 othersite.local" | sudo tee -a /etc/hosts
 
-      - uses: actions/setup-node@v4
+      - name: "Setup Node ${{ env.NODE_VERSION }}"
+        uses: actions/setup-node@v5
         with:
           node-version: 21
           cache: 'npm'
@@ -289,7 +290,7 @@ jobs:
           steps.test-playwright-read-only.outcome != 'success' ||
           steps.test-playwright-no-tag.outcome != 'success' ||
           steps.test-playwright-write.outcome != 'success'
-        uses: ctrf-io/github-test-reporter@v1.0.17
+        uses: ctrf-io/github-test-reporter@v1.0.22
         env:
           GITHUB_TOKEN: ${{ secrets.BOT_HUB_TOKEN || github.token  }}
         with:
@@ -329,7 +330,7 @@ jobs:
           steps.test-playwright-read-only.outcome != 'success' ||
           steps.test-playwright-no-tag.outcome != 'success' ||
           steps.test-playwright-write.outcome != 'success' )
-        uses: cypress-io/github-action@v6.10.1
+        uses: cypress-io/github-action@v6.10.2
         with:
           install: false
           browser: chrome
