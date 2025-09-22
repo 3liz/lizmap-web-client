@@ -28,7 +28,7 @@ jobs:
     steps:
 
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Get composer cache directory
         id: get-composer-cache-dir
@@ -56,7 +56,7 @@ jobs:
         run: composer require --working-dir=tests/units/ phpunit/phpunit:${{ matrix.php-unit }}
 
       - name: "Setup Node ${{ env.NODE_VERSION }}"
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -71,9 +71,10 @@ jobs:
     steps:
 
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - name: "Setup Node ${{ env.NODE_VERSION }}"
+        uses: actions/setup-node@v5
         with:
           node-version: 21
 
