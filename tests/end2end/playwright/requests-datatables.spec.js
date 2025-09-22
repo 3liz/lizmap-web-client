@@ -116,6 +116,124 @@ test.describe('Datables Requests @requests @readonly', () => {
         );
     });
 
+    test('Search request', async({ request }) => {
+        // Simple datatable request
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'attribute_table',
+            layerId: 'quartiers_5fe55662_2cbf_48f4_a505_498c61fe978c',
+        });
+        let url = `/index.php/lizmap/datatables?${params}`;
+        let response = await request.post(url, {
+            data: {
+                start: 0,
+                length: 50,
+                columns: [
+                    {'data': 'lizSelected'},
+                    {'data': 'featureToolbar'},
+                    {'data': 'quartier'},
+                    {'data': 'quartmno'},
+                ],
+                order: [{'column': 2, 'dir': 'asc'}],
+                searchBuilder: {
+                    criteria: [
+                        {'condition': '=', 'data': 'quartmno', 'value1': 'CX', 'type': 'string'},
+                    ],
+                    logic: 'AND',
+                },
+            }
+        });
+
+        let body = await checkJson(response);
+        expect(body).toHaveProperty('draw');
+        expect(body).toHaveProperty('recordsTotal', '7');
+        expect(body).toHaveProperty('recordsFiltered', '1');
+        // Check data
+        expect(body).toHaveProperty('data');
+        expect(body.data).toHaveProperty('type', 'FeatureCollection');
+        expect(body.data).toHaveProperty('features');
+        expect(body.data.features).toHaveLength(1);
+        expect(body.data.features.map(feat => feat.properties.quartier)).toEqual(
+            [4]
+        );
+        expect(body.data.features.map(feat => feat.properties.quartmno)).toEqual(
+            ['CX']
+        );
+
+        response = await request.post(url, {
+            data: {
+                start: 0,
+                length: 50,
+                columns: [
+                    {'data': 'lizSelected'},
+                    {'data': 'featureToolbar'},
+                    {'data': 'quartier'},
+                    {'data': 'quartmno'},
+                ],
+                order: [{'column': 2, 'dir': 'asc'}],
+                searchBuilder: {
+                    criteria: [
+                        {'condition': 'starts', 'data': 'quartmno', 'value1': 'C', 'type': 'string'},
+                    ],
+                    logic: 'AND',
+                },
+            }
+        });
+
+        body = await checkJson(response);
+        expect(body).toHaveProperty('draw');
+        expect(body).toHaveProperty('recordsTotal', '7');
+        expect(body).toHaveProperty('recordsFiltered', '2');
+        // Check data
+        expect(body).toHaveProperty('data');
+        expect(body.data).toHaveProperty('type', 'FeatureCollection');
+        expect(body.data).toHaveProperty('features');
+        expect(body.data.features).toHaveLength(2);
+        expect(body.data.features.map(feat => feat.properties.quartier)).toEqual(
+            [3,4]
+        );
+        expect(body.data.features.map(feat => feat.properties.quartmno)).toEqual(
+            ['CV','CX']
+        );
+
+        response = await request.post(url, {
+            data: {
+                start: 0,
+                length: 50,
+                columns: [
+                    {'data': 'lizSelected'},
+                    {'data': 'featureToolbar'},
+                    {'data': 'quartier'},
+                    {'data': 'quartmno'},
+                ],
+                order: [{'column': 2, 'dir': 'asc'}],
+                searchBuilder: {
+                    criteria: [
+                        {'condition': 'starts', 'data': 'quartmno', 'value1': 'C', 'type': 'string'},
+                        {'condition': 'starts', 'data': 'quartmno', 'value1': 'P', 'type': 'string'},
+                    ],
+                    logic: 'OR',
+                },
+            }
+        });
+
+        body = await checkJson(response);
+        expect(body).toHaveProperty('draw');
+        expect(body).toHaveProperty('recordsTotal', '7');
+        expect(body).toHaveProperty('recordsFiltered', '4');
+        // Check data
+        expect(body).toHaveProperty('data');
+        expect(body.data).toHaveProperty('type', 'FeatureCollection');
+        expect(body.data).toHaveProperty('features');
+        expect(body.data.features).toHaveLength(4);
+        expect(body.data.features.map(feat => feat.properties.quartier)).toEqual(
+            [2,3,4,5]
+        );
+        expect(body.data.features.map(feat => feat.properties.quartmno)).toEqual(
+            ['PA','CV','CX','PR']
+        );
+    });
+
     test('Error: The parameters repository, project and layerId are mandatory.', async({ request }) => {
         // layerId is forgotten
         let params = new URLSearchParams({
