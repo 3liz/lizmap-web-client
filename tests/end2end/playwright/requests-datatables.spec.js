@@ -34,7 +34,9 @@ test.describe('Datables Requests @requests @readonly', () => {
         expect(body.data).toHaveProperty('type', 'FeatureCollection');
         expect(body.data).toHaveProperty('features');
         expect(body.data.features).toHaveLength(7);
-        expect(body.data.features.map(feat => feat.properties.quartier)).toEqual(
+        /** @type {any[]} */
+        const features = body.data.features;
+        expect(features.map(feat => feat.properties.quartier)).toEqual(
             [1,2,3,4,5,6,7]
         );
         // Check editable features
@@ -76,7 +78,9 @@ test.describe('Datables Requests @requests @readonly', () => {
         expect(body.data).toHaveProperty('type', 'FeatureCollection');
         expect(body.data).toHaveProperty('features');
         expect(body.data.features).toHaveLength(5);
-        expect(body.data.features.map(feat => feat.properties.quartier)).toEqual(
+        /** @type {any[]} */
+        const features = body.data.features;
+        expect(features.map(feat => feat.properties.quartier)).toEqual(
             [1,2,3,6,7]
         );
     });
@@ -111,7 +115,9 @@ test.describe('Datables Requests @requests @readonly', () => {
         expect(body.data).toHaveProperty('type', 'FeatureCollection');
         expect(body.data).toHaveProperty('features');
         expect(body.data.features).toHaveLength(7);
-        expect(body.data.features.map(feat => feat.properties.quartier)).toEqual(
+        /** @type {any[]} */
+        const features = body.data.features;
+        expect(features.map(feat => feat.properties.quartier)).toEqual(
             [1,2,3,4,5,6,7].reverse()
         );
     });
@@ -153,10 +159,12 @@ test.describe('Datables Requests @requests @readonly', () => {
         expect(body.data).toHaveProperty('type', 'FeatureCollection');
         expect(body.data).toHaveProperty('features');
         expect(body.data.features).toHaveLength(1);
-        expect(body.data.features.map(feat => feat.properties.quartier)).toEqual(
+        /** @type {any[]} */
+        let features = body.data.features;
+        expect(features.map(feat => feat.properties.quartier)).toEqual(
             [4]
         );
-        expect(body.data.features.map(feat => feat.properties.quartmno)).toEqual(
+        expect(features.map(feat => feat.properties.quartmno)).toEqual(
             ['CX']
         );
 
@@ -189,10 +197,12 @@ test.describe('Datables Requests @requests @readonly', () => {
         expect(body.data).toHaveProperty('type', 'FeatureCollection');
         expect(body.data).toHaveProperty('features');
         expect(body.data.features).toHaveLength(2);
-        expect(body.data.features.map(feat => feat.properties.quartier)).toEqual(
+        /** @type {any[]} */
+        features = body.data.features;
+        expect(features.map(feat => feat.properties.quartier)).toEqual(
             [3,4]
         );
-        expect(body.data.features.map(feat => feat.properties.quartmno)).toEqual(
+        expect(features.map(feat => feat.properties.quartmno)).toEqual(
             ['CV','CX']
         );
 
@@ -226,10 +236,12 @@ test.describe('Datables Requests @requests @readonly', () => {
         expect(body.data).toHaveProperty('type', 'FeatureCollection');
         expect(body.data).toHaveProperty('features');
         expect(body.data.features).toHaveLength(4);
-        expect(body.data.features.map(feat => feat.properties.quartier)).toEqual(
+        /** @type {any[]} */
+        features = body.data.features;
+        expect(features.map(feat => feat.properties.quartier)).toEqual(
             [2,3,4,5]
         );
-        expect(body.data.features.map(feat => feat.properties.quartmno)).toEqual(
+        expect(features.map(feat => feat.properties.quartmno)).toEqual(
             ['PA','CV','CX','PR']
         );
     });
@@ -356,7 +368,9 @@ test.describe('Datables Requests @requests @readonly', () => {
         expect(body.data).toHaveProperty('type', 'FeatureCollection');
         expect(body.data).toHaveProperty('features');
         expect(body.data.features).toHaveLength(2);
-        expect(body.data.features.map(feat => feat.properties.quartier)).toEqual(
+        /** @type {any[]} */
+        let features = body.data.features;
+        expect(features.map(feat => feat.properties.quartier)).toEqual(
             [2,3]
         );
     });
