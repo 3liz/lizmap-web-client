@@ -234,6 +234,97 @@ test.describe('Datables Requests @requests @readonly', () => {
         );
     });
 
+    test('Pages request', async({ request }) => {
+        // Simple datatable request
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'attribute_table',
+            layerId: 'points_b288cb23_3e45_4e22_ad33_152363ef6d21',
+        });
+        let url = `/index.php/lizmap/datatables?${params}`;
+        let response = await request.post(url, {
+            data: {
+                start: 0,
+                length: 50,
+                columns: [
+                    {'data': 'lizSelected'},
+                    {'data': 'featureToolbar'},
+                    {'data': 'id'},
+                    {'data': 'quartier'},
+                ],
+                order: [{'column': 2, 'dir': 'asc'}],
+            }
+        });
+        let body = await checkJson(response);
+        expect(body).toHaveProperty('draw');
+        expect(body).toHaveProperty('recordsTotal', '700');
+        expect(body).toHaveProperty('recordsFiltered', '700');
+        // Check data
+        expect(body).toHaveProperty('data');
+        expect(body.data).toHaveProperty('type', 'FeatureCollection');
+        expect(body.data).toHaveProperty('features');
+        expect(body.data.features).toHaveLength(50);
+        expect(body.data.features[0].properties.id).toEqual(0);
+        expect(body.data.features[49].properties.id).toEqual(49);
+
+        response = await request.post(url, {
+            data: {
+                start: 650,
+                length: 50,
+                columns: [
+                    {'data': 'lizSelected'},
+                    {'data': 'featureToolbar'},
+                    {'data': 'id'},
+                    {'data': 'quartier'},
+                ],
+                order: [{'column': 2, 'dir': 'asc'}],
+            }
+        });
+        body = await checkJson(response);
+        expect(body).toHaveProperty('draw');
+        expect(body).toHaveProperty('recordsTotal', '700');
+        expect(body).toHaveProperty('recordsFiltered', '700');
+        // Check data
+        expect(body).toHaveProperty('data');
+        expect(body.data).toHaveProperty('type', 'FeatureCollection');
+        expect(body.data).toHaveProperty('features');
+        expect(body.data.features).toHaveLength(50);
+        expect(body.data.features[0].properties.id).toEqual(650);
+        expect(body.data.features[49].properties.id).toEqual(699);
+
+        response = await request.post(url, {
+            data: {
+                start: 0,
+                length: 50,
+                columns: [
+                    {'data': 'lizSelected'},
+                    {'data': 'featureToolbar'},
+                    {'data': 'id'},
+                    {'data': 'quartier'},
+                    {'data': 'libquart'},
+                ],
+                order: [{'column': 2, 'dir': 'asc'}],
+                searchBuilder: {
+                    criteria: [
+                        {'condition': 'starts', 'data': 'libquart', 'value1': 'pres', 'type': 'string'},
+                    ],
+                    logic: 'AND',
+                },
+            }
+        });
+        body = await checkJson(response);
+        expect(body).toHaveProperty('draw');
+        expect(body).toHaveProperty('recordsTotal', '700');
+        expect(body).toHaveProperty('recordsFiltered', '100');
+        // Check data
+        expect(body).toHaveProperty('data');
+        expect(body.data).toHaveProperty('type', 'FeatureCollection');
+        expect(body.data).toHaveProperty('features');
+        expect(body.data.features).toHaveLength(50);
+        expect(body.data.features[0].properties.id).toEqual(500);
+        expect(body.data.features[49].properties.id).toEqual(549);
+    });
+
     test('Error: The parameters repository, project and layerId are mandatory.', async({ request }) => {
         // layerId is forgotten
         let params = new URLSearchParams({
