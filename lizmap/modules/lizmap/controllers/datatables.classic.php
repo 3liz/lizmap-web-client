@@ -241,8 +241,8 @@ class datatablesCtrl extends jController
 
         $returnedData = array(
             'draw' => (int) $this->param('draw'),
-            'recordsTotal' => $hits,
-            'recordsFiltered' => $recordsFiltered,
+            'recordsTotal' => (int) $hits,
+            'recordsFiltered' => (int) $recordsFiltered,
             'data' => json_decode($featureData),
             'editableFeatures' => $editableFeaturesRep,
         );

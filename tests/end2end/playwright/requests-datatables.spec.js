@@ -27,8 +27,8 @@ test.describe('Datables Requests @requests @readonly', () => {
 
         const body = await checkJson(response);
         expect(body).toHaveProperty('draw');
-        expect(body).toHaveProperty('recordsTotal', '7');
-        expect(body).toHaveProperty('recordsFiltered', '7');
+        expect(body).toHaveProperty('recordsTotal', 7);
+        expect(body).toHaveProperty('recordsFiltered', 7);
         // Check data
         expect(body).toHaveProperty('data');
         expect(body.data).toHaveProperty('type', 'FeatureCollection');
@@ -69,8 +69,8 @@ test.describe('Datables Requests @requests @readonly', () => {
 
         const body = await checkJson(response);
         expect(body).toHaveProperty('draw');
-        expect(body).toHaveProperty('recordsTotal', '7');
-        expect(body).toHaveProperty('recordsFiltered', '5');
+        expect(body).toHaveProperty('recordsTotal', 7);
+        expect(body).toHaveProperty('recordsFiltered', 5);
         // Check data
         expect(body).toHaveProperty('data');
         expect(body.data).toHaveProperty('type', 'FeatureCollection');
@@ -104,8 +104,8 @@ test.describe('Datables Requests @requests @readonly', () => {
 
         const body = await checkJson(response);
         expect(body).toHaveProperty('draw');
-        expect(body).toHaveProperty('recordsTotal', '7');
-        expect(body).toHaveProperty('recordsFiltered', '7');
+        expect(body).toHaveProperty('recordsTotal', 7);
+        expect(body).toHaveProperty('recordsFiltered', 7);
         // Check data
         expect(body).toHaveProperty('data');
         expect(body.data).toHaveProperty('type', 'FeatureCollection');
@@ -146,8 +146,8 @@ test.describe('Datables Requests @requests @readonly', () => {
 
         let body = await checkJson(response);
         expect(body).toHaveProperty('draw');
-        expect(body).toHaveProperty('recordsTotal', '7');
-        expect(body).toHaveProperty('recordsFiltered', '1');
+        expect(body).toHaveProperty('recordsTotal', 7);
+        expect(body).toHaveProperty('recordsFiltered', 1);
         // Check data
         expect(body).toHaveProperty('data');
         expect(body.data).toHaveProperty('type', 'FeatureCollection');
@@ -182,8 +182,8 @@ test.describe('Datables Requests @requests @readonly', () => {
 
         body = await checkJson(response);
         expect(body).toHaveProperty('draw');
-        expect(body).toHaveProperty('recordsTotal', '7');
-        expect(body).toHaveProperty('recordsFiltered', '2');
+        expect(body).toHaveProperty('recordsTotal', 7);
+        expect(body).toHaveProperty('recordsFiltered', 2);
         // Check data
         expect(body).toHaveProperty('data');
         expect(body.data).toHaveProperty('type', 'FeatureCollection');
@@ -219,8 +219,8 @@ test.describe('Datables Requests @requests @readonly', () => {
 
         body = await checkJson(response);
         expect(body).toHaveProperty('draw');
-        expect(body).toHaveProperty('recordsTotal', '7');
-        expect(body).toHaveProperty('recordsFiltered', '4');
+        expect(body).toHaveProperty('recordsTotal', 7);
+        expect(body).toHaveProperty('recordsFiltered', 4);
         // Check data
         expect(body).toHaveProperty('data');
         expect(body.data).toHaveProperty('type', 'FeatureCollection');
@@ -257,8 +257,8 @@ test.describe('Datables Requests @requests @readonly', () => {
         });
         let body = await checkJson(response);
         expect(body).toHaveProperty('draw');
-        expect(body).toHaveProperty('recordsTotal', '700');
-        expect(body).toHaveProperty('recordsFiltered', '700');
+        expect(body).toHaveProperty('recordsTotal', 700);
+        expect(body).toHaveProperty('recordsFiltered', 700);
         // Check data
         expect(body).toHaveProperty('data');
         expect(body.data).toHaveProperty('type', 'FeatureCollection');
@@ -282,8 +282,8 @@ test.describe('Datables Requests @requests @readonly', () => {
         });
         body = await checkJson(response);
         expect(body).toHaveProperty('draw');
-        expect(body).toHaveProperty('recordsTotal', '700');
-        expect(body).toHaveProperty('recordsFiltered', '700');
+        expect(body).toHaveProperty('recordsTotal', 700);
+        expect(body).toHaveProperty('recordsFiltered', 700);
         // Check data
         expect(body).toHaveProperty('data');
         expect(body.data).toHaveProperty('type', 'FeatureCollection');
@@ -314,8 +314,8 @@ test.describe('Datables Requests @requests @readonly', () => {
         });
         body = await checkJson(response);
         expect(body).toHaveProperty('draw');
-        expect(body).toHaveProperty('recordsTotal', '700');
-        expect(body).toHaveProperty('recordsFiltered', '100');
+        expect(body).toHaveProperty('recordsTotal', 700);
+        expect(body).toHaveProperty('recordsFiltered', 100);
         // Check data
         expect(body).toHaveProperty('data');
         expect(body.data).toHaveProperty('type', 'FeatureCollection');
@@ -349,7 +349,7 @@ test.describe('Datables Requests @requests @readonly', () => {
 
         let body = await checkJson(response);
         expect(body).toHaveProperty('draw');
-        expect(body).toHaveProperty('recordsTotal', '7');
+        expect(body).toHaveProperty('recordsTotal', 7);
         expect(body).toHaveProperty('recordsFiltered', 2);
         // Check data
         expect(body).toHaveProperty('data');
