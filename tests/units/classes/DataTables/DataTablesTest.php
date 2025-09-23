@@ -175,6 +175,37 @@ class DataTablesTest extends TestCase
         );
         $exp = DataTables::convertCriteriaToExpression($criteria);
         $this->assertEquals($exp, 'name NOT BETWEEN 0 AND 5');
+
+        $criteria = array(
+            'data' => 'name',
+            'type' => 'string',
+            'condition' => '=',
+        );
+        $exp = DataTables::convertCriteriaToExpression($criteria);
+        $this->assertEquals($exp, 'name = \'\'');
+    }
+
+    public function testInvalidConvertCriteriaToExpression(): void
+    {
+        $criteria = array(
+            'type' => '',
+        );
+        $exp = DataTables::convertCriteriaToExpression($criteria);
+        $this->assertEquals($exp, '');
+
+        $criteria = array(
+            'data' => 'name',
+            'type' => '',
+        );
+        $exp = DataTables::convertCriteriaToExpression($criteria);
+        $this->assertEquals($exp, '');
+
+        $criteria = array(
+            'data' => 'name',
+            'type' => 'string',
+        );
+        $exp = DataTables::convertCriteriaToExpression($criteria);
+        $this->assertEquals($exp, '');
     }
 
     public function testConvertSearchToExpression(): void
