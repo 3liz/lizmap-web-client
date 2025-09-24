@@ -62,11 +62,6 @@ export class ProjectPage extends BasePage {
 
     // Docks
     /**
-     * Attribute table dock
-     * @type {Locator}
-     */
-    attributeTable;
-    /**
      * Main left dock
      * @type {Locator}
      */
@@ -132,6 +127,14 @@ export class ProjectPage extends BasePage {
      */
     attributeTableHtml = (name) =>
         this.page.locator(`#attribute-layer-table-${name}`);
+
+    /**
+     * Attribute table action bar for the given layer name
+     * @param {string} name Name of the layer
+     * @returns {Locator} Locator for attribute table action bar
+     */
+    attributeTableActionBar = (name) =>
+        this.page.locator(`#attribute-layer-${name} .attribute-layer-action-bar`);
 
     /**
      * Editing field for the given field in the panel
@@ -208,6 +211,18 @@ export class ProjectPage extends BasePage {
             request => request.method() === 'POST' &&
             request.postData()?.includes('WMS') === true &&
             request.postData()?.includes('GETSELECTIONTOKEN') === true
+        );
+    }
+
+    /**
+     * Waits for a GetFilterToken request
+     * @returns {Promise<Request>} The GetFilterToken request
+     */
+    async waitForGetFilterTokenRequest() {
+        return this.page.waitForRequest(
+            request => request.method() === 'POST' &&
+            request.postData()?.includes('WMS') === true &&
+            request.postData()?.includes('GETFILTERTOKEN') === true
         );
     }
 
