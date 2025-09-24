@@ -290,10 +290,7 @@ test.describe('Raster identify',
     });
 });
 
-test.describe('Popup',
-    {
-        tag: ['@readonly'],
-    },() => {
+test.describe('Popup @readonly', () => {
 
     test('click on the shape to show the popup', async ({ page }) => {
         const project = new ProjectPage(page, 'popup');
@@ -454,96 +451,92 @@ test.describe('Popup',
     });
 });
 
-test.describe('Popup Geometry',
-    {
-        tag: ['@readonly'],
-    },() => {
+test.describe('Popup Geometry @readonly', () => {
 
+    test('should display zoom and center buttons if "Add geometry to feature response" is checked', async ({ page }) => {
+        const project = new ProjectPage(page, 'feature_toolbar');
+        await project.open();
+        // Click on a point
+        let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
+        await project.clickOnMap(436, 290);
+        let getFeatureInfoRequest = await getFeatureInfoPromise;
+        await getFeatureInfoRequest.response();
 
-        test('should display zoom and center buttons if "Add geometry to feature response" is checked', async ({ page }) => {
-            const project = new ProjectPage(page, 'feature_toolbar');
-            await project.open();
-            // Click on a point
-            let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
-            await project.clickOnMap(436, 290);
-            let getFeatureInfoRequest = await getFeatureInfoPromise;
-            await getFeatureInfoRequest.response();
-
-            const featureToolbar = await project.popupContent.locator('lizmap-feature-toolbar[value^="parent_layer_"][value$=".1"]');
-            await expect(await featureToolbar.locator('button.feature-zoom')).toBeVisible();
-            await expect(await featureToolbar.locator('button.feature-center')).toBeVisible();
-        });
-
-        test('Show/hide the geometry on open/close dock', async ({ page }) => {
-            const project = new ProjectPage(page, 'feature_toolbar');
-            await project.open();
-
-            // Get default buffer with one point
-            let buffer = await page.screenshot({clip:{x:425, y:325, width:100, height:100}});
-            const defaultByteLength = buffer.byteLength;
-            await expect(defaultByteLength).toBeGreaterThan(800); // 851 or 906
-            await expect(defaultByteLength).toBeLessThan(1000) // 851 or 906
-
-            // Click on a point
-            let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
-            await project.clickOnMap(436, 290);
-            let getFeatureInfoRequest = await getFeatureInfoPromise;
-            await getFeatureInfoRequest.response();
-
-            // The geometry is displayed
-            buffer = await page.screenshot({clip:{x:425, y:325, width:100, height:100}});
-            await expect(buffer.byteLength).not.toBe(defaultByteLength);
-            await expect(buffer.byteLength).toBeGreaterThan(defaultByteLength);
-
-            // Close popup
-            page.locator('#button-popupcontent').click();
-            await page.waitForTimeout(50);
-
-            buffer = await page.screenshot({clip:{x:425, y:325, width:100, height:100}});
-            await expect(buffer.byteLength).toBe(defaultByteLength);
-
-            // Open popup
-            page.locator('#button-popupcontent').click();
-            await page.waitForTimeout(50);
-
-            buffer = await page.screenshot({clip:{x:425, y:325, width:100, height:100}});
-            await expect(buffer.byteLength).not.toBe(defaultByteLength);
-            await expect(buffer.byteLength).toBeGreaterThan(defaultByteLength);
-        });
-
-        test('Show/hide the geometry on click on the map', async ({ page }) => {
-            const project = new ProjectPage(page, 'feature_toolbar');
-            await project.open();
-
-            // Get default buffer with one point
-            let buffer = await page.screenshot({clip:{x:425, y:325, width:100, height:100}});
-            const defaultByteLength = buffer.byteLength;
-            await expect(defaultByteLength).toBeGreaterThan(800); // 851 or 906
-            await expect(defaultByteLength).toBeLessThan(1000) // 851 or 906
-
-            // Click on a point
-            let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
-            await project.clickOnMap(436, 290);
-            let getFeatureInfoRequest = await getFeatureInfoPromise;
-            await getFeatureInfoRequest.response();
-
-            // The geometry is displayed
-            buffer = await page.screenshot({clip:{x:425, y:325, width:100, height:100}});
-            await expect(buffer.byteLength).not.toBe(defaultByteLength);
-            await expect(buffer.byteLength).toBeGreaterThan(defaultByteLength);
-
-            // Not click on a point
-            getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
-            await project.clickOnMap(536, 290);
-            getFeatureInfoRequest = await getFeatureInfoPromise;
-            await getFeatureInfoRequest.response();
-            await page.waitForTimeout(500); // wait to be sure
-
-            // Nothing
-            buffer = await page.screenshot({clip:{x:425, y:325, width:100, height:100}});
-            await expect(buffer.byteLength).toBe(defaultByteLength);
-        });
+        const featureToolbar = await project.popupContent.locator('lizmap-feature-toolbar[value^="parent_layer_"][value$=".1"]');
+        await expect(await featureToolbar.locator('button.feature-zoom')).toBeVisible();
+        await expect(await featureToolbar.locator('button.feature-center')).toBeVisible();
     });
+
+    test('Show/hide the geometry on open/close dock', async ({ page }) => {
+        const project = new ProjectPage(page, 'feature_toolbar');
+        await project.open();
+
+        // Get default buffer with one point
+        let buffer = await page.screenshot({clip:{x:425, y:325, width:100, height:100}});
+        const defaultByteLength = buffer.byteLength;
+        await expect(defaultByteLength).toBeGreaterThan(800); // 851 or 906
+        await expect(defaultByteLength).toBeLessThan(1000) // 851 or 906
+
+        // Click on a point
+        let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
+        await project.clickOnMap(436, 290);
+        let getFeatureInfoRequest = await getFeatureInfoPromise;
+        await getFeatureInfoRequest.response();
+
+        // The geometry is displayed
+        buffer = await page.screenshot({clip:{x:425, y:325, width:100, height:100}});
+        await expect(buffer.byteLength).not.toBe(defaultByteLength);
+        await expect(buffer.byteLength).toBeGreaterThan(defaultByteLength);
+
+        // Close popup
+        page.locator('#button-popupcontent').click();
+        await page.waitForTimeout(50);
+
+        buffer = await page.screenshot({clip:{x:425, y:325, width:100, height:100}});
+        await expect(buffer.byteLength).toBe(defaultByteLength);
+
+        // Open popup
+        page.locator('#button-popupcontent').click();
+        await page.waitForTimeout(50);
+
+        buffer = await page.screenshot({clip:{x:425, y:325, width:100, height:100}});
+        await expect(buffer.byteLength).not.toBe(defaultByteLength);
+        await expect(buffer.byteLength).toBeGreaterThan(defaultByteLength);
+    });
+
+    test('Show/hide the geometry on click on the map', async ({ page }) => {
+        const project = new ProjectPage(page, 'feature_toolbar');
+        await project.open();
+
+        // Get default buffer with one point
+        let buffer = await page.screenshot({clip:{x:425, y:325, width:100, height:100}});
+        const defaultByteLength = buffer.byteLength;
+        await expect(defaultByteLength).toBeGreaterThan(800); // 851 or 906
+        await expect(defaultByteLength).toBeLessThan(1000) // 851 or 906
+
+        // Click on a point
+        let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
+        await project.clickOnMap(436, 290);
+        let getFeatureInfoRequest = await getFeatureInfoPromise;
+        await getFeatureInfoRequest.response();
+
+        // The geometry is displayed
+        buffer = await page.screenshot({clip:{x:425, y:325, width:100, height:100}});
+        await expect(buffer.byteLength).not.toBe(defaultByteLength);
+        await expect(buffer.byteLength).toBeGreaterThan(defaultByteLength);
+
+        // Not click on a point
+        getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
+        await project.clickOnMap(536, 290);
+        getFeatureInfoRequest = await getFeatureInfoPromise;
+        await getFeatureInfoRequest.response();
+        await page.waitForTimeout(500); // wait to be sure
+
+        // Nothing
+        buffer = await page.screenshot({clip:{x:425, y:325, width:100, height:100}});
+        await expect(buffer.byteLength).toBe(defaultByteLength);
+    });
+});
 
 test.describe('Children in popup', () => {
 
