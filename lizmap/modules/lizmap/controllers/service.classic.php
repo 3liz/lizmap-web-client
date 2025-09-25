@@ -2,6 +2,7 @@
 
 use GuzzleHttp\Psr7\Utils as Psr7Utils;
 use Lizmap\App\Checker;
+use Lizmap\App\ControllerTools;
 use Lizmap\Project\Project;
 
 use Lizmap\Project\UnknownLizmapProjectException;
@@ -292,23 +293,9 @@ class serviceCtrl extends jController
 
                 // Add WWW-Authenticate header only for external clients
                 // To avoid web browser to ask for login/password when session expires
-                // In browser, Lizmap UI sends full service URL in referer
-                $addwww = false;
-                $referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
-                if (!empty($referer)) {
-                    $referer_parse = parse_url($referer);
-                    if (array_key_exists('host', $referer_parse)) {
-                        $referer_domain = $referer_parse['host'];
-                        $domain = jApp::coord()->request->getDomainName();
-                        if (!empty($domain) and $referer_domain != $domain) {
-                            $addwww = true;
-                        }
-                    }
-                } else {
-                    $addwww = true;
-                }
+                $addHeader = !ControllerTools::clientIsABrowser();
                 // Add WWW-Authenticate header
-                if ($addwww) {
+                if ($addHeader) {
                     $rep->addHttpHeader('WWW-Authenticate', 'Basic realm="LizmapWebClient", charset="UTF-8"');
                 }
             } elseif ($code == 'Forbidden') {
