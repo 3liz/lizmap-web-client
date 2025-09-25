@@ -176,15 +176,32 @@ var lizLayerActionButtons = function() {
             if ( 'exportLayers' in lizMap.config.options
                 && lizMap.config.options.exportLayers == 'True'
                 && featureTypes != null
-                && featureTypes.length != 0 ) {
+                && featureTypes.length != 0
+                && layerConfig.typename != undefined) {
                 var exportFormats = lizMap.mainLizmap.initialConfig.vectorLayerResultFormat;
                 var options = '';
                 for ( const format of exportFormats ) {
                     options += '<option value="'+format+'">'+format+'</option>';
                 }
+                // Check export enabled
+                // By default, export is enabled for all layers with typename
+                let exportEnabled = true;
+                // If attribute layers is defined, we have to check if the publisher
+                // has disabled export in attribute table config
+                const attrLayersConfig = lizMap.mainLizmap.initialConfig.attributeLayers;
+                if (attrLayersConfig !== null) {
+                    const attrLayerConfigsLen = attrLayersConfig.layerConfigs.length;
+                    const exportLayersLen = attrLayersConfig.layerConfigs.filter(attr => attr.exportEnabled).length;
+                    // If some layers have export disabled, we have to check if the current layer is in the list
+                    if (attrLayerConfigsLen != exportLayersLen) {
+                        const attrLayerConfig = attrLayersConfig.layerConfigs.find(layer => layer.id === layerConfig.id);
+                        // If the layer is not in the list, export is disabled
+                        // else export is available as definde in attribute layer config
+                        exportEnabled = (attrLayerConfig !== undefined && attrLayerConfig.exportEnabled);
+                    }
+                }
                 // Export layer
-                // Only if layer is in attribute table
-                if( options != '' && layerConfig.typename != undefined) {
+                if( options != '' && exportEnabled) {
                     html+= '        <dt>'+lizDict['layer.metadata.export.title']+'</dt>';
                     html+= '<dd>';
                     html+= '<select class="exportLayer '+isBaselayer+'">';
