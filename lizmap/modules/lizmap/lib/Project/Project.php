@@ -1999,6 +1999,10 @@ class Project
             }
         }
 
+        // Add export layer right
+        if ($this->appContext->aclCheck('lizmap.tools.layer.export', $this->repository->getKey())) {
+            $configJson->options->exportLayers = 'True';
+        }
         // Set layers export permissions
         $this->setLayersExportPermissions($configJson, $userGroups);
 
