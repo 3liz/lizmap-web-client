@@ -105,10 +105,33 @@ class featuresCtrl extends jController
             }
         }
 
+        // Prepare expressions to send to the Lizmap server plugin
         $tooltip = array(
             // Get tooltip in HTML
             'tooltip' => $template,
         );
+
+        // Get fields required for SLD rendering i.e. used in QGIS layer renderer
+        // For example for a categorized symbology based on a field
+        if (isset($tooltipLayers->{$layerName}->{'displayLayerStyle'})
+            // TOTO FIX value if lizmap plugin saves a boolean
+            && $tooltipLayers->{$layerName}->{'displayLayerStyle'} == 'True'
+        ) {
+            $usedAttributes = qgisExpressionUtils::evaluateExpressions(
+                $qgisLayer,
+                array(
+                    'used_attributes' => "layer_renderer_used_attributes('".$layerId."')",
+                )
+            );
+            if ($usedAttributes
+                && property_exists($usedAttributes, 'used_attributes')
+                && is_array($usedAttributes->used_attributes)
+            ) {
+                foreach ($usedAttributes->used_attributes as $field) {
+                    $tooltip[$field] = '[% "'.$field.'" %]';
+                }
+            }
+        }
 
         $data = qgisExpressionUtils::replaceExpressionText(
             $qgisLayer,
