@@ -492,12 +492,6 @@ export default class SelectionTool {
             EXP_FILTER: spatialFilter
         };
 
-        // Apply limit to bounding box config
-        if (this._lizmap3.config?.limitDataToBbox === 'True') {
-            wfsParams['BBOX'] = this._map.getView().calculateExtent();
-            wfsParams['SRSNAME'] = this._map.getView().getProjection().getCode();
-        }
-
         // Restrict to current geometry extent for performance
         // But not with 'disjoint' to get features
         if (this._geomOperator !== 'disjoint') {
