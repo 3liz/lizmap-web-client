@@ -1190,8 +1190,8 @@ class QgisProject
         $this->allProj4 = $project->getProjAsKeyArray();
         $this->themes = $project->getVisibilityPresetsAsKeyArray();
         $this->customProjectVariables = $project->properties->Variables !== null ? $project->properties->Variables->getVariablesAsKeyArray() : array();
-        $this->useLayerIDs = $project->properties->WMSUseLayerIDs !== null ? $project->properties->WMSUseLayerIDs : false;
-        $this->wfsLayerIds = $project->properties->WFSLayers !== null ? $project->properties->WFSLayers : array();
+        $this->useLayerIDs = $project->properties->WMSUseLayerIDs ?? false;
+        $this->wfsLayerIds = $project->properties->WFSLayers ?? array();
         $this->layers = $project->getLayersAsKeyArray();
         $this->relations = $project->getRelationsAsKeyArray();
         $this->relationsFields = $project->getRelationFieldsAsKeyArray();
