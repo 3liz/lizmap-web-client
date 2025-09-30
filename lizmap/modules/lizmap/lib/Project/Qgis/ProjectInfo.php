@@ -456,11 +456,11 @@ class ProjectInfo extends BaseQgisXmlObject
     protected static function getAttributes($oXmlReader)
     {
         return array(
-            'version' => $oXmlReader->getAttribute('version'),
-            'projectname' => $oXmlReader->getAttribute('projectname'),
-            'saveDateTime' => $oXmlReader->getAttribute('saveDateTime'),
-            'saveUser' => $oXmlReader->getAttribute('saveUser'),
-            'saveUserFull' => $oXmlReader->getAttribute('saveUserFull'),
+            'version' => $oXmlReader->getAttribute('version') ?? '',
+            'projectname' => $oXmlReader->getAttribute('projectname') ?? '',
+            'saveDateTime' => $oXmlReader->getAttribute('saveDateTime') ?? '',
+            'saveUser' => $oXmlReader->getAttribute('saveUser') ?? '',
+            'saveUserFull' => $oXmlReader->getAttribute('saveUserFull') ?? '',
         );
     }
 
