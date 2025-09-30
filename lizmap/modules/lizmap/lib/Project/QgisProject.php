@@ -1179,19 +1179,19 @@ class QgisProject
 
         // get QGIS project version
         $this->qgisProjectVersion = $this->convertQgisProjectVersion($project->version);
-        $this->qgisEditorVersion = $project->version;
-        $this->qgisProjectName = $project->projectname;
-        $this->lastSaveDateTime = $project->saveDateTime;
-        $this->lastSaveUser = $project->saveUser;
-        $this->lastSaveUserFull = $project->saveUserFull;
+        $this->qgisEditorVersion = $project->version ?? '';
+        $this->qgisProjectName = $project->projectname ?? '';
+        $this->lastSaveDateTime = $project->saveDateTime ?? '';
+        $this->lastSaveUser = $project->saveUser ?? '';
+        $this->lastSaveUserFull = $project->saveUserFull ?? '';
 
         $this->WMSInformation = $project->getWmsInformationsAsKeyArray();
         $this->canvasColor = $project->properties->Gui->getCanvasColor();
         $this->allProj4 = $project->getProjAsKeyArray();
         $this->themes = $project->getVisibilityPresetsAsKeyArray();
         $this->customProjectVariables = $project->properties->Variables !== null ? $project->properties->Variables->getVariablesAsKeyArray() : array();
-        $this->useLayerIDs = $project->properties->WMSUseLayerIDs !== null ? $project->properties->WMSUseLayerIDs : false;
-        $this->wfsLayerIds = $project->properties->WFSLayers !== null ? $project->properties->WFSLayers : array();
+        $this->useLayerIDs = $project->properties->WMSUseLayerIDs ?? false;
+        $this->wfsLayerIds = $project->properties->WFSLayers ?? array();
         $this->layers = $project->getLayersAsKeyArray();
         $this->relations = $project->getRelationsAsKeyArray();
         $this->relationsFields = $project->getRelationFieldsAsKeyArray();
