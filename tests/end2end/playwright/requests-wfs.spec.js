@@ -2360,6 +2360,315 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
     });
 });
 
+test.describe('WFS Requests attribute_table @requests @readonly ', () => {
+
+    test('WFS GetFeature quartiers', async({ request }) => {
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'attribute_table',
+        });
+        let url = `/index.php/lizmap/service?${params}`;
+        /** @type {{[key: string]: string}} */
+        let headers = {};
+        /** @type {{[key: string]: string | number | boolean}} */
+        let form = {
+            SERVICE: 'WFS',
+            VERSION: '1.0.0',
+            REQUEST: 'GetFeature',
+            TYPENAME: 'quartiers',
+            OUTPUTFORMAT: 'GeoJSON',
+            MAXFEATURES: 50,
+            STARTINDEX: 0,
+            SORTBY: 'quartier ASC',
+        };
+        let response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        expect(response.ok()).toBeTruthy();
+        expect(response.status()).toBe(200);
+        // check content-type header
+        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+
+        // check body
+        let body = await response.json();
+        expect(body).toHaveProperty('type', 'FeatureCollection');
+        expect(body).toHaveProperty('features');
+        expect(body.features).toHaveLength(7);
+        /** @type {[{properties:{quartier: number}}]} */
+        let features = body.features;
+        // SORTBY quartier ASC
+        expect(features.map(feat => feat.properties.quartier)).toEqual(
+            [1,2,3,4,5,6,7]
+        );
+
+        form['SORTBY'] = 'quartier DESC';
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        expect(response.ok()).toBeTruthy();
+        expect(response.status()).toBe(200);
+        // check content-type header
+        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+
+        // check body
+        body = await response.json();
+        expect(body).toHaveProperty('type', 'FeatureCollection');
+        expect(body).toHaveProperty('features');
+        expect(body.features).toHaveLength(7);
+        features = body.features;
+        // SORTBY quartier DESC
+        expect(features.map(feat => feat.properties.quartier)).toEqual(
+            [1,2,3,4,5,6,7].reverse()
+        );
+
+        form['FORCE_QGIS'] = 1;
+        form['SORTBY'] = 'quartier ASC';
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        expect(response.ok()).toBeTruthy();
+        expect(response.status()).toBe(200);
+        // check content-type header
+        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+
+        // check body
+        body = await response.json();
+        expect(body).toHaveProperty('type', 'FeatureCollection');
+        expect(body).toHaveProperty('features');
+        expect(body.features).toHaveLength(7);
+        features = body.features;
+        // SORTBY quartier ASC
+        expect(features.map(feat => feat.properties.quartier)).toEqual(
+            [1,2,3,4,5,6,7]
+        );
+
+        form['SORTBY'] = 'quartier DESC';
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        expect(response.ok()).toBeTruthy();
+        expect(response.status()).toBe(200);
+        // check content-type header
+        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+
+        // check body
+        body = await response.json();
+        expect(body).toHaveProperty('type', 'FeatureCollection');
+        expect(body).toHaveProperty('features');
+        expect(body.features).toHaveLength(7);
+        features = body.features;
+        // SORTBY quartier DESC
+        expect(features.map(feat => feat.properties.quartier)).toEqual(
+            [1,2,3,4,5,6,7].reverse()
+        );
+    });
+
+    test('WFS GetFeature quartiers BBOX', async({ request }) => {
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'attribute_table',
+        });
+        let url = `/index.php/lizmap/service?${params}`;
+        /** @type {{[key: string]: string}} */
+        let headers = {};
+        /** @type {{[key: string]: string | number | boolean}} */
+        let form = {
+            SERVICE: 'WFS',
+            VERSION: '1.0.0',
+            REQUEST: 'GetFeature',
+            TYPENAME: 'quartiers',
+            OUTPUTFORMAT: 'GeoJSON',
+            MAXFEATURES: 50,
+            STARTINDEX: 0,
+            SORTBY: 'quartier ASC',
+            BBOX: '763699.512775506,6280476.5039667105,775413.9632877404,6284266.667797037',
+            SRSNAME: 'EPSG:2154',
+        };
+        let response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        expect(response.ok()).toBeTruthy();
+        expect(response.status()).toBe(200);
+        // check content-type header
+        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+
+        // check body
+        let body = await response.json();
+        expect(body).toHaveProperty('type', 'FeatureCollection');
+        expect(body).toHaveProperty('features');
+        expect(body.features).toHaveLength(5);
+        /** @type {[{properties:{quartier: number}}]} */
+        let features = body.features;
+        // SORTBY quartier ASC
+        expect(features.map(feat => feat.properties.quartier)).toEqual(
+            [1,2,3,6,7]
+        );
+
+        form['SORTBY'] = 'quartier DESC';
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        expect(response.ok()).toBeTruthy();
+        expect(response.status()).toBe(200);
+        // check content-type header
+        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+
+        // check body
+        body = await response.json();
+        expect(body).toHaveProperty('type', 'FeatureCollection');
+        expect(body).toHaveProperty('features');
+        expect(body.features).toHaveLength(5);
+        features = body.features;
+        // SORTBY quartier DESC
+        expect(features.map(feat => feat.properties.quartier)).toEqual(
+            [1,2,3,6,7].reverse()
+        );
+
+        form['FORCE_QGIS'] = 1;
+        form['SORTBY'] = 'quartier ASC';
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        expect(response.ok()).toBeTruthy();
+        expect(response.status()).toBe(200);
+        // check content-type header
+        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+
+        // check body
+        body = await response.json();
+        expect(body).toHaveProperty('type', 'FeatureCollection');
+        expect(body).toHaveProperty('features');
+        expect(body.features).toHaveLength(5);
+        features = body.features;
+        // SORTBY quartier ASC
+        expect(features.map(feat => feat.properties.quartier)).toEqual(
+            [1,2,3,6,7]
+        );
+
+        form['SORTBY'] = 'quartier DESC';
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        expect(response.ok()).toBeTruthy();
+        expect(response.status()).toBe(200);
+        // check content-type header
+        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+
+        // check body
+        body = await response.json();
+        expect(body).toHaveProperty('type', 'FeatureCollection');
+        expect(body).toHaveProperty('features');
+        expect(body.features).toHaveLength(5);
+        features = body.features;
+        // SORTBY quartier DESC
+        expect(features.map(feat => feat.properties.quartier)).toEqual(
+            [1,2,3,6,7].reverse()
+        );
+    });
+
+    test('WFS GetFeature random_points', async({ request }) => {
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'attribute_table',
+        });
+        let url = `/index.php/lizmap/service?${params}`;
+        /** @type {{[key: string]: string}} */
+        let headers = {};
+        /** @type {{[key: string]: string | number | boolean}} */
+        let form = {
+            SERVICE: 'WFS',
+            VERSION: '1.0.0',
+            REQUEST: 'GetFeature',
+            TYPENAME: 'random_points',
+            OUTPUTFORMAT: 'GeoJSON',
+            MAXFEATURES: 50,
+            STARTINDEX: 0,
+            SORTBY: 'id ASC',
+        };
+        let response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        expect(response.ok()).toBeTruthy();
+        expect(response.status()).toBe(200);
+        // check content-type header
+        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+
+        // check body
+        let body = await response.json();
+        expect(body).toHaveProperty('type', 'FeatureCollection');
+        expect(body).toHaveProperty('features');
+        expect(body.features).toHaveLength(50);
+        // SORTBY id ASC
+        expect(body.features[0].properties.id).toEqual(0);
+        expect(body.features[14].properties.id).toEqual(14);
+        expect(body.features[32].properties.id).toEqual(32);
+        expect(body.features[49].properties.id).toEqual(49);
+
+        form['STARTINDEX'] = 650;
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        expect(response.ok()).toBeTruthy();
+        expect(response.status()).toBe(200);
+        // check content-type header
+        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+
+        // check body
+        body = await response.json();
+        expect(body).toHaveProperty('type', 'FeatureCollection');
+        expect(body).toHaveProperty('features');
+        expect(body.features).toHaveLength(50);
+        // SORTBY id ASC
+        expect(body.features[0].properties.id).toEqual(650);
+        expect(body.features[14].properties.id).toEqual(664);
+        expect(body.features[32].properties.id).toEqual(682);
+        expect(body.features[49].properties.id).toEqual(699);
+
+        form['STARTINDEX'] = 0;
+        form['SORTBY'] = 'id DESC';
+        response = await request.post(url, {
+            headers: headers,
+            form: form,
+        });
+        // check response
+        expect(response.ok()).toBeTruthy();
+        expect(response.status()).toBe(200);
+        // check content-type header
+        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+
+        // check body
+        body = await response.json();
+        expect(body).toHaveProperty('type', 'FeatureCollection');
+        expect(body).toHaveProperty('features');
+        expect(body.features).toHaveLength(50);
+        // SORTBY id DESC
+        expect(body.features[0].properties.id).toEqual(699);
+        expect(body.features[14].properties.id).toEqual(685);
+        expect(body.features[32].properties.id).toEqual(667);
+        expect(body.features[49].properties.id).toEqual(650);
+    });
+});
+
 test.describe('WFS Requests @wfsOutputExtension @readonly ', () => {
     test('WFS GetFeature CSV', async({ request }) => {
         let params = new URLSearchParams({
