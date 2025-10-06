@@ -22,9 +22,9 @@ use Lizmap\Project;
  * @property string                                    $version
  * @property string                                    $projectname
  * @property string                                    $title
- * @property null|string                               $saveDateTime
- * @property null|string                               $saveUser
- * @property null|string                               $saveUserFull
+ * @property string                                    $saveDateTime
+ * @property string                                    $saveUser
+ * @property string                                    $saveUserFull
  * @property SpatialRefSys                             $projectCrs
  * @property ProjectProperties                         $properties
  * @property LayerTreeRoot                             $layerTreeRoot

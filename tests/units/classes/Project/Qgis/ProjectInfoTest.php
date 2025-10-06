@@ -262,4 +262,23 @@ Data is licensed under ODbl, OpenStreetMap contributors',
         $this->assertNotNull($json);
         $this->assertStringStartsWith('{"version":', $json);
     }
+
+    public function testProjetWithMissingProjetInfo(): void
+    {
+        $xml_path_invalid = __DIR__.'/../../Project/Ressources/project_empty_qgis_tag.qgs';
+
+        $oXml = App\XmlTools::xmlReaderFromFile($xml_path_invalid);
+        $project = Qgis\ProjectInfo::fromXmlReader($oXml);
+        // missing values on XML will be empty string
+        $emptyProps = array(
+            'version',
+            'projectname',
+            'saveDateTime',
+            'saveUser',
+            'saveUserFull',
+        );
+        foreach ($emptyProps as $prop ) {
+            $this->assertEmpty($project->{$prop});
+        }
+    }
 }
