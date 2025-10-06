@@ -49,7 +49,7 @@ class QgisFormForTests extends Form\QgisForm
 
 class jAcl2
 {
-    public static function check()
+    public static function check($right, $resource = null)
     {
         return true;
     }
