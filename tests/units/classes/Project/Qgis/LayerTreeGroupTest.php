@@ -58,6 +58,46 @@ class LayerTreeGroupTest extends TestCase
         $this->assertEquals('publicbuildings_tramstop', $treeGroup->items[1]->name);
     }
 
+    public function testShortName(): void
+    {
+
+        $xmlStr = '
+    <layer-tree-group checked="Qt::Unchecked" expanded="1" name="overview">
+      <customproperties>
+        <Option type="Map">
+          <Option name="wmsShortName" type="QString" value="Overview"></Option>
+        </Option>
+      </customproperties>
+      <layer-tree-layer expanded="1" patch_size="-1,-1" providerKey="" legend_split_behavior="0" id="quartiers_c6fea644_09fc_4f73_b4e8_201a2cc9f131" name="quartiers_overview" checked="Qt::Unchecked" source="service=\'lizmapdb\' sslmode=prefer key=\'quartier\' estimatedmetadata=true srid=4326 type=MultiPolygon checkPrimaryKeyUnicity=\'1\' table=&quot;tests_projects&quot;.&quot;quartiers&quot; (geom)" legend_exp="">
+        <customproperties>
+          <Option></Option>
+        </customproperties>
+      </layer-tree-layer>
+    </layer-tree-group>
+      ';
+        $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
+        $treeGroup = Qgis\LayerTreeGroup::fromXmlReader($oXml);
+        $this->assertEquals(null, $treeGroup->shortname);
+        $this->assertEquals('Overview', $treeGroup->customproperties['wmsShortName']);
+
+        $xmlStr = '
+    <layer-tree-group expanded="1" name="overview" checked="Qt::Unchecked" groupLayer="">
+      <customproperties>
+        <Option/>
+      </customproperties>
+      <shortname>Overview</shortname>
+      <layer-tree-layer expanded="1" patch_size="-1,-1" providerKey="" legend_split_behavior="0" id="quartiers_c6fea644_09fc_4f73_b4e8_201a2cc9f131" name="quartiers_overview" checked="Qt::Unchecked" source="service=\'lizmapdb\' sslmode=prefer key=\'quartier\' estimatedmetadata=true srid=4326 type=MultiPolygon checkPrimaryKeyUnicity=\'1\' table=&quot;tests_projects&quot;.&quot;quartiers&quot; (geom)" legend_exp="">
+        <customproperties>
+          <Option/>
+        </customproperties>
+      </layer-tree-layer>
+    </layer-tree-group>
+      ';
+        $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
+        $treeGroup = Qgis\LayerTreeGroup::fromXmlReader($oXml);
+        $this->assertEquals('Overview', $treeGroup->shortname);
+    }
+
     public function testEmpty(): void
     {
         $xmlStr = '
