@@ -60,7 +60,7 @@ jobs:
         run: phpstan analyse -c ../phpstan-ci.neon
 
       - name: Notify in case of failure but not on a PR
-        uses: peter-evans/commit-comment@v3
+        uses: peter-evans/commit-comment@v4
         if: failure() && github.event_name != 'pull_request'
         with:
           body: |
