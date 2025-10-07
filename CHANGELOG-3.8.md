@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.8.14 - 2025-10-07
+
 ### Fixed
 
 * FeaturesTable - error when the features list is empty
