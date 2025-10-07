@@ -33,7 +33,7 @@ jobs:
           - name: "BLEEDING_EDGE"
             php: "8.4"
             pg-postgis: "17-3"
-            qgis-server: "3.42"
+            qgis-server: "3.44"
             update-projects: "TRUE"
     env:
       CYPRESS_CI: TRUE

@@ -20,6 +20,9 @@ namespace Lizmap\Project\Qgis;
  * @property bool                                 $mutuallyExclusive
  * @property array                                $customproperties
  * @property array<LayerTreeGroup|LayerTreeLayer> $items
+ * @property null|string                          $shortname
+ * @property null|string                          $title
+ * @property null|string                          $abstract
  */
 class LayerTreeGroup extends BaseQgisXmlObject
 {
@@ -29,6 +32,9 @@ class LayerTreeGroup extends BaseQgisXmlObject
         'mutuallyExclusive',
         'customproperties',
         'items',
+        'shortname',
+        'title',
+        'abstract',
     );
 
     /** @var array The default values for properties */
@@ -39,6 +45,13 @@ class LayerTreeGroup extends BaseQgisXmlObject
 
     /** @var string The XML element local name */
     protected static $qgisLocalName = 'layer-tree-group';
+
+    /** @var array<string> The XML element parsed children */
+    protected static $children = array(
+        'shortname',
+        'title',
+        'abstract',
+    );
 
     protected static $childParsers = array();
 
@@ -76,6 +89,11 @@ class LayerTreeGroup extends BaseQgisXmlObject
                 continue;
             }
             $data += $item->getGroupShortNames();
+            if (isset($item->shortname) && $item->shortname != null) {
+                $data[$item->name] = $item->shortname;
+
+                continue;
+            }
             if (!array_key_exists('wmsShortName', $item->customproperties)) {
                 continue;
             }
