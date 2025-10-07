@@ -8,6 +8,11 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Fixed
+
+* FeaturesTable - error when the features list is empty
+* Editing - Avoid checking valuerelation & relationreference fields as valid WFS typenames
+
 ## 3.8.13 - 2025-09-09
 
 ### Funders
