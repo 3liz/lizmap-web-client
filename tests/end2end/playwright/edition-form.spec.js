@@ -506,6 +506,83 @@ test.describe('Multiple geometry layers', () => {
     })
 })
 
+test.describe('Form upload file widget', {tag: ['@readonly'],},() => {
+
+    test('Default file preview', async ({ page }) => {
+        const project = new ProjectPage(page, 'form_edition_all_field_type');
+        await project.open();
+
+        const layerName = 'form_edition_upload';
+        await project.openAttributeTable(layerName);
+        await expect(project.attributeTableHtml(layerName).locator('tbody tr'))
+            .toHaveCount(1);
+        await expect(project.attributeTableHtml(layerName).locator('tbody tr').first().locator('a'))
+            .toHaveCount(3);
+
+        // First text_file_mandatory: lorem-2.txt in default path
+        await expect(project.attributeTableHtml(layerName).locator('tbody tr').first().locator('a').nth(0))
+            .toHaveText('text_file_mandatory')
+        await expect(project.attributeTableHtml(layerName).locator('tbody tr').first().locator('a').nth(0))
+            .toHaveAttribute('href', /^\/index.php\/view\/media\/getMedia?.*/)
+        await expect(project.attributeTableHtml(layerName).locator('tbody tr').first().locator('a').nth(0))
+            .toHaveAttribute('href', /.*media\/upload\/form_edition_all_field_type\/form_edition_upload\/text_file_mandatory\/lorem-2.txt$/)
+
+        // image_file_mandatory : random-2.jpg in default root
+        await expect(project.attributeTableHtml(layerName).locator('tbody tr').first().locator('a').nth(1))
+            .toHaveText('image_file_mandatory')
+        await expect(project.attributeTableHtml(layerName).locator('tbody tr').first().locator('a').nth(1))
+            .toHaveAttribute('href', /^\/index.php\/view\/media\/getMedia?.*/)
+        await expect(project.attributeTableHtml(layerName).locator('tbody tr').first().locator('a').nth(1))
+            .toHaveAttribute('href', /.*media\/upload\/form_edition_all_field_type\/form_edition_upload\/image_file_mandatory\/random-2.jpg$/)
+
+        // image_file_specific_root_folder : random-4.jpg in expression path
+        await expect(project.attributeTableHtml(layerName).locator('tbody tr').first().locator('a').nth(2))
+            .toHaveText('image_file_specific_root_folder')
+        await expect(project.attributeTableHtml(layerName).locator('tbody tr').first().locator('a').nth(2))
+            .toHaveAttribute('href', /^\/index.php\/view\/media\/getMedia?.*/)
+        await expect(project.attributeTableHtml(layerName).locator('tbody tr').first().locator('a').nth(2))
+            .toHaveAttribute('href', /.*\.\.\/media\/specific_media_folder\/random-4.jpg$/)
+
+        await expect(project.attributeTableHtml(layerName).locator('tbody tr').first().locator('lizmap-feature-toolbar'))
+            .toHaveCount(1);
+        await expect(project.attributeTableHtml(layerName).locator('tbody tr').first().locator('lizmap-feature-toolbar button.feature-edit'))
+            .toHaveCount(1);
+        await expect(project.attributeTableHtml(layerName).locator('tbody tr').first().locator('lizmap-feature-toolbar button.feature-edit'))
+            .toBeVisible();
+
+        // Open edit feature
+        let modifyFeatureRequestPromise = page.waitForRequest(resquest => resquest.url().includes('modifyFeature'));
+        await project.attributeTableHtml(layerName).locator('tbody tr').first().locator('lizmap-feature-toolbar button.feature-edit').click();
+        let modifyFeatureRequest = await modifyFeatureRequestPromise;
+
+        let editFeatureRequestPromise = page.waitForRequest(resquest => resquest.url().includes('editFeature'));
+        await modifyFeatureRequest.response();
+        let editFeatureRequest = await editFeatureRequestPromise;
+        await editFeatureRequest.response();
+
+        // form visible
+        await expect(page.locator('#jforms_view_edition')).toBeVisible();
+        // text_file_mandatory
+        await page.locator('#jforms_view_edition_text_file_mandatory_choice_list').scrollIntoViewIfNeeded();
+        await expect(page.locator('#jforms_view_edition_text_file_mandatory_choice_list').getByLabel('Keep')).toBeChecked();
+        await expect(page.locator('#jforms_view_edition_text_file_mandatoryoriginal')).toHaveText('lorem-2.txt');
+        // image_file_mandatory
+        await page.locator('#jforms_view_edition_image_file_mandatory_choice_list').scrollIntoViewIfNeeded();
+        await expect(page.locator('#jforms_view_edition_image_file_mandatory_choice_list').getByLabel('Keep')).toBeChecked();
+        await expect(page.locator('#jforms_view_edition_image_file_mandatoryoriginal img'))
+            .toHaveAttribute('src', /^\/index.php\/view\/media\/getMedia?.*/)
+        await expect(page.locator('#jforms_view_edition_image_file_mandatoryoriginal img'))
+            .toHaveAttribute('src', /.*media%2Fupload%2Fform_edition_all_field_type%2Fform_edition_upload%2Fimage_file_mandatory%2Frandom-2.jpg$/)
+        // image_file_specific_root_folder
+        await page.locator('#jforms_view_edition_image_file_specific_root_folder_choice_list').scrollIntoViewIfNeeded();
+        await expect(page.locator('#jforms_view_edition_image_file_specific_root_folder_choice_list').getByLabel('Keep')).toBeChecked();
+        await expect(page.locator('#jforms_view_edition_image_file_specific_root_folderoriginal img'))
+            .toHaveAttribute('src', /^\/index.php\/view\/media\/getMedia?.*/)
+        await expect(page.locator('#jforms_view_edition_image_file_specific_root_folderoriginal img'))
+            .toHaveAttribute('src', /.*\.\.%2Fmedia%2Fspecific_media_folder%2Frandom-4.jpg$/)
+    });
+});
+
 test.describe('Form edition without creation', {tag: ['@readonly'],},() => {
 
     test('must allow modification without creation', async ({ page }) => {
