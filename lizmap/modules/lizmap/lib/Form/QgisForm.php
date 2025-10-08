@@ -635,6 +635,7 @@ class QgisForm implements QgisFormControlsInterface
                     }
 
                     if ($value !== null) {
+                        $this->formWidgetsAttributes[$ref]['uriActionParameters']['path'] = dirname($value).'/%s';
                         $filename = basename($value);
                         $ctrl->setDataFromDao($filename, 'string');
                     }

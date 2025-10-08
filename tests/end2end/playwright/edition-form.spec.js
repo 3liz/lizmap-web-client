@@ -707,7 +707,7 @@ test.describe('Form upload file widget', {tag: ['@readonly'],},() => {
         const layerName = 'form_edition_upload';
         await project.openAttributeTable(layerName);
         await expect(project.attributeTableHtml(layerName).locator('tbody tr'))
-            .toHaveCount(1);
+            .toHaveCount(2);
         await expect(project.attributeTableHtml(layerName).locator('tbody tr').first().locator('a'))
             .toHaveCount(3);
 
