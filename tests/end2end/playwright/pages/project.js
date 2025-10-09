@@ -9,13 +9,24 @@ import { BasePage } from './base';
  */
 
 /**
- * Playwright Page
+ * Playwright Locator
  * @typedef {import('@playwright/test').Locator} Locator
  */
 
 /**
  * Playwright Request
  * @typedef {import('@playwright/test').Request} Request
+ */
+
+/**
+ * @typedef {Object} logMessage
+ * @property {string} type - the log type :One of the following values:
+ * 'log', 'debug', 'info', 'error', 'warning', 'dir', 'dirxml', 'table',
+ * 'trace', 'clear', 'startGroup', 'startGroupCollapsed', 'endGroup',
+ * 'assert', 'profile', 'profileEnd', 'count', 'timeEnd'.
+ * @property {string} message - the log message text
+ * @property {string} location - the log message location in one line
+ * @see https://playwright.dev/docs/api/class-consolemessage
  */
 
 export class ProjectPage extends BasePage {
@@ -107,6 +118,12 @@ export class ProjectPage extends BasePage {
     warningMessage;
 
     /**
+     * Logs collected
+     * @type {logMessage[]}
+     */
+    logs = [];
+
+    /**
      * Path to the QGS file
      * @type {string}
      */
@@ -176,6 +193,21 @@ export class ProjectPage extends BasePage {
         this.buttonEditing = page.locator('#button-edition');
         this.buttonMetadata = page.locator('#button-metadata');
         this.editionForm = page.locator('#jforms_view_edition');
+
+        const logs = this.logs;
+        page.on('console', message => {
+            // Default message from jQuery: JQMIGRATE: Migrate is installed, version 3.3.1
+            // Do not stored it - will be removed when we are sure that this log will not appear
+            if (message.type() == 'log' && message.text().startsWith('JQMIGRATE: Migrate is installed')) {
+                return;
+            }
+            const location = message.location()
+            logs.push({
+                type: message.type(),
+                message: message.text(),
+                location: `${location.url}:${location.lineNumber}:${location.columnNumber}`
+            })
+        })
     }
 
     /**
