@@ -8,6 +8,10 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Funders
+
+* **[Cédégis](https://www.cedegis.fr/)**
+
 ### Fixed
 
 * Editing - Upload widget preview and keep value
