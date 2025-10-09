@@ -8,6 +8,31 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Funders
+
+* **[Cédégis](https://www.cedegis.fr/)**
+
+### Added
+
+* Support QGIS Project 3.44
+
+### Fixed
+
+* FeaturesTable - error when the features list is empty
+* login key for other entrypoint
+* Editing - Avoid checking valuerelation & relationreference fields as valid WFS typenames
+* Media - Improve HTTP error codes when the user is not authenticated
+* Regression: exporter disappear from layer information sub dock
+* Provide default values for *very* old qgs files with missing attributes
+* Edition - External Resource - Default root
+* Editing - Upload widget preview and keep value
+
+### Tests
+
+* Bump some Github Actions
+* e2e: move feature-toolbar from Cypress to Playwright
+* GH Action - E2E QGIS - BLEEDING_EDGE with QGIS 3.44
+
 ## 3.9.2 - 2025-09-09
 
 ### Funders
