@@ -8,6 +8,10 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Fixed
+
+* Editing - Upload widget preview and keep value
+
 ## 3.8.14 - 2025-10-07
 
 ### Fixed
