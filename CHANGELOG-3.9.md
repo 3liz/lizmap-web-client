@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.9.3 - 2025-10-09
+
 ### Funders
 
 * **[Cédégis](https://www.cedegis.fr/)**
