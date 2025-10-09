@@ -3329,6 +3329,7 @@ COPY tests_projects.form_edition_snap_polygon (id, geom) FROM stdin;
 
 COPY tests_projects.form_edition_upload (id, generic_file, text_file, image_file, text_file_mandatory, image_file_mandatory, image_file_specific_root_folder) FROM stdin;
 2	\N	\N	\N	media/upload/form_edition_all_field_type/form_edition_upload/text_file_mandatory/lorem-2.txt	media/upload/form_edition_all_field_type/form_edition_upload/image_file_mandatory/random-2.jpg	../media/specific_media_folder/random-4.jpg
+3	\N	\N	\N	media/upload/form_edition_all_field_type/form_edition_upload/image_file_mandatory/random-2.jpg	../media/specific_media_folder/random-4.jpg	media/upload/form_edition_all_field_type/form_edition_upload/text_file_mandatory/lorem-2.txt
 \.
 
 

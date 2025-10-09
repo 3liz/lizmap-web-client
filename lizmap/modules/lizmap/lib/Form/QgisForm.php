@@ -592,6 +592,7 @@ class QgisForm implements QgisFormControlsInterface
                     }
 
                     if ($value !== null) {
+                        $this->formWidgetsAttributes[$ref]['uriActionParameters']['path'] = dirname($value).'/%s';
                         $filename = basename($value);
                         $ctrl->setDataFromDao($filename, 'string');
                     }
@@ -1231,7 +1232,9 @@ class QgisForm implements QgisFormControlsInterface
         }
         if ($filename) {
             // we keep the current file
-            return $cnx->quote($targetPath.$filename);
+            return $cnx->quote($values[$ref]);
+            // or we provide a new value and move the file ?
+            // return $cnx->quote($targetPath.$filename);
         }
 
         return 'NULL';

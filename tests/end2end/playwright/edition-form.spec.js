@@ -506,6 +506,450 @@ test.describe('Multiple geometry layers', () => {
     })
 })
 
+test.describe('Form upload file widget @readonly',() => {
+
+    test('File preview with path as config', async ({ page }) => {
+        const project = new ProjectPage(page, 'form_edition_all_field_type');
+        await project.open();
+
+        const layerName = 'form_edition_upload';
+        await project.openAttributeTable(layerName);
+        await expect(project.attributeTableHtml(layerName).locator('tbody tr'))
+            .toHaveCount(2);
+        const theTableRow = project.attributeTableHtml(layerName).locator('tbody tr').first();
+        await expect(theTableRow.locator('a'))
+            .toHaveCount(3);
+
+        // First text_file_mandatory: lorem-2.txt in default path
+        await expect(theTableRow.locator('a').nth(0))
+            .toHaveText('text_file_mandatory')
+        await expect(theTableRow.locator('a').nth(0))
+            .toHaveAttribute('href', /^\/index.php\/view\/media\/getMedia?.*/)
+        await expect(theTableRow.locator('a').nth(0))
+            .toHaveAttribute('href', /.*media\/upload\/form_edition_all_field_type\/form_edition_upload\/text_file_mandatory\/lorem-2.txt$/)
+
+        // image_file_mandatory : random-2.jpg in default root
+        await expect(theTableRow.locator('a').nth(1))
+            .toHaveText('image_file_mandatory')
+        await expect(theTableRow.locator('a').nth(1))
+            .toHaveAttribute('href', /^\/index.php\/view\/media\/getMedia?.*/)
+        await expect(theTableRow.locator('a').nth(1))
+            .toHaveAttribute('href', /.*media\/upload\/form_edition_all_field_type\/form_edition_upload\/image_file_mandatory\/random-2.jpg$/)
+
+        // image_file_specific_root_folder : random-4.jpg in expression path
+        await expect(theTableRow.locator('a').nth(2))
+            .toHaveText('image_file_specific_root_folder')
+        await expect(theTableRow.locator('a').nth(2))
+            .toHaveAttribute('href', /^\/index.php\/view\/media\/getMedia?.*/)
+        await expect(theTableRow.locator('a').nth(2))
+            .toHaveAttribute('href', /.*\.\.\/media\/specific_media_folder\/random-4.jpg$/)
+
+        await expect(theTableRow.locator('lizmap-feature-toolbar'))
+            .toHaveCount(1);
+        const theFeatureToolbar = theTableRow.locator('lizmap-feature-toolbar');
+        await expect(theFeatureToolbar.locator('button.feature-edit'))
+            .toHaveCount(1);
+        const theEditButton = theFeatureToolbar.locator('button.feature-edit');
+        await expect(theEditButton)
+            .toBeVisible();
+
+        // Open edit feature
+        let modifyFeatureRequestPromise = page.waitForRequest(resquest => resquest.url().includes('modifyFeature'));
+        await theEditButton.click();
+        let modifyFeatureRequest = await modifyFeatureRequestPromise;
+
+        let editFeatureRequestPromise = page.waitForRequest(resquest => resquest.url().includes('editFeature'));
+        await modifyFeatureRequest.response();
+        let editFeatureRequest = await editFeatureRequestPromise;
+        await editFeatureRequest.response();
+
+        // Check request
+        expect(modifyFeatureRequest.url()).toMatch(/layerId=form_edition_upload_[a-z0-9_]{36}&featureId=2/);
+        expect(editFeatureRequest.url()).toMatch(/layerId=form_edition_upload_[a-z0-9_]{36}&featureId=2/);
+
+        // form visible
+        await expect(page.locator('#jforms_view_edition')).toBeVisible();
+        // id
+        await expect(page.locator('#jforms_view_edition_id')).toHaveValue('2');
+        // text_file_mandatory: lorem-2.txt
+        await page.locator('#jforms_view_edition_text_file_mandatory_choice_list').scrollIntoViewIfNeeded();
+        await expect(page.locator('#jforms_view_edition_text_file_mandatory_choice_list').getByLabel('Keep')).toBeChecked();
+        await expect(page.locator('#jforms_view_edition_text_file_mandatoryoriginal')).toHaveText('lorem-2.txt');
+        // image_file_mandatory: random-2.jpg
+        await page.locator('#jforms_view_edition_image_file_mandatory_choice_list').scrollIntoViewIfNeeded();
+        await expect(page.locator('#jforms_view_edition_image_file_mandatory_choice_list').getByLabel('Keep')).toBeChecked();
+        await expect(page.locator('#jforms_view_edition_image_file_mandatoryoriginal img'))
+            .toHaveAttribute('src', /^\/index.php\/view\/media\/getMedia?.*/)
+        await expect(page.locator('#jforms_view_edition_image_file_mandatoryoriginal img'))
+            .toHaveAttribute('src', /.*media%2Fupload%2Fform_edition_all_field_type%2Fform_edition_upload%2Fimage_file_mandatory%2Frandom-2.jpg$/)
+        // image_file_specific_root_folder: random-4.jpg
+        await page.locator('#jforms_view_edition_image_file_specific_root_folder_choice_list').scrollIntoViewIfNeeded();
+        await expect(page.locator('#jforms_view_edition_image_file_specific_root_folder_choice_list').getByLabel('Keep')).toBeChecked();
+        await expect(page.locator('#jforms_view_edition_image_file_specific_root_folderoriginal img'))
+            .toHaveAttribute('src', /^\/index.php\/view\/media\/getMedia?.*/)
+        await expect(page.locator('#jforms_view_edition_image_file_specific_root_folderoriginal img'))
+            .toHaveAttribute('src', /.*\.\.%2Fmedia%2Fspecific_media_folder%2Frandom-4.jpg$/)
+    });
+
+    test('File preview with path not as config', async ({ page }) => {
+        const project = new ProjectPage(page, 'form_edition_all_field_type');
+        await project.open();
+
+        const layerName = 'form_edition_upload';
+        await project.openAttributeTable(layerName);
+        await expect(project.attributeTableHtml(layerName).locator('tbody tr'))
+            .toHaveCount(2);
+        const theTableRow = project.attributeTableHtml(layerName).locator('tbody tr').nth(1);
+        await expect(theTableRow.locator('a'))
+            .toHaveCount(3);
+
+        // First text_file_mandatory: random-2.jpg not in default path
+        await expect(theTableRow.locator('a').nth(0))
+            .toHaveText('text_file_mandatory')
+        await expect(theTableRow.locator('a').nth(0))
+            .toHaveAttribute('href', /^\/index.php\/view\/media\/getMedia?.*/)
+        await expect(theTableRow.locator('a').nth(0))
+            .toHaveAttribute('href', /.*media\/upload\/form_edition_all_field_type\/form_edition_upload\/image_file_mandatory\/random-2.jpg$/)
+
+        // image_file_mandatory : random-4.jpg not in default root
+        await expect(theTableRow.locator('a').nth(1))
+            .toHaveText('image_file_mandatory')
+        await expect(theTableRow.locator('a').nth(1))
+            .toHaveAttribute('href', /^\/index.php\/view\/media\/getMedia?.*/)
+        await expect(theTableRow.locator('a').nth(1))
+            .toHaveAttribute('href', /.*\.\.\/media\/specific_media_folder\/random-4.jpg$/)
+
+        // image_file_specific_root_folder : lorem-2.txt not in expression path
+        await expect(theTableRow.locator('a').nth(2))
+            .toHaveText('image_file_specific_root_folder')
+        await expect(theTableRow.locator('a').nth(2))
+            .toHaveAttribute('href', /^\/index.php\/view\/media\/getMedia?.*/)
+        await expect(theTableRow.locator('a').nth(2))
+            .toHaveAttribute('href', /.*media\/upload\/form_edition_all_field_type\/form_edition_upload\/text_file_mandatory\/lorem-2.txt$/)
+
+        await expect(theTableRow.locator('lizmap-feature-toolbar'))
+            .toHaveCount(1);
+        const theFeatureToolbar = theTableRow.locator('lizmap-feature-toolbar');
+        await expect(theFeatureToolbar.locator('button.feature-edit'))
+            .toHaveCount(1);
+        const theEditButton = theFeatureToolbar.locator('button.feature-edit');
+        await expect(theEditButton)
+            .toBeVisible();
+
+        // Open edit feature
+        let modifyFeatureRequestPromise = page.waitForRequest(resquest => resquest.url().includes('modifyFeature'));
+        await theEditButton.click();
+        let modifyFeatureRequest = await modifyFeatureRequestPromise;
+
+        let editFeatureRequestPromise = page.waitForRequest(resquest => resquest.url().includes('editFeature'));
+        await modifyFeatureRequest.response();
+        let editFeatureRequest = await editFeatureRequestPromise;
+        await editFeatureRequest.response();
+
+        // Check request
+        expect(modifyFeatureRequest.url()).toMatch(/layerId=form_edition_upload_[a-z0-9_]{36}&featureId=3/);
+        expect(editFeatureRequest.url()).toMatch(/layerId=form_edition_upload_[a-z0-9_]{36}&featureId=3/);
+
+        // form visible
+        await expect(page.locator('#jforms_view_edition')).toBeVisible();
+        // id
+        await expect(page.locator('#jforms_view_edition_id')).toHaveValue('3');
+        // text_file_mandatory: random-2.jpg
+        await page.locator('#jforms_view_edition_text_file_mandatory_choice_list').scrollIntoViewIfNeeded();
+        await expect(page.locator('#jforms_view_edition_text_file_mandatory_choice_list').getByLabel('Keep')).toBeChecked();
+        await expect(page.locator('#jforms_view_edition_text_file_mandatoryoriginal img'))
+            .toHaveAttribute('src', /^\/index.php\/view\/media\/getMedia?.*/)
+        await expect(page.locator('#jforms_view_edition_text_file_mandatoryoriginal img'))
+            .toHaveAttribute('src', /.*media%2Fupload%2Fform_edition_all_field_type%2Fform_edition_upload%2Fimage_file_mandatory%2Frandom-2.jpg$/)
+        // image_file_mandatory: random-4.jpg
+        await page.locator('#jforms_view_edition_image_file_mandatory_choice_list').scrollIntoViewIfNeeded();
+        await expect(page.locator('#jforms_view_edition_image_file_mandatory_choice_list').getByLabel('Keep')).toBeChecked();
+        await expect(page.locator('#jforms_view_edition_image_file_mandatoryoriginal img'))
+            .toHaveAttribute('src', /^\/index.php\/view\/media\/getMedia?.*/)
+        await expect(page.locator('#jforms_view_edition_image_file_mandatoryoriginal img'))
+            .toHaveAttribute('src', /.*\.\.%2Fmedia%2Fspecific_media_folder%2Frandom-4.jpg$/)
+        // image_file_specific_root_folder: lorem-2.txt
+        await page.locator('#jforms_view_edition_image_file_specific_root_folder_choice_list').scrollIntoViewIfNeeded();
+        await expect(page.locator('#jforms_view_edition_image_file_specific_root_folder_choice_list').getByLabel('Keep')).toBeChecked();
+        await expect(page.locator('#jforms_view_edition_image_file_specific_root_folderoriginal')).toHaveText('lorem-2.txt');
+    });
+});
+
+test.describe('Form upload file widget @write',() => {
+
+    test('Keep file with path as config', async ({ page }) => {
+        const project = new ProjectPage(page, 'form_edition_all_field_type');
+        await project.open();
+
+        const layerName = 'form_edition_upload';
+
+        // GetFeature
+        const params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'form_edition_all_field_type',
+        });
+        const url = `/index.php/lizmap/service?${params}`;
+        const form = {
+            SERVICE: 'WFS',
+            VERSION: '1.0.0',
+            REQUEST: 'GetFeature',
+            FEATUREID: layerName+'.2',
+            OUTPUTFORMAT: 'GeoJSON',
+        };
+        let response = await page.request.post(url, {
+            form: form
+        });
+        // check response
+        expect(response.ok()).toBeTruthy();
+        expect(response.status()).toBe(200);
+        // check content-type header
+        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+
+        // check body
+        let body = await response.json();
+        expect(body).toHaveProperty('type', 'FeatureCollection');
+        expect(body).toHaveProperty('features');
+        expect(body.features).toHaveLength(1);
+        let feature = body.features[0];
+        expect(feature).toHaveProperty('type', 'Feature');
+        expect(feature).toHaveProperty('id', layerName+'.2');
+        expect(feature).toHaveProperty('properties');
+        expect(feature.properties).toHaveProperty('id', 2);
+        expect(feature.properties).toHaveProperty(
+            'text_file_mandatory',
+            'media/upload/form_edition_all_field_type/form_edition_upload/text_file_mandatory/lorem-2.txt'
+        );
+        expect(feature.properties).toHaveProperty(
+            'image_file_mandatory',
+            'media/upload/form_edition_all_field_type/form_edition_upload/image_file_mandatory/random-2.jpg'
+        );
+        expect(feature.properties).toHaveProperty(
+            'image_file_specific_root_folder',
+            '../media/specific_media_folder/random-4.jpg'
+        );
+
+        await project.openAttributeTable(layerName);
+        await expect(project.attributeTableHtml(layerName).locator('tbody tr'))
+            .toHaveCount(2);
+
+        const theTableRow = project.attributeTableHtml(layerName).locator('tbody tr').first();
+        await expect(theTableRow.locator('lizmap-feature-toolbar'))
+            .toHaveCount(1);
+        const theFeatureToolbar = theTableRow.locator('lizmap-feature-toolbar');
+        await expect(theFeatureToolbar.locator('button.feature-edit'))
+            .toHaveCount(1);
+        const theEditButton = theFeatureToolbar.locator('button.feature-edit');
+        await expect(theEditButton)
+            .toBeVisible();
+
+        // Open edit feature
+        let modifyFeatureRequestPromise = page.waitForRequest(resquest => resquest.url().includes('modifyFeature'));
+        await theEditButton.click();
+        let modifyFeatureRequest = await modifyFeatureRequestPromise;
+
+        let editFeatureRequestPromise = page.waitForRequest(resquest => resquest.url().includes('editFeature'));
+        await modifyFeatureRequest.response();
+        let editFeatureRequest = await editFeatureRequestPromise;
+        await editFeatureRequest.response();
+
+        // check request
+        expect(modifyFeatureRequest.url()).toMatch(/layerId=form_edition_upload_[a-z0-9_]{36}&featureId=2/);
+        expect(editFeatureRequest.url()).toMatch(/layerId=form_edition_upload_[a-z0-9_]{36}&featureId=2/);
+        // form visible
+        await expect(page.locator('#jforms_view_edition')).toBeVisible();
+        // id
+        await expect(page.locator('#jforms_view_edition_id')).toHaveValue('2');
+        // text_file_mandatory
+        await page.locator('#jforms_view_edition_text_file_mandatory_choice_list').scrollIntoViewIfNeeded();
+        await expect(page.locator('#jforms_view_edition_text_file_mandatory_choice_list').getByLabel('Keep')).toBeChecked();
+        // image_file_mandatory
+        await page.locator('#jforms_view_edition_image_file_mandatory_choice_list').scrollIntoViewIfNeeded();
+        await expect(page.locator('#jforms_view_edition_image_file_mandatory_choice_list').getByLabel('Keep')).toBeChecked();
+        // image_file_specific_root_folder
+        await page.locator('#jforms_view_edition_image_file_specific_root_folder_choice_list').scrollIntoViewIfNeeded();
+        await expect(page.locator('#jforms_view_edition_image_file_specific_root_folder_choice_list').getByLabel('Keep')).toBeChecked();
+        // submit without changes
+        await page.locator('#jforms_view_edition__submit_submit').scrollIntoViewIfNeeded();
+
+        let saveFeatureRequestPromise = page.waitForRequest(resquest => resquest.url().includes('saveFeature'));
+        await page.locator('#jforms_view_edition__submit_submit').click();
+        let saveFeatureRequest = await saveFeatureRequestPromise;
+        let closeFeatureRequestPromise = page.waitForRequest(resquest => resquest.url().includes('closeFeature'));
+        await saveFeatureRequest.response();
+        let closeFeatureRequest = await closeFeatureRequestPromise;
+        await closeFeatureRequest.response();
+
+        // GetFeature to check no changes
+        response = await page.request.post(url, {
+            form: form
+        });
+        // check response
+        expect(response.ok()).toBeTruthy();
+        expect(response.status()).toBe(200);
+        // check content-type header
+        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+
+        // check body
+        body = await response.json();
+        expect(body).toHaveProperty('type', 'FeatureCollection');
+        expect(body).toHaveProperty('features');
+        expect(body.features).toHaveLength(1);
+        feature = body.features[0];
+        expect(feature).toHaveProperty('type', 'Feature');
+        expect(feature).toHaveProperty('id', layerName+'.2');
+        expect(feature).toHaveProperty('properties');
+        expect(feature.properties).toHaveProperty('id', 2);
+        expect(feature.properties).toHaveProperty(
+            'text_file_mandatory',
+            'media/upload/form_edition_all_field_type/form_edition_upload/text_file_mandatory/lorem-2.txt'
+        );
+        expect(feature.properties).toHaveProperty(
+            'image_file_mandatory',
+            'media/upload/form_edition_all_field_type/form_edition_upload/image_file_mandatory/random-2.jpg'
+        );
+        expect(feature.properties).toHaveProperty(
+            'image_file_specific_root_folder',
+            '../media/specific_media_folder/random-4.jpg'
+        );
+    });
+
+    test('Keep file with path not as config', async ({ page }) => {
+        const project = new ProjectPage(page, 'form_edition_all_field_type');
+        await project.open();
+
+        const layerName = 'form_edition_upload';
+
+        // GetFeature
+        const params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'form_edition_all_field_type',
+        });
+        const url = `/index.php/lizmap/service?${params}`;
+        const form = {
+            SERVICE: 'WFS',
+            VERSION: '1.0.0',
+            REQUEST: 'GetFeature',
+            FEATUREID: layerName+'.3',
+            OUTPUTFORMAT: 'GeoJSON',
+        };
+        let response = await page.request.post(url, {
+            form: form
+        });
+        // check response
+        expect(response.ok()).toBeTruthy();
+        expect(response.status()).toBe(200);
+        // check content-type header
+        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+
+        // check body
+        let body = await response.json();
+        expect(body).toHaveProperty('type', 'FeatureCollection');
+        expect(body).toHaveProperty('features');
+        expect(body.features).toHaveLength(1);
+        let feature = body.features[0];
+        expect(feature).toHaveProperty('type', 'Feature');
+        expect(feature).toHaveProperty('id', layerName+'.3');
+        expect(feature).toHaveProperty('properties');
+        expect(feature.properties).toHaveProperty('id', 3);
+        expect(feature.properties).toHaveProperty(
+            'text_file_mandatory',
+            'media/upload/form_edition_all_field_type/form_edition_upload/image_file_mandatory/random-2.jpg'
+        );
+        expect(feature.properties).toHaveProperty(
+            'image_file_mandatory',
+            '../media/specific_media_folder/random-4.jpg'
+        );
+        expect(feature.properties).toHaveProperty(
+            'image_file_specific_root_folder',
+            'media/upload/form_edition_all_field_type/form_edition_upload/text_file_mandatory/lorem-2.txt'
+        );
+
+        await project.openAttributeTable(layerName);
+        await expect(project.attributeTableHtml(layerName).locator('tbody tr'))
+            .toHaveCount(2);
+
+        const theTableRow = project.attributeTableHtml(layerName).locator('tbody tr').nth(1);
+        await expect(theTableRow.locator('lizmap-feature-toolbar'))
+            .toHaveCount(1);
+        const theFeatureToolbar = theTableRow.locator('lizmap-feature-toolbar');
+        await expect(theFeatureToolbar.locator('button.feature-edit'))
+            .toHaveCount(1);
+        const theEditButton = theFeatureToolbar.locator('button.feature-edit');
+        await expect(theEditButton)
+            .toBeVisible();
+
+        // Open edit feature
+        let modifyFeatureRequestPromise = page.waitForRequest(resquest => resquest.url().includes('modifyFeature'));
+        await theEditButton.click();
+        let modifyFeatureRequest = await modifyFeatureRequestPromise;
+
+        let editFeatureRequestPromise = page.waitForRequest(resquest => resquest.url().includes('editFeature'));
+        await modifyFeatureRequest.response();
+        let editFeatureRequest = await editFeatureRequestPromise;
+        await editFeatureRequest.response();
+
+        // check request
+        expect(modifyFeatureRequest.url()).toMatch(/layerId=form_edition_upload_[a-z0-9_]{36}&featureId=3/);
+        expect(editFeatureRequest.url()).toMatch(/layerId=form_edition_upload_[a-z0-9_]{36}&featureId=3/);
+        // form visible
+        await expect(page.locator('#jforms_view_edition')).toBeVisible();
+        // id
+        await expect(page.locator('#jforms_view_edition_id')).toHaveValue('3');
+        // text_file_mandatory
+        await page.locator('#jforms_view_edition_text_file_mandatory_choice_list').scrollIntoViewIfNeeded();
+        await expect(page.locator('#jforms_view_edition_text_file_mandatory_choice_list').getByLabel('Keep')).toBeChecked();
+        // image_file_mandatory
+        await page.locator('#jforms_view_edition_image_file_mandatory_choice_list').scrollIntoViewIfNeeded();
+        await expect(page.locator('#jforms_view_edition_image_file_mandatory_choice_list').getByLabel('Keep')).toBeChecked();
+        // image_file_specific_root_folder
+        await page.locator('#jforms_view_edition_image_file_specific_root_folder_choice_list').scrollIntoViewIfNeeded();
+        await expect(page.locator('#jforms_view_edition_image_file_specific_root_folder_choice_list').getByLabel('Keep')).toBeChecked();
+        // submit without changes
+        await page.locator('#jforms_view_edition__submit_submit').scrollIntoViewIfNeeded();
+
+        let saveFeatureRequestPromise = page.waitForRequest(resquest => resquest.url().includes('saveFeature'));
+        await page.locator('#jforms_view_edition__submit_submit').click();
+        let saveFeatureRequest = await saveFeatureRequestPromise;
+        let closeFeatureRequestPromise = page.waitForRequest(resquest => resquest.url().includes('closeFeature'));
+        await saveFeatureRequest.response();
+        let closeFeatureRequest = await closeFeatureRequestPromise;
+        await closeFeatureRequest.response();
+
+        // GetFeature to check no changes
+        response = await page.request.post(url, {
+            form: form
+        });
+        // check response
+        expect(response.ok()).toBeTruthy();
+        expect(response.status()).toBe(200);
+        // check content-type header
+        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+
+        // check body
+        body = await response.json();
+        expect(body).toHaveProperty('type', 'FeatureCollection');
+        expect(body).toHaveProperty('features');
+        expect(body.features).toHaveLength(1);
+        feature = body.features[0];
+        expect(feature).toHaveProperty('type', 'Feature');
+        expect(feature).toHaveProperty('id', layerName+'.3');
+        expect(feature).toHaveProperty('properties');
+        expect(feature.properties).toHaveProperty('id', 3);
+        expect(feature.properties).toHaveProperty(
+            'text_file_mandatory',
+            'media/upload/form_edition_all_field_type/form_edition_upload/image_file_mandatory/random-2.jpg'
+        );
+        expect(feature.properties).toHaveProperty(
+            'image_file_mandatory',
+            '../media/specific_media_folder/random-4.jpg'
+        );
+        expect(feature.properties).toHaveProperty(
+            'image_file_specific_root_folder',
+            'media/upload/form_edition_all_field_type/form_edition_upload/text_file_mandatory/lorem-2.txt'
+        );
+    });
+});
+
 test.describe('Form edition without creation', {tag: ['@readonly'],},() => {
 
     test('must allow modification without creation', async ({ page }) => {
