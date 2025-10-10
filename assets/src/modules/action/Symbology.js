@@ -32,21 +32,54 @@ export async function updateLayerTreeLayersSymbology(treeLayers, method=HttpRequ
 
     if (method.toUpperCase() == HttpRequestMethods.GET) {
         for (const treeLayer of treeLayers) {
+            // Check if this is an external WMS layer
+            const isExternalWMS = treeLayer.itemState?.externalWmsToggle === true;
+            
             const wmsParams = {
                 LAYER: treeLayer.wmsName,
                 STYLES: treeLayer.wmsSelectedStyleName,
             };
 
-            await wms.getLegendGraphic(wmsParams).then((response) => {
-                for (const node of response.nodes) {
-                    // If the layer has no symbology, there is no type property
-                    if (node.hasOwnProperty('type')) {
-                        treeLayer.symbology = node;
-                    }
+            if (isExternalWMS) {
+                // For external WMS layers, get PNG legend directly
+                try {
+                    const pngUrl = wms.getLegendGraphicPNG(wmsParams);
+                    // Fetch the PNG and convert to base64
+                    const response = await fetch(pngUrl);
+                    const blob = await response.blob();
+                    const reader = new FileReader();
+                    
+                    await new Promise((resolve, reject) => {
+                        reader.onloadend = () => {
+                            const base64data = reader.result.split(',')[1]; // Remove data:image/png;base64, prefix
+                            treeLayer.symbology = {
+                                type: 'layer',
+                                name: treeLayer.wmsName,
+                                title: treeLayer.name,
+                                icon: base64data
+                            };
+                            resolve();
+                        };
+                        reader.onerror = reject;
+                        reader.readAsDataURL(blob);
+                    });
+                } catch (error) {
+                    console.error('Error loading external WMS legend:', error);
+                    // Fallback to default icon will be handled by symbology state
                 }
-            }).catch((error) => {
-                console.error(error);
-            });
+            } else {
+                // For normal layers, use JSON format
+                await wms.getLegendGraphic(wmsParams).then((response) => {
+                    for (const node of response.nodes) {
+                        // If the layer has no symbology, there is no type property
+                        if (node.hasOwnProperty('type')) {
+                            treeLayer.symbology = node;
+                        }
+                    }
+                }).catch((error) => {
+                    console.error(error);
+                });
+            }
         }
         return treeLayers;
     }
