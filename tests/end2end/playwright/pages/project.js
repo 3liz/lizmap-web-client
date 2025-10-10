@@ -191,6 +191,18 @@ export class ProjectPage extends BasePage {
     }
 
     /**
+     * Waits for a GetTile request
+     * @returns {Promise<Request>} The GetTile request
+     */
+    async waitForGetTileRequest() {
+        return this.page.waitForRequest(
+            request => request.method() === 'GET' &&
+            request.url().includes('WMTS') === true &&
+            request.url().includes('GetTile') === true
+        );
+    }
+
+    /**
      * Waits for a GetFeatureInfo request
      * @returns {Promise<Request>} The GetFeatureInfo request
      */
