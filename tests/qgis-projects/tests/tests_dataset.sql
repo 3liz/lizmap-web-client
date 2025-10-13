@@ -1868,6 +1868,37 @@ ALTER SEQUENCE tests_projects.single_wms_baselayer_id_seq OWNED BY tests_project
 
 
 --
+-- Name: single_wms_baselayer_two; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.single_wms_baselayer_two (
+    id integer NOT NULL,
+    title text,
+    geom public.geometry(Polygon,4326)
+);
+
+
+--
+-- Name: single_wms_baselayer_two_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
+--
+
+CREATE SEQUENCE tests_projects.single_wms_baselayer_two_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: single_wms_baselayer_two_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
+--
+
+ALTER SEQUENCE tests_projects.single_wms_baselayer_two_id_seq OWNED BY tests_projects.single_wms_baselayer_two.id;
+
+
+--
 -- Name: single_wms_lines; Type: TABLE; Schema: tests_projects; Owner: -
 --
 
@@ -2844,6 +2875,13 @@ ALTER TABLE ONLY tests_projects.single_wms_baselayer ALTER COLUMN id SET DEFAULT
 
 
 --
+-- Name: single_wms_baselayer_two id; Type: DEFAULT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.single_wms_baselayer_two ALTER COLUMN id SET DEFAULT nextval('tests_projects.single_wms_baselayer_two_id_seq'::regclass);
+
+
+--
 -- Name: single_wms_lines id; Type: DEFAULT; Schema: tests_projects; Owner: -
 --
 
@@ -3567,6 +3605,15 @@ COPY tests_projects.single_wms_baselayer (id, title, geom) FROM stdin;
 
 
 --
+-- Data for Name: single_wms_baselayer_two; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.single_wms_baselayer_two (id, title, geom) FROM stdin;
+1	BaseLayer	0103000020E610000001000000050000000077401A836C0E406218402DF9D34540F368B4E6EE6D0E40BE2FFD7034C84540064D1A2727DB0F40E97A89E64FC845403177BEC1E3D60F4021A5CF131AD445400077401A836C0E406218402DF9D34540
+\.
+
+
+--
 -- Data for Name: single_wms_lines; Type: TABLE DATA; Schema: tests_projects; Owner: -
 --
 
@@ -4211,6 +4258,13 @@ SELECT pg_catalog.setval('tests_projects.single_wms_baselayer_id_seq', 1, true);
 
 
 --
+-- Name: single_wms_baselayer_two_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.single_wms_baselayer_two_id_seq', 1, true);
+
+
+--
 -- Name: single_wms_lines_group_as_layer_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
 --
 
@@ -4821,6 +4875,14 @@ ALTER TABLE ONLY tests_projects.shop_bakery_pg
 
 ALTER TABLE ONLY tests_projects.single_wms_baselayer
     ADD CONSTRAINT single_wms_baselayer_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: single_wms_baselayer_two single_wms_baselayer_two_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.single_wms_baselayer_two
+    ADD CONSTRAINT single_wms_baselayer_two_pkey PRIMARY KEY (id);
 
 
 --

@@ -335,7 +335,8 @@ export default class SingleWMSLayer {
             const currentLayerState = this._singleWMSLayerList.get(layerName);
             // detect baseLayer, if any
             if (currentLayerState instanceof BaseLayerState) {
-                if(this._baseLayers.includes(baseLayersState.selectedBaseLayerName)){
+                if (this._baseLayers.includes(baseLayersState.selectedBaseLayerName)
+                    && currentLayerState.itemState.wmsName == baseLayersState.selectedBaseLayer.itemState.wmsName) {
                     // get item state
                     const selectedBaseLayerState = baseLayersState.selectedBaseLayer.itemState;
                     this._layersWmsName.push(selectedBaseLayerState.wmsName);
