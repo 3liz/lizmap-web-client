@@ -2023,7 +2023,8 @@ window.lizMap = function() {
 
         var attributeLayerConfig = getLayerConfigById(config_layer.id, lizMap.config.attributeLayers, 'layerId' );
         // right not set
-        if ( !('export_enabled' in attributeLayerConfig[1]) || attributeLayerConfig[1].export_enabled != 'True' ) {
+        if ( Array.isArray(attributeLayerConfig) && attributeLayerConfig.length == 2 &&
+            (!('export_enabled' in attributeLayerConfig[1]) || attributeLayerConfig[1].export_enabled != 'True') ) {
             mAddMessage(lizDict['layer.export.right.required'], 'danger', true);
             return false;
         }
