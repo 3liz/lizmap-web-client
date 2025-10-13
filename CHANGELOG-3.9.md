@@ -8,6 +8,17 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Funders
+
+* **[Faunalia](https://www.faunalia.eu/fr)** with @mind84
+* **[DEAL de la Martinique](https://www.martinique.developpement-durable.gouv.fr/)**
+
+### Fixed
+
+* Duplicated baselayers in single wms mode
+* Export layer from sub-dock
+
+
 ## 3.9.3 - 2025-10-09
 
 ### Funders
