@@ -78,7 +78,7 @@ class lizmapLogListener extends jEventListener
 
             // Add IP if needed
             if ($logItem->getData('logIp')) {
-                $data['ip'] = jApp::coord()->request->getIP();
+                $data['ip'] = lizmap::getAppContext()->getIP();
             }
 
             // Insert log
