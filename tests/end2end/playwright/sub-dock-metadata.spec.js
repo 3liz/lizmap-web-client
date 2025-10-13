@@ -1,5 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+import { expectParametersToContain } from './globals';
 import { ProjectPage } from "./pages/project";
 
 test.describe('Sub dock', () => {
@@ -58,7 +59,7 @@ test.describe('Sub dock', () => {
         await expect(page.locator('#sub-dock')).toBeHidden();
     });
 
-    test('Metadata one on two layers in WFS with attribute table', async ({ page }) => {
+    test('Metadata one on two layers in WFS with attribute table config', async ({ page }) => {
         const project = new ProjectPage(page, 'permalink');
         await project.open();
 
@@ -91,7 +92,41 @@ test.describe('Sub dock', () => {
         await expect(page.locator('#sub-dock .sub-metadata .menu-content dt').nth(3)).toHaveText('Opacity');
     });
 
-    test('Metadata one on two layers in WFS without attribute table', async ({ page }) => {
+    test('Export layer with attribute table config', async ({ page }) => {
+        const project = new ProjectPage(page, 'permalink');
+        await project.open();
+
+        // Display sub dock metadata
+        await page.getByTestId('sousquartiers').hover();
+        await page.getByTestId('sousquartiers').locator('.icon-info-sign').click();
+        await expect(page.locator('#sub-dock')).toBeVisible();
+
+        // Export
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dt').nth(5)).toHaveText('Export');
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dd select.exportLayer')).toHaveCount(1);
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dd button.exportLayer')).toHaveCount(1);
+        await page.locator('#sub-dock .sub-metadata .menu-content dd select.exportLayer').selectOption('GeoJSON');
+        const getFeatureRequestPromise = project.waitForGetFeatureRequest();
+        await page.locator('#sub-dock .sub-metadata .menu-content dd button.exportLayer').click();
+        const getFeatureRequest = await getFeatureRequestPromise;
+        const expectedParameters = {
+            'SERVICE': 'WFS',
+            'REQUEST': 'GetFeature',
+            'VERSION': '1.0.0',
+            'OUTPUTFORMAT': 'GeoJSON',
+            'TYPENAME': 'sousquartiers',
+        };
+        await expectParametersToContain('Export GeoJSON from sub-dock', getFeatureRequest.postData() ?? '', expectedParameters);
+        const response = await getFeatureRequest.response();
+
+        // check response
+        expect(response?.ok()).toBeTruthy();
+        expect(response?.status()).toBe(200);
+        // check content-type header
+        expect(response?.headers()['content-type']).toContain('application/vnd.geo+json');
+    });
+
+    test('Metadata one on two layers in WFS without attribute table config', async ({ page }) => {
         // Remove attribute table config
         await page.route('**/service/getProjectConfig*', async route => {
             const response = await route.fetch();
@@ -132,7 +167,49 @@ test.describe('Sub dock', () => {
         await expect(page.locator('#sub-dock .sub-metadata .menu-content dt').nth(3)).toHaveText('Opacity');
     });
 
-    test('Metadata one on two layers in WFS with export disable in attribute table', async ({ page }) => {
+    test('Export layer without attribute table config', async ({ page }) => {
+        // Remove attribute table config
+        await page.route('**/service/getProjectConfig*', async route => {
+            const response = await route.fetch();
+            const json = await response.json();
+            json.attributeLayers = {};
+            await route.fulfill({ response, json });
+        });
+
+        const project = new ProjectPage(page, 'permalink');
+        await project.open();
+
+        // Display sub dock metadata
+        await page.getByTestId('sousquartiers').hover();
+        await page.getByTestId('sousquartiers').locator('.icon-info-sign').click();
+        await expect(page.locator('#sub-dock')).toBeVisible();
+
+        // Export
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dt').nth(5)).toHaveText('Export');
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dd select.exportLayer')).toHaveCount(1);
+        await expect(page.locator('#sub-dock .sub-metadata .menu-content dd button.exportLayer')).toHaveCount(1);
+        await page.locator('#sub-dock .sub-metadata .menu-content dd select.exportLayer').selectOption('GeoJSON');
+        const getFeatureRequestPromise = project.waitForGetFeatureRequest();
+        await page.locator('#sub-dock .sub-metadata .menu-content dd button.exportLayer').click();
+        const getFeatureRequest = await getFeatureRequestPromise;
+        const expectedParameters = {
+            'SERVICE': 'WFS',
+            'REQUEST': 'GetFeature',
+            'VERSION': '1.0.0',
+            'OUTPUTFORMAT': 'GeoJSON',
+            'TYPENAME': 'sousquartiers',
+        };
+        await expectParametersToContain('Export GeoJSON from sub-dock', getFeatureRequest.postData() ?? '', expectedParameters);
+        const response = await getFeatureRequest.response();
+
+        // check response
+        expect(response?.ok()).toBeTruthy();
+        expect(response?.status()).toBe(200);
+        // check content-type header
+        expect(response?.headers()['content-type']).toContain('application/vnd.geo+json');
+    });
+
+    test('Metadata one on two layers in WFS with export disable in attribute table config', async ({ page }) => {
         // Remove attribute table config
         await page.route('**/service/getProjectConfig*', async route => {
             const response = await route.fetch();
