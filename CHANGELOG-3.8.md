@@ -11,10 +11,12 @@ with some extra keywords: backend, tests, test, translation, funders, important
 ### Funders
 
 * **[Cédégis](https://www.cedegis.fr/)**
+* **[Faunalia](https://www.faunalia.eu/fr)** with @mind84
 
 ### Fixed
 
 * Editing - Upload widget preview and keep value
+* Duplicated baselayers in single wms mode
 
 ## 3.8.14 - 2025-10-07
 
