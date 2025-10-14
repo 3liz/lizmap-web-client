@@ -34,11 +34,15 @@ class ProjectCache
     protected $appContext;
 
     /**
+     * Modification time of the QGIS project file.
+     *
      * @var int
      */
     protected $qgsMtime = 0;
 
     /**
+     * Modification time of the lizmap configuration file for the QGIS project.
+     *
      * @var int
      */
     protected $qgsCfgMtime = 0;
@@ -61,7 +65,7 @@ class ProjectCache
      * cfg file.
      *
      * @param string                  $file            The full path of the QGIS project file
-     * @param int                     $modifiedTime    Modification time of the file
+     * @param int                     $modifiedTime    Modification time of the QGIS project file
      * @param int                     $cfgModifiedTime Modification time of the lizmap configuration file for the QGIS project
      * @param App\AppContextInterface $appContext      The interface to call Jelix
      */
@@ -146,11 +150,27 @@ class ProjectCache
      *
      * @param string                      $layerId
      * @param QgisFormControlProperties[] $formControls
+     *
+     * @return bool false if failure
      */
-    public function setEditableLayerFormCache($layerId, $formControls)
+    public function setEditableLayerFormCache($layerId, $formControls): bool
     {
+        $cacheContent = array(
+            'qgsmtime' => $this->qgsMtime,
+            'qgscfgmtime' => $this->qgsCfgMtime,
+            'format_version' => self::CACHE_FORMAT_VERSION,
+            'formControls' => $formControls,
+        );
+
         $cacheKey = $this->fileKey.'.layer-'.$layerId.'-form';
-        $this->appContext->setCache($cacheKey, $formControls, null, $this->profile);
+
+        try {
+            return $this->appContext->setCache($cacheKey, $cacheContent, null, $this->profile);
+        } catch (\Exception $e) {
+            $this->appContext->logException($e, 'error');
+
+            return false;
+        }
     }
 
     /**
@@ -165,17 +185,32 @@ class ProjectCache
      *
      * @throws \Exception
      */
-    public function getEditableLayerFormCache($layerId)
+    public function getEditableLayerFormCache($layerId): array
     {
         $cacheKey = $this->fileKey.'.layer-'.$layerId.'-form';
 
         try {
             $cacheContent = $this->appContext->getCache($cacheKey, $this->profile);
-        } catch (\Exception $e) {
-            throw new \Exception('Can\'t read the layer form properties from cache, try to clear your cache and reload the page.');
-        }
+            // check if the cache correspond to the current project
+            if ($cacheContent === false
+                || is_null($cacheContent)
+                || !isset($cacheContent['qgsmtime'])
+                || $cacheContent['qgsmtime'] < $this->qgsMtime
+                || !isset($cacheContent['qgscfgmtime'])
+                || $cacheContent['qgscfgmtime'] < $this->qgsCfgMtime
+                || !isset($cacheContent['format_version'])
+                || $cacheContent['format_version'] != self::CACHE_FORMAT_VERSION
+                || !isset($cacheContent['formControls'])
+            ) {
+                return array();
+            }
 
-        return $cacheContent;
+            return $cacheContent['formControls'];
+        } catch (\Exception $e) {
+            $this->appContext->logException($e, 'error');
+
+            return array();
+        }
     }
 
     /**
@@ -188,7 +223,7 @@ class ProjectCache
      *
      * @return bool false if failure
      */
-    public function setProjectRelatedDataCache($key, $data, $ttl = 7200)
+    public function setProjectRelatedDataCache($key, $data, $ttl = 7200): bool
     {
         $cacheContent = array(
             'qgsmtime' => $this->qgsMtime,
@@ -242,12 +277,18 @@ class ProjectCache
         return $data;
     }
 
-    public function getFileTime()
+    /**
+     * Get modification time of the lQGIS project file.
+     */
+    public function getFileTime(): int
     {
         return $this->qgsMtime;
     }
 
-    public function getCfgFileTime()
+    /**
+     * Get modification time of the lizmap configuration file for the QGIS project.
+     */
+    public function getCfgFileTime(): int
     {
         return $this->qgsCfgMtime;
     }
