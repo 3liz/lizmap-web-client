@@ -1056,6 +1056,9 @@ class QgisProject
             }
             if (!$formControls) {
                 $formControls = $layer->getFormControls();
+                if ($proj) {
+                    $proj->getCacheHandler()->setEditableLayerFormCache($layerId, $formControls);
+                }
             }
 
             $fields_config = array();
