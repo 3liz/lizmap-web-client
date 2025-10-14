@@ -27,7 +27,8 @@ class lizmapLogListener extends jEventListener
             $key = $entrypoint.'-login';
         }
         // if user-agent is QGIS, change event key
-        if (preg_match('#QGIS/\d+/#', $_SERVER['HTTP_USER_AGENT'])) {
+        if (array_key_exists('HTTP_USER_AGENT', $_SERVER)
+            && preg_match('#QGIS/\d+/#', $_SERVER['HTTP_USER_AGENT'])) {
             $key = 'qgis-login';
         }
         $data = array(
