@@ -181,7 +181,7 @@ class JelixContext implements AppContextInterface
      *
      * @return bool false if failure
      */
-    public function setCache($key, $value, $ttl = null, $profile = '')
+    public function setCache($key, $value, $ttl = null, $profile = ''): bool
     {
         return \jCache::set($key, $value, $ttl, $profile);
     }
