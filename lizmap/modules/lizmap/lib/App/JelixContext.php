@@ -361,4 +361,42 @@ class JelixContext implements AppContextInterface
     {
         return \lizmapTiler::getTileCapabilities($project);
     }
+
+    public function getIP()
+    {
+        $request = $this->getCoord()->request;
+        // coord may not contains request if entrypoint doesn't instantiate one
+        if (!is_null($request)) {
+            return $request->getIP();
+        }
+        // see jelix jRequest class
+        if (isset($_SERVER['HTTP_X_FORWARDED_FOR']) && $_SERVER['HTTP_X_FORWARDED_FOR']) {
+            // it may content ips of all traversed proxies.
+            $list = preg_split('/[\s,]+/', $_SERVER['HTTP_X_FORWARDED_FOR']);
+            $list = array_reverse($list);
+            $lastIp = '';
+            foreach ($list as $ip) {
+                $ip = trim($ip);
+                if (preg_match('/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/', $ip, $m)) {
+                    if ($m[1] == '10' || $m[1] == '010'
+                        || ($m[1] == '172' && ((intval($m[2]) & 240) == 16))
+                        || ($m[1] == '192' && $m[2] == '168')) {
+                        break;
+                    } // stop at first private address. we just want the last public address
+                    $lastIp = $ip;
+                } elseif (preg_match('/^(?:[a-f0-9]{1,4})(?::(?:[a-f0-9]{1,4})){7}$/i', $ip)) {
+                    $lastIp = $ip;
+                }
+            }
+            if ($lastIp) {
+                return $lastIp;
+            }
+        }
+
+        if (isset($_SERVER['HTTP_CLIENT_IP']) && $_SERVER['HTTP_CLIENT_IP']) {
+            return $_SERVER['HTTP_CLIENT_IP'];
+        }
+
+        return $_SERVER['REMOTE_ADDR'];
+    }
 }
