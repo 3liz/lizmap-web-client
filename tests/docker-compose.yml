@@ -84,6 +84,8 @@ services:
     environment:
       PGSERVICEFILE: /srv/etc/pg_service.conf
       QGIS_SERVER_LIZMAP_REVEAL_SETTINGS: yes
+      QGIS_SERVER_TRUST_LAYER_METADATA: yes
+      QGIS_SERVER_FORCE_READONLY_LAYERS: yes
       QGSRV_API_ENABLED_LIZMAP: yes
       QGSRV_CACHE_ROOTDIR: /srv/projects
       QGSRV_CACHE_SIZE: '20'
