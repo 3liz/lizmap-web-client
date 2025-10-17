@@ -12,6 +12,8 @@ import { Vector as VectorLayer } from 'ol/layer.js';
 import Point from 'ol/geom/Point.js';
 import Circle from 'ol/geom/Circle.js';
 import Feature from 'ol/Feature.js';
+import Style from 'ol/style/Style.js';
+import Icon from 'ol/style/Icon.js';
 
 /**
  * @class
@@ -242,6 +244,16 @@ export default class Geolocation {
         const positionFeature = new Feature({
             geometry: new Point(coordinates)
         });
+
+        const iconStyle = new Style({
+            image: new Icon({
+                src: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbDpzcGFjZT0icHJlc2VydmUiIHZpZXdCb3g9IjAgMCAxNzkyIDE3OTIiIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiI+CiAgPHBhdGggZD0iTTE4OCAxNjU5IDg5NiAxMzNsNzA4IDE1MjYtNzA4LTM3M3oiLz4KPC9zdmc+Cg==', // eslint-disable-line
+                rotation: this._geolocation.getHeading(),
+                rotateWithView: true,
+            }),
+        });
+
+        positionFeature.setStyle(iconStyle);
 
         const accuracyFeature = new Feature({
             geometry: new Circle(coordinates, this._geolocation.getAccuracy() / 2)
