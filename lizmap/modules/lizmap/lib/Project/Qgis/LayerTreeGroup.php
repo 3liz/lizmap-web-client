@@ -139,7 +139,13 @@ class LayerTreeGroup extends BaseQgisXmlObject
 
                 continue;
             }
+            if (!$item->customproperties) {
+                continue;
+            }
             if (!array_key_exists('showFeatureCount', $item->customproperties)) {
+                continue;
+            }
+            if (!filter_var($item->customproperties['showFeatureCount'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE)) {
                 continue;
             }
             $data[] = $item->name;
