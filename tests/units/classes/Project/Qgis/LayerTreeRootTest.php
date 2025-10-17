@@ -465,4 +465,13 @@ class LayerTreeRootTest extends TestCase
         $this->assertCount(1, $layersShowFeatureCount);
         $this->assertEquals('tramway', $layersShowFeatureCount[0]);
     }
+
+    public function testGetLayersShowFeatureCount(): void
+    {
+        $xmlStr = file_get_contents(__DIR__.'/../../Project/Ressources/root-layer-tree-group-no-show-feature-count.xml');
+        $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
+        $root = Qgis\LayerTreeRoot::fromXmlReader($oXml);
+        $layersShowFeatureCount = $root->getLayersShowFeatureCount();
+        $this->assertCount(0, $layersShowFeatureCount);
+    }
 }
