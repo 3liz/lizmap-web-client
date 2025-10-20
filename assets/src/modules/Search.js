@@ -361,12 +361,14 @@ export default class Search {
                     var bbox = linkClicked.getAttribute('href').replace('#', '');
                     bbox = OpenLayers.Bounds.fromString(bbox);
                     bbox.transform(wgs84, this._lizmap3.map.getProjectionObject());
-                    lizMap.mainLizmap.map.getView().fit(bbox.toArray());
 
                     var feat = new OpenLayers.Feature.Vector(bbox.toGeometry().getCentroid());
                     var geomWKT = linkClicked.dataset.wkt;
                     if (geomWKT) {
+                        this._map.zoomToWkt(geomWKT, 'EPSG:4326');
                         this._map.setHighlightFeatures(geomWKT, "wkt", "EPSG:4326");
+                    } else {
+                        this._map.getView().fit(bbox.toArray());
                     }
 
                     $('#lizmap-search, #lizmap-search-close').removeClass('open');
