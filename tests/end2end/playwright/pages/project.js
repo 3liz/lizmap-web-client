@@ -18,6 +18,11 @@ import { BasePage } from './base';
  * @typedef {import('@playwright/test').Request} Request
  */
 
+/**
+ * Integer
+ * @typedef {number} int
+ */
+
 export class ProjectPage extends BasePage {
     // Metadata
     /**
@@ -111,6 +116,25 @@ export class ProjectPage extends BasePage {
      * @type {string}
      */
     get qgsFile() {return qgsTestFile(this.project, this.repository)};
+
+    /**
+     * Does the loading of the map must be successful or not ? Some error might
+     * be triggered when loading the map, on purpose.
+     * @type {boolean}
+     */
+    mapMustLoad = true;
+
+    /**
+     * The number of layers to find in the treeview if the map is on error.
+     * @type {int}
+     */
+    layersInTreeView = 0;
+
+    /**
+     * During openning page, does the test must wait for the GetLegendGraphic request ?
+     * @type {boolean}
+     */
+    waitForGetLegendGraphicDuringLoad = true;
 
     /**
      * Attribute table wrapper for the given layer name
@@ -290,6 +314,9 @@ export class ProjectPage extends BasePage {
         await gotoMap(
             `/index.php/view/map?${searchParams.toString()}`,
             this.page,
+            this.mapMustLoad,
+            this.layersInTreeView,
+            this.waitForGetLegendGraphicDuringLoad,
         );
 
         await expect(await this.hasDebugBarErrors(), (await this.getDebugBarErrorsMessage())).toBe(false);

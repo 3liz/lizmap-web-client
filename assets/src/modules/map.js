@@ -1195,4 +1195,18 @@ export default class map extends olMap {
             this.zoomToGeometryOrExtent(olFeature.getGeometry(), options);
         });
     }
+
+    /**
+     * Zomm to given WKT geometry
+     * @param {string} wkt The WKT geometry
+     * @param {string} projection The projection of the WKT geometry
+     * @param {object} [options] Options.
+     */
+    zoomToWkt(wkt, projection, options) {
+        const olGeometry = (new WKT()).readGeometry(wkt, {
+            dataProjection: projection,
+            featureProjection: this.getView().getProjection()
+        });
+        this.zoomToGeometryOrExtent(olGeometry, options);
+    }
 }
