@@ -12,12 +12,20 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 * **[Faunalia](https://www.faunalia.eu/fr)** with @mind84
 * **[DEAL de la Martinique](https://www.martinique.developpement-durable.gouv.fr/)**
+* **[Avignon](https://www.avignon.fr/)**
+* **[Communauté de Communes du Grand-Figeac](https://www.grand-figeac.fr/)**
+* **[SMICA](https://www.smica.fr/)**
+* **[TDPA](https://www.terredeprovence-agglo.com/)**
 
 ### Fixed
 
 * Duplicated baselayers in single wms mode
 * Export layer from sub-dock
-
+* Request IP now provided by JelixContext for logging event
+* ProjectCache not updated for form controls
+* Undefined array key "HTTP_USER_AGENT"
+* Show feature Count is requested even if it's value is 0
+* Location search zoom to
 
 ## 3.9.3 - 2025-10-09
 
