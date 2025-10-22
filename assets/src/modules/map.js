@@ -1150,7 +1150,7 @@ export default class map extends olMap {
     /**
      * Zoom to given geometry or extent
      * @param {Geometry|Extent} geometryOrExtent The geometry or extent to zoom to. CRS is 4326 by default.
-     * @param {object} [options] Options.
+     * @param {object} [options] OpenLayers View fit options object https://openlayers.org/en/latest/apidoc/module-ol_View-View.html#fit
      */
     zoomToGeometryOrExtent(geometryOrExtent, options) {
         const geometryType = geometryOrExtent.getType?.();
@@ -1179,7 +1179,7 @@ export default class map extends olMap {
     /**
      * Zoom to given feature id
      * @param {string} featureTypeDotId The string as `featureType.fid` to zoom to.
-     * @param {object} [options] Options.
+     * @param {object} [options] OpenLayers View fit options object https://openlayers.org/en/latest/apidoc/module-ol_View-View.html#fit
      */
     zoomToFid(featureTypeDotId, options) {
         const [featureType, fid] = featureTypeDotId.split('.');
@@ -1200,7 +1200,7 @@ export default class map extends olMap {
      * Zomm to given WKT geometry
      * @param {string} wkt The WKT geometry
      * @param {string} projection The projection of the WKT geometry
-     * @param {object} [options] Options.
+     * @param {object} [options] OpenLayers View fit options object https://openlayers.org/en/latest/apidoc/module-ol_View-View.html#fit
      */
     zoomToWkt(wkt, projection, options) {
         const olGeometry = (new WKT()).readGeometry(wkt, {

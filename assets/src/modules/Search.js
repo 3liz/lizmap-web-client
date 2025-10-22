@@ -368,7 +368,7 @@ export default class Search {
                         this._map.zoomToWkt(geomWKT, 'EPSG:4326');
                         this._map.setHighlightFeatures(geomWKT, "wkt", "EPSG:4326");
                     } else {
-                        this._map.getView().fit(bbox.toArray());
+                        this._map.zoomToGeometryOrExtent(bbox.toArray());
                     }
 
                     $('#lizmap-search, #lizmap-search-close').removeClass('open');
