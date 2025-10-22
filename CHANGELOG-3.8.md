@@ -13,12 +13,14 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * **[Cédégis](https://www.cedegis.fr/)**
 * **[Faunalia](https://www.faunalia.eu/fr)** with @mind84
 * **[Avignon](https://www.avignon.fr/)**
+* **[TDPA](https://www.terredeprovence-agglo.com/)**
 
 ### Fixed
 
 * Editing - Upload widget preview and keep value
 * Duplicated baselayers in single wms mode
 * Request IP now provided by JelixContext for logging event
+* Filter unique values list is empty if one is null
 
 ## 3.8.14 - 2025-10-07
 
