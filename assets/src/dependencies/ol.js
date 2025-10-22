@@ -22,6 +22,8 @@ import $ol$source$BingMaps from 'ol/source/BingMaps.js';
 import $ol$source$Google from 'ol/source/Google.js';
 import $ol$source$Vector from 'ol/source/Vector.js';
 import $ol$source$VectorTile from 'ol/source/VectorTile.js';
+import $ol$source$GeoTIFF from 'ol/source/GeoTIFF.js';
+
 import $ol$source$WMTS from 'ol/source/WMTS.js';
 import {optionsFromCapabilities as _ol_source_WMTS$optionsFromCapabilities} from 'ol/source/WMTS.js';
 import $ol$source$XYZ from 'ol/source/XYZ.js';
@@ -36,6 +38,7 @@ import $ol$layer$VectorTile from 'ol/layer/VectorTile.js';
 import $ol$layer$Group from 'ol/layer/Group.js';
 import $ol$layer$Layer from 'ol/layer/Layer.js';
 import $ol$layer$Graticule from 'ol/layer/Graticule.js';
+import $ol$layer$WebGLTile from 'ol/layer/WebGLTile.js';
 
 import {getCenter as _ol_extent$getCenter} from 'ol/extent.js';
 import {extend as _ol_extent$extend} from 'ol/extent.js';
@@ -135,6 +138,10 @@ ol.source.WMTS.optionsFromCapabilities = _ol_source_WMTS$optionsFromCapabilities
 ol.source.XYZ = $ol$source$XYZ;
 ol.source.TileWMS = $ol$source$TileWMS;
 
+ol.source.OGCMapTile = $ol$source$OGCMapTile;
+ol.source.OGCVectorTile = $ol$source$OGCVectorTile;
+ol.source.GeoTIFF = $ol$source$GeoTIFF;
+
 ol.layer = {};
 ol.layer.Graticule = $ol$layer$Graticule;
 ol.layer.Group = $ol$layer$Group;
@@ -143,8 +150,7 @@ ol.layer.Layer = $ol$layer$Layer;
 ol.layer.Tile = $ol$layer$Tile;
 ol.layer.Vector = $ol$layer$Vector;
 ol.layer.VectorTile = $ol$layer$VectorTile;
-ol.source.OGCMapTile = $ol$source$OGCMapTile;
-ol.source.OGCVectorTile = $ol$source$OGCVectorTile;
+ol.layer.WebGLTile = $ol$layer$WebGLTile;
 
 ol.extent = {};
 ol.extent.applyTransform = _ol_extent$applyTransform;
