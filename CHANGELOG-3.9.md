@@ -26,6 +26,9 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Undefined array key "HTTP_USER_AGENT"
 * Show feature Count is requested even if it's value is 0
 * Location search zoom to
+* Action: zoom to features using zoomToGeometryOrExtent
+* Replace getView().fit() by zoomToGeometryOrExtent()
+* Filter unique values list is empty if one is null
 
 ## 3.9.3 - 2025-10-09
 
