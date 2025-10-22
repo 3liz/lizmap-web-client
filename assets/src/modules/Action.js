@@ -279,8 +279,11 @@ export default class Action {
 
             if (callback['method'] == this.CallbackMethods.Zoom && features.length) {
                 // Zoom to the returned features
-                const bounds = this.actionLayer.getSource().getExtent();
-                this._map.getView().fit(bounds, {nearest: true});
+                if (features.length ==1) {
+                    this._map.zoomToGeometryOrExtent(features[0].getGeometry());
+                } else {
+                    this._map.zoomToGeometryOrExtent(this.actionLayer.getSource().getExtent());
+                }
             }
 
             // Check the given layerId is a valid Lizmap layer
