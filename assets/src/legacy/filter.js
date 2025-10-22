@@ -517,7 +517,11 @@ var lizLayerFilterTool = function () {
                     }
 
                     for (const feat of result) {
-                        globalThis['filterConfig'][field_item.order]['items'][DOMPurify.sanitize(feat['v'].toString())] = feat['c'];
+                        if (feat['v'] !== null) {
+                            globalThis['filterConfig'][field_item.order]['items'][DOMPurify.sanitize(feat['v'].toString())] = feat['c'];
+                        } else {
+                            globalThis['filterConfig'][field_item.order]['items'][feat['v']+''] = feat['c']; // 'null' for null value
+                        }
                     }
 
                     var dhtml = '';
