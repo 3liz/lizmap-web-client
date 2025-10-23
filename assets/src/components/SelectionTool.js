@@ -104,7 +104,8 @@ export default class SelectionTool extends HTMLElement {
         // Add tooltip on buttons
         // TODO allow tooltip on disabled buttons : https://stackoverflow.com/a/19938049/2000654
         $('.menu-content button, .menu-content .selectiontool-export, .selection-geom-operator', this).tooltip({
-            placement: 'top'
+            placement: 'top',
+            container: this,
         });
 
         // Export
