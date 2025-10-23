@@ -21,6 +21,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Duplicated baselayers in single wms mode
 * Request IP now provided by JelixContext for logging event
 * Filter unique values list is empty if one is null
+* Selection tool - new, add & remove selection buttons shift vertically on hover
 
 ## 3.8.14 - 2025-10-07
 
