@@ -16,6 +16,11 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * **[Communauté de Communes du Grand-Figeac](https://www.grand-figeac.fr/)**
 * **[SMICA](https://www.smica.fr/)**
 * **[TDPA](https://www.terredeprovence-agglo.com/)**
+* **[SMAVD](https://www.smavd.org/)**
+
+### Added
+
+* OpenLayers WebGLTile layer & GeoTiff source to the build
 
 ### Fixed
 
@@ -29,6 +34,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Action: zoom to features using zoomToGeometryOrExtent
 * Replace getView().fit() by zoomToGeometryOrExtent()
 * Filter unique values list is empty if one is null
+* Selection tool - new, add & remove selection buttons shift vertically on hover
+
 
 ## 3.9.3 - 2025-10-09
 
