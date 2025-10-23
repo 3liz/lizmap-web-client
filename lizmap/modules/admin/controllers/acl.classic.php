@@ -50,6 +50,7 @@ class aclCtrl extends jController
         } else {
             $rep->action = 'jauthdb_admin~default:index';
         }
+        jAcl2::clearCache();
 
         return $rep;
     }
@@ -82,6 +83,7 @@ class aclCtrl extends jController
         } catch (jAcl2DbAdminUIException $e) {
             $this->checkException($e, 'addusertogroup');
         }
+        jAcl2::clearCache();
 
         return $rep;
     }
