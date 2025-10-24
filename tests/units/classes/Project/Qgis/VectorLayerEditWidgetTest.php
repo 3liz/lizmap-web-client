@@ -170,6 +170,35 @@ class VectorLayerEditWidgetTest extends TestCase
         foreach ($config as $prop => $value) {
             $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
         }
+
+        // invalid CheckedState and UncheckedState
+        $xmlStr = '
+        <editWidget type="CheckBox">
+          <config>
+            <Option type="Map">
+              <Option name="AllowNullState" type="bool" value="true"/>
+              <Option name="CheckedState" type="invalid"/>
+              <Option name="TextDisplayMethod" type="int" value="0"/>
+              <Option name="UncheckedState" type="invalid"/>
+            </Option>
+          </config>
+        </editWidget>
+        ';
+        $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
+        $editWidget = VectorLayerEditWidget::fromXmlReader($oXml);
+
+        $this->assertEquals('CheckBox', $editWidget->type);
+        $this->assertNotNull($editWidget->config);
+        $this->assertInstanceOf(EditWidget\CheckBoxConfig::class, $editWidget->config);
+
+        $config = array(
+            'CheckedState' => '',
+            'UncheckedState' => '',
+            'TextDisplayMethod' => 0,
+        );
+        foreach ($config as $prop => $value) {
+            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
+        }
     }
 
     public function testDateTimeFromXmlReader(): void
