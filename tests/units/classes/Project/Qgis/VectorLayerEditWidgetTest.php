@@ -37,9 +37,9 @@ class VectorLayerEditWidgetTest extends TestCase
             'UseHtml' => false,
         );
         foreach ($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
         }
-        $this->assertEquals($config, $editWidget->config->getData());
+        $this->assertSame($config, $editWidget->config->getData());
 
         // Simple default old
         $xmlStr = '
@@ -64,8 +64,9 @@ class VectorLayerEditWidgetTest extends TestCase
             'UseHtml' => false,
         );
         foreach ($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
         }
+        $this->assertSame($config, $editWidget->config->getData());
 
         // Default config
         $xmlStr = '
@@ -87,8 +88,9 @@ class VectorLayerEditWidgetTest extends TestCase
             'UseHtml' => false,
         );
         foreach ($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
         }
+        $this->assertSame($config, $editWidget->config->getData());
     }
 
     public function testCheckBoxFromXmlReader(): void
@@ -241,8 +243,9 @@ class VectorLayerEditWidgetTest extends TestCase
             'field_iso_format' => false,
         );
         foreach ($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
         }
+        $this->assertSame($config, $editWidget->config->getData());
 
         // Default config
         $xmlStr = '
@@ -267,8 +270,9 @@ class VectorLayerEditWidgetTest extends TestCase
             'field_iso_format' => false,
         );
         foreach ($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
         }
+        $this->assertSame($config, $editWidget->config->getData());
     }
 
     public function testRangeFromXmlReader(): void
@@ -300,12 +304,13 @@ class VectorLayerEditWidgetTest extends TestCase
             'Max' => 2147483647,
             'Min' => -2147483648,
             'Precision' => 0,
-            'Step' => 1,
+            'Step' => 1.0,
             'Style' => 'SpinBox',
         );
         foreach ($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
         }
+        $this->assertSame($config, $editWidget->config->getData());
 
         // Default config
         $xmlStr = '
@@ -327,8 +332,9 @@ class VectorLayerEditWidgetTest extends TestCase
             'Style' => 'SpinBox',
         );
         foreach ($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
         }
+        $this->assertSame($config, $editWidget->config->getData());
         $notSet = array(
             'Max',
             'Min',
