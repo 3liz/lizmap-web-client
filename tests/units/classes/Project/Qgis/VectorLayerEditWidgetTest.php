@@ -119,9 +119,9 @@ class VectorLayerEditWidgetTest extends TestCase
             'AllowNullState' => false,
         );
         foreach ($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
         }
-        $this->assertEquals($config, $editWidget->config->getData());
+        $this->assertSame($config, $editWidget->config->getData());
 
         $xmlStr = '
         <editWidget type="CheckBox">
@@ -147,9 +147,9 @@ class VectorLayerEditWidgetTest extends TestCase
             'AllowNullState' => false,
         );
         foreach ($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
         }
-        $this->assertEquals($config, $editWidget->config->getData());
+        $this->assertSame($config, $editWidget->config->getData());
 
         // Default config
         $xmlStr = '
@@ -173,9 +173,9 @@ class VectorLayerEditWidgetTest extends TestCase
             'AllowNullState' => false,
         );
         foreach ($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
         }
-        $this->assertEquals($config, $editWidget->config->getData());
+        $this->assertSame($config, $editWidget->config->getData());
 
         // invalid CheckedState and UncheckedState
         // allow NULL
@@ -205,9 +205,9 @@ class VectorLayerEditWidgetTest extends TestCase
             'AllowNullState' => true,
         );
         foreach ($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
         }
-        $this->assertEquals($config, $editWidget->config->getData());
+        $this->assertSame($config, $editWidget->config->getData());
     }
 
     public function testDateTimeFromXmlReader(): void
