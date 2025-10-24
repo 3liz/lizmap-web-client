@@ -29,6 +29,7 @@ use Lizmap\Project\Qgis;
  * @property string $CheckedState
  * @property string $UncheckedState
  * @property int    $TextDisplayMethod
+ * @property bool   $AllowNullState
  */
 class CheckBoxConfig extends Qgis\BaseQgisObject
 {
@@ -37,6 +38,7 @@ class CheckBoxConfig extends Qgis\BaseQgisObject
         'CheckedState',
         'UncheckedState',
         'TextDisplayMethod',
+        'AllowNullState',
     );
 
     /** @var array The default values */
@@ -44,5 +46,17 @@ class CheckBoxConfig extends Qgis\BaseQgisObject
         'CheckedState' => '',
         'UncheckedState' => '',
         'TextDisplayMethod' => 0,
+        'AllowNullState' => false,
     );
+
+    protected function set(array $data): void
+    {
+        if (array_key_exists('TextDisplayMethod', $data)) {
+            $data['TextDisplayMethod'] = (int) $data['TextDisplayMethod'];
+        }
+        if (array_key_exists('AllowNullState', $data)) {
+            $data['AllowNullState'] = filter_var($data['AllowNullState'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+        }
+        parent::set($data);
+    }
 }

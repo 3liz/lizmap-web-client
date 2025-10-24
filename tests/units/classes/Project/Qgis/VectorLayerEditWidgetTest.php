@@ -37,9 +37,9 @@ class VectorLayerEditWidgetTest extends TestCase
             'UseHtml' => false,
         );
         foreach ($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
         }
-        $this->assertEquals($config, $editWidget->config->getData());
+        $this->assertSame($config, $editWidget->config->getData());
 
         // Simple default old
         $xmlStr = '
@@ -64,8 +64,9 @@ class VectorLayerEditWidgetTest extends TestCase
             'UseHtml' => false,
         );
         foreach ($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
         }
+        $this->assertSame($config, $editWidget->config->getData());
 
         // Default config
         $xmlStr = '
@@ -87,8 +88,9 @@ class VectorLayerEditWidgetTest extends TestCase
             'UseHtml' => false,
         );
         foreach ($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
         }
+        $this->assertSame($config, $editWidget->config->getData());
     }
 
     public function testCheckBoxFromXmlReader(): void
@@ -116,10 +118,12 @@ class VectorLayerEditWidgetTest extends TestCase
             'CheckedState' => '1',
             'UncheckedState' => '0',
             'TextDisplayMethod' => 1,
+            'AllowNullState' => false,
         );
         foreach ($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
         }
+        $this->assertSame($config, $editWidget->config->getData());
 
         $xmlStr = '
         <editWidget type="CheckBox">
@@ -142,10 +146,12 @@ class VectorLayerEditWidgetTest extends TestCase
             'CheckedState' => '1',
             'UncheckedState' => '0',
             'TextDisplayMethod' => 0,
+            'AllowNullState' => false,
         );
         foreach ($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
         }
+        $this->assertSame($config, $editWidget->config->getData());
 
         // Default config
         $xmlStr = '
@@ -166,10 +172,44 @@ class VectorLayerEditWidgetTest extends TestCase
             'CheckedState' => '',
             'UncheckedState' => '',
             'TextDisplayMethod' => 0,
+            'AllowNullState' => false,
         );
         foreach ($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
         }
+        $this->assertSame($config, $editWidget->config->getData());
+
+        // invalid CheckedState and UncheckedState
+        // allow NULL
+        $xmlStr = '
+        <editWidget type="CheckBox">
+          <config>
+            <Option type="Map">
+              <Option name="AllowNullState" type="bool" value="true"/>
+              <Option name="CheckedState" type="invalid"/>
+              <Option name="TextDisplayMethod" type="int" value="0"/>
+              <Option name="UncheckedState" type="invalid"/>
+            </Option>
+          </config>
+        </editWidget>
+        ';
+        $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
+        $editWidget = VectorLayerEditWidget::fromXmlReader($oXml);
+
+        $this->assertEquals('CheckBox', $editWidget->type);
+        $this->assertNotNull($editWidget->config);
+        $this->assertInstanceOf(EditWidget\CheckBoxConfig::class, $editWidget->config);
+
+        $config = array(
+            'CheckedState' => '',
+            'UncheckedState' => '',
+            'TextDisplayMethod' => 0,
+            'AllowNullState' => true,
+        );
+        foreach ($config as $prop => $value) {
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
+        }
+        $this->assertSame($config, $editWidget->config->getData());
     }
 
     public function testDateTimeFromXmlReader(): void
@@ -203,8 +243,9 @@ class VectorLayerEditWidgetTest extends TestCase
             'field_iso_format' => false,
         );
         foreach ($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
         }
+        $this->assertSame($config, $editWidget->config->getData());
 
         // Default config
         $xmlStr = '
@@ -229,8 +270,9 @@ class VectorLayerEditWidgetTest extends TestCase
             'field_iso_format' => false,
         );
         foreach ($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
         }
+        $this->assertSame($config, $editWidget->config->getData());
     }
 
     public function testRangeFromXmlReader(): void
@@ -262,12 +304,13 @@ class VectorLayerEditWidgetTest extends TestCase
             'Max' => 2147483647,
             'Min' => -2147483648,
             'Precision' => 0,
-            'Step' => 1,
+            'Step' => 1.0,
             'Style' => 'SpinBox',
         );
         foreach ($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
         }
+        $this->assertSame($config, $editWidget->config->getData());
 
         // Default config
         $xmlStr = '
@@ -289,8 +332,9 @@ class VectorLayerEditWidgetTest extends TestCase
             'Style' => 'SpinBox',
         );
         foreach ($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
         }
+        $this->assertSame($config, $editWidget->config->getData());
         $notSet = array(
             'Max',
             'Min',
