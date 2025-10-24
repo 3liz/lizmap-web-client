@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.30.x",
-    "@playwright/test": "^1.53.x",
+    "@playwright/test": "^1.56.x",
     "@rspack/cli": "^1.4.x",
     "@rspack/core": "^1.5.x",
     "@stylistic/eslint-plugin-js": "^4.2.x",
