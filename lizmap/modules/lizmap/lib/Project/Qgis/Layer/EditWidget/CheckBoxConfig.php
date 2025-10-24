@@ -45,4 +45,12 @@ class CheckBoxConfig extends Qgis\BaseQgisObject
         'UncheckedState' => '',
         'TextDisplayMethod' => 0,
     );
+
+    protected function set(array $data): void
+    {
+        if (array_key_exists('TextDisplayMethod', $data)) {
+            $data['TextDisplayMethod'] = (int) $data['TextDisplayMethod'];
+        }
+        parent::set($data);
+    }
 }
