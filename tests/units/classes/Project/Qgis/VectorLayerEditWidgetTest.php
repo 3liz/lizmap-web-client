@@ -116,6 +116,7 @@ class VectorLayerEditWidgetTest extends TestCase
             'CheckedState' => '1',
             'UncheckedState' => '0',
             'TextDisplayMethod' => 1,
+            'AllowNullState' => false,
         );
         foreach ($config as $prop => $value) {
             $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
@@ -142,6 +143,7 @@ class VectorLayerEditWidgetTest extends TestCase
             'CheckedState' => '1',
             'UncheckedState' => '0',
             'TextDisplayMethod' => 0,
+            'AllowNullState' => false,
         );
         foreach ($config as $prop => $value) {
             $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
@@ -166,12 +168,14 @@ class VectorLayerEditWidgetTest extends TestCase
             'CheckedState' => '',
             'UncheckedState' => '',
             'TextDisplayMethod' => 0,
+            'AllowNullState' => false,
         );
         foreach ($config as $prop => $value) {
             $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
         }
 
         // invalid CheckedState and UncheckedState
+        // allow NULL
         $xmlStr = '
         <editWidget type="CheckBox">
           <config>
@@ -195,6 +199,7 @@ class VectorLayerEditWidgetTest extends TestCase
             'CheckedState' => '',
             'UncheckedState' => '',
             'TextDisplayMethod' => 0,
+            'AllowNullState' => true,
         );
         foreach ($config as $prop => $value) {
             $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
