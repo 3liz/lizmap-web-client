@@ -121,6 +121,7 @@ class VectorLayerEditWidgetTest extends TestCase
         foreach ($config as $prop => $value) {
             $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
         }
+        $this->assertEquals($config, $editWidget->config->getData());
 
         $xmlStr = '
         <editWidget type="CheckBox">
@@ -148,6 +149,7 @@ class VectorLayerEditWidgetTest extends TestCase
         foreach ($config as $prop => $value) {
             $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
         }
+        $this->assertEquals($config, $editWidget->config->getData());
 
         // Default config
         $xmlStr = '
@@ -173,6 +175,7 @@ class VectorLayerEditWidgetTest extends TestCase
         foreach ($config as $prop => $value) {
             $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
         }
+        $this->assertEquals($config, $editWidget->config->getData());
 
         // invalid CheckedState and UncheckedState
         // allow NULL
@@ -204,6 +207,7 @@ class VectorLayerEditWidgetTest extends TestCase
         foreach ($config as $prop => $value) {
             $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
         }
+        $this->assertEquals($config, $editWidget->config->getData());
     }
 
     public function testDateTimeFromXmlReader(): void
