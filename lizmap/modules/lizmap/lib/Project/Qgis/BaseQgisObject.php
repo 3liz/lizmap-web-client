@@ -174,7 +174,7 @@ class BaseQgisObject implements BaseQgisInterface, \JsonSerializable // ArrayAcc
                 continue;
             }
             if ($value === null
-                && in_array($property, $this->defaultValues)) {
+                && array_key_exists($property, $this->defaultValues)) {
                 // if the value is null and the property has a default value, use the default value
                 $this->data[$property] = $this->defaultValues[$property];
 
