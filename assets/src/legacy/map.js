@@ -15,6 +15,8 @@ import WFS from '../modules/WFS.js';
 import WMS from '../modules/WMS.js';
 import { Utils } from '../modules/Utils.js';
 
+import DataTable from 'datatables.net-bs5';
+
 window.lizMap = function() {
     /**
      * PRIVATE Property: config
@@ -1111,11 +1113,6 @@ window.lizMap = function() {
                                     };
 
                                     wfsParams['EXP_FILTER'] = '"' + config.relations.pivot[rLayerId][layerId] + '" = ' + "'" + feat.properties[relation.referencedField] + "'";
-                                    // Calculate bbox
-                                    if (config.options?.limitDataToBbox == 'True') {
-                                        wfsParams['BBOX'] = lizMap.mainLizmap.map.getView().calculateExtent();
-                                        wfsParams['SRSNAME'] = lizMap.mainLizmap.map.getView().getProjection().getCode();
-                                    }
                                     preProcessRequest = lizMap.mainLizmap.wfs.getFeature(wfsParams);
 
                                     let ut = {
@@ -1336,7 +1333,7 @@ window.lizMap = function() {
                     }
 
                     // Handle compact-tables/explode-tables behaviour
-                    parentDiv.find('.lizmapPopupChildren .popupAllFeaturesCompact table').DataTable({
+                    new DataTable(parentDiv.find('.lizmapPopupChildren .popupAllFeaturesCompact table'),{
                         order: [[1, 'asc']],
                         language: { url:globalThis['lizUrls']["dataTableLanguage"] }
                     });
