@@ -489,6 +489,19 @@ class mapsCtrl extends jController
             }
         }
 
+        // checks list of domains for embeded iframe
+        $domainListStr = trim($form->getData('iframeEmbedAllowOrigin'));
+        if ($domainListStr && $domainListStr !== '*') {
+            try {
+                $domainList = RepositoryTools::fixDomainList(preg_split('/\s*,\s*/', $domainListStr));
+                $form->setData('iframeEmbedAllowOrigin', implode(',', $domainList));
+            } catch (ValueError $e) {
+                $form->setErrorOn('iframeEmbedAllowOrigin', jLocale::get('admin~admin.form.admin_section.message.iframeEmbedAllowOrigin.bad.domain'));
+                jLog::log('Error in iframeEmbedAllowOrigin: '.$e->getMessage(), 'lizmapadmin');
+                jLog::log('Error in iframeEmbedAllowOrigin: '.$e->getMessage(), 'error');
+            }
+        }
+
         // Errors : redirection to the display action
         if (!$ok) {
             /** @var jResponseRedirect $rep */
