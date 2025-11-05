@@ -70,6 +70,50 @@ make stop
 You may have to close connections to the postgresql database if you are using
 PgAdmin for example, before stopping containers.
 
+## Access locally through HTTPS
+
+To do so, you need `mkcert`
+
+```bash
+sudo apt install mkcert libnss3-tools -y
+mkcert -install
+```
+The -install step creates and installs the local CA. You'll see output like:
+
+```bash
+Created a new local CA 💥
+The local CA is now installed in the system trust store! ⚡️
+The local CA is now installed in the Firefox and/or Chrome/Chromium trust store (requires browser restart)! 🦊
+```
+
+Then, in your browser, go to `http://lizmap.local:8135/`. (see below to change the port)
+
+To update the certificates for `lizmap.local` :
+
+```bash
+mkcert -cert-file docker-conf/certs/lizmap.local.crt -key-file docker-conf/certs/lizmap.local.key lizmap.local
+
+Created a new certificate valid for the following names 📜
+ - "lizmap.local"
+
+The certificate is at "docker-conf/certs/lizmap.local.crt" and the key at "docker-conf/certs/lizmap.local.key" ✅
+
+It will expire on 5 February 2028 🗓
+```
+
+To update the certificates for `othersite.local` :
+
+```bash
+mkcert -cert-file docker-conf/certs/othersite.local.crt -key-file docker-conf/certs/othersite.local.key othersite.local
+
+Created a new certificate valid for the following names 📜
+ - "othersite.local"
+
+The certificate is at "docker-conf/certs/othersite.local.crt" and the key at "docker-conf/certs/othersite.local.key" ✅
+
+It will expire on 5 February 2028 🗓
+```
+
 ## Available commands
 
 You can execute some commands into the PHP container or other containers, by using this command:
@@ -303,6 +347,8 @@ the admin page of Lizmap, or in its `var/config/lizmapConfig.ini.php`.
 
 To test CORS, you can load `http://othersite.local:8130`, click on the buttons,
 and check the JS console for errors.
+
+To test PHP session cookie, you can load `https://othersite.local:8135/embed.html`
 
 ## ESLint
 

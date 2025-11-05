@@ -573,6 +573,24 @@ class lizMapCtrl extends jController
             'Host' => $request_headers['Host'],
             'User-Agent' => $request_headers['User-Agent'],
         )));
+        $referer = jApp::coord()->request->header('Referer');
+        if ($referer && $lrep->checkRefererEmbededIframe($referer)) {
+            $sessionsParams = &jApp::config()->sessions;
+
+            $cookieOptions = array(
+                'path' => '/',
+                'httponly' => $sessionsParams['cookieHttpOnly'],
+                'samesite' => 'None',
+                'secure' => true,
+            );
+
+            if (!$sessionsParams['shared_session']) {
+                // make sure that the session cookie is only for the current application
+                $cookieOptions['path'] = jApp::urlBasePath();
+            }
+
+            setcookie(session_name(), session_id(), $cookieOptions);
+        }
 
         // Log
         $eventParams = array(
