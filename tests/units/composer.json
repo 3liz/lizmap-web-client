@@ -16,7 +16,8 @@
         "classmap": ["../../lizmap/modules/lizmap/classes/" ],
         "psr-4": {
             "Lizmap\\": "../../lizmap/modules/lizmap/lib/",
-            "LizmapApi\\": "../../lizmap/modules/admin_api/lib/"
+            "LizmapApi\\": "../../lizmap/modules/admin_api/lib/",
+            "LizmapAdmin\\": "../../lizmap/modules/admin/lib/"
         }
     },
     "minimum-stability": "stable"
