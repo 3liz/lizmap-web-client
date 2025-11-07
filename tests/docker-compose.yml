@@ -66,6 +66,7 @@ services:
     container_name: "lizmap${LZMBRANCH}_test_nginx"
     volumes:
       - { type: bind, source: ./docker-conf/nginx-default.conf, target: /etc/nginx/conf.d/default.conf }
+      - { type: bind, source: ./docker-conf/certs, target: /etc/nginx/certs }
       - { type: bind, source: "..", target: /srv/lzm/ }
     command: /bin/sh -c "nginx -g 'daemon off;'"
     networks:
@@ -75,6 +76,7 @@ services:
 #          - othersite.local
     ports:
       - ${LZMWEBPORT}:80
+      - ${LZMWEBSPORT}:443
     depends_on:
       lizmap:
         condition: service_healthy
