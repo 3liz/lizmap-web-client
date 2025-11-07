@@ -5,6 +5,7 @@ use Lizmap\Project\Repository;
 use Lizmap\Project\UnknownLizmapProjectException;
 use Lizmap\Request\Proxy;
 use LizmapAdmin\RepositoryRightsService;
+use LizmapAdmin\RepositoryTools;
 
 /**
  * Lizmap administration.
@@ -476,35 +477,28 @@ class mapsCtrl extends jController
         }
 
         // checks list of domains for CORS
-        $domainListStr = $form->getData('accessControlAllowOrigin');
+        $domainListStr = trim($form->getData('accessControlAllowOrigin'));
         if ($domainListStr) {
-            $domainList = preg_split('/\s*,\s*/', $domainListStr);
-            $okDomain = true;
-            $newDomainList = array();
-            foreach ($domainList as $domain) {
-                if ($domain == '') {
-                    continue;
-                }
-                if (!preg_match('!^(https?://)!', $domain)) {
-                    $domain = 'https://'.$domain;
-                }
-                $urlParts = parse_url($domain);
-                if ($urlParts === false || !filter_var($domain, FILTER_VALIDATE_URL)) {
-                    $form->setErrorOn('accessControlAllowOrigin', jLocale::get('admin~admin.form.admin_section.message.accessControlAllowOrigin.bad.domain'));
-                    $ok = $okDomain = false;
-
-                    break;
-                }
-
-                // we clean the url
-                $newDomain = $urlParts['scheme'].'://'.$urlParts['host'];
-                if (isset($urlParts['port']) && $urlParts['port']) {
-                    $newDomain .= ':'.$urlParts['port'];
-                }
-                $newDomainList[] = $newDomain;
+            try {
+                $domainList = RepositoryTools::fixDomainList(preg_split('/\s*,\s*/', $domainListStr));
+                $form->setData('accessControlAllowOrigin', implode(',', $domainList));
+            } catch (ValueError $e) {
+                $form->setErrorOn('accessControlAllowOrigin', jLocale::get('admin~admin.form.admin_section.message.accessControlAllowOrigin.bad.domain'));
+                jLog::log('Error in accessControlAllowOrigin: '.$e->getMessage(), 'lizmapadmin');
+                jLog::log('Error in accessControlAllowOrigin: '.$e->getMessage(), 'error');
             }
-            if ($okDomain) {
-                $form->setData('accessControlAllowOrigin', implode(',', $newDomainList));
+        }
+
+        // checks list of domains for embeded iframe
+        $domainListStr = trim($form->getData('iframeEmbedAllowOrigin'));
+        if ($domainListStr && $domainListStr !== '*') {
+            try {
+                $domainList = RepositoryTools::fixDomainList(preg_split('/\s*,\s*/', $domainListStr));
+                $form->setData('iframeEmbedAllowOrigin', implode(',', $domainList));
+            } catch (ValueError $e) {
+                $form->setErrorOn('iframeEmbedAllowOrigin', jLocale::get('admin~admin.form.admin_section.message.iframeEmbedAllowOrigin.bad.domain'));
+                jLog::log('Error in iframeEmbedAllowOrigin: '.$e->getMessage(), 'lizmapadmin');
+                jLog::log('Error in iframeEmbedAllowOrigin: '.$e->getMessage(), 'error');
             }
         }
 
