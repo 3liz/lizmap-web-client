@@ -276,12 +276,22 @@ export class ProjectPage extends BasePage {
 
     /**
      * Waits for a GetPlot request
+     * @param {undefined|string} plot_id The plot id in post data
      * @returns {Promise<Request>} The GetFeature request
      */
-    async waitForGetPlotRequest() {
+    async waitForGetPlotRequest(plot_id=undefined) {
+        if (plot_id === undefined) {
+            return this.page.waitForRequest(
+                request => request.method() === 'POST' &&
+                request.postData()?.includes('getPlot') === true
+            );
+        }
+
         return this.page.waitForRequest(
             request => request.method() === 'POST' &&
-            request.postData()?.includes('getPlot') === true
+            request.postData()?.includes('getPlot') === true &&
+            request.postData()?.includes('plot_id') === true &&
+            request.postDataJSON()?.plot_id == plot_id
         );
     }
 
