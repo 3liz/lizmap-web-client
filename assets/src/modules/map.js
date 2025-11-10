@@ -481,7 +481,7 @@ export default class map extends olMap {
                     preload: Infinity,
                     source: new Google({
                         key: baseLayerState.key,
-                        mapType: baseLayerState.mapType,
+                        mapType: baseLayerState.googleMapType,
                     }),
                 });
             } else if (baseLayerState.type === BaseLayerTypes.Lizmap) {
@@ -750,7 +750,7 @@ export default class map extends olMap {
             ['layer.visibility.changed', 'group.visibility.changed']
         );
 
-        rootMapGroup.addListener(
+        baseLayersState.addListener(
             evt => {
                 // conservative control since the opacity events should not be fired for single WMS layers
                 if (this.isSingleWMSLayer(evt.name)) return;
