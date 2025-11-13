@@ -158,7 +158,9 @@ var lizLayerActionButtons = function() {
                 html+= '<dd>';
                 html+= '<input type="hidden" class="opacityLayer '+isBaselayer+'" value="'+aName+'">';
 
-                const currentOpacity = lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerOrGroupByName(aName).opacity;
+                const currentOpacity = metadatas.isBaselayer ?
+                    lizMap.mainLizmap.state.baseLayers.getBaseLayerByName(aName).opacity :
+                    lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerOrGroupByName(aName).opacity;
                 var opacities = lizMap.config.options.layersOpacities;
                 if (typeof opacities === 'undefined') {
                     opacities = [0.2, 0.4, 0.6, 0.8, 1];
@@ -487,8 +489,12 @@ var lizLayerActionButtons = function() {
                     return false;
                 }
 
+                const isBaselayer = lizMap.mainLizmap.map.getActiveBaseLayer()?.get("name") == eName;
+
                 // Get layer
-                const layer = lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerOrGroupByName(eName);
+                const layer = isBaselayer ?
+                    lizMap.mainLizmap.state.baseLayers.getBaseLayerByName(eName) :
+                    lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerOrGroupByName(eName);
 
                 // Set opacity
                 if( layer ) {
