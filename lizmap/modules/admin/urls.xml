@@ -49,4 +49,7 @@
     <url pathinfo="/acl/user/removegroup"  action="acl:removegroup"/>
     <url pathinfo="/acl/user/addgroup"  action="acl:addgroup"/>
 
+    <url pathinfo="/lizmap_search/show"  action="lizmap_search:show"/>
+    <url pathinfo="/lizmap_search/edit"  action="lizmap_search:edit"/>
+    <url pathinfo="/lizmap_search/save"  action="lizmap_search:save"/>
 </suburls>
