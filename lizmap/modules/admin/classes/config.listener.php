@@ -61,7 +61,16 @@ class configListener extends jEventListener
                 'lizmap'
             );
         }
-
+        if (jAcl2::check('lizmap.admin.services.view')) {
+            // configure profil for lizmap search
+            $bloc->childItems[] = new masterAdminMenuItem(
+                'lizmap_search',
+                jLocale::get('admin~admin.menu.lizmap.search.label'),
+                jUrl::get('admin~lizmap_search:show'),
+                120,
+                'lizmap'
+            );
+        }
         if (count($bloc->childItems)) {
             // Add the bloc
             $event->add($bloc);
