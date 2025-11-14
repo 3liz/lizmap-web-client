@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form xmlns="http://jelix.org/ns/forms/1.1">
+
+  <input ref="host" type="string" defaultvalue="">
+    <label locale="admin~lizmap_search.form.host" />
+  </input>
+
+  <input ref="database" type="string" defaultvalue="">
+    <label locale="admin~lizmap_search.form.database" />
+  </input>
+
+  <input ref="user" type="string" defaultvalue="">
+    <label locale="admin~lizmap_search.form.user" />
+  </input>
+
+  <secret ref="password">
+    <label locale="admin~lizmap_search.form.password" />
+  </secret>
+
+  <input ref="search_path" type="string" defaultvalue="">
+    <label locale="admin~lizmap_search.form.search_path" />
+  </input>
+
+  <output ref="error_message">
+    <label locale="admin~lizmap_search.form.error_message" />
+  </output>
+
+  <checkbox ref="confirm_invalid">
+    <label locale="admin~lizmap_search.form.confirm_invalid" />
+  </checkbox>
+
+  <submit ref="_submit">
+    <label locale="jelix~ui.buttons.save" />
+  </submit>
+</form>
