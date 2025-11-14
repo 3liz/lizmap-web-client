@@ -44,6 +44,7 @@ use Lizmap\Project\Qgis;
  * @property string $StorageAuthConfigId
  * @property int    $StorageMode
  * @property string $StorageType
+ * @property string $DefaultRoot
  */
 class ExternalResourceConfig extends Qgis\BaseQgisObject
 {
@@ -62,6 +63,7 @@ class ExternalResourceConfig extends Qgis\BaseQgisObject
         'StorageAuthConfigId',
         'StorageMode',
         'StorageType',
+        'DefaultRoot',
     );
 
     /** @var array The default values */
@@ -79,6 +81,7 @@ class ExternalResourceConfig extends Qgis\BaseQgisObject
         'StorageAuthConfigId' => '',
         'StorageType' => '',
         'StorageMode' => 0,
+        'DefaultRoot' => '',
     );
 
     protected function set(array $data): void
@@ -166,5 +169,6 @@ class ExternalResourceConfig extends Qgis\BaseQgisObject
                 'StorageAuthConfigId' => 'k6k7lv8',
                 'StorageMode' => 0,
                 'StorageType' => 'WebDAV',
-        );
+                'DefaultRoot' => '',
+           );
 */

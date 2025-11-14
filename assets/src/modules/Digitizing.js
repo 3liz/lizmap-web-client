@@ -2179,9 +2179,7 @@ export class Digitizing {
                     // And zoom to their bounding extent
                     const featuresGeometry = OL6features.map(feature => feature.getGeometry());
                     const featuresGeometryCollection = new GeometryCollection(featuresGeometry);
-                    const extent = featuresGeometryCollection.getExtent();
-
-                    this._map.getView().fit(extent);
+                    this._map.zoomToGeometryOrExtent(featuresGeometryCollection.getExtent());
                 }
             };
         })(this);

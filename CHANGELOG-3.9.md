@@ -8,6 +8,62 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Funders
+
+* **[Faunalia](https://www.faunalia.eu/fr)** with @mind84
+* **[DEAL de la Martinique](https://www.martinique.developpement-durable.gouv.fr/)**
+* **[Avignon](https://www.avignon.fr/)**
+* **[Communauté de Communes du Grand-Figeac](https://www.grand-figeac.fr/)**
+* **[SMICA](https://www.smica.fr/)**
+* **[TDPA](https://www.terredeprovence-agglo.com/)**
+* **[SMAVD](https://www.smavd.org/)**
+
+### Added
+
+* OpenLayers WebGLTile layer & GeoTiff source to the build
+
+### Fixed
+
+* Duplicated baselayers in single wms mode
+* Export layer from sub-dock
+* Request IP now provided by JelixContext for logging event
+* ProjectCache not updated for form controls
+* Undefined array key "HTTP_USER_AGENT"
+* Show feature Count is requested even if it's value is 0
+* Location search zoom to
+* Action: zoom to features using zoomToGeometryOrExtent
+* Replace getView().fit() by zoomToGeometryOrExtent()
+* Filter unique values list is empty if one is null
+* Selection tool - new, add & remove selection buttons shift vertically on hover
+
+
+## 3.9.3 - 2025-10-09
+
+### Funders
+
+* **[Cédégis](https://www.cedegis.fr/)**
+
+### Added
+
+* Support QGIS Project 3.44
+
+### Fixed
+
+* FeaturesTable - error when the features list is empty
+* login key for other entrypoint
+* Editing - Avoid checking valuerelation & relationreference fields as valid WFS typenames
+* Media - Improve HTTP error codes when the user is not authenticated
+* Regression: exporter disappear from layer information sub dock
+* Provide default values for *very* old qgs files with missing attributes
+* Edition - External Resource - Default root
+* Editing - Upload widget preview and keep value
+
+### Tests
+
+* Bump some Github Actions
+* e2e: move feature-toolbar from Cypress to Playwright
+* GH Action - E2E QGIS - BLEEDING_EDGE with QGIS 3.44
+
 ## 3.9.2 - 2025-09-09
 
 ### Funders

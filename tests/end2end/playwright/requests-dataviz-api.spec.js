@@ -168,6 +168,33 @@ test.describe('Dataviz API tests JSON data filtered for plot in popup',
             expect(json).toHaveProperty('layout')
         });
 
+        test('Bakeries', async ({request}) => {
+            const projParams = new URLSearchParams({
+                repository: 'testsrepository',
+                project: 'dataviz_filtered_in_popup',
+            });
+            const response = await request.get(
+                `${url}?${projParams}`,
+                {
+                    params:{
+                        'request': 'getPlot',
+                        'plot_id': 1,
+                        'exp_filter': `"polygon_id" IN ('5')`,
+                    }
+                });
+            const json = await checkJson(response);
+
+            expect(json).toHaveProperty('title', 'Bakeries');
+            expect(json).toHaveProperty('data');
+
+            // check data
+            const data = json.data;
+            expect(data).toHaveLength(1);
+            expect(data[0]).toHaveProperty('type', 'html');
+            expect(data[0]).toHaveProperty('name', 'id');
+            expect(data[0].x).toEqual(expect.arrayContaining([5]));
+        });
+
         test('popup_bar users of point 1', async ({request}) => {
             const projParams = new URLSearchParams({
                 repository: 'testsrepository',

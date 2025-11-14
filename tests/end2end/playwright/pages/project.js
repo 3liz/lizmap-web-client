@@ -18,6 +18,11 @@ import { BasePage } from './base';
  * @typedef {import('@playwright/test').Request} Request
  */
 
+/**
+ * Integer
+ * @typedef {number} int
+ */
+
 export class ProjectPage extends BasePage {
     // Metadata
     /**
@@ -113,6 +118,25 @@ export class ProjectPage extends BasePage {
     get qgsFile() {return qgsTestFile(this.project, this.repository)};
 
     /**
+     * Does the loading of the map must be successful or not ? Some error might
+     * be triggered when loading the map, on purpose.
+     * @type {boolean}
+     */
+    mapMustLoad = true;
+
+    /**
+     * The number of layers to find in the treeview if the map is on error.
+     * @type {int}
+     */
+    layersInTreeView = 0;
+
+    /**
+     * During openning page, does the test must wait for the GetLegendGraphic request ?
+     * @type {boolean}
+     */
+    waitForGetLegendGraphicDuringLoad = true;
+
+    /**
      * Attribute table wrapper for the given layer name
      * @param {string} name Name of the layer
      * @returns {Locator} Locator for attribute table wrapper
@@ -191,6 +215,18 @@ export class ProjectPage extends BasePage {
     }
 
     /**
+     * Waits for a GetTile request
+     * @returns {Promise<Request>} The GetTile request
+     */
+    async waitForGetTileRequest() {
+        return this.page.waitForRequest(
+            request => request.method() === 'GET' &&
+            request.url().includes('WMTS') === true &&
+            request.url().includes('GetTile') === true
+        );
+    }
+
+    /**
      * Waits for a GetFeatureInfo request
      * @returns {Promise<Request>} The GetFeatureInfo request
      */
@@ -240,12 +276,22 @@ export class ProjectPage extends BasePage {
 
     /**
      * Waits for a GetPlot request
+     * @param {undefined|string} plot_id The plot id in post data
      * @returns {Promise<Request>} The GetFeature request
      */
-    async waitForGetPlotRequest() {
+    async waitForGetPlotRequest(plot_id=undefined) {
+        if (plot_id === undefined) {
+            return this.page.waitForRequest(
+                request => request.method() === 'POST' &&
+                request.postData()?.includes('getPlot') === true
+            );
+        }
+
         return this.page.waitForRequest(
             request => request.method() === 'POST' &&
-            request.postData()?.includes('getPlot') === true
+            request.postData()?.includes('getPlot') === true &&
+            request.postData()?.includes('plot_id') === true &&
+            request.postDataJSON()?.plot_id == plot_id
         );
     }
 
@@ -278,6 +324,9 @@ export class ProjectPage extends BasePage {
         await gotoMap(
             `/index.php/view/map?${searchParams.toString()}`,
             this.page,
+            this.mapMustLoad,
+            this.layersInTreeView,
+            this.waitForGetLegendGraphicDuringLoad,
         );
 
         await expect(await this.hasDebugBarErrors(), (await this.getDebugBarErrorsMessage())).toBe(false);

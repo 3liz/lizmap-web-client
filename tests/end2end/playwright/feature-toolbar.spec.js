@@ -407,7 +407,7 @@ test.describe('Feature toolbar in popup @readonly', () => {
             'STYLES': 'défaut',
             'WIDTH': '958',
             'HEIGHT': '633',
-            'BBOX': /771293.1\d+,6278894.0\d+,772560.5\d+,6279731.4\d+/,
+            'BBOX': /770659.5\d+,6278475.3\d+,773194.2\d+,6280150.1\d+/,
             'SELECTIONTOKEN': /^[a-zA-Z0-9]{32}$/,
         }
         await expectParametersToContain('GetMap', getMapRequest.url(), getMapExpectedParameters);

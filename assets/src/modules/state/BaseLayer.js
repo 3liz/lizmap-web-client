@@ -7,6 +7,7 @@
  */
 
 import EventDispatcher from './../../utils/EventDispatcher.js';
+import { convertNumber } from './../utils/Converters.js';
 import { LayerConfig } from './../config/Layer.js';
 import { AttributionConfig } from './../config/Attribution.js'
 import { BaseLayerTypes, BaseLayersConfig, BaseLayerConfig, EmptyBaseLayerConfig, XyzBaseLayerConfig, BingBaseLayerConfig, GoogleBaseLayerConfig, WmtsBaseLayerConfig, WmsBaseLayerConfig } from './../config/BaseLayer.js';
@@ -28,10 +29,21 @@ export class BaseLayerState extends EventDispatcher {
             throw new TypeError('Base layer config and layer item state have not the same name!\n- `'+baseLayerCfg.name+'` for base layer config\n- `'+itemState.name+'` for layer item state');
         }
         super()
+        this._opacity = 1;
         this._baseLayerConfig = baseLayerCfg;
         this._itemState = itemState;
         this._loadStatus = MapLayerLoadStatus.Undefined;
         this._singleWMSLayer = false;
+
+        // If item state is null, stop configuration
+        if (itemState === null) {
+            return;
+        }
+        // Dispatch opacity events
+        itemState.addListener(
+            this.dispatch.bind(this),
+            itemState.mapType + '.opacity.changed'
+        );
     }
 
     /**
@@ -102,6 +114,59 @@ export class BaseLayerState extends EventDispatcher {
      */
     get attribution() {
         return this._baseLayerConfig.attribution;
+    }
+
+    /**
+     * Base layer map type
+     * @type {string}
+     */
+    get mapType() {
+        if (this.hasItemState) {
+            return this._itemState.mapType;
+        }
+
+        return 'layer';
+    }
+
+    /**
+     * Base layer opacity
+     * @type {number}
+     */
+    get opacity() {
+        if (this.hasItemState) {
+            return this._itemState.opacity;
+        }
+
+        return this._opacity;
+    }
+
+    /**
+     * Set base layer opacity
+     * @type {number}
+     */
+    set opacity(val) {
+        if (this.hasItemState) {
+            this._itemState.opacity = val;
+            return;
+        }
+
+        const newVal = convertNumber(val);
+
+        if (newVal < 0 || newVal > 1) {
+            throw new TypeError('Opacity must be in [0-1] interval!');
+        }
+
+        // No changes
+        if (this._opacity === newVal) {
+            return;
+        }
+        this._opacity = newVal;
+
+        this.dispatch({
+            type: this.mapType + '.opacity.changed',
+            name: this.name,
+            opacity: this.opacity,
+        });
     }
 
     /**
@@ -289,7 +354,7 @@ export class GoogleBaseLayerState extends BaseLayerState {
      * The google mapType
      * @type {string}
      */
-    get mapType() {
+    get googleMapType() {
         return this._baseLayerConfig.mapType;
     }
 }
@@ -449,28 +514,37 @@ export class BaseLayersState extends EventDispatcher {
             if (blConfig.hasLayerConfig) {
                 itemState = lgCollection.findLayerOrGroupByName(blConfig.name);
             }
+            let baseLayer = null;
             switch(blConfig.type) {
                 case BaseLayerTypes.Empty:
-                    this._baseLayersMap.set(blConfig.name, new EmptyBaseLayerState(blConfig, itemState));
+                    baseLayer = new EmptyBaseLayerState(blConfig, itemState);
                     break;
                 case BaseLayerTypes.XYZ:
-                    this._baseLayersMap.set(blConfig.name, new XyzBaseLayerState(blConfig, itemState));
+                    baseLayer = new XyzBaseLayerState(blConfig, itemState);
                     break;
                 case BaseLayerTypes.Bing:
-                    this._baseLayersMap.set(blConfig.name, new BingBaseLayerState(blConfig, itemState));
+                    baseLayer = new BingBaseLayerState(blConfig, itemState);
                     break;
                 case BaseLayerTypes.Google:
-                    this._baseLayersMap.set(blConfig.name, new GoogleBaseLayerState(blConfig, itemState));
+                    baseLayer = new GoogleBaseLayerState(blConfig, itemState);
                     break;
                 case BaseLayerTypes.WMTS:
-                    this._baseLayersMap.set(blConfig.name, new WmtsBaseLayerState(blConfig, itemState));
+                    baseLayer = new WmtsBaseLayerState(blConfig, itemState);
                     break;
                 case BaseLayerTypes.WMS:
-                    this._baseLayersMap.set(blConfig.name, new WmsBaseLayerState(blConfig, itemState));
+                    baseLayer = new WmsBaseLayerState(blConfig, itemState);
                     break;
                 default:
-                    this._baseLayersMap.set(blConfig.name, new BaseLayerState(blConfig, itemState));
+                    baseLayer = new BaseLayerState(blConfig, itemState);
                     break;
+            }
+            if (baseLayer !== null) {
+                this._baseLayersMap.set(blConfig.name, baseLayer);
+                // Dispatch event
+                baseLayer.addListener(
+                    this.dispatch.bind(this),
+                    baseLayer.mapType + '.opacity.changed'
+                );
             }
         }
         this._selectedBaseLayerName = baseLayersCfg.startupBaselayerName;

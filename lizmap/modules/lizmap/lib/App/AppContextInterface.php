@@ -152,8 +152,10 @@ interface AppContextInterface
      * @param mixed  $value   The data to store in the cache
      * @param mixed  $ttl     data time expiration
      * @param string $profile the cache profile to use
+     *
+     * @return bool false if failure
      */
-    public function setCache($key, $value, $ttl = null, $profile = '');
+    public function setCache($key, $value, $ttl = null, $profile = ''): bool;
 
     /**
      * Deletes data from cache.

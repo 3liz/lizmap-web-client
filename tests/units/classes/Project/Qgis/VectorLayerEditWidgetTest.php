@@ -37,9 +37,9 @@ class VectorLayerEditWidgetTest extends TestCase
             'UseHtml' => false,
         );
         foreach ($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
         }
-        $this->assertEquals($config, $editWidget->config->getData());
+        $this->assertSame($config, $editWidget->config->getData());
 
         // Simple default old
         $xmlStr = '
@@ -64,8 +64,9 @@ class VectorLayerEditWidgetTest extends TestCase
             'UseHtml' => false,
         );
         foreach ($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
         }
+        $this->assertSame($config, $editWidget->config->getData());
 
         // Default config
         $xmlStr = '
@@ -87,8 +88,9 @@ class VectorLayerEditWidgetTest extends TestCase
             'UseHtml' => false,
         );
         foreach ($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
         }
+        $this->assertSame($config, $editWidget->config->getData());
     }
 
     public function testCheckBoxFromXmlReader(): void
@@ -116,10 +118,12 @@ class VectorLayerEditWidgetTest extends TestCase
             'CheckedState' => '1',
             'UncheckedState' => '0',
             'TextDisplayMethod' => 1,
+            'AllowNullState' => false,
         );
         foreach ($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
         }
+        $this->assertSame($config, $editWidget->config->getData());
 
         $xmlStr = '
         <editWidget type="CheckBox">
@@ -142,10 +146,12 @@ class VectorLayerEditWidgetTest extends TestCase
             'CheckedState' => '1',
             'UncheckedState' => '0',
             'TextDisplayMethod' => 0,
+            'AllowNullState' => false,
         );
         foreach ($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
         }
+        $this->assertSame($config, $editWidget->config->getData());
 
         // Default config
         $xmlStr = '
@@ -166,10 +172,44 @@ class VectorLayerEditWidgetTest extends TestCase
             'CheckedState' => '',
             'UncheckedState' => '',
             'TextDisplayMethod' => 0,
+            'AllowNullState' => false,
         );
         foreach ($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
         }
+        $this->assertSame($config, $editWidget->config->getData());
+
+        // invalid CheckedState and UncheckedState
+        // allow NULL
+        $xmlStr = '
+        <editWidget type="CheckBox">
+          <config>
+            <Option type="Map">
+              <Option name="AllowNullState" type="bool" value="true"/>
+              <Option name="CheckedState" type="invalid"/>
+              <Option name="TextDisplayMethod" type="int" value="0"/>
+              <Option name="UncheckedState" type="invalid"/>
+            </Option>
+          </config>
+        </editWidget>
+        ';
+        $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
+        $editWidget = VectorLayerEditWidget::fromXmlReader($oXml);
+
+        $this->assertEquals('CheckBox', $editWidget->type);
+        $this->assertNotNull($editWidget->config);
+        $this->assertInstanceOf(EditWidget\CheckBoxConfig::class, $editWidget->config);
+
+        $config = array(
+            'CheckedState' => '',
+            'UncheckedState' => '',
+            'TextDisplayMethod' => 0,
+            'AllowNullState' => true,
+        );
+        foreach ($config as $prop => $value) {
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
+        }
+        $this->assertSame($config, $editWidget->config->getData());
     }
 
     public function testDateTimeFromXmlReader(): void
@@ -203,8 +243,9 @@ class VectorLayerEditWidgetTest extends TestCase
             'field_iso_format' => false,
         );
         foreach ($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
         }
+        $this->assertSame($config, $editWidget->config->getData());
 
         // Default config
         $xmlStr = '
@@ -229,8 +270,9 @@ class VectorLayerEditWidgetTest extends TestCase
             'field_iso_format' => false,
         );
         foreach ($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
         }
+        $this->assertSame($config, $editWidget->config->getData());
     }
 
     public function testRangeFromXmlReader(): void
@@ -262,12 +304,13 @@ class VectorLayerEditWidgetTest extends TestCase
             'Max' => 2147483647,
             'Min' => -2147483648,
             'Precision' => 0,
-            'Step' => 1,
+            'Step' => 1.0,
             'Style' => 'SpinBox',
         );
         foreach ($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
         }
+        $this->assertSame($config, $editWidget->config->getData());
 
         // Default config
         $xmlStr = '
@@ -289,8 +332,9 @@ class VectorLayerEditWidgetTest extends TestCase
             'Style' => 'SpinBox',
         );
         foreach ($config as $prop => $value) {
-            $this->assertEquals($value, $editWidget->config->{$prop}, $prop);
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
         }
+        $this->assertSame($config, $editWidget->config->getData());
         $notSet = array(
             'Max',
             'Min',
@@ -643,6 +687,7 @@ class VectorLayerEditWidgetTest extends TestCase
 
     public function testExternalResourceFromXmlReader(): void
     {
+        // Default
         $xmlStr = '
         <editWidget type="ExternalResource">
           <config>
@@ -691,11 +736,13 @@ class VectorLayerEditWidgetTest extends TestCase
             'StorageAuthConfigId' => '',
             'StorageType' => '',
             'StorageMode' => 0,
+            'DefaultRoot' => '',
         );
         foreach ($config as $prop => $value) {
             $this->assertSame($value, $editWidget->config->{$prop}, $prop);
         }
 
+        // Image
         $xmlStr = '
         <editWidget type="ExternalResource">
           <config>
@@ -732,11 +779,13 @@ class VectorLayerEditWidgetTest extends TestCase
             'StorageAuthConfigId' => '',
             'StorageType' => '',
             'StorageMode' => 0,
+            'DefaultRoot' => '',
         );
         foreach ($config as $prop => $value) {
             $this->assertSame($value, $editWidget->config->{$prop}, $prop);
         }
 
+        // WebDAV
         $xmlStr = '
         <editWidget type="ExternalResource">
           <config>
@@ -786,6 +835,7 @@ class VectorLayerEditWidgetTest extends TestCase
             'StorageAuthConfigId' => 'k6k7lv8',
             'StorageType' => 'WebDAV',
             'StorageMode' => 0,
+            'DefaultRoot' => '',
         );
         foreach ($config as $prop => $value) {
             $this->assertSame($value, $editWidget->config->{$prop}, $prop);
@@ -798,6 +848,142 @@ class VectorLayerEditWidgetTest extends TestCase
                 'storageUrl' => array(
                     'active' => true,
                     'expression' => '\'http://webdav/shapeData/\'||file_name(@selected_file_path)',
+                    'type' => 3,
+                ),
+            ),
+            'type' => 'collection',
+        );
+        foreach ($propertyCollection as $prop => $value) {
+            $this->assertSame($value, $editWidget->config->PropertyCollection[$prop], $prop);
+        }
+
+        // DefaultRoot
+        $xmlStr = '
+          <editWidget type="ExternalResource">
+            <config>
+              <Option type="Map">
+                <Option name="DefaultRoot" type="QString" value="../media/specific_media_folder"></Option>
+                <Option name="DocumentViewer" type="int" value="1"></Option>
+                <Option name="DocumentViewerHeight" type="int" value="0"></Option>
+                <Option name="DocumentViewerWidth" type="int" value="0"></Option>
+                <Option name="FileWidget" type="bool" value="true"></Option>
+                <Option name="FileWidgetButton" type="bool" value="true"></Option>
+                <Option name="FileWidgetFilter" type="QString" value=""></Option>
+                <Option name="PropertyCollection" type="Map">
+                  <Option name="name" type="QString" value=""></Option>
+                  <Option name="properties" type="invalid"></Option>
+                  <Option name="type" type="QString" value="collection"></Option>
+                </Option>
+                <Option name="RelativeStorage" type="int" value="1"></Option>
+                <Option name="StorageAuthConfigId" type="QString" value=""></Option>
+                <Option name="StorageMode" type="int" value="0"></Option>
+                <Option name="StorageType" type="QString" value=""></Option>
+              </Option>
+            </config>
+          </editWidget>
+        ';
+        $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
+        $editWidget = VectorLayerEditWidget::fromXmlReader($oXml);
+
+        $this->assertEquals('ExternalResource', $editWidget->type);
+        $this->assertNotNull($editWidget->config);
+        $this->assertInstanceOf(EditWidget\ExternalResourceConfig::class, $editWidget->config);
+
+        $config = array(
+            'DocumentViewer' => 1,
+            'DocumentViewerHeight' => 0,
+            'DocumentViewerWidth' => 0,
+            'FileWidget' => true,
+            'FileWidgetButton' => true,
+            'FileWidgetFilter' => '',
+            'UseLink' => false,
+            'FullUrl' => false,
+            'PropertyCollection' => array(
+                'name' => '',
+                'properties' => null,
+                'type' => 'collection',
+            ),
+            'RelativeStorage' => 1,
+            'StorageAuthConfigId' => '',
+            'StorageType' => '',
+            'StorageMode' => 0,
+            'DefaultRoot' => '../media/specific_media_folder',
+        );
+        foreach ($config as $prop => $value) {
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
+        }
+
+        // Expression root path
+        $xmlStr = '
+          <editWidget type="ExternalResource">
+            <config>
+              <Option type="Map">
+                <Option name="DocumentViewer" type="int" value="1"></Option>
+                <Option name="DocumentViewerHeight" type="int" value="0"></Option>
+                <Option name="DocumentViewerWidth" type="int" value="0"></Option>
+                <Option name="FileWidget" type="bool" value="true"></Option>
+                <Option name="FileWidgetButton" type="bool" value="true"></Option>
+                <Option name="FileWidgetFilter" type="QString" value=""></Option>
+                <Option name="PropertyCollection" type="Map">
+                  <Option name="name" type="QString" value=""></Option>
+                  <Option name="properties" type="Map">
+                    <Option name="propertyRootPath" type="Map">
+                      <Option name="active" type="bool" value="true"></Option>
+                      <Option name="expression" type="QString" value="concat(&#xA;&#x9;\'media/expression_root_folder/\',&#xA;&#x9;CASE&#xA;&#x9;&#x9;WHEN lower(trim(to_string(current_value(\'feature_code\')))) IN (\'\', \'null\') OR current_value(\'feature_code\') IS NULL &#xA;&#x9;&#x9;&#x9;THEN \'0\'&#xA;&#x9;&#x9;ELSE trim(to_string(current_value(\'feature_code\')))&#xA;&#x9;END,&#xA;&#x9;\'/\'&#xA;)"></Option>
+                      <Option name="type" type="int" value="3"></Option>
+                    </Option>
+                  </Option>
+                  <Option name="type" type="QString" value="collection"></Option>
+                </Option>
+                <Option name="RelativeStorage" type="int" value="1"></Option>
+                <Option name="StorageAuthConfigId" type="QString" value=""></Option>
+                <Option name="StorageMode" type="int" value="0"></Option>
+                <Option name="StorageType" type="QString" value=""></Option>
+              </Option>
+            </config>
+          </editWidget>
+        ';
+        $oXml = App\XmlTools::xmlReaderFromString($xmlStr);
+        $editWidget = VectorLayerEditWidget::fromXmlReader($oXml);
+
+        $this->assertEquals('ExternalResource', $editWidget->type);
+        $this->assertNotNull($editWidget->config);
+        $this->assertInstanceOf(EditWidget\ExternalResourceConfig::class, $editWidget->config);
+
+        $config = array(
+            'DocumentViewer' => 1,
+            'DocumentViewerHeight' => 0,
+            'DocumentViewerWidth' => 0,
+            'FileWidget' => true,
+            'FileWidgetButton' => true,
+            'FileWidgetFilter' => '',
+            'UseLink' => false,
+            'FullUrl' => false,
+            'RelativeStorage' => 1,
+            'StorageAuthConfigId' => '',
+            'StorageType' => '',
+            'StorageMode' => 0,
+            'DefaultRoot' => '',
+        );
+        foreach ($config as $prop => $value) {
+            $this->assertSame($value, $editWidget->config->{$prop}, $prop);
+        }
+
+        $this->assertNotNull($editWidget->config->PropertyCollection);
+        $propertyCollection = array(
+            'name' => '',
+            'properties' => array(
+                'propertyRootPath' => array(
+                    'active' => true,
+                    'expression' => 'concat(
+	\'media/expression_root_folder/\',
+	CASE
+		WHEN lower(trim(to_string(current_value(\'feature_code\')))) IN (\'\', \'null\') OR current_value(\'feature_code\') IS NULL '.'
+			THEN \'0\'
+		ELSE trim(to_string(current_value(\'feature_code\')))
+	END,
+	\'/\'
+)',
                     'type' => 3,
                 ),
             ),

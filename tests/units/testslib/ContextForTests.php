@@ -125,12 +125,14 @@ class ContextForTests implements AppContextInterface
         return $key;
     }
 
-    public function setCache($key, $value, $ttl = null, $profile = '')
+    public function setCache($key, $value, $ttl = null, $profile = ''): bool
     {
         if ($profile == '') {
             $profile = 'default';
         }
         $this->cache[$profile][$key] = $value;
+
+        return true;
     }
 
     public function clearCache($key, $profile = '')

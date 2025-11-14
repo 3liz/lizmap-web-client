@@ -15,7 +15,7 @@
     "violet/streaming-json-encoder": "^1.1.5",
     "guzzlehttp/guzzle": "^7.7.0",
     "halaxa/json-machine": "^1.1",
-    "kevinrob/guzzle-cache-middleware": "^6.0"
+    "kevinrob/guzzle-cache-middleware": "^7.0"
   },
   "minimum-stability": "stable",
   "config": {

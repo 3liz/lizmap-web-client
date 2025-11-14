@@ -385,7 +385,7 @@ export default class Lizmap {
      * @param {Array<number>} bounds - Left, bottom, right, top
      */
     set extent(bounds) {
-        this.map.getView().fit(bounds, {nearest: true});
+        this.map.zoomToGeometryOrExtent(bounds, {nearest: true});
     }
 
     updateOL2MapSize() {

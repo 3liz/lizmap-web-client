@@ -33,6 +33,7 @@ class lizmapRepository
         'path',
         'allowUserDefinedThemes',
         'accessControlAllowOrigin',
+        'iframeEmbedAllowOrigin',
     );
 
     /**
@@ -55,6 +56,10 @@ class lizmapRepository
             'required' => false,
         ),
         'accessControlAllowOrigin' => array(
+            'fieldType' => 'text',
+            'required' => false,
+        ),
+        'iframeEmbedAllowOrigin' => array(
             'fieldType' => 'text',
             'required' => false,
         ),
@@ -189,6 +194,18 @@ class lizmapRepository
     public function getACAOHeaderValue($referer)
     {
         return $this->repo->getACAOHeaderValue($referer);
+    }
+
+    /**
+     * Check if the referer is allowed to embed iframe.
+     *
+     * @param $referer The referer
+     *
+     * @return bool is the referer allowed to embed iframe
+     */
+    public function checkRefererEmbededIframe($referer): bool
+    {
+        return $this->repo->checkRefererEmbededIframe($referer);
     }
 
     public function hasValidPath()

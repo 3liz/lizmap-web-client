@@ -19,6 +19,10 @@ if [ "$LZMWEBPORT" == "" ]; then
   export LZMWEBPORT=8130
 fi
 
+if [ "$LZMWEBSPORT" == "" ]; then
+  export LZMWEBSPORT=8135
+fi
+
 
 if [ "$COMMAND" == "" ]; then
     echo "Error: command is missing"

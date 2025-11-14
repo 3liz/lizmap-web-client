@@ -34,6 +34,7 @@ test.describe('Maps management', () => {
         await expect(page.locator('[id=jforms_admin_config_section_repository]')).toBeEditable();
         await expect(page.locator('[id=jforms_admin_config_section_allowUserDefinedThemes]')).not.toBeChecked();
         await expect(page.locator('[id=jforms_admin_config_section_accessControlAllowOrigin]')).toBeEmpty();
+        await expect(page.locator('[id=jforms_admin_config_section_iframeEmbedAllowOrigin]')).toBeEmpty();
 
         // Check default rights on repository
         // anonymous, admins and users can view
@@ -142,6 +143,7 @@ test.describe('Maps management', () => {
         await expect(page.locator('[id=jforms_admin_config_section_repository]')).toHaveAttribute('value', 'testsrepository');
         await expect(page.locator('[id=jforms_admin_config_section_allowUserDefinedThemes]')).toBeChecked();
         await expect(page.locator('[id=jforms_admin_config_section_accessControlAllowOrigin]')).toHaveValue('http://othersite.local:8130');
+        await expect(page.locator('[id=jforms_admin_config_section_iframeEmbedAllowOrigin]')).toBeEmpty();
 
         // Check default rights on repository
         // anonymous, admins, group_a, group_b and publishers can view

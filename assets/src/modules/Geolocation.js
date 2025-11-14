@@ -95,7 +95,7 @@ export default class Geolocation {
             // Zoom on accuracy geometry extent when geolocation is activated for the first time
             if (this._firstGeolocation) {
                 const bounds = this._geolocation.getAccuracyGeometry().getExtent();
-                map.getView().fit(bounds, {nearest: true});
+                map.zoomToGeometryOrExtent(bounds, {nearest: true});
                 this.center();
                 this._firstGeolocation = false;
 

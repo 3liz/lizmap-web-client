@@ -25,6 +25,7 @@ class Repository
         'path',
         'allowUserDefinedThemes',
         'accessControlAllowOrigin',
+        'iframeEmbedAllowOrigin',
     );
 
     /**
@@ -44,6 +45,10 @@ class Repository
             'required' => false,
         ),
         'accessControlAllowOrigin' => array(
+            'fieldType' => 'text',
+            'required' => false,
+        ),
+        'iframeEmbedAllowOrigin' => array(
             'fieldType' => 'text',
             'required' => false,
         ),
@@ -147,7 +152,7 @@ class Repository
      *
      * @return string the value of the ACAO header. If empty, the header should not be set.
      */
-    public function getACAOHeaderValue($referer)
+    public function getACAOHeaderValue($referer): string
     {
         $origins = $this->getData('accessControlAllowOrigin');
         if (!$origins || $referer == '') {
@@ -171,6 +176,42 @@ class Repository
         }
 
         return '';
+    }
+
+    /**
+     * Check if the referer is allowed to embed iframe.
+     *
+     * @param $referer The referer
+     *
+     * @return bool is the referer allowed to embed iframe
+     */
+    public function checkRefererEmbededIframe($referer): bool
+    {
+        $origins = $this->getData('iframeEmbedAllowOrigin');
+        if (!$origins || $referer == '') {
+            return false;
+        }
+
+        if (is_string($origins)) {
+            if ($origins == '*') {
+                return true;
+            }
+            $origins = preg_split('/\s*,\s*/', $origins);
+        }
+
+        $refParts = parse_url($referer);
+        $referer = ($refParts['scheme'] ?? 'https').'://'.$refParts['host'];
+        if (isset($refParts['port'])) {
+            $referer .= ':'.$refParts['port'];
+        }
+
+        foreach ($origins as $origin) {
+            if ($origin == $referer) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     protected $cleanedPath;
