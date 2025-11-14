@@ -31,8 +31,9 @@ export async function updateLayerTreeLayersSymbology(treeLayers, method=HttpRequ
     if (method.toUpperCase() == HttpRequestMethods.GET) {
         for (const treeLayer of treeLayers) {
             // Check if this is an external WMS layer using the backend flag
-            const isExternalWMS = treeLayer.itemState?.layerConfig?.externalWmsToggle === true
-                               || treeLayer.itemState?.layerConfig?.externalWmsToggle === 'True';
+            const layerCfg = treeLayer._mapItemState?._layerItemState?._layerTreeItemCfg?._layerCfg;
+            const isExternalWMS = layerCfg?._externalWmsToggle === true
+                               || layerCfg?._externalWmsToggle === 'True';
 
             const wmsParams = {
                 LAYER: treeLayer.wmsName,
