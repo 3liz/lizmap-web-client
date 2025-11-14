@@ -2045,12 +2045,15 @@ class Project
                                 && !array_key_exists('crs', $layerDatasource)) {
                                 $layerDatasource['crs'] = 'EPSG:3857';
                             }
+                            // Set externalWmsToggle for ALL external WMS layers (not just EPSG:3857)
+                            $obj->externalWmsToggle = 'True';
+                            $obj->externalAccess = $layerDatasource;
+
                             // if the layer datasource contains type and crs EPSG:3857
-                            // external access can be provided
+                            // additional external access configuration can be provided
                             if (array_key_exists('type', $layerDatasource)
                                 && $layerDatasource['crs'] == 'EPSG:3857') {
-                                $obj->externalWmsToggle = 'True';
-                                $obj->externalAccess = $layerDatasource;
+                                // Additional external access for EPSG:3857 layers
                             }
                         }
                     }
