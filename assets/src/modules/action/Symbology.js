@@ -35,13 +35,13 @@ export async function updateLayerTreeLayersSymbology(treeLayers, method=HttpRequ
             const isExternalWMS = layerCfg?._externalWmsToggle === true
                                || layerCfg?._externalWmsToggle === 'True';
 
-            const wmsParams = {
-                LAYER: treeLayer.wmsName,
-                STYLES: treeLayer.wmsSelectedStyleName,
-            };
-
             if (isExternalWMS) {
                 // For external WMS layers, get PNG legend directly
+                const wmsParams = {
+                    LAYER: treeLayer.wmsName,
+                    STYLES: treeLayer.wmsSelectedStyleName,
+                    LAYERTITLE: 'FALSE',
+                };
                 try {
                     const pngUrl = wms.getLegendGraphicPNG(wmsParams);
                     const response = await fetch(pngUrl);
@@ -67,6 +67,10 @@ export async function updateLayerTreeLayersSymbology(treeLayers, method=HttpRequ
                 }
             } else {
                 // For normal layers, use JSON format
+                const wmsParams = {
+                    LAYER: treeLayer.wmsName,
+                    STYLES: treeLayer.wmsSelectedStyleName,
+                };
                 await wms.getLegendGraphic(wmsParams).then((response) => {
                     for (const node of response.nodes) {
                         if (node.hasOwnProperty('type')) {
