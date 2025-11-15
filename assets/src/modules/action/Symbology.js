@@ -24,6 +24,8 @@ export async function updateLayerTreeLayersSymbology(treeLayers, method=HttpRequ
 
     const wms = new WMS();
 
+    // If the tree layers is empty
+    // nothing to do
     if (treeLayers.length == 0) {
         return treeLayers;
     }
@@ -44,13 +46,14 @@ export async function updateLayerTreeLayersSymbology(treeLayers, method=HttpRequ
                 };
                 try {
                     const pngUrl = wms.getLegendGraphicPNG(wmsParams);
+                    // Fetch the PNG and convert to base64
                     const response = await fetch(pngUrl);
                     const blob = await response.blob();
                     const reader = new FileReader();
 
                     await new Promise((resolve, reject) => {
                         reader.onloadend = () => {
-                            const base64data = reader.result.split(',')[1];
+                            const base64data = reader.result.split(',')[1]; // Remove data:image/png;base64, prefix
                             treeLayer.symbology = {
                                 type: 'layer',
                                 name: treeLayer.wmsName,
@@ -64,6 +67,7 @@ export async function updateLayerTreeLayersSymbology(treeLayers, method=HttpRequ
                     });
                 } catch (error) {
                     console.error('Error loading external WMS legend:', error);
+                    // Fallback to default icon will be handled by symbology state
                 }
             } else {
                 // For normal layers, use JSON format
@@ -73,6 +77,7 @@ export async function updateLayerTreeLayersSymbology(treeLayers, method=HttpRequ
                 };
                 await wms.getLegendGraphic(wmsParams).then((response) => {
                     for (const node of response.nodes) {
+                        // If the layer has no symbology, there is no type property
                         if (node.hasOwnProperty('type')) {
                             treeLayer.symbology = node;
                         }
@@ -85,7 +90,6 @@ export async function updateLayerTreeLayersSymbology(treeLayers, method=HttpRequ
         return treeLayers;
     }
 
-    // POST method code bleibt unverändert...
     const wmsNames = treeLayers.map(layer => layer.wmsName);
     const wmsStyles = treeLayers.map(layer => layer.wmsSelectedStyleName);
     let treeLayersByName = {};
@@ -100,6 +104,7 @@ export async function updateLayerTreeLayersSymbology(treeLayers, method=HttpRequ
 
     await wms.getLegendGraphic(wmsParams).then((response) => {
         for (const node of response.nodes) {
+            // If the layer has no symbology, there is no type property
             if (node.hasOwnProperty('type')) {
                 treeLayersByName[node.name].symbology = node;
             }
@@ -107,12 +112,20 @@ export async function updateLayerTreeLayersSymbology(treeLayers, method=HttpRequ
         return treeLayers;
     }).catch(async (error) => {
         console.error(error);
+        // If the request failed, try to get the legend graphic for each layer separately
+        // This is a workaround for the issue when QGIS server timed out when requesting
+        // the legend graphic for multiple layers at once (LAYER parameter with multiple values)
         if (treeLayers.length == 1) {
+            // If there is only one layer, there is no need to try to get the legend graphic
+            // for each layer separately
             return treeLayers;
         }
         if (!(error instanceof HttpError) || error.statusCode != 504) {
+            // If the error is not a timeout, there is no need to try to get the legend graphic
+            // for each layer separately
             return treeLayers;
         }
+        // Try to get the legend graphic for each layer separately
         for (const treeLayer of treeLayers) {
             await updateLayerTreeLayerSymbology(treeLayer);
         }
