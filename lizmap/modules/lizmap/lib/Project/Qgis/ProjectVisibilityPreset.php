@@ -61,15 +61,13 @@ class ProjectVisibilityPreset extends BaseQgisObject
             'expandedGroupNode' => $this->expandedGroupNodes,
         );
         foreach ($this->layers as $layer) {
-            // Since QGIS 3.26, theme contains every layers with visible attributes
-            // before only visible layers are in theme
-            // So do not keep layer not visible
-            if (!$layer->visible) {
-                continue;
-            }
+            // Include ALL layers from theme (both visible="0" and visible="1")
+            // Layers present in theme should be checked in Lizmap, regardless of visible attribute
+            // The visible attribute is passed for potential future legend node handling
             $data['layers'][$layer->id] = array(
                 'style' => $layer->style,
                 'expanded' => $layer->expanded,
+                'visible' => $layer->visible,
             );
         }
 
