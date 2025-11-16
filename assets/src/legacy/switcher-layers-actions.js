@@ -299,46 +299,126 @@ var lizLayerActionButtons = function() {
                     if (themeNameSelected in lizMap.config.themes){
                         const themeSelected = lizMap.config.themes[themeNameSelected];
 
-                        // Groups and subgroups are separated by a '/'. We only keep deeper groups
-                        const checkedGroups = themeSelected?.checkedGroupNode?.map(groupNode => groupNode.split('/').slice(-1)[0]) || [];
-                        const expandedGroups = themeSelected?.expandedGroupNode?.map(groupNode => groupNode.split('/').slice(-1)[0]) || [];
+                        // Groups and subgroups are separated by a '/'. Keep full paths for proper matching
+                        const checkedGroupNodes = themeSelected?.checkedGroupNode || [];
+                        const expandedGroupNodes = themeSelected?.expandedGroupNode || [];
                         const expandedLegendNodes = themeSelected?.expandedLegendNode || [];
 
-                        // Set checked and expanded states
-                        for (const layerOrGroup of lizMap.mainLizmap.state.layerTree.findTreeLayersAndGroups()) {
-                            // Groups in theme are based on QGIS group (so groupAsLayer is not a layer but a group)
-                            if (layerOrGroup.mapItemState.itemState.type === "group") {
-                                layerOrGroup.checked = checkedGroups.includes(layerOrGroup.name);
-                                layerOrGroup.expanded = expandedGroups.includes(layerOrGroup.name);
-                            } else {
-                                const layerParams = themeSelected?.layers?.[layerOrGroup.layerConfig.id];
-                                if (!layerParams) {
-                                    layerOrGroup.checked = false;
-                                    continue;
-                                }
+                        const allItems = lizMap.mainLizmap.state.layerTree.findTreeLayersAndGroups();
 
-                                const style = layerParams?.style;
-                                if (style) {
-                                    layerOrGroup.wmsSelectedStyleName = style;
-                                }
+                        // Suspend permalink updates during theme application
+                        // This prevents "Too many Location/History API calls" error
+                        const permalink = lizMap.mainLizmap.permalink;
+                        if (permalink) {
+                            // Save original _writeURLFragment method
+                            permalink._originalWriteURLFragment = permalink._writeURLFragment;
+                            // Replace with no-op function during theme application
+                            permalink._writeURLFragment = () => {};
+                        }
 
-                                layerOrGroup.checked = true;
-                                layerOrGroup.expanded = layerParams?.expanded === "1" || layerParams?.expanded === true;
-
-                                // `symbologyChildren` is empty for some time if the theme switches
-                                // the layer style from simple to categorized.
-                                // TODO: avoid this hack
-                                setTimeout(() => {
-                                    // Handle expanded legend states
-                                    const symbologyChildren = layerOrGroup.symbologyChildren;
-                                    if (symbologyChildren.length) {
-                                        for (const symbol of symbologyChildren) {
-                                            symbol.expanded = expandedLegendNodes.includes(symbol.ruleKey);
-                                        }
-                                    }
-                                }, 1000);
-
+                        // STEP 1: Set ALL layers (ON if in theme, OFF if not)
+                        for (const item of allItems) {
+                            if (item.mapItemState.itemState.type === "group") {
+                                continue; // Skip groups
                             }
+
+                            const layerParams = themeSelected?.layers?.[item.layerConfig.id];
+                            if (!layerParams) {
+                                // Layer not in theme: uncheck it
+                                item.checked = false;
+                                item.expanded = false;
+                                continue;
+                            }
+
+                            const style = layerParams?.style;
+                            if (style) {
+                                item.wmsSelectedStyleName = style;
+                            }
+
+                            // Layer in theme: check it
+                            item.checked = true;
+                            item.expanded = layerParams?.expanded === "1" || layerParams?.expanded === true;
+
+                            // Handle expanded legend states
+                            setTimeout(() => {
+                                const symbologyChildren = item.symbologyChildren;
+                                if (symbologyChildren.length) {
+                                    for (const symbol of symbologyChildren) {
+                                        symbol.expanded = expandedLegendNodes.includes(symbol.ruleKey);
+                                    }
+                                }
+                            }, 1000);
+                        }
+
+                        // STEP 2: Reset groups to their config default state (toggled value)
+                        // Groups not explicitly in the theme should return to their default checked state
+                        for (const item of allItems) {
+                            if (item.mapItemState.itemState.type !== "group") {
+                                continue; // Skip layers
+                            }
+                            // Reset to the layer config's toggled value (default state)
+                            const defaultToggled = item.layerConfig?.toggled === true || item.layerConfig?.toggled === "True";
+                            item.checked = defaultToggled;
+                            item.expanded = false;
+                        }
+
+                        // STEP 3: Set specific groups ON (those in checkedGroupNodes)
+                        for (const item of allItems) {
+                            if (item.mapItemState.itemState.type !== "group") {
+                                continue; // Skip layers
+                            }
+
+                            const wmsName = item.wmsName;
+                            const name = item.name;
+
+                            // Helper function to check if group is in list
+                            const isInList = (nodeList) => {
+                                if (nodeList.includes(wmsName) || nodeList.includes(name)) {
+                                    return true;
+                                }
+                                return nodeList.some(nodePath => {
+                                    const lastPart = nodePath.split('/').pop();
+                                    return lastPart === wmsName || lastPart === name;
+                                });
+                            };
+
+                            if (isInList(checkedGroupNodes)) {
+                                item.checked = true;
+                            }
+                        }
+
+                        // STEP 4: Expand specific groups (those in expandedGroupNodes)
+                        for (const item of allItems) {
+                            if (item.mapItemState.itemState.type !== "group") {
+                                continue; // Skip layers
+                            }
+
+                            const wmsName = item.wmsName;
+                            const name = item.name;
+
+                            // Helper function to check if group is in list
+                            const isInList = (nodeList) => {
+                                if (nodeList.includes(wmsName) || nodeList.includes(name)) {
+                                    return true;
+                                }
+                                return nodeList.some(nodePath => {
+                                    const lastPart = nodePath.split('/').pop();
+                                    return lastPart === wmsName || lastPart === name;
+                                });
+                            };
+
+                            if (isInList(expandedGroupNodes)) {
+                                item.expanded = true;
+                            }
+                        }
+
+                        // Resume permalink updates after theme application
+                        if (permalink && permalink._originalWriteURLFragment) {
+                            // Restore original _writeURLFragment method
+                            permalink._writeURLFragment = permalink._originalWriteURLFragment;
+                            delete permalink._originalWriteURLFragment;
+                            // Manually trigger one permalink update now that all changes are done
+                            permalink._writeURLFragment();
                         }
 
                         // Set baseLayers checked state
