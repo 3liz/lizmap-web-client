@@ -783,6 +783,252 @@ class serviceCtrl extends jController
     }
 
     /**
+     * Generate atlas filename from QGIS project configuration for single feature requests.
+     *
+     * @param string $template    The print template name
+     * @param string $expFilter   The expression filter (e.g., "$id IN (123)")
+     * @param string $layerName   The layer name
+     * @param string $format      The output format (e.g., "pdf")
+     *
+     * @return string|null The generated filename or null if cannot generate
+     */
+    protected function generateAtlasFilename($template, $expFilter, $layerName, $format)
+    {
+        error_log('=== generateAtlasFilename START ===');
+        error_log("Template: $template, Layer: $layerName, Format: $format");
+        error_log("EXP_FILTER: $expFilter");
+
+        // Check if this is a single feature request by parsing EXP_FILTER
+        // Expected format: $id IN (123) or $id IN (123, 456, 789)
+        if (!preg_match('/\$id\s+IN\s*\(([^)]+)\)/i', $expFilter, $matches)) {
+            error_log('Failed: EXP_FILTER does not match expected pattern');
+            return null; // Not a valid $id IN (...) filter
+        }
+
+        // Extract feature IDs
+        $idsString = $matches[1];
+        $ids = array_map('trim', explode(',', $idsString));
+        error_log('Extracted IDs: ' . print_r($ids, true));
+
+        // Only process single feature requests
+        if (count($ids) !== 1) {
+            error_log('Failed: Multiple features detected (' . count($ids) . '), using fallback');
+            return null; // Multiple features, use fallback
+        }
+
+        $featureId = $ids[0];
+        error_log("Single feature ID: $featureId");
+
+        // Get atlas configuration from QGIS project file
+        try {
+            $qgisPath = $this->project->getQgisPath();
+            error_log("QGIS project path: $qgisPath");
+
+            if (!file_exists($qgisPath)) {
+                error_log("Failed: QGIS project file does not exist at $qgisPath");
+                return null;
+            }
+
+            $xmlContent = file_get_contents($qgisPath);
+            $xml = simplexml_load_string($xmlContent);
+
+            if (!$xml) {
+                error_log('Failed: Could not parse QGIS project XML');
+                return null;
+            }
+            error_log('Got QGIS project XML');
+        } catch (\Exception $e) {
+            error_log('Exception reading QGIS project: ' . $e->getMessage());
+            return null;
+        }
+
+        // Find the Layout (print template) with the given name
+        $layouts = $xml->xpath("//Layout[@name='{$template}']");
+        error_log('Found ' . count($layouts) . " layout(s) with name '{$template}'");
+        if (empty($layouts)) {
+            error_log('Failed: No layout found with that name');
+            return null;
+        }
+
+        $layout = $layouts[0];
+
+        // Get atlas configuration from the layout
+        $atlasElements = $layout->xpath('.//Atlas');
+        error_log('Found ' . count($atlasElements) . ' atlas element(s) in layout');
+        if (empty($atlasElements)) {
+            error_log('Failed: No atlas configuration found in layout');
+            return null;
+        }
+
+        $atlas = $atlasElements[0];
+        error_log('Atlas attributes: ' . print_r($atlas->attributes(), true));
+
+        // Check if atlas is enabled
+        if (!isset($atlas['enabled']) || ($atlas['enabled'] != '1' && $atlas['enabled'] !== true)) {
+            error_log('Failed: Atlas is not enabled');
+            return null;
+        }
+
+        // Get filename pattern and page name expression
+        $filenamePattern = isset($atlas['filenamePattern']) ? (string) $atlas['filenamePattern'] : null;
+        $pageNameExpression = isset($atlas['pageNameExpression']) ? (string) $atlas['pageNameExpression'] : null;
+
+        error_log("filenamePattern: " . ($filenamePattern ?: 'NULL'));
+        error_log("pageNameExpression: " . ($pageNameExpression ?: 'NULL'));
+
+        if (!$filenamePattern || !$pageNameExpression) {
+            error_log('Failed: Missing filenamePattern or pageNameExpression');
+            return null;
+        }
+
+        // Get the coverage layer ID from atlas config and use it to get layer config
+        $coverageLayerId = isset($atlas['coverageLayer']) ? (string) $atlas['coverageLayer'] : null;
+        $coverageLayerName = isset($atlas['coverageLayerName']) ? (string) $atlas['coverageLayerName'] : null;
+
+        error_log("Coverage Layer ID: " . ($coverageLayerId ?: 'NULL'));
+        error_log("Coverage Layer Name: " . ($coverageLayerName ?: 'NULL'));
+
+        if (!$coverageLayerId) {
+            error_log('Failed: No coverageLayer in atlas config');
+            return null;
+        }
+
+        // Get the layer config using the coverage layer ID from atlas
+        $layerConfig = $this->project->getLayer($coverageLayerId);
+        if (!$layerConfig) {
+            error_log("Failed: Layer config not found for coverage layer ID '$coverageLayerId'");
+            return null;
+        }
+        error_log('Got layer config from coverage layer ID');
+
+        // Fetch feature data via WFS to get the attribute value
+        try {
+            // Use the built-in method to get the WFS typename
+            // This will use shortname if available (e.g., "Flurstucke"), otherwise name
+            $typename = $layerConfig->getWfsTypeName();
+            error_log("WFS typename from getWfsTypeName(): $typename");
+
+            // FEATUREID format must be typename.id for WFS
+            $wfsFeatureId = $typename . '.' . $featureId;
+            error_log("WFS FeatureID: $wfsFeatureId");
+
+            $wfsParams = array(
+                'SERVICE' => 'WFS',
+                'VERSION' => '1.0.0',
+                'REQUEST' => 'GetFeature',
+                'TYPENAME' => $typename,
+                'OUTPUTFORMAT' => 'GeoJSON',
+                'FEATUREID' => $wfsFeatureId,
+            );
+
+            error_log('WFS request params: ' . print_r($wfsParams, true));
+
+            $wfsRequest = new \Lizmap\Request\WFSRequest(
+                $this->project,
+                $wfsParams,
+                lizmap::getServices()
+            );
+
+            $wfsResult = $wfsRequest->process();
+            $geojsonString = $wfsResult->getBodyAsString();
+            error_log('WFS response length: ' . strlen($geojsonString));
+
+            $geojson = json_decode($geojsonString, true);
+
+            if (!$geojson || !isset($geojson['features']) || count($geojson['features']) === 0) {
+                error_log('Failed: No features returned from WFS');
+                error_log('GeoJSON response: ' . substr($geojsonString, 0, 500));
+                return null;
+            }
+
+            error_log('Got ' . count($geojson['features']) . ' feature(s) from WFS');
+
+            $feature = $geojson['features'][0];
+            $properties = $feature['properties'];
+            error_log('Feature properties: ' . print_r(array_keys($properties), true));
+
+            // Clean up the page name expression (remove quotes)
+            $pageNameField = str_replace('"', '', $pageNameExpression);
+            error_log("Looking for field: '$pageNameField'");
+
+            if (!isset($properties[$pageNameField])) {
+                error_log("Failed: Field '$pageNameField' not found in feature properties");
+                error_log('Available fields: ' . implode(', ', array_keys($properties)));
+                return null;
+            }
+
+            $pageNameValue = $properties[$pageNameField];
+            error_log("Page name value: '$pageNameValue'");
+
+            // Evaluate the filename pattern
+            // Replace @atlas_pagename with the actual value
+            $evaluatedFilename = $this->evaluateAtlasFilenamePattern($filenamePattern, $pageNameValue);
+            error_log("Evaluated filename: '$evaluatedFilename'");
+
+            if ($evaluatedFilename) {
+                // Ensure it has the correct extension
+                if (!preg_match('/\.' . preg_quote($format, '/') . '$/i', $evaluatedFilename)) {
+                    $evaluatedFilename .= '.' . $format;
+                }
+
+                error_log("Final filename: '$evaluatedFilename'");
+                error_log('=== generateAtlasFilename SUCCESS ===');
+                return $evaluatedFilename;
+            }
+        } catch (\Exception $e) {
+            // If anything fails, return null to use fallback
+            error_log('Exception in generateAtlasFilename: ' . $e->getMessage());
+            error_log('Stack trace: ' . $e->getTraceAsString());
+            return null;
+        }
+
+        error_log('Failed: Reached end of function without generating filename');
+        return null;
+    }
+
+    /**
+     * Evaluate atlas filename pattern with feature data.
+     *
+     * @param string $pattern   The filename pattern (e.g., "'Flstk_'||replace(@atlas_pagename ,'/','-')")
+     * @param string $pageName  The page name value from the feature
+     *
+     * @return string|null The evaluated filename or null if cannot evaluate
+     */
+    protected function evaluateAtlasFilenamePattern($pattern, $pageName)
+    {
+        // Simple evaluation for common patterns
+        // This handles: 'Flstk_'||replace(@atlas_pagename ,'/','-')
+
+        // Replace @atlas_pagename with actual value
+        $evaluated = $pattern;
+
+        // Handle replace() function: replace(@atlas_pagename, '/', '-')
+        if (preg_match('/replace\s*\(\s*@atlas_pagename\s*,\s*[\'"]([^\'"]*)[\'"],\s*[\'"]([^\'"]*)[\'"].*\)/i', $evaluated, $matches)) {
+            $searchStr = $matches[1];
+            $replaceStr = $matches[2];
+            $replacedValue = str_replace($searchStr, $replaceStr, $pageName);
+            $evaluated = preg_replace('/replace\s*\([^)]+\)/i', "'{$replacedValue}'", $evaluated);
+        } else {
+            // Simple replacement without replace() function
+            $evaluated = str_replace('@atlas_pagename', "'{$pageName}'", $evaluated);
+        }
+
+        // Handle string concatenation with ||
+        $evaluated = preg_replace('/\'\s*\|\|\s*\'/', '', $evaluated);
+
+        // Remove remaining quotes
+        $evaluated = str_replace("'", '', $evaluated);
+
+        // Clean up the filename
+        $evaluated = trim($evaluated);
+
+        // Sanitize filename - remove/replace unsafe characters
+        $evaluated = preg_replace('/[<>:"|?*]/', '_', $evaluated);
+
+        return $evaluated ?: null;
+    }
+
+    /**
      * GetPrintAtlas.
      *
      * @urlparam string $repository Lizmap Repository
@@ -803,15 +1049,38 @@ class serviceCtrl extends jController
         // QGIS Server may include the evaluated atlas filename expression
         $fileName = null;
         $headers = $result->getHeaders();
-        if (isset($headers['content-disposition'])) {
-            // Parse Content-Disposition header to extract filename
-            // Format: attachment; filename="evaluated_name.pdf"
-            if (preg_match('/filename="?([^"]+)"?/i', $headers['content-disposition'], $matches)) {
-                $fileName = $matches[1];
+
+        // Search for Content-Disposition header (case-insensitive)
+        $contentDisposition = null;
+        foreach ($headers as $headerName => $headerValue) {
+            if (strtolower($headerName) === 'content-disposition') {
+                // Headers can be arrays in PSR-7 format
+                $contentDisposition = is_array($headerValue) ? $headerValue[0] : $headerValue;
+                break;
             }
         }
 
-        // Fallback to default naming if no filename found in headers
+        if ($contentDisposition) {
+            // Parse Content-Disposition header to extract filename
+            // Format: attachment; filename="evaluated_name.pdf" or filename*=UTF-8''evaluated_name.pdf
+            if (preg_match('/filename\*?="?([^";]+)"?/i', $contentDisposition, $matches)) {
+                $fileName = urldecode($matches[1]);
+                // Clean up UTF-8'' prefix if present (RFC 5987)
+                $fileName = preg_replace("/^UTF-8''/i", '', $fileName);
+            }
+        }
+
+        // If no filename from header, try to generate from atlas configuration for single features
+        if (!$fileName && isset($this->params['exp_filter'])) {
+            $fileName = $this->generateAtlasFilename(
+                $this->params['template'],
+                $this->params['exp_filter'],
+                $this->params['layer'],
+                $this->params['format']
+            );
+        }
+
+        // Fallback to default naming if still no filename
         if (!$fileName) {
             $fileName = $this->project->getKey().'_'.preg_replace('#[\W]+#', '_', $this->params['template']).'.'.$this->params['format'];
         }
