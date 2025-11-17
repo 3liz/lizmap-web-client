@@ -798,7 +798,24 @@ class serviceCtrl extends jController
 
         /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
-        $fileName = $this->project->getKey().'_'.preg_replace('#[\W]+#', '_', $this->params['template']).'.'.$this->params['format'];
+
+        // Try to extract filename from QGIS Server's Content-Disposition header
+        // QGIS Server may include the evaluated atlas filename expression
+        $fileName = null;
+        $headers = $result->getHeaders();
+        if (isset($headers['content-disposition'])) {
+            // Parse Content-Disposition header to extract filename
+            // Format: attachment; filename="evaluated_name.pdf"
+            if (preg_match('/filename="?([^"]+)"?/i', $headers['content-disposition'], $matches)) {
+                $fileName = $matches[1];
+            }
+        }
+
+        // Fallback to default naming if no filename found in headers
+        if (!$fileName) {
+            $fileName = $this->project->getKey().'_'.preg_replace('#[\W]+#', '_', $this->params['template']).'.'.$this->params['format'];
+        }
+
         $this->setupBinaryResponse($rep, $result, $fileName);
         $rep->doDownload = true;
 
