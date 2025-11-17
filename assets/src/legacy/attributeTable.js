@@ -597,6 +597,39 @@ var lizAttributeTable = function() {
                     html+= '</div>';
                 }
 
+                // Atlas print button for selected features
+                // Get atlas layouts available for this layer
+                var layerId = config.layers[lname]?.id;
+                var atlasLayouts = [];
+                if (layerId && lizMap.mainLizmap?.config?.printTemplates) {
+                    lizMap.mainLizmap.config.printTemplates.forEach(function(template, index) {
+                        if (layerId === template?.atlas?.coverageLayer
+                            && (template?.atlas?.enabled === '1' || template?.atlas?.enabled === true)) {
+                            // Lizmap >= 3.7
+                            if (lizMap.mainLizmap.config?.layouts?.list) {
+                                if (lizMap.mainLizmap.config?.layouts?.list?.[index]?.enabled) {
+                                    atlasLayouts.push({
+                                        title: lizMap.mainLizmap.config?.layouts?.list?.[index]?.layout,
+                                        default_format: lizMap.mainLizmap.config?.layouts?.list?.[index]?.default_format || 'pdf',
+                                    });
+                                }
+                            // Lizmap < 3.7
+                            } else {
+                                atlasLayouts.push({
+                                    title: template?.title,
+                                    default_format: 'pdf',
+                                });
+                            }
+                        }
+                    });
+                }
+
+                if (atlasLayouts.length > 0) {
+                    html+= '<button type="button" class="btn btn-sm btn-print-atlas-selection float-end" data-layer="'+cleanName+'" title="Print atlas for selected features">';
+                    html+= '<i class="icon-print"></i> Atlas';
+                    html+= '</button>';
+                }
+
                 html+= '</div>'; // attribute-layer-action-bar
 
                 if( childHtml ) {
@@ -732,6 +765,121 @@ var lizAttributeTable = function() {
                         const limitDataToBbox =
                             document.querySelector('.btn-filterbyextent-attributeTable.active[value="' + cleanName + '"]') ? true : false;
                         lizMap.exportVectorLayer(eName, eFormat, limitDataToBbox);
+                    });
+
+                // Bind click on atlas print button for selected features
+                $('#attribute-layer-'+ cleanName + ' button.btn-print-atlas-selection')
+                    .click(function(){
+                        var cleanName = $(this).data('layer');
+                        var layerName = attributeLayersDic[ cleanName ];
+                        var lConfig = config.layers[layerName];
+
+                        if (!lConfig) {
+                            console.error('Layer configuration not found for', layerName);
+                            return;
+                        }
+
+                        // Get selected features
+                        var selectedFeatures = lConfig['selectedFeatures'] || [];
+
+                        if (selectedFeatures.length === 0) {
+                            lizMap.mainLizmap._lizmap3.addMessage(
+                                'Please select at least one feature to print',
+                                'info',
+                                true
+                            );
+                            return;
+                        }
+
+                        // Get atlas layouts for this layer
+                        var layerId = lConfig?.id;
+                        var atlasLayouts = [];
+                        if (layerId && lizMap.mainLizmap?.config?.printTemplates) {
+                            lizMap.mainLizmap.config.printTemplates.forEach(function(template, index) {
+                                if (layerId === template?.atlas?.coverageLayer
+                                    && (template?.atlas?.enabled === '1' || template?.atlas?.enabled === true)) {
+                                    // Lizmap >= 3.7
+                                    if (lizMap.mainLizmap.config?.layouts?.list) {
+                                        if (lizMap.mainLizmap.config?.layouts?.list?.[index]?.enabled) {
+                                            atlasLayouts.push({
+                                                title: lizMap.mainLizmap.config?.layouts?.list?.[index]?.layout,
+                                                default_format: lizMap.mainLizmap.config?.layouts?.list?.[index]?.default_format || 'pdf',
+                                            });
+                                        }
+                                    // Lizmap < 3.7
+                                    } else {
+                                        atlasLayouts.push({
+                                            title: template?.title,
+                                            default_format: 'pdf',
+                                        });
+                                    }
+                                }
+                            });
+                        }
+
+                        if (atlasLayouts.length === 0) {
+                            console.error('No atlas layouts found for layer', layerName);
+                            return;
+                        }
+
+                        // Use first atlas layout (could be enhanced to show a dropdown if multiple)
+                        var atlasLayout = atlasLayouts[0];
+
+                        // Construct filter expression for all selected features
+                        var escapeFeatureId = function(value) {
+                            var valueType = typeof value;
+                            if (valueType === 'string') {
+                                var intRegex = /^[0-9]+$/;
+                                if (intRegex.test(value)) {
+                                    return value;
+                                }
+                                return "'" + value.replace(/'/g, "''") + "'";
+                            }
+                            return value;
+                        };
+
+                        var escapedIds = selectedFeatures.map(escapeFeatureId).join(', ');
+                        var expFilter = '$id IN (' + escapedIds + ')';
+
+                        // Construct WMS GetPrintAtlas request
+                        var wmsParams = {
+                            SERVICE: 'WMS',
+                            REQUEST: 'GetPrintAtlas',
+                            VERSION: '1.3.0',
+                            FORMAT: atlasLayout.default_format,
+                            EXCEPTION: 'application/vnd.ogc.se_inimage',
+                            TRANSPARENT: true,
+                            DPI: 100,
+                            TEMPLATE: atlasLayout.title,
+                            LAYER: lConfig?.shortname || lConfig?.name,
+                            EXP_FILTER: expFilter,
+                        };
+
+                        // Disable button while printing
+                        var $button = $(this);
+                        $button.prop('disabled', true);
+
+                        lizMap.mainLizmap._lizmap3.addMessage(
+                            lizDict['print.started'],
+                            'info',
+                            true
+                        ).addClass('print-in-progress');
+
+                        // Trigger download
+                        import('../modules/Utils.js').then(function(UtilsModule) {
+                            UtilsModule.Utils.downloadFile(lizMap.mainLizmap.serviceURL, wmsParams, function() {
+                                $button.prop('disabled', false);
+                                document.querySelector('#message .print-in-progress button')?.click();
+                            }, function(errorEvent) {
+                                $button.prop('disabled', false);
+                                console.error(errorEvent);
+                                lizMap.mainLizmap._lizmap3.addMessage(
+                                    lizDict['print.error'],
+                                    'danger',
+                                    true
+                                ).addClass('print-error');
+                            });
+                        });
                     });
 
                 // Bind click on createFeature button
