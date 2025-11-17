@@ -625,9 +625,24 @@ var lizAttributeTable = function() {
                 }
 
                 if (atlasLayouts.length > 0) {
-                    html+= '<button type="button" class="btn btn-sm btn-print-atlas-selection float-end" data-layer="'+cleanName+'" title="Print atlas for selected features">';
-                    html+= '<i class="icon-print"></i> Atlas';
-                    html+= '</button>';
+                    // If only one layout, show a simple button
+                    if (atlasLayouts.length === 1) {
+                        html+= '<button type="button" class="btn btn-sm btn-print-atlas-selection float-end" data-layer="'+cleanName+'" data-layout="'+atlasLayouts[0].title+'" data-format="'+atlasLayouts[0].default_format+'" title="Print atlas for selected features">';
+                        html+= '<i class="icon-print"></i> Atlas';
+                        html+= '</button>';
+                    } else {
+                        // If multiple layouts, show a dropdown
+                        html+= '<div class="btn-group float-end" role="group">';
+                        html+= '    <button type="button" class="btn btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" title="Print atlas for selected features">';
+                        html+= '    <i class="icon-print"></i> Atlas';
+                        html+= '    </button>';
+                        html+= '    <ul class="dropdown-menu dropdown-menu-end">';
+                        for (var i = 0; i < atlasLayouts.length; i++) {
+                            html+= '        <li><button type="button" class="dropdown-item btn-print-atlas-selection" data-layer="'+cleanName+'" data-layout="'+atlasLayouts[i].title+'" data-format="'+atlasLayouts[i].default_format+'">'+atlasLayouts[i].title+'</button></li>';
+                        }
+                        html+= '    </ul>';
+                        html+= '</div>';
+                    }
                 }
 
                 html+= '</div>'; // attribute-layer-action-bar
@@ -770,7 +785,10 @@ var lizAttributeTable = function() {
                 // Bind click on atlas print button for selected features
                 $('#attribute-layer-'+ cleanName + ' button.btn-print-atlas-selection')
                     .click(function(){
-                        var cleanName = $(this).data('layer');
+                        var $button = $(this);
+                        var cleanName = $button.data('layer');
+                        var layoutTitle = $button.data('layout');
+                        var layoutFormat = $button.data('format') || 'pdf';
                         var layerName = attributeLayersDic[ cleanName ];
                         var lConfig = config.layers[layerName];
 
@@ -790,40 +808,6 @@ var lizAttributeTable = function() {
                             );
                             return;
                         }
-
-                        // Get atlas layouts for this layer
-                        var layerId = lConfig?.id;
-                        var atlasLayouts = [];
-                        if (layerId && lizMap.mainLizmap?.config?.printTemplates) {
-                            lizMap.mainLizmap.config.printTemplates.forEach(function(template, index) {
-                                if (layerId === template?.atlas?.coverageLayer
-                                    && (template?.atlas?.enabled === '1' || template?.atlas?.enabled === true)) {
-                                    // Lizmap >= 3.7
-                                    if (lizMap.mainLizmap.config?.layouts?.list) {
-                                        if (lizMap.mainLizmap.config?.layouts?.list?.[index]?.enabled) {
-                                            atlasLayouts.push({
-                                                title: lizMap.mainLizmap.config?.layouts?.list?.[index]?.layout,
-                                                default_format: lizMap.mainLizmap.config?.layouts?.list?.[index]?.default_format || 'pdf',
-                                            });
-                                        }
-                                    // Lizmap < 3.7
-                                    } else {
-                                        atlasLayouts.push({
-                                            title: template?.title,
-                                            default_format: 'pdf',
-                                        });
-                                    }
-                                }
-                            });
-                        }
-
-                        if (atlasLayouts.length === 0) {
-                            console.error('No atlas layouts found for layer', layerName);
-                            return;
-                        }
-
-                        // Use first atlas layout (could be enhanced to show a dropdown if multiple)
-                        var atlasLayout = atlasLayouts[0];
 
                         // Construct filter expression for all selected features
                         var escapeFeatureId = function(value) {
@@ -846,17 +830,16 @@ var lizAttributeTable = function() {
                             SERVICE: 'WMS',
                             REQUEST: 'GetPrintAtlas',
                             VERSION: '1.3.0',
-                            FORMAT: atlasLayout.default_format,
+                            FORMAT: layoutFormat,
                             EXCEPTION: 'application/vnd.ogc.se_inimage',
                             TRANSPARENT: true,
                             DPI: 100,
-                            TEMPLATE: atlasLayout.title,
+                            TEMPLATE: layoutTitle,
                             LAYER: lConfig?.shortname || lConfig?.name,
                             EXP_FILTER: expFilter,
                         };
 
                         // Disable button while printing
-                        var $button = $(this);
                         $button.prop('disabled', true);
 
                         lizMap.mainLizmap._lizmap3.addMessage(
