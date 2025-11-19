@@ -916,6 +916,7 @@ class serviceCtrl extends jController
         try {
             // Use the built-in method to get the WFS typename
             // This will use shortname if available (e.g., "Flurstucke"), otherwise name
+            /** @var qgisVectorLayer $layerConfig */
             $typename = $layerConfig->getWfsTypeName();
             error_log("WFS typename from getWfsTypeName(): {$typename}");
 
