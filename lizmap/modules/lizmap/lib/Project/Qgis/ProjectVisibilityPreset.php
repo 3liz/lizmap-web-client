@@ -20,6 +20,7 @@ namespace Lizmap\Project\Qgis;
  * @property array<ProjectVisibilityPresetLayer> $layers
  * @property array<string>                       $checkedGroupNodes
  * @property array<string>                       $expandedGroupNodes
+ * @property array<string, array<string>>        $checkedLegendNodes
  */
 class ProjectVisibilityPreset extends BaseQgisObject
 {
@@ -29,6 +30,7 @@ class ProjectVisibilityPreset extends BaseQgisObject
         'layers',
         'checkedGroupNodes',
         'expandedGroupNodes',
+        'checkedLegendNodes',
     );
 
     /** @var array<string> The not null properties */
@@ -45,6 +47,9 @@ class ProjectVisibilityPreset extends BaseQgisObject
         if (!array_key_exists('expandedGroupNodes', $data)) {
             $data['expandedGroupNodes'] = array();
         }
+        if (!array_key_exists('checkedLegendNodes', $data)) {
+            $data['checkedLegendNodes'] = array();
+        }
         parent::set($data);
     }
 
@@ -59,6 +64,7 @@ class ProjectVisibilityPreset extends BaseQgisObject
             'layers' => array(),
             'checkedGroupNode' => $this->checkedGroupNodes,
             'expandedGroupNode' => $this->expandedGroupNodes,
+            'checkedLegendNodes' => $this->checkedLegendNodes,
         );
         foreach ($this->layers as $layer) {
             // Include ALL layers from theme (both visible="0" and visible="1")
@@ -93,6 +99,7 @@ class ProjectVisibilityPreset extends BaseQgisObject
             'layers' => array(),
             'checkedGroupNodes' => array(),
             'expandedGroupNodes' => array(),
+            'checkedLegendNodes' => array(),
         );
         while ($oXmlReader->read()) {
             if ($oXmlReader->nodeType == \XMLReader::END_ELEMENT
@@ -123,6 +130,28 @@ class ProjectVisibilityPreset extends BaseQgisObject
                 $data['checkedGroupNodes'][] = $oXmlReader->getAttribute('id');
             } elseif ($tagName == 'expanded-group-node') {
                 $data['expandedGroupNodes'][] = $oXmlReader->getAttribute('id');
+            } elseif ($tagName == 'checked-legend-nodes') {
+                // Read checked legend nodes for a specific layer
+                $layerId = $oXmlReader->getAttribute('id');
+                $legendNodeDepth = $oXmlReader->depth;
+                $legendNodes = array();
+
+                while ($oXmlReader->read()) {
+                    if ($oXmlReader->nodeType == \XMLReader::END_ELEMENT
+                        && $oXmlReader->localName == 'checked-legend-nodes'
+                        && $oXmlReader->depth == $legendNodeDepth) {
+                        break;
+                    }
+
+                    if ($oXmlReader->nodeType == \XMLReader::ELEMENT
+                        && $oXmlReader->localName == 'checked-legend-node') {
+                        $legendNodes[] = $oXmlReader->getAttribute('id');
+                    }
+                }
+
+                if (!empty($legendNodes)) {
+                    $data['checkedLegendNodes'][$layerId] = $legendNodes;
+                }
             }
         }
 
