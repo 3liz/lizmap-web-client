@@ -708,16 +708,21 @@ class QgisForm implements QgisFormControlsInterface
 
         // Get filter by login
         $expByUserLoginKey = 'filterByLogin';
-        $expByUserLoginObj = $project->getLoginFilter($this->layer->getName(), true);
-        $expByUserLogin = '';
-        if (!empty($expByUserLoginObj) && array_key_exists('filter', $expByUserLoginObj)) {
-            $expByUserLogin = $expByUserLoginObj['filter'];
-        }
-        if ($expByUserLogin !== '') {
-            while (array_key_exists($expByUserLoginKey, $constraintExpressions)) {
-                $expByUserLoginKey .= '@';
+        // Only if the user has no right to override the filter
+        // And only for UPDATE. For INSERT, the value might be empty in the form
+        // since it can be filled by a database trigger based on localisation (ex: city code)
+        if (!$this->loginFilteredOverride && $feature) {
+            $expByUserLoginObj = $project->getLoginFilter($this->layer->getName(), true);
+            $expByUserLogin = '';
+            if (!empty($expByUserLoginObj) && array_key_exists('filter', $expByUserLoginObj)) {
+                $expByUserLogin = $expByUserLoginObj['filter'];
             }
-            $constraintExpressions[$expByUserLoginKey] = $expByUserLogin;
+            if ($expByUserLogin !== '') {
+                while (array_key_exists($expByUserLoginKey, $constraintExpressions)) {
+                    $expByUserLoginKey .= '@';
+                }
+                $constraintExpressions[$expByUserLoginKey] = $expByUserLogin;
+            }
         }
 
         // Evaluate constraint expressions
@@ -753,12 +758,7 @@ class QgisForm implements QgisFormControlsInterface
                     continue;
                 }
                 if ($fieldName === $expByUserLoginKey) {
-                    // Do not check if the authenticated user has "loginFilterOverride"
-                    if ($this->loginFilteredOverride) {
-                        continue;
-                    }
-
-                    // If not, set an error
+                    // Set an error, as the result should be 1 and is not
                     $loginFilterConfig = $project->getLoginFilteredConfig($this->layer->getName());
                     $form->setErrorOn($loginFilterConfig->filterAttribute, \jLocale::get('view~edition.message.error.feature.editable'));
 
