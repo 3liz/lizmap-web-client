@@ -271,6 +271,11 @@ export default class Permalink {
     }
 
     _writeURLFragment() {
+        // Don't write initial permalink if waiting for first theme to be applied
+        if (this._suspendInitialWrite) {
+            return;
+        }
+
         let hash = '';
 
         // BBOX
