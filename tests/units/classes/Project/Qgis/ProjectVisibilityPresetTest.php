@@ -89,7 +89,10 @@ class ProjectVisibilityPresetTest extends TestCase
         }
 
         $dataArray = $visibilityPreset->toKeyArray();
-        $this->assertCount(1, $dataArray['layers']);
+        $this->assertCount(2, $dataArray['layers']);
+        $this->assertArrayHasKey('sousquartiers_7c49d0fc_0ee0_4308_a66d_45c144e59872', $dataArray['layers']);
+        $this->assertEquals('défaut', $dataArray['layers']['sousquartiers_7c49d0fc_0ee0_4308_a66d_45c144e59872']['style']);
+        $this->assertTrue($dataArray['layers']['sousquartiers_7c49d0fc_0ee0_4308_a66d_45c144e59872']['expanded']);
         $this->assertArrayHasKey('quartiers_ef5b13e3_36db_4e0d_98b3_990de580367d', $dataArray['layers']);
         $this->assertEquals('style1', $dataArray['layers']['quartiers_ef5b13e3_36db_4e0d_98b3_990de580367d']['style']);
         $this->assertTrue($dataArray['layers']['quartiers_ef5b13e3_36db_4e0d_98b3_990de580367d']['expanded']);
