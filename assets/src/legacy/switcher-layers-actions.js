@@ -343,49 +343,54 @@ var lizLayerActionButtons = function() {
                             // Handle legend node states (symbology categories)
                             const layerId = item.layerConfig.id;
                             const layerCheckedLegendNodes = checkedLegendNodes[layerId];
+                            const hasCheckedLegendNodes = layerId in checkedLegendNodes;
 
-                            // Only handle legend nodes if needed
-                            if (layerCheckedLegendNodes || expandedLegendNodes.length > 0) {
-                                // Use polling to apply legend node states as soon as symbology is ready
-                                // This avoids showing incorrect default states during initial load
-                                let attempts = 0;
-                                const maxAttempts = 50; // 50 * 200ms = 10 seconds max
+                            // Always handle legend nodes for layers in theme (to ensure correct state)
+                            // Use polling to apply legend node states as soon as symbology is ready
+                            // This avoids showing incorrect default states during initial load
+                            let attempts = 0;
+                            const maxAttempts = 50; // 50 * 200ms = 10 seconds max
 
-                                const applyLegendNodeStates = () => {
-                                    attempts++;
-                                    const symbologyChildren = item.symbologyChildren;
+                            const applyLegendNodeStates = () => {
+                                attempts++;
+                                const symbologyChildren = item.symbologyChildren;
 
-                                    if (symbologyChildren.length > 0) {
-                                        // Symbology is ready, apply states
+                                if (symbologyChildren.length > 0) {
+                                    // Symbology is ready, apply states
 
-                                        // Handle checked state
-                                        if (layerCheckedLegendNodes) {
-                                            // If layer has checked-legend-nodes defined in theme:
-                                            // 1. First uncheck all symbology children
-                                            // 2. Then check only those in the list
-                                            for (const symbol of symbologyChildren) {
-                                                symbol.checked = false;
-                                            }
-                                            for (const symbol of symbologyChildren) {
-                                                if (layerCheckedLegendNodes.includes(symbol.ruleKey)) {
-                                                    symbol.checked = true;
-                                                }
-                                            }
-                                        }
-
-                                        // Handle expanded state
+                                    // Handle checked state
+                                    if (hasCheckedLegendNodes) {
+                                        // Layer has checked-legend-nodes defined in theme:
+                                        // 1. First uncheck all symbology children
+                                        // 2. Then check only those in the list
                                         for (const symbol of symbologyChildren) {
-                                            symbol.expanded = expandedLegendNodes.includes(symbol.ruleKey);
+                                            symbol.checked = false;
                                         }
-                                    } else if (attempts < maxAttempts) {
-                                        // Symbology not ready yet, try again
-                                        setTimeout(applyLegendNodeStates, 200);
+                                        for (const symbol of symbologyChildren) {
+                                            if (layerCheckedLegendNodes.includes(symbol.ruleKey)) {
+                                                symbol.checked = true;
+                                            }
+                                        }
+                                    } else {
+                                        // Layer in theme but no checked-legend-nodes defined:
+                                        // Check all symbology children (default/full state)
+                                        for (const symbol of symbologyChildren) {
+                                            symbol.checked = true;
+                                        }
                                     }
-                                };
 
-                                // Start polling immediately
-                                applyLegendNodeStates();
-                            }
+                                    // Handle expanded state
+                                    for (const symbol of symbologyChildren) {
+                                        symbol.expanded = expandedLegendNodes.includes(symbol.ruleKey);
+                                    }
+                                } else if (attempts < maxAttempts) {
+                                    // Symbology not ready yet, try again
+                                    setTimeout(applyLegendNodeStates, 200);
+                                }
+                            };
+
+                            // Start polling immediately
+                            applyLegendNodeStates();
                         }
 
                         // STEP 2: Set ALL groups OFF
