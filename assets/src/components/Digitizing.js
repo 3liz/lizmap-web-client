@@ -433,6 +433,7 @@ export default class Digitizing extends HTMLElement {
                         placeholder="${lizDict['digitizing.constraint.distance']}"
                         class="distance"
                         min="0"
+                        step="any"
                         @input=${
                             event => mainLizmap.digitizing.distanceConstraint = event.target.value
                         }
@@ -444,6 +445,7 @@ export default class Digitizing extends HTMLElement {
                         type="number"
                         placeholder="${lizDict['digitizing.constraint.angle']}"
                         class="angle"
+                        step="any"
                         @input=${
                             event => mainLizmap.digitizing.angleConstraint = event.target.value
                         }
