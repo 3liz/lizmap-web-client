@@ -1295,7 +1295,7 @@ export class Digitizing {
      * @type {number}
      */
     set distanceConstraint(distanceConstraint){
-        this._distanceConstraint = parseInt(distanceConstraint)
+        this._distanceConstraint = parseFloat(distanceConstraint)
     }
 
     /**
@@ -1311,7 +1311,7 @@ export class Digitizing {
      * @type {number}
      */
     set angleConstraint(angleConstraint){
-        this._angleConstraint = parseInt(angleConstraint)
+        this._angleConstraint = parseFloat(angleConstraint)
     }
 
     /**
