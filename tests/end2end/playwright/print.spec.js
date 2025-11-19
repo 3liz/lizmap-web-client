@@ -548,7 +548,9 @@ test.describe('Print in popup', () => {
         await expect(response?.status()).toBe(200)
 
         await expect(response?.headers()['content-type']).toBe('application/pdf');
-        await expect(response?.headers()['content-disposition']).toBe('attachment; filename="print_atlas_quartiers.pdf"');
+        // QGIS Server returns the filename based on the atlas filenamePattern configured in the project
+        // The atlas_quartiers layout has: filenamePattern="'output_'||@atlas_featurenumber"
+        await expect(response?.headers()['content-disposition']).toBe('attachment; filename="output___@atlas_featurenumber.pdf"');
     });
 });
 
