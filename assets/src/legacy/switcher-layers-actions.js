@@ -350,15 +350,12 @@ var lizLayerActionButtons = function() {
                             }, 1000);
                         }
 
-                        // STEP 2: Reset groups to their config default state (toggled value)
-                        // Groups not explicitly in the theme should return to their default checked state
+                        // STEP 2: Set ALL groups OFF
                         for (const item of allItems) {
                             if (item.mapItemState.itemState.type !== "group") {
                                 continue; // Skip layers
                             }
-                            // Reset to the layer config's toggled value (default state)
-                            const defaultToggled = item.layerConfig?.toggled === true || item.layerConfig?.toggled === "True";
-                            item.checked = defaultToggled;
+                            item.checked = false;
                             item.expanded = false;
                         }
 
@@ -417,6 +414,10 @@ var lizLayerActionButtons = function() {
                             // Restore original _writeURLFragment method
                             permalink._writeURLFragment = permalink._originalWriteURLFragment;
                             delete permalink._originalWriteURLFragment;
+                            // Clear the suspend flag if this is the initial theme activation
+                            if (permalink._suspendInitialWrite) {
+                                delete permalink._suspendInitialWrite;
+                            }
                             // Manually trigger one permalink update now that all changes are done
                             permalink._writeURLFragment();
                         }
@@ -455,6 +456,11 @@ var lizLayerActionButtons = function() {
 
                 // Activate first map theme on load
                 if (lizMap.mainLizmap.initialConfig.options.activateFirstMapTheme) {
+                    // Prevent permalink from writing until after first theme is applied
+                    const permalink = lizMap.mainLizmap.permalink;
+                    if (permalink) {
+                        permalink._suspendInitialWrite = true;
+                    }
                     document.querySelector('#theme-selector .dropdown-menu button:nth-child(1)').click();
                 }
                 const urlParameters = (new URL(document.location)).searchParams;
