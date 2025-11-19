@@ -345,19 +345,11 @@ var lizLayerActionButtons = function() {
                             const layerCheckedLegendNodes = checkedLegendNodes[layerId];
                             const hasCheckedLegendNodes = layerId in checkedLegendNodes;
 
-                            // Always handle legend nodes for layers in theme (to ensure correct state)
-                            // Use polling to apply legend node states as soon as symbology is ready
-                            // This avoids showing incorrect default states during initial load
-                            let attempts = 0;
-                            const maxAttempts = 50; // 50 * 200ms = 10 seconds max
-
+                            // Define function to apply legend node states
                             const applyLegendNodeStates = () => {
-                                attempts++;
                                 const symbologyChildren = item.symbologyChildren;
 
                                 if (symbologyChildren.length > 0) {
-                                    // Symbology is ready, apply states
-
                                     // Handle checked state
                                     if (hasCheckedLegendNodes) {
                                         // Layer has checked-legend-nodes defined in theme:
@@ -383,14 +375,22 @@ var lizLayerActionButtons = function() {
                                     for (const symbol of symbologyChildren) {
                                         symbol.expanded = expandedLegendNodes.includes(symbol.ruleKey);
                                     }
-                                } else if (attempts < maxAttempts) {
-                                    // Symbology not ready yet, try again
-                                    setTimeout(applyLegendNodeStates, 200);
                                 }
                             };
 
-                            // Start polling immediately
-                            applyLegendNodeStates();
+                            // Apply states either immediately or when symbology loads
+                            if (item.symbology === null) {
+                                // Symbology not loaded yet, listen for the change event
+                                const onSymbologyChanged = (evt) => {
+                                    applyLegendNodeStates();
+                                    // Remove listener after applying states
+                                    setTimeout(() => item.removeListener(onSymbologyChanged, 'layer.symbology.changed'), 10);
+                                };
+                                item.addListener(onSymbologyChanged, 'layer.symbology.changed');
+                            } else {
+                                // Symbology already loaded, apply immediately
+                                applyLegendNodeStates();
+                            }
                         }
 
                         // STEP 2: Set ALL groups OFF
