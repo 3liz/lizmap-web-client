@@ -303,6 +303,7 @@ var lizLayerActionButtons = function() {
                         const checkedGroupNodes = themeSelected?.checkedGroupNode || [];
                         const expandedGroupNodes = themeSelected?.expandedGroupNode || [];
                         const expandedLegendNodes = themeSelected?.expandedLegendNode || [];
+                        const checkedLegendNodes = themeSelected?.checkedLegendNodes || {};
 
                         const allItems = lizMap.mainLizmap.state.layerTree.findTreeLayersAndGroups();
 
@@ -339,15 +340,52 @@ var lizLayerActionButtons = function() {
                             item.checked = true;
                             item.expanded = layerParams?.expanded === "1" || layerParams?.expanded === true;
 
-                            // Handle expanded legend states
-                            setTimeout(() => {
-                                const symbologyChildren = item.symbologyChildren;
-                                if (symbologyChildren.length) {
-                                    for (const symbol of symbologyChildren) {
-                                        symbol.expanded = expandedLegendNodes.includes(symbol.ruleKey);
+                            // Handle legend node states (symbology categories)
+                            const layerId = item.layerConfig.id;
+                            const layerCheckedLegendNodes = checkedLegendNodes[layerId];
+
+                            // Only handle legend nodes if needed
+                            if (layerCheckedLegendNodes || expandedLegendNodes.length > 0) {
+                                // Use polling to apply legend node states as soon as symbology is ready
+                                // This avoids showing incorrect default states during initial load
+                                let attempts = 0;
+                                const maxAttempts = 50; // 50 * 200ms = 10 seconds max
+
+                                const applyLegendNodeStates = () => {
+                                    attempts++;
+                                    const symbologyChildren = item.symbologyChildren;
+
+                                    if (symbologyChildren.length > 0) {
+                                        // Symbology is ready, apply states
+
+                                        // Handle checked state
+                                        if (layerCheckedLegendNodes) {
+                                            // If layer has checked-legend-nodes defined in theme:
+                                            // 1. First uncheck all symbology children
+                                            // 2. Then check only those in the list
+                                            for (const symbol of symbologyChildren) {
+                                                symbol.checked = false;
+                                            }
+                                            for (const symbol of symbologyChildren) {
+                                                if (layerCheckedLegendNodes.includes(symbol.ruleKey)) {
+                                                    symbol.checked = true;
+                                                }
+                                            }
+                                        }
+
+                                        // Handle expanded state
+                                        for (const symbol of symbologyChildren) {
+                                            symbol.expanded = expandedLegendNodes.includes(symbol.ruleKey);
+                                        }
+                                    } else if (attempts < maxAttempts) {
+                                        // Symbology not ready yet, try again
+                                        setTimeout(applyLegendNodeStates, 200);
                                     }
-                                }
-                            }, 1000);
+                                };
+
+                                // Start polling immediately
+                                applyLegendNodeStates();
+                            }
                         }
 
                         // STEP 2: Set ALL groups OFF
