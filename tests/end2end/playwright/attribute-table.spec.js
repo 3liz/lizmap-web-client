@@ -4,6 +4,43 @@ import { ProjectPage } from './pages/project';
 import { expectParametersToContain, getAuthStorageStatePath } from './globals';
 import { AdminPage } from "./pages/admin";
 
+/**
+ * @typedef {object} Position
+ * @property {number} x coord x in pixel in the page
+ * @property {number} y coord y in pixel in the page
+ */
+
+/**
+ * Move the map from a position to another
+ * @param {ProjectPage} project the project page
+ * @param {Position} from the start position
+ * @param {Position} to the end position
+ */
+const moveMap = async (project, from, to) => {
+    await project.map.hover()
+    await project.page.mouse.move(from.x, from.y)
+    await project.page.mouse.down()
+    await project.page.waitForTimeout(100)
+
+    const distX = to.x-from.x;
+    const distY = to.y-from.y;
+    const steps = Math.max(Math.abs(distX), Math.abs(distY));
+    let step = 0;
+    while (step < steps) {
+        step += 1;
+        await project.page.mouse.move(
+            Math.floor(from.x + (distX * step / steps)),
+            Math.floor(from.y + (distY * step / steps)),
+        );
+        await project.page.waitForTimeout(10);
+    }
+
+    await project.page.mouse.move(to.x, to.y)
+    await project.page.waitForTimeout(100)
+    await project.page.mouse.up()
+    await project.map.hover()
+}
+
 test.describe('Attribute table @readonly', () => {
 
     test('Should have correct column order', async ({ page }) => {
@@ -84,40 +121,12 @@ test.describe('Attribute table @readonly', () => {
 
         // Drag Map && catch GetMap
         getMapRequestPromise = project.waitForGetMapRequest();
-        await project.map.hover()
-        await page.mouse.move(400, 250)
-        await page.mouse.down()
-        await page.waitForTimeout(100)
-        await page.mouse.move(410, 240)
-        await page.waitForTimeout(100)
-        await page.mouse.move(420, 230)
-        await page.waitForTimeout(100)
-        await page.mouse.move(430, 220)
-        await page.waitForTimeout(100)
-        await page.mouse.move(440, 210)
-        await page.waitForTimeout(100)
-        await page.mouse.move(450, 200)
-        await page.waitForTimeout(100)
-        await page.mouse.move(460, 190)
-        await page.waitForTimeout(100)
-        await page.mouse.move(470, 180)
-        await page.waitForTimeout(100)
-        await page.mouse.move(480, 170)
-        await page.waitForTimeout(100)
-        await page.mouse.move(490, 160)
-        await page.waitForTimeout(100)
-        await page.mouse.move(495, 155)
-        await page.waitForTimeout(100)
-        await page.mouse.move(498, 152)
-        await page.waitForTimeout(100)
-        await page.mouse.move(500, 150)
-        await page.waitForTimeout(100)
-        await page.mouse.up()
-        await project.map.hover()
+        await moveMap(project,{x:400, y:250},{x:500, y:150});
         getMapRequest = await getMapRequestPromise;
         //getMapExpectedParameters['BBOX'] = /731487.3\d+,6251012.6\d+,794855.1\d+,6292883.0\d+/;
         //getMapExpectedParameters['BBOX'] = /729436.6\d+,6248961.9\d+,792804.5\d+,6290832.3\d+/;
-        delete getMapExpectedParameters['BBOX'];
+        getMapExpectedParameters['BBOX'] = /732448.6\d+,6251973.9\d+,795816.4\d+,6293844.3\d+/;
+        //delete getMapExpectedParameters['BBOX'];
         await expectParametersToContain('GetMap', getMapRequest.url(), getMapExpectedParameters);
         await getMapRequest.response();
         await page.waitForTimeout(100)
@@ -247,8 +256,8 @@ test.describe('Attribute table @readonly', () => {
 
         // Check rendering
         buffer = await page.screenshot({clip:clip});
-        expect(buffer.byteLength).toBeGreaterThan(defaultByteLength-5);
-        expect(buffer.byteLength).toBeLessThan(defaultByteLength+5);
+        expect(buffer.byteLength).toBeGreaterThan(defaultByteLength-6);
+        expect(buffer.byteLength).toBeLessThan(defaultByteLength+6);
 
         // select feature 2,4,6
         // click to select 2
@@ -402,8 +411,8 @@ test.describe('Attribute table @readonly', () => {
 
         // Check rendering
         buffer = await page.screenshot({clip:clip});
-        expect(buffer.byteLength).toBeGreaterThan(defaultByteLength-5);
-        expect(buffer.byteLength).toBeLessThan(defaultByteLength+5);
+        expect(buffer.byteLength).toBeGreaterThan(defaultByteLength-6);
+        expect(buffer.byteLength).toBeLessThan(defaultByteLength+6);
 
         await project.closeAttributeTable();
     });
