@@ -3,7 +3,6 @@ import { test, expect } from '@playwright/test';
 import { ProjectPage } from './pages/project';
 import { expectParametersToContain, getAuthStorageStatePath } from './globals';
 import { AdminPage } from "./pages/admin";
-import { gotoMap } from './globals';
 
 test.describe('Attribute table @readonly', () => {
 
@@ -645,37 +644,70 @@ test.describe('Attribute table @readonly', () => {
     });
 });
 
-test.describe('Attribute table data restricted to map extent', () => {
-    test.beforeEach(async ({ page }) => {
+test.describe('Attribute table data restricted to map extent @readonly', () => {
+
+    test('Data restriction and refresh button behaviour', async ({ page }) => {
+        // Update config to update limitDataToBbox
         await page.route('**/service/getProjectConfig*', async route => {
             const response = await route.fetch();
             const json = await response.json();
             json.options['limitDataToBbox'] = 'True';
             await route.fulfill({ response, json });
         });
-        const url = '/index.php/view/map/?repository=testsrepository&project=attribute_table';
-        await gotoMap(url, page)
-    });
 
-    test('Data restriction and refresh button behaviour', async ({ page }) => {
         const project = new ProjectPage(page, 'attribute_table');
-        const layerName = 'Les_quartiers_a_Montpellier';
-        await project.openAttributeTable(layerName);
+        // Catch default GetMap
+        let getMapRequestPromise = project.waitForGetMapRequest();
+        await project.open();
+        let getMapRequest = await getMapRequestPromise;
+
+        //let layerName = 'Les quartiers à Montpellier';
+        let tableName = 'Les_quartiers_a_Montpellier';
+        let typeName = 'quartiers';
+
+        /** @type {{[key: string]: string|RegExp}} */
+        let getMapExpectedParameters = {
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'REQUEST': 'GetMap',
+            'FORMAT': /^image\/png/,
+            'TRANSPARENT': /\b(\w*^true$\w*)\b/gmi,
+            'LAYERS': typeName,
+            'CRS': 'EPSG:2154',
+            'WIDTH': '958',
+            'HEIGHT': '633',
+            'BBOX': /738930.9\d+,6258456.2\d+,802298.7\d+,6300326.6\d+/,
+        }
+        await expectParametersToContain('GetMap', getMapRequest.url(), getMapExpectedParameters);
+        await getMapRequest.response();
+
+        await project.openAttributeTable(tableName);
+        let tableHtml = project.attributeTableHtml(tableName);
+
+        // Check table lines
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(7);
 
         await expect(page.locator('.btn-refresh-table')).not.toHaveClass(/btn-warning/);
 
-        const getMapPromise = page.waitForRequest(/GetMap/);
+        // Use the first line
+        let firstTr = tableHtml.locator('tbody tr').first();
+        await expect(firstTr.locator('lizmap-feature-toolbar .feature-zoom')).toBeVisible();
 
-        await page.locator('lizmap-feature-toolbar:nth-child(1) > div:nth-child(1) > button:nth-child(3)').first().click();
+        getMapRequestPromise = project.waitForGetMapRequest();
+        await firstTr.locator('lizmap-feature-toolbar .feature-zoom').click();
 
-        await getMapPromise;
+        getMapRequest = await getMapRequestPromise;
+        // Update expected GetMap Parameters
+        getMapExpectedParameters['BBOX'] = /766383.9\d+,6280282.4\d+,772720.7\d+,6284469.4\d+/;
+        await expectParametersToContain('GetMap', getMapRequest.url(), getMapExpectedParameters);
+        await getMapRequest.response();
 
         await expect(page.locator('.btn-refresh-table')).toHaveClass(/btn-warning/);
 
         // Refresh
         await page.locator('.btn-refresh-table').click();
 
-        await expect(project.attributeTableHtml(layerName).locator('tbody tr')).toHaveCount(5);
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(5);
     });
 });
 
