@@ -3,9 +3,612 @@ import { test, expect } from '@playwright/test';
 import { ProjectPage } from './pages/project';
 import { expectParametersToContain, getAuthStorageStatePath } from './globals';
 import { AdminPage } from "./pages/admin";
-import { gotoMap } from './globals';
 
-test.describe('Attribute table', () => {
+/**
+ * @typedef {object} Position
+ * @property {number} x coord x in pixel in the page
+ * @property {number} y coord y in pixel in the page
+ */
+
+/**
+ * Move the map from a position to another
+ * @param {ProjectPage} project the project page
+ * @param {Position} from the start position
+ * @param {Position} to the end position
+ */
+const moveMap = async (project, from, to) => {
+    await project.map.hover()
+    await project.page.mouse.move(from.x, from.y)
+    await project.page.mouse.down()
+    await project.page.waitForTimeout(100)
+
+    const distX = to.x-from.x;
+    const distY = to.y-from.y;
+    const steps = Math.max(Math.abs(distX), Math.abs(distY));
+    let step = 0;
+    while (step < steps) {
+        step += 1;
+        await project.page.mouse.move(
+            Math.floor(from.x + (distX * step / steps)),
+            Math.floor(from.y + (distY * step / steps)),
+        );
+        await project.page.waitForTimeout(10);
+    }
+
+    await project.page.mouse.move(to.x, to.y)
+    await project.page.waitForTimeout(100)
+    await project.page.mouse.up()
+    await project.map.hover()
+}
+
+test.describe('Attribute table @readonly', () => {
+
+    test('Should have correct column order', async ({ page }) => {
+        const project = new ProjectPage(page, 'attribute_table');
+        await project.open();
+
+        let layerName = 'quartiers_shp';
+        await project.openAttributeTable(layerName);
+        let tableWrapper = project.attributeTableWrapper(layerName);
+        await expect(tableWrapper.locator('div.dataTables_scrollHead th'))
+            .toHaveCount(6);
+        await expect(tableWrapper.locator('div.dataTables_scrollHead th').nth(0))
+            .toHaveText('');
+        await expect(tableWrapper.locator('div.dataTables_scrollHead th').nth(1))
+            .toHaveText('quartmno');
+        await expect(tableWrapper.locator('div.dataTables_scrollHead th').nth(2))
+            .toHaveText('libquart');
+        await expect(tableWrapper.locator('div.dataTables_scrollHead th').nth(3))
+            .toHaveText('photo');
+        await expect(tableWrapper.locator('div.dataTables_scrollHead th').nth(4))
+            .toHaveText('url');
+        await expect(tableWrapper.locator('div.dataTables_scrollHead th').nth(5))
+            .toHaveText('thumbnail');
+        await project.closeAttributeTable();
+
+        layerName = 'Les_quartiers_a_Montpellier';
+        await project.openAttributeTable(layerName);
+        tableWrapper = project.attributeTableWrapper(layerName);
+        await expect(tableWrapper.locator('div.dataTables_scrollHead th'))
+            .toHaveCount(7);
+        await expect(tableWrapper.locator('div.dataTables_scrollHead th').nth(0))
+            .toHaveText('');
+        await expect(tableWrapper.locator('div.dataTables_scrollHead th').nth(1))
+            .toHaveText('quartier');
+        await expect(tableWrapper.locator('div.dataTables_scrollHead th').nth(2))
+            .toHaveText('quartmno');
+        await expect(tableWrapper.locator('div.dataTables_scrollHead th').nth(3))
+            .toHaveText('libquart');
+        await expect(tableWrapper.locator('div.dataTables_scrollHead th').nth(4))
+            .toHaveText('thumbnail');
+        await expect(tableWrapper.locator('div.dataTables_scrollHead th').nth(5))
+            .toHaveText('url');
+        await expect(tableWrapper.locator('div.dataTables_scrollHead th').nth(6))
+            .toHaveText('photo');
+        await project.closeAttributeTable();
+    });
+
+    test('Should select / filter / refresh with map interaction', async ({ page }) => {
+        const project = new ProjectPage(page, 'attribute_table');
+        // Catch default GetMap
+        let getMapRequestPromise = project.waitForGetMapRequest();
+        await project.open();
+        let getMapRequest = await getMapRequestPromise;
+
+        let layerName = 'Les quartiers à Montpellier';
+        let tableName = 'Les_quartiers_a_Montpellier';
+        let typeName = 'quartiers';
+
+        /** @type {{[key: string]: string|RegExp}} */
+        let getMapExpectedParameters = {
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'REQUEST': 'GetMap',
+            'FORMAT': /^image\/png/,
+            'TRANSPARENT': /\b(\w*^true$\w*)\b/gmi,
+            'LAYERS': typeName,
+            'CRS': 'EPSG:2154',
+            'WIDTH': '958',
+            'HEIGHT': '633',
+            'BBOX': /738930.9\d+,6258456.2\d+,802298.7\d+,6300326.6\d+/,
+        }
+        await expectParametersToContain('GetMap', getMapRequest.url(), getMapExpectedParameters);
+        await getMapRequest.response();
+
+        let req_url = new URL(getMapRequest.url())
+        expect(req_url.searchParams.get('SELECTIONTOKEN')).toBeNull();
+        expect(req_url.searchParams.get('FILTERTOKEN')).toBeNull();
+
+        // Drag Map && catch GetMap
+        getMapRequestPromise = project.waitForGetMapRequest();
+        await moveMap(project,{x:400, y:250},{x:500, y:150});
+        getMapRequest = await getMapRequestPromise;
+        //getMapExpectedParameters['BBOX'] = /731487.3\d+,6251012.6\d+,794855.1\d+,6292883.0\d+/;
+        //getMapExpectedParameters['BBOX'] = /729436.6\d+,6248961.9\d+,792804.5\d+,6290832.3\d+/;
+        getMapExpectedParameters['BBOX'] = /732448.6\d+,6251973.9\d+,795816.4\d+,6293844.3\d+/;
+        //delete getMapExpectedParameters['BBOX'];
+        await expectParametersToContain('GetMap', getMapRequest.url(), getMapExpectedParameters);
+        await getMapRequest.response();
+        await page.waitForTimeout(100)
+
+        // Check rendering
+        const clip = {x:420, y:120, width:256, height:256};
+        let buffer = await page.screenshot({clip:clip});
+        const defaultByteLength = buffer.byteLength;
+        expect(defaultByteLength).toBeGreaterThan(8000); // 8667
+        expect(defaultByteLength).toBeLessThan(10000); // 8667
+
+        await project.openAttributeTable(tableName);
+        let tableHtml = project.attributeTableHtml(tableName);
+
+        // Check table lines
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(7);
+
+        // Use line with id 2
+        let tr2 = tableHtml.locator('tbody tr[id="2"]');
+        expect(tr2.locator('lizmap-feature-toolbar .feature-select')).toBeVisible();
+
+        // Selection disabled
+        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('btn-primary');
+        await expect(tr2).not.toContainClass('selected');
+
+        // Select feature
+        // click on select Button
+        let getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
+        await tr2.locator('lizmap-feature-toolbar .feature-select').click();
+        let getSelectionTokenRequest = await getSelectionTokenRequestPromise;
+        // Once the GetSelectionToken is received, the map is refreshed
+        getMapRequestPromise = project.waitForGetMapRequest();
+        await getSelectionTokenRequest.response();
+        getMapRequest = await getMapRequestPromise;
+        await getMapRequest.response();
+
+        // Check GetSelectionToken request
+        const getSelectionTokenParameters = {
+            'service': 'WMS',
+            'request': 'GETSELECTIONTOKEN',
+            'typename': typeName,
+            'ids': '2',
+        }
+        await expectParametersToContain('GetSelectionToken', getSelectionTokenRequest.postData() ?? '', getSelectionTokenParameters);
+        // update expected GetMap parameters
+        getMapExpectedParameters['SELECTIONTOKEN'] = /^[a-zA-Z0-9]{32}$/;
+        await expectParametersToContain('GetMap', getMapRequest.url(), getMapExpectedParameters);
+
+        req_url = new URL(getMapRequest.url())
+        expect(req_url.searchParams.get('SELECTIONTOKEN')).not.toBeNull()
+        expect(req_url.searchParams.get('FILTERTOKEN')).toBeNull()
+
+        // Check that the select button display that the feature is selected
+        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).toContainClass('btn-primary');
+        await expect(tr2).toContainClass('selected');
+
+        // Check rendering
+        buffer = await page.screenshot({clip:clip});
+        const selectByteLength = buffer.byteLength;
+        expect(selectByteLength).toBeGreaterThan(8000); // 8607
+        expect(selectByteLength).not.toBe(defaultByteLength); // 8667
+        expect(selectByteLength).toBeLessThan(10000);
+
+        // click on filter Button
+        let actionBar = project.attributeTableActionBar(tableName);
+        let getFilterTokenRequestPromise = project.waitForGetFilterTokenRequest();
+        await actionBar.locator('.btn-filter-attributeTable').click();
+        let getFilterTokenRequest = await getFilterTokenRequestPromise;
+
+        // Once the GetFilterToken is received, the map is refreshed
+        getMapRequestPromise = project.waitForGetMapRequest();
+        await getFilterTokenRequest.response();
+        getMapRequest = await getMapRequestPromise;
+        await getMapRequest.response();
+
+        // Check GetSelectionToken request
+        const getFilterTokenParameters = {
+            'service': 'WMS',
+            'request': 'GETFILTERTOKEN',
+            'typename': typeName,
+            'filter': typeName+':"quartier" IN ( 2 ) ',
+        }
+        await expectParametersToContain('GetFilterToken', getFilterTokenRequest.postData() ?? '', getFilterTokenParameters);
+
+        // update expected GetMap parameters
+        delete getMapExpectedParameters['SELECTIONTOKEN'];
+        getMapExpectedParameters['FILTERTOKEN'] = /^[a-zA-Z0-9]{32}$/;
+        await expectParametersToContain('GetMap', getMapRequest.url(), getMapExpectedParameters);
+
+        req_url = new URL(getMapRequest.url())
+        expect(req_url.searchParams.get('SELECTIONTOKEN')).toBeNull()
+        expect(req_url.searchParams.get('FILTERTOKEN')).not.toBeNull()
+
+        // Check that the filter button display that the feature is filtered
+        await expect(actionBar.locator('.btn-filter-attributeTable')).toContainClass('btn-primary');
+
+        // Check table lines are filtered
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(1);
+
+        // Selection disabled
+        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('btn-primary');
+        await expect(tr2).not.toContainClass('selected');
+
+        // Check tree view
+        await expect(page.getByTestId(layerName).locator('.node')).toContainClass('filtered');
+        await expect(page.locator('#layerActionUnfilter')).toBeVisible();
+
+        // Check rendering
+        buffer = await page.screenshot({clip:clip});
+        const filterByteLength = buffer.byteLength;
+        expect(filterByteLength).toBeLessThan(defaultByteLength); // 2781
+        expect(filterByteLength).toBeLessThan(selectByteLength); // 2781
+        expect(filterByteLength).toBeLessThan(3000); // 2781
+
+        // Disable filter
+        await actionBar.locator('.btn-filter-attributeTable').click();
+
+        // Check that the filter button display that the feature is not filtered
+        await expect(actionBar.locator('.btn-filter-attributeTable')).not.toContainClass('btn-primary');
+
+        // Check table lines are filtered
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(7);
+
+        // Check tree view
+        await expect(page.getByTestId(layerName).locator('.node')).not.toContainClass('filtered');
+        await expect(page.locator('#layerActionUnfilter')).not.toBeVisible();
+
+        // Check rendering
+        buffer = await page.screenshot({clip:clip});
+        expect(buffer.byteLength).toBeGreaterThan(defaultByteLength-6);
+        expect(buffer.byteLength).toBeLessThan(defaultByteLength+6);
+
+        // select feature 2,4,6
+        // click to select 2
+        getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
+        await tr2.locator('lizmap-feature-toolbar .feature-select').click();
+        getSelectionTokenRequest = await getSelectionTokenRequestPromise;
+        // Check GetSelectionToken request
+        await expectParametersToContain('GetSelectionToken', getSelectionTokenRequest.postData() ?? '', getSelectionTokenParameters);
+        await getSelectionTokenRequest.response();
+
+        // Use line with id 4
+        let tr4 = tableHtml.locator('tbody tr[id="4"]');
+        expect(tr4.locator('lizmap-feature-toolbar .feature-select')).toBeVisible();
+        // Use line with id 6
+        let tr6 = tableHtml.locator('tbody tr[id="6"]');
+        expect(tr6.locator('lizmap-feature-toolbar .feature-select')).toBeVisible();
+
+
+        // Check that the select button display that the feature is selected
+        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).toContainClass('btn-primary');
+        await expect(tr2).toContainClass('selected');
+        await expect(tr4.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('btn-primary');
+        await expect(tr4).not.toContainClass('selected');
+        await expect(tr6.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('btn-primary');
+        await expect(tr6).not.toContainClass('selected');
+
+        // click to select 4
+        getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
+        await tr4.locator('lizmap-feature-toolbar .feature-select').click();
+        getSelectionTokenRequest = await getSelectionTokenRequestPromise;
+        // Once the GetSelectionToken is received, the map is refreshed
+        getMapRequestPromise = project.waitForGetMapRequest();
+        await getSelectionTokenRequest.response();
+        getMapRequest = await getMapRequestPromise;
+        await getMapRequest.response();
+
+        // Update expected GetSelection token parameters
+        getSelectionTokenParameters['ids'] = '2,4'
+        // Check GetSelectionToken request
+        await expectParametersToContain('GetSelectionToken', getSelectionTokenRequest.postData() ?? '', getSelectionTokenParameters);
+
+        // Check that the select button display that the feature is selected
+        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).toContainClass('btn-primary');
+        await expect(tr2).toContainClass('selected');
+        await expect(tr4.locator('lizmap-feature-toolbar .feature-select')).toContainClass('btn-primary');
+        await expect(tr4).toContainClass('selected');
+        await expect(tr6.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('btn-primary');
+        await expect(tr6).not.toContainClass('selected');
+
+        // click to select 6
+        getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
+        await tr6.locator('lizmap-feature-toolbar .feature-select').click();
+        getSelectionTokenRequest = await getSelectionTokenRequestPromise;
+        // Once the GetSelectionToken is received, the map is refreshed
+        getMapRequestPromise = project.waitForGetMapRequest();
+        await getSelectionTokenRequest.response();
+
+        // Update expected GetSelection token parameters
+        getSelectionTokenParameters['ids'] = '2,4,6'
+        // Check GetSelectionToken request
+        await expectParametersToContain('GetSelectionToken', getSelectionTokenRequest.postData() ?? '', getSelectionTokenParameters);
+
+        // update expected GetMap paramaeters
+        delete getMapExpectedParameters['FILTERTOKEN'];
+        getMapExpectedParameters['SELECTIONTOKEN'] = /^[a-zA-Z0-9]{32}$/;
+        getMapRequest = await getMapRequestPromise;
+        await expectParametersToContain('GetMap', getMapRequest.url(), getMapExpectedParameters);
+        await getMapRequest.response();
+
+        req_url = new URL(getMapRequest.url())
+        expect(req_url.searchParams.get('SELECTIONTOKEN')).not.toBeNull()
+        expect(req_url.searchParams.get('FILTERTOKEN')).toBeNull()
+
+        // Check that the select button display that the feature is selected
+        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).toContainClass('btn-primary');
+        await expect(tr2).toContainClass('selected');
+        await expect(tr4.locator('lizmap-feature-toolbar .feature-select')).toContainClass('btn-primary');
+        await expect(tr4).toContainClass('selected');
+        await expect(tr6.locator('lizmap-feature-toolbar .feature-select')).toContainClass('btn-primary');
+        await expect(tr6).toContainClass('selected');
+
+        // Check rendering
+        buffer = await page.screenshot({clip:clip});
+        const muliSelectByteLength = buffer.byteLength;
+        expect(muliSelectByteLength).toBeGreaterThan(8000);
+        expect(muliSelectByteLength).not.toBe(defaultByteLength);
+        expect(muliSelectByteLength).not.toBe(selectByteLength);
+        expect(muliSelectByteLength).toBeLessThan(10000);
+
+        // click on filter Button
+        getFilterTokenRequestPromise = project.waitForGetFilterTokenRequest();
+        await actionBar.locator('.btn-filter-attributeTable').click();
+        getFilterTokenRequest = await getFilterTokenRequestPromise;
+
+        // Once the GetFilterToken is received, the map is refreshed
+        getMapRequestPromise = project.waitForGetMapRequest();
+        await getFilterTokenRequest.response();
+        getMapRequest = await getMapRequestPromise;
+        await getMapRequest.response();
+
+        // Check GetSelectionToken request
+        getFilterTokenParameters['filter'] = typeName+':"quartier" IN ( 2 , 6 , 4 ) ';
+        await expectParametersToContain('GetFilterToken', getFilterTokenRequest.postData() ?? '', getFilterTokenParameters);
+        // update expected GetMap parameters
+        delete getMapExpectedParameters['SELECTIONTOKEN'];
+        getMapExpectedParameters['FILTERTOKEN'] = /^[a-zA-Z0-9]{32}$/;
+        await expectParametersToContain('GetMap', getMapRequest.url(), getMapExpectedParameters);
+
+        req_url = new URL(getMapRequest.url())
+        expect(req_url.searchParams.get('SELECTIONTOKEN')).toBeNull()
+        expect(req_url.searchParams.get('FILTERTOKEN')).not.toBeNull()
+
+        // Check that the filter button display that the feature is filtered
+        await expect(actionBar.locator('.btn-filter-attributeTable')).toContainClass('btn-primary');
+
+        // Check table lines are filtered
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(3);
+
+        // Selection disabled
+        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('btn-primary');
+        await expect(tr2).not.toContainClass('selected');
+        await expect(tr4.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('btn-primary');
+        await expect(tr4).not.toContainClass('selected');
+        await expect(tr6.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('btn-primary');
+        await expect(tr6).not.toContainClass('selected');
+
+        // Check tree view
+        await expect(page.getByTestId(layerName).locator('.node')).toContainClass('filtered');
+        await expect(page.locator('#layerActionUnfilter')).toBeVisible();
+
+        // Check rendering
+        buffer = await page.screenshot({clip:clip});
+        const multiFilterByteLength = buffer.byteLength;
+        expect(multiFilterByteLength).toBeLessThan(defaultByteLength); // 2781
+        expect(multiFilterByteLength).toBeLessThan(selectByteLength); // 2781
+        expect(multiFilterByteLength).toBeGreaterThan(filterByteLength);
+        expect(multiFilterByteLength).toBeGreaterThan(6000);
+
+        // Disable filter
+        await actionBar.locator('.btn-filter-attributeTable').click();
+
+        // Check that the filter button display that the feature is not filtered
+        await expect(actionBar.locator('.btn-filter-attributeTable')).not.toContainClass('btn-primary');
+
+        // Check table lines are filtered
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(7);
+
+        // Check tree view
+        await expect(page.getByTestId(layerName).locator('.node')).not.toContainClass('filtered');
+        await expect(page.locator('#layerActionUnfilter')).not.toBeVisible();
+
+        // Check rendering
+        buffer = await page.screenshot({clip:clip});
+        expect(buffer.byteLength).toBeGreaterThan(defaultByteLength-6);
+        expect(buffer.byteLength).toBeLessThan(defaultByteLength+6);
+
+        await project.closeAttributeTable();
+    });
+
+    test('Should select / filter / refresh without map interaction', async ({ page }) => {
+        const project = new ProjectPage(page, 'attribute_table');
+        await project.open();
+
+        const tableName = 'quartiers_shp';
+        const typeName = 'quartiers_shp';
+        const layerName = 'quartiers_shp';
+
+        await project.openAttributeTable(tableName);
+        let tableHtml = project.attributeTableHtml(tableName);
+
+        // Check table lines
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(7);
+
+        // Use line with id 2
+        let tr2 = tableHtml.locator('tbody tr[id="2"]');
+        expect(tr2.locator('lizmap-feature-toolbar .feature-select')).toBeVisible();
+
+        // Selection disabled
+        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('btn-primary');
+        await expect(tr2).not.toContainClass('selected');
+
+        // Select feature
+        // click on select Button
+        let getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
+        await tr2.locator('lizmap-feature-toolbar .feature-select').click();
+        let getSelectionTokenRequest = await getSelectionTokenRequestPromise;
+        await getSelectionTokenRequest.response();
+
+        // Check GetSelectionToken request
+        const getSelectionTokenParameters = {
+            'service': 'WMS',
+            'request': 'GETSELECTIONTOKEN',
+            'typename': typeName,
+            'ids': '2',
+        }
+        await expectParametersToContain('GetSelectionToken', getSelectionTokenRequest.postData() ?? '', getSelectionTokenParameters);
+
+        // Check that the select button display that the feature is selected
+        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).toContainClass('btn-primary');
+        await expect(tr2).toContainClass('selected');
+
+        // click on filter Button
+        let actionBar = project.attributeTableActionBar(tableName);
+        let getFilterTokenRequestPromise = project.waitForGetFilterTokenRequest();
+        await actionBar.locator('.btn-filter-attributeTable').click();
+        let getFilterTokenRequest = await getFilterTokenRequestPromise;
+        await getFilterTokenRequest.response();
+
+        // Check GetSelectionToken request
+        const getFilterTokenParameters = {
+            'service': 'WMS',
+            'request': 'GETFILTERTOKEN',
+            'typename': typeName,
+            'filter': typeName+':"quartier" IN ( 3 ) ',
+        }
+        await expectParametersToContain('GetFilterToken', getFilterTokenRequest.postData() ?? '', getFilterTokenParameters);
+
+        // Check that the filter button display that the feature is filtered
+        await expect(actionBar.locator('.btn-filter-attributeTable')).toContainClass('btn-primary');
+
+        // Check table lines are filtered
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(1);
+
+        // Selection disabled
+        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('btn-primary');
+        await expect(tr2).not.toContainClass('selected');
+
+        // Check tree view
+        await expect(page.getByTestId(layerName).locator('.node')).toContainClass('filtered');
+        await expect(page.locator('#layerActionUnfilter')).toBeVisible();
+
+        // Disable filter
+        await actionBar.locator('.btn-filter-attributeTable').click();
+
+        // Check that the filter button display that the feature is not filtered
+        await expect(actionBar.locator('.btn-filter-attributeTable')).not.toContainClass('btn-primary');
+
+        // Check table lines are filtered
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(7);
+
+        // Check tree view
+        await expect(page.getByTestId(layerName).locator('.node')).not.toContainClass('filtered');
+        await expect(page.locator('#layerActionUnfilter')).not.toBeVisible();
+
+
+        // select feature 2,4,6
+        // click to select 2
+        getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
+        await tr2.locator('lizmap-feature-toolbar .feature-select').click();
+        getSelectionTokenRequest = await getSelectionTokenRequestPromise;
+        // Check GetSelectionToken request
+        await expectParametersToContain('GetSelectionToken', getSelectionTokenRequest.postData() ?? '', getSelectionTokenParameters);
+        await getSelectionTokenRequest.response();
+
+        // Use line with id 4
+        let tr4 = tableHtml.locator('tbody tr[id="4"]');
+        expect(tr4.locator('lizmap-feature-toolbar .feature-select')).toBeVisible();
+        // Use line with id 6
+        let tr6 = tableHtml.locator('tbody tr[id="6"]');
+        expect(tr6.locator('lizmap-feature-toolbar .feature-select')).toBeVisible();
+
+
+        // Check that the select button display that the feature is selected
+        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).toContainClass('btn-primary');
+        await expect(tr2).toContainClass('selected');
+        await expect(tr4.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('btn-primary');
+        await expect(tr4).not.toContainClass('selected');
+        await expect(tr6.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('btn-primary');
+        await expect(tr6).not.toContainClass('selected');
+
+        // click to select 4
+        getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
+        await tr4.locator('lizmap-feature-toolbar .feature-select').click();
+        getSelectionTokenRequest = await getSelectionTokenRequestPromise;
+        await getSelectionTokenRequest.response();
+
+        // Update expected GetSelection token parameters
+        getSelectionTokenParameters['ids'] = '2,4'
+        // Check GetSelectionToken request
+        await expectParametersToContain('GetSelectionToken', getSelectionTokenRequest.postData() ?? '', getSelectionTokenParameters);
+
+        // Check that the select button display that the feature is selected
+        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).toContainClass('btn-primary');
+        await expect(tr2).toContainClass('selected');
+        await expect(tr4.locator('lizmap-feature-toolbar .feature-select')).toContainClass('btn-primary');
+        await expect(tr4).toContainClass('selected');
+        await expect(tr6.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('btn-primary');
+        await expect(tr6).not.toContainClass('selected');
+
+        // click to select 6
+        getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
+        await tr6.locator('lizmap-feature-toolbar .feature-select').click();
+        getSelectionTokenRequest = await getSelectionTokenRequestPromise;
+        await getSelectionTokenRequest.response();
+
+        // Update expected GetSelection token parameters
+        getSelectionTokenParameters['ids'] = '2,4,6'
+        // Check GetSelectionToken request
+        await expectParametersToContain('GetSelectionToken', getSelectionTokenRequest.postData() ?? '', getSelectionTokenParameters);
+
+        // Check that the select button display that the feature is selected
+        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).toContainClass('btn-primary');
+        await expect(tr2).toContainClass('selected');
+        await expect(tr4.locator('lizmap-feature-toolbar .feature-select')).toContainClass('btn-primary');
+        await expect(tr4).toContainClass('selected');
+        await expect(tr6.locator('lizmap-feature-toolbar .feature-select')).toContainClass('btn-primary');
+        await expect(tr6).toContainClass('selected');
+
+        // click on filter Button
+        getFilterTokenRequestPromise = project.waitForGetFilterTokenRequest();
+        await actionBar.locator('.btn-filter-attributeTable').click();
+        getFilterTokenRequest = await getFilterTokenRequestPromise;
+        await getFilterTokenRequest.response();
+
+        // Check GetSelectionToken request
+        getFilterTokenParameters['filter'] = typeName+':"quartier" IN ( 3 , 7 , 4 ) ';
+        await expectParametersToContain('GetFilterToken', getFilterTokenRequest.postData() ?? '', getFilterTokenParameters);
+
+        // Check that the filter button display that the feature is filtered
+        await expect(actionBar.locator('.btn-filter-attributeTable')).toContainClass('btn-primary');
+
+        // Check table lines are filtered
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(3);
+
+        // Selection disabled
+        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('btn-primary');
+        await expect(tr2).not.toContainClass('selected');
+        await expect(tr4.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('btn-primary');
+        await expect(tr4).not.toContainClass('selected');
+        await expect(tr6.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('btn-primary');
+        await expect(tr6).not.toContainClass('selected');
+
+        // Check tree view
+        await expect(page.getByTestId(layerName).locator('.node')).toContainClass('filtered');
+        await expect(page.locator('#layerActionUnfilter')).toBeVisible();
+
+        // Disable filter
+        await actionBar.locator('.btn-filter-attributeTable').click();
+
+        // Check that the filter button display that the feature is not filtered
+        await expect(actionBar.locator('.btn-filter-attributeTable')).not.toContainClass('btn-primary');
+
+        // Check table lines are filtered
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(7);
+
+        // Check tree view
+        await expect(page.getByTestId(layerName).locator('.node')).not.toContainClass('filtered');
+        await expect(page.locator('#layerActionUnfilter')).not.toBeVisible();
+
+        await project.closeAttributeTable();
+    });
 
     test('Thumbnail class generate img with good path', async ({ page }) => {
         const project = new ProjectPage(page, 'attribute_table');
@@ -50,37 +653,70 @@ test.describe('Attribute table', () => {
     });
 });
 
-test.describe('Attribute table data restricted to map extent', () => {
-    test.beforeEach(async ({ page }) => {
+test.describe('Attribute table data restricted to map extent @readonly', () => {
+
+    test('Data restriction and refresh button behaviour', async ({ page }) => {
+        // Update config to update limitDataToBbox
         await page.route('**/service/getProjectConfig*', async route => {
             const response = await route.fetch();
             const json = await response.json();
             json.options['limitDataToBbox'] = 'True';
             await route.fulfill({ response, json });
         });
-        const url = '/index.php/view/map/?repository=testsrepository&project=attribute_table';
-        await gotoMap(url, page)
-    });
 
-    test('Data restriction and refresh button behaviour', async ({ page }) => {
         const project = new ProjectPage(page, 'attribute_table');
-        const layerName = 'Les_quartiers_a_Montpellier';
-        await project.openAttributeTable(layerName);
+        // Catch default GetMap
+        let getMapRequestPromise = project.waitForGetMapRequest();
+        await project.open();
+        let getMapRequest = await getMapRequestPromise;
+
+        //let layerName = 'Les quartiers à Montpellier';
+        let tableName = 'Les_quartiers_a_Montpellier';
+        let typeName = 'quartiers';
+
+        /** @type {{[key: string]: string|RegExp}} */
+        let getMapExpectedParameters = {
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'REQUEST': 'GetMap',
+            'FORMAT': /^image\/png/,
+            'TRANSPARENT': /\b(\w*^true$\w*)\b/gmi,
+            'LAYERS': typeName,
+            'CRS': 'EPSG:2154',
+            'WIDTH': '958',
+            'HEIGHT': '633',
+            'BBOX': /738930.9\d+,6258456.2\d+,802298.7\d+,6300326.6\d+/,
+        }
+        await expectParametersToContain('GetMap', getMapRequest.url(), getMapExpectedParameters);
+        await getMapRequest.response();
+
+        await project.openAttributeTable(tableName);
+        let tableHtml = project.attributeTableHtml(tableName);
+
+        // Check table lines
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(7);
 
         await expect(page.locator('.btn-refresh-table')).not.toHaveClass(/btn-warning/);
 
-        const getMapPromise = page.waitForRequest(/GetMap/);
+        // Use the first line
+        let firstTr = tableHtml.locator('tbody tr').first();
+        await expect(firstTr.locator('lizmap-feature-toolbar .feature-zoom')).toBeVisible();
 
-        await page.locator('lizmap-feature-toolbar:nth-child(1) > div:nth-child(1) > button:nth-child(3)').first().click();
+        getMapRequestPromise = project.waitForGetMapRequest();
+        await firstTr.locator('lizmap-feature-toolbar .feature-zoom').click();
 
-        await getMapPromise;
+        getMapRequest = await getMapRequestPromise;
+        // Update expected GetMap Parameters
+        getMapExpectedParameters['BBOX'] = /766383.9\d+,6280282.4\d+,772720.7\d+,6284469.4\d+/;
+        await expectParametersToContain('GetMap', getMapRequest.url(), getMapExpectedParameters);
+        await getMapRequest.response();
 
         await expect(page.locator('.btn-refresh-table')).toHaveClass(/btn-warning/);
 
         // Refresh
         await page.locator('.btn-refresh-table').click();
 
-        await expect(project.attributeTableHtml(layerName).locator('tbody tr')).toHaveCount(5);
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(5);
     });
 });
 
