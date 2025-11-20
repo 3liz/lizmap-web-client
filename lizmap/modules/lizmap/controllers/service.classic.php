@@ -1098,6 +1098,16 @@ class serviceCtrl extends jController
             );
         }
 
+        // Validate that filename has the correct extension for the requested format
+        // If not, use fallback to ensure proper file extension
+        if ($fileName) {
+            $expectedExtension = '.'.$this->params['format'];
+            if (!preg_match('/\.'.preg_quote($this->params['format'], '/').'$/i', $fileName)) {
+                // Filename doesn't have the correct extension, use fallback
+                $fileName = null;
+            }
+        }
+
         // Fallback to default naming if still no filename
         if (!$fileName) {
             $fileName = $this->project->getKey().'_'.preg_replace('#[\W]+#', '_', $this->params['template']).'.'.$this->params['format'];
