@@ -353,15 +353,9 @@ var lizLayerActionButtons = function() {
                                     // Handle checked state
                                     if (hasCheckedLegendNodes) {
                                         // Layer has checked-legend-nodes defined in theme:
-                                        // 1. First uncheck all symbology children
-                                        // 2. Then check only those in the list
+                                        // Toggle rule checkbox based on layer configuration
                                         for (const symbol of symbologyChildren) {
-                                            symbol.checked = false;
-                                        }
-                                        for (const symbol of symbologyChildren) {
-                                            if (layerCheckedLegendNodes.includes(symbol.ruleKey)) {
-                                                symbol.checked = true;
-                                            }
+                                            symbol.checked = layerCheckedLegendNodes.includes(symbol.ruleKey);
                                         }
                                     } else {
                                         // Layer in theme but no checked-legend-nodes defined:
@@ -393,16 +387,7 @@ var lizLayerActionButtons = function() {
                             }
                         }
 
-                        // STEP 2: Set ALL groups OFF
-                        for (const item of allItems) {
-                            if (item.mapItemState.itemState.type !== "group") {
-                                continue; // Skip layers
-                            }
-                            item.checked = false;
-                            item.expanded = false;
-                        }
-
-                        // STEP 3: Set specific groups ON (those in checkedGroupNodes)
+                        // STEP 2: Set groups checked/expanded state based on theme configuration
                         for (const item of allItems) {
                             if (item.mapItemState.itemState.type !== "group") {
                                 continue; // Skip layers
@@ -422,34 +407,9 @@ var lizLayerActionButtons = function() {
                                 });
                             };
 
-                            if (isInList(checkedGroupNodes)) {
-                                item.checked = true;
-                            }
-                        }
-
-                        // STEP 4: Expand specific groups (those in expandedGroupNodes)
-                        for (const item of allItems) {
-                            if (item.mapItemState.itemState.type !== "group") {
-                                continue; // Skip layers
-                            }
-
-                            const wmsName = item.wmsName;
-                            const name = item.name;
-
-                            // Helper function to check if group is in list
-                            const isInList = (nodeList) => {
-                                if (nodeList.includes(wmsName) || nodeList.includes(name)) {
-                                    return true;
-                                }
-                                return nodeList.some(nodePath => {
-                                    const lastPart = nodePath.split('/').pop();
-                                    return lastPart === wmsName || lastPart === name;
-                                });
-                            };
-
-                            if (isInList(expandedGroupNodes)) {
-                                item.expanded = true;
-                            }
+                            // Directly set the correct state based on theme configuration
+                            item.checked = isInList(checkedGroupNodes);
+                            item.expanded = isInList(expandedGroupNodes);
                         }
 
                         // Resume permalink updates after theme application
