@@ -325,7 +325,7 @@ jobs:
         uses: cypress-io/github-action@v6.10.2
         with:
           install: false
-          browser: chrome
+          browser: chromium
           headed: true
           working-directory: tests/end2end
           spec: cypress/integration/*-ghaction.js
