@@ -2483,6 +2483,15 @@ class Project
             );
         }
 
+        // DXF Export
+        $tpl = new \jTpl();
+        $dockable[] = new \lizmapMapDockItem(
+            'dxfexport',
+            $this->appContext->getLocale('view~map.dxfexport.navbar.title'),
+            $tpl->fetch('view~map_dxfexport'),
+            10
+        );
+
         return $dockable;
     }
 
