@@ -14,6 +14,9 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * **[Faunalia](https://www.faunalia.eu/fr)** with @mind84
 * **[Avignon](https://www.avignon.fr/)**
 * **[TDPA](https://www.terredeprovence-agglo.com/)**
+* **[Klein und Leber GbR](https://www.gisgeometer.de/)** with @meyerlor
+* **[Destination Bretagne Sud Golfe du Morbihan](https://destination-bretagnesud.bzh/)**
+* **[Conseil Départemental du Calvados](https://www.calvados.fr/)**
 
 ### Fixed
 
@@ -22,6 +25,15 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Request IP now provided by JelixContext for logging event
 * Filter unique values list is empty if one is null
 * Selection tool - new, add & remove selection buttons shift vertically on hover
+* jAcl2Db cache clear when user is added to or removed from a group administration
+* Add German localization for DataTables, contribution from @meyerlor
+* Admin CORS: spaces in accessControlAllowOrigin
+* Editing - Allow to create a feature on a layer with login based attribute filter
+* CSS: legend image min width
+
+### Tests
+
+* Port Dataviz from Cypress to Playwright
 
 ## 3.8.14 - 2025-10-07
 
