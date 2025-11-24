@@ -1,5 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+import { expect as responseExpect } from './fixtures/expect-response.js'
 
 test.describe('WFS Requests @requests @readonly', () => {
     test('WFS Getcapabilities', async({ request }) => {
@@ -1609,6 +1610,134 @@ test.describe('WFS Requests @requests @readonly', () => {
         expect(feature).toHaveProperty('id', 'selection_polygon.1');
         expect(feature).toHaveProperty('properties');
         expect(feature.properties).toHaveProperty('id', 1);
+    });
+
+    test('WFS GetFeature RESULTTYPE=hits', async({ request }) => {
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'selection',
+        });
+        let url = `/index.php/lizmap/service?${params}`;
+        /** @type {{[key: string]: number|string}} */
+        let form = {
+            SERVICE: 'WFS',
+            VERSION: '1.0.0',
+            REQUEST: 'GetFeature',
+            TYPENAME: 'selection_polygon',
+            RESULTTYPE: 'hits',
+            OUTPUTFORMAT: 'GeoJSON',
+        };
+        let response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(2);
+
+        // MAX Features
+        form['MAXFEATURES'] = 1;
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(1);
+
+        // Max features & start index
+        form['STARTINDEX'] = 1;
+        form['MAXFEATURES'] = 2;
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(1);
+
+        delete form['STARTINDEX'];
+        delete form['MAXFEATURES'];
+
+        // BBOX
+        form['BBOX'] = '160786,900949,186133,925344';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(1);
+
+        // BBOX & SRSNAME
+        form['BBOX'] = '160786,900949,186133,925344';
+        form['SRSNAME'] = 'EPSG:2154';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(1);
+
+        // BBOX & SRSNAME 3857
+        form['BBOX'] = '-72399,-13474,-46812,14094';
+        form['SRSNAME'] = 'EPSG:3857';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(1);
+
+        delete form['BBOX'];
+        delete form['SRSNAME'];
+
+        // EXP_FILTER
+        form['EXP_FILTER'] = '$id IN (1)';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(1);
+
+        // EXP_FILTER & BBOX
+        form['EXP_FILTER'] = '$id IN (2)';
+        form['BBOX'] = '160786,900949,186133,925344';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(0);
+
+        delete form['EXP_FILTER'];
+        delete form['BBOX'];
+
+        // FEATUREID
+        form['FEATUREID'] = 'selection_polygon.1';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(1);
+
+        // FEATUREID & BBOX
+        form['FEATUREID'] = 'selection_polygon.2';
+        form['BBOX'] = '160786,900949,186133,925344';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(0);
     });
 });
 
