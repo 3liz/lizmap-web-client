@@ -2741,6 +2741,20 @@ test.describe('WFS Requests attribute_table @requests @readonly ', () => {
         expect(features.map(feat => feat.properties.quartier)).toEqual(
             [1,2,3,4,5,6,7].reverse()
         );
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        delete form['STARTINDEX'];
+        delete form['MAXFEATURES'];
+        delete form['SORTBY'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(7);
     });
 
     test('WFS GetFeature quartiers BBOX', async({ request }) => {
@@ -2852,6 +2866,20 @@ test.describe('WFS Requests attribute_table @requests @readonly ', () => {
         expect(features.map(feat => feat.properties.quartier)).toEqual(
             [1,2,3,6,7].reverse()
         );
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        delete form['STARTINDEX'];
+        delete form['MAXFEATURES'];
+        delete form['SORTBY'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(5);
     });
 
     test('WFS GetFeature random_points', async({ request }) => {
@@ -2938,6 +2966,19 @@ test.describe('WFS Requests attribute_table @requests @readonly ', () => {
         expect(body.features[14].properties.id).toEqual(685);
         expect(body.features[32].properties.id).toEqual(667);
         expect(body.features[49].properties.id).toEqual(650);
+
+        // RESULTTYPE=hits
+        delete form['SORTBY'];
+        delete form['STARTINDEX'];
+        delete form['MAXFEATURES'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(700);
     });
 });
 
