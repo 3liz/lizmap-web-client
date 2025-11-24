@@ -1,5 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+import { expect as responseExpect } from './fixtures/expect-response.js'
 
 test.describe('WFS Requests @requests @readonly', () => {
     test('WFS Getcapabilities', async({ request }) => {
@@ -1610,6 +1611,134 @@ test.describe('WFS Requests @requests @readonly', () => {
         expect(feature).toHaveProperty('properties');
         expect(feature.properties).toHaveProperty('id', 1);
     });
+
+    test('WFS GetFeature RESULTTYPE=hits', async({ request }) => {
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'selection',
+        });
+        let url = `/index.php/lizmap/service?${params}`;
+        /** @type {{[key: string]: number|string}} */
+        let form = {
+            SERVICE: 'WFS',
+            VERSION: '1.0.0',
+            REQUEST: 'GetFeature',
+            TYPENAME: 'selection_polygon',
+            RESULTTYPE: 'hits',
+            OUTPUTFORMAT: 'GeoJSON',
+        };
+        let response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(2);
+
+        // MAX Features
+        form['MAXFEATURES'] = 1;
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(1);
+
+        // Max features & start index
+        form['STARTINDEX'] = 1;
+        form['MAXFEATURES'] = 2;
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(1);
+
+        delete form['STARTINDEX'];
+        delete form['MAXFEATURES'];
+
+        // BBOX
+        form['BBOX'] = '160786,900949,186133,925344';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(1);
+
+        // BBOX & SRSNAME
+        form['BBOX'] = '160786,900949,186133,925344';
+        form['SRSNAME'] = 'EPSG:2154';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(1);
+
+        // BBOX & SRSNAME 3857
+        form['BBOX'] = '-72399,-13474,-46812,14094';
+        form['SRSNAME'] = 'EPSG:3857';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(1);
+
+        delete form['BBOX'];
+        delete form['SRSNAME'];
+
+        // EXP_FILTER
+        form['EXP_FILTER'] = '$id IN (1)';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(1);
+
+        // EXP_FILTER & BBOX
+        form['EXP_FILTER'] = '$id IN (2)';
+        form['BBOX'] = '160786,900949,186133,925344';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(0);
+
+        delete form['EXP_FILTER'];
+        delete form['BBOX'];
+
+        // FEATUREID
+        form['FEATUREID'] = 'selection_polygon.1';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(1);
+
+        // FEATUREID & BBOX
+        form['FEATUREID'] = 'selection_polygon.2';
+        form['BBOX'] = '160786,900949,186133,925344';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(0);
+    });
 });
 
 test.describe('WFS Requests filter_layer_by_user @requests @readonly ', () => {
@@ -1661,6 +1790,17 @@ test.describe('WFS Requests filter_layer_by_user @requests @readonly ', () => {
         expect(body).toHaveProperty('type', 'FeatureCollection');
         expect(body).toHaveProperty('features');
         expect(body.features).toHaveLength(0);
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(0);
     });
 
     test('WFS GetFeature blue_filter_layer_by_user for user_in_group_a', async({ request }) => {
@@ -1716,6 +1856,17 @@ test.describe('WFS Requests filter_layer_by_user @requests @readonly ', () => {
         expect(body.features).toHaveLength(1);
         expect(body.features[0]).toHaveProperty('properties');
         expect(body.features[0].properties).toHaveProperty('gid', 2);
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(1);
     });
 
     test('WFS GetFeature blue_filter_layer_by_user for user_in_group_b', async({ request }) => {
@@ -1771,6 +1922,17 @@ test.describe('WFS Requests filter_layer_by_user @requests @readonly ', () => {
         expect(body.features).toHaveLength(1);
         expect(body.features[0]).toHaveProperty('properties');
         expect(body.features[0].properties).toHaveProperty('gid', 2);
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(1);
     });
 
     test('WFS GetFeature blue_filter_layer_by_user for admin', async({ request }) => {
@@ -1822,6 +1984,17 @@ test.describe('WFS Requests filter_layer_by_user @requests @readonly ', () => {
         expect(body).toHaveProperty('type', 'FeatureCollection');
         expect(body).toHaveProperty('features');
         expect(body.features).toHaveLength(3);
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(3);
     });
 });
 
@@ -1875,6 +2048,17 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         expect(body).toHaveProperty('type', 'FeatureCollection');
         expect(body).toHaveProperty('features');
         expect(body.features).toHaveLength(0);
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(0);
     });
 
     test('WFS GetFeature shop_bakery_pg for user_in_group_a', async({ request }) => {
@@ -1937,6 +2121,17 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         expect(features.map(feat => feat.properties.id)).toEqual(
             expect.arrayContaining([2,9,18,25])
         );
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(4);
     });
 
     test('WFS GetFeature shop_bakery_pg for admin', async({ request }) => {
@@ -2003,6 +2198,17 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
                 [2,3,4,5,8,9,11,12,13,14,16,18,19,21,23,24,25]
             )
         );
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(17);
     });
 
     test('WFS GetFeature shop_bakery for anonymous', async({ request }) => {
@@ -2053,6 +2259,17 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         expect(body).toHaveProperty('type', 'FeatureCollection');
         expect(body).toHaveProperty('features');
         expect(body.features).toHaveLength(0);
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(0);
     });
 
     test('WFS GetFeature shop_bakery for user_in_group_a', async({ request }) => {
@@ -2115,6 +2332,17 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         expect(features.map(feat => feat.properties.id)).toEqual(
             expect.arrayContaining([16,103,119,163,168])
         );
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(5);
     });
 
     test('WFS GetFeature shop_bakery for admin', async({ request }) => {
@@ -2183,6 +2411,17 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
                 155,157,158,163,168,173,174,181,195,197,199,
             ])
         );
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(25);
     });
 
     test('WFS GetFeature townhalls_EPSG2154 for anonymous', async({ request }) => {
@@ -2233,6 +2472,17 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         expect(body).toHaveProperty('type', 'FeatureCollection');
         expect(body).toHaveProperty('features');
         expect(body.features).toHaveLength(0);
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(0);
     });
 
     test('WFS GetFeature townhalls_EPSG2154 for user_in_group_a', async({ request }) => {
@@ -2295,6 +2545,17 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         expect(features.map(feat => feat.properties.fid)).toEqual(
             expect.arrayContaining([2,11,15,25])
         );
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(4);
     });
 
     test('WFS GetFeature townhalls_EPSG2154 for admin', async({ request }) => {
@@ -2357,6 +2618,17 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         expect(features.map(feat => feat.properties.fid)).toEqual(
             expect.arrayContaining([0,2,3,5,8,10,11,14,15,16,18,19,20,21,22,25,26])
         );
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(17);
     });
 });
 
@@ -2469,6 +2741,20 @@ test.describe('WFS Requests attribute_table @requests @readonly ', () => {
         expect(features.map(feat => feat.properties.quartier)).toEqual(
             [1,2,3,4,5,6,7].reverse()
         );
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        delete form['STARTINDEX'];
+        delete form['MAXFEATURES'];
+        delete form['SORTBY'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(7);
     });
 
     test('WFS GetFeature quartiers BBOX', async({ request }) => {
@@ -2580,6 +2866,20 @@ test.describe('WFS Requests attribute_table @requests @readonly ', () => {
         expect(features.map(feat => feat.properties.quartier)).toEqual(
             [1,2,3,6,7].reverse()
         );
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        delete form['STARTINDEX'];
+        delete form['MAXFEATURES'];
+        delete form['SORTBY'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(5);
     });
 
     test('WFS GetFeature random_points', async({ request }) => {
@@ -2666,6 +2966,19 @@ test.describe('WFS Requests attribute_table @requests @readonly ', () => {
         expect(body.features[14].properties.id).toEqual(685);
         expect(body.features[32].properties.id).toEqual(667);
         expect(body.features[49].properties.id).toEqual(650);
+
+        // RESULTTYPE=hits
+        delete form['SORTBY'];
+        delete form['STARTINDEX'];
+        delete form['MAXFEATURES'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(700);
     });
 });
 

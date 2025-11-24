@@ -427,6 +427,7 @@ class WFSRequest extends OGCRequest
         // and only for GeoJSON (specific to Lizmap)
         // and only if it is not a complex query like table="(SELECT ...)"
         // and if FORCE_QGIS parameter is not set to 1
+
         if ($provider == 'postgres'
             && empty($filter)
             && strtolower($output) == 'geojson'
@@ -591,8 +592,23 @@ class WFSRequest extends OGCRequest
         return '';
     }
 
-    protected function buildQueryBase($cnx, $params, $wfsFields)
+    /**
+     * Build the base SQL query to fetch data from the database.
+     *
+     * @param mixed $cnx           Database connection
+     * @param mixed $params        Request parameters
+     * @param mixed $wfsFields     List of WFS fields
+     * @param bool  $isHitsRequest True if the request must only get the features count
+     *
+     * @return string
+     */
+    protected function buildQueryBase($cnx, $params, $wfsFields, $isHitsRequest = false)
     {
+        // For hits requests, no need to get the fields or geometry
+        if ($isHitsRequest) {
+            return 'SELECT * FROM '.$this->datasource->table;
+        }
+
         $sql = ' SELECT ';
         $propertyname = '';
         if (array_key_exists('propertyname', $params)) {
@@ -867,19 +883,28 @@ class WFSRequest extends OGCRequest
             return $this->getfeatureQgis();
         }
 
+        // For getFeature with parameter RESULTTYPE=hits
+        // We should just return the number of features
+        $isHitsRequest = false;
+        if (array_key_exists('resulttype', $params) && $params['resulttype'] == 'hits') {
+            $isHitsRequest = true;
+        }
+
         // Get WFS fields
         $wfsFields = $this->qgisLayer->getWfsFields();
 
         // Verifying that every wfs fields are db fields
         // if not return getfeatureQgis
-        foreach ($wfsFields as $field) {
-            if (!array_key_exists($field, $dbFields)) {
-                return $this->getfeatureQgis();
+        if (!$isHitsRequest) {
+            foreach ($wfsFields as $field) {
+                if (!array_key_exists($field, $dbFields)) {
+                    return $this->getfeatureQgis();
+                }
             }
         }
 
         // Build SQL
-        $sql = $this->buildQueryBase($cnx, $params, $wfsFields);
+        $sql = $this->buildQueryBase($cnx, $params, $wfsFields, $isHitsRequest);
 
         // WHERE
         $sql .= ' WHERE True';
@@ -939,9 +964,16 @@ class WFSRequest extends OGCRequest
             $geometryname = strtolower($params['geometryname']);
         }
 
-        // $this->appContext->logMessage($sql);
-        // Use PostgreSQL method to export geojson
-        $sql = $this->setGeojsonSql($sql, $cnx, $typename, $geometryname);
+        // For getFeature with parameter RESULTTYPE=hits
+        // We should just return the number of features
+        if ($isHitsRequest) {
+            $sql = $this->getResultTypeHitsSql($sql);
+        } else {
+            // Else we should return all corresponding features
+            // $this->appContext->logMessage($sql);
+            // Use PostgreSQL method to export geojson
+            $sql = $this->setGeojsonSql($sql, $cnx, $typename, $geometryname);
+        }
 
         // $this->appContext->logMessage($sql);
         // Run query
@@ -953,16 +985,41 @@ class WFSRequest extends OGCRequest
             return $this->getfeatureQgis();
         }
 
-        return new OGCResponse(200, 'application/vnd.geo+json; charset=utf-8', (function () use ($q) {
-            yield '{"type": "FeatureCollection", "features": [';
-            $virg = '';
-            foreach ($q as $d) {
-                yield $virg.$d->geojson;
-                $virg = ',';
-            }
+        // For Hits request, get simple result
+        if ($isHitsRequest) {
+            return new OGCResponse(
+                200,
+                'application/vnd.geo+json; charset=utf-8',
+                (function () use ($q) {
+                    yield '{"type": "FeatureCollection", ';
+                    foreach ($q as $d) {
+                        yield ' "numberOfFeatures": '.$d->numberOfFeatures.', ';
 
-            yield ']}';
-        })());
+                        yield ' "timeStamp": "'.$d->timeStamp.'" ';
+
+                        break;
+                    }
+
+                    yield '}';
+                })()
+            );
+        } else {
+            // Standard GetFeature request returning all features
+            return new OGCResponse(
+                200,
+                'application/vnd.geo+json; charset=utf-8',
+                (function () use ($q) {
+                    yield '{"type": "FeatureCollection", "features": [';
+                    $virg = '';
+                    foreach ($q as $d) {
+                        yield $virg.$d->geojson;
+                        $virg = ',';
+                    }
+
+                    yield ']}';
+                })()
+            );
+        }
     }
 
     /**
@@ -1111,5 +1168,26 @@ class WFSRequest extends OGCRequest
         --) As fc';
 
         return $sql;
+    }
+
+    /**
+     * Get the SQL used to count the features.
+     *
+     * This is used for RESULTTYPE=hits
+     *
+     * @param string $sql
+     *
+     * @return string
+     */
+    private function getResultTypeHitsSql($sql)
+    {
+        $hitsSql = ' SELECT ';
+        $hitsSql .= ' count(*) AS "numberOfFeatures", ';
+        $hitsSql .= ' to_char(now(), \'YYYY-MM-DD"T"HH24:MI:SS\') AS "timeStamp"';
+        $hitsSql .= ' FROM (';
+        $hitsSql .= $sql;
+        $hitsSql .= ' ) AS hits';
+
+        return $hitsSql;
     }
 }
