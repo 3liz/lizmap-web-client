@@ -299,46 +299,130 @@ var lizLayerActionButtons = function() {
                     if (themeNameSelected in lizMap.config.themes){
                         const themeSelected = lizMap.config.themes[themeNameSelected];
 
-                        // Groups and subgroups are separated by a '/'. We only keep deeper groups
-                        const checkedGroups = themeSelected?.checkedGroupNode?.map(groupNode => groupNode.split('/').slice(-1)[0]) || [];
-                        const expandedGroups = themeSelected?.expandedGroupNode?.map(groupNode => groupNode.split('/').slice(-1)[0]) || [];
+                        // Groups and subgroups are separated by a '/'. Keep full paths for proper matching
+                        const checkedGroupNodes = themeSelected?.checkedGroupNode || [];
+                        const expandedGroupNodes = themeSelected?.expandedGroupNode || [];
                         const expandedLegendNodes = themeSelected?.expandedLegendNode || [];
+                        const checkedLegendNodes = themeSelected?.checkedLegendNodes || {};
 
-                        // Set checked and expanded states
-                        for (const layerOrGroup of lizMap.mainLizmap.state.layerTree.findTreeLayersAndGroups()) {
-                            // Groups in theme are based on QGIS group (so groupAsLayer is not a layer but a group)
-                            if (layerOrGroup.mapItemState.itemState.type === "group") {
-                                layerOrGroup.checked = checkedGroups.includes(layerOrGroup.name);
-                                layerOrGroup.expanded = expandedGroups.includes(layerOrGroup.name);
-                            } else {
-                                const layerParams = themeSelected?.layers?.[layerOrGroup.layerConfig.id];
-                                if (!layerParams) {
-                                    layerOrGroup.checked = false;
-                                    continue;
-                                }
+                        const allItems = lizMap.mainLizmap.state.layerTree.findTreeLayersAndGroups();
 
-                                const style = layerParams?.style;
-                                if (style) {
-                                    layerOrGroup.wmsSelectedStyleName = style;
-                                }
+                        // Suspend permalink updates during theme application
+                        // This prevents "Too many Location/History API calls" error
+                        const permalink = lizMap.mainLizmap.permalink;
+                        if (permalink) {
+                            // Save original _writeURLFragment method
+                            permalink._originalWriteURLFragment = permalink._writeURLFragment;
+                            // Replace with no-op function during theme application
+                            permalink._writeURLFragment = () => {};
+                        }
 
-                                layerOrGroup.checked = true;
-                                layerOrGroup.expanded = layerParams?.expanded === "1" || layerParams?.expanded === true;
+                        // STEP 1: Set ALL layers (ON if in theme, OFF if not)
+                        for (const item of allItems) {
+                            if (item.mapItemState.itemState.type === "group") {
+                                continue; // Skip groups
+                            }
 
-                                // `symbologyChildren` is empty for some time if the theme switches
-                                // the layer style from simple to categorized.
-                                // TODO: avoid this hack
-                                setTimeout(() => {
-                                    // Handle expanded legend states
-                                    const symbologyChildren = layerOrGroup.symbologyChildren;
-                                    if (symbologyChildren.length) {
+                            const layerParams = themeSelected?.layers?.[item.layerConfig.id];
+                            if (!layerParams) {
+                                // Layer not in theme: uncheck it
+                                item.checked = false;
+                                item.expanded = false;
+                                continue;
+                            }
+
+                            const style = layerParams?.style;
+                            if (style) {
+                                item.wmsSelectedStyleName = style;
+                            }
+
+                            // Layer in theme: check it
+                            item.checked = true;
+                            item.expanded = layerParams?.expanded === "1" || layerParams?.expanded === true;
+
+                            // Handle legend node states (symbology categories)
+                            const layerId = item.layerConfig.id;
+                            const layerCheckedLegendNodes = checkedLegendNodes[layerId];
+                            const hasCheckedLegendNodes = layerId in checkedLegendNodes;
+
+                            // Define function to apply legend node states
+                            const applyLegendNodeStates = () => {
+                                const symbologyChildren = item.symbologyChildren;
+
+                                if (symbologyChildren.length > 0) {
+                                    // Handle checked state
+                                    if (hasCheckedLegendNodes) {
+                                        // Layer has checked-legend-nodes defined in theme:
+                                        // Toggle rule checkbox based on layer configuration
                                         for (const symbol of symbologyChildren) {
-                                            symbol.expanded = expandedLegendNodes.includes(symbol.ruleKey);
+                                            symbol.checked = layerCheckedLegendNodes.includes(symbol.ruleKey);
+                                        }
+                                    } else {
+                                        // Layer in theme but no checked-legend-nodes defined:
+                                        // Check all symbology children (default/full state)
+                                        for (const symbol of symbologyChildren) {
+                                            symbol.checked = true;
                                         }
                                     }
-                                }, 1000);
 
+                                    // Handle expanded state
+                                    for (const symbol of symbologyChildren) {
+                                        symbol.expanded = expandedLegendNodes.includes(symbol.ruleKey);
+                                    }
+                                }
+                            };
+
+                            // Apply states either immediately or when symbology loads
+                            if (item.symbology === null) {
+                                // Symbology not loaded yet, listen for the change event
+                                const onSymbologyChanged = (evt) => {
+                                    applyLegendNodeStates();
+                                    // Remove listener after applying states
+                                    setTimeout(() => item.removeListener(onSymbologyChanged, 'layer.symbology.changed'), 10);
+                                };
+                                item.addListener(onSymbologyChanged, 'layer.symbology.changed');
+                            } else {
+                                // Symbology already loaded, apply immediately
+                                applyLegendNodeStates();
                             }
+                        }
+
+                        // STEP 2: Set groups checked/expanded state based on theme configuration
+                        for (const item of allItems) {
+                            if (item.mapItemState.itemState.type !== "group") {
+                                continue; // Skip layers
+                            }
+
+                            const wmsName = item.wmsName;
+                            const name = item.name;
+
+                            // Helper function to check if group is in list
+                            const isInList = (nodeList) => {
+                                if (nodeList.includes(wmsName) || nodeList.includes(name)) {
+                                    return true;
+                                }
+                                return nodeList.some(nodePath => {
+                                    const lastPart = nodePath.split('/').pop();
+                                    return lastPart === wmsName || lastPart === name;
+                                });
+                            };
+
+                            // Directly set the correct state based on theme configuration
+                            item.checked = isInList(checkedGroupNodes);
+                            item.expanded = isInList(expandedGroupNodes);
+                        }
+
+                        // Resume permalink updates after theme application
+                        if (permalink && permalink._originalWriteURLFragment) {
+                            // Restore original _writeURLFragment method
+                            permalink._writeURLFragment = permalink._originalWriteURLFragment;
+                            delete permalink._originalWriteURLFragment;
+                            // Clear the suspend flag if this is the initial theme activation
+                            if (permalink._suspendInitialWrite) {
+                                delete permalink._suspendInitialWrite;
+                            }
+                            // Manually trigger one permalink update now that all changes are done
+                            permalink._writeURLFragment();
                         }
 
                         // Set baseLayers checked state
@@ -377,6 +461,11 @@ var lizLayerActionButtons = function() {
 
                 // Activate first map theme on load
                 if (lizMap.mainLizmap.initialConfig.options.activateFirstMapTheme) {
+                    // Prevent permalink from writing until after first theme is applied
+                    const permalink = lizMap.mainLizmap.permalink;
+                    if (permalink) {
+                        permalink._suspendInitialWrite = true;
+                    }
                     $('#theme-selector li.theme:nth-child(1)').click();
                 }
                 const urlParameters = (new URL(document.location)).searchParams;
