@@ -132,6 +132,7 @@ class datatablesCtrl extends jController
             'VERSION' => '1.0.0',
             'REQUEST' => 'GetFeature',
             'TYPENAME' => $typeName,
+            'OUTPUTFORMAT' => 'GeoJSON',
         );
 
         // Get total number of features
@@ -147,18 +148,16 @@ class datatablesCtrl extends jController
         if ($wfsresponse->getCode() >= 400) {
             return $this->setErrorResponse($rep, 400, 'The request to get the total number of features failed, code: '.$wfsresponse->getCode());
         }
-        if (!str_contains(strtolower($wfsresponse->getMime()), 'text/xml')) {
+        if (!str_contains(strtolower($wfsresponse->getMime()), 'application/vnd.geo+json')) {
             return $this->setErrorResponse($rep, 400, 'The request to get the total number of features failed, mime-type: '.$wfsresponse->getMime());
         }
 
-        $hitsData = $wfsresponse->getBodyAsString();
-        preg_match('/numberOfFeatures="([0-9]+)"/', $hitsData, $matches);
-
-        if (count($matches) < 2) {
+        $hitsData = json_decode($wfsresponse->getBodyAsString());
+        if (!property_exists($hitsData, 'numberOfFeatures')) {
             return $this->setErrorResponse($rep, 400, 'The response of the request to get the total number of features is not well formed.');
         }
 
-        $hits = $matches[1];
+        $hits = $hitsData->numberOfFeatures;
         $recordsFiltered = $hits;
         if (count($filteredFeatureIDs) > 0) {
             $recordsFiltered = count($filteredFeatureIDs);
@@ -186,7 +185,6 @@ class datatablesCtrl extends jController
         }
 
         $wfsParamsPaginated = array(
-            'OUTPUTFORMAT' => 'GeoJSON',
             'MAXFEATURES' => $DTLength,
             'STARTINDEX' => $DTStart,
             'SORTBY' => $DTOrderColumnName.' '.$DTOrderColumnDirection,
@@ -215,18 +213,16 @@ class datatablesCtrl extends jController
             if ($wfsresponse->getCode() >= 400) {
                 return $this->setErrorResponse($rep, 400, 'The request to get the number of paginated features failed, code: '.$wfsresponse->getCode());
             }
-            if (!str_contains(strtolower($wfsresponse->getMime()), 'text/xml')) {
+            if (!str_contains(strtolower($wfsresponse->getMime()), 'application/vnd.geo+json')) {
                 return $this->setErrorResponse($rep, 400, 'The request to get the number of paginated features failed, mime-type: '.$wfsresponse->getMime());
             }
 
-            $filterByExtentHitsData = $wfsresponse->getBodyAsString();
-            preg_match('/numberOfFeatures="([0-9]+)"/', $filterByExtentHitsData, $matches);
-
-            if (count($matches) < 2) {
+            $filterByExtentHitsData = json_decode($wfsresponse->getBodyAsString());
+            if (!property_exists($hitsData, 'numberOfFeatures')) {
                 return $this->setErrorResponse($rep, 400, 'The response of the request to get the number of paginated features is not well formed.');
             }
 
-            $recordsFiltered = $matches[1];
+            $recordsFiltered = $filterByExtentHitsData->numberOfFeatures;
         }
 
         // Handle editable features
