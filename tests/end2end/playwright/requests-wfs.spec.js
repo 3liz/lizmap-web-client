@@ -2048,6 +2048,17 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         expect(body).toHaveProperty('type', 'FeatureCollection');
         expect(body).toHaveProperty('features');
         expect(body.features).toHaveLength(0);
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(0);
     });
 
     test('WFS GetFeature shop_bakery_pg for user_in_group_a', async({ request }) => {
@@ -2110,6 +2121,17 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         expect(features.map(feat => feat.properties.id)).toEqual(
             expect.arrayContaining([2,9,18,25])
         );
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(4);
     });
 
     test('WFS GetFeature shop_bakery_pg for admin', async({ request }) => {
@@ -2176,6 +2198,17 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
                 [2,3,4,5,8,9,11,12,13,14,16,18,19,21,23,24,25]
             )
         );
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(17);
     });
 
     test('WFS GetFeature shop_bakery for anonymous', async({ request }) => {
@@ -2226,6 +2259,17 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         expect(body).toHaveProperty('type', 'FeatureCollection');
         expect(body).toHaveProperty('features');
         expect(body.features).toHaveLength(0);
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(0);
     });
 
     test('WFS GetFeature shop_bakery for user_in_group_a', async({ request }) => {
@@ -2288,6 +2332,17 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         expect(features.map(feat => feat.properties.id)).toEqual(
             expect.arrayContaining([16,103,119,163,168])
         );
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(5);
     });
 
     test('WFS GetFeature shop_bakery for admin', async({ request }) => {
@@ -2356,6 +2411,17 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
                 155,157,158,163,168,173,174,181,195,197,199,
             ])
         );
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(25);
     });
 
     test('WFS GetFeature townhalls_EPSG2154 for anonymous', async({ request }) => {
@@ -2406,6 +2472,17 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         expect(body).toHaveProperty('type', 'FeatureCollection');
         expect(body).toHaveProperty('features');
         expect(body.features).toHaveLength(0);
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(0);
     });
 
     test('WFS GetFeature townhalls_EPSG2154 for user_in_group_a', async({ request }) => {
@@ -2468,6 +2545,17 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         expect(features.map(feat => feat.properties.fid)).toEqual(
             expect.arrayContaining([2,11,15,25])
         );
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(4);
     });
 
     test('WFS GetFeature townhalls_EPSG2154 for admin', async({ request }) => {
@@ -2530,6 +2618,17 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
         expect(features.map(feat => feat.properties.fid)).toEqual(
             expect.arrayContaining([0,2,3,5,8,10,11,14,15,16,18,19,20,21,22,25,26])
         );
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(17);
     });
 });
 
