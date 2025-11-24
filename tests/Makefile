@@ -55,7 +55,7 @@ build-plugins:
 	    -u $(LIZMAP_USER_ID):$(LIZMAP_GROUP_ID) \
 	    --rm -i \
 	    -e QGSRV_SERVER_PLUGINPATH=/srv/plugins \
-	    -e QGIS_PLUGIN_MANAGER_SOURCES_FILE=/src/docker-conf/unstable-plugin-sources.list \
+	    -e QGIS_PLUGIN_MANAGER_SOURCES_FILE=/src/docker-conf/stable-plugin-sources.list \
 	    -e QGIS_PLUGIN_MANAGER_CACHE_DIR=/tmp/cache-plugin-manager \
 	    -v $(shell pwd)/qgis-server-plugins:/srv/plugins \
 	    -v $(shell pwd)/:/src \
