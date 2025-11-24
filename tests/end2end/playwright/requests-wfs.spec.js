@@ -1790,6 +1790,17 @@ test.describe('WFS Requests filter_layer_by_user @requests @readonly ', () => {
         expect(body).toHaveProperty('type', 'FeatureCollection');
         expect(body).toHaveProperty('features');
         expect(body.features).toHaveLength(0);
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(0);
     });
 
     test('WFS GetFeature blue_filter_layer_by_user for user_in_group_a', async({ request }) => {
@@ -1845,6 +1856,17 @@ test.describe('WFS Requests filter_layer_by_user @requests @readonly ', () => {
         expect(body.features).toHaveLength(1);
         expect(body.features[0]).toHaveProperty('properties');
         expect(body.features[0].properties).toHaveProperty('gid', 2);
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(1);
     });
 
     test('WFS GetFeature blue_filter_layer_by_user for user_in_group_b', async({ request }) => {
@@ -1900,6 +1922,17 @@ test.describe('WFS Requests filter_layer_by_user @requests @readonly ', () => {
         expect(body.features).toHaveLength(1);
         expect(body.features[0]).toHaveProperty('properties');
         expect(body.features[0].properties).toHaveProperty('gid', 2);
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(1);
     });
 
     test('WFS GetFeature blue_filter_layer_by_user for admin', async({ request }) => {
@@ -1951,6 +1984,17 @@ test.describe('WFS Requests filter_layer_by_user @requests @readonly ', () => {
         expect(body).toHaveProperty('type', 'FeatureCollection');
         expect(body).toHaveProperty('features');
         expect(body.features).toHaveLength(3);
+
+        // RESULTTYPE=hits
+        delete form['FORCE_QGIS'];
+        form['RESULTTYPE'] = 'hits';
+        response = await request.post(url, {
+            form: form,
+        });
+        // check response
+        responseExpect(response).toBeGeoJson();
+        // check body
+        await responseExpect(response).toHaveGeoJsonNumberOfFeatures(3);
     });
 });
 
