@@ -158,7 +158,7 @@ test.describe('Attribute table @readonly', () => {
         expect(tr2.locator('lizmap-feature-toolbar .feature-select')).toBeVisible();
 
         // Selection disabled
-        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('btn-primary');
+        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('active'); // old bootstrap: btn-primary
         await expect(tr2).not.toContainClass('selected');
 
         // Select feature
@@ -189,7 +189,7 @@ test.describe('Attribute table @readonly', () => {
         expect(req_url.searchParams.get('FILTERTOKEN')).toBeNull()
 
         // Check that the select button display that the feature is selected
-        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).toContainClass('btn-primary');
+        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).toContainClass('active'); // old bootstrap: btn-primary
         await expect(tr2).toContainClass('selected');
 
         // Check rendering
@@ -230,13 +230,13 @@ test.describe('Attribute table @readonly', () => {
         expect(req_url.searchParams.get('FILTERTOKEN')).not.toBeNull()
 
         // Check that the filter button display that the feature is filtered
-        await expect(actionBar.locator('.btn-filter-attributeTable')).toContainClass('btn-primary');
+        await expect(actionBar.locator('.btn-filter-attributeTable')).toContainClass('active'); // old bootstrap: btn-primary
 
         // Check table lines are filtered
         await expect(tableHtml.locator('tbody tr')).toHaveCount(1);
 
         // Selection disabled
-        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('btn-primary');
+        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('active'); // old bootstrap: btn-primary
         await expect(tr2).not.toContainClass('selected');
 
         // Check tree view
@@ -254,7 +254,7 @@ test.describe('Attribute table @readonly', () => {
         await actionBar.locator('.btn-filter-attributeTable').click();
 
         // Check that the filter button display that the feature is not filtered
-        await expect(actionBar.locator('.btn-filter-attributeTable')).not.toContainClass('btn-primary');
+        await expect(actionBar.locator('.btn-filter-attributeTable')).not.toContainClass('active'); // old bootstrap: btn-primary
 
         // Check table lines are filtered
         await expect(tableHtml.locator('tbody tr')).toHaveCount(7);
@@ -286,11 +286,11 @@ test.describe('Attribute table @readonly', () => {
 
 
         // Check that the select button display that the feature is selected
-        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).toContainClass('btn-primary');
+        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).toContainClass('active'); // old bootstrap: btn-primary
         await expect(tr2).toContainClass('selected');
-        await expect(tr4.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('btn-primary');
+        await expect(tr4.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('active'); // old bootstrap: btn-primary
         await expect(tr4).not.toContainClass('selected');
-        await expect(tr6.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('btn-primary');
+        await expect(tr6.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('active'); // old bootstrap: btn-primary
         await expect(tr6).not.toContainClass('selected');
 
         // click to select 4
@@ -309,11 +309,11 @@ test.describe('Attribute table @readonly', () => {
         requestExpect(getSelectionTokenRequest).toContainParametersInPostData(getSelectionTokenParameters);
 
         // Check that the select button display that the feature is selected
-        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).toContainClass('btn-primary');
+        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).toContainClass('active'); // old bootstrap: btn-primary
         await expect(tr2).toContainClass('selected');
-        await expect(tr4.locator('lizmap-feature-toolbar .feature-select')).toContainClass('btn-primary');
+        await expect(tr4.locator('lizmap-feature-toolbar .feature-select')).toContainClass('active'); // old bootstrap: btn-primary
         await expect(tr4).toContainClass('selected');
-        await expect(tr6.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('btn-primary');
+        await expect(tr6.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('active'); // old bootstrap: btn-primary
         await expect(tr6).not.toContainClass('selected');
 
         // click to select 6
@@ -341,11 +341,11 @@ test.describe('Attribute table @readonly', () => {
         expect(req_url.searchParams.get('FILTERTOKEN')).toBeNull()
 
         // Check that the select button display that the feature is selected
-        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).toContainClass('btn-primary');
+        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).toContainClass('active'); // old bootstrap: btn-primary
         await expect(tr2).toContainClass('selected');
-        await expect(tr4.locator('lizmap-feature-toolbar .feature-select')).toContainClass('btn-primary');
+        await expect(tr4.locator('lizmap-feature-toolbar .feature-select')).toContainClass('active'); // old bootstrap: btn-primary
         await expect(tr4).toContainClass('selected');
-        await expect(tr6.locator('lizmap-feature-toolbar .feature-select')).toContainClass('btn-primary');
+        await expect(tr6.locator('lizmap-feature-toolbar .feature-select')).toContainClass('active'); // old bootstrap: btn-primary
         await expect(tr6).toContainClass('selected');
 
         // Check rendering
@@ -380,17 +380,17 @@ test.describe('Attribute table @readonly', () => {
         expect(req_url.searchParams.get('FILTERTOKEN')).not.toBeNull()
 
         // Check that the filter button display that the feature is filtered
-        await expect(actionBar.locator('.btn-filter-attributeTable')).toContainClass('btn-primary');
+        await expect(actionBar.locator('.btn-filter-attributeTable')).toContainClass('active'); // old bootstrap: btn-primary
 
         // Check table lines are filtered
         await expect(tableHtml.locator('tbody tr')).toHaveCount(3);
 
         // Selection disabled
-        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('btn-primary');
+        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('active'); // old bootstrap: btn-primary
         await expect(tr2).not.toContainClass('selected');
-        await expect(tr4.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('btn-primary');
+        await expect(tr4.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('active'); // old bootstrap: btn-primary
         await expect(tr4).not.toContainClass('selected');
-        await expect(tr6.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('btn-primary');
+        await expect(tr6.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('active'); // old bootstrap: btn-primary
         await expect(tr6).not.toContainClass('selected');
 
         // Check tree view
@@ -409,7 +409,7 @@ test.describe('Attribute table @readonly', () => {
         await actionBar.locator('.btn-filter-attributeTable').click();
 
         // Check that the filter button display that the feature is not filtered
-        await expect(actionBar.locator('.btn-filter-attributeTable')).not.toContainClass('btn-primary');
+        await expect(actionBar.locator('.btn-filter-attributeTable')).not.toContainClass('active'); // old bootstrap: btn-primary
 
         // Check table lines are filtered
         await expect(tableHtml.locator('tbody tr')).toHaveCount(7);
@@ -447,7 +447,7 @@ test.describe('Attribute table @readonly', () => {
         expect(tr2.locator('lizmap-feature-toolbar .feature-select')).toBeVisible();
 
         // Selection disabled
-        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('btn-primary');
+        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('active'); // old bootstrap: btn-primary
         await expect(tr2).not.toContainClass('selected');
 
         // Select feature
@@ -467,7 +467,7 @@ test.describe('Attribute table @readonly', () => {
         requestExpect(getSelectionTokenRequest).toContainParametersInPostData(getSelectionTokenParameters);
 
         // Check that the select button display that the feature is selected
-        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).toContainClass('btn-primary');
+        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).toContainClass('active'); // old bootstrap: btn-primary
         await expect(tr2).toContainClass('selected');
 
         // click on filter Button
@@ -487,13 +487,13 @@ test.describe('Attribute table @readonly', () => {
         requestExpect(getFilterTokenRequest).toContainParametersInPostData(getFilterTokenParameters);
 
         // Check that the filter button display that the feature is filtered
-        await expect(actionBar.locator('.btn-filter-attributeTable')).toContainClass('btn-primary');
+        await expect(actionBar.locator('.btn-filter-attributeTable')).toContainClass('active'); // old bootstrap: btn-primary
 
         // Check table lines are filtered
         await expect(tableHtml.locator('tbody tr')).toHaveCount(1);
 
         // Selection disabled
-        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('btn-primary');
+        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('active'); // old bootstrap: btn-primary
         await expect(tr2).not.toContainClass('selected');
 
         // Check tree view
@@ -504,7 +504,7 @@ test.describe('Attribute table @readonly', () => {
         await actionBar.locator('.btn-filter-attributeTable').click();
 
         // Check that the filter button display that the feature is not filtered
-        await expect(actionBar.locator('.btn-filter-attributeTable')).not.toContainClass('btn-primary');
+        await expect(actionBar.locator('.btn-filter-attributeTable')).not.toContainClass('active'); // old bootstrap: btn-primary
 
         // Check table lines are filtered
         await expect(tableHtml.locator('tbody tr')).toHaveCount(7);
@@ -532,11 +532,11 @@ test.describe('Attribute table @readonly', () => {
 
 
         // Check that the select button display that the feature is selected
-        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).toContainClass('btn-primary');
+        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).toContainClass('active'); // old bootstrap: btn-primary
         await expect(tr2).toContainClass('selected');
-        await expect(tr4.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('btn-primary');
+        await expect(tr4.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('active'); // old bootstrap: btn-primary
         await expect(tr4).not.toContainClass('selected');
-        await expect(tr6.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('btn-primary');
+        await expect(tr6.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('active'); // old bootstrap: btn-primary
         await expect(tr6).not.toContainClass('selected');
 
         // click to select 4
@@ -551,11 +551,11 @@ test.describe('Attribute table @readonly', () => {
         requestExpect(getSelectionTokenRequest).toContainParametersInPostData(getSelectionTokenParameters);
 
         // Check that the select button display that the feature is selected
-        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).toContainClass('btn-primary');
+        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).toContainClass('active'); // old bootstrap: btn-primary
         await expect(tr2).toContainClass('selected');
-        await expect(tr4.locator('lizmap-feature-toolbar .feature-select')).toContainClass('btn-primary');
+        await expect(tr4.locator('lizmap-feature-toolbar .feature-select')).toContainClass('active'); // old bootstrap: btn-primary
         await expect(tr4).toContainClass('selected');
-        await expect(tr6.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('btn-primary');
+        await expect(tr6.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('active'); // old bootstrap: btn-primary
         await expect(tr6).not.toContainClass('selected');
 
         // click to select 6
@@ -570,11 +570,11 @@ test.describe('Attribute table @readonly', () => {
         requestExpect(getSelectionTokenRequest).toContainParametersInPostData(getSelectionTokenParameters);
 
         // Check that the select button display that the feature is selected
-        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).toContainClass('btn-primary');
+        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).toContainClass('active'); // old bootstrap: btn-primary
         await expect(tr2).toContainClass('selected');
-        await expect(tr4.locator('lizmap-feature-toolbar .feature-select')).toContainClass('btn-primary');
+        await expect(tr4.locator('lizmap-feature-toolbar .feature-select')).toContainClass('active'); // old bootstrap: btn-primary
         await expect(tr4).toContainClass('selected');
-        await expect(tr6.locator('lizmap-feature-toolbar .feature-select')).toContainClass('btn-primary');
+        await expect(tr6.locator('lizmap-feature-toolbar .feature-select')).toContainClass('active'); // old bootstrap: btn-primary
         await expect(tr6).toContainClass('selected');
 
         // click on filter Button
@@ -588,17 +588,17 @@ test.describe('Attribute table @readonly', () => {
         requestExpect(getFilterTokenRequest).toContainParametersInPostData(getFilterTokenParameters);
 
         // Check that the filter button display that the feature is filtered
-        await expect(actionBar.locator('.btn-filter-attributeTable')).toContainClass('btn-primary');
+        await expect(actionBar.locator('.btn-filter-attributeTable')).toContainClass('active'); // old bootstrap: btn-primary
 
         // Check table lines are filtered
         await expect(tableHtml.locator('tbody tr')).toHaveCount(3);
 
         // Selection disabled
-        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('btn-primary');
+        await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('active'); // old bootstrap: btn-primary
         await expect(tr2).not.toContainClass('selected');
-        await expect(tr4.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('btn-primary');
+        await expect(tr4.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('active'); // old bootstrap: btn-primary
         await expect(tr4).not.toContainClass('selected');
-        await expect(tr6.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('btn-primary');
+        await expect(tr6.locator('lizmap-feature-toolbar .feature-select')).not.toContainClass('active'); // old bootstrap: btn-primary
         await expect(tr6).not.toContainClass('selected');
 
         // Check tree view
@@ -609,7 +609,7 @@ test.describe('Attribute table @readonly', () => {
         await actionBar.locator('.btn-filter-attributeTable').click();
 
         // Check that the filter button display that the feature is not filtered
-        await expect(actionBar.locator('.btn-filter-attributeTable')).not.toContainClass('btn-primary');
+        await expect(actionBar.locator('.btn-filter-attributeTable')).not.toContainClass('active'); // old bootstrap: btn-primary
 
         // Check table lines are filtered
         await expect(tableHtml.locator('tbody tr')).toHaveCount(7);
