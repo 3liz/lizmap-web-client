@@ -15,8 +15,16 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * **[Avignon](https://www.avignon.fr/)**
 * **[Communauté de Communes du Grand-Figeac](https://www.grand-figeac.fr/)**
 * **[SMICA](https://www.smica.fr/)**
-* **[TDPA](https://www.terredeprovence-agglo.com/)**
+* **[Terre De Provence Agglomération](https://www.terredeprovence-agglo.com/)**
 * **[SMAVD](https://www.smavd.org/)**
+* **[digi-studio](https://digi-stud.io/)**
+* **[Groupe Rouge Vif](https://grouperougevif.fr/)** and **[Projet InspiRe Clermont Auvergne Métropole](https://inspire-clermontmetropole.fr/)**
+* **[Châteauroux Métropole](https://www.chateauroux-metropole.fr)**
+* **[Cédégis](https://www.cedegis.fr/)**
+* **[Klein und Leber GbR](https://www.gisgeometer.de/)** with @meyerlor
+* **[Destination Bretagne Sud Golfe du Morbihan](https://destination-bretagnesud.bzh/)**
+* **[Karum](https://www.karum.fr/)**
+* **[Conseil Départemental du Calvados](https://www.calvados.fr/)**
 
 ### Added
 
@@ -35,7 +43,38 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Replace getView().fit() by zoomToGeometryOrExtent()
 * Filter unique values list is empty if one is null
 * Selection tool - new, add & remove selection buttons shift vertically on hover
+* jAcl2Db cache clear when user is added to or removed from a group administration
+* Add German localization for DataTables, contribution from @meyerlor
+* Session cookie has been blocked by Chrome/chromium
+* Admin CORS: spaces in accessControlAllowOrigin
+* Base layer opacity is not set by sub-dock
+* Fix digitizing tool to accept decimal values for distance and angle
+* Editing - Allow to create a feature on a layer with login based attribute filter
+* PHP: VectorLayer provider can be null
+* CSS: legend image min width
+* Fix QGIS theme layer visibility for nested groups
+* WFS GetFeature - Query database on RESULTTYPE=hits requests for PostgreSQL layers
 
+### Tests
+
+* e2e Playwright: Extend WFS GetFeature requests
+* e2e: Port Dataviz from Cypress to Playwright
+* e2e: migration from Cypress to Playwright attribte table
+* e2e Playwright : Store logs in Project POM
+* e2e Playwright: requests displayExpression
+* e2e: migrate zoom-to-layer test to playwright
+
+### Backend
+
+* Upgrade Jelix to version 1.8.21 - Fix a security issue in authentication.
+* Update OpenLayers to version [v10.7.0](https://github.com/openlayers/openlayers/releases/tag/v10.7.0) with:
+  * Several WebGL renderer bug fixes, along with improved memory management
+  * Updates for the Polyline feature format
+  * API improvements and bug fixes on the Select, Extent and Snap interactions
+  * Reprojection support for VectorTile layers
+  * Full web worker support for Map, with an (Offscreen)Canvas as map target
+  * Fixed cache and rendering for reprojected raster/image tile layers
+  * Several updated and new examples, including a globe-like map with Equal Earth projection
 
 ## 3.9.3 - 2025-10-09
 
