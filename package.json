@@ -42,7 +42,7 @@
     "jsts": "^2.11.x",
     "lit-html": "^3.3.x",
     "mocha": "^11.7.x",
-    "ol": "^10.6.x",
+    "ol": "^10.7.x",
     "ol-ext": "^4.0.x",
     "ol-wfs-capabilities": "^2.0.x",
     "playwright-ctrf-json-reporter": "^0.0.x",
