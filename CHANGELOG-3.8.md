@@ -30,10 +30,23 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Admin CORS: spaces in accessControlAllowOrigin
 * Editing - Allow to create a feature on a layer with login based attribute filter
 * CSS: legend image min width
+* WFS GetFeature - Query database on RESULTTYPE=hits requests for PostgreSQL layers
 
 ### Tests
 
 * Port Dataviz from Cypress to Playwright
+
+### Backend
+
+* Upgrade Jelix to version 1.8.21 - Fix a security issue in authentication.
+* Update OpenLayers to version [v10.7.0](https://github.com/openlayers/openlayers/releases/tag/v10.7.0) with:
+  * Several WebGL renderer bug fixes, along with improved memory management
+  * Updates for the Polyline feature format
+  * API improvements and bug fixes on the Select, Extent and Snap interactions
+  * Reprojection support for VectorTile layers
+  * Full web worker support for Map, with an (Offscreen)Canvas as map target
+  * Fixed cache and rendering for reprojected raster/image tile layers
+  * Several updated and new examples, including a globe-like map with Equal Earth projection
 
 ## 3.8.14 - 2025-10-07
 
