@@ -8,6 +8,10 @@ with some extra keywords : backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Backend
+
+* Upgrade Jelix to version 1.8.21 - Fix a security issue in authentication.
+
 ## 3.6.14 - 2024-07-04
 
 ### Funders
