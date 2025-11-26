@@ -12,6 +12,44 @@ import { expect as baseExpect } from '@playwright/test';
 
 export const expect = baseExpect.extend({
     /**
+     * Expecting the response is a valid JSON
+     * @param {APIResponse} response the response to test
+     *
+     * @returns {MatcherReturnType} the result
+     */
+    toBeJson(response) {
+        const assertionName = 'toBeJson';
+        let pass = true;
+        try {
+            // check response status
+            expect(response.ok()).toBeTruthy();
+            expect(response.status()).toBe(200);
+            // check content-type header
+            expect(response.headers()['content-type']).toContain('application/json');
+        } catch {
+            pass = false;
+        }
+
+        if (this.isNot) {
+            pass =!pass;
+        }
+
+        const message = pass
+            ? () => this.utils.matcherHint(assertionName, undefined, undefined, { isNot: this.isNot }) +
+                '\n\n' +
+                `Response is JSON: ${response.status()} ${response.headers()['content-type']}`
+            : () => this.utils.matcherHint(assertionName, undefined, undefined, { isNot: this.isNot }) +
+                '\n\n' +
+                `Response is not JSON: ${response.status()} ${response.headers()['content-type']}`;
+
+        return {
+            message,
+            pass,
+            name: assertionName,
+        };
+    },
+
+    /**
      * Expecting the response is a valid GeoJSON
      * @param {APIResponse} response the response to test
      *
@@ -37,10 +75,10 @@ export const expect = baseExpect.extend({
         const message = pass
             ? () => this.utils.matcherHint(assertionName, undefined, undefined, { isNot: this.isNot }) +
                 '\n\n' +
-                `Response is not GeoJSON: ${response.status()} ${response.headers()['content-type']}`
+                `Response is GeoJSON: ${response.status()} ${response.headers()['content-type']}`
             : () => this.utils.matcherHint(assertionName, undefined, undefined, { isNot: this.isNot }) +
                 '\n\n' +
-                `Response is GeoJSON: ${response.status()} ${response.headers()['content-type']}`;
+                `Response is not GeoJSON: ${response.status()} ${response.headers()['content-type']}`;
 
         return {
             message,
