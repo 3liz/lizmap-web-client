@@ -1,4 +1,6 @@
+// @ts-check
 import { test, expect } from '@playwright/test';
+import { expect as responseExpect } from './fixtures/expect-response.js'
 import { ProjectPage } from "./pages/project";
 
 test.describe('Zoom to layer', () => {
@@ -23,7 +25,9 @@ test.describe('Zoom to layer', () => {
         // Click on the map to get a popup
         let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
         await project.clickOnMap(480, 340);
-        await getFeatureInfoPromise;
+        let getFeatureInfoRequest = await getFeatureInfoPromise;
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // Check popup displayed
         const popup = page.locator('#mapmenu li.nav-dock.popupcontent');
@@ -42,8 +46,9 @@ test.describe('Zoom to layer', () => {
         // Click on the map to get no popup
         getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
         await project.clickOnMap(480, 340);
-        let getFeatureInfoRequest = await getFeatureInfoPromise;
-        await getFeatureInfoRequest.response();
+        getFeatureInfoRequest = await getFeatureInfoPromise;
+        getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // Check no popup displayed
         await expect(popup).toHaveClass(/active/);
@@ -70,7 +75,9 @@ test.describe('Zoom to layer', () => {
         // Click on the map to get a popup
         let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
         await project.clickOnMap(480, 340);
-        await getFeatureInfoPromise;
+        let getFeatureInfoRequest = await getFeatureInfoPromise;
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // Check popup displayed
         const popup = page.locator('#mapmenu li.nav-dock.popupcontent');
@@ -89,8 +96,9 @@ test.describe('Zoom to layer', () => {
         // Click on the map to get no popup
         getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
         await project.clickOnMap(480, 340);
-        let getFeatureInfoRequest = await getFeatureInfoPromise;
-        await getFeatureInfoRequest.response();
+        getFeatureInfoRequest = await getFeatureInfoPromise;
+        getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // Check no popup displayed
         await expect(popup).toHaveClass(/active/);

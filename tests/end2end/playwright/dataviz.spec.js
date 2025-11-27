@@ -1,5 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+import { expect as responseExpect } from './fixtures/expect-response.js'
 import { ProjectPage } from "./pages/project";
 //import { expectParametersToContain } from './globals';
 
@@ -272,9 +273,7 @@ test.describe('Dataviz tests @readonly', () => {
 
         // wait for GetfeatureInfo response
         let getFeatureInfoResponse = await getFeatureInfoRequest.response();
-        expect(getFeatureInfoResponse).not.toBeNull();
-        expect(getFeatureInfoResponse?.ok()).toBe(true);
-        expect(await getFeatureInfoResponse?.headerValue('Content-Type')).toContain('text/html');
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // wait for GetPlot requests
         let requests = await Promise.all([getPlotRequest1Promise, getPlotRequest2Promise]);

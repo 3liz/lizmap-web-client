@@ -104,7 +104,8 @@ test.describe('Filter layer data polygon - admin - @readonly', () => {
         let getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest()
         await project.clickOnMap(515-30, 455-75);
         let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // Two objects
         await expect(project.dock).toBeVisible()
@@ -119,7 +120,8 @@ test.describe('Filter layer data polygon - admin - @readonly', () => {
         getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest()
         await project.clickOnMap(490-30, 440-75);
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // One object
         await expect(project.dock).toBeVisible()
@@ -132,7 +134,8 @@ test.describe('Filter layer data polygon - admin - @readonly', () => {
         getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest()
         await project.clickOnMap(460-30, 275-75);
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // No object found
         await expect(project.dock).toBeVisible()
@@ -269,7 +272,8 @@ test.describe('Filter layer data polygon - user in group a - @readonly', () => {
         let getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest()
         await project.clickOnMap(515-30, 455-75);
         let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // One object, it was two for admins
         await expect(project.dock).toBeVisible()
@@ -282,7 +286,8 @@ test.describe('Filter layer data polygon - user in group a - @readonly', () => {
         getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest()
         await project.clickOnMap(490-30, 440-75);
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // No object found, it was one for admins
         await expect(project.dock).toBeVisible()
@@ -294,7 +299,8 @@ test.describe('Filter layer data polygon - user in group a - @readonly', () => {
         getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest()
         await project.clickOnMap(460-30, 275-75);
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // No object found like for admins
         await expect(project.dock).toBeVisible()
@@ -431,7 +437,8 @@ test.describe('Filter layer data polygon - not connected - @readonly', () => {
         let getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest()
         await project.clickOnMap(515-30, 455-75);
         let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // One object, it was two for admins
         await expect(project.dock).toBeVisible()
@@ -444,7 +451,8 @@ test.describe('Filter layer data polygon - not connected - @readonly', () => {
         getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest()
         await project.clickOnMap(490-30, 440-75);
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // No object found, it was one for admins
         await expect(project.dock).toBeVisible()
@@ -456,7 +464,8 @@ test.describe('Filter layer data polygon - not connected - @readonly', () => {
         getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest()
         await project.clickOnMap(460-30, 275-75);
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // No object found like for admins
         await expect(project.dock).toBeVisible()
