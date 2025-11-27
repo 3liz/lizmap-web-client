@@ -528,7 +528,7 @@ export class ProjectPage extends BasePage {
      */
     async closeLeftDock() {
         if (await this.page.locator('#dock-close').isVisible()) {
-            await this.page.locator('#dock-close').click();
+            await this.page.locator('#dock-close').click({force: true});
         }
     }
 
