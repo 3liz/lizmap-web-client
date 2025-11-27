@@ -1180,6 +1180,11 @@ test.describe('Form edition without creation', {tag: ['@readonly'],},() => {
         await expect(page.locator('#edition-creation')).not.toBeVisible();
         await expect(page.locator('#edition-form-container')).toBeVisible();
 
+        // .. with edition message ..
+        await expect(page.locator('#lizmap-edition-message')).toBeVisible();
+        await page.locator('#lizmap-edition-message .btn-close').click();
+        await expect(page.locator('#lizmap-edition-message')).not.toBeVisible();
+
         // ... even after toggling dock visibility
         await project.closeLeftDock();
         await expect(page.locator('#edition-form-container')).not.toBeVisible();
