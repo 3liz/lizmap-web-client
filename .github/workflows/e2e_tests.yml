@@ -179,6 +179,9 @@ jobs:
         env:
           CRTF_JSON_FILE: playwright-tagged-readonly.json
           PLAYWRIGHT_JSON_OUTPUT_NAME: tests-results-readonly.json
+        if: |
+          success() ||
+          steps.test-playwright-requests.outcome != 'success'
         run: |
           npx playwright test --grep @readonly --grep-invert @requests ${{ env.PLAYWRIGHT_OPTIONS }}
 
