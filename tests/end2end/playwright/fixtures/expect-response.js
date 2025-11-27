@@ -100,19 +100,21 @@ export const expect = baseExpect.extend({
 
     /**
      * Expecting the response is a valid GeoJSON
-     * @param {APIResponse} response the response to test
+     * @param {APIResponse|Response|null} response the response to test
      *
      * @returns {MatcherReturnType} the result
      */
     toBeGeoJson(response) {
         const assertionName = 'toBeGeoJson';
-        let pass = true;
+        let pass = response !== null;
         try {
-            // check response status
-            expect(response.ok()).toBeTruthy();
-            expect(response.status()).toBe(200);
-            // check content-type header
-            expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+            if (pass) {
+                // check response status
+                expect(response?.ok()).toBeTruthy();
+                expect(response?.status()).toBe(200);
+                // check content-type header
+                expect(response?.headers()['content-type']).toContain('application/vnd.geo+json');
+            }
         } catch {
             pass = false;
         }
@@ -121,13 +123,17 @@ export const expect = baseExpect.extend({
             pass =!pass;
         }
 
+        const received = (response !== null ? `${response?.status()} ${response?.headers()['content-type']}` : 'null');
+
         const message = pass
             ? () => this.utils.matcherHint(assertionName, undefined, undefined, { isNot: this.isNot }) +
                 '\n\n' +
-                `Response is GeoJSON: ${response.status()} ${response.headers()['content-type']}`
+                'Response is GeoJSON\n'+
+                `Received: ${received}`
             : () => this.utils.matcherHint(assertionName, undefined, undefined, { isNot: this.isNot }) +
                 '\n\n' +
-                `Response is not GeoJSON: ${response.status()} ${response.headers()['content-type']}`;
+                'Response is not GeoJSON\n'+
+                `Received: ${received}`;
 
         return {
             message,
