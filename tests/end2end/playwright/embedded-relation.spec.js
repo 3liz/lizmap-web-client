@@ -1,5 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+import { expect as responseExpect } from './fixtures/expect-response.js'
 import {ProjectPage} from "./pages/project";
 import { expectParametersToContain } from './globals';
 
@@ -42,9 +43,7 @@ test.describe('Display embedded relation in popup',
 
             // wait for response
             let getFeatureInfoResponse = await getFeatureInfoRequest.response();
-            expect(getFeatureInfoResponse).not.toBeNull();
-            expect(getFeatureInfoResponse?.ok()).toBe(true);
-            expect(await getFeatureInfoResponse?.headerValue('Content-Type')).toContain('text/html');
+            responseExpect(getFeatureInfoResponse).toBeHtml();
 
             // time for rendering the popup
             await page.waitForTimeout(100);

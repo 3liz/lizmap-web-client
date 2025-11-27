@@ -1,5 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+import { expect as responseExpect } from './fixtures/expect-response.js'
 import { ProjectPage } from "./pages/project";
 import { expectParametersToContain } from './globals';
 
@@ -26,7 +27,8 @@ test.describe('Feature toolbar in popup @readonly', () => {
             'QUERY_LAYERS': 'parent_layer',
         }
         await expectParametersToContain('GetFeatureInfo', getFeatureInfoRequest.postData() ?? '', getFeatureInfoExpectedParameters);
-        await getFeatureInfoRequest.response();
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // Zoom button
         const featureToolbar = await project.popupContent.locator('lizmap-feature-toolbar[value^="parent_layer_"][value$=".1"]');
@@ -90,7 +92,8 @@ test.describe('Feature toolbar in popup @readonly', () => {
             'QUERY_LAYERS': 'parent_layer',
         }
         await expectParametersToContain('GetFeatureInfo', getFeatureInfoRequest.postData() ?? '', getFeatureInfoExpectedParameters);
-        await getFeatureInfoRequest.response();
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // Center button
         const featureToolbar = await project.popupContent.locator('lizmap-feature-toolbar[value^="parent_layer_"][value$=".2"]');
@@ -184,7 +187,8 @@ test.describe('Feature toolbar in popup @readonly', () => {
             'QUERY_LAYERS': 'parent_layer',
         }
         await expectParametersToContain('GetFeatureInfo', getFeatureInfoRequest.postData() ?? '', getFeatureInfoExpectedParameters);
-        await getFeatureInfoRequest.response();
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // Select button
         const featureToolbar = project.popupContent.locator('lizmap-feature-toolbar[value^="parent_layer_"][value$=".1"]');
@@ -266,7 +270,8 @@ test.describe('Feature toolbar in popup @readonly', () => {
             'QUERY_LAYERS': 'parent_layer',
         }
         await expectParametersToContain('GetFeatureInfo', getFeatureInfoRequest.postData() ?? '', getFeatureInfoExpectedParameters);
-        await getFeatureInfoRequest.response();
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // Filter button
         const featureToolbar = project.popupContent.locator('lizmap-feature-toolbar[value^="parent_layer_"][value$=".1"]');
@@ -353,7 +358,8 @@ test.describe('Feature toolbar in popup @readonly', () => {
             'QUERY_LAYERS': 'parent_layer',
         }
         await expectParametersToContain('GetFeatureInfo', getFeatureInfoRequest.postData() ?? '', getFeatureInfoExpectedParameters);
-        await getFeatureInfoRequest.response();
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // Action button
         const featureToolbar = project.popupContent.locator('lizmap-feature-toolbar[value^="parent_layer_"][value$=".1"]');
@@ -443,7 +449,8 @@ test.describe('Feature toolbar in popup @readonly', () => {
             'QUERY_LAYERS': 'parent_layer',
         }
         await expectParametersToContain('GetFeatureInfo', getFeatureInfoRequest.postData() ?? '', getFeatureInfoExpectedParameters);
-        await getFeatureInfoRequest.response();
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // Create child button
         const featureToolbar = project.popupContent.locator('lizmap-feature-toolbar[value^="parent_layer_"][value$=".2"]');
@@ -494,7 +501,8 @@ test.describe('Feature toolbar in popup @readonly', () => {
             'QUERY_LAYERS': 'parent_layer',
         }
         await expectParametersToContain('GetFeatureInfo', getFeatureInfoRequest.postData() ?? '', getFeatureInfoExpectedParameters);
-        await getFeatureInfoRequest.response();
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // Create child button
         const featureToolbar = project.popupContent.locator('lizmap-feature-toolbar[value^="parent_layer_"][value$=".2"]');
@@ -548,7 +556,8 @@ test.describe('Feature toolbar in popup @readonly', () => {
             'QUERY_LAYERS': 'parent_layer',
         }
         await expectParametersToContain('GetFeatureInfo', getFeatureInfoRequest.postData() ?? '', getFeatureInfoExpectedParameters);
-        await getFeatureInfoRequest.response();
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // Create child button
         const featureToolbar = project.popupContent.locator('lizmap-feature-toolbar[value^="parent_layer_"][value$=".2"]');

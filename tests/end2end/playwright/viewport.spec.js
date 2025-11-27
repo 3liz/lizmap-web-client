@@ -1,5 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+import { expect as responseExpect } from './fixtures/expect-response.js'
 import {expectParametersToContain, gotoMap} from './globals';
 
 test.describe('Viewport devicePixelRatio 1', () => {
@@ -175,7 +176,7 @@ test.describe('Viewport mobile', () => {
         await page.locator('#liz-atlas-select').selectOption('2');
         let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
         let getFeatureInfoResponse = await getFeatureInfoRequest.response();
-        expect(await getFeatureInfoResponse?.headerValue('content-type')).toContain('text/html');
+        responseExpect(getFeatureInfoResponse).toBeHtml();
         await expect(page.locator('#liz-atlas-item-detail .lizmapPopupContent')).toBeInViewport();
         await expect(page.locator('#liz-atlas-item-detail .lizmapPopupContent')).toContainText('MOSSON');
         // Close atlas
