@@ -190,10 +190,12 @@ export default class FeatureToolbar extends HTMLElement {
 
         render(this._mainTemplate(), this);
 
-        this._editableFeaturesCallBack = (editableFeatures) => {
-            this.updateIsFeatureEditable(editableFeatures.properties);
-            render(this._mainTemplate(), this);
-        };
+        this._editableFeaturesCallBack = (editableFeaturesResponse) => {
+            if(editableFeaturesResponse.properties.layerName === this.featureType) {
+                this.updateIsFeatureEditable(editableFeaturesResponse.properties.editableFeatures);
+                render(this._mainTemplate(), this);
+            }
+        }
     }
 
     connectedCallback() {
