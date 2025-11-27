@@ -7,10 +7,59 @@ import { expect as baseExpect } from '@playwright/test';
 
 /**
  * Playwright Response
+ * @typedef {import('@playwright/test').Response} Response
+ */
+
+/**
+ * Playwright APIResponse
  * @typedef {import('@playwright/test').APIResponse} APIResponse
  */
 
 export const expect = baseExpect.extend({
+    /**
+     * Expecting the response is a valid image PNG
+     * @param {APIResponse|Response|null} response the response to test
+     *
+     * @returns {MatcherReturnType} the result
+     */
+    toBeImagePng(response) {
+        const assertionName = 'toBeImagePng';
+        let pass = response !== null;
+        try {
+            if (pass) {
+                // check response status
+                expect(response?.ok()).toBeTruthy();
+                expect(response?.status()).toBe(200);
+                // check content-type header
+                expect(response?.headers()['content-type']).toContain('image/png');
+            }
+        } catch {
+            pass = false;
+        }
+
+        if (this.isNot) {
+            pass =!pass;
+        }
+
+        const received = (response !== null ? `${response?.status()} ${response?.headers()['content-type']}` : 'null');
+
+        const message = pass
+            ? () => this.utils.matcherHint(assertionName, undefined, undefined, { isNot: this.isNot }) +
+                '\n\n' +
+                'Response is image PNG\n'+
+                `Received: ${received}`
+            : () => this.utils.matcherHint(assertionName, undefined, undefined, { isNot: this.isNot }) +
+                '\n\n' +
+                'Response is not image PNG\n'+
+                `Received: ${received}`;
+
+        return {
+            message,
+            pass,
+            name: assertionName,
+        };
+    },
+
     /**
      * Expecting the response is a valid JSON
      * @param {APIResponse} response the response to test
