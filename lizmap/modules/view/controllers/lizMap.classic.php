@@ -220,6 +220,27 @@ class lizMapCtrl extends jController
             'resourceUrlReplacement' => array(),
         );
 
+        // Add preload links
+        $rep->addPreloadLink(
+            jUrl::get(
+                'lizmap~service:getProjectConfig',
+                array('repository' => $repository, 'project' => $project),
+            ),
+            'fetch',
+            'application/json',
+        );
+        $rep->addPreloadLink(
+            jUrl::get(
+                'lizmap~service:getKeyValueConfig',
+                array('repository' => $repository, 'project' => $project),
+            ),
+            'fetch',
+            'application/json',
+        );
+        $rep->addPreloadLink($lproj->getWMSGetCapabilitiesUrl(), 'fetch', 'application/xml');
+        $rep->addPreloadLink($lproj->getWFSGetCapabilitiesUrl(), 'fetch', 'application/xml');
+        $rep->addPreloadLink($lproj->getWMTSGetCapabilitiesUrl(), 'fetch', 'application/xml');
+
         // Get optional WMS public url list
         $lser = lizmap::getServices();
         if ($lser->wmsPublicUrlList) {
@@ -332,6 +353,7 @@ class lizMapCtrl extends jController
             }
         }
 
+        // Add map theme
         $rep->addAssets('maptheme');
 
         // Add dockable css
