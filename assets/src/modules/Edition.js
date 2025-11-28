@@ -95,7 +95,10 @@ export default class Edition {
         if (Array.isArray(layerIds)){
             const fetchers = [];
             let layerIndex = 0;
+            const layersNames = [];
             for (const layerId of layerIds) {
+                // take layer name from requests, not from response, since response could be an empty array
+                layersNames.push(this._lizmap3.getLayerConfigById(layerId)[0]);
                 fetchers.push(fetch(globalThis['lizUrls'].edition.replace('getFeature', 'editableFeatures'),{
                     "method": "POST",
                     "body": new URLSearchParams({
@@ -111,15 +114,12 @@ export default class Edition {
                 layerIndex++;
             }
 
+            layerIndex = 0;
             Promise.all(fetchers).then(responses => {
                 const editableFeatures = [];
                 for (const response of responses) {
                     if (response?.['success'] && response?.['status'] === 'restricted') {
-                        let layerName;
                         for (const feature of response.features) {
-                            if(!layerName){
-                                layerName = feature.id.split('.')[0];
-                            }
                             editableFeatures.push(feature);
                         }
 
@@ -128,10 +128,12 @@ export default class Edition {
                             type: 'edition.editableFeatures',
                             properties: {
                                 editableFeatures: editableFeatures,
-                                layerName:layerName
+                                layerName:layersNames[layerIndex]
                             }
                         });
                     }
+
+                    layerIndex++;
                 }
             });
         }

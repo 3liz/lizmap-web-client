@@ -1482,15 +1482,13 @@ var lizAttributeTable = function() {
                 var dataLength = atFeatures.length;
 
                 if( cFeatures && cFeatures.length > 0 ){
-                    let keysFilter = [], exp_f;
+                    let keys = [], exp_f;
                     let pkey = config.attributeLayers[aName]['primaryKey'] || null;
                     if (pkey) {
-                        cFeatures.forEach((f)=>{
-                            let fid = f.id.split(".")[1];
-                            keysFilter.push('"'+pkey+'" = \''+fid+'\'');
-                        })
-
-                        exp_f = keysFilter.join(" OR ");
+                        keys = cFeatures.map((f) =>
+                            `'${f.id.split(".")[1]}'`
+                        )
+                        exp_f = `"${pkey}" IN ( ${keys.join(' , ')} )`;
                     }
 
                     // Create columns for datatable

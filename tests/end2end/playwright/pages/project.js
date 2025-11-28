@@ -328,6 +328,18 @@ export class ProjectPage extends BasePage {
     }
 
     /**
+     * Waits for a editableFeatures request
+     * @returns {Promise<Request>} The editableFeature request
+     */
+    async waitForEditableFeaturesRequest() {
+        return this.page.waitForRequest(
+            request => request.method() === 'POST' &&
+            request.url().includes('editableFeatures') === true &&
+            request.postData()?.includes('features') === true
+        );
+    }
+
+    /**
      * open function
      * Open the URL for the given project and repository
      * @param {boolean} skip_plugin_update_warning Skip UI warning about QGIS plugin version, false by default.
