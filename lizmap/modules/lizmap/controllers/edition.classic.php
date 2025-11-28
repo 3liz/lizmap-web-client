@@ -1469,7 +1469,7 @@ class editionCtrl extends jController
 
         /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
-
+        $rep->mimeType = 'application/json';
         $rep->outputFileName = 'editableFeatures.json';
         $rep->doDownload = false;
 
