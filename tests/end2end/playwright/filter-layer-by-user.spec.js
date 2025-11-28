@@ -194,7 +194,12 @@ test.describe('Filter layer data by user - admin - @readonly', () => {
 
     test('Popup with map click', async ({ page }) => {
         const project = new ProjectPage(page, 'filter_layer_by_user');
+        // Catch one GetMap
+        let getMapRequestPromise = project.waitForGetMapRequest();
         await project.open();
+        let getMapRequest = await getMapRequestPromise;
+        let getMapResponse = await getMapRequest.response();
+        responseExpect(getMapResponse).toBeImagePng();
         await project.closeLeftDock();
 
         // blue_filter_layer_by_user
@@ -353,7 +358,12 @@ test.describe('Filter layer data by user - user in group a - @readonly', () => {
 
     test('Popup with map click', async ({ page }) => {
         const project = new ProjectPage(page, 'filter_layer_by_user');
+        // Catch one GetMap
+        let getMapRequestPromise = project.waitForGetMapRequest();
         await project.open();
+        let getMapRequest = await getMapRequestPromise;
+        let getMapResponse = await getMapRequest.response();
+        responseExpect(getMapResponse).toBeImagePng();
         await project.closeLeftDock();
 
         // blue_filter_layer_by_user
@@ -500,7 +510,12 @@ test.describe('Filter layer data by user - not connected - @readonly', () => {
 
     test('Popup with map click', async ({ page }) => {
         const project = new ProjectPage(page, 'filter_layer_by_user');
+        // Catch one GetMap
+        let getMapRequestPromise = project.waitForGetMapRequest();
         await project.open();
+        let getMapRequest = await getMapRequestPromise;
+        let getMapResponse = await getMapRequest.response();
+        responseExpect(getMapResponse).toBeImagePng();
         await project.closeLeftDock();
 
         // blue_filter_layer_by_user
