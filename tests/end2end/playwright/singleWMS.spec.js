@@ -1,5 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+import { expect as responseExpect } from './fixtures/expect-response.js'
 import { expectParametersToContain } from './globals';
 import { ProjectPage } from "./pages/project";
 
@@ -191,11 +192,11 @@ test.describe('Single WMS layer', () => {
 
             let getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest();
             await project.clickOnMap(379, 288);
+            let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
+            let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+            responseExpect(getFeatureInfoResponse).toBeHtml();
 
-            await getFeatureInfoRequestPromise;
-
-            // render popup
-            await page.waitForTimeout(500);
+            // Check rendered popup
             let popup = await project.identifyContentLocator(
                 '1',
                 'single_wms_points_7462146f_833e_4d7f_be4f_bccfc4ca1662'
@@ -292,11 +293,11 @@ test.describe('Single WMS layer', () => {
             // filter
             let getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest();
             await project.clickOnMap(460, 352);
+            let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
+            let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+            responseExpect(getFeatureInfoResponse).toBeHtml();
 
-            await getFeatureInfoRequestPromise;
-
-            // render popup
-            await page.waitForTimeout(500);
+            // Check rendered popup
             let popup = await project.identifyContentLocator(
                 '3',
                 'single_wms_lines_1e302878_563d_4cc7_9bed_145269e95d68'

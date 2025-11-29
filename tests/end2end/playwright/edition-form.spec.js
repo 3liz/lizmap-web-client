@@ -1,5 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+import { expect as responseExpect } from './fixtures/expect-response.js'
 import { expectParametersToContain, gotoMap } from './globals';
 import { ProjectPage } from "./pages/project";
 
@@ -543,9 +544,7 @@ test.describe(
 
             // wait for response
             let getFeatureInfoResponse = await getFeatureInfoRequest.response();
-            expect(getFeatureInfoResponse).not.toBeNull();
-            expect(getFeatureInfoResponse?.ok()).toBe(true);
-            expect(await getFeatureInfoResponse?.headerValue('Content-Type')).toContain('text/html');
+            responseExpect(getFeatureInfoResponse).toBeHtml();
 
             // time for rendering the popup
             await page.waitForTimeout(100);
@@ -1158,7 +1157,8 @@ test.describe('Form edition without creation', {tag: ['@readonly'],},() => {
         let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
         await project.clickOnMap(630, 325);
         let getFeatureInfoRequest = await getFeatureInfoPromise;
-        await getFeatureInfoRequest.response();
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         const featureToolbar = await project.popupContent.locator('lizmap-feature-toolbar[value^="quartiers_"][value$=".6"]');
         await expect(featureToolbar).toBeDefined();

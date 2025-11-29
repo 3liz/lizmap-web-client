@@ -1,5 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+import { expect as responseExpect } from './fixtures/expect-response.js'
 import { gotoMap } from './globals';
 import { ProjectPage } from "./pages/project";
 
@@ -15,8 +16,9 @@ test.describe('Dataviz in popup @readonly', () => {
         // Click on the map and wait for GetFeatureInfo
         let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
         await project.clickOnMap(355, 280);
-        let getFeatureInfo = await getFeatureInfoPromise;
-        await getFeatureInfo.response();
+        let getFeatureInfoRequest = await getFeatureInfoPromise;
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // Check the GetPlot request
         let getPlot = project.waitForGetPlotRequest();
@@ -36,8 +38,9 @@ test.describe('Dataviz in popup @readonly', () => {
         // click again on the same point and wait for GetFeatureInfo
         getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
         await project.clickOnMap(355, 280);
-        getFeatureInfo = await getFeatureInfoPromise;
-        await getFeatureInfo.response();
+        getFeatureInfoRequest = await getFeatureInfoPromise;
+        getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // Check that the GetPlot request is the same
         getPlot = project.waitForGetPlotRequest();
@@ -57,8 +60,9 @@ test.describe('Dataviz in popup @readonly', () => {
         // click on another point and wait for GetFeatureInfo
         getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
         await project.clickOnMap(410, 216);
-        getFeatureInfo = await getFeatureInfoPromise;
-        await getFeatureInfo.response();
+        getFeatureInfoRequest = await getFeatureInfoPromise;
+        getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // Check that the GetPlot request is an other one
         getPlot = project.waitForGetPlotRequest();
@@ -78,8 +82,9 @@ test.describe('Dataviz in popup @readonly', () => {
         // click where there is a point without plot and wait for GetFeatureInfo
         getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
         await project.clickOnMap(410, 300);
-        getFeatureInfo = await getFeatureInfoPromise;
-        await getFeatureInfo.response();
+        getFeatureInfoRequest = await getFeatureInfoPromise;
+        getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // Check that the GetPlot request is an other one
         getPlot = project.waitForGetPlotRequest();
@@ -99,8 +104,9 @@ test.describe('Dataviz in popup @readonly', () => {
         // reopen previous popup and wait for GetFeatureInfo
         getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
         await project.clickOnMap(410, 216);
-        getFeatureInfo = await getFeatureInfoPromise;
-        await getFeatureInfo.response();
+        getFeatureInfoRequest = await getFeatureInfoPromise;
+        getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // Check that the GetPlot request is the same as the last one
         getPlot = project.waitForGetPlotRequest();
@@ -280,10 +286,11 @@ test.describe('Raster identify',
             await project.open();
 
             let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
-
             await project.clickOnMap(510, 415);
+            let getFeatureInfoRequest = await getFeatureInfoPromise;
+            let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+            responseExpect(getFeatureInfoResponse).toBeHtml();
 
-            await getFeatureInfoPromise;
             const popup = project.popupContent.locator("div.lizmapPopupContent div.lizmapPopupSingleFeature");
             await expect(popup).toHaveAttribute("data-layer-id", "local_raster_layer_c4c2ec5e_7567_476b_bf78_2b7c64f32615");
             await expect(popup).not.toHaveAttribute("data-feature-id");
@@ -296,11 +303,13 @@ test.describe('Popup @readonly', () => {
         const project = new ProjectPage(page, 'popup');
         await project.open();
 
-        let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
-
         // When clicking on triangle feature a popup with two tabs must appear
+        let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
         await project.clickOnMap(510, 415);
-        await getFeatureInfoPromise;
+        let getFeatureInfoRequest = await getFeatureInfoPromise;
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
+
         await expect(project.map.locator('#liz_layer_popup')).toBeVisible();
         await expect(project.map.locator('#liz_layer_popup_contentDiv > div > div > div > ul > li.active > a')).toBeVisible();
         await expect(project.map.locator('#liz_layer_popup_contentDiv > div > div > div > ul > li:nth-child(2) > a')).toBeVisible();
@@ -315,11 +324,13 @@ test.describe('Popup @readonly', () => {
         const project = new ProjectPage(page, 'popup');
         await project.open();
 
-        let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
-
         // When clicking `tab2`, `tab2_value` must appear
+        let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
         await project.clickOnMap(510, 490);
-        await getFeatureInfoPromise;
+        let getFeatureInfoRequest = await getFeatureInfoPromise;
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
+
         await page.getByRole('link', { name: 'tab2' }).click({ force: true });
         await expect(page.locator('#popup_dd_1_tab2')).toHaveClass(/active/);
     });
@@ -329,9 +340,11 @@ test.describe('Popup @readonly', () => {
         await project.open();
 
         let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
-
         await project.clickOnMap(510, 415);
-        await getFeatureInfoPromise;
+        let getFeatureInfoRequest = await getFeatureInfoPromise;
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
+
         await expect(project.map.locator('#liz_layer_popup .lizmapPopupChildren .lizmapPopupSingleFeature')).toHaveCount(2);
     });
 
@@ -348,9 +361,11 @@ test.describe('Popup @readonly', () => {
         await project.open();
 
         let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
-
         await project.clickOnMap(510, 415);
-        await getFeatureInfoPromise;
+        let getFeatureInfoRequest = await getFeatureInfoPromise;
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
+
         await expect(await project.map.locator('#liz_layer_popup lizmap-features-table')).toHaveCount(1);
         const lizmapFeaturesTable = await project.map.locator('#liz_layer_popup lizmap-features-table');
         await expect(lizmapFeaturesTable).toHaveAttribute('layerId');
@@ -375,6 +390,9 @@ test.describe('Popup @readonly', () => {
         await project.clickOnMap(486, 136);
         let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
         expect(getFeatureInfoRequest.postData()).toMatch(/FILTERTOKEN/);
+
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
     });
 
     test('With selection tool', async ({ page }) => {
@@ -387,7 +405,8 @@ test.describe('Popup @readonly', () => {
         let getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest();
         await project.clickOnMap(250, 415);
         let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         await expect(project.map.locator('#liz_layer_popup')).toBeVisible();
         await page.getByRole('link', { name: '✖' }).click();
@@ -413,7 +432,9 @@ test.describe('Popup @readonly', () => {
         getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest();
         await project.clickOnMap(250, 415);
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
+
         await expect(project.map.locator('#liz_layer_popup')).toBeVisible();
         await page.getByRole('link', { name: '✖' }).click();
     });
@@ -429,7 +450,8 @@ test.describe('Popup @readonly', () => {
         let getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest();
         await project.clickOnMap(250, 415);
         let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         await expect(project.map.locator('#liz_layer_popup')).toBeVisible();
         await page.getByRole('link', { name: '✖' }).click();
@@ -450,7 +472,8 @@ test.describe('Popup @readonly', () => {
         getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest();
         await project.clickOnMap(250, 415);
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         await expect(project.map.locator('#liz_layer_popup')).toBeVisible();
         await page.getByRole('link', { name: '✖' }).click();
@@ -485,7 +508,8 @@ test.describe('Popup Geometry @readonly', () => {
         let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
         await project.clickOnMap(436, 290);
         let getFeatureInfoRequest = await getFeatureInfoPromise;
-        await getFeatureInfoRequest.response();
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         const featureToolbar = await project.popupContent.locator('lizmap-feature-toolbar[value^="parent_layer_"][value$=".1"]');
         await expect(await featureToolbar.locator('button.feature-zoom')).toBeVisible();
@@ -506,7 +530,8 @@ test.describe('Popup Geometry @readonly', () => {
         let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
         await project.clickOnMap(436, 290);
         let getFeatureInfoRequest = await getFeatureInfoPromise;
-        await getFeatureInfoRequest.response();
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // The geometry is displayed
         buffer = await page.screenshot({clip:{x:425, y:325, width:100, height:100}});
@@ -543,7 +568,8 @@ test.describe('Popup Geometry @readonly', () => {
         let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
         await project.clickOnMap(436, 290);
         let getFeatureInfoRequest = await getFeatureInfoPromise;
-        await getFeatureInfoRequest.response();
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // The geometry is displayed
         buffer = await page.screenshot({clip:{x:425, y:325, width:100, height:100}});
@@ -554,7 +580,8 @@ test.describe('Popup Geometry @readonly', () => {
         getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
         await project.clickOnMap(536, 290);
         getFeatureInfoRequest = await getFeatureInfoPromise;
-        await getFeatureInfoRequest.response();
+        getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
         await page.waitForTimeout(500); // wait to be sure
 
         // Nothing

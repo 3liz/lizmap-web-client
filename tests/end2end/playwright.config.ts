@@ -1,5 +1,31 @@
 import { defineConfig } from '@playwright/test';
 
+import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+import path from 'path';
+
+/**
+ * The file path
+ * @member string
+ */
+const __filename = fileURLToPath(import.meta.url);
+
+/**
+ * The file directory path
+ * @member string
+ * @see https://nodejs.org/docs/latest-v15.x/api/esm.html#esm_no_filename_or_dirname
+ * @see https://stackoverflow.com/questions/8817423/why-is-dirname-not-defined-in-node-repl
+ * @example
+ * import { fileURLToPath } from 'url';
+ * import { dirname } from 'path';
+ * const __filename = fileURLToPath(import.meta.url);
+ * const __dirname = dirname(__filename);
+ */
+const __dirname = path.dirname(__filename);
+
+// loads environment variables from a tests/.env file into `process.env`
+dotenv.config({ path: path.resolve(__dirname, '..', '.env') });
+
 export default defineConfig({
     testDir: './playwright',
     snapshotPathTemplate: '{testDir}/__screenshots__/{testFilePath}/{arg}{ext}',
