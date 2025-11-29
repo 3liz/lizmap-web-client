@@ -36,7 +36,14 @@ test.describe('Filter layer data polygon - admin - @readonly', () => {
         const project = new ProjectPage(page, 'filter_layer_data_by_polygon_for_groups');
         // Catch default GetMap
         let getMapRequestPromise = project.waitForGetMapRequest();
-        await project.open();
+        if (process.env.LZMQGSRVVERSION == '3.44') {
+            // Because the projects have been upgraded to 3.44 from 3.34, this message has been displayed
+            // The project has been recently updated in QGIS Desktop, but with an outdated version of the
+            // Lizmap plugin. You must upgrade your plugin in QGIS Desktop.
+            await project.open(true);
+        } else {
+            await project.open();
+        }
         let getMapRequest = await getMapRequestPromise;
         let getMapResponse = await getMapRequest.response();
         responseExpect(getMapResponse).toBeImagePng();
@@ -104,7 +111,8 @@ test.describe('Filter layer data polygon - admin - @readonly', () => {
         let getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest()
         await project.clickOnMap(515-30, 455-75);
         let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // Two objects
         await expect(project.dock).toBeVisible()
@@ -119,7 +127,8 @@ test.describe('Filter layer data polygon - admin - @readonly', () => {
         getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest()
         await project.clickOnMap(490-30, 440-75);
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // One object
         await expect(project.dock).toBeVisible()
@@ -132,7 +141,8 @@ test.describe('Filter layer data polygon - admin - @readonly', () => {
         getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest()
         await project.clickOnMap(460-30, 275-75);
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // No object found
         await expect(project.dock).toBeVisible()
@@ -143,7 +153,11 @@ test.describe('Filter layer data polygon - admin - @readonly', () => {
         // Attribute table
         // shop_bakery
         let tableName = 'shop_bakery';
+        let getFeatureRequestPromise = project.waitForGetFeatureRequest();
         await project.openAttributeTable(tableName);
+        let getFeatureRequest = await getFeatureRequestPromise;
+        let getFeatureResponse = await getFeatureRequest.response();
+        responseExpect(getFeatureResponse).toBeGeoJson();
         let tableHtml = project.attributeTableHtml(tableName);
         // Check table lines
         await expect(tableHtml.locator('tbody tr')).toHaveCount(25);
@@ -151,7 +165,11 @@ test.describe('Filter layer data polygon - admin - @readonly', () => {
 
         // townhalls_EPSG2154
         tableName = 'townhalls_EPSG2154';
+        getFeatureRequestPromise = project.waitForGetFeatureRequest();
         await project.openAttributeTable(tableName);
+        getFeatureRequest = await getFeatureRequestPromise;
+        getFeatureResponse = await getFeatureRequest.response();
+        responseExpect(getFeatureResponse).toBeGeoJson();
         tableHtml = project.attributeTableHtml(tableName);
         // Check table lines
         await expect(tableHtml.locator('tbody tr')).toHaveCount(17);
@@ -159,7 +177,11 @@ test.describe('Filter layer data polygon - admin - @readonly', () => {
 
         // shop_bakery_pg
         tableName = 'shop_bakery_pg';
+        getFeatureRequestPromise = project.waitForGetFeatureRequest();
         await project.openAttributeTable(tableName);
+        getFeatureRequest = await getFeatureRequestPromise;
+        getFeatureResponse = await getFeatureRequest.response();
+        responseExpect(getFeatureResponse).toBeGeoJson();
         tableHtml = project.attributeTableHtml(tableName);
         // Check table lines
         await expect(tableHtml.locator('tbody tr')).toHaveCount(17);
@@ -167,7 +189,11 @@ test.describe('Filter layer data polygon - admin - @readonly', () => {
 
         // townhalls_pg
         tableName = 'townhalls_pg';
+        getFeatureRequestPromise = project.waitForGetFeatureRequest();
         await project.openAttributeTable(tableName);
+        getFeatureRequest = await getFeatureRequestPromise;
+        getFeatureResponse = await getFeatureRequest.response();
+        responseExpect(getFeatureResponse).toBeGeoJson()
         tableHtml = project.attributeTableHtml(tableName);
         // Check table lines
         await expect(tableHtml.locator('tbody tr')).toHaveCount(16);
@@ -253,7 +279,8 @@ test.describe('Filter layer data polygon - user in group a - @readonly', () => {
         let getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest()
         await project.clickOnMap(515-30, 455-75);
         let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // One object, it was two for admins
         await expect(project.dock).toBeVisible()
@@ -266,7 +293,8 @@ test.describe('Filter layer data polygon - user in group a - @readonly', () => {
         getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest()
         await project.clickOnMap(490-30, 440-75);
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // No object found, it was one for admins
         await expect(project.dock).toBeVisible()
@@ -278,7 +306,8 @@ test.describe('Filter layer data polygon - user in group a - @readonly', () => {
         getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest()
         await project.clickOnMap(460-30, 275-75);
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // No object found like for admins
         await expect(project.dock).toBeVisible()
@@ -289,7 +318,11 @@ test.describe('Filter layer data polygon - user in group a - @readonly', () => {
         // Attribute table
         // shop_bakery
         let tableName = 'shop_bakery';
+        let getFeatureRequestPromise = project.waitForGetFeatureRequest();
         await project.openAttributeTable(tableName);
+        let getFeatureRequest = await getFeatureRequestPromise;
+        let getFeatureResponse = await getFeatureRequest.response();
+        responseExpect(getFeatureResponse).toBeGeoJson();
         let tableHtml = project.attributeTableHtml(tableName);
         // Check table lines
         await expect(tableHtml.locator('tbody tr')).toHaveCount(5); // 25 for admins
@@ -297,7 +330,11 @@ test.describe('Filter layer data polygon - user in group a - @readonly', () => {
 
         // townhalls_EPSG2154
         tableName = 'townhalls_EPSG2154';
+        getFeatureRequestPromise = project.waitForGetFeatureRequest();
         await project.openAttributeTable(tableName);
+        getFeatureRequest = await getFeatureRequestPromise;
+        getFeatureResponse = await getFeatureRequest.response();
+        responseExpect(getFeatureResponse).toBeGeoJson();
         tableHtml = project.attributeTableHtml(tableName);
         // Check table lines
         await expect(tableHtml.locator('tbody tr')).toHaveCount(4); // 17 for admins
@@ -305,7 +342,11 @@ test.describe('Filter layer data polygon - user in group a - @readonly', () => {
 
         // shop_bakery_pg
         tableName = 'shop_bakery_pg';
+        getFeatureRequestPromise = project.waitForGetFeatureRequest();
         await project.openAttributeTable(tableName);
+        getFeatureRequest = await getFeatureRequestPromise;
+        getFeatureResponse = await getFeatureRequest.response();
+        responseExpect(getFeatureResponse).toBeGeoJson();
         tableHtml = project.attributeTableHtml(tableName);
         // Check table lines
         await expect(tableHtml.locator('tbody tr')).toHaveCount(4); // 17 for admins
@@ -313,7 +354,11 @@ test.describe('Filter layer data polygon - user in group a - @readonly', () => {
 
         // townhalls_pg
         tableName = 'townhalls_pg';
+        getFeatureRequestPromise = project.waitForGetFeatureRequest();
         await project.openAttributeTable(tableName);
+        getFeatureRequest = await getFeatureRequestPromise;
+        getFeatureResponse = await getFeatureRequest.response();
+        responseExpect(getFeatureResponse).toBeGeoJson();
         tableHtml = project.attributeTableHtml(tableName);
         // Check table lines
         await expect(tableHtml.locator('tbody tr')).toHaveCount(16);
@@ -399,7 +444,8 @@ test.describe('Filter layer data polygon - not connected - @readonly', () => {
         let getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest()
         await project.clickOnMap(515-30, 455-75);
         let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // One object, it was two for admins
         await expect(project.dock).toBeVisible()
@@ -412,7 +458,8 @@ test.describe('Filter layer data polygon - not connected - @readonly', () => {
         getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest()
         await project.clickOnMap(490-30, 440-75);
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // No object found, it was one for admins
         await expect(project.dock).toBeVisible()
@@ -424,7 +471,8 @@ test.describe('Filter layer data polygon - not connected - @readonly', () => {
         getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest()
         await project.clickOnMap(460-30, 275-75);
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // No object found like for admins
         await expect(project.dock).toBeVisible()
@@ -435,7 +483,11 @@ test.describe('Filter layer data polygon - not connected - @readonly', () => {
         // Attribute table
         // shop_bakery
         let tableName = 'shop_bakery';
+        let getFeatureRequestPromise = project.waitForGetFeatureRequest();
         await project.openAttributeTable(tableName);
+        let getFeatureRequest = await getFeatureRequestPromise;
+        let getFeatureResponse = await getFeatureRequest.response();
+        responseExpect(getFeatureResponse).toBeGeoJson();
         let tableHtml = project.attributeTableHtml(tableName);
         // Check table lines
         await expect(tableHtml.locator('tbody tr')).toHaveCount(0); // 25 for admins and 5 for user in froup a
@@ -443,7 +495,11 @@ test.describe('Filter layer data polygon - not connected - @readonly', () => {
 
         // townhalls_EPSG2154
         tableName = 'townhalls_EPSG2154';
+        getFeatureRequestPromise = project.waitForGetFeatureRequest();
         await project.openAttributeTable(tableName);
+        getFeatureRequest = await getFeatureRequestPromise;
+        getFeatureResponse = await getFeatureRequest.response();
+        responseExpect(getFeatureResponse).toBeGeoJson();
         tableHtml = project.attributeTableHtml(tableName);
         // Check table lines
         await expect(tableHtml.locator('tbody tr')).toHaveCount(0); // 17 for admins and 4 for user in froup a
@@ -451,7 +507,11 @@ test.describe('Filter layer data polygon - not connected - @readonly', () => {
 
         // shop_bakery_pg
         tableName = 'shop_bakery_pg';
+        getFeatureRequestPromise = project.waitForGetFeatureRequest();
         await project.openAttributeTable(tableName);
+        getFeatureRequest = await getFeatureRequestPromise;
+        getFeatureResponse = await getFeatureRequest.response();
+        responseExpect(getFeatureResponse).toBeGeoJson();
         tableHtml = project.attributeTableHtml(tableName);
         // Check table lines
         await expect(tableHtml.locator('tbody tr')).toHaveCount(0); // 17 for admins and 4 for user in froup a
@@ -459,7 +519,11 @@ test.describe('Filter layer data polygon - not connected - @readonly', () => {
 
         // townhalls_pg
         tableName = 'townhalls_pg';
+        getFeatureRequestPromise = project.waitForGetFeatureRequest();
         await project.openAttributeTable(tableName);
+        getFeatureRequest = await getFeatureRequestPromise;
+        getFeatureResponse = await getFeatureRequest.response();
+        responseExpect(getFeatureResponse).toBeGeoJson();
         tableHtml = project.attributeTableHtml(tableName);
         // Check table lines
         await expect(tableHtml.locator('tbody tr')).toHaveCount(16);
