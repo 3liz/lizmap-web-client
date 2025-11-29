@@ -194,7 +194,19 @@ test.describe('Filter layer data by user - admin - @readonly', () => {
 
     test('Popup with map click', async ({ page }) => {
         const project = new ProjectPage(page, 'filter_layer_by_user');
-        await project.open();
+        // Catch one GetMap
+        let getMapRequestPromise = project.waitForGetMapRequest();
+        if (process.env.LZMQGSRVVERSION == '3.44') {
+            // Because the projects have been upgraded to 3.44 from 3.34, this message has been displayed
+            // The project has been recently updated in QGIS Desktop, but with an outdated version of the
+            // Lizmap plugin. You must upgrade your plugin in QGIS Desktop.
+            await project.open(true);
+        } else {
+            await project.open();
+        }
+        let getMapRequest = await getMapRequestPromise;
+        let getMapResponse = await getMapRequest.response();
+        responseExpect(getMapResponse).toBeImagePng();
         await project.closeLeftDock();
 
         // blue_filter_layer_by_user
@@ -202,7 +214,8 @@ test.describe('Filter layer data by user - admin - @readonly', () => {
         let getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest()
         await project.clickOnMap(356-30, 346-75);
         let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // Blue object found
         await expect(project.dock).toBeVisible()
@@ -226,7 +239,8 @@ test.describe('Filter layer data by user - admin - @readonly', () => {
         getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest()
         await project.clickOnMap(510-30, 341-75);
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // Blue object found
         await expect(project.dock).toBeVisible()
@@ -249,7 +263,8 @@ test.describe('Filter layer data by user - admin - @readonly', () => {
         getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest()
         await project.clickOnMap(438-30, 193-75);
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // Red object found
         await expect(project.dock).toBeVisible()
@@ -273,7 +288,8 @@ test.describe('Filter layer data by user - admin - @readonly', () => {
         getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest()
         await project.clickOnMap(383-30, 500-75);
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // Green object found
         await expect(project.dock).toBeVisible()
@@ -297,7 +313,8 @@ test.describe('Filter layer data by user - admin - @readonly', () => {
         getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest()
         await project.clickOnMap(478-30, 498-75);
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // Green object found
         await expect(project.dock).toBeVisible()
@@ -321,7 +338,8 @@ test.describe('Filter layer data by user - admin - @readonly', () => {
         getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest()
         await project.clickOnMap(431-30, 563-75);
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // Green object found
         await expect(project.dock).toBeVisible()
@@ -347,7 +365,12 @@ test.describe('Filter layer data by user - user in group a - @readonly', () => {
 
     test('Popup with map click', async ({ page }) => {
         const project = new ProjectPage(page, 'filter_layer_by_user');
+        // Catch one GetMap
+        let getMapRequestPromise = project.waitForGetMapRequest();
         await project.open();
+        let getMapRequest = await getMapRequestPromise;
+        let getMapResponse = await getMapRequest.response();
+        responseExpect(getMapResponse).toBeImagePng();
         await project.closeLeftDock();
 
         // blue_filter_layer_by_user
@@ -355,7 +378,8 @@ test.describe('Filter layer data by user - user in group a - @readonly', () => {
         let getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest()
         await project.clickOnMap(356-30, 346-75);
         let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // Blue object found
         await expect(project.dock).toBeVisible()
@@ -368,7 +392,8 @@ test.describe('Filter layer data by user - user in group a - @readonly', () => {
         getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest()
         await project.clickOnMap(510-30, 341-75);
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // Blue object found
         await expect(project.dock).toBeVisible()
@@ -391,7 +416,8 @@ test.describe('Filter layer data by user - user in group a - @readonly', () => {
         getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest()
         await project.clickOnMap(438-30, 193-75);
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // Red object found
         await expect(project.dock).toBeVisible()
@@ -415,7 +441,8 @@ test.describe('Filter layer data by user - user in group a - @readonly', () => {
         getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest()
         await project.clickOnMap(383-30, 500-75);
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // Green object found
         await expect(project.dock).toBeVisible()
@@ -439,7 +466,8 @@ test.describe('Filter layer data by user - user in group a - @readonly', () => {
         getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest()
         await project.clickOnMap(478-30, 498-75);
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // Green object found
         await expect(project.dock).toBeVisible()
@@ -463,7 +491,8 @@ test.describe('Filter layer data by user - user in group a - @readonly', () => {
         getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest()
         await project.clickOnMap(431-30, 563-75);
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // Green object found
         await expect(project.dock).toBeVisible()
@@ -488,7 +517,12 @@ test.describe('Filter layer data by user - not connected - @readonly', () => {
 
     test('Popup with map click', async ({ page }) => {
         const project = new ProjectPage(page, 'filter_layer_by_user');
+        // Catch one GetMap
+        let getMapRequestPromise = project.waitForGetMapRequest();
         await project.open();
+        let getMapRequest = await getMapRequestPromise;
+        let getMapResponse = await getMapRequest.response();
+        responseExpect(getMapResponse).toBeImagePng();
         await project.closeLeftDock();
 
         // blue_filter_layer_by_user
@@ -496,7 +530,8 @@ test.describe('Filter layer data by user - not connected - @readonly', () => {
         let getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest()
         await project.clickOnMap(356-30, 346-75);
         let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // No object found
         await expect(project.dock).toBeVisible()
@@ -510,7 +545,8 @@ test.describe('Filter layer data by user - not connected - @readonly', () => {
         getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest()
         await project.clickOnMap(510-30, 341-75);
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // No object found
         await expect(project.dock).toBeVisible()
@@ -523,7 +559,8 @@ test.describe('Filter layer data by user - not connected - @readonly', () => {
         getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest()
         await project.clickOnMap(438-30, 193-75);
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // Red object found
         await expect(project.dock).toBeVisible()
@@ -547,7 +584,8 @@ test.describe('Filter layer data by user - not connected - @readonly', () => {
         getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest()
         await project.clickOnMap(383-30, 500-75);
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // Green object found
         await expect(project.dock).toBeVisible()
@@ -571,7 +609,8 @@ test.describe('Filter layer data by user - not connected - @readonly', () => {
         getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest()
         await project.clickOnMap(478-30, 498-75);
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // Green object found
         await expect(project.dock).toBeVisible()
@@ -595,7 +634,8 @@ test.describe('Filter layer data by user - not connected - @readonly', () => {
         getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest()
         await project.clickOnMap(431-30, 563-75);
         getFeatureInfoRequest = await getFeatureInfoRequestPromise;
-        await getFeatureInfoRequest.response();
+        getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         // Green object found
         await expect(project.dock).toBeVisible()

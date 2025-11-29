@@ -55,6 +55,7 @@
     "svgo": "^4.0.x",
     "svgo-loader": "^4.0.x",
     "undici": "^7.16.x",
+    "dotenv": "^17.2.3",
     "webpack": "^5.102.x",
     "webpack-merge": "^6.0.x"
   }
