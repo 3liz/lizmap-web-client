@@ -22,15 +22,15 @@ jobs:
       matrix:
         include:
           - php-version: "8.2"
-            php-unit: "11.5.50"
+            php-unit: "11.5.2"
           - php-version: "8.3"
-            php-unit: "12.5.8"
+            php-unit: "12.2.5"
           - php-version: "8.4"
-            php-unit: "12.5.8"
+            php-unit: "12.2.5"
     steps:
 
       - name: Check out repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v5
 
       - name: Get composer cache directory
         id: get-composer-cache-dir
@@ -44,7 +44,7 @@ jobs:
           tools: php-cs-fixer, phpunit
 
       - name: Cache dependencies
-        uses: actions/cache@v5
+        uses: actions/cache@v4
         with:
           path: ${{ env.composer_cache_dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
@@ -58,7 +58,7 @@ jobs:
         run: composer require --working-dir=tests/units/ phpunit/phpunit:${{ matrix.php-unit }}
 
       - name: "Setup Node ${{ env.NODE_VERSION }}"
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -73,10 +73,10 @@ jobs:
     steps:
 
       - name: Check out repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v5
 
       - name: "Setup Node ${{ env.NODE_VERSION }}"
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
