@@ -1,8 +1,9 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+import { expect as requestExpect } from './fixtures/expect-request.js'
 import { expect as responseExpect } from './fixtures/expect-response.js'
 import { ProjectPage } from './pages/project';
-import { expectParametersToContain, getAuthStorageStatePath } from './globals';
+import { getAuthStorageStatePath } from './globals';
 import { AdminPage } from "./pages/admin";
 
 /**
@@ -121,7 +122,7 @@ test.describe('Attribute table @readonly', () => {
             'HEIGHT': '633',
             'BBOX': /738930.9\d+,6258456.2\d+,802298.7\d+,6300326.6\d+/,
         }
-        await expectParametersToContain('GetMap', getMapRequest.url(), getMapExpectedParameters);
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
         await getMapRequest.response();
 
         let req_url = new URL(getMapRequest.url())
@@ -136,7 +137,7 @@ test.describe('Attribute table @readonly', () => {
         //getMapExpectedParameters['BBOX'] = /729436.6\d+,6248961.9\d+,792804.5\d+,6290832.3\d+/;
         getMapExpectedParameters['BBOX'] = /732448.6\d+,6251973.9\d+,795816.4\d+,6293844.3\d+/;
         //delete getMapExpectedParameters['BBOX'];
-        await expectParametersToContain('GetMap', getMapRequest.url(), getMapExpectedParameters);
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
         await getMapRequest.response();
         await page.waitForTimeout(100)
 
@@ -183,10 +184,10 @@ test.describe('Attribute table @readonly', () => {
             'typename': typeName,
             'ids': '2',
         }
-        await expectParametersToContain('GetSelectionToken', getSelectionTokenRequest.postData() ?? '', getSelectionTokenParameters);
+        requestExpect(getSelectionTokenRequest).toContainParametersInPostData(getSelectionTokenParameters);
         // update expected GetMap parameters
         getMapExpectedParameters['SELECTIONTOKEN'] = /^[a-zA-Z0-9]{32}$/;
-        await expectParametersToContain('GetMap', getMapRequest.url(), getMapExpectedParameters);
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
 
         req_url = new URL(getMapRequest.url())
         expect(req_url.searchParams.get('SELECTIONTOKEN')).not.toBeNull()
@@ -222,12 +223,12 @@ test.describe('Attribute table @readonly', () => {
             'typename': typeName,
             'filter': typeName+':"quartier" IN ( 2 ) ',
         }
-        await expectParametersToContain('GetFilterToken', getFilterTokenRequest.postData() ?? '', getFilterTokenParameters);
+        requestExpect(getFilterTokenRequest).toContainParametersInPostData(getFilterTokenParameters);
 
         // update expected GetMap parameters
         delete getMapExpectedParameters['SELECTIONTOKEN'];
         getMapExpectedParameters['FILTERTOKEN'] = /^[a-zA-Z0-9]{32}$/;
-        await expectParametersToContain('GetMap', getMapRequest.url(), getMapExpectedParameters);
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
 
         req_url = new URL(getMapRequest.url())
         expect(req_url.searchParams.get('SELECTIONTOKEN')).toBeNull()
@@ -278,7 +279,7 @@ test.describe('Attribute table @readonly', () => {
         await tr2.locator('lizmap-feature-toolbar .feature-select').click();
         getSelectionTokenRequest = await getSelectionTokenRequestPromise;
         // Check GetSelectionToken request
-        await expectParametersToContain('GetSelectionToken', getSelectionTokenRequest.postData() ?? '', getSelectionTokenParameters);
+        requestExpect(getSelectionTokenRequest).toContainParametersInPostData(getSelectionTokenParameters);
         await getSelectionTokenRequest.response();
 
         // Use line with id 4
@@ -310,7 +311,7 @@ test.describe('Attribute table @readonly', () => {
         // Update expected GetSelection token parameters
         getSelectionTokenParameters['ids'] = '2,4'
         // Check GetSelectionToken request
-        await expectParametersToContain('GetSelectionToken', getSelectionTokenRequest.postData() ?? '', getSelectionTokenParameters);
+        requestExpect(getSelectionTokenRequest).toContainParametersInPostData(getSelectionTokenParameters);
 
         // Check that the select button display that the feature is selected
         await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).toContainClass('btn-primary');
@@ -331,13 +332,13 @@ test.describe('Attribute table @readonly', () => {
         // Update expected GetSelection token parameters
         getSelectionTokenParameters['ids'] = '2,4,6'
         // Check GetSelectionToken request
-        await expectParametersToContain('GetSelectionToken', getSelectionTokenRequest.postData() ?? '', getSelectionTokenParameters);
+        requestExpect(getSelectionTokenRequest).toContainParametersInPostData(getSelectionTokenParameters);
 
         // update expected GetMap paramaeters
         delete getMapExpectedParameters['FILTERTOKEN'];
         getMapExpectedParameters['SELECTIONTOKEN'] = /^[a-zA-Z0-9]{32}$/;
         getMapRequest = await getMapRequestPromise;
-        await expectParametersToContain('GetMap', getMapRequest.url(), getMapExpectedParameters);
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
         await getMapRequest.response();
 
         req_url = new URL(getMapRequest.url())
@@ -373,11 +374,11 @@ test.describe('Attribute table @readonly', () => {
 
         // Check GetSelectionToken request
         getFilterTokenParameters['filter'] = typeName+':"quartier" IN ( 2 , 6 , 4 ) ';
-        await expectParametersToContain('GetFilterToken', getFilterTokenRequest.postData() ?? '', getFilterTokenParameters);
+        requestExpect(getFilterTokenRequest).toContainParametersInPostData(getFilterTokenParameters);
         // update expected GetMap parameters
         delete getMapExpectedParameters['SELECTIONTOKEN'];
         getMapExpectedParameters['FILTERTOKEN'] = /^[a-zA-Z0-9]{32}$/;
-        await expectParametersToContain('GetMap', getMapRequest.url(), getMapExpectedParameters);
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
 
         req_url = new URL(getMapRequest.url())
         expect(req_url.searchParams.get('SELECTIONTOKEN')).toBeNull()
@@ -470,7 +471,7 @@ test.describe('Attribute table @readonly', () => {
             'typename': typeName,
             'ids': '2',
         }
-        await expectParametersToContain('GetSelectionToken', getSelectionTokenRequest.postData() ?? '', getSelectionTokenParameters);
+        requestExpect(getSelectionTokenRequest).toContainParametersInPostData(getSelectionTokenParameters);
 
         // Check that the select button display that the feature is selected
         await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).toContainClass('btn-primary');
@@ -490,7 +491,7 @@ test.describe('Attribute table @readonly', () => {
             'typename': typeName,
             'filter': typeName+':"quartier" IN ( 3 ) ',
         }
-        await expectParametersToContain('GetFilterToken', getFilterTokenRequest.postData() ?? '', getFilterTokenParameters);
+        requestExpect(getFilterTokenRequest).toContainParametersInPostData(getFilterTokenParameters);
 
         // Check that the filter button display that the feature is filtered
         await expect(actionBar.locator('.btn-filter-attributeTable')).toContainClass('btn-primary');
@@ -526,7 +527,7 @@ test.describe('Attribute table @readonly', () => {
         await tr2.locator('lizmap-feature-toolbar .feature-select').click();
         getSelectionTokenRequest = await getSelectionTokenRequestPromise;
         // Check GetSelectionToken request
-        await expectParametersToContain('GetSelectionToken', getSelectionTokenRequest.postData() ?? '', getSelectionTokenParameters);
+        requestExpect(getSelectionTokenRequest).toContainParametersInPostData(getSelectionTokenParameters);
         await getSelectionTokenRequest.response();
 
         // Use line with id 4
@@ -554,7 +555,7 @@ test.describe('Attribute table @readonly', () => {
         // Update expected GetSelection token parameters
         getSelectionTokenParameters['ids'] = '2,4'
         // Check GetSelectionToken request
-        await expectParametersToContain('GetSelectionToken', getSelectionTokenRequest.postData() ?? '', getSelectionTokenParameters);
+        requestExpect(getSelectionTokenRequest).toContainParametersInPostData(getSelectionTokenParameters);
 
         // Check that the select button display that the feature is selected
         await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).toContainClass('btn-primary');
@@ -573,7 +574,7 @@ test.describe('Attribute table @readonly', () => {
         // Update expected GetSelection token parameters
         getSelectionTokenParameters['ids'] = '2,4,6'
         // Check GetSelectionToken request
-        await expectParametersToContain('GetSelectionToken', getSelectionTokenRequest.postData() ?? '', getSelectionTokenParameters);
+        requestExpect(getSelectionTokenRequest).toContainParametersInPostData(getSelectionTokenParameters);
 
         // Check that the select button display that the feature is selected
         await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).toContainClass('btn-primary');
@@ -591,7 +592,7 @@ test.describe('Attribute table @readonly', () => {
 
         // Check GetSelectionToken request
         getFilterTokenParameters['filter'] = typeName+':"quartier" IN ( 3 , 7 , 4 ) ';
-        await expectParametersToContain('GetFilterToken', getFilterTokenRequest.postData() ?? '', getFilterTokenParameters);
+        requestExpect(getFilterTokenRequest).toContainParametersInPostData(getFilterTokenParameters);
 
         // Check that the filter button display that the feature is filtered
         await expect(actionBar.locator('.btn-filter-attributeTable')).toContainClass('btn-primary');
@@ -712,7 +713,7 @@ test.describe('Attribute table data restricted to map extent @readonly', () => {
             'HEIGHT': '633',
             'BBOX': /738930.9\d+,6258456.2\d+,802298.7\d+,6300326.6\d+/,
         }
-        await expectParametersToContain('GetMap', getMapRequest.url(), getMapExpectedParameters);
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
         await getMapRequest.response();
 
         let getFeatureRequestPromise = project.waitForGetFeatureRequest();
@@ -737,7 +738,7 @@ test.describe('Attribute table data restricted to map extent @readonly', () => {
         getMapRequest = await getMapRequestPromise;
         // Update expected GetMap Parameters
         getMapExpectedParameters['BBOX'] = /766383.9\d+,6280282.4\d+,772720.7\d+,6284469.4\d+/;
-        await expectParametersToContain('GetMap', getMapRequest.url(), getMapExpectedParameters);
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
         await getMapRequest.response();
 
         await expect(page.locator('.btn-refresh-table')).toHaveClass(/btn-warning/);
@@ -897,6 +898,6 @@ test.describe('Layer export permissions ACL', () => {
             'BBOX': /3.7759\d+,43.55267\d+,3.98277\d+,43.6516\d+/,
         }
 
-        await expectParametersToContain('Export GeoJSON with BBOX', getFeatureRequest.postData() ?? '', expectedParameters);
+        requestExpect(getFeatureRequest).toContainParametersInPostData(expectedParameters);
     })
 });
