@@ -49,8 +49,6 @@ test.describe('Print in project projection', () => {
             'map1:LAYERS': 'reseau',
             'map1:STYLES': 'default',
             'map1:OPACITIES': '255',
-            // Disabled because of the migration when project is saved with QGIS >= 3.32
-            // 'multiline_label': 'Multiline label',
         }
         const getPrintParams = await expectParametersToContain('Print empty', getPrintRequest.postData() ?? '', expectedParameters)
         await expect(getPrintParams.size).toBe(14)
@@ -95,8 +93,6 @@ test.describe('Print in project projection', () => {
             'map1:LAYERS': 'Photographies_aeriennes,reseau',
             'map1:STYLES': 'default,default',
             'map1:OPACITIES': '255,255',
-            // Disabled because of the migration when project is saved with QGIS >= 3.32
-            // 'multiline_label': 'Multiline label',
         }
         const getPrintParams = await expectParametersToContain('Print external baselayer', getPrintRequest.postData() ?? '', expectedParameters)
         await expect(Array.from(getPrintParams.keys())).toHaveLength(14)
