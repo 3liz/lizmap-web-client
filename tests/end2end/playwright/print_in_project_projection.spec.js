@@ -12,7 +12,7 @@ test.describe('Print in project projection', () => {
     });
 
     test('Print empty', async ({ page }) => {
-        await page.locator('#switcher-baselayer').getByRole('combobox').selectOption('empty');
+        await page.locator('#switcher-baselayer').getByRole('combobox').selectOption('project-background-color');
         await page.locator('#print-scale').selectOption('1000');
 
         // Mock file
