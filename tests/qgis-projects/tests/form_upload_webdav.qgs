@@ -1,5 +1,5 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis saveUser="riccardo" projectname="" saveUserFull="riccardo" saveDateTime="2024-03-14T13:55:16" version="3.28.15-Firenze">
+<qgis projectname="" saveDateTime="2025-12-02T18:32:28" version="3.34.15-Prizren" saveUserFull="Ubuntu" saveUser="ubuntu">
   <homePath path=""/>
   <title></title>
   <transaction mode="Disabled"/>
@@ -17,31 +17,32 @@
       <geographicflag>true</geographicflag>
     </spatialrefsys>
   </projectCrs>
+  <elevation-shading-renderer light-azimuth="315" combined-method="0" hillshading-is-active="0" hillshading-is-multidirectional="0" edl-distance="0.5" light-altitude="45" is-active="0" edl-strength="1000" edl-is-active="1" edl-distance-unit="0" hillshading-z-factor="1"/>
   <layer-tree-group>
     <customproperties>
       <Option/>
     </customproperties>
-    <layer-tree-layer source="service='lizmapdb' sslmode=prefer key='id' checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;form_edition_upload_webdav_child_attachments&quot;" expanded="1" patch_size="-1,-1" name="form_edition_upload_webdav_child_attachments" providerKey="postgres" checked="Qt::Checked" legend_exp="" id="form_edition_upload_webdav_child_attachments_0e53afd9_2e39_4a05_9308_a5c7f6cfffca" legend_split_behavior="0">
+    <layer-tree-layer patch_size="-1,-1" name="form_edition_upload_webdav_child_attachments" providerKey="" id="form_edition_upload_webdav_child_attachments_0e53afd9_2e39_4a05_9308_a5c7f6cfffca" checked="Qt::Checked" source="service='lizmapdb' key='id' checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;form_edition_upload_webdav_child_attachments&quot;" expanded="1" legend_exp="" legend_split_behavior="0">
       <customproperties>
         <Option/>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer source="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;form_edition_upload_webdav_parent_geom&quot; (geom)" expanded="1" patch_size="-1,-1" name="form_edition_upload_webdav_parent_geom" providerKey="postgres" checked="Qt::Checked" legend_exp="" id="form_edition_upload_webdav_parent_geom_8c26e78b_f73b_4b2a_9c0e_d7a9e185346e" legend_split_behavior="0">
+    <layer-tree-layer patch_size="-1,-1" name="form_edition_upload_webdav_parent_geom" providerKey="" id="form_edition_upload_webdav_parent_geom_8c26e78b_f73b_4b2a_9c0e_d7a9e185346e" checked="Qt::Checked" source="service='lizmapdb' key='id' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;form_edition_upload_webdav_parent_geom&quot; (geom)" expanded="1" legend_exp="" legend_split_behavior="0">
       <customproperties>
         <Option/>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer source="./form_edition_upload_webdav_shape.shp" expanded="1" patch_size="-1,-1" name="form_edition_upload_webdav_shape" providerKey="ogr" checked="Qt::Checked" legend_exp="" id="for_edition_upload_webdav_shape_caf087fb_dfd0_40c5_93a4_ac1ae5648e96" legend_split_behavior="0">
+    <layer-tree-layer patch_size="-1,-1" name="form_edition_upload_webdav_shape" providerKey="" id="for_edition_upload_webdav_shape_caf087fb_dfd0_40c5_93a4_ac1ae5648e96" checked="Qt::Checked" source="/tmp/qgis-projects/form_edition_upload_webdav_shape.shp" expanded="1" legend_exp="" legend_split_behavior="0">
       <customproperties>
         <Option/>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer source="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;form_edition_upload_webdav_geom&quot; (geom)" expanded="1" patch_size="-1,-1" name="form_edition_upload_webdav_geom" providerKey="postgres" checked="Qt::Checked" legend_exp="" id="form_edition_upload_webdav_geom_c71ec5ff_dc88_451f_98e1_ccf41e34ddd7" legend_split_behavior="0">
+    <layer-tree-layer patch_size="-1,-1" name="form_edition_upload_webdav_geom" providerKey="" id="form_edition_upload_webdav_geom_c71ec5ff_dc88_451f_98e1_ccf41e34ddd7" checked="Qt::Checked" source="service='lizmapdb' key='id' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;form_edition_upload_webdav_geom&quot; (geom)" expanded="1" legend_exp="" legend_split_behavior="0">
       <customproperties>
         <Option/>
       </customproperties>
     </layer-tree-layer>
-    <layer-tree-layer source="service='lizmapdb' sslmode=prefer key='id' checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;form_edition_upload_webdav&quot;" expanded="1" patch_size="-1,-1" name="form_edition_upload_webdav" providerKey="postgres" checked="Qt::Checked" legend_exp="" id="form_edition_upload_webdav_da2c53fe_a99a_41ee_8feb_e2570b11e547" legend_split_behavior="0">
+    <layer-tree-layer patch_size="-1,-1" name="form_edition_upload_webdav" providerKey="" id="form_edition_upload_webdav_da2c53fe_a99a_41ee_8feb_e2570b11e547" checked="Qt::Checked" source="service='lizmapdb' key='id' checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;form_edition_upload_webdav&quot;" expanded="1" legend_exp="" legend_split_behavior="0">
       <customproperties>
         <Option/>
       </customproperties>
@@ -52,74 +53,20 @@
       <item>form_edition_upload_webdav_parent_geom_8c26e78b_f73b_4b2a_9c0e_d7a9e185346e</item>
     </custom-order>
   </layer-tree-group>
-  <snapping-settings tolerance="12" type="1" mode="2" enabled="0" scaleDependencyMode="0" intersection-snapping="0" minScale="0" maxScale="0" unit="1" self-snapping="0">
+  <snapping-settings self-snapping="0" unit="1" type="1" tolerance="12" intersection-snapping="0" minScale="0" mode="2" enabled="0" maxScale="0" scaleDependencyMode="0">
     <individual-layer-settings>
-      <layer-setting tolerance="12" type="1" enabled="0" units="1" minScale="0" maxScale="0" id="for_edition_upload_webdav_shape_caf087fb_dfd0_40c5_93a4_ac1ae5648e96"/>
-      <layer-setting tolerance="12" type="1" enabled="0" units="1" minScale="0" maxScale="0" id="form_edition_upload_webdav_parent_geom_8c26e78b_f73b_4b2a_9c0e_d7a9e185346e"/>
-      <layer-setting tolerance="12" type="1" enabled="0" units="1" minScale="0" maxScale="0" id="form_edition_upload_webdav_geom_c71ec5ff_dc88_451f_98e1_ccf41e34ddd7"/>
+      <layer-setting type="1" tolerance="12" minScale="0" units="1" id="form_edition_upload_webdav_geom_c71ec5ff_dc88_451f_98e1_ccf41e34ddd7" enabled="0" maxScale="0"/>
+      <layer-setting type="1" tolerance="12" minScale="0" units="1" id="for_edition_upload_webdav_shape_caf087fb_dfd0_40c5_93a4_ac1ae5648e96" enabled="0" maxScale="0"/>
+      <layer-setting type="1" tolerance="12" minScale="0" units="1" id="form_edition_upload_webdav_parent_geom_8c26e78b_f73b_4b2a_9c0e_d7a9e185346e" enabled="0" maxScale="0"/>
     </individual-layer-settings>
   </snapping-settings>
   <relations>
-    <relation referencingLayer="form_edition_upload_webdav_child_attachments_0e53afd9_2e39_4a05_9308_a5c7f6cfffca" name="child" referencedLayer="form_edition_upload_webdav_parent_geom_8c26e78b_f73b_4b2a_9c0e_d7a9e185346e" strength="Association" id="form_editi_id_parent_form_editi_id_1">
+    <relation name="child" strength="Association" referencedLayer="form_edition_upload_webdav_parent_geom_8c26e78b_f73b_4b2a_9c0e_d7a9e185346e" id="form_editi_id_parent_form_editi_id_1" referencingLayer="form_edition_upload_webdav_child_attachments_0e53afd9_2e39_4a05_9308_a5c7f6cfffca">
       <fieldRef referencingField="id_parent" referencedField="id"/>
     </relation>
   </relations>
   <polymorphicRelations/>
-  <mapcanvas annotationsVisible="1" name="theMapCanvas">
-    <units>degrees</units>
-    <extent>
-      <xmin>-1.73576402523245799</xmin>
-      <ymin>44.34785079760541748</ymin>
-      <xmax>3.79428242493046008</xmax>
-      <ymax>46.55364601884275544</ymax>
-    </extent>
-    <rotation>0</rotation>
-    <destinationsrs>
-      <spatialrefsys nativeFormat="Wkt">
-        <wkt>GEOGCRS["WGS 84",ENSEMBLE["World Geodetic System 1984 ensemble",MEMBER["World Geodetic System 1984 (Transit)"],MEMBER["World Geodetic System 1984 (G730)"],MEMBER["World Geodetic System 1984 (G873)"],MEMBER["World Geodetic System 1984 (G1150)"],MEMBER["World Geodetic System 1984 (G1674)"],MEMBER["World Geodetic System 1984 (G1762)"],MEMBER["World Geodetic System 1984 (G2139)"],ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]],ENSEMBLEACCURACY[2.0]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],CS[ellipsoidal,2],AXIS["geodetic latitude (Lat)",north,ORDER[1],ANGLEUNIT["degree",0.0174532925199433]],AXIS["geodetic longitude (Lon)",east,ORDER[2],ANGLEUNIT["degree",0.0174532925199433]],USAGE[SCOPE["Horizontal component of 3D system."],AREA["World."],BBOX[-90,-180,90,180]],ID["EPSG",4326]]</wkt>
-        <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
-        <srsid>3452</srsid>
-        <srid>4326</srid>
-        <authid>EPSG:4326</authid>
-        <description>WGS 84</description>
-        <projectionacronym>longlat</projectionacronym>
-        <ellipsoidacronym>EPSG:7030</ellipsoidacronym>
-        <geographicflag>true</geographicflag>
-      </spatialrefsys>
-    </destinationsrs>
-    <rendermaptile>0</rendermaptile>
-    <expressionContextScope/>
-  </mapcanvas>
-  <projectModels/>
-  <legend updateDrawingOrder="true">
-    <legendlayer drawingOrder="-1" name="form_edition_upload_webdav_child_attachments" checked="Qt::Checked" open="true" showFeatureCount="0">
-      <filegroup open="true" hidden="false">
-        <legendlayerfile isInOverview="0" layerid="form_edition_upload_webdav_child_attachments_0e53afd9_2e39_4a05_9308_a5c7f6cfffca" visible="1"/>
-      </filegroup>
-    </legendlayer>
-    <legendlayer drawingOrder="-1" name="form_edition_upload_webdav_parent_geom" checked="Qt::Checked" open="true" showFeatureCount="0">
-      <filegroup open="true" hidden="false">
-        <legendlayerfile isInOverview="0" layerid="form_edition_upload_webdav_parent_geom_8c26e78b_f73b_4b2a_9c0e_d7a9e185346e" visible="1"/>
-      </filegroup>
-    </legendlayer>
-    <legendlayer drawingOrder="-1" name="form_edition_upload_webdav_shape" checked="Qt::Checked" open="true" showFeatureCount="0">
-      <filegroup open="true" hidden="false">
-        <legendlayerfile isInOverview="0" layerid="for_edition_upload_webdav_shape_caf087fb_dfd0_40c5_93a4_ac1ae5648e96" visible="1"/>
-      </filegroup>
-    </legendlayer>
-    <legendlayer drawingOrder="-1" name="form_edition_upload_webdav_geom" checked="Qt::Checked" open="true" showFeatureCount="0">
-      <filegroup open="true" hidden="false">
-        <legendlayerfile isInOverview="0" layerid="form_edition_upload_webdav_geom_c71ec5ff_dc88_451f_98e1_ccf41e34ddd7" visible="1"/>
-      </filegroup>
-    </legendlayer>
-    <legendlayer drawingOrder="-1" name="form_edition_upload_webdav" checked="Qt::Checked" open="true" showFeatureCount="0">
-      <filegroup open="true" hidden="false">
-        <legendlayerfile isInOverview="0" layerid="form_edition_upload_webdav_da2c53fe_a99a_41ee_8feb_e2570b11e547" visible="1"/>
-      </filegroup>
-    </legendlayer>
-  </legend>
-  <mapViewDocks/>
-  <main-annotation-layer legendPlaceholderImage="" type="annotation" autoRefreshEnabled="0" refreshOnNotifyMessage="" refreshOnNotifyEnabled="0" autoRefreshTime="0">
+  <main-annotation-layer autoRefreshTime="0" styleCategories="AllStyleCategories" type="annotation" minScale="0" refreshOnNotifyMessage="" legendPlaceholderImage="" hasScaleBasedVisibilityFlag="0" maxScale="0" autoRefreshMode="Disabled" refreshOnNotifyEnabled="0">
     <id>Annotations_1b82beaa_5a0a_445e_b2ad_d7288106e20f</id>
     <datasource></datasource>
     <keywordList>
@@ -147,6 +94,7 @@
       <title></title>
       <abstract></abstract>
       <links/>
+      <dates/>
       <fees></fees>
       <encoding></encoding>
       <crs>
@@ -165,12 +113,21 @@
       <extent/>
     </resourceMetadata>
     <items/>
+    <flags>
+      <Identifiable>1</Identifiable>
+      <Removable>1</Removable>
+      <Searchable>1</Searchable>
+      <Private>0</Private>
+    </flags>
+    <customproperties>
+      <Option/>
+    </customproperties>
     <layerOpacity>1</layerOpacity>
     <blendMode>0</blendMode>
     <paintEffect/>
   </main-annotation-layer>
   <projectlayers>
-    <maplayer maxScale="0" type="vector" refreshOnNotifyMessage="" simplifyAlgorithm="0" simplifyDrawingHints="0" labelsEnabled="0" wkbType="Point" simplifyLocal="1" legendPlaceholderImage="" hasScaleBasedVisibilityFlag="0" autoRefreshEnabled="0" minScale="100000000" symbologyReferenceScale="-1" simplifyDrawingTol="1" geometry="Point" readOnly="0" refreshOnNotifyEnabled="0" simplifyMaxScale="1" styleCategories="AllStyleCategories" autoRefreshTime="0">
+    <maplayer hasScaleBasedVisibilityFlag="0" simplifyAlgorithm="0" refreshOnNotifyEnabled="0" symbologyReferenceScale="-1" simplifyLocal="1" autoRefreshTime="0" simplifyDrawingHints="0" styleCategories="AllStyleCategories" labelsEnabled="0" simplifyMaxScale="1" type="vector" minScale="100000000" wkbType="Point" legendPlaceholderImage="" maxScale="0" autoRefreshMode="Disabled" simplifyDrawingTol="1" refreshOnNotifyMessage="" readOnly="0" geometry="Point">
       <extent>
         <xmin>-0.63213155735301818</xmin>
         <ymin>45.70204553664066083</ymin>
@@ -187,7 +144,7 @@
       <datasource>./form_edition_upload_webdav_shape.shp</datasource>
       <shortname>for_edition_upload_webdav_shape</shortname>
       <keywordList>
-        <value></value>
+        <value/>
       </keywordList>
       <layername>form_edition_upload_webdav_shape</layername>
       <srs>
@@ -204,24 +161,25 @@
         </spatialrefsys>
       </srs>
       <resourceMetadata>
-        <identifier></identifier>
-        <parentidentifier></parentidentifier>
-        <language></language>
+        <identifier/>
+        <parentidentifier/>
+        <language/>
         <type>dataset</type>
-        <title></title>
-        <abstract></abstract>
+        <title/>
+        <abstract/>
         <contact>
-          <name></name>
-          <organization></organization>
-          <position></position>
-          <voice></voice>
-          <fax></fax>
-          <email></email>
-          <role></role>
+          <name/>
+          <organization/>
+          <position/>
+          <voice/>
+          <fax/>
+          <email/>
+          <role/>
         </contact>
         <links/>
-        <fees></fees>
-        <encoding></encoding>
+        <dates/>
+        <fees/>
+        <encoding/>
         <crs>
           <spatialrefsys nativeFormat="Wkt">
             <wkt>GEOGCRS["WGS 84",ENSEMBLE["World Geodetic System 1984 ensemble",MEMBER["World Geodetic System 1984 (Transit)"],MEMBER["World Geodetic System 1984 (G730)"],MEMBER["World Geodetic System 1984 (G873)"],MEMBER["World Geodetic System 1984 (G1150)"],MEMBER["World Geodetic System 1984 (G1674)"],MEMBER["World Geodetic System 1984 (G1762)"],MEMBER["World Geodetic System 1984 (G2139)"],ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]],ENSEMBLEACCURACY[2.0]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],CS[ellipsoidal,2],AXIS["geodetic latitude (Lat)",north,ORDER[1],ANGLEUNIT["degree",0.0174532925199433]],AXIS["geodetic longitude (Lon)",east,ORDER[2],ANGLEUNIT["degree",0.0174532925199433]],USAGE[SCOPE["Horizontal component of 3D system."],AREA["World."],BBOX[-90,-180,90,180]],ID["EPSG",4326]]</wkt>
@@ -236,11 +194,11 @@
           </spatialrefsys>
         </crs>
         <extent>
-          <spatial crs="EPSG:4326" dimensions="2" maxx="0" minx="0" miny="0" maxy="0" minz="0" maxz="0"/>
+          <spatial minx="0" maxz="0" miny="0" crs="EPSG:4326" minz="0" dimensions="2" maxy="0" maxx="0"/>
           <temporal>
             <period>
-              <start></start>
-              <end></end>
+              <start/>
+              <end/>
             </period>
           </temporal>
         </extent>
@@ -261,13 +219,13 @@
         <Searchable>1</Searchable>
         <Private>0</Private>
       </flags>
-      <temporal endExpression="" endField="" mode="0" startField="" enabled="0" limitMode="0" durationUnit="min" durationField="" startExpression="" fixedDuration="0" accumulate="0">
+      <temporal limitMode="0" startExpression="" startField="" mode="0" fixedDuration="0" enabled="0" endField="" durationUnit="min" endExpression="" durationField="" accumulate="0">
         <fixedRange>
-          <start></start>
-          <end></end>
+          <start/>
+          <end/>
         </fixedRange>
       </temporal>
-      <elevation symbology="Line" zoffset="0" type="IndividualFeatures" clamping="Terrain" showMarkerSymbolInSurfacePlots="0" extrusionEnabled="0" binding="Centroid" respectLayerSymbol="1" extrusion="0" zscale="1">
+      <elevation zscale="1" type="IndividualFeatures" clamping="Terrain" symbology="Line" extrusion="0" showMarkerSymbolInSurfacePlots="0" zoffset="0" binding="Centroid" extrusionEnabled="0" respectLayerSymbol="1">
         <data-defined-properties>
           <Option type="Map">
             <Option type="QString" name="name" value=""/>
@@ -276,7 +234,7 @@
           </Option>
         </data-defined-properties>
         <profileLineSymbol>
-          <symbol alpha="1" type="line" force_rhr="0" name="" frame_rate="10" is_animated="0" clip_to_extent="1">
+          <symbol frame_rate="10" type="line" name="" alpha="1" is_animated="0" force_rhr="0" clip_to_extent="1">
             <data_defined_properties>
               <Option type="Map">
                 <Option type="QString" name="name" value=""/>
@@ -284,7 +242,7 @@
                 <Option type="QString" name="type" value="collection"/>
               </Option>
             </data_defined_properties>
-            <layer class="SimpleLine" pass="0" enabled="1" locked="0">
+            <layer class="SimpleLine" pass="0" id="{ff35a701-04eb-4ac4-b0f3-1b3cd9e5ce49}" enabled="1" locked="0">
               <Option type="Map">
                 <Option type="QString" name="align_dash_pattern" value="0"/>
                 <Option type="QString" name="capstyle" value="square"/>
@@ -325,7 +283,7 @@
           </symbol>
         </profileLineSymbol>
         <profileFillSymbol>
-          <symbol alpha="1" type="fill" force_rhr="0" name="" frame_rate="10" is_animated="0" clip_to_extent="1">
+          <symbol frame_rate="10" type="fill" name="" alpha="1" is_animated="0" force_rhr="0" clip_to_extent="1">
             <data_defined_properties>
               <Option type="Map">
                 <Option type="QString" name="name" value=""/>
@@ -333,7 +291,7 @@
                 <Option type="QString" name="type" value="collection"/>
               </Option>
             </data_defined_properties>
-            <layer class="SimpleFill" pass="0" enabled="1" locked="0">
+            <layer class="SimpleFill" pass="0" id="{47357a18-e215-4234-9889-10a0d6f3458c}" enabled="1" locked="0">
               <Option type="Map">
                 <Option type="QString" name="border_width_map_unit_scale" value="3x:0,0,0,0,0,0"/>
                 <Option type="QString" name="color" value="114,155,111,255"/>
@@ -358,7 +316,7 @@
           </symbol>
         </profileFillSymbol>
         <profileMarkerSymbol>
-          <symbol alpha="1" type="marker" force_rhr="0" name="" frame_rate="10" is_animated="0" clip_to_extent="1">
+          <symbol frame_rate="10" type="marker" name="" alpha="1" is_animated="0" force_rhr="0" clip_to_extent="1">
             <data_defined_properties>
               <Option type="Map">
                 <Option type="QString" name="name" value=""/>
@@ -366,7 +324,7 @@
                 <Option type="QString" name="type" value="collection"/>
               </Option>
             </data_defined_properties>
-            <layer class="SimpleMarker" pass="0" enabled="1" locked="0">
+            <layer class="SimpleMarker" pass="0" id="{64ecdd62-36ac-46d8-9af6-f7d260bf2367}" enabled="1" locked="0">
               <Option type="Map">
                 <Option type="QString" name="angle" value="0"/>
                 <Option type="QString" name="cap_style" value="square"/>
@@ -399,9 +357,9 @@
           </symbol>
         </profileMarkerSymbol>
       </elevation>
-      <renderer-v2 enableorderby="0" symbollevels="0" type="singleSymbol" referencescale="-1" forceraster="0">
+      <renderer-v2 referencescale="-1" type="singleSymbol" forceraster="0" symbollevels="0" enableorderby="0">
         <symbols>
-          <symbol alpha="1" type="marker" force_rhr="0" name="0" frame_rate="10" is_animated="0" clip_to_extent="1">
+          <symbol frame_rate="10" type="marker" name="0" alpha="1" is_animated="0" force_rhr="0" clip_to_extent="1">
             <data_defined_properties>
               <Option type="Map">
                 <Option type="QString" name="name" value=""/>
@@ -409,7 +367,7 @@
                 <Option type="QString" name="type" value="collection"/>
               </Option>
             </data_defined_properties>
-            <layer class="SimpleMarker" pass="0" enabled="1" locked="0">
+            <layer class="SimpleMarker" pass="0" id="{47f20abc-6060-4c2a-adf5-292877a43898}" enabled="1" locked="0">
               <Option type="Map">
                 <Option type="QString" name="angle" value="0"/>
                 <Option type="QString" name="cap_style" value="square"/>
@@ -444,6 +402,9 @@
         <rotation/>
         <sizescale/>
       </renderer-v2>
+      <selection mode="Default">
+        <selectionColor invalid="1"/>
+      </selection>
       <customproperties>
         <Option type="Map">
           <Option type="List" name="dualview/previewExpressions">
@@ -458,11 +419,11 @@
       <featureBlendMode>0</featureBlendMode>
       <layerOpacity>1</layerOpacity>
       <SingleCategoryDiagramRenderer attributeLegend="1" diagramType="Histogram">
-        <DiagramCategory labelPlacementMethod="XHeight" sizeScale="3x:0,0,0,0,0,0" backgroundColor="#ffffff" diagramOrientation="Up" minScaleDenominator="0" spacing="5" scaleDependency="Area" minimumSize="0" spacingUnit="MM" enabled="0" opacity="1" sizeType="MM" rotationOffset="270" penWidth="0" lineSizeScale="3x:0,0,0,0,0,0" width="15" direction="0" penAlpha="255" penColor="#000000" barWidth="5" height="15" scaleBasedVisibility="0" backgroundAlpha="255" lineSizeType="MM" maxScaleDenominator="1e+08" spacingUnitScale="3x:0,0,0,0,0,0" showAxis="1">
-          <fontProperties strikethrough="0" bold="0" description="Sans,9,-1,5,50,0,0,0,0,0" underline="0" style="" italic="0"/>
-          <attribute colorOpacity="1" color="#000000" label="" field=""/>
+        <DiagramCategory spacing="5" labelPlacementMethod="XHeight" lineSizeType="MM" width="15" backgroundAlpha="255" penWidth="0" spacingUnit="MM" minimumSize="0" lineSizeScale="3x:0,0,0,0,0,0" height="15" diagramOrientation="Up" scaleDependency="Area" penColor="#000000" maxScaleDenominator="1e+08" barWidth="5" spacingUnitScale="3x:0,0,0,0,0,0" opacity="1" minScaleDenominator="0" sizeScale="3x:0,0,0,0,0,0" scaleBasedVisibility="0" direction="0" sizeType="MM" rotationOffset="270" penAlpha="255" enabled="0" backgroundColor="#ffffff" showAxis="1">
+          <fontProperties description="Sans,9,-1,5,50,0,0,0,0,0" strikethrough="0" style="" italic="0" underline="0" bold="0"/>
+          <attribute field="" colorOpacity="1" color="#000000" label=""/>
           <axisSymbol>
-            <symbol alpha="1" type="line" force_rhr="0" name="" frame_rate="10" is_animated="0" clip_to_extent="1">
+            <symbol frame_rate="10" type="line" name="" alpha="1" is_animated="0" force_rhr="0" clip_to_extent="1">
               <data_defined_properties>
                 <Option type="Map">
                   <Option type="QString" name="name" value=""/>
@@ -470,7 +431,7 @@
                   <Option type="QString" name="type" value="collection"/>
                 </Option>
               </data_defined_properties>
-              <layer class="SimpleLine" pass="0" enabled="1" locked="0">
+              <layer class="SimpleLine" pass="0" id="{a0b17fb4-bd82-4330-a080-622e7efea302}" enabled="1" locked="0">
                 <Option type="Map">
                   <Option type="QString" name="align_dash_pattern" value="0"/>
                   <Option type="QString" name="capstyle" value="square"/>
@@ -512,7 +473,7 @@
           </axisSymbol>
         </DiagramCategory>
       </SingleCategoryDiagramRenderer>
-      <DiagramLayerSettings linePlacementFlags="18" priority="0" placement="0" obstacle="0" showAll="1" zIndex="0" dist="0">
+      <DiagramLayerSettings dist="0" priority="0" showAll="1" obstacle="0" linePlacementFlags="18" zIndex="0" placement="0">
         <properties>
           <Option type="Map">
             <Option type="QString" name="name" value=""/>
@@ -521,14 +482,14 @@
           </Option>
         </properties>
       </DiagramLayerSettings>
-      <geometryOptions removeDuplicateNodes="0" geometryPrecision="0">
+      <geometryOptions geometryPrecision="0" removeDuplicateNodes="0">
         <activeChecks/>
         <checkConfiguration/>
       </geometryOptions>
       <legend type="default-vector" showLabelLegend="0"/>
       <referencedLayers/>
       <fieldConfiguration>
-        <field name="id" configurationFlags="None">
+        <field configurationFlags="NoFlag" name="id">
           <editWidget type="TextEdit">
             <config>
               <Option type="Map">
@@ -538,7 +499,7 @@
             </config>
           </editWidget>
         </field>
-        <field name="remote" configurationFlags="None">
+        <field configurationFlags="NoFlag" name="remote">
           <editWidget type="ExternalResource">
             <config>
               <Option type="Map">
@@ -567,7 +528,7 @@
             </config>
           </editWidget>
         </field>
-        <field name="local" configurationFlags="None">
+        <field configurationFlags="NoFlag" name="local">
           <editWidget type="ExternalResource">
             <config>
               <Option type="Map">
@@ -592,30 +553,35 @@
         </field>
       </fieldConfiguration>
       <aliases>
-        <alias index="0" name="" field="id"/>
-        <alias index="1" name="" field="remote"/>
-        <alias index="2" name="" field="local"/>
+        <alias field="id" name="" index="0"/>
+        <alias field="remote" name="" index="1"/>
+        <alias field="local" name="" index="2"/>
       </aliases>
+      <splitPolicies>
+        <policy field="id" policy="Duplicate"/>
+        <policy field="remote" policy="Duplicate"/>
+        <policy field="local" policy="Duplicate"/>
+      </splitPolicies>
       <defaults>
-        <default applyOnUpdate="0" expression="" field="id"/>
-        <default applyOnUpdate="0" expression="" field="remote"/>
-        <default applyOnUpdate="0" expression="" field="local"/>
+        <default field="id" applyOnUpdate="0" expression=""/>
+        <default field="remote" applyOnUpdate="0" expression=""/>
+        <default field="local" applyOnUpdate="0" expression=""/>
       </defaults>
       <constraints>
-        <constraint constraints="0" unique_strength="0" notnull_strength="0" field="id" exp_strength="0"/>
-        <constraint constraints="0" unique_strength="0" notnull_strength="0" field="remote" exp_strength="0"/>
-        <constraint constraints="0" unique_strength="0" notnull_strength="0" field="local" exp_strength="0"/>
+        <constraint field="id" constraints="0" exp_strength="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="remote" constraints="0" exp_strength="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="local" constraints="0" exp_strength="0" unique_strength="0" notnull_strength="0"/>
       </constraints>
       <constraintExpressions>
-        <constraint exp="" field="id" desc=""/>
-        <constraint exp="" field="remote" desc=""/>
-        <constraint exp="" field="local" desc=""/>
+        <constraint field="id" exp="" desc=""/>
+        <constraint field="remote" exp="" desc=""/>
+        <constraint field="local" exp="" desc=""/>
       </constraintExpressions>
       <expressionfields/>
       <attributeactions>
-        <defaultAction key="Canvas" value="{00000000-0000-0000-0000-000000000000}"/>
+        <defaultAction value="{00000000-0000-0000-0000-000000000000}" key="Canvas"/>
       </attributeactions>
-      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
+      <attributetableconfig sortExpression="" actionWidgetStyle="dropDown" sortOrder="0">
         <columns>
           <column type="field" name="id" width="-1" hidden="0"/>
           <column type="field" name="remote" width="-1" hidden="0"/>
@@ -628,10 +594,10 @@
         <fieldstyles/>
       </conditionalstyles>
       <storedexpressions/>
-      <editform tolerant="1"></editform>
+      <editform tolerant="1"/>
       <editforminit/>
       <editforminitcodesource>0</editforminitcodesource>
-      <editforminitfilepath></editforminitfilepath>
+      <editforminitfilepath/>
       <editforminitcode><![CDATA[# -*- coding: utf-8 -*-
 """
 QGIS forms can have a Python function that is called when the form is
@@ -652,29 +618,29 @@ def my_form_open(dialog, layer, feature):
       <featformsuppress>0</featformsuppress>
       <editorlayout>tablayout</editorlayout>
       <attributeEditorForm>
-        <labelStyle overrideLabelFont="0" overrideLabelColor="0" labelColor="0,0,0,255">
-          <labelFont strikethrough="0" bold="0" description="Sans,9,-1,5,50,0,0,0,0,0" underline="0" style="" italic="0"/>
+        <labelStyle overrideLabelColor="0" labelColor="0,0,0,255" overrideLabelFont="0">
+          <labelFont description="Ubuntu,11,-1,5,50,0,0,0,0,0" strikethrough="0" style="" italic="0" underline="0" bold="0"/>
         </labelStyle>
-        <attributeEditorField showLabel="1" index="0" name="id">
-          <labelStyle overrideLabelFont="0" overrideLabelColor="0" labelColor="0,0,0,255">
-            <labelFont strikethrough="0" bold="0" description="Sans,9,-1,5,50,0,0,0,0,0" underline="0" style="" italic="0"/>
+        <attributeEditorField name="id" verticalStretch="0" horizontalStretch="0" index="0" showLabel="1">
+          <labelStyle overrideLabelColor="0" labelColor="0,0,0,255" overrideLabelFont="0">
+            <labelFont description="Sans,9,-1,5,50,0,0,0,0,0" strikethrough="0" style="" italic="0" underline="0" bold="0"/>
           </labelStyle>
         </attributeEditorField>
-        <attributeEditorField showLabel="1" index="1" name="remote">
-          <labelStyle overrideLabelFont="0" overrideLabelColor="0" labelColor="0,0,0,255">
-            <labelFont strikethrough="0" bold="0" description="Sans,9,-1,5,50,0,0,0,0,0" underline="0" style="" italic="0"/>
+        <attributeEditorField name="remote" verticalStretch="0" horizontalStretch="0" index="1" showLabel="1">
+          <labelStyle overrideLabelColor="0" labelColor="0,0,0,255" overrideLabelFont="0">
+            <labelFont description="Sans,9,-1,5,50,0,0,0,0,0" strikethrough="0" style="" italic="0" underline="0" bold="0"/>
           </labelStyle>
         </attributeEditorField>
-        <attributeEditorField showLabel="1" index="2" name="local">
-          <labelStyle overrideLabelFont="0" overrideLabelColor="0" labelColor="0,0,0,255">
-            <labelFont strikethrough="0" bold="0" description="Sans,9,-1,5,50,0,0,0,0,0" underline="0" style="" italic="0"/>
+        <attributeEditorField name="local" verticalStretch="0" horizontalStretch="0" index="2" showLabel="1">
+          <labelStyle overrideLabelColor="0" labelColor="0,0,0,255" overrideLabelFont="0">
+            <labelFont description="Sans,9,-1,5,50,0,0,0,0,0" strikethrough="0" style="" italic="0" underline="0" bold="0"/>
           </labelStyle>
         </attributeEditorField>
       </attributeEditorForm>
       <editable>
-        <field editable="1" name="id"/>
-        <field editable="1" name="local"/>
-        <field editable="1" name="remote"/>
+        <field name="id" editable="1"/>
+        <field name="local" editable="1"/>
+        <field name="remote" editable="1"/>
       </editable>
       <labelOnTop>
         <field name="id" labelOnTop="0"/>
@@ -682,14 +648,14 @@ def my_form_open(dialog, layer, feature):
         <field name="remote" labelOnTop="0"/>
       </labelOnTop>
       <reuseLastValue>
-        <field reuseLastValue="0" name="id"/>
-        <field reuseLastValue="0" name="local"/>
-        <field reuseLastValue="0" name="remote"/>
+        <field name="id" reuseLastValue="0"/>
+        <field name="local" reuseLastValue="0"/>
+        <field name="remote" reuseLastValue="0"/>
       </reuseLastValue>
       <dataDefinedFieldProperties/>
       <widgets/>
       <previewExpression>"remote"</previewExpression>
-      <mapTip>&lt;table class="table table-condensed table-striped table-bordered lizmapPopupTable">
+      <mapTip enabled="1">&lt;table class="table table-condensed table-striped table-bordered lizmapPopupTable">
   &lt;thead>
     &lt;tr>
       &lt;th>Field&lt;/th>
@@ -713,65 +679,66 @@ def my_form_open(dialog, layer, feature):
   &lt;/tbody>
 &lt;/table></mapTip>
     </maplayer>
-    <maplayer legendPlaceholderImage="" wkbType="NoGeometry" styleCategories="AllStyleCategories" readOnly="0" type="vector" hasScaleBasedVisibilityFlag="0" autoRefreshEnabled="0" geometry="No geometry" refreshOnNotifyMessage="" maxScale="0" minScale="1e+08" refreshOnNotifyEnabled="0" autoRefreshTime="0">
+    <maplayer readOnly="0" autoRefreshTime="0" styleCategories="AllStyleCategories" type="vector" minScale="1e+08" refreshOnNotifyMessage="" legendPlaceholderImage="" hasScaleBasedVisibilityFlag="0" maxScale="0" wkbType="NoGeometry" autoRefreshMode="Disabled" geometry="No geometry" refreshOnNotifyEnabled="0">
       <id>form_edition_upload_webdav_child_attachments_0e53afd9_2e39_4a05_9308_a5c7f6cfffca</id>
-      <datasource>service='lizmapdb' sslmode=prefer key='id' checkPrimaryKeyUnicity='1' table="tests_projects"."form_edition_upload_webdav_child_attachments"</datasource>
+      <datasource>service='lizmapdb' key='id' checkPrimaryKeyUnicity='1' table="tests_projects"."form_edition_upload_webdav_child_attachments"</datasource>
       <shortname>form_edition_upload_webdav_child_attachments</shortname>
       <keywordList>
-        <value></value>
+        <value/>
       </keywordList>
       <layername>form_edition_upload_webdav_child_attachments</layername>
       <srs>
         <spatialrefsys nativeFormat="Wkt">
-          <wkt></wkt>
-          <proj4></proj4>
+          <wkt/>
+          <proj4/>
           <srsid>0</srsid>
           <srid>0</srid>
-          <authid></authid>
-          <description></description>
-          <projectionacronym></projectionacronym>
-          <ellipsoidacronym></ellipsoidacronym>
+          <authid/>
+          <description/>
+          <projectionacronym/>
+          <ellipsoidacronym/>
           <geographicflag>false</geographicflag>
         </spatialrefsys>
       </srs>
       <resourceMetadata>
-        <identifier></identifier>
-        <parentidentifier></parentidentifier>
-        <language></language>
+        <identifier/>
+        <parentidentifier/>
+        <language/>
         <type>dataset</type>
-        <title></title>
-        <abstract></abstract>
+        <title/>
+        <abstract/>
         <contact>
-          <name></name>
-          <organization></organization>
-          <position></position>
-          <voice></voice>
-          <fax></fax>
-          <email></email>
-          <role></role>
+          <name/>
+          <organization/>
+          <position/>
+          <voice/>
+          <fax/>
+          <email/>
+          <role/>
         </contact>
         <links/>
-        <fees></fees>
-        <encoding></encoding>
+        <dates/>
+        <fees/>
+        <encoding/>
         <crs>
           <spatialrefsys nativeFormat="Wkt">
-            <wkt></wkt>
-            <proj4></proj4>
+            <wkt/>
+            <proj4/>
             <srsid>0</srsid>
             <srid>0</srid>
-            <authid></authid>
-            <description></description>
-            <projectionacronym></projectionacronym>
-            <ellipsoidacronym></ellipsoidacronym>
+            <authid/>
+            <description/>
+            <projectionacronym/>
+            <ellipsoidacronym/>
             <geographicflag>false</geographicflag>
           </spatialrefsys>
         </crs>
         <extent>
-          <spatial crs="" dimensions="2" maxx="0" minx="0" miny="0" maxy="0" minz="0" maxz="0"/>
+          <spatial minx="0" maxz="0" miny="0" crs="" minz="0" dimensions="2" maxy="0" maxx="0"/>
           <temporal>
             <period>
-              <start></start>
-              <end></end>
+              <start/>
+              <end/>
             </period>
           </temporal>
         </extent>
@@ -792,13 +759,13 @@ def my_form_open(dialog, layer, feature):
         <Searchable>1</Searchable>
         <Private>0</Private>
       </flags>
-      <temporal endExpression="" endField="" mode="0" startField="" enabled="0" limitMode="0" durationUnit="min" durationField="" startExpression="" fixedDuration="0" accumulate="0">
+      <temporal limitMode="0" startExpression="" startField="" mode="0" fixedDuration="0" enabled="0" endField="" durationUnit="min" endExpression="" durationField="" accumulate="0">
         <fixedRange>
-          <start></start>
-          <end></end>
+          <start/>
+          <end/>
         </fixedRange>
       </temporal>
-      <elevation symbology="Line" zoffset="0" type="IndividualFeatures" clamping="Terrain" showMarkerSymbolInSurfacePlots="0" extrusionEnabled="0" binding="Centroid" respectLayerSymbol="1" extrusion="0" zscale="1">
+      <elevation zscale="1" type="IndividualFeatures" clamping="Terrain" symbology="Line" extrusion="0" showMarkerSymbolInSurfacePlots="0" zoffset="0" binding="Centroid" extrusionEnabled="0" respectLayerSymbol="1">
         <data-defined-properties>
           <Option type="Map">
             <Option type="QString" name="name" value=""/>
@@ -807,7 +774,7 @@ def my_form_open(dialog, layer, feature):
           </Option>
         </data-defined-properties>
         <profileLineSymbol>
-          <symbol alpha="1" type="line" force_rhr="0" name="" frame_rate="10" is_animated="0" clip_to_extent="1">
+          <symbol frame_rate="10" type="line" name="" alpha="1" is_animated="0" force_rhr="0" clip_to_extent="1">
             <data_defined_properties>
               <Option type="Map">
                 <Option type="QString" name="name" value=""/>
@@ -815,7 +782,7 @@ def my_form_open(dialog, layer, feature):
                 <Option type="QString" name="type" value="collection"/>
               </Option>
             </data_defined_properties>
-            <layer class="SimpleLine" pass="0" enabled="1" locked="0">
+            <layer class="SimpleLine" pass="0" id="{b29d2010-f199-4e0d-a428-fc5442aa15de}" enabled="1" locked="0">
               <Option type="Map">
                 <Option type="QString" name="align_dash_pattern" value="0"/>
                 <Option type="QString" name="capstyle" value="square"/>
@@ -856,7 +823,7 @@ def my_form_open(dialog, layer, feature):
           </symbol>
         </profileLineSymbol>
         <profileFillSymbol>
-          <symbol alpha="1" type="fill" force_rhr="0" name="" frame_rate="10" is_animated="0" clip_to_extent="1">
+          <symbol frame_rate="10" type="fill" name="" alpha="1" is_animated="0" force_rhr="0" clip_to_extent="1">
             <data_defined_properties>
               <Option type="Map">
                 <Option type="QString" name="name" value=""/>
@@ -864,7 +831,7 @@ def my_form_open(dialog, layer, feature):
                 <Option type="QString" name="type" value="collection"/>
               </Option>
             </data_defined_properties>
-            <layer class="SimpleFill" pass="0" enabled="1" locked="0">
+            <layer class="SimpleFill" pass="0" id="{a85e3db8-d2d1-4f5c-8f5b-476c091e8e37}" enabled="1" locked="0">
               <Option type="Map">
                 <Option type="QString" name="border_width_map_unit_scale" value="3x:0,0,0,0,0,0"/>
                 <Option type="QString" name="color" value="183,72,75,255"/>
@@ -889,7 +856,7 @@ def my_form_open(dialog, layer, feature):
           </symbol>
         </profileFillSymbol>
         <profileMarkerSymbol>
-          <symbol alpha="1" type="marker" force_rhr="0" name="" frame_rate="10" is_animated="0" clip_to_extent="1">
+          <symbol frame_rate="10" type="marker" name="" alpha="1" is_animated="0" force_rhr="0" clip_to_extent="1">
             <data_defined_properties>
               <Option type="Map">
                 <Option type="QString" name="name" value=""/>
@@ -897,7 +864,7 @@ def my_form_open(dialog, layer, feature):
                 <Option type="QString" name="type" value="collection"/>
               </Option>
             </data_defined_properties>
-            <layer class="SimpleMarker" pass="0" enabled="1" locked="0">
+            <layer class="SimpleMarker" pass="0" id="{215568fe-e4c4-4ebf-9535-22c586e90802}" enabled="1" locked="0">
               <Option type="Map">
                 <Option type="QString" name="angle" value="0"/>
                 <Option type="QString" name="cap_style" value="square"/>
@@ -940,18 +907,18 @@ def my_form_open(dialog, layer, feature):
           <Option type="invalid" name="variableValues"/>
         </Option>
       </customproperties>
-      <geometryOptions removeDuplicateNodes="0" geometryPrecision="0">
+      <geometryOptions geometryPrecision="0" removeDuplicateNodes="0">
         <activeChecks/>
         <checkConfiguration/>
       </geometryOptions>
       <legend type="default-vector" showLabelLegend="0"/>
       <referencedLayers>
-        <relation referencingLayer="form_edition_upload_webdav_child_attachments_0e53afd9_2e39_4a05_9308_a5c7f6cfffca" dataSource="service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;form_edition_upload_webdav_parent_geom&quot; (geom)" layerName="form_edition_upload_webdav_parent_geom" name="child" referencedLayer="form_edition_upload_webdav_parent_geom_8c26e78b_f73b_4b2a_9c0e_d7a9e185346e" strength="Association" layerId="form_edition_upload_webdav_parent_geom_8c26e78b_f73b_4b2a_9c0e_d7a9e185346e" providerKey="postgres" id="form_editi_id_parent_form_editi_id_1">
-          <fieldRef referencingField="id_parent" referencedField="id"/>
+        <relation name="child" strength="Association" providerKey="postgres" referencedLayer="form_edition_upload_webdav_parent_geom_8c26e78b_f73b_4b2a_9c0e_d7a9e185346e" id="form_editi_id_parent_form_editi_id_1" layerName="form_edition_upload_webdav_parent_geom" layerId="form_edition_upload_webdav_parent_geom_8c26e78b_f73b_4b2a_9c0e_d7a9e185346e" referencingLayer="form_edition_upload_webdav_child_attachments_0e53afd9_2e39_4a05_9308_a5c7f6cfffca" dataSource="service='lizmapdb' key='id' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;form_edition_upload_webdav_parent_geom&quot; (geom)">
+          <fieldRef referencedField="id" referencingField="id_parent"/>
         </relation>
       </referencedLayers>
       <fieldConfiguration>
-        <field name="id" configurationFlags="None">
+        <field configurationFlags="NoFlag" name="id">
           <editWidget type="TextEdit">
             <config>
               <Option type="Map">
@@ -961,7 +928,7 @@ def my_form_open(dialog, layer, feature):
             </config>
           </editWidget>
         </field>
-        <field name="id_parent" configurationFlags="None">
+        <field configurationFlags="NoFlag" name="id_parent">
           <editWidget type="TextEdit">
             <config>
               <Option type="Map">
@@ -971,7 +938,7 @@ def my_form_open(dialog, layer, feature):
             </config>
           </editWidget>
         </field>
-        <field name="remote_path" configurationFlags="None">
+        <field configurationFlags="NoFlag" name="remote_path">
           <editWidget type="ExternalResource">
             <config>
               <Option type="Map">
@@ -1002,30 +969,35 @@ def my_form_open(dialog, layer, feature):
         </field>
       </fieldConfiguration>
       <aliases>
-        <alias index="0" name="Id" field="id"/>
-        <alias index="1" name="Id parent" field="id_parent"/>
-        <alias index="2" name="remote_path" field="remote_path"/>
+        <alias field="id" name="Id" index="0"/>
+        <alias field="id_parent" name="Id parent" index="1"/>
+        <alias field="remote_path" name="remote_path" index="2"/>
       </aliases>
+      <splitPolicies>
+        <policy field="id" policy="Duplicate"/>
+        <policy field="id_parent" policy="Duplicate"/>
+        <policy field="remote_path" policy="Duplicate"/>
+      </splitPolicies>
       <defaults>
-        <default applyOnUpdate="0" expression="" field="id"/>
-        <default applyOnUpdate="0" expression="" field="id_parent"/>
-        <default applyOnUpdate="0" expression="" field="remote_path"/>
+        <default field="id" applyOnUpdate="0" expression=""/>
+        <default field="id_parent" applyOnUpdate="0" expression=""/>
+        <default field="remote_path" applyOnUpdate="0" expression=""/>
       </defaults>
       <constraints>
-        <constraint constraints="3" unique_strength="1" notnull_strength="1" field="id" exp_strength="0"/>
-        <constraint constraints="0" unique_strength="0" notnull_strength="0" field="id_parent" exp_strength="0"/>
-        <constraint constraints="0" unique_strength="0" notnull_strength="0" field="remote_path" exp_strength="0"/>
+        <constraint field="id" constraints="3" exp_strength="0" unique_strength="1" notnull_strength="1"/>
+        <constraint field="id_parent" constraints="0" exp_strength="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="remote_path" constraints="0" exp_strength="0" unique_strength="0" notnull_strength="0"/>
       </constraints>
       <constraintExpressions>
-        <constraint exp="" field="id" desc=""/>
-        <constraint exp="" field="id_parent" desc=""/>
-        <constraint exp="" field="remote_path" desc=""/>
+        <constraint field="id" exp="" desc=""/>
+        <constraint field="id_parent" exp="" desc=""/>
+        <constraint field="remote_path" exp="" desc=""/>
       </constraintExpressions>
       <expressionfields/>
       <attributeactions>
-        <defaultAction key="Canvas" value="{00000000-0000-0000-0000-000000000000}"/>
+        <defaultAction value="{00000000-0000-0000-0000-000000000000}" key="Canvas"/>
       </attributeactions>
-      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
+      <attributetableconfig sortExpression="" actionWidgetStyle="dropDown" sortOrder="0">
         <columns>
           <column type="field" name="id" width="-1" hidden="0"/>
           <column type="field" name="id_parent" width="266" hidden="0"/>
@@ -1038,10 +1010,10 @@ def my_form_open(dialog, layer, feature):
         <fieldstyles/>
       </conditionalstyles>
       <storedexpressions/>
-      <editform tolerant="1"></editform>
+      <editform tolerant="1"/>
       <editforminit/>
       <editforminitcodesource>0</editforminitcodesource>
-      <editforminitfilepath></editforminitfilepath>
+      <editforminitfilepath/>
       <editforminitcode><![CDATA[# -*- coding: utf-8 -*-
 """
 QGIS forms can have a Python function that is called when the form is
@@ -1062,9 +1034,9 @@ def my_form_open(dialog, layer, feature):
       <featformsuppress>0</featformsuppress>
       <editorlayout>generatedlayout</editorlayout>
       <editable>
-        <field editable="0" name="id"/>
-        <field editable="1" name="id_parent"/>
-        <field editable="1" name="remote_path"/>
+        <field name="id" editable="0"/>
+        <field name="id_parent" editable="1"/>
+        <field name="remote_path" editable="1"/>
       </editable>
       <labelOnTop>
         <field name="id" labelOnTop="0"/>
@@ -1072,74 +1044,75 @@ def my_form_open(dialog, layer, feature):
         <field name="remote_path" labelOnTop="0"/>
       </labelOnTop>
       <reuseLastValue>
-        <field reuseLastValue="0" name="id"/>
-        <field reuseLastValue="0" name="id_parent"/>
-        <field reuseLastValue="0" name="remote_path"/>
+        <field name="id" reuseLastValue="0"/>
+        <field name="id_parent" reuseLastValue="0"/>
+        <field name="remote_path" reuseLastValue="0"/>
       </reuseLastValue>
       <dataDefinedFieldProperties/>
       <widgets/>
       <previewExpression>"remote_path"</previewExpression>
-      <mapTip></mapTip>
+      <mapTip enabled="1"/>
     </maplayer>
-    <maplayer legendPlaceholderImage="" wkbType="NoGeometry" styleCategories="AllStyleCategories" readOnly="0" type="vector" hasScaleBasedVisibilityFlag="0" autoRefreshEnabled="0" geometry="No geometry" refreshOnNotifyMessage="" maxScale="0" minScale="1e+08" refreshOnNotifyEnabled="0" autoRefreshTime="0">
+    <maplayer readOnly="0" autoRefreshTime="0" styleCategories="AllStyleCategories" type="vector" minScale="1e+08" refreshOnNotifyMessage="" legendPlaceholderImage="" hasScaleBasedVisibilityFlag="0" maxScale="0" wkbType="NoGeometry" autoRefreshMode="Disabled" geometry="No geometry" refreshOnNotifyEnabled="0">
       <id>form_edition_upload_webdav_da2c53fe_a99a_41ee_8feb_e2570b11e547</id>
-      <datasource>service='lizmapdb' sslmode=prefer key='id' checkPrimaryKeyUnicity='1' table="tests_projects"."form_edition_upload_webdav"</datasource>
+      <datasource>service='lizmapdb' key='id' checkPrimaryKeyUnicity='1' table="tests_projects"."form_edition_upload_webdav"</datasource>
       <shortname>form_edition_upload_webdav</shortname>
       <keywordList>
-        <value></value>
+        <value/>
       </keywordList>
       <layername>form_edition_upload_webdav</layername>
       <srs>
         <spatialrefsys nativeFormat="Wkt">
-          <wkt></wkt>
-          <proj4></proj4>
+          <wkt/>
+          <proj4/>
           <srsid>0</srsid>
           <srid>0</srid>
-          <authid></authid>
-          <description></description>
-          <projectionacronym></projectionacronym>
-          <ellipsoidacronym></ellipsoidacronym>
+          <authid/>
+          <description/>
+          <projectionacronym/>
+          <ellipsoidacronym/>
           <geographicflag>false</geographicflag>
         </spatialrefsys>
       </srs>
       <resourceMetadata>
-        <identifier></identifier>
-        <parentidentifier></parentidentifier>
-        <language></language>
+        <identifier/>
+        <parentidentifier/>
+        <language/>
         <type>dataset</type>
-        <title></title>
-        <abstract></abstract>
+        <title/>
+        <abstract/>
         <contact>
-          <name></name>
-          <organization></organization>
-          <position></position>
-          <voice></voice>
-          <fax></fax>
-          <email></email>
-          <role></role>
+          <name/>
+          <organization/>
+          <position/>
+          <voice/>
+          <fax/>
+          <email/>
+          <role/>
         </contact>
         <links/>
-        <fees></fees>
-        <encoding></encoding>
+        <dates/>
+        <fees/>
+        <encoding/>
         <crs>
           <spatialrefsys nativeFormat="Wkt">
-            <wkt></wkt>
-            <proj4></proj4>
+            <wkt/>
+            <proj4/>
             <srsid>0</srsid>
             <srid>0</srid>
-            <authid></authid>
-            <description></description>
-            <projectionacronym></projectionacronym>
-            <ellipsoidacronym></ellipsoidacronym>
+            <authid/>
+            <description/>
+            <projectionacronym/>
+            <ellipsoidacronym/>
             <geographicflag>false</geographicflag>
           </spatialrefsys>
         </crs>
         <extent>
-          <spatial crs="" dimensions="2" maxx="0" minx="0" miny="0" maxy="0" minz="0" maxz="0"/>
+          <spatial minx="0" maxz="0" miny="0" crs="" minz="0" dimensions="2" maxy="0" maxx="0"/>
           <temporal>
             <period>
-              <start></start>
-              <end></end>
+              <start/>
+              <end/>
             </period>
           </temporal>
         </extent>
@@ -1160,13 +1133,13 @@ def my_form_open(dialog, layer, feature):
         <Searchable>1</Searchable>
         <Private>0</Private>
       </flags>
-      <temporal endExpression="" endField="" mode="0" startField="" enabled="0" limitMode="0" durationUnit="min" durationField="id" startExpression="" fixedDuration="0" accumulate="0">
+      <temporal limitMode="0" startExpression="" startField="" mode="0" fixedDuration="0" enabled="0" endField="" durationUnit="min" endExpression="" durationField="id" accumulate="0">
         <fixedRange>
-          <start></start>
-          <end></end>
+          <start/>
+          <end/>
         </fixedRange>
       </temporal>
-      <elevation symbology="Line" zoffset="0" type="IndividualFeatures" clamping="Terrain" showMarkerSymbolInSurfacePlots="0" extrusionEnabled="0" binding="Centroid" respectLayerSymbol="1" extrusion="0" zscale="1">
+      <elevation zscale="1" type="IndividualFeatures" clamping="Terrain" symbology="Line" extrusion="0" showMarkerSymbolInSurfacePlots="0" zoffset="0" binding="Centroid" extrusionEnabled="0" respectLayerSymbol="1">
         <data-defined-properties>
           <Option type="Map">
             <Option type="QString" name="name" value=""/>
@@ -1175,7 +1148,7 @@ def my_form_open(dialog, layer, feature):
           </Option>
         </data-defined-properties>
         <profileLineSymbol>
-          <symbol alpha="1" type="line" force_rhr="0" name="" frame_rate="10" is_animated="0" clip_to_extent="1">
+          <symbol frame_rate="10" type="line" name="" alpha="1" is_animated="0" force_rhr="0" clip_to_extent="1">
             <data_defined_properties>
               <Option type="Map">
                 <Option type="QString" name="name" value=""/>
@@ -1183,7 +1156,7 @@ def my_form_open(dialog, layer, feature):
                 <Option type="QString" name="type" value="collection"/>
               </Option>
             </data_defined_properties>
-            <layer class="SimpleLine" pass="0" enabled="1" locked="0">
+            <layer class="SimpleLine" pass="0" id="{8a17daa2-9b02-4e76-ba07-2999c0eddb14}" enabled="1" locked="0">
               <Option type="Map">
                 <Option type="QString" name="align_dash_pattern" value="0"/>
                 <Option type="QString" name="capstyle" value="square"/>
@@ -1224,7 +1197,7 @@ def my_form_open(dialog, layer, feature):
           </symbol>
         </profileLineSymbol>
         <profileFillSymbol>
-          <symbol alpha="1" type="fill" force_rhr="0" name="" frame_rate="10" is_animated="0" clip_to_extent="1">
+          <symbol frame_rate="10" type="fill" name="" alpha="1" is_animated="0" force_rhr="0" clip_to_extent="1">
             <data_defined_properties>
               <Option type="Map">
                 <Option type="QString" name="name" value=""/>
@@ -1232,7 +1205,7 @@ def my_form_open(dialog, layer, feature):
                 <Option type="QString" name="type" value="collection"/>
               </Option>
             </data_defined_properties>
-            <layer class="SimpleFill" pass="0" enabled="1" locked="0">
+            <layer class="SimpleFill" pass="0" id="{6c681a15-6942-43cb-831b-d63cdf75ea18}" enabled="1" locked="0">
               <Option type="Map">
                 <Option type="QString" name="border_width_map_unit_scale" value="3x:0,0,0,0,0,0"/>
                 <Option type="QString" name="color" value="229,182,54,255"/>
@@ -1257,7 +1230,7 @@ def my_form_open(dialog, layer, feature):
           </symbol>
         </profileFillSymbol>
         <profileMarkerSymbol>
-          <symbol alpha="1" type="marker" force_rhr="0" name="" frame_rate="10" is_animated="0" clip_to_extent="1">
+          <symbol frame_rate="10" type="marker" name="" alpha="1" is_animated="0" force_rhr="0" clip_to_extent="1">
             <data_defined_properties>
               <Option type="Map">
                 <Option type="QString" name="name" value=""/>
@@ -1265,7 +1238,7 @@ def my_form_open(dialog, layer, feature):
                 <Option type="QString" name="type" value="collection"/>
               </Option>
             </data_defined_properties>
-            <layer class="SimpleMarker" pass="0" enabled="1" locked="0">
+            <layer class="SimpleMarker" pass="0" id="{bb040c09-f694-45bb-a39d-fcfda322178e}" enabled="1" locked="0">
               <Option type="Map">
                 <Option type="QString" name="angle" value="0"/>
                 <Option type="QString" name="cap_style" value="square"/>
@@ -1308,14 +1281,14 @@ def my_form_open(dialog, layer, feature):
           <Option type="invalid" name="variableValues"/>
         </Option>
       </customproperties>
-      <geometryOptions removeDuplicateNodes="0" geometryPrecision="0">
+      <geometryOptions geometryPrecision="0" removeDuplicateNodes="0">
         <activeChecks/>
         <checkConfiguration/>
       </geometryOptions>
       <legend type="default-vector" showLabelLegend="0"/>
       <referencedLayers/>
       <fieldConfiguration>
-        <field name="id" configurationFlags="None">
+        <field configurationFlags="NoFlag" name="id">
           <editWidget type="TextEdit">
             <config>
               <Option type="Map">
@@ -1325,7 +1298,7 @@ def my_form_open(dialog, layer, feature):
             </config>
           </editWidget>
         </field>
-        <field name="remote_path" configurationFlags="None">
+        <field configurationFlags="NoFlag" name="remote_path">
           <editWidget type="ExternalResource">
             <config>
               <Option type="Map">
@@ -1354,7 +1327,7 @@ def my_form_open(dialog, layer, feature):
             </config>
           </editWidget>
         </field>
-        <field name="local_path" configurationFlags="None">
+        <field configurationFlags="NoFlag" name="local_path">
           <editWidget type="ExternalResource">
             <config>
               <Option type="Map">
@@ -1379,30 +1352,35 @@ def my_form_open(dialog, layer, feature):
         </field>
       </fieldConfiguration>
       <aliases>
-        <alias index="0" name="id" field="id"/>
-        <alias index="1" name="remote" field="remote_path"/>
-        <alias index="2" name="local" field="local_path"/>
+        <alias field="id" name="id" index="0"/>
+        <alias field="remote_path" name="remote" index="1"/>
+        <alias field="local_path" name="local" index="2"/>
       </aliases>
+      <splitPolicies>
+        <policy field="id" policy="Duplicate"/>
+        <policy field="remote_path" policy="Duplicate"/>
+        <policy field="local_path" policy="Duplicate"/>
+      </splitPolicies>
       <defaults>
-        <default applyOnUpdate="0" expression="" field="id"/>
-        <default applyOnUpdate="0" expression="" field="remote_path"/>
-        <default applyOnUpdate="0" expression="" field="local_path"/>
+        <default field="id" applyOnUpdate="0" expression=""/>
+        <default field="remote_path" applyOnUpdate="0" expression=""/>
+        <default field="local_path" applyOnUpdate="0" expression=""/>
       </defaults>
       <constraints>
-        <constraint constraints="3" unique_strength="1" notnull_strength="1" field="id" exp_strength="0"/>
-        <constraint constraints="0" unique_strength="0" notnull_strength="0" field="remote_path" exp_strength="0"/>
-        <constraint constraints="0" unique_strength="0" notnull_strength="0" field="local_path" exp_strength="0"/>
+        <constraint field="id" constraints="3" exp_strength="0" unique_strength="1" notnull_strength="1"/>
+        <constraint field="remote_path" constraints="0" exp_strength="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="local_path" constraints="0" exp_strength="0" unique_strength="0" notnull_strength="0"/>
       </constraints>
       <constraintExpressions>
-        <constraint exp="" field="id" desc=""/>
-        <constraint exp="" field="remote_path" desc=""/>
-        <constraint exp="" field="local_path" desc=""/>
+        <constraint field="id" exp="" desc=""/>
+        <constraint field="remote_path" exp="" desc=""/>
+        <constraint field="local_path" exp="" desc=""/>
       </constraintExpressions>
       <expressionfields/>
       <attributeactions>
-        <defaultAction key="Canvas" value="{00000000-0000-0000-0000-000000000000}"/>
+        <defaultAction value="{00000000-0000-0000-0000-000000000000}" key="Canvas"/>
       </attributeactions>
-      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
+      <attributetableconfig sortExpression="" actionWidgetStyle="dropDown" sortOrder="0">
         <columns>
           <column type="field" name="id" width="-1" hidden="0"/>
           <column type="field" name="remote_path" width="-1" hidden="0"/>
@@ -1415,10 +1393,10 @@ def my_form_open(dialog, layer, feature):
         <fieldstyles/>
       </conditionalstyles>
       <storedexpressions/>
-      <editform tolerant="1"></editform>
+      <editform tolerant="1"/>
       <editforminit/>
       <editforminitcodesource>0</editforminitcodesource>
-      <editforminitfilepath></editforminitfilepath>
+      <editforminitfilepath/>
       <editforminitcode><![CDATA[# -*- coding: utf-8 -*-
 """
 QGIS forms can have a Python function that is called when the form is
@@ -1439,29 +1417,29 @@ def my_form_open(dialog, layer, feature):
       <featformsuppress>0</featformsuppress>
       <editorlayout>tablayout</editorlayout>
       <attributeEditorForm>
-        <labelStyle overrideLabelFont="0" overrideLabelColor="0" labelColor="0,0,0,255">
-          <labelFont strikethrough="0" bold="0" description="Sans,9,-1,5,50,0,0,0,0,0" underline="0" style="" italic="0"/>
+        <labelStyle overrideLabelColor="0" labelColor="0,0,0,255" overrideLabelFont="0">
+          <labelFont description="Ubuntu,11,-1,5,50,0,0,0,0,0" strikethrough="0" style="" italic="0" underline="0" bold="0"/>
         </labelStyle>
-        <attributeEditorField showLabel="1" index="0" name="id">
-          <labelStyle overrideLabelFont="0" overrideLabelColor="0" labelColor="0,0,0,255">
-            <labelFont strikethrough="0" bold="0" description="Sans,9,-1,5,50,0,0,0,0,0" underline="0" style="" italic="0"/>
+        <attributeEditorField name="id" verticalStretch="0" horizontalStretch="0" index="0" showLabel="1">
+          <labelStyle overrideLabelColor="0" labelColor="0,0,0,255" overrideLabelFont="0">
+            <labelFont description="Sans,9,-1,5,50,0,0,0,0,0" strikethrough="0" style="" italic="0" underline="0" bold="0"/>
           </labelStyle>
         </attributeEditorField>
-        <attributeEditorField showLabel="1" index="1" name="remote_path">
-          <labelStyle overrideLabelFont="0" overrideLabelColor="0" labelColor="0,0,0,255">
-            <labelFont strikethrough="0" bold="0" description="Sans,9,-1,5,50,0,0,0,0,0" underline="0" style="" italic="0"/>
+        <attributeEditorField name="remote_path" verticalStretch="0" horizontalStretch="0" index="1" showLabel="1">
+          <labelStyle overrideLabelColor="0" labelColor="0,0,0,255" overrideLabelFont="0">
+            <labelFont description="Sans,9,-1,5,50,0,0,0,0,0" strikethrough="0" style="" italic="0" underline="0" bold="0"/>
           </labelStyle>
         </attributeEditorField>
-        <attributeEditorField showLabel="1" index="2" name="local_path">
-          <labelStyle overrideLabelFont="0" overrideLabelColor="0" labelColor="0,0,0,255">
-            <labelFont strikethrough="0" bold="0" description="Sans,9,-1,5,50,0,0,0,0,0" underline="0" style="" italic="0"/>
+        <attributeEditorField name="local_path" verticalStretch="0" horizontalStretch="0" index="2" showLabel="1">
+          <labelStyle overrideLabelColor="0" labelColor="0,0,0,255" overrideLabelFont="0">
+            <labelFont description="Sans,9,-1,5,50,0,0,0,0,0" strikethrough="0" style="" italic="0" underline="0" bold="0"/>
           </labelStyle>
         </attributeEditorField>
       </attributeEditorForm>
       <editable>
-        <field editable="0" name="id"/>
-        <field editable="1" name="local_path"/>
-        <field editable="1" name="remote_path"/>
+        <field name="id" editable="0"/>
+        <field name="local_path" editable="1"/>
+        <field name="remote_path" editable="1"/>
       </editable>
       <labelOnTop>
         <field name="id" labelOnTop="0"/>
@@ -1469,16 +1447,16 @@ def my_form_open(dialog, layer, feature):
         <field name="remote_path" labelOnTop="0"/>
       </labelOnTop>
       <reuseLastValue>
-        <field reuseLastValue="0" name="id"/>
-        <field reuseLastValue="0" name="local_path"/>
-        <field reuseLastValue="0" name="remote_path"/>
+        <field name="id" reuseLastValue="0"/>
+        <field name="local_path" reuseLastValue="0"/>
+        <field name="remote_path" reuseLastValue="0"/>
       </reuseLastValue>
       <dataDefinedFieldProperties/>
       <widgets/>
       <previewExpression>"remote_path"</previewExpression>
-      <mapTip></mapTip>
+      <mapTip enabled="1"/>
     </maplayer>
-    <maplayer maxScale="0" type="vector" refreshOnNotifyMessage="" simplifyAlgorithm="0" simplifyDrawingHints="0" labelsEnabled="0" wkbType="Point" simplifyLocal="1" legendPlaceholderImage="" hasScaleBasedVisibilityFlag="0" autoRefreshEnabled="0" minScale="100000000" symbologyReferenceScale="-1" simplifyDrawingTol="1" geometry="Point" readOnly="0" refreshOnNotifyEnabled="0" simplifyMaxScale="1" styleCategories="AllStyleCategories" autoRefreshTime="0">
+    <maplayer hasScaleBasedVisibilityFlag="0" simplifyAlgorithm="0" refreshOnNotifyEnabled="0" symbologyReferenceScale="-1" simplifyLocal="1" autoRefreshTime="0" simplifyDrawingHints="0" styleCategories="AllStyleCategories" labelsEnabled="0" simplifyMaxScale="1" type="vector" minScale="100000000" wkbType="Point" legendPlaceholderImage="" maxScale="0" autoRefreshMode="Disabled" simplifyDrawingTol="1" refreshOnNotifyMessage="" readOnly="0" geometry="Point">
       <extent>
         <xmin>-0.73929182485269596</xmin>
         <ymin>45.79233955095968156</ymin>
@@ -1492,10 +1470,10 @@ def my_form_open(dialog, layer, feature):
         <ymax>46.50445820852591794</ymax>
       </wgs84extent>
       <id>form_edition_upload_webdav_geom_c71ec5ff_dc88_451f_98e1_ccf41e34ddd7</id>
-      <datasource>service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='1' table="tests_projects"."form_edition_upload_webdav_geom" (geom)</datasource>
+      <datasource>service='lizmapdb' key='id' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='1' table="tests_projects"."form_edition_upload_webdav_geom" (geom)</datasource>
       <shortname>form_edition_upload_webdav_geom</shortname>
       <keywordList>
-        <value></value>
+        <value/>
       </keywordList>
       <layername>form_edition_upload_webdav_geom</layername>
       <srs>
@@ -1512,24 +1490,25 @@ def my_form_open(dialog, layer, feature):
         </spatialrefsys>
       </srs>
       <resourceMetadata>
-        <identifier></identifier>
-        <parentidentifier></parentidentifier>
-        <language></language>
+        <identifier/>
+        <parentidentifier/>
+        <language/>
         <type>dataset</type>
-        <title></title>
-        <abstract></abstract>
+        <title/>
+        <abstract/>
         <contact>
-          <name></name>
-          <organization></organization>
-          <position></position>
-          <voice></voice>
-          <fax></fax>
-          <email></email>
-          <role></role>
+          <name/>
+          <organization/>
+          <position/>
+          <voice/>
+          <fax/>
+          <email/>
+          <role/>
         </contact>
         <links/>
-        <fees></fees>
-        <encoding></encoding>
+        <dates/>
+        <fees/>
+        <encoding/>
         <crs>
           <spatialrefsys nativeFormat="Wkt">
             <wkt>GEOGCRS["WGS 84",ENSEMBLE["World Geodetic System 1984 ensemble",MEMBER["World Geodetic System 1984 (Transit)"],MEMBER["World Geodetic System 1984 (G730)"],MEMBER["World Geodetic System 1984 (G873)"],MEMBER["World Geodetic System 1984 (G1150)"],MEMBER["World Geodetic System 1984 (G1674)"],MEMBER["World Geodetic System 1984 (G1762)"],MEMBER["World Geodetic System 1984 (G2139)"],ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]],ENSEMBLEACCURACY[2.0]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],CS[ellipsoidal,2],AXIS["geodetic latitude (Lat)",north,ORDER[1],ANGLEUNIT["degree",0.0174532925199433]],AXIS["geodetic longitude (Lon)",east,ORDER[2],ANGLEUNIT["degree",0.0174532925199433]],USAGE[SCOPE["Horizontal component of 3D system."],AREA["World."],BBOX[-90,-180,90,180]],ID["EPSG",4326]]</wkt>
@@ -1544,11 +1523,11 @@ def my_form_open(dialog, layer, feature):
           </spatialrefsys>
         </crs>
         <extent>
-          <spatial crs="EPSG:4326" dimensions="2" maxx="0" minx="0" miny="0" maxy="0" minz="0" maxz="0"/>
+          <spatial minx="0" maxz="0" miny="0" crs="EPSG:4326" minz="0" dimensions="2" maxy="0" maxx="0"/>
           <temporal>
             <period>
-              <start></start>
-              <end></end>
+              <start/>
+              <end/>
             </period>
           </temporal>
         </extent>
@@ -1569,13 +1548,13 @@ def my_form_open(dialog, layer, feature):
         <Searchable>1</Searchable>
         <Private>0</Private>
       </flags>
-      <temporal endExpression="" endField="" mode="0" startField="" enabled="0" limitMode="0" durationUnit="min" durationField="" startExpression="" fixedDuration="0" accumulate="0">
+      <temporal limitMode="0" startExpression="" startField="" mode="0" fixedDuration="0" enabled="0" endField="" durationUnit="min" endExpression="" durationField="" accumulate="0">
         <fixedRange>
-          <start></start>
-          <end></end>
+          <start/>
+          <end/>
         </fixedRange>
       </temporal>
-      <elevation symbology="Line" zoffset="0" type="IndividualFeatures" clamping="Terrain" showMarkerSymbolInSurfacePlots="0" extrusionEnabled="0" binding="Centroid" respectLayerSymbol="1" extrusion="0" zscale="1">
+      <elevation zscale="1" type="IndividualFeatures" clamping="Terrain" symbology="Line" extrusion="0" showMarkerSymbolInSurfacePlots="0" zoffset="0" binding="Centroid" extrusionEnabled="0" respectLayerSymbol="1">
         <data-defined-properties>
           <Option type="Map">
             <Option type="QString" name="name" value=""/>
@@ -1584,7 +1563,7 @@ def my_form_open(dialog, layer, feature):
           </Option>
         </data-defined-properties>
         <profileLineSymbol>
-          <symbol alpha="1" type="line" force_rhr="0" name="" frame_rate="10" is_animated="0" clip_to_extent="1">
+          <symbol frame_rate="10" type="line" name="" alpha="1" is_animated="0" force_rhr="0" clip_to_extent="1">
             <data_defined_properties>
               <Option type="Map">
                 <Option type="QString" name="name" value=""/>
@@ -1592,7 +1571,7 @@ def my_form_open(dialog, layer, feature):
                 <Option type="QString" name="type" value="collection"/>
               </Option>
             </data_defined_properties>
-            <layer class="SimpleLine" pass="0" enabled="1" locked="0">
+            <layer class="SimpleLine" pass="0" id="{73c35083-71cd-43ea-9318-898f32216498}" enabled="1" locked="0">
               <Option type="Map">
                 <Option type="QString" name="align_dash_pattern" value="0"/>
                 <Option type="QString" name="capstyle" value="square"/>
@@ -1633,7 +1612,7 @@ def my_form_open(dialog, layer, feature):
           </symbol>
         </profileLineSymbol>
         <profileFillSymbol>
-          <symbol alpha="1" type="fill" force_rhr="0" name="" frame_rate="10" is_animated="0" clip_to_extent="1">
+          <symbol frame_rate="10" type="fill" name="" alpha="1" is_animated="0" force_rhr="0" clip_to_extent="1">
             <data_defined_properties>
               <Option type="Map">
                 <Option type="QString" name="name" value=""/>
@@ -1641,7 +1620,7 @@ def my_form_open(dialog, layer, feature):
                 <Option type="QString" name="type" value="collection"/>
               </Option>
             </data_defined_properties>
-            <layer class="SimpleFill" pass="0" enabled="1" locked="0">
+            <layer class="SimpleFill" pass="0" id="{016c11aa-6561-41ca-a0cb-7d56467a15cf}" enabled="1" locked="0">
               <Option type="Map">
                 <Option type="QString" name="border_width_map_unit_scale" value="3x:0,0,0,0,0,0"/>
                 <Option type="QString" name="color" value="190,178,151,255"/>
@@ -1666,7 +1645,7 @@ def my_form_open(dialog, layer, feature):
           </symbol>
         </profileFillSymbol>
         <profileMarkerSymbol>
-          <symbol alpha="1" type="marker" force_rhr="0" name="" frame_rate="10" is_animated="0" clip_to_extent="1">
+          <symbol frame_rate="10" type="marker" name="" alpha="1" is_animated="0" force_rhr="0" clip_to_extent="1">
             <data_defined_properties>
               <Option type="Map">
                 <Option type="QString" name="name" value=""/>
@@ -1674,7 +1653,7 @@ def my_form_open(dialog, layer, feature):
                 <Option type="QString" name="type" value="collection"/>
               </Option>
             </data_defined_properties>
-            <layer class="SimpleMarker" pass="0" enabled="1" locked="0">
+            <layer class="SimpleMarker" pass="0" id="{205fcd9f-ba03-4a15-99a2-a3105007f179}" enabled="1" locked="0">
               <Option type="Map">
                 <Option type="QString" name="angle" value="0"/>
                 <Option type="QString" name="cap_style" value="square"/>
@@ -1707,9 +1686,9 @@ def my_form_open(dialog, layer, feature):
           </symbol>
         </profileMarkerSymbol>
       </elevation>
-      <renderer-v2 enableorderby="0" symbollevels="0" type="singleSymbol" referencescale="-1" forceraster="0">
+      <renderer-v2 referencescale="-1" type="singleSymbol" forceraster="0" symbollevels="0" enableorderby="0">
         <symbols>
-          <symbol alpha="1" type="marker" force_rhr="0" name="0" frame_rate="10" is_animated="0" clip_to_extent="1">
+          <symbol frame_rate="10" type="marker" name="0" alpha="1" is_animated="0" force_rhr="0" clip_to_extent="1">
             <data_defined_properties>
               <Option type="Map">
                 <Option type="QString" name="name" value=""/>
@@ -1717,7 +1696,7 @@ def my_form_open(dialog, layer, feature):
                 <Option type="QString" name="type" value="collection"/>
               </Option>
             </data_defined_properties>
-            <layer class="SimpleMarker" pass="0" enabled="1" locked="0">
+            <layer class="SimpleMarker" pass="0" id="{2b66557f-1b24-429c-a6e4-81f21632405a}" enabled="1" locked="0">
               <Option type="Map">
                 <Option type="QString" name="angle" value="0"/>
                 <Option type="QString" name="cap_style" value="square"/>
@@ -1752,6 +1731,9 @@ def my_form_open(dialog, layer, feature):
         <rotation/>
         <sizescale/>
       </renderer-v2>
+      <selection mode="Default">
+        <selectionColor invalid="1"/>
+      </selection>
       <customproperties>
         <Option type="Map">
           <Option type="int" name="embeddedWidgets/count" value="0"/>
@@ -1763,11 +1745,11 @@ def my_form_open(dialog, layer, feature):
       <featureBlendMode>0</featureBlendMode>
       <layerOpacity>1</layerOpacity>
       <SingleCategoryDiagramRenderer attributeLegend="1" diagramType="Histogram">
-        <DiagramCategory labelPlacementMethod="XHeight" sizeScale="3x:0,0,0,0,0,0" backgroundColor="#ffffff" diagramOrientation="Up" minScaleDenominator="0" spacing="5" scaleDependency="Area" minimumSize="0" spacingUnit="MM" enabled="0" opacity="1" sizeType="MM" rotationOffset="270" penWidth="0" lineSizeScale="3x:0,0,0,0,0,0" width="15" direction="0" penAlpha="255" penColor="#000000" barWidth="5" height="15" scaleBasedVisibility="0" backgroundAlpha="255" lineSizeType="MM" maxScaleDenominator="1e+08" spacingUnitScale="3x:0,0,0,0,0,0" showAxis="1">
-          <fontProperties strikethrough="0" bold="0" description="Sans,9,-1,5,50,0,0,0,0,0" underline="0" style="" italic="0"/>
-          <attribute colorOpacity="1" color="#000000" label="" field=""/>
+        <DiagramCategory spacing="5" labelPlacementMethod="XHeight" lineSizeType="MM" width="15" backgroundAlpha="255" penWidth="0" spacingUnit="MM" minimumSize="0" lineSizeScale="3x:0,0,0,0,0,0" height="15" diagramOrientation="Up" scaleDependency="Area" penColor="#000000" maxScaleDenominator="1e+08" barWidth="5" spacingUnitScale="3x:0,0,0,0,0,0" opacity="1" minScaleDenominator="0" sizeScale="3x:0,0,0,0,0,0" scaleBasedVisibility="0" direction="0" sizeType="MM" rotationOffset="270" penAlpha="255" enabled="0" backgroundColor="#ffffff" showAxis="1">
+          <fontProperties description="Sans,9,-1,5,50,0,0,0,0,0" strikethrough="0" style="" italic="0" underline="0" bold="0"/>
+          <attribute field="" colorOpacity="1" color="#000000" label=""/>
           <axisSymbol>
-            <symbol alpha="1" type="line" force_rhr="0" name="" frame_rate="10" is_animated="0" clip_to_extent="1">
+            <symbol frame_rate="10" type="line" name="" alpha="1" is_animated="0" force_rhr="0" clip_to_extent="1">
               <data_defined_properties>
                 <Option type="Map">
                   <Option type="QString" name="name" value=""/>
@@ -1775,7 +1757,7 @@ def my_form_open(dialog, layer, feature):
                   <Option type="QString" name="type" value="collection"/>
                 </Option>
               </data_defined_properties>
-              <layer class="SimpleLine" pass="0" enabled="1" locked="0">
+              <layer class="SimpleLine" pass="0" id="{b8db5cdb-3883-4521-8b46-e22cafdfd867}" enabled="1" locked="0">
                 <Option type="Map">
                   <Option type="QString" name="align_dash_pattern" value="0"/>
                   <Option type="QString" name="capstyle" value="square"/>
@@ -1817,7 +1799,7 @@ def my_form_open(dialog, layer, feature):
           </axisSymbol>
         </DiagramCategory>
       </SingleCategoryDiagramRenderer>
-      <DiagramLayerSettings linePlacementFlags="18" priority="0" placement="0" obstacle="0" showAll="1" zIndex="0" dist="0">
+      <DiagramLayerSettings dist="0" priority="0" showAll="1" obstacle="0" linePlacementFlags="18" zIndex="0" placement="0">
         <properties>
           <Option type="Map">
             <Option type="QString" name="name" value=""/>
@@ -1826,14 +1808,14 @@ def my_form_open(dialog, layer, feature):
           </Option>
         </properties>
       </DiagramLayerSettings>
-      <geometryOptions removeDuplicateNodes="0" geometryPrecision="0">
+      <geometryOptions geometryPrecision="0" removeDuplicateNodes="0">
         <activeChecks/>
         <checkConfiguration/>
       </geometryOptions>
       <legend type="default-vector" showLabelLegend="0"/>
       <referencedLayers/>
       <fieldConfiguration>
-        <field name="id" configurationFlags="None">
+        <field configurationFlags="NoFlag" name="id">
           <editWidget type="TextEdit">
             <config>
               <Option type="Map">
@@ -1843,7 +1825,7 @@ def my_form_open(dialog, layer, feature):
             </config>
           </editWidget>
         </field>
-        <field name="remote_path" configurationFlags="None">
+        <field configurationFlags="NoFlag" name="remote_path">
           <editWidget type="ExternalResource">
             <config>
               <Option type="Map">
@@ -1872,7 +1854,7 @@ def my_form_open(dialog, layer, feature):
             </config>
           </editWidget>
         </field>
-        <field name="local_path" configurationFlags="None">
+        <field configurationFlags="NoFlag" name="local_path">
           <editWidget type="ExternalResource">
             <config>
               <Option type="Map">
@@ -1897,30 +1879,35 @@ def my_form_open(dialog, layer, feature):
         </field>
       </fieldConfiguration>
       <aliases>
-        <alias index="0" name="id" field="id"/>
-        <alias index="1" name="remote" field="remote_path"/>
-        <alias index="2" name="local" field="local_path"/>
+        <alias field="id" name="id" index="0"/>
+        <alias field="remote_path" name="remote" index="1"/>
+        <alias field="local_path" name="local" index="2"/>
       </aliases>
+      <splitPolicies>
+        <policy field="id" policy="Duplicate"/>
+        <policy field="remote_path" policy="Duplicate"/>
+        <policy field="local_path" policy="Duplicate"/>
+      </splitPolicies>
       <defaults>
-        <default applyOnUpdate="0" expression="" field="id"/>
-        <default applyOnUpdate="0" expression="" field="remote_path"/>
-        <default applyOnUpdate="0" expression="" field="local_path"/>
+        <default field="id" applyOnUpdate="0" expression=""/>
+        <default field="remote_path" applyOnUpdate="0" expression=""/>
+        <default field="local_path" applyOnUpdate="0" expression=""/>
       </defaults>
       <constraints>
-        <constraint constraints="3" unique_strength="1" notnull_strength="1" field="id" exp_strength="0"/>
-        <constraint constraints="0" unique_strength="0" notnull_strength="0" field="remote_path" exp_strength="0"/>
-        <constraint constraints="0" unique_strength="0" notnull_strength="0" field="local_path" exp_strength="0"/>
+        <constraint field="id" constraints="3" exp_strength="0" unique_strength="1" notnull_strength="1"/>
+        <constraint field="remote_path" constraints="0" exp_strength="0" unique_strength="0" notnull_strength="0"/>
+        <constraint field="local_path" constraints="0" exp_strength="0" unique_strength="0" notnull_strength="0"/>
       </constraints>
       <constraintExpressions>
-        <constraint exp="" field="id" desc=""/>
-        <constraint exp="" field="remote_path" desc=""/>
-        <constraint exp="" field="local_path" desc=""/>
+        <constraint field="id" exp="" desc=""/>
+        <constraint field="remote_path" exp="" desc=""/>
+        <constraint field="local_path" exp="" desc=""/>
       </constraintExpressions>
       <expressionfields/>
       <attributeactions>
-        <defaultAction key="Canvas" value="{00000000-0000-0000-0000-000000000000}"/>
+        <defaultAction value="{00000000-0000-0000-0000-000000000000}" key="Canvas"/>
       </attributeactions>
-      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
+      <attributetableconfig sortExpression="" actionWidgetStyle="dropDown" sortOrder="0">
         <columns>
           <column type="field" name="id" width="-1" hidden="0"/>
           <column type="field" name="remote_path" width="-1" hidden="0"/>
@@ -1933,10 +1920,10 @@ def my_form_open(dialog, layer, feature):
         <fieldstyles/>
       </conditionalstyles>
       <storedexpressions/>
-      <editform tolerant="1"></editform>
+      <editform tolerant="1"/>
       <editforminit/>
       <editforminitcodesource>0</editforminitcodesource>
-      <editforminitfilepath></editforminitfilepath>
+      <editforminitfilepath/>
       <editforminitcode><![CDATA[# -*- coding: utf-8 -*-
 """
 QGIS forms can have a Python function that is called when the form is
@@ -1957,29 +1944,29 @@ def my_form_open(dialog, layer, feature):
       <featformsuppress>0</featformsuppress>
       <editorlayout>tablayout</editorlayout>
       <attributeEditorForm>
-        <labelStyle overrideLabelFont="0" overrideLabelColor="0" labelColor="0,0,0,255">
-          <labelFont strikethrough="0" bold="0" description="Sans,9,-1,5,50,0,0,0,0,0" underline="0" style="" italic="0"/>
+        <labelStyle overrideLabelColor="0" labelColor="0,0,0,255" overrideLabelFont="0">
+          <labelFont description="Ubuntu,11,-1,5,50,0,0,0,0,0" strikethrough="0" style="" italic="0" underline="0" bold="0"/>
         </labelStyle>
-        <attributeEditorField showLabel="1" index="0" name="id">
-          <labelStyle overrideLabelFont="0" overrideLabelColor="0" labelColor="0,0,0,255">
-            <labelFont strikethrough="0" bold="0" description="Sans,9,-1,5,50,0,0,0,0,0" underline="0" style="" italic="0"/>
+        <attributeEditorField name="id" verticalStretch="0" horizontalStretch="0" index="0" showLabel="1">
+          <labelStyle overrideLabelColor="0" labelColor="0,0,0,255" overrideLabelFont="0">
+            <labelFont description="Sans,9,-1,5,50,0,0,0,0,0" strikethrough="0" style="" italic="0" underline="0" bold="0"/>
           </labelStyle>
         </attributeEditorField>
-        <attributeEditorField showLabel="1" index="1" name="remote_path">
-          <labelStyle overrideLabelFont="0" overrideLabelColor="0" labelColor="0,0,0,255">
-            <labelFont strikethrough="0" bold="0" description="Sans,9,-1,5,50,0,0,0,0,0" underline="0" style="" italic="0"/>
+        <attributeEditorField name="remote_path" verticalStretch="0" horizontalStretch="0" index="1" showLabel="1">
+          <labelStyle overrideLabelColor="0" labelColor="0,0,0,255" overrideLabelFont="0">
+            <labelFont description="Sans,9,-1,5,50,0,0,0,0,0" strikethrough="0" style="" italic="0" underline="0" bold="0"/>
           </labelStyle>
         </attributeEditorField>
-        <attributeEditorField showLabel="1" index="2" name="local_path">
-          <labelStyle overrideLabelFont="0" overrideLabelColor="0" labelColor="0,0,0,255">
-            <labelFont strikethrough="0" bold="0" description="Sans,9,-1,5,50,0,0,0,0,0" underline="0" style="" italic="0"/>
+        <attributeEditorField name="local_path" verticalStretch="0" horizontalStretch="0" index="2" showLabel="1">
+          <labelStyle overrideLabelColor="0" labelColor="0,0,0,255" overrideLabelFont="0">
+            <labelFont description="Sans,9,-1,5,50,0,0,0,0,0" strikethrough="0" style="" italic="0" underline="0" bold="0"/>
           </labelStyle>
         </attributeEditorField>
       </attributeEditorForm>
       <editable>
-        <field editable="0" name="id"/>
-        <field editable="1" name="local_path"/>
-        <field editable="1" name="remote_path"/>
+        <field name="id" editable="0"/>
+        <field name="local_path" editable="1"/>
+        <field name="remote_path" editable="1"/>
       </editable>
       <labelOnTop>
         <field name="id" labelOnTop="0"/>
@@ -1987,14 +1974,14 @@ def my_form_open(dialog, layer, feature):
         <field name="remote_path" labelOnTop="0"/>
       </labelOnTop>
       <reuseLastValue>
-        <field reuseLastValue="0" name="id"/>
-        <field reuseLastValue="0" name="local_path"/>
-        <field reuseLastValue="0" name="remote_path"/>
+        <field name="id" reuseLastValue="0"/>
+        <field name="local_path" reuseLastValue="0"/>
+        <field name="remote_path" reuseLastValue="0"/>
       </reuseLastValue>
       <dataDefinedFieldProperties/>
       <widgets/>
       <previewExpression>"remote_path"</previewExpression>
-      <mapTip>&lt;table class="table table-condensed table-striped table-bordered lizmapPopupTable">
+      <mapTip enabled="1">&lt;table class="table table-condensed table-striped table-bordered lizmapPopupTable">
   &lt;thead>
     &lt;tr>
       &lt;th>Field&lt;/th>
@@ -2018,7 +2005,7 @@ def my_form_open(dialog, layer, feature):
   &lt;/tbody>
 &lt;/table></mapTip>
     </maplayer>
-    <maplayer maxScale="0" type="vector" refreshOnNotifyMessage="" simplifyAlgorithm="0" simplifyDrawingHints="0" labelsEnabled="0" wkbType="Point" simplifyLocal="1" legendPlaceholderImage="" hasScaleBasedVisibilityFlag="0" autoRefreshEnabled="0" minScale="100000000" symbologyReferenceScale="-1" simplifyDrawingTol="1" geometry="Point" readOnly="0" refreshOnNotifyEnabled="0" simplifyMaxScale="1" styleCategories="AllStyleCategories" autoRefreshTime="0">
+    <maplayer hasScaleBasedVisibilityFlag="0" simplifyAlgorithm="0" refreshOnNotifyEnabled="0" symbologyReferenceScale="-1" simplifyLocal="1" autoRefreshTime="0" simplifyDrawingHints="0" styleCategories="AllStyleCategories" labelsEnabled="0" simplifyMaxScale="1" type="vector" minScale="100000000" wkbType="Point" legendPlaceholderImage="" maxScale="0" autoRefreshMode="Disabled" simplifyDrawingTol="1" refreshOnNotifyMessage="" readOnly="0" geometry="Point">
       <extent>
         <xmin>1.05368040595865198</xmin>
         <ymin>45.61355644895509442</ymin>
@@ -2032,10 +2019,10 @@ def my_form_open(dialog, layer, feature):
         <ymax>45.61355644895509442</ymax>
       </wgs84extent>
       <id>form_edition_upload_webdav_parent_geom_8c26e78b_f73b_4b2a_9c0e_d7a9e185346e</id>
-      <datasource>service='lizmapdb' sslmode=prefer key='id' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='1' table="tests_projects"."form_edition_upload_webdav_parent_geom" (geom)</datasource>
+      <datasource>service='lizmapdb' key='id' estimatedmetadata=true srid=4326 type=Point checkPrimaryKeyUnicity='1' table="tests_projects"."form_edition_upload_webdav_parent_geom" (geom)</datasource>
       <shortname>form_edition_upload_webdav_parent_geom</shortname>
       <keywordList>
-        <value></value>
+        <value/>
       </keywordList>
       <layername>form_edition_upload_webdav_parent_geom</layername>
       <srs>
@@ -2052,24 +2039,25 @@ def my_form_open(dialog, layer, feature):
         </spatialrefsys>
       </srs>
       <resourceMetadata>
-        <identifier></identifier>
-        <parentidentifier></parentidentifier>
-        <language></language>
+        <identifier/>
+        <parentidentifier/>
+        <language/>
         <type>dataset</type>
-        <title></title>
-        <abstract></abstract>
+        <title/>
+        <abstract/>
         <contact>
-          <name></name>
-          <organization></organization>
-          <position></position>
-          <voice></voice>
-          <fax></fax>
-          <email></email>
-          <role></role>
+          <name/>
+          <organization/>
+          <position/>
+          <voice/>
+          <fax/>
+          <email/>
+          <role/>
         </contact>
         <links/>
-        <fees></fees>
-        <encoding></encoding>
+        <dates/>
+        <fees/>
+        <encoding/>
         <crs>
           <spatialrefsys nativeFormat="Wkt">
             <wkt>GEOGCRS["WGS 84",ENSEMBLE["World Geodetic System 1984 ensemble",MEMBER["World Geodetic System 1984 (Transit)"],MEMBER["World Geodetic System 1984 (G730)"],MEMBER["World Geodetic System 1984 (G873)"],MEMBER["World Geodetic System 1984 (G1150)"],MEMBER["World Geodetic System 1984 (G1674)"],MEMBER["World Geodetic System 1984 (G1762)"],MEMBER["World Geodetic System 1984 (G2139)"],ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]],ENSEMBLEACCURACY[2.0]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],CS[ellipsoidal,2],AXIS["geodetic latitude (Lat)",north,ORDER[1],ANGLEUNIT["degree",0.0174532925199433]],AXIS["geodetic longitude (Lon)",east,ORDER[2],ANGLEUNIT["degree",0.0174532925199433]],USAGE[SCOPE["Horizontal component of 3D system."],AREA["World."],BBOX[-90,-180,90,180]],ID["EPSG",4326]]</wkt>
@@ -2084,11 +2072,11 @@ def my_form_open(dialog, layer, feature):
           </spatialrefsys>
         </crs>
         <extent>
-          <spatial crs="EPSG:4326" dimensions="2" maxx="0" minx="0" miny="0" maxy="0" minz="0" maxz="0"/>
+          <spatial minx="0" maxz="0" miny="0" crs="EPSG:4326" minz="0" dimensions="2" maxy="0" maxx="0"/>
           <temporal>
             <period>
-              <start></start>
-              <end></end>
+              <start/>
+              <end/>
             </period>
           </temporal>
         </extent>
@@ -2109,13 +2097,13 @@ def my_form_open(dialog, layer, feature):
         <Searchable>1</Searchable>
         <Private>0</Private>
       </flags>
-      <temporal endExpression="" endField="" mode="0" startField="" enabled="0" limitMode="0" durationUnit="min" durationField="" startExpression="" fixedDuration="0" accumulate="0">
+      <temporal limitMode="0" startExpression="" startField="" mode="0" fixedDuration="0" enabled="0" endField="" durationUnit="min" endExpression="" durationField="" accumulate="0">
         <fixedRange>
-          <start></start>
-          <end></end>
+          <start/>
+          <end/>
         </fixedRange>
       </temporal>
-      <elevation symbology="Line" zoffset="0" type="IndividualFeatures" clamping="Terrain" showMarkerSymbolInSurfacePlots="0" extrusionEnabled="0" binding="Centroid" respectLayerSymbol="1" extrusion="0" zscale="1">
+      <elevation zscale="1" type="IndividualFeatures" clamping="Terrain" symbology="Line" extrusion="0" showMarkerSymbolInSurfacePlots="0" zoffset="0" binding="Centroid" extrusionEnabled="0" respectLayerSymbol="1">
         <data-defined-properties>
           <Option type="Map">
             <Option type="QString" name="name" value=""/>
@@ -2124,7 +2112,7 @@ def my_form_open(dialog, layer, feature):
           </Option>
         </data-defined-properties>
         <profileLineSymbol>
-          <symbol alpha="1" type="line" force_rhr="0" name="" frame_rate="10" is_animated="0" clip_to_extent="1">
+          <symbol frame_rate="10" type="line" name="" alpha="1" is_animated="0" force_rhr="0" clip_to_extent="1">
             <data_defined_properties>
               <Option type="Map">
                 <Option type="QString" name="name" value=""/>
@@ -2132,7 +2120,7 @@ def my_form_open(dialog, layer, feature):
                 <Option type="QString" name="type" value="collection"/>
               </Option>
             </data_defined_properties>
-            <layer class="SimpleLine" pass="0" enabled="1" locked="0">
+            <layer class="SimpleLine" pass="0" id="{d5c9dba8-fc27-44c5-a51c-5828c0a0da24}" enabled="1" locked="0">
               <Option type="Map">
                 <Option type="QString" name="align_dash_pattern" value="0"/>
                 <Option type="QString" name="capstyle" value="square"/>
@@ -2173,7 +2161,7 @@ def my_form_open(dialog, layer, feature):
           </symbol>
         </profileLineSymbol>
         <profileFillSymbol>
-          <symbol alpha="1" type="fill" force_rhr="0" name="" frame_rate="10" is_animated="0" clip_to_extent="1">
+          <symbol frame_rate="10" type="fill" name="" alpha="1" is_animated="0" force_rhr="0" clip_to_extent="1">
             <data_defined_properties>
               <Option type="Map">
                 <Option type="QString" name="name" value=""/>
@@ -2181,7 +2169,7 @@ def my_form_open(dialog, layer, feature):
                 <Option type="QString" name="type" value="collection"/>
               </Option>
             </data_defined_properties>
-            <layer class="SimpleFill" pass="0" enabled="1" locked="0">
+            <layer class="SimpleFill" pass="0" id="{86ada398-1b8c-4533-8f45-f2ebfdc61403}" enabled="1" locked="0">
               <Option type="Map">
                 <Option type="QString" name="border_width_map_unit_scale" value="3x:0,0,0,0,0,0"/>
                 <Option type="QString" name="color" value="232,113,141,255"/>
@@ -2206,7 +2194,7 @@ def my_form_open(dialog, layer, feature):
           </symbol>
         </profileFillSymbol>
         <profileMarkerSymbol>
-          <symbol alpha="1" type="marker" force_rhr="0" name="" frame_rate="10" is_animated="0" clip_to_extent="1">
+          <symbol frame_rate="10" type="marker" name="" alpha="1" is_animated="0" force_rhr="0" clip_to_extent="1">
             <data_defined_properties>
               <Option type="Map">
                 <Option type="QString" name="name" value=""/>
@@ -2214,7 +2202,7 @@ def my_form_open(dialog, layer, feature):
                 <Option type="QString" name="type" value="collection"/>
               </Option>
             </data_defined_properties>
-            <layer class="SimpleMarker" pass="0" enabled="1" locked="0">
+            <layer class="SimpleMarker" pass="0" id="{d3d35008-88f6-44e7-bf3f-fb0a53f062ea}" enabled="1" locked="0">
               <Option type="Map">
                 <Option type="QString" name="angle" value="0"/>
                 <Option type="QString" name="cap_style" value="square"/>
@@ -2247,9 +2235,9 @@ def my_form_open(dialog, layer, feature):
           </symbol>
         </profileMarkerSymbol>
       </elevation>
-      <renderer-v2 enableorderby="0" symbollevels="0" type="singleSymbol" referencescale="-1" forceraster="0">
+      <renderer-v2 referencescale="-1" type="singleSymbol" forceraster="0" symbollevels="0" enableorderby="0">
         <symbols>
-          <symbol alpha="1" type="marker" force_rhr="0" name="0" frame_rate="10" is_animated="0" clip_to_extent="1">
+          <symbol frame_rate="10" type="marker" name="0" alpha="1" is_animated="0" force_rhr="0" clip_to_extent="1">
             <data_defined_properties>
               <Option type="Map">
                 <Option type="QString" name="name" value=""/>
@@ -2257,7 +2245,7 @@ def my_form_open(dialog, layer, feature):
                 <Option type="QString" name="type" value="collection"/>
               </Option>
             </data_defined_properties>
-            <layer class="SimpleMarker" pass="0" enabled="1" locked="0">
+            <layer class="SimpleMarker" pass="0" id="{327e74f0-77d9-4414-9470-e392eddc1547}" enabled="1" locked="0">
               <Option type="Map">
                 <Option type="QString" name="angle" value="0"/>
                 <Option type="QString" name="cap_style" value="square"/>
@@ -2292,6 +2280,9 @@ def my_form_open(dialog, layer, feature):
         <rotation/>
         <sizescale/>
       </renderer-v2>
+      <selection mode="Default">
+        <selectionColor invalid="1"/>
+      </selection>
       <customproperties>
         <Option type="Map">
           <Option type="int" name="embeddedWidgets/count" value="0"/>
@@ -2303,11 +2294,11 @@ def my_form_open(dialog, layer, feature):
       <featureBlendMode>0</featureBlendMode>
       <layerOpacity>1</layerOpacity>
       <SingleCategoryDiagramRenderer attributeLegend="1" diagramType="Histogram">
-        <DiagramCategory labelPlacementMethod="XHeight" sizeScale="3x:0,0,0,0,0,0" backgroundColor="#ffffff" diagramOrientation="Up" minScaleDenominator="0" spacing="5" scaleDependency="Area" minimumSize="0" spacingUnit="MM" enabled="0" opacity="1" sizeType="MM" rotationOffset="270" penWidth="0" lineSizeScale="3x:0,0,0,0,0,0" width="15" direction="0" penAlpha="255" penColor="#000000" barWidth="5" height="15" scaleBasedVisibility="0" backgroundAlpha="255" lineSizeType="MM" maxScaleDenominator="1e+08" spacingUnitScale="3x:0,0,0,0,0,0" showAxis="1">
-          <fontProperties strikethrough="0" bold="0" description="Sans,9,-1,5,50,0,0,0,0,0" underline="0" style="" italic="0"/>
-          <attribute colorOpacity="1" color="#000000" label="" field=""/>
+        <DiagramCategory spacing="5" labelPlacementMethod="XHeight" lineSizeType="MM" width="15" backgroundAlpha="255" penWidth="0" spacingUnit="MM" minimumSize="0" lineSizeScale="3x:0,0,0,0,0,0" height="15" diagramOrientation="Up" scaleDependency="Area" penColor="#000000" maxScaleDenominator="1e+08" barWidth="5" spacingUnitScale="3x:0,0,0,0,0,0" opacity="1" minScaleDenominator="0" sizeScale="3x:0,0,0,0,0,0" scaleBasedVisibility="0" direction="0" sizeType="MM" rotationOffset="270" penAlpha="255" enabled="0" backgroundColor="#ffffff" showAxis="1">
+          <fontProperties description="Sans,9,-1,5,50,0,0,0,0,0" strikethrough="0" style="" italic="0" underline="0" bold="0"/>
+          <attribute field="" colorOpacity="1" color="#000000" label=""/>
           <axisSymbol>
-            <symbol alpha="1" type="line" force_rhr="0" name="" frame_rate="10" is_animated="0" clip_to_extent="1">
+            <symbol frame_rate="10" type="line" name="" alpha="1" is_animated="0" force_rhr="0" clip_to_extent="1">
               <data_defined_properties>
                 <Option type="Map">
                   <Option type="QString" name="name" value=""/>
@@ -2315,7 +2306,7 @@ def my_form_open(dialog, layer, feature):
                   <Option type="QString" name="type" value="collection"/>
                 </Option>
               </data_defined_properties>
-              <layer class="SimpleLine" pass="0" enabled="1" locked="0">
+              <layer class="SimpleLine" pass="0" id="{5e2162cc-f461-402b-af59-7e3829544567}" enabled="1" locked="0">
                 <Option type="Map">
                   <Option type="QString" name="align_dash_pattern" value="0"/>
                   <Option type="QString" name="capstyle" value="square"/>
@@ -2357,7 +2348,7 @@ def my_form_open(dialog, layer, feature):
           </axisSymbol>
         </DiagramCategory>
       </SingleCategoryDiagramRenderer>
-      <DiagramLayerSettings linePlacementFlags="18" priority="0" placement="0" obstacle="0" showAll="1" zIndex="0" dist="0">
+      <DiagramLayerSettings dist="0" priority="0" showAll="1" obstacle="0" linePlacementFlags="18" zIndex="0" placement="0">
         <properties>
           <Option type="Map">
             <Option type="QString" name="name" value=""/>
@@ -2366,14 +2357,14 @@ def my_form_open(dialog, layer, feature):
           </Option>
         </properties>
       </DiagramLayerSettings>
-      <geometryOptions removeDuplicateNodes="0" geometryPrecision="0">
+      <geometryOptions geometryPrecision="0" removeDuplicateNodes="0">
         <activeChecks/>
         <checkConfiguration/>
       </geometryOptions>
       <legend type="default-vector" showLabelLegend="0"/>
       <referencedLayers/>
       <fieldConfiguration>
-        <field name="id" configurationFlags="None">
+        <field configurationFlags="NoFlag" name="id">
           <editWidget type="TextEdit">
             <config>
               <Option type="Map">
@@ -2383,7 +2374,7 @@ def my_form_open(dialog, layer, feature):
             </config>
           </editWidget>
         </field>
-        <field name="descr" configurationFlags="None">
+        <field configurationFlags="NoFlag" name="descr">
           <editWidget type="TextEdit">
             <config>
               <Option type="Map">
@@ -2395,26 +2386,30 @@ def my_form_open(dialog, layer, feature):
         </field>
       </fieldConfiguration>
       <aliases>
-        <alias index="0" name="Id" field="id"/>
-        <alias index="1" name="Description" field="descr"/>
+        <alias field="id" name="Id" index="0"/>
+        <alias field="descr" name="Description" index="1"/>
       </aliases>
+      <splitPolicies>
+        <policy field="id" policy="Duplicate"/>
+        <policy field="descr" policy="Duplicate"/>
+      </splitPolicies>
       <defaults>
-        <default applyOnUpdate="0" expression="" field="id"/>
-        <default applyOnUpdate="0" expression="" field="descr"/>
+        <default field="id" applyOnUpdate="0" expression=""/>
+        <default field="descr" applyOnUpdate="0" expression=""/>
       </defaults>
       <constraints>
-        <constraint constraints="3" unique_strength="1" notnull_strength="1" field="id" exp_strength="0"/>
-        <constraint constraints="0" unique_strength="0" notnull_strength="0" field="descr" exp_strength="0"/>
+        <constraint field="id" constraints="3" exp_strength="0" unique_strength="1" notnull_strength="1"/>
+        <constraint field="descr" constraints="0" exp_strength="0" unique_strength="0" notnull_strength="0"/>
       </constraints>
       <constraintExpressions>
-        <constraint exp="" field="id" desc=""/>
-        <constraint exp="" field="descr" desc=""/>
+        <constraint field="id" exp="" desc=""/>
+        <constraint field="descr" exp="" desc=""/>
       </constraintExpressions>
       <expressionfields/>
       <attributeactions>
-        <defaultAction key="Canvas" value="{00000000-0000-0000-0000-000000000000}"/>
+        <defaultAction value="{00000000-0000-0000-0000-000000000000}" key="Canvas"/>
       </attributeactions>
-      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
+      <attributetableconfig sortExpression="" actionWidgetStyle="dropDown" sortOrder="0">
         <columns>
           <column type="field" name="id" width="-1" hidden="0"/>
           <column type="field" name="descr" width="-1" hidden="0"/>
@@ -2426,10 +2421,10 @@ def my_form_open(dialog, layer, feature):
         <fieldstyles/>
       </conditionalstyles>
       <storedexpressions/>
-      <editform tolerant="1"></editform>
+      <editform tolerant="1"/>
       <editforminit/>
       <editforminitcodesource>0</editforminitcodesource>
-      <editforminitfilepath></editforminitfilepath>
+      <editforminitfilepath/>
       <editforminitcode><![CDATA[# -*- coding: utf-8 -*-
 """
 QGIS forms can have a Python function that is called when the form is
@@ -2450,22 +2445,22 @@ def my_form_open(dialog, layer, feature):
       <featformsuppress>0</featformsuppress>
       <editorlayout>tablayout</editorlayout>
       <attributeEditorForm>
-        <labelStyle overrideLabelFont="0" overrideLabelColor="0" labelColor="0,0,0,255">
-          <labelFont strikethrough="0" bold="0" description="Sans,9,-1,5,50,0,0,0,0,0" underline="0" style="" italic="0"/>
+        <labelStyle overrideLabelColor="0" labelColor="0,0,0,255" overrideLabelFont="0">
+          <labelFont description="Ubuntu,11,-1,5,50,0,0,0,0,0" strikethrough="0" style="" italic="0" underline="0" bold="0"/>
         </labelStyle>
-        <attributeEditorField showLabel="1" index="0" name="id">
-          <labelStyle overrideLabelFont="0" overrideLabelColor="0" labelColor="0,0,0,255">
-            <labelFont strikethrough="0" bold="0" description="Sans,9,-1,5,50,0,0,0,0,0" underline="0" style="" italic="0"/>
+        <attributeEditorField name="id" verticalStretch="0" horizontalStretch="0" index="0" showLabel="1">
+          <labelStyle overrideLabelColor="0" labelColor="0,0,0,255" overrideLabelFont="0">
+            <labelFont description="Sans,9,-1,5,50,0,0,0,0,0" strikethrough="0" style="" italic="0" underline="0" bold="0"/>
           </labelStyle>
         </attributeEditorField>
-        <attributeEditorField showLabel="1" index="1" name="descr">
-          <labelStyle overrideLabelFont="0" overrideLabelColor="0" labelColor="0,0,0,255">
-            <labelFont strikethrough="0" bold="0" description="Sans,9,-1,5,50,0,0,0,0,0" underline="0" style="" italic="0"/>
+        <attributeEditorField name="descr" verticalStretch="0" horizontalStretch="0" index="1" showLabel="1">
+          <labelStyle overrideLabelColor="0" labelColor="0,0,0,255" overrideLabelFont="0">
+            <labelFont description="Sans,9,-1,5,50,0,0,0,0,0" strikethrough="0" style="" italic="0" underline="0" bold="0"/>
           </labelStyle>
         </attributeEditorField>
-        <attributeEditorRelation showLabel="1" forceSuppressFormPopup="0" relationWidgetTypeId="relation_editor" name="form_editi_id_parent_form_editi_id_1" relation="form_editi_id_parent_form_editi_id_1" label="Attachments" nmRelationId="">
-          <labelStyle overrideLabelFont="0" overrideLabelColor="0" labelColor="0,0,0,255">
-            <labelFont strikethrough="0" bold="0" description="Sans,9,-1,5,50,0,0,0,0,0" underline="0" style="" italic="0"/>
+        <attributeEditorRelation name="form_editi_id_parent_form_editi_id_1" verticalStretch="0" horizontalStretch="0" nmRelationId="" relation="form_editi_id_parent_form_editi_id_1" label="Attachments" relationWidgetTypeId="relation_editor" forceSuppressFormPopup="0" showLabel="1">
+          <labelStyle overrideLabelColor="0" labelColor="0,0,0,255" overrideLabelFont="0">
+            <labelFont description="Sans,9,-1,5,50,0,0,0,0,0" strikethrough="0" style="" italic="0" underline="0" bold="0"/>
           </labelStyle>
           <editor_configuration type="Map">
             <Option type="bool" name="allow_add_child_feature_with_no_geometry" value="false"/>
@@ -2475,16 +2470,16 @@ def my_form_open(dialog, layer, feature):
         </attributeEditorRelation>
       </attributeEditorForm>
       <editable>
-        <field editable="1" name="descr"/>
-        <field editable="1" name="id"/>
+        <field name="descr" editable="1"/>
+        <field name="id" editable="1"/>
       </editable>
       <labelOnTop>
         <field name="descr" labelOnTop="0"/>
         <field name="id" labelOnTop="0"/>
       </labelOnTop>
       <reuseLastValue>
-        <field reuseLastValue="0" name="descr"/>
-        <field reuseLastValue="0" name="id"/>
+        <field name="descr" reuseLastValue="0"/>
+        <field name="id" reuseLastValue="0"/>
       </reuseLastValue>
       <dataDefinedFieldProperties/>
       <widgets>
@@ -2502,7 +2497,7 @@ def my_form_open(dialog, layer, feature):
         </widget>
       </widgets>
       <previewExpression>"descr"</previewExpression>
-      <mapTip></mapTip>
+      <mapTip enabled="1"/>
     </maplayer>
   </projectlayers>
   <layerorder>
@@ -2543,6 +2538,7 @@ def my_form_open(dialog, layer, feature):
       <CandidatesPoint type="int">16</CandidatesPoint>
       <CandidatesPolygon type="int">30</CandidatesPolygon>
       <CandidatesPolygonPerCM type="double">2.5</CandidatesPolygonPerCM>
+      <DrawLabelMetrics type="bool">false</DrawLabelMetrics>
       <DrawRectOnly type="bool">false</DrawRectOnly>
       <DrawUnplaced type="bool">false</DrawUnplaced>
       <PlacementEngineVersion type="int">0</PlacementEngineVersion>
@@ -2701,6 +2697,9 @@ def my_form_open(dialog, layer, feature):
       <role></role>
     </contact>
     <links/>
+    <dates>
+      <date type="Created" value="2021-04-12T08:10:15"/>
+    </dates>
     <author></author>
     <creation>2021-04-12T08:10:15</creation>
   </projectMetadata>
@@ -2708,9 +2707,10 @@ def my_form_open(dialog, layer, feature):
   <Layouts/>
   <mapViewDocks3D/>
   <Bookmarks/>
+  <Sensors/>
   <ProjectViewSettings UseProjectScales="0" rotation="0">
     <Scales/>
-    <DefaultViewExtent xmax="3.79428242493046008" ymin="43.6761407642562034" ymax="47.22535605219196952" xmin="-1.73576402523245799">
+    <DefaultViewExtent ymin="43.57931328234698043" ymax="47.32218353410119249" xmax="3.79428242493046008" xmin="-1.73576402523245799">
       <spatialrefsys nativeFormat="Wkt">
         <wkt>GEOGCRS["WGS 84",ENSEMBLE["World Geodetic System 1984 ensemble",MEMBER["World Geodetic System 1984 (Transit)"],MEMBER["World Geodetic System 1984 (G730)"],MEMBER["World Geodetic System 1984 (G873)"],MEMBER["World Geodetic System 1984 (G1150)"],MEMBER["World Geodetic System 1984 (G1674)"],MEMBER["World Geodetic System 1984 (G1762)"],MEMBER["World Geodetic System 1984 (G2139)"],ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]],ENSEMBLEACCURACY[2.0]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],CS[ellipsoidal,2],AXIS["geodetic latitude (Lat)",north,ORDER[1],ANGLEUNIT["degree",0.0174532925199433]],AXIS["geodetic longitude (Lon)",east,ORDER[2],ANGLEUNIT["degree",0.0174532925199433]],USAGE[SCOPE["Horizontal component of 3D system."],AREA["World."],BBOX[-90,-180,90,180]],ID["EPSG",4326]]</wkt>
         <proj4>+proj=longlat +datum=WGS84 +no_defs</proj4>
@@ -2724,10 +2724,10 @@ def my_form_open(dialog, layer, feature):
       </spatialrefsys>
     </DefaultViewExtent>
   </ProjectViewSettings>
-  <ProjectStyleSettings DefaultSymbolOpacity="1" RandomizeDefaultSymbolColor="1" projectStyleId="attachment:///Focupw_styles.db">
+  <ProjectStyleSettings RandomizeDefaultSymbolColor="1" DefaultSymbolOpacity="1" projectStyleId="attachment:///ZTJDcA_styles.db">
     <databases/>
   </ProjectStyleSettings>
-  <ProjectTimeSettings timeStep="1" frameRate="1" cumulativeTemporalRange="0" timeStepUnit="h"/>
+  <ProjectTimeSettings timeStepUnit="h" cumulativeTemporalRange="0" frameRate="1" timeStep="1"/>
   <ElevationProperties>
     <terrainProvider type="flat">
       <TerrainProvider offset="0" scale="1"/>
@@ -2775,4 +2775,7 @@ def my_form_open(dialog, layer, feature):
       </spatialrefsys>
     </CoordinateCustomCrs>
   </ProjectDisplaySettings>
+  <ProjectGpsSettings destinationLayerProvider="" autoCommitFeatures="0" destinationFollowsActiveLayer="1" autoAddTrackVertices="0" destinationLayer="form_edition_upload_webdav_child_attachments_0e53afd9_2e39_4a05_9308_a5c7f6cfffca" destinationLayerSource="service='lizmapdb' key='id' checkPrimaryKeyUnicity='1' table=&quot;tests_projects&quot;.&quot;form_edition_upload_webdav_child_attachments&quot;" destinationLayerName="form_edition_upload_webdav_child_attachments">
+    <timeStampFields/>
+  </ProjectGpsSettings>
 </qgis>

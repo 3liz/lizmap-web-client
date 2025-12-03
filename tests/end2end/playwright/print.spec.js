@@ -11,7 +11,6 @@ import {
     getAuthStorageStatePath,
     expectToHaveLengthCompare,
     playwrightTestFile,
-    qgisVersionFromProjectApi,
 } from './globals';
 
 // To update OSM and GeoPF tiles in the mock directory
@@ -60,7 +59,7 @@ test.describe('Print', () => {
         expect(await page.locator('.btn-print-dpis').inputValue()).toBe('200');
     });
 
-    test('Print requests', async ({ request, page }) => {
+    test('Print requests', async ({ page }) => {
         // Required GetPrint parameters
         const expectedParameters = {
             'SERVICE': 'WMS',
@@ -92,13 +91,10 @@ test.describe('Print', () => {
             'map0:STYLES': 'default,défaut,défaut',
             'map0:OPACITIES': '204,255,255',
             'simple_label': 'simple label',
-            // Disabled because of the migration when project is saved with QGIS >= 3.32
-            // 'multiline_label': 'Multiline label',
+            // Enable after manually update project with QGIS 3.34 to keep label with HTML rendering
+            'multiline_label': 'Multiline label',
         })
         let expectedLength = 15;
-        if (await qgisVersionFromProjectApi(request, 'print') > 33200) {
-            expectedLength = 14;
-        }
         let name = "Print requests";
         let getPrintParams = await expectParametersToContain(
             name, getPrintRequest.postData() ?? '', expectedParameters1);
@@ -230,14 +226,11 @@ test.describe('Print', () => {
             </UserStyle>
         </StyledLayerDescriptor>`,
             'simple_label': 'simple label',
-            // Disabled because of the migration when project is saved with QGIS >= 3.32
-            // 'multiline_label': 'Multiline label',
+            // Enable after manually update project with QGIS 3.34 to keep label with HTML rendering
+            'multiline_label': 'Multiline label',
         })
         /* eslint-enable no-useless-escape, @stylistic/js/max-len */
         expectedLength = 17
-        if (await qgisVersionFromProjectApi(request, 'print') > 33200) {
-            expectedLength = 16;
-        }
         name = 'Print requests 4';
         getPrintParams = await expectParametersToContain(
             name,
@@ -251,7 +244,7 @@ test.describe('Print', () => {
         );
     });
 
-    test('Print requests with selection', async ({ request, page }) => {
+    test('Print requests with selection', async ({ page }) => {
         // Select a feature
         await page.locator('#button-attributeLayers').click();
         await page.getByRole('button', { name: 'Detail' }).click();
@@ -285,19 +278,18 @@ test.describe('Print', () => {
             'map0:STYLES': 'default,défaut,défaut',
             'map0:OPACITIES': '204,255,255',
             'simple_label': 'simple label',
+            // Enable after manually update project with QGIS 3.34 to keep label with HTML rendering
+            'multiline_label': 'Multiline label',
             'SELECTIONTOKEN': /[a-z\d]+/,
         }
         const name = "Print requests with selection";
         const getPrintParams = await expectParametersToContain(name, getPrintRequest.postData() ?? '', expectedParameters);
         let expectedLength = 16;
-        if (await qgisVersionFromProjectApi(request, 'print') > 33200) {
-            expectedLength = 15;
-        }
         await expectToHaveLengthCompare(name, Array.from(getPrintParams.keys()), expectedLength, Object.keys(expectedParameters));
 
     });
 
-    test('Print requests with filter', async ({ request, page }) => {
+    test('Print requests with filter', async ({ page }) => {
         // Select a feature
         await page.locator('#button-attributeLayers').click();
         await page.getByRole('button', { name: 'Detail' }).click();
@@ -336,12 +328,11 @@ test.describe('Print', () => {
             'map0:STYLES': 'default,défaut,défaut',
             'map0:OPACITIES': '204,255,255',
             'simple_label': 'simple label',
+            // Enable after manually update project with QGIS 3.34 to keep label with HTML rendering
+            'multiline_label': 'Multiline label',
             'FILTERTOKEN': /[a-z\d]+/,
         }
         let expectedLength = 16;
-        if (await qgisVersionFromProjectApi(request, 'print') > 33200) {
-            expectedLength = 15;
-        }
         const name = 'Print requests with filter';
         const getPrintParams = await expectParametersToContain(name, getPrintRequest.postData() ?? '', expectedParameters);
         await expectToHaveLengthCompare(name, Array.from(getPrintParams.keys()), expectedLength, Object.keys(expectedParameters));
@@ -694,7 +685,7 @@ test.describe('Print 3857', () => {
         expect(await page.locator('.btn-print-dpis').inputValue()).toBe('200');
     });
 
-    test('Print requests', async ({ request, page }) => {
+    test('Print requests', async ({ page }) => {
         // Required GetPrint parameters
         const expectedParameters = {
             'SERVICE': 'WMS',
@@ -722,8 +713,8 @@ test.describe('Print 3857', () => {
             'map0:STYLES': 'default,défaut,défaut',
             'map0:OPACITIES': '204,255,255',
             'simple_label': 'simple label',
-            // Disabled because of the migration when project is saved with QGIS >= 3.32
-            // 'multiline_label': 'Multiline label',
+            // Enable after manually update project with QGIS 3.34 to keep label with HTML rendering
+            'multiline_label': 'Multiline label',
         })
         let name = "Print requests 1";
         let getPrintParams = await expectParametersToContain(
@@ -732,9 +723,6 @@ test.describe('Print 3857', () => {
             expectedParameters1
         );
         let expectedLength = 15;
-        if (await qgisVersionFromProjectApi(request, 'print') > 33200) {
-            expectedLength = 14;
-        }
         await expectToHaveLengthCompare(
             name,
             Array.from(getPrintParams.keys()),
@@ -776,7 +764,7 @@ test.describe('Print 3857', () => {
         );
     });
 
-    test('Print requests with redlining', async ({ request, page }) => {
+    test('Print requests with redlining', async ({ page }) => {
         const printPage = new PrintPage(page, 'draw');
         const drawProject = new DrawPage(page, 'draw');
         // Close left dock
@@ -851,8 +839,8 @@ test.describe('Print 3857', () => {
             </UserStyle>
         </StyledLayerDescriptor>`,
             'simple_label': 'simple label',
-            // Disabled because of the migration when project is saved with QGIS >= 3.32
-            // 'multiline_label': 'Multiline label',
+            // Enable after manually update project with QGIS 3.34 to keep label with HTML rendering
+            'multiline_label': 'Multiline label',
         })
         /* eslint-enable no-useless-escape, @stylistic/js/max-len */
         let name = 'Print requests redlining 1';
@@ -862,9 +850,6 @@ test.describe('Print 3857', () => {
             , expectedParameters1
         );
         let expectedLength = 17;
-        if (await qgisVersionFromProjectApi(request, 'print') > 33200) {
-            expectedLength = 16;
-        }
         await expectToHaveLengthCompare(
             name,
             Array.from(getPrintParams.keys()),
@@ -931,9 +916,6 @@ test.describe('Print 3857', () => {
             , expectedParameters2
         );
         expectedLength = 24;
-        if (await qgisVersionFromProjectApi(request, 'print') > 33200) {
-            expectedLength = 23;
-        }
         await expectToHaveLengthCompare(
             name,
             Array.from(getPrintParams.keys()),
@@ -995,9 +977,6 @@ test.describe('Print 3857', () => {
             , expectedParameters3
         );
         expectedLength = 24;
-        if (await qgisVersionFromProjectApi(request, 'print') > 33200) {
-            expectedLength = 23;
-        }
         await expectToHaveLengthCompare(
             name,
             Array.from(getPrintParams.keys()),
