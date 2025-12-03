@@ -196,14 +196,7 @@ test.describe('Filter layer data by user - admin - @readonly', () => {
         const project = new ProjectPage(page, 'filter_layer_by_user');
         // Catch one GetMap
         let getMapRequestPromise = project.waitForGetMapRequest();
-        if (process.env.LZMQGSRVVERSION == '3.44') {
-            // Because the projects have been upgraded to 3.44 from 3.34, this message has been displayed
-            // The project has been recently updated in QGIS Desktop, but with an outdated version of the
-            // Lizmap plugin. You must upgrade your plugin in QGIS Desktop.
-            await project.open(true);
-        } else {
-            await project.open();
-        }
+        await project.open();
         let getMapRequest = await getMapRequestPromise;
         let getMapResponse = await getMapRequest.response();
         responseExpect(getMapResponse).toBeImagePng();
