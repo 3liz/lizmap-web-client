@@ -18,19 +18,13 @@ use Lizmap\Project;
 /**
  * QGIS Raster layer pipe.
  *
- * @property RasterLayerRasterRenderer $renderer
- * @property RasterLayerHueSaturation  $hueSaturation
+ * @property null|RasterLayerRasterRenderer $renderer
+ * @property null|RasterLayerHueSaturation  $hueSaturation
  */
 class RasterLayerPipe extends Project\Qgis\BaseQgisXmlObject
 {
     /** @var array<string> The instance properties */
     protected $properties = array(
-        'renderer',
-        'hueSaturation',
-    );
-
-    /** @var array<string> The not null properties */
-    protected $mandatoryProperties = array(
         'renderer',
         'hueSaturation',
     );
