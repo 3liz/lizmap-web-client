@@ -1182,7 +1182,7 @@ test.describe('Form edition without creation', {tag: ['@readonly'],},() => {
 
         // .. with edition message ..
         await expect(page.locator('#lizmap-edition-message')).toBeVisible();
-        await page.locator('#lizmap-edition-message .btn-close').click();
+        await page.locator('#lizmap-edition-message .close').click();
         await expect(page.locator('#lizmap-edition-message')).not.toBeVisible();
 
         // ... even after toggling dock visibility
