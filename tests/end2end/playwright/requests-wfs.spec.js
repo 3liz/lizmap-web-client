@@ -2633,6 +2633,7 @@ test.describe('WFS Requests filter_layer_data_by_polygon_for_groups @requests @r
 });
 
 test.describe('WFS Requests attribute_table @requests @readonly ', () => {
+    test.skip(process.env.LZMQGSRVVERSION == '3.34', 'WFS SORTBY parameter is supported since QGIS 3.40.12');
 
     test('WFS GetFeature quartiers', async({ request }) => {
         let params = new URLSearchParams({
