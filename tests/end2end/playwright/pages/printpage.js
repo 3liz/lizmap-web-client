@@ -12,6 +12,11 @@ import { ProjectPage } from './project';
  * @typedef {import('@playwright/test').Locator} Locator
  */
 
+/**
+ * Playwright Request
+ * @typedef {import('@playwright/test').Request} Request
+ */
+
 export class PrintPage extends ProjectPage {
     // Metadata
     /**
@@ -30,7 +35,7 @@ export class PrintPage extends ProjectPage {
      * The print scale combobox
      * @type {Locator}
      */
-    printScale;
+    printScaleCombobox;
 
     /**
      * The launch print button on print panel
@@ -79,5 +84,17 @@ export class PrintPage extends ProjectPage {
         await this.launchPrintButton.click();
         // check message
         await expect(this.page.locator('div.alert')).toHaveCount(1);
+    }
+
+    /**
+     * Waits for a GetFilterToken request
+     * @returns {Promise<Request>} The GetFilterToken request
+     */
+    async waitForGetPrintRequest() {
+        return this.page.waitForRequest(
+            request => request.method() === 'POST' &&
+            request.postData()?.includes('WMS') === true &&
+            request.postData()?.includes('GetPrint') === true
+        );
     }
 }
