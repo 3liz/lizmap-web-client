@@ -131,6 +131,11 @@ class ProjectVisibilityPreset extends BaseQgisObject
             } elseif ($tagName == 'expanded-group-node') {
                 $data['expandedGroupNodes'][] = $oXmlReader->getAttribute('id');
             } elseif ($tagName == 'checked-legend-nodes') {
+                // if the element is empty, skip it
+                if ($oXmlReader->isEmptyElement) {
+                    continue;
+                }
+
                 // Read checked legend nodes for a specific layer
                 $layerId = $oXmlReader->getAttribute('id');
                 $legendNodeDepth = $oXmlReader->depth;
