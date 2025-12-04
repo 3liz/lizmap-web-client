@@ -704,11 +704,11 @@ test.describe('Attribute table @readonly', () => {
         // Check table lines
         await expect(tableHtml.locator('tbody tr')).toHaveCount(7);
         // Check filter by extent button
-        await expect(page.locator('.btn-filterbyextent-table')).not.toHaveClass(/active/);
+        await expect(page.locator('.btn-filterbyextent-attributeTable')).not.toHaveClass(/active/);
 
         // Activate filter by extent
         let datatablesRequestPromise = project.waitForDatatablesRequest();
-        await page.locator('.btn-filterbyextent-table').click();
+        await page.locator('.btn-filterbyextent-attributeTable').click();
         datatablesRequest = await datatablesRequestPromise;
         datatablesResponse = await datatablesRequest.response();
         responseExpect(datatablesResponse).toBeJson();
@@ -716,7 +716,7 @@ test.describe('Attribute table @readonly', () => {
         // Check table lines
         await expect(tableHtml.locator('tbody tr')).toHaveCount(7);
         // Check filter by extent button
-        await expect(page.locator('.btn-filterbyextent-table')).toHaveClass(/active/);
+        await expect(page.locator('.btn-filterbyextent-attributeTable')).toHaveClass(/active/);
 
         // Use the first line
         let firstTr = tableHtml.locator('tbody tr').first();
@@ -737,7 +737,7 @@ test.describe('Attribute table @readonly', () => {
 
         // Unactivate filter by extent and assert all features are in the table
         datatablesRequestPromise = project.waitForDatatablesRequest();
-        await page.locator('.btn-filterbyextent-table').click();
+        await page.locator('.btn-filterbyextent-attributeTable').click();
         datatablesRequest = await datatablesRequestPromise;
         datatablesResponse = await datatablesRequest.response();
         responseExpect(datatablesResponse).toBeJson();
@@ -745,7 +745,7 @@ test.describe('Attribute table @readonly', () => {
         // Check table lines
         await expect(tableHtml.locator('tbody tr')).toHaveCount(7);
         // Check filter by extent button
-        await expect(page.locator('.btn-filterbyextent-table')).not.toHaveClass(/active/);
+        await expect(page.locator('.btn-filterbyextent-attributeTable')).not.toHaveClass(/active/);
     });
 });
 
@@ -876,16 +876,34 @@ test.describe('Layer export permissions ACL', () => {
         responseExpect(datatablesResponse).toBeJson();
 
         // launch export
-        const getFeatureRequest = await project.launchExport('single_wms_points','GeoJSON');
+        let getFeatureRequest = await project.launchExport('single_wms_points','GeoJSON');
 
-        const expectedParameters = {
+        /** @type {{[key: string]: string|RegExp}} */
+        let expectedParameters = {
             'SERVICE': 'WFS',
             'REQUEST': 'GetFeature',
             'VERSION': '1.0.0',
             'OUTPUTFORMAT': 'GeoJSON',
-            'BBOX': /3.7759\d+,43.55267\d+,3.98277\d+,43.6516\d+/,
+            'TYPENAME': 'single_wms_points',
+            'dl': '1',
         }
 
         requestExpect(getFeatureRequest).toContainParametersInPostData(expectedParameters);
+        responseExpect(await getFeatureRequest.response()).toBeGeoJson();
+
+        // Activate filter by extent
+        let datatablesRequestPromise = project.waitForDatatablesRequest();
+        await page.locator('.btn-filterbyextent-attributeTable').click();
+        datatablesRequest = await datatablesRequestPromise;
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+
+        // launch export
+        getFeatureRequest = await project.launchExport('single_wms_points','GeoJSON');
+
+        expectedParameters['BBOX'] = /3.7759\d+,43.55267\d+,3.98277\d+,43.6516\d+/;
+
+        requestExpect(getFeatureRequest).toContainParametersInPostData(expectedParameters);
+        responseExpect(await getFeatureRequest.response()).toBeGeoJson();
     })
 });

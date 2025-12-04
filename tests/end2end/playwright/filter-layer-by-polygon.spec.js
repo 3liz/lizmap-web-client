@@ -465,7 +465,9 @@ test.describe('Filter layer data polygon - not connected - @readonly', () => {
         responseExpect(datatablesResponse).toBeJson();
         let tableHtml = project.attributeTableHtml(tableName);
         // Check table lines
-        await expect(tableHtml.locator('tbody tr')).toHaveCount(0); // 25 for admins and 5 for user in froup a
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(1); // 25 for admins and 5 for user in froup a
+        await expect(tableHtml.locator('tbody tr td')).toHaveCount(1);
+        await expect(tableHtml.locator('tbody tr td')).toHaveText('No data available in table');
         await project.closeAttributeTable();
 
         // townhalls_EPSG2154
@@ -475,7 +477,9 @@ test.describe('Filter layer data polygon - not connected - @readonly', () => {
         responseExpect(datatablesResponse).toBeJson();
         tableHtml = project.attributeTableHtml(tableName);
         // Check table lines
-        await expect(tableHtml.locator('tbody tr')).toHaveCount(0); // 17 for admins and 4 for user in froup a
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(1); // 17 for admins and 4 for user in froup a
+        await expect(tableHtml.locator('tbody tr td')).toHaveCount(1);
+        await expect(tableHtml.locator('tbody tr td')).toHaveText('No data available in table');
         await project.closeAttributeTable();
 
         // shop_bakery_pg
@@ -485,7 +489,9 @@ test.describe('Filter layer data polygon - not connected - @readonly', () => {
         responseExpect(datatablesResponse).toBeJson();
         tableHtml = project.attributeTableHtml(tableName);
         // Check table lines
-        await expect(tableHtml.locator('tbody tr')).toHaveCount(0); // 17 for admins and 4 for user in froup a
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(1); // 17 for admins and 4 for user in froup a
+        await expect(tableHtml.locator('tbody tr td')).toHaveCount(1);
+        await expect(tableHtml.locator('tbody tr td')).toHaveText('No data available in table');
         await project.closeAttributeTable();
 
         // townhalls_pg
