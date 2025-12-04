@@ -89,39 +89,53 @@ export default class Edition {
     /**
      * Fetch editable features for given array of layer IDs
      * @param {Array} layerIds - Array of layer IDs
+     * @param {Array} layerFeatures - filter on features
      */
-    fetchEditableFeatures(layerIds){
+    fetchEditableFeatures(layerIds, layerFeatures = []){
         if (Array.isArray(layerIds)){
             const fetchers = [];
+            let layerIndex = 0;
+            const layersNames = [];
             for (const layerId of layerIds) {
+                // take layer name from requests, not from response, since response could be an empty array
+                layersNames.push(this._lizmap3.getLayerConfigById(layerId)[0]);
                 fetchers.push(fetch(globalThis['lizUrls'].edition.replace('getFeature', 'editableFeatures'),{
                     "method": "POST",
                     "body": new URLSearchParams({
                         repository: globalThis['lizUrls'].params.repository,
                         project: globalThis['lizUrls'].params.project,
-                        layerId: layerId
+                        layerId: layerId,
+                        features: layerFeatures[layerIndex] ?? ''
                     })
                 }).then(response => {
                     return response.json();
                 }));
 
-                Promise.all(fetchers).then(responses => {
-                    const editableFeatures = [];
-                    for (const response of responses) {
-                        if (response?.['success'] && response?.['status'] === 'restricted') {
-                            for (const feature of response.features) {
-                                editableFeatures.push(feature);
-                            }
-
-                            // Dispatch event only if there is a restriction
-                            mainEventDispatcher.dispatch({
-                                type: 'edition.editableFeatures',
-                                properties: editableFeatures
-                            });
-                        }
-                    }
-                });
+                layerIndex++;
             }
+
+            layerIndex = 0;
+            Promise.all(fetchers).then(responses => {
+                const editableFeatures = [];
+                for (const response of responses) {
+                    if (response?.['success'] && response?.['status'] === 'restricted') {
+                        for (const feature of response.features) {
+                            editableFeatures.push(feature);
+                        }
+
+                        // Dispatch event only if there is a restriction
+                        mainEventDispatcher.dispatch({
+                            type: 'edition.editableFeatures',
+                            properties: {
+                                editableFeatures: editableFeatures,
+                                layerName:layersNames[layerIndex]
+                            }
+                        });
+                    }
+
+                    layerIndex++;
+                }
+            });
         }
     }
 }
