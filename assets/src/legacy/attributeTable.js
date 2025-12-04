@@ -1482,6 +1482,15 @@ var lizAttributeTable = function() {
                 var dataLength = atFeatures.length;
 
                 if( cFeatures && cFeatures.length > 0 ){
+                    let keys = [], exp_f;
+                    let pkey = config.attributeLayers[aName]['primaryKey'] || null;
+                    if (pkey) {
+                        keys = cFeatures.map((f) =>
+                            `'${f.id.split(".")[1]}'`
+                        )
+                        exp_f = `"${pkey}" IN ( ${keys.join(' , ')} )`;
+                    }
+
                     // Create columns for datatable
                     var cdc = createDatatableColumns(aName, atFeatures, hiddenFields, cAliases, cTypes, allColumnsKeyValues);
                     var columns = cdc.columns;
@@ -1628,7 +1637,7 @@ var lizAttributeTable = function() {
 
                         // Check editable features
                         if (canEdit || canDelete) {
-                            lizMap.mainLizmap.edition.fetchEditableFeatures([lConfig.id]);
+                            lizMap.mainLizmap.edition.fetchEditableFeatures([lConfig.id],[exp_f]);
                         }
 
                     });
