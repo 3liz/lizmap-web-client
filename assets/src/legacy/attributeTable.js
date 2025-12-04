@@ -1413,10 +1413,14 @@ var lizAttributeTable = function() {
                                 // Handle features filtered by extent
                                 if (document.querySelector('.btn-filterbyextent-attributeTable.active[value="' + cleanName + '"]')) {
                                     const olView = lizMap.mainLizmap.map.getView();
-                                    const bbox = olView.calculateExtent().join(',');
-                                    d.bbox = bbox;
-                                    const projCode = olView.getProjection().getCode();
-                                    d.srsname = projCode;
+                                    // Force to get GeoJSON as 4326
+                                    d.srsname = 'EPSG:4326';
+                                    // As legacy code do not used import method
+                                    d.bbox = lizMap.ol.proj.transformExtent(
+                                        olView.calculateExtent(),
+                                        olView.getProjection().getCode(),
+                                        'EPSG:4326',
+                                    ).join(',');
                                 }
                             },
                             dataSrc: (json) => {
@@ -1438,7 +1442,23 @@ var lizAttributeTable = function() {
                                             editionRestricted = 'edition-restricted="false"';
                                         }
                                     }
-                                    const ftb = `<lizmap-feature-toolbar ${editionRestricted} value="${lConfig.id + '.' + featID}" ${isChild ? `parent-layer-id="${parentLayerID}"` : ''} ${pivotReference ? `pivot-layer="${pivotReference}"` : ''}></lizmap-feature-toolbar>`;
+                                    let bboxinfo = '';
+                                    if (feature.bbox) {
+                                        bboxinfo = `crs="EPSG:4326" `+
+                                            `bbox-minx="${feature.bbox[0]}" bbox-miny="${feature.bbox[1]}" `+
+                                            `bbox-maxx="${feature.bbox[2]}" bbox-maxy="${feature.bbox[3]}" `;
+                                    } else if (feature.geometry && feature.geometry.type == 'Point') {
+                                        const coords = feature.geometry.coordinates;
+                                        bboxinfo = `crs="EPSG:4326" `+
+                                            `bbox-minx="${coords[0]}" bbox-miny="${coords[1]}" `+
+                                            `bbox-maxx="${coords[0]}" bbox-maxy="${coords[1]}" `;
+                                    }
+                                    const ftb = `<lizmap-feature-toolbar value="${lConfig.id + '.' + featID}" `+
+                                        bboxinfo +
+                                        `${editionRestricted} `+
+                                        `${isChild ? `parent-layer-id="${parentLayerID}"` : ''} `+
+                                        `${pivotReference ? `pivot-layer="${pivotReference}"` : ''}>`+
+                                        `</lizmap-feature-toolbar>`;
 
                                     formatedData.push(Object.assign({
                                         'DT_RowId': featID,
