@@ -263,7 +263,7 @@ Data is licensed under ODbl, OpenStreetMap contributors',
         $this->assertStringStartsWith('{"version":', $json);
     }
 
-    public function testProjetWithMissingProjetInfo(): void
+    public function testProjectWithMissingProjetInfo(): void
     {
         $xml_path_invalid = __DIR__.'/../../Project/Ressources/project_empty_qgis_tag.qgs';
 
@@ -277,7 +277,7 @@ Data is licensed under ODbl, OpenStreetMap contributors',
             'saveUser',
             'saveUserFull',
         );
-        foreach ($emptyProps as $prop ) {
+        foreach ($emptyProps as $prop) {
             $this->assertEmpty($project->{$prop});
         }
     }
