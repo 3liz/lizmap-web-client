@@ -13,9 +13,7 @@ test.describe('Editable features',
             await project.open();
 
             const layerName = 'filter_layer_by_user';
-            let getFeatureRequestPromise = project.waitForGetFeatureRequest();
-            await project.openAttributeTable(layerName);
-            let getFeatureRequest = await getFeatureRequestPromise;
+            let getFeatureRequest = await project.openAttributeTable(layerName);
             let getFeatureResponse = await getFeatureRequest.response();
             responseExpect(getFeatureResponse).toBeGeoJson();
             const tableHtml = project.attributeTableHtml(layerName);
@@ -37,8 +35,10 @@ test.describe('Editable features',
             await project.open();
 
             const layerName = 'filter_layer_by_user';
+            let getFeatureRequest = await project.openAttributeTable(layerName);
             const getEditableFeaturesRequestPromise = project.waitForEditableFeaturesRequest();
-            await project.openAttributeTable(layerName);
+            let getFeatureResponse = await getFeatureRequest.response();
+            responseExpect(getFeatureResponse).toBeGeoJson();
 
             const getEditableFeaturesRequest = await getEditableFeaturesRequestPromise;
             const expectedParameters = {

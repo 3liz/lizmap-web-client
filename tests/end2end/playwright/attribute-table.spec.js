@@ -50,9 +50,7 @@ test.describe('Attribute table @readonly', () => {
         await project.open();
 
         let layerName = 'quartiers_shp';
-        let getFeatureRequestPromise = project.waitForGetFeatureRequest();
-        await project.openAttributeTable(layerName);
-        let getFeatureRequest = await getFeatureRequestPromise;
+        let getFeatureRequest = await project.openAttributeTable(layerName);
         let getFeatureResponse = await getFeatureRequest.response();
         responseExpect(getFeatureResponse).toBeGeoJson();
         let tableWrapper = project.attributeTableWrapper(layerName);
@@ -73,9 +71,7 @@ test.describe('Attribute table @readonly', () => {
         await project.closeAttributeTable();
 
         layerName = 'Les_quartiers_a_Montpellier';
-        getFeatureRequestPromise = project.waitForGetFeatureRequest();
-        await project.openAttributeTable(layerName);
-        getFeatureRequest = await getFeatureRequestPromise;
+        getFeatureRequest = await project.openAttributeTable(layerName);
         getFeatureResponse = await getFeatureRequest.response();
         responseExpect(getFeatureResponse).toBeGeoJson();
         tableWrapper = project.attributeTableWrapper(layerName);
@@ -148,9 +144,7 @@ test.describe('Attribute table @readonly', () => {
         expect(defaultByteLength).toBeGreaterThan(8000); // 8667
         expect(defaultByteLength).toBeLessThan(10000); // 8667
 
-        let getFeatureRequestPromise = project.waitForGetFeatureRequest();
-        await project.openAttributeTable(tableName);
-        let getFeatureRequest = await getFeatureRequestPromise;
+        let getFeatureRequest = await project.openAttributeTable(tableName);
         let getFeatureResponse = await getFeatureRequest.response();
         responseExpect(getFeatureResponse).toBeGeoJson();
         let tableHtml = project.attributeTableHtml(tableName);
@@ -439,9 +433,7 @@ test.describe('Attribute table @readonly', () => {
         const typeName = 'quartiers_shp';
         const layerName = 'quartiers_shp';
 
-        let getFeatureRequestPromise = project.waitForGetFeatureRequest();
-        await project.openAttributeTable(tableName);
-        let getFeatureRequest = await getFeatureRequestPromise;
+        let getFeatureRequest = await project.openAttributeTable(tableName);
         let getFeatureResponse = await getFeatureRequest.response();
         responseExpect(getFeatureResponse).toBeGeoJson();
         let tableHtml = project.attributeTableHtml(tableName);
@@ -633,9 +625,7 @@ test.describe('Attribute table @readonly', () => {
         await project.open();
         const layerName = 'Les_quartiers_a_Montpellier';
 
-        let getFeatureRequestPromise = project.waitForGetFeatureRequest();
-        await project.openAttributeTable(layerName);
-        let getFeatureRequest = await getFeatureRequestPromise;
+        let getFeatureRequest = await project.openAttributeTable(layerName);
         let getFeatureResponse = await getFeatureRequest.response();
         responseExpect(getFeatureResponse).toBeGeoJson();
         await expect(project.attributeTableWrapper(layerName).locator('div.dataTables_info'))
@@ -660,9 +650,7 @@ test.describe('Attribute table @readonly', () => {
         await project.closeLeftDock();
         const layerName = 'random_points';
 
-        let getFeatureRequestPromise = project.waitForGetFeatureRequest();
-        await project.openAttributeTable(layerName);
-        let getFeatureRequest = await getFeatureRequestPromise;
+        let getFeatureRequest = await project.openAttributeTable(layerName);
         let getFeatureResponse = await getFeatureRequest.response();
         responseExpect(getFeatureResponse).toBeGeoJson();
         await expect(project.attributeTableWrapper(layerName).locator('div.dataTables_info'))
@@ -716,9 +704,7 @@ test.describe('Attribute table data restricted to map extent @readonly', () => {
         requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
         await getMapRequest.response();
 
-        let getFeatureRequestPromise = project.waitForGetFeatureRequest();
-        await project.openAttributeTable(tableName);
-        let getFeatureRequest = await getFeatureRequestPromise;
+        let getFeatureRequest = await project.openAttributeTable(tableName);
         let getFeatureResponse = await getFeatureRequest.response();
         responseExpect(getFeatureResponse).toBeGeoJson();
         let tableHtml = project.attributeTableHtml(tableName);
@@ -850,9 +836,7 @@ test.describe('Layer export permissions ACL', () => {
 
             // check layer export capabilities for logged in user
             for(const layerObj of expected){
-                let getFeatureRequestPromise = project.waitForGetFeatureRequest();
-                await project.openAttributeTable(layerObj.layer);
-                let getFeatureRequest = await getFeatureRequestPromise;
+                let getFeatureRequest = await project.openAttributeTable(layerObj.layer);
                 let getFeatureResponse = await getFeatureRequest.response();
                 responseExpect(getFeatureResponse).toBeGeoJson();
                 await expect(userPage.locator('.attribute-layer-action-bar .export-formats')).toHaveCount(layerObj.onPage);
@@ -881,9 +865,7 @@ test.describe('Layer export permissions ACL', () => {
         await project.open();
 
         let tableName = 'single_wms_points';
-        let getFeatureRequestPromise = project.waitForGetFeatureRequest();
-        await project.openAttributeTable(tableName);
-        let getFeatureRequest = await getFeatureRequestPromise;
+        let getFeatureRequest = await project.openAttributeTable(tableName);
         let getFeatureResponse = await getFeatureRequest.response();
         responseExpect(getFeatureResponse).toBeGeoJson();
 
