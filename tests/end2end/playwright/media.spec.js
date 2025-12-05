@@ -1,6 +1,7 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import {ProjectPage} from "./pages/project";
+import { expect as responseExpect } from './fixtures/expect-response.js'
+import { ProjectPage } from "./pages/project";
 
 test.describe('Media', () => {
     test ('Tests media headers @readonly', async ({ request }) => {
@@ -524,10 +525,9 @@ test.describe('Media', () => {
         // Open the attribute table
         const project = new ProjectPage(page, 'form_edition_all_field_type');
         await project.open();
-        let getFeatureRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeature') === true);
-
-        await project.openAttributeTable('form_edition_upload');
-        await getFeatureRequestPromise;
+        let getFeatureRequest = await project.openAttributeTable('form_edition_upload');
+        let getFeatureResponse = await getFeatureRequest.response();
+        responseExpect(getFeatureResponse).toBeGeoJson();
 
         await page.getByRole('row', { name: '2 text_file_mandatory' }).getByRole('button').nth(2);
 
