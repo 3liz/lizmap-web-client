@@ -146,9 +146,7 @@ test.describe('Filter layer data polygon - admin - @readonly', () => {
         // Attribute table
         // shop_bakery
         let tableName = 'shop_bakery';
-        let getFeatureRequestPromise = project.waitForGetFeatureRequest();
-        await project.openAttributeTable(tableName);
-        let getFeatureRequest = await getFeatureRequestPromise;
+        let getFeatureRequest = await project.openAttributeTable(tableName);
         let getFeatureResponse = await getFeatureRequest.response();
         responseExpect(getFeatureResponse).toBeGeoJson();
         let tableHtml = project.attributeTableHtml(tableName);
@@ -158,9 +156,7 @@ test.describe('Filter layer data polygon - admin - @readonly', () => {
 
         // townhalls_EPSG2154
         tableName = 'townhalls_EPSG2154';
-        getFeatureRequestPromise = project.waitForGetFeatureRequest();
-        await project.openAttributeTable(tableName);
-        getFeatureRequest = await getFeatureRequestPromise;
+        getFeatureRequest = await project.openAttributeTable(tableName);
         getFeatureResponse = await getFeatureRequest.response();
         responseExpect(getFeatureResponse).toBeGeoJson();
         tableHtml = project.attributeTableHtml(tableName);
@@ -170,9 +166,7 @@ test.describe('Filter layer data polygon - admin - @readonly', () => {
 
         // shop_bakery_pg
         tableName = 'shop_bakery_pg';
-        getFeatureRequestPromise = project.waitForGetFeatureRequest();
-        await project.openAttributeTable(tableName);
-        getFeatureRequest = await getFeatureRequestPromise;
+        getFeatureRequest = await project.openAttributeTable(tableName);
         getFeatureResponse = await getFeatureRequest.response();
         responseExpect(getFeatureResponse).toBeGeoJson();
         tableHtml = project.attributeTableHtml(tableName);
@@ -182,9 +176,7 @@ test.describe('Filter layer data polygon - admin - @readonly', () => {
 
         // townhalls_pg
         tableName = 'townhalls_pg';
-        getFeatureRequestPromise = project.waitForGetFeatureRequest();
-        await project.openAttributeTable(tableName);
-        getFeatureRequest = await getFeatureRequestPromise;
+        getFeatureRequest = await project.openAttributeTable(tableName);
         getFeatureResponse = await getFeatureRequest.response();
         responseExpect(getFeatureResponse).toBeGeoJson()
         tableHtml = project.attributeTableHtml(tableName);
@@ -311,9 +303,7 @@ test.describe('Filter layer data polygon - user in group a - @readonly', () => {
         // Attribute table
         // shop_bakery
         let tableName = 'shop_bakery';
-        let getFeatureRequestPromise = project.waitForGetFeatureRequest();
-        await project.openAttributeTable(tableName);
-        let getFeatureRequest = await getFeatureRequestPromise;
+        let getFeatureRequest = await project.openAttributeTable(tableName);
         let getFeatureResponse = await getFeatureRequest.response();
         responseExpect(getFeatureResponse).toBeGeoJson();
         let tableHtml = project.attributeTableHtml(tableName);
@@ -323,9 +313,7 @@ test.describe('Filter layer data polygon - user in group a - @readonly', () => {
 
         // townhalls_EPSG2154
         tableName = 'townhalls_EPSG2154';
-        getFeatureRequestPromise = project.waitForGetFeatureRequest();
-        await project.openAttributeTable(tableName);
-        getFeatureRequest = await getFeatureRequestPromise;
+        getFeatureRequest = await project.openAttributeTable(tableName);
         getFeatureResponse = await getFeatureRequest.response();
         responseExpect(getFeatureResponse).toBeGeoJson();
         tableHtml = project.attributeTableHtml(tableName);
@@ -335,9 +323,7 @@ test.describe('Filter layer data polygon - user in group a - @readonly', () => {
 
         // shop_bakery_pg
         tableName = 'shop_bakery_pg';
-        getFeatureRequestPromise = project.waitForGetFeatureRequest();
-        await project.openAttributeTable(tableName);
-        getFeatureRequest = await getFeatureRequestPromise;
+        getFeatureRequest = await project.openAttributeTable(tableName);
         getFeatureResponse = await getFeatureRequest.response();
         responseExpect(getFeatureResponse).toBeGeoJson();
         tableHtml = project.attributeTableHtml(tableName);
@@ -347,9 +333,7 @@ test.describe('Filter layer data polygon - user in group a - @readonly', () => {
 
         // townhalls_pg
         tableName = 'townhalls_pg';
-        getFeatureRequestPromise = project.waitForGetFeatureRequest();
-        await project.openAttributeTable(tableName);
-        getFeatureRequest = await getFeatureRequestPromise;
+        getFeatureRequest = await project.openAttributeTable(tableName);
         getFeatureResponse = await getFeatureRequest.response();
         responseExpect(getFeatureResponse).toBeGeoJson();
         tableHtml = project.attributeTableHtml(tableName);
@@ -476,9 +460,7 @@ test.describe('Filter layer data polygon - not connected - @readonly', () => {
         // Attribute table
         // shop_bakery
         let tableName = 'shop_bakery';
-        let getFeatureRequestPromise = project.waitForGetFeatureRequest();
-        await project.openAttributeTable(tableName);
-        let getFeatureRequest = await getFeatureRequestPromise;
+        let getFeatureRequest = await project.openAttributeTable(tableName);
         let getFeatureResponse = await getFeatureRequest.response();
         responseExpect(getFeatureResponse).toBeGeoJson();
         let tableHtml = project.attributeTableHtml(tableName);
@@ -488,9 +470,7 @@ test.describe('Filter layer data polygon - not connected - @readonly', () => {
 
         // townhalls_EPSG2154
         tableName = 'townhalls_EPSG2154';
-        getFeatureRequestPromise = project.waitForGetFeatureRequest();
-        await project.openAttributeTable(tableName);
-        getFeatureRequest = await getFeatureRequestPromise;
+        getFeatureRequest = await project.openAttributeTable(tableName);
         getFeatureResponse = await getFeatureRequest.response();
         responseExpect(getFeatureResponse).toBeGeoJson();
         tableHtml = project.attributeTableHtml(tableName);
@@ -500,9 +480,7 @@ test.describe('Filter layer data polygon - not connected - @readonly', () => {
 
         // shop_bakery_pg
         tableName = 'shop_bakery_pg';
-        getFeatureRequestPromise = project.waitForGetFeatureRequest();
-        await project.openAttributeTable(tableName);
-        getFeatureRequest = await getFeatureRequestPromise;
+        getFeatureRequest = await project.openAttributeTable(tableName);
         getFeatureResponse = await getFeatureRequest.response();
         responseExpect(getFeatureResponse).toBeGeoJson();
         tableHtml = project.attributeTableHtml(tableName);
@@ -512,9 +490,7 @@ test.describe('Filter layer data polygon - not connected - @readonly', () => {
 
         // townhalls_pg
         tableName = 'townhalls_pg';
-        getFeatureRequestPromise = project.waitForGetFeatureRequest();
-        await project.openAttributeTable(tableName);
-        getFeatureRequest = await getFeatureRequestPromise;
+        getFeatureRequest = await project.openAttributeTable(tableName);
         getFeatureResponse = await getFeatureRequest.response();
         responseExpect(getFeatureResponse).toBeGeoJson();
         tableHtml = project.attributeTableHtml(tableName);
