@@ -36,7 +36,7 @@ class lizmap
     protected static $repositories = array();
 
     /**
-     * @var lizmapRepository[] list of repository instances. keys are repository names
+     * @var Repository[] list of repository instances. keys are repository names
      */
     protected static $repositoryInstances = array();
 
@@ -166,8 +166,8 @@ class lizmap
     /**
      * Get the jForm for a repository.
      *
-     * @param null|lizmapRepository $rep
-     * @param jFormsBase            $form
+     * @param null|Repository $rep
+     * @param jFormsBase      $form
      *
      * @return jFormsBase
      */
@@ -259,7 +259,7 @@ class lizmap
      *
      * @param string $key Key of the repository to get
      *
-     * @return null|lizmapRepository
+     * @return null|Repository
      */
     public static function getRepository($key)
     {
@@ -286,7 +286,7 @@ class lizmap
      * @param string $key  the repository name
      * @param array  $data list of properties for the repository
      *
-     * @return null|lizmapRepository
+     * @return null|Repository
      */
     public static function createRepository($key, $data)
     {
