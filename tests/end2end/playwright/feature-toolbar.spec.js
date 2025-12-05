@@ -236,9 +236,9 @@ test.describe('Feature toolbar in popup @readonly', () => {
         await expect(featureToolbar.locator('button.feature-select')).toContainClass('btn-primary');
 
         // Open Attribute table
-        let getFeatureRequest = await project.openAttributeTable('parent_layer');
-        let getFeatureResponse = await getFeatureRequest.response();
-        responseExpect(getFeatureResponse).toBeGeoJson();
+        let datatablesRequest = await project.openAttributeTable('parent_layer');
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
         // Check first line
         let firstTr = project.attributeTableHtml('parent_layer').locator('tbody tr').first();
         await expect(firstTr).toContainClass('selected');
@@ -321,9 +321,9 @@ test.describe('Feature toolbar in popup @readonly', () => {
         await expect(featureToolbar.locator('button.feature-filter')).toContainClass('btn-primary');
 
         // Open Attribute table
-        let getFeatureRequest = await project.openAttributeTable('parent_layer');
-        let getFeatureResponse = await getFeatureRequest.response();
-        responseExpect(getFeatureResponse).toBeGeoJson();
+        let datatablesRequest = await project.openAttributeTable('parent_layer');
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
 
         // Check Attribute table is also filtered
         await expect(project.attributeTableHtml('parent_layer').locator('tbody tr'))
@@ -611,9 +611,9 @@ test.describe('Feature toolbar in attribute table @readonly', () => {
         await getMapRequest.response();
 
         // Open Attribute table
-        let getFeatureRequest = await project.openAttributeTable('parent_layer', true);
-        let getFeatureResponse = await getFeatureRequest.response();
-        responseExpect(getFeatureResponse).toBeGeoJson();
+        let datatablesRequest = await project.openAttributeTable('parent_layer', true);
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
         expect(project.attributeTableHtml('parent_layer').locator('tbody tr')).toHaveCount(2);
 
         // Use the first line
@@ -693,9 +693,9 @@ test.describe('Feature toolbar in attribute table @readonly', () => {
         await getMapRequest.response();
 
         // Open Attribute table
-        let getFeatureRequest = await project.openAttributeTable('parent_layer', true);
-        let getFeatureResponse = await getFeatureRequest.response();
-        responseExpect(getFeatureResponse).toBeGeoJson();
+        let datatablesRequest = await project.openAttributeTable('parent_layer', true);
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
         expect(project.attributeTableHtml('parent_layer').locator('tbody tr')).toHaveCount(2);
 
         // Use the first line
@@ -737,9 +737,9 @@ test.describe('Feature toolbar in attribute table @readonly', () => {
         await project.open();
 
         // Open Attribute table
-        let getFeatureRequest = await project.openAttributeTable('parent_layer', true);
-        let getFeatureResponse = await getFeatureRequest.response();
-        responseExpect(getFeatureResponse).toBeGeoJson();
+        let datatablesRequest = await project.openAttributeTable('parent_layer', true);
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
         expect(project.attributeTableHtml('parent_layer').locator('tbody tr')).toHaveCount(2);
 
         // Use the second line
@@ -779,9 +779,9 @@ test.describe('Feature toolbar in attribute table @readonly', () => {
         await project.open();
 
         // Open Attribute table
-        let getFeatureRequest = await project.openAttributeTable('parent_layer', true);
-        let getFeatureResponse = await getFeatureRequest.response();
-        responseExpect(getFeatureResponse).toBeGeoJson();
+        let datatablesRequest = await project.openAttributeTable('parent_layer', true);
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
         expect(project.attributeTableHtml('parent_layer').locator('tbody tr')).toHaveCount(2);
 
         // Use the second line
@@ -824,9 +824,9 @@ test.describe('Feature toolbar in attribute table @readonly', () => {
         await project.open();
 
         // Open Attribute table
-        let getFeatureRequest = await project.openAttributeTable('parent_layer', true);
-        let getFeatureResponse = await getFeatureRequest.response();
-        responseExpect(getFeatureResponse).toBeGeoJson();
+        let datatablesRequest = await project.openAttributeTable('parent_layer', true);
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
         expect(project.attributeTableHtml('parent_layer').locator('tbody tr')).toHaveCount(2);
 
         // Use the second line
