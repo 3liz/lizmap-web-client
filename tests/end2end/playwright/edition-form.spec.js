@@ -704,7 +704,9 @@ test.describe('Form upload file widget @readonly',() => {
         await project.open();
 
         const layerName = 'form_edition_upload';
-        await project.openAttributeTable(layerName);
+        let getFeatureRequest = await project.openAttributeTable(layerName);
+        let getFeatureResponse = await getFeatureRequest.response();
+        responseExpect(getFeatureResponse).toBeGeoJson();
         await expect(project.attributeTableHtml(layerName).locator('tbody tr'))
             .toHaveCount(2);
         const theTableRow = project.attributeTableHtml(layerName).locator('tbody tr').first();
@@ -787,7 +789,9 @@ test.describe('Form upload file widget @readonly',() => {
         await project.open();
 
         const layerName = 'form_edition_upload';
-        await project.openAttributeTable(layerName);
+        let getFeatureRequest = await project.openAttributeTable(layerName);
+        let getFeatureResponse = await getFeatureRequest.response();
+        responseExpect(getFeatureResponse).toBeGeoJson();
         await expect(project.attributeTableHtml(layerName).locator('tbody tr'))
             .toHaveCount(2);
         const theTableRow = project.attributeTableHtml(layerName).locator('tbody tr').nth(1);
@@ -919,7 +923,9 @@ test.describe('Form upload file widget @write',() => {
             '../media/specific_media_folder/random-4.jpg'
         );
 
-        await project.openAttributeTable(layerName);
+        let getFeatureRequest = await project.openAttributeTable(layerName);
+        let getFeatureResponse = await getFeatureRequest.response();
+        responseExpect(getFeatureResponse).toBeGeoJson();
         await expect(project.attributeTableHtml(layerName).locator('tbody tr'))
             .toHaveCount(2);
 
@@ -1055,7 +1061,9 @@ test.describe('Form upload file widget @write',() => {
             'media/upload/form_edition_all_field_type/form_edition_upload/text_file_mandatory/lorem-2.txt'
         );
 
-        await project.openAttributeTable(layerName);
+        let getFeatureRequest = await project.openAttributeTable(layerName);
+        let getFeatureResponse = await getFeatureRequest.response();
+        responseExpect(getFeatureResponse).toBeGeoJson();
         await expect(project.attributeTableHtml(layerName).locator('tbody tr'))
             .toHaveCount(2);
 
