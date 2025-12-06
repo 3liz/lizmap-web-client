@@ -14,6 +14,7 @@
 use GuzzleHttp\Psr7\Utils as Psr7Utils;
 use Lizmap\Form;
 use Lizmap\Project\Project;
+use Lizmap\Project\Repository;
 use Lizmap\Project\UnknownLizmapProjectException;
 use Lizmap\Request\WFSRequest;
 
@@ -22,7 +23,7 @@ class editionCtrl extends jController
     /** @var null|Project */
     private $project;
 
-    /** @var lizmapRepository */
+    /** @var null|Repository */
     private $repository;
 
     /** @var string layer id in the QGIS project file */
@@ -1413,6 +1414,7 @@ class editionCtrl extends jController
         $project = $this->param('project');
         $repository = $this->param('repository');
         $layerId = $this->param('layerId');
+        $exp_filter = $this->param('features');
 
         if (!$project) {
             $rep->data['message'] = jLocale::get('view~edition.message.error.parameter.project');
@@ -1468,12 +1470,12 @@ class editionCtrl extends jController
 
         /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
-
+        $rep->mimeType = 'application/json';
         $rep->outputFileName = 'editableFeatures.json';
         $rep->doDownload = false;
 
         // Get editable features array: status and features as iterator
-        $editableFeatures = $layer->editableFeatures();
+        $editableFeatures = $layer->editableFeatures($exp_filter ? array('EXP_FILTER' => $exp_filter) : array());
 
         // Build response generator based on editable features
         $inputGenerator = function () use ($editableFeatures) {

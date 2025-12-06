@@ -6,7 +6,7 @@
  */
 
 import { LayerTreeGroupState } from '../modules/state/LayerTree.js'
-import { updateLayerTreeLayerSymbology, updateLayerTreeGroupLayersSymbology } from '../modules/action/Symbology.js';
+import { updateLayerTreeLayerSymbology, updateLayerTreeLayersSymbology } from '../modules/action/Symbology.js';
 
 /**
  * @class
@@ -24,12 +24,19 @@ export default class Legend {
             return;
         }
 
-        updateLayerTreeGroupLayersSymbology(layerTree);
+        // Filter out layers with legendImageOption set to "disabled"
+        const treeLayers = layerTree.findTreeLayers().filter(
+            layer => layer.layerConfig.legendImageOption !== "disabled"
+        );
+        updateLayerTreeLayersSymbology(treeLayers);
 
         // Refresh symbology when a layer's style changes
         layerTree.addListener(
             evt => {
-                updateLayerTreeLayerSymbology(layerTree.getTreeLayerByName(evt.name));
+                const layer = layerTree.getTreeLayerByName(evt.name);
+                if (layer.layerConfig.legendImageOption !== "disabled") {
+                    updateLayerTreeLayerSymbology(layer);
+                }
             },['layer.style.changed']
         );
     }

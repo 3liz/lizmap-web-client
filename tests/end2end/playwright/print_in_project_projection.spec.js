@@ -1,19 +1,18 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { gotoMap, expectParametersToContain, playwrightTestFile } from './globals';
+import { PrintPage } from './pages/printpage';
+import { expect as requestExpect } from './fixtures/expect-request.js'
+import { playwrightTestFile } from './globals';
 
-test.describe('Print in project projection', () => {
-
-    test.beforeEach(async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=print_in_project_projection';
-        await gotoMap(url, page);
-
-        await page.locator('#button-print').click();
-    });
+test.describe('Print in project projection @readonly', () => {
 
     test('Print empty', async ({ page }) => {
-        await page.locator('#switcher-baselayer').getByRole('combobox').selectOption('empty');
-        await page.locator('#print-scale').selectOption('1000');
+        const project = new PrintPage(page, 'print_in_project_projection');
+        await project.open();
+        await project.openPrintPanel();
+
+        await project.baseLayerSelect.selectOption('project-background-color');
+        await project.setPrintScale('1000');
 
         // Mock file
         await page.route('**/service*', async route => {
@@ -31,8 +30,8 @@ test.describe('Print in project projection', () => {
             }
         });
 
-        const getPrintPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
-        await page.locator('#print-launch').click();
+        const getPrintPromise = project.waitForGetPrintRequest();
+        await project.launchPrint();
 
         const getPrintRequest = await getPrintPromise;
         const expectedParameters = {
@@ -49,17 +48,20 @@ test.describe('Print in project projection', () => {
             'map1:LAYERS': 'reseau',
             'map1:STYLES': 'default',
             'map1:OPACITIES': '255',
-            // Disabled because of the migration when project is saved with QGIS >= 3.32
-            // 'multiline_label': 'Multiline label',
         }
-        const getPrintParams = await expectParametersToContain('Print empty', getPrintRequest.postData() ?? '', expectedParameters)
-        await expect(getPrintParams.size).toBe(14)
+        requestExpect(getPrintRequest).toContainParametersInPostData(expectedParameters);
+        const searchParams = new URLSearchParams(getPrintRequest?.postData() ?? '');
+        expect(searchParams.size).toBe(14)
         await getPrintRequest.response()
         await page.unroute('**/service*')
     })
 
     test('Print external baselayer', async ({ page }) => {
-        await page.locator('#print-scale').selectOption('1000');
+        const project = new PrintPage(page, 'print_in_project_projection');
+        await project.open();
+        await project.openPrintPanel();
+
+        await project.setPrintScale('1000');
 
         // Mock file
         await page.route('**/service*', async route => {
@@ -77,8 +79,8 @@ test.describe('Print in project projection', () => {
             }
         });
 
-        const getPrintPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetPrint') === true);
-        await page.locator('#print-launch').click();
+        const getPrintPromise = project.waitForGetPrintRequest();
+        await project.launchPrint();
 
         const getPrintRequest = await getPrintPromise;
         const expectedParameters = {
@@ -95,11 +97,10 @@ test.describe('Print in project projection', () => {
             'map1:LAYERS': 'Photographies_aeriennes,reseau',
             'map1:STYLES': 'default,default',
             'map1:OPACITIES': '255,255',
-            // Disabled because of the migration when project is saved with QGIS >= 3.32
-            // 'multiline_label': 'Multiline label',
         }
-        const getPrintParams = await expectParametersToContain('Print external baselayer', getPrintRequest.postData() ?? '', expectedParameters)
-        await expect(Array.from(getPrintParams.keys())).toHaveLength(14)
+        requestExpect(getPrintRequest).toContainParametersInPostData(expectedParameters);
+        const searchParams = new URLSearchParams(getPrintRequest?.postData() ?? '');
+        expect(searchParams.size).toBe(14)
         await getPrintRequest.response()
         await page.unroute('**/service*')
     })

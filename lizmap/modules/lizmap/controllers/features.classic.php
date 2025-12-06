@@ -1,6 +1,9 @@
 <?php
 
+use Lizmap\App\Checker;
+use Lizmap\App\ControllerTools;
 use Lizmap\Project\UnknownLizmapProjectException;
+use Lizmap\Request\Proxy;
 
 /**
  * Get features from QGIS Server with the help of expressions.
@@ -142,6 +145,26 @@ class featuresCtrl extends jController
             'error' => 'An unexpected error occurred preventing to fetch the data',
         );
         $rep->data = $content;
+
+        // Optional BASIC authentication
+        $ok = Checker::checkCredentials($_SERVER);
+        if (!$ok) {
+            $content['error'] = jLocale::get('view~default.service.access.wrong_credentials.title');
+            $rep->data = $content;
+
+            // 401 : AuthorizationRequired
+            $rep->setHttpStatus(401, Proxy::getHttpStatusMsg(401));
+
+            // Add WWW-Authenticate header only for external clients
+            // To avoid web browser to ask for login/password when session expires
+            $addHeader = !ControllerTools::clientIsABrowser();
+            // Add WWW-Authenticate header
+            if ($addHeader) {
+                $rep->addHttpHeader('WWW-Authenticate', 'Basic realm="LizmapWebClient", charset="UTF-8"');
+            }
+
+            return $rep;
+        }
 
         // Get project and repository, and check rights
         $project = $this->param('project');

@@ -1,6 +1,7 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import {ProjectPage} from "./pages/project";
+import { expect as responseExpect } from './fixtures/expect-response.js'
+import { ProjectPage } from "./pages/project";
 
 test.describe('XSS', () => {
 
@@ -28,7 +29,9 @@ test.describe('XSS', () => {
             await project.clickOnMap(415, 290);
 
             // Open attribute table
-            await project.openAttributeTable('xss_layer');
+            let getFeatureRequest = await project.openAttributeTable('xss_layer');
+            let getFeatureResponse = await getFeatureRequest.response();
+            responseExpect(getFeatureResponse).toBeGeoJson();
 
             expect(dialogOpens).toEqual(0);
         });

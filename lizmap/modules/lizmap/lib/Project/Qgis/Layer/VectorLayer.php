@@ -85,13 +85,13 @@ class VectorLayer extends Qgis\BaseQgisObject
         'layername',
         'srs',
         'datasource',
-        'provider',
         'styleManager',
     );
 
     /** @var array The default values for properties */
     protected $defaultValues = array(
         'layerOpacity' => 1,
+        'provider' => '',
     );
 
     /**

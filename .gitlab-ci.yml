@@ -163,6 +163,7 @@ deploy-docker-unstable:
     - tags
   tags:
     - factory-dind
+  allow_failure: true
 
 deploy-quick-release:
   image: ${REGISTRY_URL}/factory-ci-runner:fabric-ci-php${PHP_VERSION}

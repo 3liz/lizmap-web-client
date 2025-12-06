@@ -8,12 +8,17 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.8.15 - 2025-11-25
+
 ### Funders
 
 * **[Cédégis](https://www.cedegis.fr/)**
 * **[Faunalia](https://www.faunalia.eu/fr)** with @mind84
 * **[Avignon](https://www.avignon.fr/)**
 * **[TDPA](https://www.terredeprovence-agglo.com/)**
+* **[Klein und Leber GbR](https://www.gisgeometer.de/)** with @meyerlor
+* **[Destination Bretagne Sud Golfe du Morbihan](https://destination-bretagnesud.bzh/)**
+* **[Conseil Départemental du Calvados](https://www.calvados.fr/)**
 
 ### Fixed
 
@@ -22,6 +27,28 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Request IP now provided by JelixContext for logging event
 * Filter unique values list is empty if one is null
 * Selection tool - new, add & remove selection buttons shift vertically on hover
+* jAcl2Db cache clear when user is added to or removed from a group administration
+* Add German localization for DataTables, contribution from @meyerlor
+* Admin CORS: spaces in accessControlAllowOrigin
+* Editing - Allow to create a feature on a layer with login based attribute filter
+* CSS: legend image min width
+* WFS GetFeature - Query database on RESULTTYPE=hits requests for PostgreSQL layers
+
+### Tests
+
+* Port Dataviz from Cypress to Playwright
+
+### Backend
+
+* Upgrade Jelix to version 1.8.21 - Fix a security issue in authentication.
+* Update OpenLayers to version [v10.7.0](https://github.com/openlayers/openlayers/releases/tag/v10.7.0) with:
+  * Several WebGL renderer bug fixes, along with improved memory management
+  * Updates for the Polyline feature format
+  * API improvements and bug fixes on the Select, Extent and Snap interactions
+  * Reprojection support for VectorTile layers
+  * Full web worker support for Map, with an (Offscreen)Canvas as map target
+  * Fixed cache and rendering for reprojected raster/image tile layers
+  * Several updated and new examples, including a globe-like map with Equal Earth projection
 
 ## 3.8.14 - 2025-10-07
 

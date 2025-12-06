@@ -1,5 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+import { expect as responseExpect } from './fixtures/expect-response.js'
 import { expectParametersToContain, gotoMap } from './globals';
 import { ProjectPage } from "./pages/project";
 
@@ -543,9 +544,7 @@ test.describe(
 
             // wait for response
             let getFeatureInfoResponse = await getFeatureInfoRequest.response();
-            expect(getFeatureInfoResponse).not.toBeNull();
-            expect(getFeatureInfoResponse?.ok()).toBe(true);
-            expect(await getFeatureInfoResponse?.headerValue('Content-Type')).toContain('text/html');
+            responseExpect(getFeatureInfoResponse).toBeHtml();
 
             // time for rendering the popup
             await page.waitForTimeout(100);
@@ -705,7 +704,9 @@ test.describe('Form upload file widget @readonly',() => {
         await project.open();
 
         const layerName = 'form_edition_upload';
-        await project.openAttributeTable(layerName);
+        let getFeatureRequest = await project.openAttributeTable(layerName);
+        let getFeatureResponse = await getFeatureRequest.response();
+        responseExpect(getFeatureResponse).toBeGeoJson();
         await expect(project.attributeTableHtml(layerName).locator('tbody tr'))
             .toHaveCount(2);
         const theTableRow = project.attributeTableHtml(layerName).locator('tbody tr').first();
@@ -788,7 +789,9 @@ test.describe('Form upload file widget @readonly',() => {
         await project.open();
 
         const layerName = 'form_edition_upload';
-        await project.openAttributeTable(layerName);
+        let getFeatureRequest = await project.openAttributeTable(layerName);
+        let getFeatureResponse = await getFeatureRequest.response();
+        responseExpect(getFeatureResponse).toBeGeoJson();
         await expect(project.attributeTableHtml(layerName).locator('tbody tr'))
             .toHaveCount(2);
         const theTableRow = project.attributeTableHtml(layerName).locator('tbody tr').nth(1);
@@ -920,7 +923,9 @@ test.describe('Form upload file widget @write',() => {
             '../media/specific_media_folder/random-4.jpg'
         );
 
-        await project.openAttributeTable(layerName);
+        let getFeatureRequest = await project.openAttributeTable(layerName);
+        let getFeatureResponse = await getFeatureRequest.response();
+        responseExpect(getFeatureResponse).toBeGeoJson();
         await expect(project.attributeTableHtml(layerName).locator('tbody tr'))
             .toHaveCount(2);
 
@@ -1056,7 +1061,9 @@ test.describe('Form upload file widget @write',() => {
             'media/upload/form_edition_all_field_type/form_edition_upload/text_file_mandatory/lorem-2.txt'
         );
 
-        await project.openAttributeTable(layerName);
+        let getFeatureRequest = await project.openAttributeTable(layerName);
+        let getFeatureResponse = await getFeatureRequest.response();
+        responseExpect(getFeatureResponse).toBeGeoJson();
         await expect(project.attributeTableHtml(layerName).locator('tbody tr'))
             .toHaveCount(2);
 
@@ -1158,7 +1165,8 @@ test.describe('Form edition without creation', {tag: ['@readonly'],},() => {
         let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
         await project.clickOnMap(630, 325);
         let getFeatureInfoRequest = await getFeatureInfoPromise;
-        await getFeatureInfoRequest.response();
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
 
         const featureToolbar = await project.popupContent.locator('lizmap-feature-toolbar[value^="quartiers_"][value$=".6"]');
         await expect(featureToolbar).toBeDefined();
@@ -1179,6 +1187,11 @@ test.describe('Form edition without creation', {tag: ['@readonly'],},() => {
         await expect(page.locator('#edition-modification-msg')).not.toBeVisible();
         await expect(page.locator('#edition-creation')).not.toBeVisible();
         await expect(page.locator('#edition-form-container')).toBeVisible();
+
+        // .. with edition message ..
+        await expect(page.locator('#lizmap-edition-message')).toBeVisible();
+        await page.locator('#lizmap-edition-message .btn-close').click();
+        await expect(page.locator('#lizmap-edition-message')).not.toBeVisible();
 
         // ... even after toggling dock visibility
         await project.closeLeftDock();

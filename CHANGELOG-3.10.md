@@ -22,6 +22,14 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 * Migrate datatables from client to server side
 
+### Removed
+
+* PHP: drop `lizmapRepository` class, use `\Lizmap\Project\Repository` instead
+* PHP: drop `lizmapProject` class, use `\Lizmap\Project\Project` instead
+* PHP: drop `lizmapOGCRequest` class, use `\Lizmap\Request\OGCRequest`
+* PHP: drop `lizmapProxy` class, use `\Lizmap\Request\Proxy`
+* PHP: drop `qgisServer` class, useless since 3.7
+
 ### Backend
 
 * Raise PHP to version 8.2

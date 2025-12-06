@@ -1,8 +1,8 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import {ProjectPage} from "./pages/project";
-import {editedFeatureIds} from "./globals";
-
+import { expect as responseExpect } from './fixtures/expect-response.js'
+import { ProjectPage } from "./pages/project";
+import { editedFeatureIds } from "./globals";
 
 test.describe(
     'Drag and drop from, editing test data',
@@ -38,7 +38,9 @@ test.describe(
         test('With non spatial data creation, not remove data', async function ({ page }) {
             const project = new ProjectPage(page, 'dnd_form');
             await project.open();
-            await project.openAttributeTable('dnd_form');
+            let getFeatureRequest = await project.openAttributeTable('dnd_form');
+            let getFeatureResponse = await getFeatureRequest.response();
+            responseExpect(getFeatureResponse).toBeGeoJson();
 
             await project.bottomDock.locator(".btn-createFeature-attributeTable").click();
             await expect(project.dock).toBeVisible();
@@ -63,7 +65,9 @@ test.describe(
         test('With editing existing data, not remove data', async function ({ page }) {
             const project = new ProjectPage(page, 'dnd_form');
             await project.open();
-            await project.openAttributeTable('dnd_form_geom');
+            let getFeatureRequest = await project.openAttributeTable('dnd_form_geom');
+            let getFeatureResponse = await getFeatureRequest.response();
+            responseExpect(getFeatureResponse).toBeGeoJson();
 
             // Button detail to open the popup inside the attribute table panel
             await page.locator('.btn-detail-attributeTable').click();

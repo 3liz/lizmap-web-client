@@ -3896,6 +3896,8 @@ lizmap-treeview .spinner::after {
 
 lizmap-treeview .symbols img.legend {
   margin-right: 4px;
+  object-fit: cover;
+  min-width: 16px;
 }
 
 lizmap-treeview img.legend[src="data:image/png;base64, "]{

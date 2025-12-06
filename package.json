@@ -1,6 +1,6 @@
 {
   "name": "lizmap-web-client",
-  "version": "3.10.0",
+  "version": "3.11.0-pre",
   "description": "Lizmap Web Client",
   "license": "ISC",
   "author": "3Liz",
@@ -42,7 +42,7 @@
     "jsts": "^2.11.x",
     "lit-html": "^3.3.x",
     "mocha": "^11.7.x",
-    "ol": "^10.6.x",
+    "ol": "^10.7.x",
     "ol-ext": "^4.0.x",
     "ol-wfs-capabilities": "^2.0.x",
     "playwright-ctrf-json-reporter": "^0.0.x",
@@ -55,6 +55,7 @@
     "svgo": "^4.0.x",
     "svgo-loader": "^4.0.x",
     "undici": "^7.16.x",
+    "dotenv": "^17.2.3",
     "webpack": "^5.102.x",
     "webpack-merge": "^6.0.x"
   }
