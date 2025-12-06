@@ -25,6 +25,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 ### Removed
 
 * PHP: drop `lizmapRepository` class, use `\Lizmap\Project\Repository` instead
+* PHP: drop `lizmapProject` class, use `\Lizmap\Project\Project` instead
 
 ### Backend
 
