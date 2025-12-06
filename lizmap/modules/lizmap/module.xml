@@ -19,7 +19,6 @@
         <class name="lizmapLogItem" file="classes/lizmapLogItem.class.php"/>
         <class name="lizmapLogConfig" file="classes/lizmapLogConfig.class.php"/>
         <class name="lizmapTiler" file="classes/lizmapTiler.class.php"/>
-        <class name="lizmapWkt" file="classes/lizmapWkt.class.php"/>
         <class name="qgisMapLayer" file="classes/qgisMapLayer.class.php"/>
         <class name="qgisVectorLayerDatasource" file="classes/qgisVectorLayerDatasource.class.php"/>
         <class name="qgisVectorLayer" file="classes/qgisVectorLayer.class.php"/>
@@ -27,6 +26,8 @@
         <class name="qgisLayerDbFieldsInfo" file="classes/qgisLayerDbFieldsInfo.class.php"/>
         <class name="lizmapServices" file="classes/lizmapServices.class.php"/>
         <class name="qgisExpressionUtils" file="classes/qgisExpressionUtils.class.php"/>
+        <!--Deprecated classes-->
+        <class name="lizmapWkt" file="classes/lizmapWkt.class.php"/>
         <namespacePathMap name="Lizmap" dir="lib"/>
     </autoload>
 </module>

@@ -15,7 +15,8 @@ namespace Lizmap\Form;
 
 use GuzzleHttp\Psr7\StreamWrapper as Psr7StreamWrapper;
 use JsonMachine\Items as JsonMachineItems;
-use Lizmap\App;
+use Lizmap\App\AppContextInterface;
+use Lizmap\App\WktTools;
 use Lizmap\Request\RemoteStorageRequest;
 use Lizmap\Request\WFSRequest;
 
@@ -65,7 +66,7 @@ class QgisForm implements QgisFormControlsInterface
     /** @var array[] keys are control names, values are an associative array of values for jforms widgets */
     protected $formWidgetsAttributes = array();
 
-    /** @var App\AppContextInterface */
+    /** @var AppContextInterface */
     protected $appContext;
 
     /**
@@ -78,7 +79,7 @@ class QgisForm implements QgisFormControlsInterface
      *
      * @throws \Exception
      */
-    public function __construct($layer, $form, $featureId, $loginFilteredOverride, App\AppContextInterface $appContext)
+    public function __construct($layer, $form, $featureId, $loginFilteredOverride, AppContextInterface $appContext)
     {
         if ($layer->getType() != 'vector') {
             throw new \Exception('The layer "'.$layer->getName().'" is not a vector layer!');
@@ -226,8 +227,8 @@ class QgisForm implements QgisFormControlsInterface
                     $geom = null;
                     $ref = $form->getData('liz_geometryColumn');
                     $wkt = trim($form->getData($ref));
-                    if ($wkt && \lizmapWkt::check($wkt)) {
-                        $geom = \lizmapWkt::parse($wkt);
+                    if ($wkt && WktTools::check($wkt)) {
+                        $geom = WktTools::parse($wkt);
                         if ($geom === null) {
                             $this->logMessage('Parsing WKT failed: "'.$wkt.'".', 'lizmapadmin');
                         }
@@ -776,8 +777,8 @@ class QgisForm implements QgisFormControlsInterface
             if ($geometryColumn != '') {
                 // from wkt to geom
                 $wkt = trim($form->getData($values[$geometryColumn]));
-                if ($wkt && \lizmapWkt::check($wkt)) {
-                    $geom = \lizmapWkt::parse($wkt);
+                if ($wkt && WktTools::check($wkt)) {
+                    $geom = WktTools::parse($wkt);
                     if ($geom === null) {
                         $this->logMessage('Parsing WKT failed: "'.$wkt.'".', 'lizmapadmin');
                     }
