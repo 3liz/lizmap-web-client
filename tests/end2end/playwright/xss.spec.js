@@ -29,9 +29,9 @@ test.describe('XSS', () => {
             await project.clickOnMap(415, 290);
 
             // Open attribute table
-            let getFeatureRequest = await project.openAttributeTable('xss_layer');
-            let getFeatureResponse = await getFeatureRequest.response();
-            responseExpect(getFeatureResponse).toBeGeoJson();
+            let datatablesRequest = await project.openAttributeTable('xss_layer');
+            let datatablesResponse = await datatablesRequest.response();
+            responseExpect(datatablesResponse).toBeJson();
 
             expect(dialogOpens).toEqual(0);
         });
