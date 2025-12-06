@@ -29,6 +29,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * PHP: drop `lizmapOGCRequest` class, use `\Lizmap\Request\OGCRequest`
 * PHP: drop `lizmapProxy` class, use `\Lizmap\Request\Proxy`
 * PHP: drop `qgisServer` class, useless since 3.7
+* PHP: drop `qgisProject` class, useless since 3.5
 
 ### Deprecated
 
