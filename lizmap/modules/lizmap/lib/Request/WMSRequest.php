@@ -13,6 +13,7 @@
 
 namespace Lizmap\Request;
 
+use Lizmap\App\WktTools;
 use Lizmap\Project\Project;
 use Lizmap\Project\Qgis;
 use Lizmap\Project\UnknownLizmapProjectException;
@@ -812,7 +813,7 @@ class WMSRequest extends OGCRequest
                     );
                     if ($feature->BoundingBox) {
                         // Fix geometry by adding space between geometry type and Z, M or ZM
-                        $geom = \lizmapWkt::fix($attribute['value']);
+                        $geom = WktTools::fix($attribute['value']);
                         // Insert geometry as an hidden input
                         $hiddenGeometry .= '<input type="hidden" value="'.$geom.'" class="lizmap-popup-layer-feature-geometry"/>'.PHP_EOL;
                         // Insert bounding box data as hidden inputs

@@ -1,5 +1,6 @@
 <?php
 
+use Lizmap\App\WktTools;
 use Lizmap\Project\UnknownLizmapProjectException;
 
 /**
@@ -145,8 +146,8 @@ class serviceCtrl extends jController
         foreach ($wktParameters as $paramName) {
             $value = trim($this->param($paramName, ''));
             ${$paramName} = $value;
-            if (!empty($value) && lizmapWkt::check($value)) {
-                $geom = lizmapWkt::parse($value);
+            if (!empty($value) && WktTools::check($value)) {
+                $geom = WktTools::parse($value);
                 if ($geom === null) {
                     ${$paramName} = '';
                     $errors = array(
