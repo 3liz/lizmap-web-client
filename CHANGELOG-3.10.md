@@ -30,6 +30,10 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * PHP: drop `lizmapProxy` class, use `\Lizmap\Request\Proxy`
 * PHP: drop `qgisServer` class, useless since 3.7
 
+### Deprecated
+
+* PHP: deprecate `lizmapWkt` class, use `\Lizmap\App\WktTools` instead
+
 ### Backend
 
 * Raise PHP to version 8.2
