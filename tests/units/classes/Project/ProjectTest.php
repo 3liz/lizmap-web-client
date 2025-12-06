@@ -96,7 +96,7 @@ class ProjectTest extends TestCase
             null
         );
         $proj = new ProjectForTests();
-        $proj->setRepo(new Project\Repository(null, array('path' => ''), null, null, null));
+        $proj->setRepo(new Project\Repository('key', array('path' => ''), null, null, null));
         $proj->setServices($services);
         $proj->setFile($file, 0, 0);
         $path = $proj->getRelativeQgisPath();
@@ -218,7 +218,7 @@ class ProjectTest extends TestCase
             $eLayers->{$key} = clone $obj;
         }
         $config = new Project\ProjectConfig((object) array('editionLayers' => $eLayers));
-        $rep = new Project\Repository(null, array(), null, null, null);
+        $rep = new Project\Repository('key', array(), null, null, null);
         $context = new ContextForTests();
         $context->setResult($acl);
         $proj = new ProjectForTests($context);
