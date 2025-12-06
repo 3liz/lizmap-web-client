@@ -18,7 +18,6 @@
         <class name="lizmap" file="classes/lizmap.class.php"/>
         <class name="lizmapLogItem" file="classes/lizmapLogItem.class.php"/>
         <class name="lizmapLogConfig" file="classes/lizmapLogConfig.class.php"/>
-        <class name="qgisServer" file="classes/qgisServer.class.php"/>
         <class name="lizmapTiler" file="classes/lizmapTiler.class.php"/>
         <class name="lizmapWkt" file="classes/lizmapWkt.class.php"/>
         <class name="qgisMapLayer" file="classes/qgisMapLayer.class.php"/>
