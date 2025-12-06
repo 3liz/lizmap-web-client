@@ -22,6 +22,10 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 * Migrate datatables from client to server side
 
+### Removed
+
+* PHP: drop `lizmapRepository` class, use `\Lizmap\Project\Repository` instead
+
 ### Backend
 
 * Raise PHP to version 8.2
