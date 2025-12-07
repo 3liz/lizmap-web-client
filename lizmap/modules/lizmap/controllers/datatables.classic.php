@@ -127,19 +127,11 @@ class datatablesCtrl extends jController
 
         $jsonFeatures = array();
 
-        $wfsParamsData = array(
-            'SERVICE' => 'WFS',
-            'VERSION' => '1.0.0',
-            'REQUEST' => 'GetFeature',
-            'TYPENAME' => $typeName,
-            'OUTPUTFORMAT' => 'GeoJSON',
-        );
+        $wfsParamsData = WFSRequest::buildGetFeatureParameters($typeName);
 
         // Get total number of features
         $hits = 0;
-        $wfsParamsHits = array(
-            'RESULTTYPE' => 'hits',
-        );
+        $wfsParamsHits = WFSRequest::$hitsGetFeatureParameters;
         // Get hits with WFS request
         $wfsrequest = new WFSRequest($lproj, array_merge($wfsParamsData, $wfsParamsHits), lizmap::getServices());
         $wfsresponse = $wfsrequest->process();
