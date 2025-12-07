@@ -4,6 +4,7 @@ namespace Lizmap\Form;
 
 use GuzzleHttp\Psr7\StreamWrapper as Psr7StreamWrapper;
 use JsonMachine\Items as JsonMachineItems;
+use Lizmap\App\WktTools;
 use Lizmap\Request\WFSRequest;
 
 class QgisFormValueRelationDynamicDatasource extends \jFormsDynamicDatasource
@@ -59,8 +60,8 @@ class QgisFormValueRelationDynamicDatasource extends \jFormsDynamicDatasource
                         if ($ref == $form->getData('liz_geometryColumn')) {
                             // from wkt to geom
                             $wkt = trim($form->getData($ref));
-                            if ($wkt && \lizmapWkt::check($wkt)) {
-                                $geom = \lizmapWkt::parse($wkt);
+                            if ($wkt && WktTools::check($wkt)) {
+                                $geom = WktTools::parse($wkt);
                                 if ($geom === null) {
                                     \jLog::log('Parsing WKT failed! '.$wkt, 'error');
                                 }
