@@ -41,8 +41,14 @@ class WFSRequest extends OGCRequest
      */
     protected $datasource;
 
+    /**
+     * @var string[] the fields to select
+     */
     protected $selectFields = array();
 
+    /**
+     * @var string[] words blocked in SQL queries
+     */
     protected $blockSqlWords = array(
         ';',
         'select',
@@ -56,6 +62,62 @@ class WFSRequest extends OGCRequest
         'vacuum',
         'create',
     );
+
+    /**
+     * @var array<string, string> Generic GetFeature request parameters
+     */
+    public static $genericGetFeatureParameters = array(
+        'SERVICE' => 'WFS',
+        'VERSION' => '1.0.0',
+        'REQUEST' => 'GetFeature',
+        'OUTPUTFORMAT' => 'GeoJSON',
+    );
+
+    /**
+     * @var array<string, string> The special hits GetFeature request parameters to get number of features
+     */
+    public static $hitsGetFeatureParameters = array(
+        'RESULTTYPE' => 'hits',
+    );
+
+    /**
+     * Build GetFeature request parameters for a type name and optional other parameters.
+     *
+     * @param string                  $typeName        The type name of features
+     * @param (array<string, string>) $otherParameters Other parameters to add to the request
+     *
+     * @return array<string, string> The parameters
+     */
+    public static function buildGetFeatureParameters(string $typeName, array $otherParameters = array()): array
+    {
+        return array_merge(
+            self::$genericGetFeatureParameters,
+            array(
+                'TYPENAME' => $typeName,
+            ),
+            $otherParameters,
+        );
+    }
+
+    /**
+     * Build GetFeature request parameters to get number of features
+     * for a type name and optional other parameters.
+     *
+     * @param string                $typeName        The type name of features
+     * @param array<string, string> $otherParameters Optional, other parameters to add to the request
+     *
+     * @return array<string, string> The parameters
+     */
+    public static function buildGetFeatureHitsParameters(string $typeName, array $otherParameters = array()): array
+    {
+        return array_merge(
+            self::buildGetFeatureParameters($typeName),
+            array(
+                'RESULTTYPE' => 'hits',
+            ),
+            $otherParameters,
+        );
+    }
 
     /**
      * @var bool apply edition context for request
@@ -84,7 +146,16 @@ class WFSRequest extends OGCRequest
         return $this->editingContext;
     }
 
-    public function parameters()
+    /**
+     * Provide the parameters with the lizmap extra parameters for filtering the request.
+     *
+     * Lizmap_User, Lizmap_User_Groups, Lizmap_Override_Filter
+     * have been added to the OGC request parameters.
+     * Filter data by login if necessary as configured in the plugin for login filtered layers.
+     *
+     * @return array<string, string> the WFS request parameters with Lizmap extra parameters for filtering request
+     */
+    public function parameters(): array
     {
         $params = parent::parameters();
 
@@ -158,7 +229,7 @@ class WFSRequest extends OGCRequest
      *
      * @return string the requested typename
      */
-    public function requestedTypename()
+    public function requestedTypename(): string
     {
         if (!is_string($this->wfs_typename)) {
             $typename = $this->param('typename', '');
@@ -186,7 +257,7 @@ class WFSRequest extends OGCRequest
     /**
      * @return int An HTTP code
      */
-    public function checkingTypename()
+    public function checkingTypename(): int
     {
         $wfsLayerIds = $this->project->getWfsLayerIds();
         // No layers published in WFS
@@ -259,11 +330,9 @@ class WFSRequest extends OGCRequest
     }
 
     /**
-     * @return OGCResponse
-     *
      * @see https://en.wikipedia.org/wiki/Web_Feature_Service#Static_Interfaces.
      */
-    protected function process_getcapabilities()
+    protected function process_getcapabilities(): OGCResponse
     {
         $version = $this->param('version');
         // force version if not defined
@@ -293,11 +362,9 @@ class WFSRequest extends OGCRequest
     }
 
     /**
-     * @return OGCResponse
-     *
      * @see https://en.wikipedia.org/wiki/Web_Feature_Service#Static_Interfaces.
      */
-    protected function process_describefeaturetype()
+    protected function process_describefeaturetype(): OGCResponse
     {
         // Checking Typename which is mandatory for DescribeFeatureType
         $typenameCheckingCode = $this->checkingTypename();
@@ -360,11 +427,9 @@ class WFSRequest extends OGCRequest
     }
 
     /**
-     * @return OGCResponse
-     *
      * @see https://en.wikipedia.org/wiki/Web_Feature_Service#Static_Interfaces.
      */
-    protected function process_getfeature()
+    protected function process_getfeature(): OGCResponse
     {
         if ($this->requestXml !== null) {
             return $this->getfeatureQgis();
@@ -450,11 +515,9 @@ class WFSRequest extends OGCRequest
     /**
      * Queries Qgis Server for getFeature.
      *
-     * @return OGCResponse
-     *
      * @see https://en.wikipedia.org/wiki/Web_Feature_Service#Static_Interfaces
      */
-    protected function getfeatureQgis()
+    protected function getfeatureQgis(): OGCResponse
     {
         // In the WFS OGC standard FEATUREID and BBOX parameters cannot be mutually set
         // but in Lizmap, the user can do a selection, based on featureid, and can request
@@ -490,7 +553,7 @@ class WFSRequest extends OGCRequest
      *
      * @return string The QGIS expression based on FEATUREID parameter
      */
-    protected function getFeatureIdFilterExp($featureid, $typename, $qgisLayer)
+    protected function getFeatureIdFilterExp(string $featureid, string $typename, $qgisLayer): string
     {
         if (empty($featureid)) {
             return '';
@@ -605,10 +668,8 @@ class WFSRequest extends OGCRequest
      * @param mixed $params        Request parameters
      * @param mixed $wfsFields     List of WFS fields
      * @param bool  $isHitsRequest True if the request must only get the features count
-     *
-     * @return string
      */
-    protected function buildQueryBase($cnx, $params, $wfsFields, $isHitsRequest = false)
+    protected function buildQueryBase($cnx, $params, $wfsFields, $isHitsRequest = false): string
     {
         // For hits requests, no need to get the fields or geometry
         if ($isHitsRequest) {
@@ -697,7 +758,7 @@ class WFSRequest extends OGCRequest
      *
      * @return string the SQL clause to instersects bbox in the request parameters or empty string
      */
-    protected function getBboxSql($params)
+    protected function getBboxSql(array $params): string
     {
         if (empty($this->datasource->geocol)) {
             // No geometry column
@@ -778,7 +839,7 @@ class WFSRequest extends OGCRequest
      *
      * @return string The SQL filter enclosed with parenthesis
      */
-    protected function getDatasourceSql()
+    protected function getDatasourceSql(): string
     {
         // Get the SQL filter from QGIS layer datasource
         $dtsql = trim($this->datasource->sql);
@@ -791,7 +852,7 @@ class WFSRequest extends OGCRequest
         return '';
     }
 
-    protected function parseExpFilter($cnx, $params)
+    protected function parseExpFilter($cnx, $params): false|string
     {
         $exp_filter = '';
         if (array_key_exists('exp_filter', $params)) {
@@ -817,7 +878,7 @@ class WFSRequest extends OGCRequest
         return '';
     }
 
-    protected function parseFeatureId($cnx, $params)
+    protected function parseFeatureId($cnx, $params): string
     {
         $featureid = '';
         $sql = '';
@@ -857,7 +918,7 @@ class WFSRequest extends OGCRequest
         return $sql;
     }
 
-    protected function getQueryOrder($cnx, $params, $wfsFields)
+    protected function getQueryOrder($cnx, $params, $wfsFields): string
     {
         // séparé par virgule, et fini par espace + a ou d
         // si pas de a ou d , c'est a
@@ -897,11 +958,9 @@ class WFSRequest extends OGCRequest
     /**
      * Queries The PostGreSQL Server for getFeature.
      *
-     * @return OGCResponse
-     *
      * @see https://en.wikipedia.org/wiki/Web_Feature_Service#Static_Interfaces
      */
-    protected function getfeaturePostgres()
+    protected function getfeaturePostgres(): OGCResponse
     {
         $params = $this->parameters();
 
@@ -1092,7 +1151,7 @@ class WFSRequest extends OGCRequest
      *
      * @return bool returns if the expression does not contains dangerous chars
      */
-    protected function validateExpressionFilter($filter)
+    protected function validateExpressionFilter(string $filter): bool
     {
         $block_items = array();
         if (preg_match('#'.implode('|', $this->blockSqlWords).'#i', $filter, $block_items)) {
@@ -1111,7 +1170,7 @@ class WFSRequest extends OGCRequest
      *
      * @return false|string returns the validate filter if the expression does not contains dangerous chars
      */
-    protected function validateFilter($filter)
+    protected function validateFilter(string $filter): false|string
     {
         if (!$this->validateExpressionFilter($filter)) {
             return false;
@@ -1234,12 +1293,8 @@ class WFSRequest extends OGCRequest
      * Get the SQL used to count the features.
      *
      * This is used for RESULTTYPE=hits
-     *
-     * @param string $sql
-     *
-     * @return string
      */
-    private function getResultTypeHitsSql($sql)
+    private function getResultTypeHitsSql(string $sql): string
     {
         $hitsSql = ' SELECT ';
         $hitsSql .= ' count(*) AS "numberOfFeatures", ';
