@@ -465,8 +465,8 @@ class qgisExpressionUtils
     /**
      * Performing the request to QGIS Server.
      *
-     * @param array               $params
-     * @param Project|qgisProject $project
+     * @param array   $params
+     * @param Project $project
      *
      * @return null|object The response content or null
      */
