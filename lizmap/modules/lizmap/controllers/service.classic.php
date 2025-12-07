@@ -625,6 +625,34 @@ class serviceCtrl extends jController
      */
     protected function GetMap($wmsRequest)
     {
+        // Check DXF export rights if FORMAT is application/dxf
+        if (isset($this->params['format']) && strtolower($this->params['format']) === 'application/dxf') {
+            // Check if DXF export is enabled
+            $dxfExportEnabled = $this->project->getOption('dxfExportEnabled');
+            // Handle both boolean (from use_proper_boolean) and string 'True'/'true'
+            $isDxfEnabled = is_bool($dxfExportEnabled) ? $dxfExportEnabled : (strtolower($dxfExportEnabled) === 'true');
+
+            if (!$isDxfEnabled) {
+                jMessage::add('DXF export is not enabled for this project', 'Forbidden');
+
+                return $this->serviceException();
+            }
+
+            // Check if user has access based on allowedGroups
+            $allowedGroups = $this->project->getOption('allowedGroups');
+            if ($allowedGroups && trim($allowedGroups) !== '') {
+                $userGroups = $this->project->getAppContext()->aclUserGroupsId();
+                $exportGroups = array_map('trim', explode(',', $allowedGroups));
+                $hasAccess = (bool) array_intersect($exportGroups, $userGroups);
+
+                if (!$hasAccess) {
+                    jMessage::add('You do not have permission to export DXF from this project', 'Forbidden');
+
+                    return $this->serviceException();
+                }
+            }
+        }
+
         $result = $wmsRequest->process();
         if ($result->data == 'error') {
             return $this->serviceException();
