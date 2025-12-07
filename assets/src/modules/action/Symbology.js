@@ -33,12 +33,10 @@ export async function updateLayerTreeLayersSymbology(treeLayers, method=HttpRequ
     if (method.toUpperCase() == HttpRequestMethods.GET) {
         for (const treeLayer of treeLayers) {
             // Check if this is an external WMS layer using the backend flag
-            const layerCfg = treeLayer._mapItemState?._layerItemState?._layerTreeItemCfg?._layerCfg;
-            const isExternalWMS = layerCfg?._externalWmsToggle === true
-                               || layerCfg?._externalWmsToggle === 'True';
+            const isExternalWMS = treeLayer.layerConfig?.externalWmsToggle;
 
             if (isExternalWMS) {
-                // For external WMS layers, get PNG legend directly
+                // For external WMS layers, use GetLegendGraphic URL directly as DOM element src
                 const wmsParams = {
                     LAYER: treeLayer.wmsName,
                     STYLES: treeLayer.wmsSelectedStyleName,
@@ -46,46 +44,40 @@ export async function updateLayerTreeLayersSymbology(treeLayers, method=HttpRequ
                 };
                 try {
                     const pngUrl = wms.getLegendGraphicPNG(wmsParams);
-                    // Fetch the PNG and convert to base64
-                    const response = await fetch(pngUrl);
-                    const blob = await response.blob();
-                    const reader = new FileReader();
-
-                    await new Promise((resolve, reject) => {
-                        reader.onloadend = () => {
-                            const base64data = reader.result.split(',')[1]; // Remove data:image/png;base64, prefix
-                            treeLayer.symbology = {
-                                type: 'layer',
-                                name: treeLayer.wmsName,
-                                title: treeLayer.name,
-                                icon: base64data
-                            };
-                            resolve();
-                        };
-                        reader.onerror = reject;
-                        reader.readAsDataURL(blob);
-                    });
+                    // Wrap in LayerSymbolsSymbology structure to make it expandable/hideable
+                    // This creates a single-item legend that can be collapsed
+                    treeLayer.symbology = {
+                        type: 'layer',
+                        name: treeLayer.wmsName,
+                        title: treeLayer.name,
+                        symbols: [{
+                            icon: pngUrl,
+                            ruleKey: '',
+                            title: treeLayer.name
+                        }]
+                    };
                 } catch (error) {
                     console.error('Error loading external WMS legend:', error);
                     // Fallback to default icon will be handled by symbology state
                 }
-            } else {
-                // For normal layers, use JSON format
-                const wmsParams = {
-                    LAYER: treeLayer.wmsName,
-                    STYLES: treeLayer.wmsSelectedStyleName,
-                };
-                await wms.getLegendGraphic(wmsParams).then((response) => {
-                    for (const node of response.nodes) {
-                        // If the layer has no symbology, there is no type property
-                        if (node.hasOwnProperty('type')) {
-                            treeLayer.symbology = node;
-                        }
-                    }
-                }).catch((error) => {
-                    console.error(error);
-                });
+                continue;
             }
+
+            // Request JSON only for non external WMS
+            const wmsParams = {
+                LAYER: treeLayer.wmsName,
+                STYLES: treeLayer.wmsSelectedStyleName,
+            };
+            await wms.getLegendGraphic(wmsParams).then((response) => {
+                for (const node of response.nodes) {
+                    // If the layer has no symbology, there is no type property
+                    if (node.hasOwnProperty('type')) {
+                        treeLayer.symbology = node;
+                    }
+                }
+            }).catch((error) => {
+                console.error(error);
+            });
         }
         return treeLayers;
     }
