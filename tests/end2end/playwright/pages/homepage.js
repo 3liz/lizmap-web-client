@@ -13,11 +13,6 @@ import { BasePage } from './base';
  */
 
 export class HomePage extends BasePage {
-    /**
-     * Search project locator
-     * @type {Locator}
-     */
-    search;
 
     /**
      * Top text locator
@@ -32,6 +27,48 @@ export class HomePage extends BasePage {
     bottomContent;
 
     /**
+     * Search project locator
+     * @type {Locator}
+     */
+    search;
+
+    /**
+     * Toggle search button project locator
+     * @type {Locator}
+     */
+    toggleSearch;
+
+    /**
+     * Search keywords project locator
+     * @type {Locator}
+     */
+    searchKeywords;
+
+    /**
+     * Search keywords project result locator
+     * @type {Locator}
+     */
+    searchKeywordsResult;
+
+    /**
+     * Search keywords project items locator
+     * @type {Locator}
+     */
+    searchKeywordsItems;
+
+    /**
+     * Search keywords project selected locator
+     * @type {Locator}
+     */
+    searchKeywordsSelected;
+
+    /**
+     * Search keywords project selected items locator
+     * @type {Locator}
+     */
+    searchKeywordsSelectedItems;
+
+    /**
      * Constructor for main landing page of Lizmap
      * @param {Page} page The playwright page
      */
@@ -39,7 +76,13 @@ export class HomePage extends BasePage {
         super(page);
         this.topContent = page.locator('#landingPageContent');
         this.bottomContent = page.locator('#landingPageContentBottom');
-        this.search = page.locator('#search');
+        this.search = page.locator('#search-project');
+        this.toggleSearch = page.locator('#toggle-search');
+        this.searchKeywords = page.locator('#search-project-keywords');
+        this.searchKeywordsResult = page.locator('#search-project-result');
+        this.searchKeywordsItems = this.searchKeywordsResult.locator('.project-keyword');
+        this.searchKeywordsSelected = page.locator('#search-project-keywords-selected');
+        this.searchKeywordsSelectedItems = this.searchKeywordsSelected.locator('.project-keyword');
     }
 
     /**
