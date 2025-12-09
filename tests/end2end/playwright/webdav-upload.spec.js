@@ -15,18 +15,18 @@ test.describe('WebDAV Server',
             await project.open();
             await project.closeLeftDock();
 
-            let editFeatureRequestPromise = page.waitForResponse(response => response.url().includes('editFeature'));
-            await project.openEditingFormWithLayer('form_edition_upload_webdav');
+            const formRequest = await project.openEditingFormWithLayer('form_edition_upload_webdav');
+            await formRequest.response();
+
             await page.locator('#jforms_view_edition_remote_path_jf_action_new').click();
 
             await page.locator('#jforms_view_edition_remote_path').setInputFiles(playwrightTestFile('test_upload_file', 'test_upload_attribute_table.txt'));
+
             // submit the form
-
+            let editFeatureRequestPromise = page.waitForRequest(/lizmap\/edition\/editFeature/);;
             await project.editingSubmitForm('edit');
-            await editFeatureRequestPromise;
-
-            // Wait a bit for the UI to refresh
-            await page.waitForTimeout(300);
+            const editFeatureRequest = await editFeatureRequestPromise;
+            await editFeatureRequest.response();
 
             await expect(page.locator("div.alert.alert-success")).toBeVisible();
 
@@ -102,18 +102,17 @@ test.describe('WebDAV Server',
             await project.open();
             await project.closeLeftDock();
 
-            let editFeatureRequestPromise = page.waitForResponse(response => response.url().includes('editFeature'));
-            await project.openEditingFormWithLayer('form_edition_upload_webdav');
+            const formRequest = await project.openEditingFormWithLayer('form_edition_upload_webdav');
+            await formRequest.response();
 
             await page.locator('#jforms_view_edition_remote_path_jf_action_new').click();
             await page.locator('#jforms_view_edition_remote_path').setInputFiles(playwrightTestFile('test_upload_file','test_upload_attribute_table_keep.txt'));
 
             // submit the form
+            let editFeatureRequestPromise = page.waitForRequest(/lizmap\/edition\/editFeature/);;
             await project.editingSubmitForm('edit');
-
-            await editFeatureRequestPromise;
-
-            await page.waitForTimeout(300);
+            const editFeatureRequest = await editFeatureRequestPromise;
+            await editFeatureRequest.response();
 
             await expect(page.locator("div.alert.alert-success")).toBeVisible();
 
@@ -173,16 +172,17 @@ test.describe('WebDAV Server',
             await project.open();
             await project.closeLeftDock();
 
-            let editFeatureRequestPromise = page.waitForResponse(response => response.url().includes('editFeature'));
-            await project.openEditingFormWithLayer('form_edition_upload_webdav');
+            const formRequest = await project.openEditingFormWithLayer('form_edition_upload_webdav');
+            await formRequest.response();
+
             await page.locator('#jforms_view_edition_remote_path_jf_action_new').click();
-
             await page.locator('#jforms_view_edition_remote_path').setInputFiles(playwrightTestFile('test_upload_file','test_upload_delete.txt'));
-            // submit the form
-            await project.editingSubmitForm('edit');
-            await editFeatureRequestPromise;
 
-            await page.waitForTimeout(300);
+            // submit the form
+            let editFeatureRequestPromise = page.waitForRequest(/lizmap\/edition\/editFeature/);;
+            await project.editingSubmitForm('edit');
+            const editFeatureRequest = await editFeatureRequestPromise;
+            await editFeatureRequest.response();
 
             await expect(page.locator("div.alert.alert-success")).toBeVisible();
 

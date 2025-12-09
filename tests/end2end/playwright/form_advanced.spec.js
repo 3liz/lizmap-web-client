@@ -5,7 +5,10 @@ test.describe('Advanced form', function () {
 
     test.beforeEach(async function ({ page }) {
         const project = new ProjectPage(page, 'form_advanced');
+        const getMapRequestPromise = project.waitForGetMapRequest();
         await project.open();
+        const getMapRequest = await getMapRequestPromise;
+        await getMapRequest.response();
 
         const formRequest = await project.openEditingFormWithLayer('form_advanced_point');
         await formRequest.response();
