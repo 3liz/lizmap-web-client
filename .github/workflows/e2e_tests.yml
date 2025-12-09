@@ -35,7 +35,6 @@ jobs:
             qgis-server: "3.44"
             update-projects: "TRUE"
     env:
-      CYPRESS_CI: TRUE
       PLAYWRIGHT_FORCE_TTY: true
       PLAYWRIGHT_LIST_PRINT_STEPS: true
       PLAYWRIGHT_JSON_OUTPUT_DIR: ${{ github.workspace }}/tests/end2end/playwright-report
@@ -316,24 +315,6 @@ jobs:
           name: ${{ matrix.name }}-playwright-report
           path: ${{ github.workspace }}/tests/end2end/playwright-report
 
-      - name: Cypress run
-        id: test-cypress
-        if: |
-          steps.qgis-server-status.outcome == 'success' &&
-          ( success() ||
-          steps.test-playwright-requests.outcome != 'success' ||
-          steps.test-playwright-read-only.outcome != 'success' ||
-          steps.test-playwright-no-tag.outcome != 'success' ||
-          steps.test-playwright-write.outcome != 'success' )
-        uses: cypress-io/github-action@v6.10.2
-        with:
-          install: false
-          browser: chrome
-          headed: true
-          working-directory: tests/end2end
-          spec: cypress/integration/*-ghaction.js
-          wait-on: http://localhost:8130
-
       - name: Export some logs to files
         if: always()
         run: |
@@ -351,18 +332,6 @@ jobs:
           name: ${{ matrix.name }}-E2E-all-logs
           path: |
             /tmp/e2e/
-
-      - name: Save screenshots as artifacts if a test fails to ease debug
-        uses: actions/upload-artifact@master
-        if: |
-          failure() &&
-          steps.test-cypress.outcome != 'success'
-        with:
-          name: ${{ matrix.name }}-cypress-screenshots
-          if-no-files-found: 'ignore'
-          path: |
-            tests/end2end/cypress/screenshots
-            tests/end2end/cypress/downloads
 
       - name: Database diff check after readonly tests
         run:
