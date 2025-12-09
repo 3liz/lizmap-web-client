@@ -502,7 +502,12 @@ export class ProjectPage extends BasePage {
      */
     async openEditingFormWithLayer(layer){
         // Open editing panel
-        await this.buttonEditing.click();
+        if (!await this.page.locator('#edition').isVisible()) {
+            await this.buttonEditing.click();
+        }
+
+        // Move mouse over the layer selector
+        await this.page.locator('#edition-layer').hover();
 
         // Select the layer to edit: add feature
         await this.page.locator('#edition-layer').selectOption({ label: layer });
