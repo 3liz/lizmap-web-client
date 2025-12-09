@@ -389,8 +389,8 @@ test.describe('Single WMS layer', () => {
             const project = new ProjectPage(page, 'single_wms_image');
             await project.open();
 
-            project.openEditingFormWithLayer('Points');
-            await page.waitForTimeout(300);
+            const formRequest = await project.openEditingFormWithLayer('Points');
+            await formRequest.response();
 
             // edition id done on #map
             await project.clickOnMapLegacy(532, 293);

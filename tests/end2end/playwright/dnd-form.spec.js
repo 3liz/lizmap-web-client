@@ -14,7 +14,10 @@ test.describe(
         test('With new geom data creation, not remove data', async function ({ page }) {
             const project = new ProjectPage(page, 'dnd_form');
             await project.open();
-            await project.openEditingFormWithLayer('dnd_form_geom');
+
+            const formRequest = await project.openEditingFormWithLayer('dnd_form_geom');
+            await formRequest.response();
+
             await project.dock.getByText('tab2').click();
             await project.editingField('field_in_dnd_form').fill('value in DND form');
             await project.clickOnMapLegacy(600, 200);
