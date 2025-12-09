@@ -30,7 +30,7 @@
       </div>
     </div>
     <div class="col-sm-10">
-      <div class="row-fluid">
+      <div class="row">
         <div id="admin-message">{jmessage_bootstrap}</div>
        {$MAIN}
       </div>
