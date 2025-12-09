@@ -26,7 +26,9 @@ test.describe('Geometry editing',
                 const field = 'label';
 
                 // Add new data
-                await project.openEditingFormWithLayer(layerName);
+                const formRequest = await project.openEditingFormWithLayer(layerName);
+                await formRequest.response();
+
                 await project.editingField(field).fill("VALUE NEW");
 
                 const x1 = 600;

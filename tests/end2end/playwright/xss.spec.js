@@ -19,7 +19,8 @@ test.describe('XSS', () => {
             });
 
             // Edition: add XSS data
-            await project.openEditingFormWithLayer('xss_layer');
+            const formRequest = await project.openEditingFormWithLayer('xss_layer');
+            await formRequest.response();
 
             await project.editingField('description').fill('<script>alert("XSS")</script>');
 
