@@ -10,7 +10,8 @@ test.describe('Value relation widget',
         test('Move geom and update select with a QGIS expression', async ({ page }) => {
             const project = new ProjectPage(page, 'form_edition_value_relation_field');
             await project.open();
-            await project.openEditingFormWithLayer('point');
+            const formRequest = await project.openEditingFormWithLayer('point');
+            await formRequest.response();
 
             const select = await page.locator("#jforms_view_edition_code_with_geom_exp");
 

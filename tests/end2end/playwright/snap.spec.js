@@ -1,24 +1,18 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { gotoMap } from './globals';
-import {ProjectPage} from "./pages/project";
+import { ProjectPage } from "./pages/project";
 
 test.describe('Snap on edition', () => {
     test.beforeEach(async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=form_edition_multilayer_snap';
-        await gotoMap(url, page);
+        const project = new ProjectPage(page, 'form_edition_multilayer_snap');
+        await project.open();
     });
 
     test('Snap panel functionalities', async ({ page }) => {
-
-        let editFeatureRequestPromise = page.waitForResponse(response => response.url().includes('editFeature'));
-
         const project = new ProjectPage(page, 'form_edition_multilayer_snap');
-        await project.openEditingFormWithLayer('form_edition_snap_control');
 
-        await editFeatureRequestPromise;
-
-        await page.waitForTimeout(300);
+        const formRequest = await project.openEditingFormWithLayer('form_edition_snap_control');
+        await formRequest.response();
 
         // briefly check the form
         await expect(page.getByRole('heading', { name: 'form_edition_snap_control' })).toHaveText("form_edition_snap_control")

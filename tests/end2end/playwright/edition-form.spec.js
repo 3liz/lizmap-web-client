@@ -1,19 +1,20 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 import { expect as responseExpect } from './fixtures/expect-response.js'
-import { expectParametersToContain, gotoMap } from './globals';
+import { expectParametersToContain } from './globals';
 import { ProjectPage } from "./pages/project";
 
 test.describe('Edition Form Validation', () => {
 
     test.beforeEach(async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=form_edition_all_field_type';
-        await gotoMap(url, page)
+        const project = new ProjectPage(page, 'form_edition_all_field_type');
+        await project.open();
     });
 
     test('Input type number with range and step', async ({ page }) => {
         const project = new ProjectPage(page, 'form_edition_all_field_type');
-        await project.openEditingFormWithLayer('form_edition_all_fields_types');
+        const formRequest = await project.openEditingFormWithLayer('form_edition_all_fields_types');
+        await formRequest.response();
 
         // ensure input attributes match with field config defined in project
         await expect(page.locator('#jforms_view_edition input[name="integer_field"]')).toHaveAttribute('type', 'number')
@@ -33,7 +34,9 @@ test.describe('Edition Form Validation', () => {
         let editFeatureRequestPromise = page.waitForResponse(response => response.url().includes('editFeature'));
 
         const project = new ProjectPage(page, 'form_edition_all_field_type');
-        await project.openEditingFormWithLayer('many_bool_formats');
+        const formRequest = await project.openEditingFormWithLayer('many_bool_formats');
+        await formRequest.response();
+
         await page.getByLabel('bool_simple_null_vm').selectOption('t');
         await project.editingSubmitForm('edit');
 
@@ -65,18 +68,25 @@ test.describe('Edition Form Validation', () => {
         });
 
         const project = new ProjectPage(page, 'form_edition_all_field_type');
+
+        // not used await project.openEditingFormWithLayer('form_edition_all_fields_types');
+        // because createFeature will fail
         await project.buttonEditing.click();
+        await page.locator('a#edition-draw').hover();
         await page.locator('a#edition-draw').click();
 
         // message
         await expect(page.locator("#lizmap-edition-message")).toBeVisible();
         await expect(page.locator("#message > div")).toHaveClass(/alert-danger/);
+
+        await page.unroute('**/edition/createFeature*');
     })
 
     test('Error send feature', async ({ page }) => {
         // display form
-        await page.locator('#button-edition').click();
-        await page.locator('a#edition-draw').click();
+        const project = new ProjectPage(page, 'form_edition_all_field_type');
+        const formRequest = await project.openEditingFormWithLayer('form_edition_all_fields_types');
+        await formRequest.response();
 
         // add data
         await page.locator('#jforms_view_edition input[name="integer_field"]').fill('50');
@@ -107,6 +117,8 @@ test.describe('Edition Form Validation', () => {
 
         // form closed
         await expect(page.locator('#edition-form-container')).toBeHidden();
+
+        await page.unroute('**/edition/saveFeature*');
     })
 })
 
@@ -114,18 +126,20 @@ test.describe('Edition Form Validation', () => {
 test.describe('Multiple geometry layers', () => {
 
     test.beforeEach(async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=multiple_geom';
-        await gotoMap(url, page)
+        const project = new ProjectPage(page, 'multiple_geom');
+        await project.open();
     });
 
     test('Double geom layer', async ({ page }) => {
-
-        await page.locator('#button-edition').click();
+        const project = new ProjectPage(page, 'multiple_geom');
 
         // double_geom layer editing, layer with "geom" column
-        await page.locator('a#edition-draw').click();
+        let formRequest = await project.openEditingFormWithLayer('double_geom');
+        await formRequest.response();
 
-        await page.waitForTimeout(300);
+        expect(page.locator('#edition')).toBeVisible();
+        expect(page.locator('#edition .edition-tabs')).toBeVisible();
+        expect(page.locator('#edition-form-container')).toBeVisible();
 
         // inspect form
         await expect(page.locator('#jforms_view_edition input[name="liz_geometryColumn"]')).toHaveValue('geom');
@@ -160,17 +174,21 @@ test.describe('Multiple geometry layers', () => {
         await page.locator('#jforms_view_edition input[name="title"]').fill('geom');
 
         // submit the form
-        await page.locator('#jforms_view_edition__submit_submit').click();
+        let saveFeatureRequestPromise = page.waitForRequest(/lizmap\/edition\/saveFeature/);
+        await project.editingSubmitForm();
+        let saveFeatureRequest = await saveFeatureRequestPromise;
+        await saveFeatureRequest.response();
 
         await expect(page.locator('#edition-form-container')).toBeHidden();
         await expect(page.locator('#lizmap-edition-message')).toBeVisible();
 
         // double_geom_layer editing, layer with "geom_d" column
-        await page.locator('#edition-layer').selectOption({ label: 'double_geom_d' });
+        formRequest = await project.openEditingFormWithLayer('double_geom_d');
+        await formRequest.response();
 
-        await page.locator('a#edition-draw').click();
-
-        await page.waitForTimeout(300);
+        expect(page.locator('#edition')).toBeVisible();
+        expect(page.locator('#edition .edition-tabs')).toBeVisible();
+        expect(page.locator('#edition-form-container')).toBeVisible();
 
         // inspect form
         await expect(page.locator('#jforms_view_edition input[name="liz_geometryColumn"]')).toHaveValue('geom_d');
@@ -205,7 +223,10 @@ test.describe('Multiple geometry layers', () => {
         await page.locator('#jforms_view_edition input[name="title"]').fill('geom_d');
 
         // submit the form
-        await page.locator('#jforms_view_edition__submit_submit').click();
+        saveFeatureRequestPromise = page.waitForRequest(/lizmap\/edition\/saveFeature/);
+        await project.editingSubmitForm();
+        saveFeatureRequest = await saveFeatureRequestPromise;
+        await saveFeatureRequest.response();
 
         await expect(page.locator('#edition-form-container')).toBeHidden();
         await expect(page.locator('#lizmap-edition-message')).toBeVisible();
@@ -275,15 +296,17 @@ test.describe('Multiple geometry layers', () => {
     })
 
     test('Triple geom layer', async ({ page }) => {
+        const project = new ProjectPage(page, 'multiple_geom');
 
         await page.locator('#button-edition').click();
 
         // triple_geom_layer editing, layer with "geom" column
-        await page.locator('#edition-layer').selectOption({ label: 'triple_geom_point' })
+        let formRequest = await project.openEditingFormWithLayer('triple_geom_point');
+        await formRequest.response();
 
-        await page.locator('a#edition-draw').click();
-
-        await page.waitForTimeout(300);
+        expect(page.locator('#edition')).toBeVisible();
+        expect(page.locator('#edition .edition-tabs')).toBeVisible();
+        expect(page.locator('#edition-form-container')).toBeVisible();
 
         // inspect form
         await expect(page.locator('#jforms_view_edition input[name="liz_geometryColumn"]')).toHaveValue('geom');
@@ -302,17 +325,21 @@ test.describe('Multiple geometry layers', () => {
         await page.locator('#jforms_view_edition input[name="title"]').fill('triple_geom_point');
 
         // submit the form
-        await page.locator('#jforms_view_edition__submit_submit').click();
+        let saveFeatureRequestPromise = page.waitForRequest(/lizmap\/edition\/saveFeature/);
+        await project.editingSubmitForm();
+        let saveFeatureRequest = await saveFeatureRequestPromise;
+        await saveFeatureRequest.response();
 
         await expect(page.locator('#edition-form-container')).toBeHidden();
         await expect(page.locator('#lizmap-edition-message')).toBeVisible();
 
         // triple_geom_layer editing, layer with "geom_l" column
-        await page.locator('#edition-layer').selectOption({ label: 'triple_geom_line' });
+        formRequest = await project.openEditingFormWithLayer('triple_geom_line');
+        await formRequest.response();
 
-        await page.locator('a#edition-draw').click();
-
-        await page.waitForTimeout(300);
+        expect(page.locator('#edition')).toBeVisible();
+        expect(page.locator('#edition .edition-tabs')).toBeVisible();
+        expect(page.locator('#edition-form-container')).toBeVisible();
 
         // inspect form
         await expect(page.locator('#jforms_view_edition input[name="liz_geometryColumn"]')).toHaveValue('geom_l');
@@ -339,17 +366,21 @@ test.describe('Multiple geometry layers', () => {
         await page.locator('#jforms_view_edition input[name="title"]').fill('triple_geom_line');
 
         // submit the form
-        await page.locator('#jforms_view_edition__submit_submit').click();
+        saveFeatureRequestPromise = page.waitForRequest(/lizmap\/edition\/saveFeature/);
+        await project.editingSubmitForm();
+        saveFeatureRequest = await saveFeatureRequestPromise;
+        await saveFeatureRequest.response();
 
         await expect(page.locator('#edition-form-container')).toBeHidden();
         await expect(page.locator('#lizmap-edition-message')).toBeVisible()
 
         // triple_geom_layer editing, layer with "geom_p" column
-        await page.locator('#edition-layer').selectOption({ label: 'triple_geom_polygon' })
+        formRequest = await project.openEditingFormWithLayer('triple_geom_polygon');
+        await formRequest.response();
 
-        await page.locator('a#edition-draw').click();
-
-        await page.waitForTimeout(300);
+        expect(page.locator('#edition')).toBeVisible();
+        expect(page.locator('#edition .edition-tabs')).toBeVisible();
+        expect(page.locator('#edition-form-container')).toBeVisible();
 
         // inspect form
         await expect(page.locator('#jforms_view_edition input[name="liz_geometryColumn"]')).toHaveValue('geom_p');
@@ -384,7 +415,10 @@ test.describe('Multiple geometry layers', () => {
         await page.locator('#jforms_view_edition input[name="title"]').fill('triple_geom_polygon');
 
         // submit the form
-        await page.locator('#jforms_view_edition__submit_submit').click();
+        saveFeatureRequestPromise = page.waitForRequest(/lizmap\/edition\/saveFeature/);
+        await project.editingSubmitForm();
+        saveFeatureRequest = await saveFeatureRequestPromise;
+        await saveFeatureRequest.response();
 
         await expect(page.locator('#edition-form-container')).toBeHidden();
         await expect(page.locator('#lizmap-edition-message')).toBeVisible();
@@ -633,7 +667,12 @@ test.describe(
             const project = new ProjectPage(page, 'text_widget');
             await project.open();
 
-            await project.openEditingFormWithLayer('Point edit');
+            const formRequest = await project.openEditingFormWithLayer('Point edit');
+            await formRequest.response();
+
+            expect(page.locator('#edition')).toBeVisible();
+            expect(page.locator('#edition .edition-tabs')).toBeVisible();
+            expect(page.locator('#edition-form-container')).toBeVisible();
 
             // set edition form instance
             project.editionForm = page.locator('#jforms_view_edition');
