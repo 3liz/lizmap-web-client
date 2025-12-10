@@ -339,6 +339,36 @@ In Cypress, to click on the map, it's recommended to use the `cy.mapClick(x,y)` 
 
 ## Manual tests
 
+## CI helper: auto-create test users for e2e
+
+For end-to-end tests (Playwright) some test suites expect predefined users to exist
+in the Lizmap database (for example `user_in_group_a`, `publisher`, `user_in_group_b`, `user_read_only`).
+
+To avoid flakiness when the database is newly-initialized in CI, the PHP container can
+create a set of test users at startup. This behavior is opt-in and controlled by the
+environment variables described below.
+
+- `LIZMAP_CREATE_TEST_USERS` (boolean 1/true to enable): when set, the PHP container
+  executes idempotent commands to create the configured test users.
+- `LIZMAP_TEST_USERS` (optional): comma-separated list of users to create. Each
+  item must be `login:email:password`. If omitted, a sensible default set is used.
+
+Recommended usage in CI: set `LIZMAP_CREATE_TEST_USERS=1` in the test job environment
+so containers will create the users automatically (do not commit secrets to repo).
+
+Example `LIZMAP_TEST_USERS` value:
+
+```
+user_in_group_a:user_in_group_a@localhost.localdomain:admin,publisher:publisher@localhost.localdomain:admin
+```
+
+Notes:
+
+- The implementation uses the application's CLI command `scripts/script.php jcommunity~user:create`
+  with `--no-error-if-exists`, so it is idempotent and safe to run multiple times.
+- Prefer setting the variables in CI job configuration (GitHub Actions, GitLab CI, ...)
+  rather than committing them to `tests/.env` which is normally gitignored.
+
 *First add testing data as explained above.*
 
 Put your projects into `tests/qgis-projects/tests/` (replace `tests` by the name

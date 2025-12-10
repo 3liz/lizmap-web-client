@@ -49,6 +49,8 @@ services:
       - LIZMAP_ADMIN_LOGIN
       - LIZMAP_ADMIN_EMAIL
       - LIZMAP_ADMIN_DEFAULT_PASSWORD_SOURCE
+      - LIZMAP_CREATE_TEST_USERS=${LIZMAP_CREATE_TEST_USERS}
+      - LIZMAP_TEST_USERS
       - ECHO_OGC_ORIGINAL_REQUEST=on
     volumes:
       - { type: bind, source: "..", target: /srv/lzm/ }
