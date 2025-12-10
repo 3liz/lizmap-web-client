@@ -20,6 +20,7 @@ jobs:
     defaults:
       run:
         working-directory: tests
+        shell: /bin/sh -e {0} # <--- QUESTA È LA RIGA DI CORREZIONE CHIAVE
     strategy:
       fail-fast: false
       matrix:
@@ -70,7 +71,7 @@ jobs:
           # Somehow, the working-directory is not taken into account
           env-file: tests/.env
 
-       # For testing only
+        # For testing only
       - name: Update all QGIS projects to QGIS Desktop ${{ matrix.qgis-server }} by opening them and rewriting them
         if: |
           matrix.update-projects == 'TRUE'
@@ -126,7 +127,7 @@ jobs:
               echo "Updated files"
               git status
               echo "::warning Git status is not clean"
-          #    exit 1
+          #   exit 1
           fi
 
       - name: Load SQL data
