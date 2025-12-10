@@ -13,30 +13,20 @@ test.describe('N to M relations',
             const project = new ProjectPage(page, 'n_to_m_relations');
             await project.open();
 
-            // open attribute table panel
-            await page.locator('#button-attributeLayers').click();
-
-            // maximize panel
-            await page.getByRole('button', { name: 'Maximize' }).click();
-
-            let datatablesRequestPromise = page.waitForRequest(
-                request => request.method() === 'POST'
-                && request.postData()?.includes('draw') === true
-            );
-
             // open main layer attribute table panel
-            await page.locator('#attribute-layer-list button[value="natural_areas"]').click();
-            await datatablesRequestPromise;
+            let datatablesRequest = await project.openAttributeTable('natural_areas', true);
+            let datatablesResponse = await datatablesRequest.response();
+            responseExpect(datatablesResponse).toBeJson();
 
             // open birds spots attribute table panel
-            await page.locator('#nav-tab-attribute-summary').click();
-            await page.locator('#attribute-layer-list button[value="birds_spots"]').click();
-            await datatablesRequestPromise;
+            datatablesRequest = await project.openAttributeTable('birds_spots', true);
+            datatablesResponse = await datatablesRequest.response();
+            responseExpect(datatablesResponse).toBeJson();
 
             // open birds attribute table panel
-            await page.locator('#nav-tab-attribute-summary').click();
-            await page.locator('#attribute-layer-list button[value="birds"]').click();
-            await datatablesRequestPromise;
+            datatablesRequest = await project.openAttributeTable('birds', true);
+            datatablesResponse = await datatablesRequest.response();
+            responseExpect(datatablesResponse).toBeJson();
 
             //back to natural areas panel
             await page.locator('#nav-tab-attribute-layer-natural_areas').click();
@@ -73,8 +63,11 @@ test.describe('N to M relations',
             await expect(page.locator("#nav-tab-attribute-child-tab-natural_areas-birds_spots")).toHaveCount(1);
 
             // click on first row of main table and open "m" layer attribute table
+            let datatablesRequestPromise = project.waitForDatatablesRequest();
             await attrTable.locator("tbody tr").nth(0).click();
-            await datatablesRequestPromise;
+            datatablesRequest = await datatablesRequestPromise;
+            datatablesResponse = await datatablesRequest.response();
+            responseExpect(datatablesResponse).toBeJson();
 
             let nRelatedAttrTable = page.locator("#attribute-layer-table-natural_areas-birds");
             await expect(attrTable).toHaveCount(1);
@@ -105,8 +98,11 @@ test.describe('N to M relations',
             }
 
             // change main record
+            datatablesRequestPromise = project.waitForDatatablesRequest();
             await attrTable.locator("tbody tr").nth(1).click();
-            await datatablesRequestPromise;
+            datatablesRequest = await datatablesRequestPromise;
+            datatablesResponse = await datatablesRequest.response();
+            responseExpect(datatablesResponse).toBeJson();
 
             // inspect new list of birds
             await expect(nRelatedAttrTable.locator("tbody tr")).toHaveCount(3);
@@ -193,9 +189,10 @@ test.describe('N to M relations',
             //back to natural areas panel first
             await page.locator('#nav-tab-attribute-layer-natural_areas').click();
 
-            let addBirdsRequestPromise = page.waitForResponse(response => response.url().includes('editFeature'));
+            let addBirdsRequestPromise = page.waitForRequest(/lizmap\/edition\/editFeature/);
             await page.locator("#attribute-layer-main-natural_areas .edition-children-add-buttons button[value='birds']").click();
-            await addBirdsRequestPromise;
+            let addBirdsRequest = await addBirdsRequestPromise;
+            await addBirdsRequest.response();
 
             // check info message for link pivot
             await expect(project.editionForm.locator("#edition-link-pivot"))
@@ -205,12 +202,15 @@ test.describe('N to M relations',
             await project.fillEditionFormTextInput('bird_name', 'Northern pintail');
             await project.fillEditionFormTextInput('bird_scientific_name', 'Anas acuta');
 
+            addBirdsRequestPromise = page.waitForRequest(/lizmap\/edition\/saveFeature/);
             await project.editingSubmitForm();
+            addBirdsRequest = await addBirdsRequestPromise;
+            await addBirdsRequest.response();
 
-            await addBirdsRequestPromise;
             await expect(page.locator("#lizmap-edition-message ul.jelix-msg").nth(0)).toHaveText("Data has been saved.");
             await expect(page.locator("#lizmap-edition-message ul.jelix-msg").nth(1))
                 .toHaveText('The new feature of layer "Birds" was successfully linked to the layer "Natural areas"');
+            await page.locator("#lizmap-edition-message .btn-close").click();
 
             // check birds child table
             await page.locator("#nav-tab-attribute-child-tab-natural_areas-birds").click();
@@ -251,7 +251,6 @@ test.describe('N to M relations',
 
             // click on last inserted record and check child attribute table
             await birdsTable.locator("tbody tr").nth(8).click();
-            await datatablesRequestPromise;
 
             let childNaturalAreasTable = page.locator("#attribute-layer-table-birds-natural_areas");
             await expect(childNaturalAreasTable.locator("tbody tr")).toHaveCount(1);
@@ -356,15 +355,18 @@ test.describe('N to M relations',
             await expect(childrenBirds.nth(0).locator(".lizmapPopupDiv")).toHaveCount(0);
 
             // add a new bird from natural areas popup
-            let editFeatureRequestPromise = page.waitForResponse(response => response.url().includes('editFeature'));
+            let editFeatureRequestPromise = page.waitForRequest(/lizmap\/edition\/editFeature/);
             await popup.locator("lizmap-feature-toolbar").first().locator('.feature-toolbar button.feature-edit').click();
-            await editFeatureRequestPromise;
+            let editFeatureRequest = await editFeatureRequestPromise;
+            await editFeatureRequest.response();
 
             await expect(page.locator("#edition-child-tab-natural_areas-birds")).toHaveCount(1);
 
             // click on the add feature button
+            editFeatureRequestPromise = page.waitForRequest(/lizmap\/edition\/editFeature/);
             await page.locator("#edition-child-tab-natural_areas-birds .attribute-layer-feature-create").nth(0).click();
-            await editFeatureRequestPromise;
+            editFeatureRequest = await editFeatureRequestPromise;
+            await editFeatureRequest.response();
 
             await expect(page.locator("#edition-link-pivot")).toHaveText("The new record will be linked to the feature ID \"1\" of \"Natural areas\" layer")
 
@@ -372,8 +374,10 @@ test.describe('N to M relations',
             await project.fillEditionFormTextInput('bird_name', 'Common snipe');
             await project.fillEditionFormTextInput('bird_scientific_name', 'Gallinago gallinago');
 
-            await project.editingSubmitForm();
-            await editFeatureRequestPromise;
+            editFeatureRequestPromise = page.waitForRequest(/lizmap\/edition\/editFeature/);
+            await project.editingSubmit('submit').click();
+            editFeatureRequest = await editFeatureRequestPromise;
+            await editFeatureRequest.response();
 
             await page.waitForTimeout(500);
 
@@ -393,8 +397,10 @@ test.describe('N to M relations',
 
             // insert new bird with "create new feature" submit option, this should create the pivot record again
             // click on the add feature button
-            await page.locator("#edition-child-tab-natural_areas-birds .attribute-layer-feature-create").nth(0).click()
-            await editFeatureRequestPromise;
+            editFeatureRequestPromise = page.waitForRequest(/lizmap\/edition\/editFeature/);
+            await page.locator("#edition-child-tab-natural_areas-birds .attribute-layer-feature-create").nth(0).click();
+            editFeatureRequest = await editFeatureRequestPromise;
+            await editFeatureRequest.response();
 
             await expect(page.locator("#edition-link-pivot")).toHaveText("The new record will be linked to the feature ID \"1\" of \"Natural areas\" layer")
 
@@ -402,9 +408,11 @@ test.describe('N to M relations',
             // fill the form and submit
             await project.fillEditionFormTextInput('bird_name', 'Mute swan');
             await project.fillEditionFormTextInput('bird_scientific_name', 'Cygnus olor');
-            await project.editingSubmitForm('create');
 
-            await editFeatureRequestPromise;
+            editFeatureRequestPromise = page.waitForRequest(/lizmap\/edition\/editFeature/);
+            await project.editingSubmitForm('create');
+            editFeatureRequest = await editFeatureRequestPromise;
+            await editFeatureRequest.response();
 
             await page.waitForTimeout(500);
             await expect(page.locator(".alert-linkaddedfeature p")).toHaveText('The new feature of layer "Birds" was successfully linked to the layer "Natural areas"');
@@ -414,16 +422,20 @@ test.describe('N to M relations',
             // fill the form and submit
             await project.fillEditionFormTextInput('bird_name', 'Common shelduck');
             await project.fillEditionFormTextInput('bird_scientific_name', 'Tadorna tadorna');
-            await project.editingSubmitForm('edit');
 
-            await editFeatureRequestPromise;
+            editFeatureRequestPromise = page.waitForRequest(/lizmap\/edition\/editFeature/);
+            await project.editingSubmitForm('edit');
+            editFeatureRequest = await editFeatureRequestPromise;
+            await editFeatureRequest.response();
+
             await expect(page.locator(".alert-linkaddedfeature p")).toHaveText('The new feature of layer "Birds" was successfully linked to the layer "Natural areas"');
             await expect(page.locator("#edition-link-pivot")).toHaveCount(0);
 
             // submit again to update
+            editFeatureRequestPromise = page.waitForRequest(/lizmap\/edition\/editFeature/);
             await project.editingSubmitForm('edit');
-
-            await editFeatureRequestPromise;
+            editFeatureRequest = await editFeatureRequestPromise;
+            await editFeatureRequest.response();
 
             await expect(page.locator(".alert-linkaddedfeature")).toHaveCount(0);
             await expect(page.locator("#edition-link-pivot")).toHaveCount(0);
@@ -433,7 +445,6 @@ test.describe('N to M relations',
                 return dialog.accept();
             });
             await page.locator('#jforms_view_edition__submit_cancel').click();
-            await editFeatureRequestPromise;
 
             await expect(editionFormBirdsTable).toHaveCount(1);
             await expect(editionFormBirdsTable.locator("tbody tr")).toHaveCount(6);
