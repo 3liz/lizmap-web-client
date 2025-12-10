@@ -397,4 +397,68 @@ class WFSRequestTest extends TestCase
         $result = $wfs->getDatasourceSqlForTests();
         $this->assertEquals($expectedSql, $result);
     }
+
+    public function testBuildGetFeatureParameters(): void
+    {
+        $genericParameters = WFSRequestForTests::$genericGetFeatureParameters;
+        $params = WFSRequestForTests::buildGetFeatureParameters('test');
+        $this->assertEquals(
+            $params,
+            array(
+                'SERVICE' => 'WFS',
+                'VERSION' => '1.0.0',
+                'REQUEST' => 'GetFeature',
+                'OUTPUTFORMAT' => 'GeoJSON',
+                'TYPENAME' => 'test',
+            ),
+        );
+
+        $params = WFSRequestForTests::buildGetFeatureParameters(
+            'test',
+            array('OUTPUTFORMAT' => 'GML3'),
+        );
+        $this->assertEquals(
+            $params,
+            array(
+                'SERVICE' => 'WFS',
+                'VERSION' => '1.0.0',
+                'REQUEST' => 'GetFeature',
+                'OUTPUTFORMAT' => 'GML3',
+                'TYPENAME' => 'test',
+            ),
+        );
+    }
+
+    public function testBuildGetFeatureHitsParameters(): void
+    {
+        $genericParameters = WFSRequestForTests::$genericGetFeatureParameters;
+        $params = WFSRequestForTests::buildGetFeatureHitsParameters('test');
+        $this->assertEquals(
+            $params,
+            array(
+                'SERVICE' => 'WFS',
+                'VERSION' => '1.0.0',
+                'REQUEST' => 'GetFeature',
+                'OUTPUTFORMAT' => 'GeoJSON',
+                'TYPENAME' => 'test',
+                'RESULTTYPE' => 'hits',
+            ),
+        );
+
+        $params = WFSRequestForTests::buildGetFeatureHitsParameters(
+            'test',
+            array('OUTPUTFORMAT' => 'GML3'),
+        );
+        $this->assertEquals(
+            $params,
+            array(
+                'SERVICE' => 'WFS',
+                'VERSION' => '1.0.0',
+                'REQUEST' => 'GetFeature',
+                'OUTPUTFORMAT' => 'GML3',
+                'TYPENAME' => 'test',
+                'RESULTTYPE' => 'hits',
+            ),
+        );
+    }
 }

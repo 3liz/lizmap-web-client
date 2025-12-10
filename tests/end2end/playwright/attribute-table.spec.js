@@ -50,46 +50,46 @@ test.describe('Attribute table @readonly', () => {
         await project.open();
 
         let layerName = 'quartiers_shp';
-        let getFeatureRequest = await project.openAttributeTable(layerName);
-        let getFeatureResponse = await getFeatureRequest.response();
-        responseExpect(getFeatureResponse).toBeGeoJson();
+        let datatablesRequest = await project.openAttributeTable(layerName);
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
         let tableWrapper = project.attributeTableWrapper(layerName);
-        await expect(tableWrapper.locator('div.dataTables_scrollHead th'))
+        await expect(tableWrapper.locator('div.dt-scroll-head th'))
             .toHaveCount(6);
-        await expect(tableWrapper.locator('div.dataTables_scrollHead th').nth(0))
+        await expect(tableWrapper.locator('div.dt-scroll-head th').nth(0))
             .toHaveText('');
-        await expect(tableWrapper.locator('div.dataTables_scrollHead th').nth(1))
+        await expect(tableWrapper.locator('div.dt-scroll-head th').nth(1))
             .toHaveText('quartmno');
-        await expect(tableWrapper.locator('div.dataTables_scrollHead th').nth(2))
+        await expect(tableWrapper.locator('div.dt-scroll-head th').nth(2))
             .toHaveText('libquart');
-        await expect(tableWrapper.locator('div.dataTables_scrollHead th').nth(3))
+        await expect(tableWrapper.locator('div.dt-scroll-head th').nth(3))
             .toHaveText('photo');
-        await expect(tableWrapper.locator('div.dataTables_scrollHead th').nth(4))
+        await expect(tableWrapper.locator('div.dt-scroll-head th').nth(4))
             .toHaveText('url');
-        await expect(tableWrapper.locator('div.dataTables_scrollHead th').nth(5))
+        await expect(tableWrapper.locator('div.dt-scroll-head th').nth(5))
             .toHaveText('thumbnail');
         await project.closeAttributeTable();
 
         layerName = 'Les_quartiers_a_Montpellier';
-        getFeatureRequest = await project.openAttributeTable(layerName);
-        getFeatureResponse = await getFeatureRequest.response();
-        responseExpect(getFeatureResponse).toBeGeoJson();
+        datatablesRequest = await project.openAttributeTable(layerName);
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
         tableWrapper = project.attributeTableWrapper(layerName);
-        await expect(tableWrapper.locator('div.dataTables_scrollHead th'))
+        await expect(tableWrapper.locator('div.dt-scroll-head th'))
             .toHaveCount(7);
-        await expect(tableWrapper.locator('div.dataTables_scrollHead th').nth(0))
+        await expect(tableWrapper.locator('div.dt-scroll-head th').nth(0))
             .toHaveText('');
-        await expect(tableWrapper.locator('div.dataTables_scrollHead th').nth(1))
+        await expect(tableWrapper.locator('div.dt-scroll-head th').nth(1))
             .toHaveText('quartier');
-        await expect(tableWrapper.locator('div.dataTables_scrollHead th').nth(2))
+        await expect(tableWrapper.locator('div.dt-scroll-head th').nth(2))
             .toHaveText('quartmno');
-        await expect(tableWrapper.locator('div.dataTables_scrollHead th').nth(3))
+        await expect(tableWrapper.locator('div.dt-scroll-head th').nth(3))
             .toHaveText('libquart');
-        await expect(tableWrapper.locator('div.dataTables_scrollHead th').nth(4))
+        await expect(tableWrapper.locator('div.dt-scroll-head th').nth(4))
             .toHaveText('thumbnail');
-        await expect(tableWrapper.locator('div.dataTables_scrollHead th').nth(5))
+        await expect(tableWrapper.locator('div.dt-scroll-head th').nth(5))
             .toHaveText('url');
-        await expect(tableWrapper.locator('div.dataTables_scrollHead th').nth(6))
+        await expect(tableWrapper.locator('div.dt-scroll-head th').nth(6))
             .toHaveText('photo');
         await project.closeAttributeTable();
     });
@@ -144,9 +144,10 @@ test.describe('Attribute table @readonly', () => {
         expect(defaultByteLength).toBeGreaterThan(8000); // 8667
         expect(defaultByteLength).toBeLessThan(10000); // 8667
 
-        let getFeatureRequest = await project.openAttributeTable(tableName);
-        let getFeatureResponse = await getFeatureRequest.response();
-        responseExpect(getFeatureResponse).toBeGeoJson();
+        // Open attribute table
+        let datatablesRequest = await project.openAttributeTable(tableName);
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
         let tableHtml = project.attributeTableHtml(tableName);
 
         // Check table lines
@@ -433,9 +434,9 @@ test.describe('Attribute table @readonly', () => {
         const typeName = 'quartiers_shp';
         const layerName = 'quartiers_shp';
 
-        let getFeatureRequest = await project.openAttributeTable(tableName);
-        let getFeatureResponse = await getFeatureRequest.response();
-        responseExpect(getFeatureResponse).toBeGeoJson();
+        let datatablesRequest = await project.openAttributeTable(tableName);
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
         let tableHtml = project.attributeTableHtml(tableName);
 
         // Check table lines
@@ -625,10 +626,10 @@ test.describe('Attribute table @readonly', () => {
         await project.open();
         const layerName = 'Les_quartiers_a_Montpellier';
 
-        let getFeatureRequest = await project.openAttributeTable(layerName);
-        let getFeatureResponse = await getFeatureRequest.response();
-        responseExpect(getFeatureResponse).toBeGeoJson();
-        await expect(project.attributeTableWrapper(layerName).locator('div.dataTables_info'))
+        let datatablesRequest = await project.openAttributeTable(layerName);
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+        await expect(project.attributeTableWrapper(layerName).locator('div.dt-info'))
             .toContainText('Showing 1 to 7 of 7 entries');
         await expect(project.attributeTableHtml(layerName).locator('tbody tr'))
             .toHaveCount(7);
@@ -650,33 +651,23 @@ test.describe('Attribute table @readonly', () => {
         await project.closeLeftDock();
         const layerName = 'random_points';
 
-        let getFeatureRequest = await project.openAttributeTable(layerName);
-        let getFeatureResponse = await getFeatureRequest.response();
-        responseExpect(getFeatureResponse).toBeGeoJson();
-        await expect(project.attributeTableWrapper(layerName).locator('div.dataTables_info'))
+        let datatablesRequest = await project.openAttributeTable(layerName);
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+        await expect(project.attributeTableWrapper(layerName).locator('div.dt-info'))
             .toContainText('Showing 1 to 50 of 700 entries');
         await expect(project.attributeTableHtml(layerName).locator('tbody tr'))
             .toHaveCount(50);
-        await expect(project.attributeTableWrapper(layerName).locator('ul.pagination > li.paginate_button'))
+        await expect(project.attributeTableWrapper(layerName).locator('ul.pagination > li.dt-paging-button'))
             .toHaveCount(9);
-        // click on last page which is the previous last paginate_button
+        // click on last page which is the previous last dt-paging-button
         await project.attributeTableWrapper(layerName).hover();
-        project.attributeTableWrapper(layerName).locator('ul.pagination > li.paginate_button:nth-last-child(-0n+2)').dispatchEvent('click');
-        await expect(project.attributeTableWrapper(layerName).locator('div.dataTables_info'))
+        project.attributeTableWrapper(layerName).locator('ul.pagination > li.dt-paging-button:nth-last-child(-0n+2) > button').dispatchEvent('click');
+        await expect(project.attributeTableWrapper(layerName).locator('div.dt-info'))
             .toContainText('Showing 651 to 700 of 700 entries');
     });
-});
 
-test.describe('Attribute table data restricted to map extent @readonly', () => {
-
-    test('Data restriction and refresh button behaviour', async ({ page }) => {
-        // Update config to update limitDataToBbox
-        await page.route('**/service/getProjectConfig*', async route => {
-            const response = await route.fetch();
-            const json = await response.json();
-            json.options['limitDataToBbox'] = 'True';
-            await route.fulfill({ response, json });
-        });
+    test('Data filtered by extent', async ({ page }) => {
 
         const project = new ProjectPage(page, 'attribute_table');
         // Catch default GetMap
@@ -704,20 +695,34 @@ test.describe('Attribute table data restricted to map extent @readonly', () => {
         requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
         await getMapRequest.response();
 
-        let getFeatureRequest = await project.openAttributeTable(tableName);
-        let getFeatureResponse = await getFeatureRequest.response();
-        responseExpect(getFeatureResponse).toBeGeoJson();
+        let datatablesRequest = await project.openAttributeTable(tableName);
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+
         let tableHtml = project.attributeTableHtml(tableName);
 
         // Check table lines
         await expect(tableHtml.locator('tbody tr')).toHaveCount(7);
+        // Check filter by extent button
+        await expect(page.locator('.btn-filterbyextent-attributeTable')).not.toHaveClass(/active/);
 
-        await expect(page.locator('.btn-refresh-table')).not.toHaveClass(/btn-warning/);
+        // Activate filter by extent
+        let datatablesRequestPromise = project.waitForDatatablesRequest();
+        await page.locator('.btn-filterbyextent-attributeTable').click();
+        datatablesRequest = await datatablesRequestPromise;
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+
+        // Check table lines
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(7);
+        // Check filter by extent button
+        await expect(page.locator('.btn-filterbyextent-attributeTable')).toHaveClass(/active/);
 
         // Use the first line
         let firstTr = tableHtml.locator('tbody tr').first();
         await expect(firstTr.locator('lizmap-feature-toolbar .feature-zoom')).toBeVisible();
 
+        // Zoom to feature of the first line
         getMapRequestPromise = project.waitForGetMapRequest();
         await firstTr.locator('lizmap-feature-toolbar .feature-zoom').click();
 
@@ -727,12 +732,20 @@ test.describe('Attribute table data restricted to map extent @readonly', () => {
         requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
         await getMapRequest.response();
 
-        await expect(page.locator('.btn-refresh-table')).toHaveClass(/btn-warning/);
-
-        // Refresh
-        await page.locator('.btn-refresh-table').click();
-
+        // Check table lines
         await expect(tableHtml.locator('tbody tr')).toHaveCount(5);
+
+        // Unactivate filter by extent and assert all features are in the table
+        datatablesRequestPromise = project.waitForDatatablesRequest();
+        await page.locator('.btn-filterbyextent-attributeTable').click();
+        datatablesRequest = await datatablesRequestPromise;
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+
+        // Check table lines
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(7);
+        // Check filter by extent button
+        await expect(page.locator('.btn-filterbyextent-attributeTable')).not.toHaveClass(/active/);
     });
 });
 
@@ -836,9 +849,9 @@ test.describe('Layer export permissions ACL', () => {
 
             // check layer export capabilities for logged in user
             for(const layerObj of expected){
-                let getFeatureRequest = await project.openAttributeTable(layerObj.layer);
-                let getFeatureResponse = await getFeatureRequest.response();
-                responseExpect(getFeatureResponse).toBeGeoJson();
+                let datatablesRequest = await project.openAttributeTable(layerObj.layer);
+                let datatablesResponse = await datatablesRequest.response();
+                responseExpect(datatablesResponse).toBeJson();
                 await expect(userPage.locator('.attribute-layer-action-bar .export-formats')).toHaveCount(layerObj.onPage);
                 await project.closeAttributeTable();
             }
@@ -854,32 +867,43 @@ test.describe('Layer export permissions ACL', () => {
     test('Layer export request ACL', {
         tag: '@readonly',
     }, async ({page}) => {
-        await page.route('**/service/getProjectConfig*', async route => {
-            const response = await route.fetch();
-            const json = await response.json();
-            json.options['limitDataToBbox'] = 'True';
-            await route.fulfill({ response, json });
-        });
-
         const project = new ProjectPage(page, 'enable_export_acl');
         await project.open();
 
         let tableName = 'single_wms_points';
-        let getFeatureRequest = await project.openAttributeTable(tableName);
-        let getFeatureResponse = await getFeatureRequest.response();
-        responseExpect(getFeatureResponse).toBeGeoJson();
+        let datatablesRequest = await project.openAttributeTable(tableName);
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
 
-        // launche export
-        getFeatureRequest = await project.launchExport('single_wms_points','GeoJSON');
+        // launch export
+        let getFeatureRequest = await project.launchExport('single_wms_points','GeoJSON');
 
-        const expectedParameters = {
+        /** @type {{[key: string]: string|RegExp}} */
+        let expectedParameters = {
             'SERVICE': 'WFS',
             'REQUEST': 'GetFeature',
             'VERSION': '1.0.0',
             'OUTPUTFORMAT': 'GeoJSON',
-            'BBOX': /3.7759\d+,43.55267\d+,3.98277\d+,43.6516\d+/,
+            'TYPENAME': 'single_wms_points',
+            'dl': '1',
         }
 
         requestExpect(getFeatureRequest).toContainParametersInPostData(expectedParameters);
+        responseExpect(await getFeatureRequest.response()).toBeGeoJson();
+
+        // Activate filter by extent
+        let datatablesRequestPromise = project.waitForDatatablesRequest();
+        await page.locator('.btn-filterbyextent-attributeTable').click();
+        datatablesRequest = await datatablesRequestPromise;
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+
+        // launch export
+        getFeatureRequest = await project.launchExport('single_wms_points','GeoJSON');
+
+        expectedParameters['BBOX'] = /3.7759\d+,43.55267\d+,3.98277\d+,43.6516\d+/;
+
+        requestExpect(getFeatureRequest).toContainParametersInPostData(expectedParameters);
+        responseExpect(await getFeatureRequest.response()).toBeGeoJson();
     })
 });
