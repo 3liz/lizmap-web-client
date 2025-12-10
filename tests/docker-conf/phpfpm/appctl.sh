@@ -155,17 +155,21 @@ function setupTestUsers() {
         return 0
     fi
 
-    local users=(
-      "user_in_group_a user_in_group_a@localhost.localdomain admin"
-      "publisher publisher@localhost.localdomain admin"
-      "user_in_group_b user_in_group_b@localhost.localdomain admin"
-      "user_read_only user_read_only@localhost.localdomain admin"
-    )
+    # Users can be provided via LIZMAP_TEST_USERS as a comma-separated list
+    # Each user item format: login:email:password
+    # Default list kept small and generic for upstream compatibility
+    if [ -z "${LIZMAP_TEST_USERS}" ]; then
+        LIZMAP_TEST_USERS="user_in_group_a:user_in_group_a@localhost.localdomain:admin,publisher:publisher@localhost.localdomain:admin,user_in_group_b:user_in_group_b@localhost.localdomain:admin,user_read_only:user_read_only@localhost.localdomain:admin"
+    fi
 
-    for u in "${users[@]}"; do
-        login=$(echo "$u" | awk '{print $1}')
-        email=$(echo "$u" | awk '{print $2}')
-        pass=$(echo "$u" | awk '{print $3}')
+    IFS=',' read -r -a user_items <<< "${LIZMAP_TEST_USERS}"
+    for item in "${user_items[@]}"; do
+        # split by ':'
+        IFS=':' read -r login email pass <<< "${item}"
+        if [ -z "$login" ] || [ -z "$email" ]; then
+            continue
+        fi
+        echo "[setupTestUsers] creating user: $login <$email>"
         su $APP_USER -c "php $APPDIR/scripts/script.php jcommunity~user:create -v --no-error-if-exists $login $email $pass" || true
     done
 }
