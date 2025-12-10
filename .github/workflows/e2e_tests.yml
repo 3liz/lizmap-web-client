@@ -19,8 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: tests
-        shell: /bin/sh -e {0} # <--- QUESTA È LA RIGA DI CORREZIONE CHIAVE
+        working-directory: .
+        shell: /usr/bin/bash -e {0}
     strategy:
       fail-fast: false
       matrix:
@@ -54,6 +54,17 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v5
+
+      - name: Debug workspace after checkout
+        run: |
+          echo "GITHUB_WORKSPACE=${GITHUB_WORKSPACE}"
+          pwd
+          echo "Listing repo root"
+          ls -la || true
+          echo "Listing tests folder (if present)"
+          ls -la tests || true
+          echo "Listing tests/end2end (if present)"
+          ls -la tests/end2end || true
 
       - name: Make environment and show Lizmap versions
         env:
