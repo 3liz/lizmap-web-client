@@ -148,6 +148,28 @@ function setupAdmin() {
     fi
 }
 
+function setupTestUsers() {
+    # Create additional test users required by Playwright e2e tests
+    # Controlled by env var LIZMAP_CREATE_TEST_USERS (1/true to enable)
+    if [ "${LIZMAP_CREATE_TEST_USERS}" != "1" ] && [ "${LIZMAP_CREATE_TEST_USERS}" != "true" ]; then
+        return 0
+    fi
+
+    local users=(
+      "user_in_group_a user_in_group_a@localhost.localdomain admin"
+      "publisher publisher@localhost.localdomain admin"
+      "user_in_group_b user_in_group_b@localhost.localdomain admin"
+      "user_read_only user_read_only@localhost.localdomain admin"
+    )
+
+    for u in "${users[@]}"; do
+        login=$(echo "$u" | awk '{print $1}')
+        email=$(echo "$u" | awk '{print $2}')
+        pass=$(echo "$u" | awk '{print $3}')
+        su $APP_USER -c "php $APPDIR/scripts/script.php jcommunity~user:create -v --no-error-if-exists $login $email $pass" || true
+    done
+}
+
 function launch() {
     if [ ! -f $APPDIR/var/config/profiles.ini.php ]; then
        if [ "$1" == "sqlite" ]; then
@@ -187,6 +209,7 @@ function launch() {
     setRights
     cleanTmp
     setupAdmin
+    setupTestUsers
 }
 
 function launchUnitTests() {
