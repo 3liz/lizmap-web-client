@@ -111,15 +111,13 @@ export default class FeatureToolbar extends HTMLElement {
                             class="btn btn-sm dropdown-toggle"
                             data-bs-toggle="dropdown"
                             aria-expanded="false"
-                            data-bs-toggle="tooltip"
-                            data-bs-title="${lizDict['attributeLayers.toolbar.btn.data.export.title']}"
+                            title="${lizDict['attributeLayers.toolbar.btn.data.export.title']}"
                             >
                             <i class="icon-download"></i>
-                            <span class="caret"></span>
                         </button>
-                        <ul class="dropdown-menu pull-right" role="menu">
+                        <ul class="dropdown-menu">
                             ${this._downloadFormats.map((format) =>
-                                html`<li><a href="#" @click=${() => this.export(format)}>${format}</a></li>`)}
+                                html`<li><a class="dropdown-item" href="#" @click=${() => this.export(format)}>${format}</a></li>`)}
                         </ul>
                     </div>`
                 : ''
@@ -196,16 +194,15 @@ export default class FeatureToolbar extends HTMLElement {
                         class="btn btn-sm dropdown-toggle"
                         data-bs-toggle="dropdown"
                         aria-expanded="false"
-                        data-bs-title="${lizDict['attributeLayers.toolbar.btn.data.createFeature.title']}"
+                        title="${lizDict['attributeLayers.toolbar.btn.data.createFeature.title']}"
                         >
                         <i class="icon-plus-sign"></i>
-                        <span class="caret"></span>
                     </button>
-                    <ul class="dropdown-menu" role="menu">
+                    <ul class="dropdown-menu">
                         ${this.editableChildrenLayers.map((child) =>
                             html`
                                 <li>
-                                    <a
+                                    <a href="#" class="dropdown-item"
                                         data-child-layer-id="${child.layerId}"
                                         @click=${() => this.createChild(child)}
                                         >${child.title}
