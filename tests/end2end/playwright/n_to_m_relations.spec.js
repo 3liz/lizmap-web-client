@@ -54,7 +54,7 @@ test.describe('N to M relations',
                 await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Edit']")).toBeVisible();
                 await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Delete']")).toBeVisible();
                 await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Unlink child']")).toBeHidden();
-                await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Create feature']")).toBeVisible();
+                await expect(featToolbar.locator(".feature-toolbar button[title='Create feature']")).toBeVisible();
                 await expect(featToolbar.locator(".feature-toolbar .feature-create-child ul li a")).toHaveText("Bird sposts");
             }
 
@@ -94,7 +94,7 @@ test.describe('N to M relations',
                 await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Edit']")).toBeVisible();
                 await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Delete']")).toBeHidden();
                 await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Unlink child']")).toBeVisible();
-                await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Create feature']")).toBeHidden();
+                await expect(featToolbar.locator(".feature-toolbar button[title='Create feature']")).toBeHidden();
             }
 
             // change main record
@@ -123,7 +123,7 @@ test.describe('N to M relations',
                 await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Edit']")).toBeVisible();
                 await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Delete']")).toBeHidden();
                 await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Unlink child']")).toBeVisible();
-                await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Create feature']")).toBeHidden();
+                await expect(featToolbar.locator(".feature-toolbar button[title='Create feature']")).toBeHidden();
             }
 
             // change tab to inspect bird spots (1:n control)
@@ -153,7 +153,7 @@ test.describe('N to M relations',
                 await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Edit']")).toBeVisible();
                 await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Delete']")).toBeVisible();
                 await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Unlink child']")).toBeVisible();
-                await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Create feature']")).toBeHidden();
+                await expect(featToolbar.locator(".feature-toolbar button[title='Create feature']")).toBeHidden();
             }
 
             // unlink bird spot from second natural area record
