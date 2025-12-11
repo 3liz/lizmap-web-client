@@ -30,7 +30,6 @@ class lizmap_searchCtrl extends jController
 
     public function show()
     {
-
         $form = jForms::create('lizmap_search', 'show');
         $hasDedicatedProfile = $this->lizmapSearch->hasProfile();
         if ($hasDedicatedProfile) {
@@ -42,27 +41,36 @@ class lizmap_searchCtrl extends jController
         $resp = $this->getResponse('html');
         $tpl = new jTpl();
         $tpl->assign('form', $form);
-        $tpl->assign('isConfOk', $this->lizmapSearch->check());
+        $tpl->assign('isConfOk', $this->lizmapSearch->check(true));
         $tpl->assign('hasDedicatedProfile', $hasDedicatedProfile);
         $resp->body->assign('MAIN', $tpl->fetch('lizmapSearch'));
 
         return $resp;
     }
 
+    public function pre()
+    {
+        $form = jForms::create('lizmap_search', 'edit');
+        if ($this->lizmapSearch->hasProfile()) {
+            $this->lizmapSearch->initProfileForm($form);
+        } else {
+            $form->deactivate('confirm_invalid');
+            $form->deactivate('error_message');
+        }
+
+        return $this->redirect('admin~lizmap_search:edit');
+    }
+
     public function edit()
     {
         $form = jForms::get('lizmap_search', 'edit');
+        if (is_null($form)) {
+            return $this->redirect('admin~lizmap_search:pre');
+        }
 
         /** @var jResponseHtml $resp */
         $resp = $this->getResponse('html');
         $tpl = new jTpl();
-        if (is_null($form)) {
-            $form = jForms::create('lizmap_search', 'edit');
-            if ($this->lizmapSearch->hasProfile()) {
-                $this->lizmapSearch->initProfileForm($form);
-            }
-        }
-
         $tpl->assign('form', $form);
         $resp->body->assign('MAIN', $tpl->fetch('lizmapSearch.edit'));
 
