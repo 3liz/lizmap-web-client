@@ -38,9 +38,8 @@ class LizmapSearch
         $form->deactivate('error_message');
     }
 
-    public function check()
+    public function check($logMissingRelation = false)
     {
-        $ok = false;
         $profile = null;
         if ($this->hasProfile()) {
             $profile = self::PROFILE_NAME;
@@ -50,10 +49,11 @@ class LizmapSearch
             $cnx = $this->appContext->getDbConnection($profile);
         } catch (\Exception $e) {
             // log ?
-            $this->appContext->logException($e, 'error');
+            $this->appContext->logMessage('error connecting to lizmap_search : '.$e->getMessage(), 'lizmapadmin');
 
             return false;
         }
+
         // The Lizmap FTS search is only available for PostgreSQL
         if ($cnx->dbms != 'pgsql') {
             return false;
@@ -78,15 +78,18 @@ class LizmapSearch
 
         try {
             $res = $cnx->query($sql);
-            foreach ($res as $r) {
-                return $r->lizmap_search_exists;
+            $stmt = $res->fetch();
+            $isRelationExisting = $stmt->lizmap_search_exists == 't';
+
+            if ($logMissingRelation && !$isRelationExisting) {
+                $this->appContext->logMessage('lizmap_search does\'nt exists or user can\'t request it', 'lizmapadmin');
             }
+
+            return $isRelationExisting;
         } catch (\Exception $e) {
-            $this->appContext->logException($e, 'error');
+            $this->appContext->logException($e->getMessage(), 'error');
 
             return false;
         }
-
-        return false;
     }
 }
