@@ -35,6 +35,8 @@ class qgisAttributeEditorElement
     protected $childrenAfterTab = array();
     protected $_textWidgetText = '';
 
+    protected $backgroundColor;
+
     public function __construct(
         QgisFormControlsInterface $formControls,
         SimpleXMLElement $node,
@@ -95,6 +97,7 @@ class qgisAttributeEditorElement
                 } else {
                     $this->_isTabPanel = true;
                     $this->htmlId = $parentId.'-tab'.$idx;
+                    $this->backgroundColor = $this->getAttribute('backgroundColor');
                 }
             }
 
@@ -391,5 +394,14 @@ class qgisAttributeEditorElement
         }
 
         return $expressions;
+    }
+
+    public function getBackgroundColorStyle()
+    {
+        if (!is_null($this->backgroundColor)) {
+            return 'style="background-color:'.$this->backgroundColor.'"';
+        }
+
+        return '';
     }
 }

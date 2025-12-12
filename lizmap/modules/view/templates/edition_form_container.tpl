@@ -21,7 +21,7 @@
 {if $container->hasTabChildren()}
 <ul id="{$container->getParentId()}-tabs" class="nav nav-tabs">
     {foreach $container->getTabChildren() as $k => $tabChild}
-    <li class="nav-item" {if !$groupVisibilities[$tabChild->getHtmlId()]} style="display:none;"{/if}>
+    <li class="nav-item" {if !$groupVisibilities[$tabChild->getHtmlId()]} style="display:none;"{/if} {$tabChild->getBackgroundColorStyle()}>
         <button class="nav-link {if $k == 0}active{/if}" data-bs-target="#{$tabChild->getHtmlId()}" data-bs-toggle="tab" type="button">{$tabChild->getName()}</button>
     </li>
     {/foreach}
@@ -29,7 +29,7 @@
 
 <div id="{$container->getParentId()}-tab-content" class="tab-content">
     {foreach $container->getTabChildren() as $k => $tabChild}
-        <div class="tab-pane {if $k == 0}active{/if}" id="{$tabChild->getHtmlId()}">
+        <div class="tab-pane {if $k == 0}active{/if}" id="{$tabChild->getHtmlId()}" {$tabChild->getBackgroundColorStyle()}>
             {fetchtpl 'view~edition_form_container',array('container'=>$tabChild, 'groupVisibilities'=>$groupVisibilities)}
         </div>
     {/foreach}
