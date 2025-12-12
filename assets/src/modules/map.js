@@ -750,21 +750,26 @@ export default class map extends olMap {
             ['layer.visibility.changed', 'group.visibility.changed']
         );
 
-        baseLayersState.addListener(
-            evt => {
+        let opacityChangedListener = function (map) {
+            return function (evt) {
                 // conservative control since the opacity events should not be fired for single WMS layers
-                if (this.isSingleWMSLayer(evt.name)) return;
+                if (map.isSingleWMSLayer(evt.name)) return;
 
-                const activeBaseLayer = this.getActiveBaseLayer();
+                const activeBaseLayer = map.getActiveBaseLayer();
                 if (activeBaseLayer && activeBaseLayer.get("name") === evt.name) {
                     activeBaseLayer.setOpacity(evt.opacity);
                 } else {
-                    this.getLayerOrGroupByName(evt.name)?.setOpacity(evt.opacity);
+                    map.getLayerOrGroupByName(evt.name)?.setOpacity(evt.opacity);
                 }
-            },
+            }};
+        baseLayersState.addListener(
+           opacityChangedListener(this),
             ['layer.opacity.changed', 'group.opacity.changed']
         );
-
+        rootMapGroup.addListener(
+           opacityChangedListener(this),
+            ['layer.opacity.changed', 'group.opacity.changed']
+        );
         rootMapGroup.addListener(
             evt => {
                 const stateOlLayerAndMap = this._statesOlLayersandGroupsMap.get(evt.name);
