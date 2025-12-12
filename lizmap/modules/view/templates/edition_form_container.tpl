@@ -23,14 +23,14 @@
 {if $container->hasTabChildren()}
 <ul id="{$container->getParentId()}-tabs" class="nav nav-tabs">
     {foreach $container->getTabChildren() as $tabChild}
-    <li{if !$groupVisibilities[$tabChild->getHtmlId()]} style="display:none;"{/if}><a href="#{$tabChild->getHtmlId()}"
+    <li{if !$groupVisibilities[$tabChild->getHtmlId()]} style="display:none;"{/if} {$tabChild->getBackgroundColorStyle()}><a href="#{$tabChild->getHtmlId()}"
            data-toggle="tab">{$tabChild->getName()}</a></li>
     {/foreach}
 </ul>
 
 <div id="{$container->getParentId()}-tab-content" class="tab-content">
     {foreach $container->getTabChildren() as $tabChild}
-        <div class="tab-pane" id="{$tabChild->getHtmlId()}">
+        <div class="tab-pane" id="{$tabChild->getHtmlId()}" {$tabChild->getBackgroundColorStyle()}>
             {fetchtpl 'view~edition_form_container',array('container'=>$tabChild, 'groupVisibilities'=>$groupVisibilities)}
         </div>
     {/foreach}
