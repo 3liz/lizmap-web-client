@@ -18,9 +18,9 @@ test.describe('Form edition', function () {
         const formRequest = await project.openEditingFormWithLayer('end2end_form_edition');
         await formRequest.response();
 
-        expect(page.locator('#edition')).toBeVisible();
-        expect(page.locator('#edition .edition-tabs')).toBeVisible();
-        expect(page.locator('#edition-form-container')).toBeVisible();
+        await expect(page.locator('#edition')).toBeVisible();
+        await expect(page.locator('#edition .edition-tabs')).toBeVisible();
+        await expect(page.locator('#edition-form-container')).toBeVisible();
 
         expect(page.locator('.edition-tabs button[data-bs-target="#tabdigitization"]')).not.toBeVisible();
 
@@ -35,9 +35,9 @@ test.describe('Form edition', function () {
         const formRequest = await project.openEditingFormWithLayer('end2end_form_edition_geom');
         await formRequest.response();
 
-        expect(page.locator('#edition')).toBeVisible();
-        expect(page.locator('#edition .edition-tabs')).toBeVisible();
-        expect(page.locator('#edition-form-container')).toBeVisible();
+        await expect(page.locator('#edition')).toBeVisible();
+        await expect(page.locator('#edition .edition-tabs')).toBeVisible();
+        await expect(page.locator('#edition-form-container')).toBeVisible();
 
         expect(page.locator('.edition-tabs button[data-bs-target="#tabdigitization"]')).toBeVisible();
 
@@ -55,17 +55,17 @@ test.describe('Form edition', function () {
         responseExpect(datatablesResponse).toBeJson();
 
         let tableHtml = project.attributeTableHtml(tableName);
-        expect(tableHtml.locator('tbody tr')).not.toHaveCount(0);
-        expect(tableHtml.locator('tbody tr .feature-edit')).not.toHaveCount(0);
+        await expect(tableHtml.locator('tbody tr')).not.toHaveCount(0);
+        await expect(tableHtml.locator('tbody tr .feature-edit')).not.toHaveCount(0);
 
         let editFeatureRequestPromise = page.waitForRequest(/lizmap\/edition\/editFeature/);;
         tableHtml.locator('tbody tr .feature-edit').first().click();
         const editFeatureRequest = await editFeatureRequestPromise;
         await editFeatureRequest.response();
 
-        expect(page.locator('#edition')).toBeVisible();
-        expect(page.locator('#edition .edition-tabs')).toBeVisible();
-        expect(page.locator('#edition-form-container')).toBeVisible();
+        await expect(page.locator('#edition')).toBeVisible();
+        await expect(page.locator('#edition .edition-tabs')).toBeVisible();
+        await expect(page.locator('#edition-form-container')).toBeVisible();
 
         // Cancel form
         page.on('dialog', dialog => dialog.accept());
@@ -78,9 +78,9 @@ test.describe('Form edition', function () {
         const formRequest = await project.openEditingFormWithLayer('end2end_form_edition');
         await formRequest.response();
 
-        expect(page.locator('#edition')).toBeVisible();
-        expect(page.locator('#edition .edition-tabs')).toBeVisible();
-        expect(page.locator('#edition-form-container')).toBeVisible();
+        await expect(page.locator('#edition')).toBeVisible();
+        await expect(page.locator('#edition .edition-tabs')).toBeVisible();
+        await expect(page.locator('#edition-form-container')).toBeVisible();
 
         await project.editingField('value').fill('42');
 
@@ -101,9 +101,9 @@ test.describe('Form edition', function () {
         const formRequest = await project.openEditingFormWithLayer(tableName);
         await formRequest.response();
 
-        expect(page.locator('#edition')).toBeVisible();
-        expect(page.locator('#edition .edition-tabs')).toBeVisible();
-        expect(page.locator('#edition-form-container')).toBeVisible();
+        await expect(page.locator('#edition')).toBeVisible();
+        await expect(page.locator('#edition .edition-tabs')).toBeVisible();
+        await expect(page.locator('#edition-form-container')).toBeVisible();
 
         await project.editingField('value').fill('42');
 
@@ -122,18 +122,18 @@ test.describe('Form edition', function () {
         responseExpect(datatablesResponse).toBeJson();
 
         let tableHtml = project.attributeTableHtml(tableName);
-        expect(tableHtml.locator('tbody tr')).not.toHaveCount(0);
-        expect(tableHtml.locator('tbody tr .feature-edit')).not.toHaveCount(0);
-        expect(tableHtml.locator('tbody tr .feature-delete')).not.toHaveCount(0);
+        await expect(tableHtml.locator('tbody tr')).not.toHaveCount(0);
+        await expect(tableHtml.locator('tbody tr .feature-edit')).not.toHaveCount(0);
+        await expect(tableHtml.locator('tbody tr .feature-delete')).not.toHaveCount(0);
 
         let editFeatureRequestPromise = page.waitForRequest(/lizmap\/edition\/editFeature/);
         tableHtml.locator('tbody tr .feature-edit').first().click();
         let editFeatureRequest = await editFeatureRequestPromise;
         await editFeatureRequest.response();
 
-        expect(page.locator('#edition')).toBeVisible();
-        expect(page.locator('#edition .edition-tabs')).toBeVisible();
-        expect(page.locator('#edition-form-container')).toBeVisible();
+        await expect(page.locator('#edition')).toBeVisible();
+        await expect(page.locator('#edition .edition-tabs')).toBeVisible();
+        await expect(page.locator('#edition-form-container')).toBeVisible();
 
         await project.clickOnMapLegacy(630-30 , 325-75);
 
