@@ -5,7 +5,7 @@ import { expect as responseExpect } from './fixtures/expect-response.js'
 
 test.describe('Form edition reverse geom', function () {
 
-    test('must reverse geom @readonly', async function ({ page }) {
+    test('must reverse geom @write', async function ({ page }) {
         const project = new ProjectPage(page, 'reverse_geom');
         let getMapRequestPromise = project.waitForGetMapRequest();
         await project.open();
@@ -31,9 +31,9 @@ test.describe('Form edition reverse geom', function () {
         // Check response body
         let getMapBody = await getMapResponse?.body();
         expect(getMapBody).toBeInstanceOf(Buffer);
-        let getMapBodyLength = getMapBody ? getMapBody.length : 0;
-        expect(getMapBodyLength).toBeGreaterThanOrEqual(13000); // 13481
-        expect(getMapBodyLength).toBeLessThanOrEqual(14000); // 13481
+        let defaultGetMapBodyLength = getMapBody ? getMapBody.length : 0;
+        expect(defaultGetMapBodyLength).toBeGreaterThanOrEqual(12500); // 13481 or 12945
+        expect(defaultGetMapBodyLength).toBeLessThanOrEqual(14000); // 13481 or 12945
 
         let getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest();
         await project.clickOnMap(436, 292);
@@ -55,16 +55,57 @@ test.describe('Form edition reverse geom', function () {
         await page.locator("#lizmap-edition-message a.close").click();
         await expect(page.locator("#lizmap-edition-message")).toHaveCount(0);
 
+        await expect(page.locator('#edition')).toBeVisible();
+        await expect(page.locator('#edition .edition-tabs')).toBeVisible();
+        await expect(page.locator('#edition-form-container')).toBeVisible();
+
+        // Check geom field
+        let fieldLocator = project.editingField('geom');
+        await expect(fieldLocator).toHaveCount(1);
+        await expect(fieldLocator).toBeHidden();
+        expect(await fieldLocator.evaluate(elt => elt.tagName)).toBe('INPUT');
+        await expect(fieldLocator).toHaveId('jforms_view_edition_geom');
+        await expect(fieldLocator).toHaveAttribute('name', 'geom');
+        await expect(fieldLocator).toHaveAttribute('type', 'hidden');
+        const wkt = await fieldLocator.getAttribute('value');
+
         expect(page.locator('.edition-tabs a[href="#tabdigitization"]')).toBeVisible();
         await page.locator('.edition-tabs a[href="#tabdigitization"]').click();
 
         expect(page.locator('#tabdigitization lizmap-reverse-geom')).toBeVisible();
+
         await page.locator('#tabdigitization lizmap-reverse-geom').click();
 
         await expect(page.locator("#lizmap-edition-message")).toBeVisible();
         await expect(page.locator("#lizmap-edition-message")).toContainClass('alert-success');
         await expect(page.locator("#lizmap-edition-message")).toContainText('Geometry has been reversed. You can now save the form.');
         await page.locator("#lizmap-edition-message a.close").click();
+
+        // The geom value has been upated
+        await expect(fieldLocator).not.toHaveAttribute('value', wkt);
+
+        expect(page.locator('.edition-tabs a[href="#tabform"]')).toBeVisible();
+        await page.locator('.edition-tabs a[href="#tabform"]').click();
+        await expect(page.locator('#edition-form-container')).toBeVisible();
+
+        // submit the form
+        let saveFeatureRequestPromise = page.waitForRequest(/lizmap\/edition\/saveFeature/);
+        getMapRequestPromise = project.waitForGetMapRequest();
+        await project.editingSubmitForm();
+        let saveFeatureRequest = await saveFeatureRequestPromise;
+        await saveFeatureRequest.response();
+
+        getMapRequest = await getMapRequestPromise;
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
+        getMapResponse = await getMapRequest.response();
+        responseExpect(getMapResponse).toBeImagePng();
+        // Check response body
+        getMapBody = await getMapResponse?.body();
+        expect(getMapBody).toBeInstanceOf(Buffer);
+        let getMapBodyLength = getMapBody ? getMapBody.length : 0;
+        expect(getMapBodyLength).toBeGreaterThanOrEqual(12500); // 13481 or 12945
+        expect(getMapBodyLength).toBeLessThanOrEqual(14000); // 13481 or 12945
+        expect(getMapBodyLength).not.toBe(defaultGetMapBodyLength);
     });
 
 });
