@@ -2990,6 +2990,8 @@ lizmap-mouse-position > div.coords-unit > select{
 
 .edition-tabs .nav-pills {
   margin-bottom: 10px;
+  position: relative;
+  z-index: 1;
 }
 
 .edition-tabs .nav-pills a {
