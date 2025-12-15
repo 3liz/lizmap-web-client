@@ -35,7 +35,7 @@ class qgisAttributeEditorElement
     protected $childrenAfterTab = array();
     protected $_textWidgetText = '';
 
-    protected $backgroundColor = null;
+    protected $backgroundColor;
 
     public function __construct(
         QgisFormControlsInterface $formControls,
