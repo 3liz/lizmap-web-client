@@ -1,12 +1,12 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { gotoMap } from './globals';
+import { ProjectPage } from './pages/project';
 
 test.describe('Edition of an embedded layer', () => {
     test.beforeEach(async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=embed_child';
-        await gotoMap(url, page);
-        await page.locator('#dock-close').click();
+        const project = new ProjectPage(page, 'embed_child');
+        await project.open();
+        await project.closeLeftDock();
     });
 
     test('Inspect keyValueConfig for embedded layers', async ({ page }) =>{
@@ -47,16 +47,10 @@ test.describe('Edition of an embedded layer', () => {
     })
 
     test('Open embedded layer edition form', async ({ page }) => {
-        let editPointRequestPromise = page.waitForResponse(response => response.url().includes('editFeature'));
-
-        await page.locator('#button-edition').click();
-        await page.locator('#edition-layer').selectOption({ label: 'Embedded Point' });
-        await page.locator('#edition-draw').click();
-
-        await editPointRequestPromise;
-
-        // Wait a bit for the UI
-        await page.waitForTimeout(300);
+        const project = new ProjectPage(page, 'embed_child');
+        // Open the form for Embedded Point
+        let formRequest = await project.openEditingFormWithLayer('Embedded Point');
+        await formRequest.response();
 
         // inspect the form
         // id
@@ -76,26 +70,14 @@ test.describe('Edition of an embedded layer', () => {
         await expect(page.locator('#jforms_view_edition_descr_label')).toBeVisible();
         await expect(page.locator('#jforms_view_edition_descr_label')).toHaveText("Point description");
 
-        page.once('dialog', dialog => {
-            console.log(`Dialog message: ${dialog.message()}`);
-            dialog.accept()
-        });
-        //close form
-        await page.locator("#jforms_view_edition__submit_cancel").click()
+        // Close form
+        await project.editingSubmit('cancel').scrollIntoViewIfNeeded();
+        page.once('dialog', dialog => dialog.accept());
+        await project.editingSubmit('cancel').click();
 
-
-
-        let editLineRequestPromise = page.waitForResponse(response => response.url().includes('editFeature'));
-
-
-        //await page.locator('#button-edition').click();
-        await page.locator('#edition-layer').selectOption({ label: 'Embedded Line' });
-        await page.locator('#edition-draw').click();
-
-        await editLineRequestPromise;
-
-        // Wait a bit for the UI
-        await page.waitForTimeout(300);
+        // Open the form for Embedded Line
+        formRequest = await project.openEditingFormWithLayer('Embedded Line');
+        await formRequest.response();
 
         // inspect the form
         // id
@@ -107,5 +89,10 @@ test.describe('Edition of an embedded layer', () => {
         await expect(page.locator('#jforms_view_edition_descr')).toBeVisible();
         await expect(page.locator('#jforms_view_edition_descr_label')).toBeVisible();
         await expect(page.locator('#jforms_view_edition_descr_label')).toHaveText("Description");
+
+        // Close form
+        await project.editingSubmit('cancel').scrollIntoViewIfNeeded();
+        page.once('dialog', dialog => dialog.accept());
+        await project.editingSubmit('cancel').click();
     })
 })
