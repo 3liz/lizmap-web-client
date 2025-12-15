@@ -388,28 +388,69 @@ var lizLayerActionButtons = function() {
                         }
 
                         // STEP 2: Set groups checked/expanded state based on theme configuration
+                        // Use a two-pass approach to handle automatic parent checking:
+                        // - Pass 1: Set all groups (child groups will auto-check parents)
+                        // - Pass 2: Uncheck parent groups that shouldn't be checked
+
+                        // Helper function to check if group is in list
+                        const isInList = (nodeList, wmsName, name) => {
+                            // First check for exact matches (full path or simple name)
+                            if (nodeList.includes(wmsName) || nodeList.includes(name)) {
+                                return true;
+                            }
+
+                            // For nested groups: check if this group matches the last component of a path
+                            // Example: if checkedGroupNodes has "ALKIS/Beschriftung",
+                            // then the "Beschriftung" subgroup should match, but "ALKIS" parent should NOT
+                            for (const nodePath of nodeList) {
+                                // Skip paths without separator (already handled by exact match above)
+                                if (!nodePath.includes('/')) {
+                                    continue;
+                                }
+
+                                // Get the last component of the path
+                                const lastPart = nodePath.split('/').pop();
+
+                                // Only match if wmsName or name equals the LAST part
+                                if (wmsName === lastPart || name === lastPart) {
+                                    return true;
+                                }
+                            }
+
+                            return false;
+                        };
+
+                        // Pass 2a: Set all groups checked/expanded state
+                        // Note: Setting child groups to checked will auto-propagate to parents
                         for (const item of allItems) {
                             if (item.mapItemState.itemState.type !== "group") {
                                 continue; // Skip layers
                             }
 
-                            const wmsName = item.wmsName;
-                            const name = item.name;
+                            item.checked = isInList(checkedGroupNodes, item.wmsName, item.name);
+                            item.expanded = isInList(expandedGroupNodes, item.wmsName, item.name);
+                        }
 
-                            // Helper function to check if group is in list
-                            const isInList = (nodeList) => {
-                                if (nodeList.includes(wmsName) || nodeList.includes(name)) {
-                                    return true;
-                                }
-                                return nodeList.some(nodePath => {
-                                    const lastPart = nodePath.split('/').pop();
-                                    return lastPart === wmsName || lastPart === name;
-                                });
-                            };
+                        // Pass 2b: Fix parent groups that were auto-checked but shouldn't be
+                        // When a child group is checked, it automatically checks the parent.
+                        // This pass unchecks parents that aren't explicitly in the theme.
+                        for (const item of allItems) {
+                            if (item.mapItemState.itemState.type !== "group") {
+                                continue; // Skip layers
+                            }
 
-                            // Directly set the correct state based on theme configuration
-                            item.checked = isInList(checkedGroupNodes);
-                            item.expanded = isInList(expandedGroupNodes);
+                            // Only check groups that are currently checked
+                            if (!item.checked) {
+                                continue;
+                            }
+
+                            // Verify if this group should actually be checked per the theme
+                            const shouldBeChecked = isInList(checkedGroupNodes, item.wmsName, item.name);
+
+                            // If it's checked but not in the theme list, uncheck it
+                            if (!shouldBeChecked) {
+                                item.checked = false;
+                            }
                         }
 
                         // Resume permalink updates after theme application
