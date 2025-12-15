@@ -1,6 +1,7 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 import { expect as responseExpect } from './fixtures/expect-response.js'
+import { expect as requestExpect } from './fixtures/expect-request.js'
 import { expectParametersToContain } from './globals';
 import { ProjectPage } from "./pages/project";
 
@@ -1207,19 +1208,19 @@ test.describe('Form edition without creation', {tag: ['@readonly'],},() => {
         let getFeatureInfoResponse = await getFeatureInfoRequest.response();
         responseExpect(getFeatureInfoResponse).toBeHtml();
 
-        const featureToolbar = await project.popupContent.locator('lizmap-feature-toolbar[value^="quartiers_"][value$=".6"]');
-        await expect(featureToolbar).toBeDefined();
+        const featureToolbar = project.popupContent.locator('lizmap-feature-toolbar[value^="quartiers_"][value$=".6"]');
+        await expect(featureToolbar).toHaveCount(1);
         await expect(featureToolbar).toBeVisible();
-        await expect(await featureToolbar.locator('button.feature-edit')).toBeVisible();
+        await expect(featureToolbar.locator('button.feature-edit')).toBeVisible();
 
-        let editFeatureRequestPromise = page.waitForRequest(
-            request => request.method() === 'GET' &&
-            request.url().includes('editFeature') === true &&
-            request.url().includes('layerId=quartiers_') === true &&
-            request.url().includes('featureId=6') === true
-        );
+        let editFeatureRequestPromise = page.waitForRequest(/lizmap\/edition\/editFeature/);
         await featureToolbar.locator('button.feature-edit').click();
         let editFeatureRequest = await editFeatureRequestPromise;
+        let expectedEditFeatureParameters = {
+            'layerId': /^quartiers_/,
+            'featureId': '6',
+        };
+        requestExpect(editFeatureRequest).toContainParametersInUrl(expectedEditFeatureParameters);
         await editFeatureRequest.response();
 
         // Only edition form should be visible...
