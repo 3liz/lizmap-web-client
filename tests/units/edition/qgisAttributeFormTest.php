@@ -378,4 +378,34 @@ class qgisAttributeFormTest extends TestCase
         $this->assertEquals('foo-tab0-group1-2', $cc->getHtmlId());
         $this->assertEquals('foo-tab0-group1', $cc->getParentId());
     }
+
+    public function testBackGroundColor() : void
+    {
+        $xml = '<attributeEditorForm>
+          <attributeEditorContainer backgroundColor="#AABBCC" collapsed="0" visibilityExpressionEnabled="0" type="Tab" name="tab1" collapsedExpression="" verticalStretch="0" horizontalStretch="0" visibilityExpression="" collapsedExpressionEnabled="0" columnCount="1" groupBox="0" showLabel="1">
+            <attributeEditorField showLabel="1" index="0" name="pkuid"/>
+            <attributeEditorField showLabel="1" index="1" name="name"/>
+            <attributeEditorField showLabel="1" index="2" name="description"/>
+          </attributeEditorContainer>
+          <attributeEditorContainer collapsed="0" visibilityExpressionEnabled="0" type="Tab" name="tab_no_color" collapsedExpression="" verticalStretch="0" horizontalStretch="0" visibilityExpression="" collapsedExpressionEnabled="0" columnCount="1" groupBox="0" showLabel="1">
+            <attributeEditorField showLabel="1" index="4" name="date"/>
+            <attributeEditorField showLabel="1" index="5" name="type"/>
+            <attributeEditorField showLabel="1" index="3" name="user"/>
+          </attributeEditorContainer>
+        </attributeEditorForm>';
+        $sXml = simplexml_load_string($xml);
+        $controls = new dummyQgisFormControls();
+        $element = new qgisAttributeEditorElement($controls, $sXml, 'tabForm', 0, 0);
+
+        $tabs = $element->getTabChildren();
+        $this->assertCount(2, $tabs);
+        $colors = ['style="background-color:#AABBCC"', ''];
+        $names = ['tab1', 'tab_no_color'];
+        for($i = 0; $i<count($tabs); $i++) {
+            $this->assertEquals('tabForm-tab'.strval($i), $tabs[$i]->getHtmlId());
+            $this->assertEquals($colors[$i], $tabs[$i]->getBackgroundColorStyle());
+            $this->assertEquals($names[$i], $tabs[$i]->getName());
+            $this->assertTrue($tabs[$i]->isTabPanel());
+        }
+    }
 }
