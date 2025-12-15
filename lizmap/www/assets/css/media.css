@@ -460,6 +460,8 @@ only screen and (                   device-height <= 640px) {
 
   #dock{
     margin-top: 45px;
+    max-height: calc(100vh - 45px); /* Viewport minus header height */
+    overflow-y: auto; /* Enable scrolling in dock when needed */
   }
 
   .digitizing .btn {
