@@ -54,21 +54,66 @@ test.describe('Edition of an embedded layer', () => {
 
         // inspect the form
         // id
-        await expect(page.locator('#jforms_view_edition_id')).toBeVisible();
-        await expect(page.locator('#jforms_view_edition_id_label')).toBeVisible();
-        await expect(page.locator('#jforms_view_edition_id_label')).toHaveText("Id");
+        let fieldLocator = project.editingField('id');
+        await expect(fieldLocator).toHaveCount(1);
+        await expect(fieldLocator).not.toBeHidden();
+        await fieldLocator.scrollIntoViewIfNeeded();
+        expect(await fieldLocator.evaluate(elt => elt.tagName)).toBe('INPUT');
+        await expect(fieldLocator).toHaveId('jforms_view_edition_id');
+        await expect(fieldLocator).toHaveAttribute('name', 'id');
+        await expect(fieldLocator).toHaveAttribute('type', 'number');
+        await expect(fieldLocator).toHaveAttribute('step', 'any');
+        await expect(fieldLocator).not.toHaveAttribute('min');
+        await expect(fieldLocator).not.toHaveAttribute('max');
+        await expect(fieldLocator).toContainClass('jforms-ctrl-input');
+        await expect(fieldLocator).not.toBeDisabled();
+        await expect(fieldLocator).toBeVisible();
+        let labelLocator = page.locator(`#${await fieldLocator.getAttribute('id')}_label`);
+        await expect(labelLocator).toBeVisible();
+        await expect(labelLocator).toHaveText("Id");
 
         // external_ref
-        await expect(page.locator('#jforms_view_edition_id_ext_point')).toBeVisible();
-        await expect(page.locator('#jforms_view_edition_id_ext_point_label')).toBeVisible();
-        await expect(page.locator('#jforms_view_edition_id_ext_point_label')).toHaveText("external_ref");
-        await page.locator('#jforms_view_edition_id_ext_point').selectOption("1");
-        await page.locator('#jforms_view_edition_id_ext_point').selectOption("2");
+        fieldLocator = project.editingField('id_ext_point');
+        await expect(fieldLocator).toHaveCount(1);
+        await expect(fieldLocator).not.toBeHidden();
+        await fieldLocator.scrollIntoViewIfNeeded();
+        expect(await fieldLocator.evaluate(elt => elt.tagName)).toBe('SELECT');
+        await expect(fieldLocator).toHaveId('jforms_view_edition_id_ext_point')
+        await expect(fieldLocator).toHaveAttribute('name', 'id_ext_point');
+        await expect(fieldLocator).toHaveAttribute('size', '1');
+        await expect(fieldLocator).toContainClass('jforms-ctrl-menulist');
+        await expect(fieldLocator).not.toBeDisabled();
+        await expect(fieldLocator.locator('option')).toHaveCount(3);
+        let selectValues = [];
+        let selectTitles = [];
+        for (const option of await fieldLocator.locator('option').all()) {
+            selectValues.push(await option.getAttribute('value'));
+            selectTitles.push(await option.textContent());
+        }
+        expect(selectValues).toEqual(['', '1', '2']);
+        expect(selectTitles).toEqual(['', 'External1', 'External2']);
+        labelLocator = page.locator(`#${await fieldLocator.getAttribute('id')}_label`);
+        await expect(labelLocator).toBeVisible();
+        await expect(labelLocator).toHaveText("external_ref");
 
         // description
-        await expect(page.locator('#jforms_view_edition_descr')).toBeVisible();
-        await expect(page.locator('#jforms_view_edition_descr_label')).toBeVisible();
-        await expect(page.locator('#jforms_view_edition_descr_label')).toHaveText("Point description");
+        fieldLocator = project.editingField('descr');
+        await expect(fieldLocator).toHaveCount(1);
+        await expect(fieldLocator).not.toBeHidden();
+        await fieldLocator.scrollIntoViewIfNeeded();
+        expect(await fieldLocator.evaluate(elt => elt.tagName)).toBe('INPUT');
+        await expect(fieldLocator).toHaveId('jforms_view_edition_descr');
+        await expect(fieldLocator).toHaveAttribute('name', 'descr');
+        await expect(fieldLocator).toHaveAttribute('type', 'text');
+        await expect(fieldLocator).not.toHaveAttribute('step', 'any');
+        await expect(fieldLocator).not.toHaveAttribute('min');
+        await expect(fieldLocator).not.toHaveAttribute('max');
+        await expect(fieldLocator).toContainClass('jforms-ctrl-input');
+        await expect(fieldLocator).not.toBeDisabled();
+        await expect(fieldLocator).toBeVisible();
+        labelLocator = page.locator(`#${await fieldLocator.getAttribute('id')}_label`);
+        await expect(labelLocator).toBeVisible();
+        await expect(labelLocator).toHaveText("Point description");
 
         // Close form
         await project.editingSubmit('cancel').scrollIntoViewIfNeeded();
@@ -81,14 +126,42 @@ test.describe('Edition of an embedded layer', () => {
 
         // inspect the form
         // id
-        await expect(page.locator('#jforms_view_edition_id')).toBeVisible();
-        await expect(page.locator('#jforms_view_edition_id_label')).toBeVisible();
-        await expect(page.locator('#jforms_view_edition_id_label')).toHaveText("id");
+        fieldLocator = project.editingField('id');
+        await expect(fieldLocator).toHaveCount(1);
+        await expect(fieldLocator).not.toBeHidden();
+        await fieldLocator.scrollIntoViewIfNeeded();
+        expect(await fieldLocator.evaluate(elt => elt.tagName)).toBe('INPUT');
+        await expect(fieldLocator).toHaveId('jforms_view_edition_id');
+        await expect(fieldLocator).toHaveAttribute('name', 'id');
+        await expect(fieldLocator).toHaveAttribute('type', 'number');
+        await expect(fieldLocator).toHaveAttribute('step', 'any');
+        await expect(fieldLocator).not.toHaveAttribute('min');
+        await expect(fieldLocator).not.toHaveAttribute('max');
+        await expect(fieldLocator).toContainClass('jforms-ctrl-input');
+        await expect(fieldLocator).not.toBeDisabled();
+        await expect(fieldLocator).toBeVisible();
+        labelLocator = page.locator(`#${await fieldLocator.getAttribute('id')}_label`);
+        await expect(labelLocator).toBeVisible();
+        await expect(labelLocator).toHaveText("id");
 
         // descr
-        await expect(page.locator('#jforms_view_edition_descr')).toBeVisible();
-        await expect(page.locator('#jforms_view_edition_descr_label')).toBeVisible();
-        await expect(page.locator('#jforms_view_edition_descr_label')).toHaveText("Description");
+        fieldLocator = project.editingField('descr');
+        await expect(fieldLocator).toHaveCount(1);
+        await expect(fieldLocator).not.toBeHidden();
+        await fieldLocator.scrollIntoViewIfNeeded();
+        expect(await fieldLocator.evaluate(elt => elt.tagName)).toBe('INPUT');
+        await expect(fieldLocator).toHaveId('jforms_view_edition_descr');
+        await expect(fieldLocator).toHaveAttribute('name', 'descr');
+        await expect(fieldLocator).toHaveAttribute('type', 'text');
+        await expect(fieldLocator).not.toHaveAttribute('step', 'any');
+        await expect(fieldLocator).not.toHaveAttribute('min');
+        await expect(fieldLocator).not.toHaveAttribute('max');
+        await expect(fieldLocator).toContainClass('jforms-ctrl-input');
+        await expect(fieldLocator).not.toBeDisabled();
+        await expect(fieldLocator).toBeVisible();
+        labelLocator = page.locator(`#${await fieldLocator.getAttribute('id')}_label`);
+        await expect(labelLocator).toBeVisible();
+        await expect(labelLocator).toHaveText("Description");
 
         // Close form
         await project.editingSubmit('cancel').scrollIntoViewIfNeeded();
