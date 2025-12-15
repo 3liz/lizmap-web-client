@@ -73,7 +73,7 @@ test.describe('Edition Form Validation', () => {
         // not used await project.openEditingFormWithLayer('form_edition_all_fields_types');
         // because createFeature will fail
         await project.buttonEditing.click();
-        await page.locator('a#edition-draw').hover();
+        await page.locator('#edition-layer').hover();
         await page.locator('a#edition-draw').click();
 
         // message
