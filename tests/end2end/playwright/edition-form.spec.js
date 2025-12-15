@@ -27,34 +27,40 @@ test.describe('Edition Form Validation', () => {
         await page.locator('#jforms_view_edition input[name="integer_field"]').fill('50');
 
         // submit form
-        await project.editingSubmitForm()
+        let saveFeatureRequestPromise = page.waitForRequest(/lizmap\/edition\/saveFeature/);
+        await project.editingSubmitForm();
+        let saveFeatureRequest = await saveFeatureRequestPromise;
+        await saveFeatureRequest.response();
     })
 
     test('Boolean nullable w/ value map', async ({ page }) => {
-
-        let editFeatureRequestPromise = page.waitForResponse(response => response.url().includes('editFeature'));
 
         const project = new ProjectPage(page, 'form_edition_all_field_type');
         const formRequest = await project.openEditingFormWithLayer('many_bool_formats');
         await formRequest.response();
 
         await page.getByLabel('bool_simple_null_vm').selectOption('t');
+
+        // submit the form and wait for reopening form
+        let saveFeatureRequestPromise = page.waitForRequest(/lizmap\/edition\/saveFeature/);
         await project.editingSubmitForm('edit');
-
-        await editFeatureRequestPromise;
-
-        // Wait a bit for the UI to refresh
-        await page.waitForTimeout(300);
+        let saveFeatureRequest = await saveFeatureRequestPromise;
+        let editFeatureRequestPromise = page.waitForRequest(/lizmap\/edition\/editFeature/);
+        await saveFeatureRequest.response();
+        let editFeatureRequest = await editFeatureRequestPromise;
+        await editFeatureRequest.response();
 
         await expect(page.getByLabel('bool_simple_null_vm')).toHaveValue('t');
-
         await page.getByLabel('bool_simple_null_vm').selectOption('');
+
+        // submit the form and wait for reopening form
+        saveFeatureRequestPromise = page.waitForRequest(/lizmap\/edition\/saveFeature/);
         await project.editingSubmitForm('edit');
-
-        await editFeatureRequestPromise;
-
-        // Wait a bit for the UI to refresh
-        await page.waitForTimeout(300);
+        saveFeatureRequest = await saveFeatureRequestPromise;
+        editFeatureRequestPromise = page.waitForRequest(/lizmap\/edition\/editFeature/);
+        await saveFeatureRequest.response();
+        editFeatureRequest = await editFeatureRequestPromise;
+        await editFeatureRequest.response();
 
         await expect(page.getByLabel('bool_simple_null_vm')).toHaveValue('');
     })
