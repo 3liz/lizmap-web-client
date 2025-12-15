@@ -1,15 +1,15 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { gotoMap } from './globals';
+import { ProjectPage } from './pages/project';
 
 test.describe('Form relational values', () => {
 
     test.beforeEach(async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=form_type_relational_value';
-        await gotoMap(url, page)
+        const project = new ProjectPage(page, 'form_type_relational_value');
+        await project.open();
 
-        await page.locator('#button-edition').click();
-        await page.locator('#edition-draw').click();
+        const formRequest = await project.openEditingFormWithLayer('table_for_form');
+        await formRequest.response();
     });
 
     test('Checkboxes relational values', async ({ page }) => {
