@@ -1,6 +1,7 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 import { expect as responseExpect } from './fixtures/expect-response.js'
+import { expect as requestExpect } from './fixtures/expect-request.js'
 import { expectParametersToContain } from './globals';
 import { ProjectPage } from "./pages/project";
 
@@ -26,34 +27,40 @@ test.describe('Edition Form Validation', () => {
         await page.locator('#jforms_view_edition input[name="integer_field"]').fill('50');
 
         // submit form
-        await project.editingSubmitForm()
+        let saveFeatureRequestPromise = page.waitForRequest(/lizmap\/edition\/saveFeature/);
+        await project.editingSubmitForm();
+        let saveFeatureRequest = await saveFeatureRequestPromise;
+        await saveFeatureRequest.response();
     })
 
     test('Boolean nullable w/ value map', async ({ page }) => {
-
-        let editFeatureRequestPromise = page.waitForResponse(response => response.url().includes('editFeature'));
 
         const project = new ProjectPage(page, 'form_edition_all_field_type');
         const formRequest = await project.openEditingFormWithLayer('many_bool_formats');
         await formRequest.response();
 
         await page.getByLabel('bool_simple_null_vm').selectOption('t');
+
+        // submit the form and wait for reopening form
+        let saveFeatureRequestPromise = page.waitForRequest(/lizmap\/edition\/saveFeature/);
         await project.editingSubmitForm('edit');
-
-        await editFeatureRequestPromise;
-
-        // Wait a bit for the UI to refresh
-        await page.waitForTimeout(300);
+        let saveFeatureRequest = await saveFeatureRequestPromise;
+        let editFeatureRequestPromise = page.waitForRequest(/lizmap\/edition\/editFeature/);
+        await saveFeatureRequest.response();
+        let editFeatureRequest = await editFeatureRequestPromise;
+        await editFeatureRequest.response();
 
         await expect(page.getByLabel('bool_simple_null_vm')).toHaveValue('t');
-
         await page.getByLabel('bool_simple_null_vm').selectOption('');
+
+        // submit the form and wait for reopening form
+        saveFeatureRequestPromise = page.waitForRequest(/lizmap\/edition\/saveFeature/);
         await project.editingSubmitForm('edit');
-
-        await editFeatureRequestPromise;
-
-        // Wait a bit for the UI to refresh
-        await page.waitForTimeout(300);
+        saveFeatureRequest = await saveFeatureRequestPromise;
+        editFeatureRequestPromise = page.waitForRequest(/lizmap\/edition\/editFeature/);
+        await saveFeatureRequest.response();
+        editFeatureRequest = await editFeatureRequestPromise;
+        await editFeatureRequest.response();
 
         await expect(page.getByLabel('bool_simple_null_vm')).toHaveValue('');
     })
@@ -72,7 +79,7 @@ test.describe('Edition Form Validation', () => {
         // not used await project.openEditingFormWithLayer('form_edition_all_fields_types');
         // because createFeature will fail
         await project.buttonEditing.click();
-        await page.locator('a#edition-draw').hover();
+        await page.locator('#edition-layer').hover();
         await page.locator('a#edition-draw').click();
 
         // message
@@ -99,8 +106,11 @@ test.describe('Edition Form Validation', () => {
             });
         });
 
-        // submit form
-        await page.locator('#jforms_view_edition__submit_submit').click();
+        // submit the form
+        let saveFeatureRequestPromise = page.waitForRequest(/lizmap\/edition\/saveFeature/);
+        await project.editingSubmit('submit').click(); // do not use editingSubmitForm because of expecting in
+        let saveFeatureRequest = await saveFeatureRequestPromise;
+        await saveFeatureRequest.response();
 
         // message
         await expect(page.locator("#lizmap-edition-message")).toBeVisible();
@@ -109,11 +119,9 @@ test.describe('Edition Form Validation', () => {
         // form still here
         await expect(page.locator('#edition-form-container')).toBeVisible();
 
-        // cancel edition and inspect new child attribute table
-        page.once('dialog', dialog => {
-            return dialog.accept();
-        });
-        await page.locator('#jforms_view_edition__submit_cancel').click();
+        // Close form
+        page.once('dialog', dialog => dialog.accept());
+        await project.editingSubmit('cancel').click();
 
         // form closed
         await expect(page.locator('#edition-form-container')).toBeHidden();
@@ -1207,19 +1215,19 @@ test.describe('Form edition without creation', {tag: ['@readonly'],},() => {
         let getFeatureInfoResponse = await getFeatureInfoRequest.response();
         responseExpect(getFeatureInfoResponse).toBeHtml();
 
-        const featureToolbar = await project.popupContent.locator('lizmap-feature-toolbar[value^="quartiers_"][value$=".6"]');
-        await expect(featureToolbar).toBeDefined();
+        const featureToolbar = project.popupContent.locator('lizmap-feature-toolbar[value^="quartiers_"][value$=".6"]');
+        await expect(featureToolbar).toHaveCount(1);
         await expect(featureToolbar).toBeVisible();
-        await expect(await featureToolbar.locator('button.feature-edit')).toBeVisible();
+        await expect(featureToolbar.locator('button.feature-edit')).toBeVisible();
 
-        let editFeatureRequestPromise = page.waitForRequest(
-            request => request.method() === 'GET' &&
-            request.url().includes('editFeature') === true &&
-            request.url().includes('layerId=quartiers_') === true &&
-            request.url().includes('featureId=6') === true
-        );
+        let editFeatureRequestPromise = page.waitForRequest(/lizmap\/edition\/editFeature/);
         await featureToolbar.locator('button.feature-edit').click();
         let editFeatureRequest = await editFeatureRequestPromise;
+        let expectedEditFeatureParameters = {
+            'layerId': /^quartiers_/,
+            'featureId': '6',
+        };
+        requestExpect(editFeatureRequest).toContainParametersInUrl(expectedEditFeatureParameters);
         await editFeatureRequest.response();
 
         // Only edition form should be visible...
