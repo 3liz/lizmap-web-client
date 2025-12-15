@@ -106,8 +106,11 @@ test.describe('Edition Form Validation', () => {
             });
         });
 
-        // submit form
-        await page.locator('#jforms_view_edition__submit_submit').click();
+        // submit the form
+        let saveFeatureRequestPromise = page.waitForRequest(/lizmap\/edition\/saveFeature/);
+        await project.editingSubmit('submit').click(); // do not use editingSubmitForm because of expecting in
+        let saveFeatureRequest = await saveFeatureRequestPromise;
+        await saveFeatureRequest.response();
 
         // message
         await expect(page.locator("#lizmap-edition-message")).toBeVisible();
@@ -116,11 +119,9 @@ test.describe('Edition Form Validation', () => {
         // form still here
         await expect(page.locator('#edition-form-container')).toBeVisible();
 
-        // cancel edition and inspect new child attribute table
-        page.once('dialog', dialog => {
-            return dialog.accept();
-        });
-        await page.locator('#jforms_view_edition__submit_cancel').click();
+        // Close form
+        page.once('dialog', dialog => dialog.accept());
+        await project.editingSubmit('cancel').click();
 
         // form closed
         await expect(page.locator('#edition-form-container')).toBeHidden();
