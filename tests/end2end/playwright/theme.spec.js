@@ -1,109 +1,368 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { gotoMap } from './globals';
+import { expect as responseExpect } from './fixtures/expect-response.js'
+import { expect as requestExpect } from './fixtures/expect-request.js'
+import { ProjectPage } from "./pages/project";
 
-test.describe('Theme', () => {
+test.describe('Theme @readonly', () => {
     test.beforeEach(async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=theme';
-        await gotoMap(url, page)
+        const project = new ProjectPage(page, 'theme');
+        // Catch default GetMap
+        let getMapRequestPromise = project.waitForGetMapRequest();
+        await project.open();
+        let getMapRequest = await getMapRequestPromise;
+        await getMapRequest.response();
     });
 
     test('must display theme1 at startup', async ({ page }) => {
-        await expect(page.locator('#theme-selector > ul > li.theme').first()).toHaveClass(/selected/);
+        const themeSelector = page.locator('#theme-selector');
+        await expect(themeSelector.getByText('theme1').locator('..')).toContainClass('selected');
+        await expect(themeSelector.getByText('theme2').locator('..')).not.toContainClass('selected');
+        await expect(themeSelector.getByText('theme3').locator('..')).not.toContainClass('selected');
+        await expect(themeSelector.getByText('theme4').locator('..')).not.toContainClass('selected');
 
+        const treeview = page.locator('lizmap-treeview');
         // Expanded
-        await expect(page.locator('lizmap-treeview > ul > li:nth-child(1) > div.expandable')).not.toHaveClass(/expanded/);
-        await expect(page.locator('lizmap-treeview > ul > li:nth-child(2) > div.expandable')).not.toHaveClass(/expanded/);
+        await expect(treeview.getByTestId('group1').locator('> div.expandable')).not.toContainClass('expanded');
+        await expect(treeview.getByTestId('Les quartiers').locator('> div.expandable')).not.toContainClass('expanded');
+        await expect(treeview.getByTestId('group with subgroups').locator('> div.expandable')).not.toContainClass('expanded');
 
         // Checked
-        await expect(page.getByLabel('group1')).toBeChecked();
-        await expect(page.getByLabel('Les quartiers')).toBeChecked();
+        await expect(treeview.getByTestId('group1').getByLabel('group1')).toBeChecked();
+        await expect(treeview.getByTestId('sousquartiers').getByLabel('sousquartiers')).not.toBeChecked();
+        await expect(treeview.getByTestId('Les quartiers').getByLabel('Les quartiers')).toBeChecked();
+        await expect(treeview.getByTestId('group with subgroups').getByLabel('group with subgroups')).not.toBeChecked();
+        await expect(treeview.getByTestId('sub-group-1').getByLabel('sub-group-1')).not.toBeChecked();
+        await expect(treeview.getByTestId('sub-sub-group--1').getByLabel('sub-sub-group--1')).not.toBeChecked();
+        await expect(treeview.getByTestId('tramway_lines').getByLabel('tramway_lines')).not.toBeChecked();
+        await expect(treeview.getByTestId('sub-sub-group--2').getByLabel('sub-sub-group--2')).not.toBeChecked();
+        await expect(treeview.getByTestId('townhalls_pg').getByLabel('townhalls_pg')).not.toBeChecked();
 
         // Style
-        await page.locator('lizmap-treeview > ul > li:nth-child(2) > div.checked.layer > div.node > div > i').click({ force: true });
-        expect(await page.locator('#sub-dock select.styleLayer').inputValue()).toBe('style1');
-
-        // The url has not been updated
-        const url = new URL(page.url());
-        await expect(url.hash).toHaveLength(0);
-    });
-
-    test('must display theme2 when selected', async ({ page }) => {
-        // Select theme2
-        await page.locator('#theme-selector > button').click()
-        await page.locator('#theme-selector > ul > li.theme').nth(1).click();
-
-        // Expanded
-        await expect(page.locator('lizmap-treeview > ul > li:nth-child(1) > div.expandable')).toHaveClass(/expanded/);
-        await expect(page.locator('lizmap-treeview > ul > li:nth-child(2) > div.expandable')).toHaveClass(/expanded/);
-
-        // Checked
-        await expect(page.getByLabel('group1')).not.toBeChecked();
-        await expect(page.getByLabel('Les quartiers')).toBeChecked();
-
-        // Style
-        await page.locator('lizmap-treeview > ul > li:nth-child(2) > div.checked.layer > div.node > div > i').click({ force: true });
-        expect(await page.locator('#sub-dock select.styleLayer').inputValue()).toBe('style2');
-
-        // The url has not been updated
-        const url = new URL(page.url());
-        await expect(url.hash).toHaveLength(0);
-    });
-
-    test('must display theme3 when selected', async ({ page }) => {
-        // Select theme3
-        await page.locator('#theme-selector > button').click()
-        await page.locator('#theme-selector > ul > li.theme').nth(2).click();
-
-        // Expanded
-        await expect(page.locator('lizmap-treeview > ul > li:nth-child(1) > div.expandable')).not.toHaveClass(/expanded/);
-        await expect(page.locator('lizmap-treeview > ul > li:nth-child(2) > div.expandable')).not.toHaveClass(/expanded/);
-        await expect(page.locator('lizmap-treeview > ul > li:nth-child(3) > div.expandable')).toHaveClass(/expanded/);
-        await expect(page.locator('li:nth-child(3) > ul > li > div').first()).toHaveClass(/expanded/);
-        await expect(page.locator('li:nth-child(3) > ul > li > ul > li > .expandable').first()).toHaveClass(/expanded/);
-        await expect(page.locator('li > ul > li:nth-child(2) > .expandable')).not.toHaveClass(/expanded/);
-
-        // Checked
-        await expect(page.getByLabel('group1')).not.toBeChecked();
-        await expect(page.getByLabel('Les quartiers')).not.toBeChecked();
-        await expect(page.getByLabel('group with subgroups')).toBeChecked();
-        await expect(page.getByLabel('sub-group-1')).toBeChecked();
-        await expect(page.getByLabel('sub-sub-group--1')).toBeChecked();
-        await expect(page.getByLabel('tramway_lines')).toBeChecked();
-        await expect(page.getByLabel('sub-sub-group--2')).not.toBeChecked();
+        await page.getByTestId('Les quartiers').locator('.icon-info-sign').click({ force: true });
+        await expect(page.locator('#sub-dock select.styleLayer')).toHaveValue('style1');
 
         // Baselayer
         await expect(page.locator('lizmap-base-layers select')).toHaveValue('project-background-color');
+
+        // The url has not been updated
+        const url = new URL(page.url());
+        expect(url.hash).toHaveLength(0);
     });
 
-    test('must display theme4 when selected', async ({ page }) => {
-        // Select theme4
-        await page.locator('#theme-selector > button').click()
-        await page.locator('#theme-selector > ul > li.theme').nth(3).click();
+    test('must display theme2 when active', async ({ page }) => {
+        const project = new ProjectPage(page, 'theme');
+
+        const themeSelector = page.locator('#theme-selector');
+        await expect(themeSelector.getByText('theme1').locator('..')).toContainClass('selected');
+        await expect(themeSelector.getByText('theme2').locator('..')).not.toContainClass('selected');
+
+        // Select theme2 and catch GetMap for quartiers with style2
+        await themeSelector.locator('[data-original-title="Select theme"]').click();
+        let getMapRequestPromise = project.waitForGetMapRequest();
+        themeSelector.getByText('theme2').click();
+        let getMapRequest = await getMapRequestPromise;
+        /** @type {{[key: string]: string|RegExp}} */
+        let getMapExpectedParameters = {
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'REQUEST': 'GetMap',
+            'FORMAT': /^image\/png/,
+            'TRANSPARENT': /\b(\w*^true$\w*)\b/gmi,
+            'LAYERS': 'quartiers',
+            'STYLES': 'style2',
+            'CRS': 'EPSG:2154',
+            'WIDTH': '958',
+            'HEIGHT': '633',
+            'BBOX': /757925.8\d+,6271017.8\d+,783272.9\d+,6287766.0\d+/,
+        }
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
+        responseExpect(await getMapRequest.response()).toBeImagePng();
+
+        // Check theme2 is activated and theme1 disabled
+        await expect(themeSelector.getByText('theme1').locator('..')).not.toContainClass('selected');
+        await expect(themeSelector.getByText('theme2').locator('..')).toContainClass('selected');
+
+        const treeview = page.locator('lizmap-treeview');
+        // Expanded
+        await expect(treeview.getByTestId('group1').locator('> div.expandable')).toContainClass('expanded');
+        await expect(treeview.getByTestId('Les quartiers').locator('> div.expandable')).toContainClass('expanded');
+        await expect(treeview.getByTestId('group with subgroups').locator('> div.expandable')).not.toContainClass('expanded');
+
+        // Checked
+        await expect(treeview.getByTestId('group1').getByLabel('group1')).not.toBeChecked();
+        await expect(treeview.getByTestId('sousquartiers').getByLabel('sousquartiers')).not.toBeChecked();
+        await expect(treeview.getByTestId('Les quartiers').getByLabel('Les quartiers')).toBeChecked();
+        await expect(treeview.getByTestId('group with subgroups').getByLabel('group with subgroups')).not.toBeChecked();
+        await expect(treeview.getByTestId('sub-group-1').getByLabel('sub-group-1')).not.toBeChecked();
+        await expect(treeview.getByTestId('sub-sub-group--1').getByLabel('sub-sub-group--1')).not.toBeChecked();
+        await expect(treeview.getByTestId('tramway_lines').getByLabel('tramway_lines')).not.toBeChecked();
+        await expect(treeview.getByTestId('sub-sub-group--2').getByLabel('sub-sub-group--2')).not.toBeChecked();
+        await expect(treeview.getByTestId('townhalls_pg').getByLabel('townhalls_pg')).not.toBeChecked();
+
+        // Style
+        await page.getByTestId('Les quartiers').locator('.icon-info-sign').click({ force: true });
+        await expect(page.locator('#sub-dock select.styleLayer')).toHaveValue('style2');
+
+        // Baselayer
+        await expect(page.locator('lizmap-base-layers select')).toHaveValue('project-background-color');
+
+        // The url has not been updated
+        const url = new URL(page.url());
+        expect(url.hash).toHaveLength(0);
+    });
+
+    test('must display theme3 when active', async ({ page }) => {
+        const project = new ProjectPage(page, 'theme');
+
+        const themeSelector = page.locator('#theme-selector');
+        await expect(themeSelector.getByText('theme1').locator('..')).toContainClass('selected');
+        await expect(themeSelector.getByText('theme3').locator('..')).not.toContainClass('selected');
+
+        // Select theme3 and catch GetMap for tramway_lines
+        await themeSelector.locator('[data-original-title="Select theme"]').click();
+        let getMapRequestPromise = project.waitForGetMapRequest();
+        themeSelector.getByText('theme3').click();
+        let getMapRequest = await getMapRequestPromise;
+        /** @type {{[key: string]: string|RegExp}} */
+        let getMapExpectedParameters = {
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'REQUEST': 'GetMap',
+            'FORMAT': /^image\/png/,
+            'TRANSPARENT': /\b(\w*^true$\w*)\b/gmi,
+            'LAYERS': 'tramway_lines',
+            'STYLES': 'default',
+            'CRS': 'EPSG:2154',
+            'WIDTH': '958',
+            'HEIGHT': '633',
+            'BBOX': /757925.8\d+,6271017.8\d+,783272.9\d+,6287766.0\d+/,
+        }
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
+        responseExpect(await getMapRequest.response()).toBeImagePng();
+
+        // Check theme3 is activated and theme1 disabled
+        await expect(themeSelector.getByText('theme1').locator('..')).not.toContainClass('selected');
+        await expect(themeSelector.getByText('theme3').locator('..')).toContainClass('selected');
+
+        const treeview = page.locator('lizmap-treeview');
+        // Expanded
+        await expect(treeview.getByTestId('group1').locator('> div.expandable')).not.toContainClass('expanded');
+        await expect(treeview.getByTestId('Les quartiers').locator('> div.expandable')).not.toContainClass('expanded');
+        await expect(treeview.getByTestId('group with subgroups').locator('> div.expandable')).toContainClass('expanded');
+        await expect(treeview.getByTestId('sub-group-1').locator('> div.expandable')).toContainClass('expanded');
+        await expect(treeview.getByTestId('sub-sub-group--1').locator('> div.expandable')).toContainClass('expanded');
+        await expect(treeview.getByTestId('sub-sub-group--2').locator('> div.expandable')).not.toContainClass('expanded');
+
+        // Checked
+        await expect(treeview.getByTestId('group1').getByLabel('group1')).not.toBeChecked();
+        await expect(treeview.getByTestId('sousquartiers').getByLabel('sousquartiers')).not.toBeChecked();
+        await expect(treeview.getByTestId('Les quartiers').getByLabel('Les quartiers')).not.toBeChecked();
+        await expect(treeview.getByTestId('group with subgroups').getByLabel('group with subgroups')).toBeChecked();
+        await expect(treeview.getByTestId('sub-group-1').getByLabel('sub-group-1')).toBeChecked();
+        await expect(treeview.getByTestId('sub-sub-group--1').getByLabel('sub-sub-group--1')).toBeChecked();
+        await expect(treeview.getByTestId('tramway_lines').getByLabel('tramway_lines')).toBeChecked();
+        await expect(treeview.getByTestId('sub-sub-group--2').getByLabel('sub-sub-group--2')).not.toBeChecked();
+        await expect(treeview.getByTestId('townhalls_pg').getByLabel('townhalls_pg')).toBeChecked();
+
+        // Baselayer
+        await expect(page.locator('lizmap-base-layers select')).toHaveValue('project-background-color');
+
+        // The url has not been updated
+        const url = new URL(page.url());
+        expect(url.hash).toHaveLength(0);
+    });
+
+    test('must display theme4 when active', async ({ page }) => {
+        const project = new ProjectPage(page, 'theme');
+
+        const themeSelector = page.locator('#theme-selector');
+        await expect(themeSelector.getByText('theme1').locator('..')).toContainClass('selected');
+        await expect(themeSelector.getByText('theme4').locator('..')).not.toContainClass('selected');
+
+        // Select theme4 and catch GetMap for sousquartiers
+        await themeSelector.locator('[data-original-title="Select theme"]').click();
+        let getMapRequestPromise = project.waitForGetMapRequest();
+        themeSelector.getByText('theme4').click();
+        let getMapRequest = await getMapRequestPromise;
+        /** @type {{[key: string]: string|RegExp}} */
+        let getMapExpectedParameters = {
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'REQUEST': 'GetMap',
+            'FORMAT': /^image\/png/,
+            'TRANSPARENT': /\b(\w*^true$\w*)\b/gmi,
+            'LAYERS': 'sousquartiers',
+            'STYLES': 'rule-based',
+            'CRS': 'EPSG:2154',
+            'WIDTH': '958',
+            'HEIGHT': '633',
+            'BBOX': /757925.8\d+,6271017.8\d+,783272.9\d+,6287766.0\d+/,
+        }
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
+        responseExpect(await getMapRequest.response()).toBeImagePng();
+
+        // Check theme4 is activated and theme1 disabled
+        await expect(themeSelector.getByText('theme1').locator('..')).not.toContainClass('selected');
+        await expect(themeSelector.getByText('theme4').locator('..')).toContainClass('selected');
+
+        const treeview = page.locator('lizmap-treeview');
+        // Expanded
+        await expect(treeview.getByTestId('group1').locator('> div.expandable')).toContainClass('expanded');
+        await expect(treeview.getByTestId('sousquartiers').locator('> div.expandable')).toContainClass('expanded');
+        await expect(treeview.getByTestId('Les quartiers').locator('> div.expandable')).not.toContainClass('expanded');
+        await expect(treeview.getByTestId('group with subgroups').locator('> div.expandable')).not.toContainClass('expanded');
+
+        // Checked
+        await expect(treeview.getByTestId('group1').getByLabel('group1')).toBeChecked();
+        await expect(treeview.getByTestId('sousquartiers').getByLabel('sousquartiers')).toBeChecked();
+        await expect(treeview.getByTestId('Les quartiers').getByLabel('Les quartiers')).not.toBeChecked();
+        await expect(treeview.getByTestId('group with subgroups').getByLabel('group with subgroups')).not.toBeChecked();
+        await expect(treeview.getByTestId('sub-group-1').getByLabel('sub-group-1')).not.toBeChecked();
+        await expect(treeview.getByTestId('sub-sub-group--1').getByLabel('sub-sub-group--1')).not.toBeChecked();
+        await expect(treeview.getByTestId('tramway_lines').getByLabel('tramway_lines')).not.toBeChecked();
+        await expect(treeview.getByTestId('sub-sub-group--2').getByLabel('sub-sub-group--2')).not.toBeChecked();
+        await expect(treeview.getByTestId('townhalls_pg').getByLabel('townhalls_pg')).toBeChecked();
 
         // Baselayer
         await expect(page.locator('lizmap-base-layers select')).toHaveValue('OpenStreetMap');
+
+        // The url has not been updated
+        const url = new URL(page.url());
+        expect(url.hash).toHaveLength(0);
+    });
+
+    test('must display theme5 when active', async ({ page }) => {
+        const project = new ProjectPage(page, 'theme');
+
+        const themeSelector = page.locator('#theme-selector');
+        await expect(themeSelector.getByText('theme1').locator('..')).toContainClass('selected');
+        await expect(themeSelector.getByText('theme5').locator('..')).not.toContainClass('selected');
+
+        // Select theme5 and catch GetMap for sousquartiers
+        await themeSelector.locator('[data-original-title="Select theme"]').click();
+        let getMapRequestPromise = project.waitForGetMapRequest();
+        themeSelector.getByText('theme5').click();
+        let getMapRequest = await getMapRequestPromise;
+        /** @type {{[key: string]: string|RegExp}} */
+        let getMapExpectedParameters = {
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'REQUEST': 'GetMap',
+            'FORMAT': /^image\/png/,
+            'TRANSPARENT': /\b(\w*^true$\w*)\b/gmi,
+            'LAYERS': 'sousquartiers',
+            'STYLES': 'défaut',
+            'CRS': 'EPSG:2154',
+            'WIDTH': '958',
+            'HEIGHT': '633',
+            'BBOX': /757925.8\d+,6271017.8\d+,783272.9\d+,6287766.0\d+/,
+        }
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
+        responseExpect(await getMapRequest.response()).toBeImagePng();
+
+        // Check theme4 is activated and theme1 disabled
+        await expect(themeSelector.getByText('theme1').locator('..')).not.toContainClass('selected');
+        await expect(themeSelector.getByText('theme5').locator('..')).toContainClass('selected');
+
+        const treeview = page.locator('lizmap-treeview');
+        // Expanded
+        await expect(treeview.getByTestId('group1').locator('> div.expandable')).not.toContainClass('expanded');
+        await expect(treeview.getByTestId('Les quartiers').locator('> div.expandable')).not.toContainClass('expanded');
+        await expect(treeview.getByTestId('group with subgroups').locator('> div.expandable')).toContainClass('expanded');
+        await expect(treeview.getByTestId('sub-group-1').locator('> div.expandable')).toContainClass('expanded');
+        await expect(treeview.getByTestId('sub-sub-group--1').locator('> div.expandable')).toContainClass('expanded');
+        await expect(treeview.getByTestId('sub-sub-group--2').locator('> div.expandable')).toContainClass('expanded');
+
+        // Checked
+        await expect(treeview.getByTestId('group1').getByLabel('group1')).toBeChecked();
+        await expect(treeview.getByTestId('sousquartiers').getByLabel('sousquartiers')).toBeChecked();
+        await expect(treeview.getByTestId('Les quartiers').getByLabel('Les quartiers')).not.toBeChecked();
+        await expect(treeview.getByTestId('group with subgroups').getByLabel('group with subgroups')).not.toBeChecked();
+        await expect(treeview.getByTestId('sub-group-1').getByLabel('sub-group-1')).toBeChecked();
+        await expect(treeview.getByTestId('sub-sub-group--1').getByLabel('sub-sub-group--1')).not.toBeChecked();
+        await expect(treeview.getByTestId('tramway_lines').getByLabel('tramway_lines')).toBeChecked();
+        await expect(treeview.getByTestId('sub-sub-group--2').getByLabel('sub-sub-group--2')).not.toBeChecked();
+        await expect(treeview.getByTestId('townhalls_pg').getByLabel('townhalls_pg')).toBeChecked();
+
+        // Baselayer
+        await expect(page.locator('lizmap-base-layers select')).toHaveValue('project-background-color');
+
+        // The url has not been updated
+        const url = new URL(page.url());
+        expect(url.hash).toHaveLength(0);
     });
 
     test('mapTheme parameter', async ({ page }) => {
-        await expect(page.locator('#theme-selector > ul > li.theme').first()).toHaveClass(/selected/);
+        const project = new ProjectPage(page, 'theme');
 
-        let url = '/index.php/view/map/?repository=testsrepository&project=theme&mapTheme=theme2';
-        await gotoMap(url, page)
-        await expect(page.locator('#theme-selector > ul > li.theme').nth(1)).toHaveClass(/selected/);
+        let themeSelector = page.locator('#theme-selector');
+        await expect(themeSelector.getByText('theme1').locator('..')).toContainClass('selected');
+        await expect(themeSelector.getByText('theme2').locator('..')).not.toContainClass('selected');
+        await expect(themeSelector.getByText('theme3').locator('..')).not.toContainClass('selected');
+        await expect(themeSelector.getByText('theme4').locator('..')).not.toContainClass('selected');
 
-        url = '/index.php/view/map/?repository=testsrepository&project=theme&mapTheme=theme3';
-        await gotoMap(url, page)
-        await expect(page.locator('#theme-selector > ul > li.theme').nth(2)).toHaveClass(/selected/);
+        // Open with theme2
+        let getMapRequestPromise = project.waitForGetMapRequest();
+        await project.openWithExtraParams({'mapTheme': 'theme2'});
+        let getMapRequest = await getMapRequestPromise;
+        /** @type {{[key: string]: string|RegExp}} */
+        let getMapExpectedParameters = {
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'REQUEST': 'GetMap',
+            'FORMAT': /^image\/png/,
+            'TRANSPARENT': /\b(\w*^true$\w*)\b/gmi,
+            'LAYERS': 'quartiers',
+            'STYLES': 'style2',
+            'CRS': 'EPSG:2154',
+            'WIDTH': '958',
+            'HEIGHT': '633',
+            'BBOX': /757925.8\d+,6271017.8\d+,783272.9\d+,6287766.0\d+/,
+        }
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
+        responseExpect(await getMapRequest.response()).toBeImagePng();
 
-        url = '/index.php/view/map/?repository=testsrepository&project=theme&mapTheme=theme4';
-        await gotoMap(url, page)
-        await expect(page.locator('#theme-selector > ul > li.theme').nth(3)).toHaveClass(/selected/);
+        themeSelector = page.locator('#theme-selector');
+        await expect(themeSelector.getByText('theme1').locator('..')).not.toContainClass('selected');
+        await expect(themeSelector.getByText('theme2').locator('..')).toContainClass('selected');
+        await expect(themeSelector.getByText('theme3').locator('..')).not.toContainClass('selected');
+        await expect(themeSelector.getByText('theme4').locator('..')).not.toContainClass('selected');
+
+        // Open with theme3
+        getMapRequestPromise = project.waitForGetMapRequest();
+        await project.openWithExtraParams({'mapTheme': 'theme3'});
+        getMapRequest = await getMapRequestPromise;
+        getMapExpectedParameters['LAYERS'] = 'tramway_lines';
+        getMapExpectedParameters['STYLES'] = 'default';
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
+        responseExpect(await getMapRequest.response()).toBeImagePng();
+
+        themeSelector = page.locator('#theme-selector');
+        await expect(themeSelector.getByText('theme1').locator('..')).not.toContainClass('selected');
+        await expect(themeSelector.getByText('theme2').locator('..')).not.toContainClass('selected');
+        await expect(themeSelector.getByText('theme3').locator('..')).toContainClass('selected');
+        await expect(themeSelector.getByText('theme4').locator('..')).not.toContainClass('selected');
+
+        // Open with theme4
+        getMapRequestPromise = project.waitForGetMapRequest();
+        await project.openWithExtraParams({'mapTheme': 'theme4'});
+        getMapRequest = await getMapRequestPromise;
+        getMapExpectedParameters['LAYERS'] = 'sousquartiers';
+        getMapExpectedParameters['STYLES'] = 'rule-based';
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
+        responseExpect(await getMapRequest.response()).toBeImagePng();
+
+        themeSelector = page.locator('#theme-selector');
+        await expect(themeSelector.getByText('theme1').locator('..')).not.toContainClass('selected');
+        await expect(themeSelector.getByText('theme2').locator('..')).not.toContainClass('selected');
+        await expect(themeSelector.getByText('theme3').locator('..')).not.toContainClass('selected');
+        await expect(themeSelector.getByText('theme4').locator('..')).toContainClass('selected');
     });
 
 });
 
-test.describe('Theme and automatic permalink', () => {
+test.describe('Theme and automatic permalink @readonly', () => {
 
     test.beforeEach(async ({ page }) => {
         // force automatic permalink
@@ -114,12 +373,20 @@ test.describe('Theme and automatic permalink', () => {
             await route.fulfill({ response, json });
         });
 
-        const url = '/index.php/view/map/?repository=testsrepository&project=theme';
-        await gotoMap(url, page)
+        const project = new ProjectPage(page, 'theme');
+        // Catch default GetMap
+        let getMapRequestPromise = project.waitForGetMapRequest();
+        await project.open();
+        let getMapRequest = await getMapRequestPromise;
+        await getMapRequest.response();
     });
 
     test('must display theme1 at startup', async ({ page }) => {
-        await expect(page.locator('#theme-selector > ul > li.theme').first()).toHaveClass(/selected/);
+        const themeSelector = page.locator('#theme-selector');
+        await expect(themeSelector.getByText('theme1').locator('..')).toContainClass('selected');
+        await expect(themeSelector.getByText('theme2').locator('..')).not.toContainClass('selected');
+        await expect(themeSelector.getByText('theme3').locator('..')).not.toContainClass('selected');
+        await expect(themeSelector.getByText('theme4').locator('..')).not.toContainClass('selected');
 
         // The url has been updated
         const url = new URL(page.url());
@@ -136,10 +403,22 @@ test.describe('Theme and automatic permalink', () => {
     });
 
     test('must display theme2 when selected', async ({ page }) => {
-        // Select theme2
-        await page.locator('#theme-selector > button').click()
-        await page.locator('#theme-selector > ul > li.theme').nth(1).click();
+        const project = new ProjectPage(page, 'theme');
 
+        const themeSelector = page.locator('#theme-selector');
+        await expect(themeSelector.getByText('theme1').locator('..')).toContainClass('selected');
+        await expect(themeSelector.getByText('theme2').locator('..')).not.toContainClass('selected');
+
+        // Select theme2 and catch GetMap for quartiers with style2
+        await themeSelector.locator('[data-original-title="Select theme"]').click();
+        let getMapRequestPromise = project.waitForGetMapRequest();
+        themeSelector.getByText('theme2').click();
+        let getMapRequest = await getMapRequestPromise;
+        responseExpect(await getMapRequest.response()).toBeImagePng();
+
+        // Check theme2 is activated and theme1 disabled
+        await expect(themeSelector.getByText('theme1').locator('..')).not.toContainClass('selected');
+        await expect(themeSelector.getByText('theme2').locator('..')).toContainClass('selected');
         // The url has been updated
         const url = new URL(page.url());
         await expect(url.hash).not.toHaveLength(0);
