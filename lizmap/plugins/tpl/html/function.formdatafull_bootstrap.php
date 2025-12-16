@@ -48,7 +48,7 @@ function jtpl_function_html_formdatafull_bootstrap($tpl, $form, $builder = 'html
             $formfullBuilder->outputControlValue($ctrl);
             echo '</div>';
         } else {
-            echo '<div class="control-group">';
+            echo '<div class="form-group">';
             $formfullBuilder->outputControlLabel($ctrl, '', false);
             echo '<div class="controls">';
             $formfullBuilder->outputControlValue($ctrl);

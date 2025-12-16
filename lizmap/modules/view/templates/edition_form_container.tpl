@@ -11,7 +11,7 @@
             <span style="font-weight:bold; padding-left:5px;">{$child->getLabel()}</span>
         </div>
     {else}
-        <div class="control-group">
+        <div class="form-group">
             {ctrl_label $child->getCtrlRef()}
             <div class="controls">
                 {ctrl_control $child->getCtrlRef()}
@@ -49,7 +49,7 @@
     {elseif $child->isRelationWidget()}
         <div id="{$child->getHtmlId()}" class="lizmap-form-relation" data-relation-id="{$child->getName()}" data-relation-referencedLayer="" data-relation-referencingLayer="d"></div>
     {else}
-        <div class="control-group">
+        <div class="form-group">
             {ctrl_label $child->getCtrlRef()}
             <div class="controls">
                 {ctrl_control $child->getCtrlRef()}

@@ -51,7 +51,7 @@ class group_htmlbootstrapFormWidget extends group_htmlFormWidget
     protected function displayChildControl($widget)
     {
         $widget->setLabelAttributes(array('class' => 'control-label'));
-        echo '<div class="control-group">';
+        echo '<div class="form-group">';
         $widget->outputLabel();
         echo '<div class="controls">';
         $widget->outputControl();

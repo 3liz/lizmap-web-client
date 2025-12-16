@@ -55,7 +55,7 @@ test.describe('Display embedded relation in popup',
 
             await expect(popup.locator('.lizmapPopupTitle').first()).toHaveText('father_layer');
 
-            let fatherElements = popup.locator(".container.popup_lizmap_dd").first().locator(".before-tabs .control-group");
+            let fatherElements = popup.locator(".container.popup_lizmap_dd").first().locator(".before-tabs .form-group");
             await expect(fatherElements).toHaveCount(3);
             await expect(fatherElements.nth(0).locator('label')).toHaveText("fid");
             await expect(fatherElements.nth(0).locator('.jforms-control-input')).toHaveText("3");
@@ -124,7 +124,7 @@ test.describe('Display embedded relation in popup',
 
             await expect(popup.locator('.lizmapPopupTitle').first()).toHaveText('father_layer');
 
-            fatherElements = popup.locator(".container.popup_lizmap_dd").first().locator(".before-tabs .control-group");
+            fatherElements = popup.locator(".container.popup_lizmap_dd").first().locator(".before-tabs .form-group");
             await expect(fatherElements).toHaveCount(3);
             await expect(fatherElements.nth(0).locator('label')).toHaveText("fid");
             await expect(fatherElements.nth(0).locator('.jforms-control-input')).toHaveText("4");

@@ -25,7 +25,7 @@ export default class Snapping extends HTMLElement {
         const mainTemplate = () => html`
         <div class="${mainLizmap.snapping.config !== undefined ? '' : 'hide'}">
             <h3>${lizDict['snapping.title']}</h3>
-            <div class="control-group">
+            <div class="form-group">
                 <div class="controls">
                     <div class="btn-group">
                         <button

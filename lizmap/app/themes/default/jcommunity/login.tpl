@@ -14,20 +14,20 @@
             'auth_password'=> 'password_htmlbootstrap'
         ))}
         <fieldset>
-            <div class="control-group">
+            <div class="form-group">
                 {ctrl_label 'auth_login'}
                 <div class="controls">
                     {ctrl_control 'auth_login'}
                 </div>
             </div>
-            <div class="control-group">
+            <div class="form-group">
                 {ctrl_label 'auth_password'}
                 <div class="controls">
                     {ctrl_control 'auth_password'}
                 </div>
             </div>
             {if $persistance_ok}
-                <div class="control-group">
+                <div class="form-group">
                     <div class="controls">
                         {ctrl_control 'auth_remember_me'} {ctrl_label 'auth_remember_me'}
                     </div>

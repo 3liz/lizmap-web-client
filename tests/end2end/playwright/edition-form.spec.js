@@ -634,7 +634,7 @@ test.describe(
             await expect(project.editionForm.locator('div.tab-pane')).toHaveCount(3);
 
             // first tab
-            await expect(project.editionForm.locator('div.tab-pane').nth(0).locator('div.control-group')).toHaveCount(5);
+            await expect(project.editionForm.locator('div.tab-pane').nth(0).locator('div.form-group')).toHaveCount(5);
             await project.checkEditionFormTextField('id', '1', 'id');
             await project.checkEditionFormTextField('Constant', 'text string', 'Constant', true);
             await project.checkEditionFormTextField('Geometry X', '3.860212606866182', 'Geometry X', true);
@@ -642,11 +642,11 @@ test.describe(
             await project.checkEditionFormTextField('point_name', 'Widget_test', 'Name');
 
             // second tab
-            await expect(project.editionForm.locator('div.tab-pane').nth(2).locator('div.control-group')).toHaveCount(1);
+            await expect(project.editionForm.locator('div.tab-pane').nth(2).locator('div.form-group')).toHaveCount(1);
             await project.checkEditionFormTextField('Wrong expression', '[%kk[% "ids" %]%]', 'Wrong expression', true);
 
             // third tab
-            await expect(project.editionForm.locator('div.tab-pane').nth(1).locator('div.control-group')).toHaveCount(1);
+            await expect(project.editionForm.locator('div.tab-pane').nth(1).locator('div.form-group')).toHaveCount(1);
             await project.checkEditionFormTextField('Name check', 'Widget_test', 'Name check', true);
 
             // fill and save the form
@@ -688,7 +688,7 @@ test.describe(
             await expect(project.editionForm.locator('div.tab-pane')).toHaveCount(3);
 
             // first tab
-            await expect(project.editionForm.locator('div.tab-pane').nth(0).locator('div.control-group')).toHaveCount(5);
+            await expect(project.editionForm.locator('div.tab-pane').nth(0).locator('div.form-group')).toHaveCount(5);
             await project.checkEditionFormTextField('id', '', 'id');
             await project.checkEditionFormTextField('Constant', 'text string', 'Constant', true);
             await project.checkEditionFormTextField('Geometry X', '', 'Geometry X', true);
@@ -696,11 +696,11 @@ test.describe(
             await project.checkEditionFormTextField('point_name', '', 'Name');
 
             // second tab
-            await expect(project.editionForm.locator('div.tab-pane').nth(2).locator('div.control-group')).toHaveCount(1);
+            await expect(project.editionForm.locator('div.tab-pane').nth(2).locator('div.form-group')).toHaveCount(1);
             await project.checkEditionFormTextField('Wrong expression', '[%kk[% "ids" %]%]', 'Wrong expression', true);
 
             // third tab
-            await expect(project.editionForm.locator('div.tab-pane').nth(1).locator('div.control-group')).toHaveCount(1);
+            await expect(project.editionForm.locator('div.tab-pane').nth(1).locator('div.form-group')).toHaveCount(1);
             await project.checkEditionFormTextField('Name check', '', 'Name check', true);
 
             // insert a point feature
@@ -727,7 +727,7 @@ test.describe(
             expect(xGeom).toBeTruthy();
 
             // first tab
-            await expect(project.editionForm.locator('div.tab-pane').nth(0).locator('div.control-group')).toHaveCount(5);
+            await expect(project.editionForm.locator('div.tab-pane').nth(0).locator('div.form-group')).toHaveCount(5);
             await project.checkEditionFormTextField('id', '2', 'id');
             await project.checkEditionFormTextField('Constant', 'text string', 'Constant', true);
             await project.checkEditionFormTextField('Geometry X', xGeom, 'Geometry X', true);
@@ -735,11 +735,11 @@ test.describe(
             await project.checkEditionFormTextField('point_name', 'text insert', 'Name');
 
             // second tab
-            await expect(project.editionForm.locator('div.tab-pane').nth(2).locator('div.control-group')).toHaveCount(1);
+            await expect(project.editionForm.locator('div.tab-pane').nth(2).locator('div.form-group')).toHaveCount(1);
             await project.checkEditionFormTextField('Wrong expression', '[%kk[% "ids" %]%]', 'Wrong expression', true);
 
             // third tab
-            await expect(project.editionForm.locator('div.tab-pane').nth(1).locator('div.control-group')).toHaveCount(1);
+            await expect(project.editionForm.locator('div.tab-pane').nth(1).locator('div.form-group')).toHaveCount(1);
             await project.checkEditionFormTextField('Name check', 'text insert', 'Name check', true);
         });
     });

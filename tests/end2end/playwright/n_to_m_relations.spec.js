@@ -330,7 +330,7 @@ test.describe('N to M relations',
             );
             await expect(popup.locator('.lizmapPopupTitle').first()).toHaveText('Natural areas');
 
-            let natAreaElements = popup.locator(".container.popup_lizmap_dd").first().locator(".before-tabs .control-group");
+            let natAreaElements = popup.locator(".container.popup_lizmap_dd").first().locator(".before-tabs .form-group");
             await expect(natAreaElements).toHaveCount(2);
             await expect(natAreaElements.nth(0).locator('.jforms-control-input')).toHaveText("1");
             await expect(natAreaElements.nth(1).locator('.jforms-control-input')).toHaveText("Étang du Galabert");

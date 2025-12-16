@@ -33,25 +33,25 @@
     padding-left: 5px;
   }
 
-  #edition-point-coord-form-group .control-group label.control-label{
+  #edition-point-coord-form-group .form-group label.control-label{
     width: 80px;
     display: inline-block;
   }
 
-  #edition-point-coord-form-group .control-group div {
+  #edition-point-coord-form-group .form-group div {
     display: inline-block;
     text-align: right;
   }
 
-  #edition-point-coord-form-group .control-group input.jforms-ctrl-input{
+  #edition-point-coord-form-group .form-group input.jforms-ctrl-input{
     width: 85px;
   }
 
-  #edition-point-coord-form-group .control-group select {
+  #edition-point-coord-form-group .form-group select {
     width: auto;
   }
 
-  lizmap-geolocation-survey .control-group > div:first-child{
+  lizmap-geolocation-survey .form-group > div:first-child{
     width: 80px;
   }
 
@@ -60,21 +60,21 @@
   }
 
   /* snap panel */
-  #edition-point-coord-form-group .control-group div.snap-panel-controls {
+  #edition-point-coord-form-group .form-group div.snap-panel-controls {
     display:flex;
     flex-direction: column;
     margin: 10px;
     text-align: left;
   }
 
-  #edition-point-coord-form-group .control-group div.snap-layers-list {
+  #edition-point-coord-form-group .form-group div.snap-layers-list {
     overflow: auto;
     display: flex;
     flex-direction: column;
     text-align: left;
   }
 
-  #edition-point-coord-form-group .control-group div.snap-layer {
+  #edition-point-coord-form-group .form-group div.snap-layer {
     text-align: left;
     display: flex;
   }

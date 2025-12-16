@@ -1617,8 +1617,8 @@ div.modal legend {
   line-height: 20px;
 }
 
-#dock div.control-group,
-div.modal div.control-group {
+#dock div.form-group,
+div.modal div.form-group {
   margin-bottom: 5px;
 }
 
@@ -3483,12 +3483,12 @@ lizmap-geolocation .input-prepend .add-on{
   line-height: 16px;
 }
 
-lizmap-geolocation-survey .control-group div{
+lizmap-geolocation-survey .form-group div{
   display: inline-block;
   text-align: right;
 }
 
-lizmap-geolocation-survey .control-group > div:first-child{
+lizmap-geolocation-survey .form-group > div:first-child{
   width: 90px;
 }
 
