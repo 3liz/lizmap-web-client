@@ -19,7 +19,7 @@
         </ul>
         <div class="tab-content permalink-tab-content">
             <div id="tab-share-permalink" class="permalink-tab-pane-share tab-pane active" role="tabpanel">
-                <input id="input-share-permalink" type="text">
+                <input id="input-share-permalink" type="text" class="form-control">
                 <a href="" target="_blank" id="permalink" title="{@view~map.permalink.share.link@}"><i class="icon-share"></i></a>
             </div>
             <div id="tab-embed-permalink" class="permalink-tab-pane-embed tab-pane" role="tabpanel">
@@ -30,12 +30,12 @@
                     <option value="l">{@view~map.permalink.embed.size.large@}</option>
                     <option value="p">{@view~map.permalink.embed.size.personalized@}</option>
                 </select>
-                <div id="span-embed-personalized-permalink" class="permalink-personalized hide">
-                  <input id="input-embed-width-permalink" type="number" min="0" class="input-mini" value="800">
+                <div id="span-embed-personalized-permalink" class="permalink-personalized hide form-group">
+                  <input id="input-embed-width-permalink" type="number" min="0" class="form-control form-control-sm" value="800">
                   <span>×</span>
-                  <input id="input-embed-height-permalink" type="number" min="0" class="input-mini" value="600">
+                  <input id="input-embed-height-permalink" type="number" min="0" class="form-control form-control-sm" value="600">
                 </div>
-                <input id="input-embed-permalink" class="permalink-embed-input" type="text">
+                <input id="input-embed-permalink" class="permalink-embed-input" type="text" class="form-control">
             </div>
         </div>
     </div>
@@ -48,7 +48,7 @@
 
     <div>
       <form id="geobookmark-form">
-        <input type="text" name="bname" placeholder="{@view~map.permalink.geobookmark.name.placeholder@}">
+        <input type="text" class="form-control" name="bname" placeholder="{@view~map.permalink.geobookmark.name.placeholder@}">
         <input type="submit" class="btn-geobookmark-add btn btn-sm" title="{@view~map.permalink.geobookmark.button.add@}" value="{@view~map.permalink.geobookmark.button.add@}"/>
       </form>
     </div>

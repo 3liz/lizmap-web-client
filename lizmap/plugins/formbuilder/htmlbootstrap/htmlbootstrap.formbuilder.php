@@ -21,10 +21,36 @@ class htmlbootstrapFormBuilder extends HtmlBuilder
     protected $defaultPluginsConf = array();
 
     protected $htmlWidgetsAttributes = array(
-        'submit' => array('class' => 'btn'),
-        'reset' => array('class' => 'btn'),
+        'color' => array('bootstrapClass' => 'form-control form-control-color'),
+        'group' => array('bootstrapClass' => 'form-check-input'),
+        'radiobuttons' => array('bootstrapClass' => 'form-check-input'),
+        'checkbox' => array('bootstrapClass' => 'form-check-input'),
+        'listbox' => array('bootstrapClass' => 'form-select'),
+        'menulist' => array('bootstrapClass' => 'form-select'),
+        'button' => array('bootstrapClass' => 'btn'),
+        'submit' => array('bootstrapClass' => 'btn'),
+        'reset' => array('bootstrapClass' => 'btn'),
         'choice' => array('class' => 'form-inline', 'itemLabelClass' => 'radio'),
     );
+
+    public function getWidget($ctrl, $parentWidget = null)
+    {
+        $widget = parent::getWidget($ctrl, $parentWidget);
+        if (isset($this->htmlWidgetsAttributes[$ctrl->getWidgetType()])) {
+            return $widget;
+        }
+        if ($ctrl->type == 'date' || $ctrl->type == 'datetime') {
+            if (jApp::config()->forms['controls.datetime.input'] == 'textboxes') {
+                $widget->setDefaultAttributes(array('bootstrapClass' => 'form-control'));
+            } else {
+                $widget->setDefaultAttributes(array('bootstrapClass' => 'form-select'));
+            }
+        } else {
+            $widget->setDefaultAttributes(array('bootstrapClass' => 'form-control'));
+        }
+
+        return $widget;
+    }
 
     public function outputMetaContent($t)
     {
@@ -162,7 +188,11 @@ class htmlbootstrapFormBuilder extends HtmlBuilder
             return;
         }
         $widget = $this->getWidget($ctrl, $this->rootWidget);
-        $widget->setLabelAttributes(array('class' => 'control-label'));
+        $bs5class = 'form-label';
+        if ($ctrl->type == 'checkbox' || $ctrl->type == 'radio') {
+            $bs5class = 'form-check-label';
+        }
+        $widget->setLabelAttributes(array('class' => $bs5class));
         $widget->outputLabel($format, $editMode);
     }
 }

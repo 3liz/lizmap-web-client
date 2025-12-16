@@ -59,7 +59,7 @@ export default class Geolocation extends HTMLElement {
                             ${lizDict['geolocate.toolbar.bind']}
                     </button>
                     <input
-                        class="input-mini"
+                        class="form-control form-control-sm"
                         type="number"
                         min="1"
                         ?disabled=${

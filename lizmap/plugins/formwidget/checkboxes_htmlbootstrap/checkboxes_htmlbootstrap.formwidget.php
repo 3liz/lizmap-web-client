@@ -26,7 +26,8 @@ class checkboxes_htmlbootstrapFormWidget extends checkboxes_htmlFormWidget
         if (is_array($value) && count($value) == 1) {
             $value = $value[0];
         }
-        $span = '<label class="checkbox jforms-chkbox jforms-ctl-'.$this->ctrl->ref.'"><input type="checkbox"';
+        $span = '<label class="checkbox form-check-label jforms-chkbox jforms-ctl-'.$this->ctrl->ref.'">'
+        .'<input type="checkbox" class="form-check-input"';
 
         if (is_array($value)) {
             $value = array_map(function ($v) { return (string) $v; }, $value);

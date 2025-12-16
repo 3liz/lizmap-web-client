@@ -22,7 +22,7 @@
         {/if}
         {foreach $otherInfos as $label=>$value}
             <div class="form-group">
-                <label class="jforms-label control-label">{$label|eschtml}</label>
+                <label class="jforms-label form-label">{$label|eschtml}</label>
                 <div class="controls"><span class="jforms-value jforms-value-input">{$value|eschtml}</span></div>
             </div>
         {/foreach}

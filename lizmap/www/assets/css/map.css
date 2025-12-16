@@ -1622,15 +1622,15 @@ div.modal div.form-group {
   margin-bottom: 5px;
 }
 
-#dock .form-horizontal .control-label,
-div.modal .form-horizontal .control-label {
+#dock .form-horizontal .form-label,
+div.modal .form-horizontal .form-label {
   width: 90px;
   hyphens: auto;
   hyphens: auto;
 }
 
-#dock .form-horizontal .jforms-choice .control-label,
-div.modal .form-horizontal .jforms-choice .control-label {
+#dock .form-horizontal .jforms-choice .form-label,
+div.modal .form-horizontal .jforms-choice .form-label {
   width: 220px;
   text-align: left;
 }
@@ -2944,7 +2944,7 @@ lizmap-mouse-position > div.coords-unit > select{
   margin-bottom: 4px;
 }
 
-#edition-form-container .form-horizontal .jforms-choice .jforms-item-controls .control-label{
+#edition-form-container .form-horizontal .jforms-choice .jforms-item-controls .form-label{
   width:0;
 }
 

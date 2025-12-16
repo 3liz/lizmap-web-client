@@ -150,8 +150,8 @@ export default class Print extends HTMLElement {
 
                     ${this._printTemplates[this.printTemplate].labels.slice().reverse().map((label) =>
                     label?.htmlState ?
-                        html`<textarea name=${label.id} class="print-label" placeholder=${label.text} .value=${label.text}></textarea><br>`
-                        : html`<input  name=${label.id} class="print-label" placeholder=${label.text} value=${label.text} type="text"><br>`
+                        html`<textarea name=${label.id} class="print-label form-control" placeholder=${label.text} .value=${label.text}></textarea><br>`
+                        : html`<input  name=${label.id} class="print-label form-control" placeholder=${label.text} value=${label.text} type="text"><br>`
                         )}
                 </div>`
             : ''}

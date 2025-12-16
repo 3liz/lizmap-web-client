@@ -551,7 +551,7 @@ var lizLayerFilterTool = function () {
                             dhtml += `<option value="${lizMap.cleanName(f_val)}">${label}</option>`;
                         } else {
                             var inputId = 'liz-filter-field-' + lizMap.cleanName(field_item.title) + '-' + lizMap.cleanName(f_val);
-                            dhtml += `<label class="checkbox"><input id="${inputId}" class="liz-filter-field-value" type="checkbox" value="${lizMap.cleanName(f_val)}">${label}</label>`;
+                            dhtml += `<label class="checkbox form-check-label"><input id="${inputId}" class="liz-filter-field-value form-check-input" type="checkbox" value="${lizMap.cleanName(f_val)}">${label}</label>`;
                         }
                     }
                     var id = 'liz-filter-box-' + lizMap.cleanName(field_item.title);

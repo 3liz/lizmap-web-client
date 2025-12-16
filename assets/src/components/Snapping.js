@@ -50,13 +50,14 @@ export default class Snapping extends HTMLElement {
                         <p class="snap-layers-list-title">${lizDict['snapping.list.title']}</p>
                         <div class="snap-layers-list">
                             ${mainLizmap.snapping?.config?.snap_layers.map((snapLayer) =>
-                                html`<div class="snap-layer">
+                                html`<div class="snap-layer form-check">
                                     <input
                                         id="${'snap-layer-'+snapLayer}"
                                         name="${snapLayer}"
                                         @change=${()=> mainLizmap.snapping.snapToggled = snapLayer}
                                         .disabled=${!mainLizmap.snapping?.config?.snap_enabled[snapLayer]}
                                         .checked=${mainLizmap.snapping?.config?.snap_on_layers[snapLayer]}
+                                        class="form-check-input"
                                         type="checkbox"/>
                                     <label
                                         data-bs-toggle="tooltip"
@@ -65,7 +66,7 @@ export default class Snapping extends HTMLElement {
                                                 lizDict['snapping.list.toggle'] :
                                                     lizDict['snapping.list.disabled']}"
                                         for="${'snap-layer-'+snapLayer}"
-                                        class="${mainLizmap.snapping?.config?.snap_enabled[snapLayer] ? '' : 'snap-disabled'}"
+                                        class="${mainLizmap.snapping?.config?.snap_enabled[snapLayer] ? '' : 'snap-disabled'} form-check-label"
                                         >
                                         ${mainLizmap.snapping?.getLayerTitle(snapLayer)}
                                     </label>

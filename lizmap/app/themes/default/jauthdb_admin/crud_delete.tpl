@@ -7,9 +7,9 @@
 	</div>
 
 	<div class="form-group">
-	<label class="control-label" for="pwd_confirm">{@jauthdb_admin~crud.confirm.password@}</label>
+	<label class="form-label" for="pwd_confirm">{@jauthdb_admin~crud.confirm.password@}</label>
   <div class="controls">
-	<input type="password" id="pwd_confirm" name="pwd_confirm" />
+	<input type="password" id="pwd_confirm" name="pwd_confirm" class="form-control" />
   </div>
 	</div>
 

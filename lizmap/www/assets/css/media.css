@@ -33,7 +33,7 @@
     padding-left: 5px;
   }
 
-  #edition-point-coord-form-group .form-group label.control-label{
+  #edition-point-coord-form-group .form-group label.form-label{
     width: 80px;
     display: inline-block;
   }

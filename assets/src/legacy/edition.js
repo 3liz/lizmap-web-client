@@ -1790,8 +1790,8 @@ var lizEdition = function() {
             }
             // Handle group visibilities based on QGIS drag&drop form layout mode
             handleGroupVisibilities( form );
-            // Display label for futur action without bootstrap control-label class
-            $('#'+form.attr('id')+'_liz_future_action_label').removeClass('control-label');
+            // Display label for futur action without bootstrap form-label class
+            $('#'+form.attr('id')+'_liz_future_action_label').removeClass('form-label');
 
             // Handle JS events on form (submit, etc.)
             handleEditionFormSubmit( form );

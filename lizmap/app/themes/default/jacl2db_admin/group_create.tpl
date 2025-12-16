@@ -4,17 +4,17 @@
 <form action="{formurl 'jacl2db_admin~groups:newgroup'}" method="post" id="create-group">
 <table class="table">
     <tr>
-        <td><label for="grp_name">{@acl2.group.name.label@}</label></td>
-        <td><input id="grp_name" name="name" type="text" required value="{$groupname}"/></td>
+        <td><label for="grp_name" class="form-label">{@acl2.group.name.label@}</label></td>
+        <td><input id="grp_name" name="name" type="text" class="form-control" required value="{$groupname}"/></td>
     </tr>
     <tr>
-        <td><label for="grp_id">{@acl2.group.id.label@}</label></td>
-        <td><input id="grp_id" name="id" type="text" required/>
+        <td><label for="grp_id" class="form-label">{@acl2.group.id.label@}</label></td>
+        <td><input id="grp_id" name="id" type="text" class="form-control" required/>
         ({@acl2.group.id.help@})
         </td>
     </tr>
     <tr>
-        <td><label for="rights-copy">{@acl2.group.copy.label@}</label></td>
+        <td><label for="rights-copy" class="form-label">{@acl2.group.copy.label@}</label></td>
         <td><select id="rights-copy" name="rights-copy" class="form-select">
             <option value=""></option>
             {foreach $groups as $group}

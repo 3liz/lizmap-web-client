@@ -64,7 +64,7 @@ fieldset {
     min-width: 10em;
 }
 
-.form-horizontal .control-label {
+.form-horizontal .form-label {
     width: 240px;
 }
 

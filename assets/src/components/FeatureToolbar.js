@@ -160,14 +160,14 @@ export default class FeatureToolbar extends HTMLElement {
                                 label.htmlState
                                     ? html`
                                         <textarea
-                                            class="input-medium custom-label"
+                                            class="form-control custom-label"
                                             data-labelid="${label.id}"
                                             name="${label.id}"
                                             placeholder="${label.text}"
                                             >${label.text}</textarea>`
                                     : html`
                                         <input
-                                            class="input-medium custom-label"
+                                            class="form-control custom-label"
                                             type="text"
                                             size="15"
                                             data-labelid="${label.id}"

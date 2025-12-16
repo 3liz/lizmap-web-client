@@ -15,4 +15,18 @@ require_once JELIX_LIB_PATH.'plugins/formwidget/imageupload_html/imageupload_htm
 class imageupload_htmlbootstrapFormWidget extends imageupload_htmlFormWidget
 {
     use WidgetTrait;
+
+    protected function displaySelectButton()
+    {
+        echo '<button class="jforms-image-select-btn btn" type="button">'.jLocale::get('jelix~jforms.upload.picture.choice.new.file').'</button>'."\n";
+    }
+
+    protected function displayModifyButton($imageSelector, $currentFileName)
+    {
+        echo '<button class="jforms-image-modify-btn btn" type="button"
+            data-current-image="'.$imageSelector.'"
+            data-current-file-name="'.htmlspecialchars($currentFileName).'">'.
+            jLocale::get('jelix~jforms.upload.picture.choice.modify').
+            '</button>'."\n";
+    }
 }
