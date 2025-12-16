@@ -261,8 +261,10 @@ only screen and (                   device-height <= 640px) {
 
   #mapmenu{
     z-index: 5001;
-    width: 80%;
-    left: -80%;
+    width: max-content; /* Automatic width based on content */
+    min-width: 250px;
+    max-width: 400px;
+    left: -100%; /* Completely outside viewport */
     transition: left 0.3s cubic-bezier(0.77,0.2,0.05,1.0);
   }
 
