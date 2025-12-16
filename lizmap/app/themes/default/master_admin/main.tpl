@@ -22,12 +22,12 @@
 
 <div id="content" class="container-fluid">
   <div class="row">
-    <div id="menu" class="col-sm-2">
-      <div class="sidebar-nav">
-        <ul class="list-group">
+    <div id="menu" class="sidebar col-sm-2">
+      <nav class="sidebar-nav">
+        <ul class="nav nav-pills nav-sidebar flex-column mb-auto">
          {$MENU}
         </ul>
-      </div>
+      </nav>
     </div>
     <div class="col-sm-10">
       <div class="row">
