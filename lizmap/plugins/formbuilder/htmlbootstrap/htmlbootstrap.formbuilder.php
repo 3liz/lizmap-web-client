@@ -25,8 +25,8 @@ class htmlbootstrapFormBuilder extends HtmlBuilder
         'group' => array('bootstrapClass' => 'form-check-input'),
         'radiobuttons' => array('bootstrapClass' => 'form-check-input'),
         'checkbox' => array('bootstrapClass' => 'form-check-input'),
-        'listbox' => array('bootstrapClass' => 'form-select'),
-        'menulist' => array('bootstrapClass' => 'form-select'),
+        'listbox' => array('bootstrapClass' => 'form-select form-select-sm'),
+        'menulist' => array('bootstrapClass' => 'form-select form-select-sm'),
         'button' => array('bootstrapClass' => 'btn'),
         'submit' => array('bootstrapClass' => 'btn'),
         'reset' => array('bootstrapClass' => 'btn'),
@@ -41,12 +41,12 @@ class htmlbootstrapFormBuilder extends HtmlBuilder
         }
         if ($ctrl->type == 'date' || $ctrl->type == 'datetime') {
             if (jApp::config()->forms['controls.datetime.input'] == 'textboxes') {
-                $widget->setDefaultAttributes(array('bootstrapClass' => 'form-control'));
+                $widget->setDefaultAttributes(array('bootstrapClass' => 'form-control form-control-sm'));
             } else {
-                $widget->setDefaultAttributes(array('bootstrapClass' => 'form-select'));
+                $widget->setDefaultAttributes(array('bootstrapClass' => 'form-select form-select-sm'));
             }
         } else {
-            $widget->setDefaultAttributes(array('bootstrapClass' => 'form-control'));
+            $widget->setDefaultAttributes(array('bootstrapClass' => 'form-control form-control-sm'));
         }
 
         return $widget;
@@ -97,9 +97,9 @@ class htmlbootstrapFormBuilder extends HtmlBuilder
                 $this->outputControl($ctrl);
             } else {
                 $this->outputControlLabel($ctrl);
-                echo '<div class="controls">';
+                // echo '<div class="controls">';
                 $this->outputControl($ctrl);
-                echo "</div>\n";
+                // echo "</div>\n";
             }
             echo "</div>\n";
         }
