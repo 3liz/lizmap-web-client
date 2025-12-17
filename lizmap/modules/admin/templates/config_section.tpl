@@ -9,21 +9,21 @@
 {form $form, 'admin~maps:saveSection', array(), 'htmlbootstrap'}
 <div class="form-group">
   {ctrl_label 'path'}
-  <div class="controls">{ctrl_control 'path'}</div>
+  {ctrl_control 'path'}
 </div>
 <div class="form-group">
   {ctrl_label 'label'}
-  <div class="controls">{ctrl_control 'label'}</div>
+  {ctrl_control 'label'}
 </div>
 <div class="form-group">
   {ctrl_label 'repository'}
-  <div class="controls">{ctrl_control 'repository'}</div>
+  {ctrl_control 'repository'}
 </div>
 
 {formcontrols}
 <div class="form-group">
   {ctrl_label}
-  <div class="controls">{ctrl_control}</div>
+  {ctrl_control}
 </div>
 {/formcontrols}
 <div class="jforms-submit-buttons form-actions">{formsubmit}</div>

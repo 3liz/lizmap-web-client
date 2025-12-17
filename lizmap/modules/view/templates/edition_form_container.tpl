@@ -13,9 +13,7 @@
     {else}
         <div class="form-group">
             {ctrl_label $child->getCtrlRef()}
-            <div class="controls">
-                {ctrl_control $child->getCtrlRef()}
-            </div>
+            {ctrl_control $child->getCtrlRef()}
         </div>
     {/if}
 {/foreach}
@@ -51,9 +49,7 @@
     {else}
         <div class="form-group">
             {ctrl_label $child->getCtrlRef()}
-            <div class="controls">
-                {ctrl_control $child->getCtrlRef()}
-            </div>
+            {ctrl_control $child->getCtrlRef()}
         </div>
     {/if}
 {/foreach}

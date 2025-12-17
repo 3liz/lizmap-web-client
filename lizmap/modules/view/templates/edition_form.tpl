@@ -25,9 +25,7 @@
     {formcontrols $fieldNames}
     <div class="form-group">
         {ctrl_label}
-        <div class="controls">
-            {ctrl_control}
-        </div>
+        {ctrl_control}
     </div>
     {/formcontrols}
 {/if}

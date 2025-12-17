@@ -6,7 +6,7 @@
             {formcontrols}
             <div class="form-group">
                 {ctrl_label}
-                <div class="controls">{ctrl_value}</div>
+                {ctrl_value}
             </div>
             {/formcontrols}
             {/formdata}
@@ -15,7 +15,7 @@
             {formcontrols $publicProperties}
                 <div class="form-group">
                     {ctrl_label}
-                    <div class="controls">{ctrl_value}</div>
+                    {ctrl_value}
                 </div>
             {/formcontrols}
             {/formdata}

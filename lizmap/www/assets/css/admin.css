@@ -64,14 +64,6 @@ fieldset {
     min-width: 10em;
 }
 
-.form-horizontal .form-label {
-    width: 240px;
-}
-
-.form-horizontal .controls {
-    margin-left: 250px;
-}
-
 .table .table {
     background-color:transparent;
 }
@@ -91,13 +83,6 @@ fieldset {
 .table-server-info td
 {
     width: 50%;
-}
-
-
-@media (width <= 480px) {
-    .form-horizontal .controls {
-        margin-left: 0;
-    }
 }
 
 /*

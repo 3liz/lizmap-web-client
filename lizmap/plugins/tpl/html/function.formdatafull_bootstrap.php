@@ -50,9 +50,9 @@ function jtpl_function_html_formdatafull_bootstrap($tpl, $form, $builder = 'html
         } else {
             echo '<div class="form-group">';
             $formfullBuilder->outputControlLabel($ctrl, '', false);
-            echo '<div class="controls">';
+            // echo '<div class="controls">';
             $formfullBuilder->outputControlValue($ctrl);
-            echo "</div>\n";
+            // echo "</div>\n";
             echo "</div>\n";
         }
     }

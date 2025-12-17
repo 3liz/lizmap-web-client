@@ -16,21 +16,15 @@
         <fieldset>
             <div class="form-group">
                 {ctrl_label 'auth_login'}
-                <div class="controls">
-                    {ctrl_control 'auth_login'}
-                </div>
+                {ctrl_control 'auth_login'}
             </div>
             <div class="form-group">
                 {ctrl_label 'auth_password'}
-                <div class="controls">
-                    {ctrl_control 'auth_password'}
-                </div>
+                {ctrl_control 'auth_password'}
             </div>
             {if $persistance_ok}
                 <div class="form-group">
-                    <div class="controls">
-                        {ctrl_control 'auth_remember_me'} {ctrl_label 'auth_remember_me'}
-                    </div>
+                    {ctrl_control 'auth_remember_me'} {ctrl_label 'auth_remember_me'}
                 </div>
             {/if}
             {if $url_return}
