@@ -33,9 +33,7 @@
 
     <div class="form-group row mb-3">
         {ctrl_label "liz_future_action"}
-        <div class="controls">
-            {ctrl_control "liz_future_action"}
-        </div>
+        {ctrl_control "liz_future_action"}
     </div>
     <div class="jforms-submit-buttons form-actions">{formreset}{formsubmit}</div>
 {/form}
