@@ -16,7 +16,7 @@ class htmlbootstrapFormBuilder extends HtmlBuilder
 
     protected $jFormsJsVarName = 'jFormsJQ';
 
-    protected $htmlFormAttributes = array('class' => 'form-horizontal');
+    protected $htmlFormAttributes = array('class' => 'form-container container');
 
     protected $defaultPluginsConf = array();
 

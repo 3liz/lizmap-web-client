@@ -42,7 +42,7 @@ class group_htmlbootstrapFormWidget extends group_htmlFormWidget
             $this->_outputAttr($checkBoxAttr);
             echo '> <label for="'.$checkBoxAttr['id'].'">',htmlspecialchars($label),"</label></legend>\n";
         }
-        echo '<div class="jforms-table-group">',"\n";
+        echo '<div class="jforms-table-group container">',"\n";
     }
 
     /**
