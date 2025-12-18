@@ -18,12 +18,12 @@ class imageupload_htmlbootstrapFormWidget extends imageupload_htmlFormWidget
 
     protected function displaySelectButton()
     {
-        echo '<button class="jforms-image-select-btn btn" type="button">'.jLocale::get('jelix~jforms.upload.picture.choice.new.file').'</button>'."\n";
+        echo '<button class="jforms-image-select-btn btn btn-sm" type="button">'.jLocale::get('jelix~jforms.upload.picture.choice.new.file').'</button>'."\n";
     }
 
     protected function displayModifyButton($imageSelector, $currentFileName)
     {
-        echo '<button class="jforms-image-modify-btn btn" type="button"
+        echo '<button class="jforms-image-modify-btn btn btn-sm" type="button"
             data-current-image="'.$imageSelector.'"
             data-current-file-name="'.htmlspecialchars($currentFileName).'">'.
             jLocale::get('jelix~jforms.upload.picture.choice.modify').
