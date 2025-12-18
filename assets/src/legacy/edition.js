@@ -1650,7 +1650,7 @@ var lizEdition = function() {
                         // select the option via jquery (and fire event with "change", will update depending controls)
                         select.val(parentFeatProp).change();
                         // create a disabled input with selected option value (will look alike a select)
-                        let readOnlyInput4Select = $('<input type="text" disabled value="'+$("select[name="+relationRefField+"] option:selected").html() +'" />');
+                        let readOnlyInput4Select = $('<input type="text" disabled value="'+$(`select[name="${relationRefField}"] option:selected`).html() +'" />');
                         select.parent().append(readOnlyInput4Select);
                         // hide the select, we don't want to see it, but it need to still be enable for controls that depends of its value
                         select.addClass('hide');
