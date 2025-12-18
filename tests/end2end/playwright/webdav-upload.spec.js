@@ -270,8 +270,9 @@ test.describe('WebDAV Server',
                 'form_edition_upload_webdav_geom_c71ec5ff_dc88_451f_98e1_ccf41e34ddd7'
             );
 
+            // Provided by the lizmap server plugin
             await expect(popup.locator('.lizmapPopupTitle')).toHaveText("form_edition_upload_webdav_geom");
-            let uploadFields = popup.locator(".container.popup_lizmap_dd").locator(".before-tabs .form-group");
+            let uploadFields = popup.locator(".container.popup_lizmap_dd").locator(".before-tabs .control-group");
             await expect(uploadFields).toHaveCount(3);
             const resourceUrl = await popup.locator('#dd_jforms_view_edition_remote_path a').getAttribute("href");
             expect(resourceUrl).toContain("index.php/view/media/getMedia?repository=testsrepository&project=form_upload_webdav&path=dav%2Flogo.png");
