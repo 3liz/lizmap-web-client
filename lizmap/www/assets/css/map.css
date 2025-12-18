@@ -1624,8 +1624,6 @@ div.modal div.form-group {
 
 #dock .form-horizontal .form-label,
 div.modal .form-horizontal .form-label {
-  width: 90px;
-  hyphens: auto;
   hyphens: auto;
 }
 
