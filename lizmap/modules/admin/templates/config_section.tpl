@@ -7,21 +7,21 @@
 <h1>{@admin~admin.form.admin_section.h1.modify@}</h1>
 {/if}
 {form $form, 'admin~maps:saveSection', array(), 'htmlbootstrap'}
-<div class="form-group">
+<div class="form-group row mb-3">
   {ctrl_label 'path'}
   {ctrl_control 'path'}
 </div>
-<div class="form-group">
+<div class="form-group row mb-3">
   {ctrl_label 'label'}
   {ctrl_control 'label'}
 </div>
-<div class="form-group">
+<div class="form-group row mb-3">
   {ctrl_label 'repository'}
   {ctrl_control 'repository'}
 </div>
 
 {formcontrols}
-<div class="form-group">
+<div class="form-group row mb-3">
   {ctrl_label}
   {ctrl_control}
 </div>

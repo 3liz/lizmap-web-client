@@ -27,8 +27,12 @@ class radiobuttons_htmlbootstrapFormWidget extends checkboxes_htmlbootstrapFormW
             }
         }
         $value = (string) $value;
-        $span = '<label class="radio form-check-label jforms-radio jforms-ctl-'.$this->ctrl->ref.'"><input type="radio"';
+        $span = '<div class="form-check">'
+        .'<label class="radio form-check-label jforms-radio jforms-ctl-'.$this->ctrl->ref.'">'
+        .'<input type="radio"';
+        echo '<div class="col-9">';
         $this->showRadioCheck($attr, $value, $span);
+        echo '</div>';
         $this->outputJs($this->ctrl->ref);
     }
 }

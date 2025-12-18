@@ -50,13 +50,12 @@ class group_htmlbootstrapFormWidget extends group_htmlFormWidget
      */
     protected function displayChildControl($widget)
     {
-        $widget->setLabelAttributes(array('class' => 'col-sm-2 col-form-label'));
+        $widget->setLabelAttributes(array());
         echo '<div class="mb-3 row form-group">';
         $widget->outputLabel();
-        echo '<div class="col-sm-10">';
         $widget->outputControl();
         $widget->outputHelp();
-        echo "</div>\n</div>\n";
+        echo "</div>\n";
     }
 
     protected function displayEndGroup()

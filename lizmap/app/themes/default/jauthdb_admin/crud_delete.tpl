@@ -2,11 +2,11 @@
 <form action="{formurl 'default:delete', array('j_user_login'=>$id)}" method="post">
 	<fieldset><legend>{@jauthdb_admin~crud.confirmation@}</legend>
 	{formurlparam 'default:delete', array('j_user_login'=>$id)}
-	<div class="form-group">
+	<div class="form-group row mb-3">
 	{@jauthdb_admin~crud.confirm.deletion@}
 	</div>
 
-	<div class="form-group">
+	<div class="form-group row mb-3">
 	<label class="form-label" for="pwd_confirm">{@jauthdb_admin~crud.confirm.password@}</label>
 	<input type="password" id="pwd_confirm" name="pwd_confirm" class="form-control" />
 	</div>

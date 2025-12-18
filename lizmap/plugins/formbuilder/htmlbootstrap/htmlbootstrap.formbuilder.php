@@ -92,7 +92,7 @@ class htmlbootstrapFormBuilder extends HtmlBuilder
             if (!$this->_form->isActivated($ctrlref)) {
                 continue;
             }
-            echo '<div class="form-group">';
+            echo '<div class="form-group row mb-3">';
             if ($ctrl->type == 'group') {
                 $this->outputControl($ctrl);
             } else {

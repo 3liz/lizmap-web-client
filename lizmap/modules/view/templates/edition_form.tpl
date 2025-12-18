@@ -23,7 +23,7 @@
 
 {else}
     {formcontrols $fieldNames}
-    <div class="form-group">
+    <div class="form-group row mb-3">
         {ctrl_label}
         {ctrl_control}
     </div>
@@ -31,7 +31,7 @@
 {/if}
 
 
-    <div class="form-group">
+    <div class="form-group row mb-3">
         {ctrl_label "liz_future_action"}
         <div class="controls">
             {ctrl_control "liz_future_action"}
