@@ -1145,7 +1145,7 @@ def my_form_open(dialog, layer, feature):
         <labelStyle overrideLabelColor="0" labelColor="0,0,0,255" overrideLabelFont="0">
           <labelFont description="Ubuntu,11,-1,5,50,0,0,0,0,0" strikethrough="0" style="" italic="0" underline="0" bold="0"/>
         </labelStyle>
-        <attributeEditorContainer collapsed="0" visibilityExpressionEnabled="0" type="Tab" name="tab1" collapsedExpression="" verticalStretch="0" horizontalStretch="0" visibilityExpression="" collapsedExpressionEnabled="0" columnCount="1" groupBox="0" showLabel="1">
+        <attributeEditorContainer backgroundColor="#a6c7e0" collapsed="0" visibilityExpressionEnabled="0" type="Tab" name="tab1" collapsedExpression="" verticalStretch="0" horizontalStretch="0" visibilityExpression="" collapsedExpressionEnabled="0" columnCount="1" groupBox="0" showLabel="1">
           <labelStyle overrideLabelColor="0" labelColor="0,0,0,255" overrideLabelFont="0">
             <labelFont description="Sans Serif,9,-1,5,50,0,0,0,0,0" strikethrough="0" style="" italic="0" underline="0" bold="0"/>
           </labelStyle>
@@ -1155,7 +1155,7 @@ def my_form_open(dialog, layer, feature):
             </labelStyle>
           </attributeEditorField>
         </attributeEditorContainer>
-        <attributeEditorContainer collapsed="0" visibilityExpressionEnabled="0" type="Tab" name="tab2" collapsedExpression="" verticalStretch="0" horizontalStretch="0" visibilityExpression="" collapsedExpressionEnabled="0" columnCount="1" groupBox="0" showLabel="1">
+        <attributeEditorContainer backgroundColor="#81d868" collapsed="0" visibilityExpressionEnabled="0" type="Tab" name="tab2" collapsedExpression="" verticalStretch="0" horizontalStretch="0" visibilityExpression="" collapsedExpressionEnabled="0" columnCount="1" groupBox="0" showLabel="1">
           <labelStyle overrideLabelColor="0" labelColor="0,0,0,255" overrideLabelFont="0">
             <labelFont description="Sans Serif,9,-1,5,50,0,0,0,0,0" strikethrough="0" style="" italic="0" underline="0" bold="0"/>
           </labelStyle>
