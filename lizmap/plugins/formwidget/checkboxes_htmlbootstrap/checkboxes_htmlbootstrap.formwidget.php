@@ -37,7 +37,7 @@ class checkboxes_htmlbootstrapFormWidget extends checkboxes_htmlFormWidget
         }
         $span = '<div class="form-check">'
         .'<label class="checkbox form-check-label jforms-chkbox jforms-ctl-'.$this->ctrl->ref.'">'
-        .'<input type="checkbox" class="form-check-input"';
+        .'<input type="checkbox" class="jforms-ctrl-checkboxes form-check-input"';
 
         if (is_array($value)) {
             $value = array_map(function ($v) { return (string) $v; }, $value);
