@@ -125,4 +125,11 @@ test.describe(
             await project.editingField('field_in_dnd_form').fill('test_geom');
             await project.editingSubmitForm();
         });
+
+        test('Form tab colors', async function ({ page }) {
+            const project = new ProjectPage(page, 'dnd_form');
+            await project.open();
+            await project.openEditingFormWithLayer('dnd_form_geom');
+            await expect(project.dock.getByText('tab2').locator('..')).toHaveAttribute('style', 'background-color:#81d868');
+        });
     });
