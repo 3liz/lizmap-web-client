@@ -1,8 +1,8 @@
 {jmessage_bootstrap}
 
+<h1>{@admin.theme.detail.title@}</h1>
 <!--Services-->
-<div>
-  <h2>{@admin.theme.detail.title@}</h2>
+<div class="container">
   <table class="table">
     {formcontrols $themeForm}
     <tr>

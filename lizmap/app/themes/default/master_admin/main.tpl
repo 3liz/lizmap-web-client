@@ -30,7 +30,7 @@
       </nav>
     </div>
     <div class="col-sm-10">
-      <div class="row">
+      <div class="">
         <div id="admin-message">{jmessage_bootstrap}</div>
        {$MAIN}
       </div>
