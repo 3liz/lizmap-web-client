@@ -45,6 +45,7 @@ export default class MousePosition extends HTMLElement {
     mainTemplate(lon, lat){
         const inputLongitude = html`<input
             type="number"
+            class="form-control"
             step="any"
             placeholder="longitude"
             @input=${(event) => this._lonInput = parseFloat(event.target.value)}
@@ -53,6 +54,7 @@ export default class MousePosition extends HTMLElement {
         >`;
         const inputLatitude = html`<input
             type="number"
+            class="form-control"
             step="any"
             placeholder="latitude"
             @input=${(event) => this._latInput = parseFloat(event.target.value)}

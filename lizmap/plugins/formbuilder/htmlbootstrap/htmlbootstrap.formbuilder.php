@@ -16,15 +16,41 @@ class htmlbootstrapFormBuilder extends HtmlBuilder
 
     protected $jFormsJsVarName = 'jFormsJQ';
 
-    protected $htmlFormAttributes = array('class' => 'form-horizontal');
+    protected $htmlFormAttributes = array('class' => 'form-container container');
 
     protected $defaultPluginsConf = array();
 
     protected $htmlWidgetsAttributes = array(
-        'submit' => array('class' => 'btn'),
-        'reset' => array('class' => 'btn'),
+        'color' => array('bootstrapClass' => 'form-control form-control-color'),
+        'group' => array('bootstrapClass' => 'form-check-input'),
+        'radiobuttons' => array('bootstrapClass' => 'form-check-input'),
+        'checkbox' => array('bootstrapClass' => 'form-check-input'),
+        'listbox' => array('bootstrapClass' => 'form-select form-select-sm'),
+        'menulist' => array('bootstrapClass' => 'form-select form-select-sm'),
+        'button' => array('bootstrapClass' => 'btn'),
+        'submit' => array('bootstrapClass' => 'btn'),
+        'reset' => array('bootstrapClass' => 'btn'),
         'choice' => array('class' => 'form-inline', 'itemLabelClass' => 'radio'),
     );
+
+    public function getWidget($ctrl, $parentWidget = null)
+    {
+        $widget = parent::getWidget($ctrl, $parentWidget);
+        if (isset($this->htmlWidgetsAttributes[$ctrl->getWidgetType()])) {
+            return $widget;
+        }
+        if ($ctrl->type == 'date' || $ctrl->type == 'datetime') {
+            if (jApp::config()->forms['controls.datetime.input'] == 'textboxes') {
+                $widget->setDefaultAttributes(array('bootstrapClass' => 'form-control form-control-sm'));
+            } else {
+                $widget->setDefaultAttributes(array('bootstrapClass' => 'form-select form-select-sm'));
+            }
+        } else {
+            $widget->setDefaultAttributes(array('bootstrapClass' => 'form-control form-control-sm'));
+        }
+
+        return $widget;
+    }
 
     public function outputMetaContent($t)
     {
@@ -66,14 +92,14 @@ class htmlbootstrapFormBuilder extends HtmlBuilder
             if (!$this->_form->isActivated($ctrlref)) {
                 continue;
             }
-            echo '<div class="control-group">';
+            echo '<div class="form-group row mb-3">';
             if ($ctrl->type == 'group') {
                 $this->outputControl($ctrl);
             } else {
                 $this->outputControlLabel($ctrl);
-                echo '<div class="controls">';
+                // echo '<div class="controls">';
                 $this->outputControl($ctrl);
-                echo "</div>\n";
+                // echo "</div>\n";
             }
             echo "</div>\n";
         }
@@ -162,7 +188,11 @@ class htmlbootstrapFormBuilder extends HtmlBuilder
             return;
         }
         $widget = $this->getWidget($ctrl, $this->rootWidget);
-        $widget->setLabelAttributes(array('class' => 'control-label'));
+        $bs5class = 'form-label';
+        if ($ctrl->type == 'checkbox' || $ctrl->type == 'radio') {
+            $bs5class = 'form-check-label';
+        }
+        $widget->setLabelAttributes(array('class' => $bs5class));
         $widget->outputLabel($format, $editMode);
     }
 }

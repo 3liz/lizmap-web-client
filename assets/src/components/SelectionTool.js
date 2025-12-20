@@ -166,7 +166,7 @@ export default class SelectionTool extends HTMLElement {
                             <input
                                 type="number"
                                 min="0"
-                                class="input-mini"
+                                class="form-control form-control-sm"
                                 .value="${mainLizmap.selectionTool.bufferValue}"
                                 @input=${(event) => mainLizmap.selectionTool.bufferValue = parseInt(event.target.value)}
                                 ><span class="add-on">m</span>
