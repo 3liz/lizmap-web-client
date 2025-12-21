@@ -19,6 +19,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 ### Added
 
 * PHP: Implementing a Psr-3 Logger upper \jLog::log
+* Preload link for CSS and JS files, and map's resources
 
 ### Changed
 
