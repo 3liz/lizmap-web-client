@@ -24,6 +24,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 ### Changed
 
 * Migrate datatables from client to server side
+* JS: Replace proj4js by proj4rs WASM
 
 ### Removed
 
