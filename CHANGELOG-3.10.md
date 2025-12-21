@@ -18,6 +18,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ### Added
 
+* PHP: Implementing a Psr-3 Logger upper \jLog::log
+
 ### Changed
 
 * Migrate datatables from client to server side
