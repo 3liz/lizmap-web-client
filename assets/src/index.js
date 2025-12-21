@@ -32,7 +32,7 @@ import executeJSFromServer from './modules/ExecuteJSFromServer.js';
 
 import olDep from './dependencies/ol.js';
 import litHTMLDep from './dependencies/lit-html.js';
-import proj4 from 'proj4';
+import { proj4 } from 'proj4rs/proj4.js';
 
 /**
  *  waitFor function returns waiting time in milliseconds
