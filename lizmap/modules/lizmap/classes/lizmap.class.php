@@ -16,6 +16,7 @@ use Lizmap\App\JelixContext;
 use Lizmap\Logger as Log;
 use Lizmap\Logger\Config as LogConfig;
 use Lizmap\Logger\Item as LogItem;
+use Lizmap\Logger\Logger;
 use Lizmap\Project\Project;
 use Lizmap\Project\Repository;
 
@@ -56,6 +57,11 @@ class lizmap
     protected static $appContext;
 
     /**
+     * @var null|Logger The logger instance
+     */
+    protected static $logger;
+
+    /**
      * this is a static class, so private constructor.
      */
     private function __construct() {}
@@ -86,6 +92,18 @@ class lizmap
         }
 
         return self::$appContext;
+    }
+
+    /**
+     * @return Logger The logger instance
+     */
+    public static function getLogger()
+    {
+        if (!self::$logger) {
+            self::$logger = new Logger(self::getServices()->logLevel);
+        }
+
+        return self::$logger;
     }
 
     public static function saveServices()
@@ -500,6 +518,6 @@ class lizmap
 
         $logMessage = new Log\MetricsLogMessage($log, 'metric');
 
-        jLog::log($logMessage);
+        self::getLogger()->info($logMessage);
     }
 }

@@ -63,7 +63,10 @@ class QgisFormValueRelationDynamicDatasource extends \jFormsDynamicDatasource
                             if ($wkt && WktTools::check($wkt)) {
                                 $geom = WktTools::parse($wkt);
                                 if ($geom === null) {
-                                    \jLog::log('Parsing WKT failed! '.$wkt, 'error');
+                                    \lizmap::getLogger()->error(
+                                        'Parsing WKT failed! {wkt}',
+                                        array('wkt' => $wkt)
+                                    );
                                 }
                             }
                         } else {

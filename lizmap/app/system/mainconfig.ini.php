@@ -191,9 +191,14 @@ assetsRevision = autoconfig
 [logger]
 _all=
 default=file
+emergency=file
+alert=file
+critical=file
 error=file
 warning=file
 notice=file
+info=file
+debug=file
 ;deprecated=syslog
 strict=file
 ;sql=syslog
@@ -203,9 +208,14 @@ lizmapadmin=file
 
 [fileLogger]
 default=messages.log
+emergency=errors.log
+alert=errors.log
+critical=errors.log
 error=errors.log
 warning=errors.log
 notice=errors.log
+info=errors.log
+debug=errors.log
 strict=errors.log
 ;metric=time.log
 auth=messages.log
