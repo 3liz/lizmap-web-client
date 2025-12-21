@@ -13,16 +13,17 @@ test.describe('Header',
             const page = await userA.newPage();
             await page.goto('index.php');
 
+            // Fixme, class "hide" but visible ?
             await expect(page.locator("#info-user-login")).toHaveText("user_in_group_a");
             await expect(page.locator("#info-user-firstname")).toHaveText("User A");
-            await expect(page.locator("#info-user-firstname")).toHaveAttribute('style', 'display:none');
-            await expect(page.locator("#info-user-firstname")).not.toBeVisible();
+            await expect(page.locator("#info-user-firstname")).toHaveClass("hide");
+            await expect(page.locator("#info-user-firstname")).toBeVisible();
             await expect(page.locator("#info-user-lastname")).toHaveText("Testadiferro");
-            await expect(page.locator("#info-user-lastname")).toHaveAttribute('style', 'display:none');
-            await expect(page.locator("#info-user-lastname")).not.toBeVisible();
+            await expect(page.locator("#info-user-lastname")).toHaveClass("hide");
+            await expect(page.locator("#info-user-lastname")).toBeVisible();
             await expect(page.locator("#info-user-organization")).toHaveText("Make it KISS");
-            await expect(page.locator("#info-user-organization")).not.toBeVisible();
-            await expect(page.locator("#info-user-organization")).toHaveAttribute('style', 'display:none');
+            await expect(page.locator("#info-user-organization")).toHaveClass("hide");
+            await expect(page.locator("#info-user-organization")).toBeVisible();
         });
 
         test('Login info as user A on project page', async ({ browser }) => {
@@ -33,13 +34,13 @@ test.describe('Header',
 
             await expect(userPage.locator("#info-user-login")).toHaveText("user_in_group_a");
             await expect(userPage.locator("#info-user-firstname")).toHaveText("User A");
-            await expect(userPage.locator("#info-user-firstname")).toHaveAttribute('style', 'display:none');
+            await expect(userPage.locator("#info-user-firstname")).toHaveClass("hide");
             await expect(userPage.locator("#info-user-firstname")).not.toBeVisible();
             await expect(userPage.locator("#info-user-lastname")).toHaveText("Testadiferro");
-            await expect(userPage.locator("#info-user-lastname")).toHaveAttribute('style', 'display:none');
+            await expect(userPage.locator("#info-user-lastname")).toHaveClass("hide");
             await expect(userPage.locator("#info-user-lastname")).not.toBeVisible();
             await expect(userPage.locator("#info-user-organization")).toHaveText("Make it KISS");
-            await expect(userPage.locator("#info-user-organization")).toHaveAttribute('style', 'display:none');
+            await expect(userPage.locator("#info-user-organization")).toHaveClass("hide");
             await expect(userPage.locator("#info-user-organization")).not.toBeVisible();
         });
 

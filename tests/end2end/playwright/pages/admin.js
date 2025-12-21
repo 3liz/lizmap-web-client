@@ -61,7 +61,7 @@ export class AdminPage extends BasePage {
      * @param {string} expected Name of the page
      */
     async checkPage(expected){
-        await expect(this.menu.locator('li.active')).toHaveText(expected);
+        await expect(this.page.getByRole('link', { name: expected })).toContainClass('active');
     }
 
     /**

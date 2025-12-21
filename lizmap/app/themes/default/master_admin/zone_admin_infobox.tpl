@@ -1,8 +1,8 @@
-<ul class="nav pull-right">
+<ul class="navbar-nav">
   {foreach $infoboxitems  as $item}
-    <li class="{$item->id}">
+    <li class="{$item->id} nav-item">
      {if $item->type == 'url'}
-     <a href="{$item->content|eschtml}" title="{$item->label|eschtml}">
+     <a class="nav-link" href="{$item->content|eschtml}" title="{$item->label|eschtml}">
        {if $item->icon}<span class="icon"></span>{/if}
        <span class="text hidden-phone">{$item->label|eschtml}</span>
      </a>

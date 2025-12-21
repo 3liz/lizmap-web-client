@@ -87,7 +87,7 @@ export class DrawPage extends ProjectPage {
      *                      Possible values 'point', 'line', 'polygon','box','circle','freehand','text'.
      */
     async selectGeometry(type) {
-        await this.drawPanel.locator('.dropdown-toggle:nth-child(2)').click();
+        await this.drawPanel.locator('button.dropdown-toggle:nth-child(2)').click();
         await this.drawPanel.locator(`.digitizing-${type} > svg`).click();
     }
 
@@ -161,7 +161,7 @@ export class DrawPage extends ProjectPage {
      * Toggle the measure tool
      */
     async toggleMeasure() {
-        await this.drawPanel.locator('.digitizing-toggle-measure').click();
+        await this.drawPanel.locator('button.digitizing-toggle-measure').click();
     }
 
     /**
@@ -185,7 +185,7 @@ export class DrawPage extends ProjectPage {
      * @param {string} value The constraint value.
      */
     async setMeasureConstraint(type, value) {
-        await this.drawPanel.locator(`.digitizing-constraints input.${type}`).fill(value);
+        await this.drawPanel.locator(`.digitizing-constraint-${type} input.${type}`).fill(value);
     }
 
     /**

@@ -14,9 +14,8 @@
 </div>
 {/if}
 
-
 <!-- Help button about the colours used in the table -->
-<a href="#lizmap_project_list_help" role="button" class="btn pull-right" data-toggle="modal">{@admin.project.modal.title@}</a>
+<button type="button" data-bs-target="#lizmap_project_list_help" role="button" class="btn btn-sm float-end" data-bs-toggle="modal">{@admin.project.modal.title@}</button>
 <!-- The modal div code is at the bottom of this file -->
 
 <!-- Sentence displayed when the user clicks on a line of the projects table

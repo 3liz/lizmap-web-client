@@ -3,23 +3,25 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "monthly"
-    assignees:
-      - "Gustry"
+      interval: "cron"
+      cronjob: "0 6 5 */3 *"
 
   - package-ecosystem: "composer"
     directory: "/lizmap"
     schedule:
-      interval: "monthly"
+      interval: "cron"
+      cronjob: "0 6 5 */3 *"
 
   - package-ecosystem: "composer"
     directory: "/tests/units"
     schedule:
-      interval: "monthly"
+      interval: "cron"
+      cronjob: "0 6 5 */3 *"
 
-#  - package-ecosystem: "npm"
-#    directory: "/assets"
-#    schedule:
-#      interval: "monthly"
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "cron"
+      cronjob: "0 6 5 */3 *"
 #    assignees:
 #      - "nboisteault"

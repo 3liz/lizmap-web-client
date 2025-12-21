@@ -36,7 +36,7 @@ test.describe('Landing page content', {
 
         // save form and ensure, it's ok
         await page.getByRole('button', { name: 'Save' }).click();
-        await adminPage.checkAlert('alert-success', '×Content of the landing page has been saved');
+        await adminPage.checkAlert('alert-success', 'Content of the landing page has been saved');
 
         // Go to Landing page
         await page.goto('index.php');
@@ -61,7 +61,7 @@ test.describe('Landing page content', {
         await page.getByRole('group', { name: 'Top of the landing page' }).getByLabel('No').check();
         await page.getByRole('group', { name: 'Bottom of the landing page' }).getByLabel('No').check();
         await page.getByRole('button', { name: 'Save' }).click();
-        await adminPage.checkAlert('alert-success', '×Content of the landing page has been saved');
+        await adminPage.checkAlert('alert-success', 'Content of the landing page has been saved');
 
         // go to landing page ...
         await page.goto('index.php');

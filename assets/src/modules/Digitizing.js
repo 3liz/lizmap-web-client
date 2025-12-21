@@ -2170,7 +2170,7 @@ export class Digitizing {
                         OL6features = features;
                     }
                 } catch (error) {
-                    this._lizmap3.addMessage(error, 'error', true)
+                    this._lizmap3.addMessage(error, 'danger', true)
                 }
 
                 if (OL6features) {

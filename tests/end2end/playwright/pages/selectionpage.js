@@ -118,8 +118,8 @@ export class SelectionPage extends ProjectPage {
      *                      Possible values 'point', 'line', 'polygon','box','circle','freehand'.
      */
     async selectGeometry(type) {
-        await this.selectionPanel.locator('lizmap-digitizing .dropdown-toggle:nth-child(2)').click();
-        await this.selectionPanel.locator(`lizmap-digitizing .digitizing-${type} > svg`).click();
+        await this.selectionPanel.locator('lizmap-digitizing .digitizing-buttons .dropdown-toggle-split').click();
+        await this.selectionPanel.locator(`lizmap-digitizing .digitizing-${type}`).click();
     }
 
     /**

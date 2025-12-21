@@ -7,9 +7,8 @@ on:
   # allow to run manually
   workflow_dispatch:
 
-#concurrency:
-#  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-#  cancel-in-progress: true
+env:
+  NODE_VERSION: "21"
 
 jobs:
   end2end:
@@ -26,7 +25,7 @@ jobs:
       matrix:
         include:
           - name: "LEGACY"
-            php: "8.1"
+            php: "8.2"
             pg-postgis: "14-3"
             qgis-server: "3.40"
             update-projects: "FALSE"
@@ -43,13 +42,6 @@ jobs:
       PLAYWRIGHT_OPTIONS: --project=end2end
       FORCE_COLOR: true
     steps:
-
-      #      - name: Debug
-      #        working-directory: .
-      #        run: |
-      #            echo ${{ github.event.pull_request.head.sha }}
-      #            echo ${{ github.head_ref }}
-      #            echo ${{ github.ref_name }}
 
       - name: Login to Docker Hub
         if: ${{ github.secret_source == 'Actions' }}
@@ -150,7 +142,7 @@ jobs:
       - name: "Setup Node ${{ env.NODE_VERSION }}"
         uses: actions/setup-node@v5
         with:
-          node-version: 21
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
           cache-dependency-path: ${{ github.workspace }}/package.json
 

@@ -32,13 +32,13 @@ test.describe('WebDAV Server',
 
             let id = await page.locator('#jforms_view_edition_id').inputValue();
 
-            let getFeatureRequestPromise = page.waitForRequest(request =>
+            let datatablesRequestPromise = page.waitForRequest(request =>
                 request.method() === 'POST'
-                && request.postData()?.includes('GetFeature') === true
+                && request.postData()?.includes('draw') === true
             );
             await page.locator("#button-attributeLayers").click();
             await page.locator("button[value='form_edition_upload_webdav']").click();
-            await getFeatureRequestPromise;
+            await datatablesRequestPromise;
 
             let attrTable = page.locator("#attribute-layer-table-form_edition_upload_webdav");
             await expect(attrTable).toHaveCount(1);
@@ -63,19 +63,19 @@ test.describe('WebDAV Server',
             await project.open();
             await project.closeLeftDock();
 
-            let getFeatureRequestPromise = page.waitForRequest(request =>
+            let datatablesRequestPromise = page.waitForRequest(request =>
                 request.method() === 'POST'
-                && request.postData()?.includes('GetFeature') === true
+                && request.postData()?.includes('draw') === true
             );
             await page.locator("#button-attributeLayers").click();
             await page.locator("button[value='form_edition_upload_webdav_geom']").click();
-            await getFeatureRequestPromise;
+            await datatablesRequestPromise;
 
             let attrTable = page.locator("#attribute-layer-table-form_edition_upload_webdav_geom");
             await expect(attrTable).toHaveCount(1);
             await expect(attrTable.locator("tr").nth(1).locator("td").nth(2).locator("a")).toHaveAttribute("href", "/index.php/view/media/getMedia?repository=testsrepository&project=form_upload_webdav&path=dav/logo.png");
             let editFeatureRequestPromise = page.waitForResponse(response => response.url().includes('editFeature'));
-            await attrTable.locator("tr").nth(1).locator("td").nth(0).locator("button[title='Edit']").click();
+            await attrTable.locator("tr").nth(1).locator("td").nth(0).locator("button[data-bs-title='Edit']").click();
             await editFeatureRequestPromise;
             await page.waitForTimeout(300);
 
@@ -83,7 +83,7 @@ test.describe('WebDAV Server',
 
             let getNewFeatureRequestPromise = page.waitForRequest(request =>
                 request.method() === 'POST'
-                && request.postData()?.includes('GetFeature') === true
+                && request.postData()?.includes('draw') === true
             );
 
             await project.editingSubmitForm('close');
@@ -118,14 +118,14 @@ test.describe('WebDAV Server',
 
             let id = await page.locator('#jforms_view_edition_id').inputValue();
 
-            let getFeatureRequestPromise = page.waitForRequest(request =>
+            let datatablesRequestPromise = page.waitForRequest(request =>
                 request.method() === 'POST'
-                && request.postData()?.includes('GetFeature') === true
+                && request.postData()?.includes('draw') === true
             );
 
             await page.locator("#button-attributeLayers").click();
             await page.locator("button[value='form_edition_upload_webdav']").click();
-            await getFeatureRequestPromise;
+            await datatablesRequestPromise;
 
             let attrTable = page.locator("#attribute-layer-table-form_edition_upload_webdav");
             await expect(attrTable).toHaveCount(1);
@@ -152,7 +152,7 @@ test.describe('WebDAV Server',
 
             await editFeatureRequestPromise;
 
-            await getFeatureRequestPromise;
+            await datatablesRequestPromise;
 
             await page.waitForTimeout(300);
 
@@ -188,10 +188,10 @@ test.describe('WebDAV Server',
 
             let id = await page.locator('#jforms_view_edition_id').inputValue();
 
-            let getFeatureRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeature') === true);
+            let datatablesRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('draw') === true);
             await page.locator("#button-attributeLayers").click();
             await page.locator("button[value='form_edition_upload_webdav']").click();
-            await getFeatureRequestPromise;
+            await datatablesRequestPromise;
 
             let attrTable = page.locator("#attribute-layer-table-form_edition_upload_webdav");
             await expect(attrTable).toHaveCount(1);
@@ -216,7 +216,7 @@ test.describe('WebDAV Server',
 
             await editFeatureRequestPromise;
 
-            await getFeatureRequestPromise;
+            await datatablesRequestPromise;
 
             await page.waitForTimeout(300);
 
@@ -270,6 +270,7 @@ test.describe('WebDAV Server',
                 'form_edition_upload_webdav_geom_c71ec5ff_dc88_451f_98e1_ccf41e34ddd7'
             );
 
+            // Provided by the lizmap server plugin
             await expect(popup.locator('.lizmapPopupTitle')).toHaveText("form_edition_upload_webdav_geom");
             let uploadFields = popup.locator(".container.popup_lizmap_dd").locator(".before-tabs .control-group");
             await expect(uploadFields).toHaveCount(3);
@@ -281,14 +282,14 @@ test.describe('WebDAV Server',
             //clear screen
             await page.locator('#dock-close').click();
 
-            let getFeatureRequestPromise = page.waitForRequest(request =>
+            let datatablesRequestPromise = page.waitForRequest(request =>
                 request.method() === 'POST'
-                && request.postData()?.includes('GetFeature') === true
+                && request.postData()?.includes('draw') === true
             );
 
             await page.locator("#button-attributeLayers").click();
             await page.locator("button[value='form_edition_upload_webdav_geom']").click();
-            await getFeatureRequestPromise;
+            await datatablesRequestPromise;
 
             let attrTable = page.locator("#attribute-layer-table-form_edition_upload_webdav_geom");
             await expect(attrTable).toHaveCount(1);
@@ -357,10 +358,10 @@ test.describe('WebDAV Server',
             //clear screen
             await page.locator('#dock-close').click();
 
-            let getFeatureRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeature') === true);
+            let datatablesRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('draw') === true);
             await page.locator("#button-attributeLayers").click();
             await page.locator("button[value='form_edition_upload_webdav_shape']").click();
-            await getFeatureRequestPromise;
+            await datatablesRequestPromise;
 
             let attrTable = page.locator("#attribute-layer-table-form_edition_upload_webdav_shape");
             await expect(attrTable).toHaveCount(1);
@@ -374,14 +375,14 @@ test.describe('WebDAV Server',
             await project.open();
             await project.closeLeftDock();
 
-            let getFeatureRequestPromise = page.waitForRequest(request =>
+            let datatablesRequestPromise = page.waitForRequest(request =>
                 request.method() === 'POST'
-                && request.postData()?.includes('GetFeature') === true
+                && request.postData()?.includes('draw') === true
             );
 
             await page.locator("#button-attributeLayers").click();
             await page.locator("button[value='form_edition_upload_webdav_geom']").click();
-            await getFeatureRequestPromise;
+            await datatablesRequestPromise;
 
             let attrTable = page.locator("#attribute-layer-table-form_edition_upload_webdav_geom");
 

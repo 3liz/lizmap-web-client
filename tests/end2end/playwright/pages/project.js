@@ -340,6 +340,18 @@ export class ProjectPage extends BasePage {
     }
 
     /**
+     * Waits for a datatables request
+     * @returns {Promise<Request>} The datatables request
+     */
+    async waitForDatatablesRequest() {
+        return this.page.waitForRequest(
+            request => request.method() === 'POST' &&
+            request.url().includes('datatables') === true &&
+            request.postData()?.includes('draw') === true
+        );
+    }
+
+    /**
      * open function
      * Open the URL for the given project and repository
      * @param {boolean} skip_plugin_update_warning Skip UI warning about QGIS plugin version, false by default.
@@ -394,9 +406,9 @@ export class ProjectPage extends BasePage {
         if (!await this.page.locator('#attribute-summary').isVisible()) {
             await this.page.locator('#nav-tab-attribute-summary').click();
         }
-        const getFeatureRequestPromise = this.waitForGetFeatureRequest();
+        const datatablesPromise = this.waitForDatatablesRequest();
         await this.page.locator('#attribute-layer-list-table').locator(`button[value=${layer}]`).click();
-        return await getFeatureRequestPromise;
+        return await datatablesPromise;
     }
 
     /**
@@ -421,7 +433,7 @@ export class ProjectPage extends BasePage {
     async launchExport(layer, format){
         const getFeatureRequestPromise = this.waitForGetFeatureRequest();
         await this.page.getByRole('button', { name: 'Export' }).click();
-        await this.page.getByRole('link', { name: format }).click();
+        await this.page.getByRole('button', { name: format }).click();
         return await getFeatureRequestPromise;
     }
 

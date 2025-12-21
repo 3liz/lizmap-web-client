@@ -462,8 +462,8 @@ var lizEdition = function() {
         if ( $('#edition-point-coord-geolocation').is(':checked') )
             $('#edition-point-coord-geolocation').click();
         $('#edition-point-coord-add').hide();
-        $('#edition-segment-length').parents('.control-group').addClass('hidden');
-        $('#edition-segment-angle').parents('.control-group').addClass('hidden');
+        $('#edition-segment-length').parents('.form-group').addClass('hidden');
+        $('#edition-segment-angle').parents('.form-group').addClass('hidden');
 
         lizMap.events.triggerEvent("lizmapeditiondrawfeaturedeactivated",
             {
@@ -693,7 +693,7 @@ var lizEdition = function() {
         $('.edition-tabs').hide();
 
         // Display digitization tab back
-        $('.edition-tabs a[href="#tabdigitization"]').show();
+        $('.edition-tabs button[data-bs-target="#tabdigitization"]').show();
     }
 
     // Is there at least one layer with creation capability?
@@ -1169,7 +1169,7 @@ var lizEdition = function() {
      * @param showTotal
      */
     function displaySegmentsLength(components, projection, showTotal){
-        $('#edition-segment-length').parents('.control-group').removeClass('hidden');
+        $('#edition-segment-length').parents('.form-group').removeClass('hidden');
 
         const componentsCount = components.length;
         const lastSegmentLength = (new OpenLayers.Geometry.LineString([components[componentsCount - 2], components[componentsCount - 1]])).getGeodesicLength(projection);
@@ -1208,7 +1208,7 @@ var lizEdition = function() {
      * @param C
      */
     function displayAngleBetweenThreePoints(A, B, C){
-        $('#edition-segment-angle').parents('.control-group').removeClass('hidden');
+        $('#edition-segment-angle').parents('.form-group').removeClass('hidden');
 
         const AB = Math.sqrt(Math.pow(B.x - A.x, 2) + Math.pow(B.y - A.y, 2));
         const BC = Math.sqrt(Math.pow(B.x - C.x, 2) + Math.pow(B.y - C.y, 2));
@@ -1639,8 +1639,8 @@ var lizEdition = function() {
                                 .attr('name', "liz_pivot")
                                 .attr('value', pivot+":"+parentInfo.layerId+":"+parentInfo['feature'].properties[referencedField]);
                             form.find('div.jforms-hiddens').append(hiddenInput);
-                            var futureLinkInfo = '<div class="control-group"><p id="edition-link-pivot">'+lizDict['edition.link.pivot.add'].replace('%f','<b>'+parentInfo['feature'].properties[referencedField]+'</b>').replace("%l",'<b>'+parentLayerConf[1].title+'</b>')+'</p></div>';
-                            form.find(".control-group").last().append(futureLinkInfo);
+                            var futureLinkInfo = '<div class="form-group"><p id="edition-link-pivot">'+lizDict['edition.link.pivot.add'].replace('%f','<b>'+parentInfo['feature'].properties[referencedField]+'</b>').replace("%l",'<b>'+parentLayerConf[1].title+'</b>')+'</p></div>';
+                            form.find(".form-group").last().append(futureLinkInfo);
                         }
 
                     }
@@ -1746,7 +1746,7 @@ var lizEdition = function() {
                                 $('#edition-geomtool-container').show();
                         }
                     } else {
-                        $('.edition-tabs a[href="#tabdigitization"]').hide();
+                        $('.edition-tabs button[data-bs-target="#tabdigitization"]').hide();
                     }
                 }
                 // Modification
@@ -1766,7 +1766,7 @@ var lizEdition = function() {
                                 $('#edition-geomtool-container').show();
                         }
                     }else{
-                        $('.edition-tabs a[href="#tabdigitization"]').hide();
+                        $('.edition-tabs button[data-bs-target="#tabdigitization"]').hide();
                     }
 
                     addEditionMessage(lizDict['edition.select.modify.activate'],'info',true);
@@ -1790,8 +1790,8 @@ var lizEdition = function() {
             }
             // Handle group visibilities based on QGIS drag&drop form layout mode
             handleGroupVisibilities( form );
-            // Display label for futur action without bootstrap control-label class
-            $('#'+form.attr('id')+'_liz_future_action_label').removeClass('control-label');
+            // Display label for futur action without bootstrap form-label class
+            $('#'+form.attr('id')+'_liz_future_action_label').removeClass('form-label');
 
             // Handle JS events on form (submit, etc.)
             handleEditionFormSubmit( form );
@@ -1868,7 +1868,7 @@ var lizEdition = function() {
         $('#edition-waiter').hide();
 
         // Activate edition dock if not yet
-        $('li.edition:not(.active) #button-edition').click();
+        document.querySelector('li.edition:not(.active) #button-edition')?.click();
 
         // Hide popup
         if( $('#liz_layer_popup_close').length )
@@ -1929,7 +1929,7 @@ var lizEdition = function() {
                 if (group.hasClass('tab-pane')) {
                     // group is tab content
                     // so manage tab visibility
-                    var tab = form.children('ul.nav-tabs').find('li a[href="#' + groupId + '"]');
+                    var tab = form.children('ul.nav-tabs').find('li button[data-bs-target="#' + groupId + '"]');
                     var tabParent = tab.parent();
                     if (data[groupId]) {
                         // tab has to be visible
@@ -2416,7 +2416,7 @@ lizEditionErrorDecorator.prototype = {
         if(this.message != ''){
             if (!div) {
                 div = document.createElement('div');
-                div.setAttribute('class', 'jforms-error-list alert alert-block alert-error');
+                div.setAttribute('class', 'jforms-error-list alert alert-danger');
                 div.setAttribute('id', errid);
                 $(this.form.element).first().before(div);
             }

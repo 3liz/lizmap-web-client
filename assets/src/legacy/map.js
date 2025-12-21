@@ -15,6 +15,8 @@ import WFS from '../modules/WFS.js';
 import WMS from '../modules/WMS.js';
 import { Utils } from '../modules/Utils.js';
 
+import DataTable from 'datatables.net-bs5';
+
 window.lizMap = function() {
     /**
      * PRIVATE Property: config
@@ -305,7 +307,8 @@ window.lizMap = function() {
             $('#map-content').append($('#toolbar'));
 
             $('#toggleLegend')
-                .attr('data-original-title',$('#toggleLegendOn').attr('value'))
+                .attr('data-bs-toggle', 'tooltip')
+                .attr('data-bs-title',$('#toggleLegendOn').attr('value'))
                 .parent().attr('class','legend');
 
             // autocompletion items for locatebylayer feature
@@ -329,7 +332,8 @@ window.lizMap = function() {
             $('#toolbar').insertBefore($('#switcher-menu'));
 
             $('#toggleLegend')
-                .attr('data-original-title',$('#toggleMapOnlyOn').attr('value'))
+                .attr('data-bs-toggle', 'tooltip')
+                .attr('data-bs-title',$('#toggleMapOnlyOn').attr('value'))
                 .parent().attr('class','map');
 
             // autocompletion items for locatebylayer feature
@@ -866,7 +870,7 @@ window.lizMap = function() {
                     if ( $('#mapmenu .nav-list > li.popupcontent').hasClass('active') &&
                 $('#popupcontent .lizmapPopupContent').hasClass('noContent') &&
                 config.options.popupLocation != 'right-dock'){
-                        $('#button-popupcontent').click();
+                        document.getElementById('button-popupcontent').click();
                     }
                 },2000);
             }
@@ -877,13 +881,13 @@ window.lizMap = function() {
           && (!mCheckMobile() || ( mCheckMobile() && hasPopupContent ) )
           && (lastLonLatInfo == null || eventLonLatInfo.lon != lastLonLatInfo.lon || eventLonLatInfo.lat != lastLonLatInfo.lat)
             ){
-                $('#button-popupcontent').click();
+                document.getElementById('button-popupcontent').click();
             }
             else if(
                 $('#mapmenu .nav-list > li.popupcontent').hasClass('active')
           && ( mCheckMobile() && hasPopupContent )
             ){
-                $('#button-popupcontent').click();
+                document.getElementById('button-popupcontent').click();
             }
         } else {
             // Hide previous popup
@@ -1109,11 +1113,6 @@ window.lizMap = function() {
                                     };
 
                                     wfsParams['EXP_FILTER'] = '"' + config.relations.pivot[rLayerId][layerId] + '" = ' + "'" + feat.properties[relation.referencedField] + "'";
-                                    // Calculate bbox
-                                    if (config.options?.limitDataToBbox == 'True') {
-                                        wfsParams['BBOX'] = lizMap.mainLizmap.map.getView().calculateExtent();
-                                        wfsParams['SRSNAME'] = lizMap.mainLizmap.map.getView().getProjection().getCode();
-                                    }
                                     preProcessRequest = lizMap.mainLizmap.wfs.getFeature(wfsParams);
 
                                     let ut = {
@@ -1271,8 +1270,8 @@ window.lizMap = function() {
                             }
 
                             const resizeTablesButtons =
-                                '<button class="compact-tables btn btn-small" data-original-title="' + lizDict['popup.table.compact'] + '"><i class="icon-resize-small"></i></button>'+
-                                '<button class="explode-tables btn btn-small hide" data-original-title="' + lizDict['popup.table.explode'] + '"><i class="icon-resize-full"></i></button>';
+                              '<button class="compact-tables btn btn-sm" data-bs-toggle="tooltip" data-bs-title="' + lizDict['popup.table.compact'] + '"><i class="icon-resize-small"></i></button>'+
+                              '<button class="explode-tables btn btn-sm hide" data-bs-toggle="tooltip" data-bs-title="' + lizDict['popup.table.explode'] + '"><i class="icon-resize-full"></i></button>';
 
                             var childPopup = $('<div class="lizmapPopupChildren ' + clname + '" data-layername="' + clname + '" data-title="' + configLayer.title + '">' + resizeTablesButtons + popupChildData + '</div>');
 
@@ -1334,7 +1333,7 @@ window.lizMap = function() {
                     }
 
                     // Handle compact-tables/explode-tables behaviour
-                    parentDiv.find('.lizmapPopupChildren .popupAllFeaturesCompact table').DataTable({
+                    new DataTable(parentDiv.find('.lizmapPopupChildren .popupAllFeaturesCompact table'),{
                         order: [[1, 'asc']],
                         language: { url:globalThis['lizUrls']["dataTableLanguage"] }
                     });
@@ -1623,10 +1622,12 @@ window.lizMap = function() {
                     if( 'popupLocation' in config.options && config.options.popupLocation != 'map' ){
                         var pcontent = '<div class="lizmapPopupContent"><h4>'+lizDict['popup.msg.no.result']+'</h4></div>';
                         document.querySelector('#popupcontent div.menu-content').innerHTML = pcontent;
-                        if ( $('#mapmenu .nav-list > li.popupcontent').hasClass('active') )
-                            $('#button-popupcontent').click();
-                        if ( !$('#mapmenu .nav-list > li.popupcontent').hasClass('active') )
+                        if ( $('#mapmenu .nav-list > li.popupcontent').hasClass('active') ){
+                            document.getElementById('button-popupcontent').click();
+                        }
+                        if ( !$('#mapmenu .nav-list > li.popupcontent').hasClass('active') ){
                             $('#mapmenu .nav-list > li.popupcontent').hide();
+                        }
                     }
                 }
             }
@@ -1968,22 +1969,28 @@ window.lizMap = function() {
      */
     function mAddMessage( aMessage, aType, aClose, aTimeout ) {
         var mType = 'info';
-        var mTypeList = ['info', 'error', 'success'];
+        var mTypeList = ['info', 'error', 'danger', 'success'];
         var mClose = false;
 
         if ( mTypeList.includes(aType) ){
             mType = aType;
         }
 
+        // `.alert-error` does not exist in Bootstrap > 2
+        if (mType === 'error') {
+            mType = 'danger';
+        }
+
         if ( aClose ){
             mClose = true;
         }
 
-        var html = '<div class="alert alert-block alert-'+mType+' fade in" data-alert="alert">';
-        if ( mClose ){
-            html += '<a class="close" data-dismiss="alert" href="#">×</a>';
-        }
+        var html = '<div class="alert alert-'+mType+' alert-dismissible fade show" role="alert" data-alert="alert">';
         html += '<p>'+aMessage+'</p>';
+
+        if ( mClose ){
+            html += '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+        }
         html += '</div>';
 
         var elt = $(html);
@@ -2076,7 +2083,7 @@ window.lizMap = function() {
         mAddMessage(lizDict['layer.export.started'], 'info', true).addClass('export-in-progress');
         Utils.downloadFile(getFeatureUrlData['url'], getFeatureUrlData['options'], () => {
             document.querySelectorAll('.exportLayer').forEach(el => el.disabled = false);
-            document.querySelector('#message .export-in-progress a').click();
+            document.querySelector('#message .export-in-progress button').click();
         });
 
         return false;
@@ -2614,7 +2621,7 @@ window.lizMap = function() {
         // Create menu icon for activating dock
         var dockli = '';
         dockli+='<li class="'+dname+' nav-'+dtype+'">';
-        dockli+='   <a id="button-'+dname+'" rel="tooltip" data-original-title="'+dlabel+'" data-placement="right" href="#'+dname+'" data-container="#content">';
+        dockli+='   <a id="button-'+dname+'" data-bs-toggle="tooltip" data-bs-title="'+dlabel+'" data-placement="right" data-dockid="'+dname+'" href="#'+dname+'" data-container="#content">';
         dockli += '       <span class="icon"><i class="' + dicon + ' icon-white"></i></span><span class="menu-title">' + dname +'</span>';
         dockli+='   </a>';
         dockli+='</li>';
@@ -3495,28 +3502,46 @@ window.lizMap = function() {
                 createToolbar();
                 self.events.triggerEvent("toolbarcreated", self);
 
-                // Toggle locate
-                $('#mapmenu ul').on('click', 'li.nav-minidock > a', function () {
-                    var self = $(this);
-                    var parent = self.parent();
-                    var id = self.attr('href').substr(1);
-                    var tab = $('#nav-tab-' + id);
-                    if (parent.hasClass('active')) {
-                        $('#' + id).removeClass('active');
-                        tab.removeClass('active');
-                        parent.removeClass('active');
-                        lizMap.events.triggerEvent("minidockclosed", { 'id': id });
-                    } else {
-                        var oldActive = $('#mapmenu li.nav-minidock.active');
-                        if (oldActive.length != 0) {
-                            oldActive.removeClass('active');
-                            lizMap.events.triggerEvent("minidockclosed", { 'id': oldActive.children('a').first().attr('href').substr(1) });
-                        }
-                        tab.children('a').first().click();
-                        parent.addClass('active');
-                        lizMap.events.triggerEvent("minidockopened", { 'id': id });
+                // Handle docks visibility
+                document.querySelector('#mapmenu .nav').addEventListener('click', evt => {
+                    let dockType;
+                    const liClicked = evt.target.closest('li');
+                    if (!liClicked) {
+                        return;
                     }
-                    self.blur();
+
+                    for (const className of liClicked.classList) {
+                        if (className.includes('nav-')) {
+                            dockType = className.split('nav-')[1];
+                        }
+                    }
+
+                    if (!dockType) {
+                        return;
+                    }
+
+                    evt.preventDefault();
+
+                    const linkClicked = evt.target.closest('a');
+                    const dockId = linkClicked.dataset.dockid;
+                    const parentElement = linkClicked.parentElement;
+                    const wasActive = parentElement.classList.contains('active');
+
+                    const dockContentSelector = dockType == 'minidock' ? '#mini-dock-content > div' : '#' + dockType + '-content > div';
+
+                    document.querySelectorAll('#mapmenu .nav-' + dockType).forEach(element => {
+                        element.classList.remove('active');
+                    });
+                    document.querySelectorAll(dockContentSelector).forEach(element => element.classList.add('hide'));
+                    parentElement.classList.toggle('active', !wasActive);
+                    if (dockId) {
+                        document.getElementById(dockId).classList.toggle('hide', wasActive);
+                    }
+
+                    const dockEvent = dockType == 'right-dock' ? 'rightdock' : dockType;
+
+                    const lizmapEvent = wasActive ? dockEvent + 'closed' : dockEvent + 'opened';
+                    lizMap.events.triggerEvent(lizmapEvent, { 'id': dockId });
 
                     return false;
                 });
@@ -3526,84 +3551,6 @@ window.lizMap = function() {
                     $('#mini-dock-content > .tab-pane.active').removeClass('active');
                     $('#mini-dock-tabs li.active').removeClass('active');
                 }
-
-                $('#mapmenu ul').on('click', 'li.nav-dock > a', function () {
-                    var self = $(this);
-                    var parent = self.parent();
-                    var id = self.attr('href').substr(1);
-                    var tab = $('#nav-tab-' + id);
-                    var lizmapEvent = '';
-                    if (parent.hasClass('active')) {
-                        $('#' + id).removeClass('active');
-                        tab.removeClass('active');
-                        parent.removeClass('active');
-                        lizmapEvent = 'dockclosed';
-                    } else {
-                        var oldActive = $('#mapmenu li.nav-dock.active');
-                        if (oldActive.length != 0) {
-                            oldActive.removeClass('active');
-                            lizMap.events.triggerEvent("dockclosed", { 'id': oldActive.children('a').first().attr('href').substr(1) });
-                        }
-                        tab.show();
-                        tab.children('a').first().click();
-                        parent.addClass('active');
-                        lizmapEvent = 'dockopened';
-                    }
-                    self.blur();
-
-                    var dock = $('#dock');
-                    if ($('#dock-tabs .active').length == 0)
-                        dock.hide();
-                    else if (!dock.is(':visible'))
-                        dock.show();
-
-                    // trigger event
-                    if (lizmapEvent != '')
-                        lizMap.events.triggerEvent(lizmapEvent, { 'id': id });
-
-                    return false;
-                });
-
-                $('#mapmenu ul').on('click', 'li.nav-right-dock > a', function () {
-                    var self = $(this);
-                    var parent = self.parent();
-                    var id = self.attr('href').substr(1);
-                    var tab = $('#nav-tab-' + id);
-                    var lizmapEvent = '';
-                    if (parent.hasClass('active')) {
-                        $('#' + id).removeClass('active');
-                        tab.removeClass('active');
-                        parent.removeClass('active');
-                        var lizmapEvent = 'rightdockclosed';
-                    } else {
-                        var oldActive = $('#mapmenu li.nav-right-dock.active');
-                        if (oldActive.length != 0) {
-                            oldActive.removeClass('active');
-                            lizMap.events.triggerEvent("rightdockclosed", { 'id': oldActive.children('a').first().attr('href').substr(1) });
-                        }
-                        tab.show();
-                        tab.children('a').first().click();
-                        parent.addClass('active');
-                        var lizmapEvent = 'rightdockopened';
-                    }
-                    self.blur();
-
-                    var dock = $('#right-dock');
-                    if ($('#right-dock-tabs .active').length == 0) {
-                        dock.hide();
-                        $('#content').removeClass('right-dock-visible');
-                        updateContentSize();
-                    } else if (!dock.is(':visible')) {
-                        $('#content').addClass('right-dock-visible');
-                        dock.show();
-                        updateContentSize();
-                    }
-
-                    // trigger event
-                    if (lizmapEvent != '')
-                        lizMap.events.triggerEvent(lizmapEvent, { 'id': id });
-                    return false;
-                });
 
                 // Toggle menu visibility
                 $('#menuToggle').click(function(){
@@ -3616,11 +3563,8 @@ window.lizMap = function() {
                 });
 
                 // Show layer switcher
-                $('#button-switcher').click();
                 updateContentSize();
 
-                $('#headermenu .navbar-inner .nav a[rel="tooltip"]').tooltip();
-                $('#mapmenu .nav a[rel="tooltip"]').tooltip();
                 self.events.triggerEvent("uicreated", self);
             })
                 .catch((error) => {
@@ -3682,14 +3626,7 @@ window.lizMap = function() {
  * but after this file
  */
 lizMap.events.on({
-    /**
-     * Event when the map has been created
-     * @event mapcreated
-     */
-    'mapcreated':function(evt){
-    }
-    ,
-    'uicreated': function(evt){
+    uicreated: function(){
 
         // Update legend if mobile
         if( lizMap.checkMobile() ){
@@ -3698,8 +3635,8 @@ lizMap.events.on({
         }
 
         // Connect dock close button
-        $('#dock-close').click(function(){ $('#mapmenu .nav-list > li.active.nav-dock > a').click(); });
-        $('#right-dock-close').click(function(){ $('#mapmenu .nav-list > li.active.nav-right-dock > a').click(); });
+        document.getElementById('dock-close').addEventListener('click', () => { document.querySelector('#mapmenu .nav-list > li.active.nav-dock a').click();});
+        document.getElementById('right-dock-close').addEventListener('click', () => { document.querySelector('#mapmenu .nav-list > li.active.nav-right-dock > a').click();});
     }
 });
 
@@ -3707,4 +3644,10 @@ lizMap.events.on({
 $(document).ready(function () {
     // configurate OpenLayers
     OpenLayers.DOTS_PER_INCH = 96;
+
+    // Init bootstrap tooltips
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, {
+        trigger: 'hover'
+    }));
 });

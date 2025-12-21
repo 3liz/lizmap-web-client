@@ -29,7 +29,7 @@ export default class Message extends HTMLElement {
 
     connectedCallback() {
         this._template = () => html`
-            <button class="btn btn-small" @click=${() => {
+            <button class="btn btn-sm" @click=${() => {
                 // Remove previous message if any
                 if (this.element) {
                     this.element.remove();

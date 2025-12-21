@@ -4,25 +4,25 @@
         {if $himself}
             {formdata $form, 'htmlbootstrap'}
             {formcontrols}
-            <div class="control-group">
+            <div class="form-group row mb-3">
                 {ctrl_label}
-                <div class="controls">{ctrl_value}</div>
+                {ctrl_value}
             </div>
             {/formcontrols}
             {/formdata}
         {else}
             {formdata $form, 'htmlbootstrap'}
             {formcontrols $publicProperties}
-                <div class="control-group">
+                <div class="form-group row mb-3">
                     {ctrl_label}
-                    <div class="controls">{ctrl_value}</div>
+                    {ctrl_value}
                 </div>
             {/formcontrols}
             {/formdata}
         {/if}
         {foreach $otherInfos as $label=>$value}
-            <div class="control-group">
-                <label class="jforms-label control-label">{$label|eschtml}</label>
+            <div class="form-group row mb-3">
+                <label class="jforms-label form-label">{$label|eschtml}</label>
                 <div class="controls"><span class="jforms-value jforms-value-input">{$value|eschtml}</span></div>
             </div>
         {/foreach}

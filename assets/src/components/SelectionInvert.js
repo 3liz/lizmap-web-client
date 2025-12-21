@@ -85,8 +85,9 @@ export default class SelectionInvert extends HTMLElement {
         const mainTemplate = (hiddenClass, isDisabled, title, clickHandler) => html`
         <button
             type="button"
-            class="selectiontool-invert btn btn-mini ${hiddenClass}"
-            data-original-title="${title}"
+            class="selectiontool-invert btn btn-sm ${hiddenClass}"
+            data-bs-toggle="tooltip"
+            data-bs-title="${title}"
             ?disabled=${isDisabled}
             @click=${clickHandler}
             >

@@ -23,21 +23,17 @@
 
 {else}
     {formcontrols $fieldNames}
-    <div class="control-group">
+    <div class="form-group row mb-3">
         {ctrl_label}
-        <div class="controls">
-            {ctrl_control}
-        </div>
+        {ctrl_control}
     </div>
     {/formcontrols}
 {/if}
 
 
-    <div class="control-group">
+    <div class="form-group row mb-3">
         {ctrl_label "liz_future_action"}
-        <div class="controls">
-            {ctrl_control "liz_future_action"}
-        </div>
+        {ctrl_control "liz_future_action"}
     </div>
     <div class="jforms-submit-buttons form-actions">{formreset}{formsubmit}</div>
 {/form}

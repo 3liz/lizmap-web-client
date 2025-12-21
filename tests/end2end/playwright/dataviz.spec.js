@@ -17,16 +17,16 @@ test.describe('Dataviz tests @readonly', () => {
         // expect(datavizContent.locator('> div.tab-content').getByRole('tablist').getByRole('presentation')).toHaveCount(2);
         // 2 tabs level 0
         await expect(datavizContent.locator('> div.tab-content > ul > li')).toHaveCount(2);
-        await expect(datavizContent.locator('> div.tab-content > ul > li:nth-child(1) > a')).toHaveText('First tab');
-        await expect(datavizContent.locator('> div.tab-content > ul > li:nth-child(2) > a')).toHaveText('Second tab');
+        await expect(datavizContent.locator('> div.tab-content > ul > li:nth-child(1) > button')).toHaveText('First tab');
+        await expect(datavizContent.locator('> div.tab-content > ul > li:nth-child(2) > button')).toHaveText('Second tab');
         // 2 tab panes level 0
         await expect(datavizContent.locator('> div.tab-content > .tab-pane')).toHaveCount(2);
         await expect(datavizContent.locator('> div.tab-content .level-0')).toHaveCount(2);
 
         // Check the first tab, it is active
-        let firstTab = datavizContent.locator('> div.tab-content > ul > li:nth-child(1)');
+        let firstTab = datavizContent.locator('> div.tab-content > ul > li:nth-child(1) > button');
         await expect(firstTab).toContainClass('active');
-        await expect(firstTab.locator('a')).toHaveAttribute('href', /dataviz-dnd-0-[0-9a-z]{32}/);
+        await expect(firstTab).toHaveAttribute('data-bs-target', /dataviz-dnd-0-[0-9a-z]{32}/);
         // Check the first tab pane
         let firstTabPane = datavizContent.locator('> div.tab-content > .tab-pane').nth(0);
         await expect(firstTabPane).toContainClass('active');
@@ -47,13 +47,13 @@ test.describe('Dataviz tests @readonly', () => {
         await expect(secondFieldSetFirstTabPane.locator('div.tab-content > .tab-pane').nth(0)).toContainClass('level-2');
         await expect(secondFieldSetFirstTabPane.locator('div.tab-content > .tab-pane').nth(1)).toContainClass('level-2');
         await expect(secondFieldSetFirstTabPane.locator('div.tab-content > ul > li')).toHaveCount(2);
-        await expect(secondFieldSetFirstTabPane.locator('div.tab-content > ul > li:nth-child(1) > a')).toHaveText('Sub-Tab X');
-        await expect(secondFieldSetFirstTabPane.locator('div.tab-content > ul > li:nth-child(2) > a')).toHaveText('Sub-tab Y');
+        await expect(secondFieldSetFirstTabPane.locator('div.tab-content > ul > li:nth-child(1) > button')).toHaveText('Sub-Tab X');
+        await expect(secondFieldSetFirstTabPane.locator('div.tab-content > ul > li:nth-child(2) > button')).toHaveText('Sub-tab Y');
 
         // Check the second tab, it is not active
-        let secondTab = datavizContent.locator('> div.tab-content > ul > li:nth-child(2)');
+        let secondTab = datavizContent.locator('> div.tab-content > ul > li:nth-child(2) > button');
         await expect(secondTab).not.toContainClass('active');
-        await expect(secondTab.locator('a')).toHaveAttribute('href', /dataviz-dnd-0-[0-9a-z]{32}/);
+        await expect(secondTab).toHaveAttribute('data-bs-target', /dataviz-dnd-0-[0-9a-z]{32}/);
         // Check the first tab pane
         let secondTabPane = datavizContent.locator('> div.tab-content > .tab-pane').nth(1);
         await expect(secondTabPane).not.toContainClass('active');
@@ -197,7 +197,7 @@ test.describe('Dataviz tests @readonly', () => {
 
         // Display Sub-tab Y and get the third plot
         let getPlotRequest3Promise = project.waitForGetPlotRequest();
-        await secondFieldSetFirstTabPane.locator('div.tab-content > ul > li:nth-child(2) > a').click();
+        await secondFieldSetFirstTabPane.locator('div.tab-content > ul > li:nth-child(2) > button').click();
         let getPlot3Request = await getPlotRequest3Promise;
         await expect(getPlot3Request.headers()).toHaveProperty('content-type', 'application/json');
         postData = await getPlot3Request.postDataJSON();
@@ -221,7 +221,7 @@ test.describe('Dataviz tests @readonly', () => {
         // Display second tab to get last plots
         let getPlotRequest4Promise = project.waitForGetPlotRequest('3');
         let getPlotRequest5Promise = project.waitForGetPlotRequest('4');
-        await datavizContent.locator('> div.tab-content > ul > li:nth-child(2) > a').click();
+        await datavizContent.locator('> div.tab-content > ul > li:nth-child(2) > button').click();
         requests = await Promise.all([getPlotRequest4Promise, getPlotRequest5Promise]);
         let getPlot4Request = requests[0]; // await getPlotRequest4Promise;
         let getPlot5Request = requests[1]; // await getPlotRequest5Promise;

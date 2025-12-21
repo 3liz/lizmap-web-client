@@ -84,7 +84,7 @@ test.describe('Edition Form Validation', () => {
 
         // message
         await expect(page.locator("#lizmap-edition-message")).toBeVisible();
-        await expect(page.locator("#message > div")).toHaveClass(/alert-error/);
+        await expect(page.locator("#message > div")).toHaveClass(/alert-danger/);
 
         await page.unroute('**/edition/createFeature*');
     })
@@ -114,7 +114,7 @@ test.describe('Edition Form Validation', () => {
 
         // message
         await expect(page.locator("#lizmap-edition-message")).toBeVisible();
-        await expect(page.locator("#message > div")).toHaveClass(/alert-error/);
+        await expect(page.locator("#message > div")).toHaveClass(/alert-danger/);
 
         // form still here
         await expect(page.locator('#edition-form-container')).toBeVisible();
@@ -248,14 +248,14 @@ test.describe('Multiple geometry layers', () => {
 
         const num_rec = 3;
 
-        let getFeatureRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeature') === true);
+        let datatablesRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('draw') === true);
 
         // DOUBLE_GEOM_GEOM
         // open main layer attribute table panel
         await page.locator('#attribute-layer-list button[value="double_geom_geom"]').click();
-        await getFeatureRequestPromise;
+        await datatablesRequestPromise;
 
-        let double_geom_geom_attr_table_head = page.locator("#attribute-layer-table-double_geom_geom_wrapper .dataTables_scrollHead table");
+        let double_geom_geom_attr_table_head = page.locator("#attribute-layer-table-double_geom_geom_wrapper .dt-scroll-head table");
         let double_geom_geom_attr_table = page.locator("#attribute-layer-table-double_geom_geom");
 
         await expect(double_geom_geom_attr_table_head.locator("thead th").nth(1)).toHaveText("id");
@@ -279,9 +279,9 @@ test.describe('Multiple geometry layers', () => {
         // open main layer attribute table panel
         await page.locator('#nav-tab-attribute-summary').click();
         await page.locator('#attribute-layer-list button[value="double_geom_geom_d"]').click();
-        await getFeatureRequestPromise;
+        await datatablesRequestPromise;
 
-        let double_geom_geom_d_attr_table_head = page.locator("#attribute-layer-table-double_geom_geom_d_wrapper .dataTables_scrollHead table");
+        let double_geom_geom_d_attr_table_head = page.locator("#attribute-layer-table-double_geom_geom_d_wrapper .dt-scroll-head table");
         let double_geom_geom_d_attr_table = page.locator("#attribute-layer-table-double_geom_geom_d");
 
         await expect(double_geom_geom_d_attr_table_head.locator("thead th").nth(1)).toHaveText("id");
@@ -440,14 +440,14 @@ test.describe('Multiple geometry layers', () => {
 
         const num_rec = 4;
 
-        let getFeatureRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeature') === true);
+        let datatablesRequestPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('draw') === true);
 
         // TRIPLE_GEOM_POINT
         // open main layer attribute table panel
         await page.locator('#attribute-layer-list button[value="triple_geom_geom"]').click();
-        await getFeatureRequestPromise;
+        await datatablesRequestPromise;
 
-        let triple_geom_geom_attr_table_head = page.locator("#attribute-layer-table-triple_geom_geom_wrapper .dataTables_scrollHead table");
+        let triple_geom_geom_attr_table_head = page.locator("#attribute-layer-table-triple_geom_geom_wrapper .dt-scroll-head table");
         let triple_geom_geom_attr_table = page.locator("#attribute-layer-table-triple_geom_geom");
 
         await expect(triple_geom_geom_attr_table_head.locator("thead th").nth(1)).toHaveText("id");
@@ -481,9 +481,9 @@ test.describe('Multiple geometry layers', () => {
         await page.locator('#nav-tab-attribute-summary').click();
         await page.locator('#attribute-layer-list button[value="triple_geom_geom_l"]').click();
 
-        await getFeatureRequestPromise;
+        await datatablesRequestPromise;
 
-        let triple_geom_geom_l_attr_table_head = page.locator("#attribute-layer-table-triple_geom_geom_l_wrapper .dataTables_scrollHead table");
+        let triple_geom_geom_l_attr_table_head = page.locator("#attribute-layer-table-triple_geom_geom_l_wrapper .dt-scroll-head table");
         let triple_geom_geom_l_attr_table = page.locator("#attribute-layer-table-triple_geom_geom_l");
 
         await expect(triple_geom_geom_l_attr_table_head.locator("thead th").nth(1)).toHaveText("id");
@@ -516,9 +516,9 @@ test.describe('Multiple geometry layers', () => {
         await page.locator('#nav-tab-attribute-summary').click();
         await page.locator('#attribute-layer-list button[value="triple_geom_geom_p"]').click();
 
-        await getFeatureRequestPromise;
+        await datatablesRequestPromise;
 
-        let triple_geom_geom_p_attr_table_head = page.locator("#attribute-layer-table-triple_geom_geom_p_wrapper .dataTables_scrollHead table");
+        let triple_geom_geom_p_attr_table_head = page.locator("#attribute-layer-table-triple_geom_geom_p_wrapper .dt-scroll-head table");
         let triple_geom_geom_p_attr_table = page.locator("#attribute-layer-table-triple_geom_geom_p");
 
         await expect(triple_geom_geom_p_attr_table_head.locator("thead th").nth(1)).toHaveText("id");
@@ -634,7 +634,7 @@ test.describe(
             await expect(project.editionForm.locator('div.tab-pane')).toHaveCount(3);
 
             // first tab
-            await expect(project.editionForm.locator('div.tab-pane').nth(0).locator('div.control-group')).toHaveCount(5);
+            await expect(project.editionForm.locator('div.tab-pane').nth(0).locator('div.form-group')).toHaveCount(5);
             await project.checkEditionFormTextField('id', '1', 'id');
             await project.checkEditionFormTextField('Constant', 'text string', 'Constant', true);
             await project.checkEditionFormTextField('Geometry X', '3.860212606866182', 'Geometry X', true);
@@ -642,11 +642,11 @@ test.describe(
             await project.checkEditionFormTextField('point_name', 'Widget_test', 'Name');
 
             // second tab
-            await expect(project.editionForm.locator('div.tab-pane').nth(2).locator('div.control-group')).toHaveCount(1);
+            await expect(project.editionForm.locator('div.tab-pane').nth(2).locator('div.form-group')).toHaveCount(1);
             await project.checkEditionFormTextField('Wrong expression', '[%kk[% "ids" %]%]', 'Wrong expression', true);
 
             // third tab
-            await expect(project.editionForm.locator('div.tab-pane').nth(1).locator('div.control-group')).toHaveCount(1);
+            await expect(project.editionForm.locator('div.tab-pane').nth(1).locator('div.form-group')).toHaveCount(1);
             await project.checkEditionFormTextField('Name check', 'Widget_test', 'Name check', true);
 
             // fill and save the form
@@ -688,7 +688,7 @@ test.describe(
             await expect(project.editionForm.locator('div.tab-pane')).toHaveCount(3);
 
             // first tab
-            await expect(project.editionForm.locator('div.tab-pane').nth(0).locator('div.control-group')).toHaveCount(5);
+            await expect(project.editionForm.locator('div.tab-pane').nth(0).locator('div.form-group')).toHaveCount(5);
             await project.checkEditionFormTextField('id', '', 'id');
             await project.checkEditionFormTextField('Constant', 'text string', 'Constant', true);
             await project.checkEditionFormTextField('Geometry X', '', 'Geometry X', true);
@@ -696,11 +696,11 @@ test.describe(
             await project.checkEditionFormTextField('point_name', '', 'Name');
 
             // second tab
-            await expect(project.editionForm.locator('div.tab-pane').nth(2).locator('div.control-group')).toHaveCount(1);
+            await expect(project.editionForm.locator('div.tab-pane').nth(2).locator('div.form-group')).toHaveCount(1);
             await project.checkEditionFormTextField('Wrong expression', '[%kk[% "ids" %]%]', 'Wrong expression', true);
 
             // third tab
-            await expect(project.editionForm.locator('div.tab-pane').nth(1).locator('div.control-group')).toHaveCount(1);
+            await expect(project.editionForm.locator('div.tab-pane').nth(1).locator('div.form-group')).toHaveCount(1);
             await project.checkEditionFormTextField('Name check', '', 'Name check', true);
 
             // insert a point feature
@@ -727,7 +727,7 @@ test.describe(
             expect(xGeom).toBeTruthy();
 
             // first tab
-            await expect(project.editionForm.locator('div.tab-pane').nth(0).locator('div.control-group')).toHaveCount(5);
+            await expect(project.editionForm.locator('div.tab-pane').nth(0).locator('div.form-group')).toHaveCount(5);
             await project.checkEditionFormTextField('id', '2', 'id');
             await project.checkEditionFormTextField('Constant', 'text string', 'Constant', true);
             await project.checkEditionFormTextField('Geometry X', xGeom, 'Geometry X', true);
@@ -735,11 +735,11 @@ test.describe(
             await project.checkEditionFormTextField('point_name', 'text insert', 'Name');
 
             // second tab
-            await expect(project.editionForm.locator('div.tab-pane').nth(2).locator('div.control-group')).toHaveCount(1);
+            await expect(project.editionForm.locator('div.tab-pane').nth(2).locator('div.form-group')).toHaveCount(1);
             await project.checkEditionFormTextField('Wrong expression', '[%kk[% "ids" %]%]', 'Wrong expression', true);
 
             // third tab
-            await expect(project.editionForm.locator('div.tab-pane').nth(1).locator('div.control-group')).toHaveCount(1);
+            await expect(project.editionForm.locator('div.tab-pane').nth(1).locator('div.form-group')).toHaveCount(1);
             await project.checkEditionFormTextField('Name check', 'text insert', 'Name check', true);
         });
     });
@@ -751,9 +751,9 @@ test.describe('Form upload file widget @readonly',() => {
         await project.open();
 
         const layerName = 'form_edition_upload';
-        let getFeatureRequest = await project.openAttributeTable(layerName);
-        let getFeatureResponse = await getFeatureRequest.response();
-        responseExpect(getFeatureResponse).toBeGeoJson();
+        let datatablesRequest = await project.openAttributeTable(layerName);
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
         await expect(project.attributeTableHtml(layerName).locator('tbody tr'))
             .toHaveCount(2);
         const theTableRow = project.attributeTableHtml(layerName).locator('tbody tr').first();
@@ -836,9 +836,9 @@ test.describe('Form upload file widget @readonly',() => {
         await project.open();
 
         const layerName = 'form_edition_upload';
-        let getFeatureRequest = await project.openAttributeTable(layerName);
-        let getFeatureResponse = await getFeatureRequest.response();
-        responseExpect(getFeatureResponse).toBeGeoJson();
+        let datatablesRequest = await project.openAttributeTable(layerName);
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
         await expect(project.attributeTableHtml(layerName).locator('tbody tr'))
             .toHaveCount(2);
         const theTableRow = project.attributeTableHtml(layerName).locator('tbody tr').nth(1);
@@ -970,9 +970,9 @@ test.describe('Form upload file widget @write',() => {
             '../media/specific_media_folder/random-4.jpg'
         );
 
-        let getFeatureRequest = await project.openAttributeTable(layerName);
-        let getFeatureResponse = await getFeatureRequest.response();
-        responseExpect(getFeatureResponse).toBeGeoJson();
+        let datatablesRequest = await project.openAttributeTable(layerName);
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
         await expect(project.attributeTableHtml(layerName).locator('tbody tr'))
             .toHaveCount(2);
 
@@ -1108,9 +1108,9 @@ test.describe('Form upload file widget @write',() => {
             'media/upload/form_edition_all_field_type/form_edition_upload/text_file_mandatory/lorem-2.txt'
         );
 
-        let getFeatureRequest = await project.openAttributeTable(layerName);
-        let getFeatureResponse = await getFeatureRequest.response();
-        responseExpect(getFeatureResponse).toBeGeoJson();
+        let datatablesRequest = await project.openAttributeTable(layerName);
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
         await expect(project.attributeTableHtml(layerName).locator('tbody tr'))
             .toHaveCount(2);
 
@@ -1237,7 +1237,7 @@ test.describe('Form edition without creation', {tag: ['@readonly'],},() => {
 
         // .. with edition message ..
         await expect(page.locator('#lizmap-edition-message')).toBeVisible();
-        await page.locator('#lizmap-edition-message .close').click();
+        await page.locator('#lizmap-edition-message .btn-close').click();
         await expect(page.locator('#lizmap-edition-message')).not.toBeVisible();
 
         // ... even after toggling dock visibility

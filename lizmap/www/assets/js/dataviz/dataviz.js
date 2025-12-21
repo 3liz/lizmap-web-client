@@ -295,7 +295,7 @@ let lizDataviz = function () {
         if (abstract.trim() != '') {
             html += '  <p>' + abstract.trim() + '</p>';
         }
-        html += '  <div class="dataviz-waiter progress progress-striped active" style="margin:5px 5px;">';
+        html += '  <div class="dataviz-waiter progress progress-bar progress-bar-striped progress-bar-animated active" style="margin:5px 5px;">';
         html += '    <div class="bar" style="width: 100%;"></div>';
         html += '  </div>';
         html += '  <div id="' + target_id + '"></div>';

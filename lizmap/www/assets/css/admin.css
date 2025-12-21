@@ -1,11 +1,17 @@
-#menu .nav-list > li > a {
+#menu .list-group-item > a {
   background-repeat : no-repeat;
   background-position : left center;
   padding-left : 20px;
+  display: block;
 }
 
-#content {
-  font-size:0.8em;
+#menu .list-group-item.active > a {
+    color: white;
+}
+
+#menu .list-group-item-secondary {
+    text-transform: uppercase;
+    font-weight: bold;
 }
 
 #auth_login_zone {
@@ -54,14 +60,6 @@ fieldset {
     min-width: 10em;
 }
 
-.form-horizontal .control-label {
-    width: 240px;
-}
-
-.form-horizontal .controls {
-    margin-left: 250px;
-}
-
 .table .table {
     background-color:transparent;
 }
@@ -81,13 +79,6 @@ fieldset {
 .table-server-info td
 {
     width: 50%;
-}
-
-
-@media (width <= 480px) {
-    .form-horizontal .controls {
-        margin-left: 0;
-    }
 }
 
 /*

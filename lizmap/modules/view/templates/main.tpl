@@ -9,12 +9,12 @@
     <h2>{$subTitle}</h2>
   </div>
 
-  <div id="headermenu" class="navbar navbar-fixed-top">
-    <div id="auth" class="navbar-inner">
-      <ul class="nav pull-right">
+  <div id="headermenu" class="navbar navbar-expand position-absolute bottom-0">
+    <div id="auth" class="container-fluid justify-content-end">
+      <ul class="navbar-nav">
         {if $showHomeLink}
-        <li class="home">
-          <a href="{jurl 'view~default:index'}" rel="tooltip" data-original-title="{@view~default.home.title@}" data-placement="bottom">
+        <li class="home nav-item">
+          <a class="nav-link" href="{jurl 'view~default:index'}" data-bs-toggle="tooltip" data-bs-title="{@view~default.home.title@}" data-placement="bottom">
             <span class="icon"></span>
             <span class="text"><b>{@view~default.home.title@}</b></span>
           </a>
@@ -28,10 +28,10 @@
 
 <div id="content" class="container">
   <div id="search">
-    <div class="input-prepend">
-      <button id="toggle-search" class="btn" type="button" data-toggle="tooltip"
-        title="{@view~default.header.search.toggleKeywordsTitle.title@}">T</button>
-      <input id="search-project" class="span2" data-toggle="tooltip" title="{@view~default.header.search.input.title@}"
+    <div class="input-group">
+      <button id="toggle-search" class="btn" type="button" data-bs-toggle="tooltip"
+        data-bs-title="{@view~default.header.search.toggleKeywordsTitle.title@}">T</button>
+      <input id="search-project" class="form-control" data-bs-toggle="tooltip" data-bs-title="{@view~default.header.search.input.title@}"
         placeholder="{@view~map.search.nominatim.placeholder@}" type="text">
     </div>
     <div id="search-project-keywords">
@@ -40,9 +40,9 @@
   </div>
   {jmessage_bootstrap}
   {if $checkServerInformation}
-  <div class="alert alert-block alert-error fade in" data-alert="alert">
-    <a class="close" data-dismiss="alert" href="#">×</a>
-    <p>{@view~default.server.information.error.admin@} <a href="{jurl 'admin~server_information:index'}">🔗</a></p>
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <p>{@view~default.server.information.error.admin@} <a href="{jurl 'admin~server_information:index'}">🔗</a></p>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
   </div>
   {/if}
   {if isset($landing_page_content)}

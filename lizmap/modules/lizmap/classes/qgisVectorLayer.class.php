@@ -1168,11 +1168,12 @@ class qgisVectorLayer extends qgisMapLayer
      * when there is a filter by login (or by polygon). This allows to deactivate the editing icon
      * for the non-editable features inside the popup and attribute table.
      *
-     * @param array<string, string> $wfsParams Extra WFS parameters to filter the layer : FEATUREID or EXP_FILTER could be use
+     * @param array<string, string> $wfsParams        Extra WFS parameters to filter the layer : FEATUREID or EXP_FILTER could be use
+     * @param bool                  $featuresAsStream return the features as a stream or as an array
      *
      * @return array Data containing the status (restricted|unrestricted) and the features if restricted
      */
-    public function editableFeatures($wfsParams = array())
+    public function editableFeatures($wfsParams = array(), $featuresAsStream = true)
     {
         // Editable features are a restricted list
         $restricted_empty_data = array(
@@ -1270,8 +1271,18 @@ class qgisVectorLayer extends qgisMapLayer
         }
 
         // Features as iterator
-        $featureStream = Psr7StreamWrapper::getResource($result->getBodyAsStream());
-        $features = JsonMachineItems::fromStream($featureStream, array('pointer' => '/features'));
+        if ($featuresAsStream) {
+            $featureStream = Psr7StreamWrapper::getResource($result->getBodyAsStream());
+            $features = JsonMachineItems::fromStream($featureStream, array('pointer' => '/features'));
+        } else {
+            // Features as array
+            $features = json_decode($result->getBodyAsString(), true);
+            if (isset($features['features'])) {
+                $features = $features['features'];
+            } else {
+                $features = array();
+            }
+        }
 
         return array(
             'status' => 'restricted',

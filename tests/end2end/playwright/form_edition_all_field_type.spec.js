@@ -230,9 +230,9 @@ test.describe('Form edition all field type', function () {
         await expect(page.locator('#lizmap-edition-message')).toBeVisible();
 
         // Open Attribute table
-        let getFeatureRequest = await project.openAttributeTable(tableName);
-        let getFeatureResponse = await getFeatureRequest.response();
-        responseExpect(getFeatureResponse).toBeGeoJson();
+        let datatablesRequest = await project.openAttributeTable(tableName);
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
 
         let tableHtml = project.attributeTableHtml(tableName);
         await expect(tableHtml.locator('tbody tr')).not.toHaveCount(0);
@@ -281,9 +281,9 @@ test.describe('Form edition all field type', function () {
         await expect(page.locator('#edition-form-container')).not.toBeVisible();
 
         // Open Attribute table
-        let getFeatureRequest = await project.openAttributeTable(tableName);
-        let getFeatureResponse = await getFeatureRequest.response();
-        responseExpect(getFeatureResponse).toBeGeoJson();
+        let datatablesRequest = await project.openAttributeTable(tableName);
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
 
         let tableHtml = project.attributeTableHtml(tableName);
         await expect(tableHtml.locator('tbody tr')).not.toHaveCount(0);
@@ -332,9 +332,9 @@ test.describe('Form edition all field type', function () {
         await expect(page.locator('#edition-form-container')).not.toBeVisible();
 
         // Open Attribute table
-        let getFeatureRequest = await project.openAttributeTable(tableName);
-        let getFeatureResponse = await getFeatureRequest.response();
-        responseExpect(getFeatureResponse).toBeGeoJson();
+        let datatablesRequest = await project.openAttributeTable(tableName);
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
 
         let tableHtml = project.attributeTableHtml(tableName);
         await expect(tableHtml.locator('tbody tr')).not.toHaveCount(0);
@@ -379,7 +379,7 @@ test.describe('Form edition all field type', function () {
         await submit.scrollIntoViewIfNeeded();
         await submit.click();
 
-        await page.locator('#edition .edition-tabs > ul').scrollIntoViewIfNeeded();
+        await page.locator('#edition').getByRole('tablist').scrollIntoViewIfNeeded();
 
         // An error message should warn about invalidity of the form
         await expect(page.locator('#jforms_view_edition_errors')).toBeVisible();
@@ -408,7 +408,7 @@ test.describe('Form edition all field type', function () {
         await submit.scrollIntoViewIfNeeded();
         await submit.click();
 
-        await page.locator('#edition .edition-tabs > ul').scrollIntoViewIfNeeded();
+        await page.locator('#edition').getByRole('tablist').scrollIntoViewIfNeeded();
 
         // An error message should warn about invalidity of the form
         await expect(page.locator('#jforms_view_edition_errors')).toBeVisible();
@@ -437,7 +437,7 @@ test.describe('Form edition all field type', function () {
         await submit.scrollIntoViewIfNeeded();
         await submit.click();
 
-        await page.locator('#edition .edition-tabs > ul').scrollIntoViewIfNeeded();
+        await page.locator('#edition').getByRole('tablist').scrollIntoViewIfNeeded();
 
         // An error message should warn about invalidity of the form
         await expect(page.locator('#jforms_view_edition_errors')).toBeVisible();
@@ -543,9 +543,9 @@ test.describe('Form edition all field type', function () {
         await expect(page.locator('#edition-form-container')).not.toBeVisible();
 
         // Open Attribute table
-        let getFeatureRequest = await project.openAttributeTable(tableName);
-        let getFeatureResponse = await getFeatureRequest.response();
-        responseExpect(getFeatureResponse).toBeGeoJson();
+        let datatablesRequest = await project.openAttributeTable(tableName);
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
 
         let tableHtml = project.attributeTableHtml(tableName);
         await expect(tableHtml.locator('tbody tr')).not.toHaveCount(0);

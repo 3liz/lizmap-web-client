@@ -286,7 +286,7 @@ test.describe('Draw', () => {
         // Check measure display
         await expect(page.locator('.ol-tooltip.ol-tooltip-static')).toBeVisible();
         await expect(page.locator('.ol-tooltip.ol-tooltip-static')).toHaveText('3.3 km34.27 km2');
-    })
+    });
 
     test('From local storage', async ({ page }) => {
         const drawProject = await initDrawProject(page);

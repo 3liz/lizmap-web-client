@@ -513,7 +513,7 @@ class WMSRequest extends OGCRequest
         $this->params['with_geometry'] = 'true';
         // Starting from LWC 3.10.0, we need to request the maptip with Bootstrap 5
         // TODO, remove later when the lizmapWebClientTargetVersion=30800 because all projects will be migrated.
-        $this->params['CSS_FRAMEWORK'] = 'BOOTSTRAP2';
+        $this->params['CSS_FRAMEWORK'] = 'BOOTSTRAP5';
 
         // Get remote data
         $response = $this->request(true);
