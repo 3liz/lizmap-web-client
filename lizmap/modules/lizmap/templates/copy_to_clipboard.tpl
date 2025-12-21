@@ -1,7 +1,7 @@
 {meta_html js $j_basepath.'assets/js/copy_to_clipboard.js', ['defer' => '']}
 
 {macro 'copy_to_clipboard', $value}
-<button type="button" class="btn-small copy-to-clipboard" data-text="{$value}">
+<button type="button" class="btn-sm copy-to-clipboard" data-text="{$value}">
     <svg aria-hidden="true" height="16" width="16" data-view-component="true">
         <path
                 fill-rule="evenodd"

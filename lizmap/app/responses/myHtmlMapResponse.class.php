@@ -35,8 +35,9 @@ class myHtmlMapResponse extends AbstractLizmapHtmlResponse
 
         $this->addAssets('jquery_ui');
         $this->addAssets('bootstrap');
-        $this->addAssets('datatables');
         $this->addAssets('map');
+
+        $this->addCSSLink($bp.'assets/css/datatables.min.css');
 
         $this->setBodyAttributes(array('data-proj4js-lib-path' => $bp.'assets/js/Proj4js/'));
     }

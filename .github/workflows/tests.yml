@@ -10,6 +10,10 @@ on:
       - master
       - release_3_*
 
+env:
+  PHP_VERSION: "8.2"
+  NODE_VERSION: "21"
+
 jobs:
   php-tests:
     name: "🐘 PHP-Unit"
@@ -17,8 +21,6 @@ jobs:
     strategy:
       matrix:
         include:
-          - php-version: "8.1"
-            php-unit: "10.5.40"
           - php-version: "8.2"
             php-unit: "11.5.2"
           - php-version: "8.3"
@@ -76,7 +78,9 @@ jobs:
       - name: "Setup Node ${{ env.NODE_VERSION }}"
         uses: actions/setup-node@v5
         with:
-          node-version: 21
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: ${{ github.workspace }}/package.json
 
       - name: Install lizmap dependencies
         run: npm ci

@@ -25,7 +25,7 @@ export default class Snapping extends HTMLElement {
         const mainTemplate = () => html`
         <div class="${mainLizmap.snapping.config !== undefined ? '' : 'hide'}">
             <h3>${lizDict['snapping.title']}</h3>
-            <div class="control-group">
+            <div class="form-group">
                 <div class="controls">
                     <div class="btn-group">
                         <button
@@ -46,28 +46,28 @@ export default class Snapping extends HTMLElement {
                     </div>
                 </div>
                 ${mainLizmap.snapping.active ?
-                    html`
-                        <div class="snap-panel-controls">
-                            <p class="snap-layers-list-title">${lizDict['snapping.list.title']}</p>
-                            <div class="snap-layers-list">
-                                ${mainLizmap.snapping?.config?.snap_layers.map((snapLayer) =>
-                                    html`<div class="snap-layer">
-                                        <input
-                                            id="${'snap-layer-'+snapLayer}"
-                                            name="${snapLayer}"
-                                            @change=${()=> mainLizmap.snapping.snapToggled = snapLayer}
-                                            .disabled=${!mainLizmap.snapping?.config?.snap_enabled[snapLayer]}
-                                            .checked=${mainLizmap.snapping?.config?.snap_on_layers[snapLayer]}
-                                            type="checkbox"
-                                            />
-                                        <label
-                                            data-original-title="${(
-                                                mainLizmap.snapping?.config?.snap_enabled[snapLayer] ?
-                                                    lizDict['snapping.list.toggle'] : lizDict['snapping.list.disabled']
-                                            )}"
-                                            for="${'snap-layer-'+snapLayer}"
-                                            class="${mainLizmap.snapping?.config?.snap_enabled[snapLayer] ? '' : 'snap-disabled'}"
-                                            >
+                    html`<div class="snap-panel-controls">
+                        <p class="snap-layers-list-title">${lizDict['snapping.list.title']}</p>
+                        <div class="snap-layers-list">
+                            ${mainLizmap.snapping?.config?.snap_layers.map((snapLayer) =>
+                                html`<div class="snap-layer form-check">
+                                    <input
+                                        id="${'snap-layer-'+snapLayer}"
+                                        name="${snapLayer}"
+                                        @change=${()=> mainLizmap.snapping.snapToggled = snapLayer}
+                                        .disabled=${!mainLizmap.snapping?.config?.snap_enabled[snapLayer]}
+                                        .checked=${mainLizmap.snapping?.config?.snap_on_layers[snapLayer]}
+                                        class="form-check-input"
+                                        type="checkbox"/>
+                                    <label
+                                        data-bs-toggle="tooltip"
+                                        data-bs-title="${
+                                            mainLizmap.snapping?.config?.snap_enabled[snapLayer] ?
+                                                lizDict['snapping.list.toggle'] :
+                                                    lizDict['snapping.list.disabled']}"
+                                        for="${'snap-layer-'+snapLayer}"
+                                        class="${mainLizmap.snapping?.config?.snap_enabled[snapLayer] ? '' : 'snap-disabled'} form-check-label"
+                                        >
                                         ${mainLizmap.snapping?.getLayerTitle(snapLayer)}
                                     </label>
                                 </div>

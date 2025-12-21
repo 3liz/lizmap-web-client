@@ -28,7 +28,7 @@ var lizLayerFilterTool = function () {
 
                 html += '<div class="menu-content">';
                 // Add combo box to select the layer
-                html += '<select id="liz-filter-layer-selector">';
+                html += '<select id="liz-filter-layer-selector" class="form-select">';
                 var flayers = {};
                 for (var o in globalThis['filterConfig']) {
                     var conf = globalThis['filterConfig'][o];
@@ -55,15 +55,15 @@ var lizLayerFilterTool = function () {
                 html += '<b><span id="liz-filter-item-layer-total-count">' + total + '</span> ' + lizDict['filter.label.features'] + '</b>';
 
                 // Add zoom link
-                html += '<br/><button id="liz-filter-zoom" class="btn btn-mini btn-primary" title="' + lizDict['filter.btn.zoom.title'] + '">' + lizDict['filter.btn.zoom.label'] + '</button>';
+                html += '<br/><button id="liz-filter-zoom" class="btn btn-sm btn-primary" title="' + lizDict['filter.btn.zoom.title'] + '">' + lizDict['filter.btn.zoom.label'] + '</button>';
 
                 // Add export button
                 if (lizMap.mainLizmap.initialConfig.vectorLayerResultFormat.includes('ODS')) {
-                    html += '&nbsp;&nbsp;<button id="liz-filter-export" class="btn btn-mini btn-primary" title="' + lizDict['filter.btn.export.title'] + '">' + lizDict['filter.btn.export.label'] + '</button>';
+                    html += '&nbsp;&nbsp;<button id="liz-filter-export" class="btn btn-sm btn-primary" title="' + lizDict['filter.btn.export.title'] + '">' + lizDict['filter.btn.export.label'] + '</button>';
                 }
 
                 // Add unfilter link
-                html += '&nbsp;&nbsp;<button id="liz-filter-unfilter" class="btn btn-mini btn-primary" title="' + lizDict['filter.btn.reset.title'] + '">' + lizDict['filter.btn.reset.label'] + '</button>';
+                html += '&nbsp;&nbsp;<button id="liz-filter-unfilter" class="btn btn-sm btn-primary" title="' + lizDict['filter.btn.reset.title'] + '">' + lizDict['filter.btn.reset.label'] + '</button>';
 
                 html += '</div>';
 
@@ -114,7 +114,9 @@ var lizLayerFilterTool = function () {
                 }
 
                 // Add tooltip
-                $('#filter-content [title]').tooltip();
+                $('#filter-content [title]').tooltip({
+                    trigger: 'hover'
+                });
             }
 
             // Launch the form filter feature
@@ -219,7 +221,7 @@ var lizLayerFilterTool = function () {
                 html += '">';
                 var flabel = field_item.title;
                 html += '<span style="font-weight:bold;">' + flabel + '</span>';
-                html += '<button class="btn btn-primary btn-mini pull-right liz-filter-reset-field" title="' + lizDict['filter.btn.reset.title'] + '" value="' + field_item.order + '">x</button>';
+                html += '<button class="btn btn-primary btn-sm pull-right liz-filter-reset-field" title="' + lizDict['filter.btn.reset.title'] + '" value="' + field_item.order + '">x</button>';
                 html += '<p>';
 
                 return html;
@@ -513,7 +515,7 @@ var lizLayerFilterTool = function () {
                     html += getFormFieldHeader(field_item);
 
                     if (field_item.format == 'select') {
-                        html += '<select id="liz-filter-field-' + lizMap.cleanName(field_item.title) + '" class="liz-filter-field-select">';
+                        html += '<select id="liz-filter-field-' + lizMap.cleanName(field_item.title) + '" class="liz-filter-field-select form-select">';
                         html += '<option value=""> --- </option>';
                         html += '</select>';
                     }
@@ -549,7 +551,7 @@ var lizLayerFilterTool = function () {
                             dhtml += `<option value="${lizMap.cleanName(f_val)}">${label}</option>`;
                         } else {
                             var inputId = 'liz-filter-field-' + lizMap.cleanName(field_item.title) + '-' + lizMap.cleanName(f_val);
-                            dhtml += `<label class="checkbox"><input id="${inputId}" class="liz-filter-field-value" type="checkbox" value="${lizMap.cleanName(f_val)}">${label}</label>`;
+                            dhtml += `<label class="checkbox form-check-label"><input id="${inputId}" class="liz-filter-field-value form-check-input" type="checkbox" value="${lizMap.cleanName(f_val)}">${label}</label>`;
                         }
                     }
                     var id = 'liz-filter-box-' + lizMap.cleanName(field_item.title);
@@ -1376,7 +1378,9 @@ var lizLayerFilterTool = function () {
                 });
 
                 // Add tooltip
-                $('#liz-filter-box-' + lizMap.cleanName(field_item.title) + ' [title]').tooltip();
+                $('#liz-filter-box-' + lizMap.cleanName(field_item.title) + ' [title]').tooltip({
+                    trigger: 'hover'
+                });
 
             }
 

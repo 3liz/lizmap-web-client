@@ -146,9 +146,9 @@ test.describe('Filter layer data polygon - admin - @readonly', () => {
         // Attribute table
         // shop_bakery
         let tableName = 'shop_bakery';
-        let getFeatureRequest = await project.openAttributeTable(tableName);
-        let getFeatureResponse = await getFeatureRequest.response();
-        responseExpect(getFeatureResponse).toBeGeoJson();
+        let datatablesRequest = await project.openAttributeTable(tableName);
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
         let tableHtml = project.attributeTableHtml(tableName);
         // Check table lines
         await expect(tableHtml.locator('tbody tr')).toHaveCount(25);
@@ -156,9 +156,9 @@ test.describe('Filter layer data polygon - admin - @readonly', () => {
 
         // townhalls_EPSG2154
         tableName = 'townhalls_EPSG2154';
-        getFeatureRequest = await project.openAttributeTable(tableName);
-        getFeatureResponse = await getFeatureRequest.response();
-        responseExpect(getFeatureResponse).toBeGeoJson();
+        datatablesRequest = await project.openAttributeTable(tableName);
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
         tableHtml = project.attributeTableHtml(tableName);
         // Check table lines
         await expect(tableHtml.locator('tbody tr')).toHaveCount(17);
@@ -166,9 +166,9 @@ test.describe('Filter layer data polygon - admin - @readonly', () => {
 
         // shop_bakery_pg
         tableName = 'shop_bakery_pg';
-        getFeatureRequest = await project.openAttributeTable(tableName);
-        getFeatureResponse = await getFeatureRequest.response();
-        responseExpect(getFeatureResponse).toBeGeoJson();
+        datatablesRequest = await project.openAttributeTable(tableName);
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
         tableHtml = project.attributeTableHtml(tableName);
         // Check table lines
         await expect(tableHtml.locator('tbody tr')).toHaveCount(17);
@@ -176,9 +176,9 @@ test.describe('Filter layer data polygon - admin - @readonly', () => {
 
         // townhalls_pg
         tableName = 'townhalls_pg';
-        getFeatureRequest = await project.openAttributeTable(tableName);
-        getFeatureResponse = await getFeatureRequest.response();
-        responseExpect(getFeatureResponse).toBeGeoJson()
+        datatablesRequest = await project.openAttributeTable(tableName);
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
         tableHtml = project.attributeTableHtml(tableName);
         // Check table lines
         await expect(tableHtml.locator('tbody tr')).toHaveCount(16);
@@ -303,9 +303,9 @@ test.describe('Filter layer data polygon - user in group a - @readonly', () => {
         // Attribute table
         // shop_bakery
         let tableName = 'shop_bakery';
-        let getFeatureRequest = await project.openAttributeTable(tableName);
-        let getFeatureResponse = await getFeatureRequest.response();
-        responseExpect(getFeatureResponse).toBeGeoJson();
+        let datatablesRequest = await project.openAttributeTable(tableName);
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
         let tableHtml = project.attributeTableHtml(tableName);
         // Check table lines
         await expect(tableHtml.locator('tbody tr')).toHaveCount(5); // 25 for admins
@@ -313,9 +313,9 @@ test.describe('Filter layer data polygon - user in group a - @readonly', () => {
 
         // townhalls_EPSG2154
         tableName = 'townhalls_EPSG2154';
-        getFeatureRequest = await project.openAttributeTable(tableName);
-        getFeatureResponse = await getFeatureRequest.response();
-        responseExpect(getFeatureResponse).toBeGeoJson();
+        datatablesRequest = await project.openAttributeTable(tableName);
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
         tableHtml = project.attributeTableHtml(tableName);
         // Check table lines
         await expect(tableHtml.locator('tbody tr')).toHaveCount(4); // 17 for admins
@@ -323,9 +323,9 @@ test.describe('Filter layer data polygon - user in group a - @readonly', () => {
 
         // shop_bakery_pg
         tableName = 'shop_bakery_pg';
-        getFeatureRequest = await project.openAttributeTable(tableName);
-        getFeatureResponse = await getFeatureRequest.response();
-        responseExpect(getFeatureResponse).toBeGeoJson();
+        datatablesRequest = await project.openAttributeTable(tableName);
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
         tableHtml = project.attributeTableHtml(tableName);
         // Check table lines
         await expect(tableHtml.locator('tbody tr')).toHaveCount(4); // 17 for admins
@@ -333,9 +333,9 @@ test.describe('Filter layer data polygon - user in group a - @readonly', () => {
 
         // townhalls_pg
         tableName = 'townhalls_pg';
-        getFeatureRequest = await project.openAttributeTable(tableName);
-        getFeatureResponse = await getFeatureRequest.response();
-        responseExpect(getFeatureResponse).toBeGeoJson();
+        datatablesRequest = await project.openAttributeTable(tableName);
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
         tableHtml = project.attributeTableHtml(tableName);
         // Check table lines
         await expect(tableHtml.locator('tbody tr')).toHaveCount(16);
@@ -460,39 +460,45 @@ test.describe('Filter layer data polygon - not connected - @readonly', () => {
         // Attribute table
         // shop_bakery
         let tableName = 'shop_bakery';
-        let getFeatureRequest = await project.openAttributeTable(tableName);
-        let getFeatureResponse = await getFeatureRequest.response();
-        responseExpect(getFeatureResponse).toBeGeoJson();
+        let datatablesRequest = await project.openAttributeTable(tableName);
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
         let tableHtml = project.attributeTableHtml(tableName);
         // Check table lines
-        await expect(tableHtml.locator('tbody tr')).toHaveCount(0); // 25 for admins and 5 for user in froup a
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(1); // 25 for admins and 5 for user in froup a
+        await expect(tableHtml.locator('tbody tr td')).toHaveCount(1);
+        await expect(tableHtml.locator('tbody tr td')).toHaveText('No data available in table');
         await project.closeAttributeTable();
 
         // townhalls_EPSG2154
         tableName = 'townhalls_EPSG2154';
-        getFeatureRequest = await project.openAttributeTable(tableName);
-        getFeatureResponse = await getFeatureRequest.response();
-        responseExpect(getFeatureResponse).toBeGeoJson();
+        datatablesRequest = await project.openAttributeTable(tableName);
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
         tableHtml = project.attributeTableHtml(tableName);
         // Check table lines
-        await expect(tableHtml.locator('tbody tr')).toHaveCount(0); // 17 for admins and 4 for user in froup a
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(1); // 17 for admins and 4 for user in froup a
+        await expect(tableHtml.locator('tbody tr td')).toHaveCount(1);
+        await expect(tableHtml.locator('tbody tr td')).toHaveText('No data available in table');
         await project.closeAttributeTable();
 
         // shop_bakery_pg
         tableName = 'shop_bakery_pg';
-        getFeatureRequest = await project.openAttributeTable(tableName);
-        getFeatureResponse = await getFeatureRequest.response();
-        responseExpect(getFeatureResponse).toBeGeoJson();
+        datatablesRequest = await project.openAttributeTable(tableName);
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
         tableHtml = project.attributeTableHtml(tableName);
         // Check table lines
-        await expect(tableHtml.locator('tbody tr')).toHaveCount(0); // 17 for admins and 4 for user in froup a
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(1); // 17 for admins and 4 for user in froup a
+        await expect(tableHtml.locator('tbody tr td')).toHaveCount(1);
+        await expect(tableHtml.locator('tbody tr td')).toHaveText('No data available in table');
         await project.closeAttributeTable();
 
         // townhalls_pg
         tableName = 'townhalls_pg';
-        getFeatureRequest = await project.openAttributeTable(tableName);
-        getFeatureResponse = await getFeatureRequest.response();
-        responseExpect(getFeatureResponse).toBeGeoJson();
+        datatablesRequest = await project.openAttributeTable(tableName);
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
         tableHtml = project.attributeTableHtml(tableName);
         // Check table lines
         await expect(tableHtml.locator('tbody tr')).toHaveCount(16);

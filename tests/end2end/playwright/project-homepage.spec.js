@@ -489,8 +489,8 @@ test.describe('Projects homepage - hide_project - @readonly', function () {
             await page.goto('/index.php/view/map/?repository=testsrepository&project=hide_project');
             // Check Page back to home page
             await expect(page).toHaveURL(/.*index.php$/);
-            await expect(page.locator('#content div.alert.alert-error')).toHaveCount(1);
-            await expect(page.locator('#content div.alert.alert-error')).toHaveText(/Access denied for this project./);
+            await expect(page.locator('#content div.alert.alert-danger')).toHaveCount(1);
+            await expect(page.locator('#content div.alert.alert-danger')).toHaveText('Access denied for this project.');
         });
     });
 });

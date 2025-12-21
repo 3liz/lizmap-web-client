@@ -231,7 +231,7 @@ describe('Export data', function () {
 
         // Click on the export button
         cy.get('#attribute-layer-main-parent_layer .export-formats > button:nth-child(1)').click({ force: true })
-        cy.get('#attribute-layer-main-parent_layer .export-formats > ul:nth-child(2) > li:nth-child(1) > a:nth-child(1)').click({ force: true })
+        cy.get('#attribute-layer-main-parent_layer .export-formats > ul:nth-child(2) > li:nth-child(1) > button:nth-child(1)').click({ force: true })
 
         cy.wait('@GetExport')
             .then(({response}) => {
@@ -263,7 +263,7 @@ describe('Export data', function () {
 
         // Click on the export button
         cy.get('#attribute-layer-main-parent_layer .export-formats > button:nth-child(1)').click({ force: true })
-        cy.get('#attribute-layer-main-parent_layer .export-formats > ul:nth-child(2) > li:nth-child(1) > a:nth-child(1)').click({ force: true })
+        cy.get('#attribute-layer-main-parent_layer .export-formats > ul:nth-child(2) > li:nth-child(1) > button:nth-child(1)').click({ force: true })
 
         cy.wait('@GetExport')
             .then(({response}) => {
@@ -299,7 +299,7 @@ describe('Export data', function () {
 
         // Export
         cy.get('#attribute-layer-main-parent_layer .export-formats > button:nth-child(1)').click({ force: true })
-        cy.get('#attribute-layer-main-parent_layer .export-formats > ul:nth-child(2) > li:nth-child(1) > a:nth-child(1)').click({ force: true })
+        cy.get('#attribute-layer-main-parent_layer .export-formats > ul:nth-child(2) > li:nth-child(1) > button:nth-child(1)').click({ force: true })
 
         cy.wait('@GetExport')
             .then(({response}) => {
@@ -358,7 +358,7 @@ describe('Export data', function () {
 
         // Click on the export button
         cy.get('#attribute-layer-main-data_uids .export-formats > button:nth-child(1)').click({ force: true })
-        cy.get('#attribute-layer-main-data_uids .export-formats > ul:nth-child(2) > li:nth-child(1) > a:nth-child(1)').click({ force: true })
+        cy.get('#attribute-layer-main-data_uids .export-formats > ul:nth-child(2) > li:nth-child(1) > button:nth-child(1)').click({ force: true })
 
         cy.wait('@GetExport')
             .then(({response}) => {
@@ -381,7 +381,7 @@ describe('Export data', function () {
 
         // Click on the export button
         cy.get('#attribute-layer-main-data_uids  .export-formats > button:nth-child(1)').click({ force: true })
-        cy.get('#attribute-layer-main-data_uids  .export-formats > ul:nth-child(2) > li:nth-child(1) > a:nth-child(1)').click({ force: true })
+        cy.get('#attribute-layer-main-data_uids  .export-formats > ul:nth-child(2) > li:nth-child(1) > button:nth-child(1)').click({ force: true })
 
         cy.wait('@GetExport')
             .then(({response}) => {
@@ -404,7 +404,7 @@ describe('Export data', function () {
 
         // Export
         cy.get('#attribute-layer-main-data_uids  .export-formats > button:nth-child(1)').click({ force: true })
-        cy.get('#attribute-layer-main-data_uids  .export-formats > ul:nth-child(2) > li:nth-child(1) > a:nth-child(1)').click({ force: true })
+        cy.get('#attribute-layer-main-data_uids  .export-formats > ul:nth-child(2) > li:nth-child(1) > button:nth-child(1)').click({ force: true })
         cy.wait('@GetExport')
             .then(({response}) => {
                 expect(response.statusCode).to.eq(200)

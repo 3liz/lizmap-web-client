@@ -439,7 +439,7 @@ export default class Action {
                 this.resetLizmapAction(true, true, true, true);
 
                 // Display the errors
-                this._lizmap3.addMessage(data.errors.title + '\n' + data.errors.detail, 'error', true).attr('id', 'lizmap-action-message');
+                this._lizmap3.addMessage(data.errors.title + '\n' + data.errors.detail, 'danger', true).attr('id', 'lizmap-action-message');
                 console.warn(data.errors);
 
                 return false;
@@ -656,7 +656,7 @@ export default class Action {
 
         // Build the HTML button
         let actionButtonHtml = `
-        <button class="btn btn-mini popup-action" value="${actionUniqueId}" type="button" data-original-title="${action.title}" title="${action.title}">
+        <button class="btn btn-sm popup-action" value="${actionUniqueId}" type="button" data-bs-toggle="tooltip" data-bs-title="${action.title}">
         `;
         // The icon can be
         // * an old bootstrap 2 icon, e.g. 'icon-star'

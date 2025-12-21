@@ -25,38 +25,47 @@ export default class Geolocation extends HTMLElement {
         <div class="menu-content">
             <div class="button-bar">
                 <button
-                    class="btn btn-small ${mainLizmap.geolocation.isTracking ? 'active btn-success' : ''}"
+                    class="btn btn-sm ${mainLizmap.geolocation.isTracking ? 'active btn-success' : ''}"
                     @click=${ () => mainLizmap.geolocation.toggleTracking()}
                     ?disabled=${mainLizmap.geolocation.isTracking && mainLizmap.geolocation.firstGeolocation}
                     >
                     <span class="icon"></span>
                     ${mainLizmap.geolocation.isTracking ? (
-                        mainLizmap.geolocation.firstGeolocation ? (
-                            lizDict['geolocate.toolbar.waiting']
-                        ) :
-                            lizDict['geolocate.toolbar.stop']
-                    ) : lizDict['geolocate.toolbar.start']}
+                        mainLizmap.geolocation.firstGeolocation ?
+                            lizDict['geolocate.toolbar.waiting'] :
+                                lizDict['geolocate.toolbar.stop']) :
+                            lizDict['geolocate.toolbar.start']
+                    }
                 </button>
                 <button
-                    class="btn btn-small"
-                    @click=${() => mainLizmap.geolocation.center()}
-                    ?disabled=${!mainLizmap.geolocation.isTracking | mainLizmap.geolocation.isBind | mainLizmap.geolocation.firstGeolocation}
-                    >
-                    <span class="icon"></span>
+                    class="btn btn-sm"
+                    @click=${ () => mainLizmap.geolocation.center()}
+                    ?disabled=${
+                        !mainLizmap.geolocation.isTracking |
+                        mainLizmap.geolocation.isBind |
+                        mainLizmap.geolocation.firstGeolocation
+                    }
+                    ><span class="icon"></span>
                     ${lizDict['geolocate.toolbar.center']}
                 </button>
                 <div class="input-prepend input-append">
                     <button
-                        class="btn btn-small ${mainLizmap.geolocation.isBind ? 'active btn-success' : ''}"
+                        class="btn btn-sm ${mainLizmap.geolocation.isBind ? 'active btn-success' : ''}"
                         @click=${() => mainLizmap.geolocation.toggleBind()}
-                        ?disabled=${!mainLizmap.geolocation.isTracking | mainLizmap.geolocation.firstGeolocation}
-                        ><span class="icon"></span>${lizDict['geolocate.toolbar.bind']}
+                        ?disabled=${
+                            !mainLizmap.geolocation.isTracking | mainLizmap.geolocation.firstGeolocation
+                        }>
+                        <span class="icon"></span>
+                            ${lizDict['geolocate.toolbar.bind']}
                     </button>
                     <input
-                        class="input-mini"
+                        class="form-control form-control-sm"
                         type="number"
                         min="1"
-                        ?disabled=${!mainLizmap.geolocation.isBind || !mainLizmap.geolocation.isTracking}
+                        ?disabled=${
+                            !mainLizmap.geolocation.isBind ||
+                            !mainLizmap.geolocation.isTracking
+                        }
                         value="${mainLizmap.geolocation.bindIntervalInSecond}"
                         @input=${(event) => mainLizmap.geolocation.bindIntervalInSecond = parseInt(event.target.value)}
                         >
@@ -89,11 +98,11 @@ export default class Geolocation extends HTMLElement {
                 render(mainTemplate(), this);
             },
             [
-                'geolocation.accuracy',
+                'geolocation.isTracking',
                 'geolocation.firstGeolocation',
                 'geolocation.isBind',
-                'geolocation.isTracking',
                 'geolocation.position',
+                'geolocation.accuracy'
             ]
         );
     }

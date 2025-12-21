@@ -80,7 +80,7 @@ export default class Permalink {
                 event.preventDefault();
                 const bname = document.querySelector('#geobookmark-form input[name="bname"]').value;
                 if (bname == '') {
-                    lizMap.addMessage(lizDict['geobookmark.name.required'], 'error', true);
+                    lizMap.addMessage(lizDict['geobookmark.name.required'], 'danger', true);
                     return false;
                 }
                 const gbparams = {};

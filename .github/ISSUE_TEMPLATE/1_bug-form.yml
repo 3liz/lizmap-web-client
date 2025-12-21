@@ -35,7 +35,7 @@ body:
     attributes:
       label: Versions, safeguards, check summary etc
       description: |
-        You must go in QGIS Desktop, then Lizmap plugin, right click on your server, then "Copy versions in the clipboard". Finally paste here. There isn't any personal data provided.
+        You must go in QGIS Desktop, then Lizmap plugin, right click on your server, then "Copy versions in the clipboard for a support request". Finally paste here. There isn't any personal data provided.
         Check any messages displayed by the plugin if any. Read https://docs.lizmap.com/current/en/publish/lizmap_plugin/information.html#request-for-support
         Do not make a screenshot, it's not a searchable by a search engine for instance.
     validations:

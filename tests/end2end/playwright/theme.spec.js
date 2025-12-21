@@ -16,10 +16,10 @@ test.describe('Theme @readonly', () => {
 
     test('must display theme1 at startup', async ({ page }) => {
         const themeSelector = page.locator('#theme-selector');
-        await expect(themeSelector.getByText('theme1').locator('..')).toContainClass('selected');
-        await expect(themeSelector.getByText('theme2').locator('..')).not.toContainClass('selected');
-        await expect(themeSelector.getByText('theme3').locator('..')).not.toContainClass('selected');
-        await expect(themeSelector.getByText('theme4').locator('..')).not.toContainClass('selected');
+        await expect(themeSelector.getByText('theme1')).toContainClass('active');
+        await expect(themeSelector.getByText('theme2')).not.toContainClass('active');
+        await expect(themeSelector.getByText('theme3')).not.toContainClass('active');
+        await expect(themeSelector.getByText('theme4')).not.toContainClass('active');
 
         const treeview = page.locator('lizmap-treeview');
         // Expanded
@@ -54,11 +54,11 @@ test.describe('Theme @readonly', () => {
         const project = new ProjectPage(page, 'theme');
 
         const themeSelector = page.locator('#theme-selector');
-        await expect(themeSelector.getByText('theme1').locator('..')).toContainClass('selected');
-        await expect(themeSelector.getByText('theme2').locator('..')).not.toContainClass('selected');
+        await expect(themeSelector.getByText('theme1')).toContainClass('active');
+        await expect(themeSelector.getByText('theme2')).not.toContainClass('active');
 
         // Select theme2 and catch GetMap for quartiers with style2
-        await themeSelector.locator('[data-original-title="Select theme"]').click();
+        await themeSelector.getByTitle('Select theme').click();
         let getMapRequestPromise = project.waitForGetMapRequest();
         themeSelector.getByText('theme2').click();
         let getMapRequest = await getMapRequestPromise;
@@ -80,8 +80,8 @@ test.describe('Theme @readonly', () => {
         responseExpect(await getMapRequest.response()).toBeImagePng();
 
         // Check theme2 is activated and theme1 disabled
-        await expect(themeSelector.getByText('theme1').locator('..')).not.toContainClass('selected');
-        await expect(themeSelector.getByText('theme2').locator('..')).toContainClass('selected');
+        await expect(themeSelector.getByText('theme1')).not.toContainClass('active');
+        await expect(themeSelector.getByText('theme2')).toContainClass('active');
 
         const treeview = page.locator('lizmap-treeview');
         // Expanded
@@ -116,11 +116,11 @@ test.describe('Theme @readonly', () => {
         const project = new ProjectPage(page, 'theme');
 
         const themeSelector = page.locator('#theme-selector');
-        await expect(themeSelector.getByText('theme1').locator('..')).toContainClass('selected');
-        await expect(themeSelector.getByText('theme3').locator('..')).not.toContainClass('selected');
+        await expect(themeSelector.getByText('theme1')).toContainClass('active');
+        await expect(themeSelector.getByText('theme3')).not.toContainClass('active');
 
         // Select theme3 and catch GetMap for tramway_lines
-        await themeSelector.locator('[data-original-title="Select theme"]').click();
+        await themeSelector.getByTitle('Select theme').click();
         let getMapRequestPromise = project.waitForGetMapRequest();
         themeSelector.getByText('theme3').click();
         let getMapRequest = await getMapRequestPromise;
@@ -142,8 +142,8 @@ test.describe('Theme @readonly', () => {
         responseExpect(await getMapRequest.response()).toBeImagePng();
 
         // Check theme3 is activated and theme1 disabled
-        await expect(themeSelector.getByText('theme1').locator('..')).not.toContainClass('selected');
-        await expect(themeSelector.getByText('theme3').locator('..')).toContainClass('selected');
+        await expect(themeSelector.getByText('theme1')).not.toContainClass('active');
+        await expect(themeSelector.getByText('theme3')).toContainClass('active');
 
         const treeview = page.locator('lizmap-treeview');
         // Expanded
@@ -177,11 +177,11 @@ test.describe('Theme @readonly', () => {
         const project = new ProjectPage(page, 'theme');
 
         const themeSelector = page.locator('#theme-selector');
-        await expect(themeSelector.getByText('theme1').locator('..')).toContainClass('selected');
-        await expect(themeSelector.getByText('theme4').locator('..')).not.toContainClass('selected');
+        await expect(themeSelector.getByText('theme1')).toContainClass('active');
+        await expect(themeSelector.getByText('theme4')).not.toContainClass('active');
 
         // Select theme4 and catch GetMap for sousquartiers
-        await themeSelector.locator('[data-original-title="Select theme"]').click();
+        await themeSelector.getByTitle('Select theme').click();
         let getMapRequestPromise = project.waitForGetMapRequest();
         themeSelector.getByText('theme4').click();
         let getMapRequest = await getMapRequestPromise;
@@ -203,8 +203,8 @@ test.describe('Theme @readonly', () => {
         responseExpect(await getMapRequest.response()).toBeImagePng();
 
         // Check theme4 is activated and theme1 disabled
-        await expect(themeSelector.getByText('theme1').locator('..')).not.toContainClass('selected');
-        await expect(themeSelector.getByText('theme4').locator('..')).toContainClass('selected');
+        await expect(themeSelector.getByText('theme1')).not.toContainClass('active');
+        await expect(themeSelector.getByText('theme4')).toContainClass('active');
 
         const treeview = page.locator('lizmap-treeview');
         // Expanded
@@ -236,11 +236,11 @@ test.describe('Theme @readonly', () => {
         const project = new ProjectPage(page, 'theme');
 
         const themeSelector = page.locator('#theme-selector');
-        await expect(themeSelector.getByText('theme1').locator('..')).toContainClass('selected');
-        await expect(themeSelector.getByText('theme5').locator('..')).not.toContainClass('selected');
+        await expect(themeSelector.getByText('theme1')).toContainClass('active');
+        await expect(themeSelector.getByText('theme5')).not.toContainClass('active');
 
         // Select theme5 and catch GetMap for sousquartiers
-        await themeSelector.locator('[data-original-title="Select theme"]').click();
+        await themeSelector.getByTitle('Select theme').click();
         let getMapRequestPromise = project.waitForGetMapRequest();
         themeSelector.getByText('theme5').click();
         let getMapRequest = await getMapRequestPromise;
@@ -262,8 +262,8 @@ test.describe('Theme @readonly', () => {
         responseExpect(await getMapRequest.response()).toBeImagePng();
 
         // Check theme4 is activated and theme1 disabled
-        await expect(themeSelector.getByText('theme1').locator('..')).not.toContainClass('selected');
-        await expect(themeSelector.getByText('theme5').locator('..')).toContainClass('selected');
+        await expect(themeSelector.getByText('theme1')).not.toContainClass('active');
+        await expect(themeSelector.getByText('theme5')).toContainClass('active');
 
         const treeview = page.locator('lizmap-treeview');
         // Expanded
@@ -297,10 +297,10 @@ test.describe('Theme @readonly', () => {
         const project = new ProjectPage(page, 'theme');
 
         let themeSelector = page.locator('#theme-selector');
-        await expect(themeSelector.getByText('theme1').locator('..')).toContainClass('selected');
-        await expect(themeSelector.getByText('theme2').locator('..')).not.toContainClass('selected');
-        await expect(themeSelector.getByText('theme3').locator('..')).not.toContainClass('selected');
-        await expect(themeSelector.getByText('theme4').locator('..')).not.toContainClass('selected');
+        await expect(themeSelector.getByText('theme1')).toContainClass('active');
+        await expect(themeSelector.getByText('theme2')).not.toContainClass('active');
+        await expect(themeSelector.getByText('theme3')).not.toContainClass('active');
+        await expect(themeSelector.getByText('theme4')).not.toContainClass('active');
 
         // Open with theme2
         let getMapRequestPromise = project.waitForGetMapRequest();
@@ -324,10 +324,10 @@ test.describe('Theme @readonly', () => {
         responseExpect(await getMapRequest.response()).toBeImagePng();
 
         themeSelector = page.locator('#theme-selector');
-        await expect(themeSelector.getByText('theme1').locator('..')).not.toContainClass('selected');
-        await expect(themeSelector.getByText('theme2').locator('..')).toContainClass('selected');
-        await expect(themeSelector.getByText('theme3').locator('..')).not.toContainClass('selected');
-        await expect(themeSelector.getByText('theme4').locator('..')).not.toContainClass('selected');
+        await expect(themeSelector.getByText('theme1')).not.toContainClass('active');
+        await expect(themeSelector.getByText('theme2')).toContainClass('active');
+        await expect(themeSelector.getByText('theme3')).not.toContainClass('active');
+        await expect(themeSelector.getByText('theme4')).not.toContainClass('active');
 
         // Open with theme3
         getMapRequestPromise = project.waitForGetMapRequest();
@@ -339,10 +339,10 @@ test.describe('Theme @readonly', () => {
         responseExpect(await getMapRequest.response()).toBeImagePng();
 
         themeSelector = page.locator('#theme-selector');
-        await expect(themeSelector.getByText('theme1').locator('..')).not.toContainClass('selected');
-        await expect(themeSelector.getByText('theme2').locator('..')).not.toContainClass('selected');
-        await expect(themeSelector.getByText('theme3').locator('..')).toContainClass('selected');
-        await expect(themeSelector.getByText('theme4').locator('..')).not.toContainClass('selected');
+        await expect(themeSelector.getByText('theme1')).not.toContainClass('active');
+        await expect(themeSelector.getByText('theme2')).not.toContainClass('active');
+        await expect(themeSelector.getByText('theme3')).toContainClass('active');
+        await expect(themeSelector.getByText('theme4')).not.toContainClass('active');
 
         // Open with theme4
         getMapRequestPromise = project.waitForGetMapRequest();
@@ -354,10 +354,10 @@ test.describe('Theme @readonly', () => {
         responseExpect(await getMapRequest.response()).toBeImagePng();
 
         themeSelector = page.locator('#theme-selector');
-        await expect(themeSelector.getByText('theme1').locator('..')).not.toContainClass('selected');
-        await expect(themeSelector.getByText('theme2').locator('..')).not.toContainClass('selected');
-        await expect(themeSelector.getByText('theme3').locator('..')).not.toContainClass('selected');
-        await expect(themeSelector.getByText('theme4').locator('..')).toContainClass('selected');
+        await expect(themeSelector.getByText('theme1')).not.toContainClass('active');
+        await expect(themeSelector.getByText('theme2')).not.toContainClass('active');
+        await expect(themeSelector.getByText('theme3')).not.toContainClass('active');
+        await expect(themeSelector.getByText('theme4')).toContainClass('active');
     });
 
 });
@@ -383,14 +383,14 @@ test.describe('Theme and automatic permalink @readonly', () => {
 
     test('must display theme1 at startup', async ({ page }) => {
         const themeSelector = page.locator('#theme-selector');
-        await expect(themeSelector.getByText('theme1').locator('..')).toContainClass('selected');
-        await expect(themeSelector.getByText('theme2').locator('..')).not.toContainClass('selected');
-        await expect(themeSelector.getByText('theme3').locator('..')).not.toContainClass('selected');
-        await expect(themeSelector.getByText('theme4').locator('..')).not.toContainClass('selected');
+        await expect(themeSelector.getByText('theme1')).toContainClass('active');
+        await expect(themeSelector.getByText('theme2')).not.toContainClass('active');
+        await expect(themeSelector.getByText('theme3')).not.toContainClass('active');
+        await expect(themeSelector.getByText('theme4')).not.toContainClass('active');
 
         // The url has been updated
         const url = new URL(page.url());
-        await expect(url.hash).not.toHaveLength(0);
+        expect(url.hash).not.toHaveLength(0);
         // The decoded hash is
         // #3.730872,43.540386,4.017985,43.679557
         // |group1,Les%20quartiers
@@ -399,36 +399,35 @@ test.describe('Theme and automatic permalink @readonly', () => {
         // When theme is applied, only groups explicitly in checked-group-nodes are checked
         // Theme1 only has group1 in checked-group-nodes, so nested groups remain unchecked
         expect(url.hash).toMatch(/#3.7308\d+,43.5403\d+,4.0179\d+,43.6795\d+\|/)
-        expect(url.hash).toContain('|group1,Les%20quartiers|,style1|1,1');
+        expect(url.hash).toContain('|group1,Les%20quartiers|,style1|1,1')
     });
 
     test('must display theme2 when selected', async ({ page }) => {
         const project = new ProjectPage(page, 'theme');
 
         const themeSelector = page.locator('#theme-selector');
-        await expect(themeSelector.getByText('theme1').locator('..')).toContainClass('selected');
-        await expect(themeSelector.getByText('theme2').locator('..')).not.toContainClass('selected');
+        await expect(themeSelector.getByText('theme1')).toContainClass('active');
+        await expect(themeSelector.getByText('theme2')).not.toContainClass('active');
 
         // Select theme2 and catch GetMap for quartiers with style2
-        await themeSelector.locator('[data-original-title="Select theme"]').click();
+        await themeSelector.getByTitle('Select theme').click();
         let getMapRequestPromise = project.waitForGetMapRequest();
         themeSelector.getByText('theme2').click();
         let getMapRequest = await getMapRequestPromise;
         responseExpect(await getMapRequest.response()).toBeImagePng();
 
         // Check theme2 is activated and theme1 disabled
-        await expect(themeSelector.getByText('theme1').locator('..')).not.toContainClass('selected');
-        await expect(themeSelector.getByText('theme2').locator('..')).toContainClass('selected');
+        await expect(themeSelector.getByText('theme1')).not.toContainClass('active');
+        await expect(themeSelector.getByText('theme2')).toContainClass('active');
         // The url has been updated
         const url = new URL(page.url());
-        await expect(url.hash).not.toHaveLength(0);
+        expect(url.hash).not.toHaveLength(0);
         // The decoded hash is
         // #3.730872,43.540386,4.017985,43.679557
         // |Les%20quartiers|style2|1
         // |style2
         // |1
-        await expect(url.hash).toMatch(/#3.7308\d+,43.5403\d+,4.0179\d+,43.6795\d+\|/)
-        await expect(url.hash).toContain('|Les%20quartiers|style2|1')
+        expect(url.hash).toMatch(/#3.7308\d+,43.5403\d+,4.0179\d+,43.6795\d+\|/)
+        expect(url.hash).toContain('|Les%20quartiers|style2|1')
     });
-
 });

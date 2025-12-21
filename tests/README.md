@@ -227,9 +227,9 @@ some environment variables:
 You must set these (optional) environment variables, **before** building the stack.
 
 ```bash
-export PHP_VERSION=8.2
-export LZMQGSRVVERSION=3.24
-export LZMPOSTGISVERSION=14-3
+export PHP_VERSION=8.3
+export LZMQGSRVVERSION=3.42
+export LZMPOSTGISVERSION=17-3
 make build
 ```
 
@@ -364,7 +364,7 @@ npm run pretest:fix
 
 ## PHP Rector
 
-PHP Rector can be run if you're located in `tests/units`.
+[PHP Rector](https://getrector.com/) can be run if you're located in `tests/units`.
 
 ```bash
 # Install composer dependencies

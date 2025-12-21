@@ -287,7 +287,7 @@ import { getCenter } from 'ol/extent.js';
 
                 // Add combobox with all data
                 home += '<p style="padding:0px 10px;">';
-                home += '<select id="liz-atlas-select">';
+                home += '<select id="liz-atlas-select" class="form-select">';
                 home += '<option value="-1"> --- </option>';
                 var pkey_field = lizAtlasConfig['primaryKey'];
                 for (var i in lizAtlasConfig['features_sorted']) {
@@ -300,11 +300,11 @@ import { getCenter } from 'ol/extent.js';
                 }
                 home += '</select>';
                 home += '<br><span>';
-                home += '<button class="btn btn-mini btn-primary liz-atlas-item" value="-1">' + lizDict['atlas.toolbar.prev'] + '</button>';
+                home += '<button class="btn btn-sm btn-primary liz-atlas-item" value="-1">' + lizDict['atlas.toolbar.prev'] + '</button>';
                 home += '&nbsp;';
-                home += '<button class="btn btn-mini btn-primary liz-atlas-item" value="1">' + lizDict['atlas.toolbar.next'] + '</button>';
+                home += '<button class="btn btn-sm btn-primary liz-atlas-item" value="1">' + lizDict['atlas.toolbar.next'] + '</button>';
                 home += '&nbsp;';
-                home += '<button class="btn btn-mini btn-wanrning liz-atlas-run" value="1">' + lizDict['atlas.toolbar.play'] + '</button>';
+                home += '<button class="btn btn-sm btn-wanrning liz-atlas-run" value="1">' + lizDict['atlas.toolbar.play'] + '</button>';
                 home += '&nbsp;';
                 home += '</span>';
                 home += '</span>';
@@ -330,7 +330,7 @@ import { getCenter } from 'ol/extent.js';
                 // Multiple atlas
                 if (lizAtlasConfigArray.length > 1){
                     // Build select to choose between atlas layers
-                    atlasHTML = '<i class="icon-globe icon-white" style="margin-right: 4px;vertical-align: baseline;"></i><select id="select-atlas-layer">';
+                    atlasHTML = '<i class="icon-globe icon-white" style="margin-right: 4px;vertical-align: baseline;"></i><select id="select-atlas-layer" class="form-select">';
                     for (let i = 0; i < lizAtlasConfigArray.length; i++) {
                         atlasHTML += '<option value="' + lizAtlasConfigArray[i].layerId + '">' + lizMap.config.layers[lizAtlasConfigArray[i].layername]['title'] + '</option>';
                     }

@@ -22,7 +22,7 @@ test.describe('Form edition', function () {
         await expect(page.locator('#edition .edition-tabs')).toBeVisible();
         await expect(page.locator('#edition-form-container')).toBeVisible();
 
-        expect(page.locator('.edition-tabs a[href="#tabdigitization"]')).not.toBeVisible();
+        expect(page.locator('.edition-tabs button[data-bs-target="#tabdigitization"]')).not.toBeVisible();
 
         // Cancel form
         page.on('dialog', dialog => dialog.accept());
@@ -39,7 +39,7 @@ test.describe('Form edition', function () {
         await expect(page.locator('#edition .edition-tabs')).toBeVisible();
         await expect(page.locator('#edition-form-container')).toBeVisible();
 
-        expect(page.locator('.edition-tabs a[href="#tabdigitization"]')).toBeVisible();
+        expect(page.locator('.edition-tabs button[data-bs-target="#tabdigitization"]')).toBeVisible();
 
         // Cancel form
         page.on('dialog', dialog => dialog.accept());
@@ -50,9 +50,9 @@ test.describe('Form edition', function () {
         const project = new ProjectPage(page, 'form_edition');
         const tableName = 'end2end_form_edition';
 
-        let getFeatureRequest = await project.openAttributeTable(tableName);
-        let getFeatureResponse = await getFeatureRequest.response();
-        responseExpect(getFeatureResponse).toBeGeoJson();
+        let datatablesRequest = await project.openAttributeTable(tableName);
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
 
         let tableHtml = project.attributeTableHtml(tableName);
         await expect(tableHtml.locator('tbody tr')).not.toHaveCount(0);
@@ -117,9 +117,9 @@ test.describe('Form edition', function () {
         await expect(page.locator('#edition-form-container')).toBeHidden();
         await expect(page.locator('#lizmap-edition-message')).toBeVisible();
 
-        let getFeatureRequest = await project.openAttributeTable(tableName);
-        let getFeatureResponse = await getFeatureRequest.response();
-        responseExpect(getFeatureResponse).toBeGeoJson();
+        let datatablesRequest = await project.openAttributeTable(tableName);
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
 
         let tableHtml = project.attributeTableHtml(tableName);
         await expect(tableHtml.locator('tbody tr')).not.toHaveCount(0);

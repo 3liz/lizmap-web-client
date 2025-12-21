@@ -4,24 +4,25 @@
 
 {ifacl2 'lizmap.admin.repositories.view'}
     <!--Repositories-->
-    <div class="admin_repositories">
+    <div class="admin_repositories container">
 
         <!--Add a repository-->
         {ifacl2 'lizmap.admin.repositories.create'}
-            <div style="margin:20px 0px;">
-                <a class="btn" href="{jurl 'admin~maps:createSection'}">{@admin~admin.configuration.button.add.repository.label@}</a>
+            <div class="mb-3">
+                <a class="btn btn-sm" href="{jurl 'admin~maps:createSection'}">{@admin~admin.configuration.button.add.repository.label@}</a>
             </div>
         {/ifacl2}
 
         <!--Loop on repositories-->
         {foreach $repositories as $repo}
 
-        <div id="{$repo->getKey()}" class="admin_repository">
-            <legend>{$repo->getKey()}
+        <div id="{$repo->getKey()}" class="admin_repository card mb-3">
+            <legend class="card-header">{$repo->getKey()}
             {if !$repo->hasValidPath() }
-                <span class='badge badge-important'>{@admin~admin.form.admin_section.repository.path.invalid@}</span>
+                <span class='badge bg-warning'>{@admin~admin.form.admin_section.repository.path.invalid@}</span>
             {/if}
             </legend>
+            <div class="card-body">
             <dl><dt>{@admin~admin.form.admin_section.data.label@}</dt>
                 <dd>
                     <table class="table">
@@ -70,7 +71,7 @@
                 <!-- View repository page -->
                 {ifacl2 'lizmap.repositories.view', $repo->getKey()}
                     <a
-                        class="btn"
+                        class="btn btn-sm"
                         href="{jurl 'view~default:index', array('repository'=>$repo->getKey())}"
                         target="_blank"
                         title="{@admin~admin.configuration.button.view.repository.tooltip@}"
@@ -79,7 +80,7 @@
                 <!-- Modify -->
                 {ifacl2 'lizmap.admin.repositories.update'}
                     <a
-                        class="btn"
+                        class="btn btn-sm"
                         href="{jurl 'admin~maps:modifySection', array('repository'=>$repo->getKey())}"
                         title="{@admin~admin.configuration.button.modify.repository.tooltip@}"
                     >{@admin~admin.configuration.button.modify.repository.label@}</a>
@@ -87,7 +88,7 @@
                 <!-- Remove -->
                 {ifacl2 'lizmap.admin.repositories.delete'}
                     <a
-                        class="btn"
+                        class="btn btn-sm"
                         href="{jurl 'admin~maps:removeSection', array('repository'=>$repo->getKey())}"
                         onclick="return confirm(`{@admin~admin.configuration.button.remove.repository.confirm.label@}`)"
                         title="{@admin~admin.configuration.button.remove.repository.tooltip@}"
@@ -95,23 +96,25 @@
                 {/ifacl2}
                 {ifacl2 'lizmap.admin.repositories.delete'}
                     <a
-                        class="btn"
+                        class="btn btn-sm"
                         href="{jurl 'admin~maps:removeCache', array('repository'=>$repo->getKey())}"
                         onclick="return confirm(`{@admin~admin.cache.button.remove.repository.cache.confirm.label@}`)"
                         title="{@admin~admin.cache.button.remove.repository.cache.tooltip@}"
                     >{@admin~admin.cache.button.remove.repository.cache.label@}</a>
                 {/ifacl2}
             </div>
+            </div>
         </div>
 
         {/foreach}
 
+        <!--Add a repository-->
+        {if count($repositories)}
+            {ifacl2 'lizmap.admin.repositories.create'}
+            <div class="mb-3">
+                <a class="btn btn-sm" href="{jurl 'admin~maps:createSection'}">{@admin~admin.configuration.button.add.repository.label@}</a>
+            </div>
+            {/ifacl2}
+        {/if}
     </div>
 {/ifacl2}
-
-<!--Add a repository-->
-{if count($repositories)}
-    {ifacl2 'lizmap.admin.repositories.create'}
-        <a class="btn" href="{jurl 'admin~maps:createSection'}">{@admin~admin.configuration.button.add.repository.label@}</a>
-    {/ifacl2}
-{/if}

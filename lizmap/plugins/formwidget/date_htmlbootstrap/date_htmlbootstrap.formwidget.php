@@ -15,4 +15,11 @@ require_once JELIX_LIB_PATH.'plugins/formwidget/date_html/date_html.formwidget.p
 class date_htmlbootstrapFormWidget extends date_htmlFormWidget
 {
     use WidgetTrait;
+
+    public function outputControl()
+    {
+        echo '<div class="input-group">';
+        parent::outputControl();
+        echo '</div>';
+    }
 }

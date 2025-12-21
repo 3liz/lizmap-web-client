@@ -34,7 +34,7 @@ export default class SelectionTool extends HTMLElement {
             <span class="title">
                 <button
                     type="button"
-                    class="btn-selectiontool-clear btn btn-mini btn-error btn-link"
+                    class="btn-selectiontool-clear btn btn-sm btn-error btn-link"
                     title="${lizDict['toolbar.content.stop']}"
                     @click=${() => mainLizmap.selectionTool.disable()}
                     >×</button>
@@ -45,7 +45,7 @@ export default class SelectionTool extends HTMLElement {
 
         const layerListSelectTemplate = () => html`
         <select
-            class="selectiontool-layer-list"
+            class="selectiontool-layer-list form-select"
             @change=${ (event) => mainLizmap.selectionTool.allFeatureTypeSelected = event.target.value}>
             <optgroup label="${lizDict['selectiontool.toolbar.layers.single']}">
                 ${mainLizmap.selectionTool.layers.map((layer) => html`
@@ -62,8 +62,8 @@ export default class SelectionTool extends HTMLElement {
 
         const geomOperatorSelectTemplate = () => html`
         <select
-            class="selectiontool-geom-operator"
-            data-original-title="${lizDict['selectiontool.toolbar.geomOperator']}"
+            class="selectiontool-geom-operator form-select"
+            title="${lizDict['selectiontool.toolbar.geomOperator']}"
             @change=${ (event) => mainLizmap.selectionTool.geomOperator = event.target.value}
             >
             <option value="intersects">${lizDict['selectiontool.toolbar.geomOperator.intersects']}</option>
@@ -82,8 +82,9 @@ export default class SelectionTool extends HTMLElement {
                     <button
                         type="button"
                         value="refresh"
-                        class="selectiontool-type-refresh btn btn-mini ${selectMode === 'new' ? 'active' : ''}"
-                        data-original-title="${lizDict['selectiontool.toolbar.action.type.refresh']}"
+                        class="selectiontool-type-refresh btn btn-sm ${selectMode === 'new' ? 'active' : ''}"
+                        data-bs-toggle="tooltip"
+                        data-bs-title="${lizDict['selectiontool.toolbar.action.type.refresh']}"
                         @click=${() => mainLizmap.selectionTool.newAddRemoveSelected = 'new'}
                         >
                         <i class="icon-refresh"></i>
@@ -91,8 +92,9 @@ export default class SelectionTool extends HTMLElement {
                     <button
                         type="button"
                         value="plus"
-                        class="selectiontool-type-plus btn btn-mini ${selectMode === 'add' ? 'active' : ''}"
-                        data-original-title="${lizDict['selectiontool.toolbar.action.type.plus']}"
+                        class="selectiontool-type-plus btn btn-sm ${selectMode === 'add' ? 'active' : ''}"
+                        data-bs-toggle="tooltip"
+                        data-bs-title="${lizDict['selectiontool.toolbar.action.type.plus']}"
                         @click=${() => mainLizmap.selectionTool.newAddRemoveSelected = 'add'}
                         >
                         <i class="icon-plus"></i>
@@ -100,8 +102,9 @@ export default class SelectionTool extends HTMLElement {
                     <button
                         type="button"
                         value="minus"
-                        class="selectiontool-type-minus btn btn-mini ${selectMode === 'remove' ? 'active' : ''}"
-                        data-original-title="${lizDict['selectiontool.toolbar.action.type.minus']}"
+                        class="selectiontool-type-minus btn btn-sm ${selectMode === 'remove' ? 'active' : ''}"
+                        data-bs-toggle="tooltip"
+                        data-bs-title="${lizDict['selectiontool.toolbar.action.type.minus']}"
                         @click=${() => mainLizmap.selectionTool.newAddRemoveSelected = 'remove'}
                         >
                         <i class="icon-minus"></i>
@@ -112,10 +115,11 @@ export default class SelectionTool extends HTMLElement {
         const filterButtonTemplate = (isFilterDisabled, filteredFeaturesCount) => html`
         <button
             type="button"
-            class="selectiontool-filter btn btn-mini ${filteredFeaturesCount !== 0 ? 'active' : ''}"
+            class="selectiontool-filter btn btn-sm ${filteredFeaturesCount !== 0 ? 'active' : ''}"
             ?disabled=${isFilterDisabled}
             @click=${ () => mainLizmap.selectionTool.filter()}
-            data-original-title="${lizDict['selectiontool.toolbar.action.filter']}">
+            data-bs-toggle="tooltip"
+            data-bs-title="${lizDict['selectiontool.toolbar.action.filter']}">
             <i class="icon-filter"></i>
         </button>`;
 
@@ -123,23 +127,23 @@ export default class SelectionTool extends HTMLElement {
             <div
                 class="btn-group dropup selectiontool-export"
                 role="group"
-                data-original-title="${mainLizmap.selectionTool.isExportable ? '' : lizDict['switcher.layer.export.warn']}"
+                data-bs-toggle="tooltip"
+                data-bs-title="${mainLizmap.selectionTool.isExportable ? '' : lizDict['switcher.layer.export.warn']}"
                 >
                 <button
                     type="button"
-                    class="btn btn-mini dropdown-toggle"
-                    data-toggle="dropdown"
+                    class="btn btn-sm dropdown-toggle"
+                    data-bs-toggle="dropdown"
                     aria-expanded="false"
                     ?disabled=${ !mainLizmap.selectionTool.isExportable }
                     >
                     ${lizDict['switcher.layer.export.title']}
-                <span class="caret"></span>
                 </button>
                 <ul class="selectiontool-export-formats dropdown-menu dropdown-menu-right" role="menu">
-                    <li><a href="#" class="btn-export-selection">GeoJSON</a></li>
-                    <li><a href="#" class="btn-export-selection">GML</a></li>
+                    <li><a href="#" class="btn-export-selection dropdown-item">GeoJSON</a></li>
+                    <li><a href="#" class="btn-export-selection dropdown-item">GML</a></li>
                     ${mainLizmap.selectionTool.exportFormats.map(
-                        (format) => html`<li><a href="#" class="btn-export-selection">${format}</a></li>`
+                        (format) => html`<li><a href="#" class="btn-export-selection dropdown-item">${format}</a></li>`
                     )}
                 </ul>
             </div>` : '';
@@ -162,7 +166,7 @@ export default class SelectionTool extends HTMLElement {
                             <input
                                 type="number"
                                 min="0"
-                                class="input-mini"
+                                class="form-control form-control-sm"
                                 .value="${mainLizmap.selectionTool.bufferValue}"
                                 @input=${(event) => mainLizmap.selectionTool.bufferValue = parseInt(event.target.value)}
                                 ><span class="add-on">m</span>
@@ -175,10 +179,11 @@ export default class SelectionTool extends HTMLElement {
                     ${buttonsTypeTemplate()}
                     <button
                         type="button"
-                        class="selectiontool-unselect btn btn-mini"
+                        class="selectiontool-unselect btn btn-sm"
                         ?disabled=${mainLizmap.selectionTool.selectedFeaturesCount === 0}
                         @click=${ () => mainLizmap.selectionTool.unselect()}
-                        data-original-title="${lizDict['selectiontool.toolbar.action.unselect']}"
+                        data-bs-toggle="tooltip"
+                        data-bs-title="${lizDict['selectiontool.toolbar.action.unselect']}"
                         >
                         <i class="icon-star-empty"></i>
                     </button>
@@ -204,6 +209,7 @@ export default class SelectionTool extends HTMLElement {
             placement: 'top',
             container: this,
         });
+        $('.selection-geom-operator, .selectiontool-actions .btn', this).tooltip();
 
         // Export
         this.querySelectorAll('.btn-export-selection').forEach(exportbtn => {

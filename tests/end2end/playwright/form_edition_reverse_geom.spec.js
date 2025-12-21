@@ -52,7 +52,7 @@ test.describe('Form edition reverse geom', function () {
         responseExpect(await editFeatureRequest.response()).toBeTextPlain();
 
         await expect(page.locator("#lizmap-edition-message")).toBeVisible();
-        await page.locator("#lizmap-edition-message a.close").click();
+        await page.locator("#lizmap-edition-message .btn-close").click();
         await expect(page.locator("#lizmap-edition-message")).toHaveCount(0);
 
         await expect(page.locator('#edition')).toBeVisible();
@@ -69,8 +69,8 @@ test.describe('Form edition reverse geom', function () {
         await expect(fieldLocator).toHaveAttribute('type', 'hidden');
         const wkt = await fieldLocator.getAttribute('value');
 
-        expect(page.locator('.edition-tabs a[href="#tabdigitization"]')).toBeVisible();
-        await page.locator('.edition-tabs a[href="#tabdigitization"]').click();
+        expect(page.locator('.edition-tabs button[data-bs-target="#tabdigitization"]')).toBeVisible();
+        await page.locator('.edition-tabs button[data-bs-target="#tabdigitization"]').click();
 
         expect(page.locator('#tabdigitization lizmap-reverse-geom')).toBeVisible();
 
@@ -79,13 +79,13 @@ test.describe('Form edition reverse geom', function () {
         await expect(page.locator("#lizmap-edition-message")).toBeVisible();
         await expect(page.locator("#lizmap-edition-message")).toContainClass('alert-success');
         await expect(page.locator("#lizmap-edition-message")).toContainText('Geometry has been reversed. You can now save the form.');
-        await page.locator("#lizmap-edition-message a.close").click();
+        await page.locator("#lizmap-edition-message .btn-close").click();
 
         // The geom value has been upated
         await expect(fieldLocator).not.toHaveAttribute('value', wkt);
 
-        expect(page.locator('.edition-tabs a[href="#tabform"]')).toBeVisible();
-        await page.locator('.edition-tabs a[href="#tabform"]').click();
+        expect(page.locator('.edition-tabs button[data-bs-target="#tabform"]')).toBeVisible();
+        await page.locator('.edition-tabs button[data-bs-target="#tabform"]').click();
         await expect(page.locator('#edition-form-container')).toBeVisible();
 
         // submit the form

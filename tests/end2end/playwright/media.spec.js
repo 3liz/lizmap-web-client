@@ -525,9 +525,9 @@ test.describe('Media', () => {
         // Open the attribute table
         const project = new ProjectPage(page, 'form_edition_all_field_type');
         await project.open();
-        let getFeatureRequest = await project.openAttributeTable('form_edition_upload');
-        let getFeatureResponse = await getFeatureRequest.response();
-        responseExpect(getFeatureResponse).toBeGeoJson();
+        let datatablesRequest = await project.openAttributeTable('form_edition_upload');
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
 
         await page.getByRole('row', { name: '2 text_file_mandatory' }).getByRole('button').nth(2);
 

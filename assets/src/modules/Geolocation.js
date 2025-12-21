@@ -105,7 +105,7 @@ export default class Geolocation {
 
         // Handle geolocation error
         this._geolocation.on('error', error => {
-            this._lizmap3.addMessage(error.message, 'error', true);
+            this._lizmap3.addMessage(error.message, 'danger', true);
         });
     }
 
