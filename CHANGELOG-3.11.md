@@ -17,5 +17,3 @@ with some extra keywords: backend, tests, test, translation, funders, important
 ### Changed
 
 ### Backend
-
-* Update to Bootstrap 5
