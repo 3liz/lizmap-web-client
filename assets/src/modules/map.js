@@ -499,49 +499,45 @@ export default class map extends olMap {
                         source: new WMTS(options)
                     });
                 } else {
-                    if(mapState.singleWMSLayer){
-                        baseLayerState.singleWMSLayer = true;
-                        this._statesSingleWMSLayers.set(baseLayerState.name, baseLayerState);
+                    // Basemaps are always rendered as separate layers, not included in single WMS
+                    if (this._useCustomTileWms) {
+                        baseLayer = new TileLayer({
+                            // extent: extent,
+                            minResolution: layerMinResolution,
+                            maxResolution: layerMaxResolution,
+                            source: new TileWMS({
+                                url: serviceURL,
+                                projection: qgisProjectProjection,
+                                serverType: 'qgis',
+                                tileGrid: this._customTileGrid,
+                                params: {
+                                    LAYERS: baseLayerState.itemState.wmsName,
+                                    FORMAT: baseLayerState.layerConfig.imageFormat,
+                                    DPI: 96,
+                                    TILED: 'true'
+                                },
+                                wrapX: false, // do not reused across the 180° meridian.
+                                hidpi: this._hidpi, // pixelRatio is used in useTileWms and customTileGrid definition
+                            })
+                        });
                     } else {
-                        if (this._useCustomTileWms) {
-                            baseLayer = new TileLayer({
-                                // extent: extent,
-                                minResolution: layerMinResolution,
-                                maxResolution: layerMaxResolution,
-                                source: new TileWMS({
-                                    url: serviceURL,
-                                    projection: qgisProjectProjection,
-                                    serverType: 'qgis',
-                                    tileGrid: this._customTileGrid,
-                                    params: {
-                                        LAYERS: baseLayerState.itemState.wmsName,
-                                        FORMAT: baseLayerState.layerConfig.imageFormat,
-                                        DPI: 96,
-                                        TILED: 'true'
-                                    },
-                                    wrapX: false, // do not reused across the 180° meridian.
-                                    hidpi: this._hidpi, // pixelRatio is used in useTileWms and customTileGrid definition
-                                })
-                            });
-                        } else {
-                            baseLayer = new ImageLayer({
-                                // extent: extent,
-                                minResolution: layerMinResolution,
-                                maxResolution: layerMaxResolution,
-                                source: new ImageWMS({
-                                    url: serviceURL,
-                                    projection: qgisProjectProjection,
-                                    serverType: 'qgis',
-                                    ratio: this._WMSRatio,
-                                    hidpi: this._hidpi,
-                                    params: {
-                                        LAYERS: baseLayerState.itemState.wmsName,
-                                        FORMAT: baseLayerState.layerConfig.imageFormat,
-                                        DPI: 96
-                                    },
-                                })
-                            });
-                        }
+                        baseLayer = new ImageLayer({
+                            // extent: extent,
+                            minResolution: layerMinResolution,
+                            maxResolution: layerMaxResolution,
+                            source: new ImageWMS({
+                                url: serviceURL,
+                                projection: qgisProjectProjection,
+                                serverType: 'qgis',
+                                ratio: this._WMSRatio,
+                                hidpi: this._hidpi,
+                                params: {
+                                    LAYERS: baseLayerState.itemState.wmsName,
+                                    FORMAT: baseLayerState.layerConfig.imageFormat,
+                                    DPI: 96
+                                },
+                            })
+                        });
                     }
                 }
             } else if (baseLayerState.type === BaseLayerTypes.Empty) {
