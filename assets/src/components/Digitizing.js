@@ -236,6 +236,7 @@ export default class Digitizing extends HTMLElement {
                     <input
                         id="textRotation"
                         type="number"
+                        class="form-control"
                         .value=${mainLizmap.digitizing.editedFeatureTextRotation}
                         @input=${
                             event => mainLizmap.digitizing.editedFeatureTextRotation = parseInt(event.target.value)
@@ -254,6 +255,7 @@ export default class Digitizing extends HTMLElement {
                 <input
                     id="textScale"
                     type="number"
+                    class="form-control"
                     min="1"
                     .value=${mainLizmap.digitizing.editedFeatureTextScale}
                     @input=${
@@ -456,7 +458,7 @@ export default class Digitizing extends HTMLElement {
                     <input
                         type="number"
                         placeholder="${lizDict['digitizing.constraint.distance']}"
-                        class="distance"
+                        class="distance form-control"
                         min="0"
                         step="any"
                         @input=${
@@ -469,7 +471,7 @@ export default class Digitizing extends HTMLElement {
                     <input
                         type="number"
                         placeholder="${lizDict['digitizing.constraint.angle']}"
-                        class="angle"
+                        class="angle form-control"
                         step="any"
                         @input=${
                             event => mainLizmap.digitizing.angleConstraint = event.target.value

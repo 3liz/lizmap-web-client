@@ -1,6 +1,7 @@
 {if $id === null}
 
 <h1>{@jauthdb_admin~crud.title.create@}</h1>
+<div class="container">
 {formfull $form, 'default:savecreate', array(), 'htmlbootstrap', $formOptions}
     {if $randomPwd}
         <p>{@jauthdb_admin~crud.form.random.password@} {$randomPwd}</p>
@@ -10,20 +11,18 @@
         {$info}
     {/foreach}
 
-    <p><a href="{jurl 'default:index'}" class="crud-link btn">{@jauthdb_admin~crud.link.return.to.list@}</a></p>
-
+    <p><a href="{jurl 'default:index'}" class="crud-link btn btn-sm">{@jauthdb_admin~crud.link.return.to.list@}</a></p>
+</div>
 {else}
 
 <h1>{@jauthdb_admin~crud.title.update@}</h1>
-
+<div class="container">
 {formfull $form, 'default:saveupdate', array('j_user_login'=>$id), 'htmlbootstrap', $formOptions}
 
     {foreach $otherInfo as $info}
         {$info}
     {/foreach}
 
-    <p><a href="{jurl 'default:view', array('j_user_login'=>$id)}" class="crud-link btn">{@jauthdb_admin~crud.link.return.to.view@}</a>.</p>
+    <p><a href="{jurl 'default:view', array('j_user_login'=>$id)}" class="crud-link btn btn-sm">{@jauthdb_admin~crud.link.return.to.view@}</a>.</p>
+</div>
 {/if}
-
-
-

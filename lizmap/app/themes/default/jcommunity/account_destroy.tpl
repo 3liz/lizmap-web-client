@@ -8,8 +8,8 @@
             <p>{@jcommunity~account.form.delete.account.confirm@}</p>
 
             <p>
-                <label for="conf_password">{@jcommunity~account.form.password@}</label>
-                <input type="password" name="conf_password" id="conf_password" />
+                <label for="conf_password" class="form-label">{@jcommunity~account.form.password@}</label>
+                <input type="password" name="conf_password" id="conf_password" class="form-control" />
             </p>
 
             <div><input type="submit" value="{@jcommunity~account.form.delete.account.submit@}" />

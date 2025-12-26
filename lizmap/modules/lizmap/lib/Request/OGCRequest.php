@@ -255,7 +255,7 @@ abstract class OGCRequest
         // The master error with MAP parameter
         // This user must have an access to QGIS Server logs
         $params = $this->parameters();
-        \jLog::log($message.' Check logs on QGIS Server. '.$this->formatHttpErrorString($params, $code), 'error');
+        \lizmap::getLogger()->error($message.' Check logs on QGIS Server. '.$this->formatHttpErrorString($params, $code));
 
         // The admin error without the MAP parameter
         // but replaced by REPOSITORY and PROJECT parameters
@@ -404,7 +404,7 @@ abstract class OGCRequest
         } catch (\Exception $e) {
             // if qgisprojects profile does not exist, or if there is an
             // other error about the cache, let's log it
-            \jLog::logEx($e, 'error');
+            \lizmap::getAppContext()->logException($e, 'error');
         }
         // return cached data
         if ($cached !== false) {
@@ -451,7 +451,7 @@ abstract class OGCRequest
             $errormsg = '\n'.$xmldata.'\n'.$xml;
             $errormsg = '\n'.http_build_query($this->params).$errormsg;
             $errormsg = 'An error has been raised when loading '.$name.':'.$errormsg;
-            \jLog::log($errormsg, 'lizmapadmin');
+            \lizmap::getAppContext()->logMessage($errormsg, 'lizmapadmin');
 
             return null;
         }

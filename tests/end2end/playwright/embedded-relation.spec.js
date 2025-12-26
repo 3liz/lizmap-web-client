@@ -55,6 +55,7 @@ test.describe('Display embedded relation in popup',
 
             await expect(popup.locator('.lizmapPopupTitle').first()).toHaveText('father_layer');
 
+            // Provided by the lizmap server plugin
             let fatherElements = popup.locator(".container.popup_lizmap_dd").first().locator(".before-tabs .control-group");
             await expect(fatherElements).toHaveCount(3);
             await expect(fatherElements.nth(0).locator('label')).toHaveText("fid");
@@ -124,6 +125,7 @@ test.describe('Display embedded relation in popup',
 
             await expect(popup.locator('.lizmapPopupTitle').first()).toHaveText('father_layer');
 
+            // Provided by the lizmap server plugin
             fatherElements = popup.locator(".container.popup_lizmap_dd").first().locator(".before-tabs .control-group");
             await expect(fatherElements).toHaveCount(3);
             await expect(fatherElements.nth(0).locator('label')).toHaveText("fid");

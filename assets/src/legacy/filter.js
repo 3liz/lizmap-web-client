@@ -28,7 +28,7 @@ var lizLayerFilterTool = function () {
 
                 html += '<div class="menu-content">';
                 // Add combo box to select the layer
-                html += '<select id="liz-filter-layer-selector">';
+                html += '<select id="liz-filter-layer-selector" class="form-select">';
                 var flayers = {};
                 for (var o in globalThis['filterConfig']) {
                     var conf = globalThis['filterConfig'][o];
@@ -515,7 +515,7 @@ var lizLayerFilterTool = function () {
                     html += getFormFieldHeader(field_item);
 
                     if (field_item.format == 'select') {
-                        html += '<select id="liz-filter-field-' + lizMap.cleanName(field_item.title) + '" class="liz-filter-field-select">';
+                        html += '<select id="liz-filter-field-' + lizMap.cleanName(field_item.title) + '" class="liz-filter-field-select form-select">';
                         html += '<option value=""> --- </option>';
                         html += '</select>';
                     }
@@ -551,7 +551,7 @@ var lizLayerFilterTool = function () {
                             dhtml += `<option value="${lizMap.cleanName(f_val)}">${label}</option>`;
                         } else {
                             var inputId = 'liz-filter-field-' + lizMap.cleanName(field_item.title) + '-' + lizMap.cleanName(f_val);
-                            dhtml += `<label class="checkbox"><input id="${inputId}" class="liz-filter-field-value" type="checkbox" value="${lizMap.cleanName(f_val)}">${label}</label>`;
+                            dhtml += `<label class="checkbox form-check-label"><input id="${inputId}" class="liz-filter-field-value form-check-input" type="checkbox" value="${lizMap.cleanName(f_val)}">${label}</label>`;
                         }
                     }
                     var id = 'liz-filter-box-' + lizMap.cleanName(field_item.title);

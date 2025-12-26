@@ -14,10 +14,6 @@
     font-weight: bold;
 }
 
-#content {
-  font-size:0.8em;
-}
-
 #auth_login_zone {
     max-width:450px;
     margin: auto;
@@ -64,14 +60,6 @@ fieldset {
     min-width: 10em;
 }
 
-.form-horizontal .control-label {
-    width: 240px;
-}
-
-.form-horizontal .controls {
-    margin-left: 250px;
-}
-
 .table .table {
     background-color:transparent;
 }
@@ -91,13 +79,6 @@ fieldset {
 .table-server-info td
 {
     width: 50%;
-}
-
-
-@media (width <= 480px) {
-    .form-horizontal .controls {
-        margin-left: 0;
-    }
 }
 
 /*

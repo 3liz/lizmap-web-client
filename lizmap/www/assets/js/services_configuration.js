@@ -35,7 +35,7 @@ var ServiceConfiguration = {
         // reset form inputs for other types than selected
         for (var r in this.redisOptions) {
             var inp = this.redisOptions[r];
-            $('#' + this.prefix + inp).parents('div.control-group:first').toggle(isRedis);
+            $('#' + this.prefix + inp).parents('div.form-group:first').toggle(isRedis);
         }
     }
 };

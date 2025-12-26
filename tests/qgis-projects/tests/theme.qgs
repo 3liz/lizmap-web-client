@@ -4200,6 +4200,26 @@ def my_form_open(dialog, layer, feature):
         <expanded-group-node id="baselayers"/>
       </expanded-group-nodes>
     </visibility-preset>
+    <visibility-preset has-checked-group-info="1" has-expanded-info="1" name="theme5">
+      <layer style="défaut" expanded="1" id="sousquartiers_7c49d0fc_0ee0_4308_a66d_45c144e59872" visible="1"/>
+      <expanded-legend-nodes id="sousquartiers_7c49d0fc_0ee0_4308_a66d_45c144e59872">
+        <expanded-legend-node id="{799a3cf2-2e09-4f3d-93f5-dc2a4920971d}"/>
+      </expanded-legend-nodes>
+      <layer style="default" expanded="1" id="tramway_lines_d90bd315_72dd_4dbd_b785_f835a3f61dea" visible="0"/>
+      <expanded-legend-nodes id="tramway_lines_d90bd315_72dd_4dbd_b785_f835a3f61dea"/>
+      <layer style="default" expanded="1" id="townhalls_pg_099cf6cf_70e4_4920_a285_ff4daedd4d33" visible="0"/>
+      <expanded-legend-nodes id="townhalls_pg_099cf6cf_70e4_4920_a285_ff4daedd4d33"/>
+      <checked-group-nodes>
+        <checked-group-node id="group1"/>
+        <checked-group-node id="group with subgroups/sub-group-1"/>
+      </checked-group-nodes>
+      <expanded-group-nodes>
+        <expanded-group-node id="group with subgroups/sub-group-1/sub-sub-group--2"/>
+        <expanded-group-node id="group with subgroups"/>
+        <expanded-group-node id="group with subgroups/sub-group-1/sub-sub-group--1"/>
+        <expanded-group-node id="group with subgroups/sub-group-1"/>
+      </expanded-group-nodes>
+    </visibility-preset>
   </visibility-presets>
   <transformContext/>
   <projectMetadata>

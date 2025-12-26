@@ -53,7 +53,7 @@ export default class LocateByLayer {
             var locatedElement = locateByLayerList[l];
             var lConfig = this._lizmap3.config.layers[locatedElement];
             var html = '<div class="locate-layer">';
-            html += '<select id="locate-layer-' + this._lizmap3.cleanName(locatedElement) + '" class="label">';
+            html += '<select id="locate-layer-' + this._lizmap3.cleanName(locatedElement) + '" class="label form-select">';
             html += '<option>' + lConfig.title + '...</option>';
             html += '</select>';
             html += '</div>';
@@ -223,7 +223,7 @@ export default class LocateByLayer {
                 // add filter values list
                 $('#locate-layer-'+layerName).parent().before(
                     `<div class="locate-layer">
-                    <select id="locate-layer-`+layerName+'-'+locate.filterFieldName+'">'+fOptions+`</select>
+                    <select class="form-select" id="locate-layer-`+layerName+'-'+locate.filterFieldName+'">'+fOptions+`</select>
                     </div><br/>`
                 );
                 // listen to filter select changes

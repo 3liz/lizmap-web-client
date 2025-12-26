@@ -1,6 +1,6 @@
 {jmessage_bootstrap}
-  <div>
-    <h2>{@admin~admin.logs.counter.title@}</h2>
+  <h1>{@admin~admin.logs.counter.title@}</h1>
+  <div class="container">
 
     <table class="table table-bordered table-striped">
       <thead>
@@ -22,8 +22,7 @@
         {/foreach}
       </tbody>
     </table>
-  </div>
-
-  <div class="form-actions">
-    <a class="btn" href="{jurl 'admin~logs:index'}">{@admin~admin.configuration.button.back.label@}</a>
+    <div class="form-actions">
+      <a class="btn btn-sm" href="{jurl 'admin~logs:index'}">{@admin~admin.configuration.button.back.label@}</a>
+    </div>
   </div>

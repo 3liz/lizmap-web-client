@@ -18,9 +18,13 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ### Added
 
+* PHP: Implementing a Psr-3 Logger upper \jLog::log
+* Preload link for CSS and JS files, and map's resources
+
 ### Changed
 
 * Migrate datatables from client to server side
+* JS: Replace proj4js by proj4rs WASM
 
 ### Removed
 
@@ -39,3 +43,4 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 * Raise PHP to version 8.2
 * Raise docker from Alpine 17 to 21
+* Update to Bootstrap 5

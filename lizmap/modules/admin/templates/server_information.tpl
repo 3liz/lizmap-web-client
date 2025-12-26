@@ -2,9 +2,9 @@
 {include 'lizmap~copy_to_clipboard'}
 
 {ifacl2 'lizmap.admin.server.information.view'}
+<h1>{@admin.menu.server.information.label@}</h1>
   <!--Services-->
-  <div id="lizmap_server_information">
-    <h2>{@admin.menu.server.information.label@}</h2>
+  <div id="lizmap_server_information" class="container">
 
     <h3>{@admin.server.information.lizmap.label@}</h3>
     <h4>{@admin.server.information.lizmap.info@}</h4>

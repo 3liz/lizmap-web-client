@@ -1,8 +1,8 @@
 {jmessage_bootstrap}
 
-  <h1>{@admin~admin.configuration.h1@}</h1>
+<h1>{@admin~admin.configuration.h1@}</h1>
 
-
+<div class="container">
   <div>
     <h2>{@admin~admin.generic.h2@}</h2>
     <dl>
@@ -123,3 +123,4 @@
     </div>
     {/ifacl2}
   {/ifacl2}
+</div>

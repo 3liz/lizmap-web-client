@@ -270,6 +270,7 @@ test.describe('WebDAV Server',
                 'form_edition_upload_webdav_geom_c71ec5ff_dc88_451f_98e1_ccf41e34ddd7'
             );
 
+            // Provided by the lizmap server plugin
             await expect(popup.locator('.lizmapPopupTitle')).toHaveText("form_edition_upload_webdav_geom");
             let uploadFields = popup.locator(".container.popup_lizmap_dd").locator(".before-tabs .control-group");
             await expect(uploadFields).toHaveCount(3);
