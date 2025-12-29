@@ -181,6 +181,7 @@ setup() {
     run lizmap-ctl console wmts:cache:clean -v testsrepository cache Quartiers
     assert_success
     assert_output --partial "Start cleaning"
+    assert_output --partial "End cleaning"
 
     assert_not_exists "$TESTS_ROOT/tmp/testsrepository/cache/Quartiers"
 
@@ -239,6 +240,7 @@ setup() {
     run lizmap-ctl console wmts:cache:clean -v testsrepository cache Quartiers
     assert_success
     assert_output --partial "Start cleaning"
+    assert_output --partial "End cleaning"
 
     assert_not_exists "$TESTS_ROOT/tmp/testsrepository/cache/Quartiers"
 }

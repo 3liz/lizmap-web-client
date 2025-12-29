@@ -415,7 +415,7 @@ class WMTSCache
             $result = Proxy::clearProjectCache($repository->getKey(), $project->getKey());
         }
         $outputCallback('================');
-        if (!$result) {
+        if ($result) {
             $outputCallback('End cleaning');
         } else {
             $outputCallback('Error cleaning');
