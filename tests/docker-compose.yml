@@ -52,6 +52,7 @@ services:
       - ECHO_OGC_ORIGINAL_REQUEST=on
     volumes:
       - { type: bind, source: "..", target: /srv/lzm/ }
+      - { type: bind, source: "tmp/", target: /tmp/ }
       - { type: bind, source: ./docker-conf/pg_service.conf, target: /srv/etc/pg_service.conf }
       - { type: bind, source: ./docker-conf/phpfpm/admin.conf, target: /srv/etc/admin.conf }
     depends_on:
