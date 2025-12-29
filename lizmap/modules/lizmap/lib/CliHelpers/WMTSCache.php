@@ -29,7 +29,7 @@ class WMTSCache
                 throw new \Exception('Unknown repository!');
             }
         } catch (UnknownLizmapProjectException $e) {
-            throw new \Exception('The project has not be found!');
+            throw new \Exception('The project has not been found!');
         }
 
         return $project;
@@ -113,9 +113,13 @@ class WMTSCache
         }
         if (!$layerFound) {
             $outputCallback('layer '.$layerName.' not found');
+
+            return 1;
         }
         if (!$tileMatrixFound) {
             $outputCallback('TileMatrixSet '.$tileMatrixSetId.' not found');
+
+            return 1;
         }
 
         return 0;
@@ -194,7 +198,7 @@ class WMTSCache
         }
         // Layer not found
         if (count($selectedLayers) === 0) {
-            $outputCallback("The layers '".implode(',', $layerIds)."' have not be found!");
+            $outputCallback("The layers '".implode(',', $layerIds)."' have not been found!");
 
             return 1;
         }
@@ -211,7 +215,7 @@ class WMTSCache
 
         // TileMatrixSet not found
         if (!$tileMatrixSet) {
-            $outputCallback("The TileMatrixSet '".$tileMatrixSetId."' has not be found!");
+            $outputCallback("The TileMatrixSet '".$tileMatrixSetId."' has not been found!");
 
             return 1;
         }
@@ -415,7 +419,7 @@ class WMTSCache
             $result = Proxy::clearProjectCache($repository->getKey(), $project->getKey());
         }
         $outputCallback('================');
-        if (!$result) {
+        if ($result) {
             $outputCallback('End cleaning');
         } else {
             $outputCallback('Error cleaning');

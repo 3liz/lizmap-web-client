@@ -164,6 +164,11 @@ jobs:
         run: |
           npm ci
 
+      - name: Run BATS tests
+        working-directory: ./
+        run: |
+          npm run bats
+
       - name: Install Playwright
         working-directory: tests/end2end
         run: |

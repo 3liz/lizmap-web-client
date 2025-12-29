@@ -15,6 +15,7 @@
   ],
   "scripts": {
     "build": "rspack build --config assets/webpack.prod.js",
+    "bats": "bats ./tests/end2end/bats/",
     "cy:open": "cypress open --project ./tests/end2end/",
     "cy:test": "cypress run --headed --project ./tests/end2end/",
     "js:test": "mocha --recursive ./tests/js-units/node",
@@ -33,10 +34,14 @@
     "@rspack/core": "^1.5.x",
     "@stylistic/eslint-plugin-js": "^4.2.x",
     "@turf/line-split": "^7.2.x",
+    "bats": "^1.13.0",
+    "bats-assert": "^2.2.4",
+    "bats-support": "^0.3.0",
     "chai": "^5.2.x",
     "cypress": "<10.0.0",
     "cypress-file-upload": "^5.0.x",
     "dompurify": "^3.2.x",
+    "dotenv": "^17.2.3",
     "eslint-plugin-jsdoc": "^51.3.x",
     "flatgeobuf": "~4.2.x",
     "jsts": "^2.11.x",
@@ -55,7 +60,6 @@
     "svgo": "^4.0.x",
     "svgo-loader": "^4.0.x",
     "undici": "^7.16.x",
-    "dotenv": "^17.2.3",
     "webpack": "^5.102.x",
     "webpack-merge": "^6.0.x"
   }
