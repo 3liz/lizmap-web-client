@@ -35,16 +35,14 @@ setup() {
 
 @test "wmts:capabilities failed unknown layer" {
     run lizmap-ctl console wmts:capabilities testsrepository cache unknown
-    # command does not exit with 1
-    assert_success
+    assert_failure
     assert_output --partial 'layer unknown not found'
     refute_output --partial 'wmts:capabilities <repository> <project> [<layer> [<TileMatrixSet>]]'
 }
 
-@test "wmts:capabilities failed unknown crs" {
+@test "wmts:capabilities failed unknown TileMatrixSet (crs)" {
     run lizmap-ctl console wmts:capabilities testsrepository cache Quartiers unknown
-    # command does not exit with 1
-    assert_success
+    assert_failure
     assert_output --partial 'TileMatrixSet unknown not found'
     refute_output --partial 'wmts:capabilities <repository> <project> [<layer> [<TileMatrixSet>]]'
 }
