@@ -29,7 +29,7 @@ setup() {
 @test "wmts:capabilities failed unknown project" {
     run lizmap-ctl console wmts:capabilities testsrepository unknown
     assert_failure
-    assert_output --partial 'The project has not be found!'
+    assert_output --partial 'The project has not been found!'
     refute_output --partial 'wmts:capabilities <repository> <project> [<layer> [<TileMatrixSet>]]'
 }
 
