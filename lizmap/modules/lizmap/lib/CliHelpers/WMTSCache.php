@@ -113,9 +113,13 @@ class WMTSCache
         }
         if (!$layerFound) {
             $outputCallback('layer '.$layerName.' not found');
+
+            return 1;
         }
         if (!$tileMatrixFound) {
             $outputCallback('TileMatrixSet '.$tileMatrixSetId.' not found');
+
+            return 1;
         }
 
         return 0;
