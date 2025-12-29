@@ -44,7 +44,7 @@
     "datatables.net-buttons-bs5": "^3.2.2",
     "datatables.net-datetime": "^1.5.5",
     "datatables.net-searchbuilder-bs5": "^1.8.2",
-    "dompurify": "^3.2.x",
+    "dompurify": "^3.3.x",
     "dotenv": "^17.2.3",
     "eslint-plugin-jsdoc": "^60.2.x",
     "flatgeobuf": "^4.3.x",
