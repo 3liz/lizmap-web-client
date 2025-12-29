@@ -29,7 +29,7 @@ class WMTSCache
                 throw new \Exception('Unknown repository!');
             }
         } catch (UnknownLizmapProjectException $e) {
-            throw new \Exception('The project has not be found!');
+            throw new \Exception('The project has not been found!');
         }
 
         return $project;
@@ -194,7 +194,7 @@ class WMTSCache
         }
         // Layer not found
         if (count($selectedLayers) === 0) {
-            $outputCallback("The layers '".implode(',', $layerIds)."' have not be found!");
+            $outputCallback("The layers '".implode(',', $layerIds)."' have not been found!");
 
             return 1;
         }
@@ -211,7 +211,7 @@ class WMTSCache
 
         // TileMatrixSet not found
         if (!$tileMatrixSet) {
-            $outputCallback("The TileMatrixSet '".$tileMatrixSetId."' has not be found!");
+            $outputCallback("The TileMatrixSet '".$tileMatrixSetId."' has not been found!");
 
             return 1;
         }

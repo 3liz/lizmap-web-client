@@ -60,7 +60,7 @@ setup() {
 @test "wmts:cache:seed failed unkown project" {
     run lizmap-ctl console wmts:cache:seed -v -f --dry-run testsrepository unknown Quartiers EPSG:3857 10 10
     assert_failure
-    assert_output --partial 'The project has not be found!'
+    assert_output --partial 'The project has not been found!'
     refute_output --partial 'wmts:cache:seed [--dry-run] [--bbox BBOX] [-f|--force] [--]'
     refute_output --partial '<repository> <project> <layers> <TileMatrixSet> <TileMatrixMin> <TileMatrixMax>'
 }
@@ -68,7 +68,7 @@ setup() {
 @test "wmts:cache:seed failed unkown layer" {
     run lizmap-ctl console wmts:cache:seed -v -f --dry-run testsrepository cache unknown EPSG:3857 10 10
     assert_failure
-    assert_output --partial "The layers 'unknown' have not be found!"
+    assert_output --partial "The layers 'unknown' have not been found!"
     refute_output --partial 'wmts:cache:seed [--dry-run] [--bbox BBOX] [-f|--force] [--]'
     refute_output --partial '<repository> <project> <layers> <TileMatrixSet> <TileMatrixMin> <TileMatrixMax>'
 }
@@ -77,7 +77,7 @@ setup() {
     run lizmap-ctl console wmts:cache:seed -v -f --dry-run testsrepository cache Quartiers unknown 10 10
     assert_failure
     assert_output --partial "The TileMatrixSet 'EPSG:3857'!"
-    assert_output --partial "The TileMatrixSet 'unknown' has not be found!"
+    assert_output --partial "The TileMatrixSet 'unknown' has not been found!"
     refute_output --partial 'wmts:cache:seed [--dry-run] [--bbox BBOX] [-f|--force] [--]'
     refute_output --partial '<repository> <project> <layers> <TileMatrixSet> <TileMatrixMin> <TileMatrixMax>'
 }

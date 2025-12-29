@@ -229,7 +229,7 @@ export default class map extends olMap {
                         });
                     }
 
-                    // The options could be null if the layer has not be found in
+                    // The options could be null if the layer has not been found in
                     // WMTS capabilities
                     if (options) {
                         layer = new TileLayer({
@@ -763,11 +763,11 @@ export default class map extends olMap {
                 }
             }};
         baseLayersState.addListener(
-           opacityChangedListener(this),
+            opacityChangedListener(this),
             ['layer.opacity.changed', 'group.opacity.changed']
         );
         rootMapGroup.addListener(
-           opacityChangedListener(this),
+            opacityChangedListener(this),
             ['layer.opacity.changed', 'group.opacity.changed']
         );
         rootMapGroup.addListener(
