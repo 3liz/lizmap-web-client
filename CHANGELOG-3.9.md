@@ -8,6 +8,44 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Funders
+
+* **[Klein und Leber GbR](https://www.gisgeometer.de/)** with @meyerlor
+* **[Faunalia](https://www.faunalia.eu/fr)** with @mind84
+
+### Fixed
+
+* QGIS project parsing - error when raster renderer & huesaturation are not defined
+* Respect legend_image_option setting when loading symbology
+* Editable features in attribute table
+* QGIS project parsing - error in visibility-preset when checked-legend-nodes is empty
+* use same change opacity listener for base Layers and root map group
+* Prevent parent groups from being auto-checked
+* Error on add child element from parent attribute table
+
+### Tests
+
+* e2e Playwright: add fixture expect request
+* Update every tests project to QGIS 3.34 and Lizmap plugin 4.4.9
+* e2e Playwright: open attribute table returns WFS GetFeature request
+* e2e Playwright: enhancing editable features
+* e2e: move Projects homepage from cypress to playwright
+* e2e Playwright: enhancing openEditingFormWithLayer
+* e2e: Move form_edition from Cypress to Playwright
+* e2e Playwright: enhancing n_to_m relations
+* e2e: move reverse_geom from Cypress to Playwright
+* e2e: move from Cypress to Playwright form_edition_all_fields_types
+* e2e Playwright: enhancing some edition form tests
+* e2e: Move form_edit_related_child_data from Cypress to Playwright
+* e2e: move form_edition_value_relation_field from Cypress to Playwright
+* e2e Playwright: Enhancing some form tests
+* e2e Playwright Theme: enhancing
+* e2e CLI with BATS and remove from cypress
+
+### Backend
+
+* PHP Repository class enhancement
+
 ## 3.9.4 - 2025-11-25
 
 ### Funders
