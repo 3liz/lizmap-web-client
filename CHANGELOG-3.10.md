@@ -46,3 +46,4 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Raise PHP to version 8.2
 * Raise docker from Alpine 17 to 21
 * Update to Bootstrap 5
+* CI: copy .module.wasm files whatever their names are

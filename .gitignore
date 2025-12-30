@@ -21,6 +21,7 @@ build/
 node_modules/
 assets/dist/
 *.bundle.js
+*.module.wasm
 
 # Config
 lizmap/var/config/lizmapConfig.ini.php
