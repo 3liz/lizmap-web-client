@@ -12,9 +12,9 @@
     {
         "branch": "3.10",
         "changelog": {},
-        "first_release_date": "",
-        "latest_release_date": "",
-        "latest_release_version": "",
+        "first_release_date": "2025-12-30",
+        "latest_release_date": "2025-12-30",
+        "latest_release_version": "3.10.0-alpha.1",
         "qgis_max_version_recommended": 39900,
         "qgis_min_version_recommended": 34000,
         "status": "dev"
