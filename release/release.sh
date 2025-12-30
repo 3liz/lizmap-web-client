@@ -33,12 +33,8 @@ done
 echo "package.json"
 sed -i "s@\"version\": \"[a-z.0-9-]\+\"@\"version\": \"$2\"@g" package.json
 
-echo "package-lock.json"
-sed -i "s@\"version\": \"[a-z.0-9-]\+\"@\"version\": \"$2\"@g" package-lock.json
-
 git add README.md
 git add lizmap/project.xml
 git add lizmap/modules/*/module.xml
 git add package.json
-git add package-lock.json
 git commit -m "Bump to version $2"
