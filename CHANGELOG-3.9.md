@@ -8,6 +8,10 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Backend
+
+* CI: copy .module.wasm files whatever their names are
+
 ## 3.9.5 - 2025-12-29
 
 ### Funders
