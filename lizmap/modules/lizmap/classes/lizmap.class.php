@@ -518,6 +518,6 @@ class lizmap
 
         $logMessage = new Log\MetricsLogMessage($log, 'metric');
 
-        self::getLogger()->info($logMessage);
+        self::getLogger()->info("metric\t".$logMessage->getFormatedMessage());
     }
 }
