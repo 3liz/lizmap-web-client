@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.10.0-alpha.1 - 2025-12-30
+
 ### Funders
 
 * **[Digi-Studio](https://digi-stud.io/)**
