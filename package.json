@@ -61,6 +61,7 @@
     "svgo-loader": "^4.0.x",
     "undici": "^7.16.x",
     "webpack": "^5.104.x",
-    "webpack-merge": "^6.0.x"
+    "webpack-merge": "^6.0.x",
+    "xmldoc": "^2.0.3"
   }
 }
