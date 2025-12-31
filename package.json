@@ -45,6 +45,7 @@
     "datatables.net-datetime": "^1.5.5",
     "datatables.net-searchbuilder-bs5": "^1.8.2",
     "dompurify": "^3.3.x",
+    "dotenv": "^17.2.3",
     "eslint-plugin-jsdoc": "^61.5.x",
     "flatgeobuf": "^4.4.x",
     "jsts": "^2.11.x",
@@ -63,8 +64,8 @@
     "svgo": "^4.0.x",
     "svgo-loader": "^4.0.x",
     "undici": "^7.16.x",
-    "dotenv": "^17.2.3",
     "webpack": "^5.104.x",
-    "webpack-merge": "^6.0.x"
+    "webpack-merge": "^6.0.x",
+    "xmldoc": "^2.0.3"
   }
 }
