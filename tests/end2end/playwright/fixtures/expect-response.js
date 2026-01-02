@@ -329,5 +329,117 @@ export const expect = baseExpect.extend({
             expected: expected,
             actual: matcherResult?.actual,
         };
-    }
+    },
+
+    /**
+     * Expecting the response is a JSON Lizmap Config
+     * @param {APIResponse} response the response to test
+     *
+     * @returns {Promise<MatcherReturnType>} the result
+     */
+    async toBeLizmapConfig(response) {
+        const assertionName = 'toBeLizmapConfig';
+        let pass = true;
+        /** @type {MatcherReturnType} matcherResult */
+        let matcherResult = {
+            message: () => '',
+            pass: pass,
+            name: assertionName,
+        };
+        const response_body = await response.body();
+        try {
+            expect(response).toBeJson();
+            let body = await response.json();
+
+            expect(body).toHaveProperty('metadata');
+            expect(body.metadata).toHaveProperty('qgis_desktop_version');
+            expect(body.metadata).toHaveProperty('lizmap_plugin_version');
+            expect(body.metadata).toHaveProperty('lizmap_plugin_version_str');
+            expect(body.metadata).toHaveProperty('lizmap_web_client_target_version');
+            expect(body.metadata).toHaveProperty('lizmap_web_client_target_status');
+
+            expect(body).toHaveProperty('warnings');
+
+            expect(body).toHaveProperty('options');
+            expect(body.options).toHaveProperty('bbox');
+            expect(body.options).toHaveProperty('initialExtent');
+            expect(body.options).toHaveProperty('mapScales');
+            expect(body.options).toHaveProperty('minScale');
+            expect(body.options).toHaveProperty('maxScale');
+            expect(body.options).toHaveProperty('projection');
+            expect(body.options).toHaveProperty('pointTolerance');
+            expect(body.options).toHaveProperty('lineTolerance');
+            expect(body.options).toHaveProperty('polygonTolerance');
+            expect(body.options).toHaveProperty('popupLocation');
+            expect(body.options).toHaveProperty('datavizLocation');
+            expect(body.options).toHaveProperty('wmsMaxHeight');
+            expect(body.options).toHaveProperty('wmsMaxWidth');
+
+            expect(body).toHaveProperty('layers');
+
+            expect(body).toHaveProperty('locateByLayer');
+
+            expect(body).toHaveProperty('attributeLayers');
+
+            expect(body).toHaveProperty('timemanagerLayers');
+
+            expect(body).toHaveProperty('relations');
+            expect(body.relations).toHaveProperty('pivot');
+
+            expect(body).toHaveProperty('printTemplates');
+
+            expect(body).toHaveProperty('layouts');
+            expect(body.layouts).toHaveProperty('config');
+            expect(body.layouts.config).toHaveProperty('default_popup_print');
+            expect(body.layouts).toHaveProperty('list');
+
+            expect(body).toHaveProperty('atlas');
+            expect(body.atlas).toHaveProperty('layers');
+
+            expect(body).toHaveProperty('tooltipLayers');
+
+            expect(body).toHaveProperty('formFilterLayers');
+
+            expect(body).toHaveProperty('datavizLayers');
+            expect(body.datavizLayers).toHaveProperty('locale');
+            expect(body.datavizLayers).toHaveProperty('layers');
+            expect(body.datavizLayers).toHaveProperty('dataviz');
+
+            expect(body).toHaveProperty('loginFilteredLayers');
+
+            expect(body).toHaveProperty('filter_by_polygon');
+            expect(body.filter_by_polygon).toHaveProperty('config');
+            expect(body.filter_by_polygon.config).toHaveProperty('filter_by_user');
+            expect(body.filter_by_polygon.config).toHaveProperty('group_field');
+            expect(body.filter_by_polygon.config).toHaveProperty('polygon_layer_id');
+            expect(body.filter_by_polygon).toHaveProperty('layers');
+        } catch(/** @type {any} */ e) {
+            matcherResult = e.matcherResult;
+            if (typeof matcherResult?.message !== 'function') {
+                const message = matcherResult?.message
+                matcherResult.message = () => message;
+            }
+            pass = false;
+        }
+
+        if (this.isNot) {
+            pass =!pass;
+        }
+
+        const message = pass
+            ? () => this.utils.matcherHint(assertionName, undefined, undefined, { isNot: this.isNot }) +
+                '\n\n' +
+                `Expected: Response not to be JSON Lizmap config\n`+
+                `Actual: ${response_body} - ${matcherResult?.message()}`
+            : () => this.utils.matcherHint(assertionName, undefined, undefined, { isNot: this.isNot }) +
+                '\n\n' +
+                `Expected: Response to be JSON  Lizmap config\n`+
+                `Actual: ${response_body} - ${matcherResult?.message()}`
+
+        return {
+            message,
+            pass,
+            name: assertionName,
+        };
+    },
 });
