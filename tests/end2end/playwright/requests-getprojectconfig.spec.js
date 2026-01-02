@@ -4,6 +4,34 @@ import { expect as responseExpect } from './fixtures/expect-response.js'
 import { getAuthStorageStatePath } from './globals';
 
 test.describe('Request Lizmap GetProjectConfig - anonymous - @requests @readonly', () => {
+    test('Failed - Project is mandatory', async({ request }) => {
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            // project: 'hide_project',
+        });
+        let url = `/index.php/lizmap/service/getProjectConfig?${params}`;
+        let response = await request.get(url, {});
+        // check response
+        responseExpect(response).toBeXml(404);
+        // check body
+        let body = await response.text();
+        expect(body).toContain('ServiceException');
+    });
+
+    test('Failed - Repository is mandatory', async({ request }) => {
+        let params = new URLSearchParams({
+            // repository: 'testsrepository',
+            project: 'hide_project',
+        });
+        let url = `/index.php/lizmap/service/getProjectConfig?${params}`;
+        let response = await request.get(url, {});
+        // check response
+        responseExpect(response).toBeXml(404);
+        // check body
+        let body = await response.text();
+        expect(body).toContain('ServiceException');
+    });
+
     test('Empty config from hide_project', async({ request }) => {
         let params = new URLSearchParams({
             repository: 'testsrepository',
