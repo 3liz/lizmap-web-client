@@ -22,7 +22,7 @@ services:
       start_interval: 2s
       start_period: 10s
   redis:
-    image: redis:7-alpine
+    image: redis:8-alpine
     container_name: "lizmap${LZMBRANCH}_test_redis"
   openldap:
     build: ./docker-conf/openldap
