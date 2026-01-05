@@ -26,10 +26,10 @@ jobs:
     steps:
 
       - name: Check out repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: "Setup Node ${{ env.NODE_VERSION }}"
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -56,7 +56,7 @@ jobs:
     steps:
 
       - name: Check out repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Change tokens about versions
         run: make version-doc
@@ -78,7 +78,7 @@ jobs:
     steps:
 
       - name: Check out repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Change tokens about versions
         run: make version-doc
