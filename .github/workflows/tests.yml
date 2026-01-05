@@ -58,7 +58,7 @@ jobs:
         run: composer require --working-dir=tests/units/ phpunit/phpunit:${{ matrix.php-unit }}
 
       - name: "Setup Node ${{ env.NODE_VERSION }}"
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -76,7 +76,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: "Setup Node ${{ env.NODE_VERSION }}"
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
