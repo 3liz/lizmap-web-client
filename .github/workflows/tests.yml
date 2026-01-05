@@ -28,7 +28,7 @@ jobs:
     steps:
 
       - name: Check out repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Get composer cache directory
         id: get-composer-cache-dir
@@ -71,7 +71,7 @@ jobs:
     steps:
 
       - name: Check out repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: "Setup Node ${{ env.NODE_VERSION }}"
         uses: actions/setup-node@v5
