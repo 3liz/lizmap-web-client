@@ -1578,7 +1578,7 @@ window.lizMap = function() {
 
                     // Do not get the filter token if the popup is not displayed
                     nbPopupDisplayed = document.querySelectorAll(
-                  `input.lizmap-popup-layer-feature-id[value^=${lConfig.id}]`
+                  `input.lizmap-popup-layer-feature-id[value^="${lConfig.id}"]`
                     ).length;
                     if (nbPopupDisplayed == 0) {
                         continue;
