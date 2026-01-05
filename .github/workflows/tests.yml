@@ -44,7 +44,7 @@ jobs:
           tools: php-cs-fixer, phpunit
 
       - name: Cache dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ env.composer_cache_dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
