@@ -13,7 +13,7 @@ jobs:
     if: github.repository == '3liz/lizmap-web-client'
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           ref: 'master'
           fetch-depth: 0

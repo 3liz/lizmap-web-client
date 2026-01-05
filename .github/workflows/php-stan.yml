@@ -26,7 +26,7 @@ jobs:
           - php-version: '8.3'
           - php-version: '8.4'
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Get composer cache directory
         id: get-composer-cache-dir
