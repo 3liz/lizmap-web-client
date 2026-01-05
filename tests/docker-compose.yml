@@ -79,36 +79,40 @@ services:
       - ${LZMWEBPORT}:80
       - ${LZMWEBSPORT}:443
     depends_on:
-      lizmap:
-        condition: service_healthy
-  map:
-    container_name: "lizmap${LZMBRANCH}_test_qgis"
-    image: 3liz/qgis-map-server:${LZMQGSRVVERSION}
+      - lizmap
+  # QGIS RPC backend
+  map-rpc:
+    container_name: "lizmap${LZMBRANCH}_test_qgis_rpc"
+    image: 3liz/qjazz:${LZMQGSRVVERSION}
+    command: ["qjazz-rpc", "serve", "-C", "/srv/etc/qgis-server.toml"]
     environment:
-      PGSERVICEFILE: /srv/etc/pg_service.conf
+      CONF_LOGGING__LEVEL: trace
+      CONF_WORKER__NUM_PROCESSES: 4
+      CONF_DISPLAY_XVFB: ON
+      CONF_USER: ${LIZMAP_USER_ID}:${LIZMAP_GROUP_ID}
+      QGIS_PLUGINPATH: /srv/qgis-server-plugins
       QGIS_SERVER_LIZMAP_REVEAL_SETTINGS: yes
-      QGIS_SERVER_TRUST_LAYER_METADATA: yes
-      QGIS_SERVER_FORCE_READONLY_LAYERS: yes
-      QGSRV_API_ENABLED_LIZMAP: yes
-      QGSRV_CACHE_ROOTDIR: /srv/projects
-      QGSRV_CACHE_SIZE: '20'
-      # For testing purpose, I think it's better to have a strict check of layers
-      QGSRV_CACHE_STRICT_CHECK: yes
-      QGSRV_LOGGING_LEVEL: DEBUG
-      QGSRV_SERVER_PLUGINPATH: /srv/qgis-server-plugins
-      QGSRV_MANAGEMENT_ENABLED: yes
-      QGSRV_MANAGEMENT_INTERFACES: "0.0.0.0"
-      QGSRV_SERVER_WORKERS: 4
-      QGSRV_USER: ${LIZMAP_USER_ID}:${LIZMAP_GROUP_ID}
-      ROUTER_HOST: map
+      QGIS_PLUGIN_MANAGER_SOURCES_FILE: /srv/etc/plugin-sources.list
+      PGSERVICEFILE: /srv/etc/pg_service.conf
     volumes:
       - { type: bind, source: ./qgis-projects, target: /srv/projects }
       - { type: bind, source: ./qgis-server-plugins, target: /srv/qgis-server-plugins }
-      - { type: bind, source: ./wps-data, target: /srv/data }
       - { type: bind, source: ./docker-conf/pg_service.conf, target: /srv/etc/pg_service.conf }
+      - { type: bind, source: ./docker-conf/qgis-server.toml, target: /srv/etc/qgis-server.toml }
+      - type: bind
+        source: ./docker-conf/stable-plugin-sources.list
+        target: /srv/etc/plugin-sources.list
+  # QGIS workers frontend
+  map:
+    container_name: "lizmap${LZMBRANCH}_test_qgis"
+    image: 3liz/qjazz:${LZMQGSRVVERSION}
+    command: ["qjazz-map", "serve", "-C", "/srv/etc/qgis-server.toml"]
+    environment:
+        CONF_LOGGING__LEVEL: trace
+    volumes:
+      - { type: bind, source: ./docker-conf/qgis-server.toml, target: /srv/etc/qgis-server.toml }
     ports:
-      - ${LZMQGSRVPORT}:8080
-      - ${QGSRVAPIPORT}:19876
+      - ${LZMQGSRVPORT}:9080
   webdav:
     container_name: lizmap${LZMBRANCH}_test_webdav
     image: ugeek/webdav:amd64

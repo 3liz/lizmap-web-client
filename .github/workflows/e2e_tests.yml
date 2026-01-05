@@ -24,15 +24,15 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: "LEGACY"
+          - name: "LTR"
             php: "8.2"
             pg-postgis: "14-3"
-            qgis-server: "3.40"
+            qgis-server: "qgis-ltr-eager"
             update-projects: "FALSE"
-          - name: "BLEEDING_EDGE"
+          - name: "RELEASE"
             php: "8.4"
             pg-postgis: "17-3"
-            qgis-server: "3.44"
+            qgis-server: "qgis-release-eager"
             update-projects: "TRUE"
     env:
       PLAYWRIGHT_FORCE_TTY: true
@@ -326,6 +326,7 @@ jobs:
           mkdir -p /tmp/e2e/lwc
           mkdir -p /tmp/e2e/docker
           docker logs lizmap${{ env.LZMBRANCH }}_test_qgis &> /tmp/e2e/docker/qgis-server.log | true
+          docker logs lizmap${{ env.LZMBRANCH }}_test_qgis_rpc &> /tmp/e2e/docker/qgis-server-rpc.log | true
           docker logs lizmap${{ env.LZMBRANCH }}_test_php &> /tmp/e2e/docker/php.log | true
           docker logs lizmap${{ env.LZMBRANCH }}_test_nginx &> /tmp/e2e/docker/nginx.log | true
           cp -r ../lizmap/var/log /tmp/e2e/lwc/
