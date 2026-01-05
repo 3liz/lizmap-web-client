@@ -139,7 +139,7 @@ jobs:
             sudo echo "127.0.0.1 othersite.local" | sudo tee -a /etc/hosts
 
       - name: "Setup Node ${{ env.NODE_VERSION }}"
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
