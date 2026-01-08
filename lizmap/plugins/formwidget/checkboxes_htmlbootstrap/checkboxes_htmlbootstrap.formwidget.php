@@ -29,6 +29,7 @@ class checkboxes_htmlbootstrapFormWidget extends checkboxes_htmlFormWidget
     {
         $attr = $this->getControlAttributes();
         $value = $this->getValue();
+        $ro = $this->ctrl->readOnly;
 
         $attr['name'] = $this->ctrl->ref.'[]';
         unset($attr['title']);
