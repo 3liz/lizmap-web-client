@@ -21,8 +21,8 @@ test.describe('Single WMS layer', () => {
                 'VERSION': '1.3.0',
                 'REQUEST': 'GetMap',
                 'FORMAT': 'image/png',
-                'STYLES':'default,default,default,default,default,',
-                'LAYERS':'single_wms_baselayer,single_wms_lines,single_wms_points,single_wms_points_group,single_wms_lines_group,GroupAsLayer',
+                'STYLES':'default,default,default,default,',
+                'LAYERS':'single_wms_lines,single_wms_points,single_wms_points_group,single_wms_lines_group,GroupAsLayer',
             }
 
             const requestTile = await requestTilePromise;
@@ -86,8 +86,8 @@ test.describe('Single WMS layer', () => {
                 'VERSION': '1.3.0',
                 'REQUEST': 'GetMap',
                 'FORMAT': 'image/png',
-                'STYLES':'default,default,default,default,',
-                'LAYERS':'single_wms_baselayer,single_wms_points,single_wms_points_group,single_wms_lines_group,GroupAsLayer',
+                'STYLES':'default,default,default,',
+                'LAYERS':'single_wms_points,single_wms_points_group,single_wms_lines_group,GroupAsLayer',
             }
             await expectParametersToContain('GetMap', requestSwitch.url(), expectedSwitchParameters);
             await requestSwitch.response();
@@ -103,8 +103,8 @@ test.describe('Single WMS layer', () => {
                 'VERSION': '1.3.0',
                 'REQUEST': 'GetMap',
                 'FORMAT': 'image/png',
-                'STYLES':'default,default,default,',
-                'LAYERS':'single_wms_baselayer,single_wms_points,single_wms_points_group,GroupAsLayer',
+                'STYLES':'default,default,',
+                'LAYERS':'single_wms_points,single_wms_points_group,GroupAsLayer',
             }
 
             await expectParametersToContain('GetMap', requestGroup.url(), expectedGroupParameters);
@@ -121,8 +121,8 @@ test.describe('Single WMS layer', () => {
                 'VERSION': '1.3.0',
                 'REQUEST': 'GetMap',
                 'FORMAT': 'image/png',
-                'STYLES':'default,default,default',
-                'LAYERS':'single_wms_baselayer,single_wms_points,single_wms_points_group',
+                'STYLES':'default,default',
+                'LAYERS':'single_wms_points,single_wms_points_group',
             }
             await expectParametersToContain('GetMap', requestGroupAsLayer.url(), expectedGroupAsLayerParameters);
             await requestGroupAsLayer.response();
@@ -140,8 +140,8 @@ test.describe('Single WMS layer', () => {
                     const searchParam = new URLSearchParams(url);
                     expect(searchParam.get('FORMAT') == 'image%2Fpng').toBeTruthy();
                     expect(searchParam.get('SERVICE') == 'WMS').toBeTruthy();
-                    expect(searchParam.get('STYLES') == 'default%2Cdefault%2Cdefault%2Cdefault%2Cdefault%2C').toBeTruthy();
-                    expect(searchParam.get('LAYERS') == 'single_wms_baselayer%2Csingle_wms_lines%2Csingle_wms_points%2Csingle_wms_points_group%2Csingle_wms_lines_group%2CGroupAsLayer').toBeTruthy();
+                    expect(searchParam.get('STYLES') == 'default%2Cdefault%2Cdefault%2Cdefault%2C').toBeTruthy();
+                    expect(searchParam.get('LAYERS') == 'single_wms_lines%2Csingle_wms_points%2Csingle_wms_points_group%2Csingle_wms_lines_group%2CGroupAsLayer').toBeTruthy();
                 }
             })
 
@@ -176,8 +176,8 @@ test.describe('Single WMS layer', () => {
                 'VERSION': '1.3.0',
                 'REQUEST': 'GetMap',
                 'FORMAT': 'image/png',
-                'STYLES':'default,default,white_dots,default,default,',
-                'LAYERS':'single_wms_baselayer,single_wms_lines,single_wms_points,single_wms_points_group,single_wms_lines_group,GroupAsLayer',
+                'STYLES':'default,white_dots,default,default,',
+                'LAYERS':'single_wms_lines,single_wms_points,single_wms_points_group,single_wms_lines_group,GroupAsLayer',
             }
             await expectParametersToContain('GetMap', requestStyle.url(), expectedStyleParameters);
             await requestStyle.response();
@@ -230,9 +230,9 @@ test.describe('Single WMS layer', () => {
                 'VERSION': '1.3.0',
                 'REQUEST': 'GetMap',
                 'FORMAT': 'image/png',
-                'STYLES':'default,default,default,default,default,',
+                'STYLES':'default,default,default,default,',
                 'FILTERTOKEN': /^[a-zA-Z0-9]{32}$/,
-                'LAYERS':'single_wms_baselayer,single_wms_lines,single_wms_points,single_wms_points_group,single_wms_lines_group,GroupAsLayer',
+                'LAYERS':'single_wms_lines,single_wms_points,single_wms_points_group,single_wms_lines_group,GroupAsLayer',
             }
             await expectParametersToContain('GetMap', requestFilteredMap.url(), expectedFilteredMapParameters);
             await requestFilteredMap.response();
@@ -255,9 +255,9 @@ test.describe('Single WMS layer', () => {
                 'VERSION': '1.3.0',
                 'REQUEST': 'GetMap',
                 'FORMAT': 'image/png',
-                'STYLES':'default,default,white_dots,default,default,',
+                'STYLES':'default,white_dots,default,default,',
                 'FILTERTOKEN': /^[a-zA-Z0-9]{32}$/,
-                'LAYERS':'single_wms_baselayer,single_wms_lines,single_wms_points,single_wms_points_group,single_wms_lines_group,GroupAsLayer',
+                'LAYERS':'single_wms_lines,single_wms_points,single_wms_points_group,single_wms_lines_group,GroupAsLayer',
             }
             await expectParametersToContain('GetMap', requestFilteredStyle.url(), expectedFilteredStyleParameters);
             await requestFilteredStyle.response();
@@ -282,10 +282,10 @@ test.describe('Single WMS layer', () => {
                 'VERSION': '1.3.0',
                 'REQUEST': 'GetMap',
                 'FORMAT': 'image/png',
-                'STYLES':'default,default,default,default,default,',
+                'STYLES':'default,default,default,default,',
                 'LEGEND_ON':'single_wms_lines:1,2,3,4',
                 'LEGEND_OFF':'single_wms_lines:0',
-                'LAYERS':'single_wms_baselayer,single_wms_lines,single_wms_points,single_wms_points_group,single_wms_lines_group,GroupAsLayer',
+                'LAYERS':'single_wms_lines,single_wms_points,single_wms_points_group,single_wms_lines_group,GroupAsLayer',
             }
             await expectParametersToContain('GetMap', requestLegend.url(), expectedLegendParameters);
             await requestLegend.response();
@@ -330,11 +330,11 @@ test.describe('Single WMS layer', () => {
                 'VERSION': '1.3.0',
                 'REQUEST': 'GetMap',
                 'FORMAT': 'image/png',
-                'STYLES':'default,default,default,default,default,',
+                'STYLES':'default,default,default,default,',
                 'LEGEND_ON':'single_wms_lines:1,2,3,4',
                 'LEGEND_OFF':'single_wms_lines:0',
                 'FILTERTOKEN': /^[a-zA-Z0-9]{32}$/,
-                'LAYERS':'single_wms_baselayer,single_wms_lines,single_wms_points,single_wms_points_group,single_wms_lines_group,GroupAsLayer',
+                'LAYERS':'single_wms_lines,single_wms_points,single_wms_points_group,single_wms_lines_group,GroupAsLayer',
             }
             await expectParametersToContain('GetMap', requestFiltereLegend.url(), expectedFiltereLegendParameters);
             await requestFiltereLegend.response();
@@ -375,8 +375,8 @@ test.describe('Single WMS layer', () => {
                 'VERSION': '1.3.0',
                 'REQUEST': 'GetMap',
                 'FORMAT': 'image/png',
-                'STYLES':'default,default,default,default,default,',
-                'LAYERS':'single_wms_baselayer_two,single_wms_lines,single_wms_points,single_wms_points_group,single_wms_lines_group,GroupAsLayer',
+                'STYLES':'default,default,default,default,',
+                'LAYERS':'single_wms_lines,single_wms_points,single_wms_points_group,single_wms_lines_group,GroupAsLayer',
             }
             await expectParametersToContain('GetMap', requestSecondBaseLayer.url(), expectedSecondBaseLayerParameters);
             await requestSecondBaseLayer.response();
@@ -405,8 +405,8 @@ test.describe('Single WMS layer', () => {
                 'VERSION': '1.3.0',
                 'REQUEST': 'GetMap',
                 'FORMAT': 'image/png',
-                'STYLES':'default,default,default,default,default,',
-                'LAYERS':'single_wms_baselayer,single_wms_lines,single_wms_points,single_wms_points_group,single_wms_lines_group,GroupAsLayer',
+                'STYLES':'default,default,default,default,',
+                'LAYERS':'single_wms_lines,single_wms_points,single_wms_points_group,single_wms_lines_group,GroupAsLayer',
             }
             await expectParametersToContain('GetMap', requestMap.url(), expectedrequestMapParameters);
             await requestMap.response();
