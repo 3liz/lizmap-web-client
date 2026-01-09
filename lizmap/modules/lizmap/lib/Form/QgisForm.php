@@ -123,7 +123,7 @@ class QgisForm implements QgisFormControlsInterface
                 $formControl = new QgisFormControl($controlName, $fieldName, $formInfos[$fieldName], $prop, $defaultValue, $constraints, $this->appContext);
             } else {
                 // The field is not present in the .XML
-                $formControl = new QgisFormControl($controlName, $fieldName,null, $prop, null, $constraints, $this->appContext);
+                $formControl = new QgisFormControl($controlName, $fieldName, null, $prop, null, $constraints, $this->appContext);
             }
 
             $this->fillFormControl($formControl, $controlName, $form);
@@ -982,6 +982,7 @@ class QgisForm implements QgisFormControlsInterface
         $form = $this->form;
         foreach ($fields as $ref) {
             $controlName = self::escapeFieldName($ref);
+
             /** @var null|\jFormsControl $jCtrl */
             $jCtrl = $form->getControl($controlName);
             // Field not in form
@@ -2002,9 +2003,7 @@ class QgisForm implements QgisFormControlsInterface
         $escapedFieldName = preg_replace('/\'/', '__escaped_quote__', $fieldName);
         $escapedFieldName = preg_replace('/^action$/', '__escaped_action__', $escapedFieldName);
         $escapedFieldName = preg_replace('/\?/', '__escaped_question__', $escapedFieldName);
-        $escapedFieldName = preg_replace('/ /', '__escaped_space__', $escapedFieldName);
 
-        return $escapedFieldName;
+        return preg_replace('/ /', '__escaped_space__', $escapedFieldName);
     }
-
 }
