@@ -55,7 +55,7 @@ CREATE TABLE tests_projects.sousquartiers (
 
 
 --
--- Name: BAD designed table; Type: TABLE; Schema: tests_projects; Owner: lizmap
+-- Name: BAD designed table; Type: TABLE; Schema: tests_projects; Owner: -
 --
 
 CREATE TABLE tests_projects."BAD designed table" (
