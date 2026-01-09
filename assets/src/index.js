@@ -74,6 +74,10 @@ const definedCustomElements = () => {
     window.customElements.define('lizmap-navbar', NavBar);
     window.customElements.define('lizmap-tooltip', Tooltip);
     window.customElements.define('lizmap-message', Message);
+
+    // The uiready event is fired once all modules have been loaded,
+    // allowing custom js to interact with them in a more convenient way
+    lizMap.events.triggerEvent('uiready', {});
 }
 
 /**
