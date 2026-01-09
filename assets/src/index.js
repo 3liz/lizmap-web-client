@@ -104,9 +104,6 @@ const definedCustomElements = () => {
     window.customElements.define('lizmap-tooltip', Tooltip);
     window.customElements.define('lizmap-message', Message);
 
-    // at this point ui is fully loaded. External
-    // js can listen to uiready event to interact with the user interface
-    lizMap.events.triggerEvent('uiready', {});
 }
 
 /**
