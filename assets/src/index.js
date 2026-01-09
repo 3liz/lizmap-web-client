@@ -74,6 +74,7 @@ const definedCustomElements = () => {
     window.customElements.define('lizmap-navbar', NavBar);
     window.customElements.define('lizmap-tooltip', Tooltip);
     window.customElements.define('lizmap-message', Message);
+
 }
 
 /**
