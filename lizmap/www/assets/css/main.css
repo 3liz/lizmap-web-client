@@ -255,3 +255,61 @@ h1, h2, h3, h4, h5 {
     transform: rotate(1turn);
   }
 }
+
+/* Feature Picker Popup for Geometry Copy */
+.feature-picker-popup {
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+}
+
+.feature-picker-popup .feature-picker-header {
+  margin-bottom: 8px;
+}
+
+.feature-picker-popup h5 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.feature-picker-popup table {
+  margin: 0;
+  width: 100%;
+}
+
+.feature-picker-popup .feature-row {
+  cursor: pointer;
+}
+
+.feature-picker-popup .feature-row:hover {
+  background-color: #f0f0f0;
+}
+
+.feature-picker-popup .close-btn {
+  font-size: 20px;
+  line-height: 16px;
+  padding: 0 4px;
+}
+
+.feature-picker-popup .close-btn:hover {
+  color: #f00;
+}
+
+/* Copy geometry button web component - display inline */
+lizmap-copy-geometry-button {
+  display: inline-block;
+  vertical-align: top;
+}
+
+lizmap-copy-geometry-button svg {
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+}
+
+/* Active button state for copy geometry */
+button.active.btn-primary {
+  background-color: #0084ff !important;
+  color: white !important;
+  border-color: #0084ff !important;
+}
