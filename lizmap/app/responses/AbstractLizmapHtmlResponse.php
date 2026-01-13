@@ -98,7 +98,7 @@ class AbstractLizmapHtmlResponse extends jResponseHtml
         $this->addHeadContent('<!-- Start preload -->');
         // other preload links
         foreach ($this->preloadLink as $link) {
-            $this->addHeadContent('<link rel="preload" href="'.$link['href'].'" as="'.$link['as'].'"'.($link['type'] ? ' type="'.$link['type'].'"' : '').'>');
+            $this->addHeadContent('<link rel="preload" href="'.$link['href'].'" as="'.$link['as'].'"'.($link['type'] ? ' type="'.$link['type'].'"' : '').' crossorigin>');
         }
         $this->addHeadContent('<!-- End preload -->');
         $this->addHeadContent('<script id="lizmap-vars" type="application/json">'.json_encode($this->jsVarData).'</script>'."\n");
