@@ -143,7 +143,7 @@ test.describe('Datables Requests @requests @readonly', () => {
                 order: [{'column': 2, 'dir': 'asc'}],
                 searchBuilder: {
                     criteria: [
-                        {'condition': '=', 'data': 'quartmno', 'value1': 'CX', 'type': 'string'},
+                        {'condition': '=', 'data': 'quartmno', 'origData': 'quartmno', 'value1': 'CX', 'type': 'string'},
                     ],
                     logic: 'AND',
                 },
@@ -181,7 +181,7 @@ test.describe('Datables Requests @requests @readonly', () => {
                 order: [{'column': 2, 'dir': 'asc'}],
                 searchBuilder: {
                     criteria: [
-                        {'condition': 'starts', 'data': 'quartmno', 'value1': 'C', 'type': 'string'},
+                        {'condition': 'starts', 'data': 'quartmno', 'origData': 'quartmno', 'value1': 'C', 'type': 'string'},
                     ],
                     logic: 'AND',
                 },
@@ -219,8 +219,8 @@ test.describe('Datables Requests @requests @readonly', () => {
                 order: [{'column': 2, 'dir': 'asc'}],
                 searchBuilder: {
                     criteria: [
-                        {'condition': 'starts', 'data': 'quartmno', 'value1': 'C', 'type': 'string'},
-                        {'condition': 'starts', 'data': 'quartmno', 'value1': 'P', 'type': 'string'},
+                        {'condition': 'starts', 'data': 'quartmno', 'origData': 'quartmno', 'value1': 'C', 'type': 'string'},
+                        {'condition': 'starts', 'data': 'quartmno', 'origData': 'quartmno', 'value1': 'P', 'type': 'string'},
                     ],
                     logic: 'OR',
                 },
@@ -318,7 +318,7 @@ test.describe('Datables Requests @requests @readonly', () => {
                 order: [{'column': 2, 'dir': 'asc'}],
                 searchBuilder: {
                     criteria: [
-                        {'condition': 'starts', 'data': 'libquart', 'value1': 'pres', 'type': 'string'},
+                        {'condition': 'starts', 'data': 'libquart', 'origData': 'libquart', 'value1': 'pres', 'type': 'string'},
                     ],
                     logic: 'AND',
                 },
