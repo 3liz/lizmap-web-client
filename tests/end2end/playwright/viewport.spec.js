@@ -9,6 +9,7 @@ test.describe('Viewport devicePixelRatio 1', () => {
         const url = '/index.php/view/map/?repository=testsrepository&project=world-3857#-522.0703124273273,-89.68790709387876,522.0703124273273,89.68790709387875||';
 
         // Overwrite WMS Max Size
+        /** @type {string[]} */
         let requests = [];
         await page.route('**/service/getProjectConfig*', async route => {
             const request = route.request();
@@ -31,17 +32,19 @@ test.describe('Viewport devicePixelRatio 1', () => {
         // Check that the get project config has been catched
         // Preload and fetch
         let timeCount = 0;
-        while (requests.length < 2) {
+        while (requests.length < 1) {
             timeCount += 100;
             if (timeCount > 1000) {
                 throw new Error('Timeout');
             }
             await page.waitForTimeout(100);
         }
-        await expect(requests).toHaveLength(2);
+        await expect(requests).toHaveLength(1);
 
         // Wait to let the JS build classes
         await page.waitForTimeout(1000);
+        // Still 1 getProjectConfig request if preload does not failed
+        expect(requests).toHaveLength(1);
 
         // Check that the WMS Max Size has been well overwrite
         expect(await page.evaluate(() => globalThis.lizMap.mainLizmap.initialConfig.options.wmsMaxHeight)).toBe(950);
@@ -50,6 +53,7 @@ test.describe('Viewport devicePixelRatio 1', () => {
         await page.unroute('**/service/getProjectConfig*')
 
         // Catch GetMaps request;
+        /** @type {string[]} */
         let GetMaps = [];
         await page.route('**/service*', async route => {
             const request = route.request();
@@ -86,6 +90,7 @@ test.describe('Viewport devicePixelRatio 2', () => {
         const url = '/index.php/view/map/?repository=testsrepository&project=world-3857#-522.0703124273273,-89.68790709387876,522.0703124273273,89.68790709387875||';
 
         // Overwrite WMS Max Size
+        /** @type {string[]} */
         let requests = [];
         await page.route('**/service/getProjectConfig*', async route => {
             const request = route.request();
@@ -108,17 +113,19 @@ test.describe('Viewport devicePixelRatio 2', () => {
         // Check that the get project config has been catched
         // Preload and fetch
         let timeCount = 0;
-        while (requests.length < 2) {
+        while (requests.length < 1) {
             timeCount += 100;
             if (timeCount > 1000) {
                 throw new Error('Timeout');
             }
             await page.waitForTimeout(100);
         }
-        expect(requests).toHaveLength(2);
+        expect(requests).toHaveLength(1);
 
         // Wait to let the JS build classes
         await page.waitForTimeout(1000);
+        // Still 1 getProjectConfig request if preload does not failed
+        expect(requests).toHaveLength(1);
 
         // Check that the WMS Max Size has been well overwrite
         expect(await page.evaluate(() => globalThis.lizMap.mainLizmap.initialConfig.options.wmsMaxHeight)).toBe(1900);
@@ -128,6 +135,7 @@ test.describe('Viewport devicePixelRatio 2', () => {
 
         // Catch GetMaps request;
         // Because we disable High DPI, the OL pixel ratio is forced to 1 even if the device pixel ratio is 2
+        /** @type {string[]} */
         let GetMaps = [];
         await page.route('**/service*', async route => {
             const request = route.request();
