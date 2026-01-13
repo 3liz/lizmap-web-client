@@ -34,6 +34,7 @@
     "@rspack/core": "^1.6.x",
     "@stylistic/eslint-plugin-js": "^4.2.x",
     "@turf/line-split": "^7.3.x",
+    "@reactivex/rxjs": "^6.6.7",
     "bats": "^1.13.0",
     "bats-assert": "^2.2.4",
     "bats-support": "^0.3.0",
@@ -66,6 +67,7 @@
     "undici": "^7.16.x",
     "webpack": "^5.104.x",
     "webpack-merge": "^6.0.x",
-    "xmldoc": "^2.0.3"
+    "xmldoc": "^2.0.3",
+    "rxjs": "^7.8.2"
   }
 }

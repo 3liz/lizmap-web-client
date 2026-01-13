@@ -26,6 +26,7 @@ import Treeview from './components/Treeview.js';
 import NavBar from './components/NavBar.js';
 import Tooltip from './components/Tooltip.js';
 import Message from './components/Message.js';
+import { ReplaySubject } from 'rxjs';
 
 import { mainLizmap, mainEventDispatcher } from './modules/Globals.js';
 import executeJSFromServer from './modules/ExecuteJSFromServer.js';
@@ -74,6 +75,10 @@ const definedCustomElements = () => {
     window.customElements.define('lizmap-navbar', NavBar);
     window.customElements.define('lizmap-tooltip', Tooltip);
     window.customElements.define('lizmap-message', Message);
+
+    // call the next() method on ReplaySubject.
+    // every subscribers of this ReplaySubject receive a notification
+    lizMap.uiReadySubscriber.next(1);
 }
 
 /**
@@ -87,6 +92,15 @@ const initLizmapApp = () => {
     lizMap.ol = olDep;
     lizMap.litHTML = litHTMLDep;
     lizMap.proj4 = proj4;
+    // create a Subject that act as an emitter
+    // and assign it to LizMap singleton to make it available to custom js
+    lizMap.uiReadySubscriber = new ReplaySubject();
+
+    // when you subscribe to this Subject it emits all the value previously stored
+    // following lines is used only for demonstration purpose
+    lizMap.uiReadySubscriber.subscribe(()=>{
+        console.log("Called after lizmap.uiReadySubscriber receives a new value (next(1))")
+    })
 
     lizMap.events.on({
         configsloaded: () => {
