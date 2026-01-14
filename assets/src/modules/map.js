@@ -1159,7 +1159,7 @@ export default class map extends olMap {
      */
     zoomToGeometryOrExtent(geometryOrExtent, options) {
         const geometryType = geometryOrExtent.getType?.();
-        if (geometryType && (this._initialConfig.options.max_scale_lines_polygons || this._initialConfig.options.max_scale_lines_polygons)) {
+        if (geometryType && (this._initialConfig.options.max_scale_lines_polygons || this._initialConfig.options.max_scale_points)) {
             let maxScale;
             if (['Polygon', 'Linestring', 'MultiPolygon', 'MultiLinestring'].includes(geometryType)){
                 maxScale = this._initialConfig.options.max_scale_lines_polygons;
