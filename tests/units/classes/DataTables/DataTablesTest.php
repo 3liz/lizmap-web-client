@@ -13,7 +13,8 @@ class DataTablesTest extends TestCase
     public function testConvertCriteriaToExpression(): void
     {
         $criteria = array(
-            'data' => 'name',
+            'data' => 'Name',
+            'origData' => 'name',
             'condition' => '=',
             'value1' => 'test',
             'type' => 'string',
@@ -22,7 +23,8 @@ class DataTablesTest extends TestCase
         $this->assertEquals($exp, 'name = \'test\'');
 
         $criteria = array(
-            'data' => 'name',
+            'data' => 'Name',
+            'origData' => 'name',
             'condition' => '!=',
             'value1' => '1',
             'type' => 'num',
@@ -31,7 +33,8 @@ class DataTablesTest extends TestCase
         $this->assertEquals($exp, 'name != 1');
 
         $criteria = array(
-            'data' => 'name',
+            'data' => 'Name',
+            'origData' => 'name',
             'condition' => '<',
             'value1' => '1.5',
             'type' => 'num',
@@ -40,7 +43,8 @@ class DataTablesTest extends TestCase
         $this->assertEquals($exp, 'name < 1.5');
 
         $criteria = array(
-            'data' => 'name',
+            'data' => 'Name',
+            'origData' => 'name',
             'condition' => '<=',
             'value1' => 2,
             'type' => 'num',
@@ -49,7 +53,8 @@ class DataTablesTest extends TestCase
         $this->assertEquals($exp, 'name <= 2');
 
         $criteria = array(
-            'data' => 'name',
+            'data' => 'Name',
+            'origData' => 'name',
             'condition' => '>',
             'value1' => 0.5,
             'type' => 'num',
@@ -58,7 +63,8 @@ class DataTablesTest extends TestCase
         $this->assertEquals($exp, 'name > 0.5');
 
         $criteria = array(
-            'data' => 'name',
+            'data' => 'Name',
+            'origData' => 'name',
             'condition' => '>=',
             'value1' => 'C',
             'type' => 'string',
@@ -67,7 +73,8 @@ class DataTablesTest extends TestCase
         $this->assertEquals($exp, 'name >= \'C\'');
 
         $criteria = array(
-            'data' => 'name',
+            'data' => 'Name',
+            'origData' => 'name',
             'condition' => 'starts',
             'value1' => 'test',
             'type' => 'string',
@@ -76,7 +83,8 @@ class DataTablesTest extends TestCase
         $this->assertEquals($exp, 'name ILIKE \'test%\'');
 
         $criteria = array(
-            'data' => 'name',
+            'data' => 'Name',
+            'origData' => 'name',
             'condition' => '!starts',
             'value1' => 'test',
             'type' => 'string',
@@ -85,7 +93,8 @@ class DataTablesTest extends TestCase
         $this->assertEquals($exp, 'name NOT ILIKE \'test%\'');
 
         $criteria = array(
-            'data' => 'name',
+            'data' => 'Name',
+            'origData' => 'name',
             'condition' => 'contains',
             'value1' => 'test',
             'type' => 'string',
@@ -94,7 +103,8 @@ class DataTablesTest extends TestCase
         $this->assertEquals($exp, 'name ILIKE \'%test%\'');
 
         $criteria = array(
-            'data' => 'name',
+            'data' => 'Name',
+            'origData' => 'name',
             'condition' => '!contains',
             'value1' => 'test',
             'type' => 'string',
@@ -103,7 +113,8 @@ class DataTablesTest extends TestCase
         $this->assertEquals($exp, 'name NOT ILIKE \'%test%\'');
 
         $criteria = array(
-            'data' => 'name',
+            'data' => 'Name',
+            'origData' => 'name',
             'condition' => 'ends',
             'value1' => 'test',
             'type' => 'string',
@@ -112,7 +123,8 @@ class DataTablesTest extends TestCase
         $this->assertEquals($exp, 'name ILIKE \'%test\'');
 
         $criteria = array(
-            'data' => 'name',
+            'data' => 'Name',
+            'origData' => 'name',
             'condition' => '!ends',
             'value1' => 'test',
             'type' => 'string',
@@ -121,7 +133,8 @@ class DataTablesTest extends TestCase
         $this->assertEquals($exp, 'name NOT ILIKE \'%test\'');
 
         $criteria = array(
-            'data' => 'name',
+            'data' => 'Name',
+            'origData' => 'name',
             'condition' => 'null',
             'type' => 'string',
         );
@@ -129,7 +142,8 @@ class DataTablesTest extends TestCase
         $this->assertEquals($exp, 'name IS NULL');
 
         $criteria = array(
-            'data' => 'name',
+            'data' => 'Name',
+            'origData' => 'name',
             'condition' => '!null',
             'type' => 'string',
         );
@@ -137,7 +151,8 @@ class DataTablesTest extends TestCase
         $this->assertEquals($exp, 'name IS NOT NULL');
 
         $criteria = array(
-            'data' => 'name',
+            'data' => 'Name',
+            'origData' => 'name',
             'condition' => 'between',
             'value1' => 'a',
             'value2' => 'd',
@@ -147,7 +162,8 @@ class DataTablesTest extends TestCase
         $this->assertEquals($exp, 'name BETWEEN \'a\' AND \'d\'');
 
         $criteria = array(
-            'data' => 'name',
+            'data' => 'Name',
+            'origData' => 'name',
             'condition' => '!between',
             'value1' => 'a',
             'value2' => 'd',
@@ -157,7 +173,8 @@ class DataTablesTest extends TestCase
         $this->assertEquals($exp, 'name NOT BETWEEN \'a\' AND \'d\'');
 
         $criteria = array(
-            'data' => 'name',
+            'data' => 'Name',
+            'origData' => 'name',
             'condition' => 'between',
             'value1' => 0,
             'value2' => 5,
@@ -167,7 +184,8 @@ class DataTablesTest extends TestCase
         $this->assertEquals($exp, 'name BETWEEN 0 AND 5');
 
         $criteria = array(
-            'data' => 'name',
+            'data' => 'Name',
+            'origData' => 'name',
             'condition' => '!between',
             'value1' => '0',
             'value2' => '5',
@@ -177,7 +195,8 @@ class DataTablesTest extends TestCase
         $this->assertEquals($exp, 'name NOT BETWEEN 0 AND 5');
 
         $criteria = array(
-            'data' => 'name',
+            'data' => 'Name',
+            'origData' => 'name',
             'type' => 'string',
             'condition' => '=',
         );
@@ -194,14 +213,23 @@ class DataTablesTest extends TestCase
         $this->assertEquals($exp, '');
 
         $criteria = array(
-            'data' => 'name',
+            'data' => 'Name',
             'type' => '',
         );
         $exp = DataTables::convertCriteriaToExpression($criteria);
         $this->assertEquals($exp, '');
 
         $criteria = array(
-            'data' => 'name',
+            'data' => 'Name',
+            'origData' => 'name',
+            'type' => '',
+        );
+        $exp = DataTables::convertCriteriaToExpression($criteria);
+        $this->assertEquals($exp, '');
+
+        $criteria = array(
+            'data' => 'Name',
+            'origData' => 'name',
             'type' => 'string',
         );
         $exp = DataTables::convertCriteriaToExpression($criteria);
@@ -213,7 +241,8 @@ class DataTablesTest extends TestCase
         $search = array(
             'criteria' => array(
                 array(
-                    'data' => 'name',
+                    'data' => 'Name',
+                    'origData' => 'name',
                     'condition' => '=',
                     'value1' => 'test',
                     'type' => 'string',
@@ -226,13 +255,15 @@ class DataTablesTest extends TestCase
         $search = array(
             'criteria' => array(
                 array(
-                    'data' => 'name',
+                    'data' => 'Name',
+                    'origData' => 'name',
                     'condition' => '>=',
                     'value1' => 'a',
                     'type' => 'string',
                 ),
                 array(
-                    'data' => 'name',
+                    'data' => 'Name',
+                    'origData' => 'name',
                     'condition' => '<=',
                     'value1' => 'd',
                     'type' => 'string',
@@ -245,13 +276,15 @@ class DataTablesTest extends TestCase
         $search = array(
             'criteria' => array(
                 array(
-                    'data' => 'name',
+                    'data' => 'Name',
+                    'origData' => 'name',
                     'condition' => 'starts',
                     'value1' => 'test',
                     'type' => 'string',
                 ),
                 array(
-                    'data' => 'name',
+                    'data' => 'Name',
+                    'origData' => 'name',
                     'condition' => 'ends',
                     'value1' => 'test',
                     'type' => 'string',

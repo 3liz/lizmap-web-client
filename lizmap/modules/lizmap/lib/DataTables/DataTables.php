@@ -3,7 +3,7 @@
 namespace Lizmap\DataTables;
 
 /**
- * @phpstan-type DTCriteria array{type: string, data: ?string, condition: ?string, value1: ?string, value2: ?string}
+ * @phpstan-type DTCriteria array{type: string, data: ?string, origData: ?string, condition: ?string, value1: ?string, value2: ?string}
  * @phpstan-type DTSearchBuilder array{criteria: DTCriteria[], logic: ?string}
  */
 class DataTables
@@ -16,7 +16,7 @@ class DataTables
     public static function convertCriteriaToExpression($criteria): string
     {
         // Check column
-        $column = $criteria['data'] ?? '';
+        $column = $criteria['origData'] ?? '';
         if ($column == '') {
             return '';
         }
