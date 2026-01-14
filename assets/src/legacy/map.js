@@ -2392,7 +2392,11 @@ window.lizMap = function() {
         }
         // Or get the feature via WFS in needed
         else{
-            getFeatureData(featureType, null, featureId, 'extent', false, null, null,
+            var geometryName = 'extent';
+            if (layerConfig['geometryType'] == 'point') {
+                geometryName = null; // to get default geometry
+            }
+            getFeatureData(featureType, null, featureId, geometryName, false, null, null,
                 function( aName, aFilter, cFeatures, cAliases ){
 
                     if (cFeatures.length == 1) {
