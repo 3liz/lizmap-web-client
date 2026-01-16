@@ -110,10 +110,13 @@ class Logger extends AbstractLogger
     /**
      * Logs with an arbitrary level.
      *
-     * @param mixed $level
+     * @param mixed              $level
+     * @param string|\Stringable $message
+     * @param array              $context
      *
      * @throws InvalidArgumentException
      */
+    
     public function log($level, $message, array $context = array()): void
     {
         if (!in_array($level, self::LogLevels)) {
