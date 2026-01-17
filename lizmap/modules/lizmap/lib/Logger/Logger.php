@@ -116,7 +116,7 @@ class Logger extends AbstractLogger
      *
      * @throws InvalidArgumentException
      */
-    public function log($level, $message, array $context)
+    public function log($level, $message, array $context = [])
     {
         if (!in_array($level, self::LogLevels)) {
             throw new InvalidArgumentException('Invalid log level');
