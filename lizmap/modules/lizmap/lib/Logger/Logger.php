@@ -107,7 +107,7 @@ class Logger extends AbstractLogger
             && array_search($level, self::LogLevels) <= array_search($this->level, self::LogLevels);
     }
 
-    /**
+        /**
      * Logs with an arbitrary level.
      *
      * @param mixed              $level
@@ -116,7 +116,8 @@ class Logger extends AbstractLogger
      *
      * @throws InvalidArgumentException
      */
-    public function log($level, $message, array $context = [])
+    public function log($level, $message, array $context = array())
+
     {
         if (!in_array($level, self::LogLevels)) {
             throw new InvalidArgumentException('Invalid log level');
