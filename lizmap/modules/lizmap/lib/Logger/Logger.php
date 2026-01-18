@@ -146,7 +146,7 @@ class Logger extends AbstractLogger
      *
      * @see https://www.php-fig.org/psr/psr-3/#12-message
      */
-    private function interpolate(string $message, array $context = array()): string
+    protected function interpolate(string $message, array $context = array()): string
     {
         $replace = array();
         foreach ($context as $key => $val) {

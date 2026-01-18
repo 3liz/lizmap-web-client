@@ -134,4 +134,15 @@ class LoggerTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $invalidLogger = new Logger('invalid');
     }
+
+    public function testInterpolate(): void
+    {
+        $logger = new LoggerForTests();
+        $this->assertInstanceOf(Logger::class, $logger);
+
+        $this->assertEquals('test', $logger->interpolateForTests('test'));
+        $this->assertEquals('test', $logger->interpolateForTests('test', array()));
+        $this->assertEquals('test', $logger->interpolateForTests('test', array('key' => 'value')));
+        $this->assertEquals('test value', $logger->interpolateForTests('test {key}', array('key' => 'value')));
+    }
 }
