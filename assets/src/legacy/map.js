@@ -2846,7 +2846,11 @@ window.lizMap = function() {
          * {Object} Contains main filtered layer if filter is active
          */
         lizmapLayerFilterActive: null,
-
+        /**
+         * Subscribed events from external js
+         * @type {Array}
+         */
+        subscribedExternalJSEvent: [],
         /**
          * Method: getLizmapDesktopPluginMetadata
          */
@@ -3201,383 +3205,141 @@ window.lizMap = function() {
                     console.warn('JSON for Lizmap global variables is not valid!');
                 }
             }
+        },
+        /**
+         * Load initial configuration and capabilities
+         *
+         * @returns {Promise<Object|null>} the initial configuration and capabilities object, or null if an error occurs
+         */
+        loadProjectConfigurations: async () => {
+            return new Promise((resolve,reject) => {
 
-            // Get config
-            const configRequest = fetch(globalThis['lizUrls'].config + '?' + new URLSearchParams(globalThis['lizUrls'].params)).then(function (response) {
-                if (!response.ok) {
-                    throw 'Config not loaded: ' + response.status + ' ' + response.statusText
-                }
-                return response.json()
-            });
+                let startupConfigurations = null;
+                // Get config
+                const configRequest = fetch(globalThis['lizUrls'].config + '?' + new URLSearchParams(globalThis['lizUrls'].params)).then(function (response) {
+                    if (!response.ok) {
+                        throw 'Config not loaded: ' + response.status + ' ' + response.statusText
+                    }
+                    return response.json()
+                });
 
-            // Get key/value config
-            const keyValueConfigRequest = fetch(globalThis['lizUrls'].keyValueConfig + '?' + new URLSearchParams(globalThis['lizUrls'].params)).then(function (response) {
-                if (!response.ok) {
-                    throw 'Key/value config not loaded: ' + response.status + ' ' + response.statusText
-                }
-                return response.json()
-            });
+                // Get key/value config
+                const keyValueConfigRequest = fetch(globalThis['lizUrls'].keyValueConfig + '?' + new URLSearchParams(globalThis['lizUrls'].params)).then(function (response) {
+                    if (!response.ok) {
+                        throw 'Key/value config not loaded: ' + response.status + ' ' + response.statusText
+                    }
+                    return response.json()
+                });
 
-            // Get WMS, WMTS, WFS capabilities
-            const WMSRequest = fetch(globalThis['lizUrls'].service + '&' + new URLSearchParams({ SERVICE: 'WMS', REQUEST: 'GetCapabilities', VERSION: '1.3.0' })).then(function (response) {
-                if (!response.ok) {
-                    throw 'WMS GetCapabilities not loaded: ' + response.status + ' ' + response.statusText
-                }
-                return response.text()
-            });
-            const WMTSRequest = fetch(globalThis['lizUrls'].service + '&' + new URLSearchParams({ SERVICE: 'WMTS', REQUEST: 'GetCapabilities', VERSION: '1.0.0' })).then(function (response) {
-                if (!response.ok) {
-                    throw 'WMTS GetCapabilities not loaded: ' + response.status + ' ' + response.statusText
-                }
-                return response.text()
-            });
-            const WFSRequest = fetch(globalThis['lizUrls'].service + '&' + new URLSearchParams({ SERVICE: 'WFS', REQUEST: 'GetCapabilities', VERSION: '1.0.0' })).then(function (response) {
-                if (!response.ok) {
-                    throw 'WFS GetCapabilities not loaded: ' + response.status + ' ' + response.statusText
-                }
-                return response.text()
-            });
+                // Get WMS, WMTS, WFS capabilities
+                const WMSRequest = fetch(globalThis['lizUrls'].service + '&' + new URLSearchParams({ SERVICE: 'WMS', REQUEST: 'GetCapabilities', VERSION: '1.3.0' })).then(function (response) {
+                    if (!response.ok) {
+                        throw 'WMS GetCapabilities not loaded: ' + response.status + ' ' + response.statusText
+                    }
+                    return response.text()
+                });
+                const WMTSRequest = fetch(globalThis['lizUrls'].service + '&' + new URLSearchParams({ SERVICE: 'WMTS', REQUEST: 'GetCapabilities', VERSION: '1.0.0' })).then(function (response) {
+                    if (!response.ok) {
+                        throw 'WMTS GetCapabilities not loaded: ' + response.status + ' ' + response.statusText
+                    }
+                    return response.text()
+                });
+                const WFSRequest = fetch(globalThis['lizUrls'].service + '&' + new URLSearchParams({ SERVICE: 'WFS', REQUEST: 'GetCapabilities', VERSION: '1.0.0' })).then(function (response) {
+                    if (!response.ok) {
+                        throw 'WFS GetCapabilities not loaded: ' + response.status + ' ' + response.statusText
+                    }
+                    return response.text()
+                });
 
-            // Get feature extent if defined in URL
-            let featureExtentRequest;
-            // Get feature info if defined in URL
-            let getFeatureInfoRequest;
-            let getFeatureInfo;
+                // Get feature extent if defined in URL
+                let featureExtentRequest;
+                // Get feature info if defined in URL
+                let getFeatureInfoRequest;
+                //let getFeatureInfo;
 
-            const urlParameters = (new URL(document.location)).searchParams;
+                const urlParameters = (new URL(document.location)).searchParams;
 
-            const layerName = urlParameters.get('layer');
-            const filter = urlParameters.get('filter');
+                const layerName = urlParameters.get('layer');
+                const filter = urlParameters.get('filter');
 
-            if(layerName && filter){
+                if(layerName && filter){
 
-                // Feature extent
-                const wfs = new WFS();
-                const wfsParams = {
-                    TYPENAME: layerName,
-                    EXP_FILTER: filter
-                };
-
-                featureExtentRequest = wfs.getFeature(wfsParams);
-
-                // Feature info
-                if(urlParameters.get('popup') === 'true'){
-                    const wms = new WMS();
-                    const wmsParams = {
-                        QUERY_LAYERS: layerName,
-                        LAYERS: layerName,
-                        FEATURE_COUNT: 50, // TODO: get this value from config after it has been loaded?
-                        FILTER: `${layerName}:${filter}`,
+                    // Feature extent
+                    const wfs = new WFS();
+                    const wfsParams = {
+                        TYPENAME: layerName,
+                        EXP_FILTER: filter
                     };
 
-                    getFeatureInfoRequest = wms.getFeatureInfo(wmsParams);
-                }
-            }
+                    featureExtentRequest = wfs.getFeature(wfsParams);
 
-            // Request config and capabilities in parallel
-            Promise.allSettled([
-                configRequest,
-                keyValueConfigRequest,
-                WMSRequest,
-                WMTSRequest,
-                WFSRequest,
-                featureExtentRequest,
-                getFeatureInfoRequest,
-            ]).then(async (responses) => {
-                // Raise an error when one those required requests fails
-                // Other requests can fail silently
-                const requiredRequests = [responses[0], responses[2], responses[3], responses[4]];
+                    // Feature info
+                    if(urlParameters.get('popup') === 'true'){
+                        const wms = new WMS();
+                        const wmsParams = {
+                            QUERY_LAYERS: layerName,
+                            LAYERS: layerName,
+                            FEATURE_COUNT: 50, // TODO: get this value from config after it has been loaded?
+                            FILTER: `${layerName}:${filter}`,
+                        };
 
-                for (const request of requiredRequests) {
-                    if (request.status === "rejected") {
-                        throw new Error(request.reason);
+                        getFeatureInfoRequest = wms.getFeatureInfo(wmsParams);
                     }
                 }
 
-                // `config` is defined globally
-                config = responses[0].value;
-                keyValueConfig = responses[1].value;
-                const wmsCapaData = responses[2].value;
-                const wmtsCapaData = responses[3].value;
-                const wfsCapaData = responses[4].value;
-                const startupFeaturesData = responses[5].value;
-                let featuresExtent;
-                if (startupFeaturesData) {
-                    const startupFeatures = (new GeoJSON()).readFeatures(startupFeaturesData);
-                    featuresExtent = startupFeatures[0].getGeometry().getExtent();
-                    startupFeatures.forEach(feature => extend(featuresExtent, feature.getGeometry().getExtent()));
-                } else if (responses[5].status === 'rejected') {
-                    console.error('An error occurred while loading the features to zoom to at startup: '+responses[5].reason);
-                    mAddMessage(lizDict['startup.features.error'],'error',true)
-                        .attr('id','lizmap-startup-features-error-message');
-                }
+                // Request config and capabilities in parallel
+                Promise.allSettled([
+                    configRequest,
+                    keyValueConfigRequest,
+                    WMSRequest,
+                    WMTSRequest,
+                    WFSRequest,
+                    featureExtentRequest,
+                    getFeatureInfoRequest,
+                ]).then(async (responses) => {
+                    const requiredRequests = [responses[0], responses[2], responses[3], responses[4]];
 
-                /**
-                 * mainLizmap is loaded in another JS file
-                 * and could not be available when `configsloaded` is fired
-                 * in this case all the Lizmap is not build
-                 * to be sur mainLizmap is ready when `configsloaded` is fired
-                 * we have to wait until `lizMap.mainLizmap` is not `undefined`
-                 */
-
-                // sleep Promise
-                let sleep = ms => new Promise(r => setTimeout(r, ms));
-                // sleep step first value the *2
-                let sleepStep = 100;
-                // max wait to 10 seconds
-                const maxWait = 10000;
-                // waitFor function returns waiting time in milliseconds
-                let waitFor = async function waitFor(f){
-                    let waitingTime = 0;
-                    while(waitingTime < maxWait && !f()) {
-                        await sleep(sleepStep);
-                        waitingTime += sleepStep;
-                        sleepStep *= 2;
+                    for (const request of requiredRequests) {
+                        if (request.status === "rejected") {
+                            throw new Error(request.reason);
+                        }
                     }
-                    return waitingTime;
-                };
-                // wait until lizMap.mainLizmap is not undefined
-                // lizMap.mainLizmap is defined when configsloaded is fired
-                const waitingFor = await waitFor(() => {
-                    self.events.triggerEvent("configsloaded", {
+
+                    // `config` is defined globally
+                    config = responses[0].value;
+                    keyValueConfig = responses[1].value;
+                    const wmsCapaData = responses[2].value;
+                    const wmtsCapaData = responses[3].value;
+                    const wfsCapaData = responses[4].value;
+                    const startupFeaturesData = responses[5].value;
+                    let featuresExtent;
+                    if (startupFeaturesData) {
+                        const startupFeatures = (new GeoJSON()).readFeatures(startupFeaturesData);
+                        featuresExtent = startupFeatures[0].getGeometry().getExtent();
+                        startupFeatures.forEach(feature => extend(featuresExtent, feature.getGeometry().getExtent()));
+                    } else if (responses[5].status === 'rejected') {
+                        console.error('An error occurred while loading the features to zoom to at startup: '+responses[5].reason);
+                        mAddMessage(lizDict['startup.features.error'],'error',true)
+                            .attr('id','lizmap-startup-features-error-message');
+                    }
+
+                    startupConfigurations = {
                         initialConfig: config,
                         wmsCapabilities: wmsCapaData,
                         wmtsCapabilities: wmtsCapaData,
                         wfsCapabilities: wfsCapaData,
                         startupFeatures: responses[5].value,
-                    });
-                    return self.mainLizmap !== undefined;
-                });
-                // lizMap.mainLizmap is still undefined
-                if (self.mainLizmap === undefined) {
-                    throw new Error('Until we wait '+waitingFor+' ms, mainLizmap has not been loaded!');
-                }
-
-                getFeatureInfo = responses[6].value;
-
-                const domparser = new DOMParser();
-
-                config.options.hasOverview = false;
-
-                // store layerIDs
-                if ('useLayerIDs' in config.options && config.options.useLayerIDs == 'True') {
-                    for (var layerName in config.layers) {
-                        var configLayer = config.layers[layerName];
-                        layerIdMap[configLayer.id] = layerName;
-                    }
-                }
-                // store shortnames and shortnames
-                for (var layerName in config.layers) {
-                    var configLayer = config.layers[layerName];
-                    if ('shortname' in configLayer && configLayer.shortname != '')
-                        shortNameMap[configLayer.shortname] = layerName;
-                    configLayer.cleanname = cleanName(layerName);
-                }
-
-                // Parse WMS capabilities
-                const wmsFormat =  new OpenLayers.Format.WMSCapabilities({version:'1.3.0'});
-                capabilities = wmsFormat.read(wmsCapaData);
-
-                if (!capabilities.capability) {
-                    throw 'WMS Capabilities error';
-                }
-
-                // Parse WMTS capabilities
-                const wmtsFormat = new OpenLayers.Format.WMTSCapabilities({});
-                wmtsCapabilities = wmtsFormat.read(wmtsCapaData);
-                if ('exceptionReport' in wmtsCapabilities) {
-                    var wmtsElem = $('#metadata-wmts-getcapabilities-url');
-                    if (wmtsElem.length != 0) {
-                        wmtsElem.before('<i title="' + wmtsCapabilities.exceptionReport.exceptions[0].texts[0] + '" class="icon-warning-sign"></i>&nbsp;');
-                    }
-                    wmtsCapabilities = null;
-                }
-                self.wmtsCapabilities = wmtsCapaData;
-
-                // Parse WFS capabilities
-                wfsCapabilities = domparser.parseFromString(wfsCapaData, "application/xml");
-                var featureTypes = self.mainLizmap.initialConfig.vectorLayerFeatureTypeList;
-
-                for (const featureType of featureTypes) {
-                    var typeName = featureType.Name;
-                    var layerName = lizMap.getNameByTypeName(typeName);
-                    if (!layerName) {
-                        if (typeName in config.layers)
-                            layerName = typeName
-                        else if ((typeName in shortNameMap) && (shortNameMap[typeName] in config.layers))
-                            layerName = shortNameMap[typeName];
-                        else {
-                            for (var l in config.layers) {
-                                if (l.split(' ').join('_') == typeName) {
-                                    layerName = l;
-                                    break;
-                                }
-                            }
-                        }
+                        getFeatureInfo: responses[6].value,
+                        featuresExtent: featuresExtent
                     }
 
-                    if (!(layerName in config.layers))
-                        continue;
-
-                    var configLayer = config.layers[layerName];
-                    configLayer.typename = typeName;
-                    typeNameMap[typeName] = layerName;
-                }
-
-                //set title and abstract coming from capabilities
-                $('#abstract').html(capabilities.abstract ? capabilities.abstract : '');
-
-                // get and analyse tree
-                var capability = capabilities.capability;
-
-                // Copy QGIS project's projection
-                config.options.qgisProjectProjection = Object.assign({}, config.options.projection);
-
-                // Add the config in self here to be able
-                // to let the JS external script modify some plugin cfg layers properties
-                // before Lizmap will create the layer tree
-                self.config = config;
-                /**
-                 * Event when the tree is going to be created
-                 * @event beforetreecreated
-                 */
-                self.events.triggerEvent("beforetreecreated", self);
-                buildNativeScales();
-
-                var firstLayer = capability.nestedLayers[0];
-
-                // Re-save the config in self
-                self.config = config;
-                self.keyValueConfig = keyValueConfig;
-
-                // create the map
-                initProjections(firstLayer);
-                createMap(featuresExtent);
-                self.map = map;
-                self.layers = layers;
-                self.baselayers = baselayers;
-                self.controls = controls;
-                /**
-                 * Event when the map has been created
-                 * @event mapcreated
-                 */
-                self.events.triggerEvent("mapcreated", self);
-
-                // Add empty baselayer as needed by OL2 map
-                if (baselayers.length === 0) {
-                    // hide elements for baselayers
-                    map.addLayer(new OpenLayers.Layer.Vector('baselayer',{
-                        maxExtent:map.maxExtent
-                        ,maxScale: map.maxScale
-                        ,minScale: map.minScale
-                        ,numZoomLevels: map.numZoomLevels
-                        ,scales: map.scales
-                        ,projection: map.projection
-                        ,units: map.projection.proj.units
-                    }));
-                }
-
-                /**
-                 * Event when layers have been added
-                 * @event layersadded
-                 */
-                self.events.triggerEvent("layersadded", self);
-
-
-                // Verifying z-index
-                var lastLayerZIndex = map.layers[map.layers.length - 1].getZIndex();
-                if (lastLayerZIndex > map.Z_INDEX_BASE['Feature'] - 100) {
-                    map.Z_INDEX_BASE['Feature'] = lastLayerZIndex + 100;
-                    map.Z_INDEX_BASE['Popup'] = map.Z_INDEX_BASE['Feature'] + 25;
-                    if (map.Z_INDEX_BASE['Popup'] > map.Z_INDEX_BASE['Control'] - 25)
-                        map.Z_INDEX_BASE['Control'] = map.Z_INDEX_BASE['Popup'] + 25;
-                }
-
-                // initialize the map
-                // Set map extent depending on options
-                if (!map.getCenter()) {
-                    map.zoomToExtent(map.initialExtent, map.zoomToClosest);
-                }
-
-                updateContentSize();
-                map.events.triggerEvent("zoomend", { "zoomChanged": true });
-
-                // create toolbar
-                createToolbar();
-                self.events.triggerEvent("toolbarcreated", self);
-
-                // Handle docks visibility
-                document.querySelector('#mapmenu .nav').addEventListener('click', evt => {
-                    let dockType;
-                    const liClicked = evt.target.closest('li');
-                    if (!liClicked) {
-                        return;
-                    }
-
-                    for (const className of liClicked.classList) {
-                        if (className.includes('nav-')) {
-                            dockType = className.split('nav-')[1];
-                        }
-                    }
-
-                    if (!dockType) {
-                        return;
-                    }
-
-                    evt.preventDefault();
-
-                    const linkClicked = evt.target.closest('a');
-                    const dockId = linkClicked.dataset.dockid;
-                    const parentElement = linkClicked.parentElement;
-                    const wasActive = parentElement.classList.contains('active');
-
-                    const dockContentSelector = dockType == 'minidock' ? '#mini-dock-content > div' : '#' + dockType + '-content > div';
-
-                    document.querySelectorAll('#mapmenu .nav-' + dockType).forEach(element => {
-                        element.classList.remove('active');
-                    });
-                    document.querySelectorAll(dockContentSelector).forEach(element => element.classList.add('hide'));
-                    parentElement.classList.toggle('active', !wasActive);
-                    if (dockId) {
-                        document.getElementById(dockId).classList.toggle('hide', wasActive);
-                    }
-
-                    const dockEvent = dockType == 'right-dock' ? 'rightdock' : dockType;
-
-                    const lizmapEvent = wasActive ? dockEvent + 'closed' : dockEvent + 'opened';
-                    lizMap.events.triggerEvent(lizmapEvent, { 'id': dockId });
-
-                    return false;
-                });
-
-                // hide mini-dock if no tool is active
-                if ($('#mapmenu ul li.nav-minidock.active').length == 0) {
-                    $('#mini-dock-content > .tab-pane.active').removeClass('active');
-                    $('#mini-dock-tabs li.active').removeClass('active');
-                }
-
-                // Toggle menu visibility
-                $('#menuToggle').click(function(){
-                    $(this).toggleClass('opened');
-                });
-
-                // Hide mapmenu when menu item is clicked in mobile context
-                $('#menuToggle:visible ~ #mapmenu ul').on('click', 'li > a', function () {
-                    $('#menuToggle').removeClass('opened');
-                });
-
-                // Show layer switcher
-                updateContentSize();
-
-                self.events.triggerEvent("uicreated", self);
-            })
-                .catch((error) => {
+                }).catch((error)=>{
                     console.error(error);
                     // Generic error message
                     let errorMsg = `
-          <p class="error-msg">
-          ${lizDict['startup.error']}<br>
-          `;
+                        <p class="error-msg">
+                        ${lizDict['startup.error']}<br>
+                        `;
                     if (document.body.dataset.lizmapAdminUser == 1) {
                         // The user is an administrator, we add more infos and buttons.
                         if (document.body.dataset.lizmapUserDefinedJsCount > 0) {
@@ -3585,7 +3347,7 @@ window.lizMap = function() {
 
                             <a href="${globalThis['lizUrls'].repositoryAdmin}"><button class="btn btn-primary" type="button">${lizDict['startup.goToRepositoryAdmin']}</button></a>
                             <a href="`+ window.location+`&no_user_defined_js=1"><button class="btn btn-primary" type="button">${lizDict['startup.projectWithoutJSLink']}</button></a>
-                    `;
+                        `;
                         } else {
                             // No additional JavaScript, but still failing, we propose the developer tools :/
                             errorMsg += `${lizDict['startup.error.developer.tools']}<br>`;
@@ -3598,20 +3360,277 @@ window.lizMap = function() {
                     errorMsg += `<a href="${globalThis['lizUrls'].basepath}"><button class="btn btn-primary" type="button">${lizDict['startup.goToProject']}</button></a>`;
                     errorMsg += `</p>`;
                     document.getElementById('header').insertAdjacentHTML('afterend', errorMsg);
+                }).finally(()=>{
+                    return resolve(startupConfigurations)
                 })
-                .finally(() => {
-                    $('body').css('cursor', 'auto');
-                    $('#loading').dialog('close');
+            })
+        },
+        /**
+         * Complete lizMap initialization, which includes fully building the configuration object and
+         * creating the legacy ol2 map
+         * @param {Object} startupConfigurations object containing initial configuration and capabilities
+         * @returns {void}
+         */
+        completeInitialization: (startupConfigurations) => {
+            //var self = this;
+            const domparser = new DOMParser();
 
-                    // Display getFeatureInfo if requested
-                    if(getFeatureInfo){
-                        displayGetFeatureInfo(getFeatureInfo,
-                            {
-                                x: map.size.w / 2,
-                                y: map.size.h / 2
-                            });
+            config.options.hasOverview = false;
+
+            // store layerIDs
+            if ('useLayerIDs' in config.options && config.options.useLayerIDs == 'True') {
+                for (var layerName in config.layers) {
+                    var configLayer = config.layers[layerName];
+                    layerIdMap[configLayer.id] = layerName;
+                }
+            }
+            // store shortnames and shortnames
+            for (var layerName in config.layers) {
+                var configLayer = config.layers[layerName];
+                if ('shortname' in configLayer && configLayer.shortname != '')
+                    shortNameMap[configLayer.shortname] = layerName;
+                configLayer.cleanname = cleanName(layerName);
+            }
+
+            // Parse WMS capabilities
+            const wmsFormat =  new OpenLayers.Format.WMSCapabilities({version:'1.3.0'});
+            capabilities = wmsFormat.read(startupConfigurations.wmsCapabilities);
+
+            if (!capabilities.capability) {
+                throw 'WMS Capabilities error';
+            }
+
+            // Parse WMTS capabilities
+            const wmtsFormat = new OpenLayers.Format.WMTSCapabilities({});
+            wmtsCapabilities = wmtsFormat.read(startupConfigurations.wmtsCapabilities);
+            if ('exceptionReport' in wmtsCapabilities) {
+                var wmtsElem = $('#metadata-wmts-getcapabilities-url');
+                if (wmtsElem.length != 0) {
+                    wmtsElem.before('<i title="' + wmtsCapabilities.exceptionReport.exceptions[0].texts[0] + '" class="icon-warning-sign"></i>&nbsp;');
+                }
+                wmtsCapabilities = null;
+            }
+            lizMap.wmtsCapabilities = startupConfigurations.wmtsCapabilities;
+
+            // Parse WFS capabilities
+            wfsCapabilities = domparser.parseFromString(startupConfigurations.wfsCapabilities, "application/xml");
+            var featureTypes = lizMap.mainLizmap.initialConfig.vectorLayerFeatureTypeList;
+
+            for (const featureType of featureTypes) {
+                var typeName = featureType.Name;
+                var layerName = lizMap.getNameByTypeName(typeName);
+                if (!layerName) {
+                    if (typeName in config.layers)
+                        layerName = typeName
+                    else if ((typeName in shortNameMap) && (shortNameMap[typeName] in config.layers))
+                        layerName = shortNameMap[typeName];
+                    else {
+                        for (var l in config.layers) {
+                            if (l.split(' ').join('_') == typeName) {
+                                layerName = l;
+                                break;
+                            }
+                        }
                     }
+                }
+
+                if (!(layerName in config.layers))
+                    continue;
+
+                var configLayer = config.layers[layerName];
+                configLayer.typename = typeName;
+                typeNameMap[typeName] = layerName;
+            }
+
+            //set title and abstract coming from capabilities
+            $('#abstract').html(capabilities.abstract ? capabilities.abstract : '');
+
+            // get and analyse tree
+            var capability = capabilities.capability;
+
+            // Copy QGIS project's projection
+            config.options.qgisProjectProjection = Object.assign({}, config.options.projection);
+
+            // Add the config in self here to be able
+            // to let the JS external script modify some plugin cfg layers properties
+            // before Lizmap will create the layer tree
+            lizMap.config = config;
+            /**
+             * Event when the tree is going to be created
+             * @event beforetreecreated
+             */
+            lizMap.events.triggerEvent("beforetreecreated", lizMap);
+            buildNativeScales();
+
+            var firstLayer = capability.nestedLayers[0];
+
+            // Re-save the config in self
+            lizMap.config = config;
+            lizMap.keyValueConfig = keyValueConfig;
+
+            // create the map
+            initProjections(firstLayer);
+            createMap(startupConfigurations.featuresExtent);
+            lizMap.map = map;
+            lizMap.layers = layers;
+            lizMap.baselayers = baselayers;
+            lizMap.controls = controls;
+            /**
+             * Event when the map has been created
+             * keep this legacy event for backwards compatibility purpose
+             * @event mapcreated
+             */
+            lizMap.events.triggerEvent("mapcreated", lizMap);
+
+            lizMap.mainEventDispatcher.dispatch("lizmap.ol2.mapcreated");
+
+            // Add empty baselayer as needed by OL2 map
+            if (baselayers.length === 0) {
+                // hide elements for baselayers
+                map.addLayer(new OpenLayers.Layer.Vector('baselayer',{
+                    maxExtent:map.maxExtent
+                    ,maxScale: map.maxScale
+                    ,minScale: map.minScale
+                    ,numZoomLevels: map.numZoomLevels
+                    ,scales: map.scales
+                    ,projection: map.projection
+                    ,units: map.projection.proj.units
+                }));
+            }
+
+            /**
+             * Event when layers have been added
+             * @event layersadded
+             */
+            lizMap.events.triggerEvent("layersadded", lizMap);
+
+            // Verifying z-index
+            var lastLayerZIndex = map.layers[map.layers.length - 1].getZIndex();
+            if (lastLayerZIndex > map.Z_INDEX_BASE['Feature'] - 100) {
+                map.Z_INDEX_BASE['Feature'] = lastLayerZIndex + 100;
+                map.Z_INDEX_BASE['Popup'] = map.Z_INDEX_BASE['Feature'] + 25;
+                if (map.Z_INDEX_BASE['Popup'] > map.Z_INDEX_BASE['Control'] - 25)
+                    map.Z_INDEX_BASE['Control'] = map.Z_INDEX_BASE['Popup'] + 25;
+            }
+
+            // initialize the map
+            // Set map extent depending on options
+            if (!map.getCenter()) {
+                map.zoomToExtent(map.initialExtent, map.zoomToClosest);
+            }
+
+            updateContentSize();
+            map.events.triggerEvent("zoomend", { "zoomChanged": true });
+
+            // create toolbar
+            createToolbar();
+
+            // keep this legacy event for backwards compatibility purpose
+            lizMap.events.triggerEvent("toolbarcreated", lizMap);
+
+            // notify new ol map for modules init
+            lizMap.mainEventDispatcher.dispatch("lizmap.ol2.toolbarcreated");
+
+            // Handle docks visibility
+            document.querySelector('#mapmenu .nav').addEventListener('click', evt => {
+                let dockType;
+                const liClicked = evt.target.closest('li');
+                if (!liClicked) {
+                    return;
+                }
+
+                for (const className of liClicked.classList) {
+                    if (className.includes('nav-')) {
+                        dockType = className.split('nav-')[1];
+                    }
+                }
+
+                if (!dockType) {
+                    return;
+                }
+
+                evt.preventDefault();
+
+                const linkClicked = evt.target.closest('a');
+                const dockId = linkClicked.dataset.dockid;
+                const parentElement = linkClicked.parentElement;
+                const wasActive = parentElement.classList.contains('active');
+
+                const dockContentSelector = dockType == 'minidock' ? '#mini-dock-content > div' : '#' + dockType + '-content > div';
+
+                document.querySelectorAll('#mapmenu .nav-' + dockType).forEach(element => {
+                    element.classList.remove('active');
                 });
+                document.querySelectorAll(dockContentSelector).forEach(element => element.classList.add('hide'));
+                parentElement.classList.toggle('active', !wasActive);
+                if (dockId) {
+                    document.getElementById(dockId).classList.toggle('hide', wasActive);
+                }
+
+                const dockEvent = dockType == 'right-dock' ? 'rightdock' : dockType;
+
+                const lizmapEvent = wasActive ? dockEvent + 'closed' : dockEvent + 'opened';
+                lizMap.events.triggerEvent(lizmapEvent, { 'id': dockId });
+
+                return false;
+            });
+
+            // hide mini-dock if no tool is active
+            if ($('#mapmenu ul li.nav-minidock.active').length == 0) {
+                $('#mini-dock-content > .tab-pane.active').removeClass('active');
+                $('#mini-dock-tabs li.active').removeClass('active');
+            }
+
+            // Toggle menu visibility
+            $('#menuToggle').click(function(){
+                $(this).toggleClass('opened');
+            });
+
+            // Hide mapmenu when menu item is clicked in mobile context
+            $('#menuToggle:visible ~ #mapmenu ul').on('click', 'li > a', function () {
+                $('#menuToggle').removeClass('opened');
+            });
+
+            // Show layer switcher
+            updateContentSize();
+
+            // keep this legacy event for backwards compatibility purpose
+            lizMap.events.triggerEvent("uicreated", lizMap);
+            lizMap.mainEventDispatcher.dispatch("lizmap.ol2.uicreated");
+        },
+        /**
+         * Wait end leads to interface modifications
+         * Removes waiter and display getFeatureInfo, if requested
+         * @param {Object} getFeatureInfo
+         * @returns {void}
+         */
+        waitEnd: (getFeatureInfo)=>{
+            $('body').css('cursor', 'auto');
+            $('#loading').dialog('close');
+
+            // Display getFeatureInfo if requested
+            if(getFeatureInfo){
+                displayGetFeatureInfo(getFeatureInfo,
+                    {
+                        x: map.size.w / 2,
+                        y: map.size.h / 2
+                    });
+            }
+        },
+        /**
+         * lizMap object interface for event external js to subscribe to internal events
+         * @param {Function} listener
+         * @param {string} event
+         */
+        subscribe: (listener, event) => {
+            // if mainEventDispatcher is defined then immediatly subscribe to event
+            if(lizMap.mainEventDispatcher) {
+                lizMap.mainEventDispatcher.subscribe(listener, event);
+            } else {
+                // otherwise store the listener/event pair in the subscribedExternalJSEvent,
+                // it will be subscribed later, when mainEventDispatcher is loaded
+                lizMap.subscribedExternalJSEvent.push([listener,event])
+            }
         }
     };
     // initializing the lizMap events
@@ -3622,6 +3641,7 @@ window.lizMap = function() {
         true,
         {includeXY: true}
     );
+
     return obj;
 }();
 /*
