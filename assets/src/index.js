@@ -75,6 +75,23 @@ const definedCustomElements = () => {
     window.customElements.define('lizmap-tooltip', Tooltip);
     window.customElements.define('lizmap-message', Message);
 
+    /**
+    * At this point the user interface is fully loaded.
+    * External javascripts can subscribe to this event to perform post load
+    * operations or cutomizations
+    *
+    * Example in my_custom_script.js
+    *
+    * lizMap.subscribe(() => {
+    *          // pseudo-code
+    *          intercatWithPrintPanel();
+    *          interactWithSelectionPanel();
+    *          inteactWithLocateByLayerPanel();
+    *     },
+    *     'lizmap.uicreated'
+    * );
+    */
+    lizMap.mainEventDispatcher.dispatch('lizmap.uicreated');
 }
 
 /**
@@ -89,33 +106,70 @@ const initLizmapApp = () => {
     lizMap.litHTML = litHTMLDep;
     lizMap.proj4 = proj4;
 
-    lizMap.events.on({
-        configsloaded: () => {
-
-            lizMap.mainLizmap = mainLizmap;
-            lizMap.mainEventDispatcher = mainEventDispatcher;
-
-        },
-        uicreated: () => {
-            // Display the layer tree view at the startup
-            // Layers legend will be displayed after the map started to load
-            window.customElements.define('lizmap-treeview', Treeview);
-            window.customElements.define('lizmap-base-layers', BaseLayers);
-            // The other custom elements will be initialized after the modules are
-            if (lizMap.mainLizmap.legend !== undefined) {
-                definedCustomElements();
-            } else {
-                lizMap.mainEventDispatcher.addListener(
-                    definedCustomElements,
-                    'lizmap.modules.initialized'
-                );
-            }
+    // listen to legacy uicreated event
+    mainEventDispatcher.addListener(()=>{
+        // Display the layer tree view at the startup
+        // Layers legend will be displayed after the map started to load
+        window.customElements.define('lizmap-treeview', Treeview);
+        window.customElements.define('lizmap-base-layers', BaseLayers);
+        // The other custom elements will be initialized after the modules are
+        if (lizMap.mainLizmap.legend !== undefined) {
+            definedCustomElements();
+        } else {
+            lizMap.mainEventDispatcher.addListener(
+                definedCustomElements,
+                'lizmap.modules.initialized'
+            );
         }
-    });
+    }, 'lizmap.ol2.uicreated');
 
-    // Initialize the Lizmap application
-    lizMap.init();
+    // subscribe to Lizmap main class init complete event.
+    // Subscribe method ensure that the callback is called anyway, even if the event is alredy
+    // fired from the main Lizmap class
+    mainEventDispatcher.subscribe(async () => {
+        // // Initialize the Lizmap application
+        if (lizMap.initialized) return;
+        lizMap.init();
 
+        // assign global instances to lizMap singleton
+        lizMap.mainLizmap = mainLizmap;
+        lizMap.mainEventDispatcher = mainEventDispatcher;
+
+        // register subscribers from external js
+        if (lizMap.subscribedExternalJSEvent.length) {
+            lizMap.subscribedExternalJSEvent.forEach((e) => {
+                lizMap.mainEventDispatcher.subscribe(e[0],e[1]);
+            })
+            // clear the array, all events has been subscribed
+            lizMap.subscribedExternalJSEvent = [];
+        }
+        // wait until configuration and capabilities are fully loaded
+        const startupConfigurations = await lizMap.loadProjectConfigurations();
+
+        // loadProjectConfiguration method returns null if something went wrong
+        if (startupConfigurations) {
+            // for backwards compatibility purposes?
+            lizMap.events.triggerEvent('configsloaded', startupConfigurations);
+
+            // dipatch lizmap.configsloaded event with startupConfiguration as parameter
+            // WARNING: internal listeners should only perform synchronous
+            // actions to ensure proper app initialization
+            mainEventDispatcher.dispatch({
+                type:'lizmap.configsloaded',
+                configs: startupConfigurations
+            });
+
+            // complete lizMap intialization
+            lizMap.completeInitialization(startupConfigurations);
+        }
+
+        // end waiting, does not depend on ongoing asynchronous actions
+        lizMap.waitEnd(startupConfigurations?.getFeatureInfo);
+
+        return;
+    }, 'lizmap.class.loaded');
+
+    // listener for lizmap server notifications
     executeJSFromServer();
 }
 
