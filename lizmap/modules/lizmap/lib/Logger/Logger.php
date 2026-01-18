@@ -107,7 +107,7 @@ class Logger extends AbstractLogger
             && array_search($level, self::LogLevels) <= array_search($this->level, self::LogLevels);
     }
 
-        /**
+    /**
      * Logs with an arbitrary level.
      *
      * @param mixed              $level
