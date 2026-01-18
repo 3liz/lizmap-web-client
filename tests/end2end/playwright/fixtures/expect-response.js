@@ -197,17 +197,20 @@ export const expect = baseExpect.extend({
     /**
      * Expecting the response is a valid JSON
      * @param {APIResponse|Response|null} response the response to test
+     * @param {number} status the response status
      *
      * @returns {MatcherReturnType} the result
      */
-    toBeJson(response) {
+    toBeJson(response, status=200) {
         const assertionName = 'toBeJson';
         let pass = response !== null;
         try {
             if (pass) {
                 // check response status
-                expect(response?.ok()).toBeTruthy();
-                expect(response?.status()).toBe(200);
+                if (status < 300) {
+                    expect(response?.ok()).toBeTruthy();
+                }
+                expect(response?.status()).toBe(status);
                 // check content-type header
                 expect(response?.headers()['content-type']).toContain('application/json');
             }
