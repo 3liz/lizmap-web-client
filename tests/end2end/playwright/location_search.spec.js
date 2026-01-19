@@ -1,6 +1,7 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { checkJson } from './globals';
+import { expect as responseExpect } from './fixtures/expect-response.js'
+import { getAuthStorageStatePath } from './globals.js';
 import { ProjectPage } from "./pages/project.js";
 
 test.describe('Location search @readonly', () => {
@@ -31,7 +32,13 @@ test.describe('Location search @readonly', () => {
         let searchPromise = page.waitForRequest(/searchFts/);
         await searchLocator.press('Enter');
         let searchRequest = await searchPromise;
-        await searchRequest.response();
+        let response = await searchRequest.response();
+        // check response
+        responseExpect(response).toBeJson();
+
+        // check body
+        let body = await response?.json();
+        expect(body).toHaveProperty('Quartier');
 
         await expect(page.getByText('IGN', { exact: true })).toHaveCount(1);
         await expect(page.getByText('Map data', { exact: true })).toHaveCount(0);
@@ -97,10 +104,17 @@ test.describe('Location search @readonly', () => {
         let searchPromise = page.waitForRequest(/searchFts/);
         await searchLocator.press('Enter');
         let searchRequest = await searchPromise;
-        await searchRequest.response();
+        let response = await searchRequest.response();
+        // check response
+        responseExpect(response).toBeJson();
+
+        // check body
+        let body = await response?.json();
+        expect(body).not.toHaveProperty('Quartier');
 
         await expect(page.getByText('IGN', { exact: true })).toHaveCount(0);
         await expect(page.getByText('Map data', { exact: true })).toHaveCount(1);
+        await expect(page.getByText('No results', { exact: true })).toHaveCount(1);
 
         await searchLocator.click();
         await searchLocator.fill('mosson');
@@ -108,46 +122,213 @@ test.describe('Location search @readonly', () => {
         searchPromise = page.waitForRequest(/searchFts/);
         await searchLocator.press('Enter');
         searchRequest = await searchPromise;
-        await searchRequest.response();
+        response = await searchRequest.response();
+        // check response
+        responseExpect(response).toBeJson();
+
+        // check body
+        body = await response?.json();
+        expect(body).toHaveProperty('Quartier');
 
         await expect(page.getByText('Map data', { exact: true })).toHaveCount(0);
+        await expect(page.getByText('No results', { exact: true })).toHaveCount(0);
         await expect(page.getByText('Quartier', { exact: true })).toHaveCount(1);
+        await expect(page.getByText('PA - MOSSON', { exact: true })).toHaveCount(1);
+
+        await searchLocator.click();
+        await searchLocator.fill('ceve');
+
+        searchPromise = page.waitForRequest(/searchFts/);
+        await searchLocator.press('Enter');
+        searchRequest = await searchPromise;
+        response = await searchRequest.response();
+        // check response
+        responseExpect(response).toBeJson();
+
+        // check body
+        body = await response?.json();
+        expect(body).toHaveProperty('Quartier');
+
+        await expect(page.getByText('Map data', { exact: true })).toHaveCount(0);
+        await expect(page.getByText('No results', { exact: true })).toHaveCount(0);
+        await expect(page.getByText('Quartier', { exact: true })).toHaveCount(1);
+        await expect(page.getByText('PA - MOSSON', { exact: true })).toHaveCount(0);
+        await expect(page.getByText('CV - LES CEVENNES', { exact: true })).toHaveCount(1);
+    });
+
+    test('Disabled', async ({ page }) => {
+        await page.route('**/service/getProjectConfig*', async route => {
+            const response = await route.fetch();
+            const json = await response.json();
+            json.options['searches'] = [
+            ];
+            await route.fulfill({ response, json });
+        });
+
+        const project = new ProjectPage(page, 'location_search');
+        project.waitForGetLegendGraphicDuringLoad = false;
+        await project.open();
+        const searchLocator = page.getByPlaceholder('Search');
+
+        await expect(searchLocator).toHaveCount(0);
     });
 
 });
 
+test.describe('Location search - form_advanced - anonymous - @readonly', () => {
 
-test.describe('Lizmap Search HTTP code',
-    {
-        tag: ['@requests', '@readonly'],
-    }, () => {
+    test('Default', async ({ page }) => {
+        const project = new ProjectPage(page, 'form_advanced');
+        await project.open();
 
-        test('Check wrong requests', async ({request}) => {
-            const params = new URLSearchParams({
-                'repository': 'testsrepository',
-                'project': 'location_search',
-                'query': 'Montpellier',
-            });
-            let response = await request.get(`/index.php/lizmap/searchFts/get?${params}`);
-            await checkJson(response);
+        const searchLocator = page.getByPlaceholder('Search');
 
-            params.set('query', 'Tokyo');
-            response = await request.get('/index.php/lizmap/searchFts/get?',{params});
-            await checkJson(response, 200);
+        await expect(searchLocator).toHaveCount(1);
 
-            params.set('query', '');
-            response = await request.get('/index.php/lizmap/searchFts/get?',{params});
-            await checkJson(response, 400);
+        await searchLocator.click();
+        await searchLocator.fill('arceaux');
 
-            params.set('query', 'Montpellier');
-            params.set('project', 'does_not_exist');
-            response = await request.get('/index.php/lizmap/searchFts/get?',{params});
-            await checkJson(response, 400);
+        let searchPromise = page.waitForRequest(/searchFts/);
+        await searchLocator.press('Enter');
+        let searchRequest = await searchPromise;
+        let response = await searchRequest.response();
+        // check response
+        responseExpect(response).toBeJson();
 
-            params.set('project', 'location_search');
-            params.set('repository', 'does_not_exist');
-            response = await request.get('/index.php/lizmap/searchFts/get?',{params});
-            await checkJson(response, 400);
-        });
-    }
-);
+        // check body
+        let body = await response?.json();
+        expect(body).not.toHaveProperty('Quartier');
+        expect(body).not.toHaveProperty('Sous-Quartier');
+
+        await expect(page.getByText('IGN', { exact: true })).toHaveCount(0);
+        await expect(page.getByText('Map data', { exact: true })).toHaveCount(1);
+        await expect(page.getByText('No results', { exact: true })).toHaveCount(1);
+        await expect(page.getByText('Quartier', { exact: true })).toHaveCount(0);
+        await expect(page.getByText('Sous-Quartier', { exact: true })).toHaveCount(0);
+
+        await searchLocator.click();
+        await searchLocator.fill('mosson');
+
+        searchPromise = page.waitForRequest(/searchFts/);
+        await searchLocator.press('Enter');
+        searchRequest = await searchPromise;
+        response = await searchRequest.response();
+        // check response
+        responseExpect(response).toBeJson();
+
+        // check body
+        body = await response?.json();
+        expect(body).toHaveProperty('Quartier');
+        expect(body).not.toHaveProperty('Sous-Quartier');
+
+        await expect(page.getByText('Map data', { exact: true })).toHaveCount(0);
+        await expect(page.getByText('No results', { exact: true })).toHaveCount(0);
+        await expect(page.getByText('Quartier', { exact: true })).toHaveCount(1);
+        await expect(page.getByText('PA - MOSSON', { exact: true })).toHaveCount(1);
+        await expect(page.getByText('Sous-Quartier', { exact: true })).toHaveCount(0);
+
+        await searchLocator.click();
+        await searchLocator.fill('ceve');
+
+        searchPromise = page.waitForRequest(/searchFts/);
+        await searchLocator.press('Enter');
+        searchRequest = await searchPromise;
+        response = await searchRequest.response();
+        // check response
+        responseExpect(response).toBeJson();
+
+        // check body
+        body = await response?.json();
+        expect(body).toHaveProperty('Quartier');
+        expect(body).not.toHaveProperty('Sous-Quartier');
+
+        await expect(page.getByText('Map data', { exact: true })).toHaveCount(0);
+        await expect(page.getByText('No results', { exact: true })).toHaveCount(0);
+        await expect(page.getByText('Quartier', { exact: true })).toHaveCount(1);
+        await expect(page.getByText('PA - MOSSON', { exact: true })).toHaveCount(0);
+        await expect(page.getByText('CV - LES CEVENNES', { exact: true })).toHaveCount(1);
+        await expect(page.getByText('Sous-Quartier', { exact: true })).toHaveCount(0);
+    });
+
+});
+
+test.describe('Location search - form_advanced - admin - @readonly', () => {
+    test.use({ storageState: getAuthStorageStatePath('admin') });
+
+    test('Default', async ({ page }) => {
+        const project = new ProjectPage(page, 'form_advanced');
+        await project.open();
+
+        const searchLocator = page.getByPlaceholder('Search');
+
+        await expect(searchLocator).toHaveCount(1);
+
+        await searchLocator.click();
+        await searchLocator.fill('arceaux');
+
+        let searchPromise = page.waitForRequest(/searchFts/);
+        await searchLocator.press('Enter');
+        let searchRequest = await searchPromise;
+        let response = await searchRequest.response();
+        // check response
+        responseExpect(response).toBeJson();
+
+        // check body
+        let body = await response?.json();
+        expect(body).not.toHaveProperty('Quartier');
+        expect(body).toHaveProperty('Sous-Quartier');
+
+        await expect(page.getByText('IGN', { exact: true })).toHaveCount(0);
+        await expect(page.getByText('Map data', { exact: true })).toHaveCount(0);
+        await expect(page.getByText('No results', { exact: true })).toHaveCount(0);
+        await expect(page.getByText('Quartier', { exact: true })).toHaveCount(0);
+        await expect(page.getByText('PA - MOSSON', { exact: true })).toHaveCount(0);
+        await expect(page.getByText('Sous-Quartier', { exact: true })).toHaveCount(1);
+        await expect(page.getByText('MCA - Les Arceaux', { exact: true })).toHaveCount(1);
+
+        await searchLocator.click();
+        await searchLocator.fill('mosson');
+
+        searchPromise = page.waitForRequest(/searchFts/);
+        await searchLocator.press('Enter');
+        searchRequest = await searchPromise;
+        response = await searchRequest.response();
+        // check response
+        responseExpect(response).toBeJson();
+
+        // check body
+        body = await response?.json();
+        expect(body).toHaveProperty('Quartier');
+        expect(body).not.toHaveProperty('Sous-Quartier');
+
+        await expect(page.getByText('Map data', { exact: true })).toHaveCount(0);
+        await expect(page.getByText('No results', { exact: true })).toHaveCount(0);
+        await expect(page.getByText('Quartier', { exact: true })).toHaveCount(1);
+        await expect(page.getByText('PA - MOSSON', { exact: true })).toHaveCount(1);
+        await expect(page.getByText('Sous-Quartier', { exact: true })).toHaveCount(0);
+
+        await searchLocator.click();
+        await searchLocator.fill('ceve');
+
+        searchPromise = page.waitForRequest(/searchFts/);
+        await searchLocator.press('Enter');
+        searchRequest = await searchPromise;
+        response = await searchRequest.response();
+        // check response
+        responseExpect(response).toBeJson();
+
+        // check body
+        body = await response?.json();
+        expect(body).toHaveProperty('Quartier');
+        expect(body).toHaveProperty('Sous-Quartier');
+
+        await expect(page.getByText('Map data', { exact: true })).toHaveCount(0);
+        await expect(page.getByText('No results', { exact: true })).toHaveCount(0);
+        await expect(page.getByText('Quartier', { exact: true })).toHaveCount(1);
+        await expect(page.getByText('PA - MOSSON', { exact: true })).toHaveCount(0);
+        await expect(page.getByText('CV - LES CEVENNES', { exact: true })).toHaveCount(1);
+        await expect(page.getByText('Sous-Quartier', { exact: true })).toHaveCount(1);
+        await expect(page.getByText('CVN - LES CEVENNES', { exact: true })).toHaveCount(1);
+    });
+
+});
