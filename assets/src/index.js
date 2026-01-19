@@ -18,6 +18,7 @@ import OverviewMap from './components/OverviewMap.js';
 import FeatureToolbar from './components/FeatureToolbar.js';
 import ReverseGeom from './components/edition/ReverseGeom.js';
 import PasteGeom from './components/edition/PasteGeom.js';
+import CopyGeometryButton from './components/CopyGeometryButton.js';
 import ActionSelector from './components/ActionSelector.js';
 import Print from './components/Print.js';
 import FullScreen from './components/FullScreen.js';
@@ -55,6 +56,7 @@ const waitFor = async function waitFor(maxWait, sleepStep, f){
 };
 
 const definedCustomElements = () => {
+    console.log('Defining custom elements...');
     window.customElements.define('lizmap-geolocation', Geolocation);
     window.customElements.define('lizmap-geolocation-survey', GeolocationSurvey);
     window.customElements.define('lizmap-features-table', FeaturesTable);
@@ -68,12 +70,14 @@ const definedCustomElements = () => {
     window.customElements.define('lizmap-feature-toolbar', FeatureToolbar);
     window.customElements.define('lizmap-reverse-geom', ReverseGeom);
     window.customElements.define('lizmap-paste-geom', PasteGeom);
+    window.customElements.define('lizmap-copy-geometry-button', CopyGeometryButton);
     window.customElements.define('lizmap-action-selector', ActionSelector);
     window.customElements.define('lizmap-print', Print);
     window.customElements.define('lizmap-fullscreen', FullScreen);
     window.customElements.define('lizmap-navbar', NavBar);
     window.customElements.define('lizmap-tooltip', Tooltip);
     window.customElements.define('lizmap-message', Message);
+    console.log('All custom elements defined');
 }
 
 /**
