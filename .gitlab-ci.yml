@@ -148,23 +148,23 @@ deploy-package-unstable:
   tags:
     - fabric
 
-deploy-docker-unstable:
-  image: ${REGISTRY_URL}/factory-ci-runner:factory-ci
-  stage: deploy
-  script:
-    - update-service lizmap org/infrav3
-  environment:
-    name: snap
-  dependencies:
-    - docker-image-unstable
-  only:
-    - /^release_.*$/
-    - master
-  except:
-    - tags
-  tags:
-    - factory-dind
-  allow_failure: true
+#deploy-docker-unstable:
+#  image: ${REGISTRY_URL}/factory-ci-runner:factory-ci
+#  stage: deploy
+#  script:
+#    - update-service lizmap org/infrav3
+#  environment:
+#    name: snap
+#  dependencies:
+#    - docker-image-unstable
+#  only:
+#    - /^release_.*$/
+#    - master
+#  except:
+#    - tags
+#  tags:
+#    - factory-dind
+#  allow_failure: true
 
 deploy-quick-release:
   image: ${REGISTRY_URL}/factory-ci-runner:fabric-ci-php${PHP_VERSION}
