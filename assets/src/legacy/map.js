@@ -3618,7 +3618,7 @@ window.lizMap = function() {
     obj.events = new OpenLayers.Events(
         obj, null,
         ['treecreated','mapcreated','layersadded','uicreated',
-            'dockopened','dockclosed'],
+            'dockopened','dockclosed','uiready'],
         true,
         {includeXY: true}
     );
