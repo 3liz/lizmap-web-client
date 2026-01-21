@@ -1,0 +1,41 @@
+#
+# Worker backend configuration
+#
+
+
+[worker]
+name = "Server"
+
+[worker.qgis]
+max_projects = 20
+use_default_server_handler = true
+
+[worker.qgis.projects]
+ignore_bad_layers = false
+
+[worker.qgis.projects.search_paths]
+'/' = "/srv/projects"
+
+# Plugins allowed to install from plugin paths
+[worker.qgis.plugins]
+install = [
+    "Lizmap server",
+    "atlasprint",
+    "wfsOutputExtension",
+]
+# Auto install plugins from embedded plugin manager
+install_mode = "auto"
+
+#
+# HTTP Front end configuration
+#
+
+[backends.root]
+title = "Root backend"
+host = "map-rpc"
+route = "/"
+
+[[backends.root.api]]
+endpoint = "lizmap"
+name = "Lizmap"
+
