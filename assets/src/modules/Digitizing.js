@@ -2180,6 +2180,14 @@ export class Digitizing {
                     const featuresGeometry = OL6features.map(feature => feature.getGeometry());
                     const featuresGeometryCollection = new GeometryCollection(featuresGeometry);
                     this._map.zoomToGeometryOrExtent(featuresGeometryCollection.getExtent());
+
+                    // since a feature is added on the map,
+                    // we should emit the "featureDrawn" event anyway, no matter which tool is currently selected.
+                    // Check first if the listener is already registered on source, before manually trigger
+                    // the callback.
+                    if (!this._drawSource.hasListener("addfeature")) {
+                        this._addFeatureSaveDispatchListener();
+                    }
                 }
             };
         })(this);
