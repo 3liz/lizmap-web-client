@@ -55,6 +55,17 @@ CREATE TABLE tests_projects.sousquartiers (
 
 
 --
+-- Name: BAD designed table; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects."BAD designed table" (
+    id integer NOT NULL,
+    "BAD column name is'nt it ?" integer NOT NULL,
+    action text NOT NULL,
+    geom public.geometry(Point,3857)
+);
+
+--
 -- Name: attribute_table; Type: TABLE; Schema: tests_projects; Owner: -
 --
 
