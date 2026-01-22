@@ -411,6 +411,7 @@ export default class Digitizing extends HTMLElement {
                                     const parent = event.target.parentElement.parentElement;
                                     parent.querySelector('.file-name').textContent = file.name;
                                     mainLizmap.digitizing.import(file);
+                                    event.target.value = '';
                                 }
                             }}>
                     </label>
