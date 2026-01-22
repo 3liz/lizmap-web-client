@@ -315,7 +315,7 @@ And optionnaly add:
 - `--grep-invert "test_a|test_b"` to execute all tests but "test_a" and "test_b"
 - `mytest.spec.js` to execute one test
 - `--debug` to execute in debug mode
-- other command line : https://playwright.dev/docs/intro#command-line
+- other command line : https://playwright.dev/docs/test-cli
 
 You can also install the handy [Playwright extension](https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright) on VSCode.
 
