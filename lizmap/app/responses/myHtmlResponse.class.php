@@ -32,7 +32,6 @@ class myHtmlResponse extends AbstractLizmapHtmlResponse
         $this->addHeadContent('<meta name="Rating" content="general" />');
         $this->addHeadContent('<meta name="Distribution" content="global" />');
 
-        $this->addAssets('jquery_ui');
         $this->addAssets('bootstrap');
         $this->addAssets('normal');
     }
