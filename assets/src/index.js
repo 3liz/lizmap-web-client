@@ -35,7 +35,30 @@ import litHTMLDep from './dependencies/lit-html.js';
 import proj4 from 'proj4';
 
 /**
- *  waitFor function returns waiting time in milliseconds
+ * Patch to mitigate [Violation] "Added non-passive event listener" warnings.
+ * This ensures that OpenLayers 2 legacy touch events can still call preventDefault()
+ * while signaling to the browser that we are intentionally using non-passive listeners
+ * to maintain map interaction fluidly.
+ */
+(function patchPassiveEventListeners() {
+    const originalAddEventListener = EventTarget.prototype.addEventListener;
+    EventTarget.prototype.addEventListener = function(type, fn, options) {
+        let modifiedOptions = options;
+        if (type === 'touchstart' || type === 'touchmove') {
+            if (typeof options === 'object') {
+                // Force passive to false to ensure map panning/drawing works correctly
+                modifiedOptions = { ...options, passive: false };
+            } else {
+                // If options was a boolean (capture), convert to object
+                modifiedOptions = { capture: !!options, passive: false };
+            }
+        }
+        originalAddEventListener.call(this, type, fn, modifiedOptions);
+    };
+})();
+
+/**
+ * waitFor function returns waiting time in milliseconds
  * @param {number}   maxWait   - maximum waiting time in milliseconds
  * @param {number}   sleepStep - initial sleep step in milliseconds
  * @param {Function} f         - function to wait for that returns a boolean value
@@ -46,6 +69,7 @@ import proj4 from 'proj4';
  */
 const waitFor = async function waitFor(maxWait, sleepStep, f){
     let waitingTime = 0;
+    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
     while(waitingTime < maxWait && !f()) {
         await sleep(sleepStep);
         waitingTime += sleepStep;
