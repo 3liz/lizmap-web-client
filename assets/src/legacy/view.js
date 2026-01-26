@@ -44,22 +44,23 @@ var searchProjects = function(){
     // Get unique keywords for visible projects
     var getVisibleProjectsKeywords = function() {
         var keywordList = [];
-        var selector = ".liz-repository-project-item:not([style='display:none']) .keywordList";
+        var selector = ".liz-repository-project-item:not([style*='display: none']) .keywordList";
 
         document.querySelectorAll(selector).forEach(function (el) {
-            if (el.textContent !== '') {
+            if (el.textContent.trim() !== '') {
                 var keywordsSplitByComma = el.textContent.toUpperCase().split(', ');
                 if (isGraph) {
-                    for (var index = 0; index < keywordsSplitByComma.length; index++) {
-                        keywordList = keywordList.concat(keywordsSplitByComma[index].split('/'));
-                    }
+                    keywordsSplitByComma.forEach(keyword => {
+                        keywordList = keywordList.concat(keyword.split('/'));
+                    });
                 } else {
                     keywordList = keywordList.concat(keywordsSplitByComma);
                 }
             }
         });
 
-        return keywordList.filter(onlyUnique);
+        // Ensure unique, non-empty, and trimmed keywords
+        return keywordList.map(keyword => keyword.trim()).filter(onlyUnique).filter(keyword => keyword !== '');
     };
 
     // For graph
@@ -146,30 +147,26 @@ var searchProjects = function(){
             // Display all keywords
             document.querySelectorAll('#search-project-result .project-keyword').forEach(el => el.classList.remove('hide'));
         } else {
-            // Hide all keywords
+            // Hide all keywords initially
             document.querySelectorAll('#search-project-result .project-keyword').forEach(el => el.classList.add('hide'));
 
             var visibleProjectKeywords = getVisibleProjectsKeywords();
 
-            for (var index = 0; index < visibleProjectKeywords.length; index++) {
-                if (selectedKeywords.indexOf(visibleProjectKeywords[index]) === -1) {
-                    document.querySelectorAll('#search-project-result .project-keyword.hide').forEach(function (el) {
-                        if (el.textContent.toUpperCase() === visibleProjectKeywords[index]) {
+            visibleProjectKeywords.forEach(keyword => {
+                if (!selectedKeywords.includes(keyword)) {
+                    document.querySelectorAll('#search-project-result .project-keyword').forEach(function (el) {
+                        if (el.textContent.toUpperCase() === keyword) {
                             el.classList.remove('hide');
                         }
                     });
                 }
-            }
+            });
 
             if (isGraph) {
-                // Hide all keywords
-                document.querySelectorAll('#search-project-result .project-keyword').forEach(el => el.classList.add('hide'));
                 var visibleProjectEdges = getEdges();
                 var lastSelectedKeyword = selectedKeywords[selectedKeywords.length - 1];
 
-                var hiddenKeywords = document.querySelectorAll('#search-project-result .project-keyword.hide');
-
-                hiddenKeywords.forEach(function (hiddenKeyword) {
+                document.querySelectorAll('#search-project-result .project-keyword.hide').forEach(function (hiddenKeyword) {
                     visibleProjectEdges.forEach(function (edge) {
                         if (edge[0] === lastSelectedKeyword && edge[1] === hiddenKeyword.textContent.toUpperCase()) {
                             hiddenKeyword.classList.remove('hide');
@@ -178,6 +175,15 @@ var searchProjects = function(){
                 });
             }
         }
+
+        // Hide #search-project-result if no keywords are visible
+        var visibleKeywords = document.querySelectorAll('#search-project-result .project-keyword:not(.hide)');
+        if (visibleKeywords.length === 0) {
+            document.querySelector('#search-project-result').style.display = 'none';
+        } else {
+            document.querySelector('#search-project-result').style.display = '';
+        }
+
         unHighlightkeywords();
     };
 
@@ -334,9 +340,9 @@ var addPrefetchOnClick = function () {
     }];
     document.querySelectorAll('a.liz-project-view').forEach(function (link) {
         link.addEventListener('click', function () {
-            var projElem = this.closest('div').querySelector('div.liz-project');
+            var projElem = this.closest('div.liz-project');
             if (!projElem) {
-                alert('no project');
+                console.log('no project');
                 return false;
             }
             var repId = projElem.dataset.lizmapRepository;
