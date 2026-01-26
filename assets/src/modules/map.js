@@ -874,7 +874,7 @@ export default class map extends olMap {
                 } else if (updateResolution) {
                     view.setResolution(evt['resolution']);
                 } else if (updateExtent) {
-                    view.fit(evt['extent'], {nearest: true});
+                    view.fit(evt['extent']);
                 }
             },
             ['map.state.changed']
