@@ -1,6 +1,6 @@
 // @ts-check
 import { test } from '@playwright/test';
-import { expectParametersToContain } from './globals';
+import { expect as requestExpect } from './fixtures/expect-request.js';
 import {ProjectPage} from "./pages/project";
 
 test.describe('Overview',
@@ -27,7 +27,7 @@ test.describe('Overview',
                 'HEIGHT': '110',
                 'BBOX': /758432.36\d*,6273694.3\d*,782221.64\d*,6284973.7\d*/,
             }
-            await expectParametersToContain('GetMap', request.url(), expectedParameters);
+            requestExpect(request).toContainParametersInUrl(expectedParameters);
             await request.response();
         });
 
@@ -51,7 +51,7 @@ test.describe('Overview',
                 'HEIGHT': '110',
                 'BBOX': /43.559491\d*,3.765259\d*,43.659592\d*,3.976380\d*/,
             }
-            await expectParametersToContain('GetMap', request.url(), expectedParameters);
+            requestExpect(request).toContainParametersInUrl(expectedParameters);
             await request.response();
         });
 
@@ -74,7 +74,7 @@ test.describe('Overview',
                 'HEIGHT': '110',
                 'BBOX': /411699.32\d*,5396012.89\d*,450848.73\d*,5414575.11\d*/,
             }
-            await expectParametersToContain('GetMap', request.url(), expectedParameters);
+            requestExpect(request).toContainParametersInUrl(expectedParameters);
             await request.response();
         });
     });

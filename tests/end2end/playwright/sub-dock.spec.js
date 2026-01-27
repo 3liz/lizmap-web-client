@@ -4,7 +4,8 @@ import * as fs from 'fs/promises'
 import { existsSync } from 'node:fs';
 import { Buffer } from 'node:buffer';
 import { test, expect } from '@playwright/test';
-import { playwrightTestFile , expectParametersToContain } from './globals';
+import { expect as requestExpect } from './fixtures/expect-request.js';
+import { playwrightTestFile } from './globals';
 import { ProjectPage } from "./pages/project";
 
 // To update OSM and GeoPF tiles in the mock directory
@@ -119,7 +120,7 @@ test.describe('Sub dock @readonly', () => {
             'HEIGHT': '633',
             'BBOX': /412967.3\d+,5393197.8\d+,449580.6\d+,5417390.1\d+/,
         }
-        await expectParametersToContain('GetMap', getMapRequest.url(), getMapExpectedParameters);
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
         // Check sub dock metadata content
         await expect(page.locator('#sub-dock .sub-metadata h3 .text')).toHaveText('Information');
         await expect(page.locator('#sub-dock .sub-metadata .menu-content dt')).toHaveCount(4);
@@ -313,7 +314,7 @@ test.describe('Sub dock @readonly', () => {
             'OUTPUTFORMAT': 'GeoJSON',
             'TYPENAME': 'sousquartiers',
         };
-        await expectParametersToContain('Export GeoJSON from sub-dock', getFeatureRequest.postData() ?? '', expectedParameters);
+        requestExpect(getFeatureRequest).toContainParametersInPostData(expectedParameters);
         const response = await getFeatureRequest.response();
 
         // check response
@@ -396,7 +397,7 @@ test.describe('Sub dock @readonly', () => {
             'OUTPUTFORMAT': 'GeoJSON',
             'TYPENAME': 'sousquartiers',
         };
-        await expectParametersToContain('Export GeoJSON from sub-dock', getFeatureRequest.postData() ?? '', expectedParameters);
+        requestExpect(getFeatureRequest).toContainParametersInPostData(expectedParameters);
         const response = await getFeatureRequest.response();
 
         // check response

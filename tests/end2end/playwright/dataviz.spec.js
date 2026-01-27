@@ -2,7 +2,6 @@
 import { test, expect } from '@playwright/test';
 import { expect as responseExpect } from './fixtures/expect-response.js'
 import { ProjectPage } from "./pages/project";
-//import { expectParametersToContain } from './globals';
 
 test.describe('Dataviz tests @readonly', () => {
 
