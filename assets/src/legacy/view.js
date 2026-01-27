@@ -5,367 +5,359 @@
  * @license MPL-2.0
  */
 
-var searchProjects = function(){
+const searchProjects = () => {
     // Hide search if there are no projects
-    if ($("#content.container li .liz-project-title").length === 0) {
-        $("#search").hide();
+    if (document.querySelectorAll("#content.container li .liz-project-title").length === 0) {
+        document.querySelector("#search").style.display = "none";
         return;
     }
 
     // Activate tooltips
-    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-    [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, {
+    const tooltipTriggerList = [...document.querySelectorAll('[data-bs-toggle="tooltip"]')];
+    tooltipTriggerList.forEach(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, {
         trigger: 'hover'
     }));
 
     // Handle keywords/title toggle
-    $('#toggle-search').click(function(){
-        if ($(this).text() === '#'){
-            $(this).text('T');
+    document.querySelector('#toggle-search').addEventListener('click', function() {
+        if (this.textContent === '#') {
+            this.textContent = 'T';
 
-            $('.project-keyword').addClass('hide');
-            $('#search-project-keywords-selected').text('');
-        }else{
-            $(this).text('#');
+            document.querySelectorAll('.project-keyword').forEach(el => el.classList.add('hide'));
+            document.querySelector('#search-project-keywords-selected').textContent = '';
+        } else {
+            this.textContent = '#';
 
-            $('.project-keyword').removeClass('hide');
+            document.querySelectorAll('.project-keyword').forEach(el => el.classList.remove('hide'));
         }
 
         // Relaunch search
-        $("#content.container .liz-repository-project-item").show();
-        $("#content.container .liz-repository-title").show();
-        $("#search-project").keyup();
+        document.querySelectorAll("#content.container .liz-repository-project-item").forEach(el => el.style.display = "block");
+        document.querySelectorAll("#content.container .liz-repository-title").forEach(el => el.style.display = "block");
+        document.querySelector("#search-project").dispatchEvent(new Event('keyup'));
     });
 
-    var onlyUnique = function (value, index, self) {
-        return self.indexOf(value) === index;
-    }
+    const onlyUnique = (value, index, self) => self.indexOf(value) === index;
 
     // Get unique keywords for visible projects
-    var getVisibleProjectsKeywords = function() {
-        var keywordList = [];
-        var selector = '.liz-repository-project-item :visible .keywordList';
+    const getVisibleProjectsKeywords = () => {
+        let keywordList = [];
+        const selector = ".liz-repository-project-item:not([style*='display: none']) .keywordList";
 
-        $(selector).each(function () {
-            if ($(this).text() !== '') {
-                var keywordsSplitByComma = $(this).text().toUpperCase().split(', ');
+        document.querySelectorAll(selector).forEach(el => {
+            if (el.textContent.trim() !== '') {
+                const keywordsSplitByComma = el.textContent.toUpperCase().split(', ');
                 if (isGraph) {
-                    for (var index = 0; index < keywordsSplitByComma.length; index++) {
-                        keywordList = keywordList.concat(keywordsSplitByComma[index].split('/'));
-                    }
-                }else{
+                    keywordsSplitByComma.forEach(keyword => {
+                        keywordList = keywordList.concat(keyword.split('/'));
+                    });
+                } else {
                     keywordList = keywordList.concat(keywordsSplitByComma);
                 }
             }
         });
 
-        return keywordList.filter(onlyUnique);
-    }
+        // Ensure unique, non-empty, and trimmed keywords
+        return keywordList.map(keyword => keyword.trim()).filter(onlyUnique).filter(keyword => keyword !== '');
+    };
 
     // For graph
-    var getEdges = function () {
-        var edgeList = [];
+    const getEdges = () => {
+        const edgeList = [];
 
-        $('.liz-repository-project-item :visible .keywordList').each(function () {
-            if ($(this).text() !== '') {
-                var keywordsSplitByComma = $(this).text().toUpperCase().split(', ');
-                for (var index = 0; index < keywordsSplitByComma.length; index++) {
-                    var keywordsInGraph = keywordsSplitByComma[index].split('/');
+        document.querySelectorAll(".liz-repository-project-item:not([style='display:none']) .keywordList").forEach(el => {
+            if (el.textContent !== '') {
+                const keywordsSplitByComma = el.textContent.toUpperCase().split(', ');
+                keywordsSplitByComma.forEach(keyword => {
+                    const keywordsInGraph = keyword.split('/');
 
                     // Get edges
-                    for (var i = 0; i < keywordsInGraph.length - 1; i++) {
+                    for (let i = 0; i < keywordsInGraph.length - 1; i++) {
                         edgeList.push([keywordsInGraph[i], keywordsInGraph[i + 1]]);
                     }
-                }
+                });
             }
         });
         return edgeList;
-    }
+    };
 
     // Function to show only projects with selected keywords
-    var filterProjectsBySelectedKeywords = function () {
-        var selectedKeywords = getSelectedKeywords();
+    const filterProjectsBySelectedKeywords = () => {
+        const selectedKeywords = getSelectedKeywords();
 
         if (selectedKeywords.length === 0) {
-            $("#content.container .liz-repository-project-item").show();
-            $("#content.container .liz-repository-title").show();
+            document.querySelectorAll("#content.container .liz-repository-project-item").forEach(el => el.style.display = "block");
+            document.querySelectorAll("#content.container .liz-repository-title").forEach(el => el.style.display = "block");
         } else {
             // Hide everything then show projects and titles corresponding to the selected keywords
-            $("#content.container .liz-repository-project-item").hide();
-            $("#content.container .liz-repository-title").hide();
+            document.querySelectorAll("#content.container .liz-repository-project-item").forEach(el => el.style.display = "none");
+            document.querySelectorAll("#content.container .liz-repository-title").forEach(el => el.style.display = "none");
 
             // Show project when its keywords match all keywords in selectedKeywords
-            $('.keywordList').each(function () {
-                var showProject = false;
-                var keywordListSplitByComma = $(this).text().toUpperCase().split(', ');
+            document.querySelectorAll('.keywordList').forEach(el => {
+                let showProject = false;
+                const keywordListSplitByComma = el.textContent.toUpperCase().split(', ');
 
                 // Graph
                 if (isGraph) {
-                    var path = selectedKeywords.join('/');
-                    for (var index = 0; index < keywordListSplitByComma.length; index++) {
-                        if (keywordListSplitByComma[index].indexOf(path) !== -1) {
-                            showProject = true;
-                            break;
-                        }
-                    }
+                    const path = selectedKeywords.join('/');
+                    showProject = keywordListSplitByComma.some(keyword => keyword.includes(path));
                 } else {
-                    showProject = selectedKeywords.every(function (currentValue) {
-                        return (keywordListSplitByComma.indexOf(currentValue) !== -1);
-                    });
+                    showProject = selectedKeywords.every(currentValue => keywordListSplitByComma.includes(currentValue));
                 }
 
                 if (showProject) {
-                    $(this).closest('.liz-repository-project-item').show();
-                    $(this).closest('.liz-repository-project-list').prev('.liz-repository-title').show();
+                    el.closest('.liz-repository-project-item').style.display = "block";
+                    el.closest('.liz-repository-project-list').previousElementSibling.style.display = "block";
                 }
             });
         }
-    }
+    };
 
     // Returns array of selected keywords
-    var getSelectedKeywords = function () {
-        var selectedKeywords = [];
-        $('#search-project-keywords-selected .keyword-label').each(function () {
-            selectedKeywords.push($(this).text().toUpperCase());
-        });
+    const getSelectedKeywords = () => {
+        return [...document.querySelectorAll('#search-project-keywords-selected .keyword-label')]
+            .map(el => el.textContent.toUpperCase());
+    };
 
-        return selectedKeywords;
-    }
-
-    var unHighlightkeywords = function (){
-        $('#search-project-result .project-keyword').each(function () {
-            $(this).text($(this).text());
+    const unHighlightkeywords = () => {
+        document.querySelectorAll('#search-project-result .project-keyword').forEach(el => {
+            el.textContent = el.textContent;
         });
-    }
+    };
 
     // Display possible keywords to choose based on displayed projects and previous keywords selection
-    var displayKeywordChoices = function () {
-        var selectedKeywords = getSelectedKeywords();
+    const displayKeywordChoices = () => {
+        const selectedKeywords = getSelectedKeywords();
 
         if (selectedKeywords.length === 0) {
             // Display all keywords
-            $('#search-project-result .project-keyword').removeClass('hide');
+            document.querySelectorAll('#search-project-result .project-keyword').forEach(el => el.classList.remove('hide'));
         } else {
-            // Hide all keywords
-            $('#search-project-result .project-keyword').addClass('hide');
+            // Hide all keywords initially
+            document.querySelectorAll('#search-project-result .project-keyword').forEach(el => el.classList.add('hide'));
 
-            var visibleProjectKeywords = getVisibleProjectsKeywords();
+            const visibleProjectKeywords = getVisibleProjectsKeywords();
 
-            for (var index = 0; index < visibleProjectKeywords.length; index++) {
-                if (selectedKeywords.indexOf(visibleProjectKeywords[index]) === -1) {
-                    $('#search-project-result .project-keyword.hide').filter(function () {
-                        return ($(this).text().toUpperCase() === visibleProjectKeywords[index]);
-                    }).removeClass('hide');
+            visibleProjectKeywords.forEach(keyword => {
+                if (!selectedKeywords.includes(keyword)) {
+                    document.querySelectorAll('#search-project-result .project-keyword').forEach(el => {
+                        if (el.textContent.toUpperCase() === keyword) {
+                            el.classList.remove('hide');
+                        }
+                    });
                 }
-            }
+            });
 
             if (isGraph) {
-                // Hide all keywords
-                $('#search-project-result .project-keyword').addClass('hide');
-                var visibleProjectEdges = getEdges();
-                var lastSelectedKeyword = selectedKeywords[selectedKeywords.length - 1];
+                const visibleProjectEdges = getEdges();
+                const lastSelectedKeyword = selectedKeywords[selectedKeywords.length - 1];
 
-                var hiddenKeywords = $('#search-project-result .project-keyword.hide');
-
-                for (let index = 0; index < hiddenKeywords.length; index++) {
-                    var hiddenKeyword = hiddenKeywords.eq(index);
-
-                    for (var i = 0; i < visibleProjectEdges.length; i++) {
-                        if (visibleProjectEdges[i][0] === lastSelectedKeyword
-                            && visibleProjectEdges[i][1] === hiddenKeyword.text().toUpperCase()) {
-                            hiddenKeyword.removeClass('hide');
+                document.querySelectorAll('#search-project-result .project-keyword.hide').forEach(hiddenKeyword => {
+                    visibleProjectEdges.forEach(edge => {
+                        if (edge[0] === lastSelectedKeyword && edge[1] === hiddenKeyword.textContent.toUpperCase()) {
+                            hiddenKeyword.classList.remove('hide');
                         }
-                    }
-                }
+                    });
+                });
             }
         }
+
+        // Hide #search-project-result if no keywords are visible
+        const visibleKeywords = document.querySelectorAll('#search-project-result .project-keyword:not(.hide)');
+        document.querySelector('#search-project-result').style.display = visibleKeywords.length === 0 ? 'none' : '';
+
         unHighlightkeywords();
-    }
+    };
 
-    // Search when user type in
-    $("#search-project").keyup(function () {
+    // Search when user types in
+    document.querySelector("#search-project").addEventListener('keyup', function () {
         // Scroll to projects
-        $('html').animate({
-            scrollTop: $("#anchor-top-projects").offset().top - $('#header').height()
-        }, 500);
+        const anchorTopProjects = document.querySelector("#anchor-top-projects");
+        const header = document.querySelector("#header");
+        if (anchorTopProjects && header) {
+            window.scrollTo({
+                top: anchorTopProjects.offsetTop - header.offsetHeight,
+                behavior: "smooth"
+            });
+        }
 
-        var searchedTerm = this.value.trim().toUpperCase();
+        const searchedTerm = this.value.trim().toUpperCase();
 
         // Search by keywords
-        if ($('#toggle-search').text() === '#') {
+        if (document.querySelector('#toggle-search').textContent === '#') {
             displayKeywordChoices();
             if (searchedTerm === '' && getSelectedKeywords().length === 0) {
-                $('#search-project-result .project-keyword').addClass('hide');
+                document.querySelectorAll('#search-project-result .project-keyword').forEach(el => el.classList.add('hide'));
             } else {
-                $('#search-project-result .project-keyword:visible').each(function () {
-                    var keyword = $(this).text().toUpperCase();
+                document.querySelectorAll('#search-project-result .project-keyword:not(.hide)').forEach(el => {
+                    const keyword = el.textContent.toUpperCase();
                     // Set keyword visibility and bold on string part found
-                    if (keyword.indexOf(searchedTerm) !== -1) {
-                        var re = new RegExp(searchedTerm, "g");
-                        var keywordHighlighted = keyword.replace(re, '<span class="highlight">' + searchedTerm + '</span>');
-                        $(this).html(keywordHighlighted.toLowerCase());
+                    if (keyword.includes(searchedTerm)) {
+                        const re = new RegExp(searchedTerm, "g");
+                        el.innerHTML = keyword.replace(re, `<span class="highlight">${searchedTerm}</span>`).toLowerCase();
                     } else {
-                        $(this).addClass('hide');
+                        el.classList.add('hide');
                     }
                 });
             }
         } else { // Search by title
             // If the search bar is empty, show everything
             if (searchedTerm === "") {
-                $("#content.container .liz-repository-project-item").show();
-                $("#content.container .liz-repository-title").show();
-            }
-            // Hide everything then show projects and titles corresponding to the search bar
-            else {
-                $("#content.container .liz-repository-project-item").hide();
-                $("#content.container .liz-repository-title").hide();
+                document.querySelectorAll("#content.container .liz-repository-project-item").forEach(el => el.style.display = "block");
+                document.querySelectorAll("#content.container .liz-repository-title").forEach(el => el.style.display = "block");
+            } else {
+                // Hide everything then show projects and titles corresponding to the search bar
+                document.querySelectorAll("#content.container .liz-repository-project-item").forEach(el => el.style.display = "none");
+                document.querySelectorAll("#content.container .liz-repository-title").forEach(el => el.style.display = "none");
 
-                $("#content.container li .liz-project-title").filter(function () {
-                    return -1 != $(this).text().toUpperCase().indexOf(searchedTerm);
-                }).closest('.liz-repository-project-item').show();
-
-                $("#content.container li .liz-project-title").filter(function () {
-                    return -1 != $(this).text().toUpperCase().indexOf(searchedTerm);
-                }).closest('.liz-repository-project-list').prev('.liz-repository-title').show();
-
+                document.querySelectorAll("#content.container li .liz-project-title").forEach(el => {
+                    if (el.textContent.toUpperCase().includes(searchedTerm)) {
+                        el.closest('.liz-repository-project-item').style.display = "block";
+                        el.closest('.liz-repository-project-list').previousElementSibling.style.display = "block";
+                    }
+                });
             }
         }
     });
 
     // Init
-    var isGraph = false;
-    var uniqueKeywordList = getVisibleProjectsKeywords();
+    let isGraph = false;
+    let uniqueKeywordList = getVisibleProjectsKeywords();
 
     // Activate keywords search if any
-    if (uniqueKeywordList.length > 0){
+    if (uniqueKeywordList.length > 0) {
         // If at least one keyword contains a slash, we toggle to graph search mode
-        for (var index = 0; index < uniqueKeywordList.length; index++) {
-            var keyword = uniqueKeywordList[index];
-            if (keyword.indexOf('/') !== -1) {
+        uniqueKeywordList.some(keyword => {
+            if (keyword.includes('/')) {
                 isGraph = true;
-                // Get unique keywords in graph mode
                 uniqueKeywordList = getVisibleProjectsKeywords();
-                break;
+                return true;
             }
-        }
+            return false;
+        });
 
-        var keywordsHTML = '';
-        for (let index = 0; index < uniqueKeywordList.length; index++) {
-            keywordsHTML += '<span class="project-keyword hide">' + uniqueKeywordList[index].toLowerCase() + '</span>';
-        }
-        $('#search-project-result').html(keywordsHTML);
+        const keywordsHTML = uniqueKeywordList.map(keyword => `<span class="project-keyword hide">${keyword.toLowerCase()}</span>`).join('');
+        document.querySelector('#search-project-result').innerHTML = keywordsHTML;
 
         // Add click handler on project keywords
-        $('.project-keyword').click(function () {
-            // Move keyword in #search-project-keywords-selected
-            $('#search-project-keywords-selected').append('<span class="project-keyword"><span class="keyword-label">' + $(this).text() + '</span><span class="remove-keyword">x</span></span>');
-            // Add close event
-            $('#search-project-keywords-selected .remove-keyword').click(function () {
-                $(this).parent().remove();
+        document.querySelectorAll('.project-keyword').forEach(el => {
+            el.addEventListener('click', function () {
+                // Move keyword in #search-project-keywords-selected
+                document.querySelector('#search-project-keywords-selected').insertAdjacentHTML('beforeend', `<span class="project-keyword"><span class="keyword-label">${this.textContent}</span><span class="remove-keyword">x</span></span>`);
+                // Add close event
+                document.querySelectorAll('#search-project-keywords-selected .remove-keyword').forEach(closeEl => {
+                    closeEl.addEventListener('click', function () {
+                        this.parentElement.remove();
+                        filterProjectsBySelectedKeywords();
+                        if (document.querySelectorAll('#search-project-keywords-selected .remove-keyword').length === 0) {
+                            document.querySelectorAll('#search-project-result .project-keyword').forEach(el => el.classList.add('hide'));
+                        } else {
+                            displayKeywordChoices();
+                        }
+                    });
+                });
+                // Hide projects then display projects with selected keyword
                 filterProjectsBySelectedKeywords();
-                if ($('#search-project-keywords-selected .remove-keyword').length === 0) {
-                    $('#search-project-result .project-keyword').addClass('hide');
-                } else {
-                    displayKeywordChoices();
-                }
+                // Empty search input
+                document.querySelector('#search-project').value = '';
+                // Display remaining keywords for visible projects not yet selected
+                displayKeywordChoices();
             });
-            // Hide projects then display projects with selected keyword
-            filterProjectsBySelectedKeywords();
-            // Empty search input
-            $('#search-project').val('')
-            // Display remaining keywords for visible projects not yet selected
-            displayKeywordChoices();
         });
-    }else{
-        $('#toggle-search').hide().parent().removeClass('input-group');
+    } else {
+        document.querySelector('#toggle-search').style.display = 'none';
+        document.querySelector('#toggle-search').parentElement.classList.remove('input-group');
     }
-}
+};
 
-var addPrefetchOnClick = function () {
-    console.log('Test '+$('a.liz-project-view').length );
-    const links = [{
-        url: lizUrls.map,
-        type: 'text/html',
-        as: 'document',
-        params: {},
-    },{
-        url: lizUrls.config,
-        type: 'application/json',
-        as: 'fetch',
-        params: {},
-    },{
-        url: lizUrls.keyValueConfig,
-        type: 'application/json',
-        as: 'fetch',
-        params: {},
-    },{
-        url: lizUrls.ogcService,
-        type: 'text/xml',
-        as: 'fetch',
-        params: {
-            SERVICE: 'WMS',
-            REQUEST: 'GetCapabilities',
-            VERSION: '1.3.0',
+const addPrefetchOnClick = () => {
+    const links = [
+        {
+            url: lizUrls.map,
+            type: 'text/html',
+            as: 'document',
+            params: {},
         },
-    },{
-        url: lizUrls.ogcService,
-        type: 'text/xml',
-        as: 'fetch',
-        params: {
-            SERVICE: 'WFS',
-            REQUEST: 'GetCapabilities',
-            VERSION: '1.0.0',
+        {
+            url: lizUrls.config,
+            type: 'application/json',
+            as: 'fetch',
+            params: {},
         },
-    },{
-        url: lizUrls.ogcService,
-        type: 'text/xml',
-        as: 'fetch',
-        params: {
-            SERVICE: 'WMTS',
-            REQUEST: 'GetCapabilities',
-            VERSION: '1.0.0',
+        {
+            url: lizUrls.keyValueConfig,
+            type: 'application/json',
+            as: 'fetch',
+            params: {},
         },
-    }];
-    $('a.liz-project-view').click(function () {
-        var self = $(this);
-        var projElem = self.parent().parent().find('div.liz-project');
-        if (projElem.length < 1) {
-            alert('no project');
-            return false;
+        {
+            url: lizUrls.ogcService,
+            type: 'text/xml',
+            as: 'fetch',
+            params: {
+                SERVICE: 'WMS',
+                REQUEST: 'GetCapabilities',
+                VERSION: '1.3.0',
+            },
+        },
+        {
+            url: lizUrls.ogcService,
+            type: 'text/xml',
+            as: 'fetch',
+            params: {
+                SERVICE: 'WFS',
+                REQUEST: 'GetCapabilities',
+                VERSION: '1.0.0',
+            },
+        },
+        {
+            url: lizUrls.ogcService,
+            type: 'text/xml',
+            as: 'fetch',
+            params: {
+                SERVICE: 'WMTS',
+                REQUEST: 'GetCapabilities',
+                VERSION: '1.0.0',
+            },
         }
-        projElem = projElem[0];
-        var repId = projElem.dataset.lizmapRepository;
-        var projId = projElem.dataset.lizmapProject;
-        links.forEach(link => {
-            const params = new URLSearchParams();
-            params.append('repository', repId);
-            params.append('project', projId);
-            for (const key in link.params) {
-                params.append(key, link.params[key]);
+    ];
+
+    document.querySelectorAll('a.liz-project-view').forEach(link => {
+        link.addEventListener('click', function () {
+            const projElem = this.closest('div.liz-project');
+            if (!projElem) {
+                console.warn('No project');
+                return false;
             }
-            //create link tag
-            const linkTag = document.createElement('link');
-            linkTag.rel = 'prefetch';
-            linkTag.href = link.url+'?'+params;
-            linkTag.type = link.type;
-            linkTag.as = link.as;
-            //inject tag in the head of the document
-            document.head.appendChild(linkTag);
+            const repId = projElem.dataset.lizmapRepository;
+            const projId = projElem.dataset.lizmapProject;
+            links.forEach(link => {
+                const params = new URLSearchParams({ repository: repId, project: projId, ...link.params });
+                // Create link tag
+                const linkTag = document.createElement('link');
+                linkTag.rel = 'prefetch';
+                linkTag.href = `${link.url}?${params}`;
+                linkTag.type = link.type;
+                linkTag.as = link.as;
+                // Inject tag in the head of the document
+                document.head.appendChild(linkTag);
+            });
+
+            return true;
         });
-
-        return true;
     });
-}
+};
 
-window.addEventListener('load', function () {
+window.addEventListener('load', () => {
     // Initialize global variables
     const lizmapVariablesJSON = document.getElementById('lizmap-vars')?.innerText;
     if (lizmapVariablesJSON) {
         try {
             const lizmapVariables = JSON.parse(lizmapVariablesJSON);
-            for (const variable in lizmapVariables) {
-                globalThis[variable] = lizmapVariables[variable];
-            }
+            Object.entries(lizmapVariables).forEach(([key, value]) => {
+                globalThis[key] = value;
+            });
         } catch {
             console.warn('JSON for Lizmap global variables is not valid!');
         }
