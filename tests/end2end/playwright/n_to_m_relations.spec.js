@@ -1,8 +1,8 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+import { expect as requestExpect } from './fixtures/expect-request.js';
 import { expect as responseExpect } from './fixtures/expect-response.js'
 import {ProjectPage} from "./pages/project";
-import { expectParametersToContain } from './globals';
 
 test.describe('N to M relations',
     {
@@ -320,7 +320,7 @@ test.describe('N to M relations',
                 'CRS': 'EPSG:4326',
                 'BBOX': /43.2302\d+,4.3586\d+,43.5724\d+,4.8765\d+/,
             }
-            await expectParametersToContain('GetFeatureInfo', getFeatureInfoRequest.postData() ?? '', expectedParameters);
+            requestExpect(getFeatureInfoRequest).toContainParametersInPostData(expectedParameters);
 
             // wait for response
             let getFeatureInfoResponse = await getFeatureInfoRequest.response();

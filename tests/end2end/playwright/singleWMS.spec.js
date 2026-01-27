@@ -1,7 +1,7 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+import { expect as requestExpect } from './fixtures/expect-request.js';
 import { expect as responseExpect } from './fixtures/expect-response.js'
-import { expectParametersToContain } from './globals';
 import { ProjectPage } from "./pages/project";
 
 test.describe('Single WMS layer', () => {
@@ -34,8 +34,8 @@ test.describe('Single WMS layer', () => {
                 'layer':'single_wms_polygons',
             }
 
-            await expectParametersToContain('GetMap', requestMap.url(), expectedMapParameters);
-            await expectParametersToContain('GetTile', requestTile.url(), expectedTileParameters);
+            requestExpect(requestMap).toContainParametersInUrl(expectedMapParameters);
+            requestExpect(requestTile).toContainParametersInUrl(expectedTileParameters);
             await requestMap.response();
             await requestTile.response();
         });
@@ -89,7 +89,7 @@ test.describe('Single WMS layer', () => {
                 'STYLES':'default,default,default,default,',
                 'LAYERS':'single_wms_baselayer,single_wms_points,single_wms_points_group,single_wms_lines_group,GroupAsLayer',
             }
-            await expectParametersToContain('GetMap', requestSwitch.url(), expectedSwitchParameters);
+            requestExpect(requestSwitch).toContainParametersInUrl(expectedSwitchParameters);
             await requestSwitch.response();
 
             await page.waitForTimeout(400);
@@ -107,7 +107,7 @@ test.describe('Single WMS layer', () => {
                 'LAYERS':'single_wms_baselayer,single_wms_points,single_wms_points_group,GroupAsLayer',
             }
 
-            await expectParametersToContain('GetMap', requestGroup.url(), expectedGroupParameters);
+            requestExpect(requestGroup).toContainParametersInUrl(expectedGroupParameters);
             await requestGroup.response();
 
             await page.waitForTimeout(400);
@@ -124,7 +124,7 @@ test.describe('Single WMS layer', () => {
                 'STYLES':'default,default,default',
                 'LAYERS':'single_wms_baselayer,single_wms_points,single_wms_points_group',
             }
-            await expectParametersToContain('GetMap', requestGroupAsLayer.url(), expectedGroupAsLayerParameters);
+            requestExpect(requestGroupAsLayer).toContainParametersInUrl(expectedGroupAsLayerParameters);
             await requestGroupAsLayer.response();
 
             //enable all switched off layer
@@ -179,7 +179,7 @@ test.describe('Single WMS layer', () => {
                 'STYLES':'default,default,white_dots,default,default,',
                 'LAYERS':'single_wms_baselayer,single_wms_lines,single_wms_points,single_wms_points_group,single_wms_lines_group,GroupAsLayer',
             }
-            await expectParametersToContain('GetMap', requestStyle.url(), expectedStyleParameters);
+            requestExpect(requestStyle).toContainParametersInUrl(expectedStyleParameters);
             await requestStyle.response();
         });
 
@@ -218,7 +218,7 @@ test.describe('Single WMS layer', () => {
                 'typename': 'single_wms_points',
                 'filter': 'single_wms_points:"id" IN ( 1 ) ',
             }
-            await expectParametersToContain('GetFilterToken', requestToken.postData() ?? '', expectedFilterTokenParameter);
+            requestExpect(requestToken).toContainParametersInPostData(expectedFilterTokenParameter);
 
             // map is refreshing
             const requestFilteredMapPromise = project.waitForGetMapRequest();
@@ -234,7 +234,7 @@ test.describe('Single WMS layer', () => {
                 'FILTERTOKEN': /^[a-zA-Z0-9]{32}$/,
                 'LAYERS':'single_wms_baselayer,single_wms_lines,single_wms_points,single_wms_points_group,single_wms_lines_group,GroupAsLayer',
             }
-            await expectParametersToContain('GetMap', requestFilteredMap.url(), expectedFilteredMapParameters);
+            requestExpect(requestFilteredMap).toContainParametersInUrl(expectedFilteredMapParameters);
             await requestFilteredMap.response();
 
             // change the style while filtering
@@ -259,7 +259,7 @@ test.describe('Single WMS layer', () => {
                 'FILTERTOKEN': /^[a-zA-Z0-9]{32}$/,
                 'LAYERS':'single_wms_baselayer,single_wms_lines,single_wms_points,single_wms_points_group,single_wms_lines_group,GroupAsLayer',
             }
-            await expectParametersToContain('GetMap', requestFilteredStyle.url(), expectedFilteredStyleParameters);
+            requestExpect(requestFilteredStyle).toContainParametersInUrl(expectedFilteredStyleParameters);
             await requestFilteredStyle.response();
         });
 
@@ -287,7 +287,7 @@ test.describe('Single WMS layer', () => {
                 'LEGEND_OFF':'single_wms_lines:0',
                 'LAYERS':'single_wms_baselayer,single_wms_lines,single_wms_points,single_wms_points_group,single_wms_lines_group,GroupAsLayer',
             }
-            await expectParametersToContain('GetMap', requestLegend.url(), expectedLegendParameters);
+            requestExpect(requestLegend).toContainParametersInUrl(expectedLegendParameters);
             await requestLegend.response();
 
             // filter
@@ -318,7 +318,7 @@ test.describe('Single WMS layer', () => {
                 'typename': 'single_wms_lines',
                 'filter': 'single_wms_lines:"id" IN ( 3 ) ',
             }
-            await expectParametersToContain('GetFilterToken', requestToken.postData() ?? '', expectedFilterTokenParameter);
+            requestExpect(requestToken).toContainParametersInPostData(expectedFilterTokenParameter);
 
             // map is refreshing
             const requestFiltereLegendPromise = project.waitForGetMapRequest();
@@ -336,7 +336,7 @@ test.describe('Single WMS layer', () => {
                 'FILTERTOKEN': /^[a-zA-Z0-9]{32}$/,
                 'LAYERS':'single_wms_baselayer,single_wms_lines,single_wms_points,single_wms_points_group,single_wms_lines_group,GroupAsLayer',
             }
-            await expectParametersToContain('GetMap', requestFiltereLegend.url(), expectedFiltereLegendParameters);
+            requestExpect(requestFiltereLegend).toContainParametersInUrl(expectedFiltereLegendParameters);
             await requestFiltereLegend.response();
         });
 
@@ -360,7 +360,7 @@ test.describe('Single WMS layer', () => {
                 'STYLES':'default,default,default,default,',
                 'LAYERS':'single_wms_lines,single_wms_points,single_wms_points_group,single_wms_lines_group,GroupAsLayer',
             }
-            await expectParametersToContain('GetMap', requestTileBaseLayer.url(), expectedTileBaseLayerParameters);
+            requestExpect(requestTileBaseLayer).toContainParametersInUrl(expectedTileBaseLayerParameters);
             await requestTileBaseLayer.response();
 
             await page.waitForTimeout(500);
@@ -378,7 +378,7 @@ test.describe('Single WMS layer', () => {
                 'STYLES':'default,default,default,default,default,',
                 'LAYERS':'single_wms_baselayer_two,single_wms_lines,single_wms_points,single_wms_points_group,single_wms_lines_group,GroupAsLayer',
             }
-            await expectParametersToContain('GetMap', requestSecondBaseLayer.url(), expectedSecondBaseLayerParameters);
+            requestExpect(requestSecondBaseLayer).toContainParametersInUrl(expectedSecondBaseLayerParameters);
             await requestSecondBaseLayer.response();
         });
 
@@ -400,7 +400,7 @@ test.describe('Single WMS layer', () => {
             const requestMapPromise = project.waitForGetMapRequest();
             project.editingSubmitForm();
             const requestMap = await requestMapPromise;
-            const expectedrequestMapParameters = {
+            const expectedMapParameters = {
                 'SERVICE': 'WMS',
                 'VERSION': '1.3.0',
                 'REQUEST': 'GetMap',
@@ -408,7 +408,7 @@ test.describe('Single WMS layer', () => {
                 'STYLES':'default,default,default,default,default,',
                 'LAYERS':'single_wms_baselayer,single_wms_lines,single_wms_points,single_wms_points_group,single_wms_lines_group,GroupAsLayer',
             }
-            await expectParametersToContain('GetMap', requestMap.url(), expectedrequestMapParameters);
+            requestExpect(requestMap).toContainParametersInUrl(expectedMapParameters);
             await requestMap.response();
         });
 });
