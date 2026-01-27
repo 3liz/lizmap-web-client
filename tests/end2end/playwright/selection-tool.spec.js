@@ -1,7 +1,8 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 import { SelectionPage } from "./pages/selectionpage";
-import { expectParametersToContain , getAuthStorageStatePath } from './globals';
+import { expect as requestExpect } from './fixtures/expect-request.js';
+import { getAuthStorageStatePath } from './globals';
 
 test.describe('Selection tool', {tag: ['@readonly'],},() => {
 
@@ -212,37 +213,31 @@ test.describe('Selection tool', {tag: ['@readonly'],},() => {
         let getSelectionTokenRequest = await getSelectionTokenRequestPromise;
         let getMapRequest = await getMapRequestPromise;
 
-        await expectParametersToContain(
-            'GetFeature with intersects',
-            getFeatureRequest.postData() ?? '',
-            {
-                TYPENAME: 'selection_polygon',
-                EXP_FILTER: /intersects\(\$geometry, geom_from_gml.*\)/,
-            },
-        );
+        /** @type {{[key: string]: string|RegExp}} */
+        let getFeatureExpectedParameters = {
+            TYPENAME: 'selection_polygon',
+            EXP_FILTER: /intersects\(\$geometry, geom_from_gml.*\)/,
+        };
+        requestExpect(getFeatureRequest).toContainParametersInPostData(getFeatureExpectedParameters);
 
-        await expectParametersToContain(
-            'GetSelectionToken after GetFeature with intersects',
-            getSelectionTokenRequest.postData() ?? '',
-            {
-                typename: 'selection_polygon',
-                ids: '2',
-            },
-        );
+        /** @type {{[key: string]: string|RegExp}} */
+        let getSelectionTokenExpectedParameters = {
+            typename: 'selection_polygon',
+            ids: '2',
+        };
+        requestExpect(getSelectionTokenRequest).toContainParametersInPostData(getSelectionTokenExpectedParameters);
 
         const firstToken = await getSelectionTokenRequest.response()
             .then(resp => resp?.json())
             .then(data => data.token);
         expect(firstToken).toBeTruthy();
 
-        await expectParametersToContain(
-            'GetMap with selection token',
-            getMapRequest.url(),
-            {
-                LAYERS: 'selection_polygon',
-                SELECTIONTOKEN: firstToken,
-            },
-        );
+        /** @type {{[key: string]: string|RegExp}} */
+        let getMapExpectedParameters = {
+            LAYERS: 'selection_polygon',
+            SELECTIONTOKEN: firstToken,
+        };
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
 
         getFeatureRequestPromise = project.waitForGetFeatureRequest();
         getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
@@ -254,23 +249,11 @@ test.describe('Selection tool', {tag: ['@readonly'],},() => {
         getSelectionTokenRequest = await getSelectionTokenRequestPromise;
         getMapRequest = await getMapRequestPromise;
 
-        await expectParametersToContain(
-            'GetFeature',
-            getFeatureRequest.postData() ?? '',
-            {
-                TYPENAME: 'selection_polygon',
-                EXP_FILTER: ' $id NOT IN ( 2 ) ',
-            },
-        );
+        getFeatureExpectedParameters['EXP_FILTER'] = ' $id NOT IN ( 2 ) ';
+        requestExpect(getFeatureRequest).toContainParametersInPostData(getFeatureExpectedParameters);
 
-        await expectParametersToContain(
-            'GetSelectionToken after GetFeature with intersects',
-            getSelectionTokenRequest.postData() ?? '',
-            {
-                typename: 'selection_polygon',
-                ids: '1',
-            },
-        );
+        getSelectionTokenExpectedParameters['ids'] = '1';
+        requestExpect(getSelectionTokenRequest).toContainParametersInPostData(getSelectionTokenExpectedParameters);
 
         const secondToken = await getSelectionTokenRequest.response()
             .then(resp => resp?.json())
@@ -278,14 +261,8 @@ test.describe('Selection tool', {tag: ['@readonly'],},() => {
         expect(secondToken).toBeTruthy();
         expect(secondToken).not.toEqual(firstToken);
 
-        await expectParametersToContain(
-            'GetMap with selection token',
-            getMapRequest.url(),
-            {
-                LAYERS: 'selection_polygon',
-                SELECTIONTOKEN: secondToken,
-            },
-        );
+        getMapExpectedParameters['SELECTIONTOKEN'] = secondToken;
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
     });
 });
 

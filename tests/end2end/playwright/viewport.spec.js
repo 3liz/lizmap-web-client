@@ -1,7 +1,8 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+import { expect as requestExpect } from './fixtures/expect-request.js';
 import { expect as responseExpect } from './fixtures/expect-response.js'
-import {expectParametersToContain, gotoMap} from './globals';
+import {gotoMap} from './globals';
 
 test.describe('Viewport devicePixelRatio 1', () => {
     test('Greater than WMS max size', async ({ page }) => {
@@ -224,7 +225,7 @@ test.describe('Viewport standard', () => {
             'HEIGHT': '633',
             'BBOX': /-9373014.15\d+,-6193233.77\d+,9373014.15\d+,6193233.77\d+/,
         }
-        await expectParametersToContain('GetMap', getMapRequest.url(), expectedParameters);
+        requestExpect(getMapRequest).toContainParametersInUrl(expectedParameters);
 
         // Check zoom
         expect(await page.evaluate(() => lizMap.mainLizmap.map.getView().getZoom())).toBe(1);
@@ -254,7 +255,7 @@ test.describe('Viewport standard', () => {
             'HEIGHT': '909',
             'BBOX': /-7005300.76\d+,-8893601.11\d+,7005300.76\d+,8893601.11\d+/,
         }
-        await expectParametersToContain('GetMap', getMapRequest.url(), expectedParameters);
+        requestExpect(getMapRequest).toContainParametersInUrl(expectedParameters);
 
         // Check zoom
         expect(await page.evaluate(() => lizMap.mainLizmap.map.getView().getZoom())).toBe(1);
