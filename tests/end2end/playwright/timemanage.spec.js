@@ -1,12 +1,13 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { gotoMap, getEchoRequestParams } from './globals';
+import { ProjectPage } from "./pages/project";
+import { getEchoRequestParams } from './globals';
 
 test.describe('Time Manager', () => {
 
     test('Time Manager', async ({ page }) => {
-        const url = '/index.php/view/map?repository=testsrepository&project=time_manager';
-        await gotoMap(url, page)
+        const project = new ProjectPage(page, 'time_manager');
+        await project.open();
 
         // When the Time manager is running, 2 requests are sent for each time range
         // - getFilterToken with method POST, returning a json with a token

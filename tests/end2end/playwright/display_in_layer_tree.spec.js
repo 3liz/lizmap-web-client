@@ -1,12 +1,12 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { gotoMap } from './globals';
+import { ProjectPage } from './pages/project';
 
 test.describe('Display in layer tree', () => {
 
     test.beforeEach(async ({ page }) => {
-        const url = '/index.php/view/map?repository=testsrepository&project=display_in_legend';
-        await gotoMap(url, page)
+        const project = new ProjectPage(page, 'display_in_legend');
+        await project.open();
     });
 
     test('display in layer tree unchecked => layer not visible in layer tree and layer in print request', async ({ page }) => {

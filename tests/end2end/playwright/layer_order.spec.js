@@ -1,12 +1,12 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { gotoMap } from './globals';
+import { ProjectPage } from './pages/project';
 
 test.describe('Layer order', () => {
 
     test('Layer order in map and popups', async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=layer_order';
-        await gotoMap(url, page);
+        const project = new ProjectPage(page, 'layer_order');
+        await project.open();
 
         // Assert layers order is as defined in QGIS
         expect(await page.evaluate(() => lizMap.mainLizmap.map.getLayerByName('quartiers').getZIndex())).toEqual(0);
