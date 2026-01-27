@@ -4,7 +4,8 @@ import * as fs from 'fs/promises'
 import { existsSync } from 'node:fs';
 import { test, expect } from '@playwright/test';
 import {ProjectPage} from "./pages/project";
-import { expectParametersToContain, playwrightTestFile} from "./globals";
+import { expect as requestExpect } from './fixtures/expect-request.js';
+import { playwrightTestFile} from "./globals";
 
 // To update OSM and GeoPF tiles in the mock directory
 // IMPORTANT, this must not be set to `true` while committing, on GitHub. Set to `false`.
@@ -43,7 +44,7 @@ test.describe('Axis Orientation',
                 'HEIGHT': '633',
                 'BBOX': /5276843.28\d+,-14455.54\d+,6114251.21\d+,1252901.15\d+/,
             }
-            await expectParametersToContain('GetMap', getMapRequest.url(), expectedParameters)
+            requestExpect(getMapRequest).toContainParametersInUrl(expectedParameters);
 
             const getMapResponse = await getMapRequest.response();
             expect(getMapResponse).not.toBeNull();
@@ -135,7 +136,7 @@ test.describe('Axis Orientation',
                 'HEIGHT': '633',
                 'BBOX': /72126.00\d+,-122200.57\d+,909533.92\d+,1145156.12\d+/,
             }
-            await expectParametersToContain('GetMap', getMapRequest.url(), expectedParameters);
+            requestExpect(getMapRequest).toContainParametersInUrl(expectedParameters);
 
             const getMapResponse = await getMapRequest.response();
             expect(getMapResponse).not.toBeNull();
