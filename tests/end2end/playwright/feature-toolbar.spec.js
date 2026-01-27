@@ -1,8 +1,8 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+import { expect as requestExpect } from './fixtures/expect-request.js';
 import { expect as responseExpect } from './fixtures/expect-response.js'
 import { ProjectPage } from "./pages/project";
-import { expectParametersToContain } from './globals';
 
 /**
  * Playwright Locator
@@ -26,7 +26,7 @@ test.describe('Feature toolbar in popup @readonly', () => {
             'LAYERS': 'parent_layer',
             'QUERY_LAYERS': 'parent_layer',
         }
-        await expectParametersToContain('GetFeatureInfo', getFeatureInfoRequest.postData() ?? '', getFeatureInfoExpectedParameters);
+        requestExpect(getFeatureInfoRequest).toContainParametersInPostData(getFeatureInfoExpectedParameters);
         let getFeatureInfoResponse = await getFeatureInfoRequest.response();
         responseExpect(getFeatureInfoResponse).toBeHtml();
 
@@ -51,8 +51,9 @@ test.describe('Feature toolbar in popup @readonly', () => {
             'HEIGHT': '633',
             'BBOX': /759253.2\d+,6270938.6\d+,784600.4\d+,6287686.8\d+/,
         }
-        await expectParametersToContain('GetMap', getMapRequest.url(), getMapExpectedParameters);
-        await getMapRequest.response();
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
+        let getMapResponse = await getMapRequest.response();
+        responseExpect(getMapResponse).toBeImagePng();
 
         // Click on zoom to in feature-toolbar
         getMapRequestPromise = project.waitForGetMapRequest();
@@ -71,8 +72,9 @@ test.describe('Feature toolbar in popup @readonly', () => {
             'HEIGHT': '633',
             'BBOX': /771293.1\d+,6278894.0\d+,772560.5\d+,6279731.4\d+/,
         }
-        await expectParametersToContain('GetMap', getMapRequest.url(), getMapExpectedParameters);
-        await getMapRequest.response();
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
+        getMapResponse = await getMapRequest.response();
+        responseExpect(getMapResponse).toBeImagePng();
     });
 
     test('should center', async ({ page }) => {
@@ -91,7 +93,7 @@ test.describe('Feature toolbar in popup @readonly', () => {
             'LAYERS': 'parent_layer',
             'QUERY_LAYERS': 'parent_layer',
         }
-        await expectParametersToContain('GetFeatureInfo', getFeatureInfoRequest.postData() ?? '', getFeatureInfoExpectedParameters);
+        requestExpect(getFeatureInfoRequest).toContainParametersInPostData(getFeatureInfoExpectedParameters);
         let getFeatureInfoResponse = await getFeatureInfoRequest.response();
         responseExpect(getFeatureInfoResponse).toBeHtml();
 
@@ -116,8 +118,9 @@ test.describe('Feature toolbar in popup @readonly', () => {
             'HEIGHT': '633',
             'BBOX': /759253.2\d+,6270938.6\d+,784600.4\d+,6287686.8\d+/,
         }
-        await expectParametersToContain('GetMap', getMapRequest.url(), getMapExpectedParameters);
-        await getMapRequest.response();
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
+        let getMapResponse = await getMapRequest.response();
+        responseExpect(getMapResponse).toBeImagePng();
 
         // two more clicks on zoom-in
         getMapRequestPromise = project.waitForGetMapRequest();
@@ -146,8 +149,9 @@ test.describe('Feature toolbar in popup @readonly', () => {
             'HEIGHT': '633',
             'BBOX': /770659.5\d+,6278475.3\d+,773194.2\d+,6280150.1\d+/,
         }
-        await expectParametersToContain('GetMap', getMapRequest.url(), getMapExpectedParameters);
-        await getMapRequest.response();
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
+        getMapResponse = await getMapRequest.response();
+        responseExpect(getMapResponse).toBeImagePng();
 
         // Click on center to in feature-toolbar
         getMapRequestPromise = project.waitForGetMapRequest();
@@ -166,8 +170,9 @@ test.describe('Feature toolbar in popup @readonly', () => {
             'HEIGHT': '633',
             'BBOX': /781176.6\d+,6278640.6\d+,783711.4\d+,6280315.5\d+/,
         }
-        await expectParametersToContain('GetMap', getMapRequest.url(), getMapExpectedParameters);
-        await getMapRequest.response();
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
+        getMapResponse = await getMapRequest.response();
+        responseExpect(getMapResponse).toBeImagePng();
     });
 
     test('should select', async ({ page }) => {
@@ -186,7 +191,7 @@ test.describe('Feature toolbar in popup @readonly', () => {
             'LAYERS': 'parent_layer',
             'QUERY_LAYERS': 'parent_layer',
         }
-        await expectParametersToContain('GetFeatureInfo', getFeatureInfoRequest.postData() ?? '', getFeatureInfoExpectedParameters);
+        requestExpect(getFeatureInfoRequest).toContainParametersInPostData(getFeatureInfoExpectedParameters);
         let getFeatureInfoResponse = await getFeatureInfoRequest.response();
         responseExpect(getFeatureInfoResponse).toBeHtml();
 
@@ -207,7 +212,7 @@ test.describe('Feature toolbar in popup @readonly', () => {
             'typename': 'parent_layer',
             'ids': '1',
         }
-        await expectParametersToContain('GetSelectionToken', getSelectionTokenRequest.postData() ?? '', getSelectionTokenParameters);
+        requestExpect(getSelectionTokenRequest).toContainParametersInPostData(getSelectionTokenParameters);
 
         // Once the GetSelectionToken is received, the map is refreshed
         let getMapRequestPromise = project.waitForGetMapRequest();
@@ -229,8 +234,9 @@ test.describe('Feature toolbar in popup @readonly', () => {
             'BBOX': /740242.9\d+,6258377.5\d+,803610.7\d+,6300247.9\d+/,
             'SELECTIONTOKEN': /^[a-zA-Z0-9]{32}$/,
         }
-        await expectParametersToContain('GetMap', getMapRequest.url(), getMapExpectedParameters);
-        await getMapRequest.response();
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
+        let getMapResponse = await getMapRequest.response();
+        responseExpect(getMapResponse).toBeImagePng();
 
         // Check that the select button display that the feature is selected
         await expect(featureToolbar.locator('button.feature-select')).toContainClass('btn-primary');
@@ -245,11 +251,10 @@ test.describe('Feature toolbar in popup @readonly', () => {
         await expect(firstTr.locator('lizmap-feature-toolbar button.feature-select')).toContainClass('btn-primary');
 
         // An other click on select Button to unselect
-        getMapRequestPromise = project.waitForGetMapRequest();
         await featureToolbar.locator('button.feature-select').click();
-        getMapRequest = await getMapRequestPromise;
-        await getMapRequest.response();
+        // No GetMap request because of some OpenLayers cache
 
+        // Check that the feature is unselected
         await expect(featureToolbar.locator('button.feature-select')).not.toContainClass('btn-primary');
         await expect(firstTr).not.toContainClass('selected');
         await expect(firstTr.locator('lizmap-feature-toolbar button.feature-select')).not.toContainClass('btn-primary');
@@ -271,7 +276,7 @@ test.describe('Feature toolbar in popup @readonly', () => {
             'LAYERS': 'parent_layer',
             'QUERY_LAYERS': 'parent_layer',
         }
-        await expectParametersToContain('GetFeatureInfo', getFeatureInfoRequest.postData() ?? '', getFeatureInfoExpectedParameters);
+        requestExpect(getFeatureInfoRequest).toContainParametersInPostData(getFeatureInfoExpectedParameters);
         let getFeatureInfoResponse = await getFeatureInfoRequest.response();
         responseExpect(getFeatureInfoResponse).toBeHtml();
 
@@ -292,7 +297,7 @@ test.describe('Feature toolbar in popup @readonly', () => {
             'typename': 'parent_layer',
             'filter': 'parent_layer:"id" IN ( 1 ) ',
         }
-        await expectParametersToContain('GetFilterToken', getFilterTokenRequest.postData() ?? '', getFilterTokenParameters);
+        requestExpect(getFilterTokenRequest).toContainParametersInPostData(getFilterTokenParameters);
 
         // Once the GetFilterToken is received, the map is refreshed
         let getMapRequestPromise = project.waitForGetMapRequest();
@@ -314,8 +319,9 @@ test.describe('Feature toolbar in popup @readonly', () => {
             'BBOX': /740242.9\d+,6258377.5\d+,803610.7\d+,6300247.9\d+/,
             'FILTERTOKEN': /^[a-zA-Z0-9]{32}$/,
         }
-        await expectParametersToContain('GetMap', getMapRequest.url(), getMapExpectedParameters);
-        await getMapRequest.response();
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
+        let getMapResponse = await getMapRequest.response();
+        responseExpect(getMapResponse).toBeImagePng();
 
         // Check that the filter button display that the feature is filtered
         await expect(featureToolbar.locator('button.feature-filter')).toContainClass('btn-primary');
@@ -361,7 +367,7 @@ test.describe('Feature toolbar in popup @readonly', () => {
             'LAYERS': 'parent_layer',
             'QUERY_LAYERS': 'parent_layer',
         }
-        await expectParametersToContain('GetFeatureInfo', getFeatureInfoRequest.postData() ?? '', getFeatureInfoExpectedParameters);
+        requestExpect(getFeatureInfoRequest).toContainParametersInPostData(getFeatureInfoExpectedParameters);
         let getFeatureInfoResponse = await getFeatureInfoRequest.response();
         responseExpect(getFeatureInfoResponse).toBeHtml();
 
@@ -398,7 +404,7 @@ test.describe('Feature toolbar in popup @readonly', () => {
             'typename': 'parent_layer',
             'ids': '1',
         }
-        await expectParametersToContain('GetSelectionToken', getSelectionTokenRequest.postData() ?? '', getSelectionTokenParameters);
+        requestExpect(getSelectionTokenRequest).toContainParametersInPostData(getSelectionTokenParameters);
 
         // Once the GetFilterToken is received, the map is refreshed
         let getMapRequestPromise = project.waitForGetMapRequest();
@@ -420,8 +426,9 @@ test.describe('Feature toolbar in popup @readonly', () => {
             'BBOX': /770659.5\d+,6278475.3\d+,773194.2\d+,6280150.1\d+/,
             'SELECTIONTOKEN': /^[a-zA-Z0-9]{32}$/,
         }
-        await expectParametersToContain('GetMap', getMapRequest.url(), getMapExpectedParameters);
-        await getMapRequest.response();
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
+        let getMapResponse = await getMapRequest.response();
+        responseExpect(getMapResponse).toBeImagePng();
 
         // Check that the action button display that the action has been launched on the feature
         await expect(featureToolbar.locator('button.popup-action')).toContainClass('btn-primary');
@@ -452,7 +459,7 @@ test.describe('Feature toolbar in popup @readonly', () => {
             'LAYERS': 'parent_layer',
             'QUERY_LAYERS': 'parent_layer',
         }
-        await expectParametersToContain('GetFeatureInfo', getFeatureInfoRequest.postData() ?? '', getFeatureInfoExpectedParameters);
+        requestExpect(getFeatureInfoRequest).toContainParametersInPostData(getFeatureInfoExpectedParameters);
         let getFeatureInfoResponse = await getFeatureInfoRequest.response();
         responseExpect(getFeatureInfoResponse).toBeHtml();
 
@@ -475,8 +482,8 @@ test.describe('Feature toolbar in popup @readonly', () => {
             layerId: /^parent_layer_[a-zA-Z0-9_]*/,
             featureId: '2',
         };
-        await expectParametersToContain('modifyFeature', modifyFeatureRequest.url(), expectedParameters);
-        await expectParametersToContain('editFeature', editFeatureRequest.url(), expectedParameters);
+        requestExpect(modifyFeatureRequest).toContainParametersInUrl(expectedParameters);
+        requestExpect(editFeatureRequest).toContainParametersInUrl(expectedParameters);
 
         // id input is visible
         await expect(page.locator('#jforms_view_edition_id')).toBeVisible();
@@ -504,7 +511,7 @@ test.describe('Feature toolbar in popup @readonly', () => {
             'LAYERS': 'parent_layer',
             'QUERY_LAYERS': 'parent_layer',
         }
-        await expectParametersToContain('GetFeatureInfo', getFeatureInfoRequest.postData() ?? '', getFeatureInfoExpectedParameters);
+        requestExpect(getFeatureInfoRequest).toContainParametersInPostData(getFeatureInfoExpectedParameters);
         let getFeatureInfoResponse = await getFeatureInfoRequest.response();
         responseExpect(getFeatureInfoResponse).toBeHtml();
 
@@ -530,8 +537,8 @@ test.describe('Feature toolbar in popup @readonly', () => {
 
         // Check request
         let expectedParameters = {layerId: /^children_layer_[a-zA-Z0-9_]*/};
-        await expectParametersToContain('createFeature', createFeatureRequest.url(), expectedParameters);
-        await expectParametersToContain('editFeature', editFeatureRequest.url(), expectedParameters);
+        requestExpect(createFeatureRequest).toContainParametersInUrl(expectedParameters);
+        requestExpect(editFeatureRequest).toContainParametersInUrl(expectedParameters);
 
         // Parent_id is hidden in form when edition is started from parent form
         await expect(page.locator('#jforms_view_edition_parent_id')).toBeHidden();
@@ -559,7 +566,7 @@ test.describe('Feature toolbar in popup @readonly', () => {
             'LAYERS': 'parent_layer',
             'QUERY_LAYERS': 'parent_layer',
         }
-        await expectParametersToContain('GetFeatureInfo', getFeatureInfoRequest.postData() ?? '', getFeatureInfoExpectedParameters);
+        requestExpect(getFeatureInfoRequest).toContainParametersInPostData(getFeatureInfoExpectedParameters);
         let getFeatureInfoResponse = await getFeatureInfoRequest.response();
         responseExpect(getFeatureInfoResponse).toBeHtml();
 
@@ -607,8 +614,9 @@ test.describe('Feature toolbar in attribute table @readonly', () => {
             'HEIGHT': '633',
             'BBOX': /759253.2\d+,6270938.6\d+,784600.4\d+,6287686.8\d+/,
         }
-        await expectParametersToContain('GetMap', getMapRequest.url(), getMapExpectedParameters);
-        await getMapRequest.response();
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
+        let getMapResponse = await getMapRequest.response();
+        responseExpect(getMapResponse).toBeImagePng();
 
         // Open Attribute table
         let datatablesRequest = await project.openAttributeTable('parent_layer', true);
@@ -638,8 +646,9 @@ test.describe('Feature toolbar in attribute table @readonly', () => {
             'HEIGHT': '633',
             'BBOX': /771293.1\d+,6278894.0\d+,772560.5\d+,6279731.4\d+/,
         }
-        await expectParametersToContain('GetMap', getMapRequest.url(), getMapExpectedParameters);
-        await getMapRequest.response();
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
+        getMapResponse = await getMapRequest.response();
+        responseExpect(getMapResponse).toBeImagePng();
 
         // Use the second line
         let secondTr = project.attributeTableHtml('parent_layer').locator('tbody tr').nth(1);
@@ -663,8 +672,9 @@ test.describe('Feature toolbar in attribute table @readonly', () => {
             'HEIGHT': '633',
             'BBOX': /781810.3\d+,6279059.3\d+,783077.7\d+,6279896.8\d+/,
         }
-        await expectParametersToContain('GetMap', getMapRequest.url(), getMapExpectedParameters);
-        await getMapRequest.response();
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
+        getMapResponse = await getMapRequest.response();
+        responseExpect(getMapResponse).toBeImagePng();
     });
 
     test('should select', async ({ page }) => {
@@ -689,8 +699,9 @@ test.describe('Feature toolbar in attribute table @readonly', () => {
             'HEIGHT': '633',
             'BBOX': /759253.2\d+,6270938.6\d+,784600.4\d+,6287686.8\d+/,
         }
-        await expectParametersToContain('GetMap', getMapRequest.url(), getMapExpectedParameters);
-        await getMapRequest.response();
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
+        let getMapResponse = await getMapRequest.response();
+        responseExpect(getMapResponse).toBeImagePng();
 
         // Open Attribute table
         let datatablesRequest = await project.openAttributeTable('parent_layer', true);
@@ -715,7 +726,7 @@ test.describe('Feature toolbar in attribute table @readonly', () => {
             'typename': 'parent_layer',
             'ids': '1',
         }
-        await expectParametersToContain('GetSelectionToken', getSelectionTokenRequest.postData() ?? '', getSelectionTokenParameters);
+        requestExpect(getSelectionTokenRequest).toContainParametersInPostData(getSelectionTokenParameters);
 
         // Once the GetSelectionToken is received, the map is refreshed
         getMapRequestPromise = project.waitForGetMapRequest();
@@ -724,7 +735,7 @@ test.describe('Feature toolbar in attribute table @readonly', () => {
 
         // Check GetMap request with selection token parameter
         getMapExpectedParameters['SELECTIONTOKEN'] = /^[a-zA-Z0-9]{32}$/;
-        await expectParametersToContain('GetMap', getMapRequest.url(), getMapExpectedParameters);
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
         await getMapRequest.response();
 
         // Check that the select button display that the feature is selected
@@ -761,8 +772,8 @@ test.describe('Feature toolbar in attribute table @readonly', () => {
             layerId: /^parent_layer_[a-zA-Z0-9_]*/,
             featureId: '2',
         };
-        await expectParametersToContain('modifyFeature', modifyFeatureRequest.url(), expectedParameters);
-        await expectParametersToContain('editFeature', editFeatureRequest.url(), expectedParameters);
+        requestExpect(modifyFeatureRequest).toContainParametersInUrl(expectedParameters);
+        requestExpect(editFeatureRequest).toContainParametersInUrl(expectedParameters);
 
         // id input is visible
         await expect(page.locator('#jforms_view_edition_id')).toBeVisible();
@@ -806,8 +817,8 @@ test.describe('Feature toolbar in attribute table @readonly', () => {
 
         // Check request
         let expectedParameters = {layerId: /^children_layer_[a-zA-Z0-9_]*/};
-        await expectParametersToContain('createFeature', createFeatureRequest.url(), expectedParameters);
-        await expectParametersToContain('editFeature', editFeatureRequest.url(), expectedParameters);
+        requestExpect(createFeatureRequest).toContainParametersInUrl(expectedParameters);
+        requestExpect(editFeatureRequest).toContainParametersInUrl(expectedParameters);
 
         // Parent_id is hidden in form when edition is started from parent form
         await expect(page.locator('#jforms_view_edition_parent_id')).toBeHidden();
