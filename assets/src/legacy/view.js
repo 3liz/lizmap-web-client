@@ -5,7 +5,7 @@
  * @license MPL-2.0
  */
 
-var searchProjects = function(){
+const searchProjects = () => {
     // Hide search if there are no projects
     if (document.querySelectorAll("#content.container li .liz-project-title").length === 0) {
         document.querySelector("#search").style.display = "none";
@@ -13,7 +13,7 @@ var searchProjects = function(){
     }
 
     // Activate tooltips
-    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    const tooltipTriggerList = [...document.querySelectorAll('[data-bs-toggle="tooltip"]')];
     tooltipTriggerList.forEach(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, {
         trigger: 'hover'
     }));
@@ -37,18 +37,16 @@ var searchProjects = function(){
         document.querySelector("#search-project").dispatchEvent(new Event('keyup'));
     });
 
-    var onlyUnique = function (value, index, self) {
-        return self.indexOf(value) === index;
-    };
+    const onlyUnique = (value, index, self) => self.indexOf(value) === index;
 
     // Get unique keywords for visible projects
-    var getVisibleProjectsKeywords = function() {
-        var keywordList = [];
-        var selector = ".liz-repository-project-item:not([style*='display: none']) .keywordList";
+    const getVisibleProjectsKeywords = () => {
+        let keywordList = [];
+        const selector = ".liz-repository-project-item:not([style*='display: none']) .keywordList";
 
-        document.querySelectorAll(selector).forEach(function (el) {
+        document.querySelectorAll(selector).forEach(el => {
             if (el.textContent.trim() !== '') {
-                var keywordsSplitByComma = el.textContent.toUpperCase().split(', ');
+                const keywordsSplitByComma = el.textContent.toUpperCase().split(', ');
                 if (isGraph) {
                     keywordsSplitByComma.forEach(keyword => {
                         keywordList = keywordList.concat(keyword.split('/'));
@@ -64,28 +62,28 @@ var searchProjects = function(){
     };
 
     // For graph
-    var getEdges = function () {
-        var edgeList = [];
+    const getEdges = () => {
+        const edgeList = [];
 
-        document.querySelectorAll(".liz-repository-project-item:not([style='display:none']) .keywordList").forEach(function (el) {
+        document.querySelectorAll(".liz-repository-project-item:not([style='display:none']) .keywordList").forEach(el => {
             if (el.textContent !== '') {
-                var keywordsSplitByComma = el.textContent.toUpperCase().split(', ');
-                for (var index = 0; index < keywordsSplitByComma.length; index++) {
-                    var keywordsInGraph = keywordsSplitByComma[index].split('/');
+                const keywordsSplitByComma = el.textContent.toUpperCase().split(', ');
+                keywordsSplitByComma.forEach(keyword => {
+                    const keywordsInGraph = keyword.split('/');
 
                     // Get edges
-                    for (var i = 0; i < keywordsInGraph.length - 1; i++) {
+                    for (let i = 0; i < keywordsInGraph.length - 1; i++) {
                         edgeList.push([keywordsInGraph[i], keywordsInGraph[i + 1]]);
                     }
-                }
+                });
             }
         });
         return edgeList;
     };
 
     // Function to show only projects with selected keywords
-    var filterProjectsBySelectedKeywords = function () {
-        var selectedKeywords = getSelectedKeywords();
+    const filterProjectsBySelectedKeywords = () => {
+        const selectedKeywords = getSelectedKeywords();
 
         if (selectedKeywords.length === 0) {
             document.querySelectorAll("#content.container .liz-repository-project-item").forEach(el => el.style.display = "block");
@@ -96,23 +94,16 @@ var searchProjects = function(){
             document.querySelectorAll("#content.container .liz-repository-title").forEach(el => el.style.display = "none");
 
             // Show project when its keywords match all keywords in selectedKeywords
-            document.querySelectorAll('.keywordList').forEach(function (el) {
-                var showProject = false;
-                var keywordListSplitByComma = el.textContent.toUpperCase().split(', ');
+            document.querySelectorAll('.keywordList').forEach(el => {
+                let showProject = false;
+                const keywordListSplitByComma = el.textContent.toUpperCase().split(', ');
 
                 // Graph
                 if (isGraph) {
-                    var path = selectedKeywords.join('/');
-                    for (var index = 0; index < keywordListSplitByComma.length; index++) {
-                        if (keywordListSplitByComma[index].indexOf(path) !== -1) {
-                            showProject = true;
-                            break;
-                        }
-                    }
+                    const path = selectedKeywords.join('/');
+                    showProject = keywordListSplitByComma.some(keyword => keyword.includes(path));
                 } else {
-                    showProject = selectedKeywords.every(function (currentValue) {
-                        return (keywordListSplitByComma.indexOf(currentValue) !== -1);
-                    });
+                    showProject = selectedKeywords.every(currentValue => keywordListSplitByComma.includes(currentValue));
                 }
 
                 if (showProject) {
@@ -124,24 +115,20 @@ var searchProjects = function(){
     };
 
     // Returns array of selected keywords
-    var getSelectedKeywords = function () {
-        var selectedKeywords = [];
-        document.querySelectorAll('#search-project-keywords-selected .keyword-label').forEach(function (el) {
-            selectedKeywords.push(el.textContent.toUpperCase());
-        });
-
-        return selectedKeywords;
+    const getSelectedKeywords = () => {
+        return [...document.querySelectorAll('#search-project-keywords-selected .keyword-label')]
+            .map(el => el.textContent.toUpperCase());
     };
 
-    var unHighlightkeywords = function (){
-        document.querySelectorAll('#search-project-result .project-keyword').forEach(function (el) {
+    const unHighlightkeywords = () => {
+        document.querySelectorAll('#search-project-result .project-keyword').forEach(el => {
             el.textContent = el.textContent;
         });
     };
 
     // Display possible keywords to choose based on displayed projects and previous keywords selection
-    var displayKeywordChoices = function () {
-        var selectedKeywords = getSelectedKeywords();
+    const displayKeywordChoices = () => {
+        const selectedKeywords = getSelectedKeywords();
 
         if (selectedKeywords.length === 0) {
             // Display all keywords
@@ -150,11 +137,11 @@ var searchProjects = function(){
             // Hide all keywords initially
             document.querySelectorAll('#search-project-result .project-keyword').forEach(el => el.classList.add('hide'));
 
-            var visibleProjectKeywords = getVisibleProjectsKeywords();
+            const visibleProjectKeywords = getVisibleProjectsKeywords();
 
             visibleProjectKeywords.forEach(keyword => {
                 if (!selectedKeywords.includes(keyword)) {
-                    document.querySelectorAll('#search-project-result .project-keyword').forEach(function (el) {
+                    document.querySelectorAll('#search-project-result .project-keyword').forEach(el => {
                         if (el.textContent.toUpperCase() === keyword) {
                             el.classList.remove('hide');
                         }
@@ -163,11 +150,11 @@ var searchProjects = function(){
             });
 
             if (isGraph) {
-                var visibleProjectEdges = getEdges();
-                var lastSelectedKeyword = selectedKeywords[selectedKeywords.length - 1];
+                const visibleProjectEdges = getEdges();
+                const lastSelectedKeyword = selectedKeywords[selectedKeywords.length - 1];
 
-                document.querySelectorAll('#search-project-result .project-keyword.hide').forEach(function (hiddenKeyword) {
-                    visibleProjectEdges.forEach(function (edge) {
+                document.querySelectorAll('#search-project-result .project-keyword.hide').forEach(hiddenKeyword => {
+                    visibleProjectEdges.forEach(edge => {
                         if (edge[0] === lastSelectedKeyword && edge[1] === hiddenKeyword.textContent.toUpperCase()) {
                             hiddenKeyword.classList.remove('hide');
                         }
@@ -177,17 +164,13 @@ var searchProjects = function(){
         }
 
         // Hide #search-project-result if no keywords are visible
-        var visibleKeywords = document.querySelectorAll('#search-project-result .project-keyword:not(.hide)');
-        if (visibleKeywords.length === 0) {
-            document.querySelector('#search-project-result').style.display = 'none';
-        } else {
-            document.querySelector('#search-project-result').style.display = '';
-        }
+        const visibleKeywords = document.querySelectorAll('#search-project-result .project-keyword:not(.hide)');
+        document.querySelector('#search-project-result').style.display = visibleKeywords.length === 0 ? 'none' : '';
 
         unHighlightkeywords();
     };
 
-    // Search when user type in
+    // Search when user types in
     document.querySelector("#search-project").addEventListener('keyup', function () {
         // Scroll to projects
         const anchorTopProjects = document.querySelector("#anchor-top-projects");
@@ -199,7 +182,7 @@ var searchProjects = function(){
             });
         }
 
-        var searchedTerm = this.value.trim().toUpperCase();
+        const searchedTerm = this.value.trim().toUpperCase();
 
         // Search by keywords
         if (document.querySelector('#toggle-search').textContent === '#') {
@@ -207,13 +190,12 @@ var searchProjects = function(){
             if (searchedTerm === '' && getSelectedKeywords().length === 0) {
                 document.querySelectorAll('#search-project-result .project-keyword').forEach(el => el.classList.add('hide'));
             } else {
-                document.querySelectorAll('#search-project-result .project-keyword:not(.hide)').forEach(function (el) {
-                    var keyword = el.textContent.toUpperCase();
+                document.querySelectorAll('#search-project-result .project-keyword:not(.hide)').forEach(el => {
+                    const keyword = el.textContent.toUpperCase();
                     // Set keyword visibility and bold on string part found
-                    if (keyword.indexOf(searchedTerm) !== -1) {
-                        var re = new RegExp(searchedTerm, "g");
-                        var keywordHighlighted = keyword.replace(re, '<span class="highlight">' + searchedTerm + '</span>');
-                        el.innerHTML = keywordHighlighted.toLowerCase();
+                    if (keyword.includes(searchedTerm)) {
+                        const re = new RegExp(searchedTerm, "g");
+                        el.innerHTML = keyword.replace(re, `<span class="highlight">${searchedTerm}</span>`).toLowerCase();
                     } else {
                         el.classList.add('hide');
                     }
@@ -224,14 +206,13 @@ var searchProjects = function(){
             if (searchedTerm === "") {
                 document.querySelectorAll("#content.container .liz-repository-project-item").forEach(el => el.style.display = "block");
                 document.querySelectorAll("#content.container .liz-repository-title").forEach(el => el.style.display = "block");
-            }
-            // Hide everything then show projects and titles corresponding to the search bar
-            else {
+            } else {
+                // Hide everything then show projects and titles corresponding to the search bar
                 document.querySelectorAll("#content.container .liz-repository-project-item").forEach(el => el.style.display = "none");
                 document.querySelectorAll("#content.container .liz-repository-title").forEach(el => el.style.display = "none");
 
-                document.querySelectorAll("#content.container li .liz-project-title").forEach(function (el) {
-                    if (el.textContent.toUpperCase().indexOf(searchedTerm) !== -1) {
+                document.querySelectorAll("#content.container li .liz-project-title").forEach(el => {
+                    if (el.textContent.toUpperCase().includes(searchedTerm)) {
                         el.closest('.liz-repository-project-item').style.display = "block";
                         el.closest('.liz-repository-project-list').previousElementSibling.style.display = "block";
                     }
@@ -241,35 +222,31 @@ var searchProjects = function(){
     });
 
     // Init
-    var isGraph = false;
-    var uniqueKeywordList = getVisibleProjectsKeywords();
+    let isGraph = false;
+    let uniqueKeywordList = getVisibleProjectsKeywords();
 
     // Activate keywords search if any
-    if (uniqueKeywordList.length > 0){
+    if (uniqueKeywordList.length > 0) {
         // If at least one keyword contains a slash, we toggle to graph search mode
-        for (var index = 0; index < uniqueKeywordList.length; index++) {
-            var keyword = uniqueKeywordList[index];
-            if (keyword.indexOf('/') !== -1) {
+        uniqueKeywordList.some(keyword => {
+            if (keyword.includes('/')) {
                 isGraph = true;
-                // Get unique keywords in graph mode
                 uniqueKeywordList = getVisibleProjectsKeywords();
-                break;
+                return true;
             }
-        }
+            return false;
+        });
 
-        var keywordsHTML = '';
-        for (let index = 0; index < uniqueKeywordList.length; index++) {
-            keywordsHTML += '<span class="project-keyword hide">' + uniqueKeywordList[index].toLowerCase() + '</span>';
-        }
+        const keywordsHTML = uniqueKeywordList.map(keyword => `<span class="project-keyword hide">${keyword.toLowerCase()}</span>`).join('');
         document.querySelector('#search-project-result').innerHTML = keywordsHTML;
 
         // Add click handler on project keywords
-        document.querySelectorAll('.project-keyword').forEach(function (el) {
+        document.querySelectorAll('.project-keyword').forEach(el => {
             el.addEventListener('click', function () {
                 // Move keyword in #search-project-keywords-selected
-                document.querySelector('#search-project-keywords-selected').insertAdjacentHTML('beforeend', '<span class="project-keyword"><span class="keyword-label">' + this.textContent + '</span><span class="remove-keyword">x</span></span>');
+                document.querySelector('#search-project-keywords-selected').insertAdjacentHTML('beforeend', `<span class="project-keyword"><span class="keyword-label">${this.textContent}</span><span class="remove-keyword">x</span></span>`);
                 // Add close event
-                document.querySelectorAll('#search-project-keywords-selected .remove-keyword').forEach(function (closeEl) {
+                document.querySelectorAll('#search-project-keywords-selected .remove-keyword').forEach(closeEl => {
                     closeEl.addEventListener('click', function () {
                         this.parentElement.remove();
                         filterProjectsBySelectedKeywords();
@@ -288,76 +265,79 @@ var searchProjects = function(){
                 displayKeywordChoices();
             });
         });
-    }else{
+    } else {
         document.querySelector('#toggle-search').style.display = 'none';
         document.querySelector('#toggle-search').parentElement.classList.remove('input-group');
     }
-}
+};
 
-var addPrefetchOnClick = function () {
-    const links = [{
-        url: lizUrls.map,
-        type: 'text/html',
-        as: 'document',
-        params: {},
-    },{
-        url: lizUrls.config,
-        type: 'application/json',
-        as: 'fetch',
-        params: {},
-    },{
-        url: lizUrls.keyValueConfig,
-        type: 'application/json',
-        as: 'fetch',
-        params: {},
-    },{
-        url: lizUrls.ogcService,
-        type: 'text/xml',
-        as: 'fetch',
-        params: {
-            SERVICE: 'WMS',
-            REQUEST: 'GetCapabilities',
-            VERSION: '1.3.0',
+const addPrefetchOnClick = () => {
+    const links = [
+        {
+            url: lizUrls.map,
+            type: 'text/html',
+            as: 'document',
+            params: {},
         },
-    },{
-        url: lizUrls.ogcService,
-        type: 'text/xml',
-        as: 'fetch',
-        params: {
-            SERVICE: 'WFS',
-            REQUEST: 'GetCapabilities',
-            VERSION: '1.0.0',
+        {
+            url: lizUrls.config,
+            type: 'application/json',
+            as: 'fetch',
+            params: {},
         },
-    },{
-        url: lizUrls.ogcService,
-        type: 'text/xml',
-        as: 'fetch',
-        params: {
-            SERVICE: 'WMTS',
-            REQUEST: 'GetCapabilities',
-            VERSION: '1.0.0',
+        {
+            url: lizUrls.keyValueConfig,
+            type: 'application/json',
+            as: 'fetch',
+            params: {},
         },
-    }];
-    document.querySelectorAll('a.liz-project-view').forEach(function (link) {
+        {
+            url: lizUrls.ogcService,
+            type: 'text/xml',
+            as: 'fetch',
+            params: {
+                SERVICE: 'WMS',
+                REQUEST: 'GetCapabilities',
+                VERSION: '1.3.0',
+            },
+        },
+        {
+            url: lizUrls.ogcService,
+            type: 'text/xml',
+            as: 'fetch',
+            params: {
+                SERVICE: 'WFS',
+                REQUEST: 'GetCapabilities',
+                VERSION: '1.0.0',
+            },
+        },
+        {
+            url: lizUrls.ogcService,
+            type: 'text/xml',
+            as: 'fetch',
+            params: {
+                SERVICE: 'WMTS',
+                REQUEST: 'GetCapabilities',
+                VERSION: '1.0.0',
+            },
+        }
+    ];
+
+    document.querySelectorAll('a.liz-project-view').forEach(link => {
         link.addEventListener('click', function () {
-            var projElem = this.closest('div.liz-project');
+            const projElem = this.closest('div.liz-project');
             if (!projElem) {
-                console.log('no project');
+                console.warn('No project');
                 return false;
             }
-            var repId = projElem.dataset.lizmapRepository;
-            var projId = projElem.dataset.lizmapProject;
+            const repId = projElem.dataset.lizmapRepository;
+            const projId = projElem.dataset.lizmapProject;
             links.forEach(link => {
-                const params = new URLSearchParams();
-                params.append('repository', repId);
-                params.append('project', projId);
-                for (const key in link.params) {
-                    params.append(key, link.params[key]);
-                }
+                const params = new URLSearchParams({ repository: repId, project: projId, ...link.params });
                 // Create link tag
                 const linkTag = document.createElement('link');
                 linkTag.rel = 'prefetch';
-                linkTag.href = link.url + '?' + params;
+                linkTag.href = `${link.url}?${params}`;
                 linkTag.type = link.type;
                 linkTag.as = link.as;
                 // Inject tag in the head of the document
@@ -367,17 +347,17 @@ var addPrefetchOnClick = function () {
             return true;
         });
     });
-}
+};
 
-window.addEventListener('load', function () {
+window.addEventListener('load', () => {
     // Initialize global variables
     const lizmapVariablesJSON = document.getElementById('lizmap-vars')?.innerText;
     if (lizmapVariablesJSON) {
         try {
             const lizmapVariables = JSON.parse(lizmapVariablesJSON);
-            for (const variable in lizmapVariables) {
-                globalThis[variable] = lizmapVariables[variable];
-            }
+            Object.entries(lizmapVariables).forEach(([key, value]) => {
+                globalThis[key] = value;
+            });
         } catch {
             console.warn('JSON for Lizmap global variables is not valid!');
         }
