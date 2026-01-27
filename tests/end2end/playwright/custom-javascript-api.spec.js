@@ -23,4 +23,20 @@ test.describe('Maps management', () => {
         await expect(page.getByText('states')).not.toBeVisible();
         await expect(page.getByText('VectorTile')).not.toBeVisible();
     })
+
+    test('Load external js', {
+        tag: '@readonly',
+    }, async ({ page }) => {
+        const project = new ProjectPage(page, 'external_javascript_test');
+        await project.open();
+
+        await expect(page.locator('body')).toHaveAttribute("data-lizmap-user-defined-js-count", "1");
+
+        // await some arbitrary time grater than the async delay in subscribe_uicreated.js external
+        // js script
+        await page.waitForTimeout(5000);
+
+        await expect(page.locator("#external-js-test")).toBeVisible();
+        await expect(page.locator("#external-js-test [error]")).toHaveCount(0);
+    })
 })

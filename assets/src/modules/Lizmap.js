@@ -54,182 +54,184 @@ export default class Lizmap {
 
     constructor(eventDispatcher) {
         this._eventDispatcher = eventDispatcher;
-        lizMap.events.on({
-            configsloaded: (configs) => {
-                const wmsParser = new WMSCapabilities();
-                const wmsCapabilities = wmsParser.read(configs.wmsCapabilities);
-                const wfsParser = new WFSCapabilities();
-                const wfsCapabilities = wfsParser.read(configs.wfsCapabilities);
-                // The initialConfig has been cloned because it will be freezed
-                this._initialConfig = new Config(structuredClone(configs.initialConfig), wmsCapabilities, wfsCapabilities);
-                this._state = new State(this._initialConfig, configs.startupFeatures);
-                this._utils = Utils;
+        this._eventDispatcher.addListener((event) => {
+            const configs = event.configs;
+            const wmsParser = new WMSCapabilities();
+            const wmsCapabilities = wmsParser.read(configs.wmsCapabilities);
+            const wfsParser = new WFSCapabilities();
+            const wfsCapabilities = wfsParser.read(configs.wfsCapabilities);
+            // The initialConfig has been cloned because it will be freezed
+            this._initialConfig = new Config(structuredClone(configs.initialConfig), wmsCapabilities, wfsCapabilities);
+            this._state = new State(this._initialConfig, configs.startupFeatures);
+            this._utils = Utils;
 
-                // Register projections if unknown
-                for (const [ref, def] of Object.entries(globalThis['lizProj4'] || {})) {
-                    if (ref !== "" && !proj4.defs(ref)) {
-                        proj4.defs(ref, def);
-                    }
-                }
-                // Register project projection if unknown
-                const configProj = this._initialConfig.options.projection;
-                if (configProj.ref !== "" && !proj4.defs(configProj.ref)) {
-                    proj4.defs(configProj.ref, configProj.proj4);
-                }
-                // About axis orientation https://proj.org/en/9.3/usage/projections.html#axis-orientation
-                // Add CRS:84 projection, same as EPSG:4326 but with ENU axis orientation
-                proj4.defs("CRS:84","+proj=longlat +datum=WGS84 +no_defs +type=crs");
-                register(proj4);
-
-                // With QGIS 3.40, the root WMS Layer has more easily no bounding boxes.
-                // To check if the project projection is NEU and not ENU, Lizmap can use a
-                // child which could be a layer or a group.
-                let wmsLayer = wmsCapabilities.Capability.Layer;
-                while (wmsLayer.BoundingBox === undefined) {
-                    // breaking while before the loop because wmsLayer.Layer is not iterable
-                    if (wmsLayer.Layer === undefined) {
-                        break;
-                    }
-                    for (const wmsChildLayer of wmsLayer.Layer) {
-                        if (Array.isArray(wmsChildLayer.BoundingBox)) {
-                            wmsLayer = wmsChildLayer;
-                            break;
-                        }
-                    }
-                }
-
-                // Update project projection if its axis orientation is not ENU
-                if (configProj.ref !== "" && Array.isArray(wmsLayer.BoundingBox)) {
-                    // loop through bounding boxes of the project provided by WMS capabilities
-                    for (const bbox of wmsLayer.BoundingBox) {
-                        // If the BBOX CRS is not the same of the project projection, continue.
-                        if (bbox.crs !== configProj.ref) {
-                            continue;
-                        }
-                        // Get project projection
-                        const projectProj = getProjection(configProj.ref);
-                        // Check axis orientation, if it is not ENU, break, we don't have to do anything
-                        if (projectProj.getAxisOrientation() !== 'enu') {
-                            break;
-                        }
-                        // Transform geographic extent to project projection
-                        const extent = olTransformExtent(wmsLayer.EX_GeographicBoundingBox, 'CRS:84', bbox.crs);
-                        // Check closest coordinates
-                        if (Math.abs(extent[0] - bbox.extent[1]) < Math.abs(extent[0] - bbox.extent[0])
-                            && Math.abs(extent[1] - bbox.extent[0]) < Math.abs(extent[1] - bbox.extent[1])
-                            && Math.abs(extent[2] - bbox.extent[3]) < Math.abs(extent[2] - bbox.extent[2])
-                            && Math.abs(extent[3] - bbox.extent[2]) < Math.abs(extent[3] - bbox.extent[3])) {
-                            // If inverted axis are closest, we have to update the projection definition
-                            projectProj.axisOrientation_ = 'neu';
-                            break;
-                        }
-                        // Transform extent from project projection to CRS:84
-                        const geoExtent = olTransformExtent(bbox.extent, bbox.crs, 'CRS:84');
-                        // Check intersects between transform extent and provided extent by WMS Capapbilities
-                        if (!olExtentIntersects(geoExtent, wmsLayer.EX_GeographicBoundingBox)) {
-                            // if extents do not intersect, we have to update the projection definition
-                            projectProj.axisOrientation_ = 'neu';
-                            break;
-                        }
-                    }
-                }
-            },
-            toolbarcreated: () => {
-                this._lizmap3 = lizMap;
-
-                // Register projections if unknown
-                if (!getProjection(this.projection)) {
-                    const proj = this.config.options.projection;
-                    proj4.defs(proj.ref, proj.proj4);
-                }
-
-                if (!getProjection(this.config.options.qgisProjectProjection.ref)) {
-                    const proj = this.config.options.qgisProjectProjection;
-                    proj4.defs(proj.ref, proj.proj4);
-                }
-
-                register(proj4);
-
-                // Override getPointResolution method to always return resolution
-                // without taking care of geodesic adjustment as it can be confusing for user to not have rounded scales
-                (getProjection(this.projection)).setGetPointResolution((resolution) => resolution);
-                (getProjection(this.config.options.qgisProjectProjection.ref)).setGetPointResolution((resolution) => resolution);
-
-                // Create Lizmap modules
-                this.permalink = new Permalink();
-                this.map = new map('newOlMap', this.initialConfig, this.serviceURL, this.state.map, this.state.baseLayers, this.state.rootMapGroup, this.lizmap3);
-                this.layers = new Layers();
-                this.proxyEvents = new ProxyEvents();
-                this.wfs = new WFS();
-                this.wms = new WMS();
-                this.featureStorage = new FeatureStorage();
-                // init Legend module and others when the map is ready
-                // to load legend and features after the map has started to load
-                const initOtherModules = () => {
-                    if (this.legend === undefined) {
-                        this.legend = new Legend(this.state.layerTree);
-                        this.edition = new Edition(this._lizmap3);
-                        this.featuresTable = new FeaturesTable(this.initialConfig, this.lizmap3);
-                        this.geolocation = new Geolocation(this.map, this.lizmap3);
-                        this.geolocationSurvey = new GeolocationSurvey(this.geolocation, this.edition);
-                        this.digitizing = new Digitizing(this.map, this.lizmap3);
-                        this.selectionTool = new SelectionTool(this.map, this.digitizing, this.initialConfig, this.lizmap3);
-                        this.snapping = new Snapping(this.edition, this.state.rootMapGroup, this.state.layerTree, this.lizmap3);
-                        this.action = new Action(this.map, this.selectionTool, this.digitizing, this.lizmap3);
-                        this.popup = new Popup(this.initialConfig, this.state, this.map, this.digitizing);
-                        this.search = new Search(this.map, this.lizmap3);
-                        this.tooltip = new Tooltip(this.map, this.initialConfig.tooltipLayers, this.lizmap3);
-                        this.locateByLayer = new LocateByLayer(
-                            this.initialConfig.locateByLayer,
-                            this.initialConfig.vectorLayerFeatureTypeList,
-                            this.map,
-                            this._lizmap3
-                        );
-                        /**
-                         * Modules initialized.
-                         * @event ModulesInitialized
-                         * @property {string} type lizmap.modules.initialized
-                         * @example
-                         * lizMap.mainEventDispatcher.addListener((lizmapEvent) => {
-                         *         console.log('Modules initialized');
-                         *     },
-                         *     ['lizmap.modules.initialized']
-                         * );
-                         */
-                        eventDispatcher.dispatch('lizmap.modules.initialized');
-                    }
-                };
-                const visibleLayers = this.state.rootMapGroup.findMapLayers().filter(layer => layer.visibility);
-                if (visibleLayers.length == 0) {
-                    if (this.state.map.isReady) {
-                        initOtherModules();
-                    } else {
-                        this.state.map.addListener(initOtherModules, 'map.state.ready');
-                    }
-                } else {
-                    const waitingLayers = visibleLayers.filter(layer => {
-                        return ( layer.loadStatus == MapLayerLoadStatus.Loading ||
-                            layer.loadStatus == MapLayerLoadStatus.Undefined)
-                    });
-                    if (waitingLayers.length == 0) {
-                        initOtherModules();
-                    } else {
-                        this.state.rootMapGroup.addListener(
-                            evt => {
-                                if (evt.loadStatus != MapLayerLoadStatus.Loading) {
-                                    initOtherModules();
-                                }
-                            },
-                            'layer.load.status.changed');
-                    }
-                }
-
-                // Removed unusable button
-                if (!this.config['printTemplates'] || this.config.printTemplates.length == 0 ) {
-                    $('#button-print').parent().remove();
+            // Register projections if unknown
+            for (const [ref, def] of Object.entries(globalThis['lizProj4'] || {})) {
+                if (ref !== "" && !proj4.defs(ref)) {
+                    proj4.defs(ref, def);
                 }
             }
-        });
+            // Register project projection if unknown
+            const configProj = this._initialConfig.options.projection;
+            if (configProj.ref !== "" && !proj4.defs(configProj.ref)) {
+                proj4.defs(configProj.ref, configProj.proj4);
+            }
+            // About axis orientation https://proj.org/en/9.3/usage/projections.html#axis-orientation
+            // Add CRS:84 projection, same as EPSG:4326 but with ENU axis orientation
+            proj4.defs("CRS:84","+proj=longlat +datum=WGS84 +no_defs +type=crs");
+            register(proj4);
+
+            // With QGIS 3.40, the root WMS Layer has more easily no bounding boxes.
+            // To check if the project projection is NEU and not ENU, Lizmap can use a
+            // child which could be a layer or a group.
+            let wmsLayer = wmsCapabilities.Capability.Layer;
+            while (wmsLayer.BoundingBox === undefined) {
+                // breaking while before the loop because wmsLayer.Layer is not iterable
+                if (wmsLayer.Layer === undefined) {
+                    break;
+                }
+                for (const wmsChildLayer of wmsLayer.Layer) {
+                    if (Array.isArray(wmsChildLayer.BoundingBox)) {
+                        wmsLayer = wmsChildLayer;
+                        break;
+                    }
+                }
+            }
+
+            // Update project projection if its axis orientation is not ENU
+            if (configProj.ref !== "" && Array.isArray(wmsLayer.BoundingBox)) {
+                // loop through bounding boxes of the project provided by WMS capabilities
+                for (const bbox of wmsLayer.BoundingBox) {
+                    // If the BBOX CRS is not the same of the project projection, continue.
+                    if (bbox.crs !== configProj.ref) {
+                        continue;
+                    }
+                    // Get project projection
+                    const projectProj = getProjection(configProj.ref);
+                    // Check axis orientation, if it is not ENU, break, we don't have to do anything
+                    if (projectProj.getAxisOrientation() !== 'enu') {
+                        break;
+                    }
+                    // Transform geographic extent to project projection
+                    const extent = olTransformExtent(wmsLayer.EX_GeographicBoundingBox, 'CRS:84', bbox.crs);
+                    // Check closest coordinates
+                    if (Math.abs(extent[0] - bbox.extent[1]) < Math.abs(extent[0] - bbox.extent[0])
+                        && Math.abs(extent[1] - bbox.extent[0]) < Math.abs(extent[1] - bbox.extent[1])
+                        && Math.abs(extent[2] - bbox.extent[3]) < Math.abs(extent[2] - bbox.extent[2])
+                        && Math.abs(extent[3] - bbox.extent[2]) < Math.abs(extent[3] - bbox.extent[3])) {
+                        // If inverted axis are closest, we have to update the projection definition
+                        projectProj.axisOrientation_ = 'neu';
+                        break;
+                    }
+                    // Transform extent from project projection to CRS:84
+                    const geoExtent = olTransformExtent(bbox.extent, bbox.crs, 'CRS:84');
+                    // Check intersects between transform extent and provided extent by WMS Capapbilities
+                    if (!olExtentIntersects(geoExtent, wmsLayer.EX_GeographicBoundingBox)) {
+                        // if extents do not intersect, we have to update the projection definition
+                        projectProj.axisOrientation_ = 'neu';
+                        break;
+                    }
+                }
+            }
+        }, 'lizmap.configsloaded');
+
+        this._eventDispatcher.addListener(() => {
+            this._lizmap3 = lizMap;
+
+            // Register projections if unknown
+            if (!getProjection(this.projection)) {
+                const proj = this.config.options.projection;
+                proj4.defs(proj.ref, proj.proj4);
+            }
+
+            if (!getProjection(this.config.options.qgisProjectProjection.ref)) {
+                const proj = this.config.options.qgisProjectProjection;
+                proj4.defs(proj.ref, proj.proj4);
+            }
+
+            register(proj4);
+
+            // Override getPointResolution method to always return resolution
+            // without taking care of geodesic adjustment as it can be confusing for user to not have rounded scales
+            (getProjection(this.projection)).setGetPointResolution((resolution) => resolution);
+            (getProjection(this.config.options.qgisProjectProjection.ref)).setGetPointResolution((resolution) => resolution);
+
+            // Create Lizmap modules
+            this.permalink = new Permalink();
+            this.map = new map('newOlMap', this.initialConfig, this.serviceURL, this.state.map, this.state.baseLayers, this.state.rootMapGroup, this.lizmap3);
+            this.layers = new Layers();
+            this.proxyEvents = new ProxyEvents();
+            this.wfs = new WFS();
+            this.wms = new WMS();
+            this.featureStorage = new FeatureStorage();
+            // init Legend module and others when the map is ready
+            // to load legend and features after the map has started to load
+            const initOtherModules = () => {
+                if (this.legend === undefined) {
+                    this.legend = new Legend(this.state.layerTree);
+                    this.edition = new Edition(this._lizmap3);
+                    this.featuresTable = new FeaturesTable(this.initialConfig, this.lizmap3);
+                    this.geolocation = new Geolocation(this.map, this.lizmap3);
+                    this.geolocationSurvey = new GeolocationSurvey(this.geolocation, this.edition);
+                    this.digitizing = new Digitizing(this.map, this.lizmap3);
+                    this.selectionTool = new SelectionTool(this.map, this.digitizing, this.initialConfig, this.lizmap3);
+                    this.snapping = new Snapping(this.edition, this.state.rootMapGroup, this.state.layerTree, this.lizmap3);
+                    this.action = new Action(this.map, this.selectionTool, this.digitizing, this.lizmap3);
+                    this.popup = new Popup(this.initialConfig, this.state, this.map, this.digitizing);
+                    this.search = new Search(this.map, this.lizmap3);
+                    this.tooltip = new Tooltip(this.map, this.initialConfig.tooltipLayers, this.lizmap3);
+                    this.locateByLayer = new LocateByLayer(
+                        this.initialConfig.locateByLayer,
+                        this.initialConfig.vectorLayerFeatureTypeList,
+                        this.map,
+                        this._lizmap3
+                    );
+                    /**
+                     * Modules initialized.
+                     * @event ModulesInitialized
+                     * @property {string} type lizmap.modules.initialized
+                     * @example
+                     * lizMap.mainEventDispatcher.addListener((lizmapEvent) => {
+                     *         console.log('Modules initialized');
+                     *     },
+                     *     ['lizmap.modules.initialized']
+                     * );
+                     */
+                    eventDispatcher.dispatch('lizmap.modules.initialized');
+                }
+            };
+            const visibleLayers = this.state.rootMapGroup.findMapLayers().filter(layer => layer.visibility);
+            if (visibleLayers.length == 0) {
+                if (this.state.map.isReady) {
+                    initOtherModules();
+                } else {
+                    this.state.map.addListener(initOtherModules, 'map.state.ready');
+                }
+            } else {
+                const waitingLayers = visibleLayers.filter(layer => {
+                    return ( layer.loadStatus == MapLayerLoadStatus.Loading ||
+                        layer.loadStatus == MapLayerLoadStatus.Undefined)
+                });
+                if (waitingLayers.length == 0) {
+                    initOtherModules();
+                } else {
+                    this.state.rootMapGroup.addListener(
+                        evt => {
+                            if (evt.loadStatus != MapLayerLoadStatus.Loading) {
+                                initOtherModules();
+                            }
+                        },
+                        'layer.load.status.changed');
+                }
+            }
+
+            // Removed unusable button
+            if (!this.config['printTemplates'] || this.config.printTemplates.length == 0 ) {
+                $('#button-print').parent().remove();
+            }
+        }, 'lizmap.ol2.toolbarcreated');
+
+        this.eventDispatcher.dispatch('lizmap.class.loaded')
     }
 
     /**
