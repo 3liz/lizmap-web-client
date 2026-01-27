@@ -1,7 +1,8 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+import { expect as requestExpect } from './fixtures/expect-request.js';
 import { expect as responseExpect } from './fixtures/expect-response.js'
-import { expectParametersToContain, playwrightTestFile } from './globals';
+import { playwrightTestFile } from './globals';
 import { ProjectPage } from "./pages/project";
 
 test.describe('WebDAV Server',
@@ -256,7 +257,7 @@ test.describe('WebDAV Server',
                 'CRS': 'EPSG:4326',
                 'BBOX': /44.6568\d+,-1.2512\d+,47.3951\d+,2.8918\d+/,
             }
-            await expectParametersToContain('GetFeatureInfo', getFeatureInfoRequest.postData() ?? '', expectedParameters);
+            requestExpect(getFeatureInfoRequest).toContainParametersInPostData(expectedParameters);
 
             // wait for response
             let getFeatureInfoResponse = await getFeatureInfoRequest.response();
@@ -328,7 +329,7 @@ test.describe('WebDAV Server',
                 'CRS': 'EPSG:4326',
                 'BBOX': /44.6568\d+,-1.2512\d+,47.3951\d+,2.8918\d+/,
             }
-            await expectParametersToContain('GetFeatureInfo', getFeatureInfoRequest.postData() ?? '', expectedParameters);
+            requestExpect(getFeatureInfoRequest).toContainParametersInPostData(expectedParameters);
 
             // wait for response
             let getFeatureInfoResponse = await getFeatureInfoRequest.response();
@@ -453,7 +454,7 @@ test.describe('WebDAV Server',
                 'CRS': 'EPSG:4326',
                 'BBOX': /44.6568\d+,-1.2512\d+,47.3951\d+,2.8918\d+/,
             }
-            await expectParametersToContain('GetFeatureInfo', getFeatureInfoRequest.postData() ?? '', expectedParameters);
+            requestExpect(getFeatureInfoRequest).toContainParametersInPostData(expectedParameters);
 
             // wait for response
             let getFeatureInfoResponse = await getFeatureInfoRequest.response();
