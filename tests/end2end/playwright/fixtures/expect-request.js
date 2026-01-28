@@ -98,10 +98,6 @@ export const expect = baseExpect.extend({
         const values = containParameters(searchParams, expectedParameters);
         pass = (pass && values.pass);
 
-        if (this.isNot) {
-            pass =!pass;
-        }
-
         const message = pass
             ? () => this.utils.matcherHint(assertionName, undefined, undefined, { isNot: this.isNot }) +
                 '\n\n' +
@@ -135,10 +131,6 @@ export const expect = baseExpect.extend({
 
         const values = containParameters(searchParams, expectedParameters);
         pass = (pass && values.pass);
-
-        if (this.isNot) {
-            pass =!pass;
-        }
 
         const message = pass
             ? () => this.utils.matcherHint(assertionName, undefined, undefined, { isNot: this.isNot }) +
