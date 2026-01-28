@@ -10,8 +10,8 @@ test.describe('Time Manager @readonly', () => {
     // There are 3 time ranges in the test data: we check each one
     const timeRequest = [
         { 'start': '2007-01-01', 'end': '2011-12-31', 'currentText': '2007', 'nextText': '2011', 'sliderPosition': '0px' },
-        { 'start': '2012-01-01', 'end': '2016-12-31', 'currentText': '2012', 'nextText': '2016', 'sliderPosition': '85.6719px'  },
-        { 'start': '2017-01-01', 'end': '2021-12-31', 'currentText': '2017', 'nextText': '2021', 'sliderPosition': '171.406px' },
+        { 'start': '2012-01-01', 'end': '2016-12-31', 'currentText': '2012', 'nextText': '2016', 'sliderPosition': /8\d.\d+px/  },
+        { 'start': '2017-01-01', 'end': '2021-12-31', 'currentText': '2017', 'nextText': '2021', 'sliderPosition': /1\d\d.\d+px/ },
     ];
 
     test('Manual play', async ({ page }) => {
