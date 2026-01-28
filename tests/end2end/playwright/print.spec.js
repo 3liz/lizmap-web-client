@@ -1002,8 +1002,8 @@ test.describe('Print base layers', () => {
             if (UPDATE_MOCK_FILES && GetTiles.length <= 6) {
                 // Save file in mock directory for 6 tiles maximum
                 const response = await route.fetch();
-                await fs.mkdir(dirname(pathFile), { recursive: true })
-                await fs.writeFile(pathFile, await response.body())
+                await fs.mkdir(dirname(pathFile), { recursive: true });
+                await fs.writeFile(pathFile, new Uint8Array(await response.body()));
             } else if (existsSync(pathFile)) {
                 // fulfill route's request with mock file
                 await route.fulfill({
@@ -1133,8 +1133,8 @@ test.describe('Print base layers', () => {
                 // Save file in mock directory for 6 tiles maximum
                 try {
                     const response = await route.fetch();
-                    await fs.mkdir(dirname(pathFile), { recursive: true })
-                    await fs.writeFile(pathFile, await response.body())
+                    await fs.mkdir(dirname(pathFile), { recursive: true });
+                    await fs.writeFile(pathFile, new Uint8Array(await response.body()));
                 } catch {
 
                     // fulfill route's request with default transparent tile
