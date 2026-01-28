@@ -1,11 +1,12 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { gotoMap, getEchoRequestParams } from './globals';
+import { ProjectPage } from './pages/project';
+import { getEchoRequestParams } from './globals';
 
 test.describe('Form filter', () => {
     test.beforeEach(async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=form_filter';
-        await gotoMap(url, page);
+        const project = new ProjectPage(page, 'form_filter');
+        await project.open();
         await page.locator('#button-filter').click();
     });
 

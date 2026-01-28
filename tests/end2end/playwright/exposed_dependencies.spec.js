@@ -1,11 +1,11 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { gotoMap } from './globals';
+import { ProjectPage } from './pages/project';
 
-test.describe('Exposed dependencies', () => {
+test.describe('Exposed dependencies @readonly', () => {
     test('Dependencies are accessible', async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=startup';
-        await gotoMap(url, page)
+        const project = new ProjectPage(page, 'startup');
+        await project.open();
 
         // OpenLayers
         expect(await page.evaluate(() => globalThis.lizMap.ol)).toHaveProperty('Feature');
