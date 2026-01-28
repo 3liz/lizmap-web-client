@@ -1,6 +1,7 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { getAuthStorageStatePath, gotoMap } from './globals';
+import { ProjectPage } from './pages/project';
+import { getAuthStorageStatePath } from './globals';
 
 test.describe('Map projects switcher', () => {
 
@@ -35,7 +36,8 @@ test.describe('Map projects switcher', () => {
     })
 
     test('Switcher from map to map', async ({ page }) => {
-        await gotoMap('index.php/view/map?repository=testsrepository&project=base_layers', page);
+        const project = new ProjectPage(page, 'base_layers');
+        await project.open();
 
         // Check scale
         await expect(page.locator('#overview-bar .ol-scale-text')).toHaveText('1 : ' + (144448).toLocaleString(locale));

@@ -2,6 +2,7 @@
 import { test, expect } from '@playwright/test';
 import { expect as requestExpect } from './fixtures/expect-request.js';
 import { expect as responseExpect } from './fixtures/expect-response.js'
+import { ProjectPage } from "./pages/project";
 import {gotoMap} from './globals';
 
 test.describe('Viewport devicePixelRatio 1', () => {
@@ -169,9 +170,9 @@ test.describe('Viewport mobile', () => {
     });
     test('Display docks', async ({ page }) => {
         // atlas project
-        const url = '/index.php/view/map/?repository=testsrepository&project=atlas'
+        const project = new ProjectPage(page, 'atlas');
         // Go to the map
-        await gotoMap(url, page)
+        await project.open();
 
         // Check menu and menu toggle button
         await expect(page.locator('#mapmenu')).not.toBeInViewport();
@@ -219,8 +220,8 @@ test.describe('Viewport mobile', () => {
 
 test.describe('Viewport standard', () => {
     test('Resize viewport', async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=world-3857';
-        await gotoMap(url, page)
+        const project = new ProjectPage(page, 'world-3857');
+        await project.open();
 
         expect(await page.evaluate(() => lizMap.map.getZoom())).toBe(0);
         expect(await page.evaluate(() => lizMap.mainLizmap.map.getView().getZoom())).toBe(0);

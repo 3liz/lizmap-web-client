@@ -3,7 +3,8 @@ import { dirname } from 'path';
 import * as fs from 'fs/promises'
 import { existsSync } from 'node:fs';
 import { test, expect } from '@playwright/test';
-import { gotoMap, playwrightTestFile } from './globals';
+import { ProjectPage } from './pages/project';
+import { playwrightTestFile } from './globals';
 
 // To update OSM and GeoPF tiles in the mock directory
 // IMPORTANT, this must not be set to `true` while committing, on GitHub. Set to `false`.
@@ -14,8 +15,8 @@ test.describe('Base layers', () => {
     const locale = 'en-US';
 
     test.beforeEach(async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=base_layers';
-        await gotoMap(url, page);
+        const project = new ProjectPage(page, 'base_layers');
+        await project.open();
     });
 
     test('Base layers list', async ({ page }) => {
@@ -143,6 +144,7 @@ test.describe('Base layers', () => {
         await page.waitForTimeout(500);
 
         // Catch osm tile
+        /** @type {string[]} */
         let GetTiles = [];
         await page.route('https://tile.openstreetmap.org/*/*/*.png', async (route) => {
             const request = await route.request();
@@ -274,8 +276,8 @@ test.describe('Base layers', () => {
 test.describe('Base layers user defined', () => {
 
     test.beforeEach(async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=base_layers_user_defined';
-        await gotoMap(url, page);
+        const project = new ProjectPage(page, 'base_layers_user_defined');
+        await project.open();
     });
 
     test('Base layers list', async ({ page }) => {
@@ -290,8 +292,8 @@ test.describe('Base layers user defined', () => {
 test.describe('Base layers with space', () => {
 
     test.beforeEach(async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=base_layers+with+space';
-        await gotoMap(url, page);
+        const project = new ProjectPage(page, 'base_layers with space');
+        await project.open();
     });
 
     test('Base layers list', async ({ page }) => {
@@ -306,8 +308,8 @@ test.describe('Base layers with space', () => {
 test.describe('Base layers with dots', () => {
 
     test.beforeEach(async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=base_layers.withdot';
-        await gotoMap(url, page);
+        const project = new ProjectPage(page, 'base_layers.withdot');
+        await project.open();
     });
 
     test('Base layers list', async ({ page }) => {

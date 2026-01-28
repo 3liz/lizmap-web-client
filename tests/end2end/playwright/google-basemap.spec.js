@@ -1,11 +1,11 @@
 
 import { test, expect } from '@playwright/test';
-import { gotoMap } from './globals';
+import { ProjectPage } from './pages/project';
 
-test.describe('Google Maps Baselayers', () => {
+test.describe('Google Maps Baselayers @readonly', () => {
     test('Load map with no API Key', async ({ page }) => {
-        const url = '/index.php/view/map?repository=testsrepository&project=google_basemap';
-        await gotoMap(url, page);
+        const project = new ProjectPage(page, 'google_basemap');
+        await project.open();
 
         // baselayers group should be hidden since it is empty due to the default STRICT_GOOGLE_TOS_CHECK env variable value = TRUE
         await expect(page.locator('#switcher-baselayer.hide')).toHaveCount(1);
@@ -21,8 +21,8 @@ test.describe('Google Maps Baselayers', () => {
             }
         });
 
-        const url = '/index.php/view/map?repository=testsrepository&project=google_apikey_basemap';
-        await gotoMap(url, page);
+        const project = new ProjectPage(page, 'google_apikey_basemap');
+        await project.open();
 
         // there are three Google base layers in the project, so the expected number of failing requests is three
         expect(initGoogleRequestsCount).toBe(4);
