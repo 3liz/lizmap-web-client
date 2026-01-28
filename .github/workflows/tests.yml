@@ -18,13 +18,13 @@ jobs:
       matrix:
         include:
           - php-version: "8.1"
-            php-unit: "10.5.40"
+            php-unit: "10.5.63"
           - php-version: "8.2"
-            php-unit: "11.5.2"
+            php-unit: "11.5.50"
           - php-version: "8.3"
-            php-unit: "12.2.5"
+            php-unit: "12.5.8"
           - php-version: "8.4"
-            php-unit: "12.2.5"
+            php-unit: "12.5.8"
     steps:
 
       - name: Check out repository
