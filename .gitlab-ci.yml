@@ -92,25 +92,25 @@ package:
   tags:
     - fabric
 
-docker-image-unstable:
-  stage: docker-image
-  script:
-    - make docker-build-ci docker-deliver docker-clean
-    #- make docker-hub
-  environment:
-    name: snap
-  artifacts:
-    paths:
-      - docker/factory.manifest
-  dependencies:
-    - package
-  only:
-    - /^release_.*$/
-    - master
-  except:
-    - tags
-  tags:
-    - factory-dind
+# docker-image-unstable:
+#   stage: docker-image
+#   script:
+#     - make docker-build-ci docker-deliver docker-clean
+#     #- make docker-hub
+#   environment:
+#     name: snap
+#   artifacts:
+#     paths:
+#       - docker/factory.manifest
+#   dependencies:
+#     - package
+#   only:
+#     - /^release_.*$/
+#     - master
+#   except:
+#     - tags
+#   tags:
+#     - factory-dind
 
 docker-image-release:
   stage: docker-image
