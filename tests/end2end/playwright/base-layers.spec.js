@@ -155,8 +155,8 @@ test.describe('Base layers', () => {
             if (UPDATE_MOCK_FILES) {
                 // Save file in mock directory
                 const response = await route.fetch();
-                await fs.mkdir(dirname(pathFile), { recursive: true })
-                await fs.writeFile(pathFile, await response.body())
+                await fs.mkdir(dirname(pathFile), { recursive: true });
+                await fs.writeFile(pathFile, new Uint8Array(await response.body()));
             } else if (existsSync(pathFile)) {
                 // fulfill route's request with mock file
                 await route.fulfill({
@@ -227,8 +227,8 @@ test.describe('Base layers', () => {
             if (UPDATE_MOCK_FILES) {
                 // Save file in mock directory
                 const response = await route.fetch();
-                await fs.mkdir(path.dirname(pathFile), { recursive: true })
-                await fs.writeFile(pathFile, await response.body())
+                await fs.mkdir(dirname(pathFile), { recursive: true });
+                await fs.writeFile(pathFile, new Uint8Array(await response.body()));
             } else if (existsSync(pathFile)) {
                 // fulfill route's request with mock file
                 await route.fulfill({

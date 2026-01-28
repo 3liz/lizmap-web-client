@@ -2,7 +2,6 @@
 import { dirname } from 'path';
 import * as fs from 'fs/promises'
 import { existsSync } from 'node:fs';
-import { Buffer } from 'node:buffer';
 import { test, expect } from '@playwright/test';
 import { expect as requestExpect } from './fixtures/expect-request.js';
 import { playwrightTestFile } from './globals';
@@ -11,24 +10,6 @@ import { ProjectPage } from "./pages/project";
 // To update OSM and GeoPF tiles in the mock directory
 // IMPORTANT, this must not be set to `true` while committing, on GitHub. Set to `false`.
 const UPDATE_MOCK_FILES = false;
-// Source - https://stackoverflow.com/a
-// Posted by Martin Thomson, modified by community. See post 'Timeline' for change history
-// Retrieved 2025-11-13, License - CC BY-SA 4.0
-
-/**
- * Convert a Buffer to an Uint8Array
- * @param {Buffer} buffer a buffer to convert to an Uint8Array
- * @returns {Uint8Array} the buffer converted to an Uint8Array
- */
-function toUint8Array(buffer) {
-    const arrayBuffer = new ArrayBuffer(buffer.length);
-    const view = new Uint8Array(arrayBuffer);
-    for (let i = 0; i < buffer.length; ++i) {
-        view[i] = buffer[i];
-    }
-    return view;
-}
-
 
 test.describe('Sub dock @readonly', () => {
 
@@ -44,8 +25,7 @@ test.describe('Sub dock @readonly', () => {
                 // Save file in mock directory
                 const response = await route.fetch();
                 await fs.mkdir(dirname(pathFile), { recursive: true })
-                const respBuff = await response.body();
-                await fs.writeFile(pathFile, toUint8Array(respBuff), 'binary')
+                await fs.writeFile(pathFile, new Uint8Array(await response.body()));
             } else if (existsSync(pathFile)) {
                 // fulfill route's request with mock file
                 await route.fulfill({
