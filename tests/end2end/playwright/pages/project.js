@@ -247,6 +247,26 @@ export class ProjectPage extends BasePage {
     }
 
     /**
+     * Waits for a single WMS GetMap request (with multiple layers)
+     * This filters out basemap-only GetMap requests which have only one layer
+     * Single WMS requests combine multiple layers, so LAYERS contains commas
+     * @returns {Promise<Request>} The single WMS GetMap request
+     */
+    async waitForSingleWMSGetMapRequest() {
+        return this.page.waitForRequest(
+            request => {
+                if (request.method() !== 'GET') return false;
+                const url = request.url();
+                if (!url.includes('WMS') || !url.includes('GetMap')) return false;
+                // Check for multiple layers (comma-separated) to filter out single basemap requests
+                const layersMatch = url.match(/LAYERS=([^&]*)/i);
+                if (!layersMatch) return false;
+                return layersMatch[1].includes('%2C') || layersMatch[1].includes(',');
+            }
+        );
+    }
+
+    /**
      * Waits for a GetTile request
      * @returns {Promise<Request>} The GetTile request
      */

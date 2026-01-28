@@ -137,10 +137,13 @@ export default class SingleWMSLayer {
         this._orderedLayers = [];
 
         // construct base and map layers array
+        // Also ensure visibility is calculated for each layer before first render
         this._singleWMSLayerList.forEach((m,k) => {
             if (m instanceof BaseLayerState) {
                 this._baseLayers.push(k);
             } else if (m instanceof MapLayerState){
+                // Force visibility calculation in case it hasn't been computed yet
+                m.calculateVisibility();
                 this._mapLayers.push(k);
             }
         });
@@ -343,7 +346,8 @@ export default class SingleWMSLayer {
                     this._layerStyles.push(selectedBaseLayerState.wmsSelectedStyleName || "");
                 }
             } else if (currentLayerState instanceof MapLayerState){
-                // get item visibility
+                // Check if layer should be rendered using visibility
+                // visibility considers both the layer's checked state and parent group visibility
                 if(currentLayerState.visibility) {
                     this._layersName.push(currentLayerState.name);
                     this._layersWmsName.push(currentLayerState.wmsName);
