@@ -1,6 +1,5 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { gotoMap } from './globals';
 import { ProjectPage } from "./pages/project";
 
 test.describe('Startup', () => {
@@ -43,13 +42,13 @@ test.describe('Startup', () => {
     });
 
     test('Projects with dot or space can load', async ({ page }) => {
-        const url_dots = '/index.php/view/map/?repository=testsrepository&project=base_layers+with+space';
-        await gotoMap(url_dots, page)
+        let project = new ProjectPage(page, 'base_layers with space');
+        await project.open();
         await page.$eval("#map, #map *", el => el.style.visibility = 'visible');
         await expect(page.locator('#node-quartiers')).toHaveCount(1);
 
-        const url_space = '/index.php/view/map/?repository=testsrepository&project=base_layers.withdot';
-        await gotoMap(url_space, page)
+        project = new ProjectPage(page, 'base_layers.withdot');
+        await project.open();
         await page.$eval("#map, #map *", el => el.style.visibility = 'visible');
 
         await expect(page.locator('#node-quartiers')).toHaveCount(1);

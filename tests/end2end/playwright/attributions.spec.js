@@ -1,12 +1,12 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { gotoMap } from './globals';
+import { ProjectPage } from './pages/project';
 
-test.describe('Attributions', () => {
+test.describe('Attributions @readonly', () => {
 
     test('Layers attribution', async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=axis_orientation_neu_3044';
-        await gotoMap(url, page)
+        const project = new ProjectPage(page, 'axis_orientation_neu_3044');
+        await project.open();
 
         // No attributions
         await expect(page.getByRole('link', { name: '© Contributeurs OpenStreetMap' })).toHaveCount(0)
@@ -37,8 +37,8 @@ test.describe('Attributions', () => {
     });
 
     test('Base layers attribution', async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=axis_orientation_neu_3044';
-        await gotoMap(url, page)
+        const project = new ProjectPage(page, 'axis_orientation_neu_3044');
+        await project.open();
 
         // No attributions
         await expect(page.getByRole('link', { name: '© Contributeurs OpenStreetMap' })).toHaveCount(0)
@@ -57,8 +57,8 @@ test.describe('Attributions', () => {
     });
 
     test('Mixin attribution', async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=axis_orientation_neu_3044';
-        await gotoMap(url, page)
+        const project = new ProjectPage(page, 'axis_orientation_neu_3044');
+        await project.open();
 
         // No attributions
         await expect(page.getByRole('link', { name: '© Contributeurs OpenStreetMap' })).toHaveCount(0)

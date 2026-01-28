@@ -1,6 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { gotoMap } from './globals';
+import { ProjectPage } from "./pages/project";
 
 test.describe('Treeview', () => {
 
@@ -220,8 +220,8 @@ test.describe('Treeview mocked', () => {
             await route.fulfill({ response, json });
         });
 
-        const url = '/index.php/view/map/?repository=testsrepository&project=treeview';
-        await gotoMap(url, page);
+        const project = new ProjectPage(page, 'treeview');
+        await project.open();
 
         await expect(page.locator('lizmap-treeview div.group > input')).toHaveCount(0);
     });
