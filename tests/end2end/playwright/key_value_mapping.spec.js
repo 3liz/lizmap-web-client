@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 import { expect as responseExpect } from './fixtures/expect-response.js'
 import { ProjectPage } from './pages/project';
 
-test.describe('Key/value in attribute table', () => {
+test.describe('Key/value in attribute table @readonly', () => {
 
     const attribute_table_headers = [
         'id',
@@ -290,7 +290,7 @@ test.describe('Key/value in attribute table', () => {
     });
 });
 
-test.describe('Key/value in form filter', () => {
+test.describe('Key/value in form filter @readonly', () => {
 
     test.beforeEach(async ({ page }) => {
         const project = new ProjectPage(page, 'key_value_mapping');
