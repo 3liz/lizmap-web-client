@@ -4,7 +4,7 @@ import { test, expect } from '@playwright/test';
 import { expect as responseExpect } from './fixtures/expect-response.js'
 import { ProjectPage } from './pages/project';
 
-test.describe('Lizmap actions', () => {
+test.describe('Lizmap actions @readonly', () => {
 
     test.beforeEach(async ({ page }) => {
         const project = new ProjectPage(page, 'feature_toolbar');
