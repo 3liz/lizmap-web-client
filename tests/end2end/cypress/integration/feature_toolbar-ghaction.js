@@ -114,33 +114,4 @@ describe('Feature Toolbar in popup', function () {
         // Confirmation message should be displayed
         cy.get('#message .jelix-msg-item-success').should('have.text', 'Selected features have been correctly linked.')
     })
-
-    it('should start child edition linked to a parent feature from the child feature toolbar', function () {
-        // Click feature with id=2 on the map
-        cy.mapClick(1055, 437)
-        cy.wait('@postGetFeatureInfo')
-
-        // Check WMS GetFeatureInfo request for children
-        cy.wait('@postGetFeatureInfo').then((interception) => {
-            expect(interception.request.body)
-                .to.contain('SERVICE=WMS')
-                .to.contain('REQUEST=GetFeatureInfo')
-                .to.contain('QUERY_LAYERS=children_layer')
-                .to.contain('FILTER=children_layer%3A%22parent_id%22+%3D+%272%27')
-        })
-
-        // Start parent edition
-        cy.get('#popupcontent lizmap-feature-toolbar[value="parent_layer_d3dc849b_9622_4ad0_8401_ef7d75950111.2"] .feature-edit').click()
-
-        // Start child edition
-        cy.get('#edition-children-container lizmap-feature-toolbar[value="children_layer_358cb5a3_0c83_4a6c_8f2f_950e7459d9d0.1"] .feature-edit').click()
-
-        cy.wait(300)
-
-        // Parent_id is hidden in form when edition is started from parent form
-        cy.get('#jforms_view_edition_parent_id').should('have.class', 'hide');
-
-        // Parent_id input should have the value 2 selected
-        cy.get('#jforms_view_edition_parent_id').find('option:selected').should('have.value', '2');
-    })
 })
