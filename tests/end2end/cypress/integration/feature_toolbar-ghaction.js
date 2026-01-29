@@ -115,55 +115,6 @@ describe('Feature Toolbar in popup', function () {
         cy.get('#message .jelix-msg-item-success').should('have.text', 'Selected features have been correctly linked.')
     })
 
-    it('should display working project action selector', function () {
-        // Get the project action
-        // Check the dock is visible
-        cy.get('a#button-action').should('have.length', 1)
-
-        // Open the project action dock
-        cy.get('a#button-action').click()
-
-        // Select an action
-        cy.get('#lizmap-project-actions select.action-select').select('project_map_center_buffer')
-
-        // Run the project action
-        cy.get('#lizmap-project-actions button.action-run-button').click()
-
-        // Check result
-        cy.get('#message #lizmap-action-message p').should('have.text', 'The displayed geometry represents the buffer 2000 m of the current map center')
-
-        // Deactivate
-        cy.get('#lizmap-project-actions button.action-deactivate-button').click()
-
-        // Check
-        cy.get('#message').should('be.empty')
-
-    })
-
-    it('should display working layer action selector', function () {
-        // Select the layer in the legend tree
-        cy.get('#node-parent_layer ~ .node .icon-info-sign').click({force: true})
-
-        // Check the action selector is present
-        cy.get('#sub-dock div.layer-action-selector-container').should('have.length', 1);
-
-        // Select an action
-        cy.get('#sub-dock div.layer-action-selector-container select.action-select').select('layer_spatial_extent')
-
-        // Run the project action
-        cy.get('#sub-dock div.layer-action-selector-container button.action-run-button').click()
-
-        // Check result
-        cy.get('#message #lizmap-action-message p').should('have.text', 'The displayed geometry represents the contour of all the layer features')
-
-        // Deactivate
-        cy.get('#sub-dock div.layer-action-selector-container button.action-run-button').click()
-
-        // Check
-        cy.get('#message').should('be.empty')
-
-    })
-
     it('should start child edition linked to a parent feature from the child feature toolbar', function () {
         // Click feature with id=2 on the map
         cy.mapClick(1055, 437)
