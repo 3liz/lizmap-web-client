@@ -153,8 +153,6 @@ async function CatchErrors(page, layersInTreeView = 0) {
  * @deprecated Use Project page instead and migrate the test to use proper methods
  */
 export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 0, waitForGetLegendGraphic = true) {
-    // TODO keep this function synchronized with the Cypress equivalent
-
     // Wait for WMS GetCapabilities promise
     let getCapabilitiesWMSPromise = page.waitForRequest(/SERVICE=WMS&REQUEST=GetCapabilities/);
 
@@ -204,8 +202,6 @@ export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 
  * @param {boolean} check If some basic checks must be done.
  */
 export async function reloadMap(page, check = true) {
-    // TODO keep this function synchronized with the Cypress equivalent
-
     // Wait for WMS GetCapabilities promise
     let getCapabilitiesWMSPromise = page.waitForRequest(/SERVICE=WMS&REQUEST=GetCapabilities/);
 

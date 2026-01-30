@@ -16,8 +16,6 @@
   "scripts": {
     "build": "rspack build --config assets/webpack.prod.js",
     "bats": "bats ./tests/end2end/bats/",
-    "cy:open": "cypress open --project ./tests/end2end/",
-    "cy:test": "cypress run --headed --project ./tests/end2end/",
     "js:test": "mocha --recursive ./tests/js-units/node",
     "jsdoc": "make version-doc && make js-doc",
     "pr:open": "playwright test --config tests/end2end/playwright.config.ts --ui tests/end2end/",
@@ -38,8 +36,6 @@
     "bats-assert": "^2.2.4",
     "bats-support": "^0.3.0",
     "chai": "^6.0.x",
-    "cypress": "<10.0.0",
-    "cypress-file-upload": "^5.0.x",
     "datatables.net-bs5": "^2.2.2",
     "datatables.net-buttons-bs5": "^3.2.2",
     "datatables.net-datetime": "^1.5.5",

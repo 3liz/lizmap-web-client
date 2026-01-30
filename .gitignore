@@ -114,8 +114,6 @@ tests/qgis-projects/tests/*_attachments.zip
 tests/qgis-server-plugins/*
 !tests/qgis-server-plugins/upgrade_projects.py
 tests/lizmap-qgis-plugin.master.zip
-tests/end2end/cypress/downloads/
-tests/end2end/cypress/screenshots/
 tests/.env
 tests/end2end/playwright-report/
 tests/end2end/ctrf/

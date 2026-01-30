@@ -17,7 +17,6 @@ export default [
             "node_modules/",
             "lizmap/www/assets/jelix/",
             "lizmap/www/assets/js/",
-            "tests/end2end/cypress/", // Candidate for to be removed
             "tests/js-units/node/",
             "tests/units/vendor/",
         ],
