@@ -3,6 +3,7 @@ import { expect } from '@playwright/test';
 import { URLSearchParams } from 'url';
 import { fileURLToPath } from 'url';
 import * as path from 'path';
+import { Buffer } from 'node:buffer';
 
 /**
  * Playwright Page
@@ -81,6 +82,38 @@ export function getAuthStorageStatePath(name) {
 }
 
 /**
+ * To transform a buffer to base64
+ * @param {Buffer} buffer The buffer to transform
+ * @returns {string} The base64 of the buffer
+ */
+export function base64Buffer(buffer) {
+    var binary = '';
+    var bytes = new Uint8Array(buffer);
+    var len = bytes.byteLength;
+    for (var i = 0; i < len; i++) {
+        binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary);
+}
+
+
+const { subtle } = globalThis.crypto;
+
+/**
+ * Transform a buffer by hashing it with sha-1
+ * @param {Buffer} buff The buffer to hash
+ * @returns {Promise<string>} The hash of the buffer
+ */
+export async function digestBuffer(buff) {
+    const hashBuffer = await subtle.digest('sha-1', buff);
+    const hashArray = Array.from(new Uint8Array(hashBuffer)); // convert buffer to byte array
+    const hashHex = hashArray
+        .map((b) => b.toString(16).padStart(2, "0"))
+        .join(""); // convert bytes to hex string
+    return hashHex;
+}
+
+/**
  * Expect no errors in the map page
  * @param {Page} page The page object
  * @param {boolean} checkLayerTreeView Checking  that tree view contains layers
@@ -120,8 +153,6 @@ async function CatchErrors(page, layersInTreeView = 0) {
  * @deprecated Use Project page instead and migrate the test to use proper methods
  */
 export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 0, waitForGetLegendGraphic = true) {
-    // TODO keep this function synchronized with the Cypress equivalent
-
     // Wait for WMS GetCapabilities promise
     let getCapabilitiesWMSPromise = page.waitForRequest(/SERVICE=WMS&REQUEST=GetCapabilities/);
 
@@ -171,8 +202,6 @@ export async function gotoMap(url, page, mapMustLoad = true, layersInTreeView = 
  * @param {boolean} check If some basic checks must be done.
  */
 export async function reloadMap(page, check = true) {
-    // TODO keep this function synchronized with the Cypress equivalent
-
     // Wait for WMS GetCapabilities promise
     let getCapabilitiesWMSPromise = page.waitForRequest(/SERVICE=WMS&REQUEST=GetCapabilities/);
 
@@ -243,10 +272,10 @@ export async function getEchoRequestParams(page, url) {
 
 /**
  * Similar to "toHaveLength", but display the list of members if it fails.
- * @param {string}                        title Check title, for testing and debug
- * @param {Array}                         parameters List of parameters to check
- * @param {int}                           expectedLength Expected size length
- * @param {string[]}                      expectedParameters List of expected parameters, only for debug for the print
+ * @param {string}   title Check title, for testing and debug
+ * @param {string[]} parameters List of parameters to check
+ * @param {int}      expectedLength Expected size length
+ * @param {string[]} expectedParameters List of expected parameters, only for debug for the print
  */
 export async function expectToHaveLengthCompare(title, parameters, expectedLength, expectedParameters) {
     await expect(

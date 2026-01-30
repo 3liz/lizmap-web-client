@@ -746,3 +746,185 @@ test.describe('Attribute table @readonly', () => {
         await expect(page.locator('.btn-filterbyextent-attributeTable')).not.toHaveClass(/active/);
     });
 });
+
+
+test.describe('Attribute table linking @write', () => {
+
+    test('should unlink/link', async ({ page }) => {
+        const project = new ProjectPage(page, 'feature_toolbar');
+
+        // Create a promise to wait for the GetMap request to be made
+        let getMapRequestPromise = project.waitForGetMapRequest();
+        // Open the map project
+        await project.open();
+
+        const layerName = 'parent_layer';
+
+        // Check request
+        let getMapRequest = await getMapRequestPromise;
+        /** @type {{[key: string]: string|RegExp}} */
+        let getMapExpectedParameters = {
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'REQUEST': 'GetMap',
+            'FORMAT': /^image\/png/,
+            'TRANSPARENT': /\b(\w*^true$\w*)\b/gmi,
+            'LAYERS': layerName,
+            'CRS': 'EPSG:2154',
+            'WIDTH': '958',
+            'HEIGHT': '633',
+            'BBOX': /740242.9\d+,6258377.5\d+,803610.7\d+,6300247.9\d+/,
+        }
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
+
+        // Check response
+        let getMapResponse = await getMapRequest.response();
+        responseExpect(getMapResponse).toBeImagePng();
+
+        // Click on parent_layer
+        let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
+        await project.clickOnMap(436, 290);
+        let getFeatureInfoRequest = await getFeatureInfoPromise;
+        /** @type {{[key: string]: string|RegExp}} */
+        const getFeatureInfoExpectedParameters = {
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'REQUEST': 'GetFeatureInfo',
+            'INFO_FORMAT': /^text\/html/,
+            'LAYERS': layerName,
+            'QUERY_LAYERS': layerName,
+        }
+        requestExpect(getFeatureInfoRequest).toContainParametersInPostData(getFeatureInfoExpectedParameters);
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
+
+        // Check popup displayed
+        const popupContainer = page.locator(`#popupcontent div.lizmapPopupSingleFeature[data-feature-id="1"][data-layer-id^="${layerName}_"]`);
+        await expect(popupContainer).toHaveCount(1);
+        await expect(popupContainer).toBeVisible();
+
+        const childLayerName = 'children_layer';
+
+        // Check children displayed
+        const childPopupContainer = popupContainer.locator('div.lizmapPopupChildren');
+        await expect(childPopupContainer).toBeVisible();
+        await expect(childPopupContainer).toHaveAttribute('data-layername', childLayerName);
+        await expect(childPopupContainer).toContainClass(childLayerName);
+        await expect(childPopupContainer.locator('div.lizmapPopupSingleFeature')).toHaveCount(2);
+
+        // Open attribute table
+        let datatablesRequest = await project.openAttributeTable(layerName);
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+
+        // full sized bottom dock
+        await page.locator('#bottom-dock-window-buttons .btn-bottomdock-size').click();
+
+        // Get parent table
+        const tableHtml = project.attributeTableHtml(layerName);
+        // Check table lines
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(2);
+
+        // Get child table
+        const childTableHtml = page.locator(`#attribute-layer-table-${layerName}-${childLayerName}`);
+        // Check child table lines
+        await expect(childTableHtml.locator('tbody tr')).toHaveCount(0);
+
+        // click on line 1 like the popup
+        let datatablesPromise = project.waitForDatatablesRequest();
+        await tableHtml.locator(`tbody tr[id="1"]`).click();
+        datatablesRequest = await datatablesPromise;
+        datatablesResponse = await datatablesRequest.response();
+
+        // Check child table lines
+        await expect(childTableHtml.locator('tbody tr')).toHaveCount(2);
+
+        // Unlink button for child 2
+        await expect(childTableHtml.locator(`tbody tr[id="2"] button.feature-unlink`)).toBeVisible();
+
+        // Create the promise to wait for the request to unlink child
+        let unlinkChildRequestPromise = page.waitForRequest(/lizmap\/edition\/unlinkChild/);
+        // Click on the unlink button
+        await childTableHtml.locator(`tbody tr[id="2"] button.feature-unlink`).click();
+        let unlinkChildRequest = await unlinkChildRequestPromise;
+        datatablesPromise = project.waitForDatatablesRequest();
+        await unlinkChildRequest.response();
+        datatablesRequest = await datatablesPromise;
+        datatablesResponse = await datatablesRequest.response();
+
+        // Check child table lines
+        await expect(childTableHtml.locator('tbody tr')).toHaveCount(1);
+
+        // Confirmation message should be displayed
+        await expect(page.locator('#message .jelix-msg-item-success')).toHaveText('The child feature has correctly been unlinked.');
+
+        // Close the message
+        await expect(page.locator('#message .btn-close')).toBeVisible();
+        await page.locator('#message .btn-close').click();
+        await expect(page.locator('#message')).toBeHidden();
+
+        // The Popup has not been refreshed
+
+        // To link features
+        // 1. Select the parent_layer feature: 1
+        // 2. Open the children_layer attribute table
+        // 3. Select the children_layer feature: 2
+        // 4. back to the parent_layer attribute table
+        // 5. click on the link button
+
+        // Select the parent_layer feature: 1
+        await expect(tableHtml.locator(`tbody tr[id="1"] button.feature-select`)).toBeVisible();
+        await tableHtml.locator(`tbody tr[id="1"] button.feature-select`).click();
+
+        // Open the children_layer attribute table
+        datatablesRequest = await project.openAttributeTable(childLayerName);
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+
+        // Select the children_layer feature: 2
+        await expect(project.attributeTableHtml(childLayerName).locator(`tbody tr[id="1"] button.feature-select`)).toBeVisible();
+        await project.attributeTableHtml(childLayerName).locator(`tbody tr[id="1"] button.feature-select`).click();
+
+        // back to the parent_layer attribute table
+        await expect(tableHtml).toBeHidden();
+        await page.locator(`#nav-tab-attribute-layer-${layerName}`).click();
+        await expect(tableHtml).toBeVisible();
+
+        // click on the link button
+        const actionBar = project.attributeTableActionBar(layerName);
+        await expect(actionBar.getByText('Link selected features')).toBeVisible();
+        await expect(actionBar.locator('.btn-linkFeatures-attributeTable')).toHaveCount(1);
+        await expect(actionBar.locator('.btn-linkFeatures-attributeTable')).not.toBeVisible();
+        await actionBar.getByText('Link selected features').click();
+        await expect(actionBar.locator('.btn-linkFeatures-attributeTable')).toBeVisible();
+        // Create the promise to wait for the request to unlink child
+        let linkFeaturesRequestPromise = page.waitForRequest(/lizmap\/edition\/linkFeatures/);
+        await actionBar.locator('.btn-linkFeatures-attributeTable').click();
+        // Wait for the request to unlink child
+        let linkFeaturesRequest = await linkFeaturesRequestPromise;
+        await linkFeaturesRequest.response();
+
+        // Confirmation message should be displayed
+        await expect(page.locator('#message .jelix-msg-item-success')).toHaveText('Selected features have been correctly linked.');
+
+        // Close the message
+        await expect(page.locator('#message .btn-close')).toBeVisible();
+        await page.locator('#message .btn-close').click();
+        await expect(page.locator('#message')).toBeHidden();
+
+        // The child table has not been refreshed
+        // Check child table lines
+        // await expect(childTableHtml.locator('tbody tr')).toHaveCount(1);
+        // We need to click one the line to refresh child table
+
+        // click on line 1 like the popup
+        datatablesPromise = project.waitForDatatablesRequest();
+        await tableHtml.locator(`tbody tr[id="1"]`).click();
+        datatablesRequest = await datatablesPromise;
+        datatablesResponse = await datatablesRequest.response();
+
+        // Check child table lines
+        await expect(childTableHtml.locator('tbody tr')).toHaveCount(2);
+    });
+
+});

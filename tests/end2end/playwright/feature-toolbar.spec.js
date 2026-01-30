@@ -550,6 +550,105 @@ test.describe('Feature toolbar in popup @readonly', () => {
         await page.locator('#jforms_view_edition__submit_cancel').click();
     });
 
+    test('should start child edition linked to a parent feature from the child feature toolbar', async ({ page }) => {
+        const project = new ProjectPage(page, 'feature_toolbar');
+        await project.open();
+        const layerName = 'parent_layer';
+
+        // Click on the second point
+        let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
+        await project.clickOnMap(594, 290);
+
+        let getFeatureInfoRequest = await getFeatureInfoPromise;
+        const getFeatureInfoExpectedParameters = {
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'REQUEST': 'GetFeatureInfo',
+            'INFO_FORMAT': /^text\/html/,
+            'LAYERS': layerName,
+            'QUERY_LAYERS': layerName,
+        }
+        requestExpect(getFeatureInfoRequest).toContainParametersInPostData(getFeatureInfoExpectedParameters);
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
+
+        // Edit feature
+        const featureToolbar = project.popupContent.locator(`lizmap-feature-toolbar[value^="${layerName}_"][value$=".2"]`);
+        await expect(featureToolbar.locator('button.feature-edit')).toBeVisible();
+
+        // Open edit feature
+        // Create the promise to wait for the request to modify feature
+        let modifyFeatureRequestPromise = page.waitForRequest(/lizmap\/edition\/modifyFeature/);
+        // click on edit button from popup
+        await featureToolbar.locator('button.feature-edit').click();
+        let modifyFeatureRequest = await modifyFeatureRequestPromise;
+        // Create the promise to wait for the request to open the form
+        let editFeatureRequestPromise = page.waitForRequest(/lizmap\/edition\/editFeature/);
+        // Wait for modify feature response
+        await modifyFeatureRequest.response();
+        let editFeatureRequest = await editFeatureRequestPromise;
+        // Wait for the form and check it
+        responseExpect(await editFeatureRequest.response()).toBeTextPlain();
+        // Create the promise to wait for datatables request
+        const datatablesPromise = project.waitForDatatablesRequest();
+        let datatablesRequest = await datatablesPromise;
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+
+        // Check request
+        let expectedParameters = {
+            layerId: /^parent_layer_[a-zA-Z0-9_]*/,
+            featureId: '2',
+        };
+        requestExpect(modifyFeatureRequest).toContainParametersInUrl(expectedParameters);
+        requestExpect(editFeatureRequest).toContainParametersInUrl(expectedParameters);
+
+        // id input is visible
+        await expect(page.locator('#jforms_view_edition_id')).toBeVisible();
+        // id input should have the value 2
+        await expect(page.locator('#jforms_view_edition_id')).toHaveValue('2');
+
+        // Child layer
+        const childLayerName = 'children_layer';
+        const editionChildTable = page.locator(`#edition-child-tab-${layerName}-${childLayerName}`);
+        const editionChildTableWrapper = page.locator(`#edition-table-${layerName}-${childLayerName}_wrapper`);
+
+        // Child table is visible
+        await expect(editionChildTable).toBeVisible();
+        await expect(editionChildTableWrapper).toBeVisible();
+
+        // Table lines
+        await expect(editionChildTableWrapper.locator('tbody tr')).toHaveCount(1);
+
+        const childFeatureToolbar = editionChildTableWrapper.locator('tbody tr lizmap-feature-toolbar');
+        await expect(childFeatureToolbar.locator('button.feature-edit')).toBeVisible();
+
+        // Open child edit feature
+        // Create the promise to wait for the request to modify feature
+        modifyFeatureRequestPromise = page.waitForRequest(/lizmap\/edition\/modifyFeature/);
+        // click on edit button from popup
+        await childFeatureToolbar.locator('button.feature-edit').click();
+        modifyFeatureRequest = await modifyFeatureRequestPromise;
+        // Create the promise to wait for the request to open the form
+        editFeatureRequestPromise = page.waitForRequest(/lizmap\/edition\/editFeature/);
+        // Wait for modify feature response
+        await modifyFeatureRequest.response();
+        editFeatureRequest = await editFeatureRequestPromise;
+        // Wait for the form and check it
+        responseExpect(await editFeatureRequest.response()).toBeTextPlain();
+
+        // parent_id select is hidden
+        await expect(page.locator('#jforms_view_edition_parent_id')).toBeHidden();
+        // parent_id select should have the value 2
+        await expect(page.locator('#jforms_view_edition_parent_id')).toHaveValue('2');
+        // an input next to select is visible
+        await expect(page.locator('#jforms_view_edition_parent_id + input')).toBeVisible();
+        // the input should have the value 2 like select
+        await expect(page.locator('#jforms_view_edition_parent_id + input')).toHaveValue('2');
+        // and the input is disabled
+        await expect(page.locator('#jforms_view_edition_parent_id + input')).toBeDisabled();
+    });
+
     test('should delete', async ({ page }) => {
         const project = new ProjectPage(page, 'feature_toolbar');
         await project.open();
