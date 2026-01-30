@@ -283,25 +283,9 @@ You must execute `tests/qgis-projects/tests/load_sql.sh` to populate PostgreSQL 
 
 *First add testing data as explained above.*
 
-The `end2end` directory contains some end-to-end tests made for Cypress and Playwright.
+The `end2end` directory contains some end-to-end tests made for Playwright and BATS.
 
-In the **root** directory, `npm install` to install Cypress and Playwright.
-
-### Cypress
-
-You can then :
-- execute `npm run cy:open` to open Cypress window.
-- select the target browser then click one of the integration tests or 'Run n integration specs' to run all.
-
-or
-
-- execute `npm run cy:test` to automatically open Cypress window and run tests in Electron browser.
-
-You can also use GNU Parallel to parallelize Cypress tests execution on 8 cores for example:
-
-`find cypress/integration/ -name '*.js' | parallel -j8 --group  npx cypress run --spec {}`
-
-Output colors can be kept with `--tty` parameter, but it won't work with `--group` which is useful to not mix outputs from different tests.
+In the **root** directory, `npm install` to install Playwright and Bats.
 
 ### Playwright
 
@@ -309,7 +293,7 @@ You have to install the browsers with `npx playwright install` (only the first t
 You can then run:
 - `npx playwright test --config tests/end2end/playwright.config.ts` to execute all tests with all browsers
 And optionnaly add:
-- `--ui` to open a UI as in Cypress which ease testing
+- `--ui` to open a UI
 - `--grep @readonly --workers 4` to run tests with 4 workers for tests which are read-only
 - `--project=chromium` to execute all tests with the Chromium browser
 - `--grep-invert "test_a|test_b"` to execute all tests but "test_a" and "test_b"
@@ -321,21 +305,31 @@ You can also install the handy [Playwright extension](https://marketplace.visual
 
 #### Writing tests
 
-A tests doing only a **read-only** on Lizmap must be tagged as `@readonly`, otherwise, it must be tagged `@write`.
+A test doing only a **read-only** on Lizmap must be tagged as `@readonly`, otherwise, it must be tagged `@write`.
+If it's performing only **requests** to the API, it must be tagged as `@requests`.
 
-### Artifacts
+#### Artifacts
 
 When GitHub Action is failing, all screenshots and downloaded files are uploaded in an ZIP.
-It's available in the CI **Summary page** of the CI job, with a zip called `cypress-screenshots.zip`.
+It's available in the CI **Summary page** of the CI job.
 
-### Mouse coordinates
+#### Mouse coordinates
 
 In Firefox, you can enable and use the [measuring tool](https://firefox-source-docs.mozilla.org/devtools-user/measure_a_portion_of_the_page/index.html).
 
-You need to be sure to use the same viewport size as Cypress : `1280 * 800 DPR 1` or Playwright : `900 * 650 DPR 1`.
-We suggest you to save those configurations in `Settings` => `Emulated Devices` as `Cypress` or `Playwright`.
+You need to be sure to use the same viewport size as Playwright : `900 * 650 DPR 1`.
+We suggest you to save those configurations in `Settings` => `Emulated Devices` as `Playwright`.
 
-In Cypress, to click on the map, it's recommended to use the `cy.mapClick(x,y)` function using coordinates
+### Bats
+
+Bats (Bash Automated Testing System) is a TAP-compliant testing framework for Bash 3.2 or above. It provides a simple way to verify that the UNIX programs you write behave as expected. Bats is most useful when testing software written in Bash, but you can use it to test any UNIX program.
+
+https://bats-core.readthedocs.io/
+
+Bats is here used to test PHP console command.
+
+To run bats tests, you can use the command `npm run bats`.
+
 
 ## Manual tests
 
