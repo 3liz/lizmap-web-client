@@ -3,6 +3,7 @@ import { expect } from '@playwright/test';
 import { URLSearchParams } from 'url';
 import { fileURLToPath } from 'url';
 import * as path from 'path';
+import { Buffer } from 'node:buffer';
 
 /**
  * Playwright Page
@@ -78,6 +79,38 @@ export function qgsTestFile(file_name, directory = 'tests')   {
  */
 export function getAuthStorageStatePath(name) {
     return playwrightTestFile('.auth', name + '.json');
+}
+
+/**
+ * To transform a buffer to base64
+ * @param {Buffer} buffer The buffer to transform
+ * @returns {string} The base64 of the buffer
+ */
+export function base64Buffer(buffer) {
+    var binary = '';
+    var bytes = new Uint8Array(buffer);
+    var len = bytes.byteLength;
+    for (var i = 0; i < len; i++) {
+        binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary);
+}
+
+
+const { subtle } = globalThis.crypto;
+
+/**
+ * Transform a buffer by hashing it with sha-1
+ * @param {Buffer} buff The buffer to hash
+ * @returns {Promise<string>} The hash of the buffer
+ */
+export async function digestBuffer(buff) {
+    const hashBuffer = await subtle.digest('sha-1', buff);
+    const hashArray = Array.from(new Uint8Array(hashBuffer)); // convert buffer to byte array
+    const hashHex = hashArray
+        .map((b) => b.toString(16).padStart(2, "0"))
+        .join(""); // convert bytes to hex string
+    return hashHex;
 }
 
 /**
@@ -243,10 +276,10 @@ export async function getEchoRequestParams(page, url) {
 
 /**
  * Similar to "toHaveLength", but display the list of members if it fails.
- * @param {string}                        title Check title, for testing and debug
- * @param {Array}                         parameters List of parameters to check
- * @param {int}                           expectedLength Expected size length
- * @param {string[]}                      expectedParameters List of expected parameters, only for debug for the print
+ * @param {string}   title Check title, for testing and debug
+ * @param {string[]} parameters List of parameters to check
+ * @param {int}      expectedLength Expected size length
+ * @param {string[]} expectedParameters List of expected parameters, only for debug for the print
  */
 export async function expectToHaveLengthCompare(title, parameters, expectedLength, expectedParameters) {
     await expect(
