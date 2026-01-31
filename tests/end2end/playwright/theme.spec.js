@@ -379,6 +379,9 @@ test.describe('Theme and automatic permalink @readonly', () => {
         await project.open();
         let getMapRequest = await getMapRequestPromise;
         await getMapRequest.response();
+
+        // Remove listen to GetProjectConfig
+        await page.unroute('**/service/getProjectConfig*');
     });
 
     test('must display theme1 at startup', async ({ page }) => {

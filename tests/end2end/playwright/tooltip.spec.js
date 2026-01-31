@@ -98,6 +98,7 @@ test.describe('Tooltip @readonly', () => {
         // An error message is displayed
         await expect(page.locator('#message')).toBeVisible();
 
+        // Remove listen to features tooltips
         await page.unroute('**/lizmap/features/tooltips*');
     });
 

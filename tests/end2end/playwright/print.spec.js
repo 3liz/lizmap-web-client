@@ -993,6 +993,7 @@ test.describe('Print 3857', () => {
 test.describe('Print base layers', () => {
     test.beforeEach(async ({ page }) => {
         // Catch openstreetmap requests to mock them
+        /** @type {string[]} */
         let GetTiles = [];
         await page.route('https://tile.openstreetmap.org/*/*/*.png', async (route) => {
             const request = route.request();
@@ -1028,7 +1029,9 @@ test.describe('Print base layers', () => {
         while (GetTiles.length < 6) {
             await page.waitForTimeout(100);
         }
-        await expect(GetTiles.length).toBeGreaterThanOrEqual(6);
+        expect(GetTiles.length).toBeGreaterThanOrEqual(6);
+
+        // Remove listen to osm tiles
         await page.unroute('https://tile.openstreetmap.org/*/*/*.png');
     });
 
@@ -1123,6 +1126,7 @@ test.describe('Print base layers', () => {
 
         // Print quartiers not open-topo-map
         // Catch opentopomap request to mock them
+        /** @type {string[]} */
         let GetTiles = [];
         await page.route('https://*.tile.opentopomap.org/*/*/*.png', async (route) => {
             const request = route.request();
@@ -1161,6 +1165,8 @@ test.describe('Print base layers', () => {
             await page.waitForTimeout(100);
         }
         await expect(GetTiles.length).toBeGreaterThanOrEqual(6);
+
+        // Remove listen to opentopomap tiles
         await page.unroute('https://*.tile.opentopomap.org/*/*/*.png');
 
         getPrintRequestPromise = page.waitForRequest(
@@ -1264,6 +1270,9 @@ test.describe('Error while printing', () => {
         ).toBeVisible();
 
         await expect(page.locator("#message > div:last-child")).toHaveClass(/alert-error/);
+
+        // Stop listening to WMS requests
+        await page.unroute('**/service*');
     });
 
 
@@ -1301,6 +1310,9 @@ test.describe('Error while printing', () => {
         )).toBeVisible();
 
         await expect(page.locator("#message > div:last-child")).toHaveClass(/alert-error/);
+
+        // Stop listening to WMS requests
+        await page.unroute('**/service*');
     });
 
     test('Remove print overlay when switching to another minidock', async ({ page }) => {
