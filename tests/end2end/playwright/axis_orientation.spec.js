@@ -62,6 +62,7 @@ test.describe('Axis Orientation',
             await expect(bundeslanderByteLength).toBeGreaterThan(blankByteLength);
 
             // Catch GetTile request
+            /** @type {string[]} GetTiles - Array of tiles url string */
             let GetTiles = [];
             await page.route('https://tile.openstreetmap.org/*/*/*.png', async (route) => {
                 const request = route.request();
@@ -99,7 +100,9 @@ test.describe('Axis Orientation',
             await expect(GetTiles[3]).toContain('6/34/21.png')
             await expect(GetTiles[4]).toContain('6/33/22.png')
             await expect(GetTiles[5]).toContain('6/34/22.png')
-            await page.unroute('https://tile.openstreetmap.org/*/*/*.png')
+
+            // Remove listen to osm tiles
+            await page.unroute('https://tile.openstreetmap.org/*/*/*.png');
 
             // Wait for transition
             await page.waitForTimeout(1000);
@@ -156,6 +159,7 @@ test.describe('Axis Orientation',
             await expect(judetByteLength).toBeGreaterThan(blankByteLength);
 
             // Catch GetTile request
+            /** @type {string[]} GetTiles - Array of tiles url string */
             let GetTiles = [];
             await page.route('https://tile.openstreetmap.org/*/*/*.png', async (route) => {
                 const request = route.request();
@@ -193,7 +197,9 @@ test.describe('Axis Orientation',
             expect(GetTiles[3]).toContain('6/36/23.png')
             expect(GetTiles[4]).toContain('6/37/22.png')
             expect(GetTiles[5]).toContain('6/37/23.png')
-            await page.unroute('https://tile.openstreetmap.org/*/*/*.png')
+
+            // Remove listen to osm tiles
+            await page.unroute('https://tile.openstreetmap.org/*/*/*.png');
 
             // Wait for transition
             await page.waitForTimeout(1000);

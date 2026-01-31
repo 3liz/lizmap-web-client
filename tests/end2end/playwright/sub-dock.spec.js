@@ -316,6 +316,9 @@ test.describe('Sub dock @readonly', () => {
         const project = new ProjectPage(page, 'permalink');
         await project.open();
 
+        // Remove listen to GetProjectConfig
+        await page.unroute('**/service/getProjectConfig*');
+
         // Display sub dock metadata for layer in WFS with multiple styles
         await page.getByTestId('sousquartiers').hover();
         await page.getByTestId('sousquartiers').locator('.icon-info-sign').click();
@@ -347,7 +350,7 @@ test.describe('Sub dock @readonly', () => {
 
     test('Export layer without attribute table config', async ({ page }) => {
         // Remove attribute table config
-        await page.route('**/service/getProjectConfig*', async route => {
+        await ('**/service/getProjectConfig*', async route => {
             const response = await route.fetch();
             const json = await response.json();
             json.attributeLayers = {};
@@ -398,6 +401,9 @@ test.describe('Sub dock @readonly', () => {
 
         const project = new ProjectPage(page, 'permalink');
         await project.open();
+
+        // Remove listen to GetProjectConfig
+        await page.unroute('**/service/getProjectConfig*');
 
         // Display sub dock metadata for layer in WFS with multiple styles
         await page.getByTestId('sousquartiers').hover();

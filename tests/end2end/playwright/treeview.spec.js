@@ -11,7 +11,9 @@ test.describe('Treeview', () => {
         // Wait for WMS GetCapabilities promise
         let getCapabilitiesWMSPromise = page.waitForRequest(/SERVICE=WMS&REQUEST=GetCapabilities/);
 
+        /** @type {URLSearchParams[]} */
         const GetMaps = [];
+        /** @type {URLSearchParams[]} */
         const GetLegends = [];
         await page.route('**/service*', async route => {
             const request = await route.request();
@@ -223,6 +225,9 @@ test.describe('Treeview mocked', () => {
         const project = new ProjectPage(page, 'treeview');
         await project.open();
 
+        // Remove listen to GetProjectConfig
+        await page.unroute('**/service/getProjectConfig*');
+
         await expect(page.locator('lizmap-treeview div.group > input')).toHaveCount(0);
     });
 
@@ -231,7 +236,9 @@ test.describe('Treeview mocked', () => {
             tag: ['@mock', '@readonly'],
         }, async ({ page }) => {
             // we can't use Project page, because we are making GetLegendGraphic failing on purpose
+            /** @type {URLSearchParams[]} */
             const timedOutRequest = [];
+            /** @type {URLSearchParams[]} */
             const GetLegends = [];
             await page.route('**/service*', async route => {
                 const request = await route.request();
@@ -328,6 +335,7 @@ test.describe('Treeview mocked', () => {
             });
             */
 
+            // Stop listening to WMS requests
             await page.unroute('**/service*');
         });
 
@@ -336,8 +344,11 @@ test.describe('Treeview mocked', () => {
             tag: ['@mock', '@readonly'],
         }, async ({ page }) => {
             // we can't use Project page, because we are making GetLegendGraphic failing on purpose
+            /** @type {URLSearchParams[]} */
             const timedOutRequest = [];
+            /** @type {URLSearchParams[]} */
             const GetMaps = [];
+            /** @type {URLSearchParams[]} */
             const GetLegends = [];
             await page.route('**/service*', async route => {
                 const request = await route.request();
@@ -455,6 +466,7 @@ test.describe('Treeview mocked', () => {
                 expect(searchParams.get('STYLES')).not.toContain(',');
             });
 
+            // Stop listening to WMS requests
             await page.unroute('**/service*');
         });
 });
