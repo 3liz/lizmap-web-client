@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Schema name="kml_multiline" id="kml_multiline">
+	<SimpleField name="id" type="int"></SimpleField>
+</Schema>
+<Folder><name>kml_multiline</name>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#kml_multiline">
+		<SimpleData name="id">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <MultiGeometry><LineString><coordinates>3.8424644760806,43.625719386909 3.84683727580798,43.6256872976944 3.84241459742697,43.6242517035631 3.84620932979987,43.6240004688734 3.84253606093004,43.6222302556595</coordinates></LineString></MultiGeometry>
+  </Placemark>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#kml_multiline">
+		<SimpleData name="id">2</SimpleData>
+	</SchemaData></ExtendedData>
+      <MultiGeometry><LineString><coordinates>3.84968807871335,43.625636363524 3.84938696006945,43.6223833481268 3.85306267919144,43.6223634648876</coordinates></LineString></MultiGeometry>
+  </Placemark>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#kml_multiline">
+		<SimpleData name="id">4</SimpleData>
+	</SchemaData></ExtendedData>
+      <MultiGeometry><LineString><coordinates>3.85894674710904,43.6257457866993 3.863004360013,43.6257646041174 3.85922308861028,43.622711878062 3.86245381747609,43.6226537802435</coordinates></LineString></MultiGeometry>
+  </Placemark>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#kml_multiline">
+		<SimpleData name="id">3</SimpleData>
+	</SchemaData></ExtendedData>
+      <MultiGeometry><LineString><coordinates>3.85596924466465,43.625799235644 3.85610963112792,43.6224924183426</coordinates></LineString><LineString><coordinates>3.8556471716513,43.6263442560975 3.85568605393991,43.6260911467433 3.85628985542826,43.6261376825208 3.85617374820479,43.6264495438932 3.85566457895306,43.6263898370107</coordinates></LineString></MultiGeometry>
+  </Placemark>
+</Folder>
+</Document></kml>
