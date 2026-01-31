@@ -449,7 +449,7 @@
         "lizmap_web_client_target_version": 30700,
         "lizmap_web_client_target_status": "Stable",
         "instance_target_url": "https://demo.lizmap.com/lizmap/",
-        "instance_target_repository": "cypress"
+        "instance_target_repository": "tests"
     },
     "warnings": {},
     "options": {

@@ -1,6 +1,0 @@
-{"type": "FeatureCollection",
- "features": [
-  {"geometry":null,"id":"data_uids.2","properties":{"id":2,"label":"second","uid":"4f44046a-88e5-4ec4-bab4-b16d841433c8"},"type":"Feature"}
- ,{"geometry":null,"id":"data_uids.4","properties":{"id":4,"label":"fourth","uid":"2b91cf36-67c6-40f1-a0cb-af7e57e290d8"},"type":"Feature"}
- ]
-}
