@@ -65,6 +65,9 @@ test.describe('Location search @readonly', () => {
 
         await expect(searchLocator).toHaveCount(1);
 
+        // Remove catching GetProjectConfig
+        await page.unroute('**/service/getProjectConfig*');
+
         await searchLocator.click();
         await searchLocator.fill('arceaux');
 
@@ -97,6 +100,9 @@ test.describe('Location search @readonly', () => {
         const searchLocator = page.getByPlaceholder('Search');
 
         await expect(searchLocator).toHaveCount(1);
+
+        // Remove catching GetProjectConfig
+        await page.unroute('**/service/getProjectConfig*');
 
         await searchLocator.click();
         await searchLocator.fill('arceaux');
@@ -171,6 +177,9 @@ test.describe('Location search @readonly', () => {
         const searchLocator = page.getByPlaceholder('Search');
 
         await expect(searchLocator).toHaveCount(0);
+
+        // Remove catching GetProjectConfig
+        await page.unroute('**/service/getProjectConfig*');
     });
 
 });

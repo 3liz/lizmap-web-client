@@ -18,6 +18,11 @@ test.describe('Permalink', () => {
         });
     });
 
+    test.afterEach(async ({ page }) => {
+        // Remove catching GetProjectConfig
+        await page.unroute('**/service/getProjectConfig*');
+    });
+
     test('Hash changes when map center is changed', async ({ page }) => {
         await gotoMap('/index.php/view/map?repository=testsrepository&project=layer_legends', page);
         await page.evaluate(() => lizMap.mainLizmap.map.getView().setCenter([770485, 6277813]));
@@ -586,6 +591,11 @@ test.describe('Automatic permalink disabled', () => {
             }
             await route.fulfill({ response, json });
         });
+    });
+
+    test.afterEach(async ({ page }) => {
+        // Remove catching GetProjectConfig
+        await page.unroute('**/service/getProjectConfig*');
     });
 
     test('Hash does not change when map center is changed', async ({ page }) => {

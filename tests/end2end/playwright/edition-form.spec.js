@@ -85,6 +85,7 @@ test.describe('Edition Form Validation', () => {
         await expect(page.locator("#lizmap-edition-message")).toBeVisible();
         await expect(page.locator("#message > div")).toHaveClass(/alert-danger/);
 
+        // Remove listen to create feature
         await page.unroute('**/edition/createFeature*');
     })
 
@@ -125,6 +126,7 @@ test.describe('Edition Form Validation', () => {
         // form closed
         await expect(page.locator('#edition-form-container')).toBeHidden();
 
+        // Remove listen to save feature
         await page.unroute('**/edition/saveFeature*');
     })
 })

@@ -52,6 +52,8 @@ test.describe('Viewport devicePixelRatio 1', () => {
         expect(await page.evaluate(() => globalThis.lizMap.mainLizmap.initialConfig.options.wmsMaxHeight)).toBe(950);
         expect(await page.evaluate(() => window.devicePixelRatio)).toBe(1);
         expect(await page.evaluate(() => globalThis.lizMap.mainLizmap.map.getSize())).toStrictEqual([870, 575]);
+
+        // Remove catching GetProjectConfig
         await page.unroute('**/service/getProjectConfig*')
 
         // Catch GetMaps request;
@@ -78,6 +80,7 @@ test.describe('Viewport devicePixelRatio 1', () => {
             expect(GetMap).toContain('&DPI=96&')
         }
 
+        // Stop listening to WMS requests
         await page.unroute('**/service*')
     })
 })
@@ -133,6 +136,8 @@ test.describe('Viewport devicePixelRatio 2', () => {
         expect(await page.evaluate(() => globalThis.lizMap.mainLizmap.initialConfig.options.wmsMaxHeight)).toBe(1900);
         expect(await page.evaluate(() => window.devicePixelRatio)).toBe(2);
         expect(await page.evaluate(() => globalThis.lizMap.mainLizmap.map.getSize())).toStrictEqual([870, 620]);
+
+        // Remove catching GetProjectConfig
         await page.unroute('**/service/getProjectConfig*')
 
         // Catch GetMaps request;
@@ -159,6 +164,8 @@ test.describe('Viewport devicePixelRatio 2', () => {
             expect(GetMap).toContain('&HEIGHT=682&')
             expect(GetMap).toContain('&DPI=96&')
         }
+
+        // Stop listening to WMS requests
         await page.unroute('**/service*')
     })
 })
