@@ -272,4 +272,12 @@ export class DrawPage extends ProjectPage {
     async setTextScaleValue(scale) {
         return this.drawPanel.locator('#textScale').fill(scale);
     }
+
+    /**
+     * Click on import button to choose a file to draw on the map
+     * @returns {Promise<void>} The promise of the click action on import button to choose a file to draw on the map are
+     */
+    async clickImportFile() {
+        this.drawPanel.locator('.digitizing-import').click();
+    }
 }
