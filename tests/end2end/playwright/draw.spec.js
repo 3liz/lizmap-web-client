@@ -2,6 +2,11 @@
 import { test, expect } from '@playwright/test';
 import { reloadMap } from './globals';
 import { DrawPage } from "./pages/drawpage";
+import { playwrightTestFile, digestBuffer } from "./globals";
+
+// To update screenshots stored in __screenshots__ for toMatchSnapshot test
+// IMPORTANT, this must not be set to `true` while committing, on GitHub. Set to `false`.
+const UPDATE_SCREENSHOT_FILES = false;
 
 /**
  * Playwright Page
@@ -560,5 +565,341 @@ test.describe('Draw text tools', () => {
         await drawProject.deleteAllDrawings();
         // close draw panel
         await drawProject.closeDrawPanel();
+    });
+});
+
+
+test.describe('Import file to draw', () => {
+
+    test('KML - multilinestring', async ({ page }) => {
+        const drawProject = await initDrawProject(page);
+        const geometryType = 'multilinestring';
+        const screenshotClip = {x:950/2-380/2, y:900/2-380/2, width:380, height:380};
+
+        // Get blank buffer
+        let buffer = await page.screenshot({
+            clip: screenshotClip,
+            //path: playwrightTestFile('__screenshots__','draw.spec.js','blank.png'),
+        });
+        const blankHash = await digestBuffer(buffer);
+        const blankByteLength = buffer.byteLength;
+        expect(blankByteLength).toBeGreaterThan(1000); // 1286
+        expect(blankByteLength).toBeLessThan(1500); // 1286
+
+        // Start waiting for file chooser before clicking. Note no await.
+        const fileChooserPromise = page.waitForEvent('filechooser');
+        // Click import file
+        drawProject.clickImportFile();
+
+        const fileChooser = await fileChooserPromise;
+        await fileChooser.setFiles(playwrightTestFile('data', `kml_${geometryType}.kml`));
+
+        // Wait for OL rendering
+        await page.waitForTimeout(500);
+
+        buffer = await page.screenshot({
+            clip: screenshotClip,
+            // path: playwrightTestFile('__screenshots__','draw.spec.js','drawn.png'),
+        });
+        expect(await digestBuffer(buffer)).not.toEqual(blankHash);
+        expect(buffer.byteLength).toBeGreaterThan(blankByteLength);
+
+        // The KML has been drawn
+        expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toHaveLength(4);
+
+        // Hide all elements but #map, #newOlMap and their children
+        await page.$eval("*", el => el.style.visibility = 'hidden');
+        await page.$eval("#newOlMap, #newOlMap *", el => el.style.visibility = 'visible');
+
+        if (UPDATE_SCREENSHOT_FILES) {
+            await drawProject.map.screenshot({path: playwrightTestFile('__screenshots__','draw.spec.js',`draw-kml-${geometryType}.png`)});
+        } else {
+            expect(await drawProject.map.screenshot()).toMatchSnapshot(`draw-kml-${geometryType}.png`);
+        }
+    });
+
+    test('KML - multipoint', async ({ page }) => {
+        const drawProject = await initDrawProject(page);
+        const geometryType = 'multipoint';
+        const screenshotClip = {x:950/2-380/2, y:900/2-380/2, width:380, height:380};
+
+        // Get blank buffer
+        let buffer = await page.screenshot({
+            clip: screenshotClip,
+            //path: playwrightTestFile('__screenshots__','draw.spec.js','blank.png'),
+        });
+        const blankHash = await digestBuffer(buffer);
+        const blankByteLength = buffer.byteLength;
+        expect(blankByteLength).toBeGreaterThan(1000); // 1286
+        expect(blankByteLength).toBeLessThan(1500); // 1286
+
+        // Start waiting for file chooser before clicking. Note no await.
+        const fileChooserPromise = page.waitForEvent('filechooser');
+        // Click import file
+        drawProject.clickImportFile();
+
+        const fileChooser = await fileChooserPromise;
+        await fileChooser.setFiles(playwrightTestFile('data', `kml_${geometryType}.kml`));
+
+        // Wait for OL rendering
+        await page.waitForTimeout(500);
+
+        buffer = await page.screenshot({
+            clip: screenshotClip,
+            // path: playwrightTestFile('__screenshots__','draw.spec.js','drawn.png'),
+        });
+        expect(await digestBuffer(buffer)).not.toEqual(blankHash);
+        expect(buffer.byteLength).toBeGreaterThan(blankByteLength);
+
+        // The KML has been drawn
+        expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toHaveLength(2);
+
+        // Hide all elements but #map, #newOlMap and their children
+        await page.$eval("*", el => el.style.visibility = 'hidden');
+        await page.$eval("#newOlMap, #newOlMap *", el => el.style.visibility = 'visible');
+
+        if (UPDATE_SCREENSHOT_FILES) {
+            await drawProject.map.screenshot({path: playwrightTestFile('__screenshots__','draw.spec.js',`draw-kml-${geometryType}.png`)});
+        } else {
+            expect(await drawProject.map.screenshot()).toMatchSnapshot(`draw-kml-${geometryType}.png`);
+        }
+    });
+
+    test('KML - multipolygon', async ({ page }) => {
+        const drawProject = await initDrawProject(page);
+        const geometryType = 'multipolygon';
+        const screenshotClip = {x:950/2-380/2, y:900/2-380/2, width:380, height:380};
+
+        // Get blank buffer
+        let buffer = await page.screenshot({
+            clip: screenshotClip,
+            //path: playwrightTestFile('__screenshots__','draw.spec.js','blank.png'),
+        });
+        const blankHash = await digestBuffer(buffer);
+        const blankByteLength = buffer.byteLength;
+        expect(blankByteLength).toBeGreaterThan(1000); // 1286
+        expect(blankByteLength).toBeLessThan(1500); // 1286
+
+        // Start waiting for file chooser before clicking. Note no await.
+        const fileChooserPromise = page.waitForEvent('filechooser');
+        // Click import file
+        drawProject.clickImportFile();
+
+        const fileChooser = await fileChooserPromise;
+        await fileChooser.setFiles(playwrightTestFile('data', `kml_${geometryType}.kml`));
+
+        // Wait for OL rendering
+        await page.waitForTimeout(500);
+
+        buffer = await page.screenshot({
+            clip: screenshotClip,
+            // path: playwrightTestFile('__screenshots__','draw.spec.js','drawn.png'),
+        });
+        expect(await digestBuffer(buffer)).not.toEqual(blankHash);
+        expect(buffer.byteLength).toBeGreaterThan(blankByteLength);
+
+        // The KML has been drawn
+        expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toHaveLength(2);
+
+        // Hide all elements but #map, #newOlMap and their children
+        await page.$eval("*", el => el.style.visibility = 'hidden');
+        await page.$eval("#newOlMap, #newOlMap *", el => el.style.visibility = 'visible');
+
+        if (UPDATE_SCREENSHOT_FILES) {
+            await drawProject.map.screenshot({path: playwrightTestFile('__screenshots__','draw.spec.js',`draw-kml-${geometryType}.png`)});
+        } else {
+            expect(await drawProject.map.screenshot()).toMatchSnapshot(`draw-kml-${geometryType}.png`);
+        }
+    });
+
+    test('KML - polygon', async ({ page }) => {
+        const drawProject = await initDrawProject(page);
+        const geometryType = 'polygon';
+        const screenshotClip = {x:950/2-380/2, y:900/2-380/2, width:380, height:380};
+
+        // Get blank buffer
+        let buffer = await page.screenshot({
+            clip: screenshotClip,
+            //path: playwrightTestFile('__screenshots__','draw.spec.js','blank.png'),
+        });
+        const blankHash = await digestBuffer(buffer);
+        const blankByteLength = buffer.byteLength;
+        expect(blankByteLength).toBeGreaterThan(1000); // 1286
+        expect(blankByteLength).toBeLessThan(1500); // 1286
+
+        // Start waiting for file chooser before clicking. Note no await.
+        const fileChooserPromise = page.waitForEvent('filechooser');
+        // Click import file
+        drawProject.clickImportFile();
+
+        const fileChooser = await fileChooserPromise;
+        await fileChooser.setFiles(playwrightTestFile('data', `kml_${geometryType}.kml`));
+
+        // Wait for OL rendering
+        await page.waitForTimeout(500);
+
+        buffer = await page.screenshot({
+            clip: screenshotClip,
+            // path: playwrightTestFile('__screenshots__','draw.spec.js','drawn.png'),
+        });
+        expect(await digestBuffer(buffer)).not.toEqual(blankHash);
+        expect(buffer.byteLength).toBeGreaterThan(blankByteLength);
+
+        // The KML has been drawn
+        expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toHaveLength(1);
+
+        // Hide all elements but #map, #newOlMap and their children
+        await page.$eval("*", el => el.style.visibility = 'hidden');
+        await page.$eval("#newOlMap, #newOlMap *", el => el.style.visibility = 'visible');
+
+        if (UPDATE_SCREENSHOT_FILES) {
+            await drawProject.map.screenshot({path: playwrightTestFile('__screenshots__','draw.spec.js',`draw-kml-${geometryType}.png`)});
+        } else {
+            expect(await drawProject.map.screenshot()).toMatchSnapshot(`draw-kml-${geometryType}.png`);
+        }
+    });
+
+    test('KML - point - with xml header', async ({ page }) => {
+        const drawProject = await initDrawProject(page);
+        const fileName = 'with_xml_header';
+        const screenshotClip = {x:950/2-380/2, y:900/2-380/2, width:380, height:380};
+
+        // Get blank buffer
+        let buffer = await page.screenshot({
+            clip: screenshotClip,
+            //path: playwrightTestFile('__screenshots__','draw.spec.js','blank.png'),
+        });
+        const blankHash = await digestBuffer(buffer);
+        const blankByteLength = buffer.byteLength;
+        expect(blankByteLength).toBeGreaterThan(1000); // 1286
+        expect(blankByteLength).toBeLessThan(1500); // 1286
+
+        // Start waiting for file chooser before clicking. Note no await.
+        const fileChooserPromise = page.waitForEvent('filechooser');
+        // Click import file
+        drawProject.clickImportFile();
+
+        const fileChooser = await fileChooserPromise;
+        await fileChooser.setFiles(playwrightTestFile('data', `kml_${fileName}.kml`));
+
+        // Wait for OL rendering
+        await page.waitForTimeout(500);
+
+        buffer = await page.screenshot({
+            clip: screenshotClip,
+            // path: playwrightTestFile('__screenshots__','draw.spec.js','drawn.png'),
+        });
+        expect(await digestBuffer(buffer)).not.toEqual(blankHash);
+        expect(buffer.byteLength).toBeGreaterThan(blankByteLength);
+
+        // The KML has been drawn
+        expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toHaveLength(1);
+
+        // Hide all elements but #map, #newOlMap and their children
+        await page.$eval("*", el => el.style.visibility = 'hidden');
+        await page.$eval("#newOlMap, #newOlMap *", el => el.style.visibility = 'visible');
+
+        if (UPDATE_SCREENSHOT_FILES) {
+            await drawProject.map.screenshot({
+                path: playwrightTestFile('__screenshots__','draw.spec.js',`draw-kml-${fileName.replaceAll('_','-')}.png`)
+            });
+        } else {
+            expect(await drawProject.map.screenshot()).toMatchSnapshot(`draw-kml-${fileName.replaceAll('_','-')}.png`);
+        }
+    });
+
+    test('KML - point - without xml header', async ({ page }) => {
+        const drawProject = await initDrawProject(page);
+        const fileName = 'without_xml_header';
+        const screenshotClip = {x:950/2-380/2, y:900/2-380/2, width:380, height:380};
+
+        // Get blank buffer
+        let buffer = await page.screenshot({
+            clip: screenshotClip,
+            //path: playwrightTestFile('__screenshots__','draw.spec.js','blank.png'),
+        });
+        const blankHash = await digestBuffer(buffer);
+        const blankByteLength = buffer.byteLength;
+        expect(blankByteLength).toBeGreaterThan(1000); // 1286
+        expect(blankByteLength).toBeLessThan(1500); // 1286
+
+        // Start waiting for file chooser before clicking. Note no await.
+        const fileChooserPromise = page.waitForEvent('filechooser');
+        // Click import file
+        drawProject.clickImportFile();
+
+        const fileChooser = await fileChooserPromise;
+        await fileChooser.setFiles(playwrightTestFile('data', `kml_${fileName}.kml`));
+
+        // Wait for OL rendering
+        await page.waitForTimeout(500);
+
+        buffer = await page.screenshot({
+            clip: screenshotClip,
+            // path: playwrightTestFile('__screenshots__','draw.spec.js','drawn.png'),
+        });
+        expect(await digestBuffer(buffer)).not.toEqual(blankHash);
+        expect(buffer.byteLength).toBeGreaterThan(blankByteLength);
+
+        // The KML has been drawn
+        expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toHaveLength(1);
+
+        // Hide all elements but #map, #newOlMap and their children
+        await page.$eval("*", el => el.style.visibility = 'hidden');
+        await page.$eval("#newOlMap, #newOlMap *", el => el.style.visibility = 'visible');
+
+        if (UPDATE_SCREENSHOT_FILES) {
+            await drawProject.map.screenshot({
+                path: playwrightTestFile('__screenshots__','draw.spec.js',`draw-kml-${fileName.replaceAll('_','-')}.png`)
+            });
+        } else {
+            expect(await drawProject.map.screenshot()).toMatchSnapshot(`draw-kml-${fileName.replaceAll('_','-')}.png`);
+        }
+    });
+
+    test('Import KML multilinestring - Erase all - Import same KML multilinestring', async ({ page }) => {
+        const drawProject = await initDrawProject(page);
+
+        // Start waiting for file chooser before clicking. Note no await.
+        let fileChooserPromise = page.waitForEvent('filechooser');
+        // Click import file
+        drawProject.clickImportFile();
+
+        let fileChooser = await fileChooserPromise;
+        await fileChooser.setFiles(playwrightTestFile('data', 'kml_multilinestring.kml'))
+        // await expect(fileChooser.element).toHaveValue('');
+
+        // Wait for OL rendering
+        await page.waitForTimeout(500);
+
+        // The KML has been drawn
+        expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toHaveLength(4);
+
+        // Erase all
+        await drawProject.deleteAllDrawings();
+
+        // Wait for OL rendering
+        await page.waitForTimeout(500);
+
+        // The all features has been removed from the map
+        expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toBeNull();
+
+        /*  Fixed by https://github.com/3liz/lizmap-web-client/pull/6446
+        // Start waiting for file chooser before clicking. Note no await.
+        fileChooserPromise = page.waitForEvent('filechooser');
+        // Click import file
+        drawProject.clickImportFile();
+
+        fileChooser = await fileChooserPromise;
+        await fileChooser.setFiles(playwrightTestFile('data', 'kml_multilinestring.kml'))
+        // await expect(fileChooser.element).toHaveValue('');
+
+        // Wait for OL rendering
+        await page.waitForTimeout(500);
+
+        // The KML has been drawn
+        expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toHaveLength(4);
+        */
+
     });
 });
