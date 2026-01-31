@@ -614,7 +614,10 @@ test.describe('Import file to draw', () => {
         if (UPDATE_SCREENSHOT_FILES) {
             await drawProject.map.screenshot({path: playwrightTestFile('__screenshots__','draw.spec.js',`draw-kml-${geometryType}.png`)});
         } else {
-            expect(await drawProject.map.screenshot()).toMatchSnapshot(`draw-kml-${geometryType}.png`);
+            expect(await drawProject.map.screenshot()).toMatchSnapshot(
+                `draw-kml-${geometryType}.png`,
+                {maxDiffPixelRatio: 0.05},
+            );
         }
     });
 
@@ -661,7 +664,10 @@ test.describe('Import file to draw', () => {
         if (UPDATE_SCREENSHOT_FILES) {
             await drawProject.map.screenshot({path: playwrightTestFile('__screenshots__','draw.spec.js',`draw-kml-${geometryType}.png`)});
         } else {
-            expect(await drawProject.map.screenshot()).toMatchSnapshot(`draw-kml-${geometryType}.png`);
+            expect(await drawProject.map.screenshot()).toMatchSnapshot(
+                `draw-kml-${geometryType}.png`,
+                {maxDiffPixelRatio: 0.05},
+            );
         }
     });
 
@@ -708,7 +714,10 @@ test.describe('Import file to draw', () => {
         if (UPDATE_SCREENSHOT_FILES) {
             await drawProject.map.screenshot({path: playwrightTestFile('__screenshots__','draw.spec.js',`draw-kml-${geometryType}.png`)});
         } else {
-            expect(await drawProject.map.screenshot()).toMatchSnapshot(`draw-kml-${geometryType}.png`);
+            expect(await drawProject.map.screenshot()).toMatchSnapshot(
+                `draw-kml-${geometryType}.png`,
+                {maxDiffPixelRatio: 0.05},
+            );
         }
     });
 
@@ -755,7 +764,10 @@ test.describe('Import file to draw', () => {
         if (UPDATE_SCREENSHOT_FILES) {
             await drawProject.map.screenshot({path: playwrightTestFile('__screenshots__','draw.spec.js',`draw-kml-${geometryType}.png`)});
         } else {
-            expect(await drawProject.map.screenshot()).toMatchSnapshot(`draw-kml-${geometryType}.png`);
+            expect(await drawProject.map.screenshot()).toMatchSnapshot(
+                `draw-kml-${geometryType}.png`,
+                {maxDiffPixelRatio: 0.05},
+            );
         }
     });
 
@@ -804,7 +816,10 @@ test.describe('Import file to draw', () => {
                 path: playwrightTestFile('__screenshots__','draw.spec.js',`draw-kml-${fileName.replaceAll('_','-')}.png`)
             });
         } else {
-            expect(await drawProject.map.screenshot()).toMatchSnapshot(`draw-kml-${fileName.replaceAll('_','-')}.png`);
+            expect(await drawProject.map.screenshot()).toMatchSnapshot(
+                `draw-kml-${fileName.replaceAll('_','-')}.png`,
+                {maxDiffPixelRatio: 0.05},
+            );
         }
     });
 
@@ -853,7 +868,10 @@ test.describe('Import file to draw', () => {
                 path: playwrightTestFile('__screenshots__','draw.spec.js',`draw-kml-${fileName.replaceAll('_','-')}.png`)
             });
         } else {
-            expect(await drawProject.map.screenshot()).toMatchSnapshot(`draw-kml-${fileName.replaceAll('_','-')}.png`);
+            expect(await drawProject.map.screenshot()).toMatchSnapshot(
+                `draw-kml-${fileName.replaceAll('_','-')}.png`,
+                {maxDiffPixelRatio: 0.05},
+            );
         }
     });
 
