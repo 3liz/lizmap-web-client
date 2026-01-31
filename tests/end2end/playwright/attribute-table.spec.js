@@ -3,6 +3,7 @@ import { test, expect } from '@playwright/test';
 import { expect as requestExpect } from './fixtures/expect-request.js'
 import { expect as responseExpect } from './fixtures/expect-response.js'
 import { ProjectPage } from './pages/project';
+import { digestBuffer } from "./globals";
 
 /**
  * @typedef {object} Position
@@ -117,7 +118,9 @@ test.describe('Attribute table @readonly', () => {
             'BBOX': /738930.9\d+,6258456.2\d+,802298.7\d+,6300326.6\d+/,
         }
         requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
-        await getMapRequest.response();
+        // Check response
+        let getMapResponse = await getMapRequest.response();
+        responseExpect(getMapResponse).toBeImagePng();
 
         let req_url = new URL(getMapRequest.url())
         expect(req_url.searchParams.get('SELECTIONTOKEN')).toBeNull();
@@ -132,12 +135,17 @@ test.describe('Attribute table @readonly', () => {
         getMapExpectedParameters['BBOX'] = /732448.6\d+,6251973.9\d+,795816.4\d+,6293844.3\d+/;
         //delete getMapExpectedParameters['BBOX'];
         requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
-        await getMapRequest.response();
-        await page.waitForTimeout(100)
+        // Check response
+        getMapResponse = await getMapRequest.response();
+        responseExpect(getMapResponse).toBeImagePng();
+
+        // Wait for OL rendering
+        await page.waitForTimeout(500)
 
         // Check rendering
         const clip = {x:420, y:120, width:256, height:256};
         let buffer = await page.screenshot({clip:clip});
+        const defaultHash = await digestBuffer(buffer);
         const defaultByteLength = buffer.byteLength;
         expect(defaultByteLength).toBeGreaterThan(8000); // 8667
         expect(defaultByteLength).toBeLessThan(10000); // 8667
@@ -168,7 +176,9 @@ test.describe('Attribute table @readonly', () => {
         getMapRequestPromise = project.waitForGetMapRequest();
         await getSelectionTokenRequest.response();
         getMapRequest = await getMapRequestPromise;
-        await getMapRequest.response();
+        // Check response
+        getMapResponse = await getMapRequest.response();
+        responseExpect(getMapResponse).toBeImagePng();
 
         // Check GetSelectionToken request
         const getSelectionTokenParameters = {
@@ -192,6 +202,8 @@ test.describe('Attribute table @readonly', () => {
 
         // Check rendering
         buffer = await page.screenshot({clip:clip});
+        const selectHash = await digestBuffer(buffer);
+        expect(selectHash).not.toEqual(defaultHash);
         const selectByteLength = buffer.byteLength;
         expect(selectByteLength).toBeGreaterThan(8000); // 8607
         expect(selectByteLength).not.toBe(defaultByteLength); // 8667
@@ -207,7 +219,9 @@ test.describe('Attribute table @readonly', () => {
         getMapRequestPromise = project.waitForGetMapRequest();
         await getFilterTokenRequest.response();
         getMapRequest = await getMapRequestPromise;
-        await getMapRequest.response();
+        // Check response
+        getMapResponse = await getMapRequest.response();
+        responseExpect(getMapResponse).toBeImagePng();
 
         // Check GetSelectionToken request
         const getFilterTokenParameters = {
@@ -243,6 +257,9 @@ test.describe('Attribute table @readonly', () => {
 
         // Check rendering
         buffer = await page.screenshot({clip:clip});
+        const filterHash = await digestBuffer(buffer);
+        expect(filterHash).not.toEqual(defaultHash);
+        expect(filterHash).not.toEqual(selectHash);
         const filterByteLength = buffer.byteLength;
         expect(filterByteLength).toBeLessThan(defaultByteLength); // 2781
         expect(filterByteLength).toBeLessThan(selectByteLength); // 2781
@@ -261,10 +278,17 @@ test.describe('Attribute table @readonly', () => {
         await expect(page.getByTestId(layerName).locator('.node')).not.toContainClass('filtered');
         await expect(page.locator('#layerActionUnfilter')).not.toBeVisible();
 
+        // Wait for OL rendering
+        await page.waitForTimeout(100);
+
         // Check rendering
         buffer = await page.screenshot({clip:clip});
-        expect(buffer.byteLength).toBeGreaterThan(defaultByteLength-6);
-        expect(buffer.byteLength).toBeLessThan(defaultByteLength+6);
+        const firstDisableHash = await digestBuffer(buffer);
+        expect(firstDisableHash).not.toEqual(filterHash);
+        expect(firstDisableHash).not.toEqual(selectHash);
+        expect(firstDisableHash).not.toEqual(defaultHash);
+        expect(buffer.byteLength).toBeGreaterThan(defaultByteLength-10);
+        expect(buffer.byteLength).toBeLessThan(defaultByteLength+10);
 
         // select feature 2,4,6
         // click to select 2
@@ -299,7 +323,9 @@ test.describe('Attribute table @readonly', () => {
         getMapRequestPromise = project.waitForGetMapRequest();
         await getSelectionTokenRequest.response();
         getMapRequest = await getMapRequestPromise;
-        await getMapRequest.response();
+        // Check response
+        getMapResponse = await getMapRequest.response();
+        responseExpect(getMapResponse).toBeImagePng();
 
         // Update expected GetSelection token parameters
         getSelectionTokenParameters['ids'] = '2,4'
@@ -332,7 +358,9 @@ test.describe('Attribute table @readonly', () => {
         getMapExpectedParameters['SELECTIONTOKEN'] = /^[a-zA-Z0-9]{32}$/;
         getMapRequest = await getMapRequestPromise;
         requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
-        await getMapRequest.response();
+        // Check response
+        getMapResponse = await getMapRequest.response();
+        responseExpect(getMapResponse).toBeImagePng();
 
         req_url = new URL(getMapRequest.url())
         expect(req_url.searchParams.get('SELECTIONTOKEN')).not.toBeNull()
@@ -348,11 +376,15 @@ test.describe('Attribute table @readonly', () => {
 
         // Check rendering
         buffer = await page.screenshot({clip:clip});
-        const muliSelectByteLength = buffer.byteLength;
-        expect(muliSelectByteLength).toBeGreaterThan(8000);
-        expect(muliSelectByteLength).not.toBe(defaultByteLength);
-        expect(muliSelectByteLength).not.toBe(selectByteLength);
-        expect(muliSelectByteLength).toBeLessThan(10000);
+        const multiSelectHash = await digestBuffer(buffer);
+        expect(multiSelectHash).not.toEqual(defaultHash);
+        expect(multiSelectHash).not.toEqual(selectHash);
+        expect(multiSelectHash).not.toEqual(filterHash);
+        const multiSelectByteLength = buffer.byteLength;
+        expect(multiSelectByteLength).toBeGreaterThan(8000);
+        expect(multiSelectByteLength).not.toBe(defaultByteLength);
+        expect(multiSelectByteLength).not.toBe(selectByteLength);
+        expect(multiSelectByteLength).toBeLessThan(10000);
 
         // click on filter Button
         getFilterTokenRequestPromise = project.waitForGetFilterTokenRequest();
@@ -363,7 +395,9 @@ test.describe('Attribute table @readonly', () => {
         getMapRequestPromise = project.waitForGetMapRequest();
         await getFilterTokenRequest.response();
         getMapRequest = await getMapRequestPromise;
-        await getMapRequest.response();
+        // Check response
+        getMapResponse = await getMapRequest.response();
+        responseExpect(getMapResponse).toBeImagePng();
 
         // Check GetSelectionToken request
         getFilterTokenParameters['filter'] = typeName+':"quartier" IN ( 2 , 6 , 4 ) ';
@@ -397,6 +431,11 @@ test.describe('Attribute table @readonly', () => {
 
         // Check rendering
         buffer = await page.screenshot({clip:clip});
+        const multiFilterHash = await digestBuffer(buffer);
+        expect(multiFilterHash).not.toEqual(defaultHash);
+        expect(multiFilterHash).not.toEqual(selectHash);
+        expect(multiFilterHash).not.toEqual(filterHash);
+        expect(multiFilterHash).not.toEqual(multiSelectHash);
         const multiFilterByteLength = buffer.byteLength;
         expect(multiFilterByteLength).toBeLessThan(defaultByteLength); // 2781
         expect(multiFilterByteLength).toBeLessThan(selectByteLength); // 2781
@@ -416,10 +455,20 @@ test.describe('Attribute table @readonly', () => {
         await expect(page.getByTestId(layerName).locator('.node')).not.toContainClass('filtered');
         await expect(page.locator('#layerActionUnfilter')).not.toBeVisible();
 
+        // Wait for OL rendering
+        await page.waitForTimeout(100);
+
         // Check rendering
         buffer = await page.screenshot({clip:clip});
-        expect(buffer.byteLength).toBeGreaterThan(defaultByteLength-6);
-        expect(buffer.byteLength).toBeLessThan(defaultByteLength+6);
+        const scndDisableHash = await digestBuffer(buffer);
+        expect(scndDisableHash).not.toEqual(multiFilterHash);
+        expect(scndDisableHash).not.toEqual(multiSelectHash);
+        expect(scndDisableHash).not.toEqual(filterHash);
+        expect(scndDisableHash).not.toEqual(selectHash);
+        expect(scndDisableHash).not.toEqual(defaultHash);
+        expect(scndDisableHash).toEqual(firstDisableHash);
+        expect(buffer.byteLength).toBeGreaterThan(defaultByteLength-10);
+        expect(buffer.byteLength).toBeLessThan(defaultByteLength+10);
 
         await project.closeAttributeTable();
     });
