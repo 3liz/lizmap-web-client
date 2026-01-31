@@ -58,6 +58,11 @@ export class ProjectPage extends BasePage {
      * @type {Locator}
      */
     mapOl2;
+    /**
+     * The map's navigation bar
+     * @type {Locator}
+     */
+    navBar;
 
     // Menu
     /**
@@ -65,11 +70,7 @@ export class ProjectPage extends BasePage {
      * @type {Locator}
      */
     switcher;
-    /**
-     * Base layer select
-     * @type {Locator}
-     */
-    baseLayerSelect;
+
     /**
      * Editing menu
      * @type {Locator}
@@ -98,10 +99,20 @@ export class ProjectPage extends BasePage {
      */
     miniDock;
     /**
-     * Popup dock
+     * Popup content
      * @type {Locator}
      */
     popupContent;
+    /**
+     * Lizmap Tree View
+     * @type {Locator}
+     */
+    treeView;
+    /**
+     * Base layer select
+     * @type {Locator}
+     */
+    baseLayerSelect;
     /**
      * Top search bar
      * @type {Locator}
@@ -205,11 +216,13 @@ export class ProjectPage extends BasePage {
         this.repository = repository;
         this.map = page.locator('#newOlMap');
         this.mapOl2 = page.locator('#map');
+        this.navBar = page.locator('#navbar');
         this.dock = page.locator('#dock');
         this.rightDock = page.locator('#right-dock');
         this.bottomDock = page.locator('#bottom-dock');
         this.miniDock = page.locator('#mini-dock-content');
         this.popupContent = page.locator('#popupcontent');
+        this.treeView = page.locator('#switcher lizmap-treeview');
         this.warningMessage = page.locator('#lizmap-warning-message');
         this.search = page.locator('#search-query');
         this.switcher = page.locator('#button-switcher');
@@ -375,6 +388,27 @@ export class ProjectPage extends BasePage {
 
         await expect(await this.hasDebugBarErrors(), (await this.getDebugBarErrorsMessage())).toBe(false);
         await expect(await this.hasDebugBarWarnings(), (await this.getDebugBarWarningMessage())).toBe(false);
+    }
+
+    /**
+     * Zoom in
+     */
+    async zoomIn() {
+        await this.navBar.locator('button.btn.zoom-in').click();
+    }
+
+    /**
+     * Zoom out
+     */
+    async zoomOut() {
+        await this.navBar.locator('button.btn.zoom-out').click();
+    }
+
+    /**
+     * Zoom to initial extent
+     */
+    async zoomToInitialExtent() {
+        await this.navBar.locator('button.btn.zoom-extent').click();
     }
 
     /**
