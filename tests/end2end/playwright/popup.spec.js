@@ -360,6 +360,9 @@ test.describe('Popup @readonly', () => {
         const project = new ProjectPage(page, 'popup');
         await project.open();
 
+        // Remove catching GetProjectConfig
+        await page.unroute('**/service/getProjectConfig*');
+
         let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
         await project.clickOnMap(510, 415);
         let getFeatureInfoRequest = await getFeatureInfoPromise;
@@ -372,7 +375,6 @@ test.describe('Popup @readonly', () => {
         await expect(lizmapFeaturesTable).toHaveAttribute('layerTitle', 'children_layer');
         await expect(lizmapFeaturesTable).toHaveAttribute('uniqueField', 'id');
         await expect(lizmapFeaturesTable).toHaveAttribute('expressionFilter', 'parent_id = \'1\'');
-        await page.unroute('**/service/getProjectConfig*');
     });
 
     test('getFeatureInfo request should contain a FILTERTOKEN parameter when the layer is filtered', async ({ page }) => {
@@ -655,6 +657,9 @@ test.describe('Popup config mocked with "minidock" option', () => {
 
         const project = new ProjectPage(page, 'popup');
         await project.open();
+
+        // Remove catching GetProjectConfig
+        await page.unroute('**/service/getProjectConfig*');
 
         // When clicking on a triangle feature a popup must appear
         await page.locator('#newOlMap').click({

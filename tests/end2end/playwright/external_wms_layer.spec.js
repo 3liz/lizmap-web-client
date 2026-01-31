@@ -110,5 +110,8 @@ test.describe('External WMS layers', () => {
         // Check response
         getMapResponse = await getMapRequest.response();
         responseExpect(getMapResponse).toBeImageWebp();
+
+        // Remove listen to osm tiles
+        await page.unroute('https://tile.openstreetmap.org/*/*/*.png');
     });
 });
