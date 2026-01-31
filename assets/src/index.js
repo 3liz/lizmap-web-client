@@ -20,6 +20,7 @@ import ReverseGeom from './components/edition/ReverseGeom.js';
 import PasteGeom from './components/edition/PasteGeom.js';
 import ActionSelector from './components/ActionSelector.js';
 import Print from './components/Print.js';
+import DxfExport from './components/DxfExport.js';
 import FullScreen from './components/FullScreen.js';
 import BaseLayers from './components/BaseLayers.js';
 import Treeview from './components/Treeview.js';
@@ -94,6 +95,7 @@ const definedCustomElements = () => {
     window.customElements.define('lizmap-paste-geom', PasteGeom);
     window.customElements.define('lizmap-action-selector', ActionSelector);
     window.customElements.define('lizmap-print', Print);
+    window.customElements.define('lizmap-dxfexport', DxfExport);
     window.customElements.define('lizmap-fullscreen', FullScreen);
     window.customElements.define('lizmap-navbar', NavBar);
     window.customElements.define('lizmap-tooltip', Tooltip);
