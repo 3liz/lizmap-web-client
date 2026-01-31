@@ -877,6 +877,17 @@ test.describe('Import file to draw', () => {
 
     test('Import KML multilinestring - Erase all - Import same KML multilinestring', async ({ page }) => {
         const drawProject = await initDrawProject(page);
+        const screenshotClip = {x:950/2-380/2, y:900/2-380/2, width:380, height:380};
+
+        // Get blank buffer
+        let buffer = await page.screenshot({
+            clip: screenshotClip,
+            //path: playwrightTestFile('__screenshots__','draw.spec.js','blank.png'),
+        });
+        const blankHash = await digestBuffer(buffer);
+        const blankByteLength = buffer.byteLength;
+        expect(blankByteLength).toBeGreaterThan(1000); // 1286
+        expect(blankByteLength).toBeLessThan(1500); // 1286
 
         // Start waiting for file chooser before clicking. Note no await.
         let fileChooserPromise = page.waitForEvent('filechooser');
@@ -884,14 +895,23 @@ test.describe('Import file to draw', () => {
         drawProject.clickImportFile();
 
         let fileChooser = await fileChooserPromise;
-        await fileChooser.setFiles(playwrightTestFile('data', 'kml_multilinestring.kml'))
-        // await expect(fileChooser.element).toHaveValue('');
+        await fileChooser.setFiles(playwrightTestFile('data', 'kml_multilinestring.kml'));
 
         // Wait for OL rendering
         await page.waitForTimeout(500);
 
         // The KML has been drawn
         expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toHaveLength(4);
+
+        // Get multilinestring buffer
+        buffer = await page.screenshot({
+            clip: screenshotClip,
+            //path: playwrightTestFile('__screenshots__','draw.spec.js','drawn.png'),
+        });
+        const firstHash = await digestBuffer(buffer);
+        const firstByteLength = buffer.byteLength;
+        expect(firstHash).not.toEqual(blankHash);
+        expect(firstByteLength).toBeGreaterThan(blankByteLength);
 
         // Erase all
         await drawProject.deleteAllDrawings();
@@ -902,22 +922,39 @@ test.describe('Import file to draw', () => {
         // The all features has been removed from the map
         expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toBeNull();
 
-        /*  Fixed by https://github.com/3liz/lizmap-web-client/pull/6446
-        // Start waiting for file chooser before clicking. Note no await.
-        fileChooserPromise = page.waitForEvent('filechooser');
+        // Get erase buffer
+        buffer = await page.screenshot({
+            clip: screenshotClip,
+            //path: playwrightTestFile('__screenshots__','draw.spec.js','blank-erase-drawn.png'),
+        });
+        const eraseByteLength = buffer.byteLength;
+        expect(eraseByteLength).toBeGreaterThan(1000); // 1286
+        expect(eraseByteLength).toBeLessThan(1500); // 1286
+
+        //  Fixed by https://github.com/3liz/lizmap-web-client/pull/6446
         // Click import file
         drawProject.clickImportFile();
 
         fileChooser = await fileChooserPromise;
-        await fileChooser.setFiles(playwrightTestFile('data', 'kml_multilinestring.kml'))
-        // await expect(fileChooser.element).toHaveValue('');
+        await fileChooser.setFiles(playwrightTestFile('data', 'kml_multilinestring.kml'));
 
         // Wait for OL rendering
         await page.waitForTimeout(500);
 
         // The KML has been drawn
         expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toHaveLength(4);
-        */
+
+        // Get multipolygon buffer
+        buffer = await page.screenshot({
+            clip: screenshotClip,
+            //path: playwrightTestFile('__screenshots__','draw.spec.js','drawn.png'),
+        });
+        const secondHash = await digestBuffer(buffer);
+        const secondByteLength = buffer.byteLength;
+        expect(secondHash).not.toEqual(blankHash);
+        expect(secondHash).toEqual(firstHash);
+        expect(secondByteLength).toBeGreaterThan(blankByteLength);
+        expect(secondByteLength).toEqual(firstByteLength);
 
     });
 });
