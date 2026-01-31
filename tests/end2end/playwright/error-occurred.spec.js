@@ -28,41 +28,61 @@ test.describe('Error occurred', () => {
     })
 
     test('Project  error', async ({ page }) => {
+        // Catch GetProjectConfig to abort request
         await page.route('**/service/getProjectConfig*', async route => {
             await route.abort()
         });
         // Error catch
         await gotoMap('/index.php/view/map/?repository=testsrepository&project=world-3857', page, false);
+
+        // Remove catching GetProjectConfig
+        await page.unroute('**/service/getProjectConfig*');
+
         // Go back home
         await goBackHomeAfterError(page);
     })
 
     test('GetCapabilities WMS error', async ({ page }) => {
+        // Catch WMS GetCapabilities to abort request
         await page.route(/SERVICE=WMS&REQUEST=GetCapabilities/, async route => {
             await route.abort()
         });
         // Error catch
         await gotoMap('/index.php/view/map/?repository=testsrepository&project=world-3857', page, false);
+
+        // Remove catching WMS GetCapabilities
+        await page.unroute(/SERVICE=WMS&REQUEST=GetCapabilities/);
+
         // Go back home
         await goBackHomeAfterError(page);
     })
 
     test('GetCapabilities WMTS error', async ({ page }) => {
+        // Catch WMTS GetCapabilities to abort request
         await page.route(/SERVICE=WMTS&REQUEST=GetCapabilities/, async route => {
             await route.abort()
         });
         // Error catch
         await gotoMap('/index.php/view/map/?repository=testsrepository&project=world-3857', page, false);
+
+        // Remove catching WMTS GetCapabilities
+        await page.unroute(/SERVICE=WMTS&REQUEST=GetCapabilities/);
+
         // Go back home
         await goBackHomeAfterError(page);
     })
 
     test('GetCapabilities WFS error', async ({ page }) => {
+        // Catch WFS GetCapabilities to abort request
         await page.route(/SERVICE=WFS&REQUEST=GetCapabilities/, async route => {
             await route.abort()
         });
         // Error catch
         await gotoMap('/index.php/view/map/?repository=testsrepository&project=world-3857', page, false);
+
+        // Remove catching WFS GetCapabilities
+        await page.unroute(/SERVICE=WFS&REQUEST=GetCapabilities/);
+
         // Go back home
         await goBackHomeAfterError(page);
     })

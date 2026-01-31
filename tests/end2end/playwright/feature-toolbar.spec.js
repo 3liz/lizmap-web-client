@@ -998,6 +998,9 @@ test.describe('Feature toolbar zoom to max @readonly', () => {
         let getMapResponse = await getMapRequest.response();
         responseExpect(getMapResponse).toBeImagePng();
 
+        // Remove catching GetProjectConfig
+        await page.unroute('**/service/getProjectConfig*');
+
         // Display layer tramway_lines
         getMapRequestPromise = project.waitForGetMapRequest();
         await page.getByTestId('tramway_lines').locator('.node').click();
@@ -1082,6 +1085,9 @@ test.describe('Feature toolbar zoom to max @readonly', () => {
         // Check response
         let getMapResponse = await getMapRequest.response();
         responseExpect(getMapResponse).toBeImagePng();
+
+        // Remove catching GetProjectConfig
+        await page.unroute('**/service/getProjectConfig*');
 
         // Display layer tramway_lines
         getMapRequestPromise = project.waitForGetMapRequest();
@@ -1172,6 +1178,9 @@ test.describe('Feature toolbar zoom to max @readonly', () => {
         let getMapResponse = await getMapRequest.response();
         responseExpect(getMapResponse).toBeImagePng();
 
+        // Remove catching GetProjectConfig
+        await page.unroute('**/service/getProjectConfig*');
+
         // Click on parent_layer
         let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
         await project.clickOnMap(436, 290);
@@ -1241,6 +1250,9 @@ test.describe('Feature toolbar zoom to max @readonly', () => {
         // Check response
         let getMapResponse = await getMapRequest.response();
         responseExpect(getMapResponse).toBeImagePng();
+
+        // Remove catching GetProjectConfig
+        await page.unroute('**/service/getProjectConfig*');
 
         // Open Attribute table
         let datatablesRequest = await project.openAttributeTable('parent_layer', true);
@@ -1312,6 +1324,9 @@ test.describe('Feature toolbar zoom to max @readonly', () => {
         // Check response
         let getMapResponse = await getMapRequest.response();
         responseExpect(getMapResponse).toBeImagePng();
+
+        // Remove catching GetProjectConfig
+        await page.unroute('**/service/getProjectConfig*');
 
         // Check scale
         await expect(page.locator('#overview-bar .ol-scale-text')).not.toHaveText('1 : ' + (max_scale_lines_polygons).toLocaleString(locale));

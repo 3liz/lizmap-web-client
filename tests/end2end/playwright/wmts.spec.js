@@ -50,6 +50,8 @@ test.describe('WMTS', () => {
         expect(GetTiles[5]).toContain('TileMatrix=2')
         expect(GetTiles[5]).toContain('TileRow=4')
         expect(GetTiles[5]).toContain('TileCol=8')
-        await page.unroute('**/service*')
+
+        // Stop listening to WMS requests
+        await page.unroute('**/service*');
     })
 })
