@@ -179,6 +179,10 @@ class serviceCtrl extends jController
             'wkt' => $wkt,
         );
 
+        // Add the user login
+        $action_params['user_login'] = (jAuth::isConnected()) ? jAuth::getUserSession()->login : 'anonymous';
+
+        // If the scope is layer or feature, add the layer parameters
         if ($qgisLayer && in_array($scope, array('layer', 'feature'))) {
             $layerName = $qgisLayer->getName();
             $layerDatasource = $qgisLayer->getDatasourceParameters();
