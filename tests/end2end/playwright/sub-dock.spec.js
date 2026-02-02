@@ -2,32 +2,14 @@
 import { dirname } from 'path';
 import * as fs from 'fs/promises'
 import { existsSync } from 'node:fs';
-import { Buffer } from 'node:buffer';
 import { test, expect } from '@playwright/test';
-import { playwrightTestFile , expectParametersToContain } from './globals';
+import { expect as requestExpect } from './fixtures/expect-request.js';
+import { playwrightTestFile } from './globals';
 import { ProjectPage } from "./pages/project";
 
 // To update OSM and GeoPF tiles in the mock directory
 // IMPORTANT, this must not be set to `true` while committing, on GitHub. Set to `false`.
 const UPDATE_MOCK_FILES = false;
-// Source - https://stackoverflow.com/a
-// Posted by Martin Thomson, modified by community. See post 'Timeline' for change history
-// Retrieved 2025-11-13, License - CC BY-SA 4.0
-
-/**
- * Convert a Buffer to an Uint8Array
- * @param {Buffer} buffer a buffer to convert to an Uint8Array
- * @returns {Uint8Array} the buffer converted to an Uint8Array
- */
-function toUint8Array(buffer) {
-    const arrayBuffer = new ArrayBuffer(buffer.length);
-    const view = new Uint8Array(arrayBuffer);
-    for (let i = 0; i < buffer.length; ++i) {
-        view[i] = buffer[i];
-    }
-    return view;
-}
-
 
 test.describe('Sub dock @readonly', () => {
 
@@ -43,8 +25,7 @@ test.describe('Sub dock @readonly', () => {
                 // Save file in mock directory
                 const response = await route.fetch();
                 await fs.mkdir(dirname(pathFile), { recursive: true })
-                const respBuff = await response.body();
-                await fs.writeFile(pathFile, toUint8Array(respBuff), 'binary')
+                await fs.writeFile(pathFile, new Uint8Array(await response.body()));
             } else if (existsSync(pathFile)) {
                 // fulfill route's request with mock file
                 await route.fulfill({
@@ -119,7 +100,7 @@ test.describe('Sub dock @readonly', () => {
             'HEIGHT': '633',
             'BBOX': /412967.3\d+,5393197.8\d+,449580.6\d+,5417390.1\d+/,
         }
-        await expectParametersToContain('GetMap', getMapRequest.url(), getMapExpectedParameters);
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
         // Check sub dock metadata content
         await expect(page.locator('#sub-dock .sub-metadata h3 .text')).toHaveText('Information');
         await expect(page.locator('#sub-dock .sub-metadata .menu-content dt')).toHaveCount(4);
@@ -313,7 +294,7 @@ test.describe('Sub dock @readonly', () => {
             'OUTPUTFORMAT': 'GeoJSON',
             'TYPENAME': 'sousquartiers',
         };
-        await expectParametersToContain('Export GeoJSON from sub-dock', getFeatureRequest.postData() ?? '', expectedParameters);
+        requestExpect(getFeatureRequest).toContainParametersInPostData(expectedParameters);
         const response = await getFeatureRequest.response();
 
         // check response
@@ -334,6 +315,9 @@ test.describe('Sub dock @readonly', () => {
 
         const project = new ProjectPage(page, 'permalink');
         await project.open();
+
+        // Remove listen to GetProjectConfig
+        await page.unroute('**/service/getProjectConfig*');
 
         // Display sub dock metadata for layer in WFS with multiple styles
         await page.getByTestId('sousquartiers').hover();
@@ -366,7 +350,7 @@ test.describe('Sub dock @readonly', () => {
 
     test('Export layer without attribute table config', async ({ page }) => {
         // Remove attribute table config
-        await page.route('**/service/getProjectConfig*', async route => {
+        await ('**/service/getProjectConfig*', async route => {
             const response = await route.fetch();
             const json = await response.json();
             json.attributeLayers = {};
@@ -396,7 +380,7 @@ test.describe('Sub dock @readonly', () => {
             'OUTPUTFORMAT': 'GeoJSON',
             'TYPENAME': 'sousquartiers',
         };
-        await expectParametersToContain('Export GeoJSON from sub-dock', getFeatureRequest.postData() ?? '', expectedParameters);
+        requestExpect(getFeatureRequest).toContainParametersInPostData(expectedParameters);
         const response = await getFeatureRequest.response();
 
         // check response
@@ -417,6 +401,9 @@ test.describe('Sub dock @readonly', () => {
 
         const project = new ProjectPage(page, 'permalink');
         await project.open();
+
+        // Remove listen to GetProjectConfig
+        await page.unroute('**/service/getProjectConfig*');
 
         // Display sub dock metadata for layer in WFS with multiple styles
         await page.getByTestId('sousquartiers').hover();

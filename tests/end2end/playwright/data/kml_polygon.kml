@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Schema name="kml_polygon" id="kml_polygon">
+	<SimpleField name="id" type="int"></SimpleField>
+</Schema>
+<Folder><name>kml_polygon</name>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#kml_polygon">
+		<SimpleData name="id">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Polygon><outerBoundaryIs><LinearRing><coordinates>3.84553931534801,43.6202211778472 3.84753571005527,43.6130046425429 3.86295504481109,43.6125407757889 3.86873661395909,43.6226771777707 3.86119827378499,43.6266844995418 3.8517164527354,43.626854617164 3.8517164527354,43.626854617164 3.84553931534801,43.6202211778472</coordinates></LinearRing></outerBoundaryIs><innerBoundaryIs><LinearRing><coordinates>3.85401906956011,43.623566343418 3.85443807381599,43.6206864599743 3.86108319670859,43.6208169169731 3.8608347726453,43.6236313217421 3.85401906956011,43.623566343418</coordinates></LinearRing></innerBoundaryIs><innerBoundaryIs><LinearRing><coordinates>3.85181712278782,43.6171741722223 3.85183725270776,43.615238090251 3.85864340802347,43.6150535873598 3.85854801554321,43.6173032405137 3.8555593241221,43.6181686428237 3.85181712278782,43.6171741722223</coordinates></LinearRing></innerBoundaryIs></Polygon>
+  </Placemark>
+</Folder>
+</Document></kml>

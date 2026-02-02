@@ -1,9 +1,0 @@
-{"type": "FeatureCollection",
- "features": [
-  {"geometry":null,"id":"data_uids.1","properties":{"id":1,"label":"first","uid":"00304c51-794c-46df-b17f-84dc797fb227"},"type":"Feature"}
- ,{"geometry":null,"id":"data_uids.2","properties":{"id":2,"label":"second","uid":"4f44046a-88e5-4ec4-bab4-b16d841433c8"},"type":"Feature"}
- ,{"geometry":null,"id":"data_uids.3","properties":{"id":3,"label":"third","uid":"00cd40ee-c7a0-4d19-8985-86a21fee0502"},"type":"Feature"}
- ,{"geometry":null,"id":"data_uids.4","properties":{"id":4,"label":"fourth","uid":"2b91cf36-67c6-40f1-a0cb-af7e57e290d8"},"type":"Feature"}
- ,{"geometry":null,"id":"data_uids.5","properties":{"id":5,"label":"fifth","uid":"2460e97e-b226-4f53-9f02-bf0d573a8b30"},"type":"Feature"}
- ]
-}

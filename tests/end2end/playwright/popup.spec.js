@@ -137,8 +137,8 @@ test.describe('Style parameter in GetFeatureInfo request', () => {
         // Lizmap init the map with the first style found in the styles's list sorted alphabetically, in this case "default"
 
 
-        const url = '/index.php/view/map/?repository=testsrepository&project=get_feature_info_style';
-        await gotoMap(url, page);
+        const project = new ProjectPage(page, 'get_feature_info_style');
+        await project.open();
     })
     test('Click on the map to show the popup', async ({ page }) => {
         await page.locator("#dock-close").click();
@@ -361,6 +361,9 @@ test.describe('Popup @readonly', () => {
         const project = new ProjectPage(page, 'popup');
         await project.open();
 
+        // Remove catching GetProjectConfig
+        await page.unroute('**/service/getProjectConfig*');
+
         let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
         await project.clickOnMap(510, 415);
         let getFeatureInfoRequest = await getFeatureInfoPromise;
@@ -373,7 +376,6 @@ test.describe('Popup @readonly', () => {
         await expect(lizmapFeaturesTable).toHaveAttribute('layerTitle', 'children_layer');
         await expect(lizmapFeaturesTable).toHaveAttribute('uniqueField', 'id');
         await expect(lizmapFeaturesTable).toHaveAttribute('expressionFilter', 'parent_id = \'1\'');
-        await page.unroute('**/service/getProjectConfig*');
     });
 
     test('getFeatureInfo request should contain a FILTERTOKEN parameter when the layer is filtered', async ({ page }) => {
@@ -591,8 +593,8 @@ test.describe('Popup Geometry @readonly', () => {
 test.describe('Children in popup', () => {
 
     test.beforeEach(async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=feature_toolbar';
-        await gotoMap(url, page);
+        const project = new ProjectPage(page, 'feature_toolbar');
+        await project.open();
     });
 
     test('click on the feature to show the popup and his children', async ({ page }) => {
@@ -651,8 +653,11 @@ test.describe('Popup config mocked with "minidock" option', () => {
             await route.fulfill({ response, json });
         });
 
-        const url = '/index.php/view/map/?repository=testsrepository&project=popup';
-        await gotoMap(url, page)
+        const project = new ProjectPage(page, 'popup');
+        await project.open();
+
+        // Remove catching GetProjectConfig
+        await page.unroute('**/service/getProjectConfig*');
 
         // When clicking on a triangle feature a popup must appear
         await page.locator('#newOlMap').click({
@@ -684,8 +689,8 @@ test.describe('Popup max features', () => {
 
 test.describe('Drag and drop design with relations', () => {
     test('Children are placed in the correct div container', async ({ page }) => {
-        const url = '/index.php/view/map?repository=testsrepository&project=children_in_relation_div';
-        await gotoMap(url, page);
+        const project = new ProjectPage(page, 'children_in_relation_div');
+        await project.open();
 
         let getFeatureInfoRequestBirdsPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true && request.postData()?.includes('birds') === true);
         let getFeatureInfoRequestSpotsPromise = page.waitForRequest(request => request.method() === 'POST' && request.postData()?.includes('GetFeatureInfo') === true && request.postData()?.includes('birds_spot') === true);

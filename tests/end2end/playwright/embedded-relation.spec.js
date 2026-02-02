@@ -1,8 +1,8 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+import { expect as requestExpect } from './fixtures/expect-request.js';
 import { expect as responseExpect } from './fixtures/expect-response.js'
 import {ProjectPage} from "./pages/project";
-import { expectParametersToContain } from './globals';
 
 test.describe('Display embedded relation in popup',
     {
@@ -39,7 +39,7 @@ test.describe('Display embedded relation in popup',
                 'CRS': 'EPSG:4326',
                 'BBOX': /-0.2789\d+,-0.7174\d+,0.4056\d+,0.3183\d+/,
             }
-            await expectParametersToContain('GetFeatureInfo', getFeatureInfoRequest.postData() ?? '', expectedParameters);
+            requestExpect(getFeatureInfoRequest).toContainParametersInPostData(expectedParameters);
 
             // wait for response
             let getFeatureInfoResponse = await getFeatureInfoRequest.response();
@@ -107,7 +107,7 @@ test.describe('Display embedded relation in popup',
                 'CRS': 'EPSG:4326',
                 'BBOX': /-0.2789\d+,-0.7174\d+,0.4056\d+,0.3183\d+/,
             }
-            await expectParametersToContain('GetFeatureInfo', getFeatureInfoRequest.postData() ?? '', expectedParameters);
+            requestExpect(getFeatureInfoRequest).toContainParametersInPostData(expectedParameters);
 
             // wait for response
             getFeatureInfoResponse = await getFeatureInfoRequest.response();

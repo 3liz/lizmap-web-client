@@ -4,7 +4,8 @@ import * as fs from 'fs/promises'
 import { existsSync } from 'node:fs';
 import { test, expect } from '@playwright/test';
 import {ProjectPage} from "./pages/project";
-import { expectParametersToContain, playwrightTestFile} from "./globals";
+import { expect as requestExpect } from './fixtures/expect-request.js';
+import { playwrightTestFile} from "./globals";
 
 // To update OSM and GeoPF tiles in the mock directory
 // IMPORTANT, this must not be set to `true` while committing, on GitHub. Set to `false`.
@@ -43,7 +44,7 @@ test.describe('Axis Orientation',
                 'HEIGHT': '633',
                 'BBOX': /5276843.28\d+,-14455.54\d+,6114251.21\d+,1252901.15\d+/,
             }
-            await expectParametersToContain('GetMap', getMapRequest.url(), expectedParameters)
+            requestExpect(getMapRequest).toContainParametersInUrl(expectedParameters);
 
             const getMapResponse = await getMapRequest.response();
             expect(getMapResponse).not.toBeNull();
@@ -61,6 +62,7 @@ test.describe('Axis Orientation',
             await expect(bundeslanderByteLength).toBeGreaterThan(blankByteLength);
 
             // Catch GetTile request
+            /** @type {string[]} GetTiles - Array of tiles url string */
             let GetTiles = [];
             await page.route('https://tile.openstreetmap.org/*/*/*.png', async (route) => {
                 const request = route.request();
@@ -71,8 +73,8 @@ test.describe('Axis Orientation',
                 if (UPDATE_MOCK_FILES && GetTiles.length <= 6) {
                     // Save file in mock directory for 6 tiles maximum
                     const response = await route.fetch();
-                    await fs.mkdir(dirname(pathFile), { recursive: true })
-                    await fs.writeFile(pathFile, await response.body())
+                    await fs.mkdir(dirname(pathFile), { recursive: true });
+                    await fs.writeFile(pathFile, new Uint8Array(await response.body()));
                 } else if (existsSync(pathFile)) {
                     // fulfill route's request with mock file
                     await route.fulfill({
@@ -98,7 +100,9 @@ test.describe('Axis Orientation',
             await expect(GetTiles[3]).toContain('6/34/21.png')
             await expect(GetTiles[4]).toContain('6/33/22.png')
             await expect(GetTiles[5]).toContain('6/34/22.png')
-            await page.unroute('https://tile.openstreetmap.org/*/*/*.png')
+
+            // Remove listen to osm tiles
+            await page.unroute('https://tile.openstreetmap.org/*/*/*.png');
 
             // Wait for transition
             await page.waitForTimeout(1000);
@@ -135,7 +139,7 @@ test.describe('Axis Orientation',
                 'HEIGHT': '633',
                 'BBOX': /72126.00\d+,-122200.57\d+,909533.92\d+,1145156.12\d+/,
             }
-            await expectParametersToContain('GetMap', getMapRequest.url(), expectedParameters);
+            requestExpect(getMapRequest).toContainParametersInUrl(expectedParameters);
 
             const getMapResponse = await getMapRequest.response();
             expect(getMapResponse).not.toBeNull();
@@ -155,6 +159,7 @@ test.describe('Axis Orientation',
             await expect(judetByteLength).toBeGreaterThan(blankByteLength);
 
             // Catch GetTile request
+            /** @type {string[]} GetTiles - Array of tiles url string */
             let GetTiles = [];
             await page.route('https://tile.openstreetmap.org/*/*/*.png', async (route) => {
                 const request = route.request();
@@ -165,8 +170,8 @@ test.describe('Axis Orientation',
                 if (UPDATE_MOCK_FILES && GetTiles.length <= 6) {
                     // Save file in mock directory for 6 tiles maximum
                     const response = await route.fetch();
-                    await fs.mkdir(dirname(pathFile), { recursive: true })
-                    await fs.writeFile(pathFile, await response.body())
+                    await fs.mkdir(dirname(pathFile), { recursive: true });
+                    await fs.writeFile(pathFile, new Uint8Array(await response.body()));
                 } else if (existsSync(pathFile)) {
                     // fulfill route's request with mock file
                     await route.fulfill({
@@ -192,7 +197,9 @@ test.describe('Axis Orientation',
             expect(GetTiles[3]).toContain('6/36/23.png')
             expect(GetTiles[4]).toContain('6/37/22.png')
             expect(GetTiles[5]).toContain('6/37/23.png')
-            await page.unroute('https://tile.openstreetmap.org/*/*/*.png')
+
+            // Remove listen to osm tiles
+            await page.unroute('https://tile.openstreetmap.org/*/*/*.png');
 
             // Wait for transition
             await page.waitForTimeout(1000);

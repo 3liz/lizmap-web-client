@@ -1,6 +1,7 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import {expectParametersToContain, gotoMap, reloadMap} from './globals';
+import { expect as requestExpect } from './fixtures/expect-request.js';
+import {gotoMap, reloadMap} from './globals';
 
 test.describe('Permalink', () => {
 
@@ -15,6 +16,11 @@ test.describe('Permalink', () => {
             }
             await route.fulfill({ response, json });
         });
+    });
+
+    test.afterEach(async ({ page }) => {
+        // Remove catching GetProjectConfig
+        await page.unroute('**/service/getProjectConfig*');
     });
 
     test('Hash changes when map center is changed', async ({ page }) => {
@@ -587,6 +593,11 @@ test.describe('Automatic permalink disabled', () => {
         });
     });
 
+    test.afterEach(async ({ page }) => {
+        // Remove catching GetProjectConfig
+        await page.unroute('**/service/getProjectConfig*');
+    });
+
     test('Hash does not change when map center is changed', async ({ page }) => {
         await gotoMap('/index.php/view/map?repository=testsrepository&project=layer_legends', page);
         await page.evaluate(() => lizMap.mainLizmap.map.getView().setCenter([770485, 6277813]));
@@ -734,7 +745,7 @@ test.describe('BBox parameter', () => {
             'HEIGHT': '633',
             'BBOX': /762375.04\d+,6277986.97\d+,775048.61\d+,6286361.05\d+/,
         }
-        await expectParametersToContain('GetMap', getMapRequest.url(), expectedParameters);
+        requestExpect(getMapRequest).toContainParametersInUrl(expectedParameters);
 
         // Check Permalink tool
         const new_share_value = await page.locator('#input-share-permalink').inputValue();
@@ -783,7 +794,7 @@ test.describe('BBox parameter', () => {
             'HEIGHT': '633',
             'BBOX': /762375.04\d+,6277986.97\d+,775048.61\d+,6286361.05\d+/,
         }
-        await expectParametersToContain('GetMap', getMapRequest.url(), expectedParameters);
+        requestExpect(getMapRequest).toContainParametersInUrl(expectedParameters);
 
         // Check Permalink tool
         const new_share_value = await page.locator('#input-share-permalink').inputValue();

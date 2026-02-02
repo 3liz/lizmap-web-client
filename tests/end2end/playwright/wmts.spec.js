@@ -1,6 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { gotoMap } from './globals';
+import { ProjectPage } from "./pages/project";
 
 test.describe('WMTS', () => {
     test('Check GetCapabilities', async ({ page }) => {
@@ -17,9 +17,10 @@ test.describe('WMTS', () => {
         expect(getCapabilitiesWMTSResponseText).toContain('<TileMatrixSet>EPSG:3857</TileMatrixSet>');
     })
     test('Check GetTile', async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=wmts_test';
-        await gotoMap(url, page)
+        const project = new ProjectPage(page, 'wmts_test');
+        await project.open();
         // Catch GetTile request;
+        /** @type {string[]} */
         let GetTiles = [];
         await page.route('**/service*', (route) => {
             const request = route.request();
@@ -49,6 +50,8 @@ test.describe('WMTS', () => {
         expect(GetTiles[5]).toContain('TileMatrix=2')
         expect(GetTiles[5]).toContain('TileRow=4')
         expect(GetTiles[5]).toContain('TileCol=8')
-        await page.unroute('**/service*')
+
+        // Stop listening to WMS requests
+        await page.unroute('**/service*');
     })
 })

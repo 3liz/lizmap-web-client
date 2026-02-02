@@ -2,7 +2,6 @@
 import { test, expect } from '@playwright/test';
 import { expect as responseExpect } from './fixtures/expect-response.js'
 import { expect as requestExpect } from './fixtures/expect-request.js'
-import { expectParametersToContain } from './globals';
 import { ProjectPage } from "./pages/project";
 
 test.describe('Edition Form Validation', () => {
@@ -86,6 +85,7 @@ test.describe('Edition Form Validation', () => {
         await expect(page.locator("#lizmap-edition-message")).toBeVisible();
         await expect(page.locator("#message > div")).toHaveClass(/alert-danger/);
 
+        // Remove listen to create feature
         await page.unroute('**/edition/createFeature*');
     })
 
@@ -126,6 +126,7 @@ test.describe('Edition Form Validation', () => {
         // form closed
         await expect(page.locator('#edition-form-container')).toBeHidden();
 
+        // Remove listen to save feature
         await page.unroute('**/edition/saveFeature*');
     })
 })
@@ -582,7 +583,7 @@ test.describe(
                 'CRS': 'EPSG:4326',
                 'BBOX': /43.5515\d+,3.7760\d+,43.6884\d+,3.9831\d+/,
             }
-            await expectParametersToContain('GetFeatureInfo', getFeatureInfoRequest.postData() ?? '', expectedParameters);
+            requestExpect(getFeatureInfoRequest).toContainParametersInPostData(expectedParameters);
 
             // wait for response
             let getFeatureInfoResponse = await getFeatureInfoRequest.response();

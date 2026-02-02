@@ -1,6 +1,6 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
-import { gotoMap } from './globals';
+import { ProjectPage } from './pages/project';
 import { base64svg, base64svgLineLayer } from "./../../../assets/src/modules/state/SymbologyIcons";
 
 test.describe('Legend tests', () => {
@@ -8,8 +8,8 @@ test.describe('Legend tests', () => {
     const locale = 'en-US';
 
     test.beforeEach(async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=layer_legends';
-        await gotoMap(url, page)
+        const project = new ProjectPage(page, 'layer_legends');
+        await project.open();
     });
 
     test('Tests the legend toggled layers', async ({ page }) => {
@@ -143,8 +143,8 @@ test.describe('Legend tests', () => {
 
 test.describe('Checkboxes on groups', () => {
     test('Tree initialization of checkboxes on groups', async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=groups_checkboxes';
-        await gotoMap(url, page)
+        const project = new ProjectPage(page, 'groups_checkboxes');
+        await project.open();
         // single layer, outside group
         await expect(page.getByLabel('shop_bakery_pg')).toBeChecked();
         // groupAsLayer group: the group is checked, the two layers under this group are unchecked

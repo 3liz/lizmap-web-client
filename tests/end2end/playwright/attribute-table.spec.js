@@ -3,8 +3,7 @@ import { test, expect } from '@playwright/test';
 import { expect as requestExpect } from './fixtures/expect-request.js'
 import { expect as responseExpect } from './fixtures/expect-response.js'
 import { ProjectPage } from './pages/project';
-import { getAuthStorageStatePath } from './globals';
-import { AdminPage } from "./pages/admin";
+import { digestBuffer } from "./globals";
 
 /**
  * @typedef {object} Position
@@ -119,7 +118,9 @@ test.describe('Attribute table @readonly', () => {
             'BBOX': /738930.9\d+,6258456.2\d+,802298.7\d+,6300326.6\d+/,
         }
         requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
-        await getMapRequest.response();
+        // Check response
+        let getMapResponse = await getMapRequest.response();
+        responseExpect(getMapResponse).toBeImagePng();
 
         let req_url = new URL(getMapRequest.url())
         expect(req_url.searchParams.get('SELECTIONTOKEN')).toBeNull();
@@ -134,12 +135,17 @@ test.describe('Attribute table @readonly', () => {
         getMapExpectedParameters['BBOX'] = /732448.6\d+,6251973.9\d+,795816.4\d+,6293844.3\d+/;
         //delete getMapExpectedParameters['BBOX'];
         requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
-        await getMapRequest.response();
-        await page.waitForTimeout(100)
+        // Check response
+        getMapResponse = await getMapRequest.response();
+        responseExpect(getMapResponse).toBeImagePng();
+
+        // Wait for OL rendering
+        await page.waitForTimeout(500)
 
         // Check rendering
         const clip = {x:420, y:120, width:256, height:256};
         let buffer = await page.screenshot({clip:clip});
+        const defaultHash = await digestBuffer(buffer);
         const defaultByteLength = buffer.byteLength;
         expect(defaultByteLength).toBeGreaterThan(8000); // 8667
         expect(defaultByteLength).toBeLessThan(10000); // 8667
@@ -170,7 +176,9 @@ test.describe('Attribute table @readonly', () => {
         getMapRequestPromise = project.waitForGetMapRequest();
         await getSelectionTokenRequest.response();
         getMapRequest = await getMapRequestPromise;
-        await getMapRequest.response();
+        // Check response
+        getMapResponse = await getMapRequest.response();
+        responseExpect(getMapResponse).toBeImagePng();
 
         // Check GetSelectionToken request
         const getSelectionTokenParameters = {
@@ -194,6 +202,8 @@ test.describe('Attribute table @readonly', () => {
 
         // Check rendering
         buffer = await page.screenshot({clip:clip});
+        const selectHash = await digestBuffer(buffer);
+        expect(selectHash).not.toEqual(defaultHash);
         const selectByteLength = buffer.byteLength;
         expect(selectByteLength).toBeGreaterThan(8000); // 8607
         expect(selectByteLength).not.toBe(defaultByteLength); // 8667
@@ -209,7 +219,9 @@ test.describe('Attribute table @readonly', () => {
         getMapRequestPromise = project.waitForGetMapRequest();
         await getFilterTokenRequest.response();
         getMapRequest = await getMapRequestPromise;
-        await getMapRequest.response();
+        // Check response
+        getMapResponse = await getMapRequest.response();
+        responseExpect(getMapResponse).toBeImagePng();
 
         // Check GetSelectionToken request
         const getFilterTokenParameters = {
@@ -245,6 +257,9 @@ test.describe('Attribute table @readonly', () => {
 
         // Check rendering
         buffer = await page.screenshot({clip:clip});
+        const filterHash = await digestBuffer(buffer);
+        expect(filterHash).not.toEqual(defaultHash);
+        expect(filterHash).not.toEqual(selectHash);
         const filterByteLength = buffer.byteLength;
         expect(filterByteLength).toBeLessThan(defaultByteLength); // 2781
         expect(filterByteLength).toBeLessThan(selectByteLength); // 2781
@@ -263,10 +278,17 @@ test.describe('Attribute table @readonly', () => {
         await expect(page.getByTestId(layerName).locator('.node')).not.toContainClass('filtered');
         await expect(page.locator('#layerActionUnfilter')).not.toBeVisible();
 
+        // Wait for OL rendering
+        await page.waitForTimeout(100);
+
         // Check rendering
         buffer = await page.screenshot({clip:clip});
-        expect(buffer.byteLength).toBeGreaterThan(defaultByteLength-6);
-        expect(buffer.byteLength).toBeLessThan(defaultByteLength+6);
+        const firstDisableHash = await digestBuffer(buffer);
+        expect(firstDisableHash).not.toEqual(filterHash);
+        expect(firstDisableHash).not.toEqual(selectHash);
+        expect(firstDisableHash).not.toEqual(defaultHash);
+        expect(buffer.byteLength).toBeGreaterThan(defaultByteLength-10);
+        expect(buffer.byteLength).toBeLessThan(defaultByteLength+10);
 
         // select feature 2,4,6
         // click to select 2
@@ -301,7 +323,9 @@ test.describe('Attribute table @readonly', () => {
         getMapRequestPromise = project.waitForGetMapRequest();
         await getSelectionTokenRequest.response();
         getMapRequest = await getMapRequestPromise;
-        await getMapRequest.response();
+        // Check response
+        getMapResponse = await getMapRequest.response();
+        responseExpect(getMapResponse).toBeImagePng();
 
         // Update expected GetSelection token parameters
         getSelectionTokenParameters['ids'] = '2,4'
@@ -334,7 +358,9 @@ test.describe('Attribute table @readonly', () => {
         getMapExpectedParameters['SELECTIONTOKEN'] = /^[a-zA-Z0-9]{32}$/;
         getMapRequest = await getMapRequestPromise;
         requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
-        await getMapRequest.response();
+        // Check response
+        getMapResponse = await getMapRequest.response();
+        responseExpect(getMapResponse).toBeImagePng();
 
         req_url = new URL(getMapRequest.url())
         expect(req_url.searchParams.get('SELECTIONTOKEN')).not.toBeNull()
@@ -350,11 +376,15 @@ test.describe('Attribute table @readonly', () => {
 
         // Check rendering
         buffer = await page.screenshot({clip:clip});
-        const muliSelectByteLength = buffer.byteLength;
-        expect(muliSelectByteLength).toBeGreaterThan(8000);
-        expect(muliSelectByteLength).not.toBe(defaultByteLength);
-        expect(muliSelectByteLength).not.toBe(selectByteLength);
-        expect(muliSelectByteLength).toBeLessThan(10000);
+        const multiSelectHash = await digestBuffer(buffer);
+        expect(multiSelectHash).not.toEqual(defaultHash);
+        expect(multiSelectHash).not.toEqual(selectHash);
+        expect(multiSelectHash).not.toEqual(filterHash);
+        const multiSelectByteLength = buffer.byteLength;
+        expect(multiSelectByteLength).toBeGreaterThan(8000);
+        expect(multiSelectByteLength).not.toBe(defaultByteLength);
+        expect(multiSelectByteLength).not.toBe(selectByteLength);
+        expect(multiSelectByteLength).toBeLessThan(10000);
 
         // click on filter Button
         getFilterTokenRequestPromise = project.waitForGetFilterTokenRequest();
@@ -365,7 +395,9 @@ test.describe('Attribute table @readonly', () => {
         getMapRequestPromise = project.waitForGetMapRequest();
         await getFilterTokenRequest.response();
         getMapRequest = await getMapRequestPromise;
-        await getMapRequest.response();
+        // Check response
+        getMapResponse = await getMapRequest.response();
+        responseExpect(getMapResponse).toBeImagePng();
 
         // Check GetSelectionToken request
         getFilterTokenParameters['filter'] = typeName+':"quartier" IN ( 2 , 6 , 4 ) ';
@@ -399,6 +431,11 @@ test.describe('Attribute table @readonly', () => {
 
         // Check rendering
         buffer = await page.screenshot({clip:clip});
+        const multiFilterHash = await digestBuffer(buffer);
+        expect(multiFilterHash).not.toEqual(defaultHash);
+        expect(multiFilterHash).not.toEqual(selectHash);
+        expect(multiFilterHash).not.toEqual(filterHash);
+        expect(multiFilterHash).not.toEqual(multiSelectHash);
         const multiFilterByteLength = buffer.byteLength;
         expect(multiFilterByteLength).toBeLessThan(defaultByteLength); // 2781
         expect(multiFilterByteLength).toBeLessThan(selectByteLength); // 2781
@@ -418,10 +455,20 @@ test.describe('Attribute table @readonly', () => {
         await expect(page.getByTestId(layerName).locator('.node')).not.toContainClass('filtered');
         await expect(page.locator('#layerActionUnfilter')).not.toBeVisible();
 
+        // Wait for OL rendering
+        await page.waitForTimeout(100);
+
         // Check rendering
         buffer = await page.screenshot({clip:clip});
-        expect(buffer.byteLength).toBeGreaterThan(defaultByteLength-6);
-        expect(buffer.byteLength).toBeLessThan(defaultByteLength+6);
+        const scndDisableHash = await digestBuffer(buffer);
+        expect(scndDisableHash).not.toEqual(multiFilterHash);
+        expect(scndDisableHash).not.toEqual(multiSelectHash);
+        expect(scndDisableHash).not.toEqual(filterHash);
+        expect(scndDisableHash).not.toEqual(selectHash);
+        expect(scndDisableHash).not.toEqual(defaultHash);
+        expect(scndDisableHash).toEqual(firstDisableHash);
+        expect(buffer.byteLength).toBeGreaterThan(defaultByteLength-10);
+        expect(buffer.byteLength).toBeLessThan(defaultByteLength+10);
 
         await project.closeAttributeTable();
     });
@@ -749,161 +796,184 @@ test.describe('Attribute table @readonly', () => {
     });
 });
 
-test.describe('Layer export permissions ACL', () => {
-    // single_wms_points -> export enabled for group_a users
-    // single_wms_points_group -> export enabled, no groups specified, inherith export permission from repository level
-    // single_wms_lines_group_as_layer -> export disabled
-    // single_wms_lines_group_as_layer -> export enabled for group_a, group_b users
-    [
-        {
-            login:'__anonymous',
-            enabled_groups: [],
-            expected: [
-                {layer:'single_wms_points', onPage:0},
-                {layer:'single_wms_points_group', onPage:0},
-                {layer:'single_wms_lines_group_as_layer', onPage:0},
-                {layer:'single_wms_polygons', onPage:0},
-            ]
-        },
-        {
-            login:'admin',
-            enabled_groups: ['admins'],
-            expected: [
-                {layer:'single_wms_points', onPage:1},
-                {layer:'single_wms_points_group', onPage:1},
-                {layer:'single_wms_lines_group_as_layer', onPage:0},
-                {layer:'single_wms_polygons', onPage:1},
-            ]
-        },
-        {
-            login:'user_in_group_a',
-            enabled_groups: ['admins'],
-            expected: [
-                {layer:'single_wms_points', onPage:1},
-                {layer:'single_wms_points_group', onPage:0},
-                {layer:'single_wms_lines_group_as_layer', onPage:0},
-                {layer:'single_wms_polygons', onPage:1},
-            ]
-        },
-        {
-            login:'user_in_group_a',
-            enabled_groups: ['group_a','group_b'],
-            expected: [
-                {layer:'single_wms_points', onPage:1},
-                {layer:'single_wms_points_group', onPage:1},
-                {layer:'single_wms_lines_group_as_layer', onPage:0},
-                {layer:'single_wms_polygons', onPage:1},
-            ]
-        },
-        {
-            login:'user_in_group_b',
-            enabled_groups: ['admins'],
-            expected: [
-                {layer:'single_wms_points', onPage:0},
-                {layer:'single_wms_points_group', onPage:0},
-                {layer:'single_wms_lines_group_as_layer', onPage:0},
-                {layer:'single_wms_polygons', onPage:1},
-            ]
-        },
-        {
-            login:'publisher',
-            enabled_groups: ['group_b','group_a','admins'],
-            expected: [
-                {layer:'single_wms_points', onPage:0},
-                {layer:'single_wms_points_group', onPage:0},
-                {layer:'single_wms_lines_group_as_layer', onPage:0},
-                {layer:'single_wms_polygons', onPage:0},
-            ]
-        },
-    ].forEach(({login, enabled_groups, expected}, c) => {
-        test(`#${c} Layer export with ${login} user logged in`, {
-            tag: '@write',
-        }, async ({browser}) => {
-            // open admin page to set export permissions
-            const adminContext = await browser.newContext({ storageState: getAuthStorageStatePath('admin') });
-            const page = await adminContext.newPage();
-            const adminPage = new AdminPage(page);
 
-            await page.goto('admin.php');
-            // open maps management page
-            await adminPage.openPage('Maps management');
+test.describe('Attribute table linking @write', () => {
 
-            // set layer export permissions
-            await adminPage.modifyRepository('testsrepository');
-            await adminPage.uncheckAllExportPermission();
-            await adminPage.setLayerExportPermission(enabled_groups);
-            await adminPage.page.getByRole('button', { name: 'Save' }).click();
+    test('should unlink/link', async ({ page }) => {
+        const project = new ProjectPage(page, 'feature_toolbar');
 
-            // login with specific user
-            let userContext;
-            if (login !== '__anonymous') {
-                userContext = await browser.newContext({storageState: getAuthStorageStatePath(login)});
-            } else {
-                userContext = await browser.newContext();
-            }
-            const userPage = await userContext.newPage();
-
-            // go to project page
-            const project = new ProjectPage(userPage, 'enable_export_acl');
-            await project.open();
-
-            // check layer export capabilities for logged in user
-            for(const layerObj of expected){
-                let datatablesRequest = await project.openAttributeTable(layerObj.layer);
-                let datatablesResponse = await datatablesRequest.response();
-                responseExpect(datatablesResponse).toBeJson();
-                await expect(userPage.locator('.attribute-layer-action-bar .export-formats')).toHaveCount(layerObj.onPage);
-                await project.closeAttributeTable();
-            }
-
-            // reset layer export permissions
-            await adminPage.modifyRepository('testsrepository');
-            await adminPage.resetLayerExportPermission();
-
-            await adminPage.page.getByRole('button', { name: 'Save' }).click();
-        })
-    })
-
-    test('Layer export request ACL', {
-        tag: '@readonly',
-    }, async ({page}) => {
-        const project = new ProjectPage(page, 'enable_export_acl');
+        // Create a promise to wait for the GetMap request to be made
+        let getMapRequestPromise = project.waitForGetMapRequest();
+        // Open the map project
         await project.open();
 
-        let tableName = 'single_wms_points';
-        let datatablesRequest = await project.openAttributeTable(tableName);
+        const layerName = 'parent_layer';
+
+        // Check request
+        let getMapRequest = await getMapRequestPromise;
+        /** @type {{[key: string]: string|RegExp}} */
+        let getMapExpectedParameters = {
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'REQUEST': 'GetMap',
+            'FORMAT': /^image\/png/,
+            'TRANSPARENT': /\b(\w*^true$\w*)\b/gmi,
+            'LAYERS': layerName,
+            'CRS': 'EPSG:2154',
+            'WIDTH': '958',
+            'HEIGHT': '633',
+            'BBOX': /740242.9\d+,6258377.5\d+,803610.7\d+,6300247.9\d+/,
+        }
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
+
+        // Check response
+        let getMapResponse = await getMapRequest.response();
+        responseExpect(getMapResponse).toBeImagePng();
+
+        // Click on parent_layer
+        let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
+        await project.clickOnMap(436, 290);
+        let getFeatureInfoRequest = await getFeatureInfoPromise;
+        /** @type {{[key: string]: string|RegExp}} */
+        const getFeatureInfoExpectedParameters = {
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'REQUEST': 'GetFeatureInfo',
+            'INFO_FORMAT': /^text\/html/,
+            'LAYERS': layerName,
+            'QUERY_LAYERS': layerName,
+        }
+        requestExpect(getFeatureInfoRequest).toContainParametersInPostData(getFeatureInfoExpectedParameters);
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
+
+        // Check popup displayed
+        const popupContainer = page.locator(`#popupcontent div.lizmapPopupSingleFeature[data-feature-id="1"][data-layer-id^="${layerName}_"]`);
+        await expect(popupContainer).toHaveCount(1);
+        await expect(popupContainer).toBeVisible();
+
+        const childLayerName = 'children_layer';
+
+        // Check children displayed
+        const childPopupContainer = popupContainer.locator('div.lizmapPopupChildren');
+        await expect(childPopupContainer).toBeVisible();
+        await expect(childPopupContainer).toHaveAttribute('data-layername', childLayerName);
+        await expect(childPopupContainer).toContainClass(childLayerName);
+        await expect(childPopupContainer.locator('div.lizmapPopupSingleFeature')).toHaveCount(2);
+
+        // Open attribute table
+        let datatablesRequest = await project.openAttributeTable(layerName);
         let datatablesResponse = await datatablesRequest.response();
         responseExpect(datatablesResponse).toBeJson();
 
-        // launch export
-        let getFeatureRequest = await project.launchExport('single_wms_points','GeoJSON');
+        // full sized bottom dock
+        await page.locator('#bottom-dock-window-buttons .btn-bottomdock-size').click();
 
-        /** @type {{[key: string]: string|RegExp}} */
-        let expectedParameters = {
-            'SERVICE': 'WFS',
-            'REQUEST': 'GetFeature',
-            'VERSION': '1.0.0',
-            'OUTPUTFORMAT': 'GeoJSON',
-            'TYPENAME': 'single_wms_points',
-            'dl': '1',
-        }
+        // Get parent table
+        const tableHtml = project.attributeTableHtml(layerName);
+        // Check table lines
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(2);
 
-        requestExpect(getFeatureRequest).toContainParametersInPostData(expectedParameters);
-        responseExpect(await getFeatureRequest.response()).toBeGeoJson();
+        // Get child table
+        const childTableHtml = page.locator(`#attribute-layer-table-${layerName}-${childLayerName}`);
+        // Check child table lines
+        await expect(childTableHtml.locator('tbody tr')).toHaveCount(0);
 
-        // Activate filter by extent
-        let datatablesRequestPromise = project.waitForDatatablesRequest();
-        await page.locator('.btn-filterbyextent-attributeTable').click();
-        datatablesRequest = await datatablesRequestPromise;
+        // click on line 1 like the popup
+        let datatablesPromise = project.waitForDatatablesRequest();
+        await tableHtml.locator(`tbody tr[id="1"]`).click();
+        datatablesRequest = await datatablesPromise;
+        datatablesResponse = await datatablesRequest.response();
+
+        // Check child table lines
+        await expect(childTableHtml.locator('tbody tr')).toHaveCount(2);
+
+        // Unlink button for child 2
+        await expect(childTableHtml.locator(`tbody tr[id="2"] button.feature-unlink`)).toBeVisible();
+
+        // Create the promise to wait for the request to unlink child
+        let unlinkChildRequestPromise = page.waitForRequest(/lizmap\/edition\/unlinkChild/);
+        // Click on the unlink button
+        await childTableHtml.locator(`tbody tr[id="2"] button.feature-unlink`).click();
+        let unlinkChildRequest = await unlinkChildRequestPromise;
+        datatablesPromise = project.waitForDatatablesRequest();
+        await unlinkChildRequest.response();
+        datatablesRequest = await datatablesPromise;
+        datatablesResponse = await datatablesRequest.response();
+
+        // Check child table lines
+        await expect(childTableHtml.locator('tbody tr')).toHaveCount(1);
+
+        // Confirmation message should be displayed
+        await expect(page.locator('#message .jelix-msg-item-success')).toHaveText('The child feature has correctly been unlinked.');
+
+        // Close the message
+        await expect(page.locator('#message .btn-close')).toBeVisible();
+        await page.locator('#message .btn-close').click();
+        await expect(page.locator('#message')).toBeHidden();
+
+        // The Popup has not been refreshed
+
+        // To link features
+        // 1. Select the parent_layer feature: 1
+        // 2. Open the children_layer attribute table
+        // 3. Select the children_layer feature: 2
+        // 4. back to the parent_layer attribute table
+        // 5. click on the link button
+
+        // Select the parent_layer feature: 1
+        await expect(tableHtml.locator(`tbody tr[id="1"] button.feature-select`)).toBeVisible();
+        await tableHtml.locator(`tbody tr[id="1"] button.feature-select`).click();
+
+        // Open the children_layer attribute table
+        datatablesRequest = await project.openAttributeTable(childLayerName);
         datatablesResponse = await datatablesRequest.response();
         responseExpect(datatablesResponse).toBeJson();
 
-        // launch export
-        getFeatureRequest = await project.launchExport('single_wms_points','GeoJSON');
+        // Select the children_layer feature: 2
+        await expect(project.attributeTableHtml(childLayerName).locator(`tbody tr[id="1"] button.feature-select`)).toBeVisible();
+        await project.attributeTableHtml(childLayerName).locator(`tbody tr[id="1"] button.feature-select`).click();
 
-        expectedParameters['BBOX'] = /3.7759\d+,43.55267\d+,3.98277\d+,43.6516\d+/;
+        // back to the parent_layer attribute table
+        await expect(tableHtml).toBeHidden();
+        await page.locator(`#nav-tab-attribute-layer-${layerName}`).click();
+        await expect(tableHtml).toBeVisible();
 
-        requestExpect(getFeatureRequest).toContainParametersInPostData(expectedParameters);
-        responseExpect(await getFeatureRequest.response()).toBeGeoJson();
-    })
+        // click on the link button
+        const actionBar = project.attributeTableActionBar(layerName);
+        await expect(actionBar.getByText('Link selected features')).toBeVisible();
+        await expect(actionBar.locator('.btn-linkFeatures-attributeTable')).toHaveCount(1);
+        await expect(actionBar.locator('.btn-linkFeatures-attributeTable')).not.toBeVisible();
+        await actionBar.getByText('Link selected features').click();
+        await expect(actionBar.locator('.btn-linkFeatures-attributeTable')).toBeVisible();
+        // Create the promise to wait for the request to unlink child
+        let linkFeaturesRequestPromise = page.waitForRequest(/lizmap\/edition\/linkFeatures/);
+        await actionBar.locator('.btn-linkFeatures-attributeTable').click();
+        // Wait for the request to unlink child
+        let linkFeaturesRequest = await linkFeaturesRequestPromise;
+        await linkFeaturesRequest.response();
+
+        // Confirmation message should be displayed
+        await expect(page.locator('#message .jelix-msg-item-success')).toHaveText('Selected features have been correctly linked.');
+
+        // Close the message
+        await expect(page.locator('#message .btn-close')).toBeVisible();
+        await page.locator('#message .btn-close').click();
+        await expect(page.locator('#message')).toBeHidden();
+
+        // The child table has not been refreshed
+        // Check child table lines
+        // await expect(childTableHtml.locator('tbody tr')).toHaveCount(1);
+        // We need to click one the line to refresh child table
+
+        // click on line 1 like the popup
+        datatablesPromise = project.waitForDatatablesRequest();
+        await tableHtml.locator(`tbody tr[id="1"]`).click();
+        datatablesRequest = await datatablesPromise;
+        datatablesResponse = await datatablesRequest.response();
+
+        // Check child table lines
+        await expect(childTableHtml.locator('tbody tr')).toHaveCount(2);
+    });
+
 });

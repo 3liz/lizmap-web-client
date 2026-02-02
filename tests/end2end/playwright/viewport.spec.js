@@ -1,7 +1,9 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+import { expect as requestExpect } from './fixtures/expect-request.js';
 import { expect as responseExpect } from './fixtures/expect-response.js'
-import {expectParametersToContain, gotoMap} from './globals';
+import { ProjectPage } from "./pages/project";
+import {gotoMap} from './globals';
 
 test.describe('Viewport devicePixelRatio 1', () => {
     test('Greater than WMS max size', async ({ page }) => {
@@ -50,6 +52,8 @@ test.describe('Viewport devicePixelRatio 1', () => {
         expect(await page.evaluate(() => globalThis.lizMap.mainLizmap.initialConfig.options.wmsMaxHeight)).toBe(950);
         expect(await page.evaluate(() => window.devicePixelRatio)).toBe(1);
         expect(await page.evaluate(() => globalThis.lizMap.mainLizmap.map.getSize())).toStrictEqual([870, 575]);
+
+        // Remove catching GetProjectConfig
         await page.unroute('**/service/getProjectConfig*')
 
         // Catch GetMaps request;
@@ -76,6 +80,7 @@ test.describe('Viewport devicePixelRatio 1', () => {
             expect(GetMap).toContain('&DPI=96&')
         }
 
+        // Stop listening to WMS requests
         await page.unroute('**/service*')
     })
 })
@@ -131,6 +136,8 @@ test.describe('Viewport devicePixelRatio 2', () => {
         expect(await page.evaluate(() => globalThis.lizMap.mainLizmap.initialConfig.options.wmsMaxHeight)).toBe(1900);
         expect(await page.evaluate(() => window.devicePixelRatio)).toBe(2);
         expect(await page.evaluate(() => globalThis.lizMap.mainLizmap.map.getSize())).toStrictEqual([870, 620]);
+
+        // Remove catching GetProjectConfig
         await page.unroute('**/service/getProjectConfig*')
 
         // Catch GetMaps request;
@@ -157,6 +164,8 @@ test.describe('Viewport devicePixelRatio 2', () => {
             expect(GetMap).toContain('&HEIGHT=682&')
             expect(GetMap).toContain('&DPI=96&')
         }
+
+        // Stop listening to WMS requests
         await page.unroute('**/service*')
     })
 })
@@ -168,9 +177,9 @@ test.describe('Viewport mobile', () => {
     });
     test('Display docks', async ({ page }) => {
         // atlas project
-        const url = '/index.php/view/map/?repository=testsrepository&project=atlas'
+        const project = new ProjectPage(page, 'atlas');
         // Go to the map
-        await gotoMap(url, page)
+        await project.open();
 
         // Check menu and menu toggle button
         await expect(page.locator('#mapmenu')).not.toBeInViewport();
@@ -218,8 +227,8 @@ test.describe('Viewport mobile', () => {
 
 test.describe('Viewport standard', () => {
     test('Resize viewport', async ({ page }) => {
-        const url = '/index.php/view/map/?repository=testsrepository&project=world-3857';
-        await gotoMap(url, page)
+        const project = new ProjectPage(page, 'world-3857');
+        await project.open();
 
         expect(await page.evaluate(() => lizMap.map.getZoom())).toBe(0);
         expect(await page.evaluate(() => lizMap.mainLizmap.map.getView().getZoom())).toBe(0);
@@ -246,7 +255,7 @@ test.describe('Viewport standard', () => {
             'HEIGHT': '633',
             'BBOX': /-9373014.15\d+,-6193233.77\d+,9373014.15\d+,6193233.77\d+/,
         }
-        await expectParametersToContain('GetMap', getMapRequest.url(), expectedParameters);
+        requestExpect(getMapRequest).toContainParametersInUrl(expectedParameters);
 
         // Check zoom
         expect(await page.evaluate(() => lizMap.mainLizmap.map.getView().getZoom())).toBe(1);
@@ -276,7 +285,7 @@ test.describe('Viewport standard', () => {
             'HEIGHT': '909',
             'BBOX': /-7005300.76\d+,-8893601.11\d+,7005300.76\d+,8893601.11\d+/,
         }
-        await expectParametersToContain('GetMap', getMapRequest.url(), expectedParameters);
+        requestExpect(getMapRequest).toContainParametersInUrl(expectedParameters);
 
         // Check zoom
         expect(await page.evaluate(() => lizMap.mainLizmap.map.getView().getZoom())).toBe(1);

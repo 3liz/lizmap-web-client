@@ -52,8 +52,10 @@ test.describe('Print in project projection @readonly', () => {
         requestExpect(getPrintRequest).toContainParametersInPostData(expectedParameters);
         const searchParams = new URLSearchParams(getPrintRequest?.postData() ?? '');
         expect(searchParams.size).toBe(14)
-        await getPrintRequest.response()
-        await page.unroute('**/service*')
+        await getPrintRequest.response();
+
+        // Stop listening to WMS requests
+        await page.unroute('**/service*');
     })
 
     test('Print external baselayer', async ({ page }) => {
@@ -101,7 +103,9 @@ test.describe('Print in project projection @readonly', () => {
         requestExpect(getPrintRequest).toContainParametersInPostData(expectedParameters);
         const searchParams = new URLSearchParams(getPrintRequest?.postData() ?? '');
         expect(searchParams.size).toBe(14)
-        await getPrintRequest.response()
-        await page.unroute('**/service*')
+        await getPrintRequest.response();
+
+        // Stop listening to WMS requests
+        await page.unroute('**/service*');
     })
 })
