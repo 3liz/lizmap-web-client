@@ -161,6 +161,9 @@ export default class Geolocation {
 
     // Get position in GPS coordinates (ESPG:4326) with 6 decimals
     get position() {
+        if (!this.isTracking) {
+            return undefined;
+        }
         const position = this._geolocation.getPosition();
         if (position) {
             const qgisProjectProjection = this._lizmap3.map.getProjection();
@@ -171,8 +174,12 @@ export default class Geolocation {
     }
 
     get accuracy() {
-        if (this._geolocation.getAccuracy()) {
-            return parseFloat(this._geolocation.getAccuracy().toFixed(3));
+        if (!this.isTracking) {
+            return undefined;
+        }
+        const acc = this._geolocation.getAccuracy();
+        if (acc) {
+            return parseFloat(acc.toFixed(3));
         }
         return undefined;
     }
