@@ -3183,10 +3183,12 @@ lizmap-mouse-position > div.coords-unit > select{
   border-radius: 5px;
   font-size: 0.8em;
   display: none;
+
   /* SAFE ZONE: Using padding-top on the container ensures a physical 
      clearance for the absolute-positioned Close button. 
      This prevents E2E tests (Playwright) from detecting overlaps.
   */
+  
   padding-top: 45px !important; 
 }
 
@@ -3197,7 +3199,9 @@ lizmap-mouse-position > div.coords-unit > select{
   max-height: 33%;
   max-width: none;
   border-radius: 0;
+  
   /* Maintain the clearance zone on mobile devices */
+  
   padding-top: 40px !important;
 }
 
@@ -3227,9 +3231,11 @@ lizmap-mouse-position > div.coords-unit > select{
 }
 
 #lizmap-search ul.items li > strong {
+  
   /* STRUCTURAL SHIFT: Forcing the strong tag as a block element 
      ensures a solid, predictable layout for the result titles.
   */
+  
   display: block !important; 
   color: #fff;
 }
@@ -3239,9 +3245,11 @@ lizmap-mouse-position > div.coords-unit > select{
   right: 8px;
   top: 8px;
   position: absolute;
+  
   /* Kept on a higher layer than the search container to ensure it 
      remains interactive and visible within the padding-top area.
   */
+  
   z-index: 1041;
 }
 
