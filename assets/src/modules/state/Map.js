@@ -151,8 +151,10 @@ export class MapState extends EventDispatcher {
 
         // Values from options
         this._singleWMSLayer = false;
+        this._excludeBasemapsFromSingleWMS = false;
         if (options) {
             this._singleWMSLayer = options.wms_single_request_for_all_layers; // default value is defined as false
+            this._excludeBasemapsFromSingleWMS = options.exclude_basemaps_from_single_wms; // default value is defined as false
             this._scales = buildScales(options);
             this._maxZoom = this._scales.length - 1;
             this._projection = options.projection.ref;
@@ -414,6 +416,14 @@ export class MapState extends EventDispatcher {
      */
     get singleWMSLayer(){
         return this._singleWMSLayer;
+    }
+
+    /**
+     * Config excludeBasemapsFromSingleWMS
+     * @type {boolean}
+     */
+    get excludeBasemapsFromSingleWMS(){
+        return this._excludeBasemapsFromSingleWMS;
     }
 
     /**
