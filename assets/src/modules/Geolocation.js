@@ -5,6 +5,7 @@
  * @license MPL-2.0
  */
 import { mainEventDispatcher } from '../modules/Globals.js';
+import { convertBoolean } from './utils/Converters.js';
 import olGeolocation from 'ol/Geolocation.js';
 import { transform } from 'ol/proj.js';
 import { Vector as VectorSource } from 'ol/source.js';
@@ -12,6 +13,9 @@ import { Vector as VectorLayer } from 'ol/layer.js';
 import Point from 'ol/geom/Point.js';
 import Circle from 'ol/geom/Circle.js';
 import Feature from 'ol/Feature.js';
+import Style from 'ol/style/Style.js';
+import Icon from 'ol/style/Icon.js';
+import { OptionsConfig } from './config/Options.js';
 
 /**
  * @class
@@ -21,10 +25,11 @@ export default class Geolocation {
 
     /**
      * Create a geolocation instance
-     * @param {Map}    map           - OpenLayers map
-     * @param {object}   lizmap3   - The old lizmap object
+     * @param {Map}           map     - OpenLayers map
+     * @param {OptionsConfig} options - The Lizmap config options
+     * @param {object}        lizmap3 - The old lizmap object
      */
-    constructor(map, lizmap3) {
+    constructor(map, options, lizmap3) {
         const color = 'rgb(3, 149, 214)';
         const fillColor = 'rgba(3, 149, 214, 0.1)';
         const strokeWidth = 1;
@@ -51,6 +56,8 @@ export default class Geolocation {
         this._lizmap3 = lizmap3;
         this._map = map;
         this._firstGeolocation = true;
+        this._displayPrecision = options.geolocationPrecision;
+        this._displayDirection = options.geolocationDirection;
         this._isBind = false;
         this._bindIntervalID = 0;
         this._bindIntervalInSecond = 10;
@@ -184,6 +191,30 @@ export default class Geolocation {
         return undefined;
     }
 
+    get displayPrecision() {
+        return this._displayPrecision;
+    }
+
+    /**
+     * Set display geolocation precision
+     * @param {boolean} displayPrecision - Enable display geolocation precision.
+     */
+    set displayPrecision(displayPrecision) {
+        this._displayPrecision = convertBoolean(displayPrecision);
+    }
+
+    get displayDirection() {
+        return this._displayDirection;
+    }
+
+    /**
+     * Set display geolocation direction
+     * @param {boolean} displayDirection - Enable display geolocation direction.
+     */
+    set displayDirection(displayDirection) {
+        this._displayDirection = convertBoolean(displayDirection);
+    }
+
     get isTracking() {
         return this._geolocation.getTracking();
     }
@@ -243,9 +274,28 @@ export default class Geolocation {
             geometry: new Point(coordinates)
         });
 
+        if (this.displayDirection) {
+            const iconStyle = new Style({
+                image: new Icon({
+                    src: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbDpzcGFjZT0icHJlc2VydmUiIHZpZXdCb3g9IjAgMCAxNzkyIDE3OTIiIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiI+CiAgPHBhdGggZD0iTTE4OCAxNjU5IDg5NiAxMzNsNzA4IDE1MjYtNzA4LTM3M3oiLz4KPC9zdmc+Cg==', // eslint-disable-line
+                    rotation: this._geolocation.getHeading(),
+                    rotateWithView: true,
+                }),
+            });
+            positionFeature.setStyle(iconStyle);
+        }
+
         const accuracyFeature = new Feature({
             geometry: new Circle(coordinates, this._geolocation.getAccuracy() / 2)
         });
+
+        if (!this.displayPrecision) {
+            accuracyFeature.setStyle(new Style({
+                'stroke-color': 'transparent',
+                'stroke-width': 0.0,
+                'fill-color': 'transparent',
+            }));
+        }
 
         this._geolocationLayer.getSource().clear();
         this._geolocationLayer.getSource().addFeatures([positionFeature, accuracyFeature]);
