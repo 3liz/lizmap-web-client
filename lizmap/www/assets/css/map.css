@@ -2699,12 +2699,9 @@ lizmap-mouse-position > div.coords-unit > select{
   display:block;
 }
 
+ /* STRUCTURAL SHIFT: Forcing the strong tag as a block element ensures a solid, predictable layout for the result titles. */
+
 #lizmap-search ul.items li > strong {
-
-  /* STRUCTURAL SHIFT: Forcing the strong tag as a block element
-     ensures a solid, predictable layout for the result titles.
-  */
-
   display: block !important;
   color: #fff;
 }
@@ -2713,12 +2710,7 @@ lizmap-mouse-position > div.coords-unit > select{
   display: none;
   right: 8px;
   top: 8px;
-  position: absolute;
-
-  /* Kept on a higher layer than the search container to ensure it
-     remains interactive and visible within the padding-top area.
-  */
-
+  position: absolute;  /* Kept on a higher layer than the search container to ensure it remains interactive and visible within the padding-top area. */
   z-index: 1041;
 }
 
