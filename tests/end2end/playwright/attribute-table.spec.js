@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 import { expect as requestExpect } from './fixtures/expect-request.js'
 import { expect as responseExpect } from './fixtures/expect-response.js'
 import { ProjectPage } from './pages/project';
-import { digestBuffer } from "./globals";
+import { digestBuffer, gotoMap, expectParametersToContain } from "./globals";
 
 /**
  * @typedef {object} Position
