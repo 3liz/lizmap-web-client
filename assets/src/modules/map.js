@@ -499,10 +499,13 @@ export default class map extends olMap {
                         source: new WMTS(options)
                     });
                 } else {
-                    if(mapState.singleWMSLayer){
+                    // Check if basemaps should be included in single WMS or rendered separately
+                    if(mapState.singleWMSLayer && !mapState.excludeBasemapsFromSingleWMS){
+                        // Include basemaps in single WMS request
                         baseLayerState.singleWMSLayer = true;
                         this._statesSingleWMSLayers.set(baseLayerState.name, baseLayerState);
                     } else {
+                        // Render basemaps as separate layers (improves performance for COG basemaps)
                         if (this._useCustomTileWms) {
                             baseLayer = new TileLayer({
                                 // extent: extent,
