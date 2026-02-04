@@ -1029,7 +1029,7 @@ test.describe('Attribute table atlas print button', () => {
         const getPrintRequest = await getPrintPromise;
         const expectedParameters = {
             'SERVICE': 'WMS',
-            'REQUEST': 'GetPrint',
+            'REQUEST': 'GetPrintAtlas',
             'VERSION': '1.3.0',
             'FORMAT': 'pdf',
             'TRANSPARENT': 'true',
@@ -1072,7 +1072,9 @@ test.describe('Attribute table atlas print button', () => {
         await gotoMap(url, page);
 
         const project = new ProjectPage(page, 'attribute_table');
-        await project.openAttributeTable('Les quartiers à Montpellier');
+        // Use the underscore version of the layer name to avoid CSS selector issues
+        // with special characters like 'à'
+        await project.openAttributeTable('Les_quartiers_a_Montpellier');
 
         // Check that atlas button is NOT visible for this layer (no atlas configured)
         const atlasButton = page.locator('#attribute-layer-main-Les_quartiers_a_Montpellier button.btn-print-atlas-selection');
