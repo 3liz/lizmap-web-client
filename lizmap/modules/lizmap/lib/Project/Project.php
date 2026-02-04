@@ -2483,6 +2483,33 @@ class Project
             );
         }
 
+        // DXF Export - check if enabled and user has access
+        $dxfExportEnabled = $this->cfg->getOption('dxfExportEnabled');
+        // Handle both boolean (from use_proper_boolean) and string 'True'/'true'
+        $isDxfEnabled = is_bool($dxfExportEnabled) ? $dxfExportEnabled : (strtolower($dxfExportEnabled) === 'true');
+
+        if ($isDxfEnabled) {
+            $allowedGroups = $this->cfg->getOption('allowedGroups');
+            $hasAccess = true;
+
+            // If allowedGroups is specified, check if user is in one of those groups
+            if ($allowedGroups && trim($allowedGroups) !== '') {
+                $userGroups = $this->appContext->aclUserGroupsId();
+                $exportGroups = array_map('trim', explode(',', $allowedGroups));
+                $hasAccess = (bool) array_intersect($exportGroups, $userGroups);
+            }
+
+            if ($hasAccess) {
+                $tpl = new \jTpl();
+                $dockable[] = new \lizmapMapDockItem(
+                    'dxfexport',
+                    $this->appContext->getLocale('view~map.dxfexport.navbar.title'),
+                    $tpl->fetch('view~map_dxfexport'),
+                    10
+                );
+            }
+        }
+
         return $dockable;
     }
 

@@ -800,6 +800,15 @@ CSS Sprite positions calculated via http://instantsprite.com/ using 20px images 
   background-position: -350px 0;
 }
 
+#mapmenu .nav-list > li.dxfexport .icon {
+  background-position: -1039px 0;
+}
+
+#mapmenu .nav-list > li.dxfexport.active .icon,
+#mapmenu .nav-list > li.dxfexport a:hover .icon {
+  background-position: -1014px 0;
+}
+
 #mapmenu .nav-list > li.measure .icon {
   background-position: -275px 0;
 }
@@ -1733,6 +1742,13 @@ div.modal h3 .text {
 #dock .print h3 .icon,
 #mini-dock .print h3 .icon {
   background-position: -375px 0;
+}
+
+#toolbar .dxfexport h3 .icon,
+#menu .dxfexport h3 .icon,
+#dock .dxfexport h3 .icon,
+#mini-dock .dxfexport h3 .icon {
+  background-position: -1039px 0;
 }
 
 #toolbar .measure h3 .icon,

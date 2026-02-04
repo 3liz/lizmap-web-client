@@ -134,7 +134,7 @@
       <wgs84extent>
         <xmin>-180</xmin>
         <ymin>-85.05112877980660357</ymin>
-        <xmax>179.99999999999997158</xmax>
+        <xmax>180</xmax>
         <ymax>85.05112877980660357</ymax>
       </wgs84extent>
       <id>OpenStreetMap_ab9cd479_708a_4147_a0b1_2508e7ba864c</id>
