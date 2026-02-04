@@ -1004,28 +1004,32 @@ test.describe('Attribute table atlas print button', () => {
         const project = new ProjectPage(page, 'print');
         await project.openAttributeTable('quartiers');
 
-        // Select features by clicking checkboxes in the table
-        // Note: This is a simplified approach - actual selection might differ
-        const firstCheckbox = page.locator('#attribute-layer-table-quartiers tbody tr:first-child input[type="checkbox"]');
-        await firstCheckbox.check();
+        const tableHtml = project.attributeTableHtml('quartiers');
 
-        const secondCheckbox = page.locator('#attribute-layer-table-quartiers tbody tr:nth-child(2) input[type="checkbox"]');
-        await secondCheckbox.check();
+        // Select first feature using the feature-select button
+        let getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
+        await tableHtml.locator('tbody tr:first-child lizmap-feature-toolbar .feature-select').click();
+        await getSelectionTokenRequestPromise;
 
-        // Wait for GetPrintAtlas request
-        const getPrintAtlasPromise = page.waitForRequest(request =>
+        // Select second feature
+        getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
+        await tableHtml.locator('tbody tr:nth-child(2) lizmap-feature-toolbar .feature-select').click();
+        await getSelectionTokenRequestPromise;
+
+        // Wait for GetPrint request (atlas uses GetPrint with EXP_FILTER)
+        const getPrintPromise = page.waitForRequest(request =>
             request.method() === 'POST' &&
-            request.postData()?.includes('GetPrintAtlas') === true
+            request.postData()?.includes('GetPrint') === true
         );
 
         // Click atlas button
         const atlasButton = page.locator('#attribute-layer-main-quartiers button.btn-print-atlas-selection');
         await atlasButton.click();
 
-        const getPrintAtlasRequest = await getPrintAtlasPromise;
+        const getPrintRequest = await getPrintPromise;
         const expectedParameters = {
             'SERVICE': 'WMS',
-            'REQUEST': 'GetPrintAtlas',
+            'REQUEST': 'GetPrint',
             'VERSION': '1.3.0',
             'FORMAT': 'pdf',
             'TRANSPARENT': 'true',
@@ -1036,10 +1040,10 @@ test.describe('Attribute table atlas print button', () => {
             'EXP_FILTER': /\$id IN \(.+\)/,
         };
 
-        await expectParametersToContain('Atlas print with selected features', getPrintAtlasRequest.postData() ?? '', expectedParameters);
+        await expectParametersToContain('Atlas print with selected features', getPrintRequest.postData() ?? '', expectedParameters);
 
         // Verify response
-        const response = await getPrintAtlasRequest.response();
+        const response = await getPrintRequest.response();
         await expect(response?.status()).toBe(200);
         await expect(response?.headers()['content-type']).toBe('application/pdf');
     });
@@ -1063,13 +1067,16 @@ test.describe('Attribute table atlas print button', () => {
     test('Atlas button does not appear for layer without atlas layout', {
         tag: '@readonly',
     }, async ({ page }) => {
-        // Switch to a project/layer without atlas
-        const project = new ProjectPage(page, 'print');
-        await project.openAttributeTable('shop_bakery');
+        // Use attribute_table project which has layers without atlas configured
+        const url = '/index.php/view/map/?repository=testsrepository&project=attribute_table';
+        await gotoMap(url, page);
 
-        // Check that atlas button is NOT visible
-        const atlasButton = page.locator('#attribute-layer-main-shop_bakery button.btn-print-atlas-selection');
-        await expect(atlasButton).not.toBeVisible();
+        const project = new ProjectPage(page, 'attribute_table');
+        await project.openAttributeTable('Les quartiers à Montpellier');
+
+        // Check that atlas button is NOT visible for this layer (no atlas configured)
+        const atlasButton = page.locator('#attribute-layer-main-Les_quartiers_a_Montpellier button.btn-print-atlas-selection');
+        await expect(atlasButton).toHaveCount(0);
     });
 
     test('Atlas dropdown appears for layer with multiple atlas layouts', {
