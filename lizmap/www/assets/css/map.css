@@ -3154,34 +3154,43 @@ lizmap-mouse-position > div.coords-unit > select{
 .qgis_sprite.mActionSplitFeatures { background-position: -534px 0; }
 .qgis_sprite.mActionShowAllLayers { background-position: -563px 0; }
 
-#lizmap-search{
+#lizmap-search {
   top: 1px;
   position: absolute;
   z-index: 1040;
   overflow: auto;
-  background-color: #4A4A4A;
   background-color: rgb(0 0 0 / 70%);
   max-height: 99%;
   right: 100px;
   max-width: 70%;
-  color:white;
-  border-radius:5px;
-  font-size:0.8em;
-  display:none;
+  color: white;
+  border-radius: 5px;
+  font-size: 0.8em;
+  display: none;
+  /* SAFE ZONE: Using padding-top on the container ensures a physical 
+     clearance for the absolute-positioned Close button. 
+     This prevents E2E tests (Playwright) from detecting overlaps.
+  */
+  padding-top: 45px !important; 
 }
 
-#content.mobile #lizmap-search{
+#content.mobile #lizmap-search {
   left: 31px;
   right: 1px;
   bottom: 1px;
   max-height: 33%;
-  max-width:none;
-  border-radius:0;
+  max-width: none;
+  border-radius: 0;
+  /* Maintain the clearance zone on mobile devices */
+  padding-top: 40px !important;
 }
 
 #lizmap-search > li{
   list-style: none;
+  margin-top: 30px; 
+  padding-left: 10px
 }
+
 
 #lizmap-search .items > li > ul{
   margin: 0 10px 10px 25px
@@ -3201,11 +3210,22 @@ lizmap-mouse-position > div.coords-unit > select{
   display:block;
 }
 
-#lizmap-search-close{
-  display:none;
-  right: 3px;
-  top: 2px;
+#lizmap-search ul.items li > strong {
+  /* STRUCTURAL SHIFT: Forcing the strong tag as a block element 
+     ensures a solid, predictable layout for the result titles.
+  */
+  display: block !important; 
+  color: #fff;
+}
+
+#lizmap-search-close {
+  display: none;
+  right: 8px;
+  top: 8px;
   position: absolute;
+  /* Kept on a higher layer than the search container to ensure it 
+     remains interactive and visible within the padding-top area.
+  */
   z-index: 1041;
 }
 
