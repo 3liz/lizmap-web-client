@@ -783,6 +783,266 @@ class serviceCtrl extends jController
     }
 
     /**
+     * Generate atlas filename from QGIS project configuration for single feature requests.
+     *
+     * @param string $template  The print template name
+     * @param string $expFilter The expression filter (e.g., "$id IN (123)")
+     * @param string $layerName The layer name
+     * @param string $format    The output format (e.g., "pdf")
+     *
+     * @return null|string The generated filename or null if cannot generate
+     */
+    protected function generateAtlasFilename($template, $expFilter, $layerName, $format)
+    {
+        lizmap::getLogger()->debug("generateAtlasFilename: Template: {$template}, Layer: {$layerName}, Format: {$format}");
+        lizmap::getLogger()->debug("generateAtlasFilename: EXP_FILTER: {$expFilter}");
+
+        // Check if this is a single feature request by parsing EXP_FILTER
+        // Expected format: $id IN (123) or $id IN (123, 456, 789)
+        if (!preg_match('/\$id\s+IN\s*\(([^)]+)\)/i', $expFilter, $matches)) {
+            lizmap::getLogger()->debug('generateAtlasFilename: EXP_FILTER does not match expected pattern');
+
+            return null; // Not a valid $id IN (...) filter
+        }
+
+        // Extract feature IDs
+        $idsString = $matches[1];
+        $ids = array_map('trim', explode(',', $idsString));
+        lizmap::getLogger()->debug('generateAtlasFilename: Extracted IDs: '.implode(', ', $ids));
+
+        // Only process single feature requests
+        if (count($ids) !== 1) {
+            lizmap::getLogger()->debug('generateAtlasFilename: Multiple features detected ('.count($ids).'), using fallback');
+
+            return null; // Multiple features, use fallback
+        }
+
+        $featureId = $ids[0];
+        lizmap::getLogger()->debug("generateAtlasFilename: Single feature ID: {$featureId}");
+
+        // Get atlas configuration from QGIS project file
+        try {
+            $qgisPath = $this->project->getQgisPath();
+            lizmap::getLogger()->debug("generateAtlasFilename: QGIS project path: {$qgisPath}");
+
+            if (!file_exists($qgisPath)) {
+                lizmap::getLogger()->warning("generateAtlasFilename: QGIS project file does not exist at {$qgisPath}");
+
+                return null;
+            }
+
+            $xmlContent = file_get_contents($qgisPath);
+            $xml = simplexml_load_string($xmlContent);
+
+            if (!$xml) {
+                lizmap::getLogger()->warning('generateAtlasFilename: Could not parse QGIS project XML');
+
+                return null;
+            }
+            lizmap::getLogger()->debug('generateAtlasFilename: Got QGIS project XML');
+        } catch (Exception $e) {
+            lizmap::getLogger()->error('generateAtlasFilename: Exception reading QGIS project: '.$e->getMessage());
+
+            return null;
+        }
+
+        // Find the Layout (print template) with the given name
+        $layouts = $xml->xpath("//Layout[@name='{$template}']");
+        lizmap::getLogger()->debug('generateAtlasFilename: Found '.count($layouts)." layout(s) with name '{$template}'");
+        if (empty($layouts)) {
+            lizmap::getLogger()->debug("generateAtlasFilename: No layout found with name '{$template}'");
+
+            return null;
+        }
+
+        $layout = $layouts[0];
+
+        // Get atlas configuration from the layout
+        $atlasElements = $layout->xpath('.//Atlas');
+        lizmap::getLogger()->debug('generateAtlasFilename: Found '.count($atlasElements).' atlas element(s) in layout');
+        if (empty($atlasElements)) {
+            lizmap::getLogger()->debug('generateAtlasFilename: No atlas configuration found in layout');
+
+            return null;
+        }
+
+        $atlas = $atlasElements[0];
+        lizmap::getLogger()->debug('generateAtlasFilename: Processing atlas element');
+
+        // Check if atlas is enabled
+        if (!isset($atlas['enabled']) || ($atlas['enabled'] != '1' && $atlas['enabled'] !== true)) {
+            lizmap::getLogger()->debug('generateAtlasFilename: Atlas is not enabled');
+
+            return null;
+        }
+
+        // Get filename pattern and page name expression
+        $filenamePattern = isset($atlas['filenamePattern']) ? (string) $atlas['filenamePattern'] : null;
+        $pageNameExpression = isset($atlas['pageNameExpression']) ? (string) $atlas['pageNameExpression'] : null;
+
+        lizmap::getLogger()->debug('generateAtlasFilename: filenamePattern: '.($filenamePattern ?: 'NULL'));
+        lizmap::getLogger()->debug('generateAtlasFilename: pageNameExpression: '.($pageNameExpression ?: 'NULL'));
+
+        if (!$filenamePattern || !$pageNameExpression) {
+            lizmap::getLogger()->debug('generateAtlasFilename: Missing filenamePattern or pageNameExpression');
+
+            return null;
+        }
+
+        // Get the coverage layer ID from atlas config and use it to get layer config
+        $coverageLayerId = isset($atlas['coverageLayer']) ? (string) $atlas['coverageLayer'] : null;
+        $coverageLayerName = isset($atlas['coverageLayerName']) ? (string) $atlas['coverageLayerName'] : null;
+
+        lizmap::getLogger()->debug('generateAtlasFilename: Coverage Layer ID: '.($coverageLayerId ?: 'NULL'));
+        lizmap::getLogger()->debug('generateAtlasFilename: Coverage Layer Name: '.($coverageLayerName ?: 'NULL'));
+
+        if (!$coverageLayerId) {
+            lizmap::getLogger()->debug('generateAtlasFilename: No coverageLayer in atlas config');
+
+            return null;
+        }
+
+        // Get the layer config using the coverage layer ID from atlas
+        $layerConfig = $this->project->getLayer($coverageLayerId);
+        if (!$layerConfig) {
+            lizmap::getLogger()->warning("generateAtlasFilename: Layer config not found for coverage layer ID '{$coverageLayerId}'");
+
+            return null;
+        }
+        lizmap::getLogger()->debug('generateAtlasFilename: Got layer config from coverage layer ID');
+
+        // Fetch feature data via WFS to get the attribute value
+        try {
+            // Use the built-in method to get the WFS typename
+            // This will use shortname if available (e.g., "Flurstucke"), otherwise name
+            /** @var qgisVectorLayer $layerConfig */
+            $typename = $layerConfig->getWfsTypeName();
+            lizmap::getLogger()->debug("generateAtlasFilename: WFS typename: {$typename}");
+
+            // FEATUREID format must be typename.id for WFS
+            $wfsFeatureId = $typename.'.'.$featureId;
+            lizmap::getLogger()->debug("generateAtlasFilename: WFS FeatureID: {$wfsFeatureId}");
+
+            $wfsParams = array(
+                'SERVICE' => 'WFS',
+                'VERSION' => '1.0.0',
+                'REQUEST' => 'GetFeature',
+                'TYPENAME' => $typename,
+                'OUTPUTFORMAT' => 'GeoJSON',
+                'FEATUREID' => $wfsFeatureId,
+            );
+
+            lizmap::getLogger()->debug('generateAtlasFilename: WFS request TYPENAME='.$typename.' FEATUREID='.$wfsFeatureId);
+
+            $wfsRequest = new WFSRequest(
+                $this->project,
+                $wfsParams,
+                lizmap::getServices()
+            );
+
+            $wfsResult = $wfsRequest->process();
+            $geojsonString = $wfsResult->getBodyAsString();
+            lizmap::getLogger()->debug('generateAtlasFilename: WFS response length: '.strlen($geojsonString));
+
+            $geojson = json_decode($geojsonString, true);
+
+            if (!$geojson || !isset($geojson['features']) || count($geojson['features']) === 0) {
+                lizmap::getLogger()->warning('generateAtlasFilename: No features returned from WFS');
+                lizmap::getLogger()->debug('generateAtlasFilename: GeoJSON response: '.substr($geojsonString, 0, 500));
+
+                return null;
+            }
+
+            lizmap::getLogger()->debug('generateAtlasFilename: Got '.count($geojson['features']).' feature(s) from WFS');
+
+            $feature = $geojson['features'][0];
+            $properties = $feature['properties'];
+            lizmap::getLogger()->debug('generateAtlasFilename: Feature properties: '.implode(', ', array_keys($properties)));
+
+            // Clean up the page name expression (remove quotes)
+            $pageNameField = str_replace('"', '', $pageNameExpression);
+            lizmap::getLogger()->debug("generateAtlasFilename: Looking for field: '{$pageNameField}'");
+
+            if (!isset($properties[$pageNameField])) {
+                lizmap::getLogger()->warning("generateAtlasFilename: Field '{$pageNameField}' not found in feature properties");
+                lizmap::getLogger()->debug('generateAtlasFilename: Available fields: '.implode(', ', array_keys($properties)));
+
+                return null;
+            }
+
+            $pageNameValue = $properties[$pageNameField];
+            lizmap::getLogger()->debug("generateAtlasFilename: Page name value: '{$pageNameValue}'");
+
+            // Evaluate the filename pattern
+            // Replace @atlas_pagename with the actual value
+            $evaluatedFilename = $this->evaluateAtlasFilenamePattern($filenamePattern, $pageNameValue);
+            lizmap::getLogger()->debug("generateAtlasFilename: Evaluated filename: '{$evaluatedFilename}'");
+
+            if ($evaluatedFilename) {
+                // Ensure it has the correct extension
+                if (!preg_match('/\.'.preg_quote($format, '/').'$/i', $evaluatedFilename)) {
+                    $evaluatedFilename .= '.'.$format;
+                }
+
+                lizmap::getLogger()->debug("generateAtlasFilename: Final filename: '{$evaluatedFilename}'");
+
+                return $evaluatedFilename;
+            }
+        } catch (Exception $e) {
+            // If anything fails, return null to use fallback
+            lizmap::getLogger()->error('generateAtlasFilename: '.$e->getMessage());
+
+            return null;
+        }
+
+        lizmap::getLogger()->debug('generateAtlasFilename: Reached end of function without generating filename');
+
+        return null;
+    }
+
+    /**
+     * Evaluate atlas filename pattern with feature data.
+     *
+     * @param string $pattern  The filename pattern (e.g., "'Flstk_'||replace(@atlas_pagename ,'/','-')")
+     * @param string $pageName The page name value from the feature
+     *
+     * @return null|string The evaluated filename or null if cannot evaluate
+     */
+    protected function evaluateAtlasFilenamePattern($pattern, $pageName)
+    {
+        // Simple evaluation for common patterns
+        // This handles: 'Flstk_'||replace(@atlas_pagename ,'/','-')
+
+        // Replace @atlas_pagename with actual value
+        $evaluated = $pattern;
+
+        // Handle replace() function: replace(@atlas_pagename, '/', '-')
+        if (preg_match('/replace\s*\(\s*@atlas_pagename\s*,\s*[\'"]([^\'"]*)[\'"],\s*[\'"]([^\'"]*)[\'"].*\)/i', $evaluated, $matches)) {
+            $searchStr = $matches[1];
+            $replaceStr = $matches[2];
+            $replacedValue = str_replace($searchStr, $replaceStr, $pageName);
+            $evaluated = preg_replace('/replace\s*\([^)]+\)/i', "'{$replacedValue}'", $evaluated);
+        } else {
+            // Simple replacement without replace() function
+            $evaluated = str_replace('@atlas_pagename', "'{$pageName}'", $evaluated);
+        }
+
+        // Handle string concatenation with ||
+        $evaluated = preg_replace('/\'\s*\|\|\s*\'/', '', $evaluated);
+
+        // Remove remaining quotes
+        $evaluated = str_replace("'", '', $evaluated);
+
+        // Clean up the filename
+        $evaluated = trim($evaluated);
+
+        // Sanitize filename - remove/replace unsafe characters
+        $evaluated = preg_replace('/[<>:"|?*]/', '_', $evaluated);
+
+        return $evaluated ?: null;
+    }
+
+    /**
      * GetPrintAtlas.
      *
      * @urlparam string $repository Lizmap Repository
@@ -798,7 +1058,58 @@ class serviceCtrl extends jController
 
         /** @var jResponseBinary $rep */
         $rep = $this->getResponse('binary');
-        $fileName = $this->project->getKey().'_'.preg_replace('#[\W]+#', '_', $this->params['template']).'.'.$this->params['format'];
+
+        // Try to extract filename from QGIS Server's Content-Disposition header
+        // QGIS Server may include the evaluated atlas filename expression
+        $fileName = null;
+        $headers = $result->getHeaders();
+
+        // Search for Content-Disposition header (case-insensitive)
+        $contentDisposition = null;
+        foreach ($headers as $headerName => $headerValue) {
+            if (strtolower($headerName) === 'content-disposition') {
+                // Headers can be arrays in PSR-7 format
+                $contentDisposition = is_array($headerValue) ? $headerValue[0] : $headerValue;
+
+                break;
+            }
+        }
+
+        if ($contentDisposition) {
+            // Parse Content-Disposition header to extract filename
+            // Format: attachment; filename="evaluated_name.pdf" or filename*=UTF-8''evaluated_name.pdf
+            if (preg_match('/filename\*?="?([^";]+)"?/i', $contentDisposition, $matches)) {
+                $fileName = urldecode($matches[1]);
+                // Clean up UTF-8'' prefix if present (RFC 5987)
+                $fileName = preg_replace("/^UTF-8''/i", '', $fileName);
+            }
+        }
+
+        // If no filename from header, try to generate from atlas configuration for single features
+        if (!$fileName && isset($this->params['exp_filter'])) {
+            $fileName = $this->generateAtlasFilename(
+                $this->params['template'],
+                $this->params['exp_filter'],
+                $this->params['layer'],
+                $this->params['format']
+            );
+        }
+
+        // Validate that filename has the correct extension for the requested format
+        // If not, use fallback to ensure proper file extension
+        if ($fileName) {
+            $expectedExtension = '.'.$this->params['format'];
+            if (!preg_match('/\.'.preg_quote($this->params['format'], '/').'$/i', $fileName)) {
+                // Filename doesn't have the correct extension, use fallback
+                $fileName = null;
+            }
+        }
+
+        // Fallback to default naming if still no filename
+        if (!$fileName) {
+            $fileName = $this->project->getKey().'_'.preg_replace('#[\W]+#', '_', $this->params['template']).'.'.$this->params['format'];
+        }
+
         $this->setupBinaryResponse($rep, $result, $fileName);
         $rep->doDownload = true;
 

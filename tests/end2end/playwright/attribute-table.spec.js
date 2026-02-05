@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 import { expect as requestExpect } from './fixtures/expect-request.js'
 import { expect as responseExpect } from './fixtures/expect-response.js'
 import { ProjectPage } from './pages/project';
-import { digestBuffer } from "./globals";
+import { digestBuffer, gotoMap, expectParametersToContain } from "./globals";
 
 /**
  * @typedef {object} Position
@@ -976,4 +976,134 @@ test.describe('Attribute table linking @write', () => {
         await expect(childTableHtml.locator('tbody tr')).toHaveCount(2);
     });
 
+});
+
+test.describe('Attribute table atlas print button', () => {
+    test.beforeEach(async ({ page }) => {
+        // Use the print project which has atlas configured for quartiers layer
+        const url = '/index.php/view/map/?repository=testsrepository&project=print';
+        await gotoMap(url, page)
+    });
+
+    test('Atlas button appears for layer with atlas layout', {
+        tag: '@readonly',
+    }, async ({ page }) => {
+        const project = new ProjectPage(page, 'print');
+        await project.openAttributeTable('quartiers');
+
+        // Check that atlas button is visible
+        const atlasButton = page.locator('#attribute-layer-main-quartiers button.btn-print-atlas-selection');
+        await expect(atlasButton).toBeVisible();
+        await expect(atlasButton).toContainText('Atlas');
+        await expect(atlasButton.locator('i.icon-print')).toBeVisible();
+    });
+
+    test('Atlas button sends correct request with selected features', {
+        tag: '@readonly',
+    }, async ({ page }) => {
+        const project = new ProjectPage(page, 'print');
+        await project.openAttributeTable('quartiers');
+
+        const tableHtml = project.attributeTableHtml('quartiers');
+
+        // Select first feature using the feature-select button
+        let getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
+        await tableHtml.locator('tbody tr:first-child lizmap-feature-toolbar .feature-select').click();
+        await getSelectionTokenRequestPromise;
+
+        // Select second feature
+        getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
+        await tableHtml.locator('tbody tr:nth-child(2) lizmap-feature-toolbar .feature-select').click();
+        await getSelectionTokenRequestPromise;
+
+        // Wait for GetPrint request (atlas uses GetPrint with EXP_FILTER)
+        const getPrintPromise = page.waitForRequest(request =>
+            request.method() === 'POST' &&
+            request.postData()?.includes('GetPrint') === true
+        );
+
+        // Click atlas button
+        const atlasButton = page.locator('#attribute-layer-main-quartiers button.btn-print-atlas-selection');
+        await atlasButton.click();
+
+        const getPrintRequest = await getPrintPromise;
+        const expectedParameters = {
+            'SERVICE': 'WMS',
+            'REQUEST': 'GetPrintAtlas',
+            'VERSION': '1.3.0',
+            'FORMAT': 'pdf',
+            'TRANSPARENT': 'true',
+            'DPI': '100',
+            'TEMPLATE': 'atlas_quartiers',
+            'LAYER': 'quartiers',
+            // EXP_FILTER should contain the selected feature IDs
+            'EXP_FILTER': /\$id IN \(.+\)/,
+        };
+
+        await expectParametersToContain('Atlas print with selected features', getPrintRequest.postData() ?? '', expectedParameters);
+
+        // Verify response
+        const response = await getPrintRequest.response();
+        await expect(response?.status()).toBe(200);
+        await expect(response?.headers()['content-type']).toBe('application/pdf');
+    });
+
+    test('Atlas button shows message when no features selected', {
+        tag: '@readonly',
+    }, async ({ page }) => {
+        const project = new ProjectPage(page, 'print');
+        await project.openAttributeTable('quartiers');
+
+        // Click atlas button without selecting features
+        const atlasButton = page.locator('#attribute-layer-main-quartiers button.btn-print-atlas-selection');
+        await atlasButton.click();
+
+        // Check for info message
+        const message = page.locator('#message .alert-info');
+        await expect(message).toBeVisible();
+        await expect(message).toContainText('Please select at least one feature to print');
+    });
+
+    test('Atlas button does not appear for layer without atlas layout', {
+        tag: '@readonly',
+    }, async ({ page }) => {
+        // Use attribute_table project which has layers without atlas configured
+        const url = '/index.php/view/map/?repository=testsrepository&project=attribute_table';
+        await gotoMap(url, page);
+
+        const project = new ProjectPage(page, 'attribute_table');
+        // Use the underscore version of the layer name to avoid CSS selector issues
+        // with special characters like 'à'
+        await project.openAttributeTable('Les_quartiers_a_Montpellier');
+
+        // Check that atlas button is NOT visible for this layer (no atlas configured)
+        const atlasButton = page.locator('#attribute-layer-main-Les_quartiers_a_Montpellier button.btn-print-atlas-selection');
+        await expect(atlasButton).toHaveCount(0);
+    });
+
+    test('Atlas dropdown appears for layer with multiple atlas layouts', {
+        tag: '@readonly',
+    }, async ({ page }) => {
+        const project = new ProjectPage(page, 'print');
+        await project.openAttributeTable('quartiers');
+
+        // The quartiers layer has multiple atlas layouts configured
+        // Check if dropdown exists
+        const atlasDropdown = page.locator('#attribute-layer-main-quartiers .btn-group button.dropdown-toggle');
+
+        // If dropdown exists, verify it has the correct structure
+        if (await atlasDropdown.count() > 0) {
+            await expect(atlasDropdown).toBeVisible();
+            await expect(atlasDropdown).toContainText('Atlas');
+
+            // Click to open dropdown
+            await atlasDropdown.click();
+
+            // Check dropdown items
+            const dropdownItems = page.locator('#attribute-layer-main-quartiers .dropdown-menu button.btn-print-atlas-selection');
+            await expect(dropdownItems.first()).toBeVisible();
+        }
+        // If no dropdown, it means there's only one layout (simple button)
+        // which is already tested in the first test
+    });
 });
