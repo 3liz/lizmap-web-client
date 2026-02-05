@@ -794,13 +794,13 @@ class serviceCtrl extends jController
      */
     protected function generateAtlasFilename($template, $expFilter, $layerName, $format)
     {
-        \lizmap::getLogger()->debug("generateAtlasFilename: Template: {$template}, Layer: {$layerName}, Format: {$format}");
-        \lizmap::getLogger()->debug("generateAtlasFilename: EXP_FILTER: {$expFilter}");
+        lizmap::getLogger()->debug("generateAtlasFilename: Template: {$template}, Layer: {$layerName}, Format: {$format}");
+        lizmap::getLogger()->debug("generateAtlasFilename: EXP_FILTER: {$expFilter}");
 
         // Check if this is a single feature request by parsing EXP_FILTER
         // Expected format: $id IN (123) or $id IN (123, 456, 789)
         if (!preg_match('/\$id\s+IN\s*\(([^)]+)\)/i', $expFilter, $matches)) {
-            \lizmap::getLogger()->debug('generateAtlasFilename: EXP_FILTER does not match expected pattern');
+            lizmap::getLogger()->debug('generateAtlasFilename: EXP_FILTER does not match expected pattern');
 
             return null; // Not a valid $id IN (...) filter
         }
@@ -808,25 +808,25 @@ class serviceCtrl extends jController
         // Extract feature IDs
         $idsString = $matches[1];
         $ids = array_map('trim', explode(',', $idsString));
-        \lizmap::getLogger()->debug('generateAtlasFilename: Extracted IDs: '.implode(', ', $ids));
+        lizmap::getLogger()->debug('generateAtlasFilename: Extracted IDs: '.implode(', ', $ids));
 
         // Only process single feature requests
         if (count($ids) !== 1) {
-            \lizmap::getLogger()->debug('generateAtlasFilename: Multiple features detected ('.count($ids).'), using fallback');
+            lizmap::getLogger()->debug('generateAtlasFilename: Multiple features detected ('.count($ids).'), using fallback');
 
             return null; // Multiple features, use fallback
         }
 
         $featureId = $ids[0];
-        \lizmap::getLogger()->debug("generateAtlasFilename: Single feature ID: {$featureId}");
+        lizmap::getLogger()->debug("generateAtlasFilename: Single feature ID: {$featureId}");
 
         // Get atlas configuration from QGIS project file
         try {
             $qgisPath = $this->project->getQgisPath();
-            \lizmap::getLogger()->debug("generateAtlasFilename: QGIS project path: {$qgisPath}");
+            lizmap::getLogger()->debug("generateAtlasFilename: QGIS project path: {$qgisPath}");
 
             if (!file_exists($qgisPath)) {
-                \lizmap::getLogger()->warning("generateAtlasFilename: QGIS project file does not exist at {$qgisPath}");
+                lizmap::getLogger()->warning("generateAtlasFilename: QGIS project file does not exist at {$qgisPath}");
 
                 return null;
             }
@@ -835,22 +835,22 @@ class serviceCtrl extends jController
             $xml = simplexml_load_string($xmlContent);
 
             if (!$xml) {
-                \lizmap::getLogger()->warning('generateAtlasFilename: Could not parse QGIS project XML');
+                lizmap::getLogger()->warning('generateAtlasFilename: Could not parse QGIS project XML');
 
                 return null;
             }
-            \lizmap::getLogger()->debug('generateAtlasFilename: Got QGIS project XML');
+            lizmap::getLogger()->debug('generateAtlasFilename: Got QGIS project XML');
         } catch (Exception $e) {
-            \lizmap::getLogger()->error('generateAtlasFilename: Exception reading QGIS project: '.$e->getMessage());
+            lizmap::getLogger()->error('generateAtlasFilename: Exception reading QGIS project: '.$e->getMessage());
 
             return null;
         }
 
         // Find the Layout (print template) with the given name
         $layouts = $xml->xpath("//Layout[@name='{$template}']");
-        \lizmap::getLogger()->debug('generateAtlasFilename: Found '.count($layouts)." layout(s) with name '{$template}'");
+        lizmap::getLogger()->debug('generateAtlasFilename: Found '.count($layouts)." layout(s) with name '{$template}'");
         if (empty($layouts)) {
-            \lizmap::getLogger()->debug("generateAtlasFilename: No layout found with name '{$template}'");
+            lizmap::getLogger()->debug("generateAtlasFilename: No layout found with name '{$template}'");
 
             return null;
         }
@@ -859,19 +859,19 @@ class serviceCtrl extends jController
 
         // Get atlas configuration from the layout
         $atlasElements = $layout->xpath('.//Atlas');
-        \lizmap::getLogger()->debug('generateAtlasFilename: Found '.count($atlasElements).' atlas element(s) in layout');
+        lizmap::getLogger()->debug('generateAtlasFilename: Found '.count($atlasElements).' atlas element(s) in layout');
         if (empty($atlasElements)) {
-            \lizmap::getLogger()->debug('generateAtlasFilename: No atlas configuration found in layout');
+            lizmap::getLogger()->debug('generateAtlasFilename: No atlas configuration found in layout');
 
             return null;
         }
 
         $atlas = $atlasElements[0];
-        \lizmap::getLogger()->debug('generateAtlasFilename: Processing atlas element');
+        lizmap::getLogger()->debug('generateAtlasFilename: Processing atlas element');
 
         // Check if atlas is enabled
         if (!isset($atlas['enabled']) || ($atlas['enabled'] != '1' && $atlas['enabled'] !== true)) {
-            \lizmap::getLogger()->debug('generateAtlasFilename: Atlas is not enabled');
+            lizmap::getLogger()->debug('generateAtlasFilename: Atlas is not enabled');
 
             return null;
         }
@@ -880,11 +880,11 @@ class serviceCtrl extends jController
         $filenamePattern = isset($atlas['filenamePattern']) ? (string) $atlas['filenamePattern'] : null;
         $pageNameExpression = isset($atlas['pageNameExpression']) ? (string) $atlas['pageNameExpression'] : null;
 
-        \lizmap::getLogger()->debug('generateAtlasFilename: filenamePattern: '.($filenamePattern ?: 'NULL'));
-        \lizmap::getLogger()->debug('generateAtlasFilename: pageNameExpression: '.($pageNameExpression ?: 'NULL'));
+        lizmap::getLogger()->debug('generateAtlasFilename: filenamePattern: '.($filenamePattern ?: 'NULL'));
+        lizmap::getLogger()->debug('generateAtlasFilename: pageNameExpression: '.($pageNameExpression ?: 'NULL'));
 
         if (!$filenamePattern || !$pageNameExpression) {
-            \lizmap::getLogger()->debug('generateAtlasFilename: Missing filenamePattern or pageNameExpression');
+            lizmap::getLogger()->debug('generateAtlasFilename: Missing filenamePattern or pageNameExpression');
 
             return null;
         }
@@ -893,11 +893,11 @@ class serviceCtrl extends jController
         $coverageLayerId = isset($atlas['coverageLayer']) ? (string) $atlas['coverageLayer'] : null;
         $coverageLayerName = isset($atlas['coverageLayerName']) ? (string) $atlas['coverageLayerName'] : null;
 
-        \lizmap::getLogger()->debug('generateAtlasFilename: Coverage Layer ID: '.($coverageLayerId ?: 'NULL'));
-        \lizmap::getLogger()->debug('generateAtlasFilename: Coverage Layer Name: '.($coverageLayerName ?: 'NULL'));
+        lizmap::getLogger()->debug('generateAtlasFilename: Coverage Layer ID: '.($coverageLayerId ?: 'NULL'));
+        lizmap::getLogger()->debug('generateAtlasFilename: Coverage Layer Name: '.($coverageLayerName ?: 'NULL'));
 
         if (!$coverageLayerId) {
-            \lizmap::getLogger()->debug('generateAtlasFilename: No coverageLayer in atlas config');
+            lizmap::getLogger()->debug('generateAtlasFilename: No coverageLayer in atlas config');
 
             return null;
         }
@@ -905,11 +905,11 @@ class serviceCtrl extends jController
         // Get the layer config using the coverage layer ID from atlas
         $layerConfig = $this->project->getLayer($coverageLayerId);
         if (!$layerConfig) {
-            \lizmap::getLogger()->warning("generateAtlasFilename: Layer config not found for coverage layer ID '{$coverageLayerId}'");
+            lizmap::getLogger()->warning("generateAtlasFilename: Layer config not found for coverage layer ID '{$coverageLayerId}'");
 
             return null;
         }
-        \lizmap::getLogger()->debug('generateAtlasFilename: Got layer config from coverage layer ID');
+        lizmap::getLogger()->debug('generateAtlasFilename: Got layer config from coverage layer ID');
 
         // Fetch feature data via WFS to get the attribute value
         try {
@@ -917,11 +917,11 @@ class serviceCtrl extends jController
             // This will use shortname if available (e.g., "Flurstucke"), otherwise name
             /** @var qgisVectorLayer $layerConfig */
             $typename = $layerConfig->getWfsTypeName();
-            \lizmap::getLogger()->debug("generateAtlasFilename: WFS typename: {$typename}");
+            lizmap::getLogger()->debug("generateAtlasFilename: WFS typename: {$typename}");
 
             // FEATUREID format must be typename.id for WFS
             $wfsFeatureId = $typename.'.'.$featureId;
-            \lizmap::getLogger()->debug("generateAtlasFilename: WFS FeatureID: {$wfsFeatureId}");
+            lizmap::getLogger()->debug("generateAtlasFilename: WFS FeatureID: {$wfsFeatureId}");
 
             $wfsParams = array(
                 'SERVICE' => 'WFS',
@@ -932,7 +932,7 @@ class serviceCtrl extends jController
                 'FEATUREID' => $wfsFeatureId,
             );
 
-            \lizmap::getLogger()->debug('generateAtlasFilename: WFS request TYPENAME='.$typename.' FEATUREID='.$wfsFeatureId);
+            lizmap::getLogger()->debug('generateAtlasFilename: WFS request TYPENAME='.$typename.' FEATUREID='.$wfsFeatureId);
 
             $wfsRequest = new WFSRequest(
                 $this->project,
@@ -942,41 +942,41 @@ class serviceCtrl extends jController
 
             $wfsResult = $wfsRequest->process();
             $geojsonString = $wfsResult->getBodyAsString();
-            \lizmap::getLogger()->debug('generateAtlasFilename: WFS response length: '.strlen($geojsonString));
+            lizmap::getLogger()->debug('generateAtlasFilename: WFS response length: '.strlen($geojsonString));
 
             $geojson = json_decode($geojsonString, true);
 
             if (!$geojson || !isset($geojson['features']) || count($geojson['features']) === 0) {
-                \lizmap::getLogger()->warning('generateAtlasFilename: No features returned from WFS');
-                \lizmap::getLogger()->debug('generateAtlasFilename: GeoJSON response: '.substr($geojsonString, 0, 500));
+                lizmap::getLogger()->warning('generateAtlasFilename: No features returned from WFS');
+                lizmap::getLogger()->debug('generateAtlasFilename: GeoJSON response: '.substr($geojsonString, 0, 500));
 
                 return null;
             }
 
-            \lizmap::getLogger()->debug('generateAtlasFilename: Got '.count($geojson['features']).' feature(s) from WFS');
+            lizmap::getLogger()->debug('generateAtlasFilename: Got '.count($geojson['features']).' feature(s) from WFS');
 
             $feature = $geojson['features'][0];
             $properties = $feature['properties'];
-            \lizmap::getLogger()->debug('generateAtlasFilename: Feature properties: '.implode(', ', array_keys($properties)));
+            lizmap::getLogger()->debug('generateAtlasFilename: Feature properties: '.implode(', ', array_keys($properties)));
 
             // Clean up the page name expression (remove quotes)
             $pageNameField = str_replace('"', '', $pageNameExpression);
-            \lizmap::getLogger()->debug("generateAtlasFilename: Looking for field: '{$pageNameField}'");
+            lizmap::getLogger()->debug("generateAtlasFilename: Looking for field: '{$pageNameField}'");
 
             if (!isset($properties[$pageNameField])) {
-                \lizmap::getLogger()->warning("generateAtlasFilename: Field '{$pageNameField}' not found in feature properties");
-                \lizmap::getLogger()->debug('generateAtlasFilename: Available fields: '.implode(', ', array_keys($properties)));
+                lizmap::getLogger()->warning("generateAtlasFilename: Field '{$pageNameField}' not found in feature properties");
+                lizmap::getLogger()->debug('generateAtlasFilename: Available fields: '.implode(', ', array_keys($properties)));
 
                 return null;
             }
 
             $pageNameValue = $properties[$pageNameField];
-            \lizmap::getLogger()->debug("generateAtlasFilename: Page name value: '{$pageNameValue}'");
+            lizmap::getLogger()->debug("generateAtlasFilename: Page name value: '{$pageNameValue}'");
 
             // Evaluate the filename pattern
             // Replace @atlas_pagename with the actual value
             $evaluatedFilename = $this->evaluateAtlasFilenamePattern($filenamePattern, $pageNameValue);
-            \lizmap::getLogger()->debug("generateAtlasFilename: Evaluated filename: '{$evaluatedFilename}'");
+            lizmap::getLogger()->debug("generateAtlasFilename: Evaluated filename: '{$evaluatedFilename}'");
 
             if ($evaluatedFilename) {
                 // Ensure it has the correct extension
@@ -984,18 +984,18 @@ class serviceCtrl extends jController
                     $evaluatedFilename .= '.'.$format;
                 }
 
-                \lizmap::getLogger()->debug("generateAtlasFilename: Final filename: '{$evaluatedFilename}'");
+                lizmap::getLogger()->debug("generateAtlasFilename: Final filename: '{$evaluatedFilename}'");
 
                 return $evaluatedFilename;
             }
         } catch (Exception $e) {
             // If anything fails, return null to use fallback
-            \lizmap::getLogger()->error('generateAtlasFilename: '.$e->getMessage());
+            lizmap::getLogger()->error('generateAtlasFilename: '.$e->getMessage());
 
             return null;
         }
 
-        \lizmap::getLogger()->debug('generateAtlasFilename: Reached end of function without generating filename');
+        lizmap::getLogger()->debug('generateAtlasFilename: Reached end of function without generating filename');
 
         return null;
     }
