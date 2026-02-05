@@ -261,9 +261,12 @@ only screen and (                   device-height <= 640px) {
 
   #mapmenu{
     z-index: 5001;
-    width: 80%;
-    left: -80%;
-    transition: left 0.3s cubic-bezier(0.77,0.2,0.05,1.0);
+    width: max-content; /* Automatic width based on content */
+    min-width: 250px;
+    max-width: 400px;
+    left: 0;
+    transform: translateX(-100%); /* Completely outside viewport */
+    transition: transform 0.3s cubic-bezier(0.77,0.2,0.05,1.0);
   }
 
   #mapmenu > div{
@@ -330,7 +333,7 @@ only screen and (                   device-height <= 640px) {
   }
 
   #menuToggle.opened ~ #mapmenu{
-    left: 0;
+    transform: translateX(0);
   }
 
   #menuToggle{
@@ -460,6 +463,8 @@ only screen and (                   device-height <= 640px) {
 
   #dock{
     margin-top: 45px;
+    max-height: calc(100vh - 45px); /* Viewport minus header height */
+    overflow-y: auto; /* Enable scrolling in dock when needed */
   }
 
   .digitizing .btn {
