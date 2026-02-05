@@ -87,7 +87,7 @@ class QgisFormControlTest extends TestCase
             'exp' => false,
         );
 
-        $control = new QgisFormControl('geom', null, $prop, null, $constraints, $appContext);
+        $control = new QgisFormControl('geom', 'geom', null, $prop, null, $constraints, $appContext);
         $this->assertEquals($control->ref, 'geom');
         $this->assertEquals($control->fieldName, 'geom');
         $this->assertEquals($control->fieldDataType, 'geometry');
@@ -98,42 +98,42 @@ class QgisFormControlTest extends TestCase
 
         // DB properties - MultiPoint
         $prop->type = 'MultiPoint';
-        $control = new QgisFormControl('geom', null, $prop, null, $constraints, $appContext);
+        $control = new QgisFormControl('geom', 'geom', null, $prop, null, $constraints, $appContext);
         $this->assertEquals($control->fieldDataType, 'geometry');
 
         // DB properties - LINE
         $prop->type = 'LINE';
-        $control = new QgisFormControl('geom', null, $prop, null, $constraints, $appContext);
+        $control = new QgisFormControl('geom', 'geom', null, $prop, null, $constraints, $appContext);
         $this->assertEquals($control->fieldDataType, 'geometry');
 
         // DB properties - LineString
         $prop->type = 'LineString';
-        $control = new QgisFormControl('geom', null, $prop, null, $constraints, $appContext);
+        $control = new QgisFormControl('geom', 'geom', null, $prop, null, $constraints, $appContext);
         $this->assertEquals($control->fieldDataType, 'geometry');
 
         // DB properties - MultiLineString
         $prop->type = 'MultiLineString';
-        $control = new QgisFormControl('geom', null, $prop, null, $constraints, $appContext);
+        $control = new QgisFormControl('geom', 'geom', null, $prop, null, $constraints, $appContext);
         $this->assertEquals($control->fieldDataType, 'geometry');
 
         // DB properties - Polygon
         $prop->type = 'Polygon';
-        $control = new QgisFormControl('geom', null, $prop, null, $constraints, $appContext);
+        $control = new QgisFormControl('geom', 'geom', null, $prop, null, $constraints, $appContext);
         $this->assertEquals($control->fieldDataType, 'geometry');
 
         // DB properties - MultiPolygon
         $prop->type = 'MultiPolygon';
-        $control = new QgisFormControl('geom', null, $prop, null, $constraints, $appContext);
+        $control = new QgisFormControl('geom', 'geom', null, $prop, null, $constraints, $appContext);
         $this->assertEquals($control->fieldDataType, 'geometry');
 
         // DB properties - Geometry
         $prop->type = 'Geometry';
-        $control = new QgisFormControl('geom', null, $prop, null, $constraints, $appContext);
+        $control = new QgisFormControl('geom', 'geom', null, $prop, null, $constraints, $appContext);
         $this->assertEquals($control->fieldDataType, 'geometry');
 
         // DB properties - GeometryCollection
         $prop->type = 'GeometryCollection';
-        $control = new QgisFormControl('geom', null, $prop, null, $constraints, $appContext);
+        $control = new QgisFormControl('geom', 'geom', null, $prop, null, $constraints, $appContext);
         $this->assertEquals($control->fieldDataType, 'geometry');
     }
 
@@ -169,7 +169,7 @@ class QgisFormControlTest extends TestCase
             'exp' => false,
         );
 
-        $control = new QgisFormControl('id', $properties, $prop, null, $constraints, $appContext);
+        $control = new QgisFormControl('id', 'id', $properties, $prop, null, $constraints, $appContext);
         $this->assertEquals($control->ref, 'id');
         $this->assertEquals($control->fieldName, 'id');
         $this->assertEquals($control->fieldDataType, 'integer');
@@ -189,7 +189,7 @@ class QgisFormControlTest extends TestCase
                 'Editable' => false,
             )
         );
-        $control = new QgisFormControl('id', $properties, $prop, null, $constraints, $appContext);
+        $control = new QgisFormControl('id', 'id', $properties, $prop, null, $constraints, $appContext);
         $this->assertTrue($control->isReadOnly);
         $this->assertFalse($control->required);
     }
@@ -226,7 +226,7 @@ class QgisFormControlTest extends TestCase
             'exp' => false,
         );
 
-        $control = new QgisFormControl('label', $properties, $prop, null, $constraints, $appContext);
+        $control = new QgisFormControl('label', 'label', $properties, $prop, null, $constraints, $appContext);
         $this->assertEquals($control->ref, 'label');
         $this->assertEquals($control->fieldName, 'label');
         $this->assertEquals($control->fieldDataType, 'text');
@@ -240,7 +240,7 @@ class QgisFormControlTest extends TestCase
         // QGIS constraints
         $constraints['constraints'] = 0;
         $constraints['notNull'] = false;
-        $control = new QgisFormControl('label', $properties, $prop, null, $constraints, $appContext);
+        $control = new QgisFormControl('label', 'label', $properties, $prop, null, $constraints, $appContext);
         $this->assertTrue($control->required);
 
         // DB properties - Text
@@ -248,7 +248,7 @@ class QgisFormControlTest extends TestCase
         // QGIS constraints - not null
         $constraints['constraints'] = 1;
         $constraints['notNull'] = true;
-        $control = new QgisFormControl('label', $properties, $prop, null, $constraints, $appContext);
+        $control = new QgisFormControl('label', 'label', $properties, $prop, null, $constraints, $appContext);
         $this->assertTrue($control->required);
 
         // DB properties - Text
@@ -267,7 +267,7 @@ class QgisFormControlTest extends TestCase
         // QGIS constraints
         $constraints['constraints'] = 0;
         $constraints['notNull'] = false;
-        $control = new QgisFormControl('label', $properties, $prop, null, $constraints, $appContext);
+        $control = new QgisFormControl('label', 'label', $properties, $prop, null, $constraints, $appContext);
         $this->assertTrue($control->isReadOnly);
         $this->assertFalse($control->required);
     }
@@ -299,7 +299,7 @@ class QgisFormControlTest extends TestCase
             'exp' => false,
         );
 
-        $control = new QgisFormControl('checked', $properties, $prop, null, $constraints, $appContext);
+        $control = new QgisFormControl('checked', 'checked', $properties, $prop, null, $constraints, $appContext);
         $this->assertEquals($control->ref, 'checked');
         $this->assertEquals($control->fieldName, 'checked');
         $this->assertEquals($control->fieldDataType, 'boolean');
@@ -323,7 +323,7 @@ class QgisFormControlTest extends TestCase
             )
         );
 
-        $control = new QgisFormControl('checked', $properties, $prop, null, $constraints, $appContext);
+        $control = new QgisFormControl('checked', 'checked', $properties, $prop, null, $constraints, $appContext);
         $this->assertEquals($control->fieldDataType, 'integer');
         $this->assertEquals($control->ctrl->valueOnCheck, '1');
         $this->assertEquals($control->ctrl->valueOnUncheck, '0');
@@ -341,7 +341,7 @@ class QgisFormControlTest extends TestCase
             )
         );
 
-        $control = new QgisFormControl('checked', $properties, $prop, null, $constraints, $appContext);
+        $control = new QgisFormControl('checked', 'checked', $properties, $prop, null, $constraints, $appContext);
         $this->assertEquals($control->fieldDataType, 'text');
         $this->assertEquals($control->ctrl->valueOnCheck, 'y');
         $this->assertEquals($control->ctrl->valueOnUncheck, 'n');
@@ -364,7 +364,7 @@ class QgisFormControlTest extends TestCase
             )
         );
 
-        $control = new QgisFormControl('checked', $properties, $prop, null, $constraints, $appContext);
+        $control = new QgisFormControl('checked', 'checked', $properties, $prop, null, $constraints, $appContext);
         $this->assertEquals($control->fieldDataType, 'boolean');
         $this->assertEquals($control->fieldEditType, 'CheckBox');
         $this->assertEquals($control->ctrl->getWidgetType(), 'checkbox');
