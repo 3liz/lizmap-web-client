@@ -154,6 +154,18 @@ export class BaseIconSymbology extends BaseObjectSymbology {
      * @type {string}
      */
     get icon() {
+        // Check if _icon exists and is a string
+        if (!this._icon || typeof this._icon !== 'string') {
+            return base64png + base64pngNullData;
+        }
+
+        // If it's already a URL (absolute or relative) or data URI, return as-is
+        // This allows external WMS legends to be served directly from their source
+        if (this._icon.startsWith('http://') || this._icon.startsWith('https://') || this._icon.startsWith('/') || this._icon.startsWith('data:')) {
+            return this._icon;
+        }
+
+        // Otherwise, it's base64 data that needs the prefix
         return base64png + this._icon;
     }
 }
@@ -174,12 +186,11 @@ export class LayerIconSymbology extends BaseIconSymbology {
      * Create a layer icon symbology instance based on a node object provided by QGIS Server
      * @param {object}  node      - the QGIS node symbology
      * @param {string}  node.type  - the node type: layer
-     * @param {string}  node.icon  - the png image in base64
+     * @param {string}  node.icon  - the png image in base64 or URL
      * @param {string}  node.name  - the layer name
      * @param {string}  node.title - the node title
      */
     constructor(node) {
-
         if (!node.hasOwnProperty('type') || node.type != 'layer') {
             throw new ValidationError('The layer icon symbology is only available for layer type!');
         }
