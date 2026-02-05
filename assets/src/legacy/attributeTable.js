@@ -597,6 +597,54 @@ var lizAttributeTable = function() {
                     html+= '</div>';
                 }
 
+                // Atlas print button for selected features
+                // Get atlas layouts available for this layer
+                var layerId = config.layers[lname]?.id;
+                var atlasLayouts = [];
+                if (layerId && lizMap.mainLizmap?.config?.printTemplates) {
+                    lizMap.mainLizmap.config.printTemplates.forEach(function(template, index) {
+                        if (layerId === template?.atlas?.coverageLayer
+                            && (template?.atlas?.enabled === '1' || template?.atlas?.enabled === true)) {
+                            // Lizmap >= 3.7
+                            if (lizMap.mainLizmap.config?.layouts?.list) {
+                                if (lizMap.mainLizmap.config?.layouts?.list?.[index]?.enabled) {
+                                    atlasLayouts.push({
+                                        title: lizMap.mainLizmap.config?.layouts?.list?.[index]?.layout,
+                                        default_format: lizMap.mainLizmap.config?.layouts?.list?.[index]?.default_format || 'pdf',
+                                    });
+                                }
+                            // Lizmap < 3.7
+                            } else {
+                                atlasLayouts.push({
+                                    title: template?.title,
+                                    default_format: 'pdf',
+                                });
+                            }
+                        }
+                    });
+                }
+
+                if (atlasLayouts.length > 0) {
+                    // If only one layout, show a simple button
+                    if (atlasLayouts.length === 1) {
+                        html+= '<button type="button" class="btn btn-sm btn-print-atlas-selection float-end" data-layer="'+cleanName+'" data-layout="'+atlasLayouts[0].title+'" data-format="'+atlasLayouts[0].default_format+'" title="Print atlas for selected features">';
+                        html+= '<i class="icon-print"></i> Atlas';
+                        html+= '</button>';
+                    } else {
+                        // If multiple layouts, show a dropdown
+                        html+= '<div class="btn-group float-end" role="group">';
+                        html+= '    <button type="button" class="btn btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" title="Print atlas for selected features">';
+                        html+= '    <i class="icon-print"></i> Atlas';
+                        html+= '    </button>';
+                        html+= '    <ul class="dropdown-menu dropdown-menu-end">';
+                        for (var i = 0; i < atlasLayouts.length; i++) {
+                            html+= '        <li><button type="button" class="dropdown-item btn-print-atlas-selection" data-layer="'+cleanName+'" data-layout="'+atlasLayouts[i].title+'" data-format="'+atlasLayouts[i].default_format+'">'+atlasLayouts[i].title+'</button></li>';
+                        }
+                        html+= '    </ul>';
+                        html+= '</div>';
+                    }
+                }
+
                 html+= '</div>'; // attribute-layer-action-bar
 
                 if( childHtml ) {
@@ -732,6 +780,89 @@ var lizAttributeTable = function() {
                         const limitDataToBbox =
                             document.querySelector('.btn-filterbyextent-attributeTable.active[value="' + cleanName + '"]') ? true : false;
                         lizMap.exportVectorLayer(eName, eFormat, limitDataToBbox);
+                    });
+
+                // Bind click on atlas print button for selected features
+                $('#attribute-layer-'+ cleanName + ' button.btn-print-atlas-selection')
+                    .click(function(){
+                        var $button = $(this);
+                        var cleanName = $button.data('layer');
+                        var layoutTitle = $button.data('layout');
+                        var layoutFormat = $button.data('format') || 'pdf';
+                        var layerName = attributeLayersDic[ cleanName ];
+                        var lConfig = config.layers[layerName];
+
+                        if (!lConfig) {
+                            console.error('Layer configuration not found for', layerName);
+                            return;
+                        }
+
+                        // Get selected features
+                        var selectedFeatures = lConfig['selectedFeatures'] || [];
+
+                        if (selectedFeatures.length === 0) {
+                            lizMap.mainLizmap._lizmap3.addMessage(
+                                'Please select at least one feature to print',
+                                'info',
+                                true
+                            );
+                            return;
+                        }
+
+                        // Construct filter expression for all selected features
+                        var escapeFeatureId = function(value) {
+                            var valueType = typeof value;
+                            if (valueType === 'string') {
+                                var intRegex = /^[0-9]+$/;
+                                if (intRegex.test(value)) {
+                                    return value;
+                                }
+                                return "'" + value.replace(/'/g, "''") + "'";
+                            }
+                            return value;
+                        };
+
+                        var escapedIds = selectedFeatures.map(escapeFeatureId).join(', ');
+                        var expFilter = '$id IN (' + escapedIds + ')';
+
+                        // Construct WMS GetPrintAtlas request
+                        var wmsParams = {
+                            SERVICE: 'WMS',
+                            REQUEST: 'GetPrintAtlas',
+                            VERSION: '1.3.0',
+                            FORMAT: layoutFormat,
+                            EXCEPTION: 'application/vnd.ogc.se_inimage',
+                            TRANSPARENT: true,
+                            DPI: 100,
+                            TEMPLATE: layoutTitle,
+                            LAYER: lConfig?.shortname || lConfig?.name,
+                            EXP_FILTER: expFilter,
+                        };
+
+                        // Disable button while printing
+                        $button.prop('disabled', true);
+
+                        lizMap.mainLizmap._lizmap3.addMessage(
+                            lizDict['print.started'],
+                            'info',
+                            true
+                        ).addClass('print-in-progress');
+
+                        // Trigger download
+                        import('../modules/Utils.js').then(function(UtilsModule) {
+                            UtilsModule.Utils.downloadFile(lizMap.mainLizmap.serviceURL, wmsParams, function() {
+                                $button.prop('disabled', false);
+                                document.querySelector('#message .print-in-progress button')?.click();
+                            }, function(errorEvent) {
+                                $button.prop('disabled', false);
+                                console.error(errorEvent);
+                                lizMap.mainLizmap._lizmap3.addMessage(
+                                    lizDict['print.error'],
+                                    'danger',
+                                    true
+                                ).addClass('print-error');
+                            });
+                        });
                     });
 
                 // Bind click on createFeature button
