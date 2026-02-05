@@ -41,6 +41,7 @@ import '../images/svg/file-upload.svg';
  * It is mandatory and provide a way to use this element for different contexts.
  *
  * The other attributes are:
+ *  active - Activate the element on load
  *  selected-tool - Start selected drawing tools one of DigitizingAvailableTools or available-tools
  *  available-tools - List of available drawing tools based on DigitizingAvailableTools
  *  save - Enable save capability
@@ -50,6 +51,7 @@ import '../images/svg/file-upload.svg';
  * @example <caption>Example of use</caption>
  * <lizmap-digitizing
  *     context="draw"
+ *     active
  *     selected-tool="box"
  *     available-tools="point,line,polygon,box,freehand"
  *     save
@@ -530,6 +532,11 @@ export default class Digitizing extends HTMLElement {
                 'digitizing.visibility',
             ]
         );
+
+        // Activate the selected tool if the active attribute is present
+        if (this.active && this._toolSelected) {
+            this.selectTool(this._toolSelected);
+        }
     }
 
     disconnectedCallback() {
@@ -639,6 +646,26 @@ export default class Digitizing extends HTMLElement {
         if (this._availableTools.includes(tool)) {
             this._toolSelected = tool;
             mainLizmap.digitizing.toolSelected = tool;
+        }
+    }
+
+    /**
+     * The element is active if the active attribute is present
+     * @type {boolean}
+     */
+    get active() {
+        return this.hasAttribute('active');
+    }
+
+    /**
+     * Set the active state of the element
+     * @param {boolean} value - True to activate the element, false to deactivate
+     */
+    set active(value) {
+        if (value) {
+            this.setAttribute('active', '');
+        } else {
+            this.removeAttribute('active');
         }
     }
 
