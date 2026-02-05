@@ -21,6 +21,7 @@ import WMS from './WMS.js';
 import { Utils } from './Utils.js';
 import Action from './Action.js';
 import FeatureStorage from './FeatureStorage.js';
+import GeometryCopyHandler from './GeometryCopyHandler.js';
 import Popup from './Popup.js';
 import Legend from './Legend.js';
 import Permalink from './Permalink.js';
@@ -176,6 +177,7 @@ export default class Lizmap {
                         this.selectionTool = new SelectionTool(this.map, this.digitizing, this.initialConfig, this.lizmap3);
                         this.snapping = new Snapping(this.edition, this.state.rootMapGroup, this.state.layerTree, this.lizmap3);
                         this.action = new Action(this.map, this.selectionTool, this.digitizing, this.lizmap3);
+                        this.geometryCopyHandler = new GeometryCopyHandler(this._lizmap3.map);
                         this.popup = new Popup(this.initialConfig, this.state, this.map, this.digitizing);
                         this.search = new Search(this.map, this.lizmap3);
                         this.tooltip = new Tooltip(this.map, this.initialConfig.tooltipLayers, this.lizmap3);
