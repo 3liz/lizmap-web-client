@@ -79,6 +79,8 @@ describe('OptionsConfig', function () {
         expect(opt.use_native_zoom_levels).to.be.eq(false)
         // Default value for singleWMS option is false (option wms_single_request_for_all_layers not defined)
         expect(opt.wms_single_request_for_all_layers).to.be.eq(false)
+        // Default value for basemaps excluded from the single WMS request
+        expect(opt.exclude_basemaps_from_single_wms).to.be.eq(false)
     })
 
     it('use_native_zoom_levels', function () {

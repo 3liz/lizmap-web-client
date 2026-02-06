@@ -45,6 +45,14 @@ export default class EventDispatcher {
         this._listeners = {};
         this._stackEventId = [];
         this._serial = 0;
+        /**
+         * Object for keep track of emitted events per events.
+         * Keys are the events type, values are the last emitted object (or parameter)
+         * for the given event
+         * @type {Object}
+         *
+         */
+        this._emittedEventsType = {};
     }
 
     /**
@@ -207,15 +215,53 @@ export default class EventDispatcher {
                     }
                 });
                 if (match) {
+                    // keep track of the last emitted event
+                    this._emittedEventsType[event.type] = event;
                     listener(event);
                 }
             });
+        } else {
+            // there are no listeners for the give event. We keep track of the event
+            // for future subscribers
+            this._emittedEventsType[event.type] = event;
         }
         if ('*' in this._listeners) {
             this._listeners['*'].forEach((item) => {
                 const [listener, ] = item;
+                // keep track of the last emitted event
+                this._emittedEventsType[event.type] = event;
                 listener(event);
             });
         }
+    }
+
+    /**
+     * Subscribe to events.
+     * This method is very similar to addListener, but it can also notify listeners even
+     * if they were defined after the event was emitted. It always emits the last event
+     * registered for the specific event type.
+     * Does not supports wildcard events
+     * @param {EventListener}        listener   - Callback
+     * @param {Array<string>|string} events     - events on which the listener will be called. if undefined or "*",
+     *                                                 it will be called for any events
+     */
+    subscribe(listener, events) {
+        if (events === undefined) {
+            throw Error('Notification for all events is not allowed');
+        }
+
+        if('string' == typeof events) events = [events];
+        else if (Array.isArray(events)) events = [...events];
+
+        events.forEach((ev)=>{
+            if(this._emittedEventsType[ev]) {
+                // if the event has already been emitted, the listener is called immediately,
+                // passing the last emitted object as a parameter
+                listener(this._emittedEventsType[ev]);
+            }
+
+            // add listener for each event
+            this.addListener(listener, ev);
+        })
     }
 }

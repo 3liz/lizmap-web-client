@@ -24,13 +24,17 @@ qgis-plugin-manager install -f atlasprint
 
 # echo "QGIS Server Lizmap plugin"
 # Latest commit
-# echo "Latest commit from https://packages.3liz.org"
-# wget https://packages.3liz.org/pub/lizmap-server-qgis-plugin/lizmap_server.master.zip -O /tmp/lizmap_server.master.zip
+# echo "Latest commit from https://qgis-plugins.3liz.org"
+# qgis-plugin-manager install --pre -f "Lizmap server"
+
+# Specific version
+# VERSION=2.14.1
+# echo "Specific version from https://qgis-plugins.3liz.org"
+# qgis-plugin-manager install -f "Lizmap server"==${VERSION}
 
 # Latest release
-# VERSION=1.1.1
+# VERSION=2.14.1
 # echo "Stable release from GitHub"
 # wget https://github.com/3liz/qgis-lizmap-server-plugin/releases/latest/download/lizmap_server.${VERSION}.zip -O /tmp/lizmap_server.master.zip
-
 # unzip -o /tmp/lizmap_server.master.zip -d /srv/plugins/
 # rm /tmp/lizmap_server.master.zip

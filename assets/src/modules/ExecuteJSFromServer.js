@@ -8,65 +8,66 @@
  * Execute JS from server
  */
 export default function executeJSFromServer() {
-    lizMap.events.on({
-        uicreated: () => {
-            displayWarningsAdministrator();
-            checkInvalidLayersCfgFile();
+    // listen to legacy uicreated event
+    lizMap.mainEventDispatcher.addListener(()=>{
+        displayWarningsAdministrator();
+        checkInvalidLayersCfgFile();
 
-            if (document.body.dataset.lizmapHideLegend) {
-                document.querySelector('li.switcher.active #button-switcher')?.click();
-            }
+        if (document.body.dataset.lizmapHideLegend) {
+            document.querySelector('li.switcher.active #button-switcher')?.click();
         }
-    });
+    }, 'lizmap.ol2.uicreated');
 
     if (document.body.dataset.lizmapEmbed) {
+        lizMap.mainEventDispatcher.addListener(()=>{
+            // it's an embedded content
+            $('#content').addClass('embed');
+
+            // move tooltip placement to bottom
+            const tooltipTriggerList = document.querySelectorAll(
+                '#mapmenu .nav-list > li > a');
+            [...tooltipTriggerList].map(tooltipTriggerEl => {
+                bootstrap.Tooltip.getInstance(tooltipTriggerEl).dispose();
+                new bootstrap.Tooltip(tooltipTriggerEl, { placement: 'bottom', trigger: 'hover' });
+            });
+
+            // move search tool
+            var search = $('#nominatim-search');
+            if (search.length != 0) {
+                $('#mapmenu').append(search);
+                $(
+                    '#nominatim-search div.dropdown-menu'
+                ).removeClass('pull-right').addClass('pull-left');
+            }
+
+            //calculate dock position and size
+            $('#dock').css('top', ($('#mapmenu').height() + 10) + 'px');
+            lizMap.updateContentSize();
+
+            // force mini-dock and sub-dock position
+            $('#mini-dock').css('top', $('#dock').css('top'));
+            $('#sub-dock').css('top', $('#dock').css('top'));
+
+            // Force display popup on the map
+            lizMap.config.options.popupLocation = 'map';
+
+            // Force close tools
+            if ($('#mapmenu li.locate').hasClass('active')){
+                document.getElementById('button-locate')?.click();
+            }
+            if ($('#mapmenu li.switcher').hasClass('active')){
+                document.getElementById('button-switcher')?.click();
+            }
+
+            $('#mapmenu .nav-list > li.permaLink a').attr(
+                'data-bs-toggle', 'tooltip'
+            ).attr(
+                'data-bs-title', lizDict['embed.open.map']
+            );
+        }, 'lizmap.ol2.uicreated');
+
+        // legacy events
         lizMap.events.on({
-            uicreated: () => {
-                // it's an embedded content
-                $('#content').addClass('embed');
-
-                // move tooltip placement to bottom
-                const tooltipTriggerList = document.querySelectorAll(
-                    '#mapmenu .nav-list > li > a');
-                [...tooltipTriggerList].map(tooltipTriggerEl => {
-                    bootstrap.Tooltip.getInstance(tooltipTriggerEl).dispose();
-                    new bootstrap.Tooltip(tooltipTriggerEl, { placement: 'bottom', trigger: 'hover' });
-                });
-
-                // move search tool
-                var search = $('#nominatim-search');
-                if (search.length != 0) {
-                    $('#mapmenu').append(search);
-                    $(
-                        '#nominatim-search div.dropdown-menu'
-                    ).removeClass('pull-right').addClass('pull-left');
-                }
-
-                //calculate dock position and size
-                $('#dock').css('top', ($('#mapmenu').height() + 10) + 'px');
-                lizMap.updateContentSize();
-
-                // force mini-dock and sub-dock position
-                $('#mini-dock').css('top', $('#dock').css('top'));
-                $('#sub-dock').css('top', $('#dock').css('top'));
-
-                // Force display popup on the map
-                lizMap.config.options.popupLocation = 'map';
-
-                // Force close tools
-                if ($('#mapmenu li.locate').hasClass('active')){
-                    document.getElementById('button-locate')?.click();
-                }
-                if ($('#mapmenu li.switcher').hasClass('active')){
-                    document.getElementById('button-switcher')?.click();
-                }
-
-                $('#mapmenu .nav-list > li.permaLink a').attr(
-                    'data-bs-toggle', 'tooltip'
-                ).attr(
-                    'data-bs-title', lizDict['embed.open.map']
-                );
-            },
             dockopened: () => {
                 // one tool at a time
                 var activeMenu = $('#mapmenu ul li.nav-minidock.active a');

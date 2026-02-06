@@ -40,7 +40,7 @@ const optionalProperties = {
     'activateFirstMapTheme': { type: 'boolean', default: false },
     'automatic_permalink': { type: 'boolean', default: false },
     'wms_single_request_for_all_layers' : { type:'boolean', default: false },
-    'exclude_basemaps_from_single_wms' : { type:'boolean', default: false }
+    'exclude_basemaps_from_single_wms' : { type:'boolean', default: false },
 };
 
 /**

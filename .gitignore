@@ -108,8 +108,18 @@ tests/qgis-projects/webdav/test/*
 !tests/qgis-projects/webdav/test/test_upload.conf
 !tests/qgis-projects/webdav/test/test_upload.txt
 !tests/qgis-projects/ProJets 1982*!
-tests/qgis-projects/tests/media/
+tests/qgis-projects/tests/media/*
+!tests/qgis-projects/tests/media/js/
+tests/qgis-projects/tests/media/js/*
+!tests/qgis-projects/tests/media/js/external_javascript_test/
+tests/qgis-projects/tests/media/js/external_javascript_test/*
+!tests/qgis-projects/tests/media/js/external_javascript_test/subscribe_uicreated.js
+!tests/qgis-projects/tests/media/js/javascript_error/
+tests/qgis-projects/tests/media/js/javascript_error/*
 !tests/qgis-projects/tests/media/js/javascript_error/invalid_javascript.js
+!tests/qgis-projects/tests/media/js/world-3857/
+tests/qgis-projects/tests/media/js/world-3857/*
+!tests/qgis-projects/tests/media/js/world-3857/add-ol-layers.js
 tests/qgis-projects/tests/*_attachments.zip
 tests/qgis-server-plugins/*
 !tests/qgis-server-plugins/upgrade_projects.py
