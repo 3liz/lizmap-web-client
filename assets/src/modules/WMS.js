@@ -86,4 +86,29 @@ export default class WMS {
             body: params,
         });
     }
+    
+    /**
+     * Get legend graphic as PNG image URL from WMS
+     * @param {object} options - optional parameters which can override this._defaultGetLegendGraphicsParameters
+     * @returns {string} PNG image URL
+     * @memberof WMS
+     */
+    getLegendGraphicPNG(options) {
+        const layers = options['LAYERS'] ?? options['LAYER'];
+        // Check if layer is specified
+        if (!layers) {
+            throw new RequestError(
+                'LAYERS or LAYER parameter is required for getLegendGraphic request',
+                options,
+            );
+        }
+
+        const params = new URLSearchParams({
+            ...this._defaultGetLegendGraphicParameters,
+            ...options,
+            FORMAT: 'image/png' // Force PNG format for external WMS layers
+        });
+
+        return `${globalThis['lizUrls'].wms}?${params}`;
+    }
 }
