@@ -166,6 +166,7 @@ describe('Config', function () {
 
         expect(initialConfig.options).to.be.instanceOf(OptionsConfig)
         expect(initialConfig.options.wms_single_request_for_all_layers).to.be.eq(true)
+        expect(initialConfig.options.exclude_basemaps_from_single_wms).to.be.eq(false)
     })
 
 })
