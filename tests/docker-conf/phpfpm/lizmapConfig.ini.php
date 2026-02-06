@@ -43,6 +43,12 @@ rootRepositories="/srv/lzm/tests/qgis-projects"
 ; Does the server use relative path from root folder? 0/1
 relativeWMSPath=on
 
+; The option to defined the logger log level.
+; The default log level is error.
+; You can change it to debug, info, notice, warning, error, critical, alert, emergency
+; as defined by PSR-3: Logger Interface  https://www.php-fig.org/psr/psr-3/#5-psrlogloglevel
+; logLevel="error"
+
 appName=Lizmap
 wmsMaxWidth=3000
 wmsMaxHeight=3000
