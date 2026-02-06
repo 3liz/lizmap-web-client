@@ -2658,7 +2658,7 @@ lizmap-mouse-position > div.coords-unit > select{
      This prevents E2E tests (Playwright) from detecting overlaps.
   */
 
-  padding-top: 45px !important;
+  padding-top: 30px !important;
 }
 
 #content.mobile #lizmap-search {
