@@ -8,6 +8,15 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Fixed
+
+* deactivate legacy deploiement
+* Github Action PHPUnit Matrix
+
+### Backend
+
+* Upgrade Jelix to version 1.8.22 - Fix a regression on the login page.
+
 ## 3.8.15 - 2025-11-25
 
 ### Funders
