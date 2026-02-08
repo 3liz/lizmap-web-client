@@ -8,9 +8,48 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Fixed
+
+* JS - querySelectorAll on input.lizmap-popup-layer-feature-id with layerId value
+* JS - to zoom to point with feature-toolbar in attribute table
+* JS - Add "uiready" event
+* JS - update map's extent does not zoom to nearest 
+* JS - Always emit featureDrawn event when feature is uploaed via draw panel
+* JS - Patch event listeners for touch events to be non-passive, Fix scroll-blocking touch event listeners in OpenLayers legacy 
+* JS - zoom to max scale for points
+* JS - Reset file input after upload in Draw panel
+* PHP - Action: Add the user login to the JSON used by lizmap_get_data function
+* JS - Position and accuracy are undefined when Geolocation is stopped
+* CSS - dock height overflow on mobile devices and use content-based for menu
+* CSS - Overlap on #lizmap-search Close Button and Items in map.css
+
+### Tests
+
+* e2e: move GetCapabilities requests from cypress to Playwright
+* e2e: move GetProjectConfig requests from cypress to Playwright
+* e2e: move service requests from cypress to Playwright
+* Bump Redis to 8 in docker compose
+* e2e: location search enhancement 
+* e2e: replace expectParametersToContain by expectRequest 
+* e2e: remove gotomap 
+* e2e: time manager enhancing and modernization
+* e2e: Move external_wms_layer from Cypress to Playwright
+* e2e: wrap the Buffer<ArrayBufferLike> into an Uint8Array for writeFile
+* e2e: Move key_value_mapping from Cypress to Playwright 
+* e2e: Move action tests form Cypress to Playwright 
+* e2e: Move export data tests from Cypress to Playwright
+* e2e: definitly remove cypress
+* e2e: well unroute
+* e2e: Modernize base_layers tests 
+* e2e: revival of draw import tests
+* e2e: Enhancing Should select / filter / refresh with map interaction
+* e2e: re-import the same file to draw on map
+
 ### Backend
 
 * CI: copy .module.wasm files whatever their names are
+* Upgrade JavaScript dependancies
+* QGIS Server plugins repository: using qgis-plugins.3liz.org
 
 ## 3.9.5 - 2025-12-29
 
