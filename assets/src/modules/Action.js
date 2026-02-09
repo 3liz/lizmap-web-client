@@ -664,8 +664,7 @@ export default class Action {
         if (action.icon.startsWith('icon-')) {
             actionButtonHtml += `<i class="${action.icon}"></i>`;
         }
-        let regex = new RegExp('^(.{1,2})?(/)?media/');
-        if (action.icon.match(regex)) {
+        if (action.icon.match(lizMap.constants.MEDIA_REGEX)) {
             let mediaLink = globalThis['lizUrls'].media + '?' + new URLSearchParams(globalThis['lizUrls'].params);
             let imageUrl = `${mediaLink}&path=${action.icon}`;
             actionButtonHtml += `<img style="width: 20px; height: 20px;" src="${imageUrl}">`;
