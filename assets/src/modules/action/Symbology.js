@@ -51,9 +51,9 @@ export async function updateLayerTreeLayersSymbology(treeLayers, method=HttpRequ
                         name: treeLayer.wmsName,
                         title: treeLayer.name,
                         symbols: [{
-                            icon: pngUrl,
-                            ruleKey: '',
-                            title: treeLayer.name
+                            type: 'image',
+                            url: pngUrl,
+                            title: treeLayer.name,
                         }]
                     };
                 } catch (error) {
