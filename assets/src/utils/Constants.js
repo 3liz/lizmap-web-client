@@ -21,9 +21,16 @@ export const MEDIA_REGEX = /^(\/)?(?:\.\.\/)?media\//;
 
 /**
  * @constant
+ * Regex to check if a path is an URL wich starts with /, http://, https:// or data:
+ */
+export const URL_REGEX = /^\/|(?:https?:\/\/)|(?:data:)/
+
+/**
+ * @constant
  * Constants object to be exposed to the global scop
  */
 export const Constants = Object.freeze({
     ADJUSTED_DPI: ADJUSTED_DPI,
     MEDIA_REGEX: MEDIA_REGEX,
+    URL_REGEX: URL_REGEX,
 });
