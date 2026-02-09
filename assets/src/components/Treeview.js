@@ -65,6 +65,31 @@ export default class Treeview extends HTMLElement {
             </ul>
         </li>`
 
+        this._symbolImageTemplate = symbol =>
+            html`
+        <label class="symbol-title">
+            <img class="legend" alt="${symbol.title}" src="${this._createGetMediaLink(symbol.url)}">
+        </label>`
+
+        this._symbolIconTemplate = symbol =>
+            html`
+        <label class="symbol-title">
+            ${symbol.ruleKey
+                ? html`<input type="checkbox" .checked=${symbol.checked} @click=${() => symbol.checked = !symbol.checked}>`
+                : ''
+            }
+            <img class="legend" src="${symbol.icon}">
+            ${symbol.title}
+        </label>
+        ${(symbol.childrenCount)
+            ? html`
+                    <ul class="symbols">
+                        ${symbol.children.map(s => this._symbolTemplate(s))}
+                    </ul>`
+                : ''
+        }
+        `
+
         this._symbolTemplate = symbol =>
             html`
         <li class="symbol ${symbol.type}${this._isInScale(symbol) ? '' : ' not-in-scale'}${symbol.ruleKey && !symbol.checked ? ' not-visible' : ''}">
@@ -73,21 +98,8 @@ export default class Treeview extends HTMLElement {
                         <div class="expandable ${symbol.expanded ? 'expanded' : ''}" @click=${() => symbol.expanded = !symbol.expanded}></div>`
                     : ''
             }
-            <label class="symbol-title">
-                ${symbol.ruleKey
-                    ? html`<input type="checkbox" .checked=${symbol.checked} @click=${() => symbol.checked = !symbol.checked}>`
-                    : ''
-                }
-                <img class="legend" src="${symbol.icon}">
-                ${symbol.title}
-            </label>
-            ${(symbol.childrenCount)
-                ? html`
-                        <ul class="symbols">
-                            ${symbol.children.map(s => this._symbolTemplate(s))}
-                        </ul>`
-                    : ''
-            }
+            ${symbol.type === 'image' ? html`${this._symbolImageTemplate(symbol)}` : ''}
+            ${symbol.type !== 'image' ? html`${this._symbolIconTemplate(symbol)}` : ''}
         </li>`
 
         this._layerTemplate = (layer, parent) =>
