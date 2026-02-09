@@ -4,7 +4,7 @@ import { readFileSync } from 'fs';
 
 import { ValidationError } from 'assets/src/modules/Errors.js';
 import { base64png, base64pngNullData } from 'assets/src/modules/state/SymbologyIcons.js';
-import { BaseIconSymbology, LayerIconSymbology, SymbolIconSymbology, SymbolRuleSymbology, BaseSymbolsSymbology, LayerSymbolsSymbology, LayerGroupSymbology, buildLayerSymbology } from 'assets/src/modules/state/Symbology.js';
+import { BaseIconSymbology, LayerIconSymbology, SymbolImageSymbology, SymbolIconSymbology, SymbolRuleSymbology, BaseSymbolsSymbology, LayerSymbolsSymbology, LayerGroupSymbology, buildLayerSymbology } from 'assets/src/modules/state/Symbology.js';
 
 describe('BaseIconSymbology', function () {
     it('Simple', function () {
@@ -82,6 +82,113 @@ describe('LayerIconSymbology', function () {
         } catch (error) {
             expect(error.name).to.be.eq('ValidationError')
             expect(error.message).to.be.eq('The properties: `name` are required in the cfg object!')
+            expect(error).to.be.instanceOf(ValidationError)
+        }
+    })
+})
+
+describe('SymbolImageSymbology', function () {
+    it('Valid with http URL', function () {
+        const icon = new SymbolImageSymbology({
+            "url":"http://localhost:8130/image.png",
+            "title":"layer_legend_image",
+            "type":"image",
+        })
+        expect(icon).to.be.instanceOf(BaseIconSymbology)
+        expect(icon).to.be.instanceOf(SymbolImageSymbology)
+        expect(icon.url).to.be.eq("http://localhost:8130/image.png")
+        expect(icon.title).to.be.eq('layer_legend_image')
+        expect(icon.type).to.be.eq('image')
+    })
+
+    it('Valid with https URL', function () {
+        const icon = new SymbolImageSymbology({
+            "url":"https://localhost:8130/image.png",
+            "title":"layer_legend_image",
+            "type":"image",
+        })
+        expect(icon).to.be.instanceOf(BaseIconSymbology)
+        expect(icon).to.be.instanceOf(SymbolImageSymbology)
+        expect(icon.url).to.be.eq("https://localhost:8130/image.png")
+        expect(icon.title).to.be.eq('layer_legend_image')
+        expect(icon.type).to.be.eq('image')
+    })
+
+    it('Valid with data URL', function () {
+        const icon = new SymbolImageSymbology({
+            "url":base64png+base64pngNullData,
+            "title":"layer_legend_image",
+            "type":"image",
+        })
+        expect(icon).to.be.instanceOf(BaseIconSymbology)
+        expect(icon).to.be.instanceOf(SymbolImageSymbology)
+        expect(icon.url).to.be.eq(base64png+base64pngNullData)
+        expect(icon.title).to.be.eq('layer_legend_image')
+        expect(icon.type).to.be.eq('image')
+    })
+
+    it('Valid with media path', function () {
+        const icon = new SymbolImageSymbology({
+            "url":"media/foo/bar.png",
+            "title":"layer_legend_image",
+            "type":"image",
+        })
+        expect(icon).to.be.instanceOf(BaseIconSymbology)
+        expect(icon).to.be.instanceOf(SymbolImageSymbology)
+        expect(icon.url).to.be.eq("media/foo/bar.png")
+        expect(icon.title).to.be.eq('layer_legend_image')
+        expect(icon.type).to.be.eq('image')
+    })
+
+    it('Valid with relative path', function () {
+        const icon = new SymbolImageSymbology({
+            "url":"/assets/foo/bar.png",
+            "title":"layer_legend_image",
+            "type":"image",
+        })
+        expect(icon).to.be.instanceOf(BaseIconSymbology)
+        expect(icon).to.be.instanceOf(SymbolImageSymbology)
+        expect(icon.url).to.be.eq("/assets/foo/bar.png")
+        expect(icon.title).to.be.eq('layer_legend_image')
+        expect(icon.type).to.be.eq('image')
+    })
+
+    it('Failing type', function () {
+        try {
+            new SymbolImageSymbology({
+                "url":"http://localhost/image.png",
+                "title":"layer_legend_image",
+            })
+        } catch (error) {
+            expect(error.name).to.be.eq('ValidationError')
+            expect(error.message).to.be.eq('The symbol image symbology is only available for image type!')
+            expect(error).to.be.instanceOf(ValidationError)
+        }
+    })
+
+    it('Failing url', function () {
+        try {
+            new SymbolImageSymbology({
+                "url":"assets/foo/bar.png",
+                "title":"layer_legend_image",
+                "type":"image",
+            })
+        } catch (error) {
+            expect(error.name).to.be.eq('ValidationError')
+            expect(error.message).to.be.eq('The symbol image symbology is only available for media path or url!')
+            expect(error).to.be.instanceOf(ValidationError)
+        }
+    })
+
+    it('Failing required properties', function () {
+        try {
+            new SymbolImageSymbology({
+                "title":"layer_legend_image",
+                "type":"image",
+            })
+        } catch (error) {
+            expect(error.name).to.be.eq('ValidationError')
+            expect(error.message).to.be.eq('The properties: `url` are required in the cfg object!')
             expect(error).to.be.instanceOf(ValidationError)
         }
     })
