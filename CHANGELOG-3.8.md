@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.8.16 - 2026-02-09
+
 ### Fixed
 
 * deactivate legacy deploiement
