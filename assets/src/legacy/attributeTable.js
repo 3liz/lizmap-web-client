@@ -1793,7 +1793,7 @@ var lizAttributeTable = function() {
                                 }
                             }
 
-                            if (data.substring(0, 6) == 'media/' || data.substring(0, 7) == '/media/' || data.substring(0, 9) == '../media/') {
+                            if (lizMap.constants.MEDIA_REGEX.test(data)) {
                                 var rdata = data;
                                 var colMeta = meta.settings.aoColumns[meta.col];
                                 if (data.substring(0, 7) == '/media/')

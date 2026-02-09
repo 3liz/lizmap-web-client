@@ -35,8 +35,7 @@ var lizLayerActionButtons = function() {
                     return false;
                 var windowLink = self.val();
                 // Test if the link is internal
-                var mediaRegex = /^(\/)?media\//;
-                if(mediaRegex.test(windowLink)){
+                if(lizMap.constants.MEDIA_REGEX.test(windowLink)){
                     var mediaLink = globalThis['lizUrls'].media + '?' + new URLSearchParams(globalThis['lizUrls'].params);
                     windowLink = mediaLink+'&path=/'+windowLink;
                 }

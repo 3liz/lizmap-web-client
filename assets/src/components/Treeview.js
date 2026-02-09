@@ -9,6 +9,7 @@
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import { Utils } from '../modules/Utils.js';
 import { MapLayerLoadStatus } from '../modules/state/MapLayer.js';
+import { MEDIA_REGEX } from '../utils/Constants.js';
 
 import { html, render } from 'lit-html';
 
@@ -297,16 +298,21 @@ export default class Treeview extends HTMLElement {
         return false;
     }
 
-    _createDocLink(layerName) {
-        let url = lizMap.config.layers?.[layerName]?.link;
-
-        // Test if the url is internal
-        const mediaRegex = /^(\/)?media\//;
-        if (mediaRegex.test(url)) {
+    _createGetMediaLink(path) {
+        let url = '';
+        // Test if the path is internal
+        if (MEDIA_REGEX.test(path)) {
             const mediaLink = globalThis['lizUrls'].media + '?' + new URLSearchParams(globalThis['lizUrls'].params);
-            url = mediaLink + '&path=/' + url;
+            url = mediaLink + '&path=/' + path;
+        } else {
+            url = path;
         }
         return url;
+    }
+
+    _createDocLink(layerName) {
+        let url = lizMap.config.layers?.[layerName]?.link;
+        return this._createGetMediaLink(url);
     }
 
     _createRemoveCacheLink(layerName) {
