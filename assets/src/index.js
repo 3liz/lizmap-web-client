@@ -33,6 +33,7 @@ import executeJSFromServer from './modules/ExecuteJSFromServer.js';
 import olDep from './dependencies/ol.js';
 import litHTMLDep from './dependencies/lit-html.js';
 import proj4 from 'proj4';
+import { Constants } from './utils/Constants.js';
 
 /**
  * Patch to mitigate [Violation] "Added non-passive event listener" warnings.
@@ -115,6 +116,7 @@ const initLizmapApp = () => {
     lizMap.ol = olDep;
     lizMap.litHTML = litHTMLDep;
     lizMap.proj4 = proj4;
+    lizMap.constants = Constants;
 
     lizMap.events.on({
         configsloaded: () => {
