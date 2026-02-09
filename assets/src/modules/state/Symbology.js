@@ -20,6 +20,7 @@ import {
     base64svgPolygonLayer,
     base64svgRasterLayer,
 } from './SymbologyIcons.js';
+import { MEDIA_REGEX, URL_REGEX } from './../../utils/Constants.js';
 
 
 /**
@@ -199,6 +200,53 @@ export class LayerIconSymbology extends BaseIconSymbology {
      */
     get name() {
         return this._name;
+    }
+}
+
+const symbolImageProperties = {
+    'url': {type: 'string'},
+    'title': {type: 'string'},
+}
+/**
+ * Class representing a layer icon symbology
+ * @class
+ * @augments BaseIconSymbology
+ */
+export class SymbolImageSymbology extends BaseIconSymbology {
+
+    /**
+     * Create a layer icon symbology instance based on a node object provided by QGIS Server
+     * @param {object}  node      - the QGIS node symbology
+     * @param {string}  node.type  - the node type: image
+     * @param {string}  node.url   - the url image
+     * @param {string}  node.title - the node title
+     */
+    constructor(node) {
+
+        if (!node.hasOwnProperty('type') || node.type != 'image') {
+            throw new ValidationError('The symbol image symbology is only available for image type!');
+        }
+
+        super(node, symbolImageProperties, {})
+
+        if (!MEDIA_REGEX.test(node?.url) && !URL_REGEX.test(node?.url)) {
+            throw new ValidationError('The symbol image symbology is only available for media path or url!');
+        }
+
+        /**
+         * The private layer name
+         * @type {string}
+         * @private
+         */
+        this._url;
+    }
+
+    /**
+     * The image url
+     * @type {string}
+     */
+    get url() {
+        return this._url;
     }
 }
 
