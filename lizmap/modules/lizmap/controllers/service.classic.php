@@ -628,11 +628,7 @@ class serviceCtrl extends jController
         // Check DXF export rights if FORMAT is application/dxf
         if (isset($this->params['format']) && strtolower($this->params['format']) === 'application/dxf') {
             // Check if DXF export is enabled
-            $dxfExportEnabled = $this->project->getOption('dxfExportEnabled');
-            // Handle both boolean (from use_proper_boolean) and string 'True'/'true'
-            $isDxfEnabled = is_bool($dxfExportEnabled) ? $dxfExportEnabled : (strtolower($dxfExportEnabled) === 'true');
-
-            if (!$isDxfEnabled) {
+            if (!$this->project->getBooleanOption('dxfExportEnabled')) {
                 jMessage::add('DXF export is not enabled for this project', 'Forbidden');
 
                 return $this->serviceException();
