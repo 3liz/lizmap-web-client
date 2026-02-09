@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.7.17 - 2026-02-09
+
 ### Fixed
 
 * deactivate legacy deploiement
@@ -16,7 +18,6 @@ with some extra keywords: backend, tests, test, translation, funders, important
 ### Backend
 
 * Upgrade Jelix to version 1.8.22 - Fix a regression on the login page.
-
 
 ## 3.7.16 - 2025-11-25
 
