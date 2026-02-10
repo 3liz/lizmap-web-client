@@ -2485,11 +2485,7 @@ class Project
         }
 
         // DXF Export - check if enabled and user has access
-        $dxfExportEnabled = $this->cfg->getOption('dxfExportEnabled');
-        // Handle both boolean (from use_proper_boolean) and string 'True'/'true'
-        $isDxfEnabled = is_bool($dxfExportEnabled) ? $dxfExportEnabled : (strtolower($dxfExportEnabled) === 'true');
-
-        if ($isDxfEnabled) {
+        if ($this->cfg->getBooleanOption('dxfExportEnabled')) {
             $allowedGroups = $this->cfg->getOption('allowedGroups');
             $hasAccess = true;
 
