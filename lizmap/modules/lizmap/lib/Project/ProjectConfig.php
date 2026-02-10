@@ -440,7 +440,7 @@ class ProjectConfig
     public function getBooleanOption($name)
     {
         if (property_exists($this->options, $name)) {
-            return strtolower($this->options->{$name}) == 'true';
+            return filter_var($this->options->{$name}, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
         }
 
         return null;
