@@ -344,7 +344,7 @@ describe('SymbolRuleSymbology', function () {
 })
 
 describe('BaseSymbolsSymbology', function () {
-    it('Valid', function () {
+    it('Valid with icons', function () {
         const symbols = new BaseSymbolsSymbology({
             "symbols":[{
                 "icon":"iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAU0lEQVQ4jWNgGAV0A4z4JJWVlf8j8+\/evYtTPQs+Q9YelkMRC7Zl+I\/LMKyC2AxBGPYIq8uYcLmIVDBEDLp79y5jsO0jkgwiKfphlpBkwyigPgAATTcaN5pMVDUAAAAASUVORK5CYII=",
@@ -370,6 +370,64 @@ describe('BaseSymbolsSymbology', function () {
         const symbolsGetChildren = symbols.getChildren()
         expect(symbolsGetChildren.next().value).to.be.instanceOf(BaseIconSymbology).that.be.eq(symbolsChildren[0])
         expect(symbolsGetChildren.next().value).to.be.instanceOf(BaseIconSymbology).that.be.eq(symbolsChildren[1])
+    })
+
+    it('Valid with image', function () {
+        const symbols = new BaseSymbolsSymbology({
+            "symbols":[{
+                "url":"http://localhost:8130/index.php/lizmap/service/?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=legend&FORMAT=image/png&STYLE=default",
+                "title":"legend",
+                "type":"image",
+            }],
+            "title":"hide_at_startup",
+            "type":"layer"
+        })
+        expect(symbols).to.be.instanceOf(BaseSymbolsSymbology)
+        expect(symbols.title).to.be.eq('hide_at_startup')
+        expect(symbols.type).to.be.eq('layer')
+        expect(symbols.expanded).to.be.false
+        expect(symbols.childrenCount).to.be.eq(1)
+        expect(symbols.children).to.be.an('array').that.have.lengthOf(1)
+
+        const symbolsChildren = symbols.children
+        expect(symbolsChildren[0]).to.be.instanceOf(SymbolImageSymbology)
+
+        const symbolsGetChildren = symbols.getChildren()
+        expect(symbolsGetChildren.next().value).to.be.instanceOf(SymbolImageSymbology).that.be.eq(symbolsChildren[0])
+    })
+
+    it('Valid with icons and image', function () {
+        const symbols = new BaseSymbolsSymbology({
+            "symbols":[{
+                "icon":"iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAU0lEQVQ4jWNgGAV0A4z4JJWVlf8j8+\/evYtTPQs+Q9YelkMRC7Zl+I\/LMKyC2AxBGPYIq8uYcLmIVDBEDLp79y5jsO0jkgwiKfphlpBkwyigPgAATTcaN5pMVDUAAAAASUVORK5CYII=",
+                "title":"category 1"
+            },{
+                "icon":"iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAU0lEQVQ4jWNgGAV0A4z4JJWVlf8j8+\/evYtTPQs+Q4Q2HkUV9Lf+j8swrIJYDYGCd\/7WWF3GhMtFpIIhYtDdu3cZ3\/lbk2QQSdEPs4QkG0YB9QEAMC8aMZ0a06cAAAAASUVORK5CYII=",
+                "title":"category 2"
+            },{
+                "url":"http://localhost:8130/index.php/lizmap/service/?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=legend&FORMAT=image/png&STYLE=default",
+                "title":"legend",
+                "type":"image",
+            }],
+            "title":"hide_at_startup",
+            "type":"layer"
+        })
+        expect(symbols).to.be.instanceOf(BaseSymbolsSymbology)
+        expect(symbols.title).to.be.eq('hide_at_startup')
+        expect(symbols.type).to.be.eq('layer')
+        expect(symbols.expanded).to.be.false
+        expect(symbols.childrenCount).to.be.eq(3)
+        expect(symbols.children).to.be.an('array').that.have.lengthOf(3)
+
+        const symbolsChildren = symbols.children
+        expect(symbolsChildren[0]).to.be.instanceOf(BaseIconSymbology)
+        expect(symbolsChildren[1]).to.be.instanceOf(BaseIconSymbology)
+        expect(symbolsChildren[2]).to.be.instanceOf(SymbolImageSymbology)
+
+        const symbolsGetChildren = symbols.getChildren()
+        expect(symbolsGetChildren.next().value).to.be.instanceOf(BaseIconSymbology).that.be.eq(symbolsChildren[0])
+        expect(symbolsGetChildren.next().value).to.be.instanceOf(BaseIconSymbology).that.be.eq(symbolsChildren[1])
+        expect(symbolsGetChildren.next().value).to.be.instanceOf(SymbolImageSymbology).that.be.eq(symbolsChildren[2])
     })
 
     it('Event', function () {
@@ -747,6 +805,117 @@ describe('LayerSymbolsSymbology', function () {
         expect(symbology._icons[1].title).to.be.eq('')
         expect(symbology._icons[1].parentRuleKey).to.be.eq('')
         expect(symbology._icons[1].parentRule).to.be.null
+    })
+
+    it('image', function () {
+        const symbology = new LayerSymbolsSymbology({
+            "symbols":[{
+                "url":"http://localhost:8130/index.php/lizmap/service/?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=legend&FORMAT=image/png&STYLE=default",
+                "title":"legend",
+                "type":"image",
+            }],
+            "title":"layer_legend_categorized",
+            "type":"layer",
+            "name":"layer_legend_categorized"
+        })
+        expect(symbology).to.be.instanceOf(BaseSymbolsSymbology)
+        expect(symbology).to.be.instanceOf(LayerSymbolsSymbology)
+        expect(symbology.title).to.be.eq('layer_legend_categorized')
+        expect(symbology.name).to.be.eq('layer_legend_categorized')
+        expect(symbology.type).to.be.eq('layer')
+        expect(symbology.expanded).to.be.false
+        expect(symbology.legendOn).to.be.true
+        expect(symbology.childrenCount).to.be.eq(1)
+        expect(symbology.children).to.be.an('array').that.have.lengthOf(1)
+
+        const symbologyChildren = symbology.children
+        expect(symbologyChildren[0])
+            .to.be.instanceOf(BaseIconSymbology)
+            .that.be.instanceOf(SymbolImageSymbology)
+            .that.not.be.instanceOf(SymbolIconSymbology)
+            .that.not.be.instanceOf(SymbolRuleSymbology)
+
+        const symbologyGetChildren = symbology.getChildren()
+        expect(symbologyGetChildren.next().value).to.be.instanceOf(SymbolImageSymbology).that.be.eq(symbologyChildren[0])
+        expect(symbologyGetChildren.next().value).to.be.undefined
+
+        expect(symbology.wmsParameters('layer_legend_categorized')).to.be.an('object').that.be.deep.eq({})
+    })
+
+    it('categorizedSymbol with image', function () {
+        const symbology = new LayerSymbolsSymbology({
+            "symbols":[{
+                "icon":"iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAU0lEQVQ4jWNgGAV0A4z4JJWVlf8j8+\/evYtTPQs+Q9YelkMRC7Zl+I\/LMKyC2AxBGPYIq8uYcLmIVDBEDLp79y5jsO0jkgwiKfphlpBkwyigPgAATTcaN5pMVDUAAAAASUVORK5CYII=",
+                "title":"category 1",
+                "ruleKey":"0",
+                "checked":true
+            },{
+                "icon":"iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAU0lEQVQ4jWNgGAV0A4z4JJWVlf8j8+\/evYtTPQs+Q4Q2HkUV9Lf+j8swrIJYDYGCd\/7WWF3GhMtFpIIhYtDdu3cZ3\/lbk2QQSdEPs4QkG0YB9QEAMC8aMZ0a06cAAAAASUVORK5CYII=",
+                "title":"category 2",
+                "ruleKey":"1",
+                "checked":true
+            },{
+                "url":"http://localhost:8130/index.php/lizmap/service/?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYER=legend&FORMAT=image/png&STYLE=default",
+                "title":"legend",
+                "type":"image",
+            }],
+            "title":"layer_legend_categorized",
+            "type":"layer",
+            "name":"layer_legend_categorized"
+        })
+        expect(symbology).to.be.instanceOf(BaseSymbolsSymbology)
+        expect(symbology).to.be.instanceOf(LayerSymbolsSymbology)
+        expect(symbology.title).to.be.eq('layer_legend_categorized')
+        expect(symbology.name).to.be.eq('layer_legend_categorized')
+        expect(symbology.type).to.be.eq('layer')
+        expect(symbology.expanded).to.be.false
+        expect(symbology.legendOn).to.be.true
+        expect(symbology.childrenCount).to.be.eq(3)
+        expect(symbology.children).to.be.an('array').that.have.lengthOf(3)
+
+        const symbologyChildren = symbology.children
+        expect(symbologyChildren[0])
+            .to.be.instanceOf(BaseIconSymbology)
+            .that.be.instanceOf(SymbolIconSymbology)
+            .that.not.be.instanceOf(SymbolRuleSymbology)
+        expect(symbologyChildren[1])
+            .to.be.instanceOf(BaseIconSymbology)
+            .that.be.instanceOf(SymbolIconSymbology)
+            .that.not.be.instanceOf(SymbolRuleSymbology)
+        expect(symbologyChildren[2])
+            .to.be.instanceOf(BaseIconSymbology)
+            .that.be.instanceOf(SymbolImageSymbology)
+            .that.not.be.instanceOf(SymbolIconSymbology)
+            .that.not.be.instanceOf(SymbolRuleSymbology)
+
+        const symbologyGetChildren = symbology.getChildren()
+        expect(symbologyGetChildren.next().value).to.be.instanceOf(SymbolIconSymbology).that.be.eq(symbologyChildren[0])
+        expect(symbologyGetChildren.next().value).to.be.instanceOf(SymbolIconSymbology).that.be.eq(symbologyChildren[1])
+        expect(symbologyGetChildren.next().value).to.be.instanceOf(SymbolImageSymbology).that.be.eq(symbologyChildren[2])
+        expect(symbologyGetChildren.next().value).to.be.undefined
+
+        expect(symbology.wmsParameters('layer_legend_categorized')).to.be.an('object').that.be.deep.eq({})
+        symbologyChildren[0].checked = false
+        expect(symbology.legendOn).to.be.true
+        expect(symbology.wmsParameters('layer_legend_categorized')).to.be.an('object').that.be.deep.eq({
+            "LEGEND_ON": "layer_legend_categorized:1",
+            "LEGEND_OFF": "layer_legend_categorized:0"
+        })
+        symbologyChildren[1].checked = false
+        expect(symbology.legendOn).to.be.false
+        expect(symbology.wmsParameters('layer_legend_categorized')).to.be.an('object').that.be.deep.eq({
+            "LEGEND_ON": "layer_legend_categorized:",
+            "LEGEND_OFF": "layer_legend_categorized:0,1"
+        })
+        symbologyChildren[0].checked = true
+        expect(symbology.legendOn).to.be.true
+        expect(symbology.wmsParameters('layer_legend_categorized')).to.be.an('object').that.be.deep.eq({
+            "LEGEND_ON": "layer_legend_categorized:0",
+            "LEGEND_OFF": "layer_legend_categorized:1"
+        })
+        symbologyChildren[1].checked = true
+        expect(symbology.legendOn).to.be.true
+        expect(symbology.wmsParameters('layer_legend_categorized')).to.be.an('object').that.be.deep.eq({})
     })
 
     it('Failing required properties', function () {

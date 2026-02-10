@@ -32,11 +32,42 @@ export async function updateLayerTreeLayersSymbology(treeLayers, method=HttpRequ
 
     if (method.toUpperCase() == HttpRequestMethods.GET) {
         for (const treeLayer of treeLayers) {
+            // Check if this is an external WMS layer using the backend flag
+            const isExternalWMS = treeLayer.layerConfig?.externalWmsToggle;
+
+            if (isExternalWMS) {
+                // For external WMS layers, use GetLegendGraphic URL directly as DOM element src
+                const wmsParams = {
+                    LAYER: treeLayer.wmsName,
+                    STYLES: treeLayer.wmsSelectedStyleName,
+                    LAYERTITLE: 'FALSE',
+                };
+                try {
+                    const pngUrl = wms.getLegendGraphicPNG(wmsParams);
+                    // Wrap in LayerSymbolsSymbology structure to make it expandable/hideable
+                    // This creates a single-item legend that can be collapsed
+                    treeLayer.symbology = {
+                        type: 'layer',
+                        name: treeLayer.wmsName,
+                        title: treeLayer.name,
+                        symbols: [{
+                            type: 'image',
+                            url: pngUrl,
+                            title: treeLayer.name,
+                        }]
+                    };
+                } catch (error) {
+                    console.error('Error loading external WMS legend:', error);
+                    // Fallback to default icon will be handled by symbology state
+                }
+                continue;
+            }
+
+            // Request JSON only for non external WMS
             const wmsParams = {
                 LAYER: treeLayer.wmsName,
                 STYLES: treeLayer.wmsSelectedStyleName,
             };
-
             await wms.getLegendGraphic(wmsParams).then((response) => {
                 for (const node of response.nodes) {
                     // If the layer has no symbology, there is no type property
