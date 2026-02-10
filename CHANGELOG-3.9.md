@@ -29,6 +29,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * CSS - dock height overflow on mobile devices and use content-based for menu
 * CSS - Overlap on #lizmap-search Close Button and Items in map.css
 * UI - Display legend for external WMS layers
+* JS - action, force redraw of layer by updating source URL parameters
 
 ### API
 
