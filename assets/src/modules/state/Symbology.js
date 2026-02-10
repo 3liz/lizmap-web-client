@@ -154,6 +154,12 @@ export class BaseIconSymbology extends BaseObjectSymbology {
      * @type {string}
      */
     get icon() {
+        // Check if _icon exists and is a string
+        if (!this._icon || typeof this._icon !== 'string') {
+            return base64png + base64pngNullData;
+        }
+
+        // Otherwise, it's base64 data that needs the prefix
         return base64png + this._icon;
     }
 }
@@ -179,7 +185,6 @@ export class LayerIconSymbology extends BaseIconSymbology {
      * @param {string}  node.title - the node title
      */
     constructor(node) {
-
         if (!node.hasOwnProperty('type') || node.type != 'layer') {
             throw new ValidationError('The layer icon symbology is only available for layer type!');
         }
@@ -531,7 +536,11 @@ export class BaseSymbolsSymbology extends BaseObjectSymbology {
          */
         this._icons = [];
         for(const symbol of this._symbols) {
-            this._icons.push(new iconClass(symbol));
+            if (symbol?.type === 'image') {
+                this._icons.push(new SymbolImageSymbology(symbol));
+            } else {
+                this._icons.push(new iconClass(symbol));
+            }
         }
 
         /**
@@ -580,7 +589,7 @@ export class BaseSymbolsSymbology extends BaseObjectSymbology {
 
     /**
      * The children icons
-     * @type {BaseIconSymbology[]}
+     * @type {Array<BaseIconSymbology|SymbolImageSymbology>}
      */
     get children() {
         return [...this._icons];
@@ -589,7 +598,7 @@ export class BaseSymbolsSymbology extends BaseObjectSymbology {
     /**
      * Iterate through children icons
      * @generator
-     * @yields {BaseIconSymbology} The next child icon
+     * @yields {BaseIconSymbology|SymbolImageSymbology} The next child icon
      */
     *getChildren() {
         for (const icon of this._icons) {
@@ -664,7 +673,7 @@ export class LayerSymbolsSymbology extends BaseSymbolsSymbology {
 
         /**
          * The private children icons
-         * @type {SymbolIconSymbology[]|SymbolRuleSymbology[]}
+         * @type {Array<SymbolIconSymbology|SymbolImageSymbology>|Array<SymbolRuleSymbology|SymbolImageSymbology>}
          * @private
          */
         this._icons;
@@ -697,13 +706,21 @@ export class LayerSymbolsSymbology extends BaseSymbolsSymbology {
      * @type {boolean}
      */
     get legendOn() {
+        let imageCount = 0;
         for (const symbol of this._icons) {
+            if (symbol.type === 'image') {
+                imageCount += 1;
+                continue;
+            }
             if (symbol.ruleKey === '') {
                 return true;
             }
             if (symbol.legendOn) {
                 return true;
             }
+        }
+        if (this._icons.length === imageCount) {
+            return true;
         }
         return false;
     }
@@ -721,7 +738,7 @@ export class LayerSymbolsSymbology extends BaseSymbolsSymbology {
 
     /**
      * The children icons
-     * @type {Array<SymbolIconSymbology|SymbolRuleSymbology>}
+     * @type {Array<SymbolIconSymbology|SymbolRuleSymbology|SymbolImageSymbology>}
      */
     get children() {
         if (this._root !== null) {
@@ -733,7 +750,7 @@ export class LayerSymbolsSymbology extends BaseSymbolsSymbology {
     /**
      * Iterate through children icons
      * @generator
-     * @yields {SymbolIconSymbology|SymbolRuleSymbology} The next child icon
+     * @yields {SymbolIconSymbology|SymbolRuleSymbology|SymbolImageSymbology} The next child icon
      */
     *getChildren() {
         for (const child of this.children) {
@@ -751,7 +768,13 @@ export class LayerSymbolsSymbology extends BaseSymbolsSymbology {
         }
         let keyChecked = [];
         let keyUnchecked = [];
+        let imageCount = 0;
         for (const symbol of this._icons) {
+            if (symbol.type === 'image') {
+                imageCount += 1;
+                continue;
+            }
+            // If the ruleKey is empty, we don't want to add it to the parameters
             if (symbol.ruleKey === '') {
                 keyChecked = [];
                 keyUnchecked = [];
@@ -764,7 +787,7 @@ export class LayerSymbolsSymbology extends BaseSymbolsSymbology {
             }
         }
         if ((keyChecked.length != 0 || keyUnchecked.length != 0)
-            && keyChecked.length != this._icons.length) {
+            && keyChecked.length !== this._icons.length - imageCount) {
             params['LEGEND_ON'] = wmsName+':'+keyChecked.join();
             params['LEGEND_OFF'] = wmsName+':'+keyUnchecked.join();
         }
