@@ -306,8 +306,8 @@ export default class Action {
 
                 // Redraw the layer
                 if (callback['method'] == this.CallbackMethods.Redraw) {
-                    // Redraw the given layer
-                    layer.getSource().changed();
+                    // We force a redraw (avoid cache) of the layer by changing a parameter in the source URL
+                    layer.getSource().updateParams({ts: Date.now()});
                 }
 
                 // Select items in the layer which intersect the returned geometry
