@@ -313,7 +313,7 @@ var lizAttributeTable = function() {
 
                 const wfsParams = {
                     TYPENAME: typeName,
-                    GEOMETRYNAME: 'extent'
+                    GEOMETRYNAME: layerConfig['geometryType'] == 'point' ? null : 'extent',
                 };
 
                 if(filter){
@@ -424,7 +424,7 @@ var lizAttributeTable = function() {
 
                 const wfsParams = {
                     TYPENAME: typeName,
-                    GEOMETRYNAME: 'extent'
+                    GEOMETRYNAME:  layerConfig['geometryType'] == 'point' ? null : 'extent',
                 };
 
                 if(filter){
@@ -3346,7 +3346,7 @@ var lizAttributeTable = function() {
                     const typeName = pivotConfig[1].typename;
                     const wfsParams = {
                         TYPENAME: typeName,
-                        GEOMETRYNAME: 'extent'
+                        GEOMETRYNAME:  pivotConfig[1]['geometryType'] == 'point' ? null : 'extent',
                     };
                     wfsParams['EXP_FILTER'] = '"' + referencedPivotField + '" = ' + "'" + referencedFieldValue + "'";
                     if (config.options?.limitDataToBbox == 'True') {
