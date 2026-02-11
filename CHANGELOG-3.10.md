@@ -21,6 +21,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Multi atlas printing for selection
 * Geometry "copy&paste" functionality for digitizing workflow
 * JS: Add "subscribe" method to EventDispatcher class and to lizMap object
+* Use background color defned in QGIS for tab in edition form
 
 ## Changed
 
@@ -47,13 +48,16 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * e2e: Enhancing Should select / filter / refresh with map interaction
 * e2e: re-import the same file to draw on map
 
+### API
+
+* JS - constant MEDIA_REGEX
+* JS - Defined image symbology for layer
+* PHP - Enhancing getBooleanOption by using filter_var
+
 ### Backend
 
 * Upgrade JavaScript dependancies
 * QGIS Server plugins repository: using qgis-plugins.3liz.org
-* JS - constant MEDIA_REGEX
-* JS - Defined image symbology for layer
-* PHP - Enhancing getBooleanOption by using filter_var
 
 ## 3.10.0-alpha.1 - 2025-12-30
 
