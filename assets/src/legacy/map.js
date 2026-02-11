@@ -2273,6 +2273,11 @@ window.lizMap = function() {
 
         $('body').css('cursor', 'wait');
 
+        // If the geometry type is point, force to get the geometry
+        if (aConfig['geometryType'] == 'point') {
+            aGeometryName = null;
+        }
+
         var getFeatureUrlData = lizMap.getVectorLayerWfsUrl( aName, aFilter, aFeatureID, aGeometryName, restrictToMapExtent, startIndex, maxFeatures );
 
         // see if a request for the same feature is not already made
