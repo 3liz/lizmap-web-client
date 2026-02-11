@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.10.0-beta.1 - 2026-02-11
+
 ### Funders
 
 * **[Terre De Provence Agglomération](https://www.terredeprovence-agglo.com/)**
