@@ -8,6 +8,53 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Funders
+
+* **[Terre De Provence Agglomération](https://www.terredeprovence-agglo.com/)**
+* **[Klein und Leber GbR](https://www.gisgeometer.de/)** with @meyerlor
+
+### Added
+
+* Can dislay geoloc orientation arrow
+* DXF export
+* Can exclude basemaps from single WMS layer option
+* Multi atlas printing for selection
+* Geometry "copy&paste" functionality for digitizing workflow
+* JS: Add "subscribe" method to EventDispatcher class and to lizMap object
+
+## Changed
+
+* e2e: definitly remove cypress tests
+
+### Tests
+
+* e2e: move GetCapabilities requests from cypress to Playwright
+* e2e: move GetProjectConfig requests from cypress to Playwright
+* e2e: move service requests from cypress to Playwright
+* Bump Redis to 8 in docker compose
+* e2e: location search enhancement
+* e2e: replace expectParametersToContain by expectRequest
+* e2e: remove gotomap
+* e2e: time manager enhancing and modernization
+* e2e: Move external_wms_layer from Cypress to Playwright
+* e2e: wrap the Buffer<ArrayBufferLike> into an Uint8Array for writeFile
+* e2e: Move key_value_mapping from Cypress to Playwright
+* e2e: Move action tests form Cypress to Playwright
+* e2e: Move export data tests from Cypress to Playwright
+* e2e: well unroute
+* e2e: Modernize base_layers tests
+* e2e: revival of draw import tests
+* e2e: Enhancing Should select / filter / refresh with map interaction
+* e2e: re-import the same file to draw on map
+
+### Backend
+
+* Upgrade JavaScript dependancies
+* QGIS Server plugins repository: using qgis-plugins.3liz.org
+* JS - constant MEDIA_REGEX
+* JS - Defined image symbology for layer
+* PHP - Enhancing getBooleanOption by using filter_var
+
 ## 3.10.0-alpha.1 - 2025-12-30
 
 ### Funders
