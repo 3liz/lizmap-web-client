@@ -4066,7 +4066,41 @@ div.lizmap-features-table.popup-displayed > table.lizmap-features-table-containe
   margin: 0 !important;
 }
 
+/* Lizmap TypeAHead component */
 
+.lizmap-typeahead-container {
+    position:relative;
+    height:100%;
+}
+
+.lizmap-typeahead-options-container {
+    position:fixed;
+    display:flex;
+    flex-direction:column;
+    gap:3px;
+    visibility: hidden;
+    padding: 5px;
+    background: var(--color-background-primary);
+    border: 1px solid var(--color-contrasted-elements);
+    border-radius: 5px;
+    max-height:300px;
+    overflow-y: auto;
+}
+
+.lizmap-typeahead-options-container > span:not([data-lizmap-typeahead="no-data"]):hover {
+    cursor:pointer;
+    background: var(--color-contrasted-elements-light);
+    color: white;
+}
+
+.lizmap-typeahead-options-container.on-search {
+    visibility: visible;
+}
+
+/** searchBuilder css adjustments **/
+.dt-datetime {
+    z-index:5001 !important;
+}
 
 /* Deactivate the OLD bootstrap-2 modal
 This is needed for LWC >=3.9 and the migration to bootstrap 5
