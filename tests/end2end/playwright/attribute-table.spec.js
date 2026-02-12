@@ -827,6 +827,260 @@ test.describe('Attribute table @readonly', () => {
         // Check filter by extent button
         await expect(page.locator('.btn-filterbyextent-attributeTable')).not.toHaveClass(/active/);
     });
+
+    test('Value relation and Value map fields in Search Builder', async ({ page }) => {
+        const project = new ProjectPage(page, 'huge_attribute_table');
+        await project.open();
+        await project.closeLeftDock();
+
+        const tableName = 'huge_table';
+        // table fields
+        const huge_table_fields = [
+            'Id',
+            'Large lookup',
+            'Small lookup',
+            'Date field',
+            'Int field',
+            'Float field',
+            'Value Map field',
+        ];
+
+        // open the attribute table
+        let datatablesRequest = await project.openAttributeTable(tableName, true);
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+        let tableHtml = project.attributeTableHtml(tableName);
+
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(50);
+
+        // check results count
+        await expect(project.attributeTableWrapper(tableName).locator('div.dt-info'))
+            .toContainText('Showing 1 to 50 of 5,000 entries');
+
+        // open search builder panel
+        await project.openSearchBuilderPanel(tableName, true);
+
+        // add blank criteria and check fields existance
+        await project.addSearchBuilderCriterion(tableName, huge_table_fields);
+        const firstCriteria = await project.getSearchBuilderCriterion(tableName, 0);
+
+        // select the field to filter and check available conditions
+        const large_lookup_conditions = [
+            '=',
+            '!=',
+            'null',
+            '!null',
+        ];
+        await project.selectSearchBuilderData(firstCriteria, 'Large lookup', large_lookup_conditions);
+
+        // select a condition
+        await project.selectSearchBuilderCondition(firstCriteria,'=');
+
+        const typeAHeadElement = firstCriteria.locator('.dtsb-inputCont lizmap-typeahead');
+
+        // check if the input is instance of lizmap-typeahead component
+        await expect(typeAHeadElement).toHaveCount(1);
+
+        // fill typeahead input and check options
+        const expected_options = [
+            'Alpine Swift',
+            'Common Swift',
+            'Pallid Swift',
+            'Western Swamphen',
+        ];
+        await project.fillTypeAHeadInput(typeAHeadElement ,'Sw', expected_options);
+
+        // select a value from available typeahead options
+        await project.selectTypeAHeadOption(typeAHeadElement, '23', 'Alpine Swift');
+
+        // fill typeahead with another value and select no options
+        await project.fillTypeAHeadInput(typeAHeadElement ,'Go');
+        await firstCriteria.locator('select.dtsb-data').click();
+        // typeahead values must not change
+        await project.checkTypeAHeadValues(typeAHeadElement, '23', 'Alpine Swift');
+
+        // launch search and check results
+        let datatablesRequestPromise = project.waitForDatatablesRequest();
+        await project.searchBuilderLaunchSearch(tableName);
+        datatablesRequest = await datatablesRequestPromise;
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+        await expect(project.attributeTableWrapper(tableName).locator('div.dt-info'))
+            .toContainText('Showing 1 to 40 of 40 entries (filtered from 5,000 total entries)');
+
+        // add new criteria
+        await project.addSearchBuilderCriterion(tableName, huge_table_fields);
+        const secondCriteria = await project.getSearchBuilderCriterion(tableName, 1);
+        // select the field to filter and check available conditions
+        const small_lookup_conditions = [
+            '=',
+            '!=',
+            'null',
+            '!null',
+        ];
+        await project.selectSearchBuilderData(secondCriteria, 'Small lookup', small_lookup_conditions);
+
+        // select a condition
+        await project.selectSearchBuilderCondition(secondCriteria,'=');
+
+        const secondCriteriaDropDown = secondCriteria.locator('.dtsb-inputCont select.dtsb-value');
+
+        // check if the input is a dropdown
+        await expect(secondCriteriaDropDown).toHaveCount(1);
+        // select an option from dropdown and filter
+        await secondCriteriaDropDown.selectOption({label: 'Afrotropic'});
+
+        datatablesRequestPromise = project.waitForDatatablesRequest();
+        await project.searchBuilderLaunchSearch(tableName);
+        datatablesRequest = await datatablesRequestPromise;
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+        await expect(project.attributeTableWrapper(tableName).locator('div.dt-info'))
+            .toContainText('Showing 1 to 10 of 10 entries (filtered from 5,000 total entries)');
+
+        // add Value Map condition
+        await project.addSearchBuilderCriterion(tableName, huge_table_fields);
+        const thirdCriteria = await project.getSearchBuilderCriterion(tableName, 2);
+
+        // select the field to filter and check available conditions
+        const value_map_conditions = [
+            '=',
+            '!=',
+            'null',
+            '!null',
+        ];
+        await project.selectSearchBuilderData(thirdCriteria, 'Value Map field', value_map_conditions);
+
+        // select a condition
+        await project.selectSearchBuilderCondition(thirdCriteria,'=');
+
+        const valueMapCriteria = thirdCriteria.locator('.dtsb-inputCont select.dtsb-value');
+        // check if the input is a dropdown
+        await expect(valueMapCriteria).toHaveCount(1);
+        // select an option from dropdown and filter
+        await valueMapCriteria.selectOption({label: 'Yes'});
+
+        datatablesRequestPromise = project.waitForDatatablesRequest();
+        await project.searchBuilderLaunchSearch(tableName);
+        datatablesRequest = await datatablesRequestPromise;
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+        await expect(project.attributeTableWrapper(tableName).locator('div.dt-info'))
+            .toContainText('Showing 1 to 7 of 7 entries (filtered from 5,000 total entries)');
+
+        // remove a criterion and check the initialization values
+        datatablesRequestPromise = project.waitForDatatablesRequest();
+        await project.removeSearchBuilderCriterion(secondCriteria);
+        await expect(project.attributeTableWrapper(tableName).locator('div.dt-info'))
+            .toContainText('Showing 1 to 29 of 29 entries (filtered from 5,000 total entries)');
+
+        const firstCriteriaAfterRemove = await project.getSearchBuilderCriterion(tableName, 0);
+        await project.checkTypeAHeadValues(firstCriteriaAfterRemove
+            .locator('.dtsb-inputCont lizmap-typeahead'), '23', 'Alpine Swift');
+        const secondCriteriaAfterRemove = await project.getSearchBuilderCriterion(tableName, 1);
+        await expect(await secondCriteriaAfterRemove
+            .locator('.dtsb-inputCont select.dtsb-value').inputValue()).toBe('true');
+
+        // checks others fields
+        // date field
+        await project.addSearchBuilderCriterion(tableName, huge_table_fields);
+        const dateCriteria = await project.getSearchBuilderCriterion(tableName, 2);
+        const date_conditions = [
+            '=',
+            '!=',
+            '<',
+            '>',
+            'between',
+            '!between',
+            'null',
+            '!null',
+        ];
+        await project.selectSearchBuilderData(dateCriteria, 'Date field', date_conditions);
+
+        // int field
+        await project.addSearchBuilderCriterion(tableName, huge_table_fields);
+        const intCriteria = await project.getSearchBuilderCriterion(tableName, 3);
+        const int_conditions = [
+            '=',
+            '!=',
+            '<',
+            '<=',
+            '>=',
+            '>',
+            'between',
+            '!between',
+            'null',
+            '!null',
+        ];
+        await project.selectSearchBuilderData(intCriteria, 'Int field', int_conditions);
+
+        // float field
+        await project.addSearchBuilderCriterion(tableName, huge_table_fields);
+        const floatCriteria = await project.getSearchBuilderCriterion(tableName, 4);
+        const float_conditions = [
+            '=',
+            '!=',
+            '<',
+            '<=',
+            '>=',
+            '>',
+            'between',
+            '!between',
+            'null',
+            '!null',
+        ];
+        await project.selectSearchBuilderData(floatCriteria, 'Float field', float_conditions);
+
+        // close panel
+        await project.searchBuilderClosePanel(tableName);
+
+        // open new attribute table, check for unwanted conflicts
+        const lookupTableName = 'lookup_1';
+
+        // open the attribute table
+        datatablesRequest = await project.openAttributeTable(lookupTableName, true);
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+        let lookupTableHtml = project.attributeTableHtml(lookupTableName);
+
+        await expect(lookupTableHtml.locator('tbody tr')).toHaveCount(50);
+        // check results count
+        await expect(project.attributeTableWrapper(lookupTableName).locator('div.dt-info'))
+            .toContainText('Showing 1 to 50 of 100 entries');
+
+        // open search builder panel
+        await project.openSearchBuilderPanel(lookupTableName, true);
+        // add one condition and filter
+
+        await project.addSearchBuilderCriterion(lookupTableName);
+        const firstLookupCriteria = await project.getSearchBuilderCriterion(lookupTableName, 0);
+
+        // select field to filter and check for available conditions
+        await project.selectSearchBuilderData(firstLookupCriteria, 'id');
+
+        // select a condition
+        await project.selectSearchBuilderCondition(firstLookupCriteria,'=');
+
+        const firstLookupCriteriaInput = await firstLookupCriteria.locator('.dtsb-inputCont input.dtsb-value');
+
+        // fill the input and filter
+        await firstLookupCriteriaInput.fill("4");
+        datatablesRequestPromise = project.waitForDatatablesRequest();
+        await project.searchBuilderLaunchSearch(lookupTableName);
+        datatablesRequest = await datatablesRequestPromise;
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+        await expect(project.attributeTableWrapper(lookupTableName).locator('div.dt-info'))
+            .toContainText('Showing 1 to 1 of 1 entries (filtered from 100 total entries)');
+
+        // close panel
+        await project.searchBuilderClosePanel(lookupTableName);
+
+        // back to the first table and check total number of records
+        await project.switchAttributeTable(tableName);
+        await expect(project.attributeTableWrapper(tableName).locator('div.dt-info'))
+            .toContainText('Showing 1 to 29 of 29 entries (filtered from 5,000 total entries)');
+    });
 });
 
 
