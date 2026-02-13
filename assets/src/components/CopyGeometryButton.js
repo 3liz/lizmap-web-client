@@ -8,8 +8,6 @@
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import { html, render } from 'lit-html';
 
-import '../images/svg/mActionEditCopy.svg';
-
 /**
  * Web component for "Copy existing geometry" button
  * @class
@@ -29,7 +27,7 @@ export default class CopyGeometryButton extends HTMLElement {
                 ?disabled=${!this._canActivate()}
                 @click=${() => this._toggle()}>
                 <svg>
-                    <use xlink:href="#mActionEditCopy"></use>
+                    <use href="${lizUrls.svgSprite}#mActionEditCopy"/>
                 </svg>
             </button>
         `;

@@ -214,6 +214,7 @@ class lizMapCtrl extends jController
             'edition' => jUrl::get('lizmap~edition:getFeature'),
             'permalink' => jUrl::getFull('view~map:index'),
             'dataTableLanguage' => $bp.'assets/js/dataTables/'.jApp::config()->locale.'.json',
+            'svgSprite' => $bp.'assets/svg/sprite.svg?_r='.jApp::config()->urlengine['assetsRevision'],
             'basepath' => $bp,
             'geobookmark' => jUrl::get('lizmap~geobookmark:index'),
             'service' => jUrl::get('lizmap~service:index').'?repository='.$repository.'&project='.$project,

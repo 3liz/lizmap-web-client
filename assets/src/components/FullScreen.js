@@ -8,9 +8,6 @@
 
 import { html, render } from 'lit-html';
 
-import '../images/svg/fullscreen.svg';
-import '../images/svg/fullscreen-exit.svg';
-
 /**
  * @class
  * @name FullScreen
@@ -44,8 +41,8 @@ export default class FullScreen extends HTMLElement {
             html`
         <button @click=${() => document.fullscreenElement ? document.exitFullscreen() : this._elementFullscreened.requestFullscreen()}>
             ${document.fullscreenElement
-                ? html`<svg><use xlink:href="#fullscreen-exit"></use></svg>`
-                : html`<svg><use xlink:href="#fullscreen"></use></svg>`
+                ? html`<svg><use href="${lizUrls.svgSprite}#fullscreen-exit"/></svg>`
+                : html`<svg><use href="${lizUrls.svgSprite}#fullscreen"/></svg>`
             }
         </button>`;
 
