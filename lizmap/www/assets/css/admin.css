@@ -64,17 +64,6 @@ fieldset {
     background-color:transparent;
 }
 
-
-#dashboard-content {
-    padding-left: 2.1277%;
-}
-
-.dashboard-widget h3 {
-    background-color: #eee;
-    margin: 0 0 10px;
-    padding: 0 10px;
-}
-
 .table-server-info th,
 .table-server-info td
 {

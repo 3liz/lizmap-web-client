@@ -6,19 +6,19 @@
 
 {assign $nbPerCol = ceil(count($widgets)/2)}
 <div id="dashboard-content" class="row">
-    <div id="dashboard-left-column" class="span6">
+    <div class="col-sm-6">
         {for $i=0; $i<$nbPerCol;$i++}
-        <div class="dashboard-widget well">
-            <h3>{$widgets[$i]->title|eschtml}</h3>
-            <div class="dashboard-widget-content">{$widgets[$i]->content}</div>
+        <div class="card">
+            <h3 class="card-header">{$widgets[$i]->title|eschtml}</h3>
+            <div class="card-body">{$widgets[$i]->content}</div>
         </div>
         {/for}
     </div>
-    <div id="dashboard-right-column" class="span6">
+    <div class="col-sm-6">
         {for $i=$nbPerCol; $i<count($widgets);$i++}
-        <div class="dashboard-widget well">
-            <h3>{$widgets[$i]->title|eschtml}</h3>
-            <div class="dashboard-widget-content">{$widgets[$i]->content}</div>
+        <div class="card">
+            <h3 class="card-header">{$widgets[$i]->title|eschtml}</h3>
+            <div class="card-body">{$widgets[$i]->content}</div>
         </div>
         {/for}
     </div>
