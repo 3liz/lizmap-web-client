@@ -41,7 +41,7 @@ import '../images/svg/file-upload.svg';
  * It is mandatory and provide a way to use this element for different contexts.
  *
  * The other attributes are:
- *  active - Activate the element on load
+ *  active - Activate the element on load or when the attribute is added
  *  selected-tool - Start selected drawing tools one of DigitizingAvailableTools or available-tools
  *  available-tools - List of available drawing tools based on DigitizingAvailableTools
  *  save - Enable save capability
@@ -84,6 +84,10 @@ export default class Digitizing extends HTMLElement {
         super();
         this._toolSelected = DigitizingAvailableTools[0];
         this._availableTools = DigitizingAvailableTools.slice(1);
+    }
+
+    static get observedAttributes() {
+        return ['active'];
     }
 
     connectedCallback() {
@@ -534,12 +538,26 @@ export default class Digitizing extends HTMLElement {
         );
 
         // Activate the selected tool if the active attribute is present
+        this._activateIfNeeded();
+    }
+
+    /**
+     * Activate the selected tool if the active attribute is present
+     * @private
+     */
+    _activateIfNeeded() {
         if (this.active && this._toolSelected) {
             this.selectTool(this._toolSelected);
         }
     }
 
     disconnectedCallback() {
+    }
+
+    attributeChangedCallback(name) {
+        if (name === 'active') {
+            this._activateIfNeeded();
+        }
     }
 
     /**

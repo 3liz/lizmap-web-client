@@ -36,7 +36,6 @@
                 </div>
                 <div class="tab-pane" id="tabdigitization">
                     <lizmap-digitizing
-                        active
                         context="draw"
                         selected-tool="point"
                         available-tools="point"
