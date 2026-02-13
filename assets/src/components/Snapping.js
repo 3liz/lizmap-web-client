@@ -8,7 +8,6 @@
 
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import { html, render } from 'lit-html';
-import '../images/svg/refresh.svg';
 
 /**
  * @class
@@ -40,7 +39,7 @@ export default class Snapping extends HTMLElement {
                             @click=${() => mainLizmap.snapping.getSnappingData() }
                             >
                             <svg width="14" height="14">
-                                <use xlink:href="#refresh"/>
+                                <use href="${lizUrls.svgSprite}#refresh"/>
                             </svg>
                         </button>
                     </div>
