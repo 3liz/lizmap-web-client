@@ -4,7 +4,7 @@
             <button class="btn-draw-clear btn btn-mini btn-error btn-link"
                 title="{@view~map.toolbar.content.stop@}" onclick="document.querySelector('#button-draw').click();">×</button>
             <svg>
-                <use xlink:href="#pencil"></use>
+                <use href="{$j_basepath}assets/svg/sprite.svg?{$j_assetsRevision}#pencil"/>
             </svg>
             <span class="text">&nbsp;{@view~map.draw.navbar.title@}&nbsp;</span>
         </span>

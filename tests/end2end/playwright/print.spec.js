@@ -515,7 +515,7 @@ test.describe('Print in popup', () => {
         const featureAtlasSousQuartiers = page.locator('#popupcontent lizmap-feature-toolbar[value="sousquartiers_e27e6af0_dcc5_4700_9730_361437f69862.2"] .feature-atlas');
         await expect(featureAtlasSousQuartiers).toHaveCount(1);
         await expect(featureAtlasSousQuartiers.locator('button')).toHaveAttribute('title', 'atlas_sousquartiers');
-        await expect(featureAtlasSousQuartiers.locator('svg use')).toHaveAttribute('xlink:href', '#map-print');
+        await expect(featureAtlasSousQuartiers.locator('svg use')).toHaveAttribute('xlink:href', /^\/assets\/svg\/sprite\.svg.*#map-print$/);
     });
 
     test('Atlas print in popup requests', async ({ page }) => {

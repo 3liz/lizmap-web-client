@@ -18,8 +18,6 @@ import KML from 'ol/format/KML.js';
 import Point from 'ol/geom/Point.js';
 import {fromExtent} from 'ol/geom/Polygon.js';
 
-import '../images/svg/map-print.svg';
-
 /**
  * @class
  * @name FeatureToolbar
@@ -139,7 +137,7 @@ export default class FeatureToolbar extends HTMLElement {
                         ${layout.icon
                         ? html`<img src="${mainLizmap.mediaURL}&path=${layout.icon}"/>`
                         : html`<svg>
-                                    <use xlink:href="#map-print"></use>
+                                    <use xlink:href="${lizUrls.svgSprite}#map-print"></use>
                                 </svg>`
                         }
                     </button>

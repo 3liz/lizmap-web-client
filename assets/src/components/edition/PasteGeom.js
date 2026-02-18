@@ -9,8 +9,6 @@
 import { mainLizmap, mainEventDispatcher } from '../../modules/Globals.js';
 import { html, render } from 'lit-html';
 
-import '../../images/svg/mActionEditPaste.svg';
-
 /**
  * Web component used to paste a geometry
  * @class
@@ -49,7 +47,7 @@ export default class pasteGeom extends HTMLElement {
             html`
         <button class='btn btn-small' data-original-title='${lizDict['edition.geom.paste']}' ?disabled=${!mainLizmap.featureStorage.get().length} @click=${() => this._paste()}>
             <svg>
-                <use xlink:href="#mActionEditPaste"></use>
+                <use href="${lizUrls.svgSprite}#mActionEditPaste"/>
             </svg>
         </button>`;
 
