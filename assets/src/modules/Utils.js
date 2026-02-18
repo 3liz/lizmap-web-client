@@ -202,6 +202,32 @@ export class Utils {
     }
 
     /**
+     * Fetching a resource from the network, which is XML, returning a promise that resolves with a text representation of the response body.
+     * @static
+     * @param {string} resource - This defines the resource that you wish to fetch. A string or any other object with a stringifier — including a URL object — that provides the URL of the resource you want to fetch.
+     * @param {object} options - An object containing any custom settings you want to apply to the request.
+     * @returns {Promise} A Promise that resolves with a text representation of the response body.
+     * @throws {ResponseError} In case of invalid content type (not text/xml)
+     * @throws {HttpError} In case of not successful response (status not in the range 200 – 299)
+     * @throws {NetworkError} In case of catch exceptions
+     * @see https://developer.mozilla.org/en-US/docs/Web/API/fetch
+     * @see https://developer.mozilla.org/en-US/docs/Web/API/Response
+     */
+    static fetchXML(resource, options) {
+        return Utils.fetch(resource, options).then(response => {
+            const contentType = response.headers.get('Content-Type') || '';
+
+            if (contentType.includes('text/xml')) {
+                return response.text().catch(error => {
+                    return Promise.reject(new ResponseError('XML error: ' + error.message, response, resource, options));
+                });
+            }
+
+            return Promise.reject(new ResponseError('Invalid content type: ' + contentType, response, resource, options));
+        }).catch(error => {return Promise.reject(error)});
+    }
+
+    /**
      * Get the corresponding resolution for the scale with meters per unit
      * @static
      * @param {number} scale         - The scale
