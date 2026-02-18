@@ -8,8 +8,6 @@
 import {mainLizmap, mainEventDispatcher} from '../modules/Globals.js';
 import {html, render} from 'lit-html';
 
-import '../images/svg/mActionInvertSelection.svg';
-
 /**
  * Web component used to invert selection on layer selection defined by 'feature-type' attribute
  * or allFeatureTypeSelected defined in SelectionTool module
@@ -92,7 +90,7 @@ export default class SelectionInvert extends HTMLElement {
             @click=${clickHandler}
             >
             <svg class="icon-">
-                <use xlink:href="#mActionInvertSelection"></use>
+                <use href="${lizUrls.svgSprite}#mActionInvertSelection"/>
             </svg>
         </button>`;
 

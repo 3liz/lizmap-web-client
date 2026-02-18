@@ -8,7 +8,6 @@
 
 import {mainLizmap, mainEventDispatcher} from '../modules/Globals.js';
 import {html, render} from 'lit-html';
-import '../images/svg/device-mobile-vibration.svg';
 
 /**
  * @class
@@ -31,7 +30,7 @@ export default class GeolocationSurvey extends HTMLElement {
                         <button class="btn ${mainLizmap.geolocationSurvey.beepMode ? 'active btn-success' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleBeepMode()}><i class="icon-music"></i></button>
                         <button class="btn ${mainLizmap.geolocationSurvey.vibrateMode ? 'active btn-success' : ''}" @click=${() => mainLizmap.geolocationSurvey.toggleVibrateMode()}>
                             <svg width="14" height="14">
-                                <use xlink:href="#device-mobile-vibration"/>
+                                <use href="${lizUrls.svgSprite}#device-mobile-vibration"/>
                             </svg>
                         </button>
                     </div>

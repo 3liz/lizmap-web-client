@@ -10,26 +10,6 @@ import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import { DigitizingAvailableTools } from '../modules/Digitizing.js'
 import { html, render } from 'lit-html';
 
-import '../images/svg/point.svg';
-import '../images/svg/line.svg';
-import '../images/svg/polygon.svg';
-import '../images/svg/box.svg';
-import '../images/svg/circle.svg';
-import '../images/svg/freehand.svg';
-import '../images/svg/text.svg';
-
-import '../images/svg/pencil.svg';
-import '../images/svg/edit.svg';
-import '../images/svg/rotate.svg';
-import '../images/svg/scaling.svg';
-import '../images/svg/split.svg';
-import '../images/svg/eraser.svg';
-import '../images/svg/eraser-all.svg';
-import '../images/svg/save.svg';
-
-import '../images/svg/file-download.svg';
-import '../images/svg/file-upload.svg';
-
 /**
  * @summary Provides user interface for digitizing shapes and text
  * @augments HTMLElement
@@ -113,7 +93,7 @@ export default class Digitizing extends HTMLElement {
         const svgToolIconTemplate = (tool) => {
             return html`
                 <svg class="digitizing-tool-icon">
-                    <use href="#${tool}"></use>
+                    <use href="${lizUrls.svgSprite}#${tool}"/>
                 </svg>
             `;
         }
@@ -131,7 +111,7 @@ export default class Digitizing extends HTMLElement {
                     @click=${(event) => {this.toggleToolSelected(event)}}
                     >
                     <svg>
-                        <use xlink:href="#pencil"></use>
+                        <use href="${lizUrls.svgSprite}#pencil"/>
                     </svg>
                     <!-- Display selected tool -->
                     ${availableTools
@@ -176,23 +156,8 @@ export default class Digitizing extends HTMLElement {
                 data-bs-toggle="tooltip"
                 data-bs-title="${lizDict['digitizing.toolbar.measure']}"
                 >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    stroke-width="2"
-                    stroke="currentColor"
-                    fill="none"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    >
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                    <path d="M17 3l4 4l-14 14l-4 -4z"></path>
-                    <path d="M16 7l-1.5 -1.5"></path>
-                    <path d="M13 10l-1.5 -1.5"></path>
-                    <path d="M10 13l-1.5 -1.5"></path>
-                    <path d="M7 16l-1.5 -1.5"></path>
+                <svg>
+                    <use href="${lizUrls.svgSprite}#rule"/>
                 </svg>
             </button>
             `;
@@ -206,7 +171,7 @@ export default class Digitizing extends HTMLElement {
                 data-bs-title="${lizDict['digitizing.toolbar.save']}"
                 >
                 <svg>
-                    <use xlink:href="#save" />
+                    <use href="${lizUrls.svgSprite}#save"/>
                 </svg>
             </button>
             `;
@@ -299,7 +264,7 @@ export default class Digitizing extends HTMLElement {
                 data-bs-title="${lizDict['digitizing.toolbar.edit']}"
                 >
                 <svg>
-                    <use xlink:href="#edit"/>
+                    <use href="${lizUrls.svgSprite}#edit"/>
                 </svg>
             </button>
             <button
@@ -311,7 +276,7 @@ export default class Digitizing extends HTMLElement {
                 data-bs-title="${lizDict['digitizing.toolbar.rotate']}"
                 >
                 <svg>
-                    <use xlink:href="#rotate"/>
+                    <use href="${lizUrls.svgSprite}#rotate"/>
                 </svg>
             </button>
             <button
@@ -323,7 +288,7 @@ export default class Digitizing extends HTMLElement {
                 data-bs-title="${lizDict['digitizing.toolbar.scaling']}"
                 >
                 <svg>
-                    <use xlink:href="#scaling"/>
+                    <use href="${lizUrls.svgSprite}#scaling"/>
                 </svg>
             </button>
             <button
@@ -335,7 +300,7 @@ export default class Digitizing extends HTMLElement {
                 data-bs-title="${lizDict['digitizing.toolbar.split']}"
                 >
                 <svg>
-                    <use xlink:href="#split"/>
+                    <use href="${lizUrls.svgSprite}#split"/>
                 </svg>
             </button>
             <button
@@ -347,7 +312,7 @@ export default class Digitizing extends HTMLElement {
                 data-bs-title="${lizDict['digitizing.toolbar.erase']}"
                 >
                 <svg>
-                    <use xlink:href="#eraser"/>
+                    <use href="${lizUrls.svgSprite}#eraser"/>
                 </svg>
             </button>
             <button
@@ -359,7 +324,7 @@ export default class Digitizing extends HTMLElement {
                 data-bs-title="${lizDict['digitizing.toolbar.erase.all']}"
                 >
                 <svg>
-                    <use xlink:href="#eraser-all"/>
+                    <use href="${lizUrls.svgSprite}#eraser-all"/>
                 </svg>
             </button>
             <button
@@ -389,7 +354,7 @@ export default class Digitizing extends HTMLElement {
                         title="${lizDict['attributeLayers.toolbar.btn.data.export.title']}"
                         >
                         <svg>
-                            <use xlink:href="#file-download"></use>
+                            <use href="${lizUrls.svgSprite}#file-download"/>
                         </svg>
                     </button>
                     <ul class="dropdown-menu">
@@ -426,7 +391,7 @@ export default class Digitizing extends HTMLElement {
                 <div class="digitizing-import">
                     <label class="btn" data-bs-toggle="tooltip" data-bs-title="${lizDict['digitizing.toolbar.import']}">
                         <svg>
-                            <use xlink:href="#file-upload"></use>
+                            <use href="${lizUrls.svgSprite}#file-upload"/>
                         </svg>
                         <input
                             class="hide"
