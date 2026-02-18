@@ -467,14 +467,9 @@ class datavizPlot
                 'TYPENAME' => $typeName,
                 'OUTPUTFORMAT' => 'GeoJSON',
                 'GEOMETRYNAME' => 'none',
-                'PROPERTYNAME' => implode(',', $propertyname),
             );
-            // Sort by x fields when scatter plot is used
-            if ($this->type == 'scatter' or $this->type == 'pie') {
-                $wfsparams['SORTBY'] = ','.implode(',', $this->x_fields);
-            }
             if (!empty($this->colorfields)) {
-                $wfsparams['PROPERTYNAME'] .= ','.implode(',', $this->colorfields);
+                $propertyname = array_merge($propertyname, array_filter($this->colorfields));
             }
             if (!empty($exp_filter)) {
                 // Add fields in PROPERTYNAME
@@ -488,11 +483,19 @@ class datavizPlot
                     }
                 }
                 if ($pp) {
-                    $wfsparams['PROPERTYNAME'] .= ','.$pp;
+                    $propertyname = array_merge($propertyname, array($pp));
                 }
 
                 // Add filter
                 $wfsparams['EXP_FILTER'] = $exp_filter;
+            }
+
+            // Add the list of fields
+            $wfsparams['PROPERTYNAME'] = implode(',', array_filter($propertyname));
+
+            // Sort by x fields when scatter plot is used
+            if ($this->type == 'scatter' || $this->type == 'pie') {
+                $wfsparams['SORTBY'] = implode(',', $this->x_fields);
             }
 
             $wfsrequest = new WFSRequest($this->lproj, $wfsparams, lizmap::getServices());
