@@ -23,15 +23,4 @@ export default {
         publicPath: 'auto',
         path: resolve(__dirname, '../lizmap/www/assets/js/')
     },
-    module: {
-        rules: [
-            {
-                test: /\.svg$/,
-                use: [
-                    'svg-sprite-loader',
-                    'svgo-loader'
-                ]
-            }
-        ]
-    }
 };

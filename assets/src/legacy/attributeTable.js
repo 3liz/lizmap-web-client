@@ -10,7 +10,6 @@ import 'datatables.net-buttons-bs5';
 import DateTime from 'datatables.net-datetime';
 import 'datatables.net-searchbuilder-bs5';
 import DOMPurify from 'dompurify';
-import '../images/svg/filter-square.svg';
 
 var lizAttributeTable = function() {
 
@@ -522,7 +521,7 @@ var lizAttributeTable = function() {
                 html+= `
                 <button class="btn-filterbyextent-attributeTable btn btn-sm" data-layerid="${config.layers[lname].id}" data-bs-toggle="button" value="${cleanName}" title="${lizDict['attributeLayers.toolbar.btn.filterByExtent.title']}">
                     <svg>
-                        <use xlink:href="#filter-square"></use>
+                        <use href="${lizUrls.svgSprite}#filter-square"/>
                     </svg>
                 </button>`;
 
