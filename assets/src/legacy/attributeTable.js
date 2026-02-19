@@ -1606,6 +1606,7 @@ var lizAttributeTable = function() {
 
                             lizMap.events.triggerEvent("attributeLayerContentReady",{
                                 'featureType': featureType,
+                                'oTable': oTable
                             });
                         }
                         ,order: [[ firstDisplayedColIndex, "asc" ]]
