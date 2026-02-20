@@ -82,7 +82,6 @@ const waitFor = async function waitFor(maxWait, sleepStep, f){
 };
 
 const definedCustomElements = () => {
-    console.log('Defining custom elements...');
     window.customElements.define('lizmap-geolocation', Geolocation);
     window.customElements.define('lizmap-geolocation-survey', GeolocationSurvey);
     window.customElements.define('lizmap-features-table', FeaturesTable);
