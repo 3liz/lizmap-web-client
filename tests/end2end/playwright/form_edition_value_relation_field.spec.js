@@ -248,7 +248,7 @@ test.describe('Form edition all field type', function () {
         // Intercept getData query to wait for its end
         let getDataRequestPromise = page.waitForRequest(/jelix\/forms\/getdata/);
         // Click on the map over Zone A1
-        project.clickOnMapLegacy(530-150, 375-50);
+        project.clickOnMap(530-150, 375-50);
         // Wait for getData query ends, check request parameters and response
         let getDataRequest = await getDataRequestPromise;
         let getDataExpectedParameters = {
