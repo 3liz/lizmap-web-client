@@ -416,7 +416,7 @@ export default class LocateByLayer {
                         }
                         this._map.setHighlightFeatures(data.features[0], "geojson");
                     }).fail(() => {
-                        this._.map.setHighlightFeatures(feat, "geojson");
+                        this._map.setHighlightFeatures(feat, "geojson");
                     });
                 }
                 // zoom to extent
