@@ -651,6 +651,13 @@ class QgisForm implements QgisFormControlsInterface
                         }
                     }
                 }
+                // Cast to string so that form widget comparisons work correctly.
+                // PDO in PHP 8.1+ returns native types (e.g. integers) instead of
+                // strings, which breaks strict === comparisons in fillSelect() and
+                // valueOnCheck comparisons in checkbox rendering.
+                if ($value !== null) {
+                    $value = (string) $value;
+                }
                 $form->setData($ref, $value);
             }
         }
