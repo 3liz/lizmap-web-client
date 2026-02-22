@@ -22,4 +22,7 @@
     <url pathinfo="/repo/:repository/:project/config"       action="service:getProjectConfig"/>
 
 
+    <url pathinfo="/announcement/pending" action="announcement:pending"/>
+    <url pathinfo="/announcement/mark-seen" action="announcement:markSeen"/>
+
 </suburls>

@@ -28,6 +28,7 @@ import Permalink from './Permalink.js';
 import Search from './Search.js';
 import Tooltip from './Tooltip.js';
 import LocateByLayer from './LocateByLayer.js';
+import Announcement from './Announcement.js';
 
 import WMSCapabilities from 'ol/format/WMSCapabilities.js';
 import WFSCapabilities from 'ol-wfs-capabilities';
@@ -199,6 +200,9 @@ export default class Lizmap {
                      *     ['lizmap.modules.initialized']
                      * );
                      */
+                    this.announcement = new Announcement();
+                    this.announcement.init();
+
                     eventDispatcher.dispatch('lizmap.modules.initialized');
                 }
             };
