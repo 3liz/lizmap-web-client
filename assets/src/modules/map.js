@@ -633,7 +633,8 @@ export default class map extends olMap {
 
         this.on('moveend', () => {
             if (!this._newOlMap) {
-                lizMap.map.setCenter(undefined,this.getView().getZoom(), false, false);
+                //lizMap.map.setCenter(undefined,this.getView().getZoom(), false, false);
+                this.refreshOL2View();
             }
         });
 
