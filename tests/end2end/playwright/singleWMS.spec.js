@@ -393,7 +393,7 @@ test.describe('Single WMS layer', () => {
             await formRequest.response();
 
             // edition id done on #map
-            await project.clickOnMapLegacy(532, 293);
+            await project.clickOnMap(532, 293);
             await project.fillEditionFormTextInput('title', 'Test insert');
 
             // submit the form

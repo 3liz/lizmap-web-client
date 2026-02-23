@@ -705,7 +705,7 @@ test.describe(
             await project.checkEditionFormTextField('Name check', '', 'Name check', true);
 
             // insert a point feature
-            await project.clickOnMapLegacy(488, 331);
+            await project.clickOnMap(488, 331);
             // fill the form
             await project.fillEditionFormTextInput('point_name', 'text insert');
             let editFeatureRequestPromiseUpdate = page.waitForResponse(response => response.url().includes('editFeature'));
