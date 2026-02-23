@@ -651,6 +651,26 @@ class QgisForm implements QgisFormControlsInterface
                         }
                     }
                 }
+                // Normalize the DB value to a plain string so that form widget
+                // comparisons work correctly:
+                //
+                // 1. PDO in PHP 8.1+ returns native types (int, float, bool)
+                //    instead of strings, which breaks the strict === comparison
+                //    in fillSelect() and the valueOnCheck comparison in checkbox
+                //    rendering.
+                //
+                // 2. PostgreSQL numeric/decimal columns return values with the
+                //    column-defined scale (e.g. "0.40" for numeric(10,2)) while
+                //    QGIS ValueMap keys are stored without trailing zeros ("0.4").
+                //    Stripping trailing decimal zeros aligns both sides.
+                if ($value !== null) {
+                    if (!is_string($value)) {
+                        $value = (string) $value;
+                    }
+                    if (strpos($value, '.') !== false && is_numeric($value)) {
+                        $value = rtrim(rtrim($value, '0'), '.');
+                    }
+                }
                 $form->setData($ref, $value);
             }
         }
