@@ -54,4 +54,11 @@
     <url pathinfo="/lizmap_search/edit"  action="lizmap_search:edit"/>
     <url pathinfo="/lizmap_search/save"  action="lizmap_search:save"/>
 
+    <url pathinfo="/announcements" action="announcement:index"/>
+    <url pathinfo="/announcements/create" action="announcement:create"/>
+    <url pathinfo="/announcements/save" action="announcement:save"/>
+    <url pathinfo="/announcements/:id/edit" action="announcement:edit"/>
+    <url pathinfo="/announcements/:id/toggle" action="announcement:toggle"/>
+    <url pathinfo="/announcements/:id/delete" action="announcement:delete"/>
+
 </suburls>
