@@ -752,6 +752,11 @@ class Project
         return $this->qgis->getCanvasColor();
     }
 
+    public function getSelectionColor(): string
+    {
+        return $this->qgis->getSelectionColor();
+    }
+
     public function getWMSInformation()
     {
         $WMSInformation = $this->qgis->getWMSInformation();
@@ -1850,6 +1855,8 @@ class Project
 
         $wmsMaxHeight = $this->qgis->getWMSMaxHeight();
         $configJson->options->wmsMaxHeight = $wmsMaxHeight ?: $services->wmsMaxHeight;
+
+        $configJson->options->selectionColor = $this->qgis->getSelectionColor();
 
         // Update config with layer relations
         $relations = $this->qgis->getRelations();

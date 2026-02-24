@@ -523,9 +523,14 @@ class serviceCtrl extends jController
                         }
                     }
                 }
-                // Add SELECTION for WMS
-                if ($request != 'getfeature' && count($selections) > 0) {
+                // Add SELECTION for print only — GetMap uses client-side highlight layer
+                // so QGIS Server does not render its default yellow into map tiles.
+                if ($request == 'getprint' && count($selections) > 0) {
                     $this->params['SELECTION'] = implode(';', $selections);
+                }
+                // Strip any raw SELECTION param that may have been sent for GetMap
+                if ($request == 'getmap') {
+                    unset($this->params['SELECTION']);
                 }
                 // Add FEATUREID for WFS GetFeature
                 if ($request == 'getfeature' && count($feature_ids) > 0) {

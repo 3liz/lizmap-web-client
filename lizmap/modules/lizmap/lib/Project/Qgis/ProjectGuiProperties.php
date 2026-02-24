@@ -80,6 +80,24 @@ class ProjectGuiProperties extends BaseQgisXmlObject
     }
 
     /**
+     * Get the selection color as RGBA string.
+     *
+     * @return string The selection color as rgba() CSS string
+     */
+    public function getSelectionColor(): string
+    {
+        if ($this->SelectionColorAlphaPart === null) {
+            return 'rgba(255, 255, 0, 0.8)';
+        }
+        $alphaStr = rtrim(number_format($this->SelectionColorAlphaPart / 255, 4, '.', ''), '0');
+        if (substr($alphaStr, -1) === '.') {
+            $alphaStr .= '0';
+        }
+
+        return 'rgba('.$this->SelectionColorRedPart.', '.$this->SelectionColorGreenPart.', '.$this->SelectionColorBluePart.', '.$alphaStr.')';
+    }
+
+    /**
      * Parse from an XMLReader instance at a child of an element.
      *
      * @param \XMLReader $oXmlReader An XMLReader instance at a child of an element

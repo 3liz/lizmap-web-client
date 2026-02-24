@@ -131,6 +131,11 @@ class QgisProject
     protected $canvasColor = '';
 
     /**
+     * @var string
+     */
+    protected $selectionColor = '';
+
+    /**
      * @var array<string, string> authid => proj4
      */
     protected $allProj4 = array();
@@ -183,6 +188,7 @@ class QgisProject
     protected static $cachedProperties = array(
         'WMSInformation',
         'canvasColor',
+        'selectionColor',
         'allProj4',
         'relations',
         'relationsFields',
@@ -391,6 +397,11 @@ class QgisProject
     public function getCanvasColor()
     {
         return $this->canvasColor;
+    }
+
+    public function getSelectionColor(): string
+    {
+        return $this->selectionColor;
     }
 
     /**
@@ -1190,6 +1201,7 @@ class QgisProject
 
         $this->WMSInformation = $project->getWmsInformationsAsKeyArray();
         $this->canvasColor = $project->properties->Gui->getCanvasColor();
+        $this->selectionColor = $project->properties->Gui->getSelectionColor();
         $this->allProj4 = $project->getProjAsKeyArray();
         $this->themes = $project->getVisibilityPresetsAsKeyArray();
         $this->customProjectVariables = $project->properties->Variables !== null ? $project->properties->Variables->getVariablesAsKeyArray() : array();
