@@ -1501,7 +1501,7 @@ var lizAttributeTable = function() {
                 // Datatable configuration
                 if ( !DataTable.isDataTable( aTable ) ) {
                     const datatablesUrl = globalThis['lizUrls'].wms.replace('service', 'datatables');
-                    const params = globalThis['lizUrls'].params;
+                    const params = {...globalThis['lizUrls'].params};
                     params['layerId'] = lConfig.id;
 
                     DataTable.defaults.column.orderSequence = ['asc', 'desc'];
