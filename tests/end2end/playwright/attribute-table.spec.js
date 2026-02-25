@@ -170,6 +170,8 @@ test.describe('Attribute table @readonly', () => {
         // Select feature
         // click on select Button
         let getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
+        // WFS GetFeature is fired after selection token is obtained to populate the OL highlight layer
+        let getFeatureHighlightPromise = project.waitForGetFeatureRequest();
         await tr2.locator('lizmap-feature-toolbar .feature-select').click();
         let getSelectionTokenRequest = await getSelectionTokenRequestPromise;
         // Once the GetSelectionToken is received, the map is refreshed
@@ -199,6 +201,12 @@ test.describe('Attribute table @readonly', () => {
         // Check that the select button display that the feature is selected
         await expect(tr2.locator('lizmap-feature-toolbar .feature-select')).toContainClass('active'); // old bootstrap: btn-primary
         await expect(tr2).toContainClass('selected');
+
+        // Wait for WFS GetFeature (highlight layer population) to complete
+        const getFeatureHighlight = await getFeatureHighlightPromise;
+        await getFeatureHighlight.response();
+        // Wait for OL rendering
+        await page.waitForTimeout(100);
 
         // Check rendering
         buffer = await page.screenshot({clip:clip});

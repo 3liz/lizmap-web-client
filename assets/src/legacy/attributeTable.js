@@ -2249,6 +2249,11 @@ var lizAttributeTable = function() {
                 // Empty array
                 config.layers[featureType]['selectedFeatures'] = [];
 
+                // Clear the OL highlight layer
+                if (lizMap.mainLizmap?.map?.clearHighlightFeatures) {
+                    lizMap.mainLizmap.map.clearHighlightFeatures();
+                }
+
                 lizMap.events.triggerEvent("layerSelectionChanged",
                     {
                         'featureType': featureType,
@@ -3000,6 +3005,27 @@ var lizAttributeTable = function() {
                             selectedFeatures: lConfig.selectedFeatures,
                             token: result.token
                         };
+                        // Populate the OL highlight layer with selected feature geometries.
+                        if (lizMap.mainLizmap?.map?.setHighlightFeatures) {
+                            const typeName = lConfig['typename'] || lConfig['shortname'] || featureType;
+                            fetch(globalThis['lizUrls'].wms, {
+                                method: 'POST',
+                                body: new URLSearchParams({
+                                    repository: globalThis['lizUrls'].params.repository,
+                                    project: globalThis['lizUrls'].params.project,
+                                    SERVICE: 'WFS',
+                                    REQUEST: 'GetFeature',
+                                    VERSION: '1.0.0',
+                                    OUTPUTFORMAT: 'GeoJSON',
+                                    TYPENAME: typeName,
+                                    SELECTIONTOKEN: result.token
+                                })
+                            }).then(r => r.json()).then(geojson => {
+                                lizMap.mainLizmap.map.setHighlightFeatures(
+                                    geojson, 'geojson', lConfig.crs || 'EPSG:4326'
+                                );
+                            });
+                        }
                     });
                 } else {
 

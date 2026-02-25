@@ -892,7 +892,6 @@ export default class map extends olMap {
                 wrapX: false
             }),
             style: {
-                'fill-color': styleColor,
                 'circle-fill-color': styleColor,
                 'circle-stroke-color': styleColor,
                 'circle-stroke-width': styleWidth,
@@ -1024,6 +1023,7 @@ export default class map extends olMap {
     clearHighlightFeatures() {
         this._highlightLayer.getSource().clear();
     }
+
 
     /**
      * Synchronize new OL view with OL2 one
