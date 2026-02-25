@@ -426,7 +426,8 @@ export default class SelectionTool {
                         {
                             'featureType': featureType,
                             'featureIds': this._lizmap3.config.layers[featureType]['selectedFeatures'],
-                            'updateDrawing': true
+                            'updateDrawing': true,
+                            'olHighlightUpdated': true
                         }
                     );
                 });
@@ -537,7 +538,8 @@ export default class SelectionTool {
                 {
                     'featureType': targetFeatureType,
                     'featureIds': lConfig['selectedFeatures'],
-                    'updateDrawing': true
+                    'updateDrawing': true,
+                    'olHighlightUpdated': true
                 }
             );
         });

@@ -748,7 +748,7 @@ def my_form_open(dialog, layer, feature):
       <CanvasColorBluePart type="int">255</CanvasColorBluePart>
       <CanvasColorGreenPart type="int">255</CanvasColorGreenPart>
       <CanvasColorRedPart type="int">255</CanvasColorRedPart>
-      <SelectionColorAlphaPart type="int">255</SelectionColorAlphaPart>
+      <SelectionColorAlphaPart type="int">204</SelectionColorAlphaPart>
       <SelectionColorBluePart type="int">0</SelectionColorBluePart>
       <SelectionColorGreenPart type="int">255</SelectionColorGreenPart>
       <SelectionColorRedPart type="int">255</SelectionColorRedPart>

@@ -2971,7 +2971,7 @@ var lizAttributeTable = function() {
              *
              * @param featureType
              */
-            function updateMapLayerSelection(featureType) {
+            function updateMapLayerSelection(featureType, olHighlightUpdated) {
                 // Get layer config
                 var lConfig = config.layers[featureType];
                 if (!lConfig){
@@ -3005,9 +3005,12 @@ var lizAttributeTable = function() {
                             selectedFeatures: lConfig.selectedFeatures,
                             token: result.token
                         };
-                        // Populate the OL highlight layer with selected feature geometries.
-                        if (lizMap.mainLizmap?.map?.setHighlightFeatures) {
+                        // Populate the OL highlight layer only when SelectionTool has NOT already
+                        // done so (it sets olHighlightUpdated:true on the layerSelectionChanged event).
+                        if (!olHighlightUpdated && lizMap.mainLizmap?.map?.setHighlightFeatures) {
                             const typeName = lConfig['typename'] || lConfig['shortname'] || featureType;
+                            const featureIds = lConfig.selectedFeatures
+                                .map(id => typeName + '.' + id).join(',');
                             fetch(globalThis['lizUrls'].wms, {
                                 method: 'POST',
                                 body: new URLSearchParams({
@@ -3018,12 +3021,14 @@ var lizAttributeTable = function() {
                                     VERSION: '1.0.0',
                                     OUTPUTFORMAT: 'GeoJSON',
                                     TYPENAME: typeName,
-                                    SELECTIONTOKEN: result.token
+                                    FEATUREID: featureIds
                                 })
                             }).then(r => r.json()).then(geojson => {
                                 lizMap.mainLizmap.map.setHighlightFeatures(
                                     geojson, 'geojson', lConfig.crs || 'EPSG:4326'
                                 );
+                            }).catch(() => {
+                                // If WFS fails, leave highlight layer unchanged
                             });
                         }
                     });
@@ -3293,7 +3298,7 @@ var lizAttributeTable = function() {
 
                     // Update openlayers layer drawing
                     if( e.updateDrawing ){
-                        updateMapLayerSelection( e.featureType );
+                        updateMapLayerSelection( e.featureType, e.olHighlightUpdated );
                     }
                 },
 
