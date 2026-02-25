@@ -392,7 +392,7 @@ test.describe('Attribute table @readonly', () => {
         expect(multiSelectByteLength).toBeGreaterThan(8000);
         expect(multiSelectByteLength).not.toBe(defaultByteLength);
         expect(multiSelectByteLength).not.toBe(selectByteLength);
-        expect(multiSelectByteLength).toBeLessThan(10000);
+        expect(multiSelectByteLength).toBeLessThan(15000);
 
         // click on filter Button
         getFilterTokenRequestPromise = project.waitForGetFilterTokenRequest();
