@@ -3009,8 +3009,6 @@ var lizAttributeTable = function() {
                         // done so (it sets olHighlightUpdated:true on the layerSelectionChanged event).
                         if (!olHighlightUpdated && lizMap.mainLizmap?.map?.setHighlightFeatures) {
                             const typeName = lConfig['typename'] || lConfig['shortname'] || featureType;
-                            const featureIds = lConfig.selectedFeatures
-                                .map(id => typeName + '.' + id).join(',');
                             fetch(globalThis['lizUrls'].wms, {
                                 method: 'POST',
                                 body: new URLSearchParams({
@@ -3021,7 +3019,7 @@ var lizAttributeTable = function() {
                                     VERSION: '1.0.0',
                                     OUTPUTFORMAT: 'GeoJSON',
                                     TYPENAME: typeName,
-                                    FEATUREID: featureIds
+                                    EXP_FILTER: '$id IN ( ' + sqlEscapeFilter(lConfig.selectedFeatures) + ' ) '
                                 })
                             }).then(r => r.json()).then(geojson => {
                                 lizMap.mainLizmap.map.setHighlightFeatures(
