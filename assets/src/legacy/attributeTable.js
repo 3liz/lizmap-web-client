@@ -2208,7 +2208,7 @@ var lizAttributeTable = function() {
                 // Add filtered featured
                 $('.attribute-table-table[id]').each(function(){
                     var tableId = $(this).attr('id');
-                    var tableLayerName = $(this).parents('div.dataTables_wrapper:first').prev('input.attribute-table-hidden-layer').val()
+                    var tableLayerName = $(this).parents('div.dt-container:first').prev('input.attribute-table-hidden-layer').val();
                     // Get parent table for the feature type
                     if ( tableLayerName
                         && DataTable.isDataTable( $(this) )
@@ -2216,7 +2216,7 @@ var lizAttributeTable = function() {
                     ){
 
                         var sIds = [];
-                        var rTable = $(this).DataTable();
+                        let rTable = new DataTable.Api(this);
                         var filteredrowids = rTable.rows( {"filter":"applied"} ).ids();
                         for ( var i = 0; i < filteredrowids.length; i++ ) {
                             sIds.push( filteredrowids[i] );
