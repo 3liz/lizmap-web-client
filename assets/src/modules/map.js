@@ -884,26 +884,26 @@ export default class map extends olMap {
         );
 
         // Create the highlight layer (popup, locate, search, startup)
-        // Stroke-only: shows feature location without obscuring the map
-        const styleColor = initialConfig.options.selectionColor;
+        // Always yellow stroke-only — fixed color independent of project settings
+        const highlightColor = 'rgba(255,255,0,0.8)';
         const styleWidth = 3;
         this._highlightLayer = new VectorLayer({
             source: new VectorSource({
                 wrapX: false
             }),
             style: {
-                'circle-fill-color': styleColor,
-                'circle-stroke-color': styleColor,
+                'circle-stroke-color': highlightColor,
                 'circle-stroke-width': styleWidth,
                 'circle-radius': 6,
-                'stroke-color': styleColor,
+                'stroke-color': highlightColor,
                 'stroke-width': styleWidth,
             }
         });
         this.addToolLayer(this._highlightLayer);
 
         // Create the selection layer (SelectionTool, attribute table)
-        // Fill + stroke: clearly marks features chosen by the user for operations
+        // Fill + stroke using the project's configured selection color
+        const styleColor = initialConfig.options.selectionColor;
         this._selectionLayer = new VectorLayer({
             source: new VectorSource({
                 wrapX: false
