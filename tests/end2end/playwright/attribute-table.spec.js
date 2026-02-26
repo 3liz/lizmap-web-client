@@ -350,6 +350,8 @@ test.describe('Attribute table @readonly', () => {
 
         // click to select 6
         getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
+        // WFS GetFeature fired to update OL highlight layer for 3 selected features
+        let getFeatureHighlightMultiPromise = project.waitForGetFeatureRequest();
         await tr6.locator('lizmap-feature-toolbar .feature-select').click();
         getSelectionTokenRequest = await getSelectionTokenRequestPromise;
         // Once the GetSelectionToken is received, the map is refreshed
@@ -382,6 +384,12 @@ test.describe('Attribute table @readonly', () => {
         await expect(tr6.locator('lizmap-feature-toolbar .feature-select')).toContainClass('active'); // old bootstrap: btn-primary
         await expect(tr6).toContainClass('selected');
 
+        // Wait for WFS GetFeature (highlight layer population) to complete
+        const getFeatureHighlightMulti = await getFeatureHighlightMultiPromise;
+        await getFeatureHighlightMulti.response();
+        // Wait for OL rendering
+        await page.waitForTimeout(100);
+
         // Check rendering
         buffer = await page.screenshot({clip:clip});
         const multiSelectHash = await digestBuffer(buffer);
@@ -389,7 +397,9 @@ test.describe('Attribute table @readonly', () => {
         expect(multiSelectHash).not.toEqual(selectHash);
         expect(multiSelectHash).not.toEqual(filterHash);
         const multiSelectByteLength = buffer.byteLength;
-        expect(multiSelectByteLength).toBeGreaterThan(8000);
+        // OL highlight covers polygon interiors with semi-opaque yellow, reducing PNG entropy
+        // compared to the WMS-only default; the threshold checks the image is not blank
+        expect(multiSelectByteLength).toBeGreaterThan(5000);
         expect(multiSelectByteLength).not.toBe(defaultByteLength);
         expect(multiSelectByteLength).not.toBe(selectByteLength);
         expect(multiSelectByteLength).toBeLessThan(15000);
