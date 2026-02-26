@@ -3031,6 +3031,13 @@ var lizAttributeTable = function() {
                     lConfig.request_params['selection'] = null;
                     lConfig.request_params['selectiontoken'] = null;
 
+                    // Clear the OL highlight layer only for explicit user deselection
+                    // (not when SelectionTool reports no features found in a layer,
+                    // which sets olHighlightUpdated:true — it manages its own clearing)
+                    if (!olHighlightUpdated) {
+                        lizMap.mainLizmap?.map?.clearHighlightFeatures?.();
+                    }
+
                     // Update layer state
                     lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerByName(lConfig.name).selectedFeatures = null;
                 }
