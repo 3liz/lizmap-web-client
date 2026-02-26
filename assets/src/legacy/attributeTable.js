@@ -2249,9 +2249,9 @@ var lizAttributeTable = function() {
                 // Empty array
                 config.layers[featureType]['selectedFeatures'] = [];
 
-                // Clear the OL highlight layer
-                if (lizMap.mainLizmap?.map?.clearHighlightFeatures) {
-                    lizMap.mainLizmap.map.clearHighlightFeatures();
+                // Clear the OL selection layer
+                if (lizMap.mainLizmap?.map?.clearSelectionFeatures) {
+                    lizMap.mainLizmap.map.clearSelectionFeatures();
                 }
 
                 lizMap.events.triggerEvent("layerSelectionChanged",
@@ -3007,10 +3007,10 @@ var lizAttributeTable = function() {
                         };
                     });
 
-                    // Populate the OL highlight layer independently of GETSELECTIONTOKEN.
+                    // Populate the OL selection layer independently of GETSELECTIONTOKEN.
                     // Only when SelectionTool has NOT already done so
                     // (it sets olHighlightUpdated:true on the layerSelectionChanged event).
-                    if (!olHighlightUpdated && lizMap.mainLizmap?.map?.setHighlightFeatures) {
+                    if (!olHighlightUpdated && lizMap.mainLizmap?.map?.setSelectionFeatures) {
                         const typeName = lConfig['typename'] || lConfig['shortname'] || featureType;
                         const layerCrs = lConfig.crs || 'EPSG:4326';
                         lizMap.mainLizmap.wfs.getFeature({
@@ -3018,7 +3018,7 @@ var lizAttributeTable = function() {
                             EXP_FILTER: '$id IN ( ' + sqlEscapeFilter(lConfig.selectedFeatures) + ' ) ',
                             SRSNAME: layerCrs
                         }).then(geojson => {
-                            lizMap.mainLizmap.map.setHighlightFeatures(
+                            lizMap.mainLizmap.map.setSelectionFeatures(
                                 geojson, 'geojson', layerCrs
                             );
                         }).catch(() => {});
@@ -3031,11 +3031,11 @@ var lizAttributeTable = function() {
                     lConfig.request_params['selection'] = null;
                     lConfig.request_params['selectiontoken'] = null;
 
-                    // Clear the OL highlight layer only for explicit user deselection
+                    // Clear the OL selection layer only for explicit user deselection
                     // (not when SelectionTool reports no features found in a layer,
                     // which sets olHighlightUpdated:true — it manages its own clearing)
                     if (!olHighlightUpdated) {
-                        lizMap.mainLizmap?.map?.clearHighlightFeatures?.();
+                        lizMap.mainLizmap?.map?.clearSelectionFeatures?.();
                     }
 
                     // Update layer state
