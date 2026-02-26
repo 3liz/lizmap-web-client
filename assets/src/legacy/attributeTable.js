@@ -2987,7 +2987,7 @@ var lizAttributeTable = function() {
                     }
                     lConfig.request_params['selection'] = wmsName + ':' + lConfig.selectedFeatures.join();
 
-                    // Get selection token
+                    // Get selection token (for WMS layer styling)
                     fetch(globalThis['lizUrls'].service, {
                         method: "POST",
                         body: new URLSearchParams({
@@ -3005,31 +3005,24 @@ var lizAttributeTable = function() {
                             selectedFeatures: lConfig.selectedFeatures,
                             token: result.token
                         };
-                        // Populate the OL highlight layer only when SelectionTool has NOT already
-                        // done so (it sets olHighlightUpdated:true on the layerSelectionChanged event).
-                        if (!olHighlightUpdated && lizMap.mainLizmap?.map?.setHighlightFeatures) {
-                            const typeName = lConfig['typename'] || lConfig['shortname'] || featureType;
-                            fetch(globalThis['lizUrls'].wms, {
-                                method: 'POST',
-                                body: new URLSearchParams({
-                                    repository: globalThis['lizUrls'].params.repository,
-                                    project: globalThis['lizUrls'].params.project,
-                                    SERVICE: 'WFS',
-                                    REQUEST: 'GetFeature',
-                                    VERSION: '1.0.0',
-                                    OUTPUTFORMAT: 'GeoJSON',
-                                    TYPENAME: typeName,
-                                    EXP_FILTER: '$id IN ( ' + sqlEscapeFilter(lConfig.selectedFeatures) + ' ) '
-                                })
-                            }).then(r => r.json()).then(geojson => {
-                                lizMap.mainLizmap.map.setHighlightFeatures(
-                                    geojson, 'geojson', lConfig.crs || 'EPSG:4326'
-                                );
-                            }).catch(() => {
-                                // If WFS fails, leave highlight layer unchanged
-                            });
-                        }
                     });
+
+                    // Populate the OL highlight layer independently of GETSELECTIONTOKEN.
+                    // Only when SelectionTool has NOT already done so
+                    // (it sets olHighlightUpdated:true on the layerSelectionChanged event).
+                    if (!olHighlightUpdated && lizMap.mainLizmap?.map?.setHighlightFeatures) {
+                        const typeName = lConfig['typename'] || lConfig['shortname'] || featureType;
+                        const layerCrs = lConfig.crs || 'EPSG:4326';
+                        lizMap.mainLizmap.wfs.getFeature({
+                            TYPENAME: typeName,
+                            EXP_FILTER: '$id IN ( ' + sqlEscapeFilter(lConfig.selectedFeatures) + ' ) ',
+                            SRSNAME: layerCrs
+                        }).then(geojson => {
+                            lizMap.mainLizmap.map.setHighlightFeatures(
+                                geojson, 'geojson', layerCrs
+                            );
+                        }).catch(() => {});
+                    }
                 } else {
 
                     if (!('request_params' in lConfig)) {
@@ -3271,27 +3264,30 @@ var lizAttributeTable = function() {
 
                 layerSelectionChanged: function(e) {
 
-                    // Update attribute table tools
-                    updateAttributeTableTools( e.featureType );
+                    // Update attribute table tools and table rows only if
+                    // this layer has an attribute table configured
+                    if (config.attributeLayers[e.featureType]) {
+                        updateAttributeTableTools( e.featureType );
 
-                    // Update selected features in the table
-                    const layerId = config.attributeLayers[e.featureType].layerId;
-                    const selectedFeatures = config.layers[e.featureType].selectedFeatures;
-                    const table = new DataTable('table[data-layerid=' + layerId + ']');
+                        // Update selected features in the table
+                        const layerId = config.attributeLayers[e.featureType].layerId;
+                        const selectedFeatures = config.layers[e.featureType].selectedFeatures;
+                        const table = new DataTable('table[data-layerid=' + layerId + ']');
 
-                    if (document.querySelector('.btn-moveselectedtotop-attributeTable.active[data-layerid="' + layerId + '"]')) {
-                        table.draw();
-                    } else {
-                        table.rows().every(function (rowIdx) {
-                            var data = this.data();
-                            if ((selectedFeatures.includes(data.DT_RowId.toString()))) {
-                                this.row(rowIdx).node().classList.add('selected');
-                                data.lizSelected = 'a';
-                            } else {
-                                this.row(rowIdx).node().classList.remove('selected');
-                                data.lizSelected = 'z';
-                            }
-                        });
+                        if (document.querySelector('.btn-moveselectedtotop-attributeTable.active[data-layerid="' + layerId + '"]')) {
+                            table.draw();
+                        } else {
+                            table.rows().every(function (rowIdx) {
+                                var data = this.data();
+                                if ((selectedFeatures.includes(data.DT_RowId.toString()))) {
+                                    this.row(rowIdx).node().classList.add('selected');
+                                    data.lizSelected = 'a';
+                                } else {
+                                    this.row(rowIdx).node().classList.remove('selected');
+                                    data.lizSelected = 'z';
+                                }
+                            });
+                        }
                     }
 
                     // Update openlayers layer drawing
