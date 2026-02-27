@@ -1273,10 +1273,17 @@ class QgisForm implements QgisFormControlsInterface
 
         $filename = $form->getData($ref);
         $cnx = $this->layer->getDatasourceConnection();
-        $newFilename = $uploadCtrl->getUniqueFileName($targetFullPath);
 
-        // save new file, delete old file if needed etc.
-        $saveFile = $uploadCtrl->saveFile($targetFullPath, $newFilename);
+        $renamedFilename = $this->computeDefaultFilename($uploadCtrl, $ref, $form->getAllData());
+        if ($renamedFilename !== null) {
+            // Rename to default value stem; overwrite existing file with same name
+            $newFilename = $renamedFilename;
+            $saveFile = $uploadCtrl->saveFile($targetFullPath, $newFilename);
+        } else {
+            $newFilename = $uploadCtrl->getUniqueFileName($targetFullPath);
+            // save new file, delete old file if needed etc.
+            $saveFile = $uploadCtrl->saveFile($targetFullPath, $newFilename);
+        }
 
         // We must check if the saveFile action has worked
         if (
@@ -1302,6 +1309,91 @@ class QgisForm implements QgisFormControlsInterface
         }
 
         return 'NULL';
+    }
+
+    /**
+     * If the QGIS field has a default value expression set and a new file is being
+     * uploaded, compute the target filename using the evaluated default value as the
+     * stem and the uploaded file's extension.
+     *
+     * The expression is evaluated at save time with full form data context,
+     * mirroring the approach used for rootPathExpression in getStoragePathFromExpression().
+     *
+     * @param \jFormsControlUpload2 $uploadCtrl
+     * @param string                $ref        Field name / form control reference
+     * @param array                 $formData   Current form field values (for expression context)
+     *
+     * @return null|string Renamed filename, or null if no rename needed
+     */
+    protected function computeDefaultFilename($uploadCtrl, $ref, $formData)
+    {
+        $uploadedFilename = $uploadCtrl->getNewFile();
+        if ($uploadedFilename === '') {
+            return null; // no new file uploaded
+        }
+
+        $expression = $this->layer->getDefaultValue($ref);
+        if ($expression === null || trim((string) $expression) === '') {
+            return null; // no default value expression configured
+        }
+        $expression = trim((string) $expression);
+
+        // Resolve the expression to a value.
+        // Simple quoted strings are handled directly to avoid a QGIS Server round-trip.
+        if (is_numeric($expression)) {
+            $defaultValue = $expression;
+        } elseif (preg_match("/^'.*'$/", $expression)) {
+            $inner = trim($expression, "'");
+            if (!preg_match("/(?<!\\\\)'/", $inner)) {
+                // Plain quoted string: strip surrounding quotes
+                $defaultValue = str_replace("\\'", "'", $inner);
+            } else {
+                // Quoted string with embedded quotes — evaluate via QGIS Server
+                $defaultValue = $this->evaluateDefaultFilenameExpression($ref, $expression, $formData);
+            }
+        } else {
+            // Full QGIS expression — evaluate at save time with form data context
+            $defaultValue = $this->evaluateDefaultFilenameExpression($ref, $expression, $formData);
+        }
+
+        if ($defaultValue === null || trim((string) $defaultValue) === '') {
+            return null;
+        }
+
+        // Use only the filename stem (strips any directory prefix and extension
+        // the expression may have returned, e.g. from @project_path || '/dir/name')
+        $stem = pathinfo(trim((string) $defaultValue), PATHINFO_FILENAME);
+        if ($stem === '') {
+            return null;
+        }
+        $ext = pathinfo($uploadedFilename, PATHINFO_EXTENSION);
+
+        return $ext !== '' ? $stem.'.'.$ext : $stem;
+    }
+
+    /**
+     * Evaluate a QGIS expression for the default filename at save time,
+     * passing the current form data as feature properties for context.
+     *
+     * @param string $ref        Field name
+     * @param string $expression Raw QGIS expression
+     * @param array  $formData   Current form values
+     *
+     * @return null|mixed Evaluated result, or null on failure
+     */
+    protected function evaluateDefaultFilenameExpression($ref, $expression, $formData)
+    {
+        $formFeature = array(
+            'type' => 'Feature',
+            'geometry' => null,
+            'properties' => $formData ?: array(),
+        );
+        $results = $this->evaluateExpression(array($ref => $expression), $formFeature);
+        if ($results && property_exists($results, $ref)) {
+            return $results->{$ref};
+        }
+
+        return null;
     }
 
     /**
@@ -1331,6 +1423,10 @@ class QgisForm implements QgisFormControlsInterface
         }
         if ($action == 'new' && trim($filename) != '') {
             // upload a new file
+            $renamedFilename = $this->computeDefaultFilename($uploadCtrl, $ref, $form->getAllData());
+            if ($renamedFilename !== null) {
+                $filename = $renamedFilename;
+            }
             $newStorageUrl = $this->evaluateWebDavUrlExpression($ref, $storageUrl, $filename);
             if (!$newStorageUrl) {
                 throw new \Exception('Invalid file path');
