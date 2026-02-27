@@ -1918,7 +1918,7 @@ def my_form_open(dialog, layer, feature):
       <defaults>
         <default expression="" field="id" applyOnUpdate="0"/>
         <default expression="" field="generic_file" applyOnUpdate="0"/>
-        <default expression="" field="text_file" applyOnUpdate="0"/>
+        <default expression="'test_default_doc'" field="text_file" applyOnUpdate="0"/>
         <default expression="" field="image_file" applyOnUpdate="0"/>
         <default expression="" field="text_file_mandatory" applyOnUpdate="0"/>
         <default expression="" field="image_file_mandatory" applyOnUpdate="0"/>
