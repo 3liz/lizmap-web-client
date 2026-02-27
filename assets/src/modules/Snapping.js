@@ -161,6 +161,9 @@ export default class Snapping {
                         this._setSnapLayersVisibility,
                         ['layer.visibility.changed','group.visibility.changed']
                     );
+
+                    // Auto-activate snapping when snap layers are configured
+                    this.active = true;
                 }
             },
             'edition.formDisplayed'
