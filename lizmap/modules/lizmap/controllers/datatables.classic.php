@@ -11,6 +11,8 @@
  * @license Mozilla Public License : http://www.mozilla.org/MPL/
  */
 
+use GuzzleHttp\Psr7\StreamWrapper as Psr7StreamWrapper;
+use JsonMachine\Items as JsonMachineItems;
 use Lizmap\DataTables\DataTables;
 use Lizmap\Project\UnknownLizmapProjectException;
 use Lizmap\Request\Proxy;
@@ -240,6 +242,186 @@ class datatablesCtrl extends jController
         );
 
         $rep->data = $returnedData;
+
+        return $rep;
+    }
+
+    /**
+     * Gets features via WFS and calculates the total extent.
+     * It basically use the same logic of the main endpoint but ignores
+     * pagination to get all filtered features.
+     *
+     * @return jResponseJson
+     */
+    public function filteredFeaturesExtent()
+    {
+
+        /** @var jResponseJson $rep */
+        $rep = $this->getResponse('json');
+
+        // Lizmap parameters
+        $repository = $this->param('repository');
+        $project = $this->param('project');
+        $layerId = $this->param('layerId');
+
+        if (!$repository || !$project || !$layerId) {
+            return $this->setErrorResponse($rep, 400, 'The parameters repository, project and layerId are mandatory.');
+        }
+        $DTSearchBuilder = '';
+        if ($this->param('searchBuilder')) {
+            $DTSearchBuilder = $this->param('searchBuilder');
+        }
+
+        $filteredFeatureIDs = array();
+        if ($this->param('filteredfeatureids')) {
+            $filteredFeatureIDs = explode(',', $this->param('filteredfeatureids'));
+        }
+        $expFilter = $this->param('exp_filter');
+
+        // Filter by bounding box
+        $bbox = array();
+        $srsName = $this->param('srsname');
+        if ($this->param('bbox') && $srsName) {
+            $bbox = explode(',', $this->param('bbox'));
+        }
+
+        // Check if when the bbox is defined, it contains 4 number
+        if (count($bbox) > 0 && count($bbox) != 4) {
+            return $this->setErrorResponse($rep, 400, 'The bbox parameter must contain 4 numbers separated by a comma.');
+        }
+
+        try {
+            $lproj = lizmap::getProject($repository.'~'.$project);
+            if (!$lproj) {
+                return $this->setErrorResponse($rep, 404, 'The lizmap project '.$repository.'~'.$project.' does not exist.');
+            }
+        } catch (UnknownLizmapProjectException $e) {
+            return $this->setErrorResponse($rep, 404, 'The lizmap project '.$repository.'~'.$project.' does not exist.');
+        }
+
+        /** @var null|qgisVectorLayer $layer */
+        $layer = $lproj->getLayer($layerId);
+        if (!$layer) {
+            return $this->setErrorResponse($rep, 404, 'The layerId '.$layerId.' does not exist.');
+        }
+
+        // filter project layers to get geometry type
+        $projectLayers = $lproj->getLayers();
+        $layerCfg = $projectLayers->{$layer->getName()};
+        if (!property_exists($layerCfg, 'geometryType')
+            || $layerCfg->geometryType == 'none'
+            || $layerCfg->geometryType == 'unknown'
+        ) {
+            return $this->setErrorResponse($rep, 404, 'Invalid geometry');
+        }
+
+        $pointGeom = $layerCfg->geometryType == 'point';
+
+        $typeName = $layer->getWfsTypeName();
+
+        $wfsParamsData = WFSRequest::buildGetFeatureParameters($typeName);
+
+        if (count($filteredFeatureIDs) > 0) {
+            $filteredFeatureIDSFilter = '$id IN ('.implode(' , ', $filteredFeatureIDs).')';
+            // concat current exp_filter with filteredFeaturesIds filter
+            $expFilter = !$expFilter ? $filteredFeatureIDSFilter : "( {$expFilter} ) AND ( {$filteredFeatureIDSFilter} )";
+        }
+
+        // Handle search made by searchBuilder
+        if ($DTSearchBuilder) {
+            $searchBuilderFilter = DataTables::convertSearchToExpression($DTSearchBuilder);
+            // concat current exp_filter with searchBuilderFilter filter
+            $expFilter = !$expFilter ? $searchBuilderFilter : "( {$expFilter} ) AND ( {$searchBuilderFilter} )";
+        }
+
+        if ($expFilter) {
+            $wfsParamsData['EXP_FILTER'] = $expFilter;
+        }
+
+        // Handle filter by extent
+        if (count($bbox) == 4) {
+            // Add parameters to get features in the bounding box (paginated)
+            $bboxString = implode(',', $bbox);
+            $wfsParamsData['BBOX'] = $bboxString;
+            $wfsParamsData['SRSNAME'] = $srsName;
+        }
+
+        // if the geometry is not of type point, request the geometry extent,
+        // else get default geometry
+        if (!$pointGeom) {
+            $wfsParamsData['GEOMETRYNAME'] = 'extent';
+        }
+
+        $wfsrequest = new WFSRequest($lproj, $wfsParamsData, lizmap::getServices());
+        $wfsresponse = $wfsrequest->process();
+
+        if ($wfsresponse->getCode() >= 400) {
+            return $this->setErrorResponse($rep, 400, 'The request to get paginated features failed, code: '.$wfsresponse->getCode());
+        }
+        if (!str_contains(strtolower($wfsresponse->getMime()), 'application/vnd.geo+json')) {
+            return $this->setErrorResponse($rep, 400, 'The request to get paginated features failed, mime-type: '.$wfsresponse->getMime());
+        }
+
+        // get WFS resposne as a stream, so we can parse it step by step
+        $featureStream = Psr7StreamWrapper::getResource($wfsresponse->getBodyAsStream());
+        $features = JsonMachineItems::fromStream($featureStream, array('pointer' => '/features'));
+
+        $bboxXMin = null;
+        $bboxXMax = null;
+        $bboxYMin = null;
+        $bboxYMax = null;
+        $finalExtent = array();
+
+        foreach ($features as $feat) {
+            if (!$pointGeom && property_exists($feat, 'bbox')) {
+                $bbox = $feat->bbox;
+                if (
+                    is_array($bbox)
+                    && count($bbox) == 4
+                    && $bbox[0] !== null
+                    && $bbox[1] !== null
+                    && $bbox[2] !== null
+                    && $bbox[3] !== null
+                ) {
+                    $bboxXMin = min((float) $bbox[0], $bboxXMin === null ? (float) $bbox[0] : $bboxXMin);
+                    $bboxYMin = min((float) $bbox[1], $bboxYMin === null ? (float) $bbox[1] : $bboxYMin);
+                    $bboxXMax = max((float) $bbox[2], $bboxXMax === null ? (float) $bbox[2] : $bboxXMax);
+                    $bboxYMax = max((float) $bbox[3], $bboxYMax === null ? (float) $bbox[3] : $bboxYMax);
+                }
+            } elseif ($pointGeom
+                && property_exists($feat, 'geometry')
+                && property_exists($feat->geometry, 'coordinates')
+            ) {
+                $coords = $feat->geometry->coordinates;
+                if (
+                    is_array($coords)
+                    && count($coords) == 2
+                    && $coords[0] !== null
+                    && $coords[1] !== null
+                ) {
+                    $bboxXMin = min((float) $coords[0], $bboxXMin === null ? (float) $coords[0] : $bboxXMin);
+                    $bboxYMin = min((float) $coords[1], $bboxYMin === null ? (float) $coords[1] : $bboxYMin);
+                    $bboxXMax = max((float) $coords[0], $bboxXMax === null ? (float) $coords[0] : $bboxXMax);
+                    $bboxYMax = max((float) $coords[1], $bboxYMax === null ? (float) $coords[1] : $bboxYMax);
+                }
+            }
+        }
+
+        if (
+            $bboxXMin !== null
+            && $bboxYMin !== null
+            && $bboxXMax !== null
+            && $bboxYMax !== null
+        ) {
+            $finalExtent = array(
+                $bboxXMin,
+                $bboxYMin,
+                $bboxXMax,
+                $bboxYMax,
+            );
+        }
+
+        $rep->data = $finalExtent;
 
         return $rep;
     }
