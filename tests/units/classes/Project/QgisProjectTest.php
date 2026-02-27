@@ -100,7 +100,7 @@ class QgisProjectTest extends TestCase
 
     public function testCacheConstruct(): void
     {
-        $cachedProperties = array('WMSInformation', 'canvasColor', 'allProj4',
+        $cachedProperties = array('WMSInformation', 'canvasColor', 'selectionColor', 'allProj4',
             'relations', 'themes', 'useLayerIDs', 'layers', 'data',
             'qgisProjectVersion', 'customProjectVariables', 'relationsFields',
             'wfsLayerIds');

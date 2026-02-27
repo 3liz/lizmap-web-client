@@ -2450,6 +2450,11 @@ var lizAttributeTable = function() {
                 // Empty array
                 config.layers[featureType]['selectedFeatures'] = [];
 
+                // Clear the OL selection layer
+                if (lizMap.mainLizmap?.map?.clearSelectionFeatures) {
+                    lizMap.mainLizmap.map.clearSelectionFeatures();
+                }
+
                 lizMap.events.triggerEvent("layerSelectionChanged",
                     {
                         'featureType': featureType,
@@ -3167,7 +3172,7 @@ var lizAttributeTable = function() {
              *
              * @param featureType
              */
-            function updateMapLayerSelection(featureType) {
+            function updateMapLayerSelection(featureType, olHighlightUpdated) {
                 // Get layer config
                 var lConfig = config.layers[featureType];
                 if (!lConfig){
@@ -3183,7 +3188,7 @@ var lizAttributeTable = function() {
                     }
                     lConfig.request_params['selection'] = wmsName + ':' + lConfig.selectedFeatures.join();
 
-                    // Get selection token
+                    // Get selection token (for WMS layer styling)
                     fetch(globalThis['lizUrls'].service, {
                         method: "POST",
                         body: new URLSearchParams({
@@ -3202,6 +3207,23 @@ var lizAttributeTable = function() {
                             token: result.token
                         };
                     });
+
+                    // Populate the OL selection layer independently of GETSELECTIONTOKEN.
+                    // Only when SelectionTool has NOT already done so
+                    // (it sets olHighlightUpdated:true on the layerSelectionChanged event).
+                    if (!olHighlightUpdated && lizMap.mainLizmap?.map?.setSelectionFeatures) {
+                        const typeName = lConfig['typename'] || lConfig['shortname'] || featureType;
+                        const layerCrs = lConfig.crs || 'EPSG:4326';
+                        lizMap.mainLizmap.wfs.getFeature({
+                            TYPENAME: typeName,
+                            EXP_FILTER: '$id IN ( ' + sqlEscapeFilter(lConfig.selectedFeatures) + ' ) ',
+                            SRSNAME: layerCrs
+                        }).then(geojson => {
+                            lizMap.mainLizmap.map.setSelectionFeatures(
+                                geojson, 'geojson', layerCrs
+                            );
+                        }).catch(() => {});
+                    }
                 } else {
 
                     if (!('request_params' in lConfig)) {
@@ -3209,6 +3231,13 @@ var lizAttributeTable = function() {
                     }
                     lConfig.request_params['selection'] = null;
                     lConfig.request_params['selectiontoken'] = null;
+
+                    // Clear the OL selection layer only for explicit user deselection
+                    // (not when SelectionTool reports no features found in a layer,
+                    // which sets olHighlightUpdated:true — it manages its own clearing)
+                    if (!olHighlightUpdated) {
+                        lizMap.mainLizmap?.map?.clearSelectionFeatures?.();
+                    }
 
                     // Update layer state
                     lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerByName(lConfig.name).selectedFeatures = null;
@@ -3443,32 +3472,35 @@ var lizAttributeTable = function() {
 
                 layerSelectionChanged: function(e) {
 
-                    // Update attribute table tools
-                    updateAttributeTableTools( e.featureType );
+                    // Update attribute table tools and table rows only if
+                    // this layer has an attribute table configured
+                    if (config.attributeLayers[e.featureType]) {
+                        updateAttributeTableTools( e.featureType );
 
-                    // Update selected features in the table
-                    const layerId = config.attributeLayers[e.featureType].layerId;
-                    const selectedFeatures = config.layers[e.featureType].selectedFeatures;
-                    const table = new DataTable('table[data-layerid=' + layerId + ']');
+                        // Update selected features in the table
+                        const layerId = config.attributeLayers[e.featureType].layerId;
+                        const selectedFeatures = config.layers[e.featureType].selectedFeatures;
+                        const table = new DataTable('table[data-layerid=' + layerId + ']');
 
-                    if (document.querySelector('.btn-moveselectedtotop-attributeTable.active[data-layerid="' + layerId + '"]')) {
-                        table.draw();
-                    } else {
-                        table.rows().every(function (rowIdx) {
-                            var data = this.data();
-                            if ((selectedFeatures.includes(data.DT_RowId.toString()))) {
-                                this.row(rowIdx).node().classList.add('selected');
-                                data.lizSelected = 'a';
-                            } else {
-                                this.row(rowIdx).node().classList.remove('selected');
-                                data.lizSelected = 'z';
-                            }
-                        });
+                        if (document.querySelector('.btn-moveselectedtotop-attributeTable.active[data-layerid="' + layerId + '"]')) {
+                            table.draw();
+                        } else {
+                            table.rows().every(function (rowIdx) {
+                                var data = this.data();
+                                if ((selectedFeatures.includes(data.DT_RowId.toString()))) {
+                                    this.row(rowIdx).node().classList.add('selected');
+                                    data.lizSelected = 'a';
+                                } else {
+                                    this.row(rowIdx).node().classList.remove('selected');
+                                    data.lizSelected = 'z';
+                                }
+                            });
+                        }
                     }
 
                     // Update openlayers layer drawing
                     if( e.updateDrawing ){
-                        updateMapLayerSelection( e.featureType );
+                        updateMapLayerSelection( e.featureType, e.olHighlightUpdated );
                     }
                 },
 

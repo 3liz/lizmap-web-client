@@ -58,6 +58,32 @@ class ProjectGuiPropertiesTest extends TestCase
         $this->assertEquals('rgb(50, 100, 200)', $properties->getCanvasColor());
     }
 
+    public function testGetSelectionColor(): void
+    {
+        $data = array(
+            'CanvasColorBluePart' => 255,
+            'CanvasColorGreenPart' => 255,
+            'CanvasColorRedPart' => 255,
+            'SelectionColorAlphaPart' => 255,
+            'SelectionColorBluePart' => 0,
+            'SelectionColorGreenPart' => 255,
+            'SelectionColorRedPart' => 255,
+        );
+
+        $properties = new Qgis\ProjectGuiProperties($data);
+        $this->assertEquals('rgba(255, 255, 0, 1.0)', $properties->getSelectionColor());
+
+        // Only CanvasColor parts are mandatory; SelectionColor defaults when null
+        $data = array(
+            'CanvasColorBluePart' => 255,
+            'CanvasColorGreenPart' => 255,
+            'CanvasColorRedPart' => 255,
+        );
+
+        $properties = new Qgis\ProjectGuiProperties($data);
+        $this->assertEquals('rgba(255, 255, 0, 0.8)', $properties->getSelectionColor());
+    }
+
     public function testExceptionNoSuchProperty(): void
     {
         $data = array(

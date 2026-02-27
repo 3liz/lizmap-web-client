@@ -151,11 +151,13 @@ export default class SelectionTool {
 
                                 selectionFeature = this.featureDrawnBuffered;
 
+                                this._map.clearSelectionFeatures();
                                 for (const featureType of this.allFeatureTypeSelected) {
                                     this.selectLayerFeaturesFromSelectionFeature(featureType, selectionFeature, this._geomOperator);
                                 }
                             });
                         } else {
+                            this._map.clearSelectionFeatures();
                             for (const featureType of this.allFeatureTypeSelected) {
                                 this.selectLayerFeaturesFromSelectionFeature(featureType, selectionFeature, this._geomOperator);
                             }
@@ -343,6 +345,7 @@ export default class SelectionTool {
         }
         this._digitizing.drawLayer.getSource().clear();
         this._bufferLayer.getSource().clear();
+        this._map.clearSelectionFeatures();
     }
 
     filter() {
@@ -423,7 +426,8 @@ export default class SelectionTool {
                         {
                             'featureType': featureType,
                             'featureIds': this._lizmap3.config.layers[featureType]['selectedFeatures'],
-                            'updateDrawing': true
+                            'updateDrawing': true,
+                            'olHighlightUpdated': true
                         }
                     );
                 });
@@ -519,11 +523,23 @@ export default class SelectionTool {
             }
 
             lConfig['selectedFeatures'] = featureIds;
+
+            // Update client-side selection layer with configured selection color.
+            // Always add (never clear here) — the clear happens synchronously before
+            // the loop that fires concurrent WFS calls, avoiding race conditions.
+            if (featureIds.length > 0 && this.newAddRemoveSelected !== 'remove') {
+                this._map.addSelectionFeatures(response, "geojson", lConfig.crs || "EPSG:4326");
+            } else if (this.newAddRemoveSelected === 'remove') {
+                // Remaining geometries not available; clear the overlay entirely
+                this._map.clearSelectionFeatures();
+            }
+
             this._lizmap3.events.triggerEvent("layerSelectionChanged",
                 {
                     'featureType': targetFeatureType,
                     'featureIds': lConfig['selectedFeatures'],
-                    'updateDrawing': true
+                    'updateDrawing': true,
+                    'olHighlightUpdated': true
                 }
             );
         });
