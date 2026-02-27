@@ -7,7 +7,7 @@
 
 import { mainEventDispatcher } from '../modules/Globals.js';
 import Edition from './Edition.js';
-import { MapRootState } from './state/MapLayer.js';
+import { MapLayerLoadStatus, MapRootState } from './state/MapLayer.js';
 import { TreeRootState } from './state/LayerTree.js';
 
 /**
@@ -39,6 +39,7 @@ export default class Snapping {
         this._snapEnabled = {};
         this._snapToggled = {};
         this._snapLayers = [];
+        this._pendingMapReadyListener = null;
 
         // Create layer to store snap features
         const snapLayer = new OpenLayers.Layer.Vector('snaplayer', {
@@ -163,7 +164,8 @@ export default class Snapping {
                     );
 
                     // Auto-activate snapping when snap layers are configured
-                    this.active = true;
+                    // Defer WFS snap requests until map rendering is complete
+                    this._activateWhenMapReady();
                 }
             },
             'edition.formDisplayed'
@@ -172,6 +174,13 @@ export default class Snapping {
         // Clean snap when edition ends
         mainEventDispatcher.addListener(
             () => {
+                // Remove pending map-ready listener if still waiting
+                if (this._pendingMapReadyListener) {
+                    this._rootMapGroup.removeListener(
+                        this._pendingMapReadyListener, 'layer.load.status.changed'
+                    );
+                    this._pendingMapReadyListener = null;
+                }
                 this.active = false;
                 this._lizmap3.map.getLayersByName('snaplayer')[0].destroyFeatures();
                 this.config = undefined;
@@ -185,6 +194,39 @@ export default class Snapping {
             },
             'edition.formClosed'
         );
+    }
+
+    /**
+     * Activate snapping only after all visible map layers have finished loading.
+     * This prevents snap WFS requests from competing with map tile rendering
+     * on QGIS Server, which can significantly slow down large projects.
+     * @private
+     */
+    _activateWhenMapReady() {
+        const visibleLayers = this._rootMapGroup.findMapLayers().filter(l => l.visibility);
+        const stillLoading = visibleLayers.filter(
+            l => l.loadStatus === MapLayerLoadStatus.Loading
+              || l.loadStatus === MapLayerLoadStatus.Undefined
+        );
+
+        if (stillLoading.length === 0) {
+            this.active = true;
+        } else {
+            const listener = () => {
+                const remaining = this._rootMapGroup.findMapLayers().filter(
+                    l => l.visibility
+                      && (l.loadStatus === MapLayerLoadStatus.Loading
+                       || l.loadStatus === MapLayerLoadStatus.Undefined)
+                );
+                if (remaining.length === 0) {
+                    this._rootMapGroup.removeListener(listener, 'layer.load.status.changed');
+                    this._pendingMapReadyListener = null;
+                    this.active = true;
+                }
+            };
+            this._pendingMapReadyListener = listener;
+            this._rootMapGroup.addListener(listener, 'layer.load.status.changed');
+        }
     }
 
     getSnappingData () {
