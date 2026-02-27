@@ -188,6 +188,7 @@ export default class SelectionTool {
                     this._digitizing.context = event.id;
                     this._digitizing.singlePartGeometry = true;
                     this._digitizing.toggleVisibility(true);
+                    this._digitizing.toolSelected = 'box';
                 }
             },
             minidockclosed: (event) => {
