@@ -668,6 +668,39 @@ test.describe('Attribute table @readonly', () => {
         await project.closeAttributeTable();
     });
 
+    test('Should select all filtered results', async ({ page }) => {
+        const project = new ProjectPage(page, 'attribute_table');
+        await project.open();
+
+        const tableName = 'quartiers_shp';
+        const typeName = 'quartiers_shp';
+
+        let datatablesRequest = await project.openAttributeTable(tableName);
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+        let tableHtml = project.attributeTableHtml(tableName);
+
+        // Check table lines
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(7);
+
+        // click on select-searched button to select all records
+        let getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
+        await project.attributeTableActionBar(tableName).locator('.btn-select-searched').click();
+        let getSelectionTokenRequest = await getSelectionTokenRequestPromise;
+        await getSelectionTokenRequest.response();
+
+        // Check GetSelectionToken request
+        const getSelectionTokenParameters = {
+            'service': 'WMS',
+            'request': 'GETSELECTIONTOKEN',
+            'typename': typeName,
+            'ids': '2,6,0,4,3,1,5',
+        }
+
+        requestExpect(getSelectionTokenRequest).toContainParametersInPostData(getSelectionTokenParameters);
+        expect(tableHtml.locator('tbody tr.selected')).toHaveCount(7);
+    });
+
     test('Thumbnail class generate img with good path', async ({ page }) => {
         const project = new ProjectPage(page, 'attribute_table');
         await project.open();
