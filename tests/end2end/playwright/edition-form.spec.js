@@ -3,6 +3,7 @@ import { test, expect } from '@playwright/test';
 import { expect as responseExpect } from './fixtures/expect-response.js'
 import { expect as requestExpect } from './fixtures/expect-request.js'
 import { ProjectPage } from "./pages/project";
+import { playwrightTestFile } from './globals';
 
 test.describe('Edition Form Validation', () => {
 
@@ -1193,6 +1194,89 @@ test.describe('Form upload file widget @write',() => {
         expect(feature.properties).toHaveProperty(
             'image_file_specific_root_folder',
             'media/upload/form_edition_all_field_type/form_edition_upload/text_file_mandatory/lorem-2.txt'
+        );
+    });
+
+    test('Upload file renamed to field default value expression stem', async ({ page }) => {
+        const project = new ProjectPage(page, 'form_edition_all_field_type');
+        await project.open();
+
+        const layerName = 'form_edition_upload';
+
+        let datatablesRequest = await project.openAttributeTable(layerName);
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+        await expect(project.attributeTableHtml(layerName).locator('tbody tr'))
+            .toHaveCount(2);
+
+        const theTableRow = project.attributeTableHtml(layerName).locator('tbody tr').first();
+        await expect(theTableRow.locator('lizmap-feature-toolbar')).toHaveCount(1);
+        const theEditButton = theTableRow.locator('lizmap-feature-toolbar').locator('button.feature-edit');
+        await expect(theEditButton).toBeVisible();
+
+        // Open edit feature (feature 2)
+        let modifyFeatureRequestPromise = page.waitForRequest(request => request.url().includes('modifyFeature'));
+        await theEditButton.click();
+        let modifyFeatureRequest = await modifyFeatureRequestPromise;
+
+        let editFeatureRequestPromise = page.waitForRequest(request => request.url().includes('editFeature'));
+        await modifyFeatureRequest.response();
+        let editFeatureRequest = await editFeatureRequestPromise;
+        await editFeatureRequest.response();
+
+        // form visible, check it's feature 2
+        await expect(page.locator('#jforms_view_edition')).toBeVisible();
+        await expect(page.locator('#jforms_view_edition_id')).toHaveValue('2');
+
+        // Select "New file" for text_file and upload a file with an arbitrary name
+        await page.locator('#jforms_view_edition_text_file_choice_list').scrollIntoViewIfNeeded();
+        await page.locator('#jforms_view_edition_text_file_choice_list').getByLabel('New file').click();
+        await page.locator('#jforms_view_edition_text_file').setInputFiles(
+            playwrightTestFile('test_upload_file', 'test_upload_replace.txt')
+        );
+
+        // Submit
+        await page.locator('#jforms_view_edition__submit_submit').scrollIntoViewIfNeeded();
+        let saveFeatureRequestPromise = page.waitForRequest(request => request.url().includes('saveFeature'));
+        await page.locator('#jforms_view_edition__submit_submit').click();
+        let saveFeatureRequest = await saveFeatureRequestPromise;
+        let closeFeatureRequestPromise = page.waitForRequest(request => request.url().includes('closeFeature'));
+        await saveFeatureRequest.response();
+        let closeFeatureRequest = await closeFeatureRequestPromise;
+        await closeFeatureRequest.response();
+
+        // Verify via WFS: text_file should be renamed using the default value expression stem
+        // field default expression is 'test_default_doc' → stem = 'test_default_doc'
+        // uploaded file extension = '.txt' → stored as 'test_default_doc.txt'
+        const params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'form_edition_all_field_type',
+        });
+        const url = `/index.php/lizmap/service?${params}`;
+        const wfsForm = {
+            SERVICE: 'WFS',
+            VERSION: '1.0.0',
+            REQUEST: 'GetFeature',
+            FEATUREID: layerName + '.2',
+            OUTPUTFORMAT: 'GeoJSON',
+        };
+        let response = await page.request.post(url, { form: wfsForm });
+        expect(response.ok()).toBeTruthy();
+        let body = await response.json();
+        expect(body.features).toHaveLength(1);
+        let feature = body.features[0];
+        expect(feature.properties).toHaveProperty(
+            'text_file',
+            'media/upload/form_edition_all_field_type/form_edition_upload/text_file/test_default_doc.txt'
+        );
+        // Other mandatory fields should be unchanged
+        expect(feature.properties).toHaveProperty(
+            'text_file_mandatory',
+            'media/upload/form_edition_all_field_type/form_edition_upload/text_file_mandatory/lorem-2.txt'
+        );
+        expect(feature.properties).toHaveProperty(
+            'image_file_mandatory',
+            'media/upload/form_edition_all_field_type/form_edition_upload/image_file_mandatory/random-2.jpg'
         );
     });
 });
