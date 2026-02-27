@@ -28,6 +28,7 @@ import Treeview from './components/Treeview.js';
 import NavBar from './components/NavBar.js';
 import Tooltip from './components/Tooltip.js';
 import Message from './components/Message.js';
+import TypeAHead from './components/TypeAHead.js';
 
 import { mainLizmap, mainEventDispatcher } from './modules/Globals.js';
 import executeJSFromServer from './modules/ExecuteJSFromServer.js';
@@ -103,6 +104,7 @@ const definedCustomElements = () => {
     window.customElements.define('lizmap-navbar', NavBar);
     window.customElements.define('lizmap-tooltip', Tooltip);
     window.customElements.define('lizmap-message', Message);
+    window.customElements.define('lizmap-typeahead', TypeAHead);
 
     /**
     * At this point the user interface is fully loaded.
