@@ -21,6 +21,7 @@ import { html, render } from 'lit-html';
  * It is mandatory and provide a way to use this element for different contexts.
  *
  * The other attributes are:
+ *  active - Activate the element on load or when the attribute is added
  *  selected-tool - Start selected drawing tools one of DigitizingAvailableTools or available-tools
  *  available-tools - List of available drawing tools based on DigitizingAvailableTools
  *  save - Enable save capability
@@ -30,6 +31,7 @@ import { html, render } from 'lit-html';
  * @example <caption>Example of use</caption>
  * <lizmap-digitizing
  *     context="draw"
+ *     active
  *     selected-tool="box"
  *     available-tools="point,line,polygon,box,freehand"
  *     save
@@ -62,6 +64,10 @@ export default class Digitizing extends HTMLElement {
         super();
         this._toolSelected = DigitizingAvailableTools[0];
         this._availableTools = DigitizingAvailableTools.slice(1);
+    }
+
+    static get observedAttributes() {
+        return ['active'];
     }
 
     connectedCallback() {
@@ -495,9 +501,28 @@ export default class Digitizing extends HTMLElement {
                 'digitizing.visibility',
             ]
         );
+
+        // Activate the selected tool if the active attribute is present
+        this._activateIfNeeded();
+    }
+
+    /**
+     * Activate the selected tool if the active attribute is present
+     * @private
+     */
+    _activateIfNeeded() {
+        if (this.active && this._toolSelected) {
+            this.selectTool(this._toolSelected);
+        }
     }
 
     disconnectedCallback() {
+    }
+
+    attributeChangedCallback(name) {
+        if (name === 'active') {
+            this._activateIfNeeded();
+        }
     }
 
     /**
@@ -604,6 +629,26 @@ export default class Digitizing extends HTMLElement {
         if (this._availableTools.includes(tool)) {
             this._toolSelected = tool;
             mainLizmap.digitizing.toolSelected = tool;
+        }
+    }
+
+    /**
+     * The element is active if the active attribute is present
+     * @type {boolean}
+     */
+    get active() {
+        return this.hasAttribute('active');
+    }
+
+    /**
+     * Set the active state of the element
+     * @param {boolean} value - True to activate the element, false to deactivate
+     */
+    set active(value) {
+        if (value) {
+            this.setAttribute('active', '');
+        } else {
+            this.removeAttribute('active');
         }
     }
 
