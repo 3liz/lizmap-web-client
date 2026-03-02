@@ -479,6 +479,176 @@ export class ProjectPage extends BasePage {
     }
 
     /**
+     * Switch to given attribute table
+     * @param {string} tableName Name of the attribute table to visualize
+     * @returns {Promise<void>}
+     */
+    async switchAttributeTable(tableName){
+        await this.page.locator(`#nav-tab-attribute-layer-${tableName}`).click();
+    }
+
+    /**
+     * Open search builder attribute table panel. Optionally can clear all criteria
+     * @param {string}  name Name of the table
+     * @param {boolean} clearAll Wheter to clear all conditions or not
+     */
+    async openSearchBuilderPanel(name, clearAll = false){
+        await this.attributeTableActionBar(name).locator('.dt-buttons.btn-group.flex-wrap button').click();
+        if(clearAll) {
+            await this.attributeTableActionBar(name).locator('button.dtsb-clearAll').click();
+        }
+    }
+
+    /**
+     * Adds a blank criterion and returns corresponding locator. Optionally, checks the available fields
+     * @param {string} name The table name
+     * @param {string[]|null} expectedFields Expected fields to check
+     * @returns {Promise<void>}
+     */
+    async addSearchBuilderCriterion(name, expectedFields = null){
+        await this.attributeTableActionBar(name).locator('button.dtsb-add').click();
+        // select last added criterion
+        const addedCriterion = await this.attributeTableActionBar(name).locator('.dtsb-criteria').last();
+
+        if (expectedFields) {
+            expectedFields.forEach(async (field) => {
+                await expect(addedCriterion.locator('select.dtsb-data').getByText(field)).toHaveCount(1);
+            })
+        }
+    }
+
+    /**
+     * Gets the given criterion locator
+     * @param {string} name The table name
+     * @param {number} criterionIndex DOM index of the criterion to retrieve
+     * @returns {Promise<Locator>} The criterion locator
+     */
+    async getSearchBuilderCriterion(name, criterionIndex){
+        return this.attributeTableActionBar(name).locator('.dtsb-criteria').nth(criterionIndex);
+    }
+
+    /**
+     * Removes the given criterion
+     * @param {Locator} criterion The criterion locator
+     * @returns {Promise<void>}
+     */
+    async removeSearchBuilderCriterion(criterion){
+        await criterion.locator('.dtsb-delete').click();
+    }
+
+    /**
+     * Selects a data for the given criterion and optionally checks the availble conditions
+     * @param {Locator} criterion The criterion locator
+     * @param {string} data Option to select
+     * @param {string[]|null} expectedConditions Expected selectable conditions
+     * @returns {Promise<void>}
+     */
+    async selectSearchBuilderData(criterion, data, expectedConditions = null){
+        await criterion.locator('select.dtsb-data').selectOption({label: data});
+        // select last condition added
+        const condition = criterion.locator('select.dtsb-condition');
+
+        if (expectedConditions) {
+            const options = condition.locator('option').all();
+            for (const option of await options) {
+                const optionValue = await option.getAttribute("value") || '';
+                if (optionValue) {
+                    if(expectedConditions.indexOf(optionValue) > -1) {
+                        expect(await option.evaluate(op => op.style.display )).toBe('');
+                    } else expect(await option.evaluate(op => op.style.display )).toBe('none');
+                }
+            }
+        }
+    }
+
+    /**
+     * Select a condition for the given criterion
+     * @param {Locator} criterion The criterion locator
+     * @param {string} condition The selected condition
+     * @returns {Promise<void>}
+     */
+    async selectSearchBuilderCondition(criterion, condition){
+        await criterion.locator('select.dtsb-condition').selectOption(condition);
+    }
+
+    /**
+     * Performs filtering for the given attribute table
+     * @param {string} tableName Attribute table to filter
+     * @returns {Promise<void>}
+     */
+    async searchBuilderLaunchSearch(tableName){
+        await this.attributeTableActionBar(tableName).locator('.dtsb-search').click();
+    }
+
+    /**
+     * Closes the search builder filter panel for the given table
+     * @param {string} tableName Attribute table containing the search builder panel
+     * @returns {Promise<void>}
+     */
+    async searchBuilderClosePanel(tableName){
+        await this.attributeTableActionBar(tableName).locator('.dtb-popover-close').click();
+    }
+
+    /**
+     * Fills typeahead input with given text. Optionally, checks the resulting displayed options
+     * @param {Locator} typeaheadNode Typeahead element locator
+     * @param {string} text Text to fill
+     * @param {string[]|null} expected_options List of displayed options to check
+     * @returns {Promise<void>}
+     */
+    async fillTypeAHeadInput(typeaheadNode, text, expected_options = null){
+        await typeaheadNode.locator('.lizmap-typeahead-text').pressSequentially(text);
+        if(expected_options){
+            await this.typeAHeadCheckResultOptions(typeaheadNode, expected_options)
+        }
+    }
+
+    /**
+     * Checks the results options list for the given typeahead node
+     * @param {Locator} typeaheadNode Typeahead locator
+     * @param {string[]} expected_options List of displayed options to check
+     * @returns {Promise<void>}
+     */
+    async typeAHeadCheckResultOptions(typeaheadNode, expected_options){
+        const optionContainer = typeaheadNode.locator('.lizmap-typeahead-options-container');
+        await expect(optionContainer).toBeVisible();
+        const displayed_options = optionContainer.locator('span[data-lizmap-typeahead]');
+        await expect(displayed_options).toHaveCount(expected_options.length);
+        let c = 0;
+        for (const opt of await displayed_options.all()){
+            expect(await opt.innerText()).toBe(expected_options[c]);
+            c++;
+        }
+    }
+
+    /**
+     * Selects an option for the given typeahead node
+     * @param {Locator} typeaheadNode Typeahead locator
+     * @param {string} optionValue Actual value of the option
+     * @param {string} optionDescription Text specifying the option to select
+     * @returns {Promise<void>}
+     */
+    async selectTypeAHeadOption(typeaheadNode, optionValue, optionDescription){
+        await typeaheadNode
+            .locator('.lizmap-typeahead-options-container span[data-lizmap-typeahead]')
+            .getByText(optionDescription)
+            .click();
+        await this.checkTypeAHeadValues(typeaheadNode, optionValue, optionDescription);
+    }
+
+    /**
+     * Checks the given typeahead node state
+     * @param {Locator} typeaheadNode Typeahead locator
+     * @param {string} value Actual option value
+     * @param {string} description Actual option description
+     * @returns {Promise<void>}
+     */
+    async checkTypeAHeadValues(typeaheadNode, value, description){
+        await expect(typeaheadNode.locator('.lizmap-typeahead-input')).toHaveValue(value);
+        await expect(typeaheadNode.locator('.lizmap-typeahead-text')).toHaveValue(description);
+    }
+
+    /**
      * launchExport function
      * @param {string} layer     - the layer to export
      * @param {string} format - the format to export
