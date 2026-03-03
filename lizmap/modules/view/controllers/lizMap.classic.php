@@ -218,6 +218,8 @@ class lizMapCtrl extends jController
             'basepath' => $bp,
             'geobookmark' => jUrl::get('lizmap~geobookmark:index'),
             'service' => jUrl::get('lizmap~service:index').'?repository='.$repository.'&project='.$project,
+            'announcement' => jUrl::get('lizmap~announcement:pending'),
+            'announcementMarkSeen' => jUrl::get('lizmap~announcement:markSeen'),
             'resourceUrlReplacement' => array(),
         );
 
