@@ -1138,13 +1138,27 @@ test.describe('Attribute table @readonly', () => {
         await project.switchAttributeTable(hugeTableName);
 
         // zoom to filtered features
-        let extentRequestPromise = project.waitForDatatablesZoomExtentRequest();
+        let getMapRequestPromise = project.waitForGetMapRequest();
+        //let extentRequestPromise = project.waitForDatatablesZoomExtentRequest();
+        /** @type {{[key: string]: string|RegExp}} */
+        let getMapExpectedParameters = {
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'REQUEST': 'GetMap',
+            'FORMAT': /^image\/png/,
+            'TRANSPARENT': /\b(\w*^true$\w*)\b/gmi,
+            'LAYERS': hugeTableName,
+            'CRS': 'EPSG:4326',
+            'WIDTH': '958',
+            'HEIGHT': '633',
+            'BBOX': /43.5380\d+,3.7657\d+,43.6887\d+,3.9938\d+/,
+        }
+
         await project.attributeTableActionBar(hugeTableName).locator('.btn-fit-filtered-extent').click();
-        let extentRequest = await extentRequestPromise;
-        let extentResponse = await extentRequest.response();
-        responseExpect(extentResponse).toBeJson();
-        let jsonResp = await extentResponse?.json();
-        expect(JSON.stringify(jsonResp)).toMatch(/3.7976\d+,43.5590\d+,3.9618\d+,43.6676\d+/)
+        let getMapRequest = await getMapRequestPromise;
+
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
+        await getMapRequest.response();
 
         // switch to bakeries and set some filters
         await project.switchAttributeTable(bakeriesTableName);
@@ -1185,12 +1199,12 @@ test.describe('Attribute table @readonly', () => {
         await project.searchBuilderClosePanel(bakeriesTableName);
 
         // zoom to bakeries filtered features
-        extentRequestPromise = project.waitForDatatablesZoomExtentRequest();
+        let extentRequestPromise = project.waitForDatatablesZoomExtentRequest();
         await project.attributeTableActionBar(bakeriesTableName).locator('.btn-fit-filtered-extent').click();
-        extentRequest = await extentRequestPromise;
-        extentResponse = await extentRequest.response();
+        let extentRequest = await extentRequestPromise;
+        let extentResponse = await extentRequest.response();
         responseExpect(extentResponse).toBeJson();
-        jsonResp = await extentResponse?.json();
+        let jsonResp = await extentResponse?.json();
         expect(JSON.stringify(jsonResp)).toMatch(/3.9046\d+,43.6026\d+,3.9130\d+,43.6591\d+/);
 
         // activate filter by extent
