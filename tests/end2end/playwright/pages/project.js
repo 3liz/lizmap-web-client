@@ -385,6 +385,19 @@ export class ProjectPage extends BasePage {
     }
 
     /**
+     * Waits for a datatables zomm to extent request
+     * @returns {Promise<Request>} The datatables request
+     */
+    async waitForDatatablesZoomExtentRequest() {
+        return this.page.waitForRequest(
+            request => request.method() === 'POST' &&
+            request.url().includes('datatables') === true &&
+            request.url().includes('filteredFeaturesExtent') === true &&
+            request.postData()?.includes('draw') === true
+        );
+    }
+
+    /**
      * open function
      * Open the URL for the given project and repository
      * @param {boolean} skip_plugin_update_warning Skip UI warning about QGIS plugin version, false by default.
@@ -581,6 +594,15 @@ export class ProjectPage extends BasePage {
     }
 
     /**
+     * Toggles the search builder logical operator for the given table.
+     * @param {string} tableName Attribute table to filter
+     * @returns {Promise<void>}
+     */
+    async toggleSearchBuilderLogicalCondition(tableName){
+        await this.attributeTableActionBar(tableName).locator('.dtsb-logic').click();
+    }
+
+    /**
      * Closes the search builder filter panel for the given table
      * @param {string} tableName Attribute table containing the search builder panel
      * @returns {Promise<void>}
@@ -601,6 +623,16 @@ export class ProjectPage extends BasePage {
         if(expected_options){
             await this.typeAHeadCheckResultOptions(typeaheadNode, expected_options)
         }
+    }
+
+    /**
+     * Fills searchBuilder input with given text.
+     * @param {Locator} inputNode Typeahead element locator
+     * @param {string} text Text to fill
+     * @returns {Promise<void>}
+     */
+    async fillSearchBuilderInput(inputNode, text){
+        await inputNode.pressSequentially(text);
     }
 
     /**

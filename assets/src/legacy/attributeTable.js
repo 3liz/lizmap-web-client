@@ -495,6 +495,11 @@ var lizAttributeTable = function() {
                 // Action bar specific to the tab
                 html+= '<div class="attribute-layer-action-bar">';
 
+                // add zoom to filtered features extent, only if layer has geometry
+                if (config.layers[lname].geometryType != 'none') {
+                    html+= '<button class="btn-fit-filtered-extent btn btn-sm" value="'+cleanName+'" title="'+lizDict['attributeLayers.toolbar.btn.fit.filtered.extent.title']+'"><i class="icon-fullscreen"></i></button>';
+                }
+
                 // Selected searched lines button
                 html+= '<button class="btn-select-searched btn btn-sm" value="'+cleanName+'" title="'+lizDict['attributeLayers.toolbar.btn.select.searched.title']+'"><i class="icon-star"></i></button>';
 
@@ -1055,6 +1060,71 @@ var lizAttributeTable = function() {
                         { 'featureType': aName, 'updateDrawing': true}
                     );
                     return false;
+                }).hover(
+                    function(){ $(this).addClass('btn-primary'); },
+                    function(){ $(this).removeClass('btn-primary'); }
+                );
+
+                // Bind click on btn-fit-filtered-extent button.
+                // This feature calculates the total extent of the filtered feature (no padding)
+                // and then fit the map extent accordingly. The fit follows OL View settings.
+                // The calculation is performed on all filtered features, ignoring pagination
+                $('#attribute-layer-'+ cleanName + ' button.btn-fit-filtered-extent').click(async function(){
+                    let targetExtent = [];
+                    var tableName = attributeLayersDic[ $(this).val() ];
+                    if (!DataTable.isDataTable(`#attribute-layer-table-${tableName}`)) return;
+
+                    const dtTable = new DataTable.Api(`#attribute-layer-table-${tableName}`);
+                    const dtParams = dtTable.ajax.params();
+                    const hasFilter = typeof dtParams == 'object' &&
+                        'searchBuilder' in dtParams &&
+                        'criteria' in dtParams.searchBuilder &&
+                        Array.isArray(dtParams.searchBuilder.criteria) &&
+                        dtParams.searchBuilder.criteria.length > 0
+                    if (!hasFilter) {
+                        const layerConfig = lizMap.config.layers[$(this).val()];
+                        if (layerConfig && 'extent' in layerConfig && 'crs' in layerConfig) {
+                            targetExtent = lizMap.ol.proj.transformExtent(
+                                layerConfig.extent,
+                                layerConfig.crs,
+                                lizMap.mainLizmap.map.getView().getProjection().getCode()
+                            );
+                        }
+                    } else {
+                        const datatablesUrl = globalThis['lizUrls'].wms.replace('service', 'datatables/filteredFeaturesExtent');
+                        const params = {...globalThis['lizUrls'].params};
+                        params['layerId'] = config.attributeLayers[cleanName].layerId;
+
+                        // Using the same parameters as the search builder ensures that the extent calculation
+                        // is consistent with the filtered features.
+                        const extentRequest = await fetch(datatablesUrl + '?' + new URLSearchParams(params).toString(),{
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json;charset=utf-8'
+                            },
+                            body: JSON.stringify({...dtParams})
+                        })
+
+                        // probably there is no need to notify user if something went wrong.
+                        // The worst case scenario would be that the zoom does not occur.
+                        if(!extentRequest.ok) return;
+
+                        const extent = await extentRequest.json();
+                        if(extent && extent.length == 4) {
+                            // the extent is returned in EPSG:4326 by default, it must be converted in map crs
+                            targetExtent = lizMap.ol.proj.transformExtent(
+                                extent,
+                                'EPSG:4326',
+                                lizMap.mainLizmap.map.getView().getProjection().getCode()
+                            );
+                        }
+                    }
+
+                    if(targetExtent && targetExtent.length == 4) {
+                        // zoom to features extent
+                        lizMap.mainLizmap.map.zoomToGeometryOrExtent(targetExtent);
+                    }
+
                 }).hover(
                     function(){ $(this).addClass('btn-primary'); },
                     function(){ $(this).removeClass('btn-primary'); }
