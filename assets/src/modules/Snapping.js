@@ -39,6 +39,7 @@ export default class Snapping {
         this._snapEnabled = {};
         this._snapToggled = {};
         this._snapLayers = [];
+        this._snapOnStart = false;
         this._pendingMapReadyListener = null;
 
         // Create layer to store snap features
@@ -137,6 +138,9 @@ export default class Snapping {
                                     'snap_segments_tolerance': editionLayerConfig.hasOwnProperty('snap_segments_tolerance') ? editionLayerConfig.snap_segments_tolerance : 10,
                                     'snap_intersections_tolerance': editionLayerConfig.hasOwnProperty('snap_intersections_tolerance') ? editionLayerConfig.snap_intersections_tolerance : 10
                                 };
+
+                                this._snapOnStart = editionLayerConfig.hasOwnProperty('snap_on_start')
+                                    && editionLayerConfig.snap_on_start === 'True';
                             }
                         }
                     }
@@ -165,8 +169,7 @@ export default class Snapping {
 
                     // Auto-activate snapping if configured (snap_on_start).
                     // Legacy configs without the key do not auto-activate.
-                    if (editionLayerConfig.hasOwnProperty('snap_on_start')
-                        && editionLayerConfig.snap_on_start === 'True') {
+                    if (this._snapOnStart) {
                         this._activateWhenMapReady();
                     }
                 }
@@ -214,6 +217,9 @@ export default class Snapping {
 
         if (stillLoading.length === 0) {
             this.active = true;
+            let previousMessage = document.getElementById('lizmap-snapping-message');
+            if (previousMessage) previousMessage.remove();
+            this._lizmap3.addMessage(lizDict['snapping.message.activated'] || 'Snapping has been automatically activated.', 'info', true, 7000).attr('id', 'lizmap-snapping-message');
         } else {
             const listener = () => {
                 const remaining = this._rootMapGroup.findMapLayers().filter(
@@ -225,6 +231,9 @@ export default class Snapping {
                     this._rootMapGroup.removeListener(listener, 'layer.load.status.changed');
                     this._pendingMapReadyListener = null;
                     this.active = true;
+                    let previousMessage = document.getElementById('lizmap-snapping-message');
+                    if (previousMessage) previousMessage.remove();
+                    this._lizmap3.addMessage(lizDict['snapping.message.activated'] || 'Snapping has been automatically activated.', 'info', true, 7000).attr('id', 'lizmap-snapping-message');
                 }
             };
             this._pendingMapReadyListener = listener;

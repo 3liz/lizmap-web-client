@@ -189,7 +189,9 @@ export default class SelectionTool {
                     this._digitizing.singlePartGeometry = true;
                     this._digitizing.toggleVisibility(true);
                     this._digitizing.toolSelected = 'box';
-                    this._lizmap3.addMessage(lizDict['selectiontool.message.start'], 'info', true, 5000);
+                    let previousMessage = document.getElementById('lizmap-selection-message');
+                    if (previousMessage) previousMessage.remove();
+                    this._lizmap3.addMessage(lizDict['selectiontool.message.start'], 'info', true, 7000).attr('id', 'lizmap-selection-message');
                 }
             },
             minidockclosed: (event) => {
