@@ -163,9 +163,12 @@ export default class Snapping {
                         ['layer.visibility.changed','group.visibility.changed']
                     );
 
-                    // Auto-activate snapping when snap layers are configured
-                    // Defer WFS snap requests until map rendering is complete
-                    this._activateWhenMapReady();
+                    // Auto-activate snapping if configured (snap_on_start).
+                    // Legacy configs without the key do not auto-activate.
+                    if (editionLayerConfig.hasOwnProperty('snap_on_start')
+                        && editionLayerConfig.snap_on_start === 'True') {
+                        this._activateWhenMapReady();
+                    }
                 }
             },
             'edition.formDisplayed'
