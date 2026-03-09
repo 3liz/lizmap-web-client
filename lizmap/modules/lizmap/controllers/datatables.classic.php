@@ -156,12 +156,16 @@ class datatablesCtrl extends jController
         }
 
         if (count($filteredFeatureIDs) > 0) {
-            $wfsParamsData['EXP_FILTER'] = '$id IN ('.implode(' , ', $filteredFeatureIDs).')';
+            $filteredFeatureIDSFilter = '$id IN ('.implode(' , ', $filteredFeatureIDs).')';
+            // concat current exp_filter with filteredFeaturesIds filter
+            $expFilter = !$expFilter ? $filteredFeatureIDSFilter : "( {$expFilter} ) AND ( {$filteredFeatureIDSFilter} )";
         }
 
         // Handle search made by searchBuilder
         if ($DTSearchBuilder) {
-            $expFilter = DataTables::convertSearchToExpression($DTSearchBuilder);
+            $searchBuilderFilter = DataTables::convertSearchToExpression($DTSearchBuilder);
+            // concat current exp_filter with searchBuilderFilter filter
+            $expFilter = !$expFilter ? $searchBuilderFilter : "( {$expFilter} ) AND ( {$searchBuilderFilter} )";
         }
 
         if ($expFilter) {
