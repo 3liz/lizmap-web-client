@@ -56,6 +56,11 @@ class ProjectConfig
     /**
      * @var object
      */
+    protected $portfolios;
+
+    /**
+     * @var object
+     */
     protected $loginFilteredLayers;
 
     /**
@@ -94,6 +99,7 @@ class ProjectConfig
         'atlas',
         'tooltipLayers',
         'layouts',
+        'portfolios',
         'loginFilteredLayers',
         'filter_by_polygon',
         'datavizLayers',
@@ -491,6 +497,38 @@ class ProjectConfig
     public function getLayouts()
     {
         return $this->layouts;
+    }
+
+    /**
+     * Portfolios are configured.
+     *
+     * @since 3.10
+     *
+     * @return bool
+     */
+    public function hasPortfolios()
+    {
+        if ($this->portfolios == null) {
+            return false;
+        }
+
+        if (!property_exists($this->portfolios, 'list')) {
+            return false;
+        }
+
+        return (bool) count((array) $this->portfolios->list);
+    }
+
+    /**
+     * Portfolios.
+     *
+     * @since 3.10
+     *
+     * @return null|object
+     */
+    public function getPortfolios()
+    {
+        return $this->portfolios;
     }
 
     /**
