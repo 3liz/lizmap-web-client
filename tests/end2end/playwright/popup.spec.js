@@ -400,10 +400,13 @@ test.describe('Popup @readonly', () => {
     test('With selection tool', async ({ page }) => {
         const project = new ProjectPage(page, 'popup');
         await project.open();
-        // Open Selection tool
+        // Open Selection tool - box draw is auto-activated
         await page.locator('#button-selectiontool').click();
 
-        // Popup still available
+        // Deactivate draw - popup should be available
+        await page.locator('.digitizing-buttons > button').first().click();
+
+        // Popup available when draw is inactive
         let getFeatureInfoRequestPromise = project.waitForGetFeatureInfoRequest();
         await project.clickOnMap(250, 415);
         let getFeatureInfoRequest = await getFeatureInfoRequestPromise;
@@ -413,7 +416,7 @@ test.describe('Popup @readonly', () => {
         await expect(project.map.locator('#liz_layer_popup')).toBeVisible();
         await page.getByRole('link', { name: '✖' }).click();
 
-        // Activate draw
+        // Activate draw with point tool via dropdown
         await page.locator('#selectiontool .digitizing-buttons > button.dropdown-toggle:nth-child(2)').click();
         await page.locator('#selectiontool .selectiontool .digitizing-point > svg > use').click();
 
