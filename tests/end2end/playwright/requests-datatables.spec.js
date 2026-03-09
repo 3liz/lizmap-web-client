@@ -904,4 +904,147 @@ test.describe('Datables Requests @requests @readonly', () => {
         expect(body).toHaveProperty('code', 'Not Found');
         expect(body).toHaveProperty('message', 'The layerId unknown does not exist.');
     });
+
+    test('Extent request', async({ request }) => {
+        // Unknown project in testsrepository
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'huge_attribute_table',
+            layerId: 'bakeries_8ca232e6_df58_44f7_94df_b4c02cc7a79c',
+        });
+        let url = `/index.php/lizmap/datatables/filteredFeaturesExtent?${params}`;
+        const data = {
+            start: 0,
+            length: 50,
+            columns: [
+                {'data': 'lizSelected'},
+                {'data': 'featureToolbar'},
+                {'data': 'id'},
+                {'data': 'polygon_id'},
+            ],
+            order: [{'column': 2, 'dir': 'asc'}],
+            searchBuilder: {
+                criteria: [
+                    {'condition': '=', 'data': 'id', 'origData': 'id', 'value1': '1', 'type': 'num'},
+                    {'condition': '=', 'data': 'id', 'origData': 'id', 'value1': '16', 'type': 'num'},
+                ],
+                logic: 'OR',
+            },
+        };
+        let response = await request.post(url, {
+            data: data,
+        });
+        // check response
+        let body = await checkJson(response, 200);
+        // check response body
+        expect(body).toStrictEqual([
+            3.811568,
+            43.653714,
+            3.913073,
+            43.659122
+        ]);
+    });
+
+    test('Extent request on a single point feature', async({ request }) => {
+        // Unknown project in testsrepository
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'huge_attribute_table',
+            layerId: 'bakeries_8ca232e6_df58_44f7_94df_b4c02cc7a79c',
+        });
+        let url = `/index.php/lizmap/datatables/filteredFeaturesExtent?${params}`;
+        const data = {
+            start: 0,
+            length: 50,
+            columns: [
+                {'data': 'lizSelected'},
+                {'data': 'featureToolbar'},
+                {'data': 'id'},
+                {'data': 'polygon_id'},
+            ],
+            order: [{'column': 2, 'dir': 'asc'}],
+            searchBuilder: {
+                criteria: [
+                    {'condition': '=', 'data': 'id', 'origData': 'id', 'value1': '1', 'type': 'num'},
+                ],
+                logic: 'AND',
+            },
+        };
+        let response = await request.post(url, {
+            data: data,
+        });
+        // check response
+        let body = await checkJson(response, 200);
+        // check response body
+        expect(body).toStrictEqual([
+            3.913073,
+            43.659122,
+            3.913073,
+            43.659122
+        ]);
+    });
+
+    test('Empty response on extent request', async({ request }) => {
+        // Unknown project in testsrepository
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'huge_attribute_table',
+            layerId: 'bakeries_8ca232e6_df58_44f7_94df_b4c02cc7a79c',
+        });
+        let url = `/index.php/lizmap/datatables/filteredFeaturesExtent?${params}`;
+        const data = {
+            start: 0,
+            length: 50,
+            columns: [
+                {'data': 'lizSelected'},
+                {'data': 'featureToolbar'},
+                {'data': 'id'},
+                {'data': 'polygon_id'},
+            ],
+            order: [{'column': 2, 'dir': 'asc'}],
+            searchBuilder: {
+                criteria: [
+                    {'condition': '=', 'data': 'id', 'origData': 'id', 'value1': '1', 'type': 'num'},
+                    {'condition': '=', 'data': 'id', 'origData': 'id', 'value1': '16', 'type': 'num'},
+                ],
+                logic: 'AND',
+            },
+        };
+        let response = await request.post(url, {
+            data: data,
+        });
+        // check response
+        let body = await checkJson(response, 200);
+        // check response body
+        expect(body).toStrictEqual([]);
+    });
+
+    test('Error: Invalid geometry on extent request', async({ request }) => {
+        // Unknown project in testsrepository
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'huge_attribute_table',
+            layerId: 'lookup_1_7c7e31d9_b595_4e70_bd13_47ed8df34896',
+        });
+        let url = `/index.php/lizmap/datatables/filteredFeaturesExtent?${params}`;
+        const data = {
+            start: 0,
+            length: 50,
+            columns: [
+                {'data': 'lizSelected'},
+                {'data': 'featureToolbar'},
+                {'data': 'id'},
+            ],
+            order: [{'column': 2, 'dir': 'asc'}],
+        };
+        let response = await request.post(url, {
+            data: data,
+        });
+        // check response
+        let body = await checkJson(response, 404);
+        // check response body
+        expect(body).toHaveProperty('status', 404);
+        expect(body).toHaveProperty('code', 'Not Found');
+        expect(body).toHaveProperty('message', 'Invalid geometry');
+    });
 });
