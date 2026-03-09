@@ -37,7 +37,8 @@ echo "SQL queries on the server"
 psql -v ON_ERROR_STOP=1 service=${NEW_SERVICE} -f set_tests_respository_rights.sql
 
 # Import data, check there isn't any ACL before
-psql -v ON_ERROR_STOP=1 service=${NEW_SERVICE} -f tests_dataset.sql
+psql -v ON_ERROR_STOP=1 service=${NEW_SERVICE} -f tests_dataset_schema.sql
+psql -v ON_ERROR_STOP=1 service=${NEW_SERVICE} -f tests_dataset_data.sql
 psql -v ON_ERROR_STOP=1 service=${NEW_SERVICE} -f set_tests_lizmap_search.sql
 psql -v ON_ERROR_STOP=1 service=${NEW_SERVICE} -f set_tests_module_action.sql
 

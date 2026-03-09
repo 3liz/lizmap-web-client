@@ -192,16 +192,16 @@ jobs:
           steps.test-playwright-requests.outcome != 'success' ||
           steps.test-playwright-read-only.outcome != 'success'
         run: |
-          ./lizmap-ctl dump-pgsql
-          git diff --exit-code qgis-projects/tests/tests_dataset.sql
+          ./lizmap-ctl dump-pgsql-data
+          git diff --exit-code qgis-projects/tests/tests_dataset_data.sql
           db_diff=$?
           echo "db_diff=${db_diff}" >> "$GITHUB_OUTPUT"
           if [[ -z ${db_diff} ]]; then
                 echo "No updated files 👍"
           else
                 echo "Updated files"
-                git diff qgis-projects/tests/tests_dataset.sql > qgis-projects/tests/tests_dataset.patch
-                git restore qgis-projects/tests/tests_dataset.sql
+                git diff qgis-projects/tests/tests_dataset_data.sql > qgis-projects/tests/tests_dataset_data.patch
+                git restore qgis-projects/tests/tests_dataset_data.sql
                 echo "::warning Git status is not clean after running tests about the DB"
                 exit 0
           fi
