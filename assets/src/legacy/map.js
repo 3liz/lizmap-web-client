@@ -2647,7 +2647,7 @@ window.lizMap = function() {
 
         // Create dock tab content
         var docktab = '';
-        docktab+='<div class="tab-pane" id="'+dname+'">';
+        docktab+='<div class="hide" id="'+dname+'">';
         if( dtype == 'minidock'){
             docktab+='<div class="mini-dock-close" title="' + lizDict['toolbar.content.stop'] + '" style="padding:7px;float:right;cursor:pointer;"><i class="icon-remove icon-white"></i></div>';
             docktab+='    <div class="'+dname+'">';
