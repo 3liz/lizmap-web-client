@@ -2750,12 +2750,6 @@ var lizAttributeTable = function() {
                 // Update layer state
                 lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerByName(layerConfig.name).expressionFilter = null;
 
-                // Refresh attributeTable
-                var opTable = '#attribute-layer-table-'+lizMap.cleanName( typeName );
-                if( $( opTable ).length ){
-                    getDataAndRefreshAttributeTable(typeName, null, opTable);
-                }
-
                 // And send event so that getFeatureInfo and getPrint use the updated layer filters
                 lizMap.events.triggerEvent("layerFilterParamChanged",
                     {
