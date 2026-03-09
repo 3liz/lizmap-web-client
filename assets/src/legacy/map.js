@@ -2673,13 +2673,6 @@ window.lizMap = function() {
             $('#dock-content').append(docktab);
         else if( dtype == 'bottomdock' )
             $('#bottom-dock-content').append(docktab);
-
-        // Create dock tab li
-        var docktabli = '';
-        docktabli+= '<li id="nav-tab-'+dname+'"><a href="#'+dname+'" data-toggle="tab">'+dlabel+'</a></li>';
-        if( dtype == 'bottomdock' )
-            $('#bottom-dock-tabs').append(docktabli);
-
     }
 
     /**
