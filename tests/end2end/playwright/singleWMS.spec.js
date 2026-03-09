@@ -60,12 +60,8 @@ test.describe('Single WMS layer', () => {
                     await icon.hover();
                     await icon.click();
                     let subDock = page.locator("#sub-dock");
-                    if (className == 'single_wms_polygons') {
-                        // opacity is enabled only in the tiled layer
-                        await expect(subDock.locator(".opacityLayer")).toHaveCount(1);
-                    } else {
-                        await expect(subDock.locator(".opacityLayer")).toHaveCount(0);
-                    }
+                    // opacity controls are available for all layers, including single WMS layers
+                    await expect(subDock.locator(".opacityLayer")).toHaveCount(1);
                 }
             }
         });
