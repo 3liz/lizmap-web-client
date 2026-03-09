@@ -12,10 +12,4 @@
         &nbsp;
         <button class="btn-bottomdock-size btn btn-sm" type="button" title="{@view~map.bottomdock.toolbar.btn.size.maximize.title@}">{@view~map.bottomdock.toolbar.btn.size.maximize.title@}</button>
       </div>
-
-      <ul id="bottom-dock-tabs" class="nav nav-tabs">
-      {foreach $dockable as $dock}
-        <li id="nav-tab-{$dock->id}" {if $dock->order==1} class="active"{/if}><a href="#{$dock->id}" data-toggle="tab">{$dock->title}</a></li>
-      {/foreach}
-      </ul>
     </div>

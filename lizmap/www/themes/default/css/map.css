@@ -229,8 +229,7 @@ div.modal div.menu-content,
 }
 
 /* Dark text in dock, right-dock, bottom-dock main titles */
-.dock-title,
-#bottom-dock-tabs>li>a {
+.dock-title {
   color: var(--color-text-primary);
 }
 

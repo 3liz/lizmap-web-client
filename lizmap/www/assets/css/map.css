@@ -1176,10 +1176,6 @@ SubDock
   display: block;
 }
 
-#bottom-dock-tabs {
-  display:none;
-}
-
 #bottom-dock:hover {
   opacity: 1;
 }
