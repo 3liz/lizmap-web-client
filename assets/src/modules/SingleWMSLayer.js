@@ -88,6 +88,12 @@ export default class SingleWMSLayer {
         this._legendOff = [];
 
         /**
+         * list of layer opacities (0-255) on the current single layer displayed on map
+         * @type {number[]}
+         */
+        this._layerOpacities = [];
+
+        /**
          * the single WMS layer instance
          * @type {?ImageLayer<ImageWMS>}
          */
@@ -155,7 +161,9 @@ export default class SingleWMSLayer {
         // register listener for map layers
         mainLizmap.state.rootMapGroup.addListener(
             evt => {
-                if (this._mapLayers.includes(evt.name)) {
+                // For opacity events on groups, always update since child layers may be affected
+                const isOpacityEvent = evt.type === 'layer.opacity.changed' || evt.type === 'group.opacity.changed';
+                if (this._mapLayers.includes(evt.name) || isOpacityEvent) {
                     // the layer is included in the single WMS request
 
                     // wait a bit in order to reduce the amount of requests
@@ -166,7 +174,7 @@ export default class SingleWMSLayer {
                     },600)
                 }
             },
-            ['layer.visibility.changed','group.visibility.changed','layer.symbol.checked.changed', 'layer.style.changed', 'layer.selection.token.changed', 'layer.filter.token.changed']
+            ['layer.visibility.changed','group.visibility.changed','layer.symbol.checked.changed', 'layer.style.changed', 'layer.selection.token.changed', 'layer.filter.token.changed', 'layer.opacity.changed', 'group.opacity.changed']
         );
 
         // register listener for base layers
@@ -290,6 +298,9 @@ export default class SingleWMSLayer {
             STYLES: this._layerStyles.join(","),
             DPI: 96
         }
+        // Only send OPACITIES when at least one layer has non-full opacity
+        if (this._layerOpacities.some(o => o !== 255))
+            param["OPACITIES"] = this._layerOpacities.join(",");
         if (this._selectionTokens.join("").split("").length > 0)
             param["SELECTIONTOKEN"] = this._selectionTokens.join(";");
         if (this._filterTokens.join("").split("").length > 0)
@@ -331,6 +342,7 @@ export default class SingleWMSLayer {
         this._filterTokens = [];
         this._legendOn = [];
         this._legendOff = [];
+        this._layerOpacities = [];
 
         this._orderedLayers.forEach((layerName) => {
             //since _orderedLayers property respect the layerOrder, if there is a baselayer in the list, then it will be put
@@ -341,9 +353,14 @@ export default class SingleWMSLayer {
                 if (this._baseLayers.includes(baseLayersState.selectedBaseLayerName)
                     && currentLayerState.itemState.wmsName == baseLayersState.selectedBaseLayer.itemState.wmsName) {
                     // get item state
-                    const selectedBaseLayerState = baseLayersState.selectedBaseLayer.itemState;
+                    const selectedBaseLayer = baseLayersState.selectedBaseLayer;
+                    const selectedBaseLayerState = selectedBaseLayer.itemState;
                     this._layersWmsName.push(selectedBaseLayerState.wmsName);
                     this._layerStyles.push(selectedBaseLayerState.wmsSelectedStyleName || "");
+                    // Compute opacity: user-set opacity * QGIS project opacity
+                    const baseOpacity = selectedBaseLayerState.opacity;
+                    const qgisOpacity = selectedBaseLayer.layerConfig?.opacity ?? 1;
+                    this._layerOpacities.push(Math.round(255 * baseOpacity * qgisOpacity));
                 }
             } else if (currentLayerState instanceof MapLayerState){
                 // Check if layer should be rendered using visibility
@@ -352,6 +369,10 @@ export default class SingleWMSLayer {
                     this._layersName.push(currentLayerState.name);
                     this._layersWmsName.push(currentLayerState.wmsName);
                     this._layerStyles.push(currentLayerState.wmsSelectedStyleName || "");
+                    // Compute opacity: total opacity (incl. parent groups) * QGIS project opacity
+                    const totalOpacity = currentLayerState.itemState.calculateTotalOpacity();
+                    const qgisOpacity = currentLayerState.layerConfig?.opacity ?? 1;
+                    this._layerOpacities.push(Math.round(255 * totalOpacity * qgisOpacity));
                     const wmsParam = currentLayerState.wmsParameters;
                     if (wmsParam){
                         if(wmsParam.SELECTIONTOKEN)
