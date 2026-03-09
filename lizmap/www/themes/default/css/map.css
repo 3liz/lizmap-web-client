@@ -230,7 +230,6 @@ div.modal div.menu-content,
 
 /* Dark text in dock, right-dock, bottom-dock main titles */
 .dock-title,
-#right-dock-tabs>li>a,
 #bottom-dock-tabs>li>a {
   color: var(--color-text-primary);
 }
