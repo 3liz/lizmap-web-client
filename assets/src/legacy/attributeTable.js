@@ -2467,35 +2467,62 @@ var lizAttributeTable = function() {
              * @param featureType
              * @param supdateDrawing
              */
-            function setSelectedFeaturesFromSearchedFilter( featureType, supdateDrawing ) {
+            async function setSelectedFeaturesFromSearchedFilter( featureType, supdateDrawing ) {
                 // Set function parameters if not given
                 supdateDrawing = typeof supdateDrawing !== 'undefined' ?  supdateDrawing : true;
 
                 // Assure selectedFeatures property exists for the layer
                 if( !config.layers[featureType]['selectedFeatures'] )
                     config.layers[featureType]['selectedFeatures'] = [];
+                const table = document.getElementById(`attribute-layer-table-${featureType}`);
+                if (!table || !DataTable.isDataTable( $(table) )) return;
+                const eTable = new DataTable.Api(table);
+                const { pages } = {...eTable.page.info()};
 
                 var hasChanged = false;
-                // Add filtered featured
-                $('.attribute-table-table[id]').each(function(){
-                    var tableId = $(this).attr('id');
-                    var tableLayerName = $(this).parents('div.dt-container:first').prev('input.attribute-table-hidden-layer').val();
-                    // Get parent table for the feature type
-                    if ( tableLayerName
-                        && DataTable.isDataTable( $(this) )
-                        && lizMap.cleanName( featureType ) == tableLayerName
-                    ){
-
+                if( pages == 1 ) {
+                    // avoid server call and select features on client side
+                    // Add filtered features
+                    var tableLayerName = $(table).parents('div.dt-container:first').prev('input.attribute-table-hidden-layer').val();
+                    if( lizMap.cleanName( featureType ) == tableLayerName ) {
                         var sIds = [];
-                        let rTable = new DataTable.Api(this);
-                        var filteredrowids = rTable.rows( {"filter":"applied"} ).ids();
+                        //let rTable = new DataTable.Api(this);
+                        var filteredrowids = eTable.rows( {"filter":"applied"} ).ids();
                         for ( var i = 0; i < filteredrowids.length; i++ ) {
                             sIds.push( filteredrowids[i] );
                         }
                         config.layers[featureType]['selectedFeatures'] = sIds;
                         hasChanged = true;
                     }
-                })
+                } else if(pages > 1) {
+                    // call server
+                    const datatablesUrl = globalThis['lizUrls'].wms.replace('service', 'datatables/selectFilteredFeatures');
+                    const params = {...globalThis['lizUrls'].params};
+                    params['layerId'] = config.attributeLayers[featureType].layerId;
+
+                    // Using the same parameters as the search builder ensures that the selection
+                    // is consistent with the filtered features.
+                    const selectedFeaturesResponse = await fetch(datatablesUrl + '?' + new URLSearchParams(params).toString(),{
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json;charset=utf-8'
+                        },
+                        body: JSON.stringify({...eTable.ajax.params()})
+                    })
+
+                    if (!selectedFeaturesResponse.ok) return;
+                    const featuresR = await selectedFeaturesResponse.json();
+
+                    const features = (new lizMap.ol.format.GeoJSON()).readFeatures(featuresR);
+
+                    // Array of feature ids matching geometry condition
+                    let featureIds = features.map(feature => feature.getId().split('.')[1]);
+                    featureIds = config.layers[featureType]['selectedFeatures'].concat(featureIds);
+                    featureIds = [...new Set(featureIds)];
+
+                    config.layers[featureType]['selectedFeatures'] = featureIds;
+                    hasChanged = true;
+                }
 
                 if( hasChanged ){
                     lizMap.events.triggerEvent("layerSelectionChanged",
