@@ -80,7 +80,7 @@ test.describe('Single WMS layer', () => {
             await icon.click();
 
             const requestOpacityPromise = project.waitForSingleWMSGetMapRequest();
-            await page.locator("#sub-dock").locator("a.btn-opacity-layer.60").click();
+            await page.locator("#sub-dock").locator("a.btn-opacity-layer:text-is('60')").click();
 
             const requestOpacity = await requestOpacityPromise;
             const expectedOpacityParameters = {
