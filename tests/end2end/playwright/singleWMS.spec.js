@@ -66,6 +66,36 @@ test.describe('Single WMS layer', () => {
             }
         });
 
+    test('Change layer opacity',
+        {
+            tag:['@readonly']
+        }, async ({ page }) => {
+            const project = new ProjectPage(page, 'single_wms_image');
+            await project.open();
+
+            // Open single_wms_points info panel and change opacity to 60%
+            const points = page.getByTestId('single_wms_points');
+            await points.locator(".node").nth(0).hover();
+            let icon = points.locator(".icon-info-sign");
+            await icon.click();
+
+            const requestOpacityPromise = project.waitForSingleWMSGetMapRequest();
+            await page.locator("#sub-dock").locator("a.btn-opacity-layer.60").click();
+
+            const requestOpacity = await requestOpacityPromise;
+            const expectedOpacityParameters = {
+                'SERVICE': 'WMS',
+                'VERSION': '1.3.0',
+                'REQUEST': 'GetMap',
+                'FORMAT': 'image/png',
+                'STYLES':'default,default,default,default,',
+                'OPACITIES': '255,153,255,255,255',
+                'LAYERS':'single_wms_lines,single_wms_points,single_wms_points_group,single_wms_lines_group,GroupAsLayer',
+            }
+            requestExpect(requestOpacity).toContainParametersInUrl(expectedOpacityParameters);
+            await requestOpacity.response();
+        });
+
     test('Switch layers',
         {
             tag:['@readonly']
