@@ -29,8 +29,8 @@
     "@eslint/js": "^9.39.x",
     "@nieuwlandgeo/sldreader": "^0.6.2",
     "@playwright/test": "^1.57.x",
-    "@rspack/cli": "~1.6.x",
-    "@rspack/core": "~1.6.x",
+    "@rspack/cli": "~1.7.x",
+    "@rspack/core": "~1.7.x",
     "@stylistic/eslint-plugin-js": "^4.2.x",
     "@turf/line-split": "^7.3.x",
     "bats": "^1.13.0",
@@ -58,7 +58,6 @@
     "stylelint": "^16.26.x",
     "stylelint-config-standard": "^39.0.x",
     "undici": "^7.16.x",
-    "webpack": "^5.104.x",
     "webpack-merge": "^6.0.x",
     "xmldoc": "^2.0.3"
   }
