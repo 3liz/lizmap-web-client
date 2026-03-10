@@ -1080,4 +1080,113 @@ test.describe('Datables Requests @requests @readonly', () => {
         expect(body).toHaveProperty('code', 'Not Found');
         expect(body).toHaveProperty('message', 'Invalid geometry');
     });
+
+    test('Select datatables filtered features request', async({ request }) => {
+        // Simple datatable request
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'huge_attribute_table',
+            layerId: 'huge_table_3a6c5511_aa6a_43fe_957e_e2c3f5b0a085',
+        });
+        let url = `/index.php/lizmap/datatables/selectFilteredFeatures?${params}`;
+        let response = await request.post(url, {
+            data: {
+                start: 0,
+                length: 50,
+                columns: [
+                    {'data': 'lizSelected'},
+                    {'data': 'featureToolbar'},
+                    {'data': 'id'},
+                    {'data': 'lookup_1'},
+                ],
+                order: [{'column': 2, 'dir': 'asc'}],
+                searchBuilder: {
+                    criteria: [
+                        {'condition': '=', 'data': 'Large lookup', 'origData': 'lookup_1', 'value1': '18', 'type': 'string'},
+                    ],
+                    logic: 'AND',
+                },
+            }
+        });
+
+        let body = await checkJson(response, 200);
+        expect(body).toHaveProperty('type', 'FeatureCollection');
+        expect(body).toHaveProperty('features');
+        expect(body.features).toHaveLength(69);
+        /** @type {any[]} */
+        let features = body.features;
+        expect(features.map(feat => feat.id.split('.')[1])).toStrictEqual(
+            [
+                "157",
+                "241",
+                "330",
+                "349",
+                "386",
+                "490",
+                "957",
+                "1027",
+                "1062",
+                "1201",
+                "1246",
+                "1306",
+                "1369",
+                "1410",
+                "1491",
+                "1631",
+                "1642",
+                "1693",
+                "1831",
+                "1837",
+                "1853",
+                "1950",
+                "2000",
+                "2014",
+                "2035",
+                "2124",
+                "2233",
+                "2355",
+                "2376",
+                "2409",
+                "2435",
+                "2460",
+                "2482",
+                "2513",
+                "2754",
+                "2778",
+                "2799",
+                "2843",
+                "2908",
+                "3348",
+                "3354",
+                "3355",
+                "3391",
+                "3414",
+                "3519",
+                "3537",
+                "3593",
+                "3631",
+                "3650",
+                "3708",
+                "3718",
+                "3764",
+                "3840",
+                "3902",
+                "3965",
+                "4106",
+                "4174",
+                "4192",
+                "4261",
+                "4275",
+                "4329",
+                "4415",
+                "4556",
+                "4730",
+                "4763",
+                "4831",
+                "4920",
+                "4944",
+                "4958"
+            ]
+        );
+    })
 });
