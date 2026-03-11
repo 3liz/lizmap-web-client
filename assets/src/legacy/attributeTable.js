@@ -2477,7 +2477,7 @@ var lizAttributeTable = function() {
                 const table = document.getElementById(`attribute-layer-table-${featureType}`);
                 if (!table || !DataTable.isDataTable( $(table) )) return;
                 const eTable = new DataTable.Api(table);
-                const { pages } = {...eTable.page.info()};
+                const { pages, recordsDisplay } = {...eTable.page.info()};
 
                 var hasChanged = false;
                 if( pages == 1 ) {
@@ -2495,6 +2495,10 @@ var lizAttributeTable = function() {
                         hasChanged = true;
                     }
                 } else if(pages > 1) {
+                    let confirmSelection = true;
+                    // warn user if more than 1000 features are involved.
+                    if(recordsDisplay > 1000) confirmSelection = confirm(lizDict['attributeLayers.toolbar.btn.select.searched.warn']);
+                    if(!confirmSelection) return;
                     // call server
                     const datatablesUrl = globalThis['lizUrls'].wms.replace('service', 'datatables/selectFilteredFeatures');
                     const params = {...globalThis['lizUrls'].params};

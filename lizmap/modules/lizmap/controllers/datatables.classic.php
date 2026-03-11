@@ -47,12 +47,12 @@ class datatablesCtrl extends jController
     private $DTLength;
 
     /**
-     * @var null|array Array of columns order
+     * @var mixed Array of columns order
      */
     private $DTOrder;
 
     /**
-     * @var null|array Array of columns name
+     * @var mixed Array of columns name
      */
     private $DTColumns;
 
