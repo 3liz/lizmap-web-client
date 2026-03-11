@@ -148,26 +148,24 @@ var lizLayerActionButtons = function() {
                 }
             }
             // Opacity
-            {
-                html+= '        <dt>'+lizDict['layer.metadata.opacity.title']+'</dt>';
-                html+= '<dd>';
-                html+= '<input type="hidden" class="opacityLayer '+isBaselayer+'" value="'+aName+'">';
+            html+= '        <dt>'+lizDict['layer.metadata.opacity.title']+'</dt>';
+            html+= '<dd>';
+            html+= '<input type="hidden" class="opacityLayer '+isBaselayer+'" value="'+aName+'">';
 
-                const currentOpacity = metadatas.isBaselayer ?
-                    lizMap.mainLizmap.state.baseLayers.getBaseLayerByName(aName).opacity :
-                    lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerOrGroupByName(aName).opacity;
-                var opacities = lizMap.config.options.layersOpacities;
-                if (typeof opacities === 'undefined') {
-                    opacities = [0.2, 0.4, 0.6, 0.8, 1];
-                }
-                for ( var i=0, len=opacities.length; i<len; i++ ) {
-                    var oactive = '';
-                    if(currentOpacity == opacities[i])
-                        oactive = 'active';
-                    html+= '<a href="#" class="btn btn-sm btn-opacity-layer '+ oactive+' '+ opacities[i]*100+'">'+opacities[i]*100+'</a>';
-                }
-                html+= '</dd>';
+            const currentOpacity = metadatas.isBaselayer ?
+                lizMap.mainLizmap.state.baseLayers.getBaseLayerByName(aName).opacity :
+                lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerOrGroupByName(aName).opacity;
+            var opacities = lizMap.config.options.layersOpacities;
+            if (typeof opacities === 'undefined') {
+                opacities = [0.2, 0.4, 0.6, 0.8, 1];
             }
+            for ( var i=0, len=opacities.length; i<len; i++ ) {
+                var oactive = '';
+                if(currentOpacity == opacities[i])
+                    oactive = 'active';
+                html+= '<a href="#" class="btn btn-sm btn-opacity-layer '+ oactive+' '+ opacities[i]*100+'">'+opacities[i]*100+'</a>';
+            }
+            html+= '</dd>';
 
             // Export
             if ( 'exportLayers' in lizMap.config.options

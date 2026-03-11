@@ -40,7 +40,7 @@ test.describe('Single WMS layer', () => {
             await requestTile.response();
         });
 
-    test('Check opacity',
+    test('Check opacity UI',
         {
             tag:['@readonly']
         }, async ({ page }) => {
@@ -85,7 +85,7 @@ test.describe('Single WMS layer', () => {
             }
             requestExpect(requestMap).toContainParametersInUrl(expectedMapParameters);
             // Check that there is no OPACITIES in the request
-            requestExpect(getMapRequest).not.toContainParametersInUrl({
+            requestExpect(requestMap).not.toContainParametersInUrl({
                 'OPACITIES': '255,255,255,255,255',
             });
             await requestMap.response();
