@@ -735,6 +735,32 @@ test.describe('Attribute table @readonly', () => {
 
         requestExpect(getSelectionTokenRequest).toContainParametersInPostData(getSelectionTokenParameters);
         expect(tableHtml.locator('tbody tr.selected')).toHaveCount(50);
+
+        // empty filters and try to select the whole dataset
+        await project.attributeTableActionBar(tableName).locator('.btn-unselect-attributeTable').click();
+
+        // clear filters
+        datatablesRequestPromise = project.waitForDatatablesRequest();
+        await project.openSearchBuilderPanel(tableName, true);
+        datatablesRequest = await datatablesRequestPromise;
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+        await expect(project.attributeTableWrapper(tableName).locator('div.dt-info'))
+            .toContainText('Showing 1 to 50 of 5,000 entries');
+        // close panel
+        await project.searchBuilderClosePanel(tableName);
+
+        let dialogPromped = false;
+        page.once('dialog', dialog => {
+            expect(dialog.message()).toBe("You are about to select more than a 1000 features. This may take a few seconds to process. Are you sure you want to proceed?");
+            dialogPromped = true;
+            return dialog.accept()
+        });
+        getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
+        await project.attributeTableActionBar(tableName).locator('.btn-select-searched').click();
+        expect(dialogPromped).toBeTruthy();
+        getSelectionTokenRequest = await getSelectionTokenRequestPromise;
+        await getSelectionTokenRequest.response();
     });
 
     test('Thumbnail class generate img with good path', async ({ page }) => {
