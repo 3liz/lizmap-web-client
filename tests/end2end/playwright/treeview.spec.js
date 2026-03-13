@@ -1,6 +1,7 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 import { ProjectPage } from "./pages/project";
+import { expect as requestExpect } from './fixtures/expect-request.js';
 
 test.describe('Treeview', () => {
 
@@ -209,6 +210,45 @@ test.describe('Treeview', () => {
         await expect(page.getByLabel('group with space in name and shortname defined')).toBeChecked();
         await expect(page.locator('#node-quartiers')).toBeChecked();
         await expect(page.locator('#node-shop_bakery_pg')).not.toBeChecked();
+
+        // double click on single layer, check legend symbols
+        const project = new ProjectPage(page, 'treeview');
+        await project.zoomIn();
+        await page.waitForTimeout(1000);
+        let getMapRequestPromise = project.waitForGetMapRequest();
+        await project.changeLayerStyle('subdistricts','refined_categories');
+
+        let getMapRequest = await getMapRequestPromise;
+        const expectedRequestParameters = {
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'REQUEST': 'GetMap',
+            'FORMAT': /image\/png/,
+            'STYLES':'refined_categories',
+            'LAYERS':'sousquartiers',
+        }
+        requestExpect(getMapRequest).toContainParametersInUrl(expectedRequestParameters);
+
+        await page.locator('#layers-unfold-all').click();
+        const checkboxes = await page.getByTestId('subdistricts').locator('input[type="checkbox"]');
+        await expect(checkboxes).toHaveCount(16);
+        for (let checkbox of await checkboxes.all()) {
+            await expect(checkbox).toBeChecked();
+        }
+
+        // double click on subdistricts layer checkbox to turn off all categories
+        await page.getByTestId('subdistricts').locator('.layer input[type="checkbox"]').dblclick();
+
+        for (let checkbox of await checkboxes.all()) {
+            await expect(checkbox).not.toBeChecked();
+        }
+
+        // double click on subdistricts layer checkbox to turn on all categories
+        await page.getByTestId('subdistricts').locator('.layer input[type="checkbox"]').dblclick();
+
+        for (let checkbox of await checkboxes.all()) {
+            await expect(checkbox).toBeChecked();
+        }
     });
 });
 
