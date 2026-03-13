@@ -295,13 +295,13 @@ h1, h2, h3, h4, h5 {
   color: #f00;
 }
 
-/* Copy geometry button web component - display inline */
-lizmap-copy-geometry-button {
+/* Copy/paste geometry button web component - display inline */
+lizmap-paste-geom {
   display: inline-block;
   vertical-align: top;
 }
 
-lizmap-copy-geometry-button svg {
+lizmap-paste-geom svg {
   width: 16px;
   height: 16px;
   vertical-align: middle;
