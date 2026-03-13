@@ -12,6 +12,7 @@
  */
 
 use GuzzleHttp\Psr7\StreamWrapper as Psr7StreamWrapper;
+use GuzzleHttp\Psr7\Utils as Psr7Utils;
 use JsonMachine\Items as JsonMachineItems;
 use Lizmap\DataTables\DataTables;
 use Lizmap\Project\UnknownLizmapProjectException;
@@ -20,6 +21,66 @@ use Lizmap\Request\WFSRequest;
 
 class datatablesCtrl extends jController
 {
+    /**
+     * @var null|string The repository key string
+     */
+    private $repository;
+
+    /**
+     * @var null|string The qgis project key
+     */
+    private $project;
+
+    /**
+     * @var null|string The layer id
+     */
+    private $layerId;
+
+    /**
+     * @var null|string Pagination start
+     */
+    private $DTStart;
+
+    /**
+     * @var null|string Number of features per page
+     */
+    private $DTLength;
+
+    /**
+     * @var mixed Array of columns order
+     */
+    private $DTOrder;
+
+    /**
+     * @var mixed Array of columns name
+     */
+    private $DTColumns;
+
+    /**
+     * @var null|array Array of search builder condition criteria
+     */
+    private $DTSearchBuilder;
+
+    /**
+     * @var null|string srs code
+     */
+    private $srsName;
+
+    /**
+     * @var array bbox array
+     */
+    private $bbox;
+
+    /**
+     * @var array Array of filtered features ids
+     */
+    private $filteredFeatureIDs;
+
+    /**
+     * @var null|string WFS expression filter
+     */
+    private $expFilter;
+
     /**
      * Sets the error in the provided response object based on the given HTTP error code.
      *
@@ -41,93 +102,111 @@ class datatablesCtrl extends jController
         return $rep;
     }
 
+    /**
+     * Assign values to class instance property.
+     */
+    private function initClassProperties()
+    {
+        $this->repository = $this->param('repository');
+        $this->project = $this->param('project');
+        $this->layerId = $this->param('layerId');
+        $this->DTStart = $this->param('start');
+        $this->DTLength = $this->param('length');
+        $this->DTOrder = $this->param('order');
+        $this->DTColumns = $this->param('columns');
+        $this->DTSearchBuilder = $this->param('searchBuilder');
+        $this->filteredFeatureIDs = $this->param('filteredfeatureids') ? explode(',', $this->param('filteredfeatureids')) : array();
+        $this->srsName = $this->param('srsname');
+        $this->bbox = $this->param('bbox') && $this->srsName ? explode(',', $this->param('bbox')) : array();
+        $this->expFilter = $this->getExpFilter();
+    }
+
+    /**
+     * Return expression filter parameter.
+     *
+     * @return null|string
+     */
+    private function getExpFilter()
+    {
+        $expFilter = $this->param('exp_filter');
+        if (count($this->filteredFeatureIDs) > 0) {
+            $filteredFeatureIDSFilter = '$id IN ('.implode(' , ', $this->filteredFeatureIDs).')';
+            // concat current exp_filter with filteredFeaturesIds filter
+            $expFilter = !$expFilter ? $filteredFeatureIDSFilter : "( {$expFilter} ) AND ( {$filteredFeatureIDSFilter} )";
+        }
+
+        // Handle search made by searchBuilder
+        if ($this->DTSearchBuilder) {
+            $searchBuilderFilter = DataTables::convertSearchToExpression($this->DTSearchBuilder);
+            // concat current exp_filter with searchBuilderFilter filter
+            $expFilter = !$expFilter ? $searchBuilderFilter : "( {$expFilter} ) AND ( {$searchBuilderFilter} )";
+        }
+
+        return $expFilter;
+
+    }
+
     public function index()
     {
         /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
 
         // Lizmap parameters
-        $repository = $this->param('repository');
-        $project = $this->param('project');
-        $layerId = $this->param('layerId');
+        $this->initClassProperties();
 
-        if (!$repository || !$project || !$layerId) {
+        if (!$this->repository || !$this->project || !$this->layerId) {
             return $this->setErrorResponse($rep, 400, 'The parameters repository, project and layerId are mandatory.');
         }
 
-        // DataTables parameters
-        $DTStart = $this->param('start');
-        $DTLength = $this->param('length');
-        $DTOrder = $this->param('order');
-        $DTColumns = $this->param('columns');
-
         // Check DataTables parameters
-        if (!isset($DTStart) || !isset($DTLength) || !isset($DTOrder) || !isset($DTColumns)) {
+        if (!isset($this->DTStart) || !isset($this->DTLength) || !isset($this->DTOrder) || !isset($this->DTColumns)) {
             return $this->setErrorResponse($rep, 400, 'The DataTables parameters start, length'.
             ', order and columns are mandatory.');
         }
-        if (!is_array($DTOrder) || count($DTOrder) == 0 || !array_key_exists(0, $DTOrder)
-            || !array_key_exists('column', $DTOrder[0]) || !array_key_exists('dir', $DTOrder[0])) {
-            return $this->setErrorResponse($rep, 400, 'The DataTables parameter order '.json_encode($DTOrder).
-            ' is not well formed.');
-        }
-        if (!is_array($DTColumns) || count($DTColumns) == 0) {
-            return $this->setErrorResponse($rep, 400, 'The DataTables parameter columns '.json_encode($DTColumns).
+
+        if (!is_array($this->DTOrder) || count($this->DTOrder) == 0 || !array_key_exists(0, $this->DTOrder)
+            || !array_key_exists('column', $this->DTOrder[0]) || !array_key_exists('dir', $this->DTOrder[0])) {
+            return $this->setErrorResponse($rep, 400, 'The DataTables parameter order '.json_encode($this->DTOrder).
             ' is not well formed.');
         }
 
-        // Extract info for DataTables parameters
-        $DTOrderColumnIndex = $DTOrder[0]['column'];
-        $DTOrderColumnDirection = $DTOrder[0]['dir'] == 'desc' ? 'DESC' : 'ASC';
-        if (!array_key_exists($DTOrderColumnIndex, $DTColumns)) {
-            return $this->setErrorResponse($rep, 400, 'The DataTables parameters order and columns are not compatible.');
-        }
-        if (!array_key_exists('data', $DTColumns[$DTOrderColumnIndex])) {
-            return $this->setErrorResponse($rep, 400, 'The DataTables parameter columns '.json_encode($DTColumns).
+        if (!is_array($this->DTColumns) || count($this->DTColumns) == 0) {
+            return $this->setErrorResponse($rep, 400, 'The DataTables parameter columns '.json_encode($this->DTColumns).
             ' is not well formed.');
-        }
-        $DTOrderColumnName = $DTColumns[$DTOrderColumnIndex]['data'];
-
-        $DTSearchBuilder = '';
-        if ($this->param('searchBuilder')) {
-            $DTSearchBuilder = $this->param('searchBuilder');
-        }
-
-        $filteredFeatureIDs = array();
-        if ($this->param('filteredfeatureids')) {
-            $filteredFeatureIDs = explode(',', $this->param('filteredfeatureids'));
-        }
-        $expFilter = $this->param('exp_filter');
-
-        // Filter by bounding box
-        $bbox = array();
-        $srsName = $this->param('srsname');
-        if ($this->param('bbox') && $srsName) {
-            $bbox = explode(',', $this->param('bbox'));
         }
 
         // Check if when the bbox is defined, it contains 4 number
-        if (count($bbox) > 0 && count($bbox) != 4) {
+        if (count($this->bbox) > 0 && count($this->bbox) != 4) {
             return $this->setErrorResponse($rep, 400, 'The bbox parameter must contain 4 numbers separated by a comma.');
         }
 
+        // Extract info for DataTables parameters
+        $DTOrderColumnIndex = $this->DTOrder[0]['column'];
+        $DTOrderColumnDirection = $this->DTOrder[0]['dir'] == 'desc' ? 'DESC' : 'ASC';
+        if (!array_key_exists($DTOrderColumnIndex, $this->DTColumns)) {
+            return $this->setErrorResponse($rep, 400, 'The DataTables parameters order and columns are not compatible.');
+        }
+        if (!array_key_exists('data', $this->DTColumns[$DTOrderColumnIndex])) {
+            return $this->setErrorResponse($rep, 400, 'The DataTables parameter columns '.json_encode($this->DTColumns).
+            ' is not well formed.');
+        }
+        $DTOrderColumnName = $this->DTColumns[$DTOrderColumnIndex]['data'];
+
         try {
-            $lproj = lizmap::getProject($repository.'~'.$project);
+            $lproj = lizmap::getProject($this->repository.'~'.$this->project);
             if (!$lproj) {
-                return $this->setErrorResponse($rep, 404, 'The lizmap project '.$repository.'~'.$project.' does not exist.');
+                return $this->setErrorResponse($rep, 404, 'The lizmap project '.$this->repository.'~'.$this->project.' does not exist.');
             }
         } catch (UnknownLizmapProjectException $e) {
-            return $this->setErrorResponse($rep, 404, 'The lizmap project '.$repository.'~'.$project.' does not exist.');
+            return $this->setErrorResponse($rep, 404, 'The lizmap project '.$this->repository.'~'.$this->project.' does not exist.');
         }
 
         /** @var null|qgisVectorLayer $layer */
-        $layer = $lproj->getLayer($layerId);
+        $layer = $lproj->getLayer($this->layerId);
         if (!$layer) {
-            return $this->setErrorResponse($rep, 404, 'The layerId '.$layerId.' does not exist.');
+            return $this->setErrorResponse($rep, 404, 'The layerId '.$this->layerId.' does not exist.');
         }
         $typeName = $layer->getWfsTypeName();
-
-        $jsonFeatures = array();
 
         $wfsParamsData = WFSRequest::buildGetFeatureParameters($typeName);
 
@@ -153,38 +232,25 @@ class datatablesCtrl extends jController
 
         $hits = $hitsData->numberOfFeatures;
         $recordsFiltered = $hits;
-        if (count($filteredFeatureIDs) > 0) {
-            $recordsFiltered = count($filteredFeatureIDs);
+        if (count($this->filteredFeatureIDs) > 0) {
+            $recordsFiltered = count($this->filteredFeatureIDs);
         }
 
-        if (count($filteredFeatureIDs) > 0) {
-            $filteredFeatureIDSFilter = '$id IN ('.implode(' , ', $filteredFeatureIDs).')';
-            // concat current exp_filter with filteredFeaturesIds filter
-            $expFilter = !$expFilter ? $filteredFeatureIDSFilter : "( {$expFilter} ) AND ( {$filteredFeatureIDSFilter} )";
-        }
-
-        // Handle search made by searchBuilder
-        if ($DTSearchBuilder) {
-            $searchBuilderFilter = DataTables::convertSearchToExpression($DTSearchBuilder);
-            // concat current exp_filter with searchBuilderFilter filter
-            $expFilter = !$expFilter ? $searchBuilderFilter : "( {$expFilter} ) AND ( {$searchBuilderFilter} )";
-        }
-
-        if ($expFilter) {
-            $wfsParamsData['EXP_FILTER'] = $expFilter;
+        if ($this->expFilter) {
+            $wfsParamsData['EXP_FILTER'] = $this->expFilter;
         }
 
         // Handle filter by extent
-        if (count($bbox) == 4) {
+        if (count($this->bbox) == 4) {
             // Add parameters to get features in the bounding box (paginated)
-            $bboxString = implode(',', $bbox);
+            $bboxString = implode(',', $this->bbox);
             $wfsParamsData['BBOX'] = $bboxString;
-            $wfsParamsData['SRSNAME'] = $srsName;
+            $wfsParamsData['SRSNAME'] = $this->srsName;
         }
 
         $wfsParamsPaginated = array(
-            'MAXFEATURES' => $DTLength,
-            'STARTINDEX' => $DTStart,
+            'MAXFEATURES' => $this->DTLength,
+            'STARTINDEX' => $this->DTStart,
             'SORTBY' => $DTOrderColumnName.' '.$DTOrderColumnDirection,
         );
         // Get paginated features by a WFS resquest
@@ -202,7 +268,7 @@ class datatablesCtrl extends jController
         $featureData = $wfsresponse->getBodyAsString();
 
         // Get hits when data is filtered
-        if ($expFilter || count($bbox) == 4) {
+        if ($this->expFilter || count($this->bbox) == 4) {
 
             $wfsrequest = new WFSRequest($lproj, array_merge($wfsParamsData, $wfsParamsHits), lizmap::getServices());
             $wfsresponse = $wfsrequest->process();
@@ -260,49 +326,30 @@ class datatablesCtrl extends jController
         $rep = $this->getResponse('json');
 
         // Lizmap parameters
-        $repository = $this->param('repository');
-        $project = $this->param('project');
-        $layerId = $this->param('layerId');
+        $this->initClassProperties();
 
-        if (!$repository || !$project || !$layerId) {
+        if (!$this->repository || !$this->project || !$this->layerId) {
             return $this->setErrorResponse($rep, 400, 'The parameters repository, project and layerId are mandatory.');
-        }
-        $DTSearchBuilder = '';
-        if ($this->param('searchBuilder')) {
-            $DTSearchBuilder = $this->param('searchBuilder');
-        }
-
-        $filteredFeatureIDs = array();
-        if ($this->param('filteredfeatureids')) {
-            $filteredFeatureIDs = explode(',', $this->param('filteredfeatureids'));
-        }
-        $expFilter = $this->param('exp_filter');
-
-        // Filter by bounding box
-        $bbox = array();
-        $srsName = $this->param('srsname');
-        if ($this->param('bbox') && $srsName) {
-            $bbox = explode(',', $this->param('bbox'));
         }
 
         // Check if when the bbox is defined, it contains 4 number
-        if (count($bbox) > 0 && count($bbox) != 4) {
+        if (count($this->bbox) > 0 && count($this->bbox) != 4) {
             return $this->setErrorResponse($rep, 400, 'The bbox parameter must contain 4 numbers separated by a comma.');
         }
 
         try {
-            $lproj = lizmap::getProject($repository.'~'.$project);
+            $lproj = lizmap::getProject($this->repository.'~'.$this->project);
             if (!$lproj) {
-                return $this->setErrorResponse($rep, 404, 'The lizmap project '.$repository.'~'.$project.' does not exist.');
+                return $this->setErrorResponse($rep, 404, 'The lizmap project '.$this->repository.'~'.$this->project.' does not exist.');
             }
         } catch (UnknownLizmapProjectException $e) {
-            return $this->setErrorResponse($rep, 404, 'The lizmap project '.$repository.'~'.$project.' does not exist.');
+            return $this->setErrorResponse($rep, 404, 'The lizmap project '.$this->repository.'~'.$this->project.' does not exist.');
         }
 
         /** @var null|qgisVectorLayer $layer */
-        $layer = $lproj->getLayer($layerId);
+        $layer = $lproj->getLayer($this->layerId);
         if (!$layer) {
-            return $this->setErrorResponse($rep, 404, 'The layerId '.$layerId.' does not exist.');
+            return $this->setErrorResponse($rep, 404, 'The layerId '.$this->layerId.' does not exist.');
         }
 
         // filter project layers to get geometry type
@@ -321,29 +368,16 @@ class datatablesCtrl extends jController
 
         $wfsParamsData = WFSRequest::buildGetFeatureParameters($typeName);
 
-        if (count($filteredFeatureIDs) > 0) {
-            $filteredFeatureIDSFilter = '$id IN ('.implode(' , ', $filteredFeatureIDs).')';
-            // concat current exp_filter with filteredFeaturesIds filter
-            $expFilter = !$expFilter ? $filteredFeatureIDSFilter : "( {$expFilter} ) AND ( {$filteredFeatureIDSFilter} )";
-        }
-
-        // Handle search made by searchBuilder
-        if ($DTSearchBuilder) {
-            $searchBuilderFilter = DataTables::convertSearchToExpression($DTSearchBuilder);
-            // concat current exp_filter with searchBuilderFilter filter
-            $expFilter = !$expFilter ? $searchBuilderFilter : "( {$expFilter} ) AND ( {$searchBuilderFilter} )";
-        }
-
-        if ($expFilter) {
-            $wfsParamsData['EXP_FILTER'] = $expFilter;
+        if ($this->expFilter) {
+            $wfsParamsData['EXP_FILTER'] = $this->expFilter;
         }
 
         // Handle filter by extent
-        if (count($bbox) == 4) {
-            // Add parameters to get features in the bounding box (paginated)
-            $bboxString = implode(',', $bbox);
+        if (count($this->bbox) == 4) {
+            // Add parameters to get features in the bounding box
+            $bboxString = implode(',', $this->bbox);
             $wfsParamsData['BBOX'] = $bboxString;
-            $wfsParamsData['SRSNAME'] = $srsName;
+            $wfsParamsData['SRSNAME'] = $this->srsName;
         }
 
         // if the geometry is not of type point, request the geometry extent,
@@ -424,5 +458,81 @@ class datatablesCtrl extends jController
         $rep->data = $finalExtent;
 
         return $rep;
+    }
+
+    /**
+     * Returns all features corresponding to the searching parameters, ignoring pagination.
+     *
+     * @return jResponseBinary|jResponseJson
+     */
+    public function selectFilteredFeatures()
+    {
+
+        /** @var jResponseJson $rep */
+        $rep = $this->getResponse('json');
+
+        // Lizmap parameters
+        $this->initClassProperties();
+
+        if (!$this->repository || !$this->project || !$this->layerId) {
+            return $this->setErrorResponse($rep, 400, 'The parameters repository, project and layerId are mandatory.');
+        }
+
+        // Check if when the bbox is defined, it contains 4 number
+        if (count($this->bbox) > 0 && count($this->bbox) != 4) {
+            return $this->setErrorResponse($rep, 400, 'The bbox parameter must contain 4 numbers separated by a comma.');
+        }
+
+        try {
+            $lproj = lizmap::getProject($this->repository.'~'.$this->project);
+            if (!$lproj) {
+                return $this->setErrorResponse($rep, 404, 'The lizmap project '.$this->repository.'~'.$this->project.' does not exist.');
+            }
+        } catch (UnknownLizmapProjectException $e) {
+            return $this->setErrorResponse($rep, 404, 'The lizmap project '.$this->repository.'~'.$this->project.' does not exist.');
+        }
+
+        /** @var null|qgisVectorLayer $layer */
+        $layer = $lproj->getLayer($this->layerId);
+        if (!$layer) {
+            return $this->setErrorResponse($rep, 404, 'The layerId '.$this->layerId.' does not exist.');
+        }
+
+        $typeName = $layer->getWfsTypeName();
+
+        $wfsParamsData = WFSRequest::buildGetFeatureParameters($typeName);
+
+        if ($this->expFilter) {
+            $wfsParamsData['EXP_FILTER'] = $this->expFilter;
+        }
+
+        // Handle filter by extent
+        if (count($this->bbox) == 4) {
+            // Add parameters to get features in the bounding box (paginated)
+            $bboxString = implode(',', $this->bbox);
+            $wfsParamsData['BBOX'] = $bboxString;
+            $wfsParamsData['SRSNAME'] = $this->srsName;
+        }
+
+        $wfsrequest = new WFSRequest($lproj, $wfsParamsData, lizmap::getServices());
+        $wfsresponse = $wfsrequest->process();
+
+        if ($wfsresponse->getCode() >= 400) {
+            return $this->setErrorResponse($rep, 400, 'The request to get paginated features failed, code: '.$wfsresponse->getCode());
+        }
+        if (!str_contains(strtolower($wfsresponse->getMime()), 'application/vnd.geo+json')) {
+            return $this->setErrorResponse($rep, 400, 'The request to get paginated features failed, mime-type: '.$wfsresponse->getMime());
+        }
+
+        /** @var jResponseBinary $binaryRep */
+        $binaryRep = $this->getResponse('binary');
+        $binaryRep->mimeType = 'application/json';
+
+        $binaryRep->setContentCallback(function () use ($wfsresponse) {
+            $output = Psr7Utils::streamFor(fopen('php://output', 'w+'));
+            Psr7Utils::copyToStream($wfsresponse->getBodyAsStream(), $output);
+        });
+
+        return $binaryRep;
     }
 }
