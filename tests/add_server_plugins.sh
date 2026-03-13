@@ -11,9 +11,9 @@ if [ -f /srv/plugins/sources.list ]; then
 fi
 
 echo "QGIS Server Lizmap and WfsOutputExtension plugins"
-echo "Unstable from https://packages.3liz.org"
+echo "Loading from https://qgis-plugins.3liz.org"
 # qgis-plugin-manager init
-echo "https://packages.3liz.org/pub/server-plugins-repository/unstable/plugins.[VERSION].xml" > /tmp/sources-plugin-manager.list
+echo "https://qgis-plugins.3liz.org/plugins.xml?qgis=[VERSION]" > /tmp/sources-plugin-manager.list
 qgis-plugin-manager update
 qgis-plugin-manager install -f "Lizmap server"
 qgis-plugin-manager install -f wfsOutputExtension
@@ -21,11 +21,16 @@ qgis-plugin-manager install -f atlasprint
 
 # echo "QGIS Server Lizmap plugin"
 # Latest commit
-# echo "Latest commit from https://packages.3liz.org"
-# wget https://packages.3liz.org/pub/lizmap-server-qgis-plugin/lizmap_server.master.zip -O /tmp/lizmap_server.master.zip
+# echo "Latest commit from https://qgis-plugins.3liz.org"
+# qgis-plugin-manager install --pre -f "Lizmap server"
+
+# Specific version
+# VERSION=2.14.1
+# echo "Specific version from https://qgis-plugins.3liz.org"
+# qgis-plugin-manager install -f "Lizmap server"==${VERSION}
 
 # Latest release
-# VERSION=1.1.1
+# VERSION=2.14.1
 # echo "Stable release from GitHub"
 # wget https://github.com/3liz/qgis-lizmap-server-plugin/releases/latest/download/lizmap_server.${VERSION}.zip -O /tmp/lizmap_server.master.zip
 
