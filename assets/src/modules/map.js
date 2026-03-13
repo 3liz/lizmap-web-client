@@ -883,15 +883,34 @@ export default class map extends olMap {
             ['map.state.changed']
         );
 
-        // Create the highlight layer
-        // used to display features on top of all layers
-        const styleColor = 'rgba(255,255,0,0.8)';
+        // Create the highlight layer (popup, locate, search, startup)
+        // Always yellow stroke-only — fixed color independent of project settings
+        const highlightColor = 'rgba(255,255,0,0.8)';
         const styleWidth = 3;
         this._highlightLayer = new VectorLayer({
             source: new VectorSource({
                 wrapX: false
             }),
             style: {
+                'circle-stroke-color': highlightColor,
+                'circle-stroke-width': styleWidth,
+                'circle-radius': 6,
+                'stroke-color': highlightColor,
+                'stroke-width': styleWidth,
+            }
+        });
+        this.addToolLayer(this._highlightLayer);
+
+        // Create the selection layer (SelectionTool, attribute table)
+        // Fill + stroke using the project's configured selection color
+        const styleColor = initialConfig.options.selectionColor;
+        this._selectionLayer = new VectorLayer({
+            source: new VectorSource({
+                wrapX: false
+            }),
+            style: {
+                'fill-color': styleColor,
+                'circle-fill-color': styleColor,
                 'circle-stroke-color': styleColor,
                 'circle-stroke-width': styleWidth,
                 'circle-radius': 6,
@@ -899,7 +918,7 @@ export default class map extends olMap {
                 'stroke-width': styleWidth,
             }
         });
-        this.addToolLayer(this._highlightLayer);
+        this.addToolLayer(this._selectionLayer);
 
         // Init view
         this.syncNewOLwithOL2View();
@@ -1022,6 +1041,59 @@ export default class map extends olMap {
     clearHighlightFeatures() {
         this._highlightLayer.getSource().clear();
     }
+
+    /**
+     * Returns true if the highlight layer currently contains features
+     * @returns {boolean}
+     */
+    get hasHighlightFeatures() {
+        return this._highlightLayer.getSource().getFeatures().length > 0;
+    }
+
+    /**
+     * Add features to the selection layer (SelectionTool, attribute table).
+     * Uses fill + stroke so selected features are clearly distinct from the map.
+     * @param {string} features features as GeoJSON or WKT
+     * @param {string} format format string as `geojson` or `wkt`
+     * @param {string|undefined} projection optional features projection
+     */
+    addSelectionFeatures(features, format, projection) {
+        const qgisProjectProjection = this._lizmap3.map.getProjection();
+        let olFeatures;
+        if (format === "geojson") {
+            olFeatures = (new GeoJSON()).readFeatures(features, {
+                dataProjection: projection,
+                featureProjection: qgisProjectProjection
+            });
+        } else if (format === "wkt") {
+            olFeatures = (new WKT()).readFeatures(features, {
+                dataProjection: projection,
+                featureProjection: qgisProjectProjection
+            });
+        } else {
+            return;
+        }
+        this._selectionLayer.getSource().addFeatures(olFeatures);
+    }
+
+    /**
+     * Replace all features in the selection layer.
+     * @param {string} features features as GeoJSON or WKT
+     * @param {string} format format string as `geojson` or `wkt`
+     * @param {string|undefined} projection optional features projection
+     */
+    setSelectionFeatures(features, format, projection) {
+        this.clearSelectionFeatures();
+        this.addSelectionFeatures(features, format, projection);
+    }
+
+    /**
+     * Clear all features in the selection layer.
+     */
+    clearSelectionFeatures() {
+        this._selectionLayer.getSource().clear();
+    }
+
 
     /**
      * Synchronize new OL view with OL2 one
