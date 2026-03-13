@@ -604,6 +604,28 @@ test.describe('Request Lizmap GetProjectConfig - anonymous - @requests @readonly
             }
         });
         expect(body.printTemplates[1]).toMatchObject({
+            title: 'print_overview',
+            width: 297,
+            height: 210,
+            maps: [{
+                id: 'map0',
+                width: 46,
+                height: 44,
+                grid: false,
+                overviewMap: body.printTemplates[1].maps[1].uuid,
+            },{
+                id: 'map1',
+                width: 253,
+                height: 171,
+                grid: false,
+                overviewMap: null,
+            }],
+            labels: [],
+            atlas: {
+                enabled: false,
+            }
+        });
+        expect(body.printTemplates[2]).toMatchObject({
             title: 'print_map',
             width: 297,
             height: 210,
@@ -619,7 +641,7 @@ test.describe('Request Lizmap GetProjectConfig - anonymous - @requests @readonly
                 enabled: false,
             }
         });
-        expect(body.printTemplates[2]).toMatchObject({
+        expect(body.printTemplates[3]).toMatchObject({
             title: 'atlas_quartiers',
             width: 297,
             height: 210,
@@ -636,7 +658,7 @@ test.describe('Request Lizmap GetProjectConfig - anonymous - @requests @readonly
                 coverageLayer: body.layers.quartiers.id,
             }
         });
-        expect(body.printTemplates[3]).toMatchObject({
+        expect(body.printTemplates[4]).toMatchObject({
             title: 'atlas_sousquartiers',
             width: 297,
             height: 210,
@@ -653,28 +675,6 @@ test.describe('Request Lizmap GetProjectConfig - anonymous - @requests @readonly
                 coverageLayer: body.layers.sousquartiers.id,
             }
         });
-        expect(body.printTemplates[4]).toMatchObject({
-            title: 'print_overview',
-            width: 297,
-            height: 210,
-            maps: [{
-                id: 'map0',
-                width: 46,
-                height: 44,
-                grid: false,
-                overviewMap: body.printTemplates[4].maps[1].uuid,
-            },{
-                id: 'map1',
-                width: 253,
-                height: 171,
-                grid: false,
-                overviewMap: null,
-            }],
-            labels: [],
-            atlas: {
-                enabled: false,
-            }
-        });
 
         expect(body.layouts.config).toHaveProperty('default_popup_print', true);
         expect(body.layouts.list).not.toEqual([]);
@@ -688,6 +688,14 @@ test.describe('Request Lizmap GetProjectConfig - anonymous - @requests @readonly
             default_dpi: '100',
         });
         expect(body.layouts.list[1]).toEqual({
+            layout: 'print_overview',
+            enabled: true,
+            formats_available: ['pdf'],
+            default_format: 'pdf',
+            dpi_available: ['100'],
+            default_dpi: '100',
+        });
+        expect(body.layouts.list[2]).toEqual({
             layout: 'print_map',
             enabled: true,
             formats_available: ['png', 'jpeg'],
@@ -695,7 +703,7 @@ test.describe('Request Lizmap GetProjectConfig - anonymous - @requests @readonly
             dpi_available: ['100', '200'],
             default_dpi: '200',
         });
-        expect(body.layouts.list[2]).toEqual({
+        expect(body.layouts.list[3]).toEqual({
             layout: 'atlas_quartiers',
             enabled: true,
             formats_available: ['pdf'],
@@ -704,16 +712,8 @@ test.describe('Request Lizmap GetProjectConfig - anonymous - @requests @readonly
             default_dpi: '100',
             icon: 'media/svg/tree-fill.svg',
         });
-        expect(body.layouts.list[3]).toEqual({
-            layout: 'atlas_sousquartiers',
-            enabled: true,
-            formats_available: ['pdf'],
-            default_format: 'pdf',
-            dpi_available: ['100'],
-            default_dpi: '100',
-        });
         expect(body.layouts.list[4]).toEqual({
-            layout: 'print_overview',
+            layout: 'atlas_sousquartiers',
             enabled: true,
             formats_available: ['pdf'],
             default_format: 'pdf',
@@ -983,6 +983,28 @@ test.describe('Request Lizmap GetProjectConfig - admin - @requests @readonly', (
             }
         });
         expect(body.printTemplates[1]).toMatchObject({
+            title: 'print_overview',
+            width: 297,
+            height: 210,
+            maps: [{
+                id: 'map0',
+                width: 46,
+                height: 44,
+                grid: false,
+                overviewMap: body.printTemplates[1].maps[1].uuid,
+            },{
+                id: 'map1',
+                width: 253,
+                height: 171,
+                grid: false,
+                overviewMap: null,
+            }],
+            labels: [],
+            atlas: {
+                enabled: false,
+            }
+        });
+        expect(body.printTemplates[2]).toMatchObject({
             title: 'print_map',
             width: 297,
             height: 210,
@@ -998,7 +1020,7 @@ test.describe('Request Lizmap GetProjectConfig - admin - @requests @readonly', (
                 enabled: false,
             }
         });
-        expect(body.printTemplates[2]).toMatchObject({
+        expect(body.printTemplates[3]).toMatchObject({
             title: 'atlas_quartiers',
             width: 297,
             height: 210,
@@ -1015,7 +1037,7 @@ test.describe('Request Lizmap GetProjectConfig - admin - @requests @readonly', (
                 coverageLayer: body.layers.quartiers.id,
             }
         });
-        expect(body.printTemplates[3]).toMatchObject({
+        expect(body.printTemplates[4]).toMatchObject({
             title: 'atlas_sousquartiers',
             width: 297,
             height: 210,
@@ -1032,30 +1054,8 @@ test.describe('Request Lizmap GetProjectConfig - admin - @requests @readonly', (
                 coverageLayer: body.layers.sousquartiers.id,
             }
         });
-        expect(body.printTemplates[4]).toMatchObject({
-            title: 'print_allowed_groups',
-        });
         expect(body.printTemplates[5]).toMatchObject({
-            title: 'print_overview',
-            width: 297,
-            height: 210,
-            maps: [{
-                id: 'map0',
-                width: 46,
-                height: 44,
-                grid: false,
-                overviewMap: body.printTemplates[5].maps[1].uuid,
-            },{
-                id: 'map1',
-                width: 253,
-                height: 171,
-                grid: false,
-                overviewMap: null,
-            }],
-            labels: [],
-            atlas: {
-                enabled: false,
-            }
+            title: 'print_allowed_groups',
         });
 
         expect(body.layouts.config).toHaveProperty('default_popup_print', true);
@@ -1070,6 +1070,14 @@ test.describe('Request Lizmap GetProjectConfig - admin - @requests @readonly', (
             default_dpi: '100',
         });
         expect(body.layouts.list[1]).toEqual({
+            layout: 'print_overview',
+            enabled: true,
+            formats_available: ['pdf'],
+            default_format: 'pdf',
+            dpi_available: ['100'],
+            default_dpi: '100',
+        });
+        expect(body.layouts.list[2]).toEqual({
             layout: 'print_map',
             enabled: true,
             formats_available: ['png', 'jpeg'],
@@ -1077,7 +1085,7 @@ test.describe('Request Lizmap GetProjectConfig - admin - @requests @readonly', (
             dpi_available: ['100', '200'],
             default_dpi: '200',
         });
-        expect(body.layouts.list[2]).toEqual({
+        expect(body.layouts.list[3]).toEqual({
             layout: 'atlas_quartiers',
             enabled: true,
             formats_available: ['pdf'],
@@ -1086,7 +1094,7 @@ test.describe('Request Lizmap GetProjectConfig - admin - @requests @readonly', (
             default_dpi: '100',
             icon: 'media/svg/tree-fill.svg',
         });
-        expect(body.layouts.list[3]).toEqual({
+        expect(body.layouts.list[4]).toEqual({
             layout: 'atlas_sousquartiers',
             enabled: true,
             formats_available: ['pdf'],
@@ -1094,20 +1102,12 @@ test.describe('Request Lizmap GetProjectConfig - admin - @requests @readonly', (
             dpi_available: ['100'],
             default_dpi: '100',
         });
-        expect(body.layouts.list[4]).toEqual({
+        expect(body.layouts.list[5]).toEqual({
             layout: 'print_allowed_groups',
             enabled: true,
             formats_available: ['pdf', 'svg', 'png', 'jpeg'],
             default_format: 'pdf',
             dpi_available: ['100', '200', '300'],
-            default_dpi: '100',
-        });
-        expect(body.layouts.list[5]).toEqual({
-            layout: 'print_overview',
-            enabled: true,
-            formats_available: ['pdf'],
-            default_format: 'pdf',
-            dpi_available: ['100'],
             default_dpi: '100',
         });
 

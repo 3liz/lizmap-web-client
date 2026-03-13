@@ -1984,6 +1984,8 @@ class Project
         $server = new Server();
         $serverMetadata = $server->getMetadata();
         $serverPlugins = $serverMetadata['qgis_server_info']['plugins'];
+        // Build a lookup of print templates by title
+        $printTemplatesByTitle = array();
         foreach ($this->printCapabilities as $printTemplate) {
             /** @var array $printTemplate */
             if ($serverPlugins['atlasprint']['version'] == 'not found'
@@ -1995,8 +1997,24 @@ class Project
             }
             if ($enabledLayoutNames === null
                 || in_array($printTemplate['title'], $enabledLayoutNames)) {
-                $configJson->printTemplates[] = $printTemplate;
+                $printTemplatesByTitle[$printTemplate['title']] = $printTemplate;
             }
+        }
+        // Order printTemplates to match the layouts.list order from the cfg
+        if ($enabledLayoutNames !== null) {
+            foreach ($enabledLayoutNames as $layoutName) {
+                if (array_key_exists($layoutName, $printTemplatesByTitle)) {
+                    $configJson->printTemplates[] = $printTemplatesByTitle[$layoutName];
+                }
+            }
+            // Append any templates not in the cfg (e.g. atlas-only templates filtered above)
+            foreach ($printTemplatesByTitle as $title => $tmpl) {
+                if (!in_array($title, $enabledLayoutNames)) {
+                    $configJson->printTemplates[] = $tmpl;
+                }
+            }
+        } else {
+            $configJson->printTemplates = array_values($printTemplatesByTitle);
         }
 
         // Add export layer right
