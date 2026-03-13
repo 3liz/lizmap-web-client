@@ -162,6 +162,19 @@ export class BaseIconSymbology extends BaseObjectSymbology {
         // Otherwise, it's base64 data that needs the prefix
         return base64png + this._icon;
     }
+
+    /**
+     * Propagate throught symbology items the checked state
+     * @param {boolean} val The new checked state
+     * @returns {boolean} the new checked state
+     */
+    propagateCheckedState(val){
+        for (const icon of this.children) {
+            icon.propagateCheckedState(val);
+        }
+        this.checked = val;
+        return this.checked;
+    }
 }
 
 const layerIconProperties = {

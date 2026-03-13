@@ -597,6 +597,20 @@ export class LayerTreeLayerState extends LayerTreeItemState {
             }
         }
     }
+
+    /**
+     * Propagate throught symbology items the checked state
+     * @param {boolean} val The new checked state
+     * @returns {boolean} the new checked state
+     */
+    propagateCheckedState(val) {
+        for (const symbol of this.symbologyChildren) {
+            // each symbol manages its own tree state
+            symbol.propagateCheckedState(val);
+        }
+        this.checked = val;
+        return this.checked;
+    }
 }
 
 /**
