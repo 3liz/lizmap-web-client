@@ -6,7 +6,7 @@ import { ConversionError } from 'assets/src/modules/Errors.js';
 import { LayersConfig } from 'assets/src/modules/config/Layer.js';
 import { LayerTreeGroupConfig, buildLayerTreeConfig } from 'assets/src/modules/config/LayerTree.js';
 import { base64png, base64svg, base64svgPointLayer, base64svgLineLayer, base64svgPolygonLayer, base64svgRasterLayer, base64svgOlLayer } from 'assets/src/modules/state/SymbologyIcons.js';
-import { BaseIconSymbology, LayerIconSymbology, LayerSymbolsSymbology, SymbolIconSymbology } from 'assets/src/modules/state/Symbology.js';
+import { BaseIconSymbology, LayerIconSymbology, LayerSymbolsSymbology, SymbolIconSymbology, SymbolRuleSymbology } from 'assets/src/modules/state/Symbology.js';
 import { buildLayersOrder } from 'assets/src/modules/config/LayersOrder.js';
 import { LayersAndGroupsCollection } from 'assets/src/modules/state/Layer.js';
 import { MapLayerLoadStatus, MapGroupState, MapRootState } from 'assets/src/modules/state/MapLayer.js';
@@ -1119,6 +1119,147 @@ describe('LayerTreeGroupState', function () {
         expect(rootLayerVisibilityChangedEvt).to.have.length(2)
         expect(rootLayerVisibilityChangedEvt).to.be.deep.eq(layerVisibilityChangedEvt)
         expect(quartiers.visibility).to.be.true
+    })
+
+    it('Should propagate checked status through layer symbology', function() {
+        const root = getRootLayerTreeGroupState('montpellier_tree');
+        expect(root).to.be.instanceOf(LayerTreeGroupState);
+
+        // check state on sousquartiers, should deactivate groups recursivily
+        const sousquartiers = root.children[2];
+        expect(sousquartiers).to.be.instanceOf(LayerTreeLayerState);
+        expect(sousquartiers.name).to.be.eq('SousQuartiers');
+        expect(sousquartiers.wmsSelectedStyleName).to.be.eq('default');
+        expect(sousquartiers.wmsParameters).to.be.an('object').that.deep.equal({
+          'LAYERS': 'SousQuartiers',
+          'STYLES': 'default',
+          'FORMAT': 'image/png',
+          'DPI': 96
+        })
+
+        expect(sousquartiers.checked).to.be.true;
+
+        const legend = JSON.parse(readFileSync('./tests/js-units/data/montpellier_tree-legend.json', 'utf8'));
+        expect(legend).to.not.be.undefined;
+
+        expect(sousquartiers.symbology).to.be.null;
+        sousquartiers.symbology = legend.nodes[8];
+        expect(sousquartiers.symbology).to.be.instanceOf(LayerSymbolsSymbology);
+        expect(sousquartiers.symbology.children).to.have.length(7);
+        const children = sousquartiers.symbology.getChildren();
+        expect(children.next().value.checked).to.be.true;
+        expect(children.next().value.checked).to.be.true;
+        expect(children.next().value.checked).to.be.true;
+        expect(children.next().value.checked).to.be.true;
+        expect(children.next().value.checked).to.be.true;
+        expect(children.next().value.checked).to.be.true;
+        expect(children.next().value.checked).to.be.true;
+
+        const cv = sousquartiers.symbology.children[0];
+        expect(cv).to.not.be.undefined;
+        expect(cv).to.be.instanceOf(SymbolRuleSymbology);
+        expect(cv.children).to.have.length(4)
+        const cvChildren = cv.getChildren();
+        expect(cvChildren.next().value.checked).to.be.true;
+        expect(cvChildren.next().value.checked).to.be.true;
+        expect(cvChildren.next().value.checked).to.be.true;
+        expect(cvChildren.next().value.checked).to.be.true;
+
+        const cx = sousquartiers.symbology.children[1];
+        expect(cx).to.not.be.undefined;
+        expect(cx).to.be.instanceOf(SymbolRuleSymbology)
+        expect(cx.children).to.have.length(4)
+        const cxChildren = cx.getChildren();
+        expect(cxChildren.next().value.checked).to.be.true;
+        expect(cxChildren.next().value.checked).to.be.true;
+        expect(cxChildren.next().value.checked).to.be.true;
+        expect(cxChildren.next().value.checked).to.be.true;
+
+        // turn symbology off
+        sousquartiers.checked = false;
+        sousquartiers.propagateCheckedState(false);
+        const childrenUnChecked = sousquartiers.symbology.getChildren();
+        expect(childrenUnChecked.next().value.checked).to.be.false;
+        expect(childrenUnChecked.next().value.checked).to.be.false;
+        expect(childrenUnChecked.next().value.checked).to.be.false;
+        expect(childrenUnChecked.next().value.checked).to.be.false;
+        expect(childrenUnChecked.next().value.checked).to.be.false;
+        expect(childrenUnChecked.next().value.checked).to.be.false;
+        expect(childrenUnChecked.next().value.checked).to.be.false;
+
+        const cvUncheckedChildren = cv.getChildren();
+        expect(cvUncheckedChildren.next().value.checked).to.be.false;
+        expect(cvUncheckedChildren.next().value.checked).to.be.false;
+        expect(cvUncheckedChildren.next().value.checked).to.be.false;
+        expect(cvUncheckedChildren.next().value.checked).to.be.false;
+
+        const cxUncheckedChildren = cx.getChildren();
+        expect(cxUncheckedChildren.next().value.checked).to.be.false;
+        expect(cxUncheckedChildren.next().value.checked).to.be.false;
+        expect(cxUncheckedChildren.next().value.checked).to.be.false;
+        expect(cxUncheckedChildren.next().value.checked).to.be.false;
+
+        // turn symbology on
+        sousquartiers.checked = true;
+        sousquartiers.propagateCheckedState(true);
+        const childrenChecked = sousquartiers.symbology.getChildren();
+        expect(childrenChecked.next().value.checked).to.be.true;
+        expect(childrenChecked.next().value.checked).to.be.true;
+        expect(childrenChecked.next().value.checked).to.be.true;
+        expect(childrenChecked.next().value.checked).to.be.true;
+        expect(childrenChecked.next().value.checked).to.be.true;
+        expect(childrenChecked.next().value.checked).to.be.true;
+        expect(childrenChecked.next().value.checked).to.be.true;
+
+        const cvCheckedChildren = cv.getChildren();
+        expect(cvCheckedChildren.next().value.checked).to.be.true;
+        expect(cvCheckedChildren.next().value.checked).to.be.true;
+        expect(cvCheckedChildren.next().value.checked).to.be.true;
+        expect(cvCheckedChildren.next().value.checked).to.be.true;
+
+        const cxCheckedChildren = cx.getChildren();
+        expect(cxCheckedChildren.next().value.checked).to.be.true;
+        expect(cxCheckedChildren.next().value.checked).to.be.true;
+        expect(cxCheckedChildren.next().value.checked).to.be.true;
+        expect(cxCheckedChildren.next().value.checked).to.be.true;
+
+        // Icon symbology
+        const bicycleRides = root.children[0].children[1];
+        expect(bicycleRides).to.be.instanceOf(LayerTreeLayerState);
+        expect(bicycleRides.name).to.be.eq('edition_line');
+        expect(bicycleRides.wmsSelectedStyleName).to.be.eq('default');
+        expect(bicycleRides.wmsParameters).to.be.an('object').that.deep.equal({
+          'LAYERS': 'edition_line',
+          'STYLES': 'default',
+          'FORMAT': 'image/png',
+          'DPI': 96
+        })
+
+        expect(bicycleRides.symbology).to.be.null;
+        bicycleRides.symbology = legend.nodes[1];
+        expect(bicycleRides.symbology).to.be.instanceOf(LayerSymbolsSymbology);
+        expect(bicycleRides.symbology.children).to.have.length(3);
+        const bicycleRidesChildren = bicycleRides.symbology.getChildren();
+        expect(bicycleRidesChildren.next().value).to.be.instanceOf(SymbolIconSymbology).that.has.property('checked',true);
+        expect(bicycleRidesChildren.next().value).to.be.instanceOf(SymbolIconSymbology).that.has.property('checked',true);
+        expect(bicycleRidesChildren.next().value).to.be.instanceOf(SymbolIconSymbology).that.has.property('checked',true);
+
+        // turn symbology off
+        bicycleRides.checked = false;
+        bicycleRides.propagateCheckedState(false);
+
+        const bicycleRidesChildrenUnChecked = bicycleRides.symbology.getChildren()
+        expect(bicycleRidesChildrenUnChecked.next().value.checked).to.be.false;
+        expect(bicycleRidesChildrenUnChecked.next().value.checked).to.be.false;
+        expect(bicycleRidesChildrenUnChecked.next().value.checked).to.be.false;
+
+        // turn symbology on
+        bicycleRides.checked = true;
+        bicycleRides.propagateCheckedState(true);
+        const bicycleRidesChildrenChecked = bicycleRides.symbology.getChildren();
+        expect(bicycleRidesChildrenChecked.next().value.checked).to.be.true;
+        expect(bicycleRidesChildrenChecked.next().value.checked).to.be.true;
+        expect(bicycleRidesChildrenChecked.next().value.checked).to.be.true;
     })
 
     it('Filter & token', function () {
