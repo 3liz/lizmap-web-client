@@ -498,6 +498,19 @@ export class SymbolRuleSymbology extends SymbolIconSymbology {
             expanded: this.expanded
         });
     }
+
+    /**
+     * Propagate throught symbology items the checked state
+     * @param {boolean} val The new checked state
+     * @returns {boolean} the new checked state
+     */
+    propagateCheckedState(val){
+        for (const icon of this.children) {
+            icon.propagateCheckedState(val);
+        }
+        this.checked = val;
+        return this.checked;
+    }
 }
 
 /**
@@ -604,6 +617,19 @@ export class BaseSymbolsSymbology extends BaseObjectSymbology {
         for (const icon of this._icons) {
             yield icon;
         }
+    }
+
+    /**
+     * Propagate throught symbology items the checked state
+     * @param {boolean} val The new checked state
+     * @returns {boolean} the new checked state
+     */
+    propagateCheckedState(val){
+        for (const icon of this.children) {
+            icon.propagateCheckedState(val);
+        }
+        this.checked = val;
+        return this.checked;
     }
 }
 
@@ -868,6 +894,19 @@ export class LayerGroupSymbology extends BaseObjectSymbology {
         for (const node of this._symbologyNodes) {
             yield node;
         }
+    }
+
+    /**
+     * Propagate throught symbology items the checked state
+     * @param {boolean} val The new checked state
+     * @returns {boolean} the new checked state
+     */
+    propagateCheckedState(val){
+        for (const icon of this.children) {
+            icon.propagateCheckedState(val);
+        }
+        this.checked = val;
+        return this.checked;
     }
 }
 
