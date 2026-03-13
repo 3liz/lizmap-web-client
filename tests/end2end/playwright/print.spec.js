@@ -34,9 +34,9 @@ test.describe('Print', () => {
         await expect(page.locator('#print-scale > option')).toHaveCount(6);
         await expect(page.locator('#print-scale > option')).toContainText(
             ['500,000', '250,000', '100,000', '50,000', '25,000', '10,000']);
-        // Templates
+        // Templates - order must match layouts.list order in cfg
         await expect(page.locator('#print-template > option')).toHaveCount(3);
-        await expect(page.locator('#print-template > option')).toContainText(['print_labels', 'print_map']);
+        await expect(page.locator('#print-template > option')).toHaveText(['print_labels', 'print_overview', 'print_map']);
 
         // Test `print_labels` template
 
@@ -45,7 +45,7 @@ test.describe('Print', () => {
         await expect(page.locator('.print-dpi')).toHaveCount(0);
 
         // Test `print_map` template
-        await page.locator('#print-template').selectOption('1');
+        await page.locator('#print-template').selectOption('2');
 
         // Format and DPI lists exist as there are multiple values
         await expect(page.locator('#print-format > option')).toHaveCount(2);
@@ -53,7 +53,7 @@ test.describe('Print', () => {
         await expect(page.locator('.btn-print-dpis > option')).toHaveCount(2);
         await expect(page.locator('.btn-print-dpis > option')).toContainText(['100', '200']);
 
-        // PNG is default
+        // JPEG is default
         expect(await page.locator('#print-format').inputValue()).toBe('jpeg');
         // 200 DPI is default
         expect(await page.locator('.btn-print-dpis').inputValue()).toBe('200');
@@ -100,37 +100,8 @@ test.describe('Print', () => {
             name, getPrintRequest.postData() ?? '', expectedParameters1);
         await expectToHaveLengthCompare(name, Array.from(getPrintParams.keys()), expectedLength, Object.keys(expectedParameters1));
 
-        // Test `print_map` template
-        await page.locator('#print-template').selectOption('1');
-
-        getPrintPromise = page.waitForRequest(
-            request =>
-                request.method() === 'POST' &&
-                request.postData()?.includes('GetPrint') === true
-        );
-        await page.locator('#print-launch').click();
-        getPrintRequest = await getPrintPromise;
-        // Extend and update GetPrint parameters
-        const expectedParameters2 = Object.assign({}, expectedParameters, {
-            'FORMAT': 'jpeg',
-            'DPI': '200',
-            'TEMPLATE': 'print_map',
-            'map0:EXTENT': /765699.\d+,6271792.\d+,775499.\d+,6286992.\d+/,
-            'map0:SCALE': '100000',
-            'map0:LAYERS': 'OpenStreetMap,quartiers,sousquartiers',
-            'map0:STYLES': 'default,défaut,défaut',
-            'map0:OPACITIES': '204,255,255',
-        })
-        name = 'Print requests 2';
-        getPrintParams = await expectParametersToContain(name, getPrintRequest.postData() ?? '', expectedParameters2);
-        await expectToHaveLengthCompare(
-            name,
-            Array.from(getPrintParams.keys()),
-            13, Object.keys(expectedParameters2)
-        );
-
         // Test `print_overview` template
-        await page.locator('#print-template').selectOption('2');
+        await page.locator('#print-template').selectOption('1');
         getPrintPromise = page.waitForRequest(
             request =>
                 request.method() === 'POST' &&
@@ -152,13 +123,42 @@ test.describe('Print', () => {
             'map1:OPACITIES': '204,255,255',
             'map0:EXTENT': /761864.\d+,6274266.\d+,779334.\d+,6284518.\d+/,
         })
-        name = 'Print requests 3';
+        name = 'Print requests 2';
         getPrintParams = await expectParametersToContain(name, getPrintRequest.postData() ?? '', expectedParameters3);
         await expectToHaveLengthCompare(
             name,
             Array.from(getPrintParams.keys()),
             14,
             Object.keys(expectedParameters3)
+        );
+
+        // Test `print_map` template
+        await page.locator('#print-template').selectOption('2');
+
+        getPrintPromise = page.waitForRequest(
+            request =>
+                request.method() === 'POST' &&
+                request.postData()?.includes('GetPrint') === true
+        );
+        await page.locator('#print-launch').click();
+        getPrintRequest = await getPrintPromise;
+        // Extend and update GetPrint parameters
+        const expectedParameters2 = Object.assign({}, expectedParameters, {
+            'FORMAT': 'jpeg',
+            'DPI': '200',
+            'TEMPLATE': 'print_map',
+            'map0:EXTENT': /765699.\d+,6271792.\d+,775499.\d+,6286992.\d+/,
+            'map0:SCALE': '100000',
+            'map0:LAYERS': 'OpenStreetMap,quartiers,sousquartiers',
+            'map0:STYLES': 'default,défaut,défaut',
+            'map0:OPACITIES': '204,255,255',
+        })
+        name = 'Print requests 3';
+        getPrintParams = await expectParametersToContain(name, getPrintRequest.postData() ?? '', expectedParameters2);
+        await expectToHaveLengthCompare(
+            name,
+            Array.from(getPrintParams.keys()),
+            13, Object.keys(expectedParameters2)
         );
 
         // Redlining with circle
@@ -566,9 +566,9 @@ test.describe('Print - user in group a', () => {
     });
 
     test('Print UI', async ({ page }) => {
-        // Templates
+        // Templates - order must match layouts.list order in cfg
         await expect(page.locator('#print-template > option')).toHaveCount(3);
-        await expect(page.locator('#print-template > option')).toContainText(['print_labels', 'print_map']);
+        await expect(page.locator('#print-template > option')).toHaveText(['print_labels', 'print_overview', 'print_map']);
 
         // Test `print_labels` template
 
@@ -577,7 +577,7 @@ test.describe('Print - user in group a', () => {
         await expect(page.locator('.print-dpi')).toHaveCount(0);
 
         // Test `print_map` template
-        await page.locator('#print-template').selectOption('1');
+        await page.locator('#print-template').selectOption('2');
 
         // Format and DPI lists exist as there are multiple values
         await expect(page.locator('#print-format > option')).toHaveCount(2);
@@ -585,7 +585,7 @@ test.describe('Print - user in group a', () => {
         await expect(page.locator('.btn-print-dpis > option')).toHaveCount(2);
         await expect(page.locator('.btn-print-dpis > option')).toContainText(['100', '200']);
 
-        // PNG is default
+        // JPEG is default
         expect(await page.locator('#print-format').inputValue()).toBe('jpeg');
         // 200 DPI is default
         expect(await page.locator('.btn-print-dpis').inputValue()).toBe('200');
@@ -605,9 +605,9 @@ test.describe('Print - admin', () => {
     });
 
     test('Print UI', async ({ page }) => {
-        // Templates
+        // Templates - order must match layouts.list order in cfg
         await expect(page.locator('#print-template > option')).toHaveCount(4);
-        await expect(page.locator('#print-template > option')).toContainText(['print_labels', 'print_map', 'print_allowed_groups']);
+        await expect(page.locator('#print-template > option')).toHaveText(['print_labels', 'print_overview', 'print_map', 'print_allowed_groups']);
 
         // Test `print_labels` template
 
@@ -616,7 +616,7 @@ test.describe('Print - admin', () => {
         await expect(page.locator('.print-dpi')).toHaveCount(0);
 
         // Test `print_map` template
-        await page.locator('#print-template').selectOption('1');
+        await page.locator('#print-template').selectOption('2');
 
         // Format and DPI lists exist as there are multiple values
         await expect(page.locator('#print-format > option')).toHaveCount(2);
@@ -624,13 +624,13 @@ test.describe('Print - admin', () => {
         await expect(page.locator('.btn-print-dpis > option')).toHaveCount(2);
         await expect(page.locator('.btn-print-dpis > option')).toContainText(['100', '200']);
 
-        // PNG is default
+        // JPEG is default
         expect(await page.locator('#print-format').inputValue()).toBe('jpeg');
         // 200 DPI is default
         expect(await page.locator('.btn-print-dpis').inputValue()).toBe('200');
 
         // Test `print_allowed_groups` template
-        await page.locator('#print-template').selectOption('2');
+        await page.locator('#print-template').selectOption('3');
 
         // Format and DPI lists exist as there are multiple values
         await expect(page.locator('#print-format > option')).toHaveCount(4);
@@ -638,9 +638,9 @@ test.describe('Print - admin', () => {
         await expect(page.locator('.btn-print-dpis > option')).toHaveCount(3);
         await expect(page.locator('.btn-print-dpis > option')).toContainText(['100', '200', '300']);
 
-        // PNG is default
+        // PDF is default
         expect(await page.locator('#print-format').inputValue()).toBe('pdf');
-        // 200 DPI is default
+        // 100 DPI is default
         expect(await page.locator('.btn-print-dpis').inputValue()).toBe('100');
     });
 });
