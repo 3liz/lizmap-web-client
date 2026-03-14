@@ -173,6 +173,8 @@ class lizAjaxCtrl extends jController
             'nominatim' => jUrl::getFull('lizmap~osm:nominatim'),
             'edition' => jUrl::getFull('lizmap~edition:getFeature'),
             'permalink' => jUrl::getFull('view~map:index'),
+            'announcement' => jUrl::getFull('lizmap~announcement:pending'),
+            'announcementMarkSeen' => jUrl::getFull('lizmap~announcement:markSeen'),
         );
 
         // Get optional WMS public url list
