@@ -58,7 +58,7 @@ export default class pasteGeom extends HTMLElement {
             ?disabled=${!this._canActivate()}
             @click=${() => this._toggle()}>
             <svg>
-                <use href="${lizUrls.svgSprite}#mActionEditPaste"/>
+                <use href="${lizUrls.svgSprite}#copyGeometry"/>
             </svg>
         </button>`;
 
