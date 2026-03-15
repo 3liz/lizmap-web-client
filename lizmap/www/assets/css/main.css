@@ -296,12 +296,14 @@ h1, h2, h3, h4, h5 {
 }
 
 /* Copy/paste geometry button web component - display inline */
-lizmap-paste-geom {
+lizmap-paste-geom,
+lizmap-paste-stored-geom {
   display: inline-block;
   vertical-align: top;
 }
 
-lizmap-paste-geom svg {
+lizmap-paste-geom svg,
+lizmap-paste-stored-geom svg {
   width: 16px;
   height: 16px;
   vertical-align: middle;
