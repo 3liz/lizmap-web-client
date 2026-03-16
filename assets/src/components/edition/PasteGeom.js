@@ -54,7 +54,7 @@ export default class pasteGeom extends HTMLElement {
             html`
         <button class='btn btn-sm ${this._active ? 'active btn-primary' : ''}'
             data-bs-toggle="tooltip"
-            data-bs-title='${lizDict['edition.geom.copyPaste'] || 'Copy and paste an existing geometry'}'
+            data-bs-title='${lizDict['edition.geom.copyPaste'] || 'Copy the geometry from an existing map layer feature'}'
             ?disabled=${!this._canActivate()}
             @click=${() => this._toggle()}>
             <svg>
