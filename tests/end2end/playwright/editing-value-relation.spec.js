@@ -15,11 +15,11 @@ test.describe('Value relation widget',
 
             const select = await page.locator("#jforms_view_edition_code_with_geom_exp");
 
-            await project.clickOnMapLegacy(650, 200);
+            await project.clickOnMap(650, 200);
 
             await select.selectOption({value: ''});
 
-            await project.mapOl2.dragTo(project.mapOl2, {
+            await project.map.dragTo(project.map, {
                 sourcePosition: { x: 650, y: 200 },
                 targetPosition: { x: 500, y: 200 },
             });

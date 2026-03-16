@@ -32,6 +32,7 @@ export default class Edition {
                 this.drawFeatureActivated = true;
                 this.layerGeometry = properties.editionConfig.geometryType;
                 this.drawControl = properties.drawControl;
+                this.activateDigitizing();
                 mainEventDispatcher.dispatch('edition.drawFeatureActivated');
             },
             lizmapeditiondrawfeaturedeactivated: () => {
@@ -46,9 +47,44 @@ export default class Edition {
                 mainEventDispatcher.dispatch('edition.formDisplayed');
             },
             lizmapeditionformclosed: () => {
+                this.deactivateDigitizing();
                 mainEventDispatcher.dispatch('edition.formClosed');
             }
         });
+    }
+
+    /**
+     * Get the lizmap-digitizing element
+     * @returns {HTMLElement|null} The digitizing element or null if not found
+     */
+    get digitizingElement() {
+        return document.querySelector('lizmap-digitizing[context="draw"]');
+    }
+
+    /**
+     * Activate the lizmap-digitizing web component when feature editing starts
+     * @private
+     */
+    activateDigitizing() {
+        if (this.layerGeometry) {
+            const digitizingElement = this.digitizingElement;
+            if (digitizingElement) {
+                // Activate the component using the active attribute
+                digitizingElement.setAttribute('active', '');
+            }
+        }
+    }
+
+    /**
+     * Deactivate the lizmap-digitizing web component when feature editing ends
+     * @private
+     */
+    deactivateDigitizing() {
+        const digitizingElement = this.digitizingElement;
+        if (digitizingElement) {
+            // Remove the active attribute to deactivate the component
+            digitizingElement.removeAttribute('active');
+        }
     }
 
     get layerId() {

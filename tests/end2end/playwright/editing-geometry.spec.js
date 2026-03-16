@@ -33,12 +33,12 @@ test.describe('Geometry editing',
 
                 const x1 = 600;
                 const y1 = 200;
-                await project.clickOnMapLegacy(x1, y1);
+                await project.clickOnMap(x1, y1);
                 if (geom === 'polygon'){
-                    await project.clickOnMapLegacy(x1, y1 + 100);
+                    await project.clickOnMap(x1, y1 + 100);
                 }
                 if (geom === 'line' || geom === 'polygon') {
-                    await project.dblClickOnMapLegacy(x1 + 100, y1);
+                    await project.dblClickOnMap(x1 + 100, y1);
                 }
                 await project.editingSubmitForm();
 

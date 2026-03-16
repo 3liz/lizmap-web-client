@@ -20,7 +20,7 @@ test.describe(
 
             await project.dock.getByText('tab2').click();
             await project.editingField('field_in_dnd_form').fill('value in DND form');
-            await project.clickOnMapLegacy(600, 200);
+            await project.clickOnMap(600, 200);
 
             await project.editingSubmitForm();
             const ids = await editedFeatureIds(page);
