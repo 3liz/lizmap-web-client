@@ -2052,9 +2052,11 @@ class Project
                         if (!array_key_exists('password', $layerDatasource)
                             && !array_key_exists('authcfg', $layerDatasource)) {
                             // Add wmts type if type is not already defined (it is for xyz)
-                            // and the url contains wmts and the CRS is EPSG:3857
+                            // and the url contains 'wmts' (matches both URLs with 'service=wmts'
+                            // query parameter and URLs with 'wmts' in the path like
+                            // WMTSCapabilities.xml endpoints)
                             if (!array_key_exists('type', $layerDatasource)
-                                && stripos($layerDatasource['url'], 'service=wmts')) {
+                                && stripos($layerDatasource['url'], 'wmts') !== false) {
                                 $layerDatasource['type'] = 'wmts';
                             }
                             // Add crs if type is xyz
