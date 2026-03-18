@@ -2051,13 +2051,24 @@ class Project
                         // authentication parameters
                         if (!array_key_exists('password', $layerDatasource)
                             && !array_key_exists('authcfg', $layerDatasource)) {
-                            // Add wmts type if type is not already defined (it is for xyz)
-                            // and the url contains 'wmts' (matches both URLs with 'service=wmts'
-                            // query parameter and URLs with 'wmts' in the path like
-                            // WMTSCapabilities.xml endpoints)
-                            if (!array_key_exists('type', $layerDatasource)
-                                && stripos($layerDatasource['url'], 'wmts') !== false) {
-                                $layerDatasource['type'] = 'wmts';
+                            // Add wmts type if type is not already defined (it is for xyz).
+                            // Detection covers two URL patterns used by WMTS servers:
+                            //   1. SERVICE=WMTS as a query parameter (e.g. ?Service=WMTS&…)
+                            //   2. 'wmts' appearing in the URL host or path
+                            //      (e.g. wmts.example.com/wmts/1.0.0/WMTSCapabilities.xml)
+                            // Only the query parameter 'service' is checked, not arbitrary
+                            // parameter values such as 'project=wmts', which would give false
+                            // positives for plain WMS services.
+                            if (!array_key_exists('type', $layerDatasource)) {
+                                $parsedUrl = parse_url($layerDatasource['url']);
+                                $urlHost = strtolower($parsedUrl['host'] ?? '');
+                                $urlPath = strtolower($parsedUrl['path'] ?? '');
+                                $urlQuery = strtolower($parsedUrl['query'] ?? '');
+                                if (stripos($urlQuery, 'service=wmts') !== false
+                                    || stripos($urlHost, 'wmts') !== false
+                                    || stripos($urlPath, 'wmts') !== false) {
+                                    $layerDatasource['type'] = 'wmts';
+                                }
                             }
                             // Add crs if type is xyz
                             if (array_key_exists('type', $layerDatasource)
