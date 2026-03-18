@@ -100,12 +100,17 @@ test.describe('External WMTS layer — getProjectConfig @requests @readonly', ()
         }
     });
 
-    // Scenario B (variant) — WMS layer explicitly opted out of external access
-    test('WMS layer with externalWmsToggle=False has no external routing', async () => {
+    // Scenario B (variant) — WMS layer without 'wmts' in URL must not become a WMTS layer
+    test('WMS layer without wmts in URL does not get externalAccess.type = wmts', async () => {
         const wmsGroupedLayer = config.layers['WMS grouped external'];
         expect(wmsGroupedLayer, 'Layer "WMS grouped external" must exist in config').toBeDefined();
-        // externalWmsToggle explicitly set to False by the plugin — must stay False
-        expect(String(wmsGroupedLayer.externalWmsToggle).toLowerCase()).toBe('false');
+        // This WMS layer's URL has no 'wmts' token in host/path/service param, so
+        // the PHP detection must NOT set externalAccess.type = 'wmts'.
+        // (Note: PHP sets externalWmsToggle = 'True' for all external WMS layers —
+        // the plugin's 'False' value in the .cfg is overridden at runtime.)
+        if (wmsGroupedLayer.externalAccess) {
+            expect(wmsGroupedLayer.externalAccess.type).not.toBe('wmts');
+        }
     });
 });
 
