@@ -4122,3 +4122,15 @@ These lines will be removed in the future, when the minimum target version will 
 #lizmap-modal:has(> div.modal-header) ~ div.modal-backdrop {
     display: none !important;
 }
+
+/* Print scale selector with toggle between preset and custom */
+.print-scale-container {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.print-scale-container select,
+.print-scale-container input {
+  flex: 1;
+}
