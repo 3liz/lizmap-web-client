@@ -2428,6 +2428,16 @@ class Project
             );
         }
 
+        if ($this->cfg->hasPortfolios()) {
+            $tpl = new \jTpl();
+            $dockable[] = new \lizmapMapDockItem(
+                'portfolios',
+                $this->appContext->getLocale('view~map.portfolios.toolbar.title'),
+                $tpl->fetch('view~map_portfolios_dock'),
+                4
+            );
+        }
+
         if ($this->cfg->getBooleanOption('measure')) {
             $tpl = new \jTpl();
             $dockable[] = new \lizmapMapDockItem(
