@@ -1109,18 +1109,28 @@ div.popup_lizmap_dd {
   font-size: 12px;
 }
 
-div.popup_lizmap_dd .form-horizontal .form-group {
-  margin-bottom: 0 !important;
+div.popup_lizmap_dd .control-group {
+  display: flex !important;
+  align-items: center;
+  column-gap: 4px;
+  margin-bottom: 2px;
 }
 
 div.popup_lizmap_dd label {
-  padding-top: 0 !important;
+  flex: 0 0 clamp(80px, 40%, 150px) !important;
+  max-width: clamp(80px, 40%, 150px);
   font-size: 12px !important;
-  width: 130px !important;
+  hyphens: auto;
+  overflow-wrap: break-word;
 }
 
 div.popup_lizmap_dd .controls {
-  margin-left: 140px !important;
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding-left: 0 !important;
+  hyphens: auto;
+  overflow-wrap: break-word;
 }
 
 /* ATLAS */
