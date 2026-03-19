@@ -903,6 +903,16 @@ CSS Sprite positions calculated via http://instantsprite.com/ using 20px images 
   background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' stroke-width='2' stroke='%23000' fill='none' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24' id='pencil'><path d='M0 0h24v24H0z' stroke='none'></path><path d='M4 20h4L18.5 9.5a1.5 1.5 0 00-4-4L4 16v4M13.5 6.5l4 4'></path></svg>");
 }
 
+
+#mapmenu .nav-list > li.portfolios .icon{
+  background-image: url("../svg/portfolio-white.svg");
+}
+
+#mapmenu .nav-list > li.portfolios.active .icon,
+#mapmenu .nav-list > li.portfolios a:hover .icon{
+  background-image: url("../svg/portfolio-dark.svg");
+}
+
 /* navbar */
 .navbar-fixed-top .navbar-inner,
 .navbar-static-top .navbar-inner {
@@ -1806,6 +1816,14 @@ div.modal h3 .text {
 #dock .timemanager h3 .icon,
 #mini-dock .timemanager h3 .icon {
   background-position : -625px 0;
+}
+
+#toolbar .portfolios h3 .icon,
+#menu .portfolios h3 .icon,
+#dock .portfolios h3 .icon,
+#mini-dock .portfolios h3 .icon {
+  background-image: url("../svg/portfolio-dark.svg");
+  background-position: 0 0;
 }
 
 #mini-dock .draw h3 svg {
