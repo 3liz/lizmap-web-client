@@ -1627,6 +1627,32 @@ div.modal .form-horizontal .controls {
   margin-right: 10px;
 }
 
+/* Drag-and-drop popup: flex layout for label/value rows.
+   Selectors use div.container.popup_lizmap_dd (specificity 31) to
+   beat any stale theme CSS with equal selectors + !important (specificity 21). */
+div.container.popup_lizmap_dd .control-group {
+  display: flex !important;
+  align-items: center;
+  column-gap: 4px;
+  margin-bottom: 2px;
+}
+
+div.container.popup_lizmap_dd label {
+  flex: 0 0 clamp(80px, 40%, 150px) !important;
+  max-width: clamp(80px, 40%, 150px);
+  hyphens: auto;
+  overflow-wrap: break-word;
+}
+
+div.container.popup_lizmap_dd .controls {
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding-left: 0 !important;
+  hyphens: auto;
+  overflow-wrap: break-word;
+}
+
 #dock .form-horizontal .controls label.checkbox,
 div.modal .form-horizontal .controls label.checkbox {
   max-width: 200px;
