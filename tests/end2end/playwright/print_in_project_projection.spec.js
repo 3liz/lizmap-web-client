@@ -2,6 +2,7 @@
 import { test, expect } from '@playwright/test';
 import { PrintPage } from './pages/printpage';
 import { expect as requestExpect } from './fixtures/expect-request.js'
+import { expect as responseExpect } from './fixtures/expect-response.js'
 import { playwrightTestFile } from './globals';
 
 test.describe('Print in project projection @readonly', () => {
@@ -52,7 +53,7 @@ test.describe('Print in project projection @readonly', () => {
         requestExpect(getPrintRequest).toContainParametersInPostData(expectedParameters);
         const searchParams = new URLSearchParams(getPrintRequest?.postData() ?? '');
         expect(searchParams.size).toBe(14)
-        await getPrintRequest.response();
+        responseExpect(await getPrintRequest.response()).toBePdf();
 
         // Stop listening to WMS requests
         await page.unroute('**/service*');
@@ -103,7 +104,7 @@ test.describe('Print in project projection @readonly', () => {
         requestExpect(getPrintRequest).toContainParametersInPostData(expectedParameters);
         const searchParams = new URLSearchParams(getPrintRequest?.postData() ?? '');
         expect(searchParams.size).toBe(14)
-        await getPrintRequest.response();
+        responseExpect(await getPrintRequest.response()).toBePdf();
 
         // Stop listening to WMS requests
         await page.unroute('**/service*');
