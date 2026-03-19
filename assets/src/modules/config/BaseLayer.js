@@ -316,7 +316,9 @@ const googleProperties = {
 }
 
 const googleOptionalProperties = {
-    'key': { type: 'string', nullable: true }
+    'key': { type: 'string', nullable: true },
+    'layerTypes': { type: 'array', contentType: 'string' },
+    'overlay': { type: 'boolean' },
 }
 
 /**
@@ -327,11 +329,13 @@ const googleOptionalProperties = {
 export class GoogleBaseLayerConfig extends BaseLayerConfig {
     /**
      * Create a GOOGLE base layer config based on a config object
-     * @param {string} name           - the base layer name
-     * @param {object} cfg            - the lizmap config object for GOOGLE base layer
-     * @param {string} cfg.title      - the base layer title
-     * @param {string} cfg.mapType    - the base layer mapType
-     * @param {string} [cfg.key]      - the base layer key
+     * @param {string} name                  - the base layer name
+     * @param {object} cfg                   - the lizmap config object for GOOGLE base layer
+     * @param {string} cfg.title             - the base layer title
+     * @param {string} cfg.mapType           - the base layer mapType
+     * @param {string} [cfg.key]             - the base layer key
+     * @param {string[]} [cfg.layerTypes]    - additional layer types (e.g. ['layerRoadmap'])
+     * @param {boolean} [cfg.overlay]        - display only layerTypes without the base mapType
      */
     constructor(name, cfg) {
         if (!cfg || typeof cfg !== "object") {
@@ -352,6 +356,22 @@ export class GoogleBaseLayerConfig extends BaseLayerConfig {
      */
     get mapType() {
         return this._mapType;
+    }
+
+    /**
+     * The Google layer types (e.g. ['layerRoadmap'] for hybrid)
+     * @type {string[]|null}
+     */
+    get layerTypes() {
+        return this._layerTypes;
+    }
+
+    /**
+     * Whether to display only layerTypes without the underlying mapType
+     * @type {boolean|null}
+     */
+    get overlay() {
+        return this._overlay;
     }
 
 }
@@ -804,10 +824,18 @@ const QMSExternalLayer = {
         "mapType": "satellite",
         "key":""
     },
+    "google-hybrid": {
+        "type" :"google",
+        "title": "Google Hybrid",
+        "mapType": "satellite",
+        "layerTypes": ["layerRoadmap"],
+        "key":""
+    },
     "google-terrain": {
         "type" :"google",
         "title": "Google Terrain",
         "mapType": "terrain",
+        "layerTypes": ["layerRoadmap"],
         "key":""
 
     }
@@ -906,21 +934,29 @@ export class BaseLayersConfig {
                                 // add the apikey to the configuration
                                 Object.assign(extendedCfg[layerTreeItem.name],{key:options["bingKey"]})
                             } else if (externalUrl && externalUrl.includes('google.com') && options["googleKey"]){
-                                if (externalUrl.includes('lyrs=m')) {
+                                // Extract the exact lyrs value to avoid substring false-positives (e.g. lyrs=svv matching lyrs=s)
+                                const lyrsMatch = externalUrl.match(/[?&/]lyrs=([^&%]+)/);
+                                const lyrs = lyrsMatch ? lyrsMatch[1] : null;
+                                if (lyrs === 'm') {
                                     // roads
                                     extendedCfg[layerTreeItem.name] = structuredClone(QMSExternalLayer["google-streets"])
-                                } else if (externalUrl.includes('lyrs=s')){
+                                } else if (lyrs === 's'){
                                     // satellite map
                                     extendedCfg[layerTreeItem.name] = structuredClone(QMSExternalLayer["google-satellite"])
-                                } else if (externalUrl.includes('lyrs=p') || externalUrl.includes('lyrs=t')){
+                                } else if (lyrs === 'y'){
+                                    // hybrid (satellite + road labels)
+                                    extendedCfg[layerTreeItem.name] = structuredClone(QMSExternalLayer["google-hybrid"])
+                                } else if (lyrs === 'p' || lyrs === 't'){
                                     // terrain
                                     extendedCfg[layerTreeItem.name] = structuredClone(QMSExternalLayer["google-terrain"])
                                 } else {
-                                    // Fallback to google-streets
-                                    extendedCfg[layerTreeItem.name] = structuredClone(QMSExternalLayer["google-streets"])
+                                    // Unknown Google layer type (e.g. StreetView availability) - keep as XYZ
+                                    extendedCfg[layerTreeItem.name] = structuredClone(layerTreeItem.layerConfig.externalAccess);
                                 }
-                                // add the apikey to the configuration
-                                Object.assign(extendedCfg[layerTreeItem.name],{key:options["googleKey"]})
+                                // add the apikey only for Google Maps Tiles API layers
+                                if (extendedCfg[layerTreeItem.name].type === 'google') {
+                                    Object.assign(extendedCfg[layerTreeItem.name],{key:options["googleKey"]})
+                                }
                             }
                             else {
                                 // layer could be converted to XYZ or WMTS background layers
