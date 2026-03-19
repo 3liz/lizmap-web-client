@@ -475,14 +475,21 @@ export default class map extends olMap {
                     }),
                 });
             } else if (baseLayerState.type === BaseLayerTypes.Google) {
+                const googleSourceOptions = {
+                    key: baseLayerState.key,
+                    mapType: baseLayerState.googleMapType,
+                };
+                if (baseLayerState.googleLayerTypes) {
+                    googleSourceOptions.layerTypes = baseLayerState.googleLayerTypes;
+                }
+                if (baseLayerState.googleOverlay !== null) {
+                    googleSourceOptions.overlay = baseLayerState.googleOverlay;
+                }
                 baseLayer = new TileLayer({
                     minResolution: layerMinResolution,
                     maxResolution: layerMaxResolution,
                     preload: Infinity,
-                    source: new Google({
-                        key: baseLayerState.key,
-                        mapType: baseLayerState.googleMapType,
-                    }),
+                    source: new Google(googleSourceOptions),
                 });
             } else if (baseLayerState.type === BaseLayerTypes.Lizmap) {
                 if (baseLayerState.layerConfig.cached) {
