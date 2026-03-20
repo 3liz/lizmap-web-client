@@ -5,11 +5,11 @@ hideSensitiveServicesProperties=0
 ;list the different map services (servers, generic parameters, etc.)
 [services]
 ;URL to QGIS Server for OGC web services
-wmsServerURL="http://map:8080/ows/"
+wmsServerURL="http://map:9080/"
 ;WMS subdomain URLs list (optional)
 wmsPublicUrlList=
 ;URL to the API exposed by the Lizmap plugin for QGIS Server
-lizmapPluginAPIURL="http://map:8080/lizmap/"
+lizmapPluginAPIURL="http://map:9080/lizmap/"
 
 onlyMaps=off
 defaultRepository=testsrepository
