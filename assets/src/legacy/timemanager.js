@@ -288,7 +288,7 @@ var lizTimemanager = function() {
                     // feature starts before window ends AND feature ends after window starts
                     if(max_val && Date.parse(max_val)){
                         // Feature must start before or at the upper boundary
-                        filters.push('"' + startField + '"' + " <= '" + formatDatetime(max_val, filterResolution) + "'");
+                        filters.push('( "' + startField + '"' + " <= '" + formatDatetime(max_val, filterResolution) + "' )");
                     }else{
                         max_val = null;
                     }
@@ -302,12 +302,12 @@ var lizTimemanager = function() {
                 } else {
                     // Single field (point-in-time events): show features within the window
                     if(min_val && Date.parse(min_val)){
-                        filters.push('"' + startField + '"' + " >= '" + formatDatetime(min_val, filterResolution) + "'");
+                        filters.push('( "' + startField + '"' + " >= '" + formatDatetime(min_val, filterResolution) + "' )");
                     }else{
                         min_val = null;
                     }
                     if(max_val && Date.parse(max_val)){
-                        filters.push('"' + startField + '"' + " <= '" + formatDatetime(max_val, filterResolution) + "'");
+                        filters.push('( "' + startField + '"' + " <= '" + formatDatetime(max_val, filterResolution) + "' )");
                     }else{
                         max_val = null;
                     }
