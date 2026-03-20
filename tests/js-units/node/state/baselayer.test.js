@@ -9,7 +9,8 @@ import { buildLayersOrder } from 'assets/src/modules/config/LayersOrder.js';
 import { LayersAndGroupsCollection } from 'assets/src/modules/state/Layer.js';
 import { OptionsConfig } from 'assets/src/modules/config/Options.js';
 
-import { BaseLayerState, EmptyBaseLayerState, BaseLayersState } from 'assets/src/modules/state/BaseLayer.js';
+import { BaseLayerState, EmptyBaseLayerState, GoogleBaseLayerState, BaseLayersState } from 'assets/src/modules/state/BaseLayer.js';
+import { GoogleBaseLayerConfig } from 'assets/src/modules/config/BaseLayer.js';
 
 /**
  * Returns the BaseLayersState for the project
@@ -115,6 +116,85 @@ describe('EmptyBaseLayerState', function () {
         } catch (error) {
             expect(error.name).to.be.eq('TypeError')
             expect(error.message).to.be.eq('Not an `empty` base layer config. Get `lizmap` type for `name` base layer!')
+            expect(error).to.be.instanceOf(TypeError)
+        }
+        expect(baselayer).to.be.null
+    })
+})
+
+describe('GoogleBaseLayerState', function () {
+
+    it('simple', function () {
+        const blConfig = new GoogleBaseLayerConfig('google-streets', {
+            'title': 'Google Streets',
+            'mapType': 'roadmap',
+            'key': 'test-key'
+        })
+        const baselayer = new GoogleBaseLayerState(blConfig)
+        expect(baselayer).to.be.instanceOf(BaseLayerState)
+        expect(baselayer).to.be.instanceOf(GoogleBaseLayerState)
+        expect(baselayer.type).to.be.eq(BaseLayerTypes.Google)
+        expect(baselayer.name).to.be.eq('google-streets')
+        expect(baselayer.title).to.be.eq('Google Streets')
+        expect(baselayer.googleMapType).to.be.eq('roadmap')
+        expect(baselayer.hasKey).to.be.true
+        expect(baselayer.key).to.be.eq('test-key')
+        expect(baselayer.googleLayerTypes).to.be.null
+        expect(baselayer.googleOverlay).to.be.null
+    })
+
+    it('with layerTypes (hybrid)', function () {
+        const blConfig = new GoogleBaseLayerConfig('google-hybrid', {
+            'title': 'Google Hybrid',
+            'mapType': 'satellite',
+            'key': 'test-key',
+            'layerTypes': ['layerRoadmap']
+        })
+        const baselayer = new GoogleBaseLayerState(blConfig)
+        expect(baselayer).to.be.instanceOf(GoogleBaseLayerState)
+        expect(baselayer.type).to.be.eq(BaseLayerTypes.Google)
+        expect(baselayer.name).to.be.eq('google-hybrid')
+        expect(baselayer.title).to.be.eq('Google Hybrid')
+        expect(baselayer.googleMapType).to.be.eq('satellite')
+        expect(baselayer.googleLayerTypes).to.be.deep.eq(['layerRoadmap'])
+        expect(baselayer.googleOverlay).to.be.null
+    })
+
+    it('with layerTypes (terrain)', function () {
+        const blConfig = new GoogleBaseLayerConfig('google-terrain', {
+            'title': 'Google Terrain',
+            'mapType': 'terrain',
+            'key': 'test-key',
+            'layerTypes': ['layerRoadmap']
+        })
+        const baselayer = new GoogleBaseLayerState(blConfig)
+        expect(baselayer).to.be.instanceOf(GoogleBaseLayerState)
+        expect(baselayer.googleMapType).to.be.eq('terrain')
+        expect(baselayer.googleLayerTypes).to.be.deep.eq(['layerRoadmap'])
+    })
+
+    it('with overlay', function () {
+        const blConfig = new GoogleBaseLayerConfig('google-overlay', {
+            'title': 'Google Overlay',
+            'mapType': 'satellite',
+            'key': 'test-key',
+            'layerTypes': ['layerRoadmap'],
+            'overlay': true
+        })
+        const baselayer = new GoogleBaseLayerState(blConfig)
+        expect(baselayer).to.be.instanceOf(GoogleBaseLayerState)
+        expect(baselayer.googleLayerTypes).to.be.deep.eq(['layerRoadmap'])
+        expect(baselayer.googleOverlay).to.be.true
+    })
+
+    it('Error type', function () {
+        const blConfig = new BaseLayerConfig('name', {'title': 'title'})
+        let baselayer = null;
+        try {
+            baselayer = new GoogleBaseLayerState(blConfig)
+        } catch (error) {
+            expect(error.name).to.be.eq('TypeError')
+            expect(error.message).to.be.eq('Not an `google` base layer config. Get `lizmap` type for `name` base layer!')
             expect(error).to.be.instanceOf(TypeError)
         }
         expect(baselayer).to.be.null
