@@ -144,6 +144,15 @@ class qgisVectorLayerDatasource
         if (count($split) == 3) {
             $sql = str_replace('subset=', '', $split[2]);
         }
+
+        // Handle schema and tablename like getDatasourceParameterSql does
+        if ($param == 'tablename') {
+            return trim($table);
+        }
+        if ($param == 'schema') {
+            return '';
+        }
+
         $ds = array(
             'dbname' => $dbname,
             'service' => '',
@@ -152,6 +161,7 @@ class qgisVectorLayerDatasource
             'user' => '',
             'password' => '',
             'sslmode' => '',
+            'authcfg' => '',
             'key' => '',
             'estimatedmetadata' => '',
             'selectatid' => '',
