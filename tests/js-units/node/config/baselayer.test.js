@@ -6,7 +6,7 @@ import { ValidationError, ConversionError } from 'assets/src/modules/Errors.js';
 import { AttributionConfig } from 'assets/src/modules/config/Attribution.js';
 import { LayerConfig, LayersConfig } from 'assets/src/modules/config/Layer.js';
 import { LayerTreeGroupConfig, buildLayerTreeConfig } from 'assets/src/modules/config/LayerTree.js';
-import { BaseLayerTypes, BaseLayerConfig, EmptyBaseLayerConfig, XyzBaseLayerConfig, BingBaseLayerConfig, WmtsBaseLayerConfig, WmsBaseLayerConfig, BaseLayersConfig } from 'assets/src/modules/config/BaseLayer.js';
+import { BaseLayerTypes, BaseLayerConfig, EmptyBaseLayerConfig, XyzBaseLayerConfig, BingBaseLayerConfig, GoogleBaseLayerConfig, WmtsBaseLayerConfig, WmsBaseLayerConfig, BaseLayersConfig } from 'assets/src/modules/config/BaseLayer.js';
 
 describe('BaseLayerConfig', function () {
     it('simple', function () {
@@ -155,6 +155,102 @@ describe('WmtsBaseLayerConfig', function () {
         expect(lizmapBl.numZoomLevels).to.be.eq(16)
         expect(lizmapBl.hasAttribution).to.be.false
         expect(lizmapBl.attribution).to.be.null
+    })
+})
+
+describe('GoogleBaseLayerConfig', function () {
+    it('simple', function () {
+        const googleBl = new GoogleBaseLayerConfig('google-streets', {
+            'title': 'Google Streets',
+            'mapType': 'roadmap',
+            'key': 'test-key'
+        })
+        expect(googleBl).to.be.instanceOf(BaseLayerConfig)
+        expect(googleBl).to.be.instanceOf(GoogleBaseLayerConfig)
+        expect(googleBl.type).to.be.eq(BaseLayerTypes.Google)
+        expect(googleBl.name).to.be.eq('google-streets')
+        expect(googleBl.title).to.be.eq('Google Streets')
+        expect(googleBl.mapType).to.be.eq('roadmap')
+        expect(googleBl.hasKey).to.be.true
+        expect(googleBl.key).to.be.eq('test-key')
+        expect(googleBl.layerTypes).to.be.null
+        expect(googleBl.overlay).to.be.null
+    })
+
+    it('with layerTypes (hybrid)', function () {
+        const googleHybridBl = new GoogleBaseLayerConfig('google-hybrid', {
+            'title': 'Google Hybrid',
+            'mapType': 'satellite',
+            'key': 'test-key',
+            'layerTypes': ['layerRoadmap']
+        })
+        expect(googleHybridBl).to.be.instanceOf(GoogleBaseLayerConfig)
+        expect(googleHybridBl.type).to.be.eq(BaseLayerTypes.Google)
+        expect(googleHybridBl.name).to.be.eq('google-hybrid')
+        expect(googleHybridBl.title).to.be.eq('Google Hybrid')
+        expect(googleHybridBl.mapType).to.be.eq('satellite')
+        expect(googleHybridBl.layerTypes).to.be.deep.eq(['layerRoadmap'])
+        expect(googleHybridBl.overlay).to.be.null
+    })
+
+    it('with layerTypes (terrain)', function () {
+        const googleTerrainBl = new GoogleBaseLayerConfig('google-terrain', {
+            'title': 'Google Terrain',
+            'mapType': 'terrain',
+            'key': 'test-key',
+            'layerTypes': ['layerRoadmap']
+        })
+        expect(googleTerrainBl).to.be.instanceOf(GoogleBaseLayerConfig)
+        expect(googleTerrainBl.type).to.be.eq(BaseLayerTypes.Google)
+        expect(googleTerrainBl.name).to.be.eq('google-terrain')
+        expect(googleTerrainBl.title).to.be.eq('Google Terrain')
+        expect(googleTerrainBl.mapType).to.be.eq('terrain')
+        expect(googleTerrainBl.layerTypes).to.be.deep.eq(['layerRoadmap'])
+    })
+
+    it('with overlay', function () {
+        const googleOverlayBl = new GoogleBaseLayerConfig('google-overlay', {
+            'title': 'Google Overlay',
+            'mapType': 'satellite',
+            'key': 'test-key',
+            'layerTypes': ['layerRoadmap'],
+            'overlay': true
+        })
+        expect(googleOverlayBl).to.be.instanceOf(GoogleBaseLayerConfig)
+        expect(googleOverlayBl.type).to.be.eq(BaseLayerTypes.Google)
+        expect(googleOverlayBl.layerTypes).to.be.deep.eq(['layerRoadmap'])
+        expect(googleOverlayBl.overlay).to.be.true
+    })
+
+    it('without key', function () {
+        const googleBl = new GoogleBaseLayerConfig('google-streets', {
+            'title': 'Google Streets',
+            'mapType': 'roadmap',
+            'key': ''
+        })
+        expect(googleBl).to.be.instanceOf(GoogleBaseLayerConfig)
+        expect(googleBl.type).to.be.eq(BaseLayerTypes.Google)
+        expect(googleBl.mapType).to.be.eq('roadmap')
+        expect(googleBl.hasKey).to.be.false
+        expect(googleBl.key).to.be.null
+    })
+
+    it('ValidationError: empty cfg', function () {
+        try {
+            new GoogleBaseLayerConfig('test', {})
+        } catch (error) {
+            expect(error.name).to.be.eq('ValidationError')
+            expect(error).to.be.instanceOf(ValidationError)
+        }
+    })
+
+    it('ValidationError: missing mapType', function () {
+        try {
+            new GoogleBaseLayerConfig('test', { 'title': 'Test' })
+        } catch (error) {
+            expect(error.name).to.be.eq('ValidationError')
+            expect(error).to.be.instanceOf(ValidationError)
+        }
     })
 })
 
