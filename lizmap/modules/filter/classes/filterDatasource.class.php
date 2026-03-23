@@ -333,8 +333,14 @@ class filterDatasource
                 $sql .= ' Min("'.$fields[0].'") AS min,';
                 $sql .= ' Max("'.$fields[0].'") AS max';
             } else {
-                $sql .= ' Min(Min("'.implode('","', $fields).'")) AS min,';
-                $sql .= ' Max(Max("'.implode('","', $fields).'")) AS max';
+                // Use COALESCE to handle NULL values: SQLite's scalar Min/Max
+                // return NULL if any argument is NULL, unlike PostgreSQL's Least/Greatest
+                $sql .= ' Min(CASE WHEN "'.$fields[0].'" IS NULL THEN "'.$fields[1].'"';
+                $sql .= ' WHEN "'.$fields[1].'" IS NULL THEN "'.$fields[0].'"';
+                $sql .= ' ELSE Min("'.$fields[0].'","'.$fields[1].'") END) AS min,';
+                $sql .= ' Max(CASE WHEN "'.$fields[0].'" IS NULL THEN "'.$fields[1].'"';
+                $sql .= ' WHEN "'.$fields[1].'" IS NULL THEN "'.$fields[0].'"';
+                $sql .= ' ELSE Max("'.$fields[0].'","'.$fields[1].'") END) AS max';
             }
         }
         $sql .= ' FROM '.$this->datasource->table;
