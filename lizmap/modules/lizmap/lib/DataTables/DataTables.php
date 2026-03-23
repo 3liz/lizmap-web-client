@@ -3,7 +3,8 @@
 namespace Lizmap\DataTables;
 
 /**
- * @phpstan-type DTCriteria array{type: string, data: ?string, origData: ?string, condition: ?string, value1: ?string, value2: ?string}
+ * @phpstan-type DTSingleCriteria array{type: string, data: ?string, origData: ?string, condition: ?string, value1: ?string, value2: ?string}
+ * @phpstan-type DTCriteria array{criteria: ?DTSingleCriteria, type: string, data: ?string, origData: ?string, condition: ?string, value1: ?string, value2: ?string}
  * @phpstan-type DTSearchBuilder array{criteria: DTCriteria[], logic: ?string}
  */
 class DataTables
@@ -128,16 +129,27 @@ class DataTables
 
     /**
      * @param DTSearchBuilder $search A search provided by DataTables
+     * @param int             $depth  Depth level
      */
-    public static function convertSearchToExpression($search): string
+    public static function convertSearchToExpression($search, $depth = 0): string
     {
         $logic = isset($search['logic']) ? $search['logic'] : 'AND';
         $expressions = array();
         foreach ($search['criteria'] as $criteria) {
+            if (array_key_exists('criteria', $criteria) && is_array($criteria['criteria'])) {
+                $expressions[] = self::convertSearchToExpression($criteria, $depth + 1);
+            }
             $expressions[] = self::convertCriteriaToExpression($criteria);
         }
 
         // returns only not empty expressions
-        return implode(" {$logic} ", array_filter($expressions));
+        $expression = implode(" {$logic} ", array_filter($expressions));
+        if ($depth != 0 && $expression) {
+            // add parentheses only if there is a valid expression and only if
+            // this expression is a subcondition
+            $expression = "({$expression})";
+        }
+
+        return $expression;
     }
 }
