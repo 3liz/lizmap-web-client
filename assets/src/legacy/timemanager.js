@@ -110,8 +110,7 @@ var lizTimemanager = function() {
 
                     });
                 }
-                // Make sure to trigger filter for slider position
-                onSliderStop();
+                // Filter will be triggered by loadTimemanager() once data is fetched
             }
 
             // Deactivate Timemanager feature
@@ -277,30 +276,41 @@ var lizTimemanager = function() {
                 // fields
                 var startField = layerConfig.startAttribute;
                 var endField = layerConfig.endAttribute;
-                var attributeResolution = layerConfig.attributeResolution;
+                var hasEndField = endField && endField != '' && endField != startField;
+                // Always use full ISO date format for the QGIS expression filter
+                // The attributeResolution controls the slider display, not the filter format
+                // Using year-only ('1928') or month-only ('2020-06') strings fails
+                // for DATE-typed fields in QGIS Server expression evaluation
+                var filterResolution = 'days';
 
-                // min date filter
-                if(min_val && Date.parse(min_val)){
-                    var f_min = '( "' + startField + '"' + " >= '" + formatDatetime(min_val, attributeResolution) + "'";
-                    if (endField && endField != '' && endField != startField){
-                        f_min += " OR " + ' "' + endField + '"' + " >= '" + formatDatetime(min_val, attributeResolution) + "'";
+                if (hasEndField) {
+                    // Interval overlap: feature is active during [min_val, max_val] when
+                    // feature starts before window ends AND feature ends after window starts
+                    if(max_val && Date.parse(max_val)){
+                        // Feature must start before or at the upper boundary
+                        filters.push('( "' + startField + '"' + " <= '" + formatDatetime(max_val, filterResolution) + "' )");
+                    }else{
+                        max_val = null;
                     }
-                    f_min += " )";
-                    filters.push(f_min);
-                }else{
-                    min_val = null;
-                }
-
-                // max date filter
-                if(max_val && Date.parse(max_val)){
-                    var f_max = '( "' + startField + '"' + " <= '" + formatDatetime(max_val, attributeResolution) + "'";
-                    if(endField && endField != '' && endField != startField) {
-                        f_max += " OR " + ' "' + endField + '"' + " <= '" + formatDatetime(max_val, attributeResolution) + "'";
+                    if(min_val && Date.parse(min_val)){
+                        // Feature must end after or at the lower boundary (or have no end date)
+                        filters.push('( "' + endField + '"' + " >= '" + formatDatetime(min_val, filterResolution) + "'"
+                            + ' OR "' + endField + '" IS NULL )');
+                    }else{
+                        min_val = null;
                     }
-                    f_max += " )";
-                    filters.push(f_max);
-                }else{
-                    max_val = null;
+                } else {
+                    // Single field (point-in-time events): show features within the window
+                    if(min_val && Date.parse(min_val)){
+                        filters.push('( "' + startField + '"' + " >= '" + formatDatetime(min_val, filterResolution) + "' )");
+                    }else{
+                        min_val = null;
+                    }
+                    if(max_val && Date.parse(max_val)){
+                        filters.push('( "' + startField + '"' + " <= '" + formatDatetime(max_val, filterResolution) + "' )");
+                    }else{
+                        max_val = null;
+                    }
                 }
 
                 var filter = null;
@@ -314,7 +324,6 @@ var lizTimemanager = function() {
                     'max_date': max_val
                 };
                 layerConfig['filter'] = filter;
-                //console.log(filter);
                 return filter;
             }
 
