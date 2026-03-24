@@ -6,8 +6,11 @@ set -e
 echo "* Removing existing schema about test data"
 PGPASSWORD=lizmap1234! psql -h localhost -p 8132 -U lizmap -c "DROP SCHEMA IF EXISTS tests_projects CASCADE"
 
-echo "* Run file $SCRIPTDIR/tests_dataset.sql"
-PGPASSWORD=lizmap1234! psql -h localhost -p 8132 -U lizmap -f $SCRIPTDIR/tests_dataset.sql
+echo "* Run file $SCRIPTDIR/tests_dataset_schema.sql"
+PGPASSWORD=lizmap1234! psql -h localhost -p 8132 -U lizmap -f $SCRIPTDIR/tests_dataset_schema.sql
+
+echo "* Run file $SCRIPTDIR/tests_dataset_data.sql"
+PGPASSWORD=lizmap1234! psql -h localhost -p 8132 -U lizmap -f $SCRIPTDIR/tests_dataset_data.sql
 
 echo "* Run file $SCRIPTDIR/set_tests_respository_rights.sql"
 PGPASSWORD=lizmap1234! psql -h localhost -p 8132 -U lizmap -f $SCRIPTDIR/set_tests_respository_rights.sql
