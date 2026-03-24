@@ -1877,12 +1877,8 @@ class Project
             );
             if ($configJson->options->externalSearch == 'nominatim') {
                 $externalSearch['url'] = $this->appContext->getUrl('lizmap~osm:nominatim');
-            } elseif ($configJson->options->externalSearch == 'ban') {
-                $externalSearch = array(
-                    'type' => 'BAN',
-                    'service' => 'lizmapBan',
-                    'url' => $this->appContext->getUrl('lizmap~ban:search'),
-                );
+            } elseif ($configJson->options->externalSearch == 'ban') { // old configurations with "ban" are redirected to "ign"
+                $externalSearch['service'] = 'ign';
             }
             $configJson->options->searches[] = (object) $externalSearch;
             unset($configJson->options->externalSearch);
