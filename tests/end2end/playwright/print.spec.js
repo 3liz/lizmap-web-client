@@ -59,6 +59,63 @@ test.describe('Print', () => {
         expect(await page.locator('.btn-print-dpis').inputValue()).toBe('200');
     });
 
+    test('Print custom scale mode', async ({ page }) => {
+        // Test scale mode toggle button visibility
+        const toggleButton = page.locator('.print-scale-container button');
+        await expect(toggleButton).toBeVisible();
+
+        // Initially, the select should be visible and input should be hidden
+        await expect(page.locator('#print-scale')).toBeVisible();
+        await expect(page.locator('#print-scale-custom')).not.toBeVisible();
+
+        // Toggle to custom mode by clicking the button
+        await toggleButton.click();
+
+        // Now the select should be hidden and input should be visible
+        await expect(page.locator('#print-scale')).not.toBeVisible();
+        await expect(page.locator('#print-scale-custom')).toBeVisible();
+
+        // Enter a custom scale value
+        const customInput = page.locator('#print-scale-custom');
+        await customInput.fill('75000');
+        expect(await customInput.inputValue()).toBe('75000');
+
+        // Toggle back to predefined mode
+        await toggleButton.click();
+
+        // The select should be visible again
+        await expect(page.locator('#print-scale')).toBeVisible();
+        await expect(page.locator('#print-scale-custom')).not.toBeVisible();
+    });
+
+    test('Print with custom scale value', async ({ page }) => {
+        // Test printing with a custom scale value
+        const toggleButton = page.locator('.print-scale-container button');
+
+        // Toggle to custom mode
+        await toggleButton.click();
+        await expect(page.locator('#print-scale-custom')).toBeVisible();
+
+        // Enter a custom value that doesn't exist in predefined scales
+        const customInput = page.locator('#print-scale-custom');
+        await customInput.fill('33333');
+
+        // Wait for print request and launch it
+        const getPrintPromise = page.waitForRequest(
+            request =>
+                request.method() === 'POST' &&
+                request.postData()?.includes('GetPrint') === true
+        );
+
+        await page.locator('#print-launch').click();
+
+        const getPrintRequest = await getPrintPromise;
+        const responseData = getPrintRequest.postData() ?? '';
+
+        // Verify the custom scale value is used in the print request
+        expect(responseData).toContain('map0%3ASCALE=33333');
+    });
+
     test('Print requests', async ({ page }) => {
         // Required GetPrint parameters
         const expectedParameters = {
