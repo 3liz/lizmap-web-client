@@ -8,6 +8,24 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Funders
+
+* **[Klein und Leber GbR](https://www.gisgeometer.de/)** with @meyerlor
+* **[Conseil Départemental du Gard](https://www.gard.fr/)**
+* **[ETRA SpA Società benefit](https://www.etraspa.it/)**
+
+## Added
+
+* Print -Atlas Print Button for Selected Features
+* Print -PDF Filename from Atlas Expression
+* Edition - Add geometry "copy&paste" functionality for digitizing workflow
+* Tooltip - Add the capability to render layer features with QGIS Style (using SLD)
+* Attribute table - Management of Value relation/Value Map fields in the new datatables Search Builder panel
+* Edition - Rename uploaded attachments using field default value as filename stem
+* Map - Layer opacity when "Load layers as single WMS request"
+* Edition - Auto-activate snapping via snap_on_start config
+* Print - Add mode to let user put a custom scale
+
 ## 3.10.0-beta.1 - 2026-02-11
 
 ### Funders
