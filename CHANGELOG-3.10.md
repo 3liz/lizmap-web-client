@@ -26,6 +26,10 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Edition - Auto-activate snapping via snap_on_start config
 * Print - Add mode to let user put a custom scale
 
+### Tests
+
+* e2e: PostgreSQL 18
+
 ### Backend
 
 * Update rspack to 1.7 and remove webpack
