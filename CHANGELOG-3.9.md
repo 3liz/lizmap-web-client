@@ -8,7 +8,11 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
-## 3.9.6 - 2026-02-10
+## 3.9.7 - 2026-03-25
+
+### Funders
+
+* **[Klein und Leber GbR](https://www.gisgeometer.de/)** with @meyerlor
 
 ### Fixed
 
@@ -28,6 +32,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Upgrade Jelix to version 1.8.23
 * Update locales
 * Remove SVG dependencies
+
+## 3.9.6 - 2026-02-10
 
 ### Funders
 
