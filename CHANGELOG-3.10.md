@@ -14,7 +14,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * **[Conseil Départemental du Gard](https://www.gard.fr/)**
 * **[ETRA SpA Società benefit](https://www.etraspa.it/)**
 
-## Added
+### Added
 
 * Print -Atlas Print Button for Selected Features
 * Print -PDF Filename from Atlas Expression
@@ -25,6 +25,11 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Map - Layer opacity when "Load layers as single WMS request"
 * Edition - Auto-activate snapping via snap_on_start config
 * Print - Add mode to let user put a custom scale
+
+### Backend
+
+* Update rspack to 1.7 and remove webpack
+* OpenLayers 10.8.x
 
 ## 3.10.0-beta.1 - 2026-02-11
 
