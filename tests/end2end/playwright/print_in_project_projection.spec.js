@@ -52,8 +52,15 @@ test.describe('Print in project projection @readonly', () => {
         }
         requestExpect(getPrintRequest).toContainParametersInPostData(expectedParameters);
         const searchParams = new URLSearchParams(getPrintRequest?.postData() ?? '');
-        expect(searchParams.size).toBe(14)
+        expect(searchParams.size).toBe(14);
+
+        // Start waiting for download before response. Note no await.
+        const downloadPromise = page.waitForEvent('download');
         responseExpect(await getPrintRequest.response()).toBePdf();
+
+        // Check the suggested file name is well extracted by Lizmap from header Content-Disposition
+        const download = await downloadPromise;
+        expect(download.suggestedFilename()).toBe('print_in_project_projection_Paysage_A4.pdf');
 
         // Stop listening to WMS requests
         await page.unroute('**/service*');
