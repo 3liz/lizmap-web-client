@@ -91,6 +91,7 @@ export default class Print extends HTMLElement {
                     this.printTemplate = 0;
                     this._printFormat = this.defaultFormat;
                     this._printDPI = this.defaultDPI;
+                    this._useCustomScale = false;
 
                     // Create a mask layer to display the extent for the main map
                     this._maskLayer = new MaskLayer();
@@ -137,9 +138,17 @@ export default class Print extends HTMLElement {
                         </select>
                     </td>
                     <td>
-                        <select id="print-scale" class="btn-print-scales form-select" .value=${this._printScale} @change=${(event) => { this.printScale = parseInt(event.target.value) }}>
-                            ${this._printScales.map( scale => html`<option .selected=${scale === this._printScale} value=${scale}>${scale.toLocaleString()}</option>`)}
-                        </select>
+                        <div class="print-scale-container">
+                            ${!this._useCustomScale
+                                ? html`<select id="print-scale" class="btn-print-scales form-select" .value=${this._printScale} @change=${(event) => { this.printScale = parseInt(event.target.value) }}>
+                                        ${this._printScales.map( scale => html`<option .selected=${scale === this._printScale} value=${scale}>${scale.toLocaleString()}</option>`)}
+                                    </select>`
+                                : html`<input id="print-scale-custom" type="number" class="form-control" .value=${this._printScale} @change=${(event) => { this.printScale = parseInt(event.target.value) }} min="1">`
+                            }
+                            <button class="btn btn-sm btn-outline-secondary" title="${lizDict['print.toolbar.scale.toggle']}" @click=${() => { this._useCustomScale = !this._useCustomScale; render(this._template(), this); }}>
+                                ${this._useCustomScale ? html`<span>📋</span>` : html`<span>✏️</span>`}
+                            </button>
+                        </div>
                     </td>
                 </tr>
             </table>
@@ -496,6 +505,10 @@ export default class Print extends HTMLElement {
 
     set printScale(scale){
         this._printScale = scale;
+        // When user manually enters a value, switch to custom mode if not already in it
+        if (!this._useCustomScale && !this._printScales.includes(this._printScale)) {
+            this._useCustomScale = true;
+        }
         mainLizmap.map.getView().changed();
     }
 }
