@@ -10,6 +10,25 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## 3.9.6 - 2026-02-10
 
+### Fixed
+
+* JS - Zoom to point from attribute table and respect max zoom scale
+* Dataviz - Fix setting the WFS SORTBY parameters for scatter or pie
+* Edition form – ValueMap and Checkbox show NULL when editing a feature
+* UI - auto-activate box selection and display info message
+* UI - print layout order to respect cfg configuration
+* Map - detect WMTS layers with wmts in URL path
+* JS - timemanager filter
+* Map - handle google-hybrid base layer and exact lyrs matching
+* UI - Use IGN geocoding service instead of BAN
+* JS - print download by defining a FileDownloader class with Promise and enhancing e2e tests
+
+### Backend
+
+* Upgrade Jelix to version 1.8.23
+* Update locales
+* Remove SVG dependencies
+
 ### Funders
 
 * **[Terre De Provence Agglomération](https://www.terredeprovence-agglo.com/)**
