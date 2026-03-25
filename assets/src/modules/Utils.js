@@ -32,6 +32,119 @@ export const HttpRequestMethods = createEnum({
 });
 
 /**
+ * Class representing a file downloader.
+ * Can be used to override the format file name.
+ * @class
+ */
+export class FileDownloader {
+
+    /**
+     * FileDownloader construtor
+     * @param {string} url        - A string or any other object with a stringifier — including a URL object — that provides the URL of the resource to send the request to.
+     * @param {object} parameters - Parameters that will be serialize as a Query string
+     */
+    constructor(url, parameters) {
+        this._url = url;
+        this._parameters = parameters;
+    }
+
+    /**
+     * The url
+     * @type {string}
+     */
+    get url() {
+        return this._url;
+    }
+
+    /**
+     * The parameters
+     * @type {object}
+     */
+    get parameters() {
+        return this._parameters;
+    }
+
+    /**
+     * The parameters as URLSearchParams
+     * @type {URLSearchParams}
+     * @see https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
+     */
+    get urlParameters() {
+        return new URLSearchParams(this._parameters);
+    }
+
+    /**
+     * Format a file name to be used as a download file name / can be replaced by a child class
+     * @param {string} filename the file name to format
+     * @returns {string} the file name formated
+     */
+    formatFileName(filename) {
+        return filename;
+    }
+
+    /**
+     * fetch file and download it
+     * @returns {Promise<Response>} the response downloaded
+     */
+    async fetch() {
+        return await Utils.fetch(this._url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: this.urlParameters,
+        }).then(async (response) => {
+            let filename = "";
+            const disposition = response.headers.get("Content-Disposition");
+            if (disposition && disposition.indexOf('filename') !== -1) {
+                var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+                var matches = filenameRegex.exec(disposition);
+                if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
+            }
+            filename = this.formatFileName(filename);
+
+            let type = 'application/octet-stream';
+            const contentType = response.headers.get("content-type");
+            // Firefox >= 98 opens blob in its pdf viewer
+            // This is a hack to force download as in Chrome
+            if (navigator.userAgent.toLowerCase().indexOf('firefox') == -1 || contentType != 'application/pdf') {
+                type = contentType;
+            }
+
+            const blob = new File([await response.arrayBuffer()], filename, { type: type });
+            const downloadUrl = URL.createObjectURL(blob);
+
+            if (filename) {
+                // use HTML5 a[download] attribute to specify filename
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+                a.download = filename;
+                a.dispatchEvent(new MouseEvent('click'));
+            } else {
+                window.open(downloadUrl);
+            }
+            const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+            await sleep(100); // wait a little to have time to have the download triggered, and then cleanup
+            URL.revokeObjectURL(downloadUrl)
+
+            return Promise.resolve(response);
+        }).catch(error => {
+            return Promise.reject(error);
+        });
+    }
+}
+
+/**
+ * @callback downloadFileCallback
+ * @param {Response} response - The response
+ */
+
+/**
+ * @callback downloadFileErrorCallback
+ * @param {HttpError|NetworkError} error - The error
+ */
+
+/**
  * The main utils methods
  * @class
  * @name Utils
@@ -64,62 +177,14 @@ export class Utils {
      * @static
      * @param {string} url        - A string or any other object with a stringifier — including a URL object — that provides the URL of the resource to send the request to.
      * @param {Array} parameters  - Parameters that will be serialize as a Query string
-     * @param {Function} callback - optional callback executed when download ends
-     * @param {Function} errorCallback - optional callback executed when error event occurs
+     * @param {downloadFileCallback} callback - optional callback executed when download ends
+     * @param {downloadFileErrorCallback} errorCallback - optional callback executed when error event occurs
      */
-    static downloadFile(url, parameters, callback, errorCallback) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('POST', url, true);
-        xhr.responseType = 'arraybuffer';
-        xhr.onload = function () {
-            if (this.status === 200) {
-                var filename = "";
-                var disposition = xhr.getResponseHeader('Content-Disposition');
-                if (disposition && disposition.indexOf('filename') !== -1) {
-                    var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
-                    var matches = filenameRegex.exec(disposition);
-                    if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
-                }
-
-                let type = xhr.getResponseHeader('Content-Type');
-
-                // Firefox >= 98 opens blob in its pdf viewer
-                // This is a hack to force download as in Chrome
-                if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1 && type == 'application/pdf') {
-                    type = 'application/octet-stream';
-                }
-                const blob = new File([this.response], filename, { type: type });
-                const downloadUrl = URL.createObjectURL(blob);
-
-                if (filename) {
-                    // use HTML5 a[download] attribute to specify filename
-                    const a = document.createElement('a');
-                    a.href = downloadUrl;
-                    a.download = filename;
-                    a.dispatchEvent(new MouseEvent('click'));
-                } else {
-                    window.open(downloadUrl);
-                }
-
-                setTimeout(() => URL.revokeObjectURL(downloadUrl), 100); // cleanup
-            } else {
-                // Execute callback if any
-                if (typeof errorCallback === 'function') {
-                    errorCallback(new HttpError('HTTP error: ' + this.status, this.status, url, {method:'POST', body:$.param(parameters, true)}));
-                }
-            }
-
-            // Execute callback if any
-            if (typeof callback === 'function') {
-                callback();
-            }
-        };
-        // Add error callback if any
-        if (typeof errorCallback === 'function') {
-            xhr.addEventListener("error", errorCallback);
-        }
-        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-        xhr.send($.param(parameters, true));
+    static downloadFile(url, parameters, callback = () => {}, errorCallback = () => {}) {
+        const fileDownloader =new FileDownloader(url, parameters);
+        fileDownloader.fetch()
+            .then(callback)
+            .catch(errorCallback);
     }
 
     /**
@@ -133,7 +198,7 @@ export class Utils {
      * @see https://developer.mozilla.org/en-US/docs/Web/API/fetch
      * @see https://developer.mozilla.org/en-US/docs/Web/API/Response
      */
-    static fetch(resource, options) {
+    static async fetch(resource, options) {
         return fetch(resource, options).then(response => {
             if (response.ok) {
                 return response;
@@ -160,7 +225,7 @@ export class Utils {
      * @see https://developer.mozilla.org/en-US/docs/Web/API/fetch
      * @see https://developer.mozilla.org/en-US/docs/Web/API/Response
      */
-    static fetchJSON(resource, options) {
+    static async fetchJSON(resource, options) {
         return Utils.fetch(resource, options).then(response => {
             const contentType = response.headers.get('Content-Type') || '';
 
@@ -187,7 +252,7 @@ export class Utils {
      * @see https://developer.mozilla.org/en-US/docs/Web/API/fetch
      * @see https://developer.mozilla.org/en-US/docs/Web/API/Response
      */
-    static fetchHTML(resource, options) {
+    static async fetchHTML(resource, options) {
         return Utils.fetch(resource, options).then(response => {
             const contentType = response.headers.get('Content-Type') || '';
 
@@ -213,7 +278,7 @@ export class Utils {
      * @see https://developer.mozilla.org/en-US/docs/Web/API/fetch
      * @see https://developer.mozilla.org/en-US/docs/Web/API/Response
      */
-    static fetchXML(resource, options) {
+    static async fetchXML(resource, options) {
         return Utils.fetch(resource, options).then(response => {
             const contentType = response.headers.get('Content-Type') || '';
 

@@ -87,7 +87,7 @@ export class PrintPage extends ProjectPage {
     }
 
     /**
-     * Waits for a GetFilterToken request
+     * Waits for a GetPrint request
      * @returns {Promise<Request>} The GetFilterToken request
      */
     async waitForGetPrintRequest() {
@@ -95,6 +95,18 @@ export class PrintPage extends ProjectPage {
             request => request.method() === 'POST' &&
             request.postData()?.includes('WMS') === true &&
             request.postData()?.includes('GetPrint') === true
+        );
+    }
+
+    /**
+     * Waits for a GetPrintAtlas request
+     * @returns {Promise<Request>} The GetFilterToken request
+     */
+    async waitForGetPrintAtlasRequest() {
+        return this.page.waitForRequest(
+            request => request.method() === 'POST' &&
+            request.postData()?.includes('WMS') === true &&
+            request.postData()?.includes('GetPrintAtlas') === true
         );
     }
 }
