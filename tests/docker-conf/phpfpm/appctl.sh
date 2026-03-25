@@ -190,7 +190,8 @@ function launch() {
 }
 
 function launchUnitTests() {
-    su $APP_USER -c "cd $ROOTDIR/tests/units/ && vendor/bin/phpunit"
+      UTCMD="cd $ROOTDIR/tests/units/ && vendor/bin/phpunit $@"
+      su $APP_USER -c  "$UTCMD"
 }
 
 function launchPhpStan() {
@@ -224,7 +225,7 @@ case $COMMAND in
     composer_update)
         composerUpdate;;
     unittests)
-        launchUnitTests;;
+        launchUnitTests ${*:2};;
     phpstan)
         launchPhpStan;;
     *)

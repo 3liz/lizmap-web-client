@@ -129,7 +129,7 @@ case $COMMAND in
     composer-update | composer_update)
         execInPhp composer_update;;
     unit-tests | unittests)
-        execInPhp unittests;;
+        execInPhp unittests "$@";;
     phpstan)
         execInPhp phpstan;;
     docker-exec)
