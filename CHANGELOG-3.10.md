@@ -14,7 +14,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 * **[Klein und Leber GbR](https://www.gisgeometer.de/)** with @meyerlor
 * **[Conseil Départemental du Gard](https://www.gard.fr/)**
-* **[ETRA SpA Società benefit](https://www.etraspa.it/)**
+* **[ETRA SpA Società benefit](https://www.etraspa.it/)** with Faunalia and @mind84
+* **[Faunalia](https://www.faunalia.eu/)** with @mind84
 
 ### Added
 
