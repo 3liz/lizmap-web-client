@@ -457,6 +457,16 @@ export class ProjectPage extends BasePage {
     }
 
     /**
+     * @param {string} layer The layer name
+     * @param {string} style Destination style
+     * @returns {Promise<void>}
+     */
+    async changeLayerStyle(layer, style){
+        await this.openLayerInfo(layer);
+        await this.page.locator("#sub-dock").locator("select.styleLayer").selectOption(style);
+    }
+
+    /**
      * openAttributeTable function
      * Open the attribute table for the given layer
      * @param {string} layer Name of the layer
