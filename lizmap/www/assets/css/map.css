@@ -1892,6 +1892,13 @@ transform: none !important;
   padding:0.5em;
 }
 
+#toolbar .title .btn-close,
+#dock .title .btn-close,
+#mini-dock .title .btn-close,
+#right-dock .title .btn-close {
+  float: right;
+}
+
 #toolbar .title .btn,
 #menu .title .btn,
 #dock .title .btn,
@@ -1906,24 +1913,6 @@ transform: none !important;
   padding : none;
   transition: none;
   transition: none;
-}
-
-#toolbar .title .btn.btn-error,
-#dock .title .btn.btn-error,
-#mini-dock .title .btn.btn-error,
-#right-dock .title .btn.btn-error {
-  background:none;
-  color:#DA4F49;
-  font-size:20px;
-  opacity:0.6;
-}
-
-#toolbar .title .btn.btn-error:hover,
-#dock .title .btn.btn-error:hover,
-#mini-dock .title .btn.btn-error:hover,
-#right-dock .title .btn.btn-error:hover {
-  text-decoration:none;
-  opacity:1;
 }
 
 #toolbar .title .btn.btn-locate-clear,

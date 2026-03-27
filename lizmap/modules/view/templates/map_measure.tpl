@@ -1,5 +1,12 @@
 <div class="measure">
-  <h3><span class="title"><button id="measure-stop" class="btn btn-stop btn-sm btn-error btn-link" title="{@view~map.toolbar.content.stop@}">×</button><span class="icon"></span>&nbsp;<span class="text">{@view~map.measure.toolbar.title@}</span></span></h3>
+  <h3>
+    <span class="title">
+      <button id="measure-stop" type="button" class="btn-measure-stop btn-close"
+        title="{@view~map.toolbar.content.stop@}"></button>
+      <span class="icon"></span>
+      <span class="text">&nbsp;{@view~map.measure.toolbar.title@}&nbsp;</span>
+    </span>
+  </h3>
   <div class="menu-content">
     <select id="measure-type" class="form-select">
       <option value="length">{@view~map.measure.toolbar.length@}</option>
