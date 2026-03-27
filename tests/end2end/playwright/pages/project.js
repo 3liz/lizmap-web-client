@@ -852,6 +852,67 @@ export class ProjectPage extends BasePage {
     }
 
     /**
+     * Checks group popup by layers component table and returns table rows
+     * @param {object[]} expectedResults array of expected values for each group
+     * @returns {Promise<Locator>}
+     */
+    async checkGroupPopupByLayersGroups(expectedResults){
+        await expect(this.page.locator('lizmap-group-popup-layer')).toHaveCount(1);
+        let groups = this.page.locator('lizmap-group-popup-layer .lizmap-gpl-table tr');
+
+        await expect(groups).toHaveCount(expectedResults.length);
+        for (let i=0; i< expectedResults.length; i++) {
+            await expect(groups.nth(i).locator('td').nth(0)).toHaveText(expectedResults[i].name);
+            await expect(groups.nth(i).locator('td').nth(1)).toHaveText(`(${expectedResults[i].count})`);
+        }
+
+        return groups;
+    }
+
+    /**
+     * Checks the group popup by layers component single feature interface
+     * @param {number} backItemLength "Back to layers list" selector expected length
+     * @param {number} counterLength Counter selector expected length
+     * @param {string} counterText Counter selector expected text
+     * @param {number} navButtonsLength Nav buttons selector expected length
+     * @returns {Promise<void>}
+     */
+    async checkGroupPopupByLayersFeatures(backItemLength, counterLength, counterText, navButtonsLength){
+        await expect(this.page.locator('lizmap-group-popup-layer .gpl-back')).toHaveCount(backItemLength);
+        await expect(this.page.locator('lizmap-group-popup-layer .gpl-counter')).toHaveCount(counterLength);
+        if(counterText) {
+            await expect(this.page.locator('lizmap-group-popup-layer .gpl-counter')).toHaveText(counterText);
+        }
+        await expect(this.page.locator('lizmap-group-popup-layer .gpl-nav-buttons button')).toHaveCount(navButtonsLength);
+    }
+
+    /**
+     * Group popup by layers: navigate features list back/forth based on direction parameter
+     * @param {string} direction possible values are 'next' or 'prev', default 'next'
+     */
+    async groupPopupByLayersSwitchFeature(direction = 'next'){
+        await this.page.locator(`lizmap-group-popup-layer .gpl-${direction}-popup`).click();
+    }
+
+    /**
+     * Group popup by layers: back to layers list
+     * @returns {Promise<void>}
+     */
+    async groupPopupByLayersBackToList(){
+        await this.page.locator('lizmap-group-popup-layer .gpl-back').click();
+    }
+
+    /**
+     * Returns first level popup single features
+     * @param {boolean} groupPopupByLayer
+     * @returns {Promise<Locator>}
+     */
+    async getPopupSingleFeatures(groupPopupByLayer = false){
+        const singleFeaturesSelector = `${groupPopupByLayer ? 'lizmap-group-popup-layer div[slot="popup"]':'.lizmapPopupContent'} > .lizmapPopupSingleFeature`;
+        return this.page.locator(singleFeaturesSelector);
+    }
+
+    /**
      * clickOnMap function
      * Click on the map at the given position
      * @param {number} x Position X on the map
