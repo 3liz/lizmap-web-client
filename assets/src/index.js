@@ -30,6 +30,7 @@ import NavBar from './components/NavBar.js';
 import Tooltip from './components/Tooltip.js';
 import Message from './components/Message.js';
 import TypeAHead from './components/TypeAHead.js';
+import GroupPopupByLayer from './components/GroupPopupByLayer.js';
 
 import { mainLizmap, mainEventDispatcher } from './modules/Globals.js';
 import executeJSFromServer from './modules/ExecuteJSFromServer.js';
@@ -107,23 +108,24 @@ const definedCustomElements = () => {
     window.customElements.define('lizmap-tooltip', Tooltip);
     window.customElements.define('lizmap-message', Message);
     window.customElements.define('lizmap-typeahead', TypeAHead);
+    window.customElements.define('lizmap-group-popup-layer', GroupPopupByLayer);
 
     /**
-     * At this point the user interface is fully loaded.
-     * External javascripts can subscribe to this event to perform post load
-     * operations or cutomizations
-     *
-     * Example in my_custom_script.js
-     *
-     * lizMap.subscribe(() => {
-     *          // pseudo-code
-     *          intercatWithPrintPanel();
-     *          interactWithSelectionPanel();
-     *          inteactWithLocateByLayerPanel();
-     *     },
-     *     'lizmap.uicreated'
-     * );
-     */
+         * At this point the user interface is fully loaded.
+         * External javascripts can subscribe to this event to perform post load
+         * operations or customizations
+         *
+         * Example in my_custom_script.js
+         *
+         * lizMap.subscribe(() => {
+         *          // pseudo-code
+         *          intercatWithPrintPanel();
+         *          interactWithSelectionPanel();
+         *          inteactWithLocateByLayerPanel();
+         *     },
+         *     'lizmap.uicreated'
+         * );
+         */
     lizMap.mainEventDispatcher.dispatch('lizmap.uicreated');
 }
 

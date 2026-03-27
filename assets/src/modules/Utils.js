@@ -150,7 +150,7 @@ export class FileDownloader {
  * @name Utils
  */
 export class Utils {
-
+    static globalStyleSheets = null;
     /**
      * Download a file provided as a string
      * @static
@@ -343,5 +343,26 @@ export class Utils {
                 attributeNameCheck: /crs|bbox|edition-restricted|layerid|layertitle|uniquefield|expressionfilter|withgeometry|sortingfield|sortingorder|draggable/,
             }
         });
+    }
+
+    /**
+     * Injects global stylesheets into the given shadowRoot instance
+     * @param {ShadowRoot} shadowRoot - component shadowRoot instance
+     * @returns {void}
+     */
+    static addGlobalStylesToShadowRoot(shadowRoot) {
+        if (!Utils.globalStyleSheets) {
+            Utils.globalStyleSheets = Array.from(document.styleSheets)
+                .map(x => {
+                    const sheet = new CSSStyleSheet();
+                    const css = Array.from(x.cssRules).map(rule => rule.cssText).join(' ');
+                    sheet.replaceSync(css);
+                    return sheet;
+                });
+        }
+
+        shadowRoot.adoptedStyleSheets.push(
+            ...Utils.globalStyleSheets
+        );
     }
 }

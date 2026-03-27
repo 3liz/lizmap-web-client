@@ -41,6 +41,7 @@ const optionalProperties = {
     'automatic_permalink': { type: 'boolean', default: false },
     'wms_single_request_for_all_layers' : { type:'boolean', default: false },
     'exclude_basemaps_from_single_wms' : { type:'boolean', default: false },
+    'group_popup_by_layer' : { type:'boolean', default: false },
 };
 
 /**
@@ -80,6 +81,7 @@ export class OptionsConfig  extends BaseObjectConfig {
      * @param {boolean}  [cfg.automatic_permalink]                - is automatic permalink activated ?
      * @param {boolean}  [cfg.wms_single_request_for_all_layers]  - are layers loaded as single WMS image ?
      * @param {boolean}  [cfg.exclude_basemaps_from_single_wms]   - are basemaps excluded from single WMS request ?
+     * @param {boolean}  [cfg.group_popup_by_layer]               - are popups grouped by layer ?
      */
     constructor(cfg) {
         if (!cfg || typeof cfg !== "object") {
@@ -323,6 +325,14 @@ export class OptionsConfig  extends BaseObjectConfig {
      */
     get exclude_basemaps_from_single_wms() {
         return this._exclude_basemaps_from_single_wms;
+    }
+
+    /**
+     * Features popups are displayed grouped by layer name
+     * @type {boolean}
+     */
+    get group_popup_by_layer() {
+        return this._group_popup_by_layer;
     }
 
 }

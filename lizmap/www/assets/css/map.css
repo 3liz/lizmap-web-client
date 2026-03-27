@@ -4117,6 +4117,76 @@ div.lizmap-features-table.popup-displayed > table.lizmap-features-table-containe
     z-index:5001 !important;
 }
 
+/* lizmap-group-popup-layer web component */
+
+.lizmap-gpl-container {
+    margin-bottom: 1em;
+    margin-top:1em;
+}
+
+.lizmap-gpl-table {
+    font-size:0.9em;
+}
+
+.lizmap-gpl-table tr:hover td{
+    color: var(--color-contrasted-elements);
+    cursor:pointer;
+}
+
+.lizmap-gpl-container h4 {
+    font-size: 1em;
+    color: var(--color-contrasted-elements);
+}
+
+.lizmap-gpl-nav {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap:10px;
+}
+
+.gpl-counter {
+    font-size: 0.8em;
+    flex:0 1 30px;
+}
+
+.gpl-back {
+    font-size:0.7em;
+    flex: 1 0 auto;
+}
+
+.gpl-nav-buttons{
+    display:flex;
+    gap:5px;
+}
+
+.gpl-nav-buttons button {
+    background-color: var(--color-contrasted-elements-light);
+    color: var(--color-contrasted-elements);
+    width: 25px;
+    height: 25px;
+  
+    &:hover, &:focus, &:active {
+      background-position: center;
+    }
+  }
+
+.lizmap-gpl-container button.gpl-prev-popup {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpath d='M10.8284 12.0007L15.7782 16.9504L14.364 18.3646L8 12.0007L14.364 5.63672L15.7782 7.05093L10.8284 12.0007Z'%3E%3C/path%3E%3C/svg%3E");
+    
+    &.first {
+        display: none;
+      }
+}
+
+.lizmap-gpl-container button.gpl-next-popup {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpath d='M13.1717 12.0007L8.22192 7.05093L9.63614 5.63672L16.0001 12.0007L9.63614 18.3646L8.22192 16.9504L13.1717 12.0007Z'%3E%3C/path%3E%3C/svg%3E");
+    
+    &.last {
+        display: none;
+      }
+}
+
 /* Deactivate the OLD bootstrap-2 modal
 This is needed for LWC >=3.9 and the migration to bootstrap 5
 This prevent old JS scripts to make the map unusable
