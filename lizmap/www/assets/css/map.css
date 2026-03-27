@@ -1964,6 +1964,10 @@ transform: none !important;
   background-position : -20px -20px;
 }
 
+#mini-dock .title .btn-close {
+  float: right;
+}
+
 #toolbar .menu-content .btn.btn-success,
 #dock .menu-content .btn.btn-success,
 #sub-dock .menu-content .btn.btn-success,
