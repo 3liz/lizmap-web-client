@@ -1,8 +1,8 @@
 <div class="draw">
     <h3>
         <span class="title">
-            <button class="btn-draw-clear btn btn-sm btn-error btn-link"
-                title="{@view~map.toolbar.content.stop@}" onclick="document.querySelector('#button-draw').click();">×</button>
+            <button type="button" class="btn-draw-clear btn-close"
+                title="{@view~map.toolbar.content.stop@}" onclick="document.querySelector('#button-draw').click();"></button>
             <svg>
                 <use href="{$j_basepath}assets/svg/sprite.svg?{$j_assetsRevision}#pencil"/>
             </svg>
