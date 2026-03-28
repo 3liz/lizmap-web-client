@@ -41,6 +41,7 @@ const optionalProperties = {
     'automatic_permalink': { type: 'boolean', default: false },
     'wms_single_request_for_all_layers' : { type:'boolean', default: false },
     'exclude_basemaps_from_single_wms' : { type:'boolean', default: false },
+    'selectionColor': { type: 'string', default: 'rgba(255, 255, 0, 0.8)' },
 };
 
 /**
@@ -323,6 +324,14 @@ export class OptionsConfig  extends BaseObjectConfig {
      */
     get exclude_basemaps_from_single_wms() {
         return this._exclude_basemaps_from_single_wms;
+    }
+
+    /**
+     * The selection color as rgba() CSS string
+     * @type {string}
+     */
+    get selectionColor() {
+        return this._selectionColor;
     }
 
 }
