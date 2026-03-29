@@ -130,7 +130,11 @@ export class DrawPage extends ProjectPage {
      * @param {string} color The color value
      */
     async setInputColorValue(color) {
-        await this.drawPanel.locator('input[type="color"]').fill(color);
+        const colorInput = this.drawPanel.locator('input[type="color"]');
+        await colorInput.evaluate((el, c) => {
+            el.value = c;
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+        }, color);
     }
 
     /**
@@ -279,5 +283,118 @@ export class DrawPage extends ProjectPage {
      */
     async clickImportFile() {
         this.drawPanel.locator('.digitizing-import').click();
+    }
+
+    /**
+     * Get split button locator
+     * @returns {Promise<Locator>} The split button locator
+     */
+    async splitLocator() {
+        return this.drawPanel.locator('button.digitizing-split');
+    }
+
+    /**
+     * Toggle the split tool
+     */
+    async toggleSplit() {
+        await this.drawPanel.locator('button.digitizing-split').click();
+    }
+
+    /**
+     * Get reshape button locator
+     * @returns {Promise<Locator>} The reshape button locator
+     */
+    async reshapeLocator() {
+        return this.drawPanel.locator('button.digitizing-reshape');
+    }
+
+    /**
+     * Toggle the reshape tool
+     */
+    async toggleReshape() {
+        await this.drawPanel.locator('button.digitizing-reshape').click();
+    }
+
+    /**
+     * Get rotate button locator
+     * @returns {Promise<Locator>} The rotate button locator
+     */
+    async rotateLocator() {
+        return this.drawPanel.locator('button.digitizing-rotate');
+    }
+
+    /**
+     * Toggle the rotate tool
+     */
+    async toggleRotate() {
+        await this.drawPanel.locator('button.digitizing-rotate').click();
+    }
+
+    /**
+     * Get scale button locator
+     * @returns {Promise<Locator>} The scale button locator
+     */
+    async scalingLocator() {
+        return this.drawPanel.locator('button.digitizing-scaling');
+    }
+
+    /**
+     * Toggle the scale tool
+     */
+    async toggleScaling() {
+        await this.drawPanel.locator('button.digitizing-scaling').click();
+    }
+
+    /**
+     * Get translate button locator
+     * @returns {Promise<Locator>} The translate button locator
+     */
+    async translateLocator() {
+        return this.drawPanel.locator('button.digitizing-translate');
+    }
+
+    /**
+     * Toggle the translate tool
+     */
+    async toggleTranslate() {
+        await this.drawPanel.locator('button.digitizing-translate').click();
+    }
+
+    /**
+     * Get parallel toggle button locator
+     * @returns {Promise<Locator>} The parallel toggle button locator
+     */
+    async parallelToggleLocator() {
+        return this.drawPanel.locator('button.digitizing-parallel-toggle');
+    }
+
+    /**
+     * Toggle the parallel panel
+     */
+    async toggleParallel() {
+        await this.drawPanel.locator('button.digitizing-parallel-toggle').click();
+    }
+
+    /**
+     * Set the parallel offset value
+     * @param {string} value The offset distance in meters
+     */
+    async setParallelOffset(value) {
+        await this.drawPanel.locator('.digitizing-parallel-input').fill(value);
+    }
+
+    /**
+     * Apply the parallel offset to create a new offset line
+     */
+    async applyParallel() {
+        await this.drawPanel.locator('.digitizing-parallel-apply').click();
+    }
+
+    /**
+     * Click the restart button (resets current drawing session, accepts confirmation dialog)
+     */
+    async clickRestart() {
+        this.page.once('dialog', (dialog) => dialog.accept());
+        await this.drawPanel.locator('.digitizing-restart').click();
     }
 }

@@ -796,8 +796,14 @@ export class ProjectPage extends BasePage {
         // Click on the draw button to open the form
         await this.page.locator('a#edition-draw').click();
 
-        // Wait for the request to be made and return it
-        return await editFeaturePromise;
+        // Wait for the request to be made
+        const editFeatureRequest = await editFeaturePromise;
+
+        // Wait for the form to be fully rendered before returning
+        // (activateDigitizing runs only after the form is visible)
+        await this.page.locator('#edition-form-container').waitFor({ state: 'visible' });
+
+        return editFeatureRequest;
     }
 
     /**

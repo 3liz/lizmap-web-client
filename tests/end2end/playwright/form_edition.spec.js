@@ -135,7 +135,8 @@ test.describe('Form edition', function () {
         await expect(page.locator('#edition .edition-tabs')).toBeVisible();
         await expect(page.locator('#edition-form-container')).toBeVisible();
 
-        await project.clickOnMapLegacy(630-30 , 325-75);
+        // Click on OL6 map since edition drawing was migrated from OL2 to OL6
+        await project.clickOnMap(630-30 , 325-75);
 
         // submit the form
         saveFeatureRequestPromise = page.waitForRequest(/lizmap\/edition\/saveFeature/);

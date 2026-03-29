@@ -5,7 +5,8 @@ import { expect as responseExpect } from './fixtures/expect-response.js'
 
 test.describe('Form edition reverse geom', function () {
 
-    test('must reverse geom @write', async function ({ page }) {
+    test.skip('must reverse geom @write', async function ({ page }) {
+        // The lizmap-reverse-geom web component was removed in the OL6 migration.
         const project = new ProjectPage(page, 'reverse_geom');
         let getMapRequestPromise = project.waitForGetMapRequest();
         await project.open();
