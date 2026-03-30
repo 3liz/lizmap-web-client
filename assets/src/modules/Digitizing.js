@@ -2479,6 +2479,7 @@ export class Digitizing {
         this.eraseAll();
         feature.set('color', this._drawColor);
         this._drawSource.addFeature(feature);
+        mainEventDispatcher.dispatch('digitizing.geometryChanged');
         return feature;
     }
 
