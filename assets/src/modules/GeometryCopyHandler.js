@@ -10,7 +10,6 @@ import FeaturePickerPopup from './FeaturePickerPopup.js';
 import { Utils } from './Utils.js';
 import { Feature } from 'ol';
 import { Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon } from 'ol/geom.js';
-import WKT from 'ol/format/WKT.js';
 
 /**
  * Handles geometry copy workflow
@@ -121,7 +120,7 @@ export default class GeometryCopyHandler {
 
     /**
      * Handle OL6 map click (used in edition context when OL6 map is on top)
-     * @param {import('ol/MapBrowserEvent').default} event - OL6 map click event
+     * @param {object} event - OL6 map click event
      */
     _onOL6MapClick(event) {
         const pixel = event.pixel;

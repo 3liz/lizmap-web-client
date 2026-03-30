@@ -9,7 +9,6 @@ import { mainLizmap } from './Globals.js';
 import VectorLayer from 'ol/layer/Vector.js';
 import VectorSource from 'ol/source/Vector.js';
 import { Style, Fill, Stroke } from 'ol/style.js';
-import { Feature } from 'ol';
 import WKT from 'ol/format/WKT.js';
 
 /**

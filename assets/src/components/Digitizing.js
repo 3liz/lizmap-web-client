@@ -297,7 +297,10 @@ export default class Digitizing extends HTMLElement {
             ${!isEditionPoint ? html`<button
                 type="button"
                 class="digitizing-translate btn ${mainLizmap.digitizing.isTranslating ? 'active btn-primary' : ''}"
-                ?disabled=${!mainLizmap.digitizing.featureDrawn || isSplitLocked || (this.context === 'edition' && !mainLizmap.digitizing.isEdited && !mainLizmap.digitizing.isTranslating && !mainLizmap.digitizing.isRotate && !mainLizmap.digitizing.isScaling)}
+                ?disabled=${!mainLizmap.digitizing.featureDrawn || isSplitLocked
+                    || (this.context === 'edition' && !mainLizmap.digitizing.isEdited
+                    && !mainLizmap.digitizing.isTranslating && !mainLizmap.digitizing.isRotate
+                    && !mainLizmap.digitizing.isScaling)}
                 @click=${() => { this._parallelPanelVisible = false; mainLizmap.digitizing.toggleTranslate(); if (mainLizmap.digitizing.isTranslating) this._showEditingMessage('digitizing.toolbar.move.help'); }}
                 data-bs-toggle="tooltip"
                 data-bs-title="${isSplitLocked ? splitLockedTooltip : lizDict['digitizing.toolbar.move']}"
@@ -586,7 +589,7 @@ export default class Digitizing extends HTMLElement {
         );
 
         mainEventDispatcher.addListener(
-            (event) => {
+            () => {
                 // Sync component tool state with module when context matches
                 if (mainLizmap.digitizing.context === this.context) {
                     const moduleTool = mainLizmap.digitizing.toolSelected;
