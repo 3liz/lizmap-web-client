@@ -1608,6 +1608,15 @@ window.lizMap = function() {
             "layerSelectionChanged": function( evt ) {
                 refreshGetFeatureInfo(evt);
             },
+            "lizmapeditionfeaturecreated": function() {
+                lastLonLatInfo = null;
+            },
+            "lizmapeditionfeaturemodified": function() {
+                lastLonLatInfo = null;
+            },
+            "lizmapeditionformclosed": function() {
+                lastLonLatInfo = null;
+            },
             "lizmapeditionfeaturedeleted": function( evt ) {
                 if ( $('div.lizmapPopupContent input.lizmap-popup-layer-feature-id').length > 1 ) {
                     refreshGetFeatureInfo(evt);

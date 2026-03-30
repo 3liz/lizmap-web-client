@@ -487,10 +487,14 @@ var lizEdition = function() {
         var mapSrid = mapProjCode.replace('EPSG:','');
         $('#edition-point-coord-crs-map').html(lizDict['edition.point.coord.crs.map']+' - EPSG:'+mapSrid).val(mapSrid).show();
 
-        if ( editionLayer.geometryType == 'point' )
-            $('#edition-point-coord-add').hide();
-        else
-            $('#edition-point-coord-add').show();
+        if ( editionLayer.geometryType == 'point' ) {
+            // Hide Add/Finalize buttons and their parent form-group to avoid whitespace
+            $('#edition-point-coord-add').closest('.form-group').hide();
+            $('#edition-segment-length').parents('.form-group').addClass('hidden');
+            $('#edition-segment-angle').parents('.form-group').addClass('hidden');
+        } else {
+            $('#edition-point-coord-add').closest('.form-group').show();
+        }
 
         $('#handle-point-coord').show();
 
@@ -510,25 +514,20 @@ var lizEdition = function() {
         var x = parseFloat($('#edition-point-coord-x').val());
         var y = parseFloat($('#edition-point-coord-y').val());
         if ( !isNaN(x) && !isNaN(y) ) {
-            var vertex = new OpenLayers.Geometry.Point(x,y);
-            // Get SRID and transform geometry
+            // Get SRID and transform to map projection
             var srid = $('#edition-point-coord-crs').val();
-            vertex.transform( 'EPSG:'+srid, editionLayer['ol'].projection );
-            var geometryType = editionLayer.geometryType;
-            if ( !editCtrls[geometryType].handler.point ) {
-                var px = editCtrls[geometryType].handler.layer.getViewPortPxFromLonLat({lon:vertex.x,lat:vertex.y});
-                editCtrls[geometryType].handler.createFeature(px);
-                editCtrls[geometryType].handler.point.geometry.x = vertex.x;
-                editCtrls[geometryType].handler.point.geometry.y = vertex.y;
-                editCtrls[geometryType].handler.point.geometry.clearBounds();
-            } else {
-                editCtrls[geometryType].handler.point.geometry.x = vertex.x;
-                editCtrls[geometryType].handler.point.geometry.y = vertex.y;
-                editCtrls[geometryType].handler.point.geometry.clearBounds();
+            var mapProjection = lizMap.mainLizmap.map.getView().getProjection().getCode();
+            var coord = lizMap.ol.proj.transform([x, y], 'EPSG:' + srid, mapProjection);
 
-                displaySegmentsLengthAndAngle(editCtrls[geometryType].handler.layer.features[0].geometry);
+            var geometryType = editionLayer.geometryType;
+            if (geometryType === 'point') {
+                // For point: create/move point feature at coord
+                var feature = new lizMap.ol.Feature(new lizMap.ol.geom.Point(coord));
+                lizMap.mainLizmap.digitizing._drawSource.clear();
+                lizMap.mainLizmap.digitizing._drawSource.addFeature(feature);
+                lizMap.mainEventDispatcher.dispatch('digitizing.geometryChanged');
             }
-            editCtrls[geometryType].handler.drawFeature();
+            // For line/polygon, the coordinate is used with the Add button (handled separately)
         }
     }
 
@@ -654,8 +653,7 @@ var lizEdition = function() {
      */
     function finishEdition() {
 
-        // Put old OL2 map at bottom
-        lizMap.mainLizmap.newOlMap = true;
+        // OL6 digitizing handles the drawing now
 
         // Lift the constraint on edition
         lizMap.editionPending = false;
@@ -836,86 +834,28 @@ var lizEdition = function() {
 
 
             // edit layer events
+            // OL2 edit layer events are no longer primary
+            // OL6 Digitizing module handles drawing, modification, and geometry updates
+            // These legacy events are kept as no-ops for backward compatibility
             editLayer.events.on({
-
                 featureadded: function() {
-                    // Deactivate draw control
-                    if( !editCtrls )
-                        return false;
-                    var geometryType = editionLayer.geometryType;
-                    var drawWasActivated = editCtrls[geometryType].active;
-                    if (drawWasActivated)
-                        editCtrls[geometryType].deactivate();
+                    // Handled by OL6 Digitizing module via digitizing.geometryChanged event
+                },
+                featuremodified: function() {
+                    // Handled by OL6 Digitizing module via digitizing.geometryChanged event
+                },
+                featureselected: function() {},
+                featureunselected: function() {},
+                sketchmodified: function() {},
+                vertexmodified: function() {}
+            });
 
-                    // Get feature
-                    var feat = editLayer.features[0];
-
-                    // Update form geometry field from added geometry
-                    updateGeometryColumnFromFeature( feat );
-
-                    // Activate modify control
-                    if (drawWasActivated || editionLayer['config'].capabilities.modifyGeometry == "True"){
-                        // activate edition
-                        editCtrls.panel.activate();
-                        // then modify
-                        editCtrls.modify.activate();
-                        $('#edition-geomtool-nodetool').click();
-                        editCtrls.modify.selectFeature( feat );
-                        if (geometryType === 'line'){
-                            $('#edition-geomtool-container button i').addClass('line');
-                        }
-                        if (geometryType !== 'point'){
-                            $('#edition-geomtool-container').show();
-                        }
+            // Handle split complete from OL6 Edition module
+            lizMap.events.on({
+                lizmapeditionsplitcomplete: function(evt) {
+                    if (evt.newFeatureFormData) {
+                        editionLayer.currentFeature.newfeatures.push([null, evt.newFeatureFormData]);
                     }
-
-                    // Display form tab and hide tool to handle coords for point geometry
-                    // TODO : allow use of coords tool when editing point
-                    if (geometryType === 'point') {
-                        $('.edition-tabs a[href="#tabform"]').tab('show');
-                        $('#handle-point-coord').hide();
-                    }
-
-                    // Inform user he can now modify
-                    addEditionMessage(lizDict['edition.select.modify.activate'],'info',true);
-                },
-
-                featuremodified: function(evt) {
-                    if ( evt.feature.geometry == null )
-                        return;
-                    // Update form geometry field from added geometry
-                    updateGeometryColumnFromFeature( evt.feature );
-
-                },
-
-                featureselected: function(evt) {
-                    if ( evt.feature.geometry == null )
-                        return;
-
-                },
-
-                featureunselected: function(evt) {
-                    if ( evt.feature.geometry == null )
-                        return;
-
-                    updateGeometryColumnFromFeature(evt.feature);
-                },
-
-                sketchmodified: function(evt) {
-                    // Force drawing point on geolocation position
-                    if ($('#edition-point-coord-geolocation').is(':checked')){
-                        var [lon, lat] = lizMap.mainLizmap.geolocation.getPositionInCRS(editionLayer['ol'].projection);
-                        evt.vertex.x = lon;
-                        evt.vertex.y = lat;
-                    }else{
-                        var vertex = evt.vertex.clone();
-                        displayCoordinates(vertex);
-                    }
-
-                    displaySegmentsLengthAndAngle(evt.feature.geometry);
-                },
-
-                vertexmodified: function(evt) {
                 }
             });
 
@@ -952,9 +892,16 @@ var lizEdition = function() {
                 return false;
             });
             $('#edition-point-coord-crs').change(function(){
-                if (editCtrls[editionLayer.geometryType].handler.point !== null) {
-                    var vertex = editCtrls[editionLayer.geometryType].handler.point.geometry.clone();
-                    displayCoordinates(vertex);
+                // Update displayed coordinates based on current digitizing feature
+                var features = lizMap.mainLizmap.digitizing.featureDrawn;
+                if (features && features.length > 0) {
+                    var geom = features[0].getGeometry();
+                    if (geom.getType() === 'Point') {
+                        displayCoordinates(geom.getCoordinates());
+                    } else {
+                        var lastCoord = geom.getLastCoordinate();
+                        if (lastCoord) displayCoordinates(lastCoord);
+                    }
                 }
             });
             $('#edition-point-coord-x').keyup(keyUpPointCoord);
@@ -965,14 +912,10 @@ var lizEdition = function() {
                     $('#edition-point-coord-y').attr('disabled','disabled');
 
                     if (lizMap.mainLizmap.geolocation.isTracking){
-                        var geometryType = editionLayer.geometryType;
-                        var [lon, lat] = lizMap.mainLizmap.geolocation.getPositionInCRS(editionLayer['ol'].projection);
-                        if (lon && lat){
-                            var px = editCtrls[geometryType].handler.layer.getViewPortPxFromLonLat({ lon: lon, lat: lat });
-                            editCtrls[geometryType].handler.modifyFeature(px);
-
-                            // Set X and Y input with geolocation position value as it is more precise than position given by edit controls
-                            displayCoordinates(new OpenLayers.Geometry.Point(lon, lat));
+                        var mapProjection = lizMap.mainLizmap.map.getView().getProjection().getCode();
+                        var position = lizMap.mainLizmap.geolocation.getPositionInCRS(mapProjection);
+                        if (position && position[0] && position[1]){
+                            displayCoordinates([position[0], position[1]]);
                         }
                     }
                 } else {
@@ -982,114 +925,63 @@ var lizEdition = function() {
                 lizMap.mainLizmap.geolocation.isLinkedToEdition = $(this).is(':checked');
             });
             $('#edition-point-coord-add').click(function(){
-                var geometryType = editionLayer.geometryType;
-                if (geometryType != 'point' && editCtrls[geometryType].handler.point) {
-                    var node = editCtrls[geometryType].handler.point.geometry;
-                    editCtrls[geometryType].handler.insertXY(node.x, node.y);
+                var x = parseFloat($('#edition-point-coord-x').val());
+                var y = parseFloat($('#edition-point-coord-y').val());
+                if (isNaN(x) || isNaN(y)) return;
+
+                var srid = $('#edition-point-coord-crs').val();
+                var mapProjection = lizMap.mainLizmap.map.getView().getProjection().getCode();
+                var coord = lizMap.ol.proj.transform([x, y], 'EPSG:' + srid, mapProjection);
+
+                // Append coordinate to line/polygon via draw interaction
+                var drawInteraction = lizMap.mainLizmap.digitizing._drawInteraction;
+                if (drawInteraction && typeof drawInteraction.appendCoordinates === 'function') {
+                    drawInteraction.appendCoordinates([coord]);
                 }
             });
             $('#edition-point-coord-submit').click(function(){
                 var geometryType = editionLayer.geometryType;
 
-                // Assert we have a geometry
-                if (editCtrls[geometryType].handler.getGeometry()){
-                    if (geometryType === 'point') {
-                        // Take average point if mode is enabled
-                        if (lizMap.mainLizmap.geolocationSurvey.averageRecordMode && lizMap.mainLizmap.geolocationSurvey.positionAverageInMapCRS !== undefined){
-                            editCtrls[geometryType].handler.point.geometry.x = lizMap.mainLizmap.geolocationSurvey.positionAverageInMapCRS[0];
-                            editCtrls[geometryType].handler.point.geometry.y = lizMap.mainLizmap.geolocationSurvey.positionAverageInMapCRS[1];
-                            editCtrls[geometryType].handler.drawFeature();
-                        }
-                        editCtrls[geometryType].handler.finalize();
-                    } else {
-                        editCtrls[geometryType].handler.finishGeometry();
+                if (geometryType === 'point') {
+                    // Take average point if mode is enabled
+                    if (lizMap.mainLizmap.geolocationSurvey.averageRecordMode && lizMap.mainLizmap.geolocationSurvey.positionAverageInMapCRS !== undefined){
+                        var avgCoord = lizMap.mainLizmap.geolocationSurvey.positionAverageInMapCRS;
+                        var feature = new lizMap.ol.Feature(new lizMap.ol.geom.Point([avgCoord[0], avgCoord[1]]));
+                        lizMap.mainLizmap.digitizing._drawSource.clear();
+                        lizMap.mainLizmap.digitizing._drawSource.addFeature(feature);
+                    }
+                    // For point, the feature is already placed; dispatch geometry change
+                    lizMap.mainEventDispatcher.dispatch('digitizing.geometryChanged');
+                    // Switch to edit mode
+                    lizMap.mainLizmap.digitizing.isEdited = true;
+                } else {
+                    // For line/polygon, finish the draw interaction
+                    var drawInteraction = lizMap.mainLizmap.digitizing._drawInteraction;
+                    if (drawInteraction) {
+                        drawInteraction.finishDrawing();
                     }
                 }
             });
 
-            $('#edition-geomtool-restart-drawing').click(function(){
-                if ( !confirm( lizDict['edition.confirm.restart-drawing'] ) ) {
-                    return false;
-                }
-
-                var ctrl = editCtrls[editionLayer.geometryType];
-                // Check drawing is active
-                if (ctrl.active)
-                    return false;
-
-                // Disable every modifying geometry controls
-                editCtrls.featsplit.deactivate();
-                editCtrls.reshape.deactivate();
-                editCtrls.modify.mode = OpenLayers.Control.ModifyFeature.RESHAPE;
-                editCtrls.modify.createVertices = true;
-                editCtrls.modify.deactivate();
-                editCtrls.panel.deactivate();
-                // Clear edition layers
-                editionLayer.clearLayers();
-                // activate drawing control
-                ctrl.activate();
-            });
-
-            $('#edition-geomtool-nodetool').click(function(){
-                editCtrls.reshape.deactivate();
-                editCtrls.featsplit.deactivate();
-                editCtrls.modify.mode = OpenLayers.Control.ModifyFeature.RESHAPE;
-                editCtrls.modify.createVertices = true;
-                editCtrls.modify.activate();
-                var feat = editionLayer.getFeature();
-                if (feat.geometry) {
-                    // we unselect then select, to trigger corresponding events
-                    if ( editCtrls.modify.feature )
-                        editCtrls.modify.unselectFeature( feat );
-                    editCtrls.modify.selectFeature( feat );
-                }
+$('#edition-geomtool-nodetool').click(function(){
+                // Node tool = edit mode in OL6 Digitizing
+                lizMap.mainLizmap.digitizing.isEdited = true;
             });
             $('#edition-geomtool-drag').click(function(){
-                editCtrls.reshape.deactivate();
-                editCtrls.featsplit.deactivate();
-                editCtrls.modify.mode = OpenLayers.Control.ModifyFeature.DRAG;
-                editCtrls.modify.createVertices = false;
-                editCtrls.modify.activate();
-                var feat = editionLayer.getFeature();
-                if (feat) {
-                    // we unselect then select, to trigger corresponding events
-                    if ( editCtrls.modify.feature )
-                        editCtrls.modify.unselectFeature( feat );
-                    editCtrls.modify.selectFeature( feat );
-                }
+                // Drag = translate mode — edit mode handles translate via the Translate interaction
+                lizMap.mainLizmap.digitizing.isEdited = true;
             });
             $('#edition-geomtool-rotate').click(function(){
-                editCtrls.reshape.deactivate();
-                editCtrls.featsplit.deactivate();
-                editCtrls.modify.mode = OpenLayers.Control.ModifyFeature.ROTATE;
-                editCtrls.modify.createVertices = false;
-                editCtrls.modify.activate();
-                var feat = editionLayer.getFeature();
-                if (feat) {
-                    // we unselect then select, to trigger corresponding events
-                    if ( editCtrls.modify.feature )
-                        editCtrls.modify.unselectFeature( feat );
-                    editCtrls.modify.selectFeature( feat );
-                }
+                // Rotate mode in OL6 Digitizing
+                lizMap.mainLizmap.digitizing.isRotate = true;
             });
             $('#edition-geomtool-reshape').click(function(){
-                var feat = editionLayer.getFeature();
-                if (feat && editCtrls.modify.feature) {
-                    editCtrls.modify.unselectFeature(feat);
-                }
-                editCtrls.modify.deactivate();
-                editCtrls.featsplit.deactivate();
-                editCtrls.reshape.activate();
+                lizMap.mainLizmap.digitizing.isReshaping = true;
             });
 
             $('#edition-geomtool-split').click(function(){
-                var feat = editionLayer.getFeature();
-                if (feat && editCtrls.modify.feature) {
-                    editCtrls.modify.unselectFeature(feat);
-                }
-                editCtrls.modify.deactivate();
-                editCtrls.reshape.deactivate();
-                editCtrls.featsplit.activate();
+                // Feature split uses the split tool in OL6 Digitizing
+                lizMap.mainLizmap.digitizing.isSplitting = true;
             });
 
             $('#edition-geomtool-container button, lizmap-reverse-geom').tooltip( {
@@ -1116,19 +1008,18 @@ var lizEdition = function() {
                 'geolocation.isTracking'
             );
 
-            // Make modifyFeature follow geolocation when active
+            // Geolocation position updates are now handled by OL6 Edition.js
+            // Just update coordinate display when geolocation is linked
             lizMap.mainEventDispatcher.addListener(
                 () => {
                     if (editionLayer && ('config' in editionLayer) ) {
                         $('#edition-point-coord-geolocation').removeAttr('disabled');
-                        var geometryType = editionLayer.geometryType;
-                        if ($('#edition-point-coord-geolocation').is(':checked') && editCtrls[geometryType].active ) {
-                            // Move point
-                            var [lon, lat] = lizMap.mainLizmap.geolocation.getPositionInCRS(editionLayer['ol'].projection);
-                            var px = editCtrls[geometryType].handler.layer.getViewPortPxFromLonLat({ lon: lon, lat: lat});
-                            editCtrls[geometryType].handler.modifyFeature(px);
-
-                            displayCoordinates(new OpenLayers.Geometry.Point(lon, lat));
+                        if ($('#edition-point-coord-geolocation').is(':checked')) {
+                            var mapProjection = lizMap.mainLizmap.map.getView().getProjection().getCode();
+                            var position = lizMap.mainLizmap.geolocation.getPositionInCRS(mapProjection);
+                            if (position && position[0] && position[1]) {
+                                displayCoordinates([position[0], position[1]]);
+                            }
                         }
                     }
                 },
@@ -1147,19 +1038,18 @@ var lizEdition = function() {
      *
      * @param vertex
      */
-    function displayCoordinates(vertex){
-        // Get SRID and transform geometry
+    function displayCoordinates(coordInMapProj){
+        // Get SRID and transform coordinate
         var srid = $('#edition-point-coord-crs').val();
-        var displayProj = new OpenLayers.Projection('EPSG:' + srid);
-        vertex.transform(editionLayer['ol'].projection, displayProj);
+        var mapProjection = lizMap.mainLizmap.map.getView().getProjection().getCode();
+        var coord = lizMap.ol.proj.transform(coordInMapProj, mapProjection, 'EPSG:' + srid);
 
-        if (displayProj.getUnits() === 'degrees') {
-            $('#edition-point-coord-x').val(vertex.x.toFixed(6));
-            $('#edition-point-coord-y').val(vertex.y.toFixed(6));
-        } else {
-            $('#edition-point-coord-x').val(vertex.x.toFixed(3));
-            $('#edition-point-coord-y').val(vertex.y.toFixed(3));
-        }
+        // Check if target is degrees (EPSG:4326 or similar)
+        var isDegrees = (srid === '4326');
+        var decimals = isDegrees ? 6 : 3;
+
+        $('#edition-point-coord-x').val(coord[0].toFixed(decimals));
+        $('#edition-point-coord-y').val(coord[1].toFixed(decimals));
     }
 
     /**
@@ -1486,8 +1376,7 @@ var lizEdition = function() {
                 // See "Check li (tabs) visibility" in displayEditionForm method
                 displayEditionForm( data );
 
-                // Put old OL2 map on top and synchronize position with new OL map
-                lizMap.mainLizmap.newOlMap = false;
+                // OL6 digitizing handles the drawing now
 
                 if( aCallback )
                     aCallback( editionLayer['id'], featureId );
@@ -1720,31 +1609,18 @@ var lizEdition = function() {
                     && geometryType in editCtrls ){
                         $('#edition-geomtool-container button i').removeClass('line');
                         $('#edition-geomtool-container').hide();
-                        editCtrls.modify.mode = OpenLayers.Control.ModifyFeature.RESHAPE;
-                        editCtrls.modify.createVertices = true;
-                        editCtrls.modify.deactivate();
-                        editionLayer.clearLayers();
-                        var ctrl = editCtrls[geometryType];
-                        if ( !ctrl.active ) {
-                            ctrl.activate();
 
-                            if(lizMap.checkMobile()){
-                                addEditionMessage(lizDict['edition.draw.activate.mobile'], 'info', true);
-                            }else{
-                                addEditionMessage(lizDict['edition.draw.activate'],'info',true);
-                            }
+                        // Fire event to let OL6 Edition.js handle the drawing
+                        activateDrawFeature();
+
+                        if(lizMap.checkMobile()){
+                            addEditionMessage(lizDict['edition.draw.activate.mobile'], 'info', true);
+                        }else{
+                            addEditionMessage(lizDict['edition.draw.activate'],'info',true);
                         }
-                        // Need to get geometry from form and add feature to the openlayer layer
-                        if( feat ){
-                            editionLayer['ol'].addFeatures([feat]);
-                            editCtrls.modify.activate();
-                            $('#edition-geomtool-nodetool').click();
-                            editCtrls.modify.selectFeature( feat );
-                            if (geometryType == 'line')
-                                $('#edition-geomtool-container button i').addClass('line');
-                            if (geometryType != 'point')
-                                $('#edition-geomtool-container').show();
-                        }
+
+                        // Legacy geomtool buttons replaced by OL6 digitizing toolbar
+                        $('#edition-geomtool-container').hide();
                     } else {
                         $('.edition-tabs button[data-bs-target="#tabdigitization"]').hide();
                     }
@@ -1754,17 +1630,11 @@ var lizEdition = function() {
                     // Activate modification control
                     if ( editionLayer['config'].capabilities.modifyGeometry == "True"
                     && geometryType in editCtrls ){
-                        // Need to get geometry from form and add feature to the openlayer layer
-                        feat = updateFeatureFromGeometryColumn();
-                        if( feat ){
-                            editCtrls.modify.activate();
-                            $('#edition-geomtool-nodetool').click();
-                            editCtrls.modify.selectFeature( feat );
-                            if (geometryType == 'line')
-                                $('#edition-geomtool-container button i').addClass('line');
-                            if (geometryType != 'point')
-                                $('#edition-geomtool-container').show();
-                        }
+                        // Fire event to let OL6 Edition.js handle loading and editing
+                        activateDrawFeature();
+
+                        // Legacy geomtool buttons replaced by OL6 digitizing toolbar
+                        $('#edition-geomtool-container').hide();
                     }else{
                         $('.edition-tabs button[data-bs-target="#tabdigitization"]').hide();
                     }
@@ -2083,6 +1953,10 @@ var lizEdition = function() {
             });
             sendFormPromise.then(() => {
                 displayEditionForm( formResult );
+            }).catch(e => {
+                console.error('Error saving split feature:', e);
+                $('#edition-waiter').hide();
+                addEditionMessage(lizDict['edition.message.error.send.feature'], 'error', true);
             });
 
             return false;
@@ -2103,9 +1977,20 @@ var lizEdition = function() {
             request.open("POST", url);
             request.onload = function() {
                 if (request.status == 200) {
+                    try {
+                        var json = JSON.parse(request.responseText);
+                        if (json && json.success === false) {
+                            var msg = json.message || 'unknown server error';
+                            console.warn('saveNewFeature returned success:false —', msg);
+                            reject(new Error('saveNewFeature: ' + msg));
+                            return;
+                        }
+                    } catch (e) {
+                        // Response is not JSON; treat as success (legacy behaviour)
+                    }
                     resolve(request.responseText);
                 } else {
-                    reject(new Error(`Nouveau message d'erreur`, { cause: request }));
+                    reject(new Error(`saveNewFeature failed with status ${request.status}: ${request.responseText}`, { cause: request }));
                 }
             };
             request.addEventListener("error", reject);

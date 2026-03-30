@@ -6,7 +6,7 @@
  * @license MPL-2.0
  */
 
-import { mainLizmap } from '../../modules/Globals.js';
+import { mainLizmap, mainEventDispatcher } from '../../modules/Globals.js';
 
 /**
  * Web component used to reverse vertices order for a modified feature
@@ -24,26 +24,33 @@ export default class reverseGeom extends HTMLElement {
             </svg>`);
     }
 
+    _canReverse() {
+        const features = mainLizmap.digitizing.featureDrawn;
+        return features && features.length > 0;
+    }
+
     _reverse(){
-        if (!mainLizmap.edition.modifyFeatureControl
-            || !mainLizmap.edition.modifyFeatureControl.active
-            || mainLizmap.edition.modifyFeatureControl.vertices.length == 0){
+        if (!this._canReverse()) {
             return;
         }
 
-        const lonLat = [];
+        const features = mainLizmap.digitizing.featureDrawn;
+        const geom = features[0].getGeometry();
+        const geomType = geom.getType();
 
-        for (const vertice of mainLizmap.edition.modifyFeatureControl.vertices) {
-            lonLat.push([vertice.geometry.x, vertice.geometry.y]);
+        if (geomType === 'LineString') {
+            geom.setCoordinates(geom.getCoordinates().reverse());
+        } else if (geomType === 'Polygon') {
+            const rings = geom.getCoordinates();
+            geom.setCoordinates(rings.map(ring => ring.reverse()));
+        } else if (geomType === 'MultiLineString') {
+            const lines = geom.getCoordinates();
+            geom.setCoordinates(lines.map(line => line.reverse()));
+        } else {
+            return;
         }
 
-        lonLat.reverse();
-
-        for (let index = 0; index < lonLat.length; index++) {
-            mainLizmap.edition.modifyFeatureControl.vertices[index].move(new OpenLayers.LonLat(lonLat[index][0], lonLat[index][1]));
-        }
-
-        mainLizmap.edition.modifyFeatureControl.layer.events.triggerEvent("featuremodified", { feature: mainLizmap.edition.modifyFeatureControl.feature });
+        mainEventDispatcher.dispatch('digitizing.geometryChanged');
 
         // Tell user reverse is done
         lizMap.addMessage(lizDict['edition.revertgeom.success'], 'success', true).attr('id', 'lizmap-edition-message');

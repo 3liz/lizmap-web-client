@@ -156,7 +156,7 @@ test.describe('Multiple geometry layers', () => {
         await expect(page.getByRole('heading', { name: 'double_geom' })).toHaveText('double_geom');
 
         // insert a polygon feature
-        await page.locator('#map').click({
+        await page.locator('#newOlMap').click({
             position: {
                 x: 608,
                 y: 260
@@ -164,7 +164,7 @@ test.describe('Multiple geometry layers', () => {
         });
         await page.waitForTimeout(300);
 
-        await page.locator('#map').click({
+        await page.locator('#newOlMap').click({
             position: {
                 x: 629,
                 y: 200
@@ -172,7 +172,7 @@ test.describe('Multiple geometry layers', () => {
         });
         await page.waitForTimeout(300);
 
-        await page.locator('#map').dblclick({
+        await page.locator('#newOlMap').dblclick({
             position: {
                 x: 560,
                 y: 191
@@ -205,7 +205,7 @@ test.describe('Multiple geometry layers', () => {
         await expect(page.getByRole('heading', { name: 'double_geom_d' })).toHaveText('double_geom_d');
 
         // insert a polygon feature
-        await page.locator('#map').click({
+        await page.locator('#newOlMap').click({
             position: {
                 x: 651,
                 y: 401
@@ -213,7 +213,7 @@ test.describe('Multiple geometry layers', () => {
         });
         await page.waitForTimeout(300);
 
-        await page.locator('#map').click({
+        await page.locator('#newOlMap').click({
             position: {
                 x: 695,
                 y: 368
@@ -221,7 +221,7 @@ test.describe('Multiple geometry layers', () => {
         });
         await page.waitForTimeout(300);
 
-        await page.locator('#map').dblclick({
+        await page.locator('#newOlMap').dblclick({
             position: {
                 x: 641,
                 y: 373
@@ -323,7 +323,7 @@ test.describe('Multiple geometry layers', () => {
         await expect(page.getByRole('heading', { name: 'triple_geom_point' })).toHaveText('triple_geom_point');
 
         // insert a point feature
-        await page.locator('#map').click({
+        await page.locator('#newOlMap').click({
             position: {
                 x: 523,
                 y: 389
@@ -356,7 +356,7 @@ test.describe('Multiple geometry layers', () => {
         await expect(page.getByRole('heading', { name: 'triple_geom_line' })).toHaveText('triple_geom_line');
 
         // insert a line feature
-        await page.locator('#map').click({
+        await page.locator('#newOlMap').click({
             position: {
                 x: 545,
                 y: 438
@@ -364,7 +364,7 @@ test.describe('Multiple geometry layers', () => {
         });
         await page.waitForTimeout(300);
 
-        await page.locator('#map').dblclick({
+        await page.locator('#newOlMap').dblclick({
             position: {
                 x: 589,
                 y: 413
@@ -397,7 +397,7 @@ test.describe('Multiple geometry layers', () => {
         await expect(page.getByRole('heading', { name: 'triple_geom_polygon' })).toHaveText('triple_geom_polygon');
 
         // insert a polygon feature
-        await page.locator('#map').click({
+        await page.locator('#newOlMap').click({
             position: {
                 x: 633,
                 y: 319
@@ -405,7 +405,7 @@ test.describe('Multiple geometry layers', () => {
         });
         await page.waitForTimeout(300);
 
-        await page.locator('#map').click({
+        await page.locator('#newOlMap').click({
             position: {
                 x: 645,
                 y: 280
@@ -413,7 +413,7 @@ test.describe('Multiple geometry layers', () => {
         });
         await page.waitForTimeout(300);
 
-        await page.locator('#map').dblclick({
+        await page.locator('#newOlMap').dblclick({
             position: {
                 x: 677,
                 y: 315
@@ -705,8 +705,8 @@ test.describe(
             await expect(project.editionForm.locator('div.tab-pane').nth(1).locator('div.form-group')).toHaveCount(1);
             await project.checkEditionFormTextField('Name check', '', 'Name check', true);
 
-            // insert a point feature
-            await project.clickOnMapLegacy(488, 331);
+            // insert a point feature on OL6 map since edition drawing was migrated from OL2 to OL6
+            await project.clickOnMap(488, 331);
             // fill the form
             await project.fillEditionFormTextInput('point_name', 'text insert');
             let editFeatureRequestPromiseUpdate = page.waitForResponse(response => response.url().includes('editFeature'));

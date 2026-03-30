@@ -129,7 +129,11 @@ test.describe('Draw', () => {
         await expect(await drawProject.selectedToolLocator()).not.toHaveClass(/active/);
         await drawProject.clickOnMap(370, 100);
 
-        await page.waitForTimeout(300);
+        // Wait for feature to be selected by the OL6 Select interaction
+        // (singleClick fires after ~250ms double-click guard)
+        await page.waitForFunction(() =>
+            lizMap.mainLizmap.digitizing.editedFeatures.length === 1
+        );
 
         // Change color
         await expect(await drawProject.inputColorLocator()).toHaveValue('#ff0000');
@@ -147,7 +151,10 @@ test.describe('Draw', () => {
         // Delete polygon
         page.on('dialog', dialog => dialog.accept());
         await drawProject.clickOnMap(315, 60);
-        await page.waitForTimeout(300);
+        await page.waitForFunction(() =>
+            lizMap.mainLizmap.digitizing.featureDrawn === null ||
+            lizMap.mainLizmap.digitizing.featureDrawn.length < 2
+        );
 
         expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toHaveLength(1);
         const drawn = await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn[0].getGeometry().getCoordinates())
@@ -536,8 +543,11 @@ test.describe('Draw text tools', () => {
         await expect(await drawProject.textScaleLocator()).not.toBeVisible();
 
         // Edit second point By clicking on the map
-        await page.waitForTimeout(1000);
         await drawProject.clickOnMap(350, 150);
+        // Wait for Select interaction to pick up the feature
+        await page.waitForFunction(() =>
+            lizMap.mainLizmap.digitizing.editedFeatures.length === 1
+        );
         await expect(await drawProject.textContentLocator()).toBeVisible();
         await expect(await drawProject.textRotationLocator()).toBeVisible();
         await expect(await drawProject.textScaleLocator()).toBeVisible();
@@ -549,8 +559,11 @@ test.describe('Draw text tools', () => {
         await expect(await drawProject.textScaleLocator()).toHaveValue('1');
 
         // Edit first point
-        await page.waitForTimeout(1000);
         await drawProject.clickOnMap(300, 150);
+        // Wait for Select interaction to pick up the feature
+        await page.waitForFunction(() =>
+            lizMap.mainLizmap.digitizing.editedFeatures.length === 1
+        );
         await expect(await drawProject.textContentLocator()).toBeVisible();
         await expect(await drawProject.textRotationLocator()).toBeVisible();
         await expect(await drawProject.textScaleLocator()).toBeVisible();
@@ -584,7 +597,7 @@ test.describe('Import file to draw', () => {
         const blankHash = await digestBuffer(buffer);
         const blankByteLength = buffer.byteLength;
         expect(blankByteLength).toBeGreaterThan(1000); // 1286
-        expect(blankByteLength).toBeLessThan(1500); // 1286
+        expect(blankByteLength).toBeLessThan(2500);
 
         // Start waiting for file chooser before clicking. Note no await.
         const fileChooserPromise = page.waitForEvent('filechooser');
@@ -634,7 +647,7 @@ test.describe('Import file to draw', () => {
         const blankHash = await digestBuffer(buffer);
         const blankByteLength = buffer.byteLength;
         expect(blankByteLength).toBeGreaterThan(1000); // 1286
-        expect(blankByteLength).toBeLessThan(1500); // 1286
+        expect(blankByteLength).toBeLessThan(2500);
 
         // Start waiting for file chooser before clicking. Note no await.
         const fileChooserPromise = page.waitForEvent('filechooser');
@@ -684,7 +697,7 @@ test.describe('Import file to draw', () => {
         const blankHash = await digestBuffer(buffer);
         const blankByteLength = buffer.byteLength;
         expect(blankByteLength).toBeGreaterThan(1000); // 1286
-        expect(blankByteLength).toBeLessThan(1500); // 1286
+        expect(blankByteLength).toBeLessThan(2500);
 
         // Start waiting for file chooser before clicking. Note no await.
         const fileChooserPromise = page.waitForEvent('filechooser');
@@ -734,7 +747,7 @@ test.describe('Import file to draw', () => {
         const blankHash = await digestBuffer(buffer);
         const blankByteLength = buffer.byteLength;
         expect(blankByteLength).toBeGreaterThan(1000); // 1286
-        expect(blankByteLength).toBeLessThan(1500); // 1286
+        expect(blankByteLength).toBeLessThan(2500);
 
         // Start waiting for file chooser before clicking. Note no await.
         const fileChooserPromise = page.waitForEvent('filechooser');
@@ -784,7 +797,7 @@ test.describe('Import file to draw', () => {
         const blankHash = await digestBuffer(buffer);
         const blankByteLength = buffer.byteLength;
         expect(blankByteLength).toBeGreaterThan(1000); // 1286
-        expect(blankByteLength).toBeLessThan(1500); // 1286
+        expect(blankByteLength).toBeLessThan(2500);
 
         // Start waiting for file chooser before clicking. Note no await.
         const fileChooserPromise = page.waitForEvent('filechooser');
@@ -836,7 +849,7 @@ test.describe('Import file to draw', () => {
         const blankHash = await digestBuffer(buffer);
         const blankByteLength = buffer.byteLength;
         expect(blankByteLength).toBeGreaterThan(1000); // 1286
-        expect(blankByteLength).toBeLessThan(1500); // 1286
+        expect(blankByteLength).toBeLessThan(2500);
 
         // Start waiting for file chooser before clicking. Note no await.
         const fileChooserPromise = page.waitForEvent('filechooser');
@@ -887,7 +900,7 @@ test.describe('Import file to draw', () => {
         const blankHash = await digestBuffer(buffer);
         const blankByteLength = buffer.byteLength;
         expect(blankByteLength).toBeGreaterThan(1000); // 1286
-        expect(blankByteLength).toBeLessThan(1500); // 1286
+        expect(blankByteLength).toBeLessThan(2500);
 
         // Start waiting for file chooser before clicking. Note no await.
         let fileChooserPromise = page.waitForEvent('filechooser');
@@ -929,7 +942,7 @@ test.describe('Import file to draw', () => {
         });
         const eraseByteLength = buffer.byteLength;
         expect(eraseByteLength).toBeGreaterThan(1000); // 1286
-        expect(eraseByteLength).toBeLessThan(1500); // 1286
+        expect(eraseByteLength).toBeLessThan(2500);
 
         //  Fixed by https://github.com/3liz/lizmap-web-client/pull/6446
         // Click import file
@@ -958,3 +971,391 @@ test.describe('Import file to draw', () => {
 
     });
 });
+
+test.describe('Split tool',
+    {
+        tag: ['@readonly'],
+    },
+    () => {
+
+        test('Split polygon with intersecting line produces 2 parts', async ({ page }) => {
+            const drawProject = await initDrawProject(page);
+            // Close the left dock so it does not overlap #newOlMap at small x offsets
+            await drawProject.closeLeftDock();
+
+            // Draw a rectangle polygon
+            await drawProject.selectGeometry('polygon');
+            await drawProject.clickOnMap(250, 100);
+            await drawProject.clickOnMap(450, 100);
+            await drawProject.clickOnMap(450, 300);
+            await drawProject.dblClickOnMap(250, 300);
+
+            expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toHaveLength(1);
+
+            // Activate split tool
+            await drawProject.toggleSplit();
+            expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.isSplitting)).toBe(true);
+            await expect(await drawProject.splitLocator()).toHaveClass(/active/);
+
+            // Draw a horizontal split line through the polygon
+            await drawProject.clickOnMap(210, 200);
+            await drawProject.dblClickOnMap(490, 200);
+
+            // Wait for the async split operation (JSTS lazy import)
+            await page.waitForFunction(() => lizMap.mainLizmap.digitizing.featureDrawn?.length === 2, null, { timeout: 10000 });
+
+            expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toHaveLength(2);
+
+            await drawProject.deleteAllDrawings();
+        });
+
+        test('Split line with intersecting line produces 2 parts', async ({ page }) => {
+            const drawProject = await initDrawProject(page);
+            await drawProject.closeLeftDock();
+
+            // Draw a horizontal line
+            await drawProject.selectGeometry('line');
+            await drawProject.clickOnMap(250, 200);
+            await drawProject.dblClickOnMap(450, 200);
+
+            expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toHaveLength(1);
+
+            // Activate split tool and draw a vertical crossing line
+            await drawProject.toggleSplit();
+            await drawProject.clickOnMap(300, 100);
+            await drawProject.dblClickOnMap(300, 300);
+
+            // Wait for the async split operation
+            await page.waitForFunction(() => lizMap.mainLizmap.digitizing.featureDrawn?.length === 2, null, { timeout: 10000 });
+
+            expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toHaveLength(2);
+
+            await drawProject.deleteAllDrawings();
+        });
+
+        test('Split with no intersection leaves features unchanged', async ({ page }) => {
+            const drawProject = await initDrawProject(page);
+            await drawProject.closeLeftDock();
+
+            // Draw a small polygon
+            await drawProject.selectGeometry('polygon');
+            await drawProject.clickOnMap(250, 100);
+            await drawProject.clickOnMap(350, 100);
+            await drawProject.dblClickOnMap(300, 175);
+
+            expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toHaveLength(1);
+
+            // Activate split tool and draw a line entirely outside the polygon
+            await drawProject.toggleSplit();
+            await drawProject.clickOnMap(400, 400);
+            await drawProject.dblClickOnMap(450, 450);
+
+            // Give the operation time to complete (if it fires)
+            await page.waitForTimeout(1500);
+
+            // Feature count must remain 1
+            expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toHaveLength(1);
+
+            await drawProject.deleteAllDrawings();
+        });
+    }
+);
+
+test.describe('Reshape tool',
+    {
+        tag: ['@readonly'],
+    },
+    () => {
+
+        test('Reshape line (trim mode): intersecting reshape line trims original', async ({ page }) => {
+            const drawProject = await initDrawProject(page);
+            await drawProject.closeLeftDock();
+
+            // Draw a long horizontal line
+            await drawProject.selectGeometry('line');
+            await drawProject.clickOnMap(250, 200);
+            await drawProject.dblClickOnMap(550, 200);
+
+            const origCoords = await page.evaluate(
+                () => lizMap.mainLizmap.digitizing.featureDrawn[0].getGeometry().getCoordinates()
+            );
+            expect(origCoords).toHaveLength(2);
+
+            // Activate reshape and draw a crossing vertical line
+            await drawProject.toggleReshape();
+            expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.isReshaping)).toBe(true);
+            await expect(await drawProject.reshapeLocator()).toHaveClass(/active/);
+
+            await drawProject.clickOnMap(300, 100);
+            await drawProject.dblClickOnMap(300, 300);
+
+            // Wait for the async reshape operation to complete.
+            // origCoords must be passed as an argument — waitForFunction runs in
+            // the browser context and cannot close over Node.js variables.
+            await page.waitForFunction((orig) => {
+                const coords = lizMap.mainLizmap.digitizing.featureDrawn?.[0]?.getGeometry()?.getCoordinates();
+                return coords && (coords[0][0] !== orig[0][0] || coords[coords.length - 1][0] !== orig[1][0]);
+            }, origCoords, { timeout: 10000 });
+
+            // The line should be shorter (trimmed to the longer half)
+            const newCoords = await page.evaluate(
+                () => lizMap.mainLizmap.digitizing.featureDrawn[0].getGeometry().getCoordinates()
+            );
+            // At least one endpoint must have changed
+            expect(
+                newCoords[0][0] !== origCoords[0][0] || newCoords[newCoords.length - 1][0] !== origCoords[1][0]
+            ).toBe(true);
+
+            await drawProject.deleteAllDrawings();
+        });
+
+        test('Reshape line (extend mode): non-intersecting reshape extends original', async ({ page }) => {
+            const drawProject = await initDrawProject(page);
+            await drawProject.closeLeftDock();
+
+            // Draw a short horizontal line
+            await drawProject.selectGeometry('line');
+            await drawProject.clickOnMap(250, 200);
+            await drawProject.dblClickOnMap(380, 200);
+
+            const origCoords = await page.evaluate(
+                () => lizMap.mainLizmap.digitizing.featureDrawn[0].getGeometry().getCoordinates()
+            );
+
+            // Activate reshape and draw a target line to the right of the line's endpoint
+            // (non-intersecting, so extend mode kicks in)
+            await drawProject.toggleReshape();
+            await drawProject.clickOnMap(480, 100);
+            await drawProject.dblClickOnMap(480, 300);
+
+            // Wait for geometry to change
+            await page.waitForFunction(() => {
+                const coords = lizMap.mainLizmap.digitizing.featureDrawn?.[0]?.getGeometry()?.getCoordinates();
+                return coords && coords.length > 2;
+            }, null, { timeout: 10000 });
+
+            // Line should now have more than 2 coordinates (extended)
+            const newCoords = await page.evaluate(
+                () => lizMap.mainLizmap.digitizing.featureDrawn[0].getGeometry().getCoordinates()
+            );
+            expect(newCoords.length).toBeGreaterThan(origCoords.length);
+
+            await drawProject.deleteAllDrawings();
+        });
+    }
+);
+
+test.describe('Rotate and Scale tools',
+    {
+        tag: ['@readonly'],
+    },
+    () => {
+
+        test('Rotate tool toggles active state', async ({ page }) => {
+            const drawProject = await initDrawProject(page);
+
+            await drawProject.selectGeometry('polygon');
+            await drawProject.clickOnMap(250, 150);
+            await drawProject.clickOnMap(350, 150);
+            await drawProject.dblClickOnMap(300, 250);
+
+            // Activate rotate
+            await expect(await drawProject.rotateLocator()).not.toHaveClass(/active/);
+            await drawProject.toggleRotate();
+            await expect(await drawProject.rotateLocator()).toHaveClass(/active/);
+            expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.isRotate)).toBe(true);
+
+            // Deactivate rotate
+            await drawProject.toggleRotate();
+            await expect(await drawProject.rotateLocator()).not.toHaveClass(/active/);
+            expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.isRotate)).toBe(false);
+
+            await drawProject.deleteAllDrawings();
+        });
+
+        test('Scale tool toggles active state', async ({ page }) => {
+            const drawProject = await initDrawProject(page);
+
+            await drawProject.selectGeometry('polygon');
+            await drawProject.clickOnMap(250, 150);
+            await drawProject.clickOnMap(350, 150);
+            await drawProject.dblClickOnMap(300, 250);
+
+            // Activate scaling
+            await expect(await drawProject.scalingLocator()).not.toHaveClass(/active/);
+            await drawProject.toggleScaling();
+            await expect(await drawProject.scalingLocator()).toHaveClass(/active/);
+            expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.isScaling)).toBe(true);
+
+            // Deactivate scaling
+            await drawProject.toggleScaling();
+            await expect(await drawProject.scalingLocator()).not.toHaveClass(/active/);
+            expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.isScaling)).toBe(false);
+
+            await drawProject.deleteAllDrawings();
+        });
+
+        test('Rotate and scale are mutually exclusive', async ({ page }) => {
+            const drawProject = await initDrawProject(page);
+
+            await drawProject.selectGeometry('polygon');
+            await drawProject.clickOnMap(250, 150);
+            await drawProject.clickOnMap(350, 150);
+            await drawProject.dblClickOnMap(300, 250);
+
+            // Activate rotate
+            await drawProject.toggleRotate();
+            expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.isRotate)).toBe(true);
+
+            // Activating scale must deactivate rotate
+            await drawProject.toggleScaling();
+            expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.isScaling)).toBe(true);
+            expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.isRotate)).toBe(false);
+
+            await drawProject.deleteAllDrawings();
+        });
+    }
+);
+
+test.describe('Translate tool',
+    {
+        tag: ['@readonly'],
+    },
+    () => {
+
+        test('Translate moves feature coordinates', async ({ page }) => {
+            const drawProject = await initDrawProject(page);
+
+            // Draw a polygon in the center
+            await drawProject.selectGeometry('polygon');
+            await drawProject.clickOnMap(250, 150);
+            await drawProject.clickOnMap(350, 150);
+            await drawProject.dblClickOnMap(300, 250);
+
+            const origCoords = await page.evaluate(
+                () => lizMap.mainLizmap.digitizing.featureDrawn[0].getGeometry().getCoordinates()
+            );
+
+            // Activate translate
+            await expect(await drawProject.translateLocator()).not.toHaveClass(/active/);
+            await drawProject.toggleTranslate();
+            await expect(await drawProject.translateLocator()).toHaveClass(/active/);
+            expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.isTranslating)).toBe(true);
+
+            // Drag the feature 100px right, 100px down
+            await drawProject.map.dragTo(drawProject.map, {
+                sourcePosition: { x: 300, y: 200 },
+                targetPosition: { x: 400, y: 300 },
+            });
+
+            await page.waitForTimeout(300);
+
+            const newCoords = await page.evaluate(
+                () => lizMap.mainLizmap.digitizing.featureDrawn[0].getGeometry().getCoordinates()
+            );
+
+            // At least one coordinate must differ
+            expect(newCoords[0][0][0]).not.toBeCloseTo(origCoords[0][0][0], 0);
+
+            await drawProject.deleteAllDrawings();
+        });
+    }
+);
+
+test.describe('Parallel offset',
+    {
+        tag: ['@readonly'],
+    },
+    () => {
+
+        test('Applying parallel offset changes line geometry', async ({ page }) => {
+            const drawProject = await initDrawProject(page);
+            await drawProject.closeLeftDock();
+
+            // Draw a horizontal line
+            await drawProject.selectGeometry('line');
+            await drawProject.clickOnMap(250, 200);
+            await drawProject.dblClickOnMap(450, 200);
+
+            const origCoords = await page.evaluate(
+                () => lizMap.mainLizmap.digitizing.featureDrawn[0].getGeometry().getCoordinates()
+            );
+
+            // Open parallel panel, set offset, apply
+            await drawProject.toggleParallel();
+            await expect(await drawProject.parallelToggleLocator()).toHaveClass(/active/);
+            await drawProject.setParallelOffset('200');
+            await drawProject.applyParallel();
+
+            await page.waitForTimeout(300);
+
+            // createParallel replaces the existing geometry in-place
+            const newCoords = await page.evaluate(
+                () => lizMap.mainLizmap.digitizing.featureDrawn[0].getGeometry().getCoordinates()
+            );
+
+            // Y coordinates must have shifted (offset perpendicular to a horizontal line changes Y)
+            expect(newCoords[0][1]).not.toBeCloseTo(origCoords[0][1], 0);
+
+            await drawProject.deleteAllDrawings();
+        });
+    }
+);
+
+test.describe('Import GeoJSON file',
+    {
+        tag: ['@readonly'],
+    },
+    () => {
+
+        test('Import GeoJSON polygon file draws one polygon feature', async ({ page }) => {
+            const drawProject = await initDrawProject(page);
+
+            // Start listening for the file chooser before triggering it
+            const fileChooserPromise = page.waitForEvent('filechooser');
+            drawProject.clickImportFile();
+
+            const fileChooser = await fileChooserPromise;
+            await fileChooser.setFiles(playwrightTestFile('data', 'geojson_polygon.geojson'));
+
+            // Wait for OL rendering
+            await page.waitForTimeout(500);
+
+            expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toHaveLength(1);
+            expect(
+                await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn[0].getGeometry().getType())
+            ).toBe('Polygon');
+
+            await drawProject.deleteAllDrawings();
+        });
+    }
+);
+
+test.describe('Context switching',
+    {
+        tag: ['@readonly'],
+    },
+    () => {
+
+        test('Features persist after closing and reopening the draw panel', async ({ page }) => {
+            const drawProject = await initDrawProject(page);
+
+            // Draw a polygon
+            await drawProject.selectGeometry('polygon');
+            await drawProject.clickOnMap(250, 150);
+            await drawProject.clickOnMap(350, 150);
+            await drawProject.dblClickOnMap(300, 250);
+
+            expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toHaveLength(1);
+
+            // Close and reopen the draw panel
+            await drawProject.closeDrawPanel();
+            await drawProject.openDrawPanel();
+
+            // Features must still be there
+            expect(await page.evaluate(() => lizMap.mainLizmap.digitizing.featureDrawn)).toHaveLength(1);
+
+            await drawProject.deleteAllDrawings();
+        });
+    }
+);

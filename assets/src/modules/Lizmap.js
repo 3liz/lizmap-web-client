@@ -258,7 +258,6 @@ export default class Lizmap {
      */
     set newOlMap(mode){
         this.map._newOlMap = mode;
-        document.getElementById('newOlMap').style.zIndex = mode ? 750 : 'unset';
 
         if (!mode) {
             this.updateOL2MapSize();

@@ -4,7 +4,7 @@
  * @copyright 2023 3Liz
  * @license MPL-2.0
  */
-import { mainEventDispatcher } from '../modules/Globals.js';
+import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import { deepFreeze } from './config/Tools.js';
 import { createEnum } from './utils/Enums.js';
 import { Utils } from './Utils.js';
@@ -15,7 +15,8 @@ import GPX from 'ol/format/GPX.js';
 import KML from 'ol/format/KML.js';
 import WKT from 'ol/format/WKT.js';
 
-import { Draw, Modify, Select, Translate } from 'ol/interaction.js';
+import { Draw, Modify, Select, Translate, DoubleClickZoom } from 'ol/interaction.js';
+import { click } from 'ol/events/condition.js';
 import { createBox } from 'ol/interaction/Draw.js';
 
 import { Circle, Fill, Stroke, RegularShape, Style, Text } from 'ol/style.js';
@@ -126,12 +127,16 @@ export class Digitizing {
 
         this._isEdited = false;
         this._isRotate = false;
+        this._isTranslating = false;
         this._hasMeasureVisible = false;
         this._isSaved = false;
         this._isSplitting = false;
+        this._isSplitLocked = false;
+        this._isReshaping = false;
         this._isErasing = false;
 
         this._drawInteraction;
+        this._dblClickListener = null;
 
         this._segmentMeasureTooltipElement;
         this._totalMeasureTooltipElement;
@@ -146,7 +151,10 @@ export class Digitizing {
         this._strokeWidth = 2;
 
         this._selectInteraction = new Select({
+            condition: click,
+            hitTolerance: 5,
             wrapX: false,
+            layers: (layer) => layer === this._drawLayer,
             style: (feature) => {
                 let color = feature.get('color') || this._drawColor;
 
@@ -222,16 +230,26 @@ export class Digitizing {
             if (event.selected.length) {
                 this.drawColor = event.selected[0].get('color');
             } else {
+                // In edition context, prevent deselection — always keep the feature selected
+                if (this._context === 'edition' && this.featureDrawn && this.featureDrawn.length === 1) {
+                    this._selectInteraction.getFeatures().push(this.featureDrawn[0]);
+                    return;
+                }
                 // When a feature is deselected, set the color from the first selected feature if any
                 const selectedFeatures = this._selectInteraction.getFeatures().getArray();
                 if (selectedFeatures.length) {
                     this.drawColor = selectedFeatures[0].get('color');
                 }
             }
+            mainEventDispatcher.dispatch('digitizing.editionBegins');
         });
 
         this._modifyInteraction = new Modify({
             features: this._selectInteraction.getFeatures(),
+        });
+
+        this._modifyInteraction.on('modifyend', () => {
+            mainEventDispatcher.dispatch('digitizing.geometryChanged');
         });
 
         this._translateInteraction = new Translate({
@@ -239,14 +257,26 @@ export class Digitizing {
             hitTolerance: 20
         });
 
+        this._translateInteraction.on('translateend', () => {
+            mainEventDispatcher.dispatch('digitizing.geometryChanged');
+        });
+
         this._transformRotateInteraction = new Transform({
             rotate: true,
             scale: false,
         });
 
+        this._transformRotateInteraction.on('rotateend', () => {
+            mainEventDispatcher.dispatch('digitizing.geometryChanged');
+        });
+
         this._transformScaleInteraction = new Transform({
             rotate: false,
             scale: true,
+        });
+
+        this._transformScaleInteraction.on('scaleend', () => {
+            mainEventDispatcher.dispatch('digitizing.geometryChanged');
         });
 
         this._drawStyleFunction = (feature) => {
@@ -401,6 +431,8 @@ export class Digitizing {
             minidockclosed: (e) => {
                 if (e.id == 'draw') {
                     this.toolSelected = this._tools[0]; // DigitizingTools.Deactivate
+                    this.toggleVisibility(false);
+                    this.resetConstraints();
                 }
             }
         });
@@ -595,10 +627,139 @@ export class Digitizing {
      * @param {string} tool - The tool to select
      * @fires digitizingToolSelected
      */
+    /**
+     * Disable DoubleClickZoom interaction on the map
+     * @private
+     */
+    _disableDoubleClickZoom() {
+        this._map.getInteractions().forEach(interaction => {
+            if (interaction instanceof DoubleClickZoom) {
+                interaction.setActive(false);
+            }
+        });
+    }
+
+    /**
+     * Enable DoubleClickZoom interaction on the map
+     * @private
+     */
+    _enableDoubleClickZoom() {
+        // Delay re-enabling past OL's 250ms dblclick detection window
+        // to prevent the finishing double-click from also triggering a zoom
+        setTimeout(() => {
+            this._map.getInteractions().forEach(interaction => {
+                if (interaction instanceof DoubleClickZoom) {
+                    interaction.setActive(true);
+                }
+            });
+        }, 300);
+    }
+
+    /**
+     * Restore edit mode if in edition context with a drawn feature.
+     * Called when other tools (rotate, scale, split, reshape) deactivate.
+     * @private
+     */
+    _restoreEditionEditMode() {
+        if (this._context === 'edition' && this.featureDrawn) {
+            this.isEdited = true;
+        }
+    }
+
+    /**
+     * Deactivate all tools by directly manipulating internal state.
+     * Avoids setter re-entrancy issues. Call before activating a new tool.
+     * @private
+     */
+    _deactivateAllTools() {
+        // Deactivate edit mode
+        if (this._isEdited) {
+            this._isEdited = false;
+            this._selectInteraction.getFeatures().clear();
+            this._map.removeInteraction(this._selectInteraction);
+            this._map.removeInteraction(this._modifyInteraction);
+            this.saveFeatureDrawn();
+            mainEventDispatcher.dispatch('digitizing.editionEnds');
+        }
+
+        // Deactivate translate/move mode
+        if (this._isTranslating) {
+            this._isTranslating = false;
+            this._selectInteraction.getFeatures().clear();
+            this._map.removeInteraction(this._translateInteraction);
+            this._map.removeInteraction(this._selectInteraction);
+        }
+
+        // Deactivate rotate
+        if (this._isRotate) {
+            this._isRotate = false;
+            this._transformRotateInteraction.getFeatures().clear();
+            this._map.removeInteraction(this._transformRotateInteraction);
+            mainEventDispatcher.dispatch({ type: 'digitizing.rotate', isRotate: false });
+        }
+
+        // Deactivate scale
+        if (this._isScaling) {
+            this._isScaling = false;
+            this._transformScaleInteraction.getFeatures().clear();
+            this._map.removeInteraction(this._transformScaleInteraction);
+            mainEventDispatcher.dispatch({ type: 'digitizing.scaling', isScaling: false });
+        }
+
+        // Deactivate split
+        if (this._isSplitting) {
+            this._isSplitting = false;
+            this._map.removeInteraction(this._splitInteraction);
+            if (this._splitSource) {
+                this._splitSource.clear();
+                this._splitSource = null;
+            }
+            mainEventDispatcher.dispatch({ type: 'digitizing.split', isSplitting: false });
+        }
+
+        // Deactivate reshape
+        if (this._isReshaping) {
+            this._isReshaping = false;
+            if (this._reshapeInteraction) {
+                this._map.removeInteraction(this._reshapeInteraction);
+            }
+            if (this._reshapeSource) {
+                this._reshapeSource.clear();
+                this._reshapeSource = null;
+            }
+            mainEventDispatcher.dispatch({ type: 'digitizing.reshape', isReshaping: false });
+        }
+
+        // Deactivate erasing
+        if (this._isErasing) {
+            this._map.un('singleclick', this._erasingCallBack);
+            this._isErasing = false;
+            mainEventDispatcher.dispatch('digitizing.erasingEnds');
+        }
+
+        // Deactivate draw tool
+        this._map.removeInteraction(this._drawInteraction);
+        if (this._dblClickListener) {
+            this._map.getViewport().removeEventListener('dblclick', this._dblClickListener);
+            this._dblClickListener = null;
+        }
+        this._drawSource.un('addfeature', this._addFeatureColorListener);
+        this._drawSource.un('addfeature', this._addFeatureTextListener);
+        this._drawSource.un('addfeature', this._addFeatureSinglePartGeometryListener);
+        this._drawSource.un('addfeature', this._addFeatureSaveDispatchListener);
+        this._toolSelected = this._tools[0]; // deactivate
+
+        this._enableDoubleClickZoom();
+    }
+
     set toolSelected(tool) {
         if (this._tools.includes(tool)) {
             // Disable all tools
             this._map.removeInteraction(this._drawInteraction);
+            if (this._dblClickListener) {
+                this._map.getViewport().removeEventListener('dblclick', this._dblClickListener);
+                this._dblClickListener = null;
+            }
             this._drawSource.un('addfeature', this._addFeatureColorListener);
             this._drawSource.un('addfeature', this._addFeatureTextListener);
             this._drawSource.un('addfeature', this._addFeatureSinglePartGeometryListener);
@@ -607,6 +768,7 @@ export class Digitizing {
             // If tool === 'deactivate' or current selected tool is selected again => deactivate
             if (tool === this._toolSelected || tool === this._tools[0]) {
                 this._toolSelected = this._tools[0];
+                this._enableDoubleClickZoom();
             } else {
                 const drawOptions = {
                     source: this._drawLayer.getSource(),
@@ -713,9 +875,28 @@ export class Digitizing {
                             Array.from(this._measureTooltips).pop()[1],
                         );
                     }
+
+                    // Dispatch after microtask so the feature is in the source
+                    Promise.resolve().then(() => {
+                        mainEventDispatcher.dispatch('digitizing.geometryChanged');
+                    });
                 });
 
                 this._map.addInteraction(this._drawInteraction);
+                this._disableDoubleClickZoom();
+
+                // With constraints active, OL's atFinish_() compares the actual click pixel
+                // against the constrained coordinate (which can be far from the click). This
+                // causes double-click to add a vertex instead of finishing. We intercept the
+                // DOM dblclick to remove the extra vertex OL added on the second pointer-up
+                // and call finishDrawing() ourselves. Safe when constraints are off too:
+                // finishDrawing() was already called by OL and is a no-op by then.
+                this._dblClickListener = () => {
+                    this._drawInteraction.removeLastPoint();
+                    this._drawInteraction.finishDrawing();
+                };
+                this._map.getViewport().addEventListener('dblclick', this._dblClickListener);
+
                 this._drawSource.on('addfeature', this._addFeatureColorListener);
                 this._drawSource.on('addfeature', this._addFeatureTextListener);
                 this._drawSource.on('addfeature', this._addFeatureSinglePartGeometryListener);
@@ -729,6 +910,7 @@ export class Digitizing {
                 this.isRotate = false;
                 this.isScaling = false;
                 this.isSplitting = false;
+                this.isReshaping = false;
             }
 
             /**
@@ -744,6 +926,11 @@ export class Digitizing {
                 type: 'digitizing.toolSelected',
                 tool: this._toolSelected,
             });
+
+            // Ensure snap interaction is ordered after the new draw interaction
+            if (mainLizmap.snapping) {
+                mainLizmap.snapping.reorderSnapInteraction();
+            }
         }
     }
 
@@ -836,26 +1023,18 @@ export class Digitizing {
      */
     set isEdited(edited) {
         if (this._isEdited !== edited) {
-            this._isEdited = edited;
+            if (edited) {
+                this._deactivateAllTools();
+                this._isEdited = true;
 
-            if (this._isEdited) {
                 // Automatically edit the feature if unique
-                if (this.featureDrawn.length === 1) {
+                if (this.featureDrawn && this.featureDrawn.length === 1) {
                     this._selectInteraction.getFeatures().push(this.featureDrawn[0]);
                     this.drawColor = this.featureDrawn[0].get('color');
                 }
 
-                this._map.removeInteraction(this._drawInteraction);
-
-                this._map.addInteraction(this._translateInteraction);
                 this._map.addInteraction(this._selectInteraction);
                 this._map.addInteraction(this._modifyInteraction);
-
-                this.toolSelected = 'deactivate';
-                this.isErasing = false;
-                this.isRotate = false;
-                this.isScaling = false;
-                this.isSplitting = false;
 
                 /**
                  * @event digitizingEditionBegins
@@ -868,9 +1047,9 @@ export class Digitizing {
                  */
                 mainEventDispatcher.dispatch('digitizing.editionBegins');
             } else {
+                this._isEdited = false;
                 // Clear selection
                 this._selectInteraction.getFeatures().clear();
-                this._map.removeInteraction(this._translateInteraction);
                 this._map.removeInteraction(this._selectInteraction);
                 this._map.removeInteraction(this._modifyInteraction);
 
@@ -905,22 +1084,20 @@ export class Digitizing {
      */
     set isRotate(isRotate) {
         if (this._isRotate !== isRotate) {
-            this._isRotate = isRotate;
+            if (isRotate) {
+                this._deactivateAllTools();
+                this._isRotate = true;
 
-            if (this._isRotate) {
-                this.toolSelected = 'deactivate';
-                this.isErasing = false;
-                this.isEdited = false;
-                this.isScaling = false;
-                this.isSplitting = false;
-
-                // Automatically scaling the feature if unique
-                if (this.featureDrawn.length === 1) {
+                // Automatically select the feature if unique
+                if (this.featureDrawn && this.featureDrawn.length === 1) {
                     this._transformRotateInteraction.getFeatures().push(this.featureDrawn[0]);
                 }
                 this._map.addInteraction(this._transformRotateInteraction);
             } else {
+                this._isRotate = false;
+                this._transformRotateInteraction.getFeatures().clear();
                 this._map.removeInteraction(this._transformRotateInteraction);
+                this._restoreEditionEditMode();
             }
 
             /**
@@ -954,22 +1131,20 @@ export class Digitizing {
      */
     set isScaling(isScaling) {
         if (this._isScaling !== isScaling) {
-            this._isScaling = isScaling;
+            if (isScaling) {
+                this._deactivateAllTools();
+                this._isScaling = true;
 
-            if (this._isScaling) {
-                this.toolSelected = 'deactivate';
-                this.isErasing = false;
-                this.isEdited = false;
-                this.isRotate = false;
-                this.isSplitting = false;
-
-                // Automatically scaling the feature if unique
-                if (this.featureDrawn.length === 1) {
+                // Automatically select the feature if unique
+                if (this.featureDrawn && this.featureDrawn.length === 1) {
                     this._transformScaleInteraction.getFeatures().push(this.featureDrawn[0]);
                 }
                 this._map.addInteraction(this._transformScaleInteraction);
             } else {
+                this._isScaling = false;
+                this._transformScaleInteraction.getFeatures().clear();
                 this._map.removeInteraction(this._transformScaleInteraction);
+                this._restoreEditionEditMode();
             }
 
             /**
@@ -997,41 +1172,69 @@ export class Digitizing {
     }
 
     /**
+     * Is digitizing locked after a split (all tools except vertex editing disabled)?
+     * Cleared when the editing session deactivates.
+     * @type {boolean}
+     */
+    get isSplitLocked() {
+        return this._isSplitLocked;
+    }
+
+    set isSplitLocked(locked) {
+        if (this._isSplitLocked !== locked) {
+            this._isSplitLocked = locked;
+            mainEventDispatcher.dispatch({
+                type: 'digitizing.splitLocked',
+                isSplitLocked: locked,
+            });
+        }
+    }
+
+    /**
      * Set the digitizing split tool is active or not
      * @type {boolean}
      * @fires digitizingSplit
      */
     set isSplitting(isSplitting) {
         if (this._isSplitting !== isSplitting) {
-            this._isSplitting = isSplitting;
+            if (isSplitting) {
+                this._deactivateAllTools();
+                this._isSplitting = true;
 
-            if (this._isSplitting) {
-                // Disable other tools
-                this.toolSelected = 'deactivate';
-                this.isEdited = false;
-                this.isRotate = false;
-                this.isScaling = false;
-                this.isErasing = false;
-
+                // Use a separate source for the split line so it doesn't trigger
+                // addfeature listeners (singlePartGeometry would remove existing features)
+                this._splitSource = new VectorSource();
                 this._splitInteraction = new Draw({
-                    source: this._drawSource,
-                    type: 'LineString'
+                    source: this._splitSource,
+                    type: 'LineString',
+                    style: this._drawStyleFunction
                 });
                 this._splitInteraction.on('drawend', event => {
+                    if (this._isOperationInProgress) return;
+                    this._isOperationInProgress = true;
+
+                    // Get the split line geometry and clear the temporary source
+                    const splitLineGeom = event.feature.getGeometry();
+                    this._splitSource.clear();
+
+                    // Take a snapshot of existing features (avoid modifying during iteration)
+                    const existingFeatures = [...this._drawSource.getFeatures()];
+
+                    // Find features that intersect the split line
+                    const featuresToSplit = existingFeatures.filter(
+                        f => splitLineGeom.intersectsExtent(f.getGeometry().getExtent())
+                    );
+                    if (featuresToSplit.length === 0) {
+                        this._isOperationInProgress = false;
+                        return;
+                    }
+
+                    // Lazy-load geometry libraries
                     Promise.all([
-                        import(
-                            /* webpackChunkName: 'OLparser' */ 'jsts/org/locationtech/jts/io/OL3Parser.js'
-                        ),
-                        import(
-                            /* webpackChunkName: 'UnionOp' */ 'jsts/org/locationtech/jts/operation/union/UnionOp.js'
-                        ),
-                        import(
-                            /* webpackChunkName: 'Polygonizer' */
-                            'jsts/org/locationtech/jts/operation/polygonize/Polygonizer.js'
-                        ),
-                        import(
-                            /* webpackChunkName: 'lineSplit' */ '@turf/line-split'
-                        ),
+                        import(/* webpackChunkName: 'OLparser' */ 'jsts/org/locationtech/jts/io/OL3Parser.js'),
+                        import(/* webpackChunkName: 'UnionOp' */ 'jsts/org/locationtech/jts/operation/union/UnionOp.js'),
+                        import(/* webpackChunkName: 'Polygonizer' */ 'jsts/org/locationtech/jts/operation/polygonize/Polygonizer.js'),
+                        import(/* webpackChunkName: 'lineSplit' */ '@turf/line-split'),
                     ]).then(([
                         { default: OLparser },
                         { default: UnionOp },
@@ -1039,83 +1242,97 @@ export class Digitizing {
                         { default: lineSplit }
                     ]) => {
                         const parser = new OLparser();
-                        parser.inject(
-                            Point,
-                            LineString,
-                            LinearRing,
-                            Polygon,
-                            MultiPoint,
-                            MultiLineString,
-                            MultiPolygon
-                        );
+                        parser.inject(Point, LineString, LinearRing, Polygon, MultiPoint, MultiLineString, MultiPolygon);
+                        const format = new GeoJSON();
 
-                        const lineGeometry = event.feature.getGeometry();
+                        const allSplitFeatures = [];
 
-                        // Remove line used for splitting
-                        this._drawSource.removeFeature(event.feature);
-
-                        for (const feature of this._drawSource.getFeatures()) {
-                            // Check if split line intersects with drawn feature
-                            if (!lineGeometry.intersectsExtent(feature.getGeometry().getExtent())) {
-                                continue;
-                            }
+                        for (const feature of featuresToSplit) {
                             const geomType = feature.getGeometry().getType();
-                            if ( geomType === 'Polygon') {
-                                // Convert the OpenLayers geometry to a JSTS geometry
-                                const jstsLine = parser.read(lineGeometry);
+                            const featureColor = feature.get('color') || this._drawColor;
+                            let newFeatures = null;
+
+                            if (geomType === 'Polygon') {
+                                const jstsLine = parser.read(splitLineGeom);
                                 const jstsDrawnGeom = parser.read(feature.getGeometry());
-
-                                // Perform union of Polygon and Line and use Polygonizer to split the polygon by line
-                                let union = UnionOp.union(jstsDrawnGeom.getExteriorRing(), jstsLine);
-                                let polygonizer = new Polygonizer();
-
-                                // Splitting polygon in two parts
+                                const union = UnionOp.union(jstsDrawnGeom.getExteriorRing(), jstsLine);
+                                const polygonizer = new Polygonizer();
                                 polygonizer.add(union);
-                                let polygons = polygonizer.getPolygons();
+                                const polygons = polygonizer.getPolygons();
 
-                                // This will execute only if polygon is successfully splitted into two parts
-                                if (polygons.array.length == 2) {
-                                    // Remove original polygon
-                                    this._drawSource.removeFeature(feature);
-
-                                    // Iterate through splitted polygons
-                                    polygons.array.forEach(geom => {
-                                        let splitted_polygon = new Feature({
-                                            geometry: new Polygon(parser.write(geom).getCoordinates())
-                                        });
-
-                                        // Add splitted polygon to vector layer
-                                        this._drawSource.addFeature(splitted_polygon);
-                                        this._selectInteraction.getFeatures().push(splitted_polygon);
+                                if (polygons.array.length >= 2) {
+                                    newFeatures = polygons.array.map(geom => {
+                                        const f = new Feature({ geometry: new Polygon(parser.write(geom).getCoordinates()) });
+                                        f.set('color', featureColor);
+                                        return f;
                                     });
-
-                                    this.isEdited = true;
                                 }
                             } else if (geomType === 'LineString') {
-                                const format = new GeoJSON();
-                                const turfDrawnFeature = format.writeFeatureObject(feature);
-                                const turfSplitterFeature = format.writeFeatureObject(event.feature);
-
-                                const split = lineSplit(turfDrawnFeature, turfSplitterFeature);
+                                const turfDrawn = format.writeFeatureObject(feature);
+                                const turfSplitter = format.writeFeatureObject(event.feature);
+                                const split = lineSplit(turfDrawn, turfSplitter);
 
                                 if (split.features.length > 1) {
-                                    // Remove original lineString
-                                    this._drawSource.removeFeature(feature);
-
-                                    split.features.forEach((feature) => {
-                                        let splitted_line = format.readFeature(feature);
-                                        this._drawSource.addFeature(splitted_line);
-                                        this._selectInteraction.getFeatures().push(splitted_line);
+                                    newFeatures = split.features.map(sf => {
+                                        const f = format.readFeature(sf);
+                                        f.set('color', featureColor);
+                                        return f;
                                     });
                                 }
-                                this.isEdited = true;
+                            }
+
+                            if (newFeatures && newFeatures.length > 1) {
+                                // Disable single-part constraint before adding multiple features
+                                // so the addfeature listener doesn't remove the first part
+                                // when the second is added.
+                                this._singlePartGeometry = false;
+                                // Remove original, add all split parts
+                                this._drawSource.removeFeature(feature);
+                                newFeatures.forEach(f => this._drawSource.addFeature(f));
+                                allSplitFeatures.push(...newFeatures);
                             }
                         }
+
+                        if (allSplitFeatures.length > 0) {
+                            // Multiple parts now exist — disable single part constraint
+                            this._singlePartGeometry = false;
+
+                            // Switch to edit mode and select all split features
+                            this.isEdited = true;
+                            allSplitFeatures.forEach(f => {
+                                this._selectInteraction.getFeatures().push(f);
+                            });
+
+                            // Store split results on instance — OL Feature objects
+                            // cannot be passed through EventDispatcher (JSON.stringify fails)
+                            this._lastSplitFeatures = allSplitFeatures;
+                            this._lastSplitGeometryType = allSplitFeatures[0].getGeometry().getType() === 'Polygon' ? 'polygon' : 'line';
+                            mainEventDispatcher.dispatch('digitizing.splitComplete');
+                            // Deactivate split tool and lock all other tools until features are saved
+                            this.isSplitting = false;
+                            this.isSplitLocked = true;
+                        }
+                        this._isOperationInProgress = false;
+                    }).catch(error => {
+                        console.error('Split operation failed:', error);
+                        this._isOperationInProgress = false;
                     });
                 });
                 this._map.addInteraction(this._splitInteraction);
+                this._disableDoubleClickZoom();
+                // Re-order snap interaction so it processes before the split Draw
+                if (mainLizmap.snapping) {
+                    mainLizmap.snapping.reorderSnapInteraction();
+                }
             } else {
+                this._isSplitting = false;
                 this._map.removeInteraction(this._splitInteraction);
+                if (this._splitSource) {
+                    this._splitSource.clear();
+                    this._splitSource = null;
+                }
+                this._enableDoubleClickZoom();
+                this._restoreEditionEditMode();
             }
 
             /**
@@ -1130,6 +1347,191 @@ export class Digitizing {
             mainEventDispatcher.dispatch({
                 type: 'digitizing.split',
                 isSplitting: this._isSplitting,
+            });
+        }
+    }
+
+    /**
+     * Is the digitizing reshape tool active or not?
+     * @type {boolean}
+     */
+    get isReshaping() {
+        return this._isReshaping;
+    }
+
+    /**
+     * Set the digitizing reshape tool active or not
+     * @type {boolean}
+     * @fires digitizingReshape
+     */
+    set isReshaping(isReshaping) {
+        if (this._isReshaping !== isReshaping) {
+            if (isReshaping) {
+                this._deactivateAllTools();
+                this._isReshaping = true;
+
+                // Use a separate source so the reshape line doesn't trigger
+                // addfeature listeners (singlePartGeometry would remove existing features)
+                this._reshapeSource = new VectorSource();
+                this._reshapeInteraction = new Draw({
+                    source: this._reshapeSource,
+                    type: 'LineString',
+                    style: this._drawStyleFunction
+                });
+                this._reshapeInteraction.on('drawend', event => {
+                    if (this._isOperationInProgress) return;
+                    this._isOperationInProgress = true;
+
+                    import(
+                        /* webpackChunkName: 'lineSplit' */ '@turf/line-split'
+                    ).then(({ default: lineSplit }) => {
+                        const reshapeLine = event.feature.getGeometry();
+
+                        // Clear the temporary reshape source
+                        this._reshapeSource.clear();
+
+                        // Find the existing feature to reshape
+                        const existingFeatures = this._drawSource.getFeatures();
+                        const existingFeature = existingFeatures.find(
+                            f => f.getGeometry().getType() === 'LineString'
+                        );
+                        if (!existingFeature) {
+                            this._isOperationInProgress = false;
+                            return;
+                        }
+
+                        const existingGeom = existingFeature.getGeometry();
+                        const format = new GeoJSON();
+
+                        // Try to split (Mode 1: Trim)
+                        const turfExisting = format.writeFeatureObject(existingFeature);
+                        const turfReshape = format.writeFeatureObject(event.feature);
+                        const split = lineSplit(turfExisting, turfReshape);
+
+                        if (split.features.length > 1) {
+                            // Intersection found — keep the longer segment
+                            let longestFeature = split.features[0];
+                            let longestLength = 0;
+                            for (const seg of split.features) {
+                                const segFeature = format.readFeature(seg);
+                                if (!segFeature?.getGeometry()) continue;
+                                const len = segFeature.getGeometry().getLength();
+                                if (len > longestLength) {
+                                    longestLength = len;
+                                    longestFeature = seg;
+                                }
+                            }
+                            const newGeom = format.readFeature(longestFeature).getGeometry();
+                            existingFeature.setGeometry(newGeom);
+                            mainEventDispatcher.dispatch('digitizing.geometryChanged');
+                        } else {
+                            // No intersection — Mode 2: Extend to target line
+                            // Extend the existing line along its endpoint direction
+                            // until it hits the drawn "target" line
+                            const existCoords = existingGeom.getCoordinates();
+                            const reshapeCoords = reshapeLine.getCoordinates();
+
+                            // Ray-segment intersection: find where ray from P in direction D
+                            // intersects segment A-B. Returns parameter t along ray, or null.
+                            const raySegmentIntersect = (px, py, dx, dy, ax, ay, bx, by) => {
+                                const sx = bx - ax, sy = by - ay;
+                                const denom = dx * sy - dy * sx;
+                                if (Math.abs(denom) < 1e-10) return null;
+                                const t = ((ax - px) * sy - (ay - py) * sx) / denom;
+                                const u = ((ax - px) * dy - (ay - py) * dx) / denom;
+                                if (t > 0 && u >= 0 && u <= 1) return t;
+                                return null;
+                            };
+
+                            // Try extending from end of existing line
+                            const endPt = existCoords[existCoords.length - 1];
+                            const prevPt = existCoords[existCoords.length - 2];
+                            const endDx = endPt[0] - prevPt[0];
+                            const endDy = endPt[1] - prevPt[1];
+
+                            let bestEndT = Infinity;
+                            let bestEndIntersection = null;
+                            for (let i = 0; i < reshapeCoords.length - 1; i++) {
+                                const t = raySegmentIntersect(
+                                    endPt[0], endPt[1], endDx, endDy,
+                                    reshapeCoords[i][0], reshapeCoords[i][1],
+                                    reshapeCoords[i + 1][0], reshapeCoords[i + 1][1]
+                                );
+                                if (t !== null && t < bestEndT) {
+                                    bestEndT = t;
+                                    bestEndIntersection = [
+                                        endPt[0] + endDx * t,
+                                        endPt[1] + endDy * t
+                                    ];
+                                }
+                            }
+
+                            // Try extending from start of existing line
+                            const startPt = existCoords[0];
+                            const nextPt = existCoords[1];
+                            const startDx = startPt[0] - nextPt[0];
+                            const startDy = startPt[1] - nextPt[1];
+
+                            let bestStartT = Infinity;
+                            let bestStartIntersection = null;
+                            for (let i = 0; i < reshapeCoords.length - 1; i++) {
+                                const t = raySegmentIntersect(
+                                    startPt[0], startPt[1], startDx, startDy,
+                                    reshapeCoords[i][0], reshapeCoords[i][1],
+                                    reshapeCoords[i + 1][0], reshapeCoords[i + 1][1]
+                                );
+                                if (t !== null && t < bestStartT) {
+                                    bestStartT = t;
+                                    bestStartIntersection = [
+                                        startPt[0] + startDx * t,
+                                        startPt[1] + startDy * t
+                                    ];
+                                }
+                            }
+
+                            let newCoords = null;
+                            if (bestEndIntersection && bestStartIntersection) {
+                                // Both endpoints can extend — extend both
+                                newCoords = [bestStartIntersection, ...existCoords, bestEndIntersection];
+                            } else if (bestEndIntersection) {
+                                newCoords = [...existCoords, bestEndIntersection];
+                            } else if (bestStartIntersection) {
+                                newCoords = [bestStartIntersection, ...existCoords];
+                            }
+
+                            if (newCoords) {
+                                existingFeature.setGeometry(new LineString(newCoords));
+                                mainEventDispatcher.dispatch('digitizing.geometryChanged');
+                            }
+                        }
+                        this._isOperationInProgress = false;
+                    }).catch(error => {
+                        console.error('Reshape operation failed:', error);
+                        this._isOperationInProgress = false;
+                    });
+                });
+                this._map.addInteraction(this._reshapeInteraction);
+                this._disableDoubleClickZoom();
+                // Re-order snap interaction so it processes before the reshape Draw
+                if (mainLizmap.snapping) {
+                    mainLizmap.snapping.reorderSnapInteraction();
+                }
+            } else {
+                this._isReshaping = false;
+                if (this._reshapeInteraction) {
+                    this._map.removeInteraction(this._reshapeInteraction);
+                }
+                if (this._reshapeSource) {
+                    this._reshapeSource.clear();
+                    this._reshapeSource = null;
+                }
+                this._enableDoubleClickZoom();
+                this._restoreEditionEditMode();
+            }
+
+            mainEventDispatcher.dispatch({
+                type: 'digitizing.reshape',
+                isReshaping: this._isReshaping,
             });
         }
     }
@@ -1151,15 +1553,9 @@ export class Digitizing {
      */
     set isErasing(isErasing) {
         if (this._isErasing !== isErasing) {
-            this._isErasing = isErasing;
-
-            if (this._isErasing) {
-                // deactivate other tools
-                this.toolSelected = 'deactivate';
-                this.isEdited = false;
-                this.isRotate = false;
-                this.isScaling = false;
-                this.isSplitting = false;
+            if (isErasing) {
+                this._deactivateAllTools();
+                this._isErasing = true;
 
                 this._erasingCallBack = event => {
                     const features = this._map.getFeaturesAtPixel(event.pixel, {
@@ -1192,6 +1588,7 @@ export class Digitizing {
                          * }, 'digitizing.erase');
                          */
                         mainEventDispatcher.dispatch('digitizing.erase');
+                        mainEventDispatcher.dispatch('digitizing.geometryChanged');
                     }
                 };
 
@@ -1227,6 +1624,7 @@ export class Digitizing {
                  *     console.log('The digitizing erasing tool ends');
                  * }, 'digitizing.erasingEnds');
                  */
+                this._isErasing = false;
                 mainEventDispatcher.dispatch('digitizing.erasingEnds');
             }
         }
@@ -1312,6 +1710,18 @@ export class Digitizing {
      */
     set angleConstraint(angleConstraint){
         this._angleConstraint = parseFloat(angleConstraint)
+    }
+
+    /**
+     * Reset distance and angle constraints to zero and clear their visual overlay.
+     */
+    resetConstraints() {
+        this._distanceConstraint = 0;
+        this._angleConstraint = 0;
+        // Hide and clear the on-map constraint layer (circle / angle guide lines)
+        this._constraintLayer.getSource().clear();
+        this._constraintLayer.setVisible(false);
+        mainEventDispatcher.dispatch('digitizing.constraintReset');
     }
 
     /**
@@ -1817,10 +2227,57 @@ export class Digitizing {
     }
 
     /**
+     * Whether translate/move mode is active
+     * @type {boolean}
+     */
+    get isTranslating() {
+        return this._isTranslating;
+    }
+
+    set isTranslating(translating) {
+        if (translating) {
+            this._deactivateAllTools();
+            this._isTranslating = true;
+
+            // Select the feature and add only Translate + Select (no Modify)
+            if (this.featureDrawn && this.featureDrawn.length === 1) {
+                this._selectInteraction.getFeatures().push(this.featureDrawn[0]);
+            }
+            this._map.addInteraction(this._selectInteraction);
+            this._map.addInteraction(this._translateInteraction);
+            mainEventDispatcher.dispatch('digitizing.translate');
+        } else {
+            this._isTranslating = false;
+            this._map.removeInteraction(this._translateInteraction);
+            this._map.removeInteraction(this._selectInteraction);
+            this._selectInteraction.getFeatures().clear();
+            mainEventDispatcher.dispatch('digitizing.translate');
+        }
+    }
+
+    /**
+     * Toggle translate/move mode
+     */
+    toggleTranslate() {
+        if (this._isTranslating) {
+            this.isTranslating = false;
+            // Return to edit mode
+            if (this.featureDrawn) {
+                this.isEdited = true;
+            }
+        } else {
+            this.isTranslating = true;
+        }
+    }
+
+    /**
      * Toggle measure mode
      */
     toggleMeasure() {
         this.hasMeasureVisible = !this.hasMeasureVisible;
+        if (!this.hasMeasureVisible) {
+            this.resetConstraints();
+        }
     }
 
     /**
@@ -1828,6 +2285,96 @@ export class Digitizing {
      */
     toggleSplit() {
         this.isSplitting = !this._isSplitting;
+    }
+
+    /**
+     * Toggle reshape mode
+     */
+    toggleReshape() {
+        this.isReshaping = !this._isReshaping;
+    }
+
+    /**
+     * Create a parallel line offset from the existing LineString feature.
+     * Uses miter joins (like QGIS) for correct geometry at vertices.
+     * Converts offset from meters to map projection units automatically.
+     * @param {number} offsetDistance - Offset in meters (positive = right, negative = left)
+     */
+    createParallel(offsetDistance) {
+        if (!offsetDistance || !this.featureDrawn) return;
+
+        const existingFeature = this._drawSource.getFeatures().find(
+            f => f.getGeometry().getType() === 'LineString'
+        );
+        if (!existingFeature) return;
+
+        const coords = existingFeature.getGeometry().getCoordinates();
+        if (coords.length < 2) return;
+
+        // Convert meters to map projection units
+        const projection = this._map.getView().getProjection();
+        const metersPerUnit = projection.getMetersPerUnit() || 1;
+        const d = offsetDistance / metersPerUnit;
+
+        // Compute offset point for a segment's endpoint
+        const offsetSegPoint = (p, dx, dy, len) => [
+            p[0] + (dy / len) * d,
+            p[1] + (-dx / len) * d
+        ];
+
+        // Compute the intersection of two lines (p1→p2) and (p3→p4)
+        const lineIntersection = (p1, p2, p3, p4) => {
+            const dx1 = p2[0] - p1[0], dy1 = p2[1] - p1[1];
+            const dx2 = p4[0] - p3[0], dy2 = p4[1] - p3[1];
+            const denom = dx1 * dy2 - dy1 * dx2;
+            if (Math.abs(denom) < 1e-10) return null; // parallel segments
+            const t = ((p3[0] - p1[0]) * dy2 - (p3[1] - p1[1]) * dx2) / denom;
+            return [p1[0] + t * dx1, p1[1] + t * dy1];
+        };
+
+        // Build offset segments: for each original segment, offset both endpoints
+        const offsetSegments = [];
+        for (let i = 0; i < coords.length - 1; i++) {
+            const dx = coords[i + 1][0] - coords[i][0];
+            const dy = coords[i + 1][1] - coords[i][1];
+            const len = Math.sqrt(dx * dx + dy * dy);
+            if (len === 0) continue;
+            offsetSegments.push({
+                p1: offsetSegPoint(coords[i], dx, dy, len),
+                p2: offsetSegPoint(coords[i + 1], dx, dy, len)
+            });
+        }
+
+        if (offsetSegments.length === 0) return;
+
+        // Build offset polyline using miter joins
+        const offsetCoords = [offsetSegments[0].p1];
+        for (let i = 0; i < offsetSegments.length - 1; i++) {
+            const seg1 = offsetSegments[i];
+            const seg2 = offsetSegments[i + 1];
+            const intersection = lineIntersection(seg1.p1, seg1.p2, seg2.p1, seg2.p2);
+            if (intersection) {
+                // Limit miter to avoid extreme spikes (miter limit = 5x offset)
+                const orig = coords[i + 1];
+                const miterDist = Math.sqrt(
+                    (intersection[0] - orig[0]) ** 2 + (intersection[1] - orig[1]) ** 2
+                );
+                if (miterDist > Math.abs(d) * 5) {
+                    // Fall back to bevel: use both segment endpoints
+                    offsetCoords.push(seg1.p2);
+                    offsetCoords.push(seg2.p1);
+                } else {
+                    offsetCoords.push(intersection);
+                }
+            } else {
+                // Parallel segments — use endpoint of first segment
+                offsetCoords.push(seg1.p2);
+            }
+        }
+        offsetCoords.push(offsetSegments[offsetSegments.length - 1].p2);
+
+        existingFeature.setGeometry(new LineString(offsetCoords));
+        mainEventDispatcher.dispatch('digitizing.geometryChanged');
     }
 
     /**
@@ -1873,6 +2420,7 @@ export class Digitizing {
         this.isRotate = false
         this.isErasing = false;
         this.isSplitting = false;
+        this.isReshaping = false;
 
         this._measureTooltips.forEach((measureTooltip) => {
             this._map.removeOverlay(measureTooltip[0]);
@@ -1894,6 +2442,45 @@ export class Digitizing {
          */
         mainEventDispatcher.dispatch('digitizing.erase.all');
         mainEventDispatcher.dispatch('digitizing.erase');
+        mainEventDispatcher.dispatch('digitizing.geometryChanged');
+    }
+
+    /**
+     * Get a feature as WKT in the given SRID
+     * @param {string|number} srid - Target SRID (e.g. 4326)
+     * @param {Feature} [feature] - Optional specific feature. Defaults to first drawn feature.
+     * @returns {string} WKT string or empty string if no features
+     */
+    getFeatureAsWKT(srid, feature) {
+        if (!feature) {
+            const features = this.featureDrawn;
+            if (!features || features.length === 0) return '';
+            feature = features[0];
+        }
+        const wktFormat = new WKT();
+        const geom = feature.getGeometry().clone();
+        geom.transform(this._map.getView().getProjection(), 'EPSG:' + srid);
+        return wktFormat.writeGeometry(geom);
+    }
+
+    /**
+     * Load a feature from WKT string and add it to the draw source
+     * @param {string} wktString - WKT geometry string
+     * @param {string|number} srid - Source SRID of the WKT
+     * @returns {Feature|null} The loaded feature or null
+     */
+    loadFeatureFromWKT(wktString, srid) {
+        if (!wktString) return null;
+        const wktFormat = new WKT();
+        const feature = wktFormat.readFeature(wktString, {
+            dataProjection: 'EPSG:' + srid,
+            featureProjection: this._map.getView().getProjection()
+        });
+        this.eraseAll();
+        feature.set('color', this._drawColor);
+        this._drawSource.addFeature(feature);
+        mainEventDispatcher.dispatch('digitizing.geometryChanged');
+        return feature;
     }
 
     /**
@@ -1922,10 +2509,18 @@ export class Digitizing {
                         });
                     }
                 }
-                localStorage.setItem(
-                    this._repoAndProjectString + '_' + this._context + '_drawLayer',
-                    JSON.stringify(savedFeatures),
-                );
+                try {
+                    localStorage.setItem(
+                        this._repoAndProjectString + '_' + this._context + '_drawLayer',
+                        JSON.stringify(savedFeatures),
+                    );
+                } catch (e) {
+                    if (e.name === 'QuotaExceededError') {
+                        this._lizmap3.addMessage(lizDict['digitizing.save.quota.error'] || 'Drawing storage quota exceeded', 'warning', true);
+                    } else {
+                        console.error('Failed to save drawing to localStorage:', e);
+                    }
+                }
             } else {
                 localStorage.removeItem(this._repoAndProjectString + '_' + this._context + '_drawLayer');
             }
@@ -1983,12 +2578,12 @@ export class Digitizing {
                 }
             } catch(json_error) {
                 // the saved data is an invalid JSON
-                console.log('`'+savedGeomJSON+'` is not a JSON!');
+                console.warn('`'+savedGeomJSON+'` is not a JSON!');
                 // the saved data could be a WKT from previous lizmap version
                 try {
                     const formatWKT = new WKT();
                     loadedFeatures = formatWKT.readFeatures(savedGeomJSON);
-                    console.log(loadedFeatures.length+' features read from WKT!');
+                    console.warn(loadedFeatures.length+' features read from WKT!');
                     // set color
                     for(const loadedFeature of loadedFeatures){
                         // init measure tooltip
@@ -2000,7 +2595,7 @@ export class Digitizing {
                         localStorage.removeItem(this._repoAndProjectString + '_' + this._context + '_drawLayer');
                     }
                 } catch(wkt_error) {
-                    console.log('`'+savedGeomJSON+'` is not a WKT!');
+                    console.warn('`'+savedGeomJSON+'` is not a WKT!');
                     console.error(json_error);
                     console.error(wkt_error);
                 }
@@ -2170,7 +2765,7 @@ export class Digitizing {
                         OL6features = features;
                     }
                 } catch (error) {
-                    this._lizmap3.addMessage(error, 'danger', true)
+                    this._lizmap3.addMessage(error.message || String(error), 'danger', true);
                 }
 
                 if (OL6features) {
