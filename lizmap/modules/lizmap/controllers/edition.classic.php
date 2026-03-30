@@ -1349,6 +1349,17 @@ class editionCtrl extends jController
         // Get data from the request and set the form controls data accordingly
         $form->initFromRequest();
 
+        // This is an INSERT for a new feature (split result).
+        // Clear primary key values so the database generates new PK values,
+        // and un-require them so jForms check() does not reject an empty PK.
+        foreach ($this->primaryKeys as $pkField) {
+            $pkCtrl = $form->getControl($pkField);
+            if ($pkCtrl !== null) {
+                $pkCtrl->required = false;
+                $form->setData($pkField, '');
+            }
+        }
+
         // Check the form data and redirect if needed
         $check = $form->check();
 

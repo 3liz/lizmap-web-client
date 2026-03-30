@@ -2567,23 +2567,24 @@ lizmap-mouse-position > div.coords-unit > select{
 }
 
 #message {
-  width: 50%;
-  top : 0;
-  left : 25%; /* 50 - 50/2 */
-  position : absolute;
-  z-index : 6000;
+  width: fit-content;
+  max-width: 60%;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  position: absolute;
+  z-index: 6000;
+  text-align: center;
 }
 
 #content.mobile #message{
   top: 0;
-  left:0;
-  right:0;
-  z-index:6000;
-}
-
-#content.mobile #message{
-  margin-left:60px;
-  width: calc(100% - 60px);
+  left: 60px;
+  right: 0;
+  width: auto;
+  max-width: none;
+  transform: none;
+  z-index: 6000;
 }
 
 #message .alert {
@@ -3007,19 +3008,8 @@ lizmap-mouse-position > div.coords-unit > select{
     width: 0;
 }
 
-.edition-tabs .nav-pills {
-  margin-bottom: 10px;
-  position: relative;
-  z-index: 1;
-}
-
 .edition-tabs .nav-pills a {
   color: black;
-}
-
-.edition-tabs .nav-pills > .active > a, .edition-tabs .nav-pills > .active > a:hover, .edition-tabs .nav-pills > .active > a:focus{
-  background-color: #93C01F;
-  color: white;
 }
 
 @media (height <= 500px) {
@@ -3104,54 +3094,95 @@ lizmap-mouse-position > div.coords-unit > select{
 }
 
 /* Edition style */
-#edition .nav-tabs > li > a {
-  font-size: 1.2em;
-  color: darkgray;
-  padding: 5px;
-  border: 1px solid darkgrey;
-  border-bottom-color: transparent;
+.edition-tabs {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  overflow: hidden;
 }
 
-#edition .nav > li > a:hover, .nav > li > a:focus {
-    text-decoration: none;
+.edition-tabs .nav-pills {
+  margin-bottom: 0;
+  background-color: #f0f0f0;
+  border-bottom: 1px solid #ccc;
+  padding: 6px 6px 0;
+  gap: 4px;
 }
 
-#edition .nav-tabs > li > a:hover, .nav-tabs > li > a:focus {
-    border-color: darkgrey;
+.edition-tabs .nav-pills .nav-link {
+  border-radius: 8px 8px 0 0;
+  padding: 6px 14px;
+  transition: background-color 0.2s, box-shadow 0.2s;
 }
 
-#edition .nav-tabs > .active > a, .nav-tabs > .active > a:hover, .nav-tabs > .active > a:focus {
-    color: black;
-    cursor: default;
-    background-color: lightgrey;
-    border: 1px solid darkgray;
-    border-bottom-color: transparent;
+.edition-tabs .nav-pills .nav-link:hover {
+  background-color: #e0e0e0;
 }
 
-/* Remove border & padding */
+.edition-tabs .nav-pills .nav-link.active {
+  background-color: #38f;
+  color: white;
+  box-shadow: 0 -2px 6px rgb(51 136 255 / 30%);
+}
+
 #edition div.tab-content {
-  /* border: 1px solid lightgrey;
-  padding: 10px; */
+  padding: 4px;
+  border: none;
 }
 
-#edition div.jforms-table-group{
-  /* background-color: lightgrey; */
-  padding: 5px 0;
-
-  /* border-radius: 10px; */
+/* Reset all inner containers in digitization tab — collapse nested wrappers */
+#tabdigitization #edition-point-coord-form,
+#tabdigitization #edition-point-coord-form > fieldset,
+#tabdigitization #edition-point-coord-form-group,
+#tabdigitization #handle-point-coord {
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  min-inline-size: 0;
 }
 
-#edition-point-coord-form,
-#dock #edition-point-coord-form{
-  margin-bottom: 5px;
+#tabdigitization {
+  border: none !important;
+}
+
+#edition-point-coord-form {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+#handle-point-coord .form-group.row {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+#handle-point-coord .form-group.row > .jforms-label {
+  flex: 0 0 auto;
+  width: auto;
+  margin-right: 6px;
+  margin-bottom: 0;
+}
+
+#handle-point-coord .form-group.row > .controls {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+#handle-point-coord .form-group .form-select,
+#handle-point-coord .form-group .form-control {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 #edition-point-coord-form-group h3{
   color: black;
-  padding-left: 5%;
+  padding-left: 0;
   background-color: #f0f0f0;
   line-height:2em;
-  margin: 10px;
+  margin: 0 0 5px;
 }
 
 .qgis_sprite { background: url('images/qgis_sprite.png') no-repeat top left; width: 24px; height: 24px;  }
@@ -3293,8 +3324,27 @@ lizmap-digitizing {
     display: block;
 }
 
+lizmap-digitizing[context="edition"] {
+    min-height: 0;
+    margin-bottom: 4px;
+}
+
+/* Make edition paste web components inline within digitizing toolbar */
+.digitizing lizmap-paste-geom {
+    display: inline;
+}
+
 .digitizing{
-  min-width: 260px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px;
+}
+
+.digitizing-parallel-panel,
+.digitizing-constraints,
+.digitizing-text-tools {
+  flex: 0 0 100%;
 }
 
 .digitizing .hide{
@@ -3315,6 +3365,28 @@ lizmap-digitizing {
 .digitizing svg {
   width: 24px;
   height: 24px;
+}
+
+.digitizing-parallel-panel {
+  margin-top: 4px;
+}
+
+.digitizing-parallel-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.digitizing-parallel-apply {
+  width: auto !important;
+  height: auto !important;
+  white-space: nowrap;
+}
+
+.digitizing-parallel-input {
+  flex: 0 0 80px;
+  width: 80px !important;
+  text-align: right;
 }
 
 .digitizing-selected-tool svg.digitizing-tool-icon{

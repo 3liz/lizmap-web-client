@@ -51,7 +51,7 @@
       <div id="liz_layer_popup_contentDiv" class="lizmapPopupContent"></div>
     </div>
     <div id="tooltip"></div>
-    <div id="map"></div>
+    <div id="map" style="pointer-events:none;"></div>
 
     <div id="mini-dock">
       {zone 'view~map_minidock', array('repository'=>$repository,'project'=>$project,'dockable'=>$minidockable)}

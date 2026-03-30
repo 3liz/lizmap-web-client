@@ -35,6 +35,12 @@
                     </div>
                 </div>
                 <div class="tab-pane" id="tabdigitization">
+                    <lizmap-digitizing
+                        context="edition"
+                        selected-tool="point"
+                        available-tools="point"
+                        measure
+                    ></lizmap-digitizing>
                     <div id="edition-geomtool-container" class="btn-group" data-toggle="buttons-radio"
                         style="display:none;">
                         <button id="edition-geomtool-nodetool" class="btn btn-sm"
@@ -57,16 +63,7 @@
                             data-bs-toggle="tooltip" data-bs-title="{@view~edition.geomtool.splitfeatures.title@}">
                             <i class="icon-none qgis_sprite mActionSplitFeatures"></i>
                         </button>
-                        <lizmap-reverse-geom class="btn btn-sm"
-                            data-bs-toggle="tooltip" data-bs-title="{@view~edition.geomtool.reversegeom.title@}">
-                        </lizmap-reverse-geom>
                     </div>
-                    <button id="edition-geomtool-restart-drawing" class="btn btn-sm"
-                        data-bs-toggle="tooltip" data-bs-title="{@view~edition.geomtool.restartdrawing.title@}">
-                        <i class="icon-refresh"></i>
-                    </button>
-                    <lizmap-paste-geom data-bs-toggle="tooltip" data-bs-title="{@view~edition.geomtool.copypastegeom.title@}"></lizmap-paste-geom>
-                    <lizmap-paste-stored-geom style="display:none;" data-bs-toggle="tooltip" data-bs-title="{@view~edition.geomtool.pastegeom.title@}"></lizmap-paste-stored-geom>
                     <form id="edition-point-coord-form" class="form-horizontal">
                         <fieldset>
                             <div id="edition-point-coord-form-group" class="jforms-table-group">
