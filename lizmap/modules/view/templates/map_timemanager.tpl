@@ -1,8 +1,10 @@
 <div id="timemanager-menu" class="timemanager" style="display:none;">
     <h3>
         <span class="title">
-            <button class="btn-timemanager-clear btn btn-sm btn-error btn-link" title="{@view~map.toolbar.content.stop@}">×</button>
-            <span class="icon"></span>&nbsp;{@view~map.timemanager.toolbar.title@}&nbsp;<span class="text"></span>
+            <button type="button" class="btn-timemanager-clear btn-close"
+                title="{@view~map.toolbar.content.stop@}"></button>
+            <span class="icon"></span>
+            <span class="text">&nbsp;{@view~map.timemanager.toolbar.title@}&nbsp;</span>
         </span>
     </h3>
     <div class="menu-content">
