@@ -51,6 +51,17 @@ class configListener extends jEventListener
             );
         }
 
+        // Configure project announcements
+        if (jAcl2::check('lizmap.admin.announcement.manage')) {
+            $bloc->childItems[] = new masterAdminMenuItem(
+                'lizmap_announcements',
+                jLocale::get('admin~admin.menu.lizmap.announcements.label'),
+                jUrl::get('admin~announcement:index'),
+                116,
+                'lizmap'
+            );
+        }
+
         // Configure the theme
         if (jAcl2::check('lizmap.admin.theme.update')) {
             $bloc->childItems[] = new masterAdminMenuItem(

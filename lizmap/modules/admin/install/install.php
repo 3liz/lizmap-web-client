@@ -34,6 +34,7 @@ class adminModuleInstaller extends jInstallerModule
             jAcl2DbManager::createRight('lizmap.admin.server.information.view', 'admin~jacl2.lizmap.admin.server.information.view', 'lizmap.admin.grp');
             jAcl2DbManager::createRight('lizmap.admin.lizmap.log.view', 'admin~jacl2.lizmap.admin.lizmap.log.view', 'lizmap.admin.grp');
             jAcl2DbManager::createRight('lizmap.admin.lizmap.log.delete', 'admin~jacl2.lizmap.admin.lizmap.log.delete', 'lizmap.admin.grp');
+            jAcl2DbManager::createRight('lizmap.admin.announcement.manage', 'admin~jacl2.lizmap.admin.announcement.manage', 'lizmap.admin.grp');
 
             jAcl2DbManager::createRight('lizmap.repositories.view', 'admin~jacl2.lizmap.repositories.view', 'lizmap.grp'); // the right code could be lizmap.view.repository.projects
             jAcl2DbManager::createRight('lizmap.tools.edition.use', 'admin~jacl2.lizmap.tools.edition.use', 'lizmap.grp');
@@ -57,6 +58,7 @@ class adminModuleInstaller extends jInstallerModule
             jAcl2DbManager::addRight('admins', 'lizmap.admin.server.information.view');
             jAcl2DbManager::addRight('admins', 'lizmap.admin.lizmap.log.view');
             jAcl2DbManager::addRight('admins', 'lizmap.admin.lizmap.log.delete');
+            jAcl2DbManager::addRight('admins', 'lizmap.admin.announcement.manage');
 
             // Create a new publishers group
             jAcl2DbUserGroup::createGroup('Publishers', 'publishers');

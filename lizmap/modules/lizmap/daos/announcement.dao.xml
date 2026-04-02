@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dao xmlns="http://jelix.org/ns/dao/1.0">
+    <datasources>
+        <primarytable name="lizmap_announcement" realname="lizmap_announcement" primarykey="id" />
+    </datasources>
+    <record>
+        <property name="id" fieldname="id" datatype="integer" autoincrement="true" default=""/>
+        <property name="title" fieldname="title" datatype="string" required="true" maxlength="255"/>
+        <property name="content" fieldname="content" datatype="text" required="true"/>
+        <property name="target_repository" fieldname="target_repository" datatype="string" maxlength="100"/>
+        <property name="target_project" fieldname="target_project" datatype="string" maxlength="100"/>
+        <property name="target_groups" fieldname="target_groups" datatype="text"/>
+        <property name="max_display_count" fieldname="max_display_count" datatype="integer" default="1"/>
+        <property name="created_at" fieldname="created_at" datatype="datetime" insertpattern="now()"/>
+        <property name="updated_at" fieldname="updated_at" datatype="datetime" insertpattern="now()" updatepattern="now()"/>
+        <property name="is_active" fieldname="is_active" datatype="boolean" default="true"/>
+    </record>
+    <factory>
+        <method name="findActive" type="select">
+            <conditions>
+                <eq property="is_active" value="1" />
+            </conditions>
+            <order>
+                <orderitem property="created_at" way="desc" />
+            </order>
+        </method>
+
+        <method name="findAll" type="select">
+            <order>
+                <orderitem property="created_at" way="desc" />
+            </order>
+        </method>
+    </factory>
+</dao>
