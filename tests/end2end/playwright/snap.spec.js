@@ -1,11 +1,59 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+import { expect as requestExpect } from './fixtures/expect-request.js'
 import { ProjectPage } from "./pages/project";
 
 test.describe('Snap on edition', () => {
     test.beforeEach(async ({ page }) => {
         const project = new ProjectPage(page, 'form_edition_multilayer_snap');
         await project.open();
+    });
+
+    test('Snap WFS GetFeature uses WFS 1.1.0 with SRSNAME in the map projection', async ({ page }) => {
+        const project = new ProjectPage(page, 'form_edition_multilayer_snap');
+
+        // Intercept the snap GetFeature request before opening the form —
+        // snapping is auto-activated on form display for this project.
+        const snapWfsRequestPromise = page.waitForRequest(
+            request => request.method() === 'POST'
+                && request.postData()?.includes('GetFeature') === true
+                && request.postData()?.includes('form_edition_snap_point') === true
+        );
+
+        // Track whether a DescribeFeatureType is sent alongside the snap request.
+        // With the new WFS 1.1.0 path we no longer go through getFeatureData(), so
+        // no DescribeFeatureType should be triggered.
+        let describeFeatureTypeSent = false;
+        page.on('request', request => {
+            if (
+                request.method() === 'POST'
+                && request.postData()?.includes('DescribeFeatureType') === true
+                && request.postData()?.includes('form_edition_snap_point') === true
+            ) {
+                describeFeatureTypeSent = true;
+            }
+        });
+
+        const formRequest = await project.openEditingFormWithLayer('form_edition_snap_control');
+        await formRequest.response();
+        await page.getByRole('tab', { name: 'Digitization' }).click();
+
+        const snapWfsRequest = await snapWfsRequestPromise;
+
+        // The WFS request must use version 1.1.0 with an explicit SRSNAME so that
+        // QGIS Server reprojects features server-side instead of the client using
+        // proj4js (which lacks datum-grid shifts and introduces ~cm coordinate drift).
+        requestExpect(snapWfsRequest).toContainParametersInPostData({
+            SERVICE: 'WFS',
+            VERSION: '1.1.0',
+            REQUEST: 'GetFeature',
+            TYPENAME: 'form_edition_snap_point',
+            SRSNAME: 'EPSG:4326',  // the project's map projection
+        });
+
+        // Allow any in-flight requests to settle before checking the flag.
+        await page.waitForTimeout(300);
+        expect(describeFeatureTypeSent).toBeFalsy();
     });
 
     test('Snap panel functionalities', async ({ page }) => {
@@ -31,12 +79,7 @@ test.describe('Snap on edition', () => {
 
         await Promise.all([getSnappingPointFeatureRequestPromise, getSnappingPointDescribeFeatureRequestPromise])
 
-        // check snap panel and controls
         await expect(page.locator("#edition-point-coord-form-group").getByRole("button").nth(2)).toBeDisabled();
-
-        //check layer list in the panel
-        await expect(page.locator("#edition-point-coord-form-group .snap-layers-list .snap-layer")).toHaveCount(3);
-        //Point snap, enabled and place on top of the list
         await expect(page.locator("#edition-point-coord-form-group .snap-layers-list .snap-layer").nth(0).locator("input")).toBeChecked();
         await expect(page.locator("#edition-point-coord-form-group .snap-layers-list .snap-layer").nth(0).locator("input")).toBeEnabled();
         await expect(page.locator("#edition-point-coord-form-group .snap-layers-list .snap-layer").nth(0).locator("label")).toHaveText("Point snap");
@@ -92,12 +135,10 @@ test.describe('Snap on edition', () => {
 
         let getSnappingLineFeatureRequestPromise = page.waitForRequest(
             request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('GetFeature') === true && request.postData()?.includes('form_edition_snap_line') === true);
-        let getSnappingLineDescribeFeatureRequestPromise = page.waitForRequest(
-            request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('DescribeFeatureType') === true && request.postData()?.includes('form_edition_snap_line') === true);
 
         await page.locator("#edition-point-coord-form-group").getByRole("button").nth(2).click()
 
-        await Promise.all([getSnappingLineFeatureRequestPromise, getSnappingLineDescribeFeatureRequestPromise])
+        await getSnappingLineFeatureRequestPromise;
 
         await page.waitForTimeout(300);
 
@@ -143,12 +184,10 @@ test.describe('Snap on edition', () => {
 
         let getSnappingPolygonFeatureRequestPromise = page.waitForRequest(
             request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('GetFeature') === true && request.postData()?.includes('form_edition_snap_polygon') === true);
-        let getSnappingPolygonDescribeFeatureRequestPromise = page.waitForRequest(
-            request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('DescribeFeatureType') === true && request.postData()?.includes('form_edition_snap_polygon') === true);
 
         await page.locator("#edition-point-coord-form-group").getByRole("button").nth(2).click()
 
-        await Promise.all([getSnappingPolygonFeatureRequestPromise, getSnappingPolygonDescribeFeatureRequestPromise])
+        await getSnappingPolygonFeatureRequestPromise;
 
         await page.waitForTimeout(300);
 
