@@ -477,6 +477,7 @@ class mapsCtrl extends jController
                 $form->setErrorOn('accessControlAllowOrigin', jLocale::get('admin~admin.form.admin_section.message.accessControlAllowOrigin.bad.domain'));
                 jLog::log('Error in accessControlAllowOrigin: '.$e->getMessage(), 'lizmapadmin');
                 jLog::log('Error in accessControlAllowOrigin: '.$e->getMessage(), 'error');
+                $ok = false;
             }
         }
 
