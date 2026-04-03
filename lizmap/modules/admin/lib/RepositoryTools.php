@@ -17,7 +17,7 @@ class RepositoryTools
     {
         $newDomainList = array();
         foreach ($domainList as $domain) {
-            $domain = trim($domain);
+            $domain = trim($domain, " \n\r\t\v\0'\"");
             if ($domain == '') {
                 continue;
             }
@@ -37,6 +37,6 @@ class RepositoryTools
             $newDomainList[] = $newDomain;
         }
 
-        return $newDomainList;
+        return array_unique($newDomainList);
     }
 }
