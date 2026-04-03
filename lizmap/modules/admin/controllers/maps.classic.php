@@ -486,6 +486,7 @@ class mapsCtrl extends jController
                 $form->setErrorOn('accessControlAllowOrigin', jLocale::get('admin~admin.form.admin_section.message.accessControlAllowOrigin.bad.domain'));
                 jLog::log('Error in accessControlAllowOrigin: '.$e->getMessage(), 'lizmapadmin');
                 jLog::log('Error in accessControlAllowOrigin: '.$e->getMessage(), 'error');
+                $ok = false;
             }
         }
 
@@ -499,6 +500,7 @@ class mapsCtrl extends jController
                 $form->setErrorOn('iframeEmbedAllowOrigin', jLocale::get('admin~admin.form.admin_section.message.iframeEmbedAllowOrigin.bad.domain'));
                 jLog::log('Error in iframeEmbedAllowOrigin: '.$e->getMessage(), 'lizmapadmin');
                 jLog::log('Error in iframeEmbedAllowOrigin: '.$e->getMessage(), 'error');
+                $ok = false;
             }
         }
 
