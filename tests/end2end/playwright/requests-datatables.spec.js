@@ -85,7 +85,7 @@ test.describe('Datables Requests @requests @readonly', () => {
         );
     });
 
-    test('Order request', async({ request }) => {
+    test('Order request with a shapefile layer', async({ request }) => {
         // Simple datatable request
         let params = new URLSearchParams({
             repository: 'testsrepository',
@@ -119,6 +119,43 @@ test.describe('Datables Requests @requests @readonly', () => {
         const features = body.data.features;
         expect(features.map(feat => feat.properties.quartier)).toEqual(
             [1,2,3,4,5,6,7].reverse()
+        );
+    });
+
+    test('Order request with a postgresql layer', async({ request }) => {
+        // Simple datatable request
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'huge_attribute_table',
+            layerId: 'huge_table_3a6c5511_aa6a_43fe_957e_e2c3f5b0a085',
+        });
+        let url = `/index.php/lizmap/datatables?${params}`;
+        let response = await request.post(url, {
+            data: {
+                start: 0,
+                length: 10,
+                columns: [
+                    {'data': 'lizSelected'},
+                    {'data': 'featureToolbar'},
+                    {'data': 'id'},
+                ],
+                order: [{'column': 2, 'dir': 'desc'}],
+            }
+        });
+
+        const body = await checkJson(response);
+        expect(body).toHaveProperty('draw');
+        expect(body).toHaveProperty('recordsTotal', 5000);
+        expect(body).toHaveProperty('recordsFiltered', 5000);
+        // Check data
+        expect(body).toHaveProperty('data');
+        expect(body.data).toHaveProperty('type', 'FeatureCollection');
+        expect(body.data).toHaveProperty('features');
+        expect(body.data.features).toHaveLength(10);
+        /** @type {any[]} */
+        const features = body.data.features;
+        expect(features.map(feat => feat.properties.id)).toEqual(
+            [5000,4999,4998,4997,4996,4995,4994,4993,4992,4991]
         );
     });
 
