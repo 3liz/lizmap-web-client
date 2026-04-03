@@ -1,6 +1,7 @@
 <?php
 
 use LizmapAdmin\RepositoryTools;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -10,83 +11,82 @@ use PHPUnit\Framework\TestCase;
  */
 class RepositoryToolsTest extends TestCase
 {
-    public function testFixDomainList(): void
+    public static function getDomainLists()
     {
-        $domainList = array();
-        $this->assertEquals(array(), RepositoryTools::fixDomainList($domainList));
+        return array(
+            array('', array()),
 
-        $domainList = array('');
-        $this->assertEquals(array(), RepositoryTools::fixDomainList($domainList));
+            array(' ', array()),
 
-        $domainList = array(' ');
-        $this->assertEquals(array(), RepositoryTools::fixDomainList($domainList));
+            array('https://domain1.com',  array('https://domain1.com')),
 
-        $domainList = preg_split('/\s*,\s*/', 'https://domain1.com');
+            array('https://domain1.com ', array('https://domain1.com')),
+
+            array(' https://domain1.com', array('https://domain1.com')),
+
+            array(' http://domain1.com',  array('http://domain1.com')),
+
+            array('domain1.com',          array('https://domain1.com')),
+
+            array('https://domain1.com,https://www.domain2.com',
+                array('https://domain1.com', 'https://www.domain2.com')),
+
+            array('https://domain1.com, https://www.domain2.com',
+                array('https://domain1.com', 'https://www.domain2.com')),
+
+            array('https://domain1.com,,https://www.domain2.com',
+                array('https://domain1.com', 'https://www.domain2.com')),
+
+            array('https://domain1.com, , https://www.domain2.com',
+                array('https://domain1.com', 'https://www.domain2.com')),
+
+            array('https://domain1.com, www.domain2.com',
+                array('https://domain1.com', 'https://www.domain2.com')),
+
+            array('domain1.com, www.domain2.com',
+                array('https://domain1.com', 'https://www.domain2.com')),
+
+            array('https://domain1.com,https://www.domain2.com',
+                array('https://domain1.com', 'https://www.domain2.com')),
+
+            array('https://domain1.com,https://www.domain2.com',
+                array('https://domain1.com', 'https://www.domain2.com')),
+
+            array('"https://domain1.com", \'https://www.domain2.com\'',
+                array('https://domain1.com', 'https://www.domain2.com')),
+
+            array('https://domain1.com,https://domain1.com',
+                array('https://domain1.com')),
+
+            array('https://domain1.com/foo/bar.xml,https://www.domain2.com/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetCapabilities',
+                array('https://domain1.com', 'https://www.domain2.com')),
+
+            array('"https://domain1.com/foo/bar.xml","https://domain1.com/wmts?SERVICE=WMTS&VERSION=1.0.0&REQUEST=GetCapabilities"',
+                array('https://domain1.com')),
+        );
+    }
+
+    /**
+     * @dataProvider getDomainLists
+     *
+     * @param string $domainListAsString
+     * @param array $expectedResult
+     */
+    #[DataProvider('getDomainLists')]
+    public function testFixDomainList($domainListAsString, $expectedResult): void
+    {
+        $domainList = preg_split('/\s*,\s*/', $domainListAsString);
         $this->assertEquals(
-            array('https://domain1.com'),
+            $expectedResult,
             RepositoryTools::fixDomainList($domainList),
         );
 
-        $domainList = preg_split('/\s*,\s*/', 'https://domain1.com ');
-        $this->assertEquals(
-            array('https://domain1.com'),
-            RepositoryTools::fixDomainList($domainList),
-        );
+        $this->expectException(ValueError::class);
+        RepositoryTools::fixDomainList(array('ftp:://domain1'));
+    }
 
-        $domainList = preg_split('/\s*,\s*/', ' https://domain1.com');
-        $this->assertEquals(
-            array('https://domain1.com'),
-            RepositoryTools::fixDomainList($domainList),
-        );
-
-        $domainList = preg_split('/\s*,\s*/', ' http://domain1.com');
-        $this->assertEquals(
-            array('http://domain1.com'),
-            RepositoryTools::fixDomainList($domainList),
-        );
-
-        $domainList = preg_split('/\s*,\s*/', 'domain1.com');
-        $this->assertEquals(
-            array('https://domain1.com'),
-            RepositoryTools::fixDomainList($domainList),
-        );
-
-        $domainList = preg_split('/\s*,\s*/', 'https://domain1.com,https://www.domain2.com');
-        $this->assertEquals(
-            array('https://domain1.com', 'https://www.domain2.com'),
-            RepositoryTools::fixDomainList($domainList),
-        );
-
-        $domainList = preg_split('/\s*,\s*/', 'https://domain1.com, https://www.domain2.com');
-        $this->assertEquals(
-            array('https://domain1.com', 'https://www.domain2.com'),
-            RepositoryTools::fixDomainList($domainList),
-        );
-
-        $domainList = preg_split('/\s*,\s*/', 'https://domain1.com,,https://www.domain2.com');
-        $this->assertEquals(
-            array('https://domain1.com', 'https://www.domain2.com'),
-            RepositoryTools::fixDomainList($domainList),
-        );
-
-        $domainList = preg_split('/\s*,\s*/', 'https://domain1.com, , https://www.domain2.com');
-        $this->assertEquals(
-            array('https://domain1.com', 'https://www.domain2.com'),
-            RepositoryTools::fixDomainList($domainList),
-        );
-
-        $domainList = preg_split('/\s*,\s*/', 'https://domain1.com, www.domain2.com');
-        $this->assertEquals(
-            array('https://domain1.com', 'https://www.domain2.com'),
-            RepositoryTools::fixDomainList($domainList),
-        );
-
-        $domainList = preg_split('/\s*,\s*/', 'domain1.com, www.domain2.com');
-        $this->assertEquals(
-            array('https://domain1.com', 'https://www.domain2.com'),
-            RepositoryTools::fixDomainList($domainList),
-        );
-
+    public function testBadDomainList(): void
+    {
         $this->expectException(ValueError::class);
         RepositoryTools::fixDomainList(array('ftp:://domain1'));
     }
