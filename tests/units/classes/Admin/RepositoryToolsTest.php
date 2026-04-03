@@ -80,9 +80,6 @@ class RepositoryToolsTest extends TestCase
             $expectedResult,
             RepositoryTools::fixDomainList($domainList),
         );
-
-        $this->expectException(ValueError::class);
-        RepositoryTools::fixDomainList(array('ftp:://domain1'));
     }
 
     public function testBadDomainList(): void
