@@ -1877,12 +1877,8 @@ class Project
             );
             if ($configJson->options->externalSearch == 'nominatim') {
                 $externalSearch['url'] = $this->appContext->getUrl('lizmap~osm:nominatim');
-            } elseif ($configJson->options->externalSearch == 'ban') {
-                $externalSearch = array(
-                    'type' => 'BAN',
-                    'service' => 'lizmapBan',
-                    'url' => $this->appContext->getUrl('lizmap~ban:search'),
-                );
+            } elseif ($configJson->options->externalSearch == 'ban') { // old configurations with "ban" are redirected to "ign"
+                $externalSearch['service'] = 'ign';
             }
             $configJson->options->searches[] = (object) $externalSearch;
             unset($configJson->options->externalSearch);
@@ -1984,6 +1980,8 @@ class Project
         $server = new Server();
         $serverMetadata = $server->getMetadata();
         $serverPlugins = $serverMetadata['qgis_server_info']['plugins'];
+        // Build a lookup of print templates by title
+        $printTemplatesByTitle = array();
         foreach ($this->printCapabilities as $printTemplate) {
             /** @var array $printTemplate */
             if ($serverPlugins['atlasprint']['version'] == 'not found'
@@ -1995,8 +1993,24 @@ class Project
             }
             if ($enabledLayoutNames === null
                 || in_array($printTemplate['title'], $enabledLayoutNames)) {
-                $configJson->printTemplates[] = $printTemplate;
+                $printTemplatesByTitle[$printTemplate['title']] = $printTemplate;
             }
+        }
+        // Order printTemplates to match the layouts.list order from the cfg
+        if ($enabledLayoutNames !== null) {
+            foreach ($enabledLayoutNames as $layoutName) {
+                if (array_key_exists($layoutName, $printTemplatesByTitle)) {
+                    $configJson->printTemplates[] = $printTemplatesByTitle[$layoutName];
+                }
+            }
+            // Append any templates not in the cfg (e.g. atlas-only templates filtered above)
+            foreach ($printTemplatesByTitle as $title => $tmpl) {
+                if (!in_array($title, $enabledLayoutNames)) {
+                    $configJson->printTemplates[] = $tmpl;
+                }
+            }
+        } else {
+            $configJson->printTemplates = array_values($printTemplatesByTitle);
         }
 
         // Add export layer right
@@ -2033,11 +2047,24 @@ class Project
                         // authentication parameters
                         if (!array_key_exists('password', $layerDatasource)
                             && !array_key_exists('authcfg', $layerDatasource)) {
-                            // Add wmts type if type is not already defined (it is for xyz)
-                            // and the url contains wmts and the CRS is EPSG:3857
-                            if (!array_key_exists('type', $layerDatasource)
-                                && stripos($layerDatasource['url'], 'service=wmts')) {
-                                $layerDatasource['type'] = 'wmts';
+                            // Add wmts type if type is not already defined (it is for xyz).
+                            // Detection covers two URL patterns used by WMTS servers:
+                            //   1. SERVICE=WMTS as a query parameter (e.g. ?Service=WMTS&…)
+                            //   2. 'wmts' appearing in the URL host or path
+                            //      (e.g. wmts.example.com/wmts/1.0.0/WMTSCapabilities.xml)
+                            // Only the query parameter 'service' is checked, not arbitrary
+                            // parameter values such as 'project=wmts', which would give false
+                            // positives for plain WMS services.
+                            if (!array_key_exists('type', $layerDatasource)) {
+                                $parsedUrl = parse_url($layerDatasource['url']);
+                                $urlHost = strtolower($parsedUrl['host'] ?? '');
+                                $urlPath = strtolower($parsedUrl['path'] ?? '');
+                                $urlQuery = strtolower($parsedUrl['query'] ?? '');
+                                if (stripos($urlQuery, 'service=wmts') !== false
+                                    || stripos($urlHost, 'wmts') !== false
+                                    || stripos($urlPath, 'wmts') !== false) {
+                                    $layerDatasource['type'] = 'wmts';
+                                }
                             }
                             // Add crs if type is xyz
                             if (array_key_exists('type', $layerDatasource)

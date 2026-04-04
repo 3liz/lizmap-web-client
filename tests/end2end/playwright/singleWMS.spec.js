@@ -40,7 +40,7 @@ test.describe('Single WMS layer', () => {
             await requestTile.response();
         });
 
-    test('Check opacity',
+    test('Check opacity UI',
         {
             tag:['@readonly']
         }, async ({ page }) => {
@@ -60,14 +60,57 @@ test.describe('Single WMS layer', () => {
                     await icon.hover();
                     await icon.click();
                     let subDock = page.locator("#sub-dock");
-                    if (className == 'single_wms_polygons') {
-                        // opacity is enabled only in the tiled layer
-                        await expect(subDock.locator(".opacityLayer")).toHaveCount(1);
-                    } else {
-                        await expect(subDock.locator(".opacityLayer")).toHaveCount(0);
-                    }
+                    // opacity controls are available for all layers, including single WMS layers
+                    await expect(subDock.locator(".opacityLayer")).toHaveCount(1);
                 }
             }
+        });
+
+    test('Change layer opacity',
+        {
+            tag:['@readonly']
+        }, async ({ page }) => {
+            const project = new ProjectPage(page, 'single_wms_image');
+            const requestMapPromise = project.waitForSingleWMSGetMapRequest();
+            await project.open();
+
+            const requestMap = await requestMapPromise;
+            const expectedMapParameters = {
+                'SERVICE': 'WMS',
+                'VERSION': '1.3.0',
+                'REQUEST': 'GetMap',
+                'FORMAT': 'image/png',
+                'STYLES':'default,default,default,default,',
+                'LAYERS':'single_wms_lines,single_wms_points,single_wms_points_group,single_wms_lines_group,GroupAsLayer',
+            }
+            requestExpect(requestMap).toContainParametersInUrl(expectedMapParameters);
+            // Check that there is no OPACITIES in the request
+            requestExpect(requestMap).not.toContainParametersInUrl({
+                'OPACITIES': '255,255,255,255,255',
+            });
+            await requestMap.response();
+
+            // Open single_wms_points info panel and change opacity to 60%
+            const points = page.getByTestId('single_wms_points');
+            await points.locator(".node").nth(0).hover();
+            let icon = points.locator(".icon-info-sign");
+            await icon.click();
+
+            const requestOpacityPromise = project.waitForSingleWMSGetMapRequest();
+            await page.locator("#sub-dock").locator("a.btn-opacity-layer:text-is('60')").click();
+
+            const requestOpacity = await requestOpacityPromise;
+            const expectedOpacityParameters = {
+                'SERVICE': 'WMS',
+                'VERSION': '1.3.0',
+                'REQUEST': 'GetMap',
+                'FORMAT': 'image/png',
+                'STYLES':'default,default,default,default,',
+                'OPACITIES': '255,153,255,255,255',
+                'LAYERS':'single_wms_lines,single_wms_points,single_wms_points_group,single_wms_lines_group,GroupAsLayer',
+            }
+            requestExpect(requestOpacity).toContainParametersInUrl(expectedOpacityParameters);
+            await requestOpacity.response();
         });
 
     test('Switch layers',

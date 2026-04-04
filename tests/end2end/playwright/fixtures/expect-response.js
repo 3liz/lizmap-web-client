@@ -149,6 +149,50 @@ export const expect = baseExpect.extend({
     },
 
     /**
+     * Expecting the response is a valid PDF
+     * @param {APIResponse|Response|null} response the response to test
+     *
+     * @returns {MatcherReturnType} the result
+     */
+    toBePdf(response) {
+        const assertionName = 'toBePdf';
+        let pass = response !== null;
+        try {
+            if (pass) {
+                // check response status
+                expect(response?.ok()).toBeTruthy();
+                expect(response?.status()).toBe(200);
+                // check content-type header
+                expect(response?.headers()['content-type']).toContain('application/pdf');
+            }
+        } catch {
+            pass = false;
+        }
+
+        if (this.isNot) {
+            pass =!pass;
+        }
+
+        const received = (response !== null ? `${response?.status()} ${response?.headers()['content-type']}` : 'null');
+
+        const message = pass
+            ? () => this.utils.matcherHint(assertionName, undefined, undefined, { isNot: this.isNot }) +
+                '\n\n' +
+                'Response is PDF\n'+
+                `Received: ${received}`
+            : () => this.utils.matcherHint(assertionName, undefined, undefined, { isNot: this.isNot }) +
+                '\n\n' +
+                'Response is not PDF\n'+
+                `Received: ${received}`;
+
+        return {
+            message,
+            pass,
+            name: assertionName,
+        };
+    },
+
+    /**
      * Expecting the response is a valid Text plain
      * @param {APIResponse|Response|null} response the response to test
      *

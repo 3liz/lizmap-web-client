@@ -18,7 +18,7 @@ import OverviewMap from './components/OverviewMap.js';
 import FeatureToolbar from './components/FeatureToolbar.js';
 import ReverseGeom from './components/edition/ReverseGeom.js';
 import PasteGeom from './components/edition/PasteGeom.js';
-import CopyGeometryButton from './components/CopyGeometryButton.js';
+import PasteStoredGeom from './components/edition/PasteStoredGeom.js';
 import ActionSelector from './components/ActionSelector.js';
 import Print from './components/Print.js';
 import DxfExport from './components/DxfExport.js';
@@ -28,6 +28,7 @@ import Treeview from './components/Treeview.js';
 import NavBar from './components/NavBar.js';
 import Tooltip from './components/Tooltip.js';
 import Message from './components/Message.js';
+import TypeAHead from './components/TypeAHead.js';
 
 import { mainLizmap, mainEventDispatcher } from './modules/Globals.js';
 import executeJSFromServer from './modules/ExecuteJSFromServer.js';
@@ -95,7 +96,7 @@ const definedCustomElements = () => {
     window.customElements.define('lizmap-feature-toolbar', FeatureToolbar);
     window.customElements.define('lizmap-reverse-geom', ReverseGeom);
     window.customElements.define('lizmap-paste-geom', PasteGeom);
-    window.customElements.define('lizmap-copy-geometry-button', CopyGeometryButton);
+    window.customElements.define('lizmap-paste-stored-geom', PasteStoredGeom);
     window.customElements.define('lizmap-action-selector', ActionSelector);
     window.customElements.define('lizmap-print', Print);
     window.customElements.define('lizmap-dxfexport', DxfExport);
@@ -103,6 +104,7 @@ const definedCustomElements = () => {
     window.customElements.define('lizmap-navbar', NavBar);
     window.customElements.define('lizmap-tooltip', Tooltip);
     window.customElements.define('lizmap-message', Message);
+    window.customElements.define('lizmap-typeahead', TypeAHead);
 
     /**
     * At this point the user interface is fully loaded.

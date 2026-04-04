@@ -11,6 +11,12 @@ test.describe('Snap on edition', () => {
     test('Snap panel functionalities', async ({ page }) => {
         const project = new ProjectPage(page, 'form_edition_multilayer_snap');
 
+        // Set up request watchers before opening the form, as snapping is auto-activated on form display
+        let getSnappingPointFeatureRequestPromise = page.waitForRequest(
+            request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('GetFeature') === true && request.postData()?.includes('form_edition_snap_point') === true);
+        let getSnappingPointDescribeFeatureRequestPromise = page.waitForRequest(
+            request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('DescribeFeatureType') === true && request.postData()?.includes('form_edition_snap_point') === true);
+
         const formRequest = await project.openEditingFormWithLayer('form_edition_snap_control');
         await formRequest.response();
 
@@ -21,14 +27,7 @@ test.describe('Snap on edition', () => {
         // move to digitization panel
         await page.getByRole('tab', { name: 'Digitization' }).click()
 
-        let getSnappingPointFeatureRequestPromise = page.waitForRequest(
-            request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('GetFeature') === true && request.postData()?.includes('form_edition_snap_point') === true);
-        let getSnappingPointDescribeFeatureRequestPromise = page.waitForRequest(
-            request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('DescribeFeatureType') === true && request.postData()?.includes('form_edition_snap_point') === true);
-
-        // activate snapping
-        await page.getByRole('button', { name: 'Start' }).click();
-
+        // snapping is auto-activated when snap layers are configured
         await Promise.all([getSnappingPointFeatureRequestPromise, getSnappingPointDescribeFeatureRequestPromise])
 
         // check snap panel and controls

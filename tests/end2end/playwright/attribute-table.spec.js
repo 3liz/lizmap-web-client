@@ -668,6 +668,39 @@ test.describe('Attribute table @readonly', () => {
         await project.closeAttributeTable();
     });
 
+    test('Should select all filtered results', async ({ page }) => {
+        const project = new ProjectPage(page, 'attribute_table');
+        await project.open();
+
+        const tableName = 'quartiers_shp';
+        const typeName = 'quartiers_shp';
+
+        let datatablesRequest = await project.openAttributeTable(tableName);
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+        let tableHtml = project.attributeTableHtml(tableName);
+
+        // Check table lines
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(7);
+
+        // click on select-searched button to select all records
+        let getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
+        await project.attributeTableActionBar(tableName).locator('.btn-select-searched').click();
+        let getSelectionTokenRequest = await getSelectionTokenRequestPromise;
+        await getSelectionTokenRequest.response();
+
+        // Check GetSelectionToken request
+        const getSelectionTokenParameters = {
+            'service': 'WMS',
+            'request': 'GETSELECTIONTOKEN',
+            'typename': typeName,
+            'ids': '2,6,0,4,3,1,5',
+        }
+
+        requestExpect(getSelectionTokenRequest).toContainParametersInPostData(getSelectionTokenParameters);
+        expect(tableHtml.locator('tbody tr.selected')).toHaveCount(7);
+    });
+
     test('Thumbnail class generate img with good path', async ({ page }) => {
         const project = new ProjectPage(page, 'attribute_table');
         await project.open();
@@ -794,6 +827,518 @@ test.describe('Attribute table @readonly', () => {
         // Check filter by extent button
         await expect(page.locator('.btn-filterbyextent-attributeTable')).not.toHaveClass(/active/);
     });
+
+    test('Value relation and Value map fields in Search Builder', async ({ page }) => {
+        const project = new ProjectPage(page, 'huge_attribute_table');
+        await project.open();
+        await project.closeLeftDock();
+
+        const tableName = 'huge_table';
+        // table fields
+        const huge_table_fields = [
+            'Id',
+            'Large lookup',
+            'Small lookup',
+            'Date field',
+            'Int field',
+            'Float field',
+            'Value Map field',
+        ];
+
+        // open the attribute table
+        let datatablesRequest = await project.openAttributeTable(tableName, true);
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+        let tableHtml = project.attributeTableHtml(tableName);
+
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(50);
+
+        // check results count
+        await expect(project.attributeTableWrapper(tableName).locator('div.dt-info'))
+            .toContainText('Showing 1 to 50 of 5,000 entries');
+
+        // open search builder panel
+        await project.openSearchBuilderPanel(tableName, true);
+
+        // add blank criteria and check fields existance
+        await project.addSearchBuilderCriterion(tableName, huge_table_fields);
+        const firstCriteria = await project.getSearchBuilderCriterion(tableName, 0);
+
+        // select the field to filter and check available conditions
+        const large_lookup_conditions = [
+            '=',
+            '!=',
+            'null',
+            '!null',
+        ];
+        await project.selectSearchBuilderData(firstCriteria, 'Large lookup', large_lookup_conditions);
+
+        // select a condition
+        await project.selectSearchBuilderCondition(firstCriteria,'=');
+
+        const typeAHeadElement = firstCriteria.locator('.dtsb-inputCont lizmap-typeahead');
+
+        // check if the input is instance of lizmap-typeahead component
+        await expect(typeAHeadElement).toHaveCount(1);
+
+        // fill typeahead input and check options
+        const expected_options = [
+            'Alpine Swift',
+            'Common Swift',
+            'Pallid Swift',
+            'Western Swamphen',
+        ];
+        await project.fillTypeAHeadInput(typeAHeadElement ,'Sw', expected_options);
+
+        // select a value from available typeahead options
+        await project.selectTypeAHeadOption(typeAHeadElement, '23', 'Alpine Swift');
+
+        // fill typeahead with another value and select no options
+        await project.fillTypeAHeadInput(typeAHeadElement ,'Go');
+        await firstCriteria.locator('select.dtsb-data').click();
+        // typeahead values must not change
+        await project.checkTypeAHeadValues(typeAHeadElement, '23', 'Alpine Swift');
+
+        // launch search and check results
+        let datatablesRequestPromise = project.waitForDatatablesRequest();
+        await project.searchBuilderLaunchSearch(tableName);
+        datatablesRequest = await datatablesRequestPromise;
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+        await expect(project.attributeTableWrapper(tableName).locator('div.dt-info'))
+            .toContainText('Showing 1 to 40 of 40 entries (filtered from 5,000 total entries)');
+
+        // add new criteria
+        await project.addSearchBuilderCriterion(tableName, huge_table_fields);
+        const secondCriteria = await project.getSearchBuilderCriterion(tableName, 1);
+        // select the field to filter and check available conditions
+        const small_lookup_conditions = [
+            '=',
+            '!=',
+            'null',
+            '!null',
+        ];
+        await project.selectSearchBuilderData(secondCriteria, 'Small lookup', small_lookup_conditions);
+
+        // select a condition
+        await project.selectSearchBuilderCondition(secondCriteria,'=');
+
+        const secondCriteriaDropDown = secondCriteria.locator('.dtsb-inputCont select.dtsb-value');
+
+        // check if the input is a dropdown
+        await expect(secondCriteriaDropDown).toHaveCount(1);
+        // select an option from dropdown and filter
+        await secondCriteriaDropDown.selectOption({label: 'Afrotropic'});
+
+        datatablesRequestPromise = project.waitForDatatablesRequest();
+        await project.searchBuilderLaunchSearch(tableName);
+        datatablesRequest = await datatablesRequestPromise;
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+        await expect(project.attributeTableWrapper(tableName).locator('div.dt-info'))
+            .toContainText('Showing 1 to 10 of 10 entries (filtered from 5,000 total entries)');
+
+        // add Value Map condition
+        await project.addSearchBuilderCriterion(tableName, huge_table_fields);
+        const thirdCriteria = await project.getSearchBuilderCriterion(tableName, 2);
+
+        // select the field to filter and check available conditions
+        const value_map_conditions = [
+            '=',
+            '!=',
+            'null',
+            '!null',
+        ];
+        await project.selectSearchBuilderData(thirdCriteria, 'Value Map field', value_map_conditions);
+
+        // select a condition
+        await project.selectSearchBuilderCondition(thirdCriteria,'=');
+
+        const valueMapCriteria = thirdCriteria.locator('.dtsb-inputCont select.dtsb-value');
+        // check if the input is a dropdown
+        await expect(valueMapCriteria).toHaveCount(1);
+        // select an option from dropdown and filter
+        await valueMapCriteria.selectOption({label: 'Yes'});
+
+        datatablesRequestPromise = project.waitForDatatablesRequest();
+        await project.searchBuilderLaunchSearch(tableName);
+        datatablesRequest = await datatablesRequestPromise;
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+        await expect(project.attributeTableWrapper(tableName).locator('div.dt-info'))
+            .toContainText('Showing 1 to 7 of 7 entries (filtered from 5,000 total entries)');
+
+        // remove a criterion and check the initialization values
+        datatablesRequestPromise = project.waitForDatatablesRequest();
+        await project.removeSearchBuilderCriterion(secondCriteria);
+        await expect(project.attributeTableWrapper(tableName).locator('div.dt-info'))
+            .toContainText('Showing 1 to 29 of 29 entries (filtered from 5,000 total entries)');
+
+        const firstCriteriaAfterRemove = await project.getSearchBuilderCriterion(tableName, 0);
+        await project.checkTypeAHeadValues(firstCriteriaAfterRemove
+            .locator('.dtsb-inputCont lizmap-typeahead'), '23', 'Alpine Swift');
+        const secondCriteriaAfterRemove = await project.getSearchBuilderCriterion(tableName, 1);
+        await expect(await secondCriteriaAfterRemove
+            .locator('.dtsb-inputCont select.dtsb-value').inputValue()).toBe('true');
+
+        // checks others fields
+        // date field
+        await project.addSearchBuilderCriterion(tableName, huge_table_fields);
+        const dateCriteria = await project.getSearchBuilderCriterion(tableName, 2);
+        const date_conditions = [
+            '=',
+            '!=',
+            '<',
+            '>',
+            'between',
+            '!between',
+            'null',
+            '!null',
+        ];
+        await project.selectSearchBuilderData(dateCriteria, 'Date field', date_conditions);
+
+        // int field
+        await project.addSearchBuilderCriterion(tableName, huge_table_fields);
+        const intCriteria = await project.getSearchBuilderCriterion(tableName, 3);
+        const int_conditions = [
+            '=',
+            '!=',
+            '<',
+            '<=',
+            '>=',
+            '>',
+            'between',
+            '!between',
+            'null',
+            '!null',
+        ];
+        await project.selectSearchBuilderData(intCriteria, 'Int field', int_conditions);
+
+        // float field
+        await project.addSearchBuilderCriterion(tableName, huge_table_fields);
+        const floatCriteria = await project.getSearchBuilderCriterion(tableName, 4);
+        const float_conditions = [
+            '=',
+            '!=',
+            '<',
+            '<=',
+            '>=',
+            '>',
+            'between',
+            '!between',
+            'null',
+            '!null',
+        ];
+        await project.selectSearchBuilderData(floatCriteria, 'Float field', float_conditions);
+
+        // close panel
+        await project.searchBuilderClosePanel(tableName);
+
+        // open new attribute table, check for unwanted conflicts
+        const lookupTableName = 'lookup_1';
+
+        // open the attribute table
+        datatablesRequest = await project.openAttributeTable(lookupTableName, true);
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+        let lookupTableHtml = project.attributeTableHtml(lookupTableName);
+
+        await expect(lookupTableHtml.locator('tbody tr')).toHaveCount(50);
+        // check results count
+        await expect(project.attributeTableWrapper(lookupTableName).locator('div.dt-info'))
+            .toContainText('Showing 1 to 50 of 100 entries');
+
+        // open search builder panel
+        await project.openSearchBuilderPanel(lookupTableName, true);
+        // add one condition and filter
+
+        await project.addSearchBuilderCriterion(lookupTableName);
+        const firstLookupCriteria = await project.getSearchBuilderCriterion(lookupTableName, 0);
+
+        // select field to filter and check for available conditions
+        await project.selectSearchBuilderData(firstLookupCriteria, 'id');
+
+        // select a condition
+        await project.selectSearchBuilderCondition(firstLookupCriteria,'=');
+
+        const firstLookupCriteriaInput = await firstLookupCriteria.locator('.dtsb-inputCont input.dtsb-value');
+
+        // fill the input and filter
+        await firstLookupCriteriaInput.fill("4");
+        datatablesRequestPromise = project.waitForDatatablesRequest();
+        await project.searchBuilderLaunchSearch(lookupTableName);
+        datatablesRequest = await datatablesRequestPromise;
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+        await expect(project.attributeTableWrapper(lookupTableName).locator('div.dt-info'))
+            .toContainText('Showing 1 to 1 of 1 entries (filtered from 100 total entries)');
+
+        // close panel
+        await project.searchBuilderClosePanel(lookupTableName);
+
+        // back to the first table and check total number of records
+        await project.switchAttributeTable(tableName);
+        await expect(project.attributeTableWrapper(tableName).locator('div.dt-info'))
+            .toContainText('Showing 1 to 29 of 29 entries (filtered from 5,000 total entries)');
+    });
+
+    test('Zoom to filtered features extent', async ({ page }) => {
+        const project = new ProjectPage(page, 'huge_attribute_table');
+        await project.open();
+        await project.closeLeftDock();
+
+        const hugeTableName = 'huge_table';
+
+        // open huge_table attribute table
+        let datatablesRequest = await project.openAttributeTable(hugeTableName, true);
+        let datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+        let hugeTableHtml = project.attributeTableHtml(hugeTableName);
+
+        await expect(hugeTableHtml.locator('tbody tr')).toHaveCount(50);
+
+        // check results count
+        await expect(project.attributeTableWrapper(hugeTableName).locator('div.dt-info'))
+            .toContainText('Showing 1 to 50 of 5,000 entries');
+
+        await expect(project.attributeTableActionBar(hugeTableName).locator('.btn-fit-filtered-extent')).toHaveCount(1);
+
+        // open bakery attribute table
+
+        const bakeriesTableName = 'bakeries';
+        // open bakeries attribute table
+        datatablesRequest = await project.openAttributeTable(bakeriesTableName, true);
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+        let bakeriesTableHtml = project.attributeTableHtml(bakeriesTableName);
+
+        await expect(bakeriesTableHtml.locator('tbody tr')).toHaveCount(25);
+
+        // check results count
+        await expect(project.attributeTableWrapper(bakeriesTableName).locator('div.dt-info'))
+            .toContainText('Showing 1 to 25 of 25 entries');
+
+        await expect(project.attributeTableActionBar(bakeriesTableName).locator('.btn-fit-filtered-extent')).toHaveCount(1);
+
+        const lookupTableName = 'lookup_1';
+        // open bakeries attribute table
+        datatablesRequest = await project.openAttributeTable(lookupTableName, true);
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+        let lookupTableHtml = project.attributeTableHtml(lookupTableName);
+
+        await expect(lookupTableHtml.locator('tbody tr')).toHaveCount(50);
+
+        // check results count
+        await expect(project.attributeTableWrapper(lookupTableName).locator('div.dt-info'))
+            .toContainText('Showing 1 to 50 of 100 entries');
+
+        await expect(project.attributeTableActionBar(lookupTableName).locator('.btn-fit-filtered-extent')).toHaveCount(0);
+
+        await project.switchAttributeTable(hugeTableName);
+
+        // zoom to filtered features
+        let getMapRequestPromise = project.waitForGetMapRequest();
+        //let extentRequestPromise = project.waitForDatatablesZoomExtentRequest();
+        /** @type {{[key: string]: string|RegExp}} */
+        let getMapExpectedParameters = {
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'REQUEST': 'GetMap',
+            'FORMAT': /^image\/png/,
+            'TRANSPARENT': /\b(\w*^true$\w*)\b/gmi,
+            'LAYERS': hugeTableName,
+            'CRS': 'EPSG:4326',
+            'WIDTH': '958',
+            'HEIGHT': '633',
+            'BBOX': /43.5380\d+,3.7657\d+,43.6887\d+,3.9938\d+/,
+        }
+
+        await project.attributeTableActionBar(hugeTableName).locator('.btn-fit-filtered-extent').click();
+        let getMapRequest = await getMapRequestPromise;
+
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
+        await getMapRequest.response();
+
+        // switch to bakeries and set some filters
+        await project.switchAttributeTable(bakeriesTableName);
+
+        await project.openSearchBuilderPanel(bakeriesTableName, true);
+
+        // add blank first criteria
+        await project.addSearchBuilderCriterion(bakeriesTableName);
+        const firstBakeriesCriteria = await project.getSearchBuilderCriterion(bakeriesTableName, 0);
+
+        // select the field to filter and check available conditions
+        await project.selectSearchBuilderData(firstBakeriesCriteria, 'id');
+
+        // select a condition
+        await project.selectSearchBuilderCondition(firstBakeriesCriteria,'=');
+        const bakeriesFirstInput = firstBakeriesCriteria.locator('.dtsb-inputCont .dtsb-value');
+        await project.fillSearchBuilderInput(bakeriesFirstInput,'1');
+
+        // add blank second criteria
+        await project.addSearchBuilderCriterion(bakeriesTableName);
+        const secondBakeriesCriteria = await project.getSearchBuilderCriterion(bakeriesTableName, 1);
+
+        // select the field to filter and check available conditions
+        await project.selectSearchBuilderData(secondBakeriesCriteria, 'id');
+
+        // select a condition
+        await project.selectSearchBuilderCondition(secondBakeriesCriteria,'=');
+        const bakeriesSecondInput = secondBakeriesCriteria.locator('.dtsb-inputCont .dtsb-value');
+        await project.fillSearchBuilderInput(bakeriesSecondInput,'73');
+
+        let datatablesRequestPromise = project.waitForDatatablesRequest();
+        await project.toggleSearchBuilderLogicalCondition(bakeriesTableName);
+        datatablesRequest = await datatablesRequestPromise;
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+        await expect(project.attributeTableWrapper(bakeriesTableName).locator('div.dt-info'))
+            .toContainText('Showing 1 to 2 of 2 entries (filtered from 25 total entries)');
+        await project.searchBuilderClosePanel(bakeriesTableName);
+
+        // zoom to bakeries filtered features
+        let extentRequestPromise = project.waitForDatatablesZoomExtentRequest();
+        await project.attributeTableActionBar(bakeriesTableName).locator('.btn-fit-filtered-extent').click();
+        let extentRequest = await extentRequestPromise;
+        let extentResponse = await extentRequest.response();
+        responseExpect(extentResponse).toBeJson();
+        let jsonResp = await extentResponse?.json();
+        expect(JSON.stringify(jsonResp)).toMatch(/3.9046\d+,43.6026\d+,3.9130\d+,43.6591\d+/);
+
+        // activate filter by extent
+        datatablesRequestPromise = project.waitForDatatablesRequest();
+        await project.attributeTableActionBar(bakeriesTableName).locator('.btn-filterbyextent-attributeTable').click();
+        datatablesRequest = await datatablesRequestPromise;
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+
+        // Check table lines
+        await expect(bakeriesTableHtml.locator('tbody tr')).toHaveCount(2);
+
+        // center map on first record
+        datatablesRequestPromise = project.waitForDatatablesRequest();
+        await bakeriesTableHtml.locator('tbody tr').first().locator('lizmap-feature-toolbar .feature-center').click();
+        datatablesRequest = await datatablesRequestPromise;
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+
+        // Check table lines
+        await expect(bakeriesTableHtml.locator('tbody tr')).toHaveCount(1);
+
+        // zoom to the single record extension (the zoom functionality should take care of the bbox parameter)
+        extentRequestPromise = project.waitForDatatablesZoomExtentRequest();
+        await project.attributeTableActionBar(bakeriesTableName).locator('.btn-fit-filtered-extent').click();
+        extentRequest = await extentRequestPromise;
+        extentResponse = await extentRequest.response();
+        responseExpect(extentResponse).toBeJson();
+        jsonResp = await extentResponse?.json();
+        expect(JSON.stringify(jsonResp)).toMatch(/3.9130\d+,43.6591\d+,3.9130\d+,43.6591\d+/);
+
+        // no data filtered
+        await project.openSearchBuilderPanel(bakeriesTableName);
+        datatablesRequestPromise = project.waitForDatatablesRequest();
+        await project.toggleSearchBuilderLogicalCondition(bakeriesTableName);
+
+        datatablesRequest = await datatablesRequestPromise;
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+        // Check table lines
+        await expect(bakeriesTableHtml.locator('tbody tr')).toHaveCount(1);
+        await expect(project.attributeTableWrapper(bakeriesTableName).locator('div.dt-info'))
+            .toContainText('Showing 0 to 0 of 0 entries (filtered from 25 total entries)');
+        await project.searchBuilderClosePanel(bakeriesTableName);
+
+        extentRequestPromise = project.waitForDatatablesZoomExtentRequest();
+        await project.attributeTableActionBar(bakeriesTableName).locator('.btn-fit-filtered-extent').click();
+        extentRequest = await extentRequestPromise;
+        extentResponse = await extentRequest.response();
+        responseExpect(extentResponse).toBeJson();
+        jsonResp = await extentResponse?.json();
+        expect(JSON.stringify(jsonResp)).toBe('[]');
+
+        // test polygon features
+        const polygonsTableName = 'polygons';
+        // open bakeries attribute table
+        datatablesRequest = await project.openAttributeTable(polygonsTableName, true);
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+        let polygonsTableHtml = project.attributeTableHtml(polygonsTableName);
+
+        await expect(polygonsTableHtml.locator('tbody tr')).toHaveCount(10);
+
+        // check results count
+        await expect(project.attributeTableWrapper(polygonsTableName).locator('div.dt-info'))
+            .toContainText('Showing 1 to 10 of 10 entries');
+
+        await expect(project.attributeTableActionBar(polygonsTableName).locator('.btn-fit-filtered-extent')).toHaveCount(1);
+
+        await project.openSearchBuilderPanel(polygonsTableName, true);
+
+        // add blank first criteria
+        await project.addSearchBuilderCriterion(polygonsTableName);
+        const firstPolygonsCriteria = await project.getSearchBuilderCriterion(polygonsTableName, 0);
+
+        // select the field to filter and check available conditions
+        await project.selectSearchBuilderData(firstPolygonsCriteria, 'id');
+
+        // select a condition
+        await project.selectSearchBuilderCondition(firstPolygonsCriteria,'=');
+        const polygonsFirstInput = firstPolygonsCriteria.locator('.dtsb-inputCont .dtsb-value');
+        await project.fillSearchBuilderInput(polygonsFirstInput,'0');
+
+        // add blank second criteria
+        await project.addSearchBuilderCriterion(polygonsTableName);
+        const secondPolygonsCriteria = await project.getSearchBuilderCriterion(polygonsTableName, 1);
+
+        // select the field to filter and check available conditions
+        await project.selectSearchBuilderData(secondPolygonsCriteria, 'id');
+
+        // select a condition
+        await project.selectSearchBuilderCondition(secondPolygonsCriteria,'=');
+        const polygonsSecondInput = secondPolygonsCriteria.locator('.dtsb-inputCont .dtsb-value');
+        await project.fillSearchBuilderInput(polygonsSecondInput,'1');
+
+        datatablesRequestPromise = project.waitForDatatablesRequest();
+        await project.toggleSearchBuilderLogicalCondition(polygonsTableName);
+        datatablesRequest = await datatablesRequestPromise;
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+        await expect(project.attributeTableWrapper(polygonsTableName).locator('div.dt-info'))
+            .toContainText('Showing 1 to 2 of 2 entries (filtered from 10 total entries)');
+        await project.searchBuilderClosePanel(polygonsTableName);
+
+        // zoom to bakeries filtered features
+        extentRequestPromise = project.waitForDatatablesZoomExtentRequest();
+        await project.attributeTableActionBar(polygonsTableName).locator('.btn-fit-filtered-extent').click();
+        extentRequest = await extentRequestPromise;
+        extentResponse = await extentRequest.response();
+        responseExpect(extentResponse).toBeJson();
+        jsonResp = await extentResponse?.json();
+        expect(JSON.stringify(jsonResp)).toMatch(/3.7401\d+,43.6334\d+,3.9033\d+,43.6873\d+/);
+
+        // remove one filter and then zoom to resulting features extent
+        project.openSearchBuilderPanel(polygonsTableName);
+
+        datatablesRequestPromise = project.waitForDatatablesRequest();
+        project.removeSearchBuilderCriterion(secondPolygonsCriteria);
+        datatablesRequest = await datatablesRequestPromise;
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+        await expect(project.attributeTableWrapper(polygonsTableName).locator('div.dt-info'))
+            .toContainText('Showing 1 to 1 of 1 entries (filtered from 10 total entries)');
+        await project.searchBuilderClosePanel(polygonsTableName);
+
+        // zoom to extent
+        extentRequestPromise = project.waitForDatatablesZoomExtentRequest();
+        await project.attributeTableActionBar(polygonsTableName).locator('.btn-fit-filtered-extent').click();
+        extentRequest = await extentRequestPromise;
+        extentResponse = await extentRequest.response();
+        responseExpect(extentResponse).toBeJson();
+        jsonResp = await extentResponse?.json();
+        expect(JSON.stringify(jsonResp)).toMatch(/3.7401\d+,43.6334\d+,3.8385\d+,43.6670\d+/);
+    })
 });
 
 

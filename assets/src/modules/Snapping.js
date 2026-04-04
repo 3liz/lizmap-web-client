@@ -7,7 +7,7 @@
 
 import { mainEventDispatcher } from '../modules/Globals.js';
 import Edition from './Edition.js';
-import { MapRootState } from './state/MapLayer.js';
+import { MapLayerLoadStatus, MapRootState } from './state/MapLayer.js';
 import { TreeRootState } from './state/LayerTree.js';
 
 /**
@@ -39,6 +39,8 @@ export default class Snapping {
         this._snapEnabled = {};
         this._snapToggled = {};
         this._snapLayers = [];
+        this._snapOnStart = false;
+        this._pendingMapReadyListener = null;
 
         // Create layer to store snap features
         const snapLayer = new OpenLayers.Layer.Vector('snaplayer', {
@@ -136,6 +138,9 @@ export default class Snapping {
                                     'snap_segments_tolerance': editionLayerConfig.hasOwnProperty('snap_segments_tolerance') ? editionLayerConfig.snap_segments_tolerance : 10,
                                     'snap_intersections_tolerance': editionLayerConfig.hasOwnProperty('snap_intersections_tolerance') ? editionLayerConfig.snap_intersections_tolerance : 10
                                 };
+
+                                this._snapOnStart = editionLayerConfig.hasOwnProperty('snap_on_start')
+                                    && editionLayerConfig.snap_on_start === 'True';
                             }
                         }
                     }
@@ -161,6 +166,12 @@ export default class Snapping {
                         this._setSnapLayersVisibility,
                         ['layer.visibility.changed','group.visibility.changed']
                     );
+
+                    // Auto-activate snapping if configured (snap_on_start).
+                    // Legacy configs without the key do not auto-activate.
+                    if (this._snapOnStart) {
+                        this._activateWhenMapReady();
+                    }
                 }
             },
             'edition.formDisplayed'
@@ -169,6 +180,13 @@ export default class Snapping {
         // Clean snap when edition ends
         mainEventDispatcher.addListener(
             () => {
+                // Remove pending map-ready listener if still waiting
+                if (this._pendingMapReadyListener) {
+                    this._rootMapGroup.removeListener(
+                        this._pendingMapReadyListener, 'layer.load.status.changed'
+                    );
+                    this._pendingMapReadyListener = null;
+                }
                 this.active = false;
                 this._lizmap3.map.getLayersByName('snaplayer')[0].destroyFeatures();
                 this.config = undefined;
@@ -182,6 +200,45 @@ export default class Snapping {
             },
             'edition.formClosed'
         );
+    }
+
+    /**
+     * Activate snapping only after all visible map layers have finished loading.
+     * This prevents snap WFS requests from competing with map tile rendering
+     * on QGIS Server, which can significantly slow down large projects.
+     * @private
+     */
+    _activateWhenMapReady() {
+        const visibleLayers = this._rootMapGroup.findMapLayers().filter(l => l.visibility);
+        const stillLoading = visibleLayers.filter(
+            l => l.loadStatus === MapLayerLoadStatus.Loading
+              || l.loadStatus === MapLayerLoadStatus.Undefined
+        );
+
+        if (stillLoading.length === 0) {
+            this.active = true;
+            let previousMessage = document.getElementById('lizmap-snapping-message');
+            if (previousMessage) previousMessage.remove();
+            this._lizmap3.addMessage(lizDict['snapping.message.activated'] || 'Snapping has been automatically activated.', 'info', true, 7000).attr('id', 'lizmap-snapping-message');
+        } else {
+            const listener = () => {
+                const remaining = this._rootMapGroup.findMapLayers().filter(
+                    l => l.visibility
+                      && (l.loadStatus === MapLayerLoadStatus.Loading
+                       || l.loadStatus === MapLayerLoadStatus.Undefined)
+                );
+                if (remaining.length === 0) {
+                    this._rootMapGroup.removeListener(listener, 'layer.load.status.changed');
+                    this._pendingMapReadyListener = null;
+                    this.active = true;
+                    let previousMessage = document.getElementById('lizmap-snapping-message');
+                    if (previousMessage) previousMessage.remove();
+                    this._lizmap3.addMessage(lizDict['snapping.message.activated'] || 'Snapping has been automatically activated.', 'info', true, 7000).attr('id', 'lizmap-snapping-message');
+                }
+            };
+            this._pendingMapReadyListener = listener;
+            this._rootMapGroup.addListener(listener, 'layer.load.status.changed');
+        }
     }
 
     getSnappingData () {

@@ -355,4 +355,48 @@ WHERE fk_id_series = 2  )
         $this->assertEquals('events', $element->getDatasourceParameter('table'));
         $this->assertEquals('"counter" > 3', $element->getDatasourceParameter('sql'));
     }
+
+    public function testGeopackageDatasourceAllParameters(): void
+    {
+        $provider = 'ogr';
+        $datasource = './data/buildings.gpkg|layername=buildings';
+
+        $element = new qgisVectorLayerDatasource($provider, $datasource);
+
+        $this->assertEquals('./data/buildings.gpkg', $element->getDatasourceParameter('dbname'));
+        $this->assertEquals('', $element->getDatasourceParameter('service'));
+        $this->assertEquals('', $element->getDatasourceParameter('host'));
+        $this->assertEquals('', $element->getDatasourceParameter('port'));
+        $this->assertEquals('', $element->getDatasourceParameter('user'));
+        $this->assertEquals('', $element->getDatasourceParameter('password'));
+        $this->assertEquals('', $element->getDatasourceParameter('authcfg'));
+        $this->assertEquals('', $element->getDatasourceParameter('sslmode'));
+        $this->assertEquals('', $element->getDatasourceParameter('key'));
+        $this->assertEquals('', $element->getDatasourceParameter('estimatedmetadata'));
+        $this->assertEquals('', $element->getDatasourceParameter('selectatid'));
+        $this->assertEquals('', $element->getDatasourceParameter('srid'));
+        $this->assertEquals('', $element->getDatasourceParameter('type'));
+        $this->assertEquals('', $element->getDatasourceParameter('checkPrimaryKeyUnicity'));
+        $this->assertEquals('buildings', $element->getDatasourceParameter('table'));
+        $this->assertEquals('buildings', $element->getDatasourceParameter('tablename'));
+        $this->assertEquals('', $element->getDatasourceParameter('schema'));
+        $this->assertEquals('geom', $element->getDatasourceParameter('geocol'));
+        $this->assertEquals('', $element->getDatasourceParameter('sql'));
+    }
+
+    public function testGeopackageDatasourceWithSqlAllParameters(): void
+    {
+        $provider = 'ogr';
+        $datasource = './data/buildings.gpkg|layername=buildings|subset="year" > 1900';
+
+        $element = new qgisVectorLayerDatasource($provider, $datasource);
+
+        $this->assertEquals('./data/buildings.gpkg', $element->getDatasourceParameter('dbname'));
+        $this->assertEquals('', $element->getDatasourceParameter('authcfg'));
+        $this->assertEquals('buildings', $element->getDatasourceParameter('table'));
+        $this->assertEquals('buildings', $element->getDatasourceParameter('tablename'));
+        $this->assertEquals('', $element->getDatasourceParameter('schema'));
+        $this->assertEquals('geom', $element->getDatasourceParameter('geocol'));
+        $this->assertEquals('"year" > 1900', $element->getDatasourceParameter('sql'));
+    }
 }

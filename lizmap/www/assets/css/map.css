@@ -1057,19 +1057,6 @@ ul.nav.nav-tabs {
   background-position: center;
 }
 
-#dock-tabs > li > a,
-#right-dock-tabs > li > a {
-  display:none; /* hide inactive tab titles */
-  border:none;
-  background:none;
-  color:white;
-}
-
-#dock-tabs > .active > a, #dock-tabs > .active > a:hover, #dock-tabs > .active > a:focus,
-#right-dock-tabs > .active > a, #right-dock-tabs > .active > a:hover, #right-dock-tabs > .active > a:focus {
-  display:block; /* show only active tab titles */
-}
-
 .dock-title,
 .right-dock-title{
     padding:5px;
@@ -1152,10 +1139,6 @@ SubDock
   max-height: 45vh;
 }
 
-#mini-dock-tabs {
-  display:none;
-}
-
 /* Bottom-dock */
 #bottom-dock {
   display: none;
@@ -1191,10 +1174,6 @@ SubDock
 
 #bottom-dock.half-transparent #bottom-dock-window-buttons {
   display: block;
-}
-
-#bottom-dock-tabs {
-  display:none;
 }
 
 #bottom-dock:hover {
@@ -1646,6 +1625,32 @@ div.modal .form-horizontal .jforms-choice .form-label {
 div.modal .form-horizontal .controls {
   margin-left: 100px;
   margin-right: 10px;
+}
+
+/* Drag-and-drop popup: flex layout for label/value rows.
+   Selectors use div.container.popup_lizmap_dd (specificity 31) to
+   beat any stale theme CSS with equal selectors + !important (specificity 21). */
+div.container.popup_lizmap_dd .control-group {
+  display: flex !important;
+  align-items: center;
+  column-gap: 4px;
+  margin-bottom: 2px;
+}
+
+div.container.popup_lizmap_dd label {
+  flex: 0 0 clamp(80px, 40%, 150px) !important;
+  max-width: clamp(80px, 40%, 150px);
+  hyphens: auto;
+  overflow-wrap: break-word;
+}
+
+div.container.popup_lizmap_dd .controls {
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding-left: 0 !important;
+  hyphens: auto;
+  overflow-wrap: break-word;
 }
 
 #dock .form-horizontal .controls label.checkbox,
@@ -3186,12 +3191,12 @@ lizmap-mouse-position > div.coords-unit > select{
   font-size: 0.8em;
   display: none;
 
-  /* SAFE ZONE: Using padding-top on the container ensures a physical 
-     clearance for the absolute-positioned Close button. 
+  /* SAFE ZONE: Using padding-top on the container ensures a physical
+     clearance for the absolute-positioned Close button.
      This prevents E2E tests (Playwright) from detecting overlaps.
   */
-  
-  padding-top: 45px !important; 
+
+  padding-top: 45px !important;
 }
 
 #content.mobile #lizmap-search {
@@ -3201,15 +3206,15 @@ lizmap-mouse-position > div.coords-unit > select{
   max-height: 33%;
   max-width: none;
   border-radius: 0;
-  
+
   /* Maintain the clearance zone on mobile devices */
-  
+
   padding-top: 40px !important;
 }
 
 #lizmap-search > li{
   list-style: none;
-  margin-top: 30px; 
+  margin-top: 30px;
   padding-left: 10px
 }
 
@@ -3231,11 +3236,11 @@ lizmap-mouse-position > div.coords-unit > select{
 #lizmap-search.open{
   display:block;
 }
-  
+
  /* STRUCTURAL SHIFT: Forcing the strong tag as a block element ensures a solid, predictable layout for the result titles. */
-  
+
 #lizmap-search ul.items li > strong {
-  display: block !important; 
+  display: block !important;
   color: #fff;
 }
 
@@ -3243,7 +3248,7 @@ lizmap-mouse-position > div.coords-unit > select{
   display: none;
   right: 8px;
   top: 8px;
-  position: absolute;  /* Kept on a higher layer than the search container to ensure it remains interactive and visible within the padding-top area. */  
+  position: absolute;  /* Kept on a higher layer than the search container to ensure it remains interactive and visible within the padding-top area. */
   z-index: 1041;
 }
 
@@ -4066,7 +4071,41 @@ div.lizmap-features-table.popup-displayed > table.lizmap-features-table-containe
   margin: 0 !important;
 }
 
+/* Lizmap TypeAHead component */
 
+.lizmap-typeahead-container {
+    position:relative;
+    height:100%;
+}
+
+.lizmap-typeahead-options-container {
+    position:fixed;
+    display:flex;
+    flex-direction:column;
+    gap:3px;
+    visibility: hidden;
+    padding: 5px;
+    background: var(--color-background-primary);
+    border: 1px solid var(--color-contrasted-elements);
+    border-radius: 5px;
+    max-height:300px;
+    overflow-y: auto;
+}
+
+.lizmap-typeahead-options-container > span:not([data-lizmap-typeahead="no-data"]):hover {
+    cursor:pointer;
+    background: var(--color-contrasted-elements-light);
+    color: white;
+}
+
+.lizmap-typeahead-options-container.on-search {
+    visibility: visible;
+}
+
+/** searchBuilder css adjustments **/
+.dt-datetime {
+    z-index:5001 !important;
+}
 
 /* Deactivate the OLD bootstrap-2 modal
 This is needed for LWC >=3.9 and the migration to bootstrap 5
@@ -4082,4 +4121,16 @@ These lines will be removed in the future, when the minimum target version will 
 #lizmap-modal:has(> div.modal-header),
 #lizmap-modal:has(> div.modal-header) ~ div.modal-backdrop {
     display: none !important;
+}
+
+/* Print scale selector with toggle between preset and custom */
+.print-scale-container {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.print-scale-container select,
+.print-scale-container input {
+  flex: 1;
 }

@@ -357,6 +357,22 @@ export class GoogleBaseLayerState extends BaseLayerState {
     get googleMapType() {
         return this._baseLayerConfig.mapType;
     }
+
+    /**
+     * The google layer types (e.g. ['layerRoadmap'] for hybrid)
+     * @type {string[]|null}
+     */
+    get googleLayerTypes() {
+        return this._baseLayerConfig.layerTypes;
+    }
+
+    /**
+     * Whether to display only layerTypes without the underlying mapType
+     * @type {boolean|null}
+     */
+    get googleOverlay() {
+        return this._baseLayerConfig.overlay;
+    }
 }
 
 /**

@@ -374,10 +374,6 @@ window.lizMap = function() {
             $('#map-content').css('margin-left', $('#menu').width());
         }
         $('#map').width(w);
-
-        if ( $('#right-dock-tabs').is(':visible') ){
-            $('#right-dock-content').css( 'max-height', $('#right-dock').height() - $('#right-dock-tabs').height() );
-        }
     }
 
     /**
@@ -2647,7 +2643,7 @@ window.lizMap = function() {
 
         // Create dock tab content
         var docktab = '';
-        docktab+='<div class="tab-pane" id="'+dname+'">';
+        docktab+='<div class="hide" id="'+dname+'">';
         if( dtype == 'minidock'){
             docktab+='<div class="mini-dock-close" title="' + lizDict['toolbar.content.stop'] + '" style="padding:7px;float:right;cursor:pointer;"><i class="icon-remove icon-white"></i></div>';
             docktab+='    <div class="'+dname+'">';
@@ -2677,19 +2673,6 @@ window.lizMap = function() {
             $('#dock-content').append(docktab);
         else if( dtype == 'bottomdock' )
             $('#bottom-dock-content').append(docktab);
-
-        // Create dock tab li
-        var docktabli = '';
-        docktabli+= '<li id="nav-tab-'+dname+'"><a href="#'+dname+'" data-toggle="tab">'+dlabel+'</a></li>';
-        if( dtype == 'minidock')
-            $('#mini-dock-tabs').append(docktabli);
-        else if( dtype == 'right-dock' )
-            $('#right-dock-tabs').append(docktabli);
-        else if( dtype == 'dock' )
-            $('#dock-tabs').append(docktabli);
-        else if( dtype == 'bottomdock' )
-            $('#bottom-dock-tabs').append(docktabli);
-
     }
 
     /**
@@ -3583,7 +3566,6 @@ window.lizMap = function() {
             // hide mini-dock if no tool is active
             if ($('#mapmenu ul li.nav-minidock.active').length == 0) {
                 $('#mini-dock-content > .tab-pane.active').removeClass('active');
-                $('#mini-dock-tabs li.active').removeClass('active');
             }
 
             // Toggle menu visibility

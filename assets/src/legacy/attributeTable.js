@@ -495,6 +495,11 @@ var lizAttributeTable = function() {
                 // Action bar specific to the tab
                 html+= '<div class="attribute-layer-action-bar">';
 
+                // add zoom to filtered features extent, only if layer has geometry
+                if (config.layers[lname].geometryType != 'none') {
+                    html+= '<button class="btn-fit-filtered-extent btn btn-sm" value="'+cleanName+'" title="'+lizDict['attributeLayers.toolbar.btn.fit.filtered.extent.title']+'"><i class="icon-fullscreen"></i></button>';
+                }
+
                 // Selected searched lines button
                 html+= '<button class="btn-select-searched btn btn-sm" value="'+cleanName+'" title="'+lizDict['attributeLayers.toolbar.btn.select.searched.title']+'"><i class="icon-star"></i></button>';
 
@@ -1060,6 +1065,71 @@ var lizAttributeTable = function() {
                     function(){ $(this).removeClass('btn-primary'); }
                 );
 
+                // Bind click on btn-fit-filtered-extent button.
+                // This feature calculates the total extent of the filtered feature (no padding)
+                // and then fit the map extent accordingly. The fit follows OL View settings.
+                // The calculation is performed on all filtered features, ignoring pagination
+                $('#attribute-layer-'+ cleanName + ' button.btn-fit-filtered-extent').click(async function(){
+                    let targetExtent = [];
+                    var tableName = attributeLayersDic[ $(this).val() ];
+                    if (!DataTable.isDataTable(`#attribute-layer-table-${tableName}`)) return;
+
+                    const dtTable = new DataTable.Api(`#attribute-layer-table-${tableName}`);
+                    const dtParams = dtTable.ajax.params();
+                    const hasFilter = typeof dtParams == 'object' &&
+                        'searchBuilder' in dtParams &&
+                        'criteria' in dtParams.searchBuilder &&
+                        Array.isArray(dtParams.searchBuilder.criteria) &&
+                        dtParams.searchBuilder.criteria.length > 0
+                    if (!hasFilter) {
+                        const layerConfig = lizMap.config.layers[$(this).val()];
+                        if (layerConfig && 'extent' in layerConfig && 'crs' in layerConfig) {
+                            targetExtent = lizMap.ol.proj.transformExtent(
+                                layerConfig.extent,
+                                layerConfig.crs,
+                                lizMap.mainLizmap.map.getView().getProjection().getCode()
+                            );
+                        }
+                    } else {
+                        const datatablesUrl = globalThis['lizUrls'].wms.replace('service', 'datatables/filteredFeaturesExtent');
+                        const params = {...globalThis['lizUrls'].params};
+                        params['layerId'] = config.attributeLayers[cleanName].layerId;
+
+                        // Using the same parameters as the search builder ensures that the extent calculation
+                        // is consistent with the filtered features.
+                        const extentRequest = await fetch(datatablesUrl + '?' + new URLSearchParams(params).toString(),{
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json;charset=utf-8'
+                            },
+                            body: JSON.stringify({...dtParams})
+                        })
+
+                        // probably there is no need to notify user if something went wrong.
+                        // The worst case scenario would be that the zoom does not occur.
+                        if(!extentRequest.ok) return;
+
+                        const extent = await extentRequest.json();
+                        if(extent && extent.length == 4) {
+                            // the extent is returned in EPSG:4326 by default, it must be converted in map crs
+                            targetExtent = lizMap.ol.proj.transformExtent(
+                                extent,
+                                'EPSG:4326',
+                                lizMap.mainLizmap.map.getView().getProjection().getCode()
+                            );
+                        }
+                    }
+
+                    if(targetExtent && targetExtent.length == 4) {
+                        // zoom to features extent
+                        lizMap.mainLizmap.map.zoomToGeometryOrExtent(targetExtent);
+                    }
+
+                }).hover(
+                    function(){ $(this).addClass('btn-primary'); },
+                    function(){ $(this).removeClass('btn-primary'); }
+                );
+
                 // Bind click on btn-filterbyextent button
                 document.querySelector('#attribute-layer-'+ cleanName + ' button.btn-filterbyextent-attributeTable').addEventListener('click', (e) => {
                     const layerId = e.currentTarget.getAttribute('data-layerid');
@@ -1501,7 +1571,7 @@ var lizAttributeTable = function() {
                 // Datatable configuration
                 if ( !DataTable.isDataTable( aTable ) ) {
                     const datatablesUrl = globalThis['lizUrls'].wms.replace('service', 'datatables');
-                    const params = globalThis['lizUrls'].params;
+                    const params = {...globalThis['lizUrls'].params};
                     params['layerId'] = lConfig.id;
 
                     DataTable.defaults.column.orderSequence = ['asc', 'desc'];
@@ -1645,6 +1715,8 @@ var lizAttributeTable = function() {
                     ?.previousElementSibling;
 
                     if (actionBar) {
+                        // get conditions for searchBuilder functionality
+                        const conditions = getSearchBuilderCustomConditions(oTable, allColumnsKeyValues);
                         // Add searchBuilder button
                         // Disable live search to avoid searching on each keystroke
                         // Only display columns that are sortable for search
@@ -1655,7 +1727,8 @@ var lizAttributeTable = function() {
                                     config: {
                                         liveSearch: false,
                                         columns: '.dt-orderable-asc',
-                                        depthLimit: 1
+                                        depthLimit: 1,
+                                        conditions: conditions,
                                     }
                                 }
                             ]
@@ -1670,6 +1743,8 @@ var lizAttributeTable = function() {
                         $(aTable +' tr td button').unbind('click');
                     });
 
+                    // DOM Observer
+                    let searchBuilderObserver = null;
                     // Bind events when drawing table
                     oTable.on( 'draw', function() {
 
@@ -1678,6 +1753,11 @@ var lizAttributeTable = function() {
 
                         // Bind event when users click anywhere on the table line to highlight
                         bindTableLineClick(aName, aTable);
+
+                        // observe nodes
+                        searchBuilderObserver?.disconnect();
+                        searchBuilderObserver = observeDomSearchBuilderMutation(aName, oTable, allColumnsKeyValues);
+
                         return false;
 
                     });
@@ -1691,6 +1771,197 @@ var lizAttributeTable = function() {
                     aCallback(aName,aTable);
 
                 return false;
+            }
+
+            /**
+             * Defines MutationObserver responsible for hiding non relevant conditional options for
+             * the Value Map and Value Relation fields.
+             * On these types of fields conditions such as 'between' or 'contains' do not really
+             * make sense
+             *
+             * @param {string} name                 The layer name
+             * @param {Object} oTable               The dataTable instance object
+             * @param {Object} allColumnsKeyValues  The key-value object for column data
+             * @returns {MutationObserver}
+             */
+            function observeDomSearchBuilderMutation(name, oTable, allColumnsKeyValues){
+                const observedNode = document.querySelector(`#attribute-layer-${name} .dt-buttons.btn-group.flex-wrap`);
+                // table does not have search builder
+                if(!observedNode) return;
+                const config = { childList: true, subtree: true };
+                const dataSelector = 'select.dtsb-data.form-select';
+
+                const callback = (mutationList, observer) => {
+                    for (const mutation of mutationList) {
+                      if (mutation.type === "childList") {
+                        for (const node of mutation.addedNodes) {
+                            if (node instanceof HTMLOptionElement &&
+                                node.parentElement?.classList.contains('dtsb-condition')){
+                                const relateDataElement = $(node.parentElement).siblings(dataSelector)
+                                if(relateDataElement.length == 1){
+                                    const dataFilterValue = relateDataElement.val();
+                                    // get column on filter
+                                    const columnOnFilter = oTable.settings()[0].aoColumns.filter((f)=>{
+                                        return f.idx == +dataFilterValue;
+                                    })
+                                    if(columnOnFilter.length == 1){
+                                        const columnField = columnOnFilter[0].mData;
+                                        if(columnField in allColumnsKeyValues &&
+                                            [
+                                                '>',
+                                                '>=',
+                                                'between',
+                                                'contains',
+                                                '!contains',
+                                                '!ends',
+                                                'ends',
+                                                'starts',
+                                                '!starts',
+                                            ].indexOf(node.value) > -1) {
+                                            $(node).hide();
+                                        } else {
+                                            $(node).show();
+                                        }
+                                    } else {
+                                        $(node).show();
+                                    }
+                                } else $(node).show();
+                            }
+                        }
+                      }
+                    }
+                };
+
+                const observer = new MutationObserver(callback);
+
+                observer.observe(observedNode, config);
+
+                return observer;
+            }
+
+            /**
+             * Rebuilds the search builder conditions to introduce the customizations needed
+             * to handle drop-down menus/typeahead items in place of text fields
+             * for Value Map and Value Relation fields
+             *
+             * @param {Object} oTable               The dataTable instance object
+             * @param {Object} allColumnsKeyValues  The key-value object for column data
+             * @returns {Object}                    The conditions object for searchBuilder isntance
+             */
+            function getSearchBuilderCustomConditions(oTable, allColumnsKeyValues) {
+                const suitableTypes = {
+                    num: ['!=','=','>','>=','between'],
+                    string: ['!=','=','contains','!contains','!ends','ends','starts','!starts'],
+                };
+                const conditions = {};
+                for (let type in suitableTypes) {
+                    conditions[type] = {};
+                    // define a new condition item for each type
+                    suitableTypes[type].forEach((t) => {
+                        conditions[type][t] = {};
+                        conditions[type][t]['init'] = function(that, fn, preDefined = null) {
+                            const criteria = that.s;
+                            // replace input text for Value Relation/Value Map field with dropdowns
+                            if (criteria.origData in allColumnsKeyValues) {
+                                if(t== '!=' || t == '=') {
+                                    const keyValues = allColumnsKeyValues[criteria.origData];
+                                    // if the number of options is greater than 100 (arbitrary) then
+                                    // use typeahead component
+                                    if (Object.keys(allColumnsKeyValues[criteria.origData]).length > 50) {
+                                        // typeahead input
+                                        const typeahead = document.createElement('lizmap-typeahead');
+                                        //set classes to make the component style consistent with
+                                        // the search builder.
+                                        typeahead.setAttribute('classList',
+                                            [...that.classes.value.split(" "),...that.classes.input.split(" ")].join(',')
+                                        );
+
+                                        // prepopulate value, if any
+                                        if(preDefined !== null) {
+                                            const value = preDefined[0];
+                                            const description = keyValues[value];
+                                            // init component value and description
+                                            typeahead.setAttribute('init-value',value);
+                                            typeahead.setAttribute('init-description', description);
+                                        }
+
+                                        // listen to search event in order to populate the component options list
+                                        typeahead.addEventListener('lizmap-typeahead-search',(e) => {
+                                            const detail = e.detail || '';
+                                            const options = Object.keys(keyValues)
+                                                            .map((k) => {return {id:k, description:keyValues[k] ?? ''}})
+                                                            .filter((o) => detail &&
+                                                                o.description.toLowerCase().includes(detail.toLowerCase()));
+                                            // set component options list
+                                            typeahead.options = options;
+                                        })
+
+                                        // listen to component change event to set the filter value accordingly
+                                        typeahead.addEventListener('lizmap-typeahead-change', function(e) {
+                                            fn(that, $(e.target));
+                                        })
+
+                                        // define how the search builder should get the value from the component
+                                        criteria.conditions[t]['inputValue'] = function(el, that) {
+                                            return [el[0][0].value]
+                                        }
+
+                                        // return the whole element
+                                        return $(typeahead);
+                                    } else {
+                                        // else replace the text input with ordinary select
+                                        let select = $('<select/>')
+                                        .addClass('my-select')
+                                        .addClass(that.classes.value)
+                                        .addClass(that.classes.input)
+                                        .on('input', () => {
+                                            fn(that, this); }
+                                        );
+
+                                        $(select).append($('<option/>').data('sbv',''));
+                                        for (let k in keyValues){
+                                            $(select).append(
+                                                $('<option/>')
+                                                .val(k)
+                                                .text(keyValues[k])
+                                                .data('sbv',k)
+                                            );
+                                        }
+
+                                        if (preDefined !== null) {
+                                            select.val(preDefined[0]);
+                                        }
+
+                                        criteria.conditions[t]['inputValue'] = function(el, that) {
+                                            return [el[0][0].value]
+                                        }
+
+                                        return select;
+                                    }
+
+                                } else return $('<span/>');
+
+                            } else {
+                                // return the default input element
+                                let el = $('<input/>')
+                                    .addClass(that.classes.value)
+                                    .addClass(that.classes.input)
+                                    .on('input', function() {
+                                        fn(that, this);
+                                    });
+                                if (preDefined !== null) {
+                                    el.val(preDefined[0]);
+                                }
+                                criteria.conditions[t]['inputValue'] = function(el,that){
+                                    return [$(el[0]).val()]
+                                }
+                                return el;
+                            }
+                        }
+                    })
+                }
+
+                return conditions;
             }
 
             /**
@@ -2208,7 +2479,7 @@ var lizAttributeTable = function() {
                 // Add filtered featured
                 $('.attribute-table-table[id]').each(function(){
                     var tableId = $(this).attr('id');
-                    var tableLayerName = $(this).parents('div.dataTables_wrapper:first').prev('input.attribute-table-hidden-layer').val()
+                    var tableLayerName = $(this).parents('div.dt-container:first').prev('input.attribute-table-hidden-layer').val();
                     // Get parent table for the feature type
                     if ( tableLayerName
                         && DataTable.isDataTable( $(this) )
@@ -2216,7 +2487,7 @@ var lizAttributeTable = function() {
                     ){
 
                         var sIds = [];
-                        var rTable = $(this).DataTable();
+                        let rTable = new DataTable.Api(this);
                         var filteredrowids = rTable.rows( {"filter":"applied"} ).ids();
                         for ( var i = 0; i < filteredrowids.length; i++ ) {
                             sIds.push( filteredrowids[i] );
@@ -2548,12 +2819,6 @@ var lizAttributeTable = function() {
 
                 // Update layer state
                 lizMap.mainLizmap.state.layersAndGroupsCollection.getLayerByName(layerConfig.name).expressionFilter = null;
-
-                // Refresh attributeTable
-                var opTable = '#attribute-layer-table-'+lizMap.cleanName( typeName );
-                if( $( opTable ).length ){
-                    getDataAndRefreshAttributeTable(typeName, null, opTable);
-                }
 
                 // And send event so that getFeatureInfo and getPrint use the updated layer filters
                 lizMap.events.triggerEvent("layerFilterParamChanged",
