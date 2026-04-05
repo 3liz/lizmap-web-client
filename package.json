@@ -42,7 +42,7 @@
     "datatables.net-datetime": "^1.6.3",
     "datatables.net-searchbuilder-bs5": "^1.8.4",
     "dompurify": "^3.3.x",
-    "dotenv": "^17.2.3",
+    "dotenv": "^17.4.0",
     "eslint-plugin-jsdoc": "^61.5.x",
     "flatgeobuf": "^4.4.x",
     "jsts": "^2.11.x",
