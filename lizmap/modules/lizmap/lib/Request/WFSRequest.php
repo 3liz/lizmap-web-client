@@ -1196,7 +1196,7 @@ class WFSRequest extends OGCRequest
 
             // Transform into GeoJSON
             $sql .= '
-                        ST_AsGeoJSON('.$geosql.')::json As geometry,
+                        ST_AsGeoJSON('.$geosql.', 9)::json As geometry,
             ';
         } else {
             $sql .= '

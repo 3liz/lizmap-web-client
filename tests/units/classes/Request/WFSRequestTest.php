@@ -398,6 +398,31 @@ class WFSRequestTest extends TestCase
         $this->assertEquals($expectedSql, $result);
     }
 
+    public function testSetGeojsonSqlPrecision(): void
+    {
+        $wfs = new WFSRequestForTests();
+        $wfs->datasource = (object) array('key' => 'id', 'geocol' => 'geom');
+        $wfs->selectFields = array('"id"');
+
+        $method = new \ReflectionMethod($wfs, 'setGeojsonSql');
+        $method->setAccessible(true);
+
+        $sql = $method->invoke(
+            $wfs,
+            'SELECT "id", "geom" AS "geosource" FROM mytable',
+            new jDbConnectionForTests(),
+            'my_layer',
+            'geom'
+        );
+
+        $this->assertStringContainsString(
+            'ST_AsGeoJSON(ST_Transform(lg.geosource::geometry, 4326), 9)',
+            $sql,
+            "ST_AsGeoJSON must specify 9 decimal digits for coordinate precision.\n"
+            ."Generated SQL:\n".substr($sql, strpos($sql, 'ST_AsGeoJSON') ?: 0, 200)
+        );
+    }
+
     public function testBuildGetFeatureParameters(): void
     {
         $genericParameters = WFSRequestForTests::$genericGetFeatureParameters;
