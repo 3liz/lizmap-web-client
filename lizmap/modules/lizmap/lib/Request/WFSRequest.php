@@ -685,34 +685,40 @@ class WFSRequest extends OGCRequest
         }
 
         // Check the BBOX parameter
-        // It has to contain 4 numeric separated by comma
+        // WFS 1.0.0 sends 4 numeric values; WFS 1.1.0 appends the CRS as a 5th element
+        // e.g. "xmin,ymin,xmax,ymax,EPSG:3857"
         $bboxitem = explode(',', $bbox);
-        if (count($bboxitem) !== 4) {
-            // BBOX parameter does not contain 4 elements
+        $bboxCount = count($bboxitem);
+        if ($bboxCount !== 4 && $bboxCount !== 5) {
+            // BBOX parameter does not contain 4 or 5 elements
             return '';
         }
 
-        // Check numeric elements
-        foreach ($bboxitem as $coord) {
-            if (!is_numeric(trim($coord))) {
+        // Check the 4 coordinate elements are numeric
+        for ($i = 0; $i < 4; ++$i) {
+            if (!is_numeric(trim($bboxitem[$i]))) {
                 return '';
             }
         }
 
         $layerSrid = $this->qgisLayer->getSrid();
         $srid = $this->qgisLayer->getSrid();
-        if (array_key_exists('srsname', $params)) {
+
+        // CRS priority: explicit SRSNAME param > 5th BBOX element
+        $srsname = null;
+        if (array_key_exists('srsname', $params) && !empty($params['srsname'])) {
             $srsname = $params['srsname'];
-            if (!empty($srsname)) {
-                // SRSNAME parameter is not empty
-                // extracting srid
-                $exp_srsname = explode(':', $srsname);
-                $srsname_id = end($exp_srsname);
-                if (ctype_digit($srsname_id)) {
-                    $srid = intval($srsname_id);
-                } else {
-                    return '';
-                }
+        } elseif ($bboxCount === 5) {
+            $srsname = trim($bboxitem[4]);
+        }
+
+        if ($srsname !== null) {
+            $exp_srsname = explode(':', $srsname);
+            $srsname_id = end($exp_srsname);
+            if (ctype_digit($srsname_id)) {
+                $srid = intval($srsname_id);
+            } else {
+                return '';
             }
         }
 
@@ -964,6 +970,16 @@ class WFSRequest extends OGCRequest
             $geometryname = strtolower($params['geometryname']);
         }
 
+        // Determine the output SRID from SRSNAME, defaulting to 4326
+        $outputSrid = 4326;
+        if (array_key_exists('srsname', $params) && !empty($params['srsname'])) {
+            $exp_srsname = explode(':', $params['srsname']);
+            $srsname_id = end($exp_srsname);
+            if (ctype_digit($srsname_id)) {
+                $outputSrid = intval($srsname_id);
+            }
+        }
+
         // For getFeature with parameter RESULTTYPE=hits
         // We should just return the number of features
         if ($isHitsRequest) {
@@ -972,7 +988,7 @@ class WFSRequest extends OGCRequest
             // Else we should return all corresponding features
             // $this->appContext->logMessage($sql);
             // Use PostgreSQL method to export geojson
-            $sql = $this->setGeojsonSql($sql, $cnx, $typename, $geometryname);
+            $sql = $this->setGeojsonSql($sql, $cnx, $typename, $geometryname, $outputSrid);
         }
 
         // $this->appContext->logMessage($sql);
@@ -1064,10 +1080,8 @@ class WFSRequest extends OGCRequest
      * @param \jDbConnection $cnx
      * @param mixed          $typename
      * @param mixed          $geometryname
-     *
-     * @return string
      */
-    private function setGeojsonSql($sql, $cnx, $typename, $geometryname)
+    protected function setGeojsonSql($sql, $cnx, $typename, $geometryname, int $outputSrid = 4326): string
     {
         $sql = '
         WITH source AS (
@@ -1122,10 +1136,9 @@ class WFSRequest extends OGCRequest
         if (!empty($geosql)) {
             // Define BBOX SQL
             $bboxsql = 'ST_Envelope(lg.geosource::geometry)';
-            // For new QGIS versions, export into EPSG:4326
-            $lizservices = $this->services;
-            $geosql = 'ST_Transform('.$geosql.', 4326)';
-            $bboxsql = 'ST_Transform('.$bboxsql.', 4326)';
+            // Export geometry in the requested output CRS (defaults to EPSG:4326)
+            $geosql = 'ST_Transform('.$geosql.', '.$outputSrid.')';
+            $bboxsql = 'ST_Transform('.$bboxsql.', '.$outputSrid.')';
 
             // Transform BBOX into JSON
             $sql .= '

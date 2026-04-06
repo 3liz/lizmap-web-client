@@ -56,6 +56,190 @@ test.describe('Snap on edition', () => {
         expect(describeFeatureTypeSent).toBeFalsy();
     });
 
+    test('Snap WFS GetFeature uses map projection SRSNAME for cross-CRS layer', async ({ page }, testInfo) => {
+        // Project is in EPSG:3857; snap target is stored in EPSG:2154 (Lambert-93).
+        // The WFS request must ask for features in the MAP projection (SRSNAME=EPSG:3857)
+        // and include a 5-element BBOX so the server can apply the spatial filter correctly.
+        const project = new ProjectPage(page, 'form_edition_snap_datum_shift');
+        project.waitForGetLegendGraphicDuringLoad = false;
+
+        // Log ALL network requests for debugging
+        const allRequests = [];
+        page.on('request', request => {
+            allRequests.push(`${request.method()} ${request.url().substring(0, 120)} ${(request.postData() ?? '').substring(0, 200)}`);
+        });
+        // Log console messages
+        const consoleLogs = [];
+        page.on('console', msg => consoleLogs.push(`[${msg.type()}] ${msg.text()}`));
+        page.on('pageerror', err => consoleLogs.push(`[pageerror] ${err.message}`));
+
+        await project.open();
+        console.log('[debug] project.open() completed');
+
+        const snapWfsRequestPromise = page.waitForRequest(
+            request => request.method() === 'POST'
+                && request.postData()?.includes('GetFeature') === true
+                && request.postData()?.includes('snap_datum_shift_target') === true
+        );
+
+        // Log what's in the edition layer dropdown
+        const editionLayerOptions = await page.locator('#edition-layer option').allTextContents();
+        console.log('[debug] Edition layer dropdown options:', JSON.stringify(editionLayerOptions));
+
+        // Check if edition panel is visible
+        const editionVisible = await page.locator('#edition').isVisible();
+        console.log('[debug] Edition panel visible:', editionVisible);
+
+        await project.openEditingFormWithLayer('snap_datum_shift_edit');
+        console.log('[debug] openEditingFormWithLayer completed');
+
+        // Check if Digitization tab exists
+        const digTab = page.getByRole('tab', { name: 'Digitization' });
+        const digTabCount = await digTab.count();
+        console.log('[debug] Digitization tab count:', digTabCount);
+
+        if (digTabCount > 0) {
+            await digTab.click();
+            console.log('[debug] Digitization tab clicked');
+        }
+
+        // Wait a bit then dump all requests if snap request hasn't arrived
+        await page.waitForTimeout(3000);
+
+        // Attach debug info
+        await testInfo.attach('all-network-requests', {
+            body: allRequests.join('\n'),
+            contentType: 'text/plain',
+        });
+        await testInfo.attach('browser-console-logs', {
+            body: consoleLogs.join('\n'),
+            contentType: 'text/plain',
+        });
+
+        const snapWfsRequest = await snapWfsRequestPromise;
+        const rawPostData = snapWfsRequest.postData() ?? '';
+        const postData = new URLSearchParams(rawPostData);
+
+        // Attach the full POST body to the test report for easy inspection on failure.
+        await testInfo.attach('snap-wfs-request-post-data', {
+            body: rawPostData,
+            contentType: 'application/x-www-form-urlencoded',
+        });
+
+        console.log('[snap datum-shift] WFS request parameters:');
+        for (const [key, value] of postData.entries()) {
+            console.log(`  ${key} = ${value}`);
+        }
+
+        requestExpect(snapWfsRequest).toContainParametersInPostData({
+            SERVICE: 'WFS',
+            VERSION: '1.1.0',
+            REQUEST: 'GetFeature',
+            TYPENAME: 'snap_datum_shift_target',
+            SRSNAME: 'EPSG:3857',
+        });
+
+        // BBOX must be the 5-element WFS 1.1.0 format ending with the CRS code.
+        const bbox = postData.get('BBOX') ?? '';
+        console.log('[snap datum-shift] BBOX value:', bbox);
+        expect(bbox, `BBOX must be 5-element WFS 1.1.0 format (x,y,x,y,EPSG:3857), got: "${bbox}"`
+        ).toMatch(/^-?[\d.]+,-?[\d.]+,-?[\d.]+,-?[\d.]+,EPSG:3857$/);
+    });
+
+    test('Snap features from EPSG:2154 layer arrive in EPSG:3857 coordinates', async ({ page }, testInfo) => {
+        // The PostGIS WFS path must transform geometries into the requested output CRS
+        // (SRSNAME=EPSG:3857). Without the fix, coordinates would come back in EPSG:4326
+        // (~3.86–3.92 / 43.61–43.64) or the layer native CRS EPSG:2154 (~769000–774000 /
+        // 6280000–6283000), both obviously outside the valid EPSG:3857 range for this area
+        // (~430000–435000 / 5406000–5408000).
+        const project = new ProjectPage(page, 'form_edition_snap_datum_shift');
+        project.waitForGetLegendGraphicDuringLoad = false;
+
+        // Log ALL network requests for debugging
+        const allRequests = [];
+        page.on('request', request => {
+            allRequests.push(`${request.method()} ${request.url().substring(0, 120)} ${(request.postData() ?? '').substring(0, 200)}`);
+        });
+        const consoleLogs = [];
+        page.on('console', msg => consoleLogs.push(`[${msg.type()}] ${msg.text()}`));
+        page.on('pageerror', err => consoleLogs.push(`[pageerror] ${err.message}`));
+
+        await project.open();
+        console.log('[debug] project.open() completed');
+
+        const snapWfsResponsePromise = page.waitForResponse(
+            response => response.request().method() === 'POST'
+                && response.request().postData()?.includes('GetFeature') === true
+                && response.request().postData()?.includes('snap_datum_shift_target') === true
+        );
+
+        const editionLayerOptions = await page.locator('#edition-layer option').allTextContents();
+        console.log('[debug] Edition layer dropdown options:', JSON.stringify(editionLayerOptions));
+
+        await project.openEditingFormWithLayer('snap_datum_shift_edit');
+        console.log('[debug] openEditingFormWithLayer completed');
+
+        const digTab = page.getByRole('tab', { name: 'Digitization' });
+        const digTabCount = await digTab.count();
+        console.log('[debug] Digitization tab count:', digTabCount);
+        if (digTabCount > 0) {
+            await digTab.click();
+            console.log('[debug] Digitization tab clicked');
+        }
+
+        await page.waitForTimeout(3000);
+
+        await testInfo.attach('all-network-requests', {
+            body: allRequests.join('\n'),
+            contentType: 'text/plain',
+        });
+        await testInfo.attach('browser-console-logs', {
+            body: consoleLogs.join('\n'),
+            contentType: 'text/plain',
+        });
+
+        const snapWfsResponse = await snapWfsResponsePromise;
+        const responseBody = await snapWfsResponse.text();
+
+        // Attach the full server response to the test report.
+        await testInfo.attach('snap-wfs-response-body', {
+            body: responseBody,
+            contentType: 'application/json',
+        });
+
+        const geojson = JSON.parse(responseBody);
+
+        console.log('[snap datum-shift] WFS response status:', snapWfsResponse.status());
+        console.log('[snap datum-shift] Feature count:', geojson.features?.length ?? 0);
+
+        expect(geojson.features, 'Response must contain a features array').toBeDefined();
+        expect(geojson.features.length, 'At least one snap target feature must be returned').toBeGreaterThan(0);
+
+        for (const feature of geojson.features) {
+            const [x, y] = feature.geometry.coordinates;
+
+            console.log(`[snap datum-shift] Feature id=${feature.id} coords: x=${x.toFixed(2)}, y=${y.toFixed(2)}`);
+
+            // Diagnose likely failure modes in the message for faster debugging:
+            //   4326 → x ≈ 3.86,    y ≈ 43.6
+            //   2154 → x ≈ 769 000, y ≈ 6 280 000
+            //   3857 → x ≈ 431 000, y ≈ 5 407 000  ✓
+            const hint = x < 10
+                ? `looks like EPSG:4326 (lon/lat) — server did not transform to 3857`
+                : x > 500000
+                    ? `looks like EPSG:2154 (Lambert-93) — server returned native CRS instead of 3857`
+                    : '';
+            expect(x, `x=${x.toFixed(2)} out of EPSG:3857 range for this area [420000–445000]${hint ? ' — ' + hint : ''}`
+            ).toBeGreaterThan(420000);
+            expect(x, `x=${x.toFixed(2)} out of EPSG:3857 range for this area [420000–445000]${hint ? ' — ' + hint : ''}`
+            ).toBeLessThan(445000);
+            expect(y, `y=${y.toFixed(2)} out of EPSG:3857 range for this area [5390000–5420000]`
+            ).toBeGreaterThan(5390000);
+            expect(y, `y=${y.toFixed(2)} out of EPSG:3857 range for this area [5390000–5420000]`
+            ).toBeLessThan(5420000);
+        }
+    });
+
     test('Snap panel functionalities', async ({ page }) => {
         const project = new ProjectPage(page, 'form_edition_multilayer_snap');
 
