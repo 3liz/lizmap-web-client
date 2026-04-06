@@ -60,21 +60,11 @@ test.describe('Snap on edition', () => {
         // Project is in EPSG:3857; snap target is stored in EPSG:2154 (Lambert-93).
         // The WFS request must ask for features in the MAP projection (SRSNAME=EPSG:3857)
         // and include a 5-element BBOX so the server can apply the spatial filter correctly.
+        // Snapping is auto-activated on form display (snap_on_start: True).
         const project = new ProjectPage(page, 'form_edition_snap_datum_shift');
         project.waitForGetLegendGraphicDuringLoad = false;
 
-        // Log ALL network requests for debugging
-        const allRequests = [];
-        page.on('request', request => {
-            allRequests.push(`${request.method()} ${request.url().substring(0, 120)} ${(request.postData() ?? '').substring(0, 200)}`);
-        });
-        // Log console messages
-        const consoleLogs = [];
-        page.on('console', msg => consoleLogs.push(`[${msg.type()}] ${msg.text()}`));
-        page.on('pageerror', err => consoleLogs.push(`[pageerror] ${err.message}`));
-
         await project.open();
-        console.log('[debug] project.open() completed');
 
         const snapWfsRequestPromise = page.waitForRequest(
             request => request.method() === 'POST'
@@ -82,39 +72,10 @@ test.describe('Snap on edition', () => {
                 && request.postData()?.includes('snap_datum_shift_target') === true
         );
 
-        // Log what's in the edition layer dropdown
-        const editionLayerOptions = await page.locator('#edition-layer option').allTextContents();
-        console.log('[debug] Edition layer dropdown options:', JSON.stringify(editionLayerOptions));
+        const formRequest = await project.openEditingFormWithLayer('snap_datum_shift_edit');
+        await formRequest.response();
 
-        // Check if edition panel is visible
-        const editionVisible = await page.locator('#edition').isVisible();
-        console.log('[debug] Edition panel visible:', editionVisible);
-
-        await project.openEditingFormWithLayer('snap_datum_shift_edit');
-        console.log('[debug] openEditingFormWithLayer completed');
-
-        // Check if Digitization tab exists
-        const digTab = page.getByRole('tab', { name: 'Digitization' });
-        const digTabCount = await digTab.count();
-        console.log('[debug] Digitization tab count:', digTabCount);
-
-        if (digTabCount > 0) {
-            await digTab.click();
-            console.log('[debug] Digitization tab clicked');
-        }
-
-        // Wait a bit then dump all requests if snap request hasn't arrived
-        await page.waitForTimeout(3000);
-
-        // Attach debug info
-        await testInfo.attach('all-network-requests', {
-            body: allRequests.join('\n'),
-            contentType: 'text/plain',
-        });
-        await testInfo.attach('browser-console-logs', {
-            body: consoleLogs.join('\n'),
-            contentType: 'text/plain',
-        });
+        await page.getByRole('tab', { name: 'Digitization' }).click();
 
         const snapWfsRequest = await snapWfsRequestPromise;
         const rawPostData = snapWfsRequest.postData() ?? '';
@@ -126,11 +87,6 @@ test.describe('Snap on edition', () => {
             contentType: 'application/x-www-form-urlencoded',
         });
 
-        console.log('[snap datum-shift] WFS request parameters:');
-        for (const [key, value] of postData.entries()) {
-            console.log(`  ${key} = ${value}`);
-        }
-
         requestExpect(snapWfsRequest).toContainParametersInPostData({
             SERVICE: 'WFS',
             VERSION: '1.1.0',
@@ -141,7 +97,6 @@ test.describe('Snap on edition', () => {
 
         // BBOX must be the 5-element WFS 1.1.0 format ending with the CRS code.
         const bbox = postData.get('BBOX') ?? '';
-        console.log('[snap datum-shift] BBOX value:', bbox);
         expect(bbox, `BBOX must be 5-element WFS 1.1.0 format (x,y,x,y,EPSG:3857), got: "${bbox}"`
         ).toMatch(/^-?[\d.]+,-?[\d.]+,-?[\d.]+,-?[\d.]+,EPSG:3857$/);
     });
@@ -152,20 +107,11 @@ test.describe('Snap on edition', () => {
         // (~3.86–3.92 / 43.61–43.64) or the layer native CRS EPSG:2154 (~769000–774000 /
         // 6280000–6283000), both obviously outside the valid EPSG:3857 range for this area
         // (~430000–435000 / 5406000–5408000).
+        // Snapping is auto-activated on form display (snap_on_start: True).
         const project = new ProjectPage(page, 'form_edition_snap_datum_shift');
         project.waitForGetLegendGraphicDuringLoad = false;
 
-        // Log ALL network requests for debugging
-        const allRequests = [];
-        page.on('request', request => {
-            allRequests.push(`${request.method()} ${request.url().substring(0, 120)} ${(request.postData() ?? '').substring(0, 200)}`);
-        });
-        const consoleLogs = [];
-        page.on('console', msg => consoleLogs.push(`[${msg.type()}] ${msg.text()}`));
-        page.on('pageerror', err => consoleLogs.push(`[pageerror] ${err.message}`));
-
         await project.open();
-        console.log('[debug] project.open() completed');
 
         const snapWfsResponsePromise = page.waitForResponse(
             response => response.request().method() === 'POST'
@@ -173,30 +119,10 @@ test.describe('Snap on edition', () => {
                 && response.request().postData()?.includes('snap_datum_shift_target') === true
         );
 
-        const editionLayerOptions = await page.locator('#edition-layer option').allTextContents();
-        console.log('[debug] Edition layer dropdown options:', JSON.stringify(editionLayerOptions));
+        const formRequest = await project.openEditingFormWithLayer('snap_datum_shift_edit');
+        await formRequest.response();
 
-        await project.openEditingFormWithLayer('snap_datum_shift_edit');
-        console.log('[debug] openEditingFormWithLayer completed');
-
-        const digTab = page.getByRole('tab', { name: 'Digitization' });
-        const digTabCount = await digTab.count();
-        console.log('[debug] Digitization tab count:', digTabCount);
-        if (digTabCount > 0) {
-            await digTab.click();
-            console.log('[debug] Digitization tab clicked');
-        }
-
-        await page.waitForTimeout(3000);
-
-        await testInfo.attach('all-network-requests', {
-            body: allRequests.join('\n'),
-            contentType: 'text/plain',
-        });
-        await testInfo.attach('browser-console-logs', {
-            body: consoleLogs.join('\n'),
-            contentType: 'text/plain',
-        });
+        await page.getByRole('tab', { name: 'Digitization' }).click();
 
         const snapWfsResponse = await snapWfsResponsePromise;
         const responseBody = await snapWfsResponse.text();
