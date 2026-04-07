@@ -211,6 +211,7 @@ class lizmap
                 $ctrl = new jFormsControlCheckbox($k);
             } elseif ($k == 'path' && $rootRepositories != '') {
                 if ($rep == null
+                    || !$rep->hasValidPath()
                     || substr($rep->getPath(), 0, strlen($rootRepositories)) === $rootRepositories
                 ) {
                     $ctrl = new jFormsControlMenulist($k);
@@ -261,6 +262,7 @@ class lizmap
                 // FIXME don't use getData() which is deprecated
                 $v = $rep->getData($k);
                 if ($k == 'path' && $rootRepositories != ''
+                    && $rep->hasValidPath()
                     && substr($rep->getPath(), 0, strlen($rootRepositories)) === $rootRepositories
                 ) {
                     $v = $rep->getPath();
