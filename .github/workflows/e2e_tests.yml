@@ -160,6 +160,15 @@ jobs:
         run: |
           npm run bats
 
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ env.NODE_VERSION }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-${{ env.NODE_VERSION }}-
+            playwright-${{ runner.os }}-
+
       - name: Install Playwright
         working-directory: tests/end2end
         run: |
