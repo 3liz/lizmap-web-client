@@ -283,6 +283,26 @@ class WFSRequestTest extends TestCase
             array(array('sortby' => ''), array(), ''),
             array(array('sortby' => 'id a,test d,wfs a'), array(), ''),
             array(array('sortby' => 'id a,test d,wfs a'), array('test', 'field', 'wfs'), ' ORDER BY "test" DESC, "wfs" ASC'),
+            // Test with uppercase 'D'
+            array(array('sortby' => 'id a,test D,wfs a'), array('test', 'field', 'wfs'), ' ORDER BY "test" DESC, "wfs" ASC'),
+            // Test with 'desc' keyword (lowercase)
+            array(array('sortby' => 'id a,test desc,wfs a'), array('test', 'field', 'wfs'), ' ORDER BY "test" DESC, "wfs" ASC'),
+            // Test with 'DESC' keyword (uppercase)
+            array(array('sortby' => 'id a,test DESC,wfs a'), array('test', 'field', 'wfs'), ' ORDER BY "test" DESC, "wfs" ASC'),
+            // Test with '+d' prefix
+            array(array('sortby' => 'id a,test +d,wfs a'), array('test', 'field', 'wfs'), ' ORDER BY "test" DESC, "wfs" ASC'),
+            // Test with '+D' prefix
+            array(array('sortby' => 'id a,test +D,wfs a'), array('test', 'field', 'wfs'), ' ORDER BY "test" DESC, "wfs" ASC'),
+            // Test with '+desc' prefix
+            array(array('sortby' => 'id a,test +desc,wfs a'), array('test', 'field', 'wfs'), ' ORDER BY "test" DESC, "wfs" ASC'),
+            // Test with '+DESC' prefix
+            array(array('sortby' => 'id a,test +DESC,wfs a'), array('test', 'field', 'wfs'), ' ORDER BY "test" DESC, "wfs" ASC'),
+            // Test with mixed case variations
+            array(array('sortby' => 'id Desc,test +D,wfs desc'), array('id', 'test', 'wfs'), ' ORDER BY "id" DESC, "test" DESC, "wfs" DESC'),
+            // Test single field with DESC
+            array(array('sortby' => 'id desc'), array('id'), ' ORDER BY "id" DESC'),
+            // Test single field with +DESC
+            array(array('sortby' => 'id +DESC'), array('id'), ' ORDER BY "id" DESC'),
         );
     }
 
