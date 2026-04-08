@@ -81,6 +81,32 @@ describe('OptionsConfig', function () {
         expect(opt.wms_single_request_for_all_layers).to.be.eq(false)
         // Default value for basemaps excluded from the single WMS request
         expect(opt.exclude_basemaps_from_single_wms).to.be.eq(false)
+        // Default value for selectionColor when not provided
+        expect(opt.selectionColor).to.be.eq('rgba(255, 255, 0, 0.8)')
+    })
+
+    it('selectionColor', function () {
+        const baseOpt = {
+            "projection": { "proj4": "+proj=longlat +datum=WGS84 +no_defs", "ref": "EPSG:4326" },
+            "bbox": ["-3.5", "-1.0", "3.5", "1.0"],
+            "mapScales": [10000, 25000, 50000, 100000],
+            "minScale": 10000,
+            "maxScale": 100000,
+            "initialExtent": [-3.5, -1.0, 3.5, 1.0],
+            "popupLocation": "dock",
+            "pointTolerance": 25,
+            "lineTolerance": 10,
+            "polygonTolerance": 5,
+            "datavizLocation": "dock",
+        }
+
+        // Default when not provided
+        let opt = new OptionsConfig(baseOpt)
+        expect(opt.selectionColor).to.be.eq('rgba(255, 255, 0, 0.8)')
+
+        // Custom value provided
+        opt = new OptionsConfig({ ...baseOpt, selectionColor: 'rgba(255, 0, 0, 0.784)' })
+        expect(opt.selectionColor).to.be.eq('rgba(255, 0, 0, 0.784)')
     })
 
     it('use_native_zoom_levels', function () {
