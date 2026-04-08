@@ -61,7 +61,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Make environment and show Lizmap versions
         env:
@@ -139,7 +139,7 @@ jobs:
         run: |
           sudo echo "127.0.0.1 othersite.local" | sudo tee -a /etc/hosts
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 21
           cache: 'npm'
