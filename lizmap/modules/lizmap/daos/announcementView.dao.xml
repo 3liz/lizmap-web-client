@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dao xmlns="http://jelix.org/ns/dao/1.0">
+    <datasources>
+        <primarytable name="lizmap_announcement_views" realname="lizmap_announcement_views" primarykey="id" />
+    </datasources>
+    <record>
+        <property name="id" fieldname="id" datatype="integer" autoincrement="true" default=""/>
+        <property name="announcement_id" fieldname="announcement_id" datatype="integer" required="true"/>
+        <property name="usr_login" fieldname="usr_login" datatype="string" required="true" maxlength="100"/>
+        <property name="view_count" fieldname="view_count" datatype="integer" default="0"/>
+        <property name="last_viewed_at" fieldname="last_viewed_at" datatype="datetime" insertpattern="now()" updatepattern="now()"/>
+    </record>
+    <factory>
+        <method name="getByAnnouncementAndUser" type="selectfirst">
+            <parameter name="announcement_id"/>
+            <parameter name="usr_login"/>
+            <conditions>
+                <eq property="announcement_id" expr="$announcement_id" />
+                <eq property="usr_login" expr="$usr_login" />
+            </conditions>
+        </method>
+    </factory>
+</dao>
