@@ -107,21 +107,21 @@ const definedCustomElements = () => {
     window.customElements.define('lizmap-typeahead', TypeAHead);
 
     /**
-    * At this point the user interface is fully loaded.
-    * External javascripts can subscribe to this event to perform post load
-    * operations or cutomizations
-    *
-    * Example in my_custom_script.js
-    *
-    * lizMap.subscribe(() => {
-    *          // pseudo-code
-    *          intercatWithPrintPanel();
-    *          interactWithSelectionPanel();
-    *          inteactWithLocateByLayerPanel();
-    *     },
-    *     'lizmap.uicreated'
-    * );
-    */
+     * At this point the user interface is fully loaded.
+     * External javascripts can subscribe to this event to perform post load
+     * operations or cutomizations
+     *
+     * Example in my_custom_script.js
+     *
+     * lizMap.subscribe(() => {
+     *          // pseudo-code
+     *          intercatWithPrintPanel();
+     *          interactWithSelectionPanel();
+     *          inteactWithLocateByLayerPanel();
+     *     },
+     *     'lizmap.uicreated'
+     * );
+     */
     lizMap.mainEventDispatcher.dispatch('lizmap.uicreated');
 }
 
