@@ -28,6 +28,7 @@ import Permalink from './Permalink.js';
 import Search from './Search.js';
 import Tooltip from './Tooltip.js';
 import LocateByLayer from './LocateByLayer.js';
+import GroupPopupByLayer from './GroupPopupByLayer.js';
 
 import WMSCapabilities from 'ol/format/WMSCapabilities.js';
 import WFSCapabilities from 'ol-wfs-capabilities';
@@ -89,8 +90,8 @@ export default class Lizmap {
             while (wmsLayer.BoundingBox === undefined) {
             // breaking while before the loop because wmsLayer.Layer is not iterable
                 if (wmsLayer.Layer === undefined) {
-                        break;
-                    }
+                    break;
+                }
                 for (const wmsChildLayer of wmsLayer.Layer) {
                     if (Array.isArray(wmsChildLayer.BoundingBox)) {
                         wmsLayer = wmsChildLayer;
@@ -188,6 +189,7 @@ export default class Lizmap {
                         this.map,
                         this._lizmap3
                     );
+                    this.groupPopupByLayers = new GroupPopupByLayer(this.initialConfig);
                     /**
                      * Modules initialized.
                      * @event ModulesInitialized
