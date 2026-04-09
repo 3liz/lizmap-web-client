@@ -1710,7 +1710,6 @@ export class Digitizing {
         }
         const color = this.featureDrawn[index].get('color') || this._drawColor;
         let opacityFactor = this.featureDrawn[index].get('mode') == 'textonly' ? 0 : 1;
-        let symbolizer = '';
         let strokeAndFill =
         `<Stroke>
             <SvgParameter name="stroke">${color}</SvgParameter>
@@ -1723,6 +1722,7 @@ export class Digitizing {
         </Fill>`;
 
         // We consider LINESTRING and POLYGON together currently
+        let symbolizer;
         if (this.featureDrawn[index].getGeometry().getType() === 'Point') {
             symbolizer =
             `<PointSymbolizer>

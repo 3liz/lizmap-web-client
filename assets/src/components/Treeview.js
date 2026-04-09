@@ -311,7 +311,7 @@ export default class Treeview extends HTMLElement {
     }
 
     _createGetMediaLink(path) {
-        let url = '';
+        let url;
         // Test if the path is internal
         if (MEDIA_REGEX.test(path)) {
             const mediaLink = globalThis['lizUrls'].media + '?' + new URLSearchParams(globalThis['lizUrls'].params);

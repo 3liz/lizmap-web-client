@@ -530,7 +530,7 @@ export class BaseLayersState extends EventDispatcher {
             if (blConfig.hasLayerConfig) {
                 itemState = lgCollection.findLayerOrGroupByName(blConfig.name);
             }
-            let baseLayer = null;
+            let baseLayer;
             switch(blConfig.type) {
                 case BaseLayerTypes.Empty:
                     baseLayer = new EmptyBaseLayerState(blConfig, itemState);
