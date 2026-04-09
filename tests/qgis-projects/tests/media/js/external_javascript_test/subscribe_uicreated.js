@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars */
+
 const resultPanel = document.createElement('div');
 resultPanel.style.position = 'absolute';
 resultPanel.style.zIndex = '40000';
@@ -16,6 +16,11 @@ document.body.append(resultPanel);
 
 const checkInterface = () => {
     lizMap.subscribe(()=>{
+        /**
+         *
+         * @param result
+         * @param error
+         */
         function addRecordToResultPanel(result, error = false){
             const span = document.createElement('span');
             if(error) {

@@ -86,6 +86,10 @@ test.describe('Time Manager with years resolution @readonly', () => {
         jsonFilterTokenResponse = await getFilterTokenResponse?.json();
         expect(jsonFilterTokenResponse).toHaveProperty('token');
 
+        getMapRequest = await getMapRequestPromise;
+        getMapResponse = await getMapRequest.response();
+        responseExpect(getMapResponse).toBeImagePng();
+
         await expect(page.locator('#tmCurrentValue')).toHaveText(timeObj.currentText);
         await expect(page.locator('#tmNextValue')).toHaveText(timeObj.nextText);
     }),

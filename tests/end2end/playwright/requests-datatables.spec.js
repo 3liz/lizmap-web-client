@@ -499,9 +499,8 @@ test.describe('Datables Requests @requests @readonly', () => {
             layerId: 'quartiers_5fe55662_2cbf_48f4_a505_498c61fe978c',
         });
         const url = `/index.php/lizmap/datatables?${params}`;
-        let data = {};
         // start is forgotten
-        data = {
+        let data = {
             //start: 0,
             length: 50,
             columns: [
@@ -592,9 +591,8 @@ test.describe('Datables Requests @requests @readonly', () => {
             layerId: 'quartiers_5fe55662_2cbf_48f4_a505_498c61fe978c',
         });
         const url = `/index.php/lizmap/datatables?${params}`;
-        let data = {};
         // order is not an array
-        data = {
+        let data = {
             start: 0,
             length: 50,
             columns: [
@@ -711,9 +709,8 @@ test.describe('Datables Requests @requests @readonly', () => {
             layerId: 'quartiers_5fe55662_2cbf_48f4_a505_498c61fe978c',
         });
         const url = `/index.php/lizmap/datatables?${params}`;
-        let data = {};
         // columns is not an array
-        data = {
+        let data = {
             start: 0,
             length: 50,
             columns: 2,
@@ -789,9 +786,8 @@ test.describe('Datables Requests @requests @readonly', () => {
             layerId: 'quartiers_5fe55662_2cbf_48f4_a505_498c61fe978c',
         });
         const url = `/index.php/lizmap/datatables?${params}`;
-        let data = {};
         // two columns but the third is used for order
-        data = {
+        let data = {
             start: 0,
             length: 50,
             columns: [{},{}],
