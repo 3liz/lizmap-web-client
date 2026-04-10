@@ -484,7 +484,7 @@ function decode(mgrsString) {
 
     const { length } = mgrsString;
 
-    let hunK = null;
+    let hunK;
     let sb = '';
     let testChar;
     let i = 0;

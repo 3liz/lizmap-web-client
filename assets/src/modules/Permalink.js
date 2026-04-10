@@ -276,7 +276,7 @@ export default class Permalink {
             return;
         }
 
-        let hash = '';
+        let hash;
 
         // BBOX
         let bbox = mainLizmap.extent;

@@ -871,6 +871,7 @@ test.describe('Attribute table linking @write', () => {
         await tableHtml.locator(`tbody tr[id="1"]`).click();
         getFeatureRequest = await datatablesPromise;
         getFeatureResponse = await getFeatureRequest.response();
+        responseExpect(getFeatureResponse).toBeGeoJson();
 
         // Check child table lines
         await expect(childTableHtml.locator('tbody tr')).toHaveCount(2);
@@ -887,6 +888,7 @@ test.describe('Attribute table linking @write', () => {
         await unlinkChildRequest.response();
         getFeatureRequest = await datatablesPromise;
         getFeatureResponse = await getFeatureRequest.response();
+        responseExpect(getFeatureResponse).toBeGeoJson();
 
         // Check child table lines
         await expect(childTableHtml.locator('tbody tr')).toHaveCount(1);
@@ -958,6 +960,7 @@ test.describe('Attribute table linking @write', () => {
         await tableHtml.locator(`tbody tr[id="1"]`).click();
         getFeatureRequest = await datatablesPromise;
         getFeatureResponse = await getFeatureRequest.response();
+        responseExpect(getFeatureResponse).toBeGeoJson();
 
         // Check child table lines
         await expect(childTableHtml.locator('tbody tr')).toHaveCount(2);
