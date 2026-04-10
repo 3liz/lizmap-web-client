@@ -376,7 +376,6 @@ class QgisFormControl
         }
         $upload->mimetype = $this->properties->getMimeTypes();
         $upload->accept = $this->properties->getUploadAccept();
-        $upload->capture = $this->properties->getUploadCapture();
         $this->DefaultRoot = $this->getEditAttribute('DefaultRoot');
 
         // WebDAV External Resource

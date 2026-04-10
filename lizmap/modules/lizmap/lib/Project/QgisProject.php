@@ -1247,14 +1247,13 @@ class QgisProject
     {
         $mimeTypes = array();
         $acceptAttr = '';
-        $captureAttr = '';
         $imageUpload = false;
         $defaultRoot = '';
 
         if ($fieldEditType === 'Photo') {
+            // https://stackoverflow.com/questions/21523544/html-file-input-control-with-capture-and-accept-attributes-works-wrong/60176010#60176010
             $mimeTypes = array('image/jpg', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/gif');
-            $acceptAttr = implode(', ', $mimeTypes);
-            $captureAttr = 'environment';
+            $acceptAttr = implode(', ', $mimeTypes).';capture=camera';
             $imageUpload = true;
         } elseif ($fieldEditType === 'ExternalResource') {
             $accepts = array();
@@ -1331,7 +1330,6 @@ class QgisProject
                     $mimeTypes = array('image/jpg', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/gif');
                     $acceptAttr = 'image/jpg, image/jpeg, image/pjpeg, image/png, image/gif';
                 }
-                $captureAttr = 'environment';
                 $imageUpload = true;
             }
             $defaultRoot = $fieldEditOptions['DefaultRoot'] ?? '';
@@ -1350,7 +1348,6 @@ class QgisProject
         $fieldEditOptions['UploadMimeTypes'] = $mimeTypes;
         $fieldEditOptions['DefaultRoot'] = $defaultRoot;
         $fieldEditOptions['UploadAccept'] = $acceptAttr;
-        $fieldEditOptions['UploadCapture'] = $captureAttr;
         $fieldEditOptions['UploadImage'] = $imageUpload;
     }
 
