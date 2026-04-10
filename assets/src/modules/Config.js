@@ -19,6 +19,7 @@ import { EditionLayersConfig } from './config/Edition.js';
 import { TimeManagerLayersConfig } from './config/TimeManager.js';
 import { FormFilterConfig } from './config/FormFilter.js';
 import { ThemesConfig } from './config/Theme.js';
+import { PortfoliosConfig } from './config/Portfolio.js';
 import { DatavizOptionsConfig, DatavizLayersConfig } from './config/Dataviz.js';
 import { buildLayerTreeConfig, LayerTreeGroupConfig } from './config/LayerTree.js';
 import { buildLayersOrder } from './config/LayersOrder.js';
@@ -89,6 +90,8 @@ export class Config {
         this._hasLoginFilteredLayers = true;
         this._hasThemes = true;
         this._themes = null;
+        this._hasPortfolios = true;
+        this._portfolios = null;
         this._hasDatavizConfig = true;
         this._datavizLayers = null;
         this._datavizOptions = null;
@@ -135,7 +138,8 @@ export class Config {
             'editionLayers',
             'formFilterLayers',
             'loginFilteredLayers',
-            'themes'
+            'themes',
+            'portfolios',
         ];
         for (const prop of optionalConfigProperties) {
             if (!theConfig.hasOwnProperty(prop)
@@ -476,6 +480,28 @@ export class Config {
             this._themes = new ThemesConfig(this._theConfig.themes);
         }
         return this._themes;
+    }
+
+    /**
+     * Portfolios config is defined
+     * @type {boolean}
+     */
+    get hasPortfolios() {
+        return this._hasPortfolios;
+    }
+
+    /**
+     * Config portfolios
+     * @type {PortfoliosConfig|null}
+     */
+    get portfolios() {
+        if (this.hasPortfolios) {
+            if (this._portfolios != null) {
+                return this._portfolios;
+            }
+            this._portfolios = new PortfoliosConfig(this._theConfig.portfolios);
+        }
+        return this._portfolios;
     }
 
     /**
