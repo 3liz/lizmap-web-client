@@ -1235,7 +1235,7 @@ export class LayerGroupState extends LayerItemState {
                 this._items.push(group);
             } else if (cfg.type != 'group') {
                 // layer with geometry is vector layer
-                let layer = null;
+                let layer;
                 if (cfg.geometryType != null) {
                     layer = new LayerVectorState(layerTreeItem, layersOrder, this);
                 } else {

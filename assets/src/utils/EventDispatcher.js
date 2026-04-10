@@ -49,7 +49,7 @@ export default class EventDispatcher {
          * Object for keep track of emitted events per events.
          * Keys are the events type, values are the last emitted object (or parameter)
          * for the given event
-         * @type {Object}
+         * @type {object}
          *
          */
         this._emittedEventsType = {};

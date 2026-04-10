@@ -322,7 +322,7 @@ export default class Search {
         var searchAdded = false;
         for (var i = 0, len = searchOptions.length; i < len; i++) {
             var searchOption = searchOptions[i];
-            var searchAddedResult = false;
+            var searchAddedResult;
             if (searchOption.type == 'externalSearch') {
                 searchAddedResult = this._addExternalSearch(searchOption);
             }

@@ -971,6 +971,9 @@ test.describe('Attribute table @readonly', () => {
         // remove a criterion and check the initialization values
         datatablesRequestPromise = project.waitForDatatablesRequest();
         await project.removeSearchBuilderCriterion(secondCriteria);
+        datatablesRequest = await datatablesRequestPromise;
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
         await expect(project.attributeTableWrapper(tableName).locator('div.dt-info'))
             .toContainText('Showing 1 to 29 of 29 entries (filtered from 5,000 total entries)');
 
@@ -1429,6 +1432,7 @@ test.describe('Attribute table linking @write', () => {
         await tableHtml.locator(`tbody tr[id="1"]`).click();
         datatablesRequest = await datatablesPromise;
         datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
 
         // Check child table lines
         await expect(childTableHtml.locator('tbody tr')).toHaveCount(2);
@@ -1445,6 +1449,7 @@ test.describe('Attribute table linking @write', () => {
         await unlinkChildRequest.response();
         datatablesRequest = await datatablesPromise;
         datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
 
         // Check child table lines
         await expect(childTableHtml.locator('tbody tr')).toHaveCount(1);
@@ -1516,6 +1521,7 @@ test.describe('Attribute table linking @write', () => {
         await tableHtml.locator(`tbody tr[id="1"]`).click();
         datatablesRequest = await datatablesPromise;
         datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
 
         // Check child table lines
         await expect(childTableHtml.locator('tbody tr')).toHaveCount(2);
