@@ -294,5 +294,93 @@ class DataTablesTest extends TestCase
         );
         $exp = DataTables::convertSearchToExpression($search);
         $this->assertEquals($exp, 'name ILIKE \'test%\' OR name ILIKE \'%test\'');
+
+        // test complex subconditions
+        $search = array(
+            'criteria' => array(
+                array(
+                    'criteria' => array(
+                        array(
+                            'data' => 'Surname',
+                            'origData' => 'surname',
+                            'condition' => 'starts',
+                            'value1' => 'sub',
+                            'type' => 'string',
+                        ),
+                        array(
+                            'data' => 'Surname',
+                            'origData' => 'surname',
+                            'condition' => 'starts',
+                            'value1' => 'liz',
+                            'type' => 'string',
+                        ),
+                        array(
+                            'criteria' => array(
+                                array(
+                                    'data' => 'Age',
+                                    'origData' => 'age',
+                                    'condition' => '=',
+                                    'value1' => '22',
+                                    'type' => 'num',
+                                ),
+                                array(
+                                    'data' => 'Age',
+                                    'origData' => 'age',
+                                    'condition' => '=',
+                                    'value1' => '23',
+                                    'type' => 'num',
+                                ),
+                                array(
+                                    'data' => 'Age',
+                                    'origData' => 'age',
+                                    'condition' => '=',
+                                    'value1' => '45',
+                                    'type' => 'num',
+                                ),
+                            ),
+                            'logic' => 'OR',
+                        ),
+                    ),
+                    'logic' => 'OR',
+                ),
+                array(
+                    'data' => 'Name',
+                    'origData' => 'name',
+                    'condition' => '=',
+                    'value1' => 'test',
+                    'type' => 'string',
+                ),
+                array(
+                    'data' => 'Location',
+                    'origData' => 'location',
+                    'condition' => 'ends',
+                    'value1' => 'ce',
+                    'type' => 'string',
+                ),
+                array(
+                    'criteria' => array(
+                        array(
+                            'data' => 'Year',
+                            'origData' => 'year',
+                            'condition' => '=',
+                            'value1' => '2025',
+                            'type' => 'num',
+                        ),
+                        array(
+                            'data' => 'Year',
+                            'origData' => 'year',
+                            'condition' => '=',
+                            'value1' => '2026',
+                            'type' => 'num',
+                        ),
+                    ),
+                    'logic' => 'OR',
+                ),
+            ),
+            'logic' => 'AND',
+        );
+
+        $exp = DataTables::convertSearchToExpression($search);
+        $this->assertEquals($exp, '(surname ILIKE \'sub%\' OR surname ILIKE \'liz%\' OR (age = 22 OR age = 23 OR age = 45)) AND name = \'test\' AND location ILIKE \'%ce\' AND (year = 2025 OR year = 2026)');
     }
 }
