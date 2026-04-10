@@ -750,7 +750,7 @@ def my_form_open(dialog, layer, feature):
         );
         $this->assertEquals($mimeTypes, $formControls['photo']->getMimeTypes());
         $this->assertEquals('.gif, .jpeg, .png', $formControls['photo']->getUploadAccept());
-        $this->assertEquals('environment', $formControls['photo']->getUploadCapture());
+        $this->assertEquals('', $formControls['photo']->getUploadCapture());
         $this->assertTrue($formControls['photo']->isImageUpload());
 
         $xmlStr = '
@@ -2038,7 +2038,7 @@ def my_form_open(dialog, layer, feature):
             $formControls['remote']->getMimeTypes()
         );
         $this->assertEquals('image/jpg, image/jpeg, image/pjpeg, image/png, image/gif', $formControls['remote']->getUploadAccept());
-        $this->assertEquals('environment', $formControls['remote']->getUploadCapture());
+        $this->assertEquals('', $formControls['remote']->getUploadCapture());
         $this->assertEquals('', $formControls['remote']->getEditAttribute('DefaultRoot'));
         $this->assertEquals('WebDAV', $formControls['remote']->getEditAttribute('StorageType'));
         $this->assertEquals("'http://webdav/shapeData/'||file_name(@selected_file_path)", $formControls['remote']->getEditAttribute('webDAVStorageUrl'));
