@@ -25,11 +25,34 @@ export default class Search {
         var configOptions = this._lizmap3.config.options;
         if (('searches' in configOptions) && (configOptions.searches.length > 0)) {
             this._addSearches();
+            this._addClearHandler();
         }
         else {
             $('#nominatim-search').remove();
             $('#lizmap-search, #lizmap-search-close').remove();
         }
+    }
+
+    /**
+     * PRIVATE method: bind the header clear button to reset search state
+     */
+    _addClearHandler() {
+        const headerClear = document.getElementById('header-clear');
+        if (headerClear) {
+            headerClear.addEventListener('click', () => {
+                this._clearSearch();
+            });
+        }
+    }
+
+    /**
+     * Clear search input, results, and map highlight
+     */
+    _clearSearch() {
+        document.getElementById('search-query').value = '';
+        this._map.clearHighlightFeatures();
+        $('#lizmap-search .items').html('');
+        $('#lizmap-search, #lizmap-search-close').removeClass('open');
     }
 
     /**
@@ -287,7 +310,8 @@ export default class Search {
                                 bbox = new OpenLayers.Bounds(bbox);
                                 if (extent.intersectsBounds(bbox)) {
                                     var lab = address.formatted_address.replace(labrex, '<strong class="highlight">$1</strong>');
-                                    text += '<li><a href="#' + bbox.toBBOX() + '">' + lab + '</a></li>';
+                                    var wkt = 'POINT(' + address.geometry.location.lng() + ' ' + address.geometry.location.lat() + ')';
+                                    text += '<li><a href="#' + bbox.toBBOX() + '" data-wkt="' + wkt + '">' + lab + '</a></li>';
                                     count++;
                                 }
                             }
@@ -383,6 +407,7 @@ export default class Search {
             });
 
             $('#lizmap-search-close button').click(() => {
+                this._map.clearHighlightFeatures();
                 $('#lizmap-search, #lizmap-search-close').removeClass('open');
                 return false;
             });
