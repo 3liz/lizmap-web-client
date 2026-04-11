@@ -659,6 +659,7 @@ button.btn-primary:hover > [class*=" icon-"] {
   margin-top:1px;
   height:30px;
   width:260px;
+  position: relative;
 }
 
 #headermenu .navbar-search .search-query {
@@ -668,6 +669,8 @@ button.btn-primary:hover > [class*=" icon-"] {
   right: 0;
   padding-top:2px;
   padding-bottom:2px;
+  height: 26px;
+  box-sizing: border-box;
 }
 
 #headermenu .navbar-search .search-icon {
@@ -683,8 +686,22 @@ button.btn-primary:hover > [class*=" icon-"] {
 
 #headermenu .navbar-search .icon {
   background-color: transparent;
+  background-image: url("images/sprite_20_tools.png");
+  background-repeat: no-repeat;
   background-position: -400px 0;
   border: none;
+  width: 20px;
+  height: 20px;
+}
+
+#header-clear {
+  background-position: -875px 0 !important;
+  position: absolute;
+  right: calc(100% + 4px);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  cursor: pointer;
 }
 
 #headermenu .navbar-search .icon span {
