@@ -137,7 +137,7 @@ export default class FeatureToolbar extends HTMLElement {
                         ${layout.icon
                         ? html`<img src="${mainLizmap.mediaURL}&path=${layout.icon}"/>`
                         : html`<svg>
-                                    <use xlink:href="${lizUrls.svgSprite}#map-print"></use>
+                                    <use href="${lizUrls.svgSprite}#map-print"></use>
                                 </svg>`
                         }
                     </button>
