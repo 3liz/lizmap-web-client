@@ -517,15 +517,15 @@ parameters:
     -
       message: "#^Cannot access property \\$sequence_name on object\\|true\\.$#"
       count: 1
-      path: lizmap/modules/lizmap/lib/Users/MigratorFromSqlite.php
+      path: lizmap/modules/lizmap/lib/App/AbstractMigratorFromSqlite.php
 
     -
       message: "#^If condition is always true\\.$#"
       count: 1
-      path: lizmap/modules/lizmap/lib/Users/MigratorFromSqlite.php
+      path: lizmap/modules/lizmap/lib/App/AbstractMigratorFromSqlite.php
 
     -
-      message: "#^Part \\$profile \\(array\\{\\}\\) of encapsed string cannot be cast to string\\.$#"
+      message: "#^If condition is always true\\.$#"
       count: 1
       path: lizmap/modules/lizmap/lib/Users/MigratorFromSqlite.php
 

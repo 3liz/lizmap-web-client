@@ -2,7 +2,7 @@
 
 /**
  * @author    3liz
- * @copyright 2019 3liz
+ * @copyright 2019-2026 3liz
  *
  * @see      http://3liz.com
  *
@@ -11,14 +11,11 @@
 
 namespace Lizmap\Users;
 
-class MigratorFromSqlite
+use Lizmap\App\AbstractMigratorFromSqlite;
+
+class MigratorFromSqlite extends AbstractMigratorFromSqlite
 {
-    public function __construct() {}
-
-    public const MIGRATE_RES_OK = 1;
-    public const MIGRATE_RES_ALREADY_MIGRATED = 2;
-
-    public function migrateUsersAndRights($resetBefore = false)
+    public function migrateUsersAndRights($resetBefore = false, $forceMigration = false)
     {
         $sqliteFile = \jApp::varPath('db/jauth.db');
         if (!file_exists($sqliteFile)) {
@@ -50,55 +47,39 @@ class MigratorFromSqlite
             $db->exec('DELETE FROM '.$db->prefixTable('jacl2_group'));
             $table = $daoUsersNew->getTables()[$daoUsersNew->getPrimaryTable()]['realname'];
             $db->exec('DELETE FROM '.$db->prefixTable($table));
-        } elseif ($daoUsersNew->countAll() > 0 || $daoGeoBkmNew->countAll() > 0) {
+        } elseif (!$forceMigration && $daoUsersNew->countAll() > 0 || $daoGeoBkmNew->countAll() > 0) {
             return self::MIGRATE_RES_ALREADY_MIGRATED;
         }
 
-        $this->copyTable($daoUserSelector, 'oldjauth', $profile);
-        $this->copyTable('jacl2db~jacl2group', 'oldjauth', $profile, false);
-        $this->copyTable('jacl2db~jacl2subjectgroup', 'oldjauth', $profile, false);
-        $this->copyTable('jacl2db~jacl2subject', 'oldjauth', $profile, false);
-        $this->copyTable('jacl2db~jacl2usergroup', 'oldjauth', $profile, false);
-        $this->copyTable('jacl2db~jacl2rights', 'oldjauth', $profile, false);
-        $this->copyTable('lizmap~geobookmark', 'oldjauth', $profile, true);
+        $this->prepareTablesCopy('oldjauth', $profile, $resetBefore);
+        $this->copyTable($daoUserSelector, true, array('create_date'), true);
+        $this->copyTable('jacl2db~jacl2group', false);
+        $this->copyTable('jacl2db~jacl2subjectgroup', false);
+        $this->copyTable('jacl2db~jacl2subject', false);
+
+        if (!$resetBefore) {
+            $this->deleteExistingRightsForImportedGroups();
+        }
+        $this->copyTable('jacl2db~jacl2usergroup', false);
+        $this->copyTable('jacl2db~jacl2rights', false);
+        $this->copyTable('lizmap~geobookmark', true);
 
         return self::MIGRATE_RES_OK;
     }
 
-    protected function copyTable($daoSelector, $oldProfile, $newProfile, $updateSequence = true)
+    protected function deleteExistingRightsForImportedGroups()
     {
-        $daoNew = \jDao::get($daoSelector, $newProfile);
-        $daoSqlite = \jDao::create($daoSelector, $oldProfile);
-        $properties = array_keys($daoSqlite->getProperties());
-        foreach ($daoSqlite->findAll() as $rec) {
-            $daoRec = \jDao::createRecord($daoSelector, $newProfile);
-            foreach ($properties as $prop) {
-                $daoRec->{$prop} = $rec->{$prop};
-            }
+        $oldDb = \jDb::getConnection($this->oldProfile);
+        $newDb = \jDb::getConnection($this->newProfile);
 
-            try {
-                $daoNew->insert($daoRec);
-            } catch (\Exception $e) {
-                echo '*** Insert ERROR for the record ';
-                var_export($rec->getPk());
-                echo "\nError is: ".$e->getMessage()."\n";
-            }
+        $rs = $oldDb->query('SELECT distinct(id_aclgrp) as id_aclgrp2 FROM '.$oldDb->prefixTable('jacl2_rights'));
+        foreach ($rs as $rec) {
+            $newDb->exec('DELETE FROM '.$newDb->prefixTable('jacl2_rights').' WHERE id_aclgrp = '.$newDb->quote($rec->id_aclgrp2));
         }
 
-        if ($updateSequence) {
-            $idField = $daoNew->getProperties()[$daoNew->getPrimaryKeyNames()[0]]['fieldName'];
-            $table = $daoNew->getTables()[$daoNew->getPrimaryTable()]['realname'];
-
-            $conn = \jDb::getConnection($newProfile);
-            $rs = $conn->query('SELECT pg_get_serial_sequence('.$conn->quote($table).','.$conn->quote($idField).') as sequence_name');
-            if ($rs && ($rec = $rs->fetch())) {
-                $sequence = $rec->sequence_name;
-                if ($sequence) {
-                    $conn->query('SELECT setval('.$conn->quote($sequence).',
-                    (SELECT max('.$conn->encloseName($idField).')
-                    FROM '.$conn->encloseName($table).'))');
-                }
-            }
+        $rs = $oldDb->query('SELECT distinct(login) as login2 FROM '.$oldDb->prefixTable('jacl2_user_group'));
+        foreach ($rs as $rec) {
+            $newDb->exec('DELETE FROM '.$newDb->prefixTable('jacl2_user_group').' WHERE login = '.$newDb->quote($rec->login2));
         }
     }
 
@@ -118,7 +99,7 @@ class MigratorFromSqlite
 
         $profile = \jProfiles::get('jdb', $profileName);
         if (!$profile) {
-            throw new \UnexpectedValueException("No {$profile} profile defined into profiles.ini.php", 1);
+            throw new \UnexpectedValueException("No {$profileName} profile defined into profiles.ini.php", 1);
         }
 
         if ($profile['driver'] == 'sqlite3') {
@@ -133,7 +114,7 @@ class MigratorFromSqlite
             return array($daoSelector, $profileName);
         }
 
-        // the table does not exists, let's create it
+        // the table does not exist, let's create it
         $mapper = new \jDaoDbMapper($profileName);
         $mapper->createTableFromDao($daoSelector);
 
