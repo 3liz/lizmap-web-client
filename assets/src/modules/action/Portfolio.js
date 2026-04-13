@@ -10,7 +10,8 @@ import { mainLizmap } from '../Globals.js';
 import { FileDownloader } from '../Utils.js';
 import { ADJUSTED_DPI } from '../../utils/Constants.js';
 import { ThemeConfig } from '../config/Theme.js'
-import { PortfolioDrawingGeometries, FolioZoomMethods, PortfolioConfig } from '../config/Portfolio.js'
+import { PortfolioDrawingGeometries, FolioZoomMethods } from '../config/Portfolio.js'
+import { PortfoliosState } from '../state/Portfolios.js'
 import { MapGroupState, MapLayerState } from '../state/MapLayer.js'
 import { BaseLayersState, BaseLayerState } from '../state/BaseLayer.js'
 
@@ -310,7 +311,7 @@ class FolioDownloader extends FileDownloader {
         if (!filename) {
             return filename;
         }
-        filenameParts = filename.split('.');
+        let filenameParts = filename.split('.');
         filenameParts[0] += '-'+this._theme;
         filenameParts[0] += '-'+this._scale;
         return filenameParts.join('.');
@@ -319,9 +320,12 @@ class FolioDownloader extends FileDownloader {
 
 /**
  * Run a portfolio
- * @param {PortfolioConfig} portfolio The porfolio to run
+ * @param {PortfoliosState} portfoliosState The porfolio to run
  */
-export async function runPortfolio(portfolio) {
+export async function runPortfolio(portfoliosState) {
+    const portfolio = portfoliosState.selected;
+    portfoliosState.launch();
+    // ==========================================================================
     const mapProjection = mainLizmap.config.options.projection.ref;
     const projectProjection = mainLizmap.config.options.qgisProjectProjection.ref ? mainLizmap.config.options.qgisProjectProjection.ref : mapProjection;
 

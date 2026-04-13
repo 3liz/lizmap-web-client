@@ -7,7 +7,7 @@
  */
 
 import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
-import { runPortfolio } from '../modules/action/Portfolio.js';
+import { runPortfolio } from '../modules/action/Portfolio.js'
 
 /**
  * @class
@@ -37,7 +37,8 @@ export default class PortfoliosSelector extends HTMLElement {
         this.templateId = this.getAttribute('template-id');
 
         // Get portfolios related to the element scope
-        this.portfolios = mainLizmap.initialConfig.portfolios;
+        this.config = mainLizmap.initialConfig.portfolios;
+        this.state = null;
 
         // The dock handler
         this._dockHandler = null;
@@ -54,10 +55,10 @@ export default class PortfoliosSelector extends HTMLElement {
         // Add the portfolios from the portfolios list
         const select = this.querySelector('select');
         select.classList.add('form-select');
-        for (const portfolio of this.portfolios.list) {
+        for (const portfolio of this.config.list) {
             let option = document.createElement("option");
             option.text = portfolio.title;
-            option.value = this.portfolios.list.indexOf(portfolio);
+            option.value = this.config.list.indexOf(portfolio);
             select.add(option);
         }
 
@@ -76,19 +77,25 @@ export default class PortfoliosSelector extends HTMLElement {
         select.addEventListener('change', this.onPortfolioDeactivateClick);
         select.addEventListener('change', this.onPortfolioSelectChange);
 
+        const state = mainLizmap.state.portfolios;
+
         this._dockHandler = (e) => {
             if (e.id === 'portfolios') {
                 if (e.type === 'minidockopened') {
+                    state.display();
                     this.onPortfolioDeactivateClick({target: this.querySelector('select.portfolio-select')});
                     this.onPortfolioSelectChange({target: this.querySelector('select.portfolio-select')});
                 } else if (e.type === 'minidockclosed') {
                     console.log(e);
+                    state.hide();
                     this._deactivateDigitizing();
                 }
             }
         };
         lizMap.events.on({ minidockopened: this._dockHandler.bind(this) });
         lizMap.events.on({ minidockclosed: this._dockHandler.bind(this) });
+
+        this.state = state;
     }
 
     _deactivateDigitizing() {
@@ -121,7 +128,7 @@ export default class PortfoliosSelector extends HTMLElement {
         const portfolioIdx = select.value;
         if (portfolioIdx) {
             // Get portfolio
-            const portfolio = host.portfolios.list[portfolioIdx];
+            const portfolio = host.config.list[portfolioIdx];
             description = portfolio.title;
             if ('description' in portfolio && portfolio.description) {
                 description = portfolio.description;
@@ -142,6 +149,10 @@ export default class PortfoliosSelector extends HTMLElement {
             // Add feature drawn listener
             mainEventDispatcher.addListener(host.onDigitizingFeatureDrawn.bind(host), 'digitizing.featureDrawn');
             mainEventDispatcher.addListener(host.onDigitizingFeatureErase.bind(host), 'digitizing.erase.all');
+
+            host.state.select(portfolioIdx);
+        } else {
+            host.state.select(-1);
         }
 
         descriptionSpan.textContent = description;
@@ -155,11 +166,11 @@ export default class PortfoliosSelector extends HTMLElement {
         const select = host.querySelector('select.portfolio-select');
 
         // Get the selected portfolio name
-        const portfolio = host.portfolios.list[select.value];
+        const portfolio = host.config.list[select.value];
 
         if (portfolio) {
             // Perform portfolio action
-            runPortfolio(portfolio);
+            runPortfolio(host.state);
         } else {
             lizMap.addMessage(host.noSelectionWarning, 'warning', true).attr('id', 'lizmap-portfolio-message');
         }
@@ -180,6 +191,7 @@ export default class PortfoliosSelector extends HTMLElement {
     onDigitizingFeatureDrawn() {
         // Activate run button in case of digitizing context
         if (mainLizmap.digitizing.context === "portfolio" && mainLizmap.digitizing.visibility) {
+            this.state.geometryDrawn();
             this.querySelector('button.portfolio-run-button').disabled = false;
         }
     }
@@ -187,6 +199,7 @@ export default class PortfoliosSelector extends HTMLElement {
     onDigitizingFeatureErase() {
         // Disable run button in case of digitizing context
         if (mainLizmap.digitizing.context === "portfolio" && mainLizmap.digitizing.visibility) {
+            this.state.geometryCleared();
             this.querySelector('button.portfolio-run-button').disabled = true;
         }
     }
