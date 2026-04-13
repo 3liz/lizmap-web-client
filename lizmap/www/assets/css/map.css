@@ -1936,34 +1936,6 @@ transform: none !important;
   margin-top: 3px;
 }
 
-#toolbar .title .btn.btn-print-clear,
-#dock .title .btn.btn-print-clear,
-#mini-dock .title .btn.btn-print-clear,
-#right-dock .title .btn.btn-print-clear {
-  background-position : -20px -100px;
-}
-
-#toolbar .title .btn.btn-print-clear:hover,
-#dock .title .btn.btn-print-clear:hover,
-#mini-dock .title .btn.btn-print-clear:hover,
-#right-dock .title .btn.btn-print-clear:hover {
-  background-position : 0 -100px;
-}
-
-#toolbar .title .btn.btn-stop,
-#dock .title .btn.btn-stop,
-#mini-dock .title .btn.btn-stop,
-#right-dock .title .btn.btn-stop {
-  background-position : 0 -20px;
-}
-
-#toolbar .title .btn.btn-stop:hover,
-#dock .title .btn.btn-stop:hover,
-#mini-dock .title .btn.btn-stop:hover,
-#right-dock .title .btn.btn-stop:hover {
-  background-position : -20px -20px;
-}
-
 #toolbar .menu-content .btn.btn-success,
 #dock .menu-content .btn.btn-success,
 #sub-dock .menu-content .btn.btn-success,
