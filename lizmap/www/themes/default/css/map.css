@@ -453,22 +453,6 @@ Timemanager
   background-position : -20px 0;
 }
 
-#toolbar .title .btn.btn-print-clear {
-  background-position : -20px -100px;
-}
-
-#toolbar .title .btn.btn-print-clear:hover {
-  background-position : 0 -100px;
-}
-
-#toolbar .title .btn.btn-stop {
-  background-position : 0 -20px;
-}
-
-#toolbar .title .btn.btn-stop:hover {
-  background-position : -20px -20px;
-}
-
 #toolbar .menu-content .btn.btn-success{
   background-color: #93C01F;
   background-image: linear-gradient(center top, #9BC144, #93C01F);
