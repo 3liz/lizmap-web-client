@@ -18,7 +18,7 @@ abstract class AbstractMigratorFromSqlite
     public const MIGRATE_RES_OK = 1;
     public const MIGRATE_RES_ALREADY_MIGRATED = 2;
 
-    protected function copyTable($daoSelector, $oldProfile, $newProfile, $updateSequence = true)
+    protected function copyTable($daoSelector, $oldProfile, $newProfile, $updateSequence = true, $forceUpdateFields = array())
     {
         $daoNew = \jDao::get($daoSelector, $newProfile);
         $daoSqlite = \jDao::create($daoSelector, $oldProfile);
@@ -31,6 +31,32 @@ abstract class AbstractMigratorFromSqlite
 
             try {
                 $daoNew->insert($daoRec);
+
+                if (count($forceUpdateFields)) {
+                    $newConn = \jDb::getConnection($newProfile);
+                    // $daoNew->insert does not save fields for which there is an "insertpattern" into the dao.
+                    // so we must set the value ourselves.
+                    $tableName = $daoNew->getTables()[$daoNew->getPrimaryTable()]['realname'];
+                    $pkNames = $daoNew->getPrimaryKeyNames();
+                    $pkFieldNames = array();
+                    foreach ($pkNames as $pkName) {
+                        $pkFieldNames[] = $daoNew->getProperties()[$pkName]['fieldName'];
+                    }
+
+                    $sets = array();
+                    foreach ($forceUpdateFields as $prop) {
+                        $fieldName = $daoNew->getProperties()[$prop]['fieldName'];
+                        $sets[] = $newConn->encloseName($fieldName).' = '.$newConn->quote($rec->{$prop});
+                    }
+                    $sql = 'UPDATE '.$newConn->prefixTable($tableName).' SET '.implode(',', $sets).' WHERE ';
+                    $pkValues = array_combine($pkFieldNames, is_array($rec->getPk()) ? $rec->getPk() : array($rec->getPk()));
+                    $sqlPk = array();
+                    foreach ($pkValues as $f => $v) {
+                        $sqlPk[] = $newConn->encloseName($f).'='.$newConn->quote($v);
+                    }
+                    $sql .= implode(' AND ', $sqlPk);
+                    $newConn->exec($sql);
+                }
             } catch (\Exception $e) {
                 echo '*** Insert ERROR for the record ';
                 var_export($rec->getPk());
