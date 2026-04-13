@@ -440,11 +440,6 @@ Timemanager
   background : url("images/sprite_menu_tools.png") no-repeat right;
 }
 
-#toolbar .title .btn.btn-error {
-  background:none;
-  color:#DA4F49;
-}
-
 #toolbar .title .btn.btn-locate-clear {
   background-position : 0 0;
 }
