@@ -51,7 +51,7 @@ class MigratorFromSqlite extends AbstractMigratorFromSqlite
             return self::MIGRATE_RES_ALREADY_MIGRATED;
         }
 
-        $this->copyTable($daoUserSelector, 'oldjauth', $profile);
+        $this->copyTable($daoUserSelector, 'oldjauth', $profile, true, array('create_date'));
         $this->copyTable('jacl2db~jacl2group', 'oldjauth', $profile, false);
         $this->copyTable('jacl2db~jacl2subjectgroup', 'oldjauth', $profile, false);
         $this->copyTable('jacl2db~jacl2subject', 'oldjauth', $profile, false);
