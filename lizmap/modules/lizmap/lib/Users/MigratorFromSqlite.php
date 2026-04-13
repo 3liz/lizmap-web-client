@@ -15,7 +15,7 @@ use Lizmap\App\AbstractMigratorFromSqlite;
 
 class MigratorFromSqlite extends AbstractMigratorFromSqlite
 {
-    public function migrateUsersAndRights($resetBefore = false)
+    public function migrateUsersAndRights($resetBefore = false, $forceMigration = false)
     {
         $sqliteFile = \jApp::varPath('db/jauth.db');
         if (!file_exists($sqliteFile)) {
@@ -47,19 +47,40 @@ class MigratorFromSqlite extends AbstractMigratorFromSqlite
             $db->exec('DELETE FROM '.$db->prefixTable('jacl2_group'));
             $table = $daoUsersNew->getTables()[$daoUsersNew->getPrimaryTable()]['realname'];
             $db->exec('DELETE FROM '.$db->prefixTable($table));
-        } elseif ($daoUsersNew->countAll() > 0 || $daoGeoBkmNew->countAll() > 0) {
+        } elseif (!$forceMigration && $daoUsersNew->countAll() > 0 || $daoGeoBkmNew->countAll() > 0) {
             return self::MIGRATE_RES_ALREADY_MIGRATED;
         }
 
-        $this->copyTable($daoUserSelector, 'oldjauth', $profile, true, array('create_date'));
-        $this->copyTable('jacl2db~jacl2group', 'oldjauth', $profile, false);
-        $this->copyTable('jacl2db~jacl2subjectgroup', 'oldjauth', $profile, false);
-        $this->copyTable('jacl2db~jacl2subject', 'oldjauth', $profile, false);
-        $this->copyTable('jacl2db~jacl2usergroup', 'oldjauth', $profile, false);
-        $this->copyTable('jacl2db~jacl2rights', 'oldjauth', $profile, false);
-        $this->copyTable('lizmap~geobookmark', 'oldjauth', $profile, true);
+        $this->prepareTablesCopy('oldjauth', $profile, $resetBefore);
+        $this->copyTable($daoUserSelector, true, array('create_date'), true);
+        $this->copyTable('jacl2db~jacl2group', false);
+        $this->copyTable('jacl2db~jacl2subjectgroup', false);
+        $this->copyTable('jacl2db~jacl2subject', false);
+
+        if (!$resetBefore) {
+            $this->deleteExistingRightsForImportedGroups();
+        }
+        $this->copyTable('jacl2db~jacl2usergroup', false);
+        $this->copyTable('jacl2db~jacl2rights', false);
+        $this->copyTable('lizmap~geobookmark', true);
 
         return self::MIGRATE_RES_OK;
+    }
+
+    protected function deleteExistingRightsForImportedGroups()
+    {
+        $oldDb = \jDb::getConnection($this->oldProfile);
+        $newDb = \jDb::getConnection($this->newProfile);
+
+        $rs = $oldDb->query('SELECT distinct(id_aclgrp) as id_aclgrp2 FROM '.$oldDb->prefixTable('jacl2_rights'));
+        foreach ($rs as $rec) {
+            $newDb->exec('DELETE FROM '.$newDb->prefixTable('jacl2_rights').' WHERE id_aclgrp = '.$newDb->quote($rec->id_aclgrp2));
+        }
+
+        $rs = $oldDb->query('SELECT distinct(login) as login2 FROM '.$oldDb->prefixTable('jacl2_user_group'));
+        foreach ($rs as $rec) {
+            $newDb->exec('DELETE FROM '.$newDb->prefixTable('jacl2_user_group').' WHERE login = '.$newDb->quote($rec->login2));
+        }
     }
 
     protected function createUsersTables()
