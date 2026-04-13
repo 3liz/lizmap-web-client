@@ -18,22 +18,48 @@ abstract class AbstractMigratorFromSqlite
     public const MIGRATE_RES_OK = 1;
     public const MIGRATE_RES_ALREADY_MIGRATED = 2;
 
-    protected function copyTable($daoSelector, $oldProfile, $newProfile, $updateSequence = true, $forceUpdateFields = array())
+    protected $oldProfile = '';
+    protected $newProfile = '';
+    protected $tablesWereReseted = true;
+
+    protected function prepareTablesCopy($oldProfile, $newProfile, $tablesWereReseted = true)
     {
-        $daoNew = \jDao::get($daoSelector, $newProfile);
-        $daoSqlite = \jDao::create($daoSelector, $oldProfile);
+        $this->newProfile = $newProfile;
+        $this->oldProfile = $oldProfile;
+        $this->tablesWereReseted = $tablesWereReseted;
+    }
+
+    protected function copyTable($daoSelector, $updateSequence = true, $forceUpdateFields = array(), $updateExisting = false)
+    {
+        $daoNew = \jDao::get($daoSelector, $this->newProfile);
+        $daoSqlite = \jDao::create($daoSelector, $this->oldProfile);
         $properties = array_keys($daoSqlite->getProperties());
+
+        /** @var \jDaoRecordBase $rec */
         foreach ($daoSqlite->findAll() as $rec) {
-            $daoRec = \jDao::createRecord($daoSelector, $newProfile);
+            $daoRec = \jDao::createRecord($daoSelector, $this->newProfile);
             foreach ($properties as $prop) {
                 $daoRec->{$prop} = $rec->{$prop};
             }
 
             try {
+
+                if (!$this->tablesWereReseted) {
+                    // if content was not deleted before import, we should check if the record is here.
+                    $existingRec = $daoNew->get($rec->getPk());
+                    if ($existingRec) {
+                        if ($updateExisting) {
+                            $daoNew->update($daoRec);
+                        }
+
+                        continue;
+                    }
+                }
+
                 $daoNew->insert($daoRec);
 
                 if (count($forceUpdateFields)) {
-                    $newConn = \jDb::getConnection($newProfile);
+                    $newConn = \jDb::getConnection($this->newProfile);
                     // $daoNew->insert does not save fields for which there is an "insertpattern" into the dao.
                     // so we must set the value ourselves.
                     $tableName = $daoNew->getTables()[$daoNew->getPrimaryTable()]['realname'];
@@ -45,8 +71,13 @@ abstract class AbstractMigratorFromSqlite
 
                     $sets = array();
                     foreach ($forceUpdateFields as $prop) {
+                        if ($rec->{$prop} == '' && !$daoNew->getProperties()[$prop]['required']) {
+                            $val = 'NULL';
+                        } else {
+                            $val = $newConn->quote($rec->{$prop});
+                        }
                         $fieldName = $daoNew->getProperties()[$prop]['fieldName'];
-                        $sets[] = $newConn->encloseName($fieldName).' = '.$newConn->quote($rec->{$prop});
+                        $sets[] = $newConn->encloseName($fieldName).' = '.$val;
                     }
                     $sql = 'UPDATE '.$newConn->prefixTable($tableName).' SET '.implode(',', $sets).' WHERE ';
                     $pkValues = array_combine($pkFieldNames, is_array($rec->getPk()) ? $rec->getPk() : array($rec->getPk()));
@@ -68,7 +99,7 @@ abstract class AbstractMigratorFromSqlite
             $idField = $daoNew->getProperties()[$daoNew->getPrimaryKeyNames()[0]]['fieldName'];
             $table = $daoNew->getTables()[$daoNew->getPrimaryTable()]['realname'];
 
-            $conn = \jDb::getConnection($newProfile);
+            $conn = \jDb::getConnection($this->newProfile);
             $rs = $conn->query('SELECT pg_get_serial_sequence('.$conn->quote($table).','.$conn->quote($idField).') as sequence_name');
             if ($rs && ($rec = $rs->fetch())) {
                 $sequence = $rec->sequence_name;

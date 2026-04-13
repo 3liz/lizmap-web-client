@@ -53,8 +53,9 @@ class MigratorFromSqlite extends AbstractMigratorFromSqlite
             return self::MIGRATE_RES_ALREADY_MIGRATED;
         }
 
-        $this->copyTable('lizmap~logCounter', 'oldlizlog', $profileName);
-        $this->copyTable('lizmap~logDetail', 'oldlizlog', $profileName, true, array('log_timestamp'));
+        $this->prepareTablesCopy('oldlizlog', $profileName, $resetBefore);
+        $this->copyTable('lizmap~logCounter');
+        $this->copyTable('lizmap~logDetail', true, array('log_timestamp'));
 
         return self::MIGRATE_RES_OK;
     }
