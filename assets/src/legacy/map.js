@@ -3544,20 +3544,28 @@ window.lizMap = function() {
                 const parentElement = linkClicked.parentElement;
                 const wasActive = parentElement.classList.contains('active');
 
-                const dockContentSelector = dockType == 'minidock' ? '#mini-dock-content > div' : '#' + dockType + '-content > div';
+                const dockContentSelector = dockType == 'minidock' ? '#mini-dock-content > div' : `#${dockType}-content > div`;
+                const dockEvent = dockType == 'right-dock' ? 'rightdock' : dockType;
 
-                document.querySelectorAll('#mapmenu .nav-' + dockType).forEach(element => {
-                    element.classList.remove('active');
-                });
-                document.querySelectorAll(dockContentSelector).forEach(element => element.classList.add('hide'));
+                // Manage the active docks othe same type that is not the current target
+                if ( !wasActive ) {
+                    // Hide all docks of the same type
+                    document.querySelectorAll(dockContentSelector).forEach(element => element.classList.add('hide'));
+                    // Remove active class from all other docks of the same type
+                    document.querySelectorAll(`#mapmenu .nav-${dockType}.active`).forEach(element => {
+                        element.classList.remove('active');
+                        lizMap.events.triggerEvent(dockEvent + 'closed', { 'id': element.querySelector('a').dataset.dockid });
+                    });
+                }
+
+                // Toggle active for target dock and show/hide the content container
                 parentElement.classList.toggle('active', !wasActive);
                 if (dockId) {
                     document.getElementById(dockId).classList.toggle('hide', wasActive);
                 }
 
-                const dockEvent = dockType == 'right-dock' ? 'rightdock' : dockType;
-
-                const lizmapEvent = wasActive ? dockEvent + 'closed' : dockEvent + 'opened';
+                // Dispatch event for the target dock
+                const lizmapEvent = wasActive ? `${dockEvent}closed` : `${dockEvent}opened`;
                 lizMap.events.triggerEvent(lizmapEvent, { 'id': dockId });
 
                 return false;
