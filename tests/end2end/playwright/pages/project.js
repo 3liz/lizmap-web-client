@@ -249,13 +249,28 @@ export class ProjectPage extends BasePage {
 
     /**
      * Waits for a GetMap request
+     * @param {undefined|string} layers The LAYERS parameter in url
      * @returns {Promise<Request>} The GetMap request
      */
-    async waitForGetMapRequest() {
+    async waitForGetMapRequest(layers=undefined) {
+        if (layers === undefined) {
+            return this.page.waitForRequest(
+                request => request.method() === 'GET' &&
+                request.url().includes('WMS') === true &&
+                request.url().includes('GetMap') === true
+            );
+        }
+
         return this.page.waitForRequest(
-            request => request.method() === 'GET' &&
-            request.url().includes('WMS') === true &&
-            request.url().includes('GetMap') === true
+            request => {
+                if (request.method() !== 'GET') return false;
+                const url = request.url();
+                if (!url.includes('WMS') || !url.includes('GetMap')) return false;
+                // Check for multiple layers (comma-separated) to filter out single basemap requests
+                const layersMatch = url.match(/LAYERS=([^&]*)/i);
+                if (!layersMatch) return false;
+                return layersMatch[1] === layers;
+            }
         );
     }
 
