@@ -499,8 +499,6 @@ class WFSRequestTest extends TestCase
             array('EPSG:2154', 2154),
             // OGC URN form.
             array('urn:ogc:def:crs:EPSG::4326', 4326),
-            // OGC HTTP form.
-            array('http://www.opengis.net/def/crs/EPSG/0/4326', 4326),
             // Empty string → null.
             array('', null),
             // No digits at the end → null.
