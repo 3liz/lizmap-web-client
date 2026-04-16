@@ -65,4 +65,9 @@ class WFSRequestForTests extends WFSRequest
     {
         return $this->setGeojsonSql($sql, $cnx, $typename, $geometryname, $outputSrid);
     }
+
+    public function parseSrsnameSridForTests(string $srsname): ?int
+    {
+        return $this->parseSrsnameSrid($srsname);
+    }
 }
