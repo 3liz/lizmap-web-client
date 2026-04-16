@@ -668,8 +668,8 @@ class WFSRequest extends OGCRequest
     /**
      * Parse a WFS SRSNAME string and return its SRID.
      *
-     * Accepts the common forms used by WFS clients:
-     *   "EPSG:4326", "urn:ogc:def:crs:EPSG::4326", "http://www.opengis.net/def/crs/EPSG/0/4326"
+     * Accepts the colon-separated forms used by WFS clients:
+     *   "EPSG:4326", "urn:ogc:def:crs:EPSG::4326"
      * The last colon-separated segment must be a positive integer.
      *
      * @param string $srsname the raw SRSNAME value
