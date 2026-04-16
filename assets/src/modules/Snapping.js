@@ -40,6 +40,7 @@ export default class Snapping {
         this._snapEnabled = {};
         this._snapToggled = {};
         this._snapLayers = [];
+        this._wfsErrorNotified = false;
 
         // Create layer to store snap features
         const snapLayer = new OpenLayers.Layer.Vector('snaplayer', {
@@ -190,6 +191,10 @@ export default class Snapping {
         // Empty snapping layer first
         this._snapLayer.destroyFeatures();
 
+        // Reset the once-per-refresh error notification flag so a new batch of
+        // requests can re-surface a user-visible message if WFS still fails.
+        this._wfsErrorNotified = false;
+
         // filter only visible layers and toggled layers on the the snap list
         const currentSnapLayers = this._snapLayers.filter(
             (layerId) => this._snapEnabled[layerId] && this._snapToggled[layerId]
@@ -238,7 +243,13 @@ export default class Snapping {
             }
 
             wfs.getFeature(wfsOptions).then(data => {
-                if (!data || !Array.isArray(data.features)) return;
+                if (!data || !Array.isArray(data.features)) {
+                    // The WFS endpoint returned something (no rejection) but not a
+                    // FeatureCollection — most likely an OGC ExceptionReport wrapped as
+                    // JSON. Treat as a failure so the user sees that snap may be incomplete.
+                    this._notifySnapWfsError(layerName, data);
+                    return;
+                }
                 // Features are already in map projection — no client-side reprojection needed.
                 const tfeatures = gFormat.read({
                     type: 'FeatureCollection',
@@ -246,7 +257,7 @@ export default class Snapping {
                 });
                 this._snapLayer.addFeatures(tfeatures);
             }).catch(err => {
-                console.warn('Snapping: WFS request failed for layer', layerName, err);
+                this._notifySnapWfsError(layerName, err);
             });
         }
 

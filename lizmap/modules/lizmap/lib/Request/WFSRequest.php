@@ -18,6 +18,12 @@ namespace Lizmap\Request;
  */
 class WFSRequest extends OGCRequest
 {
+    /**
+     * Default output SRID when no SRSNAME is provided on the WFS GetFeature request
+     * (EPSG:4326 — the historical WFS default).
+     */
+    protected const DEFAULT_OUTPUT_SRID = 4326;
+
     protected $tplExceptions = 'lizmap~wfs_exception';
 
     /**
@@ -660,6 +666,31 @@ class WFSRequest extends OGCRequest
     }
 
     /**
+     * Parse a WFS SRSNAME string and return its SRID.
+     *
+     * Accepts the common forms used by WFS clients:
+     *   "EPSG:4326", "urn:ogc:def:crs:EPSG::4326", "http://www.opengis.net/def/crs/EPSG/0/4326"
+     * The last colon-separated segment must be a positive integer.
+     *
+     * @param string $srsname the raw SRSNAME value
+     *
+     * @return null|int the SRID on success, null if the input is empty or malformed
+     */
+    protected function parseSrsnameSrid(string $srsname): ?int
+    {
+        if ($srsname === '') {
+            return null;
+        }
+        $parts = explode(':', $srsname);
+        $last = end($parts);
+        if ($last !== false && ctype_digit($last)) {
+            return intval($last);
+        }
+
+        return null;
+    }
+
+    /**
      * Get the SQL clause to instersects bbox in the request parameters.
      *
      * @param array<string, string> $params the request parameters
@@ -702,7 +733,7 @@ class WFSRequest extends OGCRequest
         }
 
         $layerSrid = $this->qgisLayer->getSrid();
-        $srid = $this->qgisLayer->getSrid();
+        $srid = $layerSrid;
 
         // CRS priority: explicit SRSNAME param > 5th BBOX element
         $srsname = null;
@@ -713,12 +744,14 @@ class WFSRequest extends OGCRequest
         }
 
         if ($srsname !== null) {
-            $exp_srsname = explode(':', $srsname);
-            $srsname_id = end($exp_srsname);
-            if (ctype_digit($srsname_id)) {
-                $srid = intval($srsname_id);
+            $parsedSrid = $this->parseSrsnameSrid($srsname);
+            if ($parsedSrid !== null) {
+                $srid = $parsedSrid;
             } else {
-                return '';
+                $this->appContext->logMessage(
+                    'WFSRequest::getBboxSql: invalid SRSNAME "'.$srsname.'" — falling back to layer SRID',
+                    'lizmapadmin'
+                );
             }
         }
 
@@ -970,13 +1003,17 @@ class WFSRequest extends OGCRequest
             $geometryname = strtolower($params['geometryname']);
         }
 
-        // Determine the output SRID from SRSNAME, defaulting to 4326
-        $outputSrid = 4326;
+        // Determine the output SRID from SRSNAME, defaulting to EPSG:4326
+        $outputSrid = self::DEFAULT_OUTPUT_SRID;
         if (array_key_exists('srsname', $params) && !empty($params['srsname'])) {
-            $exp_srsname = explode(':', $params['srsname']);
-            $srsname_id = end($exp_srsname);
-            if (ctype_digit($srsname_id)) {
-                $outputSrid = intval($srsname_id);
+            $parsedSrid = $this->parseSrsnameSrid($params['srsname']);
+            if ($parsedSrid !== null) {
+                $outputSrid = $parsedSrid;
+            } else {
+                $this->appContext->logMessage(
+                    'WFSRequest::getfeaturePostgres: invalid SRSNAME "'.$params['srsname'].'" — falling back to EPSG:'.self::DEFAULT_OUTPUT_SRID,
+                    'lizmapadmin'
+                );
             }
         }
 

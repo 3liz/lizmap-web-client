@@ -206,8 +206,12 @@ class WFSRequestTest extends TestCase
             // 6 elements → still invalid, returns empty.
             array('geocol', array('bbox' => '1,2,3,4,5,6'), ''),
 
-            // 5 elements but 5th is not a valid CRS string → returns empty.
-            array('geocol', array('bbox' => '1,2,3,4,notacrs'), ''),
+            // 5 elements but 5th is not a valid CRS string → a warning is logged and
+            // the input CRS falls back to the layer SRID (no ST_Transform wrapping).
+            array('geocol', array('bbox' => '1,2,3,4,notacrs'), ' AND ST_Intersects("geocol", ST_MakeEnvelope(1,2,3,4, SRID))'),
+
+            // Garbage SRSNAME param → logged and fallback to layer SRID (no ST_Transform).
+            array('geocol', array('bbox' => '1,2,3,4', 'srsname' => 'not-a-crs'), ' AND ST_Intersects("geocol", ST_MakeEnvelope(1,2,3,4, SRID))'),
         );
     }
 
@@ -226,6 +230,8 @@ class WFSRequestTest extends TestCase
             'geocol' => $geocol,
         );
         $wfs->qgisLayer = new LayerWFSForTests();
+        // Needed for the invalid-SRSNAME code path which calls logMessage.
+        $wfs->appContext = new ContextForTests();
         $sql = $wfs->getBboxSqlForTests($params);
         $bboxDesc = isset($params['bbox']) ? $params['bbox'] : '(none)';
         $srsDesc = isset($params['srsname']) ? $params['srsname'] : '(none)';
@@ -487,5 +493,40 @@ class WFSRequestTest extends TestCase
             ."Expected to contain : \"{$expectedBboxTransform}\"\n"
             ."Generated SQL snippet:\n".substr($sql, strpos($sql, 'ST_Envelope') ?: 0, 300)
         );
+    }
+
+    public static function getParseSrsnameSridData()
+    {
+        return array(
+            // Typical EPSG short form.
+            array('EPSG:4326', 4326),
+            array('EPSG:3857', 3857),
+            array('EPSG:2154', 2154),
+            // OGC URN form.
+            array('urn:ogc:def:crs:EPSG::4326', 4326),
+            // OGC HTTP form.
+            array('http://www.opengis.net/def/crs/EPSG/0/4326', 4326),
+            // Empty string → null.
+            array('', null),
+            // No digits at the end → null.
+            array('not-a-crs', null),
+            array('EPSG:foo', null),
+            array('EPSG:', null),
+            // Negative / sign prefix is not considered ctype_digit → null.
+            array('EPSG:-4326', null),
+        );
+    }
+
+    /**
+     * @dataProvider getParseSrsnameSridData
+     *
+     * @param mixed $srsname
+     * @param mixed $expected
+     */
+    #[DataProvider('getParseSrsnameSridData')]
+    public function testParseSrsnameSrid($srsname, $expected): void
+    {
+        $wfs = new WFSRequestForTests();
+        $this->assertSame($expected, $wfs->parseSrsnameSridForTests($srsname));
     }
 }
