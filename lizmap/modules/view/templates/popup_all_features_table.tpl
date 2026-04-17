@@ -22,7 +22,7 @@
                 <td>{$allFeatureToolbars[$key]}</td>
                 {foreach $featureAttributes as $attribute}
                     {if $attribute['name'] != 'geometry' && $attribute['name'] != 'maptip' && $attribute['value'] != ''}
-                        <td>{$attribute['name']|featurepopup:$attribute['value'],$repository,$project,$remoteStorageProfile}</td>
+                        <td>{$attribute['name']|popupcheckbox:$attribute['value'],$repository,$project,$checkBoxFields,$remoteStorageProfile}</td>
                     {/if}
                 {/foreach}
                 </tr>
