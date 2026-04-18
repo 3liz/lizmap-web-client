@@ -72,12 +72,12 @@
                             <div id="edition-point-coord-form-group" class="jforms-table-group">
                                 <div id="handle-point-coord">
                                     <h3>{@view~edition.point.coord.title@}</h3>
-                                    <div class="form-group row mb-3">
-                                        <label class="jforms-label form-label" for="edition-point-coord-crs"
+                                    <div class="form-group row g-0 mb-2">
+                                        <label class="jforms-label form-label col-auto" for="edition-point-coord-crs"
                                             id="edition-point-coord-crs-label">{@view~edition.point.coord.crs.label@}</label>
-                                        <div class="controls">
+                                        <div class="controls col">
                                             <select name="coord-crs" id="edition-point-coord-crs"
-                                                class="jforms-ctrl-menulist form-select">
+                                                class="jforms-ctrl-menulist form-select form-select-sm">
                                                 <option value="4326" selected="selected"><span>EPSG:4326</span></option>
                                                 <option id="edition-point-coord-crs-layer" value="" style="display:none;">
                                                 </option>
@@ -86,47 +86,47 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="form-group row mb-3">
-                                        <label class="jforms-label form-label" for="edition-point-coord-x"
+                                    <div class="form-group row g-0 mb-2">
+                                        <label class="jforms-label form-label col-auto" for="edition-point-coord-x"
                                             id="edition-point-coord-x-label">{@view~edition.point.coord.x.label@}</label>
-                                        <div class="controls">
+                                        <div class="controls col">
                                             <input name="coord-x" id="edition-point-coord-x"
                                                 class="jforms-ctrl-input form-control form-control-sm" value="" type="text">
                                         </div>
                                     </div>
-                                    <div class="form-group row mb-3">
-                                        <label class="jforms-label form-label" for="edition-point-coord-y"
+                                    <div class="form-group row g-0 mb-2">
+                                        <label class="jforms-label form-label col-auto" for="edition-point-coord-y"
                                             id="edition-point-coord-y-label">{@view~edition.point.coord.y.label@}</label>
-                                        <div class="controls">
+                                        <div class="controls col">
                                             <input name="coord-y" id="edition-point-coord-y"
                                                 class="jforms-ctrl-input form-control form-control-sm" value="" type="text">
                                         </div>
                                     </div>
-                                    <div class="form-group row mb-3 hidden">
+                                    <div class="form-group row g-0 mb-2 hidden">
                                         <label
-                                            class="jforms-label form-label">{@view~edition.segment.length.label@}</label>
-                                        <div class="controls">
+                                            class="jforms-label form-label col-auto">{@view~edition.segment.length.label@}</label>
+                                        <div class="controls col">
                                             <label id="edition-segment-length"></label>
                                         </div>
                                     </div>
-                                    <div class="form-group row mb-3 hidden">
+                                    <div class="form-group row g-0 mb-2 hidden">
                                         <label
-                                            class="jforms-label form-label">{@view~edition.segment.angle.label@}</label>
-                                        <div class="controls">
+                                            class="jforms-label form-label col-auto">{@view~edition.segment.angle.label@}</label>
+                                        <div class="controls col">
                                             <label id="edition-segment-angle"></label>
                                         </div>
                                     </div>
-                                    <div class="form-group row mb-3">
-                                        <div class="controls">
+                                    <div class="form-group row g-0 mb-2">
+                                        <div class="controls col">
                                             <button name="submit" id="edition-point-coord-add"
                                                 class="btn btn-sm">{@view~edition.point.coord.add.label@}</button>
                                             <button name="submit" id="edition-point-coord-submit"
                                                 class="btn btn-sm">{@view~edition.point.coord.finalize.label@}</button>
                                         </div>
                                     </div>
-                                    <div class="form-group row mb-3" id="edition-point-coord-geolocation-group"
+                                    <div class="form-group row g-0 mb-2" id="edition-point-coord-geolocation-group"
                                         style="display:none;">
-                                        <div class="controls form-check">
+                                        <div class="controls form-check col">
                                             <label class="jforms-label checkbox form-check-label" for="edition-point-coord-geolocation"
                                                 id="edition-point-coord-geolocation-label">
                                                 <input name="checked" id="edition-point-coord-geolocation"
