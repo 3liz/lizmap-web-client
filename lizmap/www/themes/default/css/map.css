@@ -1050,12 +1050,12 @@ div.popup_lizmap_dd .nav-tabs > li.active > a:focus {
 
 #edition div.tab-pane,
 div.popup_lizmap_dd div.tab-pane {
-  border-left: 1px solid var(--color-contrasted-elements);
-  border-right: 1px solid var(--color-contrasted-elements);
-  border-bottom: 1px solid var(--color-contrasted-elements);
   padding: 5px;
   padding-bottom: 10px;
   margin-bottom: 5px;
+  border-left: 1px solid var(--color-contrasted-elements);
+  border-right: 1px solid var(--color-contrasted-elements);
+  border-bottom: 1px solid var(--color-contrasted-elements);
 }
 
 #edition div.tab-pane.attribute-layer-child-content,
