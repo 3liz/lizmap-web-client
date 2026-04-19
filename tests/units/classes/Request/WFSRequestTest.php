@@ -244,6 +244,62 @@ class WFSRequestTest extends TestCase
         );
     }
 
+    public static function getSetGeojsonSqlOutputCrsData()
+    {
+        return array(
+            // Default output SRID (4326): geometry and bbox reprojected to EPSG:4326.
+            array(4326, 'ST_Transform(lg.geosource::geometry, 4326)', 'ST_Transform(ST_Envelope(lg.geosource::geometry), 4326)'),
+            // Map-projection SRID (3857): geometry and bbox reprojected to EPSG:3857.
+            array(3857, 'ST_Transform(lg.geosource::geometry, 3857)', 'ST_Transform(ST_Envelope(lg.geosource::geometry), 3857)'),
+            // Swiss national grid (2056).
+            array(2056, 'ST_Transform(lg.geosource::geometry, 2056)', 'ST_Transform(ST_Envelope(lg.geosource::geometry), 2056)'),
+        );
+    }
+
+    /**
+     * Verify that setGeojsonSql wraps both the feature geometry and the bounding-box
+     * geometry in ST_Transform(…, $outputSrid) so that WFS responses are returned in
+     * the CRS requested by the client.
+     *
+     * @dataProvider getSetGeojsonSqlOutputCrsData
+     *
+     * @param mixed $outputSrid
+     * @param mixed $expectedGeomSql
+     * @param mixed $expectedBboxSql
+     */
+    #[DataProvider('getSetGeojsonSqlOutputCrsData')]
+    public function testSetGeojsonSqlOutputCrs($outputSrid, $expectedGeomSql, $expectedBboxSql): void
+    {
+        $cnx = new jDbConnectionForTests();
+        $wfs = new WFSRequestForTests();
+        $wfs->datasource = (object) array(
+            'geocol' => 'geom',
+            'key' => 'id',
+            'table' => 'myschema.mytable',
+        );
+        $wfs->selectFields = array('"id"', '"name"');
+
+        $sql = $wfs->setGeojsonSqlForTests(
+            'SELECT "id", "name", "geom" AS "geosource" FROM myschema.mytable',
+            $cnx,
+            'mytable',
+            'geom',
+            $outputSrid
+        );
+
+        $this->assertStringContainsString(
+            $expectedGeomSql,
+            $sql,
+            "Feature geometry should be reprojected to SRID {$outputSrid}"
+        );
+        $this->assertStringContainsString(
+            $expectedBboxSql,
+            $sql,
+            "Bounding-box geometry should be reprojected to SRID {$outputSrid}"
+        );
+        $this->assertStringContainsString('ST_AsGeoJSON', $sql);
+    }
+
     public static function getParseExpFilterData()
     {
         return array(
