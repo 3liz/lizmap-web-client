@@ -669,11 +669,11 @@ test.describe('Attribute table @readonly', () => {
     });
 
     test('Should select all filtered results', async ({ page }) => {
-        const project = new ProjectPage(page, 'attribute_table');
+        const project = new ProjectPage(page, 'huge_attribute_table');
         await project.open();
 
-        const tableName = 'quartiers_shp';
-        const typeName = 'quartiers_shp';
+        const tableName = 'huge_table';
+        const typeName = 'huge_table';
 
         let datatablesRequest = await project.openAttributeTable(tableName);
         let datatablesResponse = await datatablesRequest.response();
@@ -681,7 +681,40 @@ test.describe('Attribute table @readonly', () => {
         let tableHtml = project.attributeTableHtml(tableName);
 
         // Check table lines
-        await expect(tableHtml.locator('tbody tr')).toHaveCount(7);
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(50);
+        await project.openSearchBuilderPanel(tableName, true);
+
+        // add blank criteria and check fields existance
+        await project.addSearchBuilderCriterion(tableName);
+        const firstCriteria = await project.getSearchBuilderCriterion(tableName, 0);
+
+        // select the field to filter
+        await project.selectSearchBuilderData(firstCriteria, 'Large lookup');
+
+        // select a condition
+        await project.selectSearchBuilderCondition(firstCriteria,'=');
+
+        const typeAHeadElement = firstCriteria.locator('.dtsb-inputCont lizmap-typeahead');
+
+        // check if the input is instance of lizmap-typeahead component
+        await expect(typeAHeadElement).toHaveCount(1);
+
+        // fill typeahead input
+        await project.fillTypeAHeadInput(typeAHeadElement ,'Eurasian Collared-Dove');
+
+        // select a value from available typeahead options
+        await project.selectTypeAHeadOption(typeAHeadElement, '18', 'Eurasian Collared-Dove');
+
+        // launch search and check results
+        let datatablesRequestPromise = project.waitForDatatablesRequest();
+        await project.searchBuilderLaunchSearch(tableName);
+        datatablesRequest = await datatablesRequestPromise;
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+        await expect(project.attributeTableWrapper(tableName).locator('div.dt-info'))
+            .toContainText('Showing 1 to 50 of 69 entries (filtered from 5,000 total entries)');
+        // close panel
+        await project.searchBuilderClosePanel(tableName);
 
         // click on select-searched button to select all records
         let getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
@@ -694,11 +727,40 @@ test.describe('Attribute table @readonly', () => {
             'service': 'WMS',
             'request': 'GETSELECTIONTOKEN',
             'typename': typeName,
-            'ids': '2,6,0,4,3,1,5',
+            'ids': '157,241,330,349,386,490,957,1027,1062,1201,1246,1306,1369,1410,1491,1631,1642,1693,'+
+                    '1831,1837,1853,1950,2000,2014,2035,2124,2233,2355,2376,2409,2435,2460,2482,2513,2754,2778,'+
+                    '2799,2843,2908,3348,3354,3355,3391,3414,3519,3537,3593,3631,3650,3708,3718,3764,3840,3902,3965,'+
+                    '4106,4174,4192,4261,4275,4329,4415,4556,4730,4763,4831,4920,4944,4958',
         }
 
         requestExpect(getSelectionTokenRequest).toContainParametersInPostData(getSelectionTokenParameters);
-        expect(tableHtml.locator('tbody tr.selected')).toHaveCount(7);
+        expect(tableHtml.locator('tbody tr.selected')).toHaveCount(50);
+
+        // empty filters and try to select the whole dataset
+        await project.attributeTableActionBar(tableName).locator('.btn-unselect-attributeTable').click();
+
+        // clear filters
+        datatablesRequestPromise = project.waitForDatatablesRequest();
+        await project.openSearchBuilderPanel(tableName, true);
+        datatablesRequest = await datatablesRequestPromise;
+        datatablesResponse = await datatablesRequest.response();
+        responseExpect(datatablesResponse).toBeJson();
+        await expect(project.attributeTableWrapper(tableName).locator('div.dt-info'))
+            .toContainText('Showing 1 to 50 of 5,000 entries');
+        // close panel
+        await project.searchBuilderClosePanel(tableName);
+
+        let dialogPromped = false;
+        page.once('dialog', dialog => {
+            expect(dialog.message()).toBe("You are about to select more than a 1000 features. This may take a few seconds to process. Are you sure you want to proceed?");
+            dialogPromped = true;
+            return dialog.accept()
+        });
+        getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
+        await project.attributeTableActionBar(tableName).locator('.btn-select-searched').click();
+        expect(dialogPromped).toBeTruthy();
+        getSelectionTokenRequest = await getSelectionTokenRequestPromise;
+        await getSelectionTokenRequest.response();
     });
 
     test('Thumbnail class generate img with good path', async ({ page }) => {
