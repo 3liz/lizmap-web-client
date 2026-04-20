@@ -1,6 +1,7 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 import { expect as requestExpect } from './fixtures/expect-request.js'
+import { expect as responseExpect } from './fixtures/expect-response.js'
 import { ProjectPage } from "./pages/project";
 
 test.describe('Snap on edition', () => {
@@ -14,11 +15,7 @@ test.describe('Snap on edition', () => {
 
         // Intercept the snap GetFeature request before opening the form —
         // snapping is auto-activated on form display for this project.
-        const snapWfsRequestPromise = page.waitForRequest(
-            request => request.method() === 'POST'
-                && request.postData()?.includes('GetFeature') === true
-                && request.postData()?.includes('form_edition_snap_point') === true
-        );
+        const snapWfsRequestPromise = project.waitForGetFeatureRequest('form_edition_snap_point');
 
         // Track whether a DescribeFeatureType is sent alongside the snap request.
         // With the new WFS 1.1.0 path we no longer go through getFeatureData(), so
@@ -51,8 +48,8 @@ test.describe('Snap on edition', () => {
             SRSNAME: 'EPSG:4326',  // the project's map projection
         });
 
-        // Allow any in-flight requests to settle before checking the flag.
-        await page.waitForTimeout(300);
+        // Confirm the snap response is valid GeoJSON, then verify no DescribeFeatureType was sent.
+        responseExpect(await snapWfsRequest.response()).toBeGeoJson();
         expect(describeFeatureTypeSent).toBeFalsy();
     });
 
@@ -66,14 +63,10 @@ test.describe('Snap on edition', () => {
 
         await project.open();
 
-        const snapWfsRequestPromise = page.waitForRequest(
-            request => request.method() === 'POST'
-                && request.postData()?.includes('GetFeature') === true
-                && request.postData()?.includes('snap_datum_shift_target') === true
-        );
+        const snapWfsRequestPromise = project.waitForGetFeatureRequest('snap_datum_shift_target');
 
         const formRequest = await project.openEditingFormWithLayer('snap_datum_shift_edit');
-        await formRequest.response();
+        responseExpect(await formRequest.response()).toBeHtml();
 
         await page.getByRole('tab', { name: 'Digitization' }).click();
 
@@ -99,6 +92,8 @@ test.describe('Snap on edition', () => {
         const bbox = postData.get('BBOX') ?? '';
         expect(bbox, `BBOX must be 5-element WFS 1.1.0 format (x,y,x,y,EPSG:3857), got: "${bbox}"`
         ).toMatch(/^-?[\d.]+,-?[\d.]+,-?[\d.]+,-?[\d.]+,EPSG:3857$/);
+
+        responseExpect(await snapWfsRequest.response()).toBeGeoJson();
     });
 
     test('Snap features from EPSG:2154 layer arrive in EPSG:3857 coordinates', async ({ page }, testInfo) => {
@@ -113,27 +108,26 @@ test.describe('Snap on edition', () => {
 
         await project.open();
 
-        const snapWfsResponsePromise = page.waitForResponse(
-            response => response.request().method() === 'POST'
-                && response.request().postData()?.includes('GetFeature') === true
-                && response.request().postData()?.includes('snap_datum_shift_target') === true
-        );
+        const snapWfsRequestPromise = project.waitForGetFeatureRequest('snap_datum_shift_target');
 
         const formRequest = await project.openEditingFormWithLayer('snap_datum_shift_edit');
         await formRequest.response();
 
         await page.getByRole('tab', { name: 'Digitization' }).click();
 
-        const snapWfsResponse = await snapWfsResponsePromise;
-        const responseBody = await snapWfsResponse.text();
+        const snapWfsRequest = await snapWfsRequestPromise;
+        const snapWfsResponse = await snapWfsRequest.response();
+
+        // Confirm the server returned valid GeoJSON before inspecting coordinates.
+        responseExpect(snapWfsResponse).toBeGeoJson();
+
+        const geojson = await snapWfsResponse.json();
 
         // Attach the full server response to the test report.
         await testInfo.attach('snap-wfs-response-body', {
-            body: responseBody,
+            body: JSON.stringify(geojson),
             contentType: 'application/json',
         });
-
-        const geojson = JSON.parse(responseBody);
 
         console.log('[snap datum-shift] WFS response status:', snapWfsResponse.status());
         console.log('[snap datum-shift] Feature count:', geojson.features?.length ?? 0);
@@ -248,9 +242,7 @@ test.describe('Snap on edition', () => {
 
         await page.locator("#edition-point-coord-form-group").getByRole("button").nth(2).click()
 
-        await getSnappingLineFeatureRequestPromise;
-
-        await page.waitForTimeout(300);
+        responseExpect(await (await getSnappingLineFeatureRequestPromise).response()).toBeGeoJson();
 
         await expect(page.locator("#edition-point-coord-form-group").getByRole("button").nth(2)).toBeDisabled();
 
@@ -297,9 +289,7 @@ test.describe('Snap on edition', () => {
 
         await page.locator("#edition-point-coord-form-group").getByRole("button").nth(2).click()
 
-        await getSnappingPolygonFeatureRequestPromise;
-
-        await page.waitForTimeout(300);
+        responseExpect(await (await getSnappingPolygonFeatureRequestPromise).response()).toBeGeoJson();
 
         await expect(page.locator("#edition-point-coord-form-group").getByRole("button").nth(2)).toBeDisabled();
 
