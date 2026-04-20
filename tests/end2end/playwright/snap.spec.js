@@ -66,7 +66,7 @@ test.describe('Snap on edition', () => {
         const snapWfsRequestPromise = project.waitForGetFeatureRequest('snap_datum_shift_target');
 
         const formRequest = await project.openEditingFormWithLayer('snap_datum_shift_edit');
-        responseExpect(await formRequest.response()).toBeHtml();
+        responseExpect(await formRequest.response()).toBeTextPlain();
 
         await page.getByRole('tab', { name: 'Digitization' }).click();
 
