@@ -320,7 +320,7 @@ test.describe('Popup @readonly', () => {
         await expect(page.locator('#popup_dd_1_tab1 a img')).toHaveAttribute('src', mediaLink);
     });
 
-    test.fail('changes popup tab', async ({ page }) => {
+    test('changes popup tab', async ({ page }) => {
         const project = new ProjectPage(page, 'popup');
         await project.open();
 
@@ -332,7 +332,6 @@ test.describe('Popup @readonly', () => {
         responseExpect(getFeatureInfoResponse).toBeHtml();
 
         await page.getByRole('link', { name: 'tab2' }).click({ force: true });
-        // This expect failed because of BS5, the click does not open the tab
         await expect(page.locator('#popup_dd_1_tab2')).toHaveClass(/active/);
     });
 
