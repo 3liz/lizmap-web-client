@@ -31,7 +31,7 @@
     "@playwright/test": "^1.59.x",
     "@rspack/cli": "~1.7.x",
     "@rspack/core": "~1.7.x",
-    "@stylistic/eslint-plugin-js": "^4.4.x",
+    "@stylistic/eslint-plugin": "^5.10.0",
     "@turf/line-split": "^7.3.x",
     "bats": "^1.13.0",
     "bats-assert": "^2.2.4",
