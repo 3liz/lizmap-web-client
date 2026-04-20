@@ -1062,15 +1062,25 @@ class WFSRequest extends OGCRequest
             $geometryname = strtolower($params['geometryname']);
         }
 
-        // Determine the output SRID from SRSNAME, defaulting to EPSG:4326
+        // Determine the output SRID: explicit SRSNAME param takes priority,
+        // then fall back to the CRS suffix of a 5-element WFS 1.1.0 BBOX.
         $outputSrid = self::DEFAULT_OUTPUT_SRID;
+        $srsname = null;
         if (array_key_exists('srsname', $params) && !empty($params['srsname'])) {
-            $parsedSrid = $this->parseSrsnameSrid($params['srsname']);
+            $srsname = $params['srsname'];
+        } elseif (array_key_exists('bbox', $params)) {
+            $bboxParts = explode(',', $params['bbox']);
+            if (count($bboxParts) === 5) {
+                $srsname = trim($bboxParts[4]);
+            }
+        }
+        if ($srsname !== null) {
+            $parsedSrid = $this->parseSrsnameSrid($srsname);
             if ($parsedSrid !== null) {
                 $outputSrid = $parsedSrid;
             } else {
                 $this->appContext->logMessage(
-                    'WFSRequest::getfeaturePostgres: invalid SRSNAME "'.$params['srsname'].'" — falling back to EPSG:'.self::DEFAULT_OUTPUT_SRID,
+                    'WFSRequest::getfeaturePostgres: invalid SRSNAME "'.$srsname.'" — falling back to EPSG:'.self::DEFAULT_OUTPUT_SRID,
                     'lizmapadmin'
                 );
             }
