@@ -8,6 +8,25 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Funders
+
+* **[Klein und Leber GbR](https://www.gisgeometer.de/)** with @meyerlor
+* **[Valabre](https://www.valabre.com/)**
+
+### Fixed
+
+* Admin - syntax error in lizmapConfig.ini.php into the list of domains for CORS
+* Attribute table - sorting order for DataTables requests with PostgreSQL layer
+* Admin - invalid repository path locked update
+* UI - default atlas print icon not well displayed
+* Edit - Remove capture attribute for image upload, use it in accept for ImageUpload control
+* Commands - sqlite migration
+* UI - search clear button not visible and not clearing highlight
+
+### Backend
+
+* CSS - Drop outdated rules about btn-stop and btn-print-clear
+
 ## 3.9.7 - 2026-03-25
 
 ### Funders
