@@ -27,10 +27,14 @@ class lizmapFts
         // Build search query
 
         // SELECT
+        // word_similarity measures how well the search term matches the best
+        // word-level substring of item_label. Unlike similarity(), it gives
+        // equal scores to all labels that contain the search term as a whole
+        // word, so the secondary alphabetical sort on item_label is effective.
         $sql = "
         SELECT
         item_layer, item_label, concat('EPSG:', ST_SRID(geom)) AS item_epsg, ST_AsText(geom) AS item_wkt,
-        similarity(trim( :searchedString ), item_label) AS sim
+        word_similarity(trim( :searchedString ), item_label) AS sim
         ";
 
         // FROM
@@ -92,7 +96,7 @@ class lizmapFts
      *
      * @return List of matching places
      */
-    public static function getData($project, $searchedString, $debug, $limit = 40)
+    public static function getData($project, $searchedString, $debug, $limit = 500)
     {
         $terms = preg_split('/\s+/', $searchedString);
         $sql = lizmapFts::generateSql($project, count($terms));
@@ -134,8 +138,8 @@ class lizmapFts
             $result = $resultSet->fetchAll();
 
             // Limitations
-            $limit_tot = 60;
-            $limit_search = 30;
+            $limit_tot = 100;
+            $limit_search = 50;
 
             // Prepare array to count items per layer
             $nb = array('search' => array(), 'tot' => 0);

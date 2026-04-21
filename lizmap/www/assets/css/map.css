@@ -3179,9 +3179,9 @@ lizmap-mouse-position > div.coords-unit > select{
   z-index: 1040;
   overflow: auto;
   background-color: rgb(0 0 0 / 70%);
-  max-height: 99%;
+  max-height: 95%;
   right: 100px;
-  max-width: 70%;
+  max-width: 85%;
   color: white;
   border-radius: 5px;
   font-size: 0.8em;
@@ -3216,12 +3216,27 @@ lizmap-mouse-position > div.coords-unit > select{
 
 
 #lizmap-search .items > li > ul{
-  margin: 0 10px 10px 25px
+  margin: 0 10px 10px 25px;
+}
+
+/* Two columns only when a category has more than 30 results */
+#lizmap-search .items > li > ul:has(> li:nth-child(31)) {
+  columns: 2 240px;
+  column-gap: 1.5em;
+}
+
+#lizmap-search .items > li > ul > li {
+  break-inside: avoid; /* keep each result in a single column */
+  max-width: 280px;    /* cap column item width so long names wrap instead of stretching */
+  overflow-wrap: break-word;
 }
 
 #lizmap-search a{
   color:white;
   font-size:0.9em;
+  display: block;      /* fills item width so hover area and wrapping work correctly */
+  white-space: normal;
+  overflow-wrap: break-word;
 }
 
 #lizmap-search a:hover{
