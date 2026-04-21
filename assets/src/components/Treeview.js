@@ -115,7 +115,9 @@ export default class Treeview extends HTMLElement {
                     class="${parent.mutuallyExclusive ? 'rounded-checkbox' : ''}"
                     id="node-${layer.name}"
                     .checked=${layer.checked}
-                    @click=${() => layer.checked = !layer.checked} >
+                    @click=${(evt) => this._clickItem(evt,layer)}
+                    @dblclick=${() =>this._dblclickItem(layer)}
+                    >
                 <div class="node ${layer.isFiltered ? 'filtered' : ''}">
                     <img class="legend" src="${layer.icon}">
                     <label for="node-${layer.name}" >${layer.layerConfig.title}</label>
@@ -295,10 +297,6 @@ export default class Treeview extends HTMLElement {
     }
 
     _dblclickItem(item) {
-        if (item.type != 'group') {
-            return false;
-        }
-
         if (this._freeze) {
             return false;
         }
@@ -311,7 +309,7 @@ export default class Treeview extends HTMLElement {
     }
 
     _createGetMediaLink(path) {
-        let url = '';
+        let url;
         // Test if the path is internal
         if (MEDIA_REGEX.test(path)) {
             const mediaLink = globalThis['lizUrls'].media + '?' + new URLSearchParams(globalThis['lizUrls'].params);

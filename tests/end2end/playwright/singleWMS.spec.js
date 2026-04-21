@@ -388,14 +388,13 @@ test.describe('Single WMS layer', () => {
             tag:['@readonly']
         }, async ({ page }) => {
             const project = new ProjectPage(page, 'single_wms_image');
+            const requestSingleMapPromise = project.waitForSingleWMSGetMapRequest();
+            const requestTilePromise = project.waitForGetTileRequest();
+            const requestFirstBaseLayerPromise = project.waitForGetMapRequest();
             await project.open();
 
-            // switch base layer
-            const requestTileBaseLayerPromise = project.waitForSingleWMSGetMapRequest();
-            await page.locator("lizmap-base-layers select").selectOption("single_wms_tiled_baselayer")
-
-            const requestTileBaseLayer = await requestTileBaseLayerPromise;
-            const expectedTileBaseLayerParameters = {
+            const requestSingleMap = await requestSingleMapPromise;
+            const expectedSingleMapParameters = {
                 'SERVICE': 'WMS',
                 'VERSION': '1.3.0',
                 'REQUEST': 'GetMap',
@@ -403,13 +402,52 @@ test.describe('Single WMS layer', () => {
                 'STYLES':'default,default,default,default,',
                 'LAYERS':'single_wms_lines,single_wms_points,single_wms_points_group,single_wms_lines_group,GroupAsLayer',
             }
+
+            const requestTile = await requestTilePromise;
+            const expectedTileParameters = {
+                'Service': 'WMTS',
+                'Version': '1.0.0',
+                'Request': 'GetTile',
+                'style':'default',
+                'layer':'single_wms_polygons',
+            }
+
+            const requestFirstBaseLayer = await requestFirstBaseLayerPromise;
+            const expectedFirstBaseLayerParameters = {
+                'SERVICE': 'WMS',
+                'VERSION': '1.3.0',
+                'REQUEST': 'GetMap',
+                'FORMAT': 'image/png',
+                'STYLES':'',
+                'LAYERS':'single_wms_baselayer',
+            }
+
+            requestExpect(requestSingleMap).toContainParametersInUrl(expectedSingleMapParameters);
+            requestExpect(requestTile).toContainParametersInUrl(expectedTileParameters);
+            requestExpect(requestFirstBaseLayer).toContainParametersInUrl(expectedFirstBaseLayerParameters);
+            await requestSingleMap.response();
+            await requestTile.response();
+            await requestFirstBaseLayer.response();
+
+            // switch base layer
+            const requestTileBaseLayerPromise = project.waitForGetTileRequest();
+            await page.locator("lizmap-base-layers select").selectOption("single_wms_tiled_baselayer")
+
+            const requestTileBaseLayer = await requestTileBaseLayerPromise;
+            const expectedTileBaseLayerParameters = {
+                'Service': 'WMTS',
+                'Version': '1.0.0',
+                'Request': 'GetTile',
+                'style':'default',
+                'layer':'single_wms_tiled_baselayer',
+            }
             requestExpect(requestTileBaseLayer).toContainParametersInUrl(expectedTileBaseLayerParameters);
             await requestTileBaseLayer.response();
 
             await page.waitForTimeout(500);
 
             // switch to second WMS baselayer
-            const requestSecondBaseLayerPromise = project.waitForSingleWMSGetMapRequest();
+            const requestSecondBaseLayerPromise = project.waitForGetMapRequest();
             await page.locator("lizmap-base-layers select").selectOption("single_wms_baselayer_two");
 
             const requestSecondBaseLayer = await requestSecondBaseLayerPromise;
@@ -418,8 +456,8 @@ test.describe('Single WMS layer', () => {
                 'VERSION': '1.3.0',
                 'REQUEST': 'GetMap',
                 'FORMAT': 'image/png',
-                'STYLES':'default,default,default,default,',
-                'LAYERS':'single_wms_lines,single_wms_points,single_wms_points_group,single_wms_lines_group,GroupAsLayer',
+                'STYLES':'',
+                'LAYERS':'single_wms_baselayer_two',
             }
             requestExpect(requestSecondBaseLayer).toContainParametersInUrl(expectedSecondBaseLayerParameters);
             await requestSecondBaseLayer.response();

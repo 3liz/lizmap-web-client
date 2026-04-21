@@ -937,7 +937,7 @@ class WFSRequest extends OGCRequest
                 $field = $exp[0];
                 if (in_array($field, $wfsFields)) {
                     $sort_items[$field] = 'ASC';
-                    if (count($exp) == 2 and $exp[1] == 'd') {
+                    if (count($exp) == 2 && in_array(strtolower($exp[1]), array('d', '+d', 'desc', '+desc'))) {
                         $sort_items[$field] = 'DESC';
                     }
                 }

@@ -11,7 +11,7 @@ import { ConversionError } from './../Errors.js';
 /**
  * Convert a value to Number
  * @function
- * @param {*} val - A value to convert to number
+ * @param {any} val - A value to convert to number
  * @returns {number} the converting value
  * @throws {ConversionError}
  */
@@ -26,7 +26,7 @@ export function convertNumber(val) {
 /**
  * Convert a value to boolean
  * @function
- * @param {*} val - A value to convert to boolean
+ * @param {any} val - A value to convert to boolean
  * @returns {boolean} the converting value
  * @throws {ConversionError}
  */
@@ -82,7 +82,7 @@ export function convertArray(val, contentType) {
             )}' could not be converted to array!`
         );
     }
-    let newVal = [];
+    let newVal;
     if (Array.isArray(val)) {
         newVal = [...val];
     } else {

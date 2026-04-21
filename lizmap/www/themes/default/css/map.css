@@ -45,14 +45,20 @@
 }
 
 #header-clear {
+  background-image: url("images/sprite_20_tools.png");
+  background-repeat: no-repeat;
   background-position: -875px 0 !important;
+  width: 20px;
+  height: 20px;
 }
-
-#headermenu .dropdown-menu > li > a
 
 #headermenu .btn-locate-clear.icon {
   background-color: transparent;
+  background-image: url("images/sprite_20_tools.png");
+  background-repeat: no-repeat;
   background-position: -875px 0;
+  width: 20px;
+  height: 20px;
   margin-top: 5px;
 }
 
@@ -440,33 +446,12 @@ Timemanager
   background : url("images/sprite_menu_tools.png") no-repeat right;
 }
 
-#toolbar .title .btn.btn-error {
-  background:none;
-  color:#DA4F49;
-}
-
 #toolbar .title .btn.btn-locate-clear {
   background-position : 0 0;
 }
 
 #toolbar .title .btn.btn-locate-clear:hover {
   background-position : -20px 0;
-}
-
-#toolbar .title .btn.btn-print-clear {
-  background-position : -20px -100px;
-}
-
-#toolbar .title .btn.btn-print-clear:hover {
-  background-position : 0 -100px;
-}
-
-#toolbar .title .btn.btn-stop {
-  background-position : 0 -20px;
-}
-
-#toolbar .title .btn.btn-stop:hover {
-  background-position : -20px -20px;
 }
 
 #toolbar .menu-content .btn.btn-success{

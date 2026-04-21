@@ -34,10 +34,10 @@ export default class SelectionTool extends HTMLElement {
             <span class="title">
                 <button
                     type="button"
-                    class="btn-selectiontool-clear btn btn-sm btn-error btn-link"
+                    class="btn-selectiontool-clear btn-close"
                     title="${lizDict['toolbar.content.stop']}"
                     @click=${() => mainLizmap.selectionTool.disable()}
-                    >×</button>
+                    ></button>
                 <span class="icon-star icon-white"></span>
                 <span class="text">&nbsp;${lizDict['selectiontool.toolbar.title']}&nbsp;</span>
             </span>

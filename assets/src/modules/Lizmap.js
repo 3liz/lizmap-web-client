@@ -87,10 +87,10 @@ export default class Lizmap {
             // child which could be a layer or a group.
             let wmsLayer = wmsCapabilities.Capability.Layer;
             while (wmsLayer.BoundingBox === undefined) {
-            // breaking while before the loop because wmsLayer.Layer is not iterable
+                // breaking while before the loop because wmsLayer.Layer is not iterable
                 if (wmsLayer.Layer === undefined) {
-                        break;
-                    }
+                    break;
+                }
                 for (const wmsChildLayer of wmsLayer.Layer) {
                     if (Array.isArray(wmsChildLayer.BoundingBox)) {
                         wmsLayer = wmsChildLayer;

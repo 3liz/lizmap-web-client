@@ -470,6 +470,80 @@ describe('BaseSymbolsSymbology', function () {
             expect(error).to.be.instanceOf(ValidationError)
         }
     })
+
+    it('Should propagate checked state', function(){
+        const symbols = new BaseSymbolsSymbology({
+            "symbols": [
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAJ0lEQVQ4jWNUVVH7z0ABYGFgYGAo1t1KtgFMlNg+asCoAaMGUNEAACHTAuWL92xvAAAAAElFTkSuQmCC",
+                    "title": "CV",
+                    "ruleKey": "{22ecac7e-c787-409f-9368-9e8e5718177a}",
+                    "checked": true,
+                    "parentRuleKey": "{dc07f240-06e7-40c5-8e65-713938d5faa3}",
+                    "expression": "\"quartmno\" = 'CV'"
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAJ0lEQVQ4jWNUVlP9z0ABYGFgYGBQ2t9BtgFMlNg+asCoAaMGUNEAAGlUAvgj5mTSAAAAAElFTkSuQmCC",
+                    "title": "LES CEVENNES",
+                    "ruleKey": "{e7adaf60-5730-43b4-a958-23422e82ff2a}",
+                    "checked": true,
+                    "parentRuleKey": "{22ecac7e-c787-409f-9368-9e8e5718177a}",
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAJ0lEQVQ4jWNUUVf5z0ABYGFgYGCwPuFCtgFMlNg+asCoAaMGUNEAAO0AAtfDo8U7AAAAAElFTkSuQmCC",
+                    "title": "Alco",
+                    "ruleKey": "{913bbd1c-3774-404f-92f7-a452e928cdc8}",
+                    "checked": true,
+                    "parentRuleKey": "{22ecac7e-c787-409f-9368-9e8e5718177a}",
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAJ0lEQVQ4jWNUVVf9z0ABYGFgYGBI3F9JtgFMlNg+asCoAaMGUNEAACuNAyulC0t1AAAAAElFTkSuQmCC",
+                    "title": "La Martelle",
+                    "ruleKey": "{6da5ec1f-7697-4b19-ad74-dd07a9c8e9be}",
+                    "checked": true,
+                    "parentRuleKey": "{22ecac7e-c787-409f-9368-9e8e5718177a}",
+                },
+                {
+                    "icon": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8\/9hAAAACXBIWXMAAA9hAAAPYQGoP6dpAAAAJ0lEQVQ4jWNUU1b7z0ABYGFgYGCYyrqCbAOYKLF91IBRA0YNoKIBANoJAtI4216hAAAAAElFTkSuQmCC",
+                    "title": "La Chamberte",
+                    "ruleKey": "{61cc231b-6f8c-4f26-b1dd-1b792ef7d5ed}",
+                    "checked": true,
+                    "parentRuleKey": "{22ecac7e-c787-409f-9368-9e8e5718177a}",
+                },
+            ],
+            "type":"layer",
+            'title':'subdistricts'
+        },{
+        },{},SymbolRuleSymbology)
+        expect(symbols).to.be.instanceOf(BaseSymbolsSymbology)
+        expect(symbols.expanded).to.be.false
+        expect(symbols.childrenCount).to.be.eq(5)
+
+        symbols.checked = false;
+        const symbolsGetChildren = symbols.getChildren()
+        expect(symbolsGetChildren.next().value).to.be.instanceOf(SymbolRuleSymbology)
+        expect(symbolsGetChildren.next().value).to.be.instanceOf(SymbolRuleSymbology)
+        expect(symbolsGetChildren.next().value).to.be.instanceOf(SymbolRuleSymbology)
+        expect(symbolsGetChildren.next().value).to.be.instanceOf(SymbolRuleSymbology)
+        expect(symbolsGetChildren.next().value).to.be.instanceOf(SymbolRuleSymbology)
+
+        symbols.propagateCheckedState(false);
+        const symbolsGetChildrenUnchecked = symbols.getChildren()
+        expect(symbolsGetChildrenUnchecked.next().value.checked).to.be.false
+        expect(symbolsGetChildrenUnchecked.next().value.checked).to.be.false
+        expect(symbolsGetChildrenUnchecked.next().value.checked).to.be.false
+        expect(symbolsGetChildrenUnchecked.next().value.checked).to.be.false
+        expect(symbolsGetChildrenUnchecked.next().value.checked).to.be.false
+
+        symbols.checked = true;
+        symbols.propagateCheckedState(true);
+        const symbolsGetChildrenChecked = symbols.getChildren()
+        expect(symbolsGetChildrenChecked.next().value.checked).to.be.true
+        expect(symbolsGetChildrenChecked.next().value.checked).to.be.true
+        expect(symbolsGetChildrenChecked.next().value.checked).to.be.true
+        expect(symbolsGetChildrenChecked.next().value.checked).to.be.true
+        expect(symbolsGetChildrenChecked.next().value.checked).to.be.true
+    })
 })
 
 describe('LayerSymbolsSymbology', function () {

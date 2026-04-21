@@ -21,6 +21,7 @@ import PasteGeom from './components/edition/PasteGeom.js';
 import PasteStoredGeom from './components/edition/PasteStoredGeom.js';
 import ActionSelector from './components/ActionSelector.js';
 import Print from './components/Print.js';
+import PortfoliosSelector from './components/PortfoliosSelector.js';
 import DxfExport from './components/DxfExport.js';
 import FullScreen from './components/FullScreen.js';
 import BaseLayers from './components/BaseLayers.js';
@@ -99,6 +100,7 @@ const definedCustomElements = () => {
     window.customElements.define('lizmap-paste-stored-geom', PasteStoredGeom);
     window.customElements.define('lizmap-action-selector', ActionSelector);
     window.customElements.define('lizmap-print', Print);
+    window.customElements.define('lizmap-portfolios-selector', PortfoliosSelector);
     window.customElements.define('lizmap-dxfexport', DxfExport);
     window.customElements.define('lizmap-fullscreen', FullScreen);
     window.customElements.define('lizmap-navbar', NavBar);
@@ -107,21 +109,21 @@ const definedCustomElements = () => {
     window.customElements.define('lizmap-typeahead', TypeAHead);
 
     /**
-    * At this point the user interface is fully loaded.
-    * External javascripts can subscribe to this event to perform post load
-    * operations or cutomizations
-    *
-    * Example in my_custom_script.js
-    *
-    * lizMap.subscribe(() => {
-    *          // pseudo-code
-    *          intercatWithPrintPanel();
-    *          interactWithSelectionPanel();
-    *          inteactWithLocateByLayerPanel();
-    *     },
-    *     'lizmap.uicreated'
-    * );
-    */
+     * At this point the user interface is fully loaded.
+     * External javascripts can subscribe to this event to perform post load
+     * operations or cutomizations
+     *
+     * Example in my_custom_script.js
+     *
+     * lizMap.subscribe(() => {
+     *          // pseudo-code
+     *          intercatWithPrintPanel();
+     *          interactWithSelectionPanel();
+     *          inteactWithLocateByLayerPanel();
+     *     },
+     *     'lizmap.uicreated'
+     * );
+     */
     lizMap.mainEventDispatcher.dispatch('lizmap.uicreated');
 }
 

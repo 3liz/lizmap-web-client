@@ -11,6 +11,7 @@ import { BaseLayersState } from './state/BaseLayer.js';
 import { LayersAndGroupsCollection } from './state/Layer.js';
 import { MapRootState } from './state/MapLayer.js';
 import { TreeRootState } from './state/LayerTree.js';
+import { PortfoliosState } from './state/Portfolios.js';
 
 /**
  * @class
@@ -32,6 +33,8 @@ export class State extends EventDispatcher {
         this._collection = null;
         this._rootMapGroup = null;
         this._layerTree = null;
+
+        this._portfolios = null;
     }
 
     /**
@@ -102,5 +105,24 @@ export class State extends EventDispatcher {
             this._layerTree = new TreeRootState(this.rootMapGroup);
         }
         return this._layerTree;
+    }
+
+    /**
+     * Portfolios is defined
+     * @type {boolean}
+     */
+    get hasPortfolios() {
+        return this._initialConfig.hasPortfolios;
+    }
+
+    /**
+     * Portfolios state
+     * @type {PortfoliosState}
+     */
+    get portfolios() {
+        if (this.hasPortfolios && this._portfolios == null) {
+            this._portfolios = new PortfoliosState(this._initialConfig.portfolios);
+        }
+        return this._portfolios;
     }
 }

@@ -18,15 +18,16 @@ class DbMigrateUsers extends ModuleCommandAbstract
             ->setDescription('Migrate users data from a sqlite database to the current database (experimental)')
             ->setHelp('')
             ->addOption('resetbefore', null, InputOption::VALUE_NONE, 'Delete target db before migrating')
+            ->addOption('force', null, InputOption::VALUE_NONE, 'Force migration if there are already some data')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $logMigrator = new MigratorFromSqlite();
+        $usersMigrator = new MigratorFromSqlite();
 
         try {
-            $res = $logMigrator->migrateUsersAndRights($input->getOption('resetbefore'));
+            $res = $usersMigrator->migrateUsersAndRights($input->getOption('resetbefore'), $input->getOption('force'));
         } catch (\UnexpectedValueException $e) {
             $output->writeln('Error during the migration: '.$e->getMessage());
 
@@ -34,12 +35,12 @@ class DbMigrateUsers extends ModuleCommandAbstract
         }
 
         switch ($res) {
-            case $logMigrator::MIGRATE_RES_ALREADY_MIGRATED:
+            case $usersMigrator::MIGRATE_RES_ALREADY_MIGRATED:
                 $output->writeln('It seems already migrated, there are some data into existing users tables');
 
                 break;
 
-            case $logMigrator::MIGRATE_RES_OK:
+            case $usersMigrator::MIGRATE_RES_OK:
                 $output->writeln('Migration done');
 
                 break;

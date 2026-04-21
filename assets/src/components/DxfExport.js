@@ -57,7 +57,7 @@ export default class DxfExport extends HTMLElement {
     /**
      * Generates the HTML template for the DXF export component
      * @private
-     * @returns {Object} The lit-html template
+     * @returns {object} The lit-html template
      */
     _template() {
         const exportableLayers = this._getExportableLayers();
@@ -90,6 +90,8 @@ export default class DxfExport extends HTMLElement {
 
     /**
      * Renders the scale selector
+     * @param currentScale
+     * @param availableScales
      * @private
      */
     _renderScaleSelector(currentScale, availableScales) {
@@ -169,6 +171,7 @@ export default class DxfExport extends HTMLElement {
 
     /**
      * Renders the layers list
+     * @param exportableLayers
      * @private
      */
     _renderLayersList(exportableLayers) {
@@ -198,6 +201,7 @@ export default class DxfExport extends HTMLElement {
 
     /**
      * Handles scale selection change
+     * @param event
      * @private
      */
     _handleScaleChange(event) {
@@ -320,7 +324,7 @@ export default class DxfExport extends HTMLElement {
      * Shows an error message
      * @private
      * @param {string} message - Error message
-     * @param {Error|Object} [error] - Optional error object
+     * @param {Error | object} [error] - Optional error object
      */
     _showError(message, error = null) {
         let displayMessage = message || lizDict['dxfexport.error'] || 'Error during DXF export';
@@ -371,7 +375,7 @@ export default class DxfExport extends HTMLElement {
     /**
      * Collects layer information for export
      * @private
-     * @returns {Object} Object containing layers, styles, opacities, and tokens
+     * @returns {object} Object containing layers, styles, opacities, and tokens
      */
     _collectLayerInformation() {
         const result = {
@@ -429,7 +433,7 @@ export default class DxfExport extends HTMLElement {
     /**
      * Builds WMS GetMap parameters for DXF export
      * @private
-     * @returns {Object} WMS parameters object
+     * @returns {object} WMS parameters object
      */
     _buildWmsParameters() {
         // Get map extent and projection
@@ -494,7 +498,7 @@ export default class DxfExport extends HTMLElement {
      * Downloads a DXF file via XHR
      * @private
      * @param {string} url - Service URL
-     * @param {Object} parameters - WMS parameters
+     * @param {object} parameters - WMS parameters
      * @param {string} filename - Output filename
      */
     _downloadDxfFile(url, parameters, filename) {

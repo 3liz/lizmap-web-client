@@ -22,13 +22,13 @@ repos:
         args: [--fix]
 
   - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v9.30.1
+    rev: v10.0.1
     hooks:
       - id: eslint
         files: \.[jt]sx?$  # *.js, *.jsx, *.ts and *.tsx
         types: [ file ]
         additional_dependencies:
-          - eslint@9.30.1
+          - eslint@10.0.1
 
   - repo: local
     hooks:

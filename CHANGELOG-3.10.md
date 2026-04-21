@@ -8,6 +8,47 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+
+## 3.10.0-beta.3 - 2026-04-20
+
+### Funders
+
+* **[Klein und Leber GbR](https://www.gisgeometer.de/)** with @meyerlor
+* **[ETRA SpA Società benefit](https://www.etraspa.it/)** with Faunalia and @mind84
+* **[Faunalia](https://www.faunalia.eu/)** with @mind84
+* **[Valabre](https://www.valabre.com/)**
+* **[Municipality of Mirandela](https://www.cm-mirandela.pt/)** with @NaturalGIS and @gioman
+
+### Added
+
+* Attribute table - Search builder: introduce support for subconditions
+* UI - Using bootstrap close button for mini-dock
+* Portfolio
+* UI - Double clicking on layer legend propagates the checked state on symbology checkbox
+* Attribute table - Select all filtered features server side
+
+### Fixed
+
+* Print - Enhance download by defining a FileDownloader class with Promise
+* Admin - syntax error in lizmapConfig.ini.php into the list of domains for CORS
+* Attribute table - sorting order for DataTables requests with PostgreSQL layer
+* Admin - invalid repository path locked update
+* UI - default atlas print icon not well displayed
+* Edit - Remove capture attribute for image upload, use it in accept for ImageUpload control
+* Commands - sqlite migration
+* JS - dispatch closed dock event when a new one is opened
+* UI - search clear button not visible and not clearing highlight
+
+### Tests
+
+* e2e: WMS single image, fix switch baselayer
+* add copy-paste geometry end-to-end tests
+
+### Backend
+
+* CSS - Drop outdated rules about btn-stop and btn-print-clear
+
+
 ## 3.10.0-beta.2 - 2026-03-25
 
 ### Funders
@@ -20,8 +61,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ### Added
 
-* Print -Atlas Print Button for Selected Features
-* Print -PDF Filename from Atlas Expression
+* Print - Atlas Print Button for Selected Features
+* Print - PDF Filename from Atlas Expression
 * Edition - Add geometry "copy&paste" functionality for digitizing workflow
 * Tooltip - Add the capability to render layer features with QGIS Style (using SLD)
 * Attribute table - Management of Value relation/Value Map fields in the new datatables Search Builder panel

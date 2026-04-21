@@ -25,6 +25,7 @@ class projectConfigTest extends TestCase
         $expected->filter_by_polygon = new stdClass();
         $expected->metadata = new stdClass();
         $expected->layouts = new stdClass();
+        $expected->portfolios = new stdClass();
         $expected->warnings = new stdClass();
 
         return array(
