@@ -663,8 +663,9 @@ window.lizMap = function() {
      * PRIVATE function: createMap
      * creating the map {<OpenLayers.Map>}
      * @param {Array} initialExtent initial extent in EPSG:4326 projection
+     * @param {Array} permalinkExtent permalink extent in EPSG:4326 projection
      */
-    function createMap(initialExtent) {
+    function createMap(initialExtent, permalinkExtent) {
     // get projection
         var proj = config.options.projection;
         var projection = new OpenLayers.Projection(proj.ref);
@@ -690,9 +691,8 @@ window.lizMap = function() {
             zoomToClosest = true;
         }
 
-        let initialExtentPermalink = window.location.hash.substring(1).split('|')[0].split(',');
-        if (initialExtentPermalink.length === 4) {
-            initialExtent = initialExtentPermalink;
+        if (permalinkExtent) {
+            initialExtent = permalinkExtent;
             initialExtentProj = proj4326;
             zoomToClosest = true;
         }
@@ -3388,9 +3388,10 @@ window.lizMap = function() {
          * Complete lizMap initialization, which includes fully building the configuration object and
          * creating the legacy ol2 map
          * @param {Object} startupConfigurations object containing initial configuration and capabilities
+         * @param {Object} initialPermalink - initial permalink object
          * @returns {void}
          */
-        completeInitialization: (startupConfigurations) => {
+        completeInitialization: (startupConfigurations, initialPermalink) => {
             //var self = this;
             const domparser = new DOMParser();
 
@@ -3489,7 +3490,7 @@ window.lizMap = function() {
 
             // create the map
             initProjections(firstLayer);
-            createMap(startupConfigurations.featuresExtent);
+            createMap(startupConfigurations.featuresExtent, initialPermalink?.bbox);
             lizMap.map = map;
             lizMap.layers = layers;
             lizMap.baselayers = baselayers;
@@ -3548,7 +3549,10 @@ window.lizMap = function() {
             lizMap.events.triggerEvent("toolbarcreated", lizMap);
 
             // notify new ol map for modules init
-            lizMap.mainEventDispatcher.dispatch("lizmap.ol2.toolbarcreated");
+            lizMap.mainEventDispatcher.dispatch({
+                type:"lizmap.ol2.toolbarcreated",
+                initialPermalink: initialPermalink
+            });
 
             // Handle docks visibility
             document.querySelector('#mapmenu .nav').addEventListener('click', evt => {

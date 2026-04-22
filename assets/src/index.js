@@ -40,6 +40,8 @@ import litHTMLDep from './dependencies/lit-html.js';
 import { proj4 } from 'proj4rs/proj4.js';
 import { Constants } from './utils/Constants.js';
 
+import Permalink from './modules/Permalink.js';
+
 /**
  * Patch to mitigate [Violation] "Added non-passive event listener" warnings.
  * This ensures that OpenLayers 2 legacy touch events can still call preventDefault()
@@ -195,8 +197,70 @@ const initLizmapApp = () => {
                 configs: startupConfigurations
             });
 
+            let initialPermalink;
+            // load permalink information, if any, and get initial extent
+            if (window.location.hash) {
+                // short link permalink
+                if(mainLizmap.initialConfig.options.short_link_permalink) {
+                    const {repository, project} = globalThis['lizUrls'].params;
+                    let currentPermalink = null;
+                    // request specific permalink
+                    if (window.location.hash.indexOf('#permalink=') == 0) {
+                        const permalinkId = window.location.hash.substring(1).split('=')[1];
+                        const permalink = await Permalink.getPermalink(permalinkId);
+                        if (permalink && permalink.hasOwnProperty('error')) {
+                            lizMap.addMessage(permalink.error.reduce((p,c) => p +'\n' + c,''),'danger',true);
+                            // reset permalink hash
+                            history.replaceState(null, '', window.location.pathname + window.location.search);
+                        } else {
+                            if (permalink &&
+                                permalink.repository &&
+                                permalink.repository == repository &&
+                                permalink.project &&
+                                permalink.project == project
+                            ) {
+                                currentPermalink = permalink.plink;
+                            }
+                        }
+                    } else if (window.location.hash === '#map_status' && mainLizmap.initialConfig.options.automatic_permalink) {
+                        // read from local storage
+                        try {
+                            const storedPermalink = localStorage.getItem('lizmap_p_link');
+                            if (storedPermalink) {
+                                let currentPermalinkList = JSON.parse(storedPermalink);
+                                if(Array.isArray(currentPermalinkList)) {
+                                    let currentPermalinkObj = currentPermalinkList.filter(
+                                        (f) => f.repository == repository && f.project == project
+                                    );
+                                    if(currentPermalinkObj.length == 1) {
+                                        currentPermalink = currentPermalinkObj[0].plink;
+                                    }
+                                }
+                            }
+                        } catch(e) {
+                            console.warn(e);
+                            currentPermalink = null;
+                            history.replaceState(null, '', window.location.pathname + window.location.search);
+                        }
+                    }
+
+                    if (currentPermalink &&
+                        currentPermalink.bbox
+                        && Array.isArray(currentPermalink.bbox) &&
+                        currentPermalink.bbox.length == 4
+                    ){
+                        initialPermalink = currentPermalink;
+                    }
+                } else {
+                    // raw permalink
+                    let initialExtentPermalink = window.location.hash.substring(1).split('|')[0].split(',');
+                    if (initialExtentPermalink.length === 4) {
+                        initialPermalink = { bbox: initialExtentPermalink };
+                    }
+                }
+            }
             // complete lizMap intialization
-            lizMap.completeInitialization(startupConfigurations);
+            lizMap.completeInitialization(startupConfigurations, initialPermalink);
         }
 
         // end waiting, does not depend on ongoing asynchronous actions

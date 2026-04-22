@@ -46,6 +46,10 @@ class lizmapModuleInstaller extends jInstallerModule
             // Add geobookmark table
             $this->useDbProfile('jauth');
             $this->execSQLScript('sql/lizgeobookmark');
+
+            // Add permnalink table
+            $this->useDbProfile('jauth');
+            $this->execSQLScript('sql/lizpermalink');
         }
     }
 }

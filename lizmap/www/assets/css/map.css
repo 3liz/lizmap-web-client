@@ -4214,3 +4214,45 @@ These lines will be removed in the future, when the minimum target version will 
 .print-scale-container input {
   flex: 1;
 }
+
+/** server-side-permalink **/
+#permalink-back {
+    margin-bottom: 1em;
+}
+
+#lizmap-new-permalink {
+    font-size: 0.8em;
+}
+
+#permalink-generator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#permalink-history {
+    font-size: 0.9em;
+    position: relative;
+    max-height: 20vh;
+    overflow: auto;
+    padding:0.5em;
+    margin-top:0.5em;
+}
+
+.permalink-history-title {
+    font-weight: bold;
+}
+
+#permalink-history tr.new-entry {
+    background: #8fe18f;
+    font-style: italic;
+}
+
+#permalink-history tr.new-entry td {
+    background: none !important;
+}
+
+#permalink-history i {
+    cursor:pointer;
+}
+

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dao xmlns="http://jelix.org/ns/dao/1.0">
+    <datasources>
+        <primarytable name="permalink" realname="permalink" primarykey="id" />
+    </datasources>
+    <record>
+        <property name="id" fieldname="id" datatype="character varying" minlength="12" maxlength="12" required="true"/>
+        <property name="url_parameters" fieldname="url_parameters" datatype="text" required="true"/>
+        <property name="repository" fieldname="repository" datatype="text" required="true"/>
+        <property name="project" fieldname="project" datatype="text" required="true"/>
+        <property name="creation_date" fieldname="creation_date" datatype="timestamp" insertpattern="now()"/>
+        <property name="last_usage_date" fieldname="last_usage_date" datatype="timestamp" insertpattern="now()"/>
+    </record>
+    <factory>
+            <method name="updateLastUsageDate" type="update">
+            <parameter name="id" />
+            <values>
+                <value property="last_usage_date" expr="NOW()"/>
+            </values>
+            <conditions>
+                <eq property="id" expr="$id" />
+            </conditions>
+        </method>
+    </factory>
+</dao>

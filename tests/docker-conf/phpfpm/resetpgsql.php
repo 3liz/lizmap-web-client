@@ -20,6 +20,7 @@ while ($tryAgain) {
     pg_query($cnx, 'drop table if exists jacl2_rights cascade');
     pg_query($cnx, 'drop table if exists jacl2_subject');
     pg_query($cnx, 'drop table if exists geobookmark');
+    pg_query($cnx, 'drop table if exists permalink');
     pg_query($cnx, 'drop table if exists jlx_user');
     pg_query($cnx, 'drop table if exists log_counter');
     pg_query($cnx, 'drop table if exists log_detail');
