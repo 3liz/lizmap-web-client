@@ -28,4 +28,14 @@ class WMSRequestForTests extends WMSRequest
     {
         return '"getMedia?path='.$matches[1].'"';
     }
+
+    public function applyCheckBoxesToFormPopupForTests($html, $checkBoxFields)
+    {
+        return $this->applyCheckBoxesToFormPopup($html, $checkBoxFields);
+    }
+
+    public static function matchCheckBoxStateForTests($value, $checkedExpected, $uncheckedExpected)
+    {
+        return self::matchCheckBoxState($value, $checkedExpected, $uncheckedExpected);
+    }
 }

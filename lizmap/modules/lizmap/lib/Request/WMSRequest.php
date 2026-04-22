@@ -1382,6 +1382,11 @@ class WMSRequest extends OGCRequest
      * given layer, using the QGIS project's typed XML info (cached per request
      * by ProjectInfo::fromQgisPath).
      *
+     * Empty CheckedState/UncheckedState strings are preserved as-is; they
+     * signal to matchCheckBoxState() that the field is a boolean DB type (no
+     * custom text labels configured) and the boolean-string fallback should
+     * be applied.
+     *
      * @param string $layerId
      *
      * @return array<string, array{CheckedState: string, UncheckedState: string}>
@@ -1416,12 +1421,9 @@ class WMSRequest extends OGCRequest
                 continue;
             }
             $data = $config->getData();
-            $checked = array_key_exists('CheckedState', $data) ? (string) $data['CheckedState'] : '';
-            $unchecked = array_key_exists('UncheckedState', $data) ? (string) $data['UncheckedState'] : '';
-            // Fall back to QGIS defaults (see QgisFormControl::fillCheckboxValues)
             $checkBoxFields[(string) $field->name] = array(
-                'CheckedState' => $checked === '' ? 't' : $checked,
-                'UncheckedState' => $unchecked === '' ? 'f' : $unchecked,
+                'CheckedState' => array_key_exists('CheckedState', $data) ? (string) $data['CheckedState'] : '',
+                'UncheckedState' => array_key_exists('UncheckedState', $data) ? (string) $data['UncheckedState'] : '',
             );
         }
 
@@ -1441,7 +1443,7 @@ class WMSRequest extends OGCRequest
      *
      * @return string
      */
-    private function applyCheckBoxesToFormPopup($maptipHtml, $checkBoxFields)
+    protected function applyCheckBoxesToFormPopup($maptipHtml, $checkBoxFields)
     {
         if (!is_string($maptipHtml) || $maptipHtml === '' || !is_array($checkBoxFields) || count($checkBoxFields) === 0) {
             return $maptipHtml;
@@ -1475,18 +1477,22 @@ class WMSRequest extends OGCRequest
     }
 
     /**
-     * Match a raw attribute value against CheckBox widget states. Tries the
-     * configured CheckedState/UncheckedState first, then falls back to common
-     * boolean representations so that fields stored as boolean (which come
-     * through WMS/WFS as 'true'/'false') still render as checkboxes.
+     * Match a raw attribute value against CheckBox widget states.
+     *
+     * When both $checkedExpected and $uncheckedExpected are empty strings the
+     * field has no custom text labels configured in QGIS (boolean DB type).
+     * In that case a boolean-string fallback is applied because QGIS Server
+     * always serialises boolean fields as 'true'/'false' in WMS responses
+     * regardless of any display labels. When either state is non-empty the
+     * field uses custom text values, so only an exact match is attempted.
      *
      * @param string $value             raw attribute value
-     * @param string $checkedExpected   CheckedState configured in QGIS
-     * @param string $uncheckedExpected UncheckedState configured in QGIS
+     * @param string $checkedExpected   CheckedState configured in QGIS (empty = no custom label)
+     * @param string $uncheckedExpected UncheckedState configured in QGIS (empty = no custom label)
      *
      * @return null|string 'checked', 'unchecked', or null for no match
      */
-    private static function matchCheckBoxState($value, $checkedExpected, $uncheckedExpected)
+    protected static function matchCheckBoxState($value, $checkedExpected, $uncheckedExpected)
     {
         if ($checkedExpected !== '' && $value === $checkedExpected) {
             return 'checked';
@@ -1494,6 +1500,13 @@ class WMSRequest extends OGCRequest
         if ($uncheckedExpected !== '' && $value === $uncheckedExpected) {
             return 'unchecked';
         }
+
+        // Boolean fallback: only for fields with no custom configured states.
+        // If either state is set, the field stores text values — exact match only.
+        if ($checkedExpected !== '' || $uncheckedExpected !== '') {
+            return null;
+        }
+
         $normalized = strtolower(trim($value));
         if (in_array($normalized, array('true', 't', '1', 'yes', 'on'), true)) {
             return 'checked';
