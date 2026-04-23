@@ -195,6 +195,23 @@ class WFSRequestTest extends TestCase
             array('geocol', array('bbox' => 'test, not, 4'), ''),
             array('geocol', array('bbox' => 'test, not, num, eric'), ''),
             array('geocol', array('bbox' => '1  , 2.2323, 1234, 4242'), ' AND ST_Intersects("geocol", ST_MakeEnvelope(1,2.2323,1234,4242, SRID))'),
+
+            // WFS 1.1.0: CRS appended as 5th BBOX element → extracted and used as input SRID;
+            // envelope is then reprojected to the layer SRID (returned as 'SRID' by the mock).
+            array('geocol', array('bbox' => '421900,5397601,440825,5412976,EPSG:3857'), ' AND ST_Intersects("geocol", ST_Transform(ST_MakeEnvelope(421900,5397601,440825,5412976, 3857), SRID))'),
+
+            // Explicit SRSNAME param takes priority over the 5th BBOX element.
+            array('geocol', array('bbox' => '421900,5397601,440825,5412976,EPSG:3857', 'srsname' => 'EPSG:2154'), ' AND ST_Intersects("geocol", ST_Transform(ST_MakeEnvelope(421900,5397601,440825,5412976, 2154), SRID))'),
+
+            // 6 elements → still invalid, returns empty.
+            array('geocol', array('bbox' => '1,2,3,4,5,6'), ''),
+
+            // 5 elements but 5th is not a valid CRS string → a warning is logged and
+            // the input CRS falls back to the layer SRID (no ST_Transform wrapping).
+            array('geocol', array('bbox' => '1,2,3,4,notacrs'), ' AND ST_Intersects("geocol", ST_MakeEnvelope(1,2,3,4, SRID))'),
+
+            // Garbage SRSNAME param → logged and fallback to layer SRID (no ST_Transform).
+            array('geocol', array('bbox' => '1,2,3,4', 'srsname' => 'not-a-crs'), ' AND ST_Intersects("geocol", ST_MakeEnvelope(1,2,3,4, SRID))'),
         );
     }
 
@@ -213,8 +230,74 @@ class WFSRequestTest extends TestCase
             'geocol' => $geocol,
         );
         $wfs->qgisLayer = new LayerWFSForTests();
+        // Needed for the invalid-SRSNAME code path which calls logMessage.
+        $wfs->appContext = new ContextForTests();
         $sql = $wfs->getBboxSqlForTests($params);
-        $this->assertEquals($expectedSql, $sql);
+        $bboxDesc = isset($params['bbox']) ? $params['bbox'] : '(none)';
+        $srsDesc = isset($params['srsname']) ? $params['srsname'] : '(none)';
+        $this->assertEquals(
+            $expectedSql,
+            $sql,
+            "getBboxSql mismatch — geocol=\"{$geocol}\" bbox=\"{$bboxDesc}\" srsname=\"{$srsDesc}\"\n"
+            ."Expected SQL : \"{$expectedSql}\"\n"
+            ."Actual SQL   : \"{$sql}\""
+        );
+    }
+
+    public static function getSetGeojsonSqlOutputCrsData()
+    {
+        return array(
+            // Default output SRID (4326): geometry and bbox reprojected to EPSG:4326.
+            array(4326, 'ST_Transform(lg.geosource::geometry, 4326)', 'ST_Transform(ST_Envelope(lg.geosource::geometry), 4326)'),
+            // Map-projection SRID (3857): geometry and bbox reprojected to EPSG:3857.
+            array(3857, 'ST_Transform(lg.geosource::geometry, 3857)', 'ST_Transform(ST_Envelope(lg.geosource::geometry), 3857)'),
+            // Swiss national grid (2056).
+            array(2056, 'ST_Transform(lg.geosource::geometry, 2056)', 'ST_Transform(ST_Envelope(lg.geosource::geometry), 2056)'),
+        );
+    }
+
+    /**
+     * Verify that setGeojsonSql wraps both the feature geometry and the bounding-box
+     * geometry in ST_Transform(…, $outputSrid) so that WFS responses are returned in
+     * the CRS requested by the client.
+     *
+     * @dataProvider getSetGeojsonSqlOutputCrsData
+     *
+     * @param mixed $outputSrid
+     * @param mixed $expectedGeomSql
+     * @param mixed $expectedBboxSql
+     */
+    #[DataProvider('getSetGeojsonSqlOutputCrsData')]
+    public function testSetGeojsonSqlOutputCrs($outputSrid, $expectedGeomSql, $expectedBboxSql): void
+    {
+        $cnx = new jDbConnectionForTests();
+        $wfs = new WFSRequestForTests();
+        $wfs->datasource = (object) array(
+            'geocol' => 'geom',
+            'key' => 'id',
+            'table' => 'myschema.mytable',
+        );
+        $wfs->selectFields = array('"id"', '"name"');
+
+        $sql = $wfs->setGeojsonSqlForTests(
+            'SELECT "id", "name", "geom" AS "geosource" FROM myschema.mytable',
+            $cnx,
+            'mytable',
+            'geom',
+            $outputSrid
+        );
+
+        $this->assertStringContainsString(
+            $expectedGeomSql,
+            $sql,
+            "Feature geometry should be reprojected to SRID {$outputSrid}"
+        );
+        $this->assertStringContainsString(
+            $expectedBboxSql,
+            $sql,
+            "Bounding-box geometry should be reprojected to SRID {$outputSrid}"
+        );
+        $this->assertStringContainsString('ST_AsGeoJSON', $sql);
     }
 
     public static function getParseExpFilterData()
@@ -416,5 +499,88 @@ class WFSRequestTest extends TestCase
         $wfs->datasource = (object) array('sql' => $sql);
         $result = $wfs->getDatasourceSqlForTests();
         $this->assertEquals($expectedSql, $result);
+    }
+
+    public static function getSetGeojsonSqlOutputSridData()
+    {
+        return array(
+            // Default: no SRSNAME → output geometry and bbox use EPSG:4326.
+            array(4326, 'ST_Transform(lg.geosource::geometry, 4326)', 'ST_Transform(ST_Envelope(lg.geosource::geometry), 4326)'),
+            // SRSNAME = EPSG:3857 → output in Web Mercator.
+            array(3857, 'ST_Transform(lg.geosource::geometry, 3857)', 'ST_Transform(ST_Envelope(lg.geosource::geometry), 3857)'),
+            // SRSNAME = EPSG:2154 → output in Lambert-93.
+            array(2154, 'ST_Transform(lg.geosource::geometry, 2154)', 'ST_Transform(ST_Envelope(lg.geosource::geometry), 2154)'),
+        );
+    }
+
+    /**
+     * @dataProvider getSetGeojsonSqlOutputSridData
+     *
+     * @param mixed $outputSrid
+     * @param mixed $expectedGeomTransform
+     * @param mixed $expectedBboxTransform
+     */
+    #[DataProvider('getSetGeojsonSqlOutputSridData')]
+    public function testSetGeojsonSqlOutputSrid($outputSrid, $expectedGeomTransform, $expectedBboxTransform): void
+    {
+        $wfs = new WFSRequestForTests();
+        $wfs->datasource = (object) array('key' => 'id', 'geocol' => 'geom');
+        $wfs->selectFields = array('"id"');
+
+        $sql = $wfs->setGeojsonSqlForTests(
+            'SELECT "id", "geom" AS "geosource" FROM mytable',
+            new jDbConnectionForTests(),
+            'my_layer',
+            'geom',
+            $outputSrid
+        );
+
+        $this->assertStringContainsString(
+            $expectedGeomTransform,
+            $sql,
+            "outputSrid={$outputSrid}: geometry transform not found in generated SQL.\n"
+            ."Expected to contain : \"{$expectedGeomTransform}\"\n"
+            ."Generated SQL snippet:\n".substr($sql, strpos($sql, 'ST_Transform') ?: 0, 300)
+        );
+        $this->assertStringContainsString(
+            $expectedBboxTransform,
+            $sql,
+            "outputSrid={$outputSrid}: bbox transform not found in generated SQL.\n"
+            ."Expected to contain : \"{$expectedBboxTransform}\"\n"
+            ."Generated SQL snippet:\n".substr($sql, strpos($sql, 'ST_Envelope') ?: 0, 300)
+        );
+    }
+
+    public static function getParseSrsnameSridData()
+    {
+        return array(
+            // Typical EPSG short form.
+            array('EPSG:4326', 4326),
+            array('EPSG:3857', 3857),
+            array('EPSG:2154', 2154),
+            // OGC URN form.
+            array('urn:ogc:def:crs:EPSG::4326', 4326),
+            // Empty string → null.
+            array('', null),
+            // No digits at the end → null.
+            array('not-a-crs', null),
+            array('EPSG:foo', null),
+            array('EPSG:', null),
+            // Negative / sign prefix is not considered ctype_digit → null.
+            array('EPSG:-4326', null),
+        );
+    }
+
+    /**
+     * @dataProvider getParseSrsnameSridData
+     *
+     * @param mixed $srsname
+     * @param mixed $expected
+     */
+    #[DataProvider('getParseSrsnameSridData')]
+    public function testParseSrsnameSrid($srsname, $expected): void
+    {
+        $wfs = new WFSRequestForTests();
+        $this->assertSame($expected, $wfs->parseSrsnameSridForTests($srsname));
     }
 }

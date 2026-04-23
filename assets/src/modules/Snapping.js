@@ -9,6 +9,7 @@ import { mainEventDispatcher } from '../modules/Globals.js';
 import Edition from './Edition.js';
 import { MapRootState } from './state/MapLayer.js';
 import { TreeRootState } from './state/LayerTree.js';
+import WFS from './WFS.js';
 
 /**
  * @class
@@ -39,6 +40,7 @@ export default class Snapping {
         this._snapEnabled = {};
         this._snapToggled = {};
         this._snapLayers = [];
+        this._wfsErrorNotified = false;
 
         // Create layer to store snap features
         const snapLayer = new OpenLayers.Layer.Vector('snaplayer', {
@@ -54,6 +56,7 @@ export default class Snapping {
         });
 
         this._lizmap3.map.addLayer(snapLayer);
+        this._snapLayer = snapLayer;
 
         const snapControl = new OpenLayers.Control.Snapping({
             layer: this._edition.editLayer,
@@ -170,7 +173,7 @@ export default class Snapping {
         mainEventDispatcher.addListener(
             () => {
                 this.active = false;
-                this._lizmap3.map.getLayersByName('snaplayer')[0].destroyFeatures();
+                this._snapLayer.destroyFeatures();
                 this.config = undefined;
 
                 // Remove listener to moveend event to layers visibility event
@@ -186,41 +189,76 @@ export default class Snapping {
 
     getSnappingData () {
         // Empty snapping layer first
-        this._lizmap3.map.getLayersByName('snaplayer')[0].destroyFeatures();
+        this._snapLayer.destroyFeatures();
+
+        // Reset the once-per-refresh error notification flag so a new batch of
+        // requests can re-surface a user-visible message if WFS still fails.
+        this._wfsErrorNotified = false;
 
         // filter only visible layers and toggled layers on the the snap list
         const currentSnapLayers = this._snapLayers.filter(
             (layerId) => this._snapEnabled[layerId] && this._snapToggled[layerId]
         );
 
-        // TODO : group aync calls with Promises
+        // Request the map projection so QGIS Server reprojects server-side with full
+        // PROJ accuracy (including datum grid shifts). This prevents the ~cm coordinate
+        // drift that occurs when OL2 performs a client-side EPSG:4326 → map-projection
+        // transform using a simplified Helmert approximation instead of an NTv2 grid.
+        const mapProjection = this._lizmap3.map.getProjection();
+        const mapExtent = this._restrictToMapExtent ? this._lizmap3.map.getExtent() : null;
+        const wfs = new WFS();
+        const gFormat = new OpenLayers.Format.GeoJSON({ ignoreExtraDims: true });
+
         for (const snapLayer of currentSnapLayers) {
+            const layerConfigById = this._lizmap3.getLayerConfigById(snapLayer);
+            if (!layerConfigById || !layerConfigById[0]) continue;
 
-            lizMap.getFeatureData(this._lizmap3.getLayerConfigById(snapLayer)[0], null, null, 'geom', this._restrictToMapExtent, null, this._maxFeatures,
-                (fName, fFilter, fFeatures) => {
+            const layerName = layerConfigById[0];
+            const layerConf = this._lizmap3.config.layers[layerName];
+            if (!layerConf) continue;
 
-                    // Transform features
-                    const snapLayerConfig = lizMap.config.layers[fName];
-                    let snapLayerCrs = snapLayerConfig['featureCrs'];
-                    if (!snapLayerCrs) {
-                        snapLayerCrs = snapLayerConfig['crs'];
-                    }
+            // Resolve typename (same logic as getVectorLayerWfsUrl)
+            let typeName = layerName.split(' ').join('_');
+            if (layerConf.hasOwnProperty('shortname') && layerConf['shortname']) typeName = layerConf['shortname'];
+            else if (layerConf.hasOwnProperty('typename') && layerConf['typename']) typeName = layerConf['typename'];
 
-                    // TODO : use OL 6 instead ?
-                    const gFormat = new OpenLayers.Format.GeoJSON({
-                        ignoreExtraDims: true,
-                        externalProjection: snapLayerCrs,
-                        internalProjection: this._lizmap3.map.getProjection()
-                    });
+            const wfsOptions = {
+                VERSION: '1.1.0',
+                TYPENAME: typeName,
+                SRSNAME: mapProjection,
+                MAXFEATURES: this._maxFeatures,
+            };
 
-                    const tfeatures = gFormat.read({
-                        type: 'FeatureCollection',
-                        features: fFeatures
-                    });
+            // Apply existing layer filter if present (e.g. login-based filter)
+            if (layerConf.hasOwnProperty('request_params') && layerConf['request_params'].hasOwnProperty('filter')) {
+                const layerFilter = layerConf['request_params']['filter'];
+                if (layerFilter) {
+                    wfsOptions['EXP_FILTER'] = layerFilter.replace(layerName + ':', '');
+                }
+            }
 
-                    // Add features
-                    this._lizmap3.map.getLayersByName('snaplayer')[0].addFeatures(tfeatures);
+            // Append CRS code so the server interprets the extent in the map projection
+            if (mapExtent) {
+                wfsOptions['BBOX'] = [mapExtent.left, mapExtent.bottom, mapExtent.right, mapExtent.top].join(',') + ',' + mapProjection;
+            }
+
+            wfs.getFeature(wfsOptions).then(data => {
+                if (!data || !Array.isArray(data.features)) {
+                    // The WFS endpoint returned something (no rejection) but not a
+                    // FeatureCollection — most likely an OGC ExceptionReport wrapped as
+                    // JSON. Treat as a failure so the user sees that snap may be incomplete.
+                    this._notifySnapWfsError(layerName, data);
+                    return;
+                }
+                // Features are already in map projection — no client-side reprojection needed.
+                const tfeatures = gFormat.read({
+                    type: 'FeatureCollection',
+                    features: data.features
                 });
+                this._snapLayer.addFeatures(tfeatures);
+            }).catch(err => {
+                this._notifySnapWfsError(layerName, err);
+            });
         }
 
         this.snapLayersRefreshable = false;
@@ -301,7 +339,7 @@ export default class Snapping {
         }
 
         // Set snap layer visibility
-        this._lizmap3.map.getLayersByName('snaplayer')[0].setVisibility(this._active);
+        this._snapLayer.setVisibility(this._active);
 
         mainEventDispatcher.dispatch('snapping.active');
     }
