@@ -81,6 +81,8 @@ describe('OptionsConfig', function () {
         expect(opt.wms_single_request_for_all_layers).to.be.eq(false)
         // Default value for basemaps excluded from the single WMS request
         expect(opt.exclude_basemaps_from_single_wms).to.be.eq(false)
+        // Default value for short permalink mode option
+        expect(opt.short_link_permalink).to.be.eq(false)
     })
 
     it('use_native_zoom_levels', function () {

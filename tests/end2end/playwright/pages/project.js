@@ -415,22 +415,48 @@ export class ProjectPage extends BasePage {
     }
 
     /**
+     * Waits for a permalink get request
+     * @returns {Promise<Request>} The permalink request
+     */
+    async waitForPermalinkGetRequest() {
+        return this.page.waitForRequest(
+            request => request.method() === 'GET' &&
+            request.url().includes('/permalink') === true &&
+            request.url().includes('id') === true
+        );
+    }
+
+    /**
+     * Waits for a permalink add request
+     * @returns {Promise<Request>} The permalink request
+     */
+    async waitForPermalinkAddRequest() {
+        return this.page.waitForRequest(
+            request => request.method() === 'POST' &&
+            request.url().includes('/permalink') === true &&
+            request.postData()?.includes('permalink') === true
+        );
+    }
+
+    /**
      * open function
      * Open the URL for the given project and repository
      * @param {boolean} skip_plugin_update_warning Skip UI warning about QGIS plugin version, false by default.
+     * @param {string} hash Load page with url hash.
      */
-    async open(skip_plugin_update_warning = false){
+    async open(skip_plugin_update_warning = false, hash = ''){
         // By default, do not display warnings about old QGIS plugin or outdated Action JSON file
-        await this.openWithExtraParams({skip_plugin_update_warning: skip_plugin_update_warning});
+        await this.openWithExtraParams({skip_plugin_update_warning: skip_plugin_update_warning}, hash);
     }
 
     /**
      * Open the URL for the given project and repository with extra parameters
      * @param {object} params Parameters to add to the default repository and project parameters.
      * Example: {skip_plugin_update_warning: true}
+     * @param {string} hash Load page with url hash
      * @returns {Promise<void>}
      */
-    async openWithExtraParams(params){
+    async openWithExtraParams(params, hash = ''){
         const searchParams = new URLSearchParams();
         searchParams.set('repository', this.repository);
         searchParams.set('project', this.project);
@@ -441,7 +467,7 @@ export class ProjectPage extends BasePage {
             searchParams.set(key, value);
         }
         await gotoMap(
-            `/index.php/view/map?${searchParams.toString()}`,
+            `/index.php/view/map?${searchParams.toString()}${hash ? hash : ''}`,
             this.page,
             this.mapMustLoad,
             this.layersInTreeView,
@@ -959,5 +985,128 @@ export class ProjectPage extends BasePage {
      */
     async dblClickOnMapLegacy(x, y){
         await this.mapOl2.dblclick({position: {x: x, y: y}});
+    }
+
+    /**
+     * Open permalink UI panel
+     * @returns {Promise<void>}
+     */
+    async openPermalinkPanel(){
+        await this.page.locator('#button-permaLink').click();
+    }
+
+    /**
+     * Checks stored permalink object
+     * @param {object} expectedPermalink Permalink values to check
+     * @returns {Promise<void>}
+     */
+    async checkShortLinkPermalink(expectedPermalink){
+        const permalink = await this.page.evaluate(() => localStorage.getItem('lizmap_p_link'));
+        expect(permalink).not.toBe(null);
+        const permalinkJSON = JSON.parse(permalink);
+        expect(permalinkJSON).not.toBe(null);
+        console.log(permalinkJSON[0].plink.bbox);
+        expect(permalinkJSON).toHaveLength(1);
+        expect(permalinkJSON[0]).toHaveProperty('repository', expectedPermalink.repository);
+        expect(permalinkJSON[0]).toHaveProperty('project', expectedPermalink.project);
+        expect(permalinkJSON[0]).toHaveProperty('plink');
+        expect(permalinkJSON[0].plink).toHaveProperty('bbox');
+        expect(permalinkJSON[0].plink.bbox.join(',')).toMatch(expectedPermalink.bbox);
+        expect(permalinkJSON[0].plink).toHaveProperty('layers');
+        expect(permalinkJSON[0].plink.layers.join(',')).toBe(expectedPermalink.layers);
+        expect(permalinkJSON[0].plink).toHaveProperty('opacities');
+        expect(permalinkJSON[0].plink.opacities.join(',')).toBe(expectedPermalink.opacities);
+        expect(permalinkJSON[0].plink).toHaveProperty('styles');
+        expect(permalinkJSON[0].plink.styles.join(',')).toBe(expectedPermalink.styles);
+    }
+
+    /**
+     * Checks permalink history table record
+     * @param {string} hash Permalink hash
+     * @returns {Promise<void>}
+     */
+    async inspectPermalinkHistoryTableRecord(hash){
+        expect(this.page.locator(`#permalink-history table tr[data-share="${hash}"]`)).toHaveCount(1);
+        const tds = this.page.locator(`#permalink-history table tr[data-share="${hash}"] td`);
+        expect(tds).toHaveCount(4);
+        expect(await tds.nth(0).textContent()).toBe(hash);
+        expect(tds.nth(1)).toBeVisible();
+        expect(tds.nth(2)).toBeVisible();
+        expect(tds.nth(3)).toBeVisible();
+    }
+
+    /**
+     * Checks permalink copy to clipboard functionality
+     * @param {string} hash Permalink hash
+     * @returns {Promise<void>}
+     */
+    async copyPermalinkToClipboard(hash){
+        const td = this.page.locator(`#permalink-history table tr[data-share="${hash}"] td`).nth(2);
+        await td.locator('i').click()
+        const clipboardContent = await this.page.evaluate(() => navigator.clipboard.readText());
+        const check_url = `http://localhost:8130/index.php/view/map?repository=${this.repository}&project=${this.project}#permalink=${hash}`;
+        expect(clipboardContent).toBe(check_url);
+    }
+
+    /**
+     * Checks permalink share UI panel
+     * @param {string} hash Permalink hash
+     * @returns {Promise<void>}
+     */
+    async inspectPermalinkSharePanel(hash){
+        await this.page.locator(`#permalink-history table tr[data-share="${hash}"] td`).nth(3).click();
+
+        expect(this.page.locator('#permalink-back')).toBeVisible();
+        const check_url = `http://localhost:8130/index.php/view/map?repository=${this.repository}&project=${this.project}#permalink=${hash}`;
+        expect(this.page.locator('#input-share-permalink')).toHaveValue(check_url);
+
+        await this.page.locator('#permalink-box [data-bs-target="#tab-embed-permalink"]').click();
+        expect(this.page.locator('#input-embed-permalink')).toBeVisible();
+        let embed_value = await this.page.locator('#input-embed-permalink').inputValue();
+
+        expect(embed_value.indexOf('width="400"')).toBeGreaterThan(-1);
+        expect(embed_value.indexOf('height="300"')).toBeGreaterThan(-1);
+        expect(embed_value.indexOf(`repository=${this.repository}`)).toBeGreaterThan(-1);
+        expect(embed_value.indexOf(`project=${this.project}`)).toBeGreaterThan(-1);
+        expect(embed_value.indexOf(`#permalink=${hash}"`)).toBeGreaterThan(-1);
+
+        // change iframe size
+        await this.page.locator('#select-embed-permalink').selectOption('m');
+
+        embed_value = await this.page.locator('#input-embed-permalink').inputValue();
+
+        expect(embed_value.indexOf('width="600"')).toBeGreaterThan(-1);
+        expect(embed_value.indexOf('height="450"')).toBeGreaterThan(-1);
+        expect(embed_value.indexOf(`repository=${this.repository}`)).toBeGreaterThan(-1);
+        expect(embed_value.indexOf(`project=${this.project}`)).toBeGreaterThan(-1);
+        expect(embed_value.indexOf(`#permalink=${hash}"`)).toBeGreaterThan(-1);
+
+        await this.page.locator('#select-embed-permalink').selectOption('l');
+
+        embed_value = await this.page.locator('#input-embed-permalink').inputValue();
+
+        expect(embed_value.indexOf('width="800"')).toBeGreaterThan(-1);
+        expect(embed_value.indexOf('height="600"')).toBeGreaterThan(-1);
+        expect(embed_value.indexOf(`repository=${this.repository}`)).toBeGreaterThan(-1);
+        expect(embed_value.indexOf(`project=${this.project}`)).toBeGreaterThan(-1);
+        expect(embed_value.indexOf(`#permalink=${hash}"`)).toBeGreaterThan(-1);
+
+        await this.page.locator('#select-embed-permalink').selectOption('p');
+        await this.page.locator('#input-embed-width-permalink').fill('250');
+        await this.page.locator('#input-embed-height-permalink').fill('367');
+        embed_value = await this.page.locator('#input-embed-permalink').inputValue();
+
+        expect(embed_value.indexOf('width="250"')).toBeGreaterThan(-1);
+        expect(embed_value.indexOf('height="367"')).toBeGreaterThan(-1);
+        expect(embed_value.indexOf(`repository=${this.repository}`)).toBeGreaterThan(-1);
+        expect(embed_value.indexOf(`project=${this.project}`)).toBeGreaterThan(-1);
+        expect(embed_value.indexOf(`#permalink=${hash}"`)).toBeGreaterThan(-1);
+        await this.page.locator('#input-embed-width-permalink').fill('800');
+        await this.page.locator('#input-embed-height-permalink').fill('600');
+
+        await this.page.locator('#select-embed-permalink').selectOption('s');
+
+        // back to permalink history
+        await this.page.locator('#permalink-back').click();
     }
 }
