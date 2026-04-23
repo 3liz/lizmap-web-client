@@ -900,14 +900,27 @@ window.lizMap = function() {
                 lizMap.mainLizmap.popup.mapPopup.setPosition([eventLonLatInfo.lon, eventLonLatInfo.lat]);
             }
 
-            // Activate Boostrap 2 tabs here as they are not
-            // automatically activated when created in popup anchored
-            $('#' + popupContainerId + ' a[data-toggle="tab"]').on( 'click',function (e) {
-                e.preventDefault();
-                $(this).tab('show');
-            });
+            document.getElementById('liz_layer_popup_contentDiv')
+                .querySelectorAll('a[data-toggle="tab"]')
+                .forEach(el => {
+                    el.addEventListener('click', e => {
+                        e.preventDefault();
+                        bootstrap.Tab.getOrCreateInstance(el).show();
+                    });
+                });
         }
         lastLonLatInfo = eventLonLatInfo;
+
+        // Activate tabs in dock popup (popupcontent)
+        if (popupContainerId) {
+            document.querySelectorAll('#' + popupContainerId + ' a[data-toggle="tab"]')
+                .forEach(el => {
+                    el.addEventListener('click', e => {
+                        e.preventDefault();
+                        bootstrap.Tab.getOrCreateInstance(el).show();
+                    });
+                });
+        }
 
         // Display related children objects
         addChildrenFeatureInfo( popup, popupContainerId );
