@@ -29,7 +29,7 @@
     "@eslint/js": "^10.0.x",
     "@nieuwlandgeo/sldreader": "^1.0.0",
     "@playwright/test": "^1.59.x",
-    "@rspack/cli": "~1.7.x",
+    "@rspack/cli": "~2.0.x",
     "@rspack/core": "~1.7.x",
     "@stylistic/eslint-plugin": "^5.10.0",
     "@turf/line-split": "^7.3.x",
