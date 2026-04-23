@@ -344,13 +344,15 @@ export class ProjectPage extends BasePage {
 
     /**
      * Waits for a GetFeature request
+     * @param {undefined|string} featureType Optional TYPENAME to filter on
      * @returns {Promise<Request>} The GetFeature request
      */
-    async waitForGetFeatureRequest() {
+    async waitForGetFeatureRequest(featureType = undefined) {
         return this.page.waitForRequest(
             request => request.method() === 'POST' &&
             request.postData()?.includes('WFS') === true &&
-            request.postData()?.includes('GetFeature') === true
+            request.postData()?.includes('GetFeature') === true &&
+            (featureType === undefined || request.postData()?.includes(featureType) === true)
         );
     }
 

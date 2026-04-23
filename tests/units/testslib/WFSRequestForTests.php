@@ -60,4 +60,14 @@ class WFSRequestForTests extends WFSRequest
     {
         return $this->validateFilter($filter);
     }
+
+    public function setGeojsonSqlForTests($sql, $cnx, $typename, $geometryname, int $outputSrid = 4326)
+    {
+        return $this->setGeojsonSql($sql, $cnx, $typename, $geometryname, $outputSrid);
+    }
+
+    public function parseSrsnameSridForTests(string $srsname): ?int
+    {
+        return $this->parseSrsnameSrid($srsname);
+    }
 }
