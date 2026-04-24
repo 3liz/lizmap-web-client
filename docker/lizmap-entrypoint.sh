@@ -127,13 +127,13 @@ sed -i "/^;clear_env =/c\clear_env = no" $PHP_INI_DIR/php-fpm.d/www.conf
 
 # first arg is `-f` or `--some-option`
 if [ "${1#-}" != "$1" ]; then
-	set -- php-fpm81 -F -O "$@"
+	set -- php-fpm83 -F -O "$@"
 fi
 
 # For compatibility
 if [ $1 == "php-fpm" ]; then
     shift
-    set -- php-fpm81 -F -O "$@"
+    set -- php-fpm83 -F -O "$@"
 fi
 
 echo "Create the account for $LIZMAP_ADMIN_LOGIN"
