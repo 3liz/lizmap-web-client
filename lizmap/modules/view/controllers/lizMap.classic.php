@@ -217,6 +217,7 @@ class lizMapCtrl extends jController
             'svgSprite' => $bp.'assets/svg/sprite.svg?_r='.jApp::config()->urlengine['assetsRevision'],
             'basepath' => $bp,
             'geobookmark' => jUrl::get('lizmap~geobookmark:index'),
+            'short_link_permalink' => jUrl::get('lizmap~permalink:index'),
             'service' => jUrl::get('lizmap~service:index').'?repository='.$repository.'&project='.$project,
             'resourceUrlReplacement' => array(),
         );

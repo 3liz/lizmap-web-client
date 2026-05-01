@@ -9,7 +9,13 @@
   </h3>
 
   <div class="menu-content">
-    <div id="permalink-box">
+    <div id="permalink-generator">
+        <button type="button" class="btn" id="lizmap-new-permalink">{@view~dictionnary.permalink.new@}</button>
+        <div id="permalink-history">
+        </div>
+    </div>
+    <div id="permalink-box" style="display:none;">
+        <button id="permalink-back" class="btn btn-sm">{@view~dictionnary.permalink.back@}</button>
         <ul class="nav nav-tabs permalink-tabs" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" data-bs-target="#tab-share-permalink" data-bs-toggle="tab" title="{@view~map.permalink.share.tab.title@}">{@view~map.permalink.share.tab@}</button>
@@ -44,14 +50,13 @@
     {if $gbContent}
     <br/>
     <div id="geobookmark-container">
-      {$gbContent}
+        {$gbContent}
     </div>
-
     <div>
-      <form id="geobookmark-form">
-        <input type="text" class="form-control" name="bname" placeholder="{@view~map.permalink.geobookmark.name.placeholder@}">
-        <input type="submit" class="btn-geobookmark-add btn btn-sm" title="{@view~map.permalink.geobookmark.button.add@}" value="{@view~map.permalink.geobookmark.button.add@}"/>
-      </form>
+        <form id="geobookmark-form">
+            <input type="text" class="form-control" name="bname" placeholder="{@view~map.permalink.geobookmark.name.placeholder@}">
+            <input type="submit" class="btn-geobookmark-add btn btn-sm" title="{@view~map.permalink.geobookmark.button.add@}" value="{@view~map.permalink.geobookmark.button.add@}"/>
+        </form>
     </div>
     {/if}
 

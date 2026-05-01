@@ -14,6 +14,7 @@
 
 
     <url pathinfo="/geobookmark"       action="geobookmark:index"/> <!-- /:repository/:project/ -->
+    <url pathinfo="/permalink"       action="permalink:index"/>
 
     <url pathinfo="/ign"       action="ign:address"/> <!-- /:repository/:project/ -->
     <url pathinfo="/osm"       action="osm:nominatim"/>
