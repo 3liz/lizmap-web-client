@@ -43,6 +43,9 @@ class lizmapModuleInstaller extends jInstallerModule
             $this->useDbProfile('lizlog');
             $this->execSQLScript('sql/lizlog');
 
+            // Add announcement tables
+            $this->execSQLScript('sql/lizannouncement');
+
             // Add geobookmark table
             $this->useDbProfile('jauth');
             $this->execSQLScript('sql/lizgeobookmark');
