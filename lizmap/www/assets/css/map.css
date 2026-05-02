@@ -3009,6 +3009,18 @@ lizmap-mouse-position > div.coords-unit > select{
   z-index: 1;
 }
 
+#tabdigitization {
+  padding-top: 5px;
+}
+
+#edition-geomtool-container,
+#edition-geomtool-restart-drawing,
+lizmap-paste-geom > button,
+lizmap-paste-stored-geom > button {
+  margin-left: 5px;
+}
+
+
 .edition-tabs .nav-pills a {
   color: black;
 }
@@ -3141,6 +3153,7 @@ lizmap-mouse-position > div.coords-unit > select{
 #dock #edition-point-coord-form{
   margin-bottom: 5px;
 }
+
 
 #edition-point-coord-form-group h3{
   color: black;
@@ -3681,14 +3694,14 @@ lizmap-fullscreen button svg {
   margin: auto;
 }
 
-lizmap-paste-geom {
-  display: inline-block;
+lizmap-paste-geom,
+lizmap-paste-stored-geom {
+  display: contents;
 }
 
 lizmap-paste-geom svg {
-  width: 24px;
-  height: 24px;
-  display: inline-block;
+  width: 20px;
+  height: 20px;
   vertical-align: text-top;
 }
 
