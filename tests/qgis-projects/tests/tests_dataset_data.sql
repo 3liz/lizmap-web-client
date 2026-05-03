@@ -244,6 +244,8 @@ COPY tests_projects.filter_layer_by_user_edition_only (gid, "user", "group", geo
 --
 
 COPY tests_projects.form_advanced_point (id, geom, has_photo, website, quartier, sousquartier) FROM stdin;
+1	01010000206A08000014AE47614D842741713D0AD737F45741	t	\N	\N	\N
+2	01010000206A08000014AE47614D8427413D0AD7A37FF45741	f	\N	\N	\N
 \.
 
 
@@ -6167,7 +6169,7 @@ SELECT pg_catalog.setval('tests_projects.filter_layer_by_user_gid_seq', 3, true)
 -- Name: form_advanced_point_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
 --
 
-SELECT pg_catalog.setval('tests_projects.form_advanced_point_id_seq', 1, false);
+SELECT pg_catalog.setval('tests_projects.form_advanced_point_id_seq', 2, true);
 
 
 --

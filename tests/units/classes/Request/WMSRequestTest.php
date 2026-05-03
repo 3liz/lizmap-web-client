@@ -364,4 +364,131 @@ class WMSRequestTest extends TestCase
         );
         $this->assertCount(0, $matches);
     }
+
+    public static function matchCheckBoxStateData()
+    {
+        // getCheckBoxFieldsForLayer() stores the raw values from the .qgs file.
+        // Empty strings signal a boolean DB field (no custom labels configured);
+        // non-empty strings are user-configured text labels (exact match only).
+        return array(
+            // ── Exact match against user-configured states ─────────────────
+            array('t', 't', 'f', 'checked'),
+            array('f', 't', 'f', 'unchecked'),
+            // ── Boolean fallback: both states empty → boolean DB field ──────
+            // QGIS WMS serialises boolean fields as 'true'/'false'
+            array('true', '', '', 'checked'),
+            array('TRUE', '', '', 'checked'),
+            array('t', '', '', 'checked'),
+            array('1', '', '', 'checked'),
+            array('yes', '', '', 'checked'),
+            array('on', '', '', 'checked'),
+            array('false', '', '', 'unchecked'),
+            array('f', '', '', 'unchecked'),
+            array('0', '', '', 'unchecked'),
+            array('no', '', '', 'unchecked'),
+            array('off', '', '', 'unchecked'),
+            // Null-like (boolean field, no value stored)
+            array('', '', '', 'unchecked'),
+            array('null', '', '', 'unchecked'),
+            array('()', '', '', 'unchecked'),
+            // ── Fallback suppressed when custom states are configured ───────
+            // A boolean-like value must NOT match when the field has text labels
+            array('true', 't', 'f', null),
+            array('t', 'Yes', 'No', null),
+            array('1', 'on', 'off', null),
+            // ── Unknown value with no configured states ─────────────────────
+            array('maybe', '', '', null),
+            array('2', '', '', null),
+        );
+    }
+
+    /**
+     * @dataProvider matchCheckBoxStateData
+     *
+     * @param mixed       $value
+     * @param mixed       $checked
+     * @param mixed       $unchecked
+     * @param null|string $expected
+     */
+    #[DataProvider('matchCheckBoxStateData')]
+    public function testMatchCheckBoxState($value, $checked, $unchecked, $expected): void
+    {
+        $result = WMSRequestForTests::matchCheckBoxStateForTests($value, $checked, $unchecked);
+        $this->assertSame($expected, $result);
+    }
+
+    public static function applyCheckBoxesToFormPopupData()
+    {
+        // getCheckBoxFieldsForLayer() stores empty strings for boolean DB fields
+        // (no custom text labels configured in QGIS). QGIS WMS serialises boolean
+        // fields as 'true'/'false'; the boolean fallback in matchCheckBoxState()
+        // handles this when both configured states are empty.
+        $boolFields = array(
+            'has_photo' => array('CheckedState' => '', 'UncheckedState' => ''),
+            'bool_field' => array('CheckedState' => '', 'UncheckedState' => ''),
+        );
+        // Custom text labels: exact match only, boolean-like values must not match.
+        $textFields = array(
+            'status' => array('CheckedState' => 'Yes', 'UncheckedState' => 'No'),
+        );
+
+        $spanTrue = '<span id="dd_jforms_view_edition_has_photo" class="jforms-control-input">true</span>';
+        $spanFalse = '<span id="dd_jforms_view_edition_has_photo" class="jforms-control-input">false</span>';
+        $spanBoolTrue = '<span id="dd_jforms_view_edition_bool_field" class="jforms-control-input">true</span>';
+        $spanCustomYes = '<span id="dd_jforms_view_edition_status" class="jforms-control-input">Yes</span>';
+        $spanCustomFallback = '<span id="dd_jforms_view_edition_status" class="jforms-control-input">true</span>';
+        $spanUnknownField = '<span id="dd_jforms_view_edition_other" class="jforms-control-input">true</span>';
+        $spanUnknownValue = '<span id="dd_jforms_view_edition_has_photo" class="jforms-control-input">maybe</span>';
+
+        $checkedHtml = '<input type="checkbox" disabled="disabled" checked="checked" class="lizmap-popup-checkbox-widget">';
+        $uncheckedHtml = '<input type="checkbox" disabled="disabled" class="lizmap-popup-checkbox-widget">';
+
+        return array(
+            'WMS true → checked'                    => array(
+                $spanTrue, $boolFields,
+                '<span id="dd_jforms_view_edition_has_photo" class="jforms-control-input">'.$checkedHtml.'</span>',
+            ),
+            'WMS false → unchecked'                 => array(
+                $spanFalse, $boolFields,
+                '<span id="dd_jforms_view_edition_has_photo" class="jforms-control-input">'.$uncheckedHtml.'</span>',
+            ),
+            'bool_field true → checked'             => array(
+                $spanBoolTrue, $boolFields,
+                '<span id="dd_jforms_view_edition_bool_field" class="jforms-control-input">'.$checkedHtml.'</span>',
+            ),
+            'custom Yes → checked'                  => array(
+                $spanCustomYes, $textFields,
+                '<span id="dd_jforms_view_edition_status" class="jforms-control-input">'.$checkedHtml.'</span>',
+            ),
+            'fallback suppressed for text field'    => array(
+                $spanCustomFallback, $textFields,
+                $spanCustomFallback,
+            ),
+            'field not in checkBoxFields'           => array(
+                $spanUnknownField, $boolFields,
+                $spanUnknownField,
+            ),
+            'value not recognised'                  => array(
+                $spanUnknownValue, $boolFields,
+                $spanUnknownValue,
+            ),
+            'empty html passthrough'                => array('', $boolFields, ''),
+            'empty fields passthrough'              => array($spanTrue, array(), $spanTrue),
+        );
+    }
+
+    /**
+     * @dataProvider applyCheckBoxesToFormPopupData
+     *
+     * @param mixed $html
+     * @param mixed $fields
+     * @param mixed $expected
+     */
+    #[DataProvider('applyCheckBoxesToFormPopupData')]
+    public function testApplyCheckBoxesToFormPopup($html, $fields, $expected): void
+    {
+        $wms = new WMSRequestForTests(new ProjectForOGCForTests(), array(), null);
+        $result = $wms->applyCheckBoxesToFormPopupForTests($html, $fields);
+        $this->assertSame($expected, $result);
+    }
 }
