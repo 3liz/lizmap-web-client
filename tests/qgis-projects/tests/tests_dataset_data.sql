@@ -5851,6 +5851,27 @@ COPY tests_projects.single_wms_tiled_baselayer (id, title, geom) FROM stdin;
 
 
 --
+-- Data for Name: snap_datum_shift_edit; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.snap_datum_shift_edit (id, geom) FROM stdin;
+1	0101000020110F0000680A9DB7594B1A416D4504F7CC9F5441
+2	0101000020110F00000EC15E0E887F1A413A1E1212DAA05441
+\.
+
+
+--
+-- Data for Name: snap_datum_shift_target; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.snap_datum_shift_target (id, geom) FROM stdin;
+1	01010000206A0800000CABB8DC257D2741B0C99475DAF45741
+2	01010000206A080000F772A066F09D2741A7A0600F02F55741
+3	01010000206A0800002828F4A0A38727417052C50879F75741
+\.
+
+
+--
 -- Data for Name: sousquartiers; Type: TABLE DATA; Schema: tests_projects; Owner: -
 --
 
@@ -6490,6 +6511,20 @@ SELECT pg_catalog.setval('tests_projects.single_wms_polygons_id_seq', 3, true);
 --
 
 SELECT pg_catalog.setval('tests_projects.single_wms_tiled_baselayer_id_seq', 1, true);
+
+
+--
+-- Name: snap_datum_shift_edit_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.snap_datum_shift_edit_id_seq', 2, true);
+
+
+--
+-- Name: snap_datum_shift_target_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.snap_datum_shift_target_id_seq', 3, true);
 
 
 --

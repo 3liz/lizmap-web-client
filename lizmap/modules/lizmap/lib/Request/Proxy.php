@@ -210,13 +210,18 @@ class Proxy
         ksort($data);
 
         // Round bbox params to avoid rounding issues with cache
+        // Preserve non-numeric elements (e.g. WFS 1.1.0 5-element BBOX CRS suffix like "EPSG:3857")
         if (array_key_exists('bbox', $data)) {
             $bboxExp = explode(',', $data['bbox']);
             $nBbox = array();
             foreach ($bboxExp as $val) {
-                $val = (float) $val;
-                $val = round($val, 6);
-                $nBbox[] = str_replace(',', '.', (string) $val);
+                $val = trim($val);
+                if (is_numeric($val)) {
+                    $val = round((float) $val, 6);
+                    $nBbox[] = str_replace(',', '.', (string) $val);
+                } else {
+                    $nBbox[] = $val;
+                }
             }
             $data['bbox'] = implode(',', $nBbox);
         }

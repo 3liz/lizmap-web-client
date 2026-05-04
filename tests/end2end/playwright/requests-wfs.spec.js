@@ -1021,6 +1021,76 @@ test.describe('WFS Requests @requests @readonly', () => {
         expect(feature.properties).toHaveProperty('id', 1);
     });
 
+    test('WFS 1.1.0 GetFeature with 5-element BBOX (SRSNAME as CRS suffix) returns geometry in requested CRS', async({ request }) => {
+        // WFS 1.1.0 encodes the coordinate reference system as a 5th comma-separated
+        // element of the BBOX parameter ("xmin,ymin,xmax,ymax,EPSG:xxxx") rather than
+        // as a separate SRSNAME parameter.  The PostGIS WFS path must parse that element,
+        // reproject the filter envelope, AND return the output geometries in that CRS.
+        //
+        // Project: form_edition_snap_datum_shift
+        //   - map projection:   EPSG:3857  (Web Mercator)
+        //   - snap layer CRS:   EPSG:2154  (Lambert-93, stored CRS)
+        // BBOX covers the test features; coordinates are in EPSG:3857.
+        const params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'form_edition_snap_datum_shift',
+        });
+        const url = `/index.php/lizmap/service?${params}`;
+
+        // --- WFS 1.1.0: CRS embedded as 5th BBOX element ---
+        let response = await request.post(url, {
+            form: {
+                SERVICE: 'WFS',
+                VERSION: '1.1.0',
+                REQUEST: 'GetFeature',
+                TYPENAME: 'snap_datum_shift_target',
+                BBOX: '421900,5397601,440825,5412976,EPSG:3857',
+                OUTPUTFORMAT: 'GeoJSON',
+            }
+        });
+        expect(response.ok()).toBeTruthy();
+        expect(response.status()).toBe(200);
+        expect(response.headers()['content-type']).toContain('application/vnd.geo+json');
+
+        let body = await response.json();
+        expect(body).toHaveProperty('type', 'FeatureCollection');
+        expect(body.features.length).toBeGreaterThan(0);
+
+        // Geometry coordinates must be in EPSG:3857 range for this area.
+        // EPSG:4326 would give x ≈ 3.9, EPSG:2154 x ≈ 769 000 — both wrong.
+        for (const feature of body.features) {
+            const coords = feature.geometry.coordinates.flat(Infinity);
+            const xs = coords.filter((_, i) => i % 2 === 0);
+            const ys = coords.filter((_, i) => i % 2 === 1);
+            for (const x of xs) {
+                expect(x, `x=${x} outside expected EPSG:3857 range [420000–445000]`).toBeGreaterThan(420000);
+                expect(x, `x=${x} outside expected EPSG:3857 range [420000–445000]`).toBeLessThan(445000);
+            }
+            for (const y of ys) {
+                expect(y, `y=${y} outside expected EPSG:3857 range [5390000–5420000]`).toBeGreaterThan(5390000);
+                expect(y, `y=${y} outside expected EPSG:3857 range [5390000–5420000]`).toBeLessThan(5420000);
+            }
+        }
+
+        // --- WFS 1.1.0: separate SRSNAME parameter (equivalent) ---
+        response = await request.post(url, {
+            form: {
+                SERVICE: 'WFS',
+                VERSION: '1.1.0',
+                REQUEST: 'GetFeature',
+                TYPENAME: 'snap_datum_shift_target',
+                BBOX: '421900,5397601,440825,5412976',
+                SRSNAME: 'EPSG:3857',
+                OUTPUTFORMAT: 'GeoJSON',
+            }
+        });
+        expect(response.ok()).toBeTruthy();
+        expect(response.status()).toBe(200);
+        body = await response.json();
+        expect(body).toHaveProperty('type', 'FeatureCollection');
+        expect(body.features.length).toBeGreaterThan(0);
+    });
+
     test('WFS GetFeature TYPENAME && EXP_FILTER', async({ request }) => {
         let params = new URLSearchParams({
             repository: 'testsrepository',

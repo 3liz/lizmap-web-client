@@ -2243,6 +2243,42 @@ ALTER SEQUENCE tests_projects.single_wms_tiled_baselayer_id_seq OWNED BY tests_p
 
 
 --
+-- Name: snap_datum_shift_target; Type: TABLE; Schema: tests_projects; Owner: -
+-- Snap target layer stored in EPSG:2154 (RGF93 / Lambert-93) to test that the
+-- PostGIS WFS path reprojects geometries and applies BBOX in the requested CRS.
+--
+
+CREATE TABLE tests_projects.snap_datum_shift_target (
+    id integer NOT NULL,
+    geom public.geometry(Point,2154)
+);
+
+CREATE SEQUENCE tests_projects.snap_datum_shift_target_id_seq
+    AS integer START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
+ALTER SEQUENCE tests_projects.snap_datum_shift_target_id_seq OWNED BY tests_projects.snap_datum_shift_target.id;
+ALTER TABLE ONLY tests_projects.snap_datum_shift_target ALTER COLUMN id SET DEFAULT nextval('tests_projects.snap_datum_shift_target_id_seq'::regclass);
+ALTER TABLE ONLY tests_projects.snap_datum_shift_target ADD CONSTRAINT snap_datum_shift_target_pkey PRIMARY KEY (id);
+CREATE INDEX snap_datum_shift_target_geom_idx ON tests_projects.snap_datum_shift_target USING gist (geom);
+
+--
+-- Name: snap_datum_shift_edit; Type: TABLE; Schema: tests_projects; Owner: -
+-- Edition layer stored in EPSG:3857 (project CRS).
+--
+
+CREATE TABLE tests_projects.snap_datum_shift_edit (
+    id integer NOT NULL,
+    geom public.geometry(Point,3857)
+);
+
+CREATE SEQUENCE tests_projects.snap_datum_shift_edit_id_seq
+    AS integer START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
+ALTER SEQUENCE tests_projects.snap_datum_shift_edit_id_seq OWNED BY tests_projects.snap_datum_shift_edit.id;
+ALTER TABLE ONLY tests_projects.snap_datum_shift_edit ALTER COLUMN id SET DEFAULT nextval('tests_projects.snap_datum_shift_edit_id_seq'::regclass);
+ALTER TABLE ONLY tests_projects.snap_datum_shift_edit ADD CONSTRAINT snap_datum_shift_edit_pkey PRIMARY KEY (id);
+CREATE INDEX snap_datum_shift_edit_geom_idx ON tests_projects.snap_datum_shift_edit USING gist (geom);
+
+
+--
 -- Name: sousquartiers_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
 --
 
