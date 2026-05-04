@@ -2147,6 +2147,66 @@ ALTER SEQUENCE tests_projects.single_wms_tiled_baselayer_id_seq OWNED BY tests_p
 
 
 --
+-- Name: snap_datum_shift_edit; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.snap_datum_shift_edit (
+    id integer NOT NULL,
+    geom public.geometry(Point,3857)
+);
+
+
+--
+-- Name: snap_datum_shift_edit_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
+--
+
+CREATE SEQUENCE tests_projects.snap_datum_shift_edit_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: snap_datum_shift_edit_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
+--
+
+ALTER SEQUENCE tests_projects.snap_datum_shift_edit_id_seq OWNED BY tests_projects.snap_datum_shift_edit.id;
+
+
+--
+-- Name: snap_datum_shift_target; Type: TABLE; Schema: tests_projects; Owner: -
+--
+
+CREATE TABLE tests_projects.snap_datum_shift_target (
+    id integer NOT NULL,
+    geom public.geometry(Point,2154)
+);
+
+
+--
+-- Name: snap_datum_shift_target_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
+--
+
+CREATE SEQUENCE tests_projects.snap_datum_shift_target_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: snap_datum_shift_target_id_seq; Type: SEQUENCE OWNED BY; Schema: tests_projects; Owner: -
+--
+
+ALTER SEQUENCE tests_projects.snap_datum_shift_target_id_seq OWNED BY tests_projects.snap_datum_shift_target.id;
+
+
+--
 -- Name: sousquartiers_id_seq; Type: SEQUENCE; Schema: tests_projects; Owner: -
 --
 
@@ -2938,6 +2998,20 @@ ALTER TABLE ONLY tests_projects.single_wms_tiled_baselayer ALTER COLUMN id SET D
 
 
 --
+-- Name: snap_datum_shift_edit id; Type: DEFAULT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.snap_datum_shift_edit ALTER COLUMN id SET DEFAULT nextval('tests_projects.snap_datum_shift_edit_id_seq'::regclass);
+
+
+--
+-- Name: snap_datum_shift_target id; Type: DEFAULT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.snap_datum_shift_target ALTER COLUMN id SET DEFAULT nextval('tests_projects.snap_datum_shift_target_id_seq'::regclass);
+
+
+--
 -- Name: sousquartiers id; Type: DEFAULT; Schema: tests_projects; Owner: -
 --
 
@@ -3702,6 +3776,27 @@ COPY tests_projects.single_wms_tiled_baselayer (id, title, geom) FROM stdin;
 
 
 --
+-- Data for Name: snap_datum_shift_edit; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.snap_datum_shift_edit (id, geom) FROM stdin;
+1	0101000020110F0000680A9DB7594B1A416D4504F7CC9F5441
+2	0101000020110F00000EC15E0E887F1A413A1E1212DAA05441
+\.
+
+
+--
+-- Data for Name: snap_datum_shift_target; Type: TABLE DATA; Schema: tests_projects; Owner: -
+--
+
+COPY tests_projects.snap_datum_shift_target (id, geom) FROM stdin;
+1	01010000206A0800000CABB8DC257D2741B0C99475DAF45741
+2	01010000206A080000F772A066F09D2741A7A0600F02F55741
+3	01010000206A0800002828F4A0A38727417052C50879F75741
+\.
+
+
+--
 -- Data for Name: sousquartiers; Type: TABLE DATA; Schema: tests_projects; Owner: -
 --
 
@@ -4320,6 +4415,20 @@ SELECT pg_catalog.setval('tests_projects.single_wms_polygons_id_seq', 3, true);
 --
 
 SELECT pg_catalog.setval('tests_projects.single_wms_tiled_baselayer_id_seq', 1, true);
+
+
+--
+-- Name: snap_datum_shift_edit_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.snap_datum_shift_edit_id_seq', 2, true);
+
+
+--
+-- Name: snap_datum_shift_target_id_seq; Type: SEQUENCE SET; Schema: tests_projects; Owner: -
+--
+
+SELECT pg_catalog.setval('tests_projects.snap_datum_shift_target_id_seq', 3, true);
 
 
 --
@@ -4952,6 +5061,22 @@ ALTER TABLE ONLY tests_projects.single_wms_tiled_baselayer
 
 
 --
+-- Name: snap_datum_shift_edit snap_datum_shift_edit_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.snap_datum_shift_edit
+    ADD CONSTRAINT snap_datum_shift_edit_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: snap_datum_shift_target snap_datum_shift_target_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
+--
+
+ALTER TABLE ONLY tests_projects.snap_datum_shift_target
+    ADD CONSTRAINT snap_datum_shift_target_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: sousquartiers sousquartiers_pkey; Type: CONSTRAINT; Schema: tests_projects; Owner: -
 --
 
@@ -5086,6 +5211,20 @@ CREATE INDEX sidx_shop_bakery_pg_geom ON tests_projects.shop_bakery_pg USING gis
 --
 
 CREATE INDEX sidx_townhalls_pg_geom ON tests_projects.townhalls_pg USING gist (geom);
+
+
+--
+-- Name: snap_datum_shift_edit_geom_idx; Type: INDEX; Schema: tests_projects; Owner: -
+--
+
+CREATE INDEX snap_datum_shift_edit_geom_idx ON tests_projects.snap_datum_shift_edit USING gist (geom);
+
+
+--
+-- Name: snap_datum_shift_target_geom_idx; Type: INDEX; Schema: tests_projects; Owner: -
+--
+
+CREATE INDEX snap_datum_shift_target_geom_idx ON tests_projects.snap_datum_shift_target USING gist (geom);
 
 
 --
