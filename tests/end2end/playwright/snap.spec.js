@@ -173,15 +173,12 @@ test.describe('Snap on edition', () => {
         // move to digitization panel
         await page.getByRole('link', { name: 'Digitization' }).click()
 
-        let getSnappingPointFeatureRequestPromise = page.waitForRequest(
-            request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('GetFeature') === true && request.postData()?.includes('form_edition_snap_point') === true);
-        let getSnappingPointDescribeFeatureRequestPromise = page.waitForRequest(
-            request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('DescribeFeatureType') === true && request.postData()?.includes('form_edition_snap_point') === true);
+        let getSnappingPointFeatureRequestPromise = project.waitForGetFeatureRequest('form_edition_snap_point');
 
         //activate snapping
         await page.getByRole('button', { name: 'Start' }).click();
 
-        await Promise.all([getSnappingPointFeatureRequestPromise, getSnappingPointDescribeFeatureRequestPromise])
+        responseExpect(await (await getSnappingPointFeatureRequestPromise).response()).toBeGeoJson();
 
         await expect(page.locator("#edition-point-coord-form-group").getByRole("button").nth(2)).toBeDisabled();
         await expect(page.locator("#edition-point-coord-form-group .snap-layers-list .snap-layer").nth(0).locator("input")).toBeChecked();
@@ -237,8 +234,7 @@ test.describe('Snap on edition', () => {
         // activate snap on line and refresh snap
         await page.locator("#edition-point-coord-form-group .snap-layers-list .snap-layer").nth(0).locator("input").check()
 
-        let getSnappingLineFeatureRequestPromise = page.waitForRequest(
-            request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('GetFeature') === true && request.postData()?.includes('form_edition_snap_line') === true);
+        let getSnappingLineFeatureRequestPromise = project.waitForGetFeatureRequest('form_edition_snap_line');
 
         await page.locator("#edition-point-coord-form-group").getByRole("button").nth(2).click()
 
@@ -284,8 +280,7 @@ test.describe('Snap on edition', () => {
         // activate snap on polygon and refresh snap
         await page.locator("#edition-point-coord-form-group .snap-layers-list .snap-layer").nth(2).locator("input").check()
 
-        let getSnappingPolygonFeatureRequestPromise = page.waitForRequest(
-            request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('GetFeature') === true && request.postData()?.includes('form_edition_snap_polygon') === true);
+        let getSnappingPolygonFeatureRequestPromise = project.waitForGetFeatureRequest('form_edition_snap_polygon');
 
         await page.locator("#edition-point-coord-form-group").getByRole("button").nth(2).click()
 
