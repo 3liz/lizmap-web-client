@@ -121,7 +121,7 @@ test.describe('Snap on edition', () => {
         // Confirm the server returned valid GeoJSON before inspecting coordinates.
         responseExpect(snapWfsResponse).toBeGeoJson();
 
-        const geojson = await snapWfsResponse.json();
+        const geojson = await snapWfsResponse?.json();
 
         // Attach the full server response to the test report.
         await testInfo.attach('snap-wfs-response-body', {
@@ -129,7 +129,7 @@ test.describe('Snap on edition', () => {
             contentType: 'application/json',
         });
 
-        console.log('[snap datum-shift] WFS response status:', snapWfsResponse.status());
+        console.log('[snap datum-shift] WFS response status:', snapWfsResponse?.status());
         console.log('[snap datum-shift] Feature count:', geojson.features?.length ?? 0);
 
         expect(geojson.features, 'Response must contain a features array').toBeDefined();
