@@ -13,10 +13,6 @@ test.describe('Snap on edition', () => {
     test('Snap WFS GetFeature uses WFS 1.1.0 with SRSNAME in the map projection', async ({ page }) => {
         const project = new ProjectPage(page, 'form_edition_multilayer_snap');
 
-        // Intercept the snap GetFeature request before opening the form —
-        // snapping is auto-activated on form display for this project.
-        const snapWfsRequestPromise = project.waitForGetFeatureRequest('form_edition_snap_point');
-
         // Track whether a DescribeFeatureType is sent alongside the snap request.
         // With the new WFS 1.1.0 path we no longer go through getFeatureData(), so
         // no DescribeFeatureType should be triggered.
@@ -33,7 +29,14 @@ test.describe('Snap on edition', () => {
 
         const formRequest = await project.openEditingFormWithLayer('form_edition_snap_control');
         await formRequest.response();
-        await page.getByRole('tab', { name: 'Digitization' }).click();
+
+        // move to digitization panel
+        await page.getByRole('link', { name: 'Digitization' }).click();
+
+        const snapWfsRequestPromise = project.waitForGetFeatureRequest('form_edition_snap_point');
+
+        //activate snapping
+        await page.getByRole('button', { name: 'Start' }).click();
 
         const snapWfsRequest = await snapWfsRequestPromise;
 
@@ -57,18 +60,22 @@ test.describe('Snap on edition', () => {
         // Project is in EPSG:3857; snap target is stored in EPSG:2154 (Lambert-93).
         // The WFS request must ask for features in the MAP projection (SRSNAME=EPSG:3857)
         // and include a 5-element BBOX so the server can apply the spatial filter correctly.
-        // Snapping is auto-activated on form display (snap_on_start: True).
+
         const project = new ProjectPage(page, 'form_edition_snap_datum_shift');
         project.waitForGetLegendGraphicDuringLoad = false;
 
         await project.open();
 
-        const snapWfsRequestPromise = project.waitForGetFeatureRequest('snap_datum_shift_target');
-
         const formRequest = await project.openEditingFormWithLayer('snap_datum_shift_edit');
         responseExpect(await formRequest.response()).toBeTextPlain();
 
-        await page.getByRole('tab', { name: 'Digitization' }).click();
+        // move to digitization panel
+        await page.getByRole('link', { name: 'Digitization' }).click();
+
+        const snapWfsRequestPromise = project.waitForGetFeatureRequest('snap_datum_shift_target');
+
+        //activate snapping
+        await page.getByRole('button', { name: 'Start' }).click();
 
         const snapWfsRequest = await snapWfsRequestPromise;
         const rawPostData = snapWfsRequest.postData() ?? '';
@@ -102,18 +109,22 @@ test.describe('Snap on edition', () => {
         // (~3.86–3.92 / 43.61–43.64) or the layer native CRS EPSG:2154 (~769000–774000 /
         // 6280000–6283000), both obviously outside the valid EPSG:3857 range for this area
         // (~430000–435000 / 5406000–5408000).
-        // Snapping is auto-activated on form display (snap_on_start: True).
+
         const project = new ProjectPage(page, 'form_edition_snap_datum_shift');
         project.waitForGetLegendGraphicDuringLoad = false;
 
         await project.open();
 
-        const snapWfsRequestPromise = project.waitForGetFeatureRequest('snap_datum_shift_target');
-
         const formRequest = await project.openEditingFormWithLayer('snap_datum_shift_edit');
         await formRequest.response();
 
-        await page.getByRole('tab', { name: 'Digitization' }).click();
+        // move to digitization panel
+        await page.getByRole('link', { name: 'Digitization' }).click();
+
+        const snapWfsRequestPromise = project.waitForGetFeatureRequest('snap_datum_shift_target');
+
+        //activate snapping
+        await page.getByRole('button', { name: 'Start' }).click();
 
         const snapWfsRequest = await snapWfsRequestPromise;
         const snapWfsResponse = await snapWfsRequest.response();
