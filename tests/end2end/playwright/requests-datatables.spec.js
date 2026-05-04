@@ -978,6 +978,79 @@ test.describe('Datables Requests @requests @readonly', () => {
         ]);
     });
 
+    test('Extent request with bounding box', async({ request }) => {
+        // Unknown project in testsrepository
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'huge_attribute_table',
+            layerId: 'bakeries_8ca232e6_df58_44f7_94df_b4c02cc7a79c',
+        });
+        let url = `/index.php/lizmap/datatables/filteredFeaturesExtent?${params}`;
+        const data = {
+            start: 0,
+            length: 50,
+            columns: [
+                {'data': 'lizSelected'},
+                {'data': 'featureToolbar'},
+                {'data': 'id'},
+                {'data': 'polygon_id'},
+            ],
+            order: [{'column': 2, 'dir': 'asc'}],
+            searchBuilder: {
+            },
+            bbox: "3.742569554123125,43.533186092555084,3.8550758801931164,43.58580809903438",
+        };
+        let response = await request.post(url, {
+            data: data,
+        });
+        // check response
+        let body = await checkJson(response, 200);
+        // check response body
+        expect(body).toStrictEqual([
+            3.766922,
+            43.561103,
+            3.942209,
+            43.683412
+        ]);
+    });
+
+    test('Extent request with filtered features', async({ request }) => {
+        // Unknown project in testsrepository
+        let params = new URLSearchParams({
+            repository: 'testsrepository',
+            project: 'huge_attribute_table',
+            layerId: 'bakeries_8ca232e6_df58_44f7_94df_b4c02cc7a79c',
+        });
+        let url = `/index.php/lizmap/datatables/filteredFeaturesExtent?${params}`;
+        const data = {
+            start: 0,
+            length: 50,
+            columns: [
+                {'data': 'lizSelected'},
+                {'data': 'featureToolbar'},
+                {'data': 'id'},
+                {'data': 'polygon_id'},
+            ],
+            order: [{'column': 2, 'dir': 'asc'}],
+            searchBuilder: {
+            },
+            exp_filter: "$id IN ( 0 , 1 ) ",
+            filteredfeatureids: "0,1",
+        };
+        let response = await request.post(url, {
+            data: data,
+        });
+        // check response
+        let body = await checkJson(response, 200);
+        // check response body
+        expect(body).toStrictEqual([
+            3.811568,
+            43.653714,
+            3.913073,
+            43.659122
+        ]);
+    });
+
     test('Extent request on a single point feature', async({ request }) => {
         // Unknown project in testsrepository
         let params = new URLSearchParams({
