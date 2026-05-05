@@ -16,7 +16,7 @@
   "scripts": {
     "build": "rspack build --config assets/webpack.prod.js",
     "bats": "bats ./tests/end2end/bats/",
-    "js:test": "mocha --recursive ./tests/js-units/node",
+    "js:test": "mocha --require ./tests/js-units/fixtures.js --recursive ./tests/js-units/node",
     "jsdoc": "make version-doc && make js-doc",
     "pr:open": "playwright test --config tests/end2end/playwright.config.ts --ui tests/end2end/",
     "pretest-fix": "eslint -c eslint.config.mjs --fix",
