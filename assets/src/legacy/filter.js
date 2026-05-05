@@ -106,9 +106,14 @@ var lizLayerFilterTool = function () {
                 // Activate the export button
                 if (lizMap.mainLizmap.initialConfig.vectorLayerResultFormat.includes('ODS')) {
                     $('#liz-filter-export').click(function () {
-                        lizMap.config.layers[globalThis['filterConfigData'].layerName].request_params['filter'] = globalThis['filterConfigData'].filter;
-                        lizMap.exportVectorLayer(globalThis['filterConfigData'].layerName, 'ODS', false);
-                        delete lizMap.config.layers[globalThis['filterConfigData'].layerName].request_params['filter'];
+                        const lName = globalThis['filterConfigData'].layerName;
+                        const lConfig = lizMap.config.layers[lName];
+                        if (!('request_params' in lConfig)) {
+                            lConfig['request_params'] = {};
+                        }
+                        lConfig.request_params['filter'] = globalThis['filterConfigData'].filter;
+                        lizMap.exportVectorLayer(lName, 'ODS', false);
+                        delete lConfig.request_params['filter'];
                         return false;
                     });
                 }
