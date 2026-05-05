@@ -2645,25 +2645,29 @@ window.lizMap = function() {
         var docktab = '';
         docktab+='<div class="hide" id="'+dname+'">';
         if( dtype == 'minidock'){
-            docktab+='<div class="mini-dock-close" title="' + lizDict['toolbar.content.stop'] + '" style="padding:7px;float:right;cursor:pointer;"><i class="icon-remove icon-white"></i></div>';
-            docktab+='    <div class="'+dname+'">';
-            docktab+='        <h3>';
-            docktab+='            <span class="title">';
-            docktab+='              <i class="'+dicon+' icon-white"></i>';
-            docktab+='              <span class="text">&nbsp;'+dlabel+'&nbsp;</span>';
-            docktab+='            </span>';
-            docktab+='        </h3>';
+            docktab += `
+                <div class="${dname}">
+                    <h3>
+                        <span class="title">
+                            <button type="button" class="btn-${dname}-close btn-close"
+                                title="${lizDict['toolbar.content.stop']}"></button>
+                            <span class="icon"><i class="${dicon} icon-white"></i></span>
+                            <span class="text">&nbsp;${dlabel}&nbsp;</span>
+                        </span>
+                    </h3>
+                </div>
+            `
         }
         docktab+='        <div class="menu-content">';
         docktab+= dcontent;
         docktab+='        </div>';
         docktab+='    </div>';
-        docktab+='</div>';
+
         if( dtype == 'minidock'){
             $('#mini-dock-content').append(docktab);
-            $('#'+dname+' div.mini-dock-close').click(function(){
+            $('#'+dname+' button.btn-close').click(function(){
                 if( $('#mapmenu .nav-list > li.'+dname).hasClass('active') ){
-                    $('#button-'+dname).click();
+                    document.querySelector(`#button-${dname}`).click()
                 }
             });
         }
