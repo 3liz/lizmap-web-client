@@ -15,6 +15,7 @@ namespace Lizmap\Request;
 
 use Lizmap\App\WktTools;
 use Lizmap\Project\Project;
+use Lizmap\Project\Qgis;
 use Lizmap\Project\UnknownLizmapProjectException;
 
 /**
@@ -695,6 +696,10 @@ class WMSRequest extends OGCRequest
 
         $remoteStorageProfile = RemoteStorageRequest::getProfile('webdav');
 
+        // Fields configured in QGIS with a CheckBox edit widget: rendered as
+        // actual checkboxes in the auto popup, mirroring the editing form.
+        $checkBoxFields = $this->getCheckBoxFieldsForLayer($layerId);
+
         // Get the template for the popup content
         $templateConfigured = false;
         $popupTemplate = '';
@@ -754,6 +759,7 @@ class WMSRequest extends OGCRequest
                 'featureId' => $id,
                 'attributes' => $feature->Attribute,
                 'remoteStorageProfile' => $remoteStorageProfile,
+                'checkBoxFields' => $checkBoxFields,
             ));
             $autoContent = $popupFeatureContent;
             // Get specific template for the layer has been configured
@@ -852,7 +858,7 @@ class WMSRequest extends OGCRequest
             $finalContent = $autoContent;
             if (property_exists($configLayer, 'popupSource')) {
                 if (in_array($configLayer->popupSource, array('qgis', 'form')) && $maptipValue) {
-                    $finalContent = $maptipValue;
+                    $finalContent = $this->applyCheckBoxesToFormPopup($maptipValue, $checkBoxFields);
                 }
                 if ($configLayer->popupSource == 'lizmap' && $templateConfigured) {
                     $finalContent = $lizmapContent;
@@ -875,6 +881,7 @@ class WMSRequest extends OGCRequest
                 'allFeatureAttributes' => array_reverse($allFeatureAttributes),
                 'remoteStorageProfile' => $remoteStorageProfile,
                 'allFeatureToolbars' => array_reverse($allFeatureToolbars),
+                'checkBoxFields' => $checkBoxFields,
             ));
         }
 
@@ -1368,5 +1375,137 @@ class WMSRequest extends OGCRequest
         }
 
         return new OGCResponse($code, $mime, $data, $cached);
+    }
+
+    /**
+     * Build a map of fields configured with a CheckBox edit widget for the
+     * given layer, using the QGIS project's typed XML info (cached per request
+     * by ProjectInfo::fromQgisPath).
+     *
+     * @param string $layerId
+     *
+     * @return array<string, array{CheckedState: string, UncheckedState: string}>
+     */
+    private function getCheckBoxFieldsForLayer($layerId)
+    {
+        $checkBoxFields = array();
+
+        $qgisPath = $this->project->getQgisPath();
+        if (!$qgisPath || !file_exists($qgisPath)) {
+            return $checkBoxFields;
+        }
+
+        try {
+            $projectInfo = Qgis\ProjectInfo::fromQgisPath($qgisPath);
+        } catch (\Exception $e) {
+            return $checkBoxFields;
+        }
+
+        $xmlLayer = $projectInfo->getLayerById($layerId);
+        if (!$xmlLayer instanceof Qgis\Layer\VectorLayer) {
+            return $checkBoxFields;
+        }
+
+        foreach ($xmlLayer->fieldConfiguration as $field) {
+            $editWidget = $field->editWidget;
+            if (strtolower($editWidget->type) !== 'checkbox') {
+                continue;
+            }
+            $config = $editWidget->config;
+            if (!$config instanceof Qgis\BaseQgisObject) {
+                continue;
+            }
+            $data = $config->getData();
+            $checked = array_key_exists('CheckedState', $data) ? (string) $data['CheckedState'] : '';
+            $unchecked = array_key_exists('UncheckedState', $data) ? (string) $data['UncheckedState'] : '';
+            // Fall back to QGIS defaults (see QgisFormControl::fillCheckboxValues)
+            $checkBoxFields[(string) $field->name] = array(
+                'CheckedState' => $checked === '' ? 't' : $checked,
+                'UncheckedState' => $unchecked === '' ? 'f' : $unchecked,
+            );
+        }
+
+        return $checkBoxFields;
+    }
+
+    /**
+     * Replace raw CheckBox-widget values in the QGIS drag-and-drop form popup
+     * HTML with disabled <input type="checkbox"> elements, mirroring the
+     * editing form. Leaves non-matching values untouched.
+     *
+     * QGIS Server emits each field in the form popup as:
+     *   <span id="dd_jforms_view_edition_FIELDNAME" class="jforms-control-input">VALUE</span>
+     *
+     * @param string $maptipHtml     form popup HTML returned by QGIS Server
+     * @param array  $checkBoxFields map fieldName => ['CheckedState' => string, 'UncheckedState' => string]
+     *
+     * @return string
+     */
+    private function applyCheckBoxesToFormPopup($maptipHtml, $checkBoxFields)
+    {
+        if (!is_string($maptipHtml) || $maptipHtml === '' || !is_array($checkBoxFields) || count($checkBoxFields) === 0) {
+            return $maptipHtml;
+        }
+
+        return preg_replace_callback(
+            '/(<span\s+id="dd_jforms_view_edition_([^"]+)"\s+class="jforms-control-input"\s*>)(.*?)(<\/span>)/us',
+            function ($m) use ($checkBoxFields) {
+                $fieldName = html_entity_decode($m[2], ENT_QUOTES, 'UTF-8');
+                if (!isset($checkBoxFields[$fieldName])) {
+                    return $m[0];
+                }
+                $value = trim(html_entity_decode($m[3], ENT_QUOTES, 'UTF-8'));
+                $cfg = $checkBoxFields[$fieldName];
+                $state = self::matchCheckBoxState(
+                    $value,
+                    isset($cfg['CheckedState']) ? (string) $cfg['CheckedState'] : '',
+                    isset($cfg['UncheckedState']) ? (string) $cfg['UncheckedState'] : ''
+                );
+                if ($state === 'checked') {
+                    return $m[1].'<input type="checkbox" disabled="disabled" checked="checked" class="lizmap-popup-checkbox-widget">'.$m[4];
+                }
+                if ($state === 'unchecked') {
+                    return $m[1].'<input type="checkbox" disabled="disabled" class="lizmap-popup-checkbox-widget">'.$m[4];
+                }
+
+                return $m[0];
+            },
+            $maptipHtml
+        );
+    }
+
+    /**
+     * Match a raw attribute value against CheckBox widget states. Tries the
+     * configured CheckedState/UncheckedState first, then falls back to common
+     * boolean representations so that fields stored as boolean (which come
+     * through WMS/WFS as 'true'/'false') still render as checkboxes.
+     *
+     * @param string $value             raw attribute value
+     * @param string $checkedExpected   CheckedState configured in QGIS
+     * @param string $uncheckedExpected UncheckedState configured in QGIS
+     *
+     * @return null|string 'checked', 'unchecked', or null for no match
+     */
+    private static function matchCheckBoxState($value, $checkedExpected, $uncheckedExpected)
+    {
+        if ($checkedExpected !== '' && $value === $checkedExpected) {
+            return 'checked';
+        }
+        if ($uncheckedExpected !== '' && $value === $uncheckedExpected) {
+            return 'unchecked';
+        }
+        $normalized = strtolower(trim($value));
+        if (in_array($normalized, array('true', 't', '1', 'yes', 'on'), true)) {
+            return 'checked';
+        }
+        if (in_array($normalized, array('false', 'f', '0', 'no', 'off'), true)) {
+            return 'unchecked';
+        }
+        // Treat null-like values (NULL, empty, QGIS's "()" for NULL boolean) as unchecked
+        if (in_array($normalized, array('', 'null', '()'), true)) {
+            return 'unchecked';
+        }
+
+        return null;
     }
 }
