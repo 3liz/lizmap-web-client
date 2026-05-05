@@ -50,15 +50,18 @@ function jtpl_modifier_common_popupcheckbox($attributeName, $attributeValue, $re
 
 /**
  * Decide whether the given raw value represents a checked, unchecked, or
- * unrecognised state for a QGIS CheckBox-widget field. Matches the
- * configured CheckedState/UncheckedState first, then falls back to common
- * boolean representations (so fields typed as boolean, which come through
- * WMS/WFS as 'true'/'false' regardless of the widget's labels, also render
- * as checkboxes). Null-like values render as unchecked.
+ * unrecognised state for a QGIS CheckBox-widget field.
+ *
+ * When both $checkedExpected and $uncheckedExpected are empty strings the
+ * field has no custom text labels configured in QGIS (boolean DB type).
+ * In that case a boolean-string fallback is applied because QGIS Server
+ * always serialises boolean fields as 'true'/'false' in WMS responses
+ * regardless of any display labels. When either state is non-empty the
+ * field uses custom text values, so only an exact match is attempted.
  *
  * @param string $value             raw attribute value
- * @param string $checkedExpected   CheckedState configured in QGIS
- * @param string $uncheckedExpected UncheckedState configured in QGIS
+ * @param string $checkedExpected   CheckedState configured in QGIS (empty = no custom label)
+ * @param string $uncheckedExpected UncheckedState configured in QGIS (empty = no custom label)
  *
  * @return null|string 'checked', 'unchecked', or null for no match
  */
@@ -70,6 +73,13 @@ function lizmap_popup_checkbox_match_state($value, $checkedExpected, $uncheckedE
     if ($uncheckedExpected !== '' && $value === $uncheckedExpected) {
         return 'unchecked';
     }
+
+    // Boolean fallback: only for fields with no custom configured states.
+    // If either state is set, the field stores text values — exact match only.
+    if ($checkedExpected !== '' || $uncheckedExpected !== '') {
+        return null;
+    }
+
     $normalized = strtolower(trim($value));
     if (in_array($normalized, array('true', 't', '1', 'yes', 'on'), true)) {
         return 'checked';
