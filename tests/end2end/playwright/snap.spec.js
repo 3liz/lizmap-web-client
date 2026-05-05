@@ -121,7 +121,7 @@ test.describe('Snap on edition', () => {
         // Confirm the server returned valid GeoJSON before inspecting coordinates.
         responseExpect(snapWfsResponse).toBeGeoJson();
 
-        const geojson = await snapWfsResponse.json();
+        const geojson = await snapWfsResponse?.json();
 
         // Attach the full server response to the test report.
         await testInfo.attach('snap-wfs-response-body', {
@@ -129,7 +129,7 @@ test.describe('Snap on edition', () => {
             contentType: 'application/json',
         });
 
-        console.log('[snap datum-shift] WFS response status:', snapWfsResponse.status());
+        console.log('[snap datum-shift] WFS response status:', snapWfsResponse?.status());
         console.log('[snap datum-shift] Feature count:', geojson.features?.length ?? 0);
 
         expect(geojson.features, 'Response must contain a features array').toBeDefined();
@@ -164,8 +164,7 @@ test.describe('Snap on edition', () => {
         const project = new ProjectPage(page, 'form_edition_multilayer_snap');
 
         // Set up request watcher before opening the form, as snapping is auto-activated on form display
-        let getSnappingPointFeatureRequestPromise = page.waitForRequest(
-            request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('GetFeature') === true && request.postData()?.includes('form_edition_snap_point') === true);
+        let getSnappingPointFeatureRequestPromise = project.waitForGetFeatureRequest('form_edition_snap_point');
 
         const formRequest = await project.openEditingFormWithLayer('form_edition_snap_control');
         await formRequest.response();
@@ -178,7 +177,7 @@ test.describe('Snap on edition', () => {
         await page.getByRole('tab', { name: 'Digitization' }).click()
 
         // snapping is auto-activated when snap layers are configured
-        await getSnappingPointFeatureRequestPromise;
+        responseExpect(await (await getSnappingPointFeatureRequestPromise).response()).toBeGeoJson();
 
         // check snap panel and controls
         await expect(page.locator("#edition-point-coord-form-group").getByRole("button").nth(2)).toBeDisabled();
@@ -239,8 +238,7 @@ test.describe('Snap on edition', () => {
         // activate snap on line and refresh snap
         await page.locator("#edition-point-coord-form-group .snap-layers-list .snap-layer").nth(0).locator("input").check()
 
-        let getSnappingLineFeatureRequestPromise = page.waitForRequest(
-            request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('GetFeature') === true && request.postData()?.includes('form_edition_snap_line') === true);
+        let getSnappingLineFeatureRequestPromise = project.waitForGetFeatureRequest('form_edition_snap_line');
 
         await page.locator("#edition-point-coord-form-group").getByRole("button").nth(2).click()
 
@@ -286,8 +284,7 @@ test.describe('Snap on edition', () => {
         // activate snap on polygon and refresh snap
         await page.locator("#edition-point-coord-form-group .snap-layers-list .snap-layer").nth(2).locator("input").check()
 
-        let getSnappingPolygonFeatureRequestPromise = page.waitForRequest(
-            request => request.method() === 'POST' && request.postData() != null && request.postData()?.includes('GetFeature') === true && request.postData()?.includes('form_edition_snap_polygon') === true);
+        let getSnappingPolygonFeatureRequestPromise = project.waitForGetFeatureRequest('form_edition_snap_polygon');
 
         await page.locator("#edition-point-coord-form-group").getByRole("button").nth(2).click()
 
