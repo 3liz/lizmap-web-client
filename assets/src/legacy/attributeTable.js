@@ -1077,10 +1077,15 @@ var lizAttributeTable = function() {
                     const dtTable = new DataTable.Api(`#attribute-layer-table-${tableName}`);
                     const dtParams = dtTable.ajax.params();
                     const hasFilter = typeof dtParams == 'object' &&
-                        'searchBuilder' in dtParams &&
+                        // search criteria
+                        ('searchBuilder' in dtParams &&
                         'criteria' in dtParams.searchBuilder &&
                         Array.isArray(dtParams.searchBuilder.criteria) &&
-                        dtParams.searchBuilder.criteria.length > 0
+                        dtParams.searchBuilder.criteria.length > 0) ||
+                        // bbox criteria
+                        'bbox' in dtParams ||
+                        // filter in criteria
+                        'filteredfeatureids' in dtParams
                     if (!hasFilter) {
                         const layerConfig = lizMap.config.layers[$(this).val()];
                         if (layerConfig && 'extent' in layerConfig && 'crs' in layerConfig) {
