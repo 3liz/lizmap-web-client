@@ -887,6 +887,15 @@ class QgisProject
         foreach ($locateByLayer as $k => $v) {
             $updateLocate = false;
             $layer = $project->getLayerById($v->layerId);
+            // Check that layer is not null
+            if ($layer === null) {
+                \lizmap::getAppContext()->logMessage(
+                    $v->layerId.' in LocateByLayer is unknown!',
+                    'lizmapadmin',
+                );
+
+                continue;
+            }
             // Get field alias
             $alias = $layer->getFieldAlias($v->fieldName);
             if ($alias !== null) {
@@ -951,6 +960,15 @@ class QgisProject
             }
             // check for embedded layers
             $layer = $project->getLayerById($obj->layerId);
+            // Check that layer is not null
+            if ($layer === null) {
+                \lizmap::getAppContext()->logMessage(
+                    $obj->layerId.' in EditionLayers is unknown!',
+                    'lizmapadmin',
+                );
+
+                continue;
+            }
             if ($layer->provider == 'spatialite') {
                 unset($editionLayers->{$key});
             }
@@ -970,7 +988,13 @@ class QgisProject
         $project = Qgis\ProjectInfo::fromQgisPath($this->path);
         foreach ($editionLayers as $obj) {
             $layer = $project->getLayerById($obj->layerId);
+            // Check that layer is not null
             if ($layer === null) {
+                \lizmap::getAppContext()->logMessage(
+                    $obj->layerId.' in EditionLayers is unknown!',
+                    'lizmapadmin',
+                );
+
                 continue;
             }
             if ($layer->type !== 'vector') {
@@ -1042,7 +1066,13 @@ class QgisProject
         $project = Qgis\ProjectInfo::fromQgisPath($this->path);
         foreach ($layerIds as $layerId) {
             $layer = $project->getLayerById($layerId);
+            // Check that layer is not null
             if ($layer === null) {
+                \lizmap::getAppContext()->logMessage(
+                    $layerId.' is unknown!',
+                    'lizmapadmin',
+                );
+
                 continue;
             }
             if ($layer->type !== 'vector') {
@@ -1124,6 +1154,15 @@ class QgisProject
             }
 
             $layer = $project->getLayerById($obj->layerId);
+            // Check that layer is not null
+            if ($layer === null) {
+                \lizmap::getAppContext()->logMessage(
+                    $obj->layerId.' in AttributeLayers is unknown!',
+                    'lizmapadmin',
+                );
+
+                continue;
+            }
             $obj->attributetableconfig = $layer->attributetableconfig->toKeyArray();
         }
     }
