@@ -154,7 +154,7 @@ jobs:
       - name: "Setup Node ${{ env.NODE_VERSION }}"
         uses: actions/setup-node@v6
         with:
-          node-version: 21
+          node-version: 22
           cache: 'npm'
           cache-dependency-path: ${{ github.workspace }}/package.json
 
