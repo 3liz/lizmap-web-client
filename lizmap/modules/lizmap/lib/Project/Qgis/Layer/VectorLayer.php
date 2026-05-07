@@ -19,32 +19,34 @@ use Lizmap\Project\Qgis;
 /**
  * QGIS Vector layer.
  *
- * @property string                                 $id
- * @property bool                                   $embedded
- * @property string                                 $type
- * @property string                                 $layername
- * @property Qgis\SpatialRefSys                     $srs
- * @property string                                 $datasource
- * @property string                                 $provider
- * @property MapLayerStyleManager                   $styleManager
- * @property null|string                            $shortname
- * @property null|string                            $title
- * @property null|string                            $abstract
- * @property null|array<string>                     $keywordList
- * @property null|string                            $previewExpression
- * @property float                                  $layerOpacity
- * @property MapLayerStyleManager                   $styleManager
- * @property array<VectorLayerField>                $fieldConfiguration
- * @property array<VectorLayerAlias>                $aliases
- * @property array<VectorLayerConstraint>           $constraints
- * @property array<VectorLayerConstraintExpression> $constraintExpressions
- * @property array<VectorLayerDefault>              $defaults
- * @property array<VectorLayerEditableField>        $editable
- * @property array<VectorLayerJoin>                 $vectorjoins
- * @property AttributeTableConfig                   $attributetableconfig
- * @property null|array<string>                     $excludeAttributesWMS
- * @property null|array<string>                     $excludeAttributesWFS
- * @property null|RendererV2                        $rendererV2
+ * @property string                                    $id
+ * @property bool                                      $embedded
+ * @property string                                    $type
+ * @property string                                    $layername
+ * @property Qgis\SpatialRefSys                        $srs
+ * @property string                                    $datasource
+ * @property string                                    $provider
+ * @property MapLayerStyleManager                      $styleManager
+ * @property null|string                               $shortname
+ * @property null|string                               $title
+ * @property null|string                               $abstract
+ * @property null|array<string>                        $keywordList
+ * @property null|string                               $previewExpression
+ * @property float                                     $layerOpacity
+ * @property MapLayerStyleManager                      $styleManager
+ * @property array<VectorLayerField>                   $fieldConfiguration
+ * @property array<VectorLayerAlias>                   $aliases
+ * @property array<VectorLayerConstraint>              $constraints
+ * @property array<VectorLayerConstraintExpression>    $constraintExpressions
+ * @property array<VectorLayerDefault>                 $defaults
+ * @property array<VectorLayerEditableField>           $editable
+ * @property array<VectorLayerJoin>                    $vectorjoins
+ * @property AttributeTableConfig                      $attributetableconfig
+ * @property null|array<string>                        $excludeAttributesWMS
+ * @property null|array<string>                        $excludeAttributesWFS
+ * @property null|RendererV2                           $rendererV2
+ * @property array<VectorLayerAttributeEditorField>    $attributeEditorField
+ * @property array<VectorLayerAttributeEditorRelation> $attributeEditorRelation
  */
 class VectorLayer extends Qgis\BaseQgisObject
 {
@@ -75,6 +77,8 @@ class VectorLayer extends Qgis\BaseQgisObject
         'attributetableconfig',
         'vectorjoins',
         'rendererV2',
+        'attributeEditorField',
+        'attributeEditorRelation',
     );
 
     /** @var array<string> The not null properties */
@@ -147,6 +151,30 @@ class VectorLayer extends Qgis\BaseQgisObject
         }
 
         return null;
+    }
+
+    /**
+     * Get the attribute editor relation configuration for the given relation id.
+     *
+     * @param string $id
+     *
+     * @return null|VectorLayerAttributeEditorRelation
+     */
+    public function getAttributeEditorRelationConfiguration($id)
+    {
+        if ($this->attributeEditorRelation === null) {
+            return null;
+        }
+        $editorRelation = null;
+        foreach ($this->attributeEditorRelation as $attributeEditor) {
+            if ($attributeEditor->relation == $id) {
+                $editorRelation = $attributeEditor;
+
+                break;
+            }
+        }
+
+        return $editorRelation;
     }
 
     /**
