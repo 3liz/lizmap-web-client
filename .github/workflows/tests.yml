@@ -11,8 +11,8 @@ on:
       - release_3_*
 
 env:
-  PHP_VERSION: "8.2"
-  NODE_VERSION: "21"
+  PHP_VERSION: "8.1"
+  NODE_VERSION: "22"
 
 jobs:
   php-tests:
