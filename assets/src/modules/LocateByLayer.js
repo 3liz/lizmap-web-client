@@ -9,6 +9,7 @@
 import DOMPurify from 'dompurify';
 
 import GeoJSON from 'ol/format/GeoJSON.js';
+import WFS from './WFS.js';
 
 /**
  * @class
@@ -118,10 +119,9 @@ export default class LocateByLayer {
                 }
             }
 
-            // get locate by layers features
-            for (var layerName in this._lizmap3LocateByLayerConfig) {
-                this.getLocateFeature(layerName);
-            }
+            // get locate by layers features asynchronously
+            this.fetchLocateFeatures();
+
             document.getElementById('locate-clear').addEventListener('click', () => {
                 this._lizmap3.mainLizmap.map.clearHighlightFeatures();
                 $('#locate select').val('-1');
@@ -144,125 +144,77 @@ export default class LocateByLayer {
     }
 
     /**
+     * Loads all locate by layers features and dispatch lizmap.locatebylayer.loaded event
+     * @returns {Promise<void>}
+     */
+    async fetchLocateFeatures() {
+        const promises = Object.keys(this._lizmap3LocateByLayerConfig || {}).map(async (k)=> await this.getLocateFeature(k));
+
+        // wait for all requests to be completed.
+        await Promise.allSettled(promises);
+
+        // Locate By Layer interface is fully loaded.
+        this._lizmap3.mainEventDispatcher.dispatch('lizmap.locatebylayers.loaded')
+    }
+
+    /**
      * Get features for locate by layer tool
      * @param {string} aName - The layer name
      */
-    getLocateFeature(aName) {
-        var locate = this._lizmap3LocateByLayerConfig[aName];
+    async getLocateFeature(aName){
+        let locate = this._lizmap3LocateByLayerConfig[aName];
 
         // get fields to retrieve
-        var fields = ['geometry',locate.fieldName];
+        let fields = ['geometry',locate.fieldName];
         // if a filter field is defined
         if ('filterFieldName' in locate)
             fields.push( locate.filterFieldName );
         // check for join fields
         if ( 'filterjoins' in locate ) {
-            var filterjoins = locate.filterjoins;
+            let filterjoins = locate.filterjoins;
             for ( var i=0, len=filterjoins.length; i<len; i++) {
                 var filterjoin = filterjoins[i];
                 fields.push( filterjoin.targetFieldName );
             }
         }
         if ( 'vectorjoins' in locate ) {
-            var vectorjoins = locate.vectorjoins;
+            let vectorjoins = locate.vectorjoins;
             for ( var k=0, vectorjoinsLen=vectorjoins.length; k<vectorjoinsLen; k++) {
                 var vectorjoin = vectorjoins[k];
                 fields.push( vectorjoin.targetFieldName );
             }
         }
 
-        // Get WFS url and options
-        var getFeatureUrlData = this._lizmap3.getVectorLayerWfsUrl( aName, null, null, 'extent' );
-        getFeatureUrlData['options']['PROPERTYNAME'] = fields.join(',');
+        const lConfig = this._lizmap3.config.layers[aName];
+        const layerName = this._lizmap3.cleanName(aName);
+        if (!lConfig) return;
 
-        var layerName = this._lizmap3.cleanName(aName);
+        const wfs = new WFS();
+        const wfsOptions = {
+            TYPENAME: lConfig['shortname'] || lConfig['typename'] || aName,
+            PROPERTYNAME: fields.join(','),
+            GEOMETRYNAME: 'extent'
+        }
 
-        // Get data
-        $.post( getFeatureUrlData['url'], getFeatureUrlData['options'], data => {
-            var lConfig = this._lizmap3.config.layers[aName];
-            locate['features'] = {};
-            if ( !data.features )
-                data = JSON.parse(data);
-            var features = data.features;
+        locate['features'] = {};
 
-            if ('filterFieldName' in locate) {
-                // create filter combobox for the layer
-                features.sort(function(a, b) {
-                    var aProperty = a.properties[locate.filterFieldName];
-                    var bProperty = b.properties[locate.filterFieldName];
-                    if (isNaN(aProperty)) {
-                        if (isNaN(bProperty)) {  // a and b are strings
-                            return aProperty.localeCompare(bProperty);
-                        } else {         // a string and b number
-                            return 1;  // a > b
-                        }
-                    } else {
-                        if (isNaN(bProperty)) {  // a number and b string
-                            return -1;  // a < b
-                        } else {         // a and b are numbers
-                            return parseFloat(aProperty) - parseFloat(bProperty);
-                        }
-                    }
-                });
-                var filterPlaceHolder = '';
-                if ( 'filterFieldAlias' in locate && locate.filterFieldAlias!='')
-                    filterPlaceHolder += locate.filterFieldAlias+' ';
-                else
-                    filterPlaceHolder += locate.filterFieldName;
-                filterPlaceHolder +=' ('+ lConfig.title + ')';
-                var fOptions = '<option value="-1"></option>';
-                var fValue = '-1';
-                for (var i=0, len=features.length; i<len; i++) {
-                    var feat = features[i];
-                    if ( fValue != feat.properties[locate.filterFieldName] ) {
-                        fValue = feat.properties[locate.filterFieldName];
-                        fOptions += '<option value="'+fValue+'">'+fValue+'</option>';
-                    }
-                }
+        let features = null;
+        try {
+            const wfsData = await wfs.getFeature(wfsOptions);
+            features = wfsData?.features;
+        } catch(e){
+            // something went wrong in WFS call, just log the error in console.
+            console.warn(e);
+        }
 
-                // add filter values list
-                $('#locate-layer-'+layerName).parent().before(
-                    `<div class="locate-layer">
-                    <select class="form-select" id="locate-layer-`+layerName+'-'+locate.filterFieldName+'">'+fOptions+`</select>
-                    </div><br/>`
-                );
-                // listen to filter select changes
-                document.getElementById('locate-layer-'+layerName+'-'+locate.filterFieldName)
-                    .addEventListener("change", () => {
-                        var filterValue = $(this).children(':selected').val();
-                        this.updateLocateFeatureList( aName );
-                        if (filterValue == '-1')
-                            $('#locate-layer-'+layerName+'-'+locate.filterFieldName+' ~ span > input').val('');
-                        $('#locate-layer-'+layerName+' ~ span > input').val('');
-                        $('#locate-layer-'+layerName).val('-1');
-                        this.zoomToLocateFeature(aName);
-                    });
-                // add combobox to the filter select
-                $('#locate-layer-'+layerName+'-'+locate.filterFieldName).combobox({
-                    position: { my : "right top", at: "right bottom" },
-                    "selected": function(evt, ui){
-                        if ( ui.item ) {
-                            const self = this;
-                            var uiItem = $(ui.item);
-                            window.setTimeout(function(){
-                                self.value = uiItem.val();
-                                self.dispatchEvent(new Event('change'));
-                            }, 1);
-                        }
-                    }
-                });
+        // if no features return
+        if(!features) return;
 
-                // add place holder to the filter combobox input
-                $('#locate-layer-'+layerName+'-'+locate.filterFieldName+' ~ span > input')
-                    .attr('placeholder', filterPlaceHolder).val('');
-                $('#locate-layer-'+layerName+'-'+locate.filterFieldName+' ~ span > input')
-                    .autocomplete('close');
-            }
-
-            // create combobox for the layer
+        if ('filterFieldName' in locate) {
+            // create filter combobox for the layer
             features.sort(function(a, b) {
-                var aProperty = a.properties[locate.fieldName];
-                var bProperty = b.properties[locate.fieldName];
+                var aProperty = a.properties[locate.filterFieldName];
+                var bProperty = b.properties[locate.filterFieldName];
                 if (isNaN(aProperty)) {
                     if (isNaN(bProperty)) {  // a and b are strings
                         return aProperty.localeCompare(bProperty);
@@ -277,85 +229,42 @@ export default class LocateByLayer {
                     }
                 }
             });
-            var placeHolder = '';
-            if ('filterFieldName' in locate) {
-                if ( 'fieldAlias' in locate && locate.fieldAlias!='' )
-                    placeHolder += locate.fieldAlias+' ';
-                else
-                    placeHolder += locate.fieldName+' ';
-                placeHolder += '('+lConfig.title+')';
-            } else {
-                placeHolder = lConfig.title;
-            }
-            var options = '<option value="-1"></option>';
-            for (var j=0, featuresLen=features.length; j<featuresLen; j++) {
-                var featElement = features[j];
-                locate.features[featElement.id.toString()] = featElement;
-                if ( !('filterFieldName' in locate) ) {
-                    // add option
-                    options += '<option value="' + featElement.id + '">';
-                    // DOMPurify.sanitize needs a string
-                    options += featElement.properties[locate.fieldName] !== null ?
-                        DOMPurify.sanitize(featElement.properties[locate.fieldName].toString()) :
-                        featElement.properties[locate.fieldName]+''; // 'null' for null value
-                    options += '</option>';
+            var filterPlaceHolder = '';
+            if ( 'filterFieldAlias' in locate && locate.filterFieldAlias!='')
+                filterPlaceHolder += locate.filterFieldAlias+' ';
+            else
+                filterPlaceHolder += locate.filterFieldName;
+            filterPlaceHolder +=' ('+ lConfig.title + ')';
+            var fOptions = '<option value="-1"></option>';
+            var fValue = '-1';
+            for (let i=0, len=features.length; i<len; i++) {
+                var feat = features[i];
+                if ( fValue != feat.properties[locate.filterFieldName] ) {
+                    fValue = feat.properties[locate.filterFieldName];
+                    fOptions += '<option value="'+fValue+'">'+fValue+'</option>';
                 }
             }
-            document.getElementById('locate-layer-'+layerName).innerHTML = options;
-            // listen to select changes
-            document.getElementById('locate-layer-'+layerName).addEventListener("change", (event) => {
-                var val = event.target.value;
-                if (val == '-1') {
+
+            // add filter values list
+            $('#locate-layer-'+layerName).parent().before(
+                `<div class="locate-layer">
+                <select class="form-select" id="locate-layer-`+layerName+'-'+locate.filterFieldName+'">'+fOptions+`</select>
+                </div><br/>`
+            );
+            // listen to filter select changes
+            document.getElementById('locate-layer-'+layerName+'-'+locate.filterFieldName)
+                .addEventListener("change", () => {
+                    var filterValue = $(this).children(':selected').val();
+                    this.updateLocateFeatureList( aName );
+                    if (filterValue == '-1')
+                        $('#locate-layer-'+layerName+'-'+locate.filterFieldName+' ~ span > input').val('');
                     $('#locate-layer-'+layerName+' ~ span > input').val('');
-                    // update to join layer
-                    if ( 'filterjoins' in locate && locate.filterjoins.length != 0 ) {
-                        var filterjoins = locate.filterjoins;
-                        for (var i=0, len=filterjoins.length; i<len; i++) {
-                            var filterjoin = filterjoins[i];
-                            var jName = filterjoin.joinLayer;
-                            if ( jName in this._lizmap3LocateByLayerConfig ) {
-                                // update joined select options
-                                var oldVal = $('#locate-layer-'+cleanName(jName)).val();
-                                this.updateLocateFeatureList( jName );
-                                $('#locate-layer-'+cleanName(jName)).val( oldVal );
-                                return;
-                            }
-                        }
-                    }
-                    // zoom to parent selection
-                    if ( 'vectorjoins' in locate && locate.vectorjoins.length == 1 ) {
-                        var joinName = locate.vectorjoins[0].joinLayer;
-                        if ( joinName in this._lizmap3LocateByLayerConfig ) {
-                            this.zoomToLocateFeature( joinName );
-                            return;
-                        }
-                    }
-                    // clear the map
-                    this.zoomToLocateFeature( aName );
-                } else {
-                    // zoom to val
-                    this.zoomToLocateFeature( aName );
-                    // update joined layer
-                    if ( 'filterjoins' in locate && locate.filterjoins.length != 0 ) {
-                        var filterjoinsList = locate.filterjoins;
-                        for (var index=0, length=filterjoinsList.length; index<length; index++) {
-                            var filterJ = filterjoinsList[index];
-                            var filterJName = filterJ.joinLayer;
-                            if ( filterJName in this._lizmap3LocateByLayerConfig ) {
-                                // update joined select options
-                                this.updateLocateFeatureList( filterJName );
-                                $('#locate-layer-'+cleanName(filterJName)).val('-1');
-                                $('#locate-layer-'+cleanName(filterJName)+' ~ span > input').val('');
-                            }
-                        }
-                    }
-                }
-                $(this).blur();
-                return;
-            });
-            $('#locate-layer-'+layerName).combobox({
-                "minLength": ('minLength' in locate) ? locate.minLength : 0,
-                "position": { my : "right top", at: "right bottom" },
+                    $('#locate-layer-'+layerName).val('-1');
+                    this.zoomToLocateFeature(aName);
+                });
+            // add combobox to the filter select
+            $('#locate-layer-'+layerName+'-'+locate.filterFieldName).combobox({
+                position: { my : "right top", at: "right bottom" },
                 "selected": function(evt, ui){
                     if ( ui.item ) {
                         const self = this;
@@ -367,17 +276,134 @@ export default class LocateByLayer {
                     }
                 }
             });
-            $('#locate-layer-'+layerName+' ~ span > input').attr('placeholder', placeHolder).val('');
-            $('#locate-layer-'+layerName+' option[value=-1]').attr('label', placeHolder);
-            $('#locate-layer-'+layerName+' ~ span > input').autocomplete('close');
-            if ( ('minLength' in locate) && locate.minLength > 0 )
-                $('#locate-layer-'+layerName).parent().addClass('no-toggle');
-            if (this._lizmap3.checkMobile()) {
-                // autocompletion items for locatebylayer feature
-                $('div.locate-layer select').show();
-                $('span.custom-combobox').hide();
+
+            // add place holder to the filter combobox input
+            $('#locate-layer-'+layerName+'-'+locate.filterFieldName+' ~ span > input')
+                .attr('placeholder', filterPlaceHolder).val('');
+            $('#locate-layer-'+layerName+'-'+locate.filterFieldName+' ~ span > input')
+                .autocomplete('close');
+        }
+
+        // create combobox for the layer
+        features.sort(function(a, b) {
+            var aProperty = a.properties[locate.fieldName];
+            var bProperty = b.properties[locate.fieldName];
+            if (isNaN(aProperty)) {
+                if (isNaN(bProperty)) {  // a and b are strings
+                    return aProperty.localeCompare(bProperty);
+                } else {         // a string and b number
+                    return 1;  // a > b
+                }
+            } else {
+                if (isNaN(bProperty)) {  // a number and b string
+                    return -1;  // a < b
+                } else {         // a and b are numbers
+                    return parseFloat(aProperty) - parseFloat(bProperty);
+                }
             }
-        },'json');
+        });
+        var placeHolder = '';
+        if ('filterFieldName' in locate) {
+            if ( 'fieldAlias' in locate && locate.fieldAlias!='' )
+                placeHolder += locate.fieldAlias+' ';
+            else
+                placeHolder += locate.fieldName+' ';
+            placeHolder += '('+lConfig.title+')';
+        } else {
+            placeHolder = lConfig.title;
+        }
+        var options = '<option value="-1"></option>';
+        for (var j=0, featuresLen=features.length; j<featuresLen; j++) {
+            var featElement = features[j];
+            locate.features[featElement.id.toString()] = featElement;
+            if ( !('filterFieldName' in locate) ) {
+                // add option
+                options += '<option value="' + featElement.id + '">';
+                // DOMPurify.sanitize needs a string
+                options += featElement.properties[locate.fieldName] !== null ?
+                    DOMPurify.sanitize(featElement.properties[locate.fieldName].toString()) :
+                    featElement.properties[locate.fieldName]+''; // 'null' for null value
+                options += '</option>';
+            }
+        }
+        document.getElementById('locate-layer-'+layerName).innerHTML = options;
+        // listen to select changes
+        document.getElementById('locate-layer-'+layerName).addEventListener("change", (event) => {
+            var val = event.target.value;
+            if (val == '-1') {
+                $('#locate-layer-'+layerName+' ~ span > input').val('');
+                // update to join layer
+                if ( 'filterjoins' in locate && locate.filterjoins.length != 0 ) {
+                    var filterjoins = locate.filterjoins;
+                    for (var i=0, len=filterjoins.length; i<len; i++) {
+                        var filterjoin = filterjoins[i];
+                        var jName = filterjoin.joinLayer;
+                        if ( jName in this._lizmap3LocateByLayerConfig ) {
+                            // update joined select options
+                            var oldVal = $('#locate-layer-'+cleanName(jName)).val();
+                            this.updateLocateFeatureList( jName );
+                            $('#locate-layer-'+cleanName(jName)).val( oldVal );
+                            return;
+                        }
+                    }
+                }
+                // zoom to parent selection
+                if ( 'vectorjoins' in locate && locate.vectorjoins.length == 1 ) {
+                    var joinName = locate.vectorjoins[0].joinLayer;
+                    if ( joinName in this._lizmap3LocateByLayerConfig ) {
+                        this.zoomToLocateFeature( joinName );
+                        return;
+                    }
+                }
+                // clear the map
+                this.zoomToLocateFeature( aName );
+            } else {
+                // zoom to val
+                this.zoomToLocateFeature( aName );
+                // update joined layer
+                if ( 'filterjoins' in locate && locate.filterjoins.length != 0 ) {
+                    var filterjoinsList = locate.filterjoins;
+                    for (var index=0, length=filterjoinsList.length; index<length; index++) {
+                        var filterJ = filterjoinsList[index];
+                        var filterJName = filterJ.joinLayer;
+                        if ( filterJName in this._lizmap3LocateByLayerConfig ) {
+                            // update joined select options
+                            this.updateLocateFeatureList( filterJName );
+                            $('#locate-layer-'+cleanName(filterJName)).val('-1');
+                            $('#locate-layer-'+cleanName(filterJName)+' ~ span > input').val('');
+                        }
+                    }
+                }
+            }
+            $(this).blur();
+            return;
+        });
+        $('#locate-layer-'+layerName).combobox({
+            "minLength": ('minLength' in locate) ? locate.minLength : 0,
+            "position": { my : "right top", at: "right bottom" },
+            "selected": function(evt, ui){
+                if ( ui.item ) {
+                    const self = this;
+                    var uiItem = $(ui.item);
+                    window.setTimeout(function(){
+                        self.value = uiItem.val();
+                        self.dispatchEvent(new Event('change'));
+                    }, 1);
+                }
+            }
+        });
+        $('#locate-layer-'+layerName+' ~ span > input').attr('placeholder', placeHolder).val('');
+        $('#locate-layer-'+layerName+' option[value=-1]').attr('label', placeHolder);
+        $('#locate-layer-'+layerName+' ~ span > input').autocomplete('close');
+        if ( ('minLength' in locate) && locate.minLength > 0 )
+            $('#locate-layer-'+layerName).parent().addClass('no-toggle');
+        if (this._lizmap3.checkMobile()) {
+            // autocompletion items for locatebylayer feature
+            $('div.locate-layer select').show();
+            $('span.custom-combobox').hide();
+        }
+
+        return;
     }
 
     /**
