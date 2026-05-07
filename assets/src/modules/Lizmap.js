@@ -28,6 +28,7 @@ import Permalink from './Permalink.js';
 import Search from './Search.js';
 import Tooltip from './Tooltip.js';
 import LocateByLayer from './LocateByLayer.js';
+import GroupPopupByLayer from './GroupPopupByLayer.js';
 
 import WMSCapabilities from 'ol/format/WMSCapabilities.js';
 import WFSCapabilities from 'ol-wfs-capabilities';
@@ -188,6 +189,7 @@ export default class Lizmap {
                         this.map,
                         this._lizmap3
                     );
+                    this.groupPopupByLayers = new GroupPopupByLayer(this.initialConfig);
                     /**
                      * Modules initialized.
                      * @event ModulesInitialized

@@ -854,6 +854,10 @@ window.lizMap = function() {
             text = text.replace( popupReg, 'table table-condensed table-striped table-bordered lizmapPopupTable');
             var pcontent = '<div class="lizmapPopupContent">'+text+'</div>';
             var hasPopupContent = (!(!text || text == null || text == ''));
+            // wrap the popups in lizmap-group-popup-layer, if the corresponding mode is enabled
+            if (lizMap.mainLizmap.groupPopupByLayers.isActive) {
+                pcontent = `<lizmap-group-popup-layer>${lizMap.mainLizmap.groupPopupByLayers.groupPopups(pcontent)}</lizmap-group-popup-layer>`
+            }
             document.querySelector('#popupcontent div.menu-content').innerHTML = pcontent;
             if ( !$('#mapmenu .nav-list > li.popupcontent').is(':visible') )
                 $('#mapmenu .nav-list > li.popupcontent').show();
@@ -891,6 +895,11 @@ window.lizMap = function() {
 
             if (!text || text == null || text == ''){
                 return false;
+            }
+
+            // wrap the popups in lizmap-group-popup-layer, if the corresponding mode is enabled
+            if (lizMap.mainLizmap.groupPopupByLayers.isActive) {
+                text = `<lizmap-group-popup-layer>${lizMap.mainLizmap.groupPopupByLayers.groupPopups(text)}</lizmap-group-popup-layer>`
             }
 
             document.getElementById('liz_layer_popup_contentDiv').innerHTML = text;

@@ -169,4 +169,18 @@ describe('Config', function () {
         expect(initialConfig.options.exclude_basemaps_from_single_wms).to.be.eq(false)
     })
 
+    it('Group Popup by Layer Config', function () {
+        const capabilities = JSON.parse(readFileSync('./tests/js-units/data/popup_grouped_by_layer-capabilities.json', 'utf8'));
+        expect(capabilities).to.not.be.undefined
+        expect(capabilities.Capability).to.not.be.undefined
+
+        const config = JSON.parse(readFileSync('./tests/js-units/data/popup_grouped_by_layer-config.json', 'utf8'));
+        expect(config).to.not.be.undefined
+
+        const initialConfig = new Config(config, capabilities);
+
+        expect(initialConfig.options).to.be.instanceOf(OptionsConfig)
+        expect(initialConfig.options.group_popup_by_layer).to.be.eq(true)
+    })
+
 })

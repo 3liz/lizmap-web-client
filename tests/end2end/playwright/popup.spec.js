@@ -711,3 +711,210 @@ test.describe('Drag and drop design with relations', () => {
 
     });
 });
+
+test.describe('Group popup by layers @readonly', () => {
+
+    ['dock','map','minidock'].forEach((popupLocation) => {
+        test(`popup on ${popupLocation}`, async ({ page }) => {
+            if (popupLocation != 'minidock') {
+                await page.route('**/service/getProjectConfig*', async route => {
+                    const response = await route.fetch();
+                    const json = await response.json();
+                    json.options['popupLocation'] = popupLocation;
+                    await route.fulfill({ response, json });
+                });
+            }
+
+            const project = new ProjectPage(page, `popup_grouped_by_layer${popupLocation == 'minidock' ? '_minidock' : ''}`);
+            await project.open();
+            await project.closeLeftDock();
+
+            // Remove catching GetProjectConfig
+            if (popupLocation != 'minidock') {
+                await page.unroute('**/service/getProjectConfig*');
+            }
+            let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
+            await project.clickOnMap(417, 289);
+            let getFeatureInfoRequest = await getFeatureInfoPromise;
+            let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+            responseExpect(getFeatureInfoResponse).toBeHtml();
+            await page.waitForTimeout(500);
+
+            const loc = await page.evaluate('lizMap.config.options.popupLocation');
+            await expect(loc).toBe(popupLocation);
+
+            // check grouped layers
+            let groups = await project.checkGroupPopupByLayersGroups([
+                {
+                    name: 'single_wms_points',
+                    count: 4
+                },
+                {
+                    name: 'single_wms_lines',
+                    count: 1
+                },
+                {
+                    name: 'single_wms_baselayer',
+                    count: 1
+                },
+            ]);
+
+            // check first layer
+            await groups.nth(0).click();
+            await project.checkGroupPopupByLayersFeatures(1,1,'1/4',2);
+            let features = await project.getPopupSingleFeatures(true);
+            await expect(features).toHaveCount(6);
+
+            await expect(features.nth(0)).toBeVisible();
+            await expect(features.nth(0).locator('.lizmapPopupTitle')).toHaveText('single_wms_points');
+            await expect(features.nth(1)).not.toBeVisible();
+            await expect(features.nth(2)).not.toBeVisible();
+            await expect(features.nth(3)).not.toBeVisible();
+            await expect(features.nth(4)).not.toBeVisible();
+            await expect(features.nth(5)).not.toBeVisible();
+
+            // switch feature
+            await project.groupPopupByLayersSwitchFeature();
+
+            await project.checkGroupPopupByLayersFeatures(1,1,'2/4',2);
+
+            await expect(features.nth(0)).not.toBeVisible();
+            await expect(features.nth(1)).toBeVisible();
+            await expect(features.nth(2)).not.toBeVisible();
+            await expect(features.nth(3)).not.toBeVisible();
+            await expect(features.nth(4)).not.toBeVisible();
+            await expect(features.nth(5)).not.toBeVisible();
+
+            await project.groupPopupByLayersSwitchFeature();
+            await project.checkGroupPopupByLayersFeatures(1,1,'3/4',2);
+
+            await expect(features.nth(0)).not.toBeVisible();
+            await expect(features.nth(1)).not.toBeVisible();
+            await expect(features.nth(2)).toBeVisible();
+            await expect(features.nth(3)).not.toBeVisible();
+            await expect(features.nth(4)).not.toBeVisible();
+            await expect(features.nth(5)).not.toBeVisible();
+
+            await project.groupPopupByLayersSwitchFeature('prev');
+
+            await project.checkGroupPopupByLayersFeatures(1,1,'2/4',2);
+
+            await expect(features.nth(0)).not.toBeVisible();
+            await expect(features.nth(1)).toBeVisible();
+            await expect(features.nth(2)).not.toBeVisible();
+            await expect(features.nth(3)).not.toBeVisible();
+            await expect(features.nth(4)).not.toBeVisible();
+            await expect(features.nth(5)).not.toBeVisible();
+
+            await project.groupPopupByLayersSwitchFeature();
+
+            // back to layers list
+            await project.groupPopupByLayersBackToList();
+            groups = await project.checkGroupPopupByLayersGroups([
+                {
+                    name: 'single_wms_points',
+                    count: 4
+                },
+                {
+                    name: 'single_wms_lines',
+                    count: 1
+                },
+                {
+                    name: 'single_wms_baselayer',
+                    count: 1
+                },
+            ]);
+
+            await groups.nth(1).click();
+            await project.checkGroupPopupByLayersFeatures(1,0,'',0);
+
+            await expect(features.nth(0)).not.toBeVisible();
+            await expect(features.nth(1)).not.toBeVisible();
+            await expect(features.nth(2)).not.toBeVisible();
+            await expect(features.nth(3)).not.toBeVisible();
+            await expect(features.nth(4)).toBeVisible();
+            await expect(features.nth(4).locator('.lizmapPopupTitle')).toHaveText('single_wms_lines');
+            await expect(features.nth(5)).not.toBeVisible();
+
+            // check wether lizmap features table component is rendered
+            await expect(features.nth(4).locator('lizmap-features-table')).toHaveCount(1);
+
+            await project.groupPopupByLayersBackToList();
+            groups = await project.checkGroupPopupByLayersGroups([
+                {
+                    name: 'single_wms_points',
+                    count: 4
+                },
+                {
+                    name: 'single_wms_lines',
+                    count: 1
+                },
+                {
+                    name: 'single_wms_baselayer',
+                    count: 1
+                },
+            ]);
+
+            await groups.nth(2).click();
+            await project.checkGroupPopupByLayersFeatures(1,0,'',0);
+            await expect(page.locator('lizmap-group-popup-layer .gpl-back')).toHaveCount(1);
+            await expect(page.locator('lizmap-group-popup-layer .gpl-counter')).toHaveCount(0);
+            await expect(page.locator('lizmap-group-popup-layer .gpl-nav-buttons')).toHaveCount(0);
+            await expect(features.nth(0)).not.toBeVisible();
+            await expect(features.nth(1)).not.toBeVisible();
+            await expect(features.nth(2)).not.toBeVisible();
+            await expect(features.nth(3)).not.toBeVisible();
+            await expect(features.nth(4)).not.toBeVisible();
+            await expect(features.nth(5)).toBeVisible();
+            await expect(features.nth(5).locator('.lizmapPopupTitle')).toHaveText('single_wms_baselayer');
+
+            // the status is mantained
+            await project.groupPopupByLayersBackToList();
+            groups = await project.checkGroupPopupByLayersGroups([
+                {
+                    name: 'single_wms_points',
+                    count: 4
+                },
+                {
+                    name: 'single_wms_lines',
+                    count: 1
+                },
+                {
+                    name: 'single_wms_baselayer',
+                    count: 1
+                },
+            ]);
+
+            await groups.nth(0).click();
+            await project.checkGroupPopupByLayersFeatures(1,1,'3/4',2);
+
+            await expect(features.nth(0)).not.toBeVisible();
+            await expect(features.nth(1)).not.toBeVisible();
+            await expect(features.nth(2)).toBeVisible();
+            await expect(features.nth(3)).not.toBeVisible();
+            await expect(features.nth(4)).not.toBeVisible();
+            await expect(features.nth(5)).not.toBeVisible();
+
+            // check if relation is visible
+            await features.nth(2).locator('.nav-item').nth(1).click();
+            expect(features.nth(2).locator('.lizmapPopupSingleFeature[data-layer-id="table_for_relationnal_value_fbba335b_1fa6_4560_9eed_7591c0aa9b74"]')).toBeVisible()
+
+            await project.switcher.click();
+            //turn off all layers except the single_wms_baselayer and then reuqest popup
+            await page.getByTestId('single_wms_polygons').locator('input').first().uncheck();
+            await page.getByTestId('single_wms_points').locator('input').first().uncheck();
+            await page.getByTestId('single_wms_lines_group').locator('input').first().uncheck();
+            await page.getByTestId('single_wms_lines').locator('input').first().uncheck();
+
+            getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
+            await project.clickOnMap(417, 289);
+            getFeatureInfoRequest = await getFeatureInfoPromise;
+            getFeatureInfoResponse = await getFeatureInfoRequest.response();
+            responseExpect(getFeatureInfoResponse).toBeHtml();
+            await page.waitForTimeout(500);
+
+            await project.checkGroupPopupByLayersFeatures(0,0,'',0);
+        })
+    })
+
+})
