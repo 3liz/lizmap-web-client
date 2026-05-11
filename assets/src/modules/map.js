@@ -420,14 +420,28 @@ export default class map extends olMap {
                     })
                 });
             } else if (baseLayerState.type === BaseLayerTypes.WMS) {
+                // When the external WMS URL is plain HTTP but Lizmap is served
+                // over HTTPS the browser blocks the request as mixed content.
+                // Fall back to the QGIS Server proxy when a project layer is
+                // available, so the upstream WMS is fetched server-side instead.
+                const useProxy = baseLayerState.url.startsWith('http:')
+                    && globalThis.location?.protocol === 'https:'
+                    && baseLayerState.hasItemState
+                    && baseLayerState.hasLayerConfig;
                 baseLayer = new ImageLayer({
                     minResolution: layerMinResolution,
                     maxResolution: layerMaxResolution,
                     source: new ImageWMS({
-                        url: baseLayerState.url,
-                        projection: baseLayerState.crs,
+                        url: useProxy ? serviceURL : baseLayerState.url,
+                        projection: useProxy ? qgisProjectProjection : baseLayerState.crs,
+                        serverType: useProxy ? 'qgis' : undefined,
                         ratio: this._WMSRatio,
-                        params: {
+                        hidpi: useProxy ? this._hidpi : undefined,
+                        params: useProxy ? {
+                            LAYERS: baseLayerState.itemState.wmsName,
+                            FORMAT: baseLayerState.layerConfig.imageFormat,
+                            DPI: 96
+                        } : {
                             LAYERS: baseLayerState.layers,
                             STYLES: baseLayerState.styles,
                             FORMAT: baseLayerState.format
