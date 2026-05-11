@@ -12,6 +12,7 @@
  */
 
 use GuzzleHttp\Psr7\Utils as Psr7Utils;
+use Lizmap\App\WktTools;
 use Lizmap\Form;
 use Lizmap\Project\Project;
 use Lizmap\Project\Repository;
@@ -687,7 +688,7 @@ class editionCtrl extends jController
      * @urlparam string $layerId
      * POST: values (JSON object), geometry (WKT string), fields (JSON array, optional)
      *
-     * @return jResponseJson
+     * @return jResponseHtmlFragment|jResponseJson
      */
     public function evaluateDefaultExpressions()
     {
@@ -710,7 +711,7 @@ class editionCtrl extends jController
             $only = array();
         }
 
-        $geom = ($wkt && \Lizmap\App\WktTools::check($wkt)) ? \Lizmap\App\WktTools::parse($wkt) : null;
+        $geom = ($wkt && WktTools::check($wkt)) ? WktTools::parse($wkt) : null;
         $formFeature = array(
             'type' => 'Feature',
             'geometry' => $geom,
@@ -734,7 +735,7 @@ class editionCtrl extends jController
             $expressions[$field] = $expression;
         }
 
-        $results = \qgisExpressionUtils::evaluateExpressions($this->layer, $expressions, $formFeature);
+        $results = qgisExpressionUtils::evaluateExpressions($this->layer, $expressions, $formFeature);
 
         /** @var jResponseJson $rep */
         $rep = $this->getResponse('json');
