@@ -171,7 +171,7 @@ class qgisVectorLayer extends qgisMapLayer
     {
         $result = array();
         foreach ($this->defaultValues as $field => $expression) {
-            if ($expression === null) {
+            if ($expression === '') {
                 continue;
             }
             $result[$field] = array(

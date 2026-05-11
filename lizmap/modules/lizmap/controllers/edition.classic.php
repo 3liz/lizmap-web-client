@@ -688,7 +688,7 @@ class editionCtrl extends jController
      * @urlparam string $layerId
      * POST: values (JSON object), geometry (WKT string), fields (JSON array, optional)
      *
-     * @return jResponseJson
+     * @return jResponseHtmlFragment|jResponseJson
      */
     public function evaluateDefaultExpressions()
     {

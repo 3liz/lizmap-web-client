@@ -130,7 +130,7 @@ class QgisForm implements QgisFormControlsInterface
                 continue;
             }
             $expression = $allDefs[$fieldName]['expression'];
-            if ($expression === null || trim($expression) === '') {
+            if (trim($expression) === '') {
                 continue;
             }
             $applyOnUpdateMap[$fieldName] = $allDefs[$fieldName]['applyOnUpdate'];
@@ -323,7 +323,7 @@ class QgisForm implements QgisFormControlsInterface
         $dynamic = array();
         foreach ($this->layer->getDefaultValueDefinitions() as $fieldName => $def) {
             $expression = $def['expression'];
-            if ($expression === null || trim($expression) === '') {
+            if (trim($expression) === '') {
                 continue;
             }
             if (is_numeric($expression)) {
@@ -708,7 +708,7 @@ class QgisForm implements QgisFormControlsInterface
         $exprDefaults = $this->evaluateDefaultExpressions($this->collectDynamicExpressions());
         foreach ($exprDefaults as $ref => $value) {
             $cur = $form->getData($ref);
-            if ($cur === null || $cur === '') {
+            if ($cur === '' || $cur === []) {
                 $form->setData($ref, $value);
             }
         }
