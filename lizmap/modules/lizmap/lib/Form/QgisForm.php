@@ -69,6 +69,12 @@ class QgisForm implements QgisFormControlsInterface
     /** @var AppContextInterface */
     protected $appContext;
 
+    /** @var array<string, string> dynamic default expressions keyed by field name */
+    protected $dynamicDefaultExpressions = array();
+
+    /** @var array<string, bool> applyOnUpdate flag keyed by field name, for dynamic defaults only */
+    protected $defaultApplyOnUpdateMap = array();
+
     /**
      * QgisForm constructor.
      *
@@ -114,8 +120,42 @@ class QgisForm implements QgisFormControlsInterface
         $cacheHandler = $layer->getProject()->getCacheHandler();
         $formInfos = $cacheHandler->getEditableLayerFormCache($layer->getId());
 
+        // Classify default expressions once to avoid per-field HTTP calls.
+        $staticDefaults = array();
+        $dynamicExpressions = array();
+        $applyOnUpdateMap = array();
+        $allDefs = $layer->getDefaultValueDefinitions();
+        foreach ($dataFields as $fieldName => $unusedProp) {
+            if (!isset($allDefs[$fieldName])) {
+                continue;
+            }
+            $expression = $allDefs[$fieldName]['expression'];
+            if ($expression === null || trim($expression) === '') {
+                continue;
+            }
+            $applyOnUpdateMap[$fieldName] = $allDefs[$fieldName]['applyOnUpdate'];
+            if (is_numeric($expression)) {
+                $staticDefaults[$fieldName] = $expression;
+
+                continue;
+            }
+            if (preg_match("/^'.*'$/", $expression)) {
+                $inner = trim($expression, "'");
+                if (!preg_match("/(?<!\\\\)'/", $inner)) {
+                    $staticDefaults[$fieldName] = str_replace("\\'", "'", $inner);
+
+                    continue;
+                }
+            }
+            $dynamicExpressions[$fieldName] = $expression;
+        }
+        $this->dynamicDefaultExpressions = $dynamicExpressions;
+        $this->defaultApplyOnUpdateMap = $applyOnUpdateMap;
+        $evaluated = $this->evaluateDefaultExpressions($dynamicExpressions);
+        $defaultsByField = $staticDefaults + $evaluated;
+
         foreach ($dataFields as $fieldName => $prop) {
-            $defaultValue = $this->getDefaultValue($fieldName);
+            $defaultValue = isset($defaultsByField[$fieldName]) ? $defaultsByField[$fieldName] : null;
 
             $constraints = $this->getConstraints($fieldName);
 
@@ -212,6 +252,12 @@ class QgisForm implements QgisFormControlsInterface
             $privateData['qgis_groupDependencies'] = array();
         }
 
+        $privateData['qgis_defaultExpressions'] = array(
+            'dependencies' => \qgisExpressionUtils::getCriteriaFromExpressions($this->dynamicDefaultExpressions),
+            'applyOnUpdate' => $this->defaultApplyOnUpdateMap,
+            'fields' => array_keys($this->dynamicDefaultExpressions),
+        );
+
         // adding text widget fields to the form
         if ($attributeEditorForm) {
             $textWidgetFields = $attributeEditorForm->getTextWidgetFields();
@@ -265,6 +311,74 @@ class QgisForm implements QgisFormControlsInterface
         $project = $this->layer->getProject();
         $prefix = 'Error in form '.$project->getRepository()->getKey().' / '.$project->getKey().' / '.$this->layer->getName().': ';
         $this->appContext->logMessage($prefix.$message, $cat);
+    }
+
+    /**
+     * Collect the dynamic (non-literal) default expressions from the layer.
+     *
+     * @return array<string, string> field name => expression string
+     */
+    protected function collectDynamicExpressions()
+    {
+        $dynamic = array();
+        foreach ($this->layer->getDefaultValueDefinitions() as $fieldName => $def) {
+            $expression = $def['expression'];
+            if ($expression === null || trim($expression) === '') {
+                continue;
+            }
+            if (is_numeric($expression)) {
+                continue;
+            }
+            if (preg_match("/^'.*'$/", $expression)) {
+                $inner = trim($expression, "'");
+                if (!preg_match("/(?<!\\\\)'/", $inner)) {
+                    continue;
+                }
+            }
+            $dynamic[$fieldName] = $expression;
+        }
+
+        return $dynamic;
+    }
+
+    /**
+     * Evaluate a set of QGIS expressions with the current form feature context.
+     *
+     * Builds a form_feature from the WKT stored in liz_geometryColumn and the
+     * current form data, then calls the QGIS expression service once for all
+     * expressions. Returns an empty array when $expressions is empty (no HTTP).
+     *
+     * @param array<string, string> $expressions field name => expression string
+     *
+     * @return array<string, mixed> field name => evaluated value
+     */
+    protected function evaluateDefaultExpressions(array $expressions)
+    {
+        if (!$expressions) {
+            return array();
+        }
+        $geom = null;
+        $ref = $this->form->getData('liz_geometryColumn');
+        $wkt = $ref ? trim((string) $this->form->getData($ref)) : '';
+        if ($wkt && WktTools::check($wkt)) {
+            $geom = WktTools::parse($wkt);
+        }
+        $formFeature = array(
+            'type' => 'Feature',
+            'geometry' => $geom,
+            'properties' => $this->form->getAllData(),
+        );
+        $results = $this->evaluateExpression($expressions, $formFeature);
+        $out = array();
+        if ($results) {
+            foreach ($expressions as $field => $_expr) {
+                if (property_exists($results, $field)) {
+                    $out[$field] = $results->{$field};
+                }
+            }
+        }
+
+        return $out;
     }
 
     /**
@@ -585,6 +699,16 @@ class QgisForm implements QgisFormControlsInterface
                 && $this->formControls[$ref]->fieldDataType === 'boolean') {
                 $ctrl->setDataFromDao($value, 'boolean');
             } else {
+                $form->setData($ref, $value);
+            }
+        }
+
+        // Apply QGIS expression defaults into fields that are still empty.
+        // DB defaults (above) win; expressions only fill what remains unset.
+        $exprDefaults = $this->evaluateDefaultExpressions($this->collectDynamicExpressions());
+        foreach ($exprDefaults as $ref => $value) {
+            $cur = $form->getData($ref);
+            if ($cur === null || $cur === '') {
                 $form->setData($ref, $value);
             }
         }

@@ -1790,6 +1790,7 @@ var lizEdition = function() {
             }
             // Handle group visibilities based on QGIS drag&drop form layout mode
             handleGroupVisibilities( form );
+            handleDefaultExpressions( form );
             // Display label for futur action without bootstrap form-label class
             $('#'+form.attr('id')+'_liz_future_action_label').removeClass('form-label');
 
@@ -1980,6 +1981,15 @@ var lizEdition = function() {
         });
     }
 
+    function debounce(fn, ms) {
+        var t;
+        return function() {
+            var ctx = this, args = arguments;
+            clearTimeout(t);
+            t = setTimeout(function(){ fn.apply(ctx, args); }, ms);
+        };
+    }
+
     /**
      *
      * @param form
@@ -2005,6 +2015,59 @@ var lizEdition = function() {
                 });
             }
         }
+    }
+
+    function handleDefaultExpressions( form ) {
+        var tForm = jFormsJQ.getForm(form.attr('id'));
+        var info = tForm.qgis_defaultExpressions;
+        if (!info || !info.fields || !info.fields.length) return;
+
+        // info.dependencies is a flat array of field names referenced in default
+        // expressions. When any of them changes, re-evaluate all dynamic fields.
+        (info.dependencies || []).forEach(function(dep) {
+            var elt = form.find('#' + form.attr('id') + '_' + dep);
+            if (elt.length) {
+                elt.on('change.lizmap-default', debounce(function() {
+                    reevaluateDefaults(form, info.fields);
+                }, 150));
+            }
+        });
+
+        $(document).on('lizmap.editionGeometryUpdated', debounce(function() {
+            reevaluateDefaults(form, info.fields);
+        }, 150));
+    }
+
+    function reevaluateDefaults( form, fields ) {
+        var info = jFormsJQ.getForm(form.attr('id')).qgis_defaultExpressions;
+        var url = form.attr('data-evaluate-defaults-action');
+        if (!url) return;
+        var data = form.serializeArray().reduce(function(a, kv) {
+            a[kv.name] = kv.value;
+            return a;
+        }, {});
+        var geomCol = data['liz_geometryColumn'];
+        var wkt = (geomCol && data[geomCol]) ? data[geomCol] : '';
+
+        $.post(url, {
+            repository: data.liz_repository,
+            project:    data.liz_project,
+            layerId:    data.liz_layerId,
+            values:     JSON.stringify(data),
+            geometry:   wkt,
+            fields:     JSON.stringify(fields)
+        }, function(resp) {
+            Object.keys(resp || {}).forEach(function(f) {
+                var ctrl = form.find('[name="' + f + '"]');
+                if (!ctrl.length) return;
+                var applyOnUpdate = info.applyOnUpdate[f] === true;
+                var isEmpty = ctrl.val() === '' || ctrl.val() == null;
+                if (applyOnUpdate || isEmpty) {
+                    // Namespaced event avoids re-triggering the dependency listener (loop avoidance)
+                    ctrl.val(resp[f]).trigger('change.lizmap-default-fill');
+                }
+            });
+        }, 'json');
     }
 
     /**
@@ -2212,6 +2275,7 @@ var lizEdition = function() {
                 'srid': srid
             }
         );
+        $(document).trigger('lizmap.editionGeometryUpdated');
         return true;
     }
 
