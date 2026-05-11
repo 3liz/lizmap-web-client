@@ -1708,10 +1708,10 @@ def my_form_open(dialog, layer, feature):
       <defaults>
         <default expression="" field="id" applyOnUpdate="0"/>
         <default expression="" field="code_without_exp" applyOnUpdate="0"/>
-        <default expression="" field="code_with_simple_exp" applyOnUpdate="0"/>
+        <default expression="&quot;code_without_exp&quot; || &apos;_derived&apos;" field="code_with_simple_exp" applyOnUpdate="1"/>
         <default expression="" field="code_for_drill_down_exp" applyOnUpdate="0"/>
         <default expression="" field="code_with_drill_down_exp" applyOnUpdate="0"/>
-        <default expression="" field="code_with_geom_exp" applyOnUpdate="0"/>
+        <default expression="$x" field="code_with_geom_exp" applyOnUpdate="0"/>
       </defaults>
       <constraints>
         <constraint unique_strength="1" constraints="3" field="id" exp_strength="0" notnull_strength="1"/>
