@@ -659,6 +659,7 @@ class editionCtrl extends jController
         $tpl->assign('formPlugins', $qgisForm->getFormPlugins());
         $tpl->assign('widgetsAttributes', $form->getContainer()->privateData['formWidgetsAttributes']);
         $tpl->assign('ajaxNewFeatureUrl', jUrl::get('lizmap~edition:saveNewFeature'));
+        $tpl->assign('ajaxEvaluateDefaultsUrl', jUrl::get('lizmap~edition:evaluateDefaultExpressions'));
         $tpl->assign('groupVisibilities', qgisExpressionUtils::evaluateGroupVisibilities($attributeEditorForm, $form));
 
         // event to add custom fields into the jForms form, or to modify those that
@@ -674,6 +675,70 @@ class editionCtrl extends jController
         /** @var jResponseHtmlFragment $rep */
         $rep = $this->getResponse('htmlfragment');
         $rep->addContent($content);
+
+        return $rep;
+    }
+
+    /**
+     * Evaluate QGIS default-value expressions with a given form feature context.
+     *
+     * @urlparam string $repository
+     * @urlparam string $project
+     * @urlparam string $layerId
+     * POST: values (JSON object), geometry (WKT string), fields (JSON array, optional)
+     *
+     * @return jResponseJson
+     */
+    public function evaluateDefaultExpressions()
+    {
+        if (!$this->getEditionParameters()) {
+            return $this->serviceAnswer();
+        }
+
+        $eCapabilities = $this->layer->getRealEditionCapabilities();
+        if ($eCapabilities->createFeature != 'True' && $eCapabilities->modifyAttribute != 'True') {
+            return $this->serviceAnswer();
+        }
+
+        $values = json_decode($this->param('values', '{}'), true);
+        if (!is_array($values)) {
+            $values = array();
+        }
+        $wkt = trim((string) $this->param('geometry', ''));
+        $only = json_decode($this->param('fields', '[]'), true);
+        if (!is_array($only)) {
+            $only = array();
+        }
+
+        $geom = ($wkt && \Lizmap\App\WktTools::check($wkt)) ? \Lizmap\App\WktTools::parse($wkt) : null;
+        $formFeature = array(
+            'type' => 'Feature',
+            'geometry' => $geom,
+            'properties' => $values,
+        );
+
+        $defs = $this->layer->getDefaultValueDefinitions();
+        $expressions = array();
+        foreach ($defs as $field => $def) {
+            if ($only && !in_array($field, $only, true)) {
+                continue;
+            }
+            $expression = $def['expression'];
+            // Skip literal / numeric defaults already resolved at form open
+            if (is_numeric($expression)) {
+                continue;
+            }
+            if (preg_match("/^'.*'$/", $expression)) {
+                continue;
+            }
+            $expressions[$field] = $expression;
+        }
+
+        $results = \qgisExpressionUtils::evaluateExpressions($this->layer, $expressions, $formFeature);
+
+        /** @var jResponseJson $rep */
+        $rep = $this->getResponse('json');
+        $rep->data = $results ? (array) $results : new stdClass();
 
         return $rep;
     }

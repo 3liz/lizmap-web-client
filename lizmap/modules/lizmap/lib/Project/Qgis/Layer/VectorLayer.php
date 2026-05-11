@@ -229,9 +229,11 @@ class VectorLayer extends Qgis\BaseQgisObject
                 $aliases[$alias->field] = $alias->name;
             }
         }
+        $defaultsApplyOnUpdate = array();
         if ($this->defaults !== null) {
             foreach ($this->defaults as $default) {
                 $defaults[$default->field] = $default->expression;
+                $defaultsApplyOnUpdate[$default->field] = (bool) $default->applyOnUpdate;
             }
         }
         if ($this->constraints !== null) {
@@ -274,6 +276,7 @@ class VectorLayer extends Qgis\BaseQgisObject
         $data['fields'] = $fields;
         $data['aliases'] = $aliases;
         $data['defaults'] = $defaults;
+        $data['defaultsApplyOnUpdate'] = $defaultsApplyOnUpdate;
         $data['constraints'] = $constraints;
         $data['wfsFields'] = $wfsFields;
         $data['webDavFields'] = $webDavFields;

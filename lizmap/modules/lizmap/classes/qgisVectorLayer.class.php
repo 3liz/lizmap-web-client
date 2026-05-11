@@ -36,6 +36,11 @@ class qgisVectorLayer extends qgisMapLayer
     protected $defaultValues = array();
 
     /**
+     * @var bool[] applyOnUpdate flag for each field that has a default expression
+     */
+    protected $defaultValuesApplyOnUpdate = array();
+
+    /**
      * @var string[] list of constraints for each fields (type of contraints and if it is notNull, unique and/or expression contraint)
      */
     protected $constraints = array();
@@ -84,6 +89,7 @@ class qgisVectorLayer extends qgisMapLayer
         $this->fields = $propLayer['fields'];
         $this->aliases = $propLayer['aliases'];
         $this->defaultValues = $propLayer['defaults'];
+        $this->defaultValuesApplyOnUpdate = array_key_exists('defaultsApplyOnUpdate', $propLayer) ? $propLayer['defaultsApplyOnUpdate'] : array();
         $this->constraints = $propLayer['constraints'];
         $this->wfsFields = $propLayer['wfsFields'];
         if (array_key_exists('webDavFields', $propLayer)) {
@@ -154,6 +160,27 @@ class qgisVectorLayer extends qgisMapLayer
         }
 
         return null;
+    }
+
+    /**
+     * Get default value definitions including the applyOnUpdate flag for each field.
+     *
+     * @return array<string, array{expression: string, applyOnUpdate: bool}>
+     */
+    public function getDefaultValueDefinitions()
+    {
+        $result = array();
+        foreach ($this->defaultValues as $field => $expression) {
+            if ($expression === null) {
+                continue;
+            }
+            $result[$field] = array(
+                'expression' => $expression,
+                'applyOnUpdate' => isset($this->defaultValuesApplyOnUpdate[$field]) ? (bool) $this->defaultValuesApplyOnUpdate[$field] : false,
+            );
+        }
+
+        return $result;
     }
 
     /**
