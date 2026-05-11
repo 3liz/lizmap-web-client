@@ -1102,8 +1102,13 @@ window.lizMap = function() {
                     relationId: relation.relationId, // relationId
                 };
                 const pivotAttributeLayerConf = lizMap.getLayerConfigById( rLayerId, lizMap.config.attributeLayers, 'layerId' );
+                const isNtoM = relation.nmRelation;
                 // check if child is a pivot table
-                if (pivotAttributeLayerConf && pivotAttributeLayerConf[1]?.pivot == 'True' && config.relations.pivot && config.relations.pivot[rLayerId]) {
+                if (isNtoM &&
+                    pivotAttributeLayerConf &&
+                    pivotAttributeLayerConf[1]?.pivot == 'True' &&
+                    config.relations.pivot && config.relations.pivot[rLayerId]
+                ) {
                     // looking for related children
                     const pivotConfig =  lizMap.getLayerConfigById(
                         rLayerId,

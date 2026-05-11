@@ -295,7 +295,8 @@ class ProjectInfo extends BaseQgisXmlObject
         foreach ($this->relations as $relation) {
             // Get referenced layer
             $referencedLayer = $this->getLayerById($relation->referencedLayer);
-
+            // get cardinality for specific layer
+            $attributeEditorRelation = $referencedLayer->getAttributeEditorRelationConfiguration($relation->id);
             // Build relations key array
             if (!array_key_exists($relation->referencedLayer, $data)) {
                 $data[$relation->referencedLayer] = array();
@@ -308,6 +309,7 @@ class ProjectInfo extends BaseQgisXmlObject
                 'previewField' => $previewField !== '' ? $previewField : $relation->referencedField,
                 'relationName' => $relation->name,
                 'relationId' => $relation->id,
+                'nmRelation' => $attributeEditorRelation ? $attributeEditorRelation->isnmRelation() : false,
             );
 
             // Collect pivot informations

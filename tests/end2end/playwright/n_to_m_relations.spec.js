@@ -28,8 +28,8 @@ test.describe('N to M relations',
             datatablesResponse = await datatablesRequest.response();
             responseExpect(datatablesResponse).toBeJson();
 
-            //back to natural areas panel
-            await page.locator('#nav-tab-attribute-layer-natural_areas').click();
+            // back to natural areas panel
+            await project.switchAttributeTable('natural_areas');
 
             let attrTable = page.locator("#attribute-layer-table-natural_areas");
             await expect(attrTable).toHaveCount(1);
@@ -59,7 +59,11 @@ test.describe('N to M relations',
             }
 
             // check child layer html divs
+            // n:m cardinality
             await expect(page.locator("#nav-tab-attribute-child-tab-natural_areas-birds")).toHaveCount(1);
+            // 1:n cardinality
+            await expect(page.locator("#nav-tab-attribute-child-tab-natural_areas-birds_areas")).toHaveCount(1);
+            // simple 1:n
             await expect(page.locator("#nav-tab-attribute-child-tab-natural_areas-birds_spots")).toHaveCount(1);
 
             // click on first row of main table and open "m" layer attribute table
@@ -126,9 +130,39 @@ test.describe('N to M relations',
                 await expect(featToolbar.locator(".feature-toolbar button[title='Create feature']")).toBeHidden();
             }
 
-            // change tab to inspect bird spots (1:n control)
-            await page.locator("#nav-tab-attribute-child-tab-natural_areas-birds_spots").click();
+            // change tab to inspect pivot table (1:n cardinality)
+            await project.switchChildAttributeTable('natural_areas-birds_areas');
+            let pivotCardinalityTable = page.locator("#attribute-layer-table-natural_areas-birds_areas");
 
+            await expect(pivotCardinalityTable).toHaveCount(1);
+
+            // inspect pivot layer related table
+            await expect(pivotCardinalityTable.locator("tbody tr")).toHaveCount(3);
+            await expect(pivotCardinalityTable.locator("tbody tr").nth(0).locator("td").nth(1)).toHaveText("5");
+            await expect(pivotCardinalityTable.locator("tbody tr").nth(0).locator("td").nth(2)).toHaveText("1");
+            await expect(pivotCardinalityTable.locator("tbody tr").nth(0).locator("td").nth(3)).toHaveText("2");
+            await expect(pivotCardinalityTable.locator("tbody tr").nth(1).locator("td").nth(1)).toHaveText("6");
+            await expect(pivotCardinalityTable.locator("tbody tr").nth(1).locator("td").nth(2)).toHaveText("3");
+            await expect(pivotCardinalityTable.locator("tbody tr").nth(1).locator("td").nth(3)).toHaveText("2");
+            await expect(pivotCardinalityTable.locator("tbody tr").nth(2).locator("td").nth(1)).toHaveText("7");
+            await expect(pivotCardinalityTable.locator("tbody tr").nth(2).locator("td").nth(2)).toHaveText("5");
+            await expect(pivotCardinalityTable.locator("tbody tr").nth(2).locator("td").nth(3)).toHaveText("2");
+
+            let pivotCardinalityTableFeatureToolbar = pivotCardinalityTable.locator("tbody tr").all();
+            for (const tr of await pivotCardinalityTableFeatureToolbar) {
+                const featToolbar = tr.locator("td").nth(0).locator("lizmap-feature-toolbar");
+                await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Select']")).toBeVisible();
+                await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Filter']")).toBeHidden();
+                await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Zoom']")).toBeHidden();
+                await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Center']")).toBeHidden();
+                await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Edit']")).toBeVisible();
+                await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Delete']")).toBeVisible();
+                await expect(featToolbar.locator(".feature-toolbar button[data-bs-title='Unlink child']")).toBeVisible();
+                await expect(featToolbar.locator(".feature-toolbar button[title='Create feature']")).toBeHidden();
+            }
+
+            // change tab to inspect bird spots (1:n control)
+            await project.switchChildAttributeTable('natural_areas-birds_spots');
             // inspect 1:n layer related table
             let oneToNAttrTable = page.locator("#attribute-layer-table-natural_areas-birds_spots");
             await expect(oneToNAttrTable).toHaveCount(1);
@@ -178,7 +212,7 @@ test.describe('N to M relations',
             await expect(oneToNAttrTable.locator("tbody tr").nth(0).locator("td").nth(3)).toHaveText("Vignalie tower");
 
             // go to birds spots tab and check the unlinked record
-            await page.locator('#nav-tab-attribute-layer-birds_spots').click();
+            await project.switchAttributeTable('birds_spots');
             let birdsSpotsTable = page.locator("#attribute-layer-table-birds_spots");
 
             await expect(birdsSpotsTable.locator("tbody tr")).toHaveCount(5);
@@ -187,8 +221,7 @@ test.describe('N to M relations',
             // insert new bird associated with first area
 
             //back to natural areas panel first
-            await page.locator('#nav-tab-attribute-layer-natural_areas').click();
-
+            await project.switchAttributeTable('natural_areas');
             let addBirdsRequestPromise = page.waitForRequest(/lizmap\/edition\/editFeature/);
             await page.locator("#attribute-layer-main-natural_areas .edition-children-add-buttons button[value='birds']").click();
             let addBirdsRequest = await addBirdsRequestPromise;
@@ -213,7 +246,8 @@ test.describe('N to M relations',
             await page.locator("#lizmap-edition-message .btn-close").click();
 
             // check birds child table
-            await page.locator("#nav-tab-attribute-child-tab-natural_areas-birds").click();
+            await project.switchChildAttributeTable('natural_areas-birds');
+            //await page.locator("#nav-tab-attribute-child-tab-natural_areas-birds").click();
 
             await expect(nRelatedAttrTable.locator("tbody tr")).toHaveCount(4);
             await expect(nRelatedAttrTable.locator("tbody tr").nth(0).locator("td").nth(1)).toHaveText("1");
@@ -225,8 +259,33 @@ test.describe('N to M relations',
             await expect(nRelatedAttrTable.locator("tbody tr").nth(3).locator("td").nth(1)).toHaveText("9");
             await expect(nRelatedAttrTable.locator("tbody tr").nth(3).locator("td").nth(2)).toHaveText("Northern pintail");
 
+            datatablesRequestPromise = project.waitForDatatablesRequest();
+            await attrTable.locator("tbody tr").nth(1).click();
+            datatablesRequest = await datatablesRequestPromise;
+            datatablesResponse = await datatablesRequest.response();
+            responseExpect(datatablesResponse).toBeJson();
+
+            page.waitForTimeout(300);
+            // go to pivot table panel and look for the new inserted record
+            await project.switchChildAttributeTable('natural_areas-birds_areas');
+            await expect(pivotCardinalityTable.locator("tbody tr")).toHaveCount(4);
+            await expect(pivotCardinalityTable.locator("tbody tr").nth(0).locator("td").nth(1)).toHaveText("5");
+            await expect(pivotCardinalityTable.locator("tbody tr").nth(0).locator("td").nth(2)).toHaveText("1");
+            await expect(pivotCardinalityTable.locator("tbody tr").nth(0).locator("td").nth(3)).toHaveText("2");
+            await expect(pivotCardinalityTable.locator("tbody tr").nth(1).locator("td").nth(1)).toHaveText("6");
+            await expect(pivotCardinalityTable.locator("tbody tr").nth(1).locator("td").nth(2)).toHaveText("3");
+            await expect(pivotCardinalityTable.locator("tbody tr").nth(1).locator("td").nth(3)).toHaveText("2");
+            await expect(pivotCardinalityTable.locator("tbody tr").nth(2).locator("td").nth(1)).toHaveText("7");
+            await expect(pivotCardinalityTable.locator("tbody tr").nth(2).locator("td").nth(2)).toHaveText("5");
+            await expect(pivotCardinalityTable.locator("tbody tr").nth(2).locator("td").nth(3)).toHaveText("2");
+            await expect(pivotCardinalityTable.locator("tbody tr").nth(3).locator("td").nth(1)).toHaveText("15");
+            await expect(pivotCardinalityTable.locator("tbody tr").nth(3).locator("td").nth(2)).toHaveText("9");
+            await expect(pivotCardinalityTable.locator("tbody tr").nth(3).locator("td").nth(3)).toHaveText("2");
+
+
             // go to birds panel and look for the new inserted record
-            await page.locator('#nav-tab-attribute-layer-birds').click();
+            await project.switchAttributeTable('birds')
+            //await page.locator('#nav-tab-attribute-layer-birds').click();
 
             let birdsTable = page.locator("#attribute-layer-table-birds");
             await expect(birdsTable.locator("tbody tr")).toHaveCount(9);
@@ -288,6 +347,36 @@ test.describe('N to M relations',
             await deleteBirdFeature;
 
             await expect(birdsTable.locator("tbody tr")).toHaveCount(8);
+            await project.switchAttributeTable('natural_areas');
+
+            datatablesRequestPromise = project.waitForDatatablesRequest();
+            await attrTable.locator("tbody tr").nth(1).click();
+            datatablesRequest = await datatablesRequestPromise;
+            datatablesResponse = await datatablesRequest.response();
+            responseExpect(datatablesResponse).toBeJson();
+
+            // check n:m relation on child natural areas table
+            await project.switchChildAttributeTable('natural_areas-birds');
+            await expect(nRelatedAttrTable.locator("tbody tr")).toHaveCount(3);
+            await expect(nRelatedAttrTable.locator("tbody tr").nth(0).locator("td").nth(1)).toHaveText("1");
+            await expect(nRelatedAttrTable.locator("tbody tr").nth(0).locator("td").nth(2)).toHaveText("Greater flamingo");
+            await expect(nRelatedAttrTable.locator("tbody tr").nth(1).locator("td").nth(1)).toHaveText("3");
+            await expect(nRelatedAttrTable.locator("tbody tr").nth(1).locator("td").nth(2)).toHaveText("Purple heron");
+            await expect(nRelatedAttrTable.locator("tbody tr").nth(2).locator("td").nth(1)).toHaveText("5");
+            await expect(nRelatedAttrTable.locator("tbody tr").nth(2).locator("td").nth(2)).toHaveText("Eurasian teal");
+
+            // go to pivot table panel and look for deleted record
+            await project.switchChildAttributeTable('natural_areas-birds_areas');
+            await expect(pivotCardinalityTable.locator("tbody tr")).toHaveCount(3);
+            await expect(pivotCardinalityTable.locator("tbody tr").nth(0).locator("td").nth(1)).toHaveText("5");
+            await expect(pivotCardinalityTable.locator("tbody tr").nth(0).locator("td").nth(2)).toHaveText("1");
+            await expect(pivotCardinalityTable.locator("tbody tr").nth(0).locator("td").nth(3)).toHaveText("2");
+            await expect(pivotCardinalityTable.locator("tbody tr").nth(1).locator("td").nth(1)).toHaveText("6");
+            await expect(pivotCardinalityTable.locator("tbody tr").nth(1).locator("td").nth(2)).toHaveText("3");
+            await expect(pivotCardinalityTable.locator("tbody tr").nth(1).locator("td").nth(3)).toHaveText("2");
+            await expect(pivotCardinalityTable.locator("tbody tr").nth(2).locator("td").nth(1)).toHaveText("7");
+            await expect(pivotCardinalityTable.locator("tbody tr").nth(2).locator("td").nth(2)).toHaveText("5");
+            await expect(pivotCardinalityTable.locator("tbody tr").nth(2).locator("td").nth(3)).toHaveText("2");
 
             // popup behavior
             await page.locator("#bottom-dock-window-buttons button.btn-bottomdock-clear").click()
@@ -336,11 +425,19 @@ test.describe('N to M relations',
             await expect(natAreaElements.nth(0).locator('.jforms-control-input')).toHaveText("1");
             await expect(natAreaElements.nth(1).locator('.jforms-control-input')).toHaveText("Étang du Galabert");
 
-            // inspect popup children
+            // inspect popup children - birds (n:m cardinality)
             let childrenBirds = popup.locator('.lizmapPopupChildren.birds .lizmapPopupSingleFeature');
             await expect(childrenBirds).toHaveCount(4);
 
-            // unlink a bird from popup
+            // inspect popup children - Pivot records (cardinality 1:n)
+            let childrenPivotRecords = popup.locator('.lizmapPopupChildren.birds_areas .lizmapPopupSingleFeature');
+            await expect(childrenPivotRecords).toHaveCount(4);
+
+            // inspect popup children - birds spots (1:n)
+            let childrenbirdsSpotsRecords = popup.locator('.lizmapPopupChildren.birds_spots .lizmapPopupSingleFeature');
+            await expect(childrenbirdsSpotsRecords).toHaveCount(2);
+
+            // unlink a bird from popup (n:m cardinality)
             page.once('dialog', dialog => {
                 expect(dialog.message()).toBe("Are you sure you want to unlink the selected feature from \"Natural areas\" layer?");
                 return dialog.accept();
@@ -354,6 +451,9 @@ test.describe('N to M relations',
             await unlinkPopupPivotFeature;
 
             await expect(childrenBirds.nth(0).locator(".lizmapPopupDiv")).toHaveCount(0);
+
+            // pivot popup should be updated too (1:n cardinality)
+            await expect(childrenPivotRecords.nth(0).locator(".lizmapPopupDiv")).toHaveCount(0);
 
             // add a new bird from natural areas popup
             let editFeatureRequestPromise = page.waitForRequest(/lizmap\/edition\/editFeature/);
@@ -382,7 +482,7 @@ test.describe('N to M relations',
 
             await page.waitForTimeout(500);
 
-            // inspect birds table in edition form
+            // inspect birds table in edition form (n:m cardinality)
             let editionFormBirdsTable = page.locator("#edition-table-natural_areas-birds");
 
             await expect(editionFormBirdsTable).toHaveCount(1);
@@ -395,6 +495,24 @@ test.describe('N to M relations',
             await expect(editionFormBirdsTable.locator("tbody tr").nth(2).locator("td").nth(2)).toHaveText("Common tern");
             await expect(editionFormBirdsTable.locator("tbody tr").nth(3).locator("td").nth(1)).toHaveText("10");
             await expect(editionFormBirdsTable.locator("tbody tr").nth(3).locator("td").nth(2)).toHaveText("Common snipe");
+
+            // inspect pivot records table in edition form (1:n cardinality)
+            let editionFormPivotTable = page.locator("#edition-table-natural_areas-birds_areas");
+
+            await expect(editionFormPivotTable).toHaveCount(1);
+            await expect(editionFormPivotTable.locator("tbody tr")).toHaveCount(4);
+            await expect(editionFormPivotTable.locator("tbody tr").nth(0).locator("td").nth(1)).toHaveText("1");
+            await expect(editionFormPivotTable.locator("tbody tr").nth(0).locator("td").nth(2)).toHaveText("1");
+            await expect(editionFormPivotTable.locator("tbody tr").nth(0).locator("td").nth(3)).toHaveText("1");
+            await expect(editionFormPivotTable.locator("tbody tr").nth(1).locator("td").nth(1)).toHaveText("2");
+            await expect(editionFormPivotTable.locator("tbody tr").nth(1).locator("td").nth(2)).toHaveText("2");
+            await expect(editionFormPivotTable.locator("tbody tr").nth(1).locator("td").nth(3)).toHaveText("1");
+            await expect(editionFormPivotTable.locator("tbody tr").nth(2).locator("td").nth(1)).toHaveText("3");
+            await expect(editionFormPivotTable.locator("tbody tr").nth(2).locator("td").nth(2)).toHaveText("6");
+            await expect(editionFormPivotTable.locator("tbody tr").nth(2).locator("td").nth(3)).toHaveText("1");
+            await expect(editionFormPivotTable.locator("tbody tr").nth(3).locator("td").nth(1)).toHaveText("16");
+            await expect(editionFormPivotTable.locator("tbody tr").nth(3).locator("td").nth(2)).toHaveText("10");
+            await expect(editionFormPivotTable.locator("tbody tr").nth(3).locator("td").nth(3)).toHaveText("1");
 
             // insert new bird with "create new feature" submit option, this should create the pivot record again
             // click on the add feature button
@@ -461,5 +579,26 @@ test.describe('N to M relations',
             await expect(editionFormBirdsTable.locator("tbody tr").nth(4).locator("td").nth(2)).toHaveText("Mute swan");
             await expect(editionFormBirdsTable.locator("tbody tr").nth(5).locator("td").nth(1)).toHaveText("12");
             await expect(editionFormBirdsTable.locator("tbody tr").nth(5).locator("td").nth(2)).toHaveText("Common shelduck");
+
+            // check pivot table (1:n cardinality)
+            await expect(editionFormPivotTable.locator("tbody tr")).toHaveCount(6);
+            await expect(editionFormPivotTable.locator("tbody tr").nth(0).locator("td").nth(1)).toHaveText("1");
+            await expect(editionFormPivotTable.locator("tbody tr").nth(0).locator("td").nth(2)).toHaveText("1");
+            await expect(editionFormPivotTable.locator("tbody tr").nth(0).locator("td").nth(3)).toHaveText("1");
+            await expect(editionFormPivotTable.locator("tbody tr").nth(1).locator("td").nth(1)).toHaveText("2");
+            await expect(editionFormPivotTable.locator("tbody tr").nth(1).locator("td").nth(2)).toHaveText("2");
+            await expect(editionFormPivotTable.locator("tbody tr").nth(1).locator("td").nth(3)).toHaveText("1");
+            await expect(editionFormPivotTable.locator("tbody tr").nth(2).locator("td").nth(1)).toHaveText("3");
+            await expect(editionFormPivotTable.locator("tbody tr").nth(2).locator("td").nth(2)).toHaveText("6");
+            await expect(editionFormPivotTable.locator("tbody tr").nth(2).locator("td").nth(3)).toHaveText("1");
+            await expect(editionFormPivotTable.locator("tbody tr").nth(3).locator("td").nth(1)).toHaveText("16");
+            await expect(editionFormPivotTable.locator("tbody tr").nth(3).locator("td").nth(2)).toHaveText("10");
+            await expect(editionFormPivotTable.locator("tbody tr").nth(3).locator("td").nth(3)).toHaveText("1");
+            await expect(editionFormPivotTable.locator("tbody tr").nth(4).locator("td").nth(1)).toHaveText("17");
+            await expect(editionFormPivotTable.locator("tbody tr").nth(4).locator("td").nth(2)).toHaveText("11");
+            await expect(editionFormPivotTable.locator("tbody tr").nth(4).locator("td").nth(3)).toHaveText("1");
+            await expect(editionFormPivotTable.locator("tbody tr").nth(5).locator("td").nth(1)).toHaveText("18");
+            await expect(editionFormPivotTable.locator("tbody tr").nth(5).locator("td").nth(2)).toHaveText("12");
+            await expect(editionFormPivotTable.locator("tbody tr").nth(5).locator("td").nth(3)).toHaveText("1");
         });
     });

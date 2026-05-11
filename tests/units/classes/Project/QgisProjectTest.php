@@ -59,7 +59,7 @@ class QgisProjectTest extends TestCase
                     'previewField' => 'fid',
                     'relationName' => 'fk_father_child_relation',
                     'relationId' => 'child_laye_father_id_father_lay_ref_id_1',
-
+                    'nmRelation' => false,
                 ),
             ),
             'pivot' => array(),

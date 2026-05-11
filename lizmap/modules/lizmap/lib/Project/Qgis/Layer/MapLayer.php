@@ -163,6 +163,17 @@ class MapLayer extends Qgis\BaseQgisXmlObject
             $data['rendererV2'] = $data['renderer-v2'];
             unset($data['renderer-v2']);
         }
+
+        // flatten attributeEditorForm properties
+        if (array_key_exists('attributeEditorForm', $data)
+            && array_key_exists('attributeEditorField', $data['attributeEditorForm'])) {
+            $data['attributeEditorField'] = $data['attributeEditorForm']['attributeEditorField'];
+        }
+        if (array_key_exists('attributeEditorForm', $data)
+            && array_key_exists('attributeEditorRelation', $data['attributeEditorForm'])) {
+            $data['attributeEditorRelation'] = $data['attributeEditorForm']['attributeEditorRelation'];
+        }
+
         if (array_key_exists('type', $data)
             && $data['type'] === 'vector') {
             return new VectorLayer($data);
@@ -206,6 +217,45 @@ MapLayer::registerChildParser('srs', function ($oXmlReader) {
 MapLayer::registerChildParser('map-layer-style-manager', function ($oXmlReader) {
     return MapLayerStyleManager::fromXmlReader($oXmlReader);
 });
+
+MapLayer::registerChildParser('attributeEditorForm', function ($oXmlReader) {
+    $data = array();
+    if ($oXmlReader->isEmptyElement) {
+        return $data;
+    }
+    $depth = $oXmlReader->depth;
+    $localName = $oXmlReader->localName;
+    while ($oXmlReader->read()) {
+        if ($oXmlReader->nodeType == \XMLReader::END_ELEMENT
+            && $oXmlReader->localName == $localName
+            && $oXmlReader->depth == $depth) {
+            break;
+        }
+
+        if ($oXmlReader->nodeType != \XMLReader::ELEMENT) {
+            continue;
+        }
+
+        /* WARNING!!
+        The attributeEditorField and attributeEditorRelation tags
+        may be nested within attributeEditorContainer tags and other tags, so parse all elements
+        and not just the direct children of the attributeEditoForm tag.
+
+        if ($oXmlReader->depth != $depth + 1) {
+            continue;
+        }
+        */
+
+        if ($oXmlReader->localName == 'attributeEditorField') {
+            $data['attributeEditorField'][] = VectorLayerAttributeEditorField::fromXmlReader($oXmlReader);
+        } elseif ($oXmlReader->localName == 'attributeEditorRelation') {
+            $data['attributeEditorRelation'][] = VectorLayerAttributeEditorRelation::fromXmlReader($oXmlReader);
+        }
+    }
+
+    return $data;
+});
+
 MapLayer::registerChildParser('fieldConfiguration', function ($oXmlReader) {
     $data = array();
     if ($oXmlReader->isEmptyElement) {

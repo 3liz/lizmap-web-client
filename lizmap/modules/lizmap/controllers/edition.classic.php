@@ -950,7 +950,12 @@ class editionCtrl extends jController
                 if ($kRel == $m_layerId || $kRel == $n_layerId) {
                     if (is_array($relation)) {
                         $filtered = array_filter($relation, function ($ar) use ($pivotId, $pivotConf, $kRel) {
-                            return is_array($ar) && array_key_exists('referencingLayer', $ar) && array_key_exists('referencingField', $ar) && $ar['referencingLayer'] == $pivotId && $ar['referencingField'] == $pivotConf[$kRel];
+                            return is_array($ar)
+                            && array_key_exists('referencingLayer', $ar)
+                            && array_key_exists('referencingField', $ar)
+                            && $ar['referencingLayer'] == $pivotId
+                            && $ar['referencingField'] == $pivotConf[$kRel]
+                            && $ar['nmRelation'] === true;
                         });
                         if (count($filtered) == 1) {
                             if ($kRel == $m_layerId && !$m_relation) {

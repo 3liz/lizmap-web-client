@@ -528,6 +528,15 @@ export class ProjectPage extends BasePage {
     }
 
     /**
+     * Switch to given child attribute table
+     * @param {string} tableName Name of the attribute table to visualize
+     * @returns {Promise<void>}
+     */
+    async switchChildAttributeTable(tableName){
+        await this.page.locator(`#nav-tab-attribute-child-tab-${tableName}`).click();
+    }
+
+    /**
      * Open search builder attribute table panel. Optionally can clear all criteria
      * @param {string}  name Name of the table
      * @param {boolean} clearAll Wheter to clear all conditions or not
