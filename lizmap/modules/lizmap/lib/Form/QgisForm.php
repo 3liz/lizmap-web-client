@@ -708,7 +708,7 @@ class QgisForm implements QgisFormControlsInterface
         $exprDefaults = $this->evaluateDefaultExpressions($this->collectDynamicExpressions());
         foreach ($exprDefaults as $ref => $value) {
             $cur = $form->getData($ref);
-            if ($cur === '' || $cur === []) {
+            if ($cur === '' || $cur === array()) {
                 $form->setData($ref, $value);
             }
         }
