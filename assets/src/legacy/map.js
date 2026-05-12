@@ -1444,7 +1444,21 @@ window.lizMap = function() {
                         expressionFilter="${exp}"
                     ></lizmap-features-table>
                 `;
-                parentDiv[0].insertAdjacentHTML("beforeend" , featuresTablehtml);
+
+                // If the parent popup is rendered using the drag-and-drop form,
+                // place the features table inside the matching relation placeholder
+                // (so child tables appear in the same tab as in the QGIS form),
+                // otherwise fall back to appending at the end of the popup.
+                const relationId = relation.relationId;
+                const placeholder = parentDiv
+                    .children('.container.popup_lizmap_dd')
+                    .find('.popup_lizmap_dd_relation')
+                    .filter(function () { return this.dataset.relationId === relationId; })[0];
+                if (placeholder) {
+                    placeholder.insertAdjacentHTML("beforeend", featuresTablehtml);
+                } else {
+                    parentDiv[0].insertAdjacentHTML("beforeend", featuresTablehtml);
+                }
             }
         });
     }
