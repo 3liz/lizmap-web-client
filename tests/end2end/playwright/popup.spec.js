@@ -713,4 +713,35 @@ test.describe('Drag and drop design with relations', () => {
         await expect(page.locator('div.popup_lizmap_dd_relation[id="popup_relation_birds_spot_area_id_natural_ar_id"] > div.lizmapPopupChildren.birds_spots')).toHaveCount(1);
 
     });
+
+    test('Children features tables are placed in the correct div container', async ({ page }) => {
+        const project = new ProjectPage(page, 'children_features_table_in_relation_div');
+        await project.open();
+
+        let getFeatureInfoPromise = project.waitForGetFeatureInfoRequest();
+        await page.locator('#newOlMap').click({
+            position: {
+                x: 358,
+                y: 248
+            }
+        });
+        let getFeatureInfoRequest = await getFeatureInfoPromise;
+        let getFeatureInfoResponse = await getFeatureInfoRequest.response();
+        responseExpect(getFeatureInfoResponse).toBeHtml();
+
+        // Each child relation must end up inside its drag-and-drop placeholder,
+        // not appended at the end of the parent popup.
+        await expect(
+            page.locator('div.popup_lizmap_dd_relation[data-relation-id="birds_area_natural_area_id_natural_ar_id"] > lizmap-features-table')
+        ).toHaveCount(1);
+        await expect(
+            page.locator('div.popup_lizmap_dd_relation[data-relation-id="birds_spot_area_id_natural_ar_id"] > lizmap-features-table')
+        ).toHaveCount(1);
+
+        // No features table should be a direct child of the popup container,
+        // confirming the fallback path is not used when placeholders exist.
+        await expect(
+            page.locator('div.lizmapPopupDiv > lizmap-features-table')
+        ).toHaveCount(0);
+    });
 });

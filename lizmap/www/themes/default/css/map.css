@@ -1109,6 +1109,50 @@ div.popup_lizmap_dd .controls {
   margin-left: 140px !important;
 }
 
+/* Spacing and row borders for a lizmap-features-table that sits inside
+   a drag-and-drop relation placeholder (i.e. inside a tab in the parent
+   form). Suppresses the redundant per-table title (the tab already
+   names the relation), adds row separators and tightens the surrounding
+   whitespace. */
+div.popup_lizmap_dd_relation > lizmap-features-table {
+  display: block;
+}
+
+/* Wrap the whole features-table in a visible frame.
+   The border is on the non-table wrapper div so it's immune to:
+   - Bootstrap's split tr/td border model in .table-bordered, which can
+     blank the right/bottom edges of <tr> 4-sided borders under
+     border-collapse: collapse on high-DPI displays at 100% zoom.
+   - Bootstrap 5's per-cell `box-shadow: inset 0 0 0 9999px ...` trick,
+     which paints over any outline or inset box-shadow declared on the
+     <table> itself. */
+div.popup_lizmap_dd_relation > lizmap-features-table > div.lizmap-features-table {
+  margin-bottom: 0;
+  border: 1px solid var(--color-contrasted-elements-light);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* The relation name is already the tab label - drop the inner h4. */
+div.popup_lizmap_dd_relation > lizmap-features-table > div.lizmap-features-table > h4 {
+  display: none;
+}
+
+/* Recolour Bootstrap's row separators (.table-bordered) so the inner
+   row dividers match the wrapper frame's tone. */
+div.popup_lizmap_dd_relation > lizmap-features-table table.lizmap-features-table-container {
+  --bs-border-color: var(--color-contrasted-elements-light);
+
+  margin-bottom: 0;
+}
+
+/* Tighten the fieldset that wraps the relation placeholder (the visible
+   rounded box) when it contains our features-table - the default top
+   gap and side padding are too generous for a compact list. */
+div.popup_lizmap_dd fieldset:has(.popup_lizmap_dd_relation > lizmap-features-table) {
+  padding: 4px 6px;
+}
+
 /* ATLAS */
 
 /* White background for Atlas content */
