@@ -271,8 +271,8 @@ class mediaCtrl extends jController
             $repex = explode('/', $n_repositoryPath);
             array_pop($repex);
             $reptest = implode('/', $repex);
-            if (!preg_match('#^'.$n_repositoryPath.'(/)?media/#', $n_abspath)
-               && !preg_match('#^'.$reptest.'(/)?media/#', $n_abspath)
+            if (!preg_match('#^'.preg_quote($n_repositoryPath, '#').'(/)?media/#', $n_abspath)
+               && !preg_match('#^'.preg_quote($reptest, '#').'(/)?media/#', $n_abspath)
             ) {
                 $ok = false;
             }
