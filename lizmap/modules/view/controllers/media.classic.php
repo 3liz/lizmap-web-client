@@ -85,7 +85,9 @@ class mediaCtrl extends jController
     /**
      * Returns error.
      *
-     * @param jResponseRedirect $message
+     * @param string $message
+     *
+     * @return jResponseRedirect
      */
     protected function error($message)
     {
@@ -100,7 +102,9 @@ class mediaCtrl extends jController
     /**
      * Return 404.
      *
-     * @param jResponseJson $message
+     * @param string $message
+     *
+     * @return jResponseJson
      */
     protected function error404($message)
     {
@@ -121,7 +125,9 @@ class mediaCtrl extends jController
     /**
      * Return 403.
      *
-     * @param jResponseJson $message
+     * @param string $message
+     *
+     * @return jResponseJson
      */
     protected function error403($message)
     {
@@ -136,7 +142,9 @@ class mediaCtrl extends jController
     /**
      * Return 401.
      *
-     * @param jResponseJson $message
+     * @param string $message
+     *
+     * @return jResponseJson
      */
     protected function error401($message)
     {
@@ -259,12 +267,7 @@ class mediaCtrl extends jController
             }
             // Redirect if errors
             if (!$ok) {
-                $content = 'No media file in the specified path: '.$path;
-                if (is_link($repositoryPath.'/'.$path)) {
-                    $content .= ' '.readlink($repositoryPath.'/'.$path);
-                }
-
-                return $this->error404($content);
+                return $this->error404('No media file in the specified path: '.$path);
             }
             $finalPath = $abspath;
         }
@@ -341,7 +344,7 @@ class mediaCtrl extends jController
     /**
      * Get illustration image for a specified project.
      *
-     * @return jResponseBinary object The image for this project
+     * @return jResponseBinary|jResponseHtml|jResponseJson object The image for this project
      */
     public function illustration()
     {
@@ -490,7 +493,7 @@ class mediaCtrl extends jController
      * Get a CSS file stored in the repository in a "media/themes" folder.
      * Url to images are replaced by getMedia URL.
      *
-     * @return jResponseBinary|jResponseText object The transformed CSS file
+     * @return jResponseBinary|jResponseRedirect|jResponseText object The transformed CSS file
      */
     public function getCssFile()
     {
