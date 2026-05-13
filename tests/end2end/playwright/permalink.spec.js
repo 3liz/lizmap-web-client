@@ -1143,6 +1143,34 @@ test.describe('Write short link permalink @write', () => {
         // hash should be equal to map_status
         let url_to_check = new URL(page.url());
         expect(url_to_check.hash).toBe("#map_status");
+
+        //add another permalink and remove permalink from local storage
+        await page.getByTestId('single_wms_points').locator('> div input').click();
+
+        // create a new permalink: since map has changed, a new permalink should be added to history table
+        permalinkAddRequestPromise = project.waitForPermalinkAddRequest();
+        await page.locator("#lizmap-new-permalink").click();
+        permalinkAddRequest = await permalinkAddRequestPromise;
+        requestExpect(permalinkAddRequest).toContainParametersInUrl(permalinkUrlParameters);
+        permalinkResponse = await permalinkAddRequest.response();
+        responseExpect(permalinkResponse).toBeJson();
+
+        body = await permalinkResponse?.json();
+
+        expect(body).toHaveProperty('permalink','UFgQYYLMAbyd');
+        expect(page.locator("#lizmap-new-permalink")).toBeDisabled();
+        expect(await page.locator("#lizmap-new-permalink").textContent()).toBe("Permalink copied to clipboard");
+        expect(page.locator("#permalink-history table tr")).toHaveCount(3);
+        await project.inspectPermalinkHistoryTableRecord("UFgQYYLMAbyd");
+        await project.inspectPermalinkSharePanel("UFgQYYLMAbyd");
+
+        // remove permalink
+        await project.removePermalinkFromLocalStorage("UFgQYYLMAbyd");
+        expect(page.locator("#permalink-history table tr")).toHaveCount(2);
+
+        // clear history
+        await project.clearPermalinkHistory();
+        expect(page.locator("#permalink-history table")).toHaveCount(0);
     })
 })
 

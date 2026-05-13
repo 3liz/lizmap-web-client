@@ -1028,11 +1028,12 @@ export class ProjectPage extends BasePage {
     async inspectPermalinkHistoryTableRecord(hash){
         expect(this.page.locator(`#permalink-history table tr[data-share="${hash}"]`)).toHaveCount(1);
         const tds = this.page.locator(`#permalink-history table tr[data-share="${hash}"] td`);
-        expect(tds).toHaveCount(4);
+        expect(tds).toHaveCount(5);
         expect(await tds.nth(0).textContent()).toBe(hash);
         expect(tds.nth(1)).toBeVisible();
         expect(tds.nth(2)).toBeVisible();
         expect(tds.nth(3)).toBeVisible();
+        expect(tds.nth(4)).toBeVisible();
     }
 
     /**
@@ -1108,5 +1109,30 @@ export class ProjectPage extends BasePage {
 
         // back to permalink history
         await this.page.locator('#permalink-back').click();
+    }
+
+    /**
+     * Remove the given permalink from local storage
+     * @param {string} hash Permalink hash
+     * @returns {Promise<void>}
+     */
+    async removePermalinkFromLocalStorage(hash){
+        this.page.once('dialog', dialog => {
+            expect(dialog.message()).toBe("Remove selected permalink from cache?");
+            return dialog.accept();
+        });
+        await this.page.locator(`#permalink-history table tr[data-share="${hash}"] td`).nth(4).click();
+    }
+
+    /**
+     * Clear permalink history
+     * @returns {Promise<void>}
+     */
+    async clearPermalinkHistory(){
+        this.page.once('dialog', dialog => {
+            expect(dialog.message()).toBe("Remove all permalink from cache?");
+            return dialog.accept();
+        });
+        await this.page.locator(`#permalink-clear-history`).click();
     }
 }
