@@ -8,6 +8,9 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Added
+
+* Edition - Support QGIS dynamic default-value expressions in edit forms, including geometry-based (`$x`, `$y`, `$area`, `$length`, `$geometry`) and field-referencing expressions (e.g. `"firstname" || ' ' || "lastname"`). Defaults are re-evaluated when the geometry is drawn/edited and when a referenced field changes, honoring QGIS's `applyOnUpdate` flag.
 
 ## 3.10.0-beta.3 - 2026-04-20
 
