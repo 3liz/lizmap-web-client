@@ -212,6 +212,16 @@ const initLizmapApp = () => {
                             lizMap.addMessage(permalink.error.reduce((p,c) => p +'\n' + c,''),'danger',true);
                             // reset permalink hash
                             history.replaceState(null, '', window.location.pathname + window.location.search);
+                            // remove permalink from local storage
+                            try {
+                                const permalinksHistory = JSON.parse(localStorage.getItem('lizmap_permalink_history') || []);
+                                localStorage.setItem(
+                                    'lizmap_permalink_history',
+                                    JSON.stringify(permalinksHistory.filter((p) => p.link != permalinkId))
+                                );
+                            } catch (e) {
+                                console.warn(e);
+                            }
                         } else {
                             if (permalink &&
                                 permalink.repository &&

@@ -4237,10 +4237,28 @@ These lines will be removed in the future, when the minimum target version will 
     overflow: auto;
     padding:0.5em;
     margin-top:0.5em;
+    width:100%;
 }
+
+#permalink-clear-history {
+    font-weight: 100;
+    font-size: 0.7em;
+    opacity:0.7;
+}
+
+#permalink-clear-history:hover {
+    opacity:1;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
 
 .permalink-history-title {
     font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1em;
 }
 
 #permalink-history tr.new-entry {

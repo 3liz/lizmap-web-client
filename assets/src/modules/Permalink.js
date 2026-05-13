@@ -54,7 +54,11 @@ export default class Permalink {
 
         this._historyTableTemplate = (links = [], newEntry) => html`
             ${links && links.length ? html`
-                <div class="permalink-history-title">${lizDict['permalink.history.title']}</div>
+                <div class="permalink-history-title">${lizDict['permalink.history.title']}
+                    <span
+                        id="permalink-clear-history"
+                        @click=${()=> this._clearPermalinkHistory()}>${lizDict['permalink.history.delete.all.title']}</span>
+                </div>
                 <table class='table table-sm table-condensed'>
                     <tbody>
                         ${links.map((l,k) => {
@@ -76,6 +80,11 @@ export default class Permalink {
                                     this.currentPermalinkId = plink;
                                     return this._sharePermalink();
                                 }}><i title="${lizDict['permalink.history.share']}" class='icon-share'></i></td>
+                                <td @click=${(e) => {
+                                    const plink = e.currentTarget.parentElement.getAttribute("data-share");
+                                    if(confirm(lizDict['permalink.history.delete.single']))
+                                        return this._updatePermalinkHistory(plink,'d');
+                                }}><i title="${lizDict['permalink.history.delete.single.title']}" class='icon-trash'></i></td>
                             </tr>`
                             })}
                     </tbody>
@@ -274,6 +283,7 @@ export default class Permalink {
     /**
      * Copy the permalink link to clipboard
      * @param {string} link - the permalink url
+     * @returns {void}
      */
     _copyToClipboard(link){
         navigator.clipboard.writeText(link).then(() => {
@@ -282,11 +292,12 @@ export default class Permalink {
 
     /**
      * Renders the history template on client
-     * @param {boolean} newEntry - wether a new record has been added
+     * @param {string} mode - update mode, 'a' = permalink added, 'd' = permalink deletes, '' = refresh only
+     * @returns {void}
      */
-    _renderHistoryTemplate(newEntry = false) {
+    _renderHistoryTemplate(mode = '') {
         if (this._shortLinkPermalink) {
-            render(this._historyTableTemplate(this.permalinksHistory, newEntry), document.getElementById('permalink-history'))
+            render(this._historyTableTemplate(this.permalinksHistory, mode == 'a'), document.getElementById('permalink-history'));
         }
     }
 
@@ -392,34 +403,55 @@ export default class Permalink {
 
     /**
      * Updates the local permalink history
-     * @param {object} plink - the permalink object
-     * @param {boolean} newEntry - wether a new record has been added
+     * @param {string} plink - the permalink hash
+     * @param {string} mode - update mode, 'a' = add, 'd' = delete, '' = refresh only
+     * @returns {void}
      */
-    _updatePermalinkHistory(plink, newEntry){
+    _updatePermalinkHistory(plink, mode){
         const {repository, project} = globalThis['lizUrls'].params;
         let permalinkList = this.permalinksHistory;
         const isOnHistory = permalinkList.filter((e)=> e.link == plink);
         if(!isOnHistory.length) {
-            permalinkList.unshift({
-                link: plink,
-                repository: repository,
-                project:project,
-                url: window.location.origin
-                + window.location.pathname
-                + '?'
-                + new URLSearchParams(globalThis['lizUrls'].params)
-                + "#permalink="+plink,
-            })
-
+            if (mode == 'a') {
+                permalinkList.unshift({
+                    link: plink,
+                    repository: repository,
+                    project:project,
+                    url: this._getShortLinkPermalinkUrl(plink),
+                })
+            }
             // keep only 20 items per tuple (repository, project)
             permalinkList = permalinkList.slice(0,20);
         } else {
             // order history
-            permalinkList = [...isOnHistory, ...permalinkList.filter((e)=> e.link != plink)]
+            permalinkList = [ ...(mode == 'd' ? [] : isOnHistory), ...permalinkList.filter((e)=> e.link != plink)]
 
         }
         this.permalinksHistory = permalinkList;
-        this._renderHistoryTemplate(newEntry);
+        this._renderHistoryTemplate(mode);
+    }
+
+    /**
+     * Returns the permalink url
+     * @returns {string} The permalink url
+     */
+    _getShortLinkPermalinkUrl(plink){
+        return window.location.origin
+            + window.location.pathname
+            + '?'
+            + new URLSearchParams(globalThis['lizUrls'].params)
+            + "#permalink="+plink;
+    }
+
+    /**
+     * Removes permalink history from local storage
+     * @returns {void}
+     */
+    _clearPermalinkHistory(){
+        if(confirm(lizDict['permalink.history.delete.all'])) {
+            localStorage.removeItem('lizmap_permalink_history');
+            this._renderHistoryTemplate();
+        }
     }
 
     /**
@@ -434,9 +466,9 @@ export default class Permalink {
 
         if(permalink) {
             this.currentPermalinkId = permalink;
-            this._updatePermalinkHistory(permalink, true);
+            this._updatePermalinkHistory(permalink, 'a');
             if(navigator.clipboard) {
-                this._copyToClipboard(permalink);
+                this._copyToClipboard(this._getShortLinkPermalinkUrl(permalink));
                 document.getElementById('lizmap-new-permalink').innerText = lizDict['permalink.clipboard'];
             } else {
                 this._sharePermalink();
@@ -553,6 +585,8 @@ export default class Permalink {
                 if (!permalink) return;
                 if(permalink.hasOwnProperty('error')) {
                     mainLizmap.displayMessage(permalink.error.reduce((p,c) => p + '\n' + c,''),'danger',true);
+                    // remove permalink from local storage
+                    this._updatePermalinkHistory(shortLink,'d');
                 } else {
                     this.currentPermalinkProperties = permalink;
                 }
