@@ -90,12 +90,12 @@ class searchCtrl extends jController
                 $appContext = $lproj->getAppContext();
                 $userGroups = $appContext->aclUserPublicGroupsId();
                 foreach ($userGroups as $g) {
-                    $sql .= " OR content LIKE '%@@".$g."'";
+                    $sql .= ' OR content LIKE '.$cnx->quote('%@@'.$g);
                 }
                 // Ok if user matches
                 $user = jAuth::getUserSession();
                 $login = $user->login;
-                $sql .= " OR content LIKE '%@@".$login."'";
+                $sql .= ' OR content LIKE '.$cnx->quote('%@@'.$login);
             }
             $sql .= ' )';
         }
