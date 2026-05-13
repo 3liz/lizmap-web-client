@@ -12,7 +12,7 @@
         <property name="last_usage_date" fieldname="last_usage_date" datatype="timestamp" insertpattern="now()"/>
     </record>
     <factory>
-            <method name="updateLastUsageDate" type="update">
+        <method name="updateLastUsageDate" type="update">
             <parameter name="id" />
             <values>
                 <value property="last_usage_date" expr="NOW()"/>
@@ -20,6 +20,28 @@
             <conditions>
                 <eq property="id" expr="$id" />
             </conditions>
+        </method>
+        <method name="deleteAll" type="delete">
+        </method>
+        <method name="deleteByLastUsage" type="delete">
+            <parameter name="date"/>
+            <conditions>
+                <lt property="last_usage_date" expr="$date" />
+            </conditions>
+        </method>
+        <method name="selectByLastUsage" type="select">
+            <parameter name="date"/>
+            <conditions>
+                <lt property="last_usage_date" expr="$date" />
+            </conditions>
+        </method>
+        <method name="getPermalinkPage" type="select">
+            <parameter name="offset"/>
+            <parameter name="limit"/>
+            <order>
+                <orderitem property="last_usage_date" way="desc" />
+            </order>
+            <limit offset="$offset" count="$limit"/>
         </method>
     </factory>
 </dao>

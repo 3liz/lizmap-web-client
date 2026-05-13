@@ -101,6 +101,17 @@ class configListener extends jEventListener
             );
         }
 
+        // Child for lizmap server side permalinks
+        if (jAcl2::check('lizmap.admin.permalink.manage')) {
+            $bloc->childItems[] = new masterAdminMenuItem(
+                'lizmap_permalinks',
+                jLocale::get('admin~admin.menu.lizmap.permalink.label'),
+                jUrl::get('admin~permalink:index'),
+                126,
+                'server'
+            );
+        }
+
         if (count($bloc->childItems)) {
             // Add the bloc
             $event->add($bloc);
