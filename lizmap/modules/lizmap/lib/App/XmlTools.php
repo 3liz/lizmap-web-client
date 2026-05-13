@@ -27,7 +27,7 @@ class XmlTools
     public static function xmlFromString($xml_str)
     {
         $use_errors = libxml_use_internal_errors(true);
-        $xml = simplexml_load_string($xml_str);
+        $xml = simplexml_load_string($xml_str, \SimpleXMLElement::class, LIBXML_NONET);
         if (!$xml) {
             return self::xmlErrorMsg();
         }
@@ -47,7 +47,7 @@ class XmlTools
     public static function xmlFromFile($xml_path)
     {
         $use_errors = libxml_use_internal_errors(true);
-        $xml = simplexml_load_file($xml_path);
+        $xml = simplexml_load_file($xml_path, \SimpleXMLElement::class, LIBXML_NONET);
         if (!$xml) {
             return self::xmlErrorMsg();
         }

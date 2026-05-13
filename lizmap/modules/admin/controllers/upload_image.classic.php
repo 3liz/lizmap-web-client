@@ -87,8 +87,9 @@ class upload_imageCtrl extends jController
         }
 
         $type = File::getMimeType($file['tmp_name']);
+        $fileName = basename(str_replace('\\', '/', $file['name']));
         if ($type == 'application/octet-stream') {
-            $type = jFile::getMimeTypeFromFilename($file['name']);
+            $type = jFile::getMimeTypeFromFilename($fileName);
         }
         if (!in_array($type, $allowedMimeType)) {
             return $this->uploadError(jLocale::get('admin~admin.upload.image.error.file.wrongType'));
@@ -97,8 +98,8 @@ class upload_imageCtrl extends jController
         // FIXME if JS sends a Blob object after the image resize, i'm not sure
         // we receive a name, so probably $file['name'] is empty. In this case,
         // we should generate one instead of getting $file['name']
-        $directoryPath .= $file['name'];
-        $webPath = jApp::urlBasePath().$uploadPath.rawurlencode($file['name']);
+        $directoryPath .= $fileName;
+        $webPath = jApp::urlBasePath().$uploadPath.rawurlencode($fileName);
 
         if (move_uploaded_file($file['tmp_name'], $directoryPath)) {
             /** @var jResponseJson $rep */
