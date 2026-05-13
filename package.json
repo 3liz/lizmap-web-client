@@ -28,7 +28,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.x",
     "@nieuwlandgeo/sldreader": "^1.0.0",
-    "@playwright/test": "^1.59.x",
+    "@playwright/test": "^1.60.x",
     "@rspack/cli": "~1.7.x",
     "@rspack/core": "~1.7.x",
     "@stylistic/eslint-plugin": "^5.10.0",
