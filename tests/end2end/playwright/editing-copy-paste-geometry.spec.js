@@ -16,6 +16,7 @@
  *
  * Key DOM selectors used in tests:
  *   lizmap-paste-geom            → copy-paste button web component
+ *   #newOlMap                    → the OL10 map canvas every map click goes to
  *   lizmap-paste-geom button     → inner <button> rendered by lit-html
  *   #feature-picker-popup        → picker popup container
  *   #feature-picker-popup .feature-row  → one row per matching feature
@@ -80,14 +81,14 @@ const EMPTY_X = 550, EMPTY_Y = 200;
  */
 async function drawGeometry(project, geomType, x, y) {
     if (geomType === 'point') {
-        await project.clickOnMapLegacy(x, y);
+        await project.clickOnMap(x, y);
     } else if (geomType === 'line') {
-        await project.clickOnMapLegacy(x, y);
-        await project.dblClickOnMapLegacy(x + 60, y);
+        await project.clickOnMap(x, y);
+        await project.dblClickOnMap(x + 60, y);
     } else if (geomType === 'polygon') {
-        await project.clickOnMapLegacy(x, y);
-        await project.clickOnMapLegacy(x + 60, y);
-        await project.dblClickOnMapLegacy(x + 30, y + 50);
+        await project.clickOnMap(x, y);
+        await project.clickOnMap(x + 60, y);
+        await project.dblClickOnMap(x + 30, y + 50);
     }
 }
 
@@ -272,7 +273,7 @@ test.describe('Copy-paste geometry — button presence and state',
 test.describe('Copy-paste geometry — copy mode activation / deactivation',
     { tag: ['@write'] }, () => {
 
-        test.fixme('TC-04: Button is enabled when editing an existing feature (layerId is set)',
+        test('TC-04: Button is enabled when editing an existing feature (layerId is set)',
             async ({ page }) => {
                 const project = new ProjectPage(page, PROJECT);
                 await project.open();
@@ -297,7 +298,7 @@ test.describe('Copy-paste geometry — copy mode activation / deactivation',
                 await deleteFeature(project, SRC_X, SRC_Y, ids['id'], LAYERS.polygon.id);
             });
 
-        test.fixme('TC-07: Activating copy mode sets crosshair cursor and marks button as active',
+        test('TC-07: Activating copy mode sets crosshair cursor and marks button as active',
             async ({ page }) => {
                 const project = new ProjectPage(page, PROJECT);
                 await project.open();
@@ -332,7 +333,7 @@ test.describe('Copy-paste geometry — copy mode activation / deactivation',
                 await deleteFeature(project, SRC_X, SRC_Y, ids['id'], LAYERS.polygon.id);
             });
 
-        test.fixme('TC-08: Clicking the active button again toggles copy mode off',
+        test('TC-08: Clicking the active button again toggles copy mode off',
             async ({ page }) => {
                 const project = new ProjectPage(page, PROJECT);
                 await project.open();
@@ -368,7 +369,7 @@ test.describe('Copy-paste geometry — copy mode activation / deactivation',
                 await deleteFeature(project, SRC_X, SRC_Y, ids['id'], LAYERS.polygon.id);
             });
 
-        test.fixme('TC-09: Closing the edition form deactivates copy mode',
+        test('TC-09: Closing the edition form deactivates copy mode',
             async ({ page }) => {
                 const project = new ProjectPage(page, PROJECT);
                 await project.open();
@@ -410,7 +411,7 @@ test.describe('Copy-paste geometry — copy mode activation / deactivation',
 test.describe('Copy-paste geometry — feature picker popup',
     { tag: ['@write'] }, () => {
 
-        test.fixme('TC-11: Clicking on an existing feature in copy mode shows the picker popup',
+        test('TC-11: Clicking on an existing feature in copy mode shows the picker popup',
             async ({ page }) => {
                 const project = new ProjectPage(page, PROJECT);
                 await project.open();
@@ -435,7 +436,7 @@ test.describe('Copy-paste geometry — feature picker popup',
 
                 // Click on the map where the source feature lives
                 // GeometryCopyHandler._onMapClick fires → WMS GetFeatureInfo POST
-                await project.clickOnMapLegacy(SRC_X, SRC_Y);
+                await project.clickOnMap(SRC_X, SRC_Y);
 
                 // Wait for the WMS request to complete so the response is processed
                 const gfiRequest = await gfiRequestPromise;
@@ -459,7 +460,7 @@ test.describe('Copy-paste geometry — feature picker popup',
                 await deleteFeature(project, SRC_X, SRC_Y, srcIds['id'], LAYERS.polygon.id);
             });
 
-        test.fixme('TC-12: Clicking on an empty area in copy mode does not show the picker popup',
+        test('TC-12: Clicking on an empty area in copy mode does not show the picker popup',
             async ({ page }) => {
                 const project = new ProjectPage(page, PROJECT);
                 await project.open();
@@ -482,7 +483,7 @@ test.describe('Copy-paste geometry — feature picker popup',
                 const gfiRequestPromise = waitForCopyModeGFIRequest(page);
 
                 // Click a corner far from any drawn feature
-                await project.clickOnMapLegacy(EMPTY_X, EMPTY_Y);
+                await project.clickOnMap(EMPTY_X, EMPTY_Y);
 
                 const gfiRequest = await gfiRequestPromise;
                 await gfiRequest.response();
@@ -499,7 +500,7 @@ test.describe('Copy-paste geometry — feature picker popup',
                 await deleteFeature(project, SRC_X, SRC_Y, ids['id'], LAYERS.polygon.id);
             });
 
-        test.fixme('TC-15: The close button (×) on the picker popup dismisses it without applying geometry',
+        test('TC-15: The close button (×) on the picker popup dismisses it without applying geometry',
             async ({ page }) => {
                 const project = new ProjectPage(page, PROJECT);
                 await project.open();
@@ -518,7 +519,7 @@ test.describe('Copy-paste geometry — feature picker popup',
                 await expect(btn).toHaveClass(/active/);
 
                 const gfiRequestPromise = waitForCopyModeGFIRequest(page);
-                await project.clickOnMapLegacy(SRC_X, SRC_Y);
+                await project.clickOnMap(SRC_X, SRC_Y);
                 const gfiReq = await gfiRequestPromise;
                 await gfiReq.response();
 
@@ -540,7 +541,7 @@ test.describe('Copy-paste geometry — feature picker popup',
                 await deleteFeature(project, SRC_X, SRC_Y, srcIds['id'], LAYERS.polygon.id);
             });
 
-        test.fixme('TC-16: Clicking outside the picker popup dismisses it',
+        test('TC-16: Clicking outside the picker popup dismisses it',
             async ({ page }) => {
                 const project = new ProjectPage(page, PROJECT);
                 await project.open();
@@ -559,7 +560,7 @@ test.describe('Copy-paste geometry — feature picker popup',
                 await expect(btn).toHaveClass(/active/);
 
                 const gfiRequestPromise = waitForCopyModeGFIRequest(page);
-                await project.clickOnMapLegacy(SRC_X, SRC_Y);
+                await project.clickOnMap(SRC_X, SRC_Y);
                 const gfiReq = await gfiRequestPromise;
                 await gfiReq.response();
 
@@ -599,7 +600,7 @@ test.describe('Copy-paste geometry — geometry type filtering',
             { editLayer: LAYERS.polygon, srcLayer: LAYERS.line,   tcId: 'TC-17b' },
         ].forEach(({ editLayer, srcLayer, tcId }) => {
 
-            test.fixme(`${tcId}: editing ${editLayer.geomType} layer — ${srcLayer.geomType} source is filtered out`,
+            test(`${tcId}: editing ${editLayer.geomType} layer — ${srcLayer.geomType} source is filtered out`,
                 async ({ page }) => {
                     const project = new ProjectPage(page, PROJECT);
                     await project.open();
@@ -633,7 +634,7 @@ test.describe('Copy-paste geometry — geometry type filtering',
                     // WMS returns the source feature but _geometryTypesMatch() filters it out
                     // because source.geomType ≠ editLayer.geomType.
                     const gfiRequestPromise = waitForCopyModeGFIRequest(page);
-                    await project.clickOnMapLegacy(SRC_X, SRC_Y);
+                    await project.clickOnMap(SRC_X, SRC_Y);
                     await (await gfiRequestPromise).response();
 
                     // No picker popup — all features were filtered out
@@ -706,7 +707,7 @@ test.describe('Copy-paste geometry — full copy workflow',
 
             // Step 5a: click at S's position to trigger WMS GetFeatureInfo
             const gfiRequestPromise = waitForCopyModeGFIRequest(page);
-            await project.clickOnMapLegacy(SRC_X, SRC_Y);
+            await project.clickOnMap(SRC_X, SRC_Y);
             const gfiReq = await gfiRequestPromise;
             await gfiReq.response();
 
@@ -739,7 +740,7 @@ test.describe('Copy-paste geometry — full copy workflow',
             await deleteFeature(project, SRC_X, SRC_Y, srcIds['id'], layerId);
         }
 
-        test.fixme('TC-21: Full workflow — copy POLYGON geometry and save', async ({ page }) => {
+        test('TC-21: Full workflow — copy POLYGON geometry and save', async ({ page }) => {
             await runFullWorkflowTest(
                 page,
                 LAYERS.polygon.name,
@@ -756,7 +757,7 @@ test.describe('Copy-paste geometry — full copy workflow',
 test.describe('Copy-paste geometry — edge cases',
     { tag: ['@write'] }, () => {
 
-        test.fixme('TC-31: Re-activating copy mode after a cancelled pick (close popup) still works',
+        test('TC-31: Re-activating copy mode after a cancelled pick (close popup) still works',
             async ({ page }) => {
                 const project = new ProjectPage(page, PROJECT);
                 await project.open();
@@ -777,7 +778,7 @@ test.describe('Copy-paste geometry — edge cases',
                 await expect(btn).toHaveClass(/active/);
 
                 const gfi1Promise = waitForCopyModeGFIRequest(page);
-                await project.clickOnMapLegacy(SRC_X, SRC_Y);
+                await project.clickOnMap(SRC_X, SRC_Y);
                 await (await gfi1Promise).response();
 
                 const popup = page.locator('#feature-picker-popup');
@@ -791,7 +792,7 @@ test.describe('Copy-paste geometry — edge cases',
 
                 // ---- Second activation: same click position, should work again ----
                 const gfi2Promise = waitForCopyModeGFIRequest(page);
-                await project.clickOnMapLegacy(SRC_X, SRC_Y);
+                await project.clickOnMap(SRC_X, SRC_Y);
                 await (await gfi2Promise).response();
 
                 await expect(popup).toBeVisible({ timeout: 5_000 });
@@ -809,7 +810,7 @@ test.describe('Copy-paste geometry — edge cases',
                 await deleteFeature(project, SRC_X, SRC_Y, srcIds['id'], LAYERS.polygon.id);
             });
 
-        test.fixme('TC-32: Rapid double-click on copy button ends in a consistent (inactive) state',
+        test('TC-32: Rapid double-click on copy button ends in a consistent (inactive) state',
             async ({ page }) => {
                 const project = new ProjectPage(page, PROJECT);
                 await project.open();
@@ -868,7 +869,7 @@ test.describe('Copy-paste geometry — edge cases',
 test.describe('Copy-paste geometry — user-facing messages (_notify)',
     { tag: ['@write'] }, () => {
 
-        test.fixme('TC-40: clicking on an empty area in copy mode displays #lizmap-copy-geometry-message',
+        test('TC-40: clicking on an empty area in copy mode displays #lizmap-copy-geometry-message',
             async ({ page }) => {
                 const project = new ProjectPage(page, PROJECT);
                 await project.open();
@@ -894,7 +895,7 @@ test.describe('Copy-paste geometry — user-facing messages (_notify)',
                 // will be empty so GeometryCopyHandler._handleWMSResponse goes through
                 // the "no compatible features" branch and calls _notify(...).
                 const gfiRequestPromise = waitForCopyModeGFIRequest(page);
-                await project.clickOnMapLegacy(EMPTY_X, EMPTY_Y);
+                await project.clickOnMap(EMPTY_X, EMPTY_Y);
                 await (await gfiRequestPromise).response();
 
                 // The message element must exist, be visible, and carry the
@@ -918,7 +919,7 @@ test.describe('Copy-paste geometry — user-facing messages (_notify)',
                 await deleteFeature(project, SRC_X, SRC_Y, ids['id'], LAYERS.polygon.id);
             });
 
-        test.fixme('TC-41: successive _notify calls do not stack — only one #lizmap-copy-geometry-message at any time',
+        test('TC-41: successive _notify calls do not stack — only one #lizmap-copy-geometry-message at any time',
             async ({ page }) => {
                 const project = new ProjectPage(page, PROJECT);
                 await project.open();
@@ -941,7 +942,7 @@ test.describe('Copy-paste geometry — user-facing messages (_notify)',
                 await expect(btn).toHaveClass(/active/);
 
                 const gfi1Promise = waitForCopyModeGFIRequest(page);
-                await project.clickOnMapLegacy(EMPTY_X, EMPTY_Y);
+                await project.clickOnMap(EMPTY_X, EMPTY_Y);
                 await (await gfi1Promise).response();
 
                 await expect(message).toHaveCount(1);
@@ -961,7 +962,7 @@ test.describe('Copy-paste geometry — user-facing messages (_notify)',
                 await expect(btn).toHaveClass(/active/);
 
                 const gfi2Promise = waitForCopyModeGFIRequest(page);
-                await project.clickOnMapLegacy(EMPTY_X, EMPTY_Y);
+                await project.clickOnMap(EMPTY_X, EMPTY_Y);
                 await (await gfi2Promise).response();
 
                 // After the second call the count must still be exactly 1:
