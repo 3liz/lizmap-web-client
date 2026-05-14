@@ -44,23 +44,30 @@ export default class pasteGeom extends HTMLElement {
      * @returns {boolean} True if can activate
      */
     _canActivate() {
-        const drawActive = mainLizmap?.edition?.drawFeatureActivated || false;
+        if (mainLizmap?.digitizing?.isSplitLocked) return false;
+        const digitizingActive = mainLizmap?.digitizing?.toolSelected !== 'deactivate'
+            || mainLizmap?.digitizing?.context === 'edition';
         const hasLayerId = !!mainLizmap?.edition?.layerId;
-        return drawActive || hasLayerId;
+        return digitizingActive || hasLayerId;
     }
 
     connectedCallback() {
-        this._template = () =>
-            html`
-        <button class='btn btn-sm ${this._active ? 'active btn-primary' : ''}'
+        this._template = () => {
+            const splitLocked = mainLizmap?.digitizing?.isSplitLocked;
+            const tooltip = splitLocked
+                ? (lizDict['edition.split.save.first'] || 'Save features first before using this tool.')
+                : (lizDict['edition.geom.copyPaste'] || 'Copy the geometry from an existing map layer feature');
+            return html`
+        <button class='btn edition-tool-btn ${this._active ? 'active btn-primary' : ''}'
             data-bs-toggle="tooltip"
-            data-bs-title='${lizDict['edition.geom.copyPaste'] || 'Copy the geometry from an existing map layer feature'}'
+            data-bs-title='${tooltip}'
             ?disabled=${!this._canActivate()}
             @click=${() => this._toggle()}>
             <svg>
                 <use href="${lizUrls.svgSprite}#copyGeometry"/>
             </svg>
         </button>`;
+        };
 
         render(this._template(), this);
 
@@ -99,6 +106,12 @@ export default class pasteGeom extends HTMLElement {
             () => {
                 render(this._template(), this);
             }, 'edition.formClosed'
+        );
+
+        mainEventDispatcher.addListener(
+            () => {
+                render(this._template(), this);
+            }, 'digitizing.splitLocked'
         );
     }
 
