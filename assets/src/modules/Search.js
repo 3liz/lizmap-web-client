@@ -5,6 +5,8 @@
  * @license MPL-2.0
  */
 
+const AUTOCOMPLETE_MIN_LENGTH = 3;
+
 /**
  * @class
  * @name Search
@@ -56,6 +58,20 @@ export default class Search {
     }
 
     /**
+     * Returns a debounced version of fn that fires after delay ms of inactivity
+     * @param {Function} fn
+     * @param {number} delay - milliseconds
+     * @returns {Function}
+     */
+    _debounce(fn, delay) {
+        let timer;
+        return (...args) => {
+            clearTimeout(timer);
+            timer = setTimeout(() => fn(...args), delay);
+        };
+    }
+
+    /**
      * Start the external search
      */
     _startExternalSearch() {
@@ -94,10 +110,57 @@ export default class Search {
     }
 
     /**
-     * PRIVATE method: addExternalSearch
-     * add external search capability
+     * PRIVATE method: fire a lizmapFts search request and display results
      * @param {object} searchConfig - search configuration
-     * @returns {boolean} external search is in the user interface
+     * @param {OpenLayers.Bounds} extent - WGS84 map extent for filtering
+     */
+    _performFtsSearch(searchConfig, extent) {
+        this._startExternalSearch();
+
+        var labrex = this._getHighlightRegEx();
+        $.get(searchConfig.url
+            , {
+                "repository": globalThis['lizUrls'].params.repository,
+                "project": globalThis['lizUrls'].params.project,
+                "query": $('#search-query').val(),
+            }
+            , (results) => {
+                var text = '';
+                var count = 0;
+
+                for (var ftsId in results) {
+                    var ftsLayerResult = results[ftsId];
+                    text += '<li><strong>' + ftsLayerResult.search_name + '</strong>';
+                    text += '<ul>';
+                    for (var i = 0, len = ftsLayerResult.features.length; i < len; i++) {
+                        var ftsFeat = ftsLayerResult.features[i];
+                        var ftsGeometry = OpenLayers.Geometry.fromWKT(ftsFeat.geometry);
+                        if (ftsLayerResult.srid != 'EPSG:4326') {
+                            ftsGeometry.transform(ftsLayerResult.srid, 'EPSG:4326');
+                        }
+                        var bbox = ftsGeometry.getBounds();
+                        if (extent.intersectsBounds(bbox)) {
+                            var lab = ftsFeat.label.replace(labrex, '<strong class="highlight">$1</strong>');
+                            text += '<li><a href="#' + bbox.toBBOX() + '" data-wkt="' + ftsGeometry.toString() + '">' + lab + '</a></li>';
+                            count++;
+                        }
+                    }
+                    text += '</ul></li>';
+                }
+
+                if (count != 0 && text != '') {
+                    this._updateExternalSearch(text);
+                }
+                else {
+                    this._updateExternalSearch('<li><strong>' + lizDict['externalsearch.mapdata'] + '</strong><ul><li>' + lizDict['externalsearch.notfound'] + '</li></ul></li>');
+                }
+            }, 'json');
+    }
+
+    /**
+     * PRIVATE method: add lizmapFts search capability with autocomplete
+     * @param {object} searchConfig - search configuration
+     * @returns {boolean} search is in the user interface
      */
     _addSearch(searchConfig) {
         if (searchConfig.type == 'externalSearch') {
@@ -112,58 +175,158 @@ export default class Search {
         var extent = new OpenLayers.Bounds(this._lizmap3.map.maxExtent.toArray());
         extent.transform(this._map.getView().getProjection().getCode(), wgs84);
 
+        const autoSearch = () => {
+            if ($('#search-query').val().length < AUTOCOMPLETE_MIN_LENGTH) {
+                $('#lizmap-search .items').html('');
+                $('#lizmap-search, #lizmap-search-close').removeClass('open');
+                return;
+            }
+            this._performFtsSearch(searchConfig, extent);
+        };
+
         $('#nominatim-search').submit(() => {
-            this._startExternalSearch();
-
-            // Format answers to highlight searched keywords
-            var labrex = this._getHighlightRegEx();
-            $.get(searchConfig.url
-                , {
-                    "repository": globalThis['lizUrls'].params.repository,
-                    "project": globalThis['lizUrls'].params.project,
-                    "query": $('#search-query').val(),
-                }
-                , (results) => {
-                    var text = '';
-                    var count = 0;
-
-                    // Loop through results
-                    for (var ftsId in results) {
-                        var ftsLayerResult = results[ftsId];
-                        text += '<li><strong>' + ftsLayerResult.search_name + '</strong>';
-                        text += '<ul>';
-                        for (var i = 0, len = ftsLayerResult.features.length; i < len; i++) {
-                            var ftsFeat = ftsLayerResult.features[i];
-                            var ftsGeometry = OpenLayers.Geometry.fromWKT(ftsFeat.geometry);
-                            if (ftsLayerResult.srid != 'EPSG:4326') {
-                                ftsGeometry.transform(ftsLayerResult.srid, 'EPSG:4326');
-                            }
-                            var bbox = ftsGeometry.getBounds();
-                            if (extent.intersectsBounds(bbox)) {
-                                var lab = ftsFeat.label.replace(labrex, '<strong class="highlight">$1</strong>');
-                                text += '<li><a href="#' + bbox.toBBOX() + '" data-wkt="' + ftsGeometry.toString() + '">' + lab + '</a></li>';
-                                count++;
-                            }
-                        }
-                        text += '</ul></li>';
-                    }
-
-                    if (count != 0 && text != '') {
-                        this._updateExternalSearch(text);
-                    }
-                    else {
-                        this._updateExternalSearch('<li><strong>' + lizDict['externalsearch.mapdata'] + '</strong><ul><li>' + lizDict['externalsearch.notfound'] + '</li></ul></li>');
-                    }
-                }, 'json');
+            this._performFtsSearch(searchConfig, extent);
             return false;
         });
+
+        $('#search-query').on('input', this._debounce(autoSearch, 100));
 
         return true;
     }
 
     /**
-     * PRIVATE method: addExternalSearch
-     * add external search capability
+     * PRIVATE method: fire an external geocoder search request and display results
+     * @param {object} searchConfig - search configuration
+     * @param {string|object} service - resolved service URL or Google Geocoder instance
+     * @param {OpenLayers.Bounds} extent - WGS84 map extent for filtering
+     */
+    _performExternalSearch(searchConfig, service, extent) {
+        this._startExternalSearch();
+
+        var labrex = this._getHighlightRegEx();
+        const searchQuery = document.getElementById('search-query').value;
+        switch (searchConfig.service) {
+            case 'nominatim':
+                $.get(service
+                    , { "query": searchQuery, "bbox": extent.toBBOX() }
+                    , data => {
+                        var text = '';
+                        var count = 0;
+                        for (const address of data) {
+                            if (count > 9) {
+                                return false;
+                            }
+                            if (!address.boundingbox) {
+                                return true;
+                            }
+
+                            var bbox = [
+                                address.boundingbox[2],
+                                address.boundingbox[0],
+                                address.boundingbox[3],
+                                address.boundingbox[1]
+                            ];
+                            bbox = new OpenLayers.Bounds(bbox);
+                            if (extent.intersectsBounds(bbox)) {
+                                var lab = address.display_name.replace(labrex, '<strong class="highlight">$1</strong>');
+                                text += `<li><a href="#${bbox.toBBOX()}" data-wkt="POINT(${address.lon} ${address.lat})">${lab}</a></li>`;
+                                count++;
+                            }
+                        }
+                        if (count == 0 || text == '') {
+                            text = '<li>' + lizDict['externalsearch.notfound'] + '</li>';
+                        }
+                        this._updateExternalSearch('<li><strong>OpenStreetMap</strong><ul>' + text + '</ul></li>');
+                    }, 'json');
+                break;
+            case 'ign': {
+                if (searchQuery.length < 3 || searchQuery.length > 200) {
+                    lizMap.addMessage(lizDict['externalsearch.ignlimit'], 'warning', true);
+                    break;
+                }
+                $.get(service
+                    , {
+                        "text": searchQuery,
+                        "type": 'StreetAddress',
+                        "maximumResponses": 10,
+                        "bbox": extent.toBBOX()
+                    }
+                    , data => {
+                        let text = '';
+                        let count = 0;
+                        for (const result of data.results) {
+                            var lab = result.fulltext.replace(labrex, '<strong class="highlight">$1</strong>');
+                            text += `
+                            <li>
+                                <a href="#${result.x},${result.y},${result.x},${result.y}" data-wkt="POINT(${result.x} ${result.y})">
+                                    ${lab}
+                                </a>
+                            </li>`;
+                            count++;
+                        }
+                        if (count == 0 || text == '') {
+                            text = '<li>' + lizDict['externalsearch.notfound'] + '</li>';
+                        }
+                        this._updateExternalSearch('<li><strong>IGN</strong><ul>' + text + '</ul></li>');
+                    }, 'json');
+                break;
+            }
+            case 'google':
+                service.geocode({
+                    'address': searchQuery,
+                    'bounds': new google.maps.LatLngBounds(
+                        new google.maps.LatLng(extent.top, extent.left),
+                        new google.maps.LatLng(extent.bottom, extent.right)
+                    )
+                }, (results, status) => {
+                    if (status == google.maps.GeocoderStatus.OK) {
+                        var text = '';
+                        var count = 0;
+                        for (const address of results) {
+                            if (count > 9) {
+                                return false;
+                            }
+                            var bbox = [];
+                            if (address.geometry.viewport) {
+                                bbox = [
+                                    address.geometry.viewport.getSouthWest().lng(),
+                                    address.geometry.viewport.getSouthWest().lat(),
+                                    address.geometry.viewport.getNorthEast().lng(),
+                                    address.geometry.viewport.getNorthEast().lat()
+                                ];
+                            } else if (address.geometry.bounds) {
+                                bbox = [
+                                    address.geometry.bounds.getSouthWest().lng(),
+                                    address.geometry.bounds.getSouthWest().lat(),
+                                    address.geometry.bounds.getNorthEast().lng(),
+                                    address.geometry.bounds.getNorthEast().lat()
+                                ];
+                            }
+                            if (bbox.length != 4) {
+                                return false;
+                            }
+                            bbox = new OpenLayers.Bounds(bbox);
+                            if (extent.intersectsBounds(bbox)) {
+                                var lab = address.formatted_address.replace(labrex, '<strong class="highlight">$1</strong>');
+                                var wkt = 'POINT(' + address.geometry.location.lng() + ' ' + address.geometry.location.lat() + ')';
+                                text += '<li><a href="#' + bbox.toBBOX() + '" data-wkt="' + wkt + '">' + lab + '</a></li>';
+                                count++;
+                            }
+                        }
+                        if (count == 0 || text == '') {
+                            text = '<li>' + lizDict['externalsearch.notfound'] + '</li>';
+                        }
+                        this._updateExternalSearch('<li><strong>Google</strong><ul>' + text + '</ul></li>');
+                    } else {
+                        this._updateExternalSearch('<li><strong>Google</strong><ul><li>' + lizDict['externalsearch.notfound'] + '</li></ul></li>');
+                    }
+                });
+                break;
+        }
+    }
+
+    /**
+     * PRIVATE method: add external geocoder search capability with autocomplete
      * @param {object} searchConfig - search configuration
      * @returns {boolean} external search is in the user interface
      */
@@ -201,132 +364,21 @@ export default class Search {
             return false;
         }
 
-        $('#nominatim-search').submit(() => {
-            this._startExternalSearch();
-
-            // Format answers to highlight searched keywords
-            var labrex = this._getHighlightRegEx();
-            const searchQuery = document.getElementById('search-query').value;
-            switch (searchConfig.service) {
-                case 'nominatim':
-                    $.get(service
-                        , { "query": searchQuery, "bbox": extent.toBBOX() }
-                        , data => {
-                            var text = '';
-                            var count = 0;
-                            for (const address of data) {
-                                if (count > 9) {
-                                    return false;
-                                }
-                                if (!address.boundingbox) {
-                                    return true;
-                                }
-
-                                var bbox = [
-                                    address.boundingbox[2],
-                                    address.boundingbox[0],
-                                    address.boundingbox[3],
-                                    address.boundingbox[1]
-                                ];
-                                bbox = new OpenLayers.Bounds(bbox);
-                                if (extent.intersectsBounds(bbox)) {
-                                    var lab = address.display_name.replace(labrex, '<strong class="highlight">$1</strong>');
-                                    text += `<li><a href="#${bbox.toBBOX()}" data-wkt="POINT(${address.lon} ${address.lat})">${lab}</a></li>`;
-                                    count++;
-                                }
-                            }
-                            if (count == 0 || text == '') {
-                                text = '<li>' + lizDict['externalsearch.notfound'] + '</li>';
-                            }
-                            this._updateExternalSearch('<li><strong>OpenStreetMap</strong><ul>' + text + '</ul></li>');
-                        }, 'json');
-                    break;
-                case 'ign': {
-                    if (searchQuery.length < 3 || searchQuery.length > 200) {
-                        lizMap.addMessage(lizDict['externalsearch.ignlimit'], 'warning', true);
-                        break;
-                    }
-                    $.get(service
-                        , {
-                            "text": searchQuery,
-                            "type": 'StreetAddress',
-                            "maximumResponses": 10,
-                            "bbox": extent.toBBOX()
-                        }
-                        , data => {
-                            let text = '';
-                            let count = 0;
-                            for (const result of data.results) {
-                                var lab = result.fulltext.replace(labrex, '<strong class="highlight">$1</strong>');
-                                text += `
-                                <li>
-                                    <a href="#${result.x},${result.y},${result.x},${result.y}" data-wkt="POINT(${result.x} ${result.y})">
-                                        ${lab}
-                                    </a>
-                                </li>`;
-                                count++;
-                            }
-                            if (count == 0 || text == '') {
-                                text = '<li>' + lizDict['externalsearch.notfound'] + '</li>';
-                            }
-                            this._updateExternalSearch('<li><strong>IGN</strong><ul>' + text + '</ul></li>');
-                        }, 'json');
-                    break;
-                }
-                case 'google':
-                    service.geocode({
-                        'address': searchQuery,
-                        'bounds': new google.maps.LatLngBounds(
-                            new google.maps.LatLng(extent.top, extent.left),
-                            new google.maps.LatLng(extent.bottom, extent.right)
-                        )
-                    }, (results, status) => {
-                        if (status == google.maps.GeocoderStatus.OK) {
-                            var text = '';
-                            var count = 0;
-                            for (const address of results) {
-                                if (count > 9) {
-                                    return false;
-                                }
-                                var bbox = [];
-                                if (address.geometry.viewport) {
-                                    bbox = [
-                                        address.geometry.viewport.getSouthWest().lng(),
-                                        address.geometry.viewport.getSouthWest().lat(),
-                                        address.geometry.viewport.getNorthEast().lng(),
-                                        address.geometry.viewport.getNorthEast().lat()
-                                    ];
-                                } else if (address.geometry.bounds) {
-                                    bbox = [
-                                        address.geometry.bounds.getSouthWest().lng(),
-                                        address.geometry.bounds.getSouthWest().lat(),
-                                        address.geometry.bounds.getNorthEast().lng(),
-                                        address.geometry.bounds.getNorthEast().lat()
-                                    ];
-                                }
-                                if (bbox.length != 4) {
-                                    return false;
-                                }
-                                bbox = new OpenLayers.Bounds(bbox);
-                                if (extent.intersectsBounds(bbox)) {
-                                    var lab = address.formatted_address.replace(labrex, '<strong class="highlight">$1</strong>');
-                                    var wkt = 'POINT(' + address.geometry.location.lng() + ' ' + address.geometry.location.lat() + ')';
-                                    text += '<li><a href="#' + bbox.toBBOX() + '" data-wkt="' + wkt + '">' + lab + '</a></li>';
-                                    count++;
-                                }
-                            }
-                            if (count == 0 || text == '') {
-                                text = '<li>' + lizDict['externalsearch.notfound'] + '</li>';
-                            }
-                            this._updateExternalSearch('<li><strong>Google</strong><ul>' + text + '</ul></li>');
-                        } else {
-                            this._updateExternalSearch('<li><strong>Google</strong><ul><li>' + lizDict['externalsearch.notfound'] + '</li></ul></li>');
-                        }
-                    });
-                    break;
+        const autoSearch = () => {
+            if ($('#search-query').val().length < AUTOCOMPLETE_MIN_LENGTH) {
+                $('#lizmap-search .items').html('');
+                $('#lizmap-search, #lizmap-search-close').removeClass('open');
+                return;
             }
+            this._performExternalSearch(searchConfig, service, extent);
+        };
+
+        $('#nominatim-search').submit(() => {
+            this._performExternalSearch(searchConfig, service, extent);
             return false;
         });
+
+        $('#search-query').on('input', this._debounce(autoSearch, 100));
 
         return true;
     }
