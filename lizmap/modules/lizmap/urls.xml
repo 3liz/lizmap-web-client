@@ -11,6 +11,7 @@
     <url pathinfo="/edition/:repository/:project/:layerId/feature/:featureId/delete"       action="edition:deleteFeature"/>
     <url pathinfo="/edition/:repository/:project/:pivot/link"       action="edition:linkFeatures"/>
     <url pathinfo="/edition/:repository/:project/:lid/unkink"       action="edition:unlinkChild"/>
+    <url pathinfo="/edition/evaluateDefaults"       action="edition:evaluateDefaultExpressions"/>
 
 
     <url pathinfo="/geobookmark"       action="geobookmark:index"/> <!-- /:repository/:project/ -->

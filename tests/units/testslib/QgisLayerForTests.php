@@ -40,6 +40,11 @@ class QgisLayerForTests extends qgisVectorLayer
         $this->defaultValues = $default;
     }
 
+    public function setDefaultValuesApplyOnUpdate($map)
+    {
+        $this->defaultValuesApplyOnUpdate = $map;
+    }
+
     public function setProject($project)
     {
         $this->project = $project;

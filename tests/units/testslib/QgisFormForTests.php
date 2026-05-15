@@ -41,6 +41,60 @@ class QgisFormForTests extends Form\QgisForm
     {
         $this->fillControlFromUniqueValues($fieldName, $control);
     }
+
+    /**
+     * Expose protected evaluateDefaultExpressions for unit tests.
+     *
+     * @param array<string, string> $expressions
+     *
+     * @return array<string, mixed>
+     */
+    public function evaluateDefaultExpressionsForTests(array $expressions)
+    {
+        return $this->evaluateDefaultExpressions($expressions);
+    }
+
+    /**
+     * Expose protected collectDynamicExpressions for unit tests.
+     *
+     * @return array<string, string>
+     */
+    public function collectDynamicExpressionsForTests()
+    {
+        return $this->collectDynamicExpressions();
+    }
+
+    /**
+     * Recorded calls to evaluateExpression: each entry is ['expressions' => ..., 'form_feature' => ...].
+     *
+     * @var array[]
+     */
+    public $evaluateExpressionCalls = array();
+
+    /**
+     * Return value for the evaluateExpression stub.
+     *
+     * @var mixed
+     */
+    public $evaluateExpressionReturn = null;
+
+    /**
+     * Override evaluateExpression to capture arguments and return a stubbed result.
+     *
+     * @param array      $expression
+     * @param null|array $form_feature
+     *
+     * @return mixed
+     */
+    public function evaluateExpression($expression, $form_feature = null)
+    {
+        $this->evaluateExpressionCalls[] = array(
+            'expressions' => $expression,
+            'form_feature' => $form_feature,
+        );
+
+        return $this->evaluateExpressionReturn;
+    }
 }
 
 class jAcl2
