@@ -4,6 +4,7 @@ import * as fs from 'fs/promises'
 import { existsSync } from 'node:fs';
 import { test, expect } from '@playwright/test';
 import { ProjectPage } from './pages/project';
+import { expect as responseExpect } from './fixtures/expect-response.js'
 import { playwrightTestFile, digestBuffer } from "./globals";
 
 // To update OSM and GeoPF tiles in the mock directory
@@ -305,5 +306,145 @@ test.describe('Geolocation @readonly', () => {
         // check dock
         await expect(geolocationDockButtonBar.getByRole('button', { name: 'Stop', exact: true })).toHaveCount(0);
         await expect(geolocationDockButtonBar.getByRole('button', { name: 'Start', exact: true })).toHaveCount(1);
+    });
+});
+
+test.describe('Geolocation heading @readonly', () => {
+
+    // const locale = 'en-US';
+
+    /** @type {string[]} */
+    let osmTiles = [];
+
+    test.beforeEach(async ({ page }) => {
+        const project = new ProjectPage(page, 'geolocation');
+        project.waitForGetLegendGraphicDuringLoad = false;
+        project.layersInTreeView = 0;
+
+        // Catch all tiles requests from openstreetmap to mock them
+        await page.route('https://tile.openstreetmap.org/*/*/*.png', async (route) => {
+            const request = route.request();
+            osmTiles.push(request.url());
+
+            // Build path file in mock directory
+            const pathFile = playwrightTestFile('mock', 'geolocation', 'osm', 'tiles' + (new URL(request.url()).pathname));
+            if (UPDATE_MOCK_FILES) {
+                // Save file in mock directory
+                const response = await route.fetch();
+                await fs.mkdir(dirname(pathFile), { recursive: true });
+                await fs.writeFile(pathFile, new Uint8Array(await response.body()));
+            } else if (existsSync(pathFile)) {
+                // fulfill route's request with mock file
+                await route.fulfill({
+                    path: pathFile
+                })
+            } else {
+                // fulfill route's request with default transparent tile
+                await route.fulfill({
+                    path: playwrightTestFile('mock', 'transparent_tile.png')
+                })
+            }
+        });
+
+        await page.route('**/service/getProjectConfig*', async route => {
+            const response = await route.fetch();
+            const json = await response.json();
+            json.options['geolocationDirection'] = true;
+            await route.fulfill({ response, json });
+        });
+
+        await project.open();
+    });
+
+    test.afterEach(async ({ page }) => {
+        osmTiles = [];
+        await page.unroute('https://tile.openstreetmap.org/*/*/*.png');
+        await page.unroute('**/service/getProjectConfig*');
+    });
+
+    test('Geolocation start and stop', async ({ page }) => {
+        const project = new ProjectPage(page, 'geolocation');
+        const screenshotClip = {x:850/2-380/2, y:700/2-380/2, width:380, height:380};
+
+        const geolocationButton = page.locator('#button-geolocation');
+        await geolocationButton.click();
+
+        const getMediaPromise = project.waitForGetMediaRequest();
+        await page.evaluate(`
+            lizMap.mainLizmap.utils.fetchJSON(
+                lizUrls.media+'?repository='+lizUrls.params.repository+'&project='+lizUrls.params.project+'&path=media/geolocation-orientation.json'
+            ).then((data) => {
+                const position = data.data[0];
+                const coords = position.coords;
+                lizMap.mainLizmap.geolocation._geolocation.set('accuracy', coords.accuracy);
+                lizMap.mainLizmap.geolocation._geolocation.set('heading', (coords.heading * Math.PI * 2) / 360);
+                const transform = lizMap.ol.proj.getTransform('EPSG:4326', 'EPSG:3857');
+                const projectedPosition = transform(
+                    [coords.longitude, coords.latitude]
+                );
+                lizMap.mainLizmap.geolocation._geolocation.set('position', projectedPosition);
+                lizMap.mainLizmap.geolocation._geolocation.set(
+                    'accuracyGeometry',
+                    new lizMap.ol.geom.Circle(projectedPosition, coords.accuracy),
+                );
+                lizMap.mainLizmap.geolocation._geolocation.set('speed', coords.speed);
+                lizMap.mainLizmap.geolocation._geolocation.changed();
+                // Override modules/Geolocation.js isTracking
+                Object.defineProperty(lizMap.mainLizmap.geolocation, 'isTracking', {get: () => {return true}, set: () => {return false}});
+                // Dispatch event to update UI
+                lizMap.mainEventDispatcher.dispatch('geolocation.isTracking');
+            });
+        `);
+        const getMediaRequest = await getMediaPromise;
+        responseExpect(await getMediaRequest.response()).toBeJson();
+        // Wait for OL transition
+        await page.waitForTimeout(500);
+        // Geolocation is displayed with direction
+
+        // Get unrotate map screenshot
+        let buffer = await page.screenshot({
+            clip: screenshotClip,
+            // path: playwrightTestFile('__screenshots__','geolocation.spec.js','pos.png'),
+        });
+        const unrotateByteLength = buffer.byteLength;
+        const unrotateHash = await digestBuffer(buffer);
+        // expect(unrotateByteLength).toBeGreaterThan(4000); // 4161 - 5471
+        // expect(unrotateByteLength).toBeLessThan(6000);
+
+        // Bind geolocation to rotate the map
+        const geolocationDock = page.locator('#geolocation');
+        const geolocationDockButtonBar = geolocationDock.locator('.button-bar');
+        await geolocationDockButtonBar.locator('.bind-btn').click();
+
+        // Wait for OL transition
+        await page.waitForTimeout(500);
+
+        // Get rotate map screenshot
+        buffer = await page.screenshot({
+            clip: screenshotClip,
+            // path: playwrightTestFile('__screenshots__','geolocation.spec.js','pos.png'),
+        });
+        const rotateByteLength = buffer.byteLength;
+        expect(rotateByteLength).not.toBe(unrotateByteLength);
+        const rotateHash = await digestBuffer(buffer);
+        expect(rotateHash).not.toBe(unrotateHash);
+
+        // Unbind geolocation, back to unrotate map
+        await geolocationDockButtonBar.locator('.bind-btn').click();
+
+        // Wait for OL transition
+        await page.waitForTimeout(500);
+
+        // Get unrotate map screenshot
+        buffer = await page.screenshot({
+            clip: screenshotClip,
+            // path: playwrightTestFile('__screenshots__','geolocation.spec.js','pos.png'),
+        });
+        const backUnrotateByteLength = buffer.byteLength;
+        expect(backUnrotateByteLength).not.toBe(rotateByteLength);
+        expect(backUnrotateByteLength).toBe(unrotateByteLength);
+        const backUnrotateHash = await digestBuffer(buffer);
+        expect(backUnrotateHash).not.toBe(rotateHash);
+        expect(backUnrotateHash).toBe(unrotateHash);
     });
 });

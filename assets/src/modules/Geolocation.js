@@ -159,8 +159,14 @@ export default class Geolocation {
         if (this.isBind) {
             this.center();
 
+            if (this.displayDirection) {
+                this.rotateView()
+            }
+
             this._startBindInterval();
         }else{
+            this._map.getView().setRotation(0);
+            this._map.render();
             this._stopBindInterval();
         }
     }
