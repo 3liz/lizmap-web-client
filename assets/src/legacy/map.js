@@ -2210,8 +2210,11 @@ window.lizMap = function() {
         var filterParam = [];
 
         if( aFilter ){
-            // Remove layerName followed by :
+            // Filter may be prefixed with either the QGIS layer name or the WFS
+            // typename (shortname). Strip both.
             aFilter = aFilter.replace( aName + ':', '');
+            if ( typeName !== aName )
+                aFilter = aFilter.replace( typeName + ':', '');
             if ( aFilter != '' )
                 filterParam.push( aFilter );
         }else{
@@ -2220,6 +2223,8 @@ window.lizMap = function() {
                 var aFilter = config.layers[aName]['request_params']['filter'];
                 if( aFilter ){
                     aFilter = aFilter.replace( aName + ':', '');
+                    if ( typeName !== aName )
+                        aFilter = aFilter.replace( typeName + ':', '');
                     filterParam.push( aFilter );
                 }
             }
