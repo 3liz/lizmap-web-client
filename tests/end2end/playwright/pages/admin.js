@@ -112,4 +112,63 @@ export class AdminPage extends BasePage {
             await this.page.locator('.jforms-ctl-lizmap\\.tools\\.layer\\.export input[value="'+group+'"]').check();
         }
     }
+
+    /**
+     * Check error permalink message on last usage delete functionality
+     * @param {string} days Number of days
+     * @returns {Promise<void>}
+     */
+    async checkLastUsagePermlainkDeleteErrorMessage(days = ''){
+        const lastUsedInputGroup = this.page.getByTestId('permalink-lastusage-input-group');
+        this.page.once('dialog', dialog => {
+            expect(dialog.message()).toBe("Are you sure to want to delete records?");
+            return dialog.accept();
+        });
+        if (days) {
+            lastUsedInputGroup.locator('input').fill(days);
+        }
+        await lastUsedInputGroup.locator('button').click();
+        await this.page.waitForTimeout(500);
+        await expect(this.page.locator('div.alert-danger.alert-dismissible p'))
+            .toHaveText('Invalid number of days provided. Insert a number grater than 0');
+    }
+
+    /**
+     * Check error permalink message on last usage delete functionality
+     * @param {string} days Number of days
+     * @param {string} expectedDeletedRecords expected deleted records
+     * @returns {Promise<void>}
+     */
+    async deleteLastUsagePermlaink(days, expectedDeletedRecords){
+        const lastUsedInputGroup = this.page.getByTestId('permalink-lastusage-input-group');
+        this.page.once('dialog', dialog => {
+            expect(dialog.message()).toBe("Are you sure to want to delete records?");
+            return dialog.accept();
+        });
+
+        lastUsedInputGroup.locator('input').fill(days);
+
+        await lastUsedInputGroup.locator('button').click();
+        await this.page.waitForTimeout(500);
+        const expectedMessage = expectedDeletedRecords ?
+            `Deleted ${expectedDeletedRecords} records from permalink table` : 'No records deleted';
+        await expect(this.page.locator('div.alert-info.alert-dismissible p'))
+            .toHaveText(expectedMessage);
+    }
+
+    /**
+     * Delete all records from permalink table
+     * @returns {Promise<void>}
+     */
+    async deleteAllPermalinks(){
+        this.page.once('dialog', dialog => {
+            expect(dialog.message()).toBe("Are you sure to want to empty the permalink table?");
+            return dialog.accept();
+        });
+        await this.page.getByRole('link', { name: 'Delete all records' }).click();
+        await this.page.waitForTimeout(500);
+        await expect(this.page.locator('div.alert-info.alert-dismissible p'))
+            .toHaveText('The permalink table has been successfully emptied');
+        await expect(this.page.getByTestId('permalink-total-stored')).toHaveText('0 permalinks stored');
+    }
 }

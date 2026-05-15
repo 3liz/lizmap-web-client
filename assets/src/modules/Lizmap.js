@@ -137,7 +137,7 @@ export default class Lizmap {
             }
         }, 'lizmap.configsloaded');
 
-        this._eventDispatcher.addListener(() => {
+        this._eventDispatcher.addListener((ev) => {
             this._lizmap3 = lizMap;
 
             // Register projections if unknown
@@ -159,7 +159,7 @@ export default class Lizmap {
             (getProjection(this.config.options.qgisProjectProjection.ref)).setGetPointResolution((resolution) => resolution);
 
             // Create Lizmap modules
-            this.permalink = new Permalink();
+            this.permalink = new Permalink(this.initialConfig, ev.initialPermalink);
             this.map = new map('newOlMap', this.initialConfig, this.serviceURL, this.state.map, this.state.baseLayers, this.state.rootMapGroup, this.lizmap3);
             this.layers = new Layers();
             this.proxyEvents = new ProxyEvents();

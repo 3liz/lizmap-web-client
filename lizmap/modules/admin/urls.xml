@@ -37,6 +37,10 @@
     <url pathinfo="/logs/export"       action="logs:export"/>
     <url pathinfo="/logs/details/empty"       action="logs:emptyDetail"/>
 
+    <url pathinfo="/permalink" action="permalink:index"/>
+    <url pathinfo="/permalink/empty" action="permalink:emptyPermalink"/>
+    <url pathinfo="/permalink/delete-last-usage" action="permalink:deleteByLastUsage"/>
+    <url pathinfo="/permalink/detail" action="permalink:detail"/>
 
     <url pathinfo="/theme"              action="theme:index"/>
     <url pathinfo="/theme/modify"       action="theme:modify"/>

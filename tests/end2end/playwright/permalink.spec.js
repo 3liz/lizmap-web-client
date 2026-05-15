@@ -1,7 +1,9 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
 import { expect as requestExpect } from './fixtures/expect-request.js';
+import { expect as responseExpect } from './fixtures/expect-response.js'
 import {gotoMap, reloadMap} from './globals';
+import { ProjectPage } from './pages/project';
 
 test.describe('Permalink', () => {
 
@@ -805,3 +807,438 @@ test.describe('BBox parameter', () => {
         await expect(new_share_url.hash).toContain('|sousquartiers|d%C3%A9faut|1')
     });
 });
+
+test.describe('Read short link permalink @readonly', () => {
+    test.beforeEach(async ({ page }) => {
+        // force automatic permalink and short link permalink
+        await page.route('**/service/getProjectConfig*', async route => {
+            const response = await route.fetch();
+            const json = await response.json();
+            json.options['automatic_permalink'] = true;
+            json.options['short_link_permalink'] = true;
+            if ('Group as layer' in json.layers) {
+                json.layers['Group as layer'].toggled = false;
+            }
+            await route.fulfill({ response, json });
+        });
+    });
+
+    test.afterEach(async ({ page }) => {
+        // Remove catching GetProjectConfig
+        await page.unroute('**/service/getProjectConfig*');
+    });
+
+    test('Permalink parameters, basic map interaction', async ({ page }) => {
+        const project = new ProjectPage(page, 'layer_legends');
+        await project.open();
+
+        await page.evaluate(() => lizMap.mainLizmap.map.getView().setCenter([770485, 6277813]));
+
+        await page.waitForTimeout(200);
+
+        let expectedPermalinkParameters = {
+            repository:'testsrepository',
+            project:'layer_legends',
+            bbox: /3.5170\d+,43.4213\d+,4.2346\d+,43.7692\d+/,
+            layers: 'layer_legend_single_symbol,layer_legend_categorized,layer_legend_ruled,tramway_lines,legend_option_test',
+            styles:'d%C3%A9faut,d%C3%A9faut,d%C3%A9faut,a_single,',
+            opacities:'1,1,1,1,1'
+        }
+        await project.checkShortLinkPermalink(expectedPermalinkParameters);
+
+        // zoom
+        await project.zoomIn();
+        await page.waitForTimeout(500);
+
+        await project.checkShortLinkPermalink({...expectedPermalinkParameters, bbox: /#3.7314\d+,43.5261\d+,4.0184\d+,43.6653\d+|/});
+
+        // toggle layer_legend_ruled layer
+        await page.getByTestId('layer_legend_ruled').locator('> div input').click();
+        await project.checkShortLinkPermalink({
+            ...expectedPermalinkParameters,
+            bbox: /3.7314\d+,43.5261\d+,4.0184\d+,43.6653\d+/,
+            layers: 'layer_legend_single_symbol,layer_legend_categorized,tramway_lines,legend_option_test',
+            styles:'d%C3%A9faut,d%C3%A9faut,a_single,',
+            opacities:'1,1,1,1'
+        });
+
+        // change layer opacity
+        await project.setLayerOpacity('layer_legend_single_symbol','20');
+        await project.checkShortLinkPermalink({
+            ...expectedPermalinkParameters,
+            bbox: /3.7314\d+,43.5261\d+,4.0184\d+,43.6653\d+/,
+            layers: 'layer_legend_single_symbol,layer_legend_categorized,tramway_lines,legend_option_test',
+            styles:'d%C3%A9faut,d%C3%A9faut,a_single,',
+            opacities:'0.2,1,1,1'
+        });
+
+        // toggle group as layer
+        await page.getByTestId('Group as layer').locator('> div input').click();
+        await project.checkShortLinkPermalink({
+            ...expectedPermalinkParameters,
+            bbox: /3.7314\d+,43.5261\d+,4.0184\d+,43.6653\d+/,
+            layers: 'layer_legend_single_symbol,layer_legend_categorized,tramway_lines,legend_option_test,Group%20as%20layer',
+            styles:'d%C3%A9faut,d%C3%A9faut,a_single,,',
+            opacities:'0.2,1,1,1,1'
+        });
+
+        // change layer style
+        await project.changeLayerStyle('tramway_lines','categorized');
+        await project.checkShortLinkPermalink({
+            ...expectedPermalinkParameters,
+            bbox: /3.7314\d+,43.5261\d+,4.0184\d+,43.6653\d+/,
+            layers: 'layer_legend_single_symbol,layer_legend_categorized,tramway_lines,legend_option_test,Group%20as%20layer',
+            styles:'d%C3%A9faut,d%C3%A9faut,categorized,,',
+            opacities:'0.2,1,1,1,1'
+        });
+
+        // reload page
+        await reloadMap(page);
+        await project.checkShortLinkPermalink({
+            ...expectedPermalinkParameters,
+            bbox: /3.7314\d+,43.5261\d+,4.0184\d+,43.6653\d+/,
+            layers: 'layer_legend_single_symbol,layer_legend_categorized,tramway_lines,legend_option_test,Group%20as%20layer',
+            styles:'d%C3%A9faut,d%C3%A9faut,categorized,,',
+            opacities:'0.2,1,1,1,1'
+        });
+
+        // check user interface
+        // layers
+        await expect(page.getByTestId('layer_legend_single_symbol').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('layer_legend_categorized').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('layer_legend_ruled').locator('> div input')).not.toBeChecked();
+        await expect(page.getByTestId('tramway_lines').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('legend_option_test').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('Group as layer').locator('> div input')).toBeChecked();
+
+        // styles
+        await project.openLayerInfo('tramway_lines');
+        await expect(page.locator('#sub-dock select.styleLayer')).toHaveValue('categorized');
+        // opacity
+        await project.openLayerInfo('layer_legend_single_symbol');
+        await expect(page.locator('#sub-dock .btn-opacity-layer.active')).toHaveText('20');
+    })
+
+    test('Load short link permalink', async ({ page }) => {
+        const project = new ProjectPage(page, 'short_link_permalink');
+        let permalinkRequestPromise = project.waitForPermalinkGetRequest();
+        await project.open(false,"#permalink=h47yokjwuJ4o");
+
+        let permalinkRequest = await permalinkRequestPromise;
+        /** @type {{[key: string]: string|RegExp}} */
+        const permalinkParameters = {
+            'o': 'g',
+            'repository': 'testsrepository',
+            'project': 'short_link_permalink',
+            'id': 'h47yokjwuJ4o',
+        }
+        requestExpect(permalinkRequest).toContainParametersInUrl(permalinkParameters);
+        let permalinkResponse = await permalinkRequest.response();
+        responseExpect(permalinkResponse).toBeJson();
+        await page.waitForTimeout(500);
+
+        await expect(page.getByTestId('single_wms_points').locator('> div input')).not.toBeChecked();
+        await expect(page.getByTestId('single_wms_lines').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_baselayer').locator('> div input')).toBeChecked();
+
+        // hash should be equal to map_status
+        let url_to_check = new URL(page.url());
+        await expect(url_to_check.hash).toBe("#map_status");
+
+        // toggle single_wms_points layer
+        await page.getByTestId('single_wms_points').locator('> div input').click();
+        await project.changeLayerStyle('single_wms_points','default');
+
+        // hash should be equal to map_status
+        url_to_check = new URL(page.url());
+        await expect(url_to_check.hash).toBe("#map_status");
+
+        let expectedPermalinkParameters = {
+            repository:'testsrepository',
+            project:'short_link_permalink',
+            bbox: /3.7810\d+,43.5318\d+,3.988\d+,43.6688\d+/,
+            layers: 'single_wms_points,single_wms_lines,single_wms_baselayer',
+            styles:'default,default,default',
+            opacities:'1,1,1'
+        }
+        await project.checkShortLinkPermalink(expectedPermalinkParameters);
+
+        // reload map
+        await reloadMap(page);
+        await project.checkShortLinkPermalink(expectedPermalinkParameters);
+
+        // hash should be equal to map_status
+        url_to_check = new URL(page.url());
+        expect(url_to_check.hash).toBe("#map_status");
+    })
+
+    test("Unknown permalink", async ({ page }) => {
+        const project = new ProjectPage(page, 'short_link_permalink');
+        let permalinkRequestPromise = project.waitForPermalinkGetRequest();
+        await project.open(false,"#permalink=unknownPermalink");
+
+        let permalinkRequest = await permalinkRequestPromise;
+        /** @type {{[key: string]: string|RegExp}} */
+        const permalinkParameters = {
+            'o': 'g',
+            'repository': 'testsrepository',
+            'project': 'short_link_permalink',
+            'id': 'unknownPermalink',
+        }
+
+        requestExpect(permalinkRequest).toContainParametersInUrl(permalinkParameters);
+        let permalinkResponse = await permalinkRequest.response();
+        responseExpect(permalinkResponse).toBeJson();
+        await page.waitForTimeout(500);
+
+        let body = await permalinkResponse?.json();
+
+        expect(body).toHaveProperty('error');
+        expect(body.error).toStrictEqual(['The permalink does not exists']);
+        await expect(page.locator('#content div.alert.alert-danger')).toHaveCount(1);
+        await expect(page.locator('#content div.alert.alert-danger')).toHaveText('The permalink does not exists');
+        // close message panel
+        await(page.locator('#content div.alert.alert-danger .btn-close')).click();
+
+        let url_to_check = new URL(page.url());
+        // on init, if the permalink does not exists, the hash sould be null
+        expect(url_to_check.hash).toBe("");
+
+        // change hash with another invalid permalink
+        const newHash = '#permalink=newUnknownPermalink';
+        permalinkRequestPromise = project.waitForPermalinkGetRequest();
+        await page.evaluate(token => window.location.hash = token, newHash);
+        permalinkRequest = await permalinkRequestPromise;
+
+        /** @type {{[key: string]: string|RegExp}} */
+        const newPermalinkParameters = {
+            'o': 'g',
+            'repository': 'testsrepository',
+            'project': 'short_link_permalink',
+            'id': 'newUnknownPermalink',
+        }
+
+        requestExpect(permalinkRequest).toContainParametersInUrl(newPermalinkParameters);
+        permalinkResponse = await permalinkRequest.response();
+        responseExpect(permalinkResponse).toBeJson();
+        await page.waitForTimeout(500);
+
+        body = await permalinkResponse?.json();
+
+        expect(body).toHaveProperty('error');
+        expect(body.error).toStrictEqual(['The permalink does not exists']);
+        await expect(page.locator('#content div.alert.alert-danger')).toHaveCount(1);
+        await expect(page.locator('#content div.alert.alert-danger')).toHaveText('The permalink does not exists');
+        url_to_check = new URL(page.url());
+        await page.waitForTimeout(500);
+
+        // on hash change, if the permalink does not exists, the hash sould be #map_status
+        expect(url_to_check.hash).toBe("#map_status");
+    })
+})
+
+test.describe('Write short link permalink @write', () => {
+    test('Add short link permalink', async ({ page }) => {
+        const project = new ProjectPage(page, 'short_link_permalink');
+        await project.open();
+
+        // change map appearance
+        await page.getByTestId('single_wms_baselayer').locator('> div input').click();
+        await project.setLayerOpacity('single_wms_lines','60');
+        await project.changeLayerStyle('single_wms_points','default');
+
+        let expectedPermalinkParameters = {
+            repository:'testsrepository',
+            project:'short_link_permalink',
+            bbox: /3.6273\d+,43.4294\d+,4.1451\d+,43.7717\d+/,
+            layers: 'single_wms_points,single_wms_lines',
+            styles:'default,default',
+            opacities:'1,0.6'
+        }
+
+        await project.checkShortLinkPermalink(expectedPermalinkParameters);
+
+        // open permalink panel
+        await project.openPermalinkPanel();
+        expect(page.locator("#permalink-generator")).toBeVisible();
+        expect(page.locator("#permalink-history table")).toHaveCount(0);
+
+        // add new short link
+        let permalinkAddRequestPromise = project.waitForPermalinkAddRequest();
+        await page.locator("#lizmap-new-permalink").click();
+        let permalinkAddRequest = await permalinkAddRequestPromise;
+        /** @type {{[key: string]: string|RegExp}} */
+        const permalinkUrlParameters = {
+            'o': 'add',
+            'repository': 'testsrepository',
+            'project': 'short_link_permalink',
+        }
+
+        requestExpect(permalinkAddRequest).toContainParametersInUrl(permalinkUrlParameters);
+        let permalinkResponse = await permalinkAddRequest.response();
+        responseExpect(permalinkResponse).toBeJson();
+
+        let body = await permalinkResponse?.json();
+
+        expect(body).toHaveProperty('permalink','JewKYGj9uRnu');
+
+        // check permalink panel interface
+        expect(page.locator("#lizmap-new-permalink")).toBeDisabled();
+        expect(await page.locator("#lizmap-new-permalink").textContent()).toBe("Permalink copied to clipboard");
+
+        // inspect history table
+        expect(page.locator("#permalink-history table tr")).toHaveCount(1);
+        await project.inspectPermalinkHistoryTableRecord("JewKYGj9uRnu");
+        await project.copyPermalinkToClipboard("JewKYGj9uRnu");
+
+        // switch layer on/off
+        await page.getByTestId('single_wms_baselayer').locator('> div input').click();
+        // button to create a new permalink should be enabled now
+        expect(page.locator("#lizmap-new-permalink")).toBeEnabled();
+
+        expect(await page.locator("#lizmap-new-permalink").textContent()).toBe("Create new permalink");
+        await page.getByTestId('single_wms_baselayer').locator('> div input').click();
+
+        // create a new permalink: since the map has not been modified, a new permalink should not be created
+        permalinkAddRequestPromise = project.waitForPermalinkAddRequest();
+        await page.locator("#lizmap-new-permalink").click();
+        permalinkAddRequest = await permalinkAddRequestPromise;
+        requestExpect(permalinkAddRequest).toContainParametersInUrl(permalinkUrlParameters);
+        permalinkResponse = await permalinkAddRequest.response();
+        responseExpect(permalinkResponse).toBeJson();
+
+        body = await permalinkResponse?.json();
+
+        expect(body).toHaveProperty('permalink','JewKYGj9uRnu');
+        expect(page.locator("#lizmap-new-permalink")).toBeDisabled();
+        expect(await page.locator("#lizmap-new-permalink").textContent()).toBe("Permalink copied to clipboard");
+
+        // inspect history table
+        expect(page.locator("#permalink-history table tr")).toHaveCount(1);
+        await project.inspectPermalinkHistoryTableRecord("JewKYGj9uRnu");
+
+        // create new permalink
+        await page.getByTestId('single_wms_baselayer').locator('> div input').click();
+
+        // create a new permalink: since map has changed, a new permalink should be added to history table
+        permalinkAddRequestPromise = project.waitForPermalinkAddRequest();
+        await page.locator("#lizmap-new-permalink").click();
+        permalinkAddRequest = await permalinkAddRequestPromise;
+        requestExpect(permalinkAddRequest).toContainParametersInUrl(permalinkUrlParameters);
+        permalinkResponse = await permalinkAddRequest.response();
+        responseExpect(permalinkResponse).toBeJson();
+
+        body = await permalinkResponse?.json();
+
+        expect(body).toHaveProperty('permalink','gJTMpHVL__la');
+        expect(page.locator("#lizmap-new-permalink")).toBeDisabled();
+        expect(await page.locator("#lizmap-new-permalink").textContent()).toBe("Permalink copied to clipboard");
+        expect(page.locator("#permalink-history table tr")).toHaveCount(2);
+        await project.inspectPermalinkHistoryTableRecord("gJTMpHVL__la");
+
+        // inspect share functionality
+        await project.inspectPermalinkSharePanel("JewKYGj9uRnu");
+        await project.inspectPermalinkSharePanel("gJTMpHVL__la");
+
+        // hash should be equal to map_status
+        let url_to_check = new URL(page.url());
+        expect(url_to_check.hash).toBe("#map_status");
+
+        //add another permalink and remove permalink from local storage
+        await page.getByTestId('single_wms_points').locator('> div input').click();
+
+        // create a new permalink: since map has changed, a new permalink should be added to history table
+        permalinkAddRequestPromise = project.waitForPermalinkAddRequest();
+        await page.locator("#lizmap-new-permalink").click();
+        permalinkAddRequest = await permalinkAddRequestPromise;
+        requestExpect(permalinkAddRequest).toContainParametersInUrl(permalinkUrlParameters);
+        permalinkResponse = await permalinkAddRequest.response();
+        responseExpect(permalinkResponse).toBeJson();
+
+        body = await permalinkResponse?.json();
+
+        expect(body).toHaveProperty('permalink','UFgQYYLMAbyd');
+        expect(page.locator("#lizmap-new-permalink")).toBeDisabled();
+        expect(await page.locator("#lizmap-new-permalink").textContent()).toBe("Permalink copied to clipboard");
+        expect(page.locator("#permalink-history table tr")).toHaveCount(3);
+        await project.inspectPermalinkHistoryTableRecord("UFgQYYLMAbyd");
+        await project.inspectPermalinkSharePanel("UFgQYYLMAbyd");
+
+        // remove permalink
+        await project.removePermalinkFromLocalStorage("UFgQYYLMAbyd");
+        expect(page.locator("#permalink-history table tr")).toHaveCount(2);
+
+        // clear history
+        await project.clearPermalinkHistory();
+        expect(page.locator("#permalink-history table")).toHaveCount(0);
+    })
+})
+
+test.describe('Short link permalink, no automatic permalink', () => {
+    test.beforeEach(async ({ page }) => {
+        // disable automaitc permalink and force single_wms_request
+        await page.route('**/service/getProjectConfig*', async route => {
+            const response = await route.fetch();
+            const json = await response.json();
+            json.options['automatic_permalink'] = false;
+            json.options['wms_single_request_for_all_layers'] = true;
+            await route.fulfill({ response, json });
+        });
+    });
+
+    test.afterEach(async ({ page }) => {
+        // Remove catching GetProjectConfig
+        await page.unroute('**/service/getProjectConfig*');
+    });
+
+    test('Read short link permalink @readonly', async ({ page }) => {
+        const project = new ProjectPage(page, 'short_link_permalink');
+        let permalinkRequestPromise = project.waitForPermalinkGetRequest();
+        let getMapRequestPromise = project.waitForGetMapRequest();
+
+        await project.open(false,"#permalink=h47yokjwuJ4o");
+
+        let permalinkRequest = await permalinkRequestPromise;
+        let getMapRequest = await getMapRequestPromise;
+        /** @type {{[key: string]: string|RegExp}} */
+        const permalinkParameters = {
+            'o': 'g',
+            'repository': 'testsrepository',
+            'project': 'short_link_permalink',
+            'id': 'h47yokjwuJ4o',
+        }
+        requestExpect(permalinkRequest).toContainParametersInUrl(permalinkParameters);
+        let permalinkResponse = await permalinkRequest.response();
+        responseExpect(permalinkResponse).toBeJson();
+
+        /** @type {{[key: string]: string|RegExp}} */
+        let getMapExpectedParameters = {
+            'SERVICE': 'WMS',
+            'VERSION': '1.3.0',
+            'REQUEST': 'GetMap',
+            'FORMAT': /^image\/png/,
+            'TRANSPARENT': /\b(\w*^true$\w*)\b/gmi,
+            'LAYERS': 'single_wms_baselayer,single_wms_lines,single_wms_points',
+            'CRS': 'EPSG:4326',
+            'WIDTH': '958',
+            'HEIGHT': '633',
+            'BBOX': /43.5249\d+,3.7705\d+,43.6757\d+,3.9986\d+/,
+        }
+        requestExpect(getMapRequest).toContainParametersInUrl(getMapExpectedParameters);
+
+        await expect(page.getByTestId('single_wms_points').locator('> div input')).not.toBeChecked();
+        await expect(page.getByTestId('single_wms_lines').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_baselayer').locator('> div input')).toBeChecked();
+
+        // no url hash
+        let url_to_check = new URL(page.url());
+        expect(url_to_check.hash).toBe('');
+
+        // change map
+        await page.getByTestId('single_wms_baselayer').locator('> div input').click();
+
+        // no url hash
+        url_to_check = new URL(page.url());
+        expect(url_to_check.hash).toBe('');
+    })
+})

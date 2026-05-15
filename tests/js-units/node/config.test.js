@@ -183,4 +183,18 @@ describe('Config', function () {
         expect(initialConfig.options.group_popup_by_layer).to.be.eq(true)
     })
 
+    it('Short link permalink config', function () {
+        const capabilities = JSON.parse(readFileSync('./tests/js-units/data/short_link_permalink-capabilities.json', 'utf8'));
+        expect(capabilities).to.not.be.undefined
+        expect(capabilities.Capability).to.not.be.undefined
+
+        const config = JSON.parse(readFileSync('./tests/js-units/data/short_link_permalink-config.json', 'utf8'));
+        expect(config).to.not.be.undefined
+
+        const initialConfig = new Config(config, capabilities);
+
+        expect(initialConfig.options).to.be.instanceOf(OptionsConfig)
+        expect(initialConfig.options.short_link_permalink).to.be.eq(true)
+    })
+
 })

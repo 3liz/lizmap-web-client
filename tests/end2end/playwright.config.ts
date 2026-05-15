@@ -73,6 +73,8 @@ export default defineConfig({
         locale: 'en-US',
         /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
         trace: 'on-first-retry',
+        permissions: ['clipboard-read', 'clipboard-write'],
+
     },
 
     /* Configure projects for major browsers */
