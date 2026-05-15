@@ -15,41 +15,47 @@ test.describe('Value relation widget',
 
             const select = await page.locator("#jforms_view_edition_code_with_geom_exp");
 
-            await project.clickOnMapLegacy(650, 200);
+            // Click on OL6 map since edition drawing was migrated from OL2 to OL6
+            // x=450 keeps us in the safe zone (349-548), clear of #dock and #mini-dock
+            await project.clickOnMap(450, 150);
+
+            // Wait for edit mode to activate (OL6 singleclick fires after ~250ms)
+            // so the Modify interaction is ready before dragTo
+            await page.waitForFunction(() => lizMap.mainLizmap.digitizing.editedFeatures.length === 1);
 
             await select.selectOption({value: ''});
 
-            await project.mapOl2.dragTo(project.mapOl2, {
-                sourcePosition: { x: 650, y: 200 },
+            await project.map.dragTo(project.map, {
+                sourcePosition: { x: 450, y: 150 },
                 targetPosition: { x: 500, y: 200 },
             });
 
             await select.selectOption({value: 'A2'});
 
-            await project.mapOl2.dragTo(project.mapOl2, {
+            await project.map.dragTo(project.map, {
                 sourcePosition: { x: 500, y: 200 },
                 targetPosition: { x: 350, y: 200 },
             });
 
             await select.selectOption({value: 'A1'});
 
-            await project.mapOl2.dragTo(project.mapOl2, {
+            await project.map.dragTo(project.map, {
                 sourcePosition: { x: 350, y: 200 },
                 targetPosition: { x: 350, y: 500 },
             });
 
             await select.selectOption({value: 'B1'});
 
-            await project.mapOl2.dragTo(project.mapOl2, {
+            await project.map.dragTo(project.map, {
                 sourcePosition: { x: 350, y: 500 },
                 targetPosition: { x: 500, y: 500 },
             });
 
             await select.selectOption({value: 'B2'});
 
-            await project.mapOl2.dragTo(project.mapOl2, {
+            await project.map.dragTo(project.map, {
                 sourcePosition: { x: 500, y: 500 },
-                targetPosition: { x: 650, y: 200 },
+                targetPosition: { x: 450, y: 150 },
             });
 
             await select.selectOption({value: ''});

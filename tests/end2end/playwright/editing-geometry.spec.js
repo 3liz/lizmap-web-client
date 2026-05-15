@@ -31,14 +31,15 @@ test.describe('Geometry editing',
 
                 await project.editingField(field).fill("VALUE NEW");
 
-                const x1 = 600;
+                const x1 = 400;
                 const y1 = 200;
-                await project.clickOnMapLegacy(x1, y1);
+                // Draw on OL6 map since edition drawing was migrated from OL2 to OL6
+                await project.clickOnMap(x1, y1);
                 if (geom === 'polygon'){
-                    await project.clickOnMapLegacy(x1, y1 + 100);
+                    await project.clickOnMap(x1, y1 + 100);
                 }
                 if (geom === 'line' || geom === 'polygon') {
-                    await project.dblClickOnMapLegacy(x1 + 100, y1);
+                    await project.dblClickOnMap(x1 + 100, y1);
                 }
                 await project.editingSubmitForm();
 
@@ -57,8 +58,9 @@ test.describe('Geometry editing',
                 await project.editingField(field).fill("VALUE EDITED");
 
                 // Edit the first point of the geometry with a translation of Y + 200
+                // Drag on the OL6 map since edition drawing was migrated from OL2 to OL6
                 const delta_y = 200;
-                await project.mapOl2.dragTo(project.mapOl2, {
+                await project.map.dragTo(project.map, {
                     sourcePosition: { x: x1, y: y1 },
                     targetPosition: { x: x1, y: y1 + delta_y },
                 });

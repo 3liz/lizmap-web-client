@@ -6,7 +6,7 @@
  * @license MPL-2.0
  */
 
-import { mainLizmap } from '../../modules/Globals.js';
+import { mainLizmap, mainEventDispatcher } from '../../modules/Globals.js';
 
 /**
  * Web component used to reverse vertices order for a modified feature
@@ -25,25 +25,32 @@ export default class reverseGeom extends HTMLElement {
     }
 
     _reverse(){
-        if (!mainLizmap.edition.modifyFeatureControl
-            || !mainLizmap.edition.modifyFeatureControl.active
-            || mainLizmap.edition.modifyFeatureControl.vertices.length == 0){
+        // OL10 path: operate on the feature currently in the digitizing draw layer.
+        // (The legacy OL2 modifyFeatureControl is no longer activated.)
+        const features = mainLizmap.digitizing?.featureDrawn;
+        if (!features || features.length === 0) return;
+
+        const feature = features[0];
+        const geom = feature.getGeometry();
+        const type = geom.getType();
+
+        if (type === 'LineString' || type === 'MultiPoint') {
+            geom.setCoordinates(geom.getCoordinates().slice().reverse());
+        } else if (type === 'Polygon') {
+            geom.setCoordinates(geom.getCoordinates().map(ring => ring.slice().reverse()));
+        } else if (type === 'MultiLineString') {
+            geom.setCoordinates(geom.getCoordinates().map(line => line.slice().reverse()));
+        } else if (type === 'MultiPolygon') {
+            geom.setCoordinates(
+                geom.getCoordinates().map(poly => poly.map(ring => ring.slice().reverse()))
+            );
+        } else {
+            // Point geometries have nothing to reverse.
             return;
         }
 
-        const lonLat = [];
-
-        for (const vertice of mainLizmap.edition.modifyFeatureControl.vertices) {
-            lonLat.push([vertice.geometry.x, vertice.geometry.y]);
-        }
-
-        lonLat.reverse();
-
-        for (let index = 0; index < lonLat.length; index++) {
-            mainLizmap.edition.modifyFeatureControl.vertices[index].move(new OpenLayers.LonLat(lonLat[index][0], lonLat[index][1]));
-        }
-
-        mainLizmap.edition.modifyFeatureControl.layer.events.triggerEvent("featuremodified", { feature: mainLizmap.edition.modifyFeatureControl.feature });
+        // Sync the hidden geom form field via the digitizing change event.
+        mainEventDispatcher.dispatch('digitizing.geometryChanged');
 
         // Tell user reverse is done
         lizMap.addMessage(lizDict['edition.revertgeom.success'], 'success', true).attr('id', 'lizmap-edition-message');
