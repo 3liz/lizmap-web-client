@@ -50,6 +50,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 * CSS - Drop outdated rules about btn-stop and btn-print-clear
 * Docker - Upgrade Alpine to 3.22 and Php to 8.3
+* Upgrade Jelix to version 1.8.24
+* Upgrade jCommunity to version 1.4.5
 
 ## 3.9.7 - 2026-03-25
 
