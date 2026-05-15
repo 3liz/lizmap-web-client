@@ -81,21 +81,23 @@ export default class Geolocation {
         });
 
         // Listen to position changes
-        this._geolocation.on('change', function () {
-            const position = geolocation.getPosition();
+        this._geolocation.on('change:position', () => {
+            // const coordinates = this._geolocation.getPosition();
+            // this.moveGeolocationPointAndCircle(coordinates);
+
+            const position = this._geolocation.getPosition();
             // const accuracy = geolocation.getAccuracy();
-            const heading = geolocation.getHeading() || 0;
+            const heading = this._geolocation.getHeading() || 0;
             // const speed = geolocation.getSpeed() || 0;
             const m = Date.now();
 
-            _addPosition(position, heading, m);
-        });
+            this._addPosition(position, heading, m);
 
-        this._geolocation.on('change:position', () => {
-            const coordinates = this._geolocation.getPosition();
-            this.moveGeolocationPointAndCircle(coordinates);
+            this.moveGeolocationPointAndCircle(position);
 
             mainEventDispatcher.dispatch('geolocation.position');
+            //console.log('change:position '+this._geolocation.getRevision());
+            //console.log(position);
         });
 
         this._geolocation.on('change:tracking', () => {
@@ -115,6 +117,7 @@ export default class Geolocation {
 
         this._geolocation.on('change:accuracy', () => {
             mainEventDispatcher.dispatch('geolocation.accuracy');
+            //console.log('change:accuracy '+this._geolocation.getRevision());
         });
 
         this._geolocation.on('change:accuracyGeometry', () => {
@@ -126,6 +129,7 @@ export default class Geolocation {
                 this._firstGeolocation = false;
 
                 mainEventDispatcher.dispatch('geolocation.firstGeolocation');
+                //console.log('change:accuracyGeometry '+this._geolocation.getRevision());
             }
         });
 
@@ -194,7 +198,7 @@ export default class Geolocation {
         this._positions.appendCoordinate([x, y, heading, m]);
 
         // only keep the 20 last coordinates
-        this._positions.setCoordinates(positions.getCoordinates().slice(-20));
+        this._positions.setCoordinates(this._positions.getCoordinates().slice(-20));
     }
 
     toggleTracking() {
@@ -348,5 +352,23 @@ export default class Geolocation {
 
         this._geolocationLayer.getSource().clear();
         this._geolocationLayer.getSource().addFeatures([positionFeature, accuracyFeature]);
+    }
+
+    rotateView() {
+        if (!this.displayDirection) {
+            return;
+        }
+
+        // the geolocation sampling period mean in ms
+        let deltaMean = 500;
+        // use sampling period to get a smooth transition
+        let m = Date.now() - deltaMean * 1.5;
+        // interpolate position along positions LineString
+        const c = this._positions.getCoordinateAtM(m, true);
+        // apply rotation
+        if (c) {
+            this._map.getView().setRotation(-c[2]);
+            this._map.render();
+        }
     }
 }
