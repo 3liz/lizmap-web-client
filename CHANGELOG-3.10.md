@@ -49,6 +49,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 ### Backend
 
 * Docker - Upgrade Alpine to 3.22 and Php to 8.3
+* Upgrade Jelix to version 1.8.24
+* Upgrade jCommunity to version 1.4.5
 
 ## 3.10.0-beta.3 - 2026-04-20
 
