@@ -24,8 +24,8 @@ export default class Geolocation extends HTMLElement {
         const mainTemplate = () => html`
         <div class="menu-content">
             <div class="button-bar">
-                <button
-                    class="btn btn-sm ${mainLizmap.geolocation.isTracking ? 'active btn-success' : ''}"
+                <button type="button"
+                    class="btn-tracking btn btn-sm ${mainLizmap.geolocation.isTracking ? 'active btn-success' : ''}"
                     @click=${ () => mainLizmap.geolocation.toggleTracking()}
                     ?disabled=${mainLizmap.geolocation.isTracking && mainLizmap.geolocation.firstGeolocation}
                     >
@@ -37,8 +37,8 @@ export default class Geolocation extends HTMLElement {
                             lizDict['geolocate.toolbar.start']
                     }
                 </button>
-                <button
-                    class="btn btn-sm"
+                <button type="button"
+                    class="btn-center btn btn-sm"
                     @click=${ () => mainLizmap.geolocation.center()}
                     ?disabled=${
                         !mainLizmap.geolocation.isTracking |
@@ -48,9 +48,9 @@ export default class Geolocation extends HTMLElement {
                     ><span class="icon"></span>
                     ${lizDict['geolocate.toolbar.center']}
                 </button>
-                <div class="input-prepend input-append">
-                    <button
-                        class="btn btn-sm ${mainLizmap.geolocation.isBind ? 'active btn-success' : ''}"
+                <div class="bind-group input-group input-group-sm">
+                    <button type="button"
+                        class="bind-btn btn btn-sm ${mainLizmap.geolocation.isBind ? 'active btn-success' : ''}"
                         @click=${() => mainLizmap.geolocation.toggleBind()}
                         ?disabled=${
                             !mainLizmap.geolocation.isTracking | mainLizmap.geolocation.firstGeolocation
@@ -59,7 +59,7 @@ export default class Geolocation extends HTMLElement {
                             ${lizDict['geolocate.toolbar.bind']}
                     </button>
                     <input
-                        class="form-control form-control-sm"
+                        class="bind-control form-control form-control-sm"
                         type="number"
                         min="1"
                         ?disabled=${
@@ -69,7 +69,7 @@ export default class Geolocation extends HTMLElement {
                         value="${mainLizmap.geolocation.bindIntervalInSecond}"
                         @input=${(event) => mainLizmap.geolocation.bindIntervalInSecond = parseInt(event.target.value)}
                         >
-                    <span class="add-on">s</span>
+                    <span class="bind-text input-group-text">s</span>
                 </div>
             </div>
             <div class="geolocation-infos">
