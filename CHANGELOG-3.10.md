@@ -8,9 +8,47 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Funders
+
+* **[Klein und Leber GbR](https://www.gisgeometer.de/)** with @meyerlor
+* **[ETRA SpA Società benefit](https://www.etraspa.it/)** with Faunalia and @mind84
+* **[Faunalia](https://www.faunalia.eu/)** with @mind84
+
 ### Added
 
+* UI - New Group by layer popup mode
+* JS - Locate by layers loaded event
+* Rely on attributeEditorRelation cardinality to display many to many relations
+* Short link permalink functionality
 * Edition - Support QGIS dynamic default-value expressions in edit forms, including geometry-based (`$x`, `$y`, `$area`, `$length`, `$geometry`) and field-referencing expressions (e.g. `"firstname" || ' ' || "lastname"`). Defaults are re-evaluated when the geometry is drawn/edited and when a referenced field changes, honoring QGIS's `applyOnUpdate` flag.
+
+### Security
+
+* admin - sanitize file name of the uploaded image
+* admin - escape html content into links on the user admin page
+* lizmap - strengthen some requests processing
+* media - don't disclose full path of unknown media in 404 page
+* xmltools - do not load explicity entities when loading XML files
+
+### Fixed
+
+* Service - WFS PostGIS path SRSNAME handling and snap datum-shift error
+* UI -close minidock added via JS addDock method
+* Edition - digitization tab layout overflow and button alignment
+* UI - Activate drag-drop popup tabs for both dock and map popup modes
+* UI - Render QGIS CheckBox-widget fields as real checkboxes in popups
+* UI - Consider bbox e filteredfeaturesid param in zoom to filtered feature extent
+* PHP - QgisProject: Checking that getLayerById returns null
+* Filter - JS request_params not yet defined for layer
+* Map - WMS baselayers from QGIS layers now proxy through QGIS Server
+
+### Tests
+
+* e2e snap edition: Enhance Snap panel functionalities
+
+### Backend
+
+* Docker - Upgrade Alpine to 3.22 and Php to 8.3
 
 ## 3.10.0-beta.3 - 2026-04-20
 
