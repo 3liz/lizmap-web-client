@@ -302,6 +302,65 @@ test.describe('Export data @readonly', () => {
         expect(feature).toHaveProperty('properties');
         expect(feature).toHaveProperty('geometry', null);
     });
+
+    test('should export a filtered spatial layer whose shortname differs from its QGIS name @readonly', async ({ page }) => {
+        // Regression: a filter applied to a layer whose WFS typename (shortname)
+        // differs from its QGIS layer name was sent to QGIS Server as
+        // EXP_FILTER='shortname:expression', which it rejects with HTTP 500.
+        // The export code must strip the typename prefix as well as the QGIS
+        // layer name prefix.
+        const project = new ProjectPage(page, 'attribute_table');
+        await project.open();
+
+        const tableName = 'Les_quartiers_a_Montpellier';
+        const typeName = 'quartiers';
+
+        // Open attribute table
+        const attrGetFeatureRequest = await project.openAttributeTable(tableName);
+        const attrGetFeatureResponse = await attrGetFeatureRequest.response();
+        responseExpect(attrGetFeatureResponse).toBeGeoJson();
+
+        const tableHtml = project.attributeTableHtml(tableName);
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(7);
+
+        // Select feature 2, then filter the table on the selection. The
+        // resulting request_params.filter is 'quartiers:"quartier" IN ( 2 ) '.
+        const tr2 = tableHtml.locator('tbody tr[id="2"]');
+        const getSelectionTokenRequestPromise = project.waitForGetSelectionTokenRequest();
+        await tr2.locator('lizmap-feature-toolbar .feature-select').click();
+        await (await getSelectionTokenRequestPromise).response();
+
+        const actionBar = project.attributeTableActionBar(tableName);
+        const getFilterTokenRequestPromise = project.waitForGetFilterTokenRequest();
+        await actionBar.locator('.btn-filter-attributeTable').click();
+        await (await getFilterTokenRequestPromise).response();
+
+        await expect(tableHtml.locator('tbody tr')).toHaveCount(1);
+
+        // Launch export. EXP_FILTER must NOT carry the 'quartiers:' prefix.
+        const getFeatureRequest = await project.launchExport(tableName, 'GeoJSON');
+        /** @type {{[key: string]: string|RegExp}} */
+        const expectedParameters = {
+            'SERVICE': 'WFS',
+            'REQUEST': 'GetFeature',
+            'VERSION': '1.0.0',
+            'OUTPUTFORMAT': 'GeoJSON',
+            'TYPENAME': typeName,
+            'dl': '1',
+            'EXP_FILTER': '"quartier" IN ( 2 ) ',
+        };
+        requestExpect(getFeatureRequest).toContainParametersInPostData(expectedParameters);
+
+        const postData = getFeatureRequest.postData() ?? '';
+        expect(postData).not.toMatch(/EXP_FILTER=quartiers(%3A|:)/);
+
+        const getFeatureResponse = await getFeatureRequest.response();
+        responseExpect(getFeatureResponse).toBeGeoJson();
+        const body = await getFeatureResponse?.json();
+        expect(body).toHaveProperty('type', 'FeatureCollection');
+        expect(body.features).toHaveLength(1);
+        expect(body.features[0]).toHaveProperty('id', tableName + '.2');
+    });
 });
 
 test.describe('Layer export permissions ACL', () => {
