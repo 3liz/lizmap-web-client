@@ -12,6 +12,18 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 * **[Klein und Leber GbR](https://www.gisgeometer.de/)** with @meyerlor
 * **[Valabre](https://www.valabre.com/)**
+* **[Syndicat Mixte du SCoT de la Haute Gironde Blaye - Estuaire](https://scot-hautegironde.fr/)**
+* **[Syndicat Mixte de Gestion de l'eau potable d'Ille-et-Vilaine](https://www.eau35.fr/)**
+* **[Faunalia](https://www.faunalia.eu/fr)** with @mind84
+* **[Klein und Leber GbR](https://www.gisgeometer.de/)** with @meyerlor
+
+### Security
+
+* admin - sanitize file name of the uploaded image
+* admin - escape html content into links on the user admin page
+* lizmap - strengthen some requests processing
+* media - don't disclose full path of unknown media in 404 page
+* xmltools - do not load explicity entities when loading XML files
 
 ### Fixed
 
@@ -21,11 +33,23 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * UI - default atlas print icon not well displayed
 * Edit - Remove capture attribute for image upload, use it in accept for ImageUpload control
 * Commands - sqlite migration
+* JS - dispatch closed dock event when a new one is opened
 * UI - search clear button not visible and not clearing highlight
+* Service - WFS PostGIS path SRSNAME handling and snap datum-shift error
+* UI - Activate drag-drop popup tabs for both dock and map popup modes
+* PHP - QgisProject: Checking that getLayerById returns null
+* Filter - JS request_params not yet defined for layer
+* Map - WMS baselayers from QGIS layers now proxy through QGIS Server
+* UI - Popup: place children features tables inside drag-and-drop relation
+
+### Tests
+
+* Add tests for CheckBox-widget popup rendering
 
 ### Backend
 
 * CSS - Drop outdated rules about btn-stop and btn-print-clear
+* Docker - Upgrade Alpine to 3.22 and Php to 8.3
 
 ## 3.9.7 - 2026-03-25
 
