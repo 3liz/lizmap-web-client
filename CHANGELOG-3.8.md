@@ -8,6 +8,25 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+### Security
+
+* admin - sanitize file name of the uploaded image
+* admin - escape html content into links on the user admin page
+* lizmap - strengthen some requests processing
+* media - don't disclose full path of unknown media in 404 page
+* xmltools - do not load explicity entities when loading XML files
+
+### Fixed
+
+* Admin - syntax error in lizmapConfig.ini.php into the list of domains for CORS
+* Admin - invalid repository path locked update
+
+### Backend
+
+* Upgrade Jelix to version 1.8.24
+* Upgrade jCommunity to version 1.4.5
+* Update locales
+
 ## 3.8.17 - 2026-03-25
 
 ### Backend
