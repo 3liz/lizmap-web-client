@@ -836,8 +836,11 @@ test.describe('Print 3857', () => {
         await drawProject.toggleEdit();
 
         // Edit second point By clicking on the map
-        await page.waitForTimeout(1000);
         await drawProject.clickOnMap(480, 300);
+        // Wait for Select interaction to pick up the feature
+        await page.waitForFunction(() =>
+            lizMap.mainLizmap.digitizing.editedFeatures.length === 1
+        );
         await drawProject.setTextContentValue('test');
 
         await printPage.openPrintPanel();

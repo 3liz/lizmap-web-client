@@ -64,6 +64,18 @@ export default class Digitizing extends HTMLElement {
         this._availableTools = DigitizingAvailableTools.slice(1);
     }
 
+    /**
+     * Show an editing message popup for the selected tool
+     * @param {string} messageKey - The lizDict key for the message
+     */
+    _showEditingMessage(messageKey) {
+        const msg = lizDict[messageKey];
+        if (!msg) return;
+        // Remove any previous editing message
+        $('#lizmap-editing-message').remove();
+        lizMap.addMessage(msg, 'info', true, 10000).attr('id', 'lizmap-editing-message');
+    }
+
     connectedCallback() {
 
         // Update available tools from attribute
@@ -244,34 +256,45 @@ export default class Digitizing extends HTMLElement {
             </form>
             `;
 
-        const mainTemplate = (toolSelected) => html`
+        const mainTemplate = (toolSelected) => {
+            // Evaluate on every render so it reflects current edition state
+            const isEditionPoint = this.context === 'edition' && mainLizmap.edition?.layerGeometry === 'point';
+
+            // For point layers in edition, no toolbar needed — drawing starts automatically
+            if (isEditionPoint) {
+                this.style.display = 'none';
+                return html``;
+            }
+            this.style.display = '';
+
+            return html`
         <div class="digitizing">
-            ${toolButtonTemplate(this._availableTools, toolSelected)}
-            <input
+            ${this.context !== 'edition' ? toolButtonTemplate(this._availableTools, toolSelected) : ''}
+            ${this.context !== 'edition' ? html`<input
                 type="color"
                 class="digitizing-color btn"
                 .value="${mainLizmap.digitizing.drawColor}"
                 @input=${(event) => mainLizmap.digitizing._userChangedColor(event.target.value)}
                 data-bs-toggle="tooltip"
                 data-bs-title="${lizDict['digitizing.toolbar.color']}"
-                >
-            <button
+                >` : ''}
+            ${this.context !== 'edition' ? html`<button
                 type="button"
                 class="digitizing-edit btn ${mainLizmap.digitizing.isEdited ? 'active btn-primary' : ''}"
                 ?disabled=${!mainLizmap.digitizing.featureDrawn}
-                @click=${() => mainLizmap.digitizing.toggleEdit()}
+                @click=${() => { mainLizmap.digitizing.toggleEdit(); if (mainLizmap.digitizing.isEdited) this._showEditingMessage('digitizing.toolbar.edit.help'); }}
                 data-bs-toggle="tooltip"
                 data-bs-title="${lizDict['digitizing.toolbar.edit']}"
                 >
                 <svg>
                     <use href="${lizUrls.svgSprite}#edit"/>
                 </svg>
-            </button>
-            <button
+            </button>` : ''}
+            ${!isEditionPoint ? html`<button
                 type="button"
                 class="digitizing-rotate btn ${mainLizmap.digitizing.isRotate ? 'active btn-primary' : ''}"
                 ?disabled=${!mainLizmap.digitizing.featureDrawn}
-                @click=${() => mainLizmap.digitizing.toggleRotate()}
+                @click=${() => { mainLizmap.digitizing.toggleRotate(); if (mainLizmap.digitizing.isRotate) this._showEditingMessage('digitizing.toolbar.rotate.help'); }}
                 data-bs-toggle="tooltip"
                 data-bs-title="${lizDict['digitizing.toolbar.rotate']}"
                 >
@@ -283,7 +306,7 @@ export default class Digitizing extends HTMLElement {
                 type="button"
                 class="digitizing-scaling btn ${mainLizmap.digitizing.isScaling ? 'active btn-primary' : ''}"
                 ?disabled=${!mainLizmap.digitizing.featureDrawn}
-                @click=${() => mainLizmap.digitizing.toggleScaling()}
+                @click=${() => { mainLizmap.digitizing.toggleScaling(); if (mainLizmap.digitizing.isScaling) this._showEditingMessage('digitizing.toolbar.scaling.help'); }}
                 data-bs-toggle="tooltip"
                 data-bs-title="${lizDict['digitizing.toolbar.scaling']}"
                 >
@@ -291,19 +314,34 @@ export default class Digitizing extends HTMLElement {
                     <use href="${lizUrls.svgSprite}#scaling"/>
                 </svg>
             </button>
-            <button
+            ${this.context !== 'edition' ? html`<button
                 type="button"
                 class="digitizing-split btn ${mainLizmap.digitizing.isSplitting ? 'active btn-primary' : ''}"
                 ?disabled=${!mainLizmap.digitizing.featureDrawn}
-                @click=${() => mainLizmap.digitizing.toggleSplit()}
+                @click=${() => { mainLizmap.digitizing.toggleSplit(); if (mainLizmap.digitizing.isSplitting) this._showEditingMessage('digitizing.toolbar.split.help'); }}
                 data-bs-toggle="tooltip"
                 data-bs-title="${lizDict['digitizing.toolbar.split']}"
                 >
                 <svg>
                     <use href="${lizUrls.svgSprite}#split"/>
                 </svg>
-            </button>
-            <button
+            </button>` : ''}` : ''}
+            ${this.context === 'edition' && !isEditionPoint ? html`<lizmap-paste-geom></lizmap-paste-geom> <button
+                type="button"
+                class="digitizing-restart btn"
+                ?disabled=${!mainLizmap.digitizing.featureDrawn}
+                @click=${() => {
+                    if (!confirm(lizDict['edition.confirm.restart-drawing'])) return;
+                    mainLizmap.digitizing.eraseAll();
+                    const toolMap = { point: 'point', line: 'line', polygon: 'polygon' };
+                    mainLizmap.digitizing.toolSelected = toolMap[mainLizmap.edition?.layerGeometry] || 'point';
+                }}
+                data-bs-toggle="tooltip"
+                data-bs-title="${lizDict['edition.toolbar.redraw']}"
+                >
+                <i class="icon-refresh"></i>
+            </button>` : ''}
+            ${this.context !== 'edition' ? html`<button
                 type="button"
                 class="digitizing-erase btn ${mainLizmap.digitizing.isErasing ? 'active btn-primary' : ''}"
                 ?disabled=${!mainLizmap.digitizing.featureDrawn}
@@ -336,8 +374,8 @@ export default class Digitizing extends HTMLElement {
                 data-bs-title="${lizDict['tree.button.checkbox']}"
                 >
                 <i class="icon-eye-${mainLizmap.digitizing.visibility ? 'open' : 'close'}"></i>
-            </button>
-            ${this.measureAvailable ? measureButtonTemplate(
+            </button>` : ''}
+            ${this.measureAvailable && !isEditionPoint ? measureButtonTemplate(
                 mainLizmap.digitizing.hasMeasureVisible,
             ) : ''}
             ${this.saveAvailable ? saveButtonTemplate(
@@ -413,65 +451,29 @@ export default class Digitizing extends HTMLElement {
             <div class="digitizing-state hide">
                 <div class="digitizing-save-state hide">${lizDict['digitizing.toolbar.save.state']}</div>
             </div>
-            <div class="digitizing-constraints ${mainLizmap.digitizing.hasConstraintsPanelVisible ? '' : 'hide'}">
-                <details>
-                    <summary>
-                        ${lizDict['digitizing.constraint.title']}
-                    </summary>
-                    ${lizDict['digitizing.constraint.details']}
-                </details>
-                <div class="digitizing-constraint-distance input-append">
-                    <input
-                        type="number"
-                        placeholder="${lizDict['digitizing.constraint.distance']}"
-                        class="distance form-control"
-                        min="0"
-                        step="any"
-                        @input=${
-                            event => mainLizmap.digitizing.distanceConstraint = event.target.value
-                        }
-                        >
-                    <span class="add-on">m</span>
-                </div>
-                <div class="digitizing-constraint-angle input-append">
-                    <input
-                        type="number"
-                        placeholder="${lizDict['digitizing.constraint.angle']}"
-                        class="angle form-control"
-                        step="any"
-                        @input=${
-                            event => mainLizmap.digitizing.angleConstraint = event.target.value
-                        }
-                        >
-                    <span class="add-on">°</span>
-                </div>
-            </div>
             ${this.textToolsAvailable ? textToolsTemplate(
                 mainLizmap.digitizing.editedFeatures.length != 0
             ) : ''}
         </div>`;
+        };
 
-        render(
-            mainTemplate(
-                this.toolSelected,
-            ),
-            this,
-        );
-
-        const tooltipTriggerList = this.querySelectorAll('[data-bs-toggle="tooltip"]');
-        [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, {
-            trigger: 'hover'
-        }));
+        this._renderTemplate = () => {
+            render(mainTemplate(this.toolSelected), this);
+            this._initTooltips();
+            this._initDropdowns();
+        };
 
         mainEventDispatcher.addListener(
             () => {
+                // Sync component tool state with module when context matches
+                if (mainLizmap.digitizing.context === this.context) {
+                    const moduleTool = mainLizmap.digitizing.toolSelected;
+                    if (this._availableTools.includes(moduleTool)) {
+                        this._toolSelected = moduleTool;
+                    }
+                }
                 if (!this.disabled) {
-                    render(
-                        mainTemplate(
-                            this.toolSelected,
-                        ),
-                        this,
-                    );
+                    this._renderTemplate();
                 }
             },
             [
@@ -495,9 +497,37 @@ export default class Digitizing extends HTMLElement {
                 'digitizing.visibility',
             ]
         );
+
+        this._renderTemplate();
     }
 
     disconnectedCallback() {
+    }
+
+
+    _initTooltips() {
+        // Dispose existing tooltips to avoid duplicates
+        this.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
+            // Skip elements whose title resolves to null (e.g. missing lizDict key)
+            // to prevent Bootstrap from throwing a type-check error.
+            const title = el.getAttribute('data-bs-title') || el.getAttribute('title');
+            if (!title) return;
+            const existing = bootstrap.Tooltip.getInstance(el);
+            if (existing) existing.dispose();
+            new bootstrap.Tooltip(el, { trigger: 'hover' });
+        });
+    }
+
+    _initDropdowns() {
+        // Use strategy:'fixed' so Popper positions the dropdown relative to the
+        // viewport, allowing it to escape overflow:auto containers (#mini-dock).
+        this.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(el => {
+            if (!bootstrap.Dropdown.getInstance(el)) {
+                new bootstrap.Dropdown(el, {
+                    popperConfig: { strategy: 'fixed' }
+                });
+            }
+        });
     }
 
     /**
