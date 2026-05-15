@@ -31,6 +31,10 @@ class htmlbootstrapFormWidget extends RootWidget
         if (array_key_exists('qgis_groupDependencies', $privateData)) {
             $groupDependencies = $privateData['qgis_groupDependencies'];
         }
+        $defaultExpressions = array();
+        if (array_key_exists('qgis_defaultExpressions', $privateData)) {
+            $defaultExpressions = $privateData['qgis_defaultExpressions'];
+        }
 
         // no scope into an anonymous js function, because jFormsJQ.tForm is used by other generated source code
         $js = "jFormsJQ.selectFillUrl='".jUrl::get('jelix~jforms:getListData')."';\n";
@@ -45,6 +49,7 @@ class htmlbootstrapFormWidget extends RootWidget
             $form->getContainer()->formId."');\n";
         $js .= 'jFormsJQ.tForm.setErrorDecorator(new '.$builder->getOption('errorDecorator')."());\n";
         $js .= 'jFormsJQ.tForm.groupDependencies = '.json_encode($groupDependencies).";\n";
+        $js .= 'jFormsJQ.tForm.qgis_defaultExpressions = '.json_encode($defaultExpressions).";\n";
         $js .= "jFormsJQ.declareForm(jFormsJQ.tForm);\n";
         $this->addJs($js);
 

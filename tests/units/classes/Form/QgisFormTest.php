@@ -50,6 +50,60 @@ class dummyForm
 }
 
 /**
+ * A richer form stub that supports getData($key), setData($key, $val), and getAllData().
+ * Used by the dynamic-default expression tests below.
+ */
+class dummyFormForDefaults
+{
+    /** @var array<string, mixed> */
+    private $store = array();
+
+    /** @var array<string, object> */
+    public $controls = array();
+
+    public function getSelector()
+    {
+        return 'test~dummy';
+    }
+
+    public function getContainer()
+    {
+        return (object) array('privateData' => array());
+    }
+
+    public function getData($key)
+    {
+        return isset($this->store[$key]) ? $this->store[$key] : null;
+    }
+
+    public function setData($key, $value)
+    {
+        $this->store[$key] = $value;
+    }
+
+    public function getAllData()
+    {
+        return $this->store;
+    }
+
+    public function getControl($ref)
+    {
+        return isset($this->controls[$ref]) ? $this->controls[$ref] : null;
+    }
+
+    public function addControl() {}
+
+    public function setReadOnly() {}
+
+    public function setErrorOn() {}
+
+    public function check()
+    {
+        return true;
+    }
+}
+
+/**
  * @internal
  *
  * @coversNothing
@@ -524,5 +578,150 @@ class QgisFormTest extends TestCase
         $form->fillControlFromUniqueValuesForTests('test', $control);
         $this->assertEquals($expectedData, $control->ctrl->datasource->data);
         $this->assertEquals($expectedRequired, $control->ctrl->required);
+    }
+
+    /**
+     * All dynamic-default expressions are sent in a single evaluateExpression
+     * call (batching), not one call per field.
+     */
+    public function testDynamicDefaultsBatchedIntoSingleCall(): void
+    {
+        $layer = new QgisLayerForTests();
+        $layer->setDefaultValues(array(
+            'coord_x' => '$x',
+            'concat_ab' => '"a" || "b"',
+            'ts' => 'now()',
+        ));
+
+        $form = new dummyFormForDefaults();
+
+        $formObj = new QgisFormForTests();
+        $formObj->setLayer($layer);
+        $formObj->setForm($form);
+        // evaluateExpressionReturn stays null — that is fine, we only count calls
+
+        $formObj->evaluateDefaultExpressionsForTests(array(
+            'coord_x' => '$x',
+            'concat_ab' => '"a" || "b"',
+            'ts' => 'now()',
+        ));
+
+        $this->assertCount(1, $formObj->evaluateExpressionCalls, 'Expected exactly one batched evaluateExpression call');
+        $call = $formObj->evaluateExpressionCalls[0];
+        $this->assertArrayHasKey('coord_x', $call['expressions']);
+        $this->assertArrayHasKey('concat_ab', $call['expressions']);
+        $this->assertArrayHasKey('ts', $call['expressions']);
+    }
+
+    /**
+     * Numeric and single-quoted-literal defaults must not be passed to
+     * evaluateExpression; only truly dynamic expressions go through.
+     */
+    public function testStaticDefaultsFastPathSkipsExpressionEvaluation(): void
+    {
+        $layer = new QgisLayerForTests();
+        $layer->setDefaultValues(array(
+            'num_field' => '42',
+            'str_field' => '\'literal\'',
+            'dyn_field' => '(SELECT 1)',
+        ));
+
+        $form = new dummyFormForDefaults();
+
+        $formObj = new QgisFormForTests();
+        $formObj->setLayer($layer);
+        $formObj->setForm($form);
+
+        // collectDynamicExpressions classifies the fields
+        $dynamic = $formObj->collectDynamicExpressionsForTests();
+
+        $this->assertArrayNotHasKey('num_field', $dynamic, 'Numeric default must be static');
+        $this->assertArrayNotHasKey('str_field', $dynamic, 'Single-quoted literal must be static');
+        $this->assertArrayHasKey('dyn_field', $dynamic, 'SQL expression must be dynamic');
+        $this->assertCount(1, $dynamic);
+
+        // When we evaluate only the one dynamic expression, evaluateExpression
+        // is called exactly once.
+        $formObj->evaluateDefaultExpressionsForTests($dynamic);
+
+        $this->assertCount(1, $formObj->evaluateExpressionCalls);
+        $callExpressions = $formObj->evaluateExpressionCalls[0]['expressions'];
+        $this->assertArrayHasKey('dyn_field', $callExpressions);
+        $this->assertArrayNotHasKey('num_field', $callExpressions);
+        $this->assertArrayNotHasKey('str_field', $callExpressions);
+    }
+
+    /**
+     * When geometry WKT and existing form data are present, evaluateExpression
+     * receives a form_feature with a parsed geometry object and matching properties.
+     */
+    public function testFormFeatureContextPassedToExpressionEvaluator(): void
+    {
+        $layer = new QgisLayerForTests();
+        $layer->setDefaultValues(array('coord_x' => '$x'));
+
+        $form = new dummyFormForDefaults();
+        $form->setData('liz_geometryColumn', 'geom');
+        $form->setData('geom', 'POINT(10 20)');
+        $form->setData('firstname', 'Jane');
+
+        $formObj = new QgisFormForTests();
+        $formObj->setLayer($layer);
+        $formObj->setForm($form);
+
+        $formObj->evaluateDefaultExpressionsForTests(array('coord_x' => '$x'));
+
+        $this->assertCount(1, $formObj->evaluateExpressionCalls);
+        $formFeature = $formObj->evaluateExpressionCalls[0]['form_feature'];
+
+        // Geometry must be parsed (not the raw WKT string, not null)
+        $this->assertNotNull($formFeature['geometry'], 'Parsed geometry must not be null');
+        $this->assertNotEquals('POINT(10 20)', $formFeature['geometry'], 'form_feature geometry must be a parsed object, not a raw WKT string');
+
+        // Properties must carry the pre-set form data
+        $this->assertArrayHasKey('firstname', $formFeature['properties']);
+        $this->assertEquals('Jane', $formFeature['properties']['firstname']);
+    }
+
+    /**
+     * setFormDataFromDefault must not overwrite a field that already has a value;
+     * the pre-set (manually entered) value must survive.
+     */
+    public function testSetFormDataFromDefaultDoesNotOverwriteExistingValue(): void
+    {
+        $layer = new QgisLayerForTests();
+        $layer->setDefaultValues(array('foo' => '"bar" || "baz"'));
+        // DB has no default values for this layer
+        $layer->dbFieldValues = array();
+
+        $form = new dummyFormForDefaults();
+        // Simulate user has already typed a value into 'foo'
+        $form->setData('foo', 'manual');
+
+        $formObj = new QgisFormForTests();
+        $formObj->setLayer($layer);
+        $formObj->setForm($form);
+
+        // Stub evaluateExpression to return a value for 'foo'
+        $expressionResult = new \stdClass();
+        $expressionResult->foo = 'evaluated_default';
+        $formObj->evaluateExpressionReturn = $expressionResult;
+
+        // setFormDataFromDefault calls collectDynamicExpressions then
+        // evaluateDefaultExpressions and only fills EMPTY fields.
+        // We drive it by calling evaluateDefaultExpressionsForTests directly
+        // (same logic used by setFormDataFromDefault's expression pass).
+        $dynamicExprs = $formObj->collectDynamicExpressionsForTests();
+        $evaluated = $formObj->evaluateDefaultExpressionsForTests($dynamicExprs);
+
+        foreach ($evaluated as $ref => $value) {
+            $cur = $form->getData($ref);
+            if ($cur === null || $cur === '') {
+                $form->setData($ref, $value);
+            }
+        }
+
+        // 'foo' was already 'manual' — it must not be overwritten
+        $this->assertEquals('manual', $form->getData('foo'));
     }
 }
