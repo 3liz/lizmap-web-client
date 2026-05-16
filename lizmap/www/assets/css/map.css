@@ -2210,7 +2210,7 @@ lizmap-print .flex {
 #switcher-layers-actions div.btn-group > ul{
   left:auto;
   right:0;
-  max-height:90px;
+  max-height:300px;
   overflow-y:auto;
 }
 
@@ -3538,7 +3538,7 @@ img {
 /* Its icon is taller than the legacy icons in the neighbouring expand/collapse
    buttons; trim the vertical padding so all three buttons share the same height. */
 #theme-selector .btn {
-  --bs-btn-padding-y: 0.125rem;
+  --bs-btn-padding-y: 0.15rem;
 }
 
 /* Geolocation */
