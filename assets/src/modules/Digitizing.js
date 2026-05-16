@@ -4,7 +4,7 @@
  * @copyright 2023 3Liz
  * @license MPL-2.0
  */
-import { mainEventDispatcher } from '../modules/Globals.js';
+import { mainLizmap, mainEventDispatcher } from '../modules/Globals.js';
 import { deepFreeze } from './config/Tools.js';
 import { createEnum } from './utils/Enums.js';
 import { Utils } from './Utils.js';
@@ -15,10 +15,11 @@ import GPX from 'ol/format/GPX.js';
 import KML from 'ol/format/KML.js';
 import WKT from 'ol/format/WKT.js';
 
-import { Draw, Modify, Select, Translate } from 'ol/interaction.js';
+import { Draw, Modify, Select, Translate, DoubleClickZoom } from 'ol/interaction.js';
+import { click } from 'ol/events/condition.js';
 import { createBox } from 'ol/interaction/Draw.js';
 
-import { Circle, Fill, Stroke, RegularShape, Style, Text } from 'ol/style.js';
+import { Circle, Fill, Stroke, Style, Text } from 'ol/style.js';
 
 import { Vector as VectorSource } from 'ol/source.js';
 import { Vector as VectorLayer } from 'ol/layer.js';
@@ -36,13 +37,11 @@ import {
     GeometryCollection
 } from 'ol/geom.js';
 
-import { circular, fromCircle } from 'ol/geom/Polygon.js';
+import { fromCircle } from 'ol/geom/Polygon.js';
 
 import { getArea, getLength } from 'ol/sphere.js';
 import Overlay from 'ol/Overlay.js';
 import { unByKey } from 'ol/Observable.js';
-
-import { transform } from 'ol/proj.js';
 
 import shp from 'shpjs';
 import * as flatgeobuf from 'flatgeobuf';
@@ -132,6 +131,7 @@ export class Digitizing {
         this._isErasing = false;
 
         this._drawInteraction;
+        this._dblClickListener = null;
 
         this._segmentMeasureTooltipElement;
         this._totalMeasureTooltipElement;
@@ -146,7 +146,10 @@ export class Digitizing {
         this._strokeWidth = 2;
 
         this._selectInteraction = new Select({
+            condition: click,
+            hitTolerance: 5,
             wrapX: false,
+            layers: (layer) => layer === this._drawLayer,
             style: (feature) => {
                 let color = feature.get('color') || this._drawColor;
 
@@ -222,16 +225,26 @@ export class Digitizing {
             if (event.selected.length) {
                 this.drawColor = event.selected[0].get('color');
             } else {
+                // In edition context, prevent deselection — always keep the feature selected
+                if (this._context === 'edition' && this.featureDrawn && this.featureDrawn.length === 1) {
+                    this._selectInteraction.getFeatures().push(this.featureDrawn[0]);
+                    return;
+                }
                 // When a feature is deselected, set the color from the first selected feature if any
                 const selectedFeatures = this._selectInteraction.getFeatures().getArray();
                 if (selectedFeatures.length) {
                     this.drawColor = selectedFeatures[0].get('color');
                 }
             }
+            mainEventDispatcher.dispatch('digitizing.editionBegins');
         });
 
         this._modifyInteraction = new Modify({
             features: this._selectInteraction.getFeatures(),
+        });
+
+        this._modifyInteraction.on('modifyend', () => {
+            mainEventDispatcher.dispatch('digitizing.geometryChanged');
         });
 
         this._translateInteraction = new Translate({
@@ -239,14 +252,26 @@ export class Digitizing {
             hitTolerance: 20
         });
 
+        this._translateInteraction.on('translateend', () => {
+            mainEventDispatcher.dispatch('digitizing.geometryChanged');
+        });
+
         this._transformRotateInteraction = new Transform({
             rotate: true,
             scale: false,
         });
 
+        this._transformRotateInteraction.on('rotateend', () => {
+            mainEventDispatcher.dispatch('digitizing.geometryChanged');
+        });
+
         this._transformScaleInteraction = new Transform({
             rotate: false,
             scale: true,
+        });
+
+        this._transformScaleInteraction.on('scaleend', () => {
+            mainEventDispatcher.dispatch('digitizing.geometryChanged');
         });
 
         this._drawStyleFunction = (feature) => {
@@ -353,37 +378,6 @@ export class Digitizing {
 
         this._map.addToolLayer(this._drawLayer);
 
-        // Constraint layer
-        this._constraintLayer = new VectorLayer({
-            source: new VectorSource({ wrapX: false }),
-            style: new Style({
-                image: new RegularShape({
-                    fill: new Fill({
-                        color: 'black',
-                    }),
-                    stroke: new Stroke({
-                        color: 'black',
-                    }),
-                    points: 4,
-                    radius: 10,
-                    radius2: 0,
-                    angle: 0,
-                }),
-                stroke: new Stroke({
-                    color: 'black',
-                    lineDash: [10]
-                }),
-            })
-        });
-        this._constraintLayer.setProperties({
-            name: 'LizmapDigitizingConstraintLayer'
-        });
-        this._map.addToolLayer(this._constraintLayer);
-
-        // Constraints values
-        this._distanceConstraint = 0;
-        this._angleConstraint = 0;
-
         // Load and display saved feature if any
         this.loadFeatureDrawnToMap();
 
@@ -401,6 +395,7 @@ export class Digitizing {
             minidockclosed: (e) => {
                 if (e.id == 'draw') {
                     this.toolSelected = this._tools[0]; // DigitizingTools.Deactivate
+                    this.toggleVisibility(false);
                 }
             }
         });
@@ -595,10 +590,118 @@ export class Digitizing {
      * @param {string} tool - The tool to select
      * @fires digitizingToolSelected
      */
+    /**
+     * Disable DoubleClickZoom interaction on the map
+     * @private
+     */
+    _disableDoubleClickZoom() {
+        this._map.getInteractions().forEach(interaction => {
+            if (interaction instanceof DoubleClickZoom) {
+                interaction.setActive(false);
+            }
+        });
+    }
+
+    /**
+     * Enable DoubleClickZoom interaction on the map
+     * @private
+     */
+    _enableDoubleClickZoom() {
+        // Delay re-enabling past OL's 250ms dblclick detection window
+        // to prevent the finishing double-click from also triggering a zoom
+        setTimeout(() => {
+            this._map.getInteractions().forEach(interaction => {
+                if (interaction instanceof DoubleClickZoom) {
+                    interaction.setActive(true);
+                }
+            });
+        }, 300);
+    }
+
+    /**
+     * Restore edit mode if in edition context with a drawn feature.
+     * Called when other tools (rotate, scale, split) deactivate.
+     * @private
+     */
+    _restoreEditionEditMode() {
+        if (this._context === 'edition' && this.featureDrawn) {
+            this.isEdited = true;
+        }
+    }
+
+    /**
+     * Deactivate all tools by directly manipulating internal state.
+     * Avoids setter re-entrancy issues. Call before activating a new tool.
+     * @private
+     */
+    _deactivateAllTools() {
+        // Deactivate edit mode
+        if (this._isEdited) {
+            this._isEdited = false;
+            this._selectInteraction.getFeatures().clear();
+            this._map.removeInteraction(this._selectInteraction);
+            this._map.removeInteraction(this._modifyInteraction);
+            this.saveFeatureDrawn();
+            mainEventDispatcher.dispatch('digitizing.editionEnds');
+        }
+
+        // Deactivate rotate
+        if (this._isRotate) {
+            this._isRotate = false;
+            this._transformRotateInteraction.getFeatures().clear();
+            this._map.removeInteraction(this._transformRotateInteraction);
+            mainEventDispatcher.dispatch({ type: 'digitizing.rotate', isRotate: false });
+        }
+
+        // Deactivate scale
+        if (this._isScaling) {
+            this._isScaling = false;
+            this._transformScaleInteraction.getFeatures().clear();
+            this._map.removeInteraction(this._transformScaleInteraction);
+            mainEventDispatcher.dispatch({ type: 'digitizing.scaling', isScaling: false });
+        }
+
+        // Deactivate split
+        if (this._isSplitting) {
+            this._isSplitting = false;
+            this._map.removeInteraction(this._splitInteraction);
+            if (this._splitSource) {
+                this._splitSource.clear();
+                this._splitSource = null;
+            }
+            mainEventDispatcher.dispatch({ type: 'digitizing.split', isSplitting: false });
+        }
+
+        // Deactivate erasing
+        if (this._isErasing) {
+            this._map.un('singleclick', this._erasingCallBack);
+            this._isErasing = false;
+            mainEventDispatcher.dispatch('digitizing.erasingEnds');
+        }
+
+        // Deactivate draw tool
+        this._map.removeInteraction(this._drawInteraction);
+        if (this._dblClickListener) {
+            this._map.getViewport().removeEventListener('dblclick', this._dblClickListener);
+            this._dblClickListener = null;
+        }
+        this._drawSource.un('addfeature', this._addFeatureColorListener);
+        this._drawSource.un('addfeature', this._addFeatureTextListener);
+        this._drawSource.un('addfeature', this._addFeatureSinglePartGeometryListener);
+        this._drawSource.un('addfeature', this._addFeatureSaveDispatchListener);
+        this._toolSelected = this._tools[0]; // deactivate
+
+        this._enableDoubleClickZoom();
+    }
+
     set toolSelected(tool) {
         if (this._tools.includes(tool)) {
             // Disable all tools
             this._map.removeInteraction(this._drawInteraction);
+            if (this._dblClickListener) {
+                this._map.getViewport().removeEventListener('dblclick', this._dblClickListener);
+                this._dblClickListener = null;
+            }
             this._drawSource.un('addfeature', this._addFeatureColorListener);
             this._drawSource.un('addfeature', this._addFeatureTextListener);
             this._drawSource.un('addfeature', this._addFeatureSinglePartGeometryListener);
@@ -607,6 +710,7 @@ export class Digitizing {
             // If tool === 'deactivate' or current selected tool is selected again => deactivate
             if (tool === this._toolSelected || tool === this._tools[0]) {
                 this._toolSelected = this._tools[0];
+                this._enableDoubleClickZoom();
             } else {
                 const drawOptions = {
                     source: this._drawLayer.getSource(),
@@ -619,15 +723,9 @@ export class Digitizing {
                         break;
                     case this._tools[2]:
                         drawOptions.type = 'LineString';
-                        drawOptions.geometryFunction = (coords, geom) => {
-                            return this._contraintsHandler(coords, geom, drawOptions.type);
-                        }
                         break;
                     case this._tools[3]:
                         drawOptions.type = 'Polygon';
-                        drawOptions.geometryFunction = (coords, geom) => {
-                            return this._contraintsHandler(coords, geom, drawOptions.type);
-                        }
                         break;
                     case this._tools[4]:
                         drawOptions.type = 'Circle';
@@ -676,14 +774,13 @@ export class Digitizing {
                 this._drawInteraction.on('drawend', event => {
                     const geom = event.feature.getGeometry();
 
-                    // Close linear ring if needed
-                    if (geom instanceof Polygon) {
-                        const coordsLinearRing = geom.getCoordinates()[0];
-                        if (coordsLinearRing[0] !== coordsLinearRing[coordsLinearRing.length - 1]) {
-                            coordsLinearRing.push(coordsLinearRing[0]);
-                            geom.setCoordinates([coordsLinearRing]);
-                        }
-                    }
+                    // OL10's Draw already returns properly closed polygon rings —
+                    // do NOT manually push another closing coordinate. (Earlier
+                    // code compared the first/last coordinate arrays with !==,
+                    // which is always true for distinct array instances regardless
+                    // of value, so it kept double-closing the ring. The duplicate
+                    // closing point shows up in WKT output and breaks tests that
+                    // expect a single closure.)
 
                     // Attach total overlay to its geom to update
                     // content when the geom is modified
@@ -692,8 +789,6 @@ export class Digitizing {
                         const geom = e.target;
                         this._setTooltipContentByGeom(geom);
                     });
-
-                    this._constraintLayer.setVisible(false);
 
                     // Remove segment measure and change total measure tooltip style
                     this._segmentMeasureTooltipElement.remove();
@@ -713,9 +808,28 @@ export class Digitizing {
                             Array.from(this._measureTooltips).pop()[1],
                         );
                     }
+
+                    // Dispatch after microtask so the feature is in the source
+                    Promise.resolve().then(() => {
+                        mainEventDispatcher.dispatch('digitizing.geometryChanged');
+                    });
                 });
 
                 this._map.addInteraction(this._drawInteraction);
+                this._disableDoubleClickZoom();
+
+                // With constraints active, OL's atFinish_() compares the actual click pixel
+                // against the constrained coordinate (which can be far from the click). This
+                // causes double-click to add a vertex instead of finishing. We intercept the
+                // DOM dblclick to remove the extra vertex OL added on the second pointer-up
+                // and call finishDrawing() ourselves. Safe when constraints are off too:
+                // finishDrawing() was already called by OL and is a no-op by then.
+                this._dblClickListener = () => {
+                    this._drawInteraction.removeLastPoint();
+                    this._drawInteraction.finishDrawing();
+                };
+                this._map.getViewport().addEventListener('dblclick', this._dblClickListener);
+
                 this._drawSource.on('addfeature', this._addFeatureColorListener);
                 this._drawSource.on('addfeature', this._addFeatureTextListener);
                 this._drawSource.on('addfeature', this._addFeatureSinglePartGeometryListener);
@@ -744,6 +858,11 @@ export class Digitizing {
                 type: 'digitizing.toolSelected',
                 tool: this._toolSelected,
             });
+
+            // Ensure snap interaction is ordered after the new draw interaction
+            if (mainLizmap.snapping) {
+                mainLizmap.snapping.reorderSnapInteraction();
+            }
         }
     }
 
@@ -836,26 +955,18 @@ export class Digitizing {
      */
     set isEdited(edited) {
         if (this._isEdited !== edited) {
-            this._isEdited = edited;
+            if (edited) {
+                this._deactivateAllTools();
+                this._isEdited = true;
 
-            if (this._isEdited) {
                 // Automatically edit the feature if unique
-                if (this.featureDrawn.length === 1) {
+                if (this.featureDrawn && this.featureDrawn.length === 1) {
                     this._selectInteraction.getFeatures().push(this.featureDrawn[0]);
                     this.drawColor = this.featureDrawn[0].get('color');
                 }
 
-                this._map.removeInteraction(this._drawInteraction);
-
-                this._map.addInteraction(this._translateInteraction);
                 this._map.addInteraction(this._selectInteraction);
                 this._map.addInteraction(this._modifyInteraction);
-
-                this.toolSelected = 'deactivate';
-                this.isErasing = false;
-                this.isRotate = false;
-                this.isScaling = false;
-                this.isSplitting = false;
 
                 /**
                  * @event digitizingEditionBegins
@@ -868,9 +979,9 @@ export class Digitizing {
                  */
                 mainEventDispatcher.dispatch('digitizing.editionBegins');
             } else {
+                this._isEdited = false;
                 // Clear selection
                 this._selectInteraction.getFeatures().clear();
-                this._map.removeInteraction(this._translateInteraction);
                 this._map.removeInteraction(this._selectInteraction);
                 this._map.removeInteraction(this._modifyInteraction);
 
@@ -905,22 +1016,20 @@ export class Digitizing {
      */
     set isRotate(isRotate) {
         if (this._isRotate !== isRotate) {
-            this._isRotate = isRotate;
+            if (isRotate) {
+                this._deactivateAllTools();
+                this._isRotate = true;
 
-            if (this._isRotate) {
-                this.toolSelected = 'deactivate';
-                this.isErasing = false;
-                this.isEdited = false;
-                this.isScaling = false;
-                this.isSplitting = false;
-
-                // Automatically scaling the feature if unique
-                if (this.featureDrawn.length === 1) {
+                // Automatically select the feature if unique
+                if (this.featureDrawn && this.featureDrawn.length === 1) {
                     this._transformRotateInteraction.getFeatures().push(this.featureDrawn[0]);
                 }
                 this._map.addInteraction(this._transformRotateInteraction);
             } else {
+                this._isRotate = false;
+                this._transformRotateInteraction.getFeatures().clear();
                 this._map.removeInteraction(this._transformRotateInteraction);
+                this._restoreEditionEditMode();
             }
 
             /**
@@ -954,22 +1063,20 @@ export class Digitizing {
      */
     set isScaling(isScaling) {
         if (this._isScaling !== isScaling) {
-            this._isScaling = isScaling;
+            if (isScaling) {
+                this._deactivateAllTools();
+                this._isScaling = true;
 
-            if (this._isScaling) {
-                this.toolSelected = 'deactivate';
-                this.isErasing = false;
-                this.isEdited = false;
-                this.isRotate = false;
-                this.isSplitting = false;
-
-                // Automatically scaling the feature if unique
-                if (this.featureDrawn.length === 1) {
+                // Automatically select the feature if unique
+                if (this.featureDrawn && this.featureDrawn.length === 1) {
                     this._transformScaleInteraction.getFeatures().push(this.featureDrawn[0]);
                 }
                 this._map.addInteraction(this._transformScaleInteraction);
             } else {
+                this._isScaling = false;
+                this._transformScaleInteraction.getFeatures().clear();
                 this._map.removeInteraction(this._transformScaleInteraction);
+                this._restoreEditionEditMode();
             }
 
             /**
@@ -1003,35 +1110,44 @@ export class Digitizing {
      */
     set isSplitting(isSplitting) {
         if (this._isSplitting !== isSplitting) {
-            this._isSplitting = isSplitting;
+            if (isSplitting) {
+                this._deactivateAllTools();
+                this._isSplitting = true;
 
-            if (this._isSplitting) {
-                // Disable other tools
-                this.toolSelected = 'deactivate';
-                this.isEdited = false;
-                this.isRotate = false;
-                this.isScaling = false;
-                this.isErasing = false;
-
+                // Use a separate source for the split line so it doesn't trigger
+                // addfeature listeners (singlePartGeometry would remove existing features)
+                this._splitSource = new VectorSource();
                 this._splitInteraction = new Draw({
-                    source: this._drawSource,
-                    type: 'LineString'
+                    source: this._splitSource,
+                    type: 'LineString',
+                    style: this._drawStyleFunction
                 });
                 this._splitInteraction.on('drawend', event => {
+                    if (this._isOperationInProgress) return;
+                    this._isOperationInProgress = true;
+
+                    // Get the split line geometry and clear the temporary source
+                    const splitLineGeom = event.feature.getGeometry();
+                    this._splitSource.clear();
+
+                    // Take a snapshot of existing features (avoid modifying during iteration)
+                    const existingFeatures = [...this._drawSource.getFeatures()];
+
+                    // Find features that intersect the split line
+                    const featuresToSplit = existingFeatures.filter(
+                        f => splitLineGeom.intersectsExtent(f.getGeometry().getExtent())
+                    );
+                    if (featuresToSplit.length === 0) {
+                        this._isOperationInProgress = false;
+                        return;
+                    }
+
+                    // Lazy-load geometry libraries
                     Promise.all([
-                        import(
-                            /* webpackChunkName: 'OLparser' */ 'jsts/org/locationtech/jts/io/OL3Parser.js'
-                        ),
-                        import(
-                            /* webpackChunkName: 'UnionOp' */ 'jsts/org/locationtech/jts/operation/union/UnionOp.js'
-                        ),
-                        import(
-                            /* webpackChunkName: 'Polygonizer' */
-                            'jsts/org/locationtech/jts/operation/polygonize/Polygonizer.js'
-                        ),
-                        import(
-                            /* webpackChunkName: 'lineSplit' */ '@turf/line-split'
-                        ),
+                        import(/* webpackChunkName: 'OLparser' */ 'jsts/org/locationtech/jts/io/OL3Parser.js'),
+                        import(/* webpackChunkName: 'UnionOp' */ 'jsts/org/locationtech/jts/operation/union/UnionOp.js'),
+                        import(/* webpackChunkName: 'Polygonizer' */ 'jsts/org/locationtech/jts/operation/polygonize/Polygonizer.js'),
+                        import(/* webpackChunkName: 'lineSplit' */ '@turf/line-split'),
                     ]).then(([
                         { default: OLparser },
                         { default: UnionOp },
@@ -1039,83 +1155,90 @@ export class Digitizing {
                         { default: lineSplit }
                     ]) => {
                         const parser = new OLparser();
-                        parser.inject(
-                            Point,
-                            LineString,
-                            LinearRing,
-                            Polygon,
-                            MultiPoint,
-                            MultiLineString,
-                            MultiPolygon
-                        );
+                        parser.inject(Point, LineString, LinearRing, Polygon, MultiPoint, MultiLineString, MultiPolygon);
+                        const format = new GeoJSON();
 
-                        const lineGeometry = event.feature.getGeometry();
+                        const allSplitFeatures = [];
 
-                        // Remove line used for splitting
-                        this._drawSource.removeFeature(event.feature);
-
-                        for (const feature of this._drawSource.getFeatures()) {
-                            // Check if split line intersects with drawn feature
-                            if (!lineGeometry.intersectsExtent(feature.getGeometry().getExtent())) {
-                                continue;
-                            }
+                        for (const feature of featuresToSplit) {
                             const geomType = feature.getGeometry().getType();
-                            if ( geomType === 'Polygon') {
-                                // Convert the OpenLayers geometry to a JSTS geometry
-                                const jstsLine = parser.read(lineGeometry);
+                            const featureColor = feature.get('color') || this._drawColor;
+                            let newFeatures = null;
+
+                            if (geomType === 'Polygon') {
+                                const jstsLine = parser.read(splitLineGeom);
                                 const jstsDrawnGeom = parser.read(feature.getGeometry());
-
-                                // Perform union of Polygon and Line and use Polygonizer to split the polygon by line
-                                let union = UnionOp.union(jstsDrawnGeom.getExteriorRing(), jstsLine);
-                                let polygonizer = new Polygonizer();
-
-                                // Splitting polygon in two parts
+                                const union = UnionOp.union(jstsDrawnGeom.getExteriorRing(), jstsLine);
+                                const polygonizer = new Polygonizer();
                                 polygonizer.add(union);
-                                let polygons = polygonizer.getPolygons();
+                                const polygons = polygonizer.getPolygons();
 
-                                // This will execute only if polygon is successfully splitted into two parts
-                                if (polygons.array.length == 2) {
-                                    // Remove original polygon
-                                    this._drawSource.removeFeature(feature);
-
-                                    // Iterate through splitted polygons
-                                    polygons.array.forEach(geom => {
-                                        let splitted_polygon = new Feature({
-                                            geometry: new Polygon(parser.write(geom).getCoordinates())
-                                        });
-
-                                        // Add splitted polygon to vector layer
-                                        this._drawSource.addFeature(splitted_polygon);
-                                        this._selectInteraction.getFeatures().push(splitted_polygon);
+                                if (polygons.array.length >= 2) {
+                                    newFeatures = polygons.array.map(geom => {
+                                        const f = new Feature({ geometry: new Polygon(parser.write(geom).getCoordinates()) });
+                                        f.set('color', featureColor);
+                                        return f;
                                     });
-
-                                    this.isEdited = true;
                                 }
                             } else if (geomType === 'LineString') {
-                                const format = new GeoJSON();
-                                const turfDrawnFeature = format.writeFeatureObject(feature);
-                                const turfSplitterFeature = format.writeFeatureObject(event.feature);
-
-                                const split = lineSplit(turfDrawnFeature, turfSplitterFeature);
+                                const turfDrawn = format.writeFeatureObject(feature);
+                                const turfSplitter = format.writeFeatureObject(event.feature);
+                                const split = lineSplit(turfDrawn, turfSplitter);
 
                                 if (split.features.length > 1) {
-                                    // Remove original lineString
-                                    this._drawSource.removeFeature(feature);
-
-                                    split.features.forEach((feature) => {
-                                        let splitted_line = format.readFeature(feature);
-                                        this._drawSource.addFeature(splitted_line);
-                                        this._selectInteraction.getFeatures().push(splitted_line);
+                                    newFeatures = split.features.map(sf => {
+                                        const f = format.readFeature(sf);
+                                        f.set('color', featureColor);
+                                        return f;
                                     });
                                 }
-                                this.isEdited = true;
+                            }
+
+                            if (newFeatures && newFeatures.length > 1) {
+                                // Disable single-part constraint before adding multiple features
+                                // so the addfeature listener doesn't remove the first part
+                                // when the second is added.
+                                this._singlePartGeometry = false;
+                                // Remove original, add all split parts
+                                this._drawSource.removeFeature(feature);
+                                newFeatures.forEach(f => this._drawSource.addFeature(f));
+                                allSplitFeatures.push(...newFeatures);
                             }
                         }
+
+                        if (allSplitFeatures.length > 0) {
+                            // Multiple parts now exist — disable single part constraint
+                            this._singlePartGeometry = false;
+
+                            // Switch to edit mode and select all split features
+                            this.isEdited = true;
+                            allSplitFeatures.forEach(f => {
+                                this._selectInteraction.getFeatures().push(f);
+                            });
+
+                            this.isSplitting = false;
+                        }
+                        this._isOperationInProgress = false;
+                    }).catch(error => {
+                        console.error('Split operation failed:', error);
+                        this._isOperationInProgress = false;
                     });
                 });
                 this._map.addInteraction(this._splitInteraction);
+                this._disableDoubleClickZoom();
+                // Re-order snap interaction so it processes before the split Draw
+                if (mainLizmap.snapping) {
+                    mainLizmap.snapping.reorderSnapInteraction();
+                }
             } else {
+                this._isSplitting = false;
                 this._map.removeInteraction(this._splitInteraction);
+                if (this._splitSource) {
+                    this._splitSource.clear();
+                    this._splitSource = null;
+                }
+                this._enableDoubleClickZoom();
+                this._restoreEditionEditMode();
             }
 
             /**
@@ -1151,15 +1274,9 @@ export class Digitizing {
      */
     set isErasing(isErasing) {
         if (this._isErasing !== isErasing) {
-            this._isErasing = isErasing;
-
-            if (this._isErasing) {
-                // deactivate other tools
-                this.toolSelected = 'deactivate';
-                this.isEdited = false;
-                this.isRotate = false;
-                this.isScaling = false;
-                this.isSplitting = false;
+            if (isErasing) {
+                this._deactivateAllTools();
+                this._isErasing = true;
 
                 this._erasingCallBack = event => {
                     const features = this._map.getFeaturesAtPixel(event.pixel, {
@@ -1192,6 +1309,7 @@ export class Digitizing {
                          * }, 'digitizing.erase');
                          */
                         mainEventDispatcher.dispatch('digitizing.erase');
+                        mainEventDispatcher.dispatch('digitizing.geometryChanged');
                     }
                 };
 
@@ -1227,6 +1345,7 @@ export class Digitizing {
                  *     console.log('The digitizing erasing tool ends');
                  * }, 'digitizing.erasingEnds');
                  */
+                this._isErasing = false;
                 mainEventDispatcher.dispatch('digitizing.erasingEnds');
             }
         }
@@ -1267,51 +1386,11 @@ export class Digitizing {
     }
 
     /**
-     * Is the digitizing constraints panel visible or not
-     * @type {boolean}
-     */
-    get hasConstraintsPanelVisible() {
-        return this._hasMeasureVisible && ['line', 'polygon'].includes(this.toolSelected);
-    }
-
-    /**
      * Is the digitizing save tool active or not?
      * @type {boolean}
      */
     get isSaved() {
         return this._isSaved;
-    }
-
-    /**
-     * Get the distance constraint
-     * @type {number}
-     */
-    get distanceConstraint(){
-        return this._distanceConstraint;
-    }
-
-    /**
-     * Set the distance constraint
-     * @type {number}
-     */
-    set distanceConstraint(distanceConstraint){
-        this._distanceConstraint = parseFloat(distanceConstraint)
-    }
-
-    /**
-     * Get the angle constraint
-     * @type {number}
-     */
-    get angleConstraint(){
-        return this._angleConstraint;
-    }
-
-    /**
-     * Set the angle constraint
-     * @type {number}
-     */
-    set angleConstraint(angleConstraint){
-        this._angleConstraint = parseFloat(angleConstraint)
     }
 
     /**
@@ -1356,142 +1435,6 @@ export class Digitizing {
             type: 'digitizing.drawColor',
             color: this._drawColor,
         });
-    }
-
-    /**
-     * The constraints handler
-     * @private
-     * @param {*} coords   - the mouse coordinates
-     * @param {*} geom     - the geometry
-     * @param {*} geomType - the geometry type
-     * @returns {void}
-     */
-    _contraintsHandler(coords, geom, geomType) {
-        // Create geom if undefined
-        if (!geom) {
-            if (geomType === 'Polygon') {
-                geom = new Polygon(coords);
-            } else {
-                geom = new LineString(coords);
-            }
-        }
-
-        let _coords;
-
-        if (geomType === 'Polygon') {
-            // Handle first linearRing in polygon
-            // TODO: Polygons with holes are not handled yet
-            _coords = coords[0];
-        } else {
-            _coords = coords;
-        }
-
-        if (this._distanceConstraint || this._angleConstraint) {
-            // Clear previous visual constraint features
-            this._constraintLayer.getSource().clear();
-            // Display constraint layer
-            this._constraintLayer.setVisible(true);
-
-            // Last point drawn on click
-            const lastDrawnPointCoords = _coords[_coords.length - 2];
-            // Point under cursor
-            const cursorPointCoords = _coords[_coords.length - 1];
-
-            // Contraint where point will be drawn on click
-            let constrainedPointCoords = cursorPointCoords;
-
-            const mapProjection = this._map.getView().getProjection();
-
-            if (this._distanceConstraint) {
-                // Draw circle with distanceConstraint as radius
-                const circle = circular(
-                    transform(lastDrawnPointCoords, mapProjection, 'EPSG:4326'),
-                    this._distanceConstraint,
-                    128
-                );
-
-                constrainedPointCoords = transform(
-                    circle.getClosestPoint(
-                        transform(cursorPointCoords, mapProjection, 'EPSG:4326')
-                    ),
-                    'EPSG:4326',
-                    mapProjection,
-                );
-
-                // Draw visual constraint features
-                this._constraintLayer.getSource().addFeature(
-                    new Feature({
-                        geometry: circle.transform('EPSG:4326', mapProjection)
-                    })
-                );
-
-                if (!this._angleConstraint) {
-                    this._constraintLayer.getSource().addFeature(
-                        new Feature({
-                            geometry: new Point(constrainedPointCoords)
-                        })
-                    );
-                }
-            }
-
-            if (this._angleConstraint && _coords.length > 2) {
-                const constrainedAngleClockwise = new LineString([_coords[_coords.length - 3], lastDrawnPointCoords]);
-                const constrainedAngleAntiClockwise = constrainedAngleClockwise.clone();
-                // Rotate clockwise
-                constrainedAngleClockwise.rotate(-1 * this._angleConstraint * (Math.PI / 180.0), lastDrawnPointCoords);
-                const closestClockwise = constrainedAngleClockwise.getClosestPoint(cursorPointCoords);
-                // Rotate anticlockwise
-                constrainedAngleAntiClockwise.rotate(this._angleConstraint * (Math.PI / 180.0), lastDrawnPointCoords);
-                const closestAntiClockwise = constrainedAngleAntiClockwise.getClosestPoint(cursorPointCoords);
-
-                // Stretch lines
-                const scaleFactor = 50;
-                constrainedAngleClockwise.scale(scaleFactor, scaleFactor, lastDrawnPointCoords);
-                constrainedAngleAntiClockwise.scale(scaleFactor, scaleFactor, lastDrawnPointCoords);
-
-                this._constraintLayer.getSource().addFeatures([
-                    new Feature({
-                        geometry: constrainedAngleClockwise
-                    }),
-                    new Feature({
-                        geometry: constrainedAngleAntiClockwise
-                    })
-                ]);
-
-                let constrainedAngleLineString;
-
-                // Display clockwise or anticlockwise angle
-                // Closest from cursor is displayed
-                if (this.getProjectedLength(
-                    new LineString([closestClockwise, cursorPointCoords])
-                ) < this.getProjectedLength(
-                    new LineString([closestAntiClockwise, cursorPointCoords])
-                )) {
-                    constrainedAngleLineString = constrainedAngleClockwise.clone();
-                } else {
-                    constrainedAngleLineString = constrainedAngleAntiClockwise.clone();
-                }
-
-                if (this._distanceConstraint) {
-                    const ratio = this._distanceConstraint / this.getProjectedLength(constrainedAngleLineString);
-                    constrainedAngleLineString.scale(ratio, ratio, constrainedAngleLineString.getLastCoordinate());
-
-                    constrainedPointCoords = constrainedAngleLineString.getFirstCoordinate();
-                } else {
-                    constrainedPointCoords = constrainedAngleLineString.getClosestPoint(cursorPointCoords);
-                }
-
-            }
-            _coords[_coords.length - 1] = constrainedPointCoords;
-        }
-
-        if (geomType === 'Polygon') {
-            geom.setCoordinates([_coords]);
-        } else {
-            geom.setCoordinates(_coords);
-        }
-
-        return geom;
     }
 
     /**
@@ -1710,6 +1653,7 @@ export class Digitizing {
         }
         const color = this.featureDrawn[index].get('color') || this._drawColor;
         let opacityFactor = this.featureDrawn[index].get('mode') == 'textonly' ? 0 : 1;
+        let symbolizer;
         let strokeAndFill =
         `<Stroke>
             <SvgParameter name="stroke">${color}</SvgParameter>
@@ -1722,7 +1666,6 @@ export class Digitizing {
         </Fill>`;
 
         // We consider LINESTRING and POLYGON together currently
-        let symbolizer;
         if (this.featureDrawn[index].getGeometry().getType() === 'Point') {
             symbolizer =
             `<PointSymbolizer>
@@ -1894,6 +1837,45 @@ export class Digitizing {
          */
         mainEventDispatcher.dispatch('digitizing.erase.all');
         mainEventDispatcher.dispatch('digitizing.erase');
+        mainEventDispatcher.dispatch('digitizing.geometryChanged');
+    }
+
+    /**
+     * Get a feature as WKT in the given SRID
+     * @param {string|number} srid - Target SRID (e.g. 4326)
+     * @param {Feature} [feature] - Optional specific feature. Defaults to first drawn feature.
+     * @returns {string} WKT string or empty string if no features
+     */
+    getFeatureAsWKT(srid, feature) {
+        if (!feature) {
+            const features = this.featureDrawn;
+            if (!features || features.length === 0) return '';
+            feature = features[0];
+        }
+        const wktFormat = new WKT();
+        const geom = feature.getGeometry().clone();
+        geom.transform(this._map.getView().getProjection(), 'EPSG:' + srid);
+        return wktFormat.writeGeometry(geom);
+    }
+
+    /**
+     * Load a feature from WKT string and add it to the draw source
+     * @param {string} wktString - WKT geometry string
+     * @param {string|number} srid - Source SRID of the WKT
+     * @returns {Feature|null} The loaded feature or null
+     */
+    loadFeatureFromWKT(wktString, srid) {
+        if (!wktString) return null;
+        const wktFormat = new WKT();
+        const feature = wktFormat.readFeature(wktString, {
+            dataProjection: 'EPSG:' + srid,
+            featureProjection: this._map.getView().getProjection()
+        });
+        this.eraseAll();
+        feature.set('color', this._drawColor);
+        this._drawSource.addFeature(feature);
+        mainEventDispatcher.dispatch('digitizing.geometryChanged');
+        return feature;
     }
 
     /**
@@ -1922,10 +1904,18 @@ export class Digitizing {
                         });
                     }
                 }
-                localStorage.setItem(
-                    this._repoAndProjectString + '_' + this._context + '_drawLayer',
-                    JSON.stringify(savedFeatures),
-                );
+                try {
+                    localStorage.setItem(
+                        this._repoAndProjectString + '_' + this._context + '_drawLayer',
+                        JSON.stringify(savedFeatures),
+                    );
+                } catch (e) {
+                    if (e.name === 'QuotaExceededError') {
+                        this._lizmap3.addMessage(lizDict['digitizing.save.quota.error'] || 'Drawing storage quota exceeded', 'warning', true);
+                    } else {
+                        console.error('Failed to save drawing to localStorage:', e);
+                    }
+                }
             } else {
                 localStorage.removeItem(this._repoAndProjectString + '_' + this._context + '_drawLayer');
             }
@@ -1983,12 +1973,12 @@ export class Digitizing {
                 }
             } catch(json_error) {
                 // the saved data is an invalid JSON
-                console.log('`'+savedGeomJSON+'` is not a JSON!');
+                console.warn('`'+savedGeomJSON+'` is not a JSON!');
                 // the saved data could be a WKT from previous lizmap version
                 try {
                     const formatWKT = new WKT();
                     loadedFeatures = formatWKT.readFeatures(savedGeomJSON);
-                    console.log(loadedFeatures.length+' features read from WKT!');
+                    console.warn(loadedFeatures.length+' features read from WKT!');
                     // set color
                     for(const loadedFeature of loadedFeatures){
                         // init measure tooltip
@@ -2000,7 +1990,7 @@ export class Digitizing {
                         localStorage.removeItem(this._repoAndProjectString + '_' + this._context + '_drawLayer');
                     }
                 } catch(wkt_error) {
-                    console.log('`'+savedGeomJSON+'` is not a WKT!');
+                    console.warn('`'+savedGeomJSON+'` is not a WKT!');
                     console.error(json_error);
                     console.error(wkt_error);
                 }
@@ -2170,7 +2160,7 @@ export class Digitizing {
                         OL6features = features;
                     }
                 } catch (error) {
-                    this._lizmap3.addMessage(error, 'danger', true)
+                    this._lizmap3.addMessage(error.message || String(error), 'danger', true);
                 }
 
                 if (OL6features) {

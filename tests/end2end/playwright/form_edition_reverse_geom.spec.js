@@ -51,9 +51,13 @@ test.describe('Form edition reverse geom', function () {
         const editFeatureRequest = await editFeatureRequestPromise;
         responseExpect(await editFeatureRequest.response()).toBeTextPlain();
 
-        await expect(page.locator("#lizmap-edition-message")).toBeVisible();
-        await page.locator("#lizmap-edition-message .btn-close").click();
-        await expect(page.locator("#lizmap-edition-message")).toHaveCount(0);
+        // The "Edit vertices" toast that appears when an existing feature's
+        // edit form opens is now emitted by modules/Edition.js with the
+        // #lizmap-editing-message id. The legacy #lizmap-edition-message is
+        // still used for save / revert success messages further down.
+        await expect(page.locator("#lizmap-editing-message")).toBeVisible();
+        await page.locator("#lizmap-editing-message .btn-close").click();
+        await expect(page.locator("#lizmap-editing-message")).toHaveCount(0);
 
         await expect(page.locator('#edition')).toBeVisible();
         await expect(page.locator('#edition .edition-tabs')).toBeVisible();

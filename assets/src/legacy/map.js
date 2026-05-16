@@ -1649,6 +1649,21 @@ window.lizMap = function() {
             "layerSelectionChanged": function( evt ) {
                 refreshGetFeatureInfo(evt);
             },
+            "lizmapeditionfeaturecreated": function() {
+                // OL10 singleclick fires ~250ms after the draw click. If the
+                // edition form save completes inside that window the click
+                // guard against duplicated GFI requests is already lifted, so
+                // the next legitimate identify click is silently deduplicated.
+                // Clearing lastLonLatInfo here forces the next click to issue
+                // a fresh GetFeatureInfo request.
+                lastLonLatInfo = null;
+            },
+            "lizmapeditionfeaturemodified": function() {
+                lastLonLatInfo = null;
+            },
+            "lizmapeditionformclosed": function() {
+                lastLonLatInfo = null;
+            },
             "lizmapeditionfeaturedeleted": function( evt ) {
                 if ( $('div.lizmapPopupContent input.lizmap-popup-layer-feature-id').length > 1 ) {
                     refreshGetFeatureInfo(evt);

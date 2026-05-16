@@ -35,6 +35,12 @@
                     </div>
                 </div>
                 <div class="tab-pane" id="tabdigitization">
+                    <lizmap-digitizing
+                        context="edition"
+                        selected-tool="point"
+                        available-tools="point"
+                        measure
+                    ></lizmap-digitizing>
                     <div id="edition-geomtool-container" class="btn-group" data-toggle="buttons-radio"
                         style="display:none;">
                         <button id="edition-geomtool-nodetool" class="btn btn-sm"
@@ -57,27 +63,33 @@
                             data-bs-toggle="tooltip" data-bs-title="{@view~edition.geomtool.splitfeatures.title@}">
                             <i class="icon-none qgis_sprite mActionSplitFeatures"></i>
                         </button>
-                        <lizmap-reverse-geom class="btn btn-sm"
-                            data-bs-toggle="tooltip" data-bs-title="{@view~edition.geomtool.reversegeom.title@}">
-                        </lizmap-reverse-geom>
                     </div>
+<<<<<<< HEAD
+                    {* lizmap-reverse-geom lives outside the legacy
+                       #edition-geomtool-container so it stays visible after the
+                       OL10 migration hides the legacy buttons. *}
+                    <lizmap-reverse-geom class="btn btn-sm"
+                        data-bs-toggle="tooltip" data-bs-title="{@view~edition.geomtool.reversegeom.title@}">
+                    </lizmap-reverse-geom>
                     <button id="edition-geomtool-restart-drawing" class="btn btn-sm"
                         data-bs-toggle="tooltip" data-bs-title="{@view~edition.geomtool.restartdrawing.title@}">
                         <i class="icon-refresh"></i>
                     </button>
                     <lizmap-paste-geom data-bs-toggle="tooltip" data-bs-title="{@view~edition.geomtool.copypastegeom.title@}"></lizmap-paste-geom>
                     <lizmap-paste-stored-geom style="display:none;" data-bs-toggle="tooltip" data-bs-title="{@view~edition.geomtool.pastegeom.title@}"></lizmap-paste-stored-geom>
+=======
+>>>>>>> c0bbf8cf1 (Migrate edition Draw/Modify/Select from OL2 to OL10)
                     <form id="edition-point-coord-form" class="form-horizontal">
                         <fieldset>
                             <div id="edition-point-coord-form-group" class="jforms-table-group">
                                 <div id="handle-point-coord">
                                     <h3>{@view~edition.point.coord.title@}</h3>
-                                    <div class="form-group row g-0 mb-2">
-                                        <label class="jforms-label form-label col-auto" for="edition-point-coord-crs"
+                                    <div class="form-group row mb-3">
+                                        <label class="jforms-label form-label" for="edition-point-coord-crs"
                                             id="edition-point-coord-crs-label">{@view~edition.point.coord.crs.label@}</label>
-                                        <div class="controls col">
+                                        <div class="controls">
                                             <select name="coord-crs" id="edition-point-coord-crs"
-                                                class="jforms-ctrl-menulist form-select form-select-sm">
+                                                class="jforms-ctrl-menulist form-select">
                                                 <option value="4326" selected="selected"><span>EPSG:4326</span></option>
                                                 <option id="edition-point-coord-crs-layer" value="" style="display:none;">
                                                 </option>
@@ -86,47 +98,47 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="form-group row g-0 mb-2">
-                                        <label class="jforms-label form-label col-auto" for="edition-point-coord-x"
+                                    <div class="form-group row mb-3">
+                                        <label class="jforms-label form-label" for="edition-point-coord-x"
                                             id="edition-point-coord-x-label">{@view~edition.point.coord.x.label@}</label>
-                                        <div class="controls col">
+                                        <div class="controls">
                                             <input name="coord-x" id="edition-point-coord-x"
                                                 class="jforms-ctrl-input form-control form-control-sm" value="" type="text">
                                         </div>
                                     </div>
-                                    <div class="form-group row g-0 mb-2">
-                                        <label class="jforms-label form-label col-auto" for="edition-point-coord-y"
+                                    <div class="form-group row mb-3">
+                                        <label class="jforms-label form-label" for="edition-point-coord-y"
                                             id="edition-point-coord-y-label">{@view~edition.point.coord.y.label@}</label>
-                                        <div class="controls col">
+                                        <div class="controls">
                                             <input name="coord-y" id="edition-point-coord-y"
                                                 class="jforms-ctrl-input form-control form-control-sm" value="" type="text">
                                         </div>
                                     </div>
-                                    <div class="form-group row g-0 mb-2 hidden">
+                                    <div class="form-group row mb-3 hidden">
                                         <label
-                                            class="jforms-label form-label col-auto">{@view~edition.segment.length.label@}</label>
-                                        <div class="controls col">
+                                            class="jforms-label form-label">{@view~edition.segment.length.label@}</label>
+                                        <div class="controls">
                                             <label id="edition-segment-length"></label>
                                         </div>
                                     </div>
-                                    <div class="form-group row g-0 mb-2 hidden">
+                                    <div class="form-group row mb-3 hidden">
                                         <label
-                                            class="jforms-label form-label col-auto">{@view~edition.segment.angle.label@}</label>
-                                        <div class="controls col">
+                                            class="jforms-label form-label">{@view~edition.segment.angle.label@}</label>
+                                        <div class="controls">
                                             <label id="edition-segment-angle"></label>
                                         </div>
                                     </div>
-                                    <div class="form-group row g-0 mb-2">
-                                        <div class="controls col">
+                                    <div class="form-group row mb-3">
+                                        <div class="controls">
                                             <button name="submit" id="edition-point-coord-add"
                                                 class="btn btn-sm">{@view~edition.point.coord.add.label@}</button>
                                             <button name="submit" id="edition-point-coord-submit"
                                                 class="btn btn-sm">{@view~edition.point.coord.finalize.label@}</button>
                                         </div>
                                     </div>
-                                    <div class="form-group row g-0 mb-2" id="edition-point-coord-geolocation-group"
+                                    <div class="form-group row mb-3" id="edition-point-coord-geolocation-group"
                                         style="display:none;">
-                                        <div class="controls form-check col">
+                                        <div class="controls form-check">
                                             <label class="jforms-label checkbox form-check-label" for="edition-point-coord-geolocation"
                                                 id="edition-point-coord-geolocation-label">
                                                 <input name="checked" id="edition-point-coord-geolocation"

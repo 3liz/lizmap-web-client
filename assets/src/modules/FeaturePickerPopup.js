@@ -5,6 +5,12 @@
  * @license MPL-2.0
  */
 
+import { mainLizmap } from './Globals.js';
+import VectorLayer from 'ol/layer/Vector.js';
+import VectorSource from 'ol/source/Vector.js';
+import { Style, Fill, Stroke } from 'ol/style.js';
+import WKT from 'ol/format/WKT.js';
+
 /**
  * Popup for selecting features at a clicked position
  * @class
@@ -14,28 +20,29 @@ export default class FeaturePickerPopup {
         this._map = map;
         this._popup = null;
         this._features = [];
+        this._highlightSource = null;
         this._highlightLayer = null;
+        this._wktFormat = new WKT();
         this._createHighlightLayer();
     }
 
     /**
-     * Create OpenLayers layer for feature highlighting
+     * Create OL6 vector layer for feature highlighting
      */
     _createHighlightLayer() {
-        // Create temporary vector layer for highlighting
-        this._highlightLayer = new OpenLayers.Layer.Vector('FeaturePickerHighlight', {
-            displayInLayerSwitcher: false,
-            styleMap: new OpenLayers.StyleMap({
-                'default': new OpenLayers.Style({
-                    fillColor: '#ffaa00',
-                    fillOpacity: 0.3,
-                    strokeColor: '#ff6600',
-                    strokeWidth: 3,
-                    strokeOpacity: 0.8
-                })
-            })
+        this._highlightSource = new VectorSource();
+        this._highlightLayer = new VectorLayer({
+            source: this._highlightSource,
+            style: new Style({
+                fill: new Fill({ color: 'rgba(255, 170, 0, 0.3)' }),
+                stroke: new Stroke({ color: '#ff6600', width: 3, opacity: 0.8 })
+            }),
+            zIndex: 900,
+            displayInLayerSwitcher: false
         });
-        this._map.addLayer(this._highlightLayer);
+        if (mainLizmap?.map) {
+            mainLizmap.map.addLayer(this._highlightLayer);
+        }
     }
 
     /**
@@ -69,7 +76,9 @@ export default class FeaturePickerPopup {
                 minWidth: '250px',
                 maxWidth: '400px',
                 maxHeight: '300px',
-                overflow: 'auto'
+                overflow: 'auto',
+                // #map has pointer-events:none; override so clicks reach popup items
+                'pointer-events': 'auto'
             });
 
         // Add to map container
@@ -149,19 +158,26 @@ export default class FeaturePickerPopup {
     }
 
     /**
-     * Highlight a feature on the map
+     * Highlight a feature on the OL6 map
      * @param {number} index - Index of feature to highlight
      */
     _highlightFeature(index) {
         this._clearHighlight();
 
         const feature = this._features[index];
-        if (feature && feature.geometry) {
-            // Create OpenLayers feature for highlighting
-            const highlightFeature = new OpenLayers.Feature.Vector(
-                feature.geometry.clone()
-            );
-            this._highlightLayer.addFeatures([highlightFeature]);
+        if (!feature) return;
+
+        // Prefer WKT-based OL6 feature (set by GeometryCopyHandler)
+        if (feature.geometryWKT && this._highlightSource) {
+            try {
+                const ol6Feature = this._wktFormat.readFeature(feature.geometryWKT, {
+                    dataProjection: mainLizmap?.map?.getView()?.getProjection() ?? 'EPSG:3857',
+                    featureProjection: mainLizmap?.map?.getView()?.getProjection() ?? 'EPSG:3857'
+                });
+                this._highlightSource.addFeature(ol6Feature);
+            } catch {
+                // silently ignore parse errors
+            }
         }
     }
 
@@ -169,7 +185,9 @@ export default class FeaturePickerPopup {
      * Clear feature highlight
      */
     _clearHighlight() {
-        this._highlightLayer.removeAllFeatures();
+        if (this._highlightSource) {
+            this._highlightSource.clear();
+        }
     }
 
     /**
