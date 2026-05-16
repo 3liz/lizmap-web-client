@@ -19,6 +19,19 @@
   background-repeat:no-repeat
 }
 
+/* Icon-only buttons: the embedded sprite icon is a fixed size, so the button
+   must hug it instead of inheriting Bootstrap 5's text-button padding and 1.5
+   line-height (which made these buttons look oversized after the BS5 upgrade). */
+.btn:has(> [class^="icon-"]:only-child),
+.btn:has(> [class*=" icon-"]:only-child) {
+  --bs-btn-line-height: 1;
+  --bs-btn-padding-y: 0.25rem;
+  --bs-btn-padding-x: 0.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .icon-glass {
   background-position:0 0
 }
@@ -1880,6 +1893,16 @@ transform: none !important;
   padding-right:0.2em;
 }
 
+/* Space the draw button away from the layer selector above it. */
+#edition-creation #edition-draw {
+  margin-top: 6px;
+}
+
+/* Space the DXF export button away from the options above it. */
+lizmap-dxfexport .dxfexport-actions {
+  margin-top: 10px;
+}
+
 /* Right Dock */
 #right-dock {
   display: none;
@@ -3509,6 +3532,12 @@ img {
   height: 18px;
   background-size: auto 18px;
   background-position: -422px -5px;
+}
+
+/* Its icon is taller than the legacy icons in the neighbouring expand/collapse
+   buttons; trim the vertical padding so all three buttons share the same height. */
+#theme-selector .btn {
+  --bs-btn-padding-y: 0.125rem;
 }
 
 /* Geolocation */

@@ -226,7 +226,7 @@ var lizLayerFilterTool = function () {
                 html += '">';
                 var flabel = field_item.title;
                 html += '<span style="font-weight:bold;">' + flabel + '</span>';
-                html += '<button class="btn btn-primary btn-sm pull-right liz-filter-reset-field" title="' + lizDict['filter.btn.reset.title'] + '" value="' + field_item.order + '">x</button>';
+                html += '<button class="btn btn-primary btn-sm pull-right liz-filter-reset-field" title="' + lizDict['filter.btn.reset.title'] + '" value="' + field_item.order + '"><i class="icon-remove icon-white"></i></button>';
                 html += '<p>';
 
                 return html;
