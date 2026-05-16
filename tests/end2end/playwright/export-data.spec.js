@@ -359,7 +359,7 @@ test.describe('Export data @readonly', () => {
         const body = await getFeatureResponse?.json();
         expect(body).toHaveProperty('type', 'FeatureCollection');
         expect(body.features).toHaveLength(1);
-        expect(body.features[0]).toHaveProperty('id', tableName + '.2');
+        expect(body.features[0]).toHaveProperty('id', typeName + '.2');
     });
 });
 
