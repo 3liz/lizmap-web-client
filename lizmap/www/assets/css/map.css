@@ -22,11 +22,12 @@
 /* Icon-only buttons: the embedded sprite icon is a fixed size, so the button
    must hug it instead of inheriting Bootstrap 5's text-button padding and 1.5
    line-height (which made these buttons look oversized after the BS5 upgrade). */
-.btn:has(> [class^="icon-"]:only-child),
-.btn:has(> [class*=" icon-"]:only-child) {
+.btn:not(.hide):has(> [class^="icon-"]:only-child),
+.btn:not(.hide):has(> [class*=" icon-"]:only-child) {
   --bs-btn-line-height: 1;
   --bs-btn-padding-y: 0.25rem;
   --bs-btn-padding-x: 0.25rem;
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
