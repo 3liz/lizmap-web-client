@@ -3519,17 +3519,15 @@ lizmap-geolocation .geolocation-infos {
     margin-top: 5px;
 }
 
-lizmap-geolocation .input-append{
+lizmap-geolocation .bind-group{
   vertical-align: top;
 }
 
-lizmap-geolocation .input-mini{
-  width: 32px;
-  height: 16px;
+lizmap-geolocation .bind-group .form-control.form-control-sm.bind-control{
+  width: 64px;
 }
 
-lizmap-geolocation .input-prepend .add-on{
-  height: 16px;
+lizmap-geolocation .bind-text{
   line-height: 16px;
 }
 
@@ -4165,7 +4163,7 @@ div.lizmap-features-table.popup-displayed > table.lizmap-features-table-containe
     color: var(--color-contrasted-elements);
     width: 25px;
     height: 25px;
-  
+
     &:hover, &:focus, &:active {
       background-position: center;
     }
@@ -4173,7 +4171,7 @@ div.lizmap-features-table.popup-displayed > table.lizmap-features-table-containe
 
 .lizmap-gpl-container button.gpl-prev-popup {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpath d='M10.8284 12.0007L15.7782 16.9504L14.364 18.3646L8 12.0007L14.364 5.63672L15.7782 7.05093L10.8284 12.0007Z'%3E%3C/path%3E%3C/svg%3E");
-    
+
     &.first {
         display: none;
       }
@@ -4181,7 +4179,7 @@ div.lizmap-features-table.popup-displayed > table.lizmap-features-table-containe
 
 .lizmap-gpl-container button.gpl-next-popup {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor'%3E%3Cpath d='M13.1717 12.0007L8.22192 7.05093L9.63614 5.63672L16.0001 12.0007L9.63614 18.3646L8.22192 16.9504L13.1717 12.0007Z'%3E%3C/path%3E%3C/svg%3E");
-    
+
     &.last {
         display: none;
       }
@@ -4273,4 +4271,3 @@ These lines will be removed in the future, when the minimum target version will 
 #permalink-history i {
     cursor:pointer;
 }
-

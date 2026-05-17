@@ -418,6 +418,18 @@ export class ProjectPage extends BasePage {
      * Waits for a permalink get request
      * @returns {Promise<Request>} The permalink request
      */
+    async waitForGetMediaRequest() {
+        return this.page.waitForRequest(
+            request => request.method() === 'GET' &&
+            request.url().includes('/media/getMedia') === true &&
+            request.url().includes('path') === true
+        );
+    }
+
+    /**
+     * Waits for a permalink get request
+     * @returns {Promise<Request>} The permalink request
+     */
     async waitForPermalinkGetRequest() {
         return this.page.waitForRequest(
             request => request.method() === 'GET' &&
