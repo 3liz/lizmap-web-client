@@ -250,4 +250,60 @@ test.describe('Geolocation @readonly', () => {
         expect(osmTiles[5]).toMatch(/\/19\/\d{6}\/\d{6}\.png/);
         */
     });
+
+    test('Geolocation error', async ({ page }) => {
+        //const project = new ProjectPage(page, 'geolocation');
+        //const screenshotClip = {x:850/2-380/2, y:700/2-380/2, width:380, height:380};
+
+        // Wait for request and response
+        while (osmTiles.length < 12) {
+            await page.waitForResponse('https://tile.openstreetmap.org/*/*/*.png', { timeout: 10000 });
+        }
+
+        // Grant geolocation permission and set geolocation
+        page.context().grantPermissions(['geolocation']);
+        page.context().setGeolocation({
+            latitude: 43.6214338643574,
+            longitude: 3.84280215159599,
+            accuracy: 1000,
+        });
+
+        const geolocationButton = page.locator('#button-geolocation');
+        await geolocationButton.click();
+
+        // Catch osm tile
+        /** @type {string[]} */
+        osmTiles = [];
+
+        // Start geolocation
+        const geolocationDock = page.locator('#geolocation');
+        const geolocationDockButtonBar = geolocationDock.locator('.button-bar');
+        await geolocationDockButtonBar.getByRole('button', { name: 'Start', exact: true }).click();
+
+        // check dock
+        await expect(geolocationDockButtonBar.getByRole('button', { name: 'Start', exact: true })).toHaveCount(0);
+        await expect(geolocationDockButtonBar.getByRole('button', { name: 'Stop', exact: true })).toHaveCount(1);
+
+        // Check scale
+        await expect(page.locator('#overview-bar .ol-scale-text')).toHaveText('1 : ' + (25000).toLocaleString(locale));
+
+        // Wait for request and response
+        while (osmTiles.length < 6) {
+            await page.waitForResponse('https://tile.openstreetmap.org/*/*/*.png', { timeout: 10000 });
+        }
+
+        // Check that we catch 6 tiles
+        expect(osmTiles.length).toBeGreaterThanOrEqual(6);
+
+        // Geolocation error
+        page.context().setGeolocation(null);
+
+        // Check messgae
+        await expect(page.locator("#message")).toBeVisible();
+        await expect(page.locator("#message > div")).toHaveClass(/alert-danger/);
+
+        // check dock
+        await expect(geolocationDockButtonBar.getByRole('button', { name: 'Stop', exact: true })).toHaveCount(0);
+        await expect(geolocationDockButtonBar.getByRole('button', { name: 'Start', exact: true })).toHaveCount(1);
+    });
 });
