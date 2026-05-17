@@ -16,6 +16,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * **[Syndicat Mixte de Gestion de l'eau potable d'Ille-et-Vilaine](https://www.eau35.fr/)**
 * **[Faunalia](https://www.faunalia.eu/fr)** with @mind84
 * **[Klein und Leber GbR](https://www.gisgeometer.de/)** with @meyerlor
+* **[Terre De Provence Agglomération](https://www.terredeprovence-agglo.com/)**
 
 ### Security
 
@@ -41,6 +42,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Filter - JS request_params not yet defined for layer
 * Map - WMS baselayers from QGIS layers now proxy through QGIS Server
 * UI - Popup: place children features tables inside drag-and-drop relation
+* UI - Geolocation error
 
 ### Tests
 
