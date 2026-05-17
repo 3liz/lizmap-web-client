@@ -128,6 +128,28 @@ class filterDatasource
         return $q;
     }
 
+    /**
+     * Check whether a SQL function is available on the SQLite/SpatiaLite connection.
+     *
+     * @param string $functionName the function name to look up (case-insensitive)
+     *
+     * @return bool true if available, or if availability cannot be determined
+     */
+    private function sqliteFunctionExists($functionName)
+    {
+        try {
+            $sql = 'SELECT count(*) AS c FROM pragma_function_list';
+            $sql .= ' WHERE lower(name) = '.$this->cnx->quote(strtolower($functionName));
+            $res = $this->cnx->query($sql)->fetch();
+
+            return $res && (int) $res->c > 0;
+        } catch (Exception $e) {
+            // pragma_function_list unavailable: assume the function exists
+            // and let the caller attempt the query as before.
+            return true;
+        }
+    }
+
     public function getFeatureCount($filter = null)
     {
 
@@ -379,6 +401,19 @@ class filterDatasource
             $st = '';
             // Provider OGR means GeoPackage: needs to convert geometry
             if ($this->provider == 'ogr' and preg_match('#gpkg$#', $this->datasource->dbname)) {
+                // Decoding GeoPackage geometry blobs requires SpatiaLite built
+                // with GeoPackage support (GeomFromGPB). When it is missing,
+                // skip the filtered-extent query instead of flooding the logs
+                // with "no such function: GeomFromGPB" errors (#6165).
+                if (!$this->sqliteFunctionExists('GeomFromGPB')) {
+                    $this->errors = array(
+                        'status' => 'error',
+                        'title' => 'Filtered extent not available',
+                        'detail' => 'SpatiaLite has no GeoPackage support (GeomFromGPB)',
+                    );
+
+                    return $this->errors;
+                }
                 $geom = 'GeomFromGPB('.$geom.')';
             }
         }
