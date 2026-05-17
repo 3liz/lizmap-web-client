@@ -287,6 +287,7 @@ class filterDatasource
                 $sql .= ' SELECT cat AS v, sum(nb) AS c';
                 $sql .= ' FROM source';
                 $sql .= ' GROUP BY cat';
+                $sql .= ' HAVING sum(nb) > 0';
                 $sql .= ' ORDER BY v';
             }
         }
