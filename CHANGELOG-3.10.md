@@ -50,6 +50,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 ### Tests
 
 * e2e snap edition: Enhance Snap panel functionalities
+* e2e: form filter - test deactivate-all button and per-layer unfilter icon in legend panel (#1551)
 
 ### Backend
 
