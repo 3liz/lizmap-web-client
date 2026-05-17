@@ -330,6 +330,10 @@ var lizLayerFilterTool = function () {
                         dateFormat: 'yy-mm-dd',
                         changeMonth: true,
                         changeYear: true,
+                        // Cover the whole data span: the default yearRange is
+                        // 'c-10:c+10' around the displayed year, which hides years
+                        // outside that window until one is picked (#6548).
+                        yearRange: new Date(feat['min']).getFullYear() + ':' + new Date(feat['max']).getFullYear(),
                         minDate: new Date(feat['min']),
                         maxDate: new Date(feat['max'])
                     });
