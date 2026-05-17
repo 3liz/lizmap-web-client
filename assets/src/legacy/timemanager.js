@@ -51,6 +51,8 @@ var lizTimemanager = function() {
             $("#tmSlider").slider( );
 
             var filter = null;
+            // Layer filters present before the time manager took control (#6773)
+            var tmBaseFilters = {};
             var tmAnimationTimer;
             var tmCurrentDate;
             var tmStartDate = -Infinity; // lower bound of when values
@@ -70,6 +72,14 @@ var lizTimemanager = function() {
              *
              */
             function activateTimemanager(){
+
+                // Remember any filter already applied to the time-managed
+                // layers (e.g. from the form filter panel), so the time
+                // filter is combined with it instead of replacing it (#6773)
+                tmBaseFilters = {};
+                for (var bl in config.timemanagerLayers) {
+                    tmBaseFilters[bl] = getLayerBaseFilter(bl);
+                }
 
                 // hourglass
                 //$('#loading').dialog('open');
@@ -329,6 +339,37 @@ var lizTimemanager = function() {
 
 
             /**
+             * Get the WMS-safe expression filter currently applied to a layer,
+             * without the WMS layer-name prefix. Returns null when none (#6773).
+             *
+             * The full filter method stores a WMS-safe filter (built from the
+             * primary key) in request_params.filter, prefixed with the WMS
+             * layer name; exp_filter may instead hold a '$id ...' expression
+             * which QGIS Server rejects, so it must not be reused as-is.
+             * @param layerName
+             */
+            function getLayerBaseFilter(layerName){
+                var lConfig = config.layers[layerName];
+                if( !lConfig || !lConfig['request_params'] ){
+                    return null;
+                }
+                var rp = lConfig['request_params'];
+                if( rp['filter'] ){
+                    var wmsName = lConfig['shortname'] || lConfig['name'];
+                    if( wmsName && rp['filter'].indexOf(wmsName + ':') === 0 ){
+                        return rp['filter'].substring(wmsName.length + 1);
+                    }
+                    return rp['filter'];
+                }
+                // Simple filter method: exp_filter is a clean expression.
+                // Skip it if it relies on '$id' (not allowed by QGIS Server).
+                if( rp['exp_filter'] && rp['exp_filter'].indexOf('$id') === -1 ){
+                    return rp['exp_filter'];
+                }
+                return null;
+            }
+
+            /**
              *
              * @param lowerBoundary
              * @param upperBoundary
@@ -341,8 +382,17 @@ var lizTimemanager = function() {
 
                 // Set filter for each vector layer
                 for (var l in config.timemanagerLayers){
-                    filter = buildDateFilter(config.timemanagerLayers[l], lowerBoundary, upperBoundary);
-                    lizMap.triggerLayerFilter(l, filter);
+                    var dateFilter = buildDateFilter(config.timemanagerLayers[l], lowerBoundary, upperBoundary);
+                    // Combine the time filter with any filter already on the
+                    // layer (e.g. from the form filter panel) so both apply (#6773)
+                    var baseFilter = tmBaseFilters[l] || null;
+                    var layerFilter;
+                    if (baseFilter && dateFilter) {
+                        layerFilter = '( ' + baseFilter + ' ) AND ( ' + dateFilter + ' )';
+                    } else {
+                        layerFilter = dateFilter || baseFilter;
+                    }
+                    lizMap.triggerLayerFilter(l, layerFilter);
                 }
             }
 
@@ -504,19 +554,26 @@ var lizTimemanager = function() {
              *
              */
             function unFilterTimeLayers() {
-                // Remove filter
+                // Remove the time filter; restore any filter the layer had
+                // before the time manager took control (#6773)
                 for(var layerName in lizMap.config.timemanagerLayers){
-                    lizMap.deactivateMaplayerFilter(layerName);
-                    // Refresh plots and popups
-                    lizMap.config.layers[layerName]['request_params']['filtertoken'] = null;
-                    lizMap.events.triggerEvent("layerFilterParamChanged",
-                        {
-                            'featureType': layerName,
-                            'filter': null,
-                            'updateDrawing': false
-                        }
-                    );
+                    var baseFilter = tmBaseFilters[layerName] || null;
+                    if (baseFilter) {
+                        lizMap.triggerLayerFilter(layerName, baseFilter);
+                    } else {
+                        lizMap.deactivateMaplayerFilter(layerName);
+                        // Refresh plots and popups
+                        lizMap.config.layers[layerName]['request_params']['filtertoken'] = null;
+                        lizMap.events.triggerEvent("layerFilterParamChanged",
+                            {
+                                'featureType': layerName,
+                                'filter': null,
+                                'updateDrawing': false
+                            }
+                        );
+                    }
                 }
+                tmBaseFilters = {};
             }
 
             /**
