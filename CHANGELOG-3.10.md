@@ -21,6 +21,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Rely on attributeEditorRelation cardinality to display many to many relations
 * Short link permalink functionality
 * Edition - Support QGIS dynamic default-value expressions in edit forms, including geometry-based (`$x`, `$y`, `$area`, `$length`, `$geometry`) and field-referencing expressions (e.g. `"firstname" || ' ' || "lastname"`). Defaults are re-evaluated when the geometry is drawn/edited and when a referenced field changes, honoring QGIS's `applyOnUpdate` flag.
+* UI - Auto-activate box selection when opening the selection tool
 
 ### Security
 
@@ -41,6 +42,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * PHP - QgisProject: Checking that getLayerById returns null
 * Filter - JS request_params not yet defined for layer
 * Map - WMS baselayers from QGIS layers now proxy through QGIS Server
+* Popup - Place children features tables inside drag-and-drop relation placeholders
+* Print - Respect cfg layout order in print panel
 
 ### Tests
 
