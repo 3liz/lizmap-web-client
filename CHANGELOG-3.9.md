@@ -46,6 +46,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Attribute table - export with filter
 * Filter - Hide the form filter panel export button when the user is not allowed to export the layer (#6642)
 * Filter - Date filter calendar now shows all years within the data range (#6548)
+* Filter - Skip the GeoPackage filtered-extent query when SpatiaLite lacks GeoPackage support, instead of flooding the logs (#6165)
 
 ### Tests
 
