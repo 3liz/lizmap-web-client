@@ -112,7 +112,15 @@ export default class Geolocation {
 
         // Handle geolocation error
         this._geolocation.on('error', error => {
+            if (this.isBind) {
+                this.toggleBind();
+            }
+            if (this.isTracking ) {
+                this.toggleTracking();
+            }
+            // Display error message
             this._lizmap3.addMessage(error.message, 'danger', true);
+            mainEventDispatcher.dispatch('geolocation.error');
         });
     }
 
