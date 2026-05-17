@@ -44,6 +44,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Map - WMS baselayers from QGIS layers now proxy through QGIS Server
 * Popup - Place children features tables inside drag-and-drop relation placeholders
 * Print - Respect cfg layout order in print panel
+* Filter - The "deactivate filter" button now clears filters on all filtered layers, not only the last one (#1551)
 
 ### Tests
 
