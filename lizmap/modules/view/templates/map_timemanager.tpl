@@ -8,6 +8,7 @@
         </span>
     </h3>
     <div class="menu-content">
+        <div id="tmLayers" class="dock-subtitle"></div>
         <div id="tmSlider"></div>
         <div>
             <span id="tmCurrentValue"></span><span> - </span><span id="tmNextValue"></span><br/>
@@ -15,6 +16,5 @@
             <button id="tmTogglePlay" class="btn-print-launch btn btn-sm btn-primary">{@view~map.timemanager.toolbar.play@}</button>
             <button id="tmNext" class="btn-print-launch btn btn-sm btn-primary">{@view~map.timemanager.toolbar.next@}</button>
         </div>
-        <div id="tmLayers"></div>
     </div>
 </div>
