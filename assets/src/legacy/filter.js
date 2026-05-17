@@ -138,6 +138,13 @@ var lizLayerFilterTool = function () {
                 var layerName = getConfig[0];
                 globalThis['filterConfigData'].layerName = layerName;
 
+                // Only show the export button when the user is allowed to export this layer.
+                // Permission is computed server-side into attributeLayers.export_enabled (see #6642).
+                var layerExportEnabled = ('attributeLayers' in lizMap.config)
+                    && (layerName in lizMap.config.attributeLayers)
+                    && lizMap.config.attributeLayers[layerName].export_enabled == 'True';
+                $('#liz-filter-export').toggle(!!layerExportEnabled);
+
                 // Remove previous field inputs
                 $('div.liz-filter-field-box').remove();
 
