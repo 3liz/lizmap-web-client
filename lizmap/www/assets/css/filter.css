@@ -73,6 +73,13 @@ ul.ui-autocomplete.ui-menu {
 
 
 /*
+form filter: keep the reset button clear of the field title
+*/
+button.liz-filter-reset-field {
+  margin-left: 8px;
+}
+
+/*
 form filter: restrict the height of the combo box list filter view
 */
 div.liz-filter-field-box p {
@@ -81,6 +88,7 @@ div.liz-filter-field-box p {
   overflow-y: scroll;
   padding-left: 5px;
   clear: both;
+  margin-top: 8px;
 }
 
 div.liz-filter-field-box p label {
