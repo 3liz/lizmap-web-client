@@ -25,6 +25,16 @@ var lizTimemanager = function() {
             // Count layers
             tmLayersNumber = Object.keys(lizMap.config.timemanagerLayers).length;
 
+            // Display the layer(s) controlled by the time manager (#6774)
+            var tmLayerTitles = [];
+            for (var tmLayerName in lizMap.config.timemanagerLayers) {
+                var tmLayerConf = lizMap.config.layers[tmLayerName];
+                tmLayerTitles.push(
+                    (tmLayerConf && tmLayerConf.title) ? tmLayerConf.title : tmLayerName
+                );
+            }
+            $('#tmLayers').text(tmLayerTitles.join(', '));
+
             $('#timemanager-menu button.btn-timemanager-clear').click(function() {
                 $('#button-timemanager').click();
             });
