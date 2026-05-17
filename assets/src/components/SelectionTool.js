@@ -162,14 +162,14 @@ export default class SelectionTool extends HTMLElement {
                     ></lizmap-digitizing>
                 <div class="selectiontool-buffer">
                     <label><span>${lizDict['selectiontool.toolbar.buffer']}</span>
-                        <div class="input-append">
+                        <div class="input-group input-group-sm">
                             <input
                                 type="number"
                                 min="0"
-                                class="form-control form-control-sm"
+                                class="form-control"
                                 .value="${mainLizmap.selectionTool.bufferValue}"
                                 @input=${(event) => mainLizmap.selectionTool.bufferValue = parseInt(event.target.value)}
-                                ><span class="add-on">m</span>
+                                ><span class="input-group-text">m</span>
                         </div>
                     </label>
                 </div>
