@@ -22,6 +22,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Short link permalink functionality
 * Edition - Support QGIS dynamic default-value expressions in edit forms, including geometry-based (`$x`, `$y`, `$area`, `$length`, `$geometry`) and field-referencing expressions (e.g. `"firstname" || ' ' || "lastname"`). Defaults are re-evaluated when the geometry is drawn/edited and when a referenced field changes, honoring QGIS's `applyOnUpdate` flag.
 * UI - Auto-activate box selection when opening the selection tool
+* Filter - Per-layer filter-removal button next to each filtered layer in the legend (#1551)
 
 ### Security
 
