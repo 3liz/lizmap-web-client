@@ -43,6 +43,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Map - WMS baselayers from QGIS layers now proxy through QGIS Server
 * UI - Popup: place children features tables inside drag-and-drop relation
 * UI - Geolocation error
+* Filter - Hide the form filter panel export button when the user is not allowed to export the layer (#6642)
 
 ### Tests
 
