@@ -43,6 +43,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Map - WMS baselayers from QGIS layers now proxy through QGIS Server
 * UI - Popup: place children features tables inside drag-and-drop relation
 * UI - Geolocation error
+* Filter - Skip the GeoPackage filtered-extent query when SpatiaLite lacks GeoPackage support, instead of flooding the logs (#6165)
 
 ### Tests
 
