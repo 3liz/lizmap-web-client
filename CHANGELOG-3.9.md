@@ -49,6 +49,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Filter - Skip the GeoPackage filtered-extent query when SpatiaLite lacks GeoPackage support, instead of flooding the logs (#6165)
 * Filter - No longer show a spurious (NULL) entry in split-value form filters without NULL data (#6166)
 * Filter - Numeric form filter now accepts decimal/float values, not only integers (#1356)
+* Time manager - Show the controlled layer(s) name in the time manager panel (#6774)
 
 ### Tests
 
