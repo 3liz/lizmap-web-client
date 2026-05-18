@@ -45,6 +45,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * UI - Geolocation error
 * Attribute table - export with filter
 * Filter - Hide the form filter panel export button when the user is not allowed to export the layer (#6642)
+* Filter - Date filter calendar now shows all years within the data range (#6548)
 
 ### Tests
 
