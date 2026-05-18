@@ -122,6 +122,10 @@ export default class Treeview extends HTMLElement {
                     <img class="legend" src="${layer.icon}">
                     <label for="node-${layer.name}" >${layer.layerConfig.title}</label>
                     <div class="layer-actions">
+                        ${layer.isFiltered
+                            ? html`<i class="icon-filter" title="${lizDict['tree.button.removeFilter']}" @click=${() => this._removeLayerFilter(layer)}></i>`
+                            : ''
+                        }
                         <a href="${this._createDocLink(layer.name)}" target="_blank" title="${lizDict['tree.button.link']}">
                             <i class="icon-share"></i>
                         </a>
@@ -337,5 +341,11 @@ export default class Treeview extends HTMLElement {
         if (! confirm(lizDict['tree.button.removeCache.confirmation'])){
             event.preventDefault();
         }
+    }
+
+    _removeLayerFilter(layer) {
+        lizMap.events.triggerEvent('layerfeatureremovefilter',
+            { 'featureType': layer.name }
+        );
     }
 }

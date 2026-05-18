@@ -3,6 +3,12 @@ import { test, expect } from '@playwright/test';
 import { ProjectPage } from './pages/project';
 import { getEchoRequestParams } from './globals';
 
+/**
+ * Layer name as used in the treeview data-testid attribute
+ * @type {string}
+ */
+const LAYER_NAME = 'form filter (à)';
+
 test.describe('Form filter', () => {
     test.beforeEach(async ({ page }) => {
         const project = new ProjectPage(page, 'form_filter');
@@ -98,5 +104,62 @@ test.describe('Form filter', () => {
         await page.locator('#liz-filter-field-textautocomplete').fill('mon');
         await expect(page.locator('#ui-id-2 .ui-menu-item')).toHaveCount(1);
         await expect(page.locator('#ui-id-2 .ui-menu-item div')).toHaveText('monuments');
+    });
+});
+
+test.describe('Form filter - Legend panel interactions', () => {
+    test.beforeEach(async ({ page }) => {
+        const project = new ProjectPage(page, 'form_filter');
+        await project.open();
+        // Open the form filter panel
+        await page.locator('#button-filter').click();
+    });
+
+    test('Deactivate all filters button in legend panel clears the active filter', async ({ page }) => {
+        // Apply a filter via the form filter panel
+        const getMapPromise = page.waitForRequest(/GetMap/);
+        await page.locator('#liz-filter-field-test_filter').selectOption('_uvres_d_art_et_monuments_de_l_espace_urbain');
+        await getMapPromise;
+
+        // Switch to the layer panel (switcher) — opening the filter panel hid it
+        await page.locator('#button-switcher').click();
+
+        // The "deactivate all filters" button in the layer legend panel must be visible
+        await expect(page.locator('#layerActionUnfilter')).toBeVisible();
+
+        // The layer node in the treeview must have the 'filtered' class
+        await expect(page.getByTestId(LAYER_NAME).locator('.node')).toContainClass('filtered');
+
+        // Click the deactivate-all button in the legend panel
+        const getMapAfterUnfilter = page.waitForRequest(/GetMap/);
+        await page.locator('#layerActionUnfilter').click();
+        await getMapAfterUnfilter;
+
+        // The button must be hidden and the 'filtered' class must be removed
+        await expect(page.locator('#layerActionUnfilter')).not.toBeVisible();
+        await expect(page.getByTestId(LAYER_NAME).locator('.node')).not.toContainClass('filtered');
+    });
+
+    test('Per-layer filter icon in legend removes the filter for that layer', async ({ page }) => {
+        // Apply a filter via the form filter panel
+        const getMapPromise = page.waitForRequest(/GetMap/);
+        await page.locator('#liz-filter-field-test_filter').selectOption('_uvres_d_art_et_monuments_de_l_espace_urbain');
+        await getMapPromise;
+
+        // Switch to the layer panel (switcher) — opening the filter panel hid it
+        await page.locator('#button-switcher').click();
+
+        // The per-layer icon-filter button must be visible inside the treeview node
+        await expect(page.getByTestId(LAYER_NAME).locator('.icon-filter')).toBeVisible();
+
+        // Click the per-layer icon-filter to remove the filter for that layer only
+        const getMapAfterUnfilter = page.waitForRequest(/GetMap/);
+        await page.getByTestId(LAYER_NAME).locator('.icon-filter').click();
+        await getMapAfterUnfilter;
+
+        // Filter must be gone: 'filtered' class removed, icon hidden, global button hidden
+        await expect(page.getByTestId(LAYER_NAME).locator('.node')).not.toContainClass('filtered');
+        await expect(page.getByTestId(LAYER_NAME).locator('.icon-filter')).not.toBeVisible();
+        await expect(page.locator('#layerActionUnfilter')).not.toBeVisible();
     });
 });
