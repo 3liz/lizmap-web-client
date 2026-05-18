@@ -48,6 +48,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Filter - Date filter calendar now shows all years within the data range (#6548)
 * Filter - Skip the GeoPackage filtered-extent query when SpatiaLite lacks GeoPackage support, instead of flooding the logs (#6165)
 * Filter - No longer show a spurious (NULL) entry in split-value form filters without NULL data (#6166)
+* Filter - Numeric form filter now accepts decimal/float values, not only integers (#1356)
 
 ### Tests
 

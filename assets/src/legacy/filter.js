@@ -380,8 +380,9 @@ var lizLayerFilterTool = function () {
                     var html = '';
                     html += getFormFieldHeader(field_item);
                     html += '<span style="white-space:nowrap">';
-                    html += '<input id="liz-filter-field-min-numeric' + lizMap.cleanName(field_item.title) + '" type="number" value="' + field_item['min'] + '" step="' + 1 + '" min="' + field_item['min'] + '" max="' + field_item['max'] + '" class="liz-filter-field-numeric" style="width:100px;">';
-                    html += '<input id="liz-filter-field-max-numeric' + lizMap.cleanName(field_item.title) + '" type="number" value="' + field_item['max'] + '" step="' + field_item['step'] + '" min="' + field_item['min'] + '" max="' + field_item['max'] + '" class="liz-filter-field-numeric" style="width:100px;">';
+                    // step="any" so decimal/float fields are not limited to integers (#1356)
+                    html += '<input id="liz-filter-field-min-numeric' + lizMap.cleanName(field_item.title) + '" type="number" value="' + field_item['min'] + '" step="any" min="' + field_item['min'] + '" max="' + field_item['max'] + '" class="liz-filter-field-numeric" style="width:100px;">';
+                    html += '<input id="liz-filter-field-max-numeric' + lizMap.cleanName(field_item.title) + '" type="number" value="' + field_item['max'] + '" step="any" min="' + field_item['min'] + '" max="' + field_item['max'] + '" class="liz-filter-field-numeric" style="width:100px;">';
                     html += '</span>';
 
                     html += '<div id="liz-filter-numeric-range' + lizMap.cleanName(field_item.title) + '">';
@@ -1318,6 +1319,14 @@ var lizLayerFilterTool = function () {
                         var min_val = field_item['min'];
                         var max_val = field_item['max'];
 
+                        // Use a fractional slider step for decimal/float fields
+                        // so the slider is not limited to integer values (#1356).
+                        var slider_step = 1;
+                        if (!Number.isInteger(min_val) || !Number.isInteger(max_val)) {
+                            var slider_range = max_val - min_val;
+                            slider_step = slider_range > 0 ? slider_range / 1000 : 1;
+                        }
+
                         // Add a function which will use a timeout
                         // to prevent too heavy load on server
                         // when using setFormFieldFilter
@@ -1345,7 +1354,7 @@ var lizLayerFilterTool = function () {
                             range: true,
                             min: min_val,
                             max: max_val,
-                            step: 1,
+                            step: slider_step,
                             values: [min_val, max_val],
                             change: function (e, ui) {
                                 onNumericChange(e, ui);
