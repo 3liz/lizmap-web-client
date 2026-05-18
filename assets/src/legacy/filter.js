@@ -138,6 +138,19 @@ var lizLayerFilterTool = function () {
                 var layerName = getConfig[0];
                 globalThis['filterConfigData'].layerName = layerName;
 
+                // Restore the filter currently applied to this layer, so switching
+                // layers in the selector keeps each layer's own filter (#6772).
+                var currentLayerFilter = [];
+                for (var fOrder in globalThis['filterConfig']) {
+                    var fItem = globalThis['filterConfig'][fOrder];
+                    if ('title' in fItem && fItem['filter'] && fItem.layerId == layerId) {
+                        currentLayerFilter.push(fItem['filter']);
+                    }
+                }
+                globalThis['filterConfigData'].filter = currentLayerFilter.length
+                    ? currentLayerFilter.join(' AND ')
+                    : undefined;
+
                 // Remove previous field inputs
                 $('div.liz-filter-field-box').remove();
 
@@ -147,14 +160,14 @@ var lizLayerFilterTool = function () {
                 // Limit dock size
                 adaptLayerFilterSize();
 
-                // Get Feature count
-                getFeatureCount();
+                // Get Feature count, reflecting the filter restored for this layer (#6772)
+                getFeatureCount(globalThis['filterConfigData'].filter);
 
                 // Set default zoom extent setZoomExtent
                 // Only if first query works
                 // Which means PHP spatialite extension is activated
                 if ($('#liz-filter-zoom').is(":visible")) {
-                    setZoomExtent();
+                    setZoomExtent(globalThis['filterConfigData'].filter);
                 }
             }
 
@@ -1139,6 +1152,92 @@ var lizLayerFilterTool = function () {
             }
 
             /**
+             * Restore the widget values of a field from its stored filter state.
+             *
+             * The form is rebuilt from scratch every time the panel opens or the
+             * selected layer changes. Without this, switching back to a layer that
+             * still has an active filter showed empty inputs (#6772).
+             * @param field_item
+             */
+            function restoreFormFieldValue(field_item) {
+                var field_config = globalThis['filterConfig'][field_item.order];
+                // Only restore fields that currently contribute an active filter.
+                if (!field_config || !field_config['filter'] || !('data' in field_config)) {
+                    return;
+                }
+                var data = field_config['data'];
+                if (!data) {
+                    return;
+                }
+                var cn = lizMap.cleanName(field_item.title);
+
+                // Suppress filter triggers while restoring: the filter is already
+                // applied, so widget changes here must not fire new requests.
+                var wasDeactivated = globalThis['filterConfigData'].deactivated;
+                globalThis['filterConfigData'].deactivated = true;
+                try {
+                    if (field_item.type == 'uniquevalues') {
+                        if (field_item.format == 'checkboxes') {
+                            for (var fv in data) {
+                                if (data[fv]) {
+                                    $('#liz-filter-field-' + cn + '-' + lizMap.cleanName(fv)).prop('checked', true);
+                                }
+                            }
+                        } else if (field_item.format == 'select') {
+                            var selectedVals = [];
+                            for (var sv in data) {
+                                if (data[sv]) {
+                                    selectedVals.push(lizMap.cleanName(sv));
+                                }
+                            }
+                            if (selectedVals.length) {
+                                var selectField = $('#liz-filter-field-' + cn);
+                                if (selectField[0] && 'sumo' in selectField[0]) {
+                                    if (selectField[0].hasAttribute('multiple')) {
+                                        selectedVals.forEach(function (v) {
+                                            selectField[0].sumo.selectItem(v);
+                                        });
+                                    } else {
+                                        selectField[0].sumo.selectItem(selectedVals[0]);
+                                    }
+                                } else {
+                                    selectField.val(
+                                        (selectField[0] && selectField[0].hasAttribute('multiple'))
+                                            ? selectedVals
+                                            : selectedVals[0]
+                                    );
+                                }
+                            }
+                        }
+                    } else if (field_item.type == 'date') {
+                        if (data['min_date']) {
+                            $('#liz-filter-field-min-date' + cn).val(data['min_date']);
+                        }
+                        if (data['max_date']) {
+                            $('#liz-filter-field-max-date' + cn).val(data['max_date']);
+                        }
+                        // .change() so the slider position is also restored
+                        $('#liz-filter-field-max-date' + cn).change();
+                    } else if (field_item.type == 'numeric') {
+                        if (data['min'] != null) {
+                            $('#liz-filter-field-min-numeric' + cn).val(data['min']);
+                        }
+                        if (data['max'] != null) {
+                            $('#liz-filter-field-max-numeric' + cn).val(data['max']);
+                        }
+                        $('#liz-filter-field-max-numeric' + cn).change();
+                    } else if (field_item.type == 'text') {
+                        if (data['text']) {
+                            // Stored value has single quotes doubled for SQL; undo it for display.
+                            $('#liz-filter-field-text' + cn).val(data['text'].replace(/''/g, "'"));
+                        }
+                    }
+                } finally {
+                    globalThis['filterConfigData'].deactivated = wasDeactivated;
+                }
+            }
+
+            /**
              * Removes the getFeatureInfo geometry
              */
             function removeFeatureInfoGeometry() {
@@ -1160,25 +1259,46 @@ var lizLayerFilterTool = function () {
                     },
                     minidockclosed: function () {
                     },
-                    layerfeatureremovefilter: function () {
-                        var layerId = globalThis['filterConfigData'].layerId;
+                    layerfeatureremovefilter: function (e) {
+                        var currentLayerId = globalThis['filterConfigData'].layerId;
 
-                        globalThis['filterConfigData'].filter = undefined;
+                        // The event carries the name of the layer whose filter
+                        // was removed; map it to a layerId. Fall back to the
+                        // layer currently shown in the panel (#6772).
+                        var removedLayerId = currentLayerId;
+                        if (e && e.featureType
+                            && lizMap.config.layers[e.featureType]) {
+                            removedLayerId = lizMap.config.layers[e.featureType].id;
+                        }
 
-                        // We need to reset the form
-                        // Deactivate all triggers to avoid unnecessary requests
+                        // The form widgets only exist in the DOM for the layer
+                        // currently shown in the panel.
+                        var isDisplayedLayer = (removedLayerId === currentLayerId);
+
+                        // Clear the stored filter for every field of the
+                        // removed layer (and reset the widgets when displayed),
+                        // so switching back to it does not restore a stale
+                        // filter.
                         globalThis['filterConfigData'].deactivated = true;
                         for (var o in globalThis['filterConfig']) {
                             var field_item = globalThis['filterConfig'][o];
-                            if (!('title' in field_item) || field_item.layerId !== layerId) {
+                            if (!('title' in field_item) || field_item.layerId !== removedLayerId) {
                                 continue;
                             }
-                            resetFormField(field_item.order);
+                            if (isDisplayedLayer) {
+                                resetFormField(field_item.order);
+                            } else {
+                                globalThis['filterConfig'][field_item.order]['filter'] = null;
+                            }
                         }
                         globalThis['filterConfigData'].deactivated = false;
 
-                        // Get feature count
-                        getFeatureCount();
+                        // Refresh the panel only when the removed layer is the
+                        // one currently displayed.
+                        if (isDisplayedLayer) {
+                            globalThis['filterConfigData'].filter = undefined;
+                            getFeatureCount();
+                        }
                     }
                 });
 
@@ -1387,6 +1507,9 @@ var lizLayerFilterTool = function () {
                     trigger: 'hover'
                 });
 
+                // Restore the widget state if this field still has an active filter (#6772)
+                restoreFormFieldValue(field_item);
+
             }
 
             /**
@@ -1511,7 +1634,9 @@ var lizLayerFilterTool = function () {
 
             // Listen to the layer selector changes
             $('#liz-filter-layer-selector').change(function () {
-                deactivateFilter();
+                // Switching the layer must NOT drop the filter already applied to
+                // the previously selected layer (#6772). launchLayerFilterTool()
+                // rebuilds the form and restores the new layer's own filter.
                 globalThis['filterConfigData'].layerId = $(this).val();
                 launchLayerFilterTool($(this).val());
             });
