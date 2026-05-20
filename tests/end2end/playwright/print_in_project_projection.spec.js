@@ -44,6 +44,7 @@ test.describe('Print in project projection @readonly', () => {
             'CRS': 'EPSG:3943',
             'DPI': '100',
             'TEMPLATE': 'Paysage A4',
+            'FORMAT_OPTIONS': 'TEXT_RENDER_FORMAT:AlwaysText',
             'map1:EXTENT': /1697873.\d+,2216859.\d+,1698164.\d+,2217051.\d+/,
             'map1:SCALE': '1000',
             'map1:LAYERS': 'reseau',
@@ -52,7 +53,7 @@ test.describe('Print in project projection @readonly', () => {
         }
         requestExpect(getPrintRequest).toContainParametersInPostData(expectedParameters);
         const searchParams = new URLSearchParams(getPrintRequest?.postData() ?? '');
-        expect(searchParams.size).toBe(14);
+        expect(searchParams.size).toBe(15);
 
         // Start waiting for download before response. Note no await.
         const downloadPromise = page.waitForEvent('download');
@@ -102,6 +103,7 @@ test.describe('Print in project projection @readonly', () => {
             'CRS': 'EPSG:3943',
             'DPI': '100',
             'TEMPLATE': 'Paysage A4',
+            'FORMAT_OPTIONS': 'TEXT_RENDER_FORMAT:AlwaysText',
             'map1:EXTENT': /1697873.\d+,2216859.\d+,1698164.\d+,2217051.\d+/,
             'map1:SCALE': '1000',
             'map1:LAYERS': 'Photographies_aeriennes,reseau',
@@ -110,7 +112,7 @@ test.describe('Print in project projection @readonly', () => {
         }
         requestExpect(getPrintRequest).toContainParametersInPostData(expectedParameters);
         const searchParams = new URLSearchParams(getPrintRequest?.postData() ?? '');
-        expect(searchParams.size).toBe(14)
+        expect(searchParams.size).toBe(15)
         responseExpect(await getPrintRequest.response()).toBePdf();
 
         // Stop listening to WMS requests
