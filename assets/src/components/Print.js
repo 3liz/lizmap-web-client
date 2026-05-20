@@ -227,6 +227,11 @@ export default class Print extends HTMLElement {
             DPI: this._printDPI,
             TEMPLATE: this._printTemplates[this._printTemplate].title
         };
+        if (this._printFormat == 'pdf') {
+            // Sets the text render format to always text to be able to select text in the PDF
+            // https://docs.qgis.org/3.34/en/docs/server_manual/services/wms.html#wms-getprint-formatoptions
+            wmsParams['FORMAT_OPTIONS'] = 'TEXT_RENDER_FORMAT:AlwaysText';
+        }
 
         wmsParams[this._mainMapID + ':EXTENT'] = extent.join(',');
         wmsParams[this._mainMapID + ':SCALE'] = this._printScale;
