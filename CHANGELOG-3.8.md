@@ -8,6 +8,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 
 ## Unreleased
 
+## 3.8.18 - 2026-05-20
+
 ### Security
 
 * admin - sanitize file name of the uploaded image
