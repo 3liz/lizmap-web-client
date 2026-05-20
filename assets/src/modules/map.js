@@ -1185,9 +1185,10 @@ export default class map extends olMap {
         const geometryType = geometryOrExtent.getType?.();
         if (geometryType && (this._initialConfig.options.max_scale_lines_polygons || this._initialConfig.options.max_scale_points)) {
             let maxScale;
-            if (['Polygon', 'Linestring', 'MultiPolygon', 'MultiLinestring'].includes(geometryType)){
+            // Compare lowerCase geometry type
+            if (['polygon', 'linestring', 'multipolygon', 'multilinestring'].includes(geometryType.toLowerCase())){
                 maxScale = this._initialConfig.options.max_scale_lines_polygons;
-            } else if (['Point', 'MultiPoint'].includes(geometryType)){
+            } else if (['point', 'multipoint'].includes(geometryType.toLowerCase())){
                 maxScale = this._initialConfig.options.max_scale_points;
             }
             const resolution = Utils.getResolutionFromScale(
