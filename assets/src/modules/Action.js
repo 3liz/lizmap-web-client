@@ -419,6 +419,21 @@ export default class Action {
         options['mapExtent'] = WKTformat.writeGeometry(fromExtent(viewExtent), projOptions);
         options['mapCenter'] = WKTformat.writeGeometry(new Point(viewCenter), projOptions);
 
+        /**
+         * Lizmap event to allow other scripts to process the data if needed
+         * @event actionStarted
+         * @property {Objects} action Current action object
+         * @property {string} layerId Layer ID of the current layer
+         * @property {string} featureId Feature ID of the current feature
+         */
+        this._lizmap3.events.triggerEvent("actionStarted",
+            {
+                'action': action,
+                'layerId': layerId,
+                'featureId': featureId
+            }
+        );
+
         // Request action and get data
         let url = actionConfigData.url;
         try {
