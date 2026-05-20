@@ -10,6 +10,7 @@ import olGeolocation from 'ol/Geolocation.js';
 import { transform } from 'ol/proj.js';
 import { Vector as VectorSource } from 'ol/source.js';
 import { Vector as VectorLayer } from 'ol/layer.js';
+import LineString from 'ol/geom/LineString.js'
 import Point from 'ol/geom/Point.js';
 import Circle from 'ol/geom/Circle.js';
 import Feature from 'ol/Feature.js';
@@ -64,19 +65,39 @@ export default class Geolocation {
         this._isLinkedToEdition = false;
 
         const qgisProjectProjection = lizmap3.map.getProjection();
+        // LineString to store the different geolocation positions. This LineString
+        // is time aware.
+        // The Z dimension is actually used to store the rotation (heading).
+        this._positions = new LineString([], 'XYZM');
+        // OpenLayers Geolocation Control
         this._geolocation = new olGeolocation({
             // `enableHighAccuracy` must be set to true to have the heading value
             trackingOptions: {
-                enableHighAccuracy: true
+                enableHighAccuracy: true,
+                maximumAge: 10000,
+                timeout: 600000,
             },
             projection: qgisProjectProjection
         });
 
+        // Listen to position changes
         this._geolocation.on('change:position', () => {
-            const coordinates = this._geolocation.getPosition();
-            this.moveGeolocationPointAndCircle(coordinates);
+            // const coordinates = this._geolocation.getPosition();
+            // this.moveGeolocationPointAndCircle(coordinates);
+
+            const position = this._geolocation.getPosition();
+            // const accuracy = geolocation.getAccuracy();
+            const heading = this._geolocation.getHeading() || 0;
+            // const speed = geolocation.getSpeed() || 0;
+            const m = Date.now();
+
+            this._addPosition(position, heading, m);
+
+            this.moveGeolocationPointAndCircle(position);
 
             mainEventDispatcher.dispatch('geolocation.position');
+            //console.log('change:position '+this._geolocation.getRevision());
+            //console.log(position);
         });
 
         this._geolocation.on('change:tracking', () => {
@@ -96,6 +117,7 @@ export default class Geolocation {
 
         this._geolocation.on('change:accuracy', () => {
             mainEventDispatcher.dispatch('geolocation.accuracy');
+            //console.log('change:accuracy '+this._geolocation.getRevision());
         });
 
         this._geolocation.on('change:accuracyGeometry', () => {
@@ -107,6 +129,7 @@ export default class Geolocation {
                 this._firstGeolocation = false;
 
                 mainEventDispatcher.dispatch('geolocation.firstGeolocation');
+                //console.log('change:accuracyGeometry '+this._geolocation.getRevision());
             }
         });
 
@@ -136,8 +159,14 @@ export default class Geolocation {
         if (this.isBind) {
             this.center();
 
+            if (this.displayDirection) {
+                this.rotateView()
+            }
+
             this._startBindInterval();
         }else{
+            this._map.getView().setRotation(0);
+            this._map.render();
             this._stopBindInterval();
         }
     }
@@ -154,6 +183,28 @@ export default class Geolocation {
 
     _stopBindInterval(){
         window.clearInterval(this._bindIntervalID);
+    }
+
+    _addPosition(position, heading, m) {
+        const x = position[0];
+        const y = position[1];
+        const fCoords = this._positions.getCoordinates();
+        const previous = fCoords[fCoords.length - 1];
+        const prevHeading = previous && previous[2];
+        if (prevHeading) {
+            let headingDiff = heading - mod(prevHeading);
+
+            // force the rotation change to be less than 180°
+            if (Math.abs(headingDiff) > Math.PI) {
+                const sign = headingDiff >= 0 ? 1 : -1;
+                headingDiff = -sign * (2 * Math.PI - Math.abs(headingDiff));
+            }
+            heading = prevHeading + headingDiff;
+        }
+        this._positions.appendCoordinate([x, y, heading, m]);
+
+        // only keep the 20 last coordinates
+        this._positions.setCoordinates(this._positions.getCoordinates().slice(-20));
     }
 
     toggleTracking() {
@@ -279,7 +330,7 @@ export default class Geolocation {
 
     moveGeolocationPointAndCircle(coordinates) {
         const positionFeature = new Feature({
-            geometry: new Point(coordinates)
+            geometry: new Point(coordinates),
         });
 
         if (this.displayDirection) {
@@ -307,5 +358,23 @@ export default class Geolocation {
 
         this._geolocationLayer.getSource().clear();
         this._geolocationLayer.getSource().addFeatures([positionFeature, accuracyFeature]);
+    }
+
+    rotateView() {
+        if (!this.displayDirection) {
+            return;
+        }
+
+        // the geolocation sampling period mean in ms
+        let deltaMean = 500;
+        // use sampling period to get a smooth transition
+        let m = Date.now() - deltaMean * 1.5;
+        // interpolate position along positions LineString
+        const c = this._positions.getCoordinateAtM(m, true);
+        // apply rotation
+        if (c) {
+            this._map.getView().setRotation(-c[2]);
+            this._map.render();
+        }
     }
 }
