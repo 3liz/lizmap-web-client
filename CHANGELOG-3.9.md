@@ -17,6 +17,7 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * **[Faunalia](https://www.faunalia.eu/fr)** with @mind84
 * **[Klein und Leber GbR](https://www.gisgeometer.de/)** with @meyerlor
 * **[Terre De Provence Agglomération](https://www.terredeprovence-agglo.com/)**
+* **[JP Énergie Environnement](https://www.jpee.fr/)**
 
 ### Security
 
@@ -50,6 +51,8 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Filter - No longer show a spurious (NULL) entry in split-value form filters without NULL data (#6166)
 * Filter - Numeric form filter now accepts decimal/float values, not only integers (#1356)
 * Time manager - Show the controlled layer(s) name in the time manager panel (#6774)
+* Action - add actionStarted event
+* GetPrint PDF with always text option
 
 ### Tests
 
