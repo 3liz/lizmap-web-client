@@ -53,9 +53,9 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Time manager - Show the controlled layer(s) name in the time manager panel (#6774)
 * Action - add actionStarted event
 * GetPrint PDF with always text option
+* UI - Geometry type case mismatch in zoomToGeometryOrExtent function
 
 ### Tests
-
 * Add tests for CheckBox-widget popup rendering
 
 ### Backend
