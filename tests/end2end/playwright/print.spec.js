@@ -133,6 +133,7 @@ test.describe('Print', () => {
         let getPrintRequest = await getPrintPromise;
         // Extend GetPrint parameters
         const expectedParameters1 = Object.assign({}, expectedParameters, {
+            'FORMAT_OPTIONS': 'TEXT_RENDER_FORMAT:AlwaysText',
             'map0:EXTENT': /759249.\d+,6271892.\d+,781949.\d+,6286892.\d+/,
             'map0:SCALE': '100000',
             'map0:LAYERS': 'OpenStreetMap,quartiers,sousquartiers',
@@ -142,7 +143,7 @@ test.describe('Print', () => {
             // Enable after manually update project with QGIS 3.34 to keep label with HTML rendering
             'multiline_label': 'Multiline label',
         })
-        let expectedLength = 15;
+        let expectedLength = 16;
         requestExpect(getPrintRequest).toContainParametersInPostData(expectedParameters1);
         let getPrintParams = new URLSearchParams(getPrintRequest?.postData() ?? '');
         expect(getPrintParams.size).toBe(expectedLength);
@@ -159,6 +160,7 @@ test.describe('Print', () => {
         // Extend and update GetPrint parameters
         const expectedParameters3 = Object.assign({}, expectedParameters, {
             'TEMPLATE': 'print_overview',
+            'FORMAT_OPTIONS': 'TEXT_RENDER_FORMAT:AlwaysText',
             'map1:EXTENT': /757949.\d+,6270842.\d+,783249.\d+,6287942.\d+/,
             'map1:SCALE': '100000',
             'map1:LAYERS': 'OpenStreetMap,quartiers,sousquartiers',
@@ -166,7 +168,7 @@ test.describe('Print', () => {
             'map1:OPACITIES': '204,255,255',
             'map0:EXTENT': /761864.\d+,6274266.\d+,779334.\d+,6284518.\d+/,
         })
-        expectedLength = 14
+        expectedLength = 15
         requestExpect(getPrintRequest).toContainParametersInPostData(expectedParameters3);
         getPrintParams = new URLSearchParams(getPrintRequest?.postData() ?? '');
         expect(getPrintParams.size).toBe(expectedLength);
@@ -227,6 +229,7 @@ test.describe('Print', () => {
         **/
         const expectedParameters4 = Object.assign({}, expectedParameters, {
             'TEMPLATE': 'print_labels',
+            'FORMAT_OPTIONS': 'TEXT_RENDER_FORMAT:AlwaysText',
             'map0:EXTENT': /759249.\d+,6271892.\d+,781949.\d+,6286892.\d+/,
             'map0:SCALE': '100000',
             'map0:LAYERS': 'OpenStreetMap,quartiers,sousquartiers',
@@ -258,7 +261,7 @@ test.describe('Print', () => {
             'multiline_label': 'Multiline label',
         })
         /* eslint-enable no-useless-escape, @stylistic/js/max-len */
-        expectedLength = 17
+        expectedLength = 18
         requestExpect(getPrintRequest).toContainParametersInPostData(expectedParameters4);
         getPrintParams = new URLSearchParams(getPrintRequest?.postData() ?? '');
         expect(getPrintParams.size).toBe(expectedLength);
@@ -288,6 +291,7 @@ test.describe('Print', () => {
             'CRS': 'EPSG:2154',
             'DPI': '100',
             'TEMPLATE': 'print_labels',
+            'FORMAT_OPTIONS': 'TEXT_RENDER_FORMAT:AlwaysText',
             'map0:EXTENT': /759249.\d+,6271892.\d+,781949.\d+,6286892.\d+/,
             'map0:SCALE': '100000',
             'map0:LAYERS': 'OpenStreetMap,quartiers,sousquartiers',
@@ -298,7 +302,7 @@ test.describe('Print', () => {
             'multiline_label': 'Multiline label',
             'SELECTIONTOKEN': /[a-z\d]+/,
         }
-        const expectedLength = 16;
+        const expectedLength = 17;
         requestExpect(getPrintRequest).toContainParametersInPostData(expectedParameters);
         const getPrintParams = new URLSearchParams(getPrintRequest?.postData() ?? '');
         expect(getPrintParams.size).toBe(expectedLength);
@@ -340,6 +344,7 @@ test.describe('Print', () => {
             'CRS': 'EPSG:2154',
             'DPI': '100',
             'TEMPLATE': 'print_labels',
+            'FORMAT_OPTIONS': 'TEXT_RENDER_FORMAT:AlwaysText',
             'map0:EXTENT': /759249.\d+,6271892.\d+,781949.\d+,6286892.\d+/,
             'map0:SCALE': '100000',
             'map0:LAYERS': 'OpenStreetMap,quartiers,sousquartiers',
@@ -350,7 +355,7 @@ test.describe('Print', () => {
             'multiline_label': 'Multiline label',
             'FILTERTOKEN': /[a-z\d]+/,
         }
-        let expectedLength = 16;
+        let expectedLength = 17;
         requestExpect(getPrintRequest).toContainParametersInPostData(expectedParameters);
         const getPrintParams = new URLSearchParams(getPrintRequest?.postData() ?? '');
         expect(getPrintParams.size).toBe(expectedLength);
@@ -401,6 +406,7 @@ test.describe(
                 'CRS': 'EPSG:3857',
                 'DPI': '100',
                 'TEMPLATE': 'test',
+                'FORMAT_OPTIONS': 'TEXT_RENDER_FORMAT:AlwaysText',
                 'map0:EXTENT': /425189.\d+,5401412.\d+,439539.\d+,5411262.\d+/,
                 'map0:SCALE': '50000',
                 'map0:LAYERS': mapLayers.join(','),
@@ -419,7 +425,7 @@ test.describe(
             // check response parameters
             requestExpect(getPrintRequest).toContainParametersInPostData(expectedParameters);
             const getPrintParams = new URLSearchParams(getPrintRequest?.postData() ?? '');
-            expect(getPrintParams.size).toBe(13);
+            expect(getPrintParams.size).toBe(14);
         })
 
         test('Layers in group with opacity', async ({ page }) => {
@@ -461,6 +467,7 @@ test.describe(
                 'CRS': 'EPSG:3857',
                 'DPI': '100',
                 'TEMPLATE': 'test',
+                'FORMAT_OPTIONS': 'TEXT_RENDER_FORMAT:AlwaysText',
                 'map0:EXTENT': /425189.\d+,5401412.\d+,439539.\d+,5411262.\d+/,
                 'map0:SCALE': '50000',
                 'map0:LAYERS': mapLayers.join(','),
@@ -479,7 +486,7 @@ test.describe(
             // check response parameters
             requestExpect(getPrintRequest).toContainParametersInPostData(expectedParameters);
             const getPrintParams = new URLSearchParams(getPrintRequest?.postData() ?? '');
-            expect(getPrintParams.size).toBe(13);
+            expect(getPrintParams.size).toBe(14);
         })
     }
 );
@@ -702,6 +709,7 @@ test.describe('Print 3857', () => {
         let getPrintRequest = await getPrintPromise;
         // Extend GetPrint parameters
         const expectedParameters1 = Object.assign({}, expectedParameters, {
+            'FORMAT_OPTIONS': 'TEXT_RENDER_FORMAT:AlwaysText',
             'map0:EXTENT': /423093.\d+,5399873.\d+,439487.\d+,5410707.\d+/,
             'map0:SCALE': '72224',
             'map0:LAYERS': 'OpenStreetMap,quartiers,sousquartiers',
@@ -711,7 +719,7 @@ test.describe('Print 3857', () => {
             // Enable after manually update project with QGIS 3.34 to keep label with HTML rendering
             'multiline_label': 'Multiline label',
         })
-        let expectedLength = 15;
+        let expectedLength = 16;
         requestExpect(getPrintRequest).toContainParametersInPostData(expectedParameters1);
         let getPrintParams = new URLSearchParams(getPrintRequest?.postData() ?? '');
         expect(getPrintParams.size).toBe(expectedLength);
@@ -779,6 +787,7 @@ test.describe('Print 3857', () => {
             'CRS': 'EPSG:3857',
             'DPI': '100',
             'TEMPLATE': 'print_labels',
+            'FORMAT_OPTIONS': 'TEXT_RENDER_FORMAT:AlwaysText',
         }
 
         // Expected GetPrint parameters
@@ -817,7 +826,7 @@ test.describe('Print 3857', () => {
             'multiline_label': 'Multiline label',
         })
         /* eslint-enable no-useless-escape, @stylistic/js/max-len */
-        let expectedLength = 17;
+        let expectedLength = 18;
         requestExpect(getPrintRequest).toContainParametersInPostData(expectedParameters1);
         let getPrintParams = new URLSearchParams(getPrintRequest?.postData() ?? '');
         expect(getPrintParams.size).toBe(expectedLength);
@@ -869,7 +878,7 @@ test.describe('Print 3857', () => {
             'map0:HIGHLIGHT_LABEL_VERTICAL_ALIGNMENT': 'half;half',
         });
 
-        expectedLength = 24;
+        expectedLength = 25;
         requestExpect(getPrintRequest).toContainParametersInPostData(expectedParameters2);
         getPrintParams = new URLSearchParams(getPrintRequest?.postData() ?? '');
         expect(getPrintParams.size).toBe(expectedLength);
@@ -916,7 +925,7 @@ test.describe('Print 3857', () => {
             'map0:HIGHLIGHT_LABEL_VERTICAL_ALIGNMENT': 'half',
         });
 
-        expectedLength = 24;
+        expectedLength = 25;
         requestExpect(getPrintRequest).toContainParametersInPostData(expectedParameters3);
         getPrintParams = new URLSearchParams(getPrintRequest?.postData() ?? '');
         expect(getPrintParams.size).toBe(expectedLength);
@@ -982,6 +991,7 @@ test.describe('Print base layers', () => {
             'CRS': 'EPSG:3857',
             'DPI': '100',
             'TEMPLATE': 'simple',
+            'FORMAT_OPTIONS': 'TEXT_RENDER_FORMAT:AlwaysText',
             'map0:EXTENT': /420548.\d+,5397710.\d+,441999.\d+,5412877.\d+/,
             'map0:SCALE': '72224',
         }
@@ -999,7 +1009,7 @@ test.describe('Print base layers', () => {
             'map0:STYLES': 'défaut',
             'map0:OPACITIES': '255',
         })
-        let expectedLength = 13;
+        let expectedLength = 14;
         requestExpect(getPrintRequest).toContainParametersInPostData(expectedParameters1);
         let getPrintParams = new URLSearchParams(getPrintRequest?.postData() ?? '');
         expect(getPrintParams.size).toBe(expectedLength);
@@ -1026,7 +1036,7 @@ test.describe('Print base layers', () => {
             'map0:STYLES': 'défaut,default',
             'map0:OPACITIES': '255,255',
         })
-        expectedLength = 13;
+        expectedLength = 14;
         requestExpect(getPrintRequest).toContainParametersInPostData(expectedParameters2);
         getPrintParams = new URLSearchParams(getPrintRequest?.postData() ?? '');
         expect(getPrintParams.size).toBe(expectedLength);
@@ -1092,7 +1102,7 @@ test.describe('Print base layers', () => {
             'map0:STYLES': 'default',
             'map0:OPACITIES': '255',
         })
-        expectedLength = 13;
+        expectedLength = 14;
         requestExpect(getPrintRequest).toContainParametersInPostData(expectedParameters3);
         getPrintParams = new URLSearchParams(getPrintRequest?.postData() ?? '');
         expect(getPrintParams.size).toBe(expectedLength);
@@ -1118,7 +1128,7 @@ test.describe('Print base layers', () => {
             'map0:STYLES': 'default,default',
             'map0:OPACITIES': '255,255',
         })
-        expectedLength = 13;
+        expectedLength = 14;
         requestExpect(getPrintRequest).toContainParametersInPostData(expectedParameters4);
         getPrintParams = new URLSearchParams(getPrintRequest?.postData() ?? '');
         expect(getPrintParams.size).toBe(expectedLength);
