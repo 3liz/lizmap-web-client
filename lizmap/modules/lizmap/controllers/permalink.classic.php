@@ -18,6 +18,7 @@ class permalinkCtrl extends jController
         'styles',
         'opacities',
         'categories',
+        'symbology',
     );
 
     /**
@@ -214,6 +215,7 @@ class permalinkCtrl extends jController
             }
 
             // validate values
+            // bbox
             if (
                 !array_key_exists('bbox', $sanitizedPermalinkKeys)
                 || !is_array($sanitizedPermalinkKeys['bbox'])
@@ -226,13 +228,32 @@ class permalinkCtrl extends jController
                 $lCount = count($sanitizedPermalinkKeys['layers']);
                 if (
                     !array_key_exists('styles', $sanitizedPermalinkKeys)
+                    || !is_array($sanitizedPermalinkKeys['styles'])
                     || count($sanitizedPermalinkKeys['styles']) !== $lCount
                     || !array_key_exists('opacities', $sanitizedPermalinkKeys)
+                    || !is_array($sanitizedPermalinkKeys['opacities'])
                     || count($sanitizedPermalinkKeys['opacities']) !== $lCount
+                    || !array_key_exists('symbology', $sanitizedPermalinkKeys)
+                    || !is_array($sanitizedPermalinkKeys['symbology'])
+                    || count($sanitizedPermalinkKeys['symbology']) !== $lCount
                 ) {
                     throw new Exception(jLocale::get('view~dictionnary.permalink.error.parameters'));
                 }
             }
+
+            // symbology
+            foreach ($sanitizedPermalinkKeys['symbology'] as $symbology) {
+                if (
+                    is_array($symbology)
+                    && (
+                        !array_key_exists('LEGEND_ON', $symbology)
+                        || !array_key_exists('LEGEND_OFF', $symbology)
+                    )
+                ) {
+                    throw new Exception(jLocale::get('view~dictionnary.permalink.error.parameters'));
+                }
+            }
+
             $jsonPermalink = json_encode($sanitizedPermalinkKeys);
 
             if (!$jsonPermalink) {

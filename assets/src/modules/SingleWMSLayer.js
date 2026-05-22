@@ -373,7 +373,13 @@ export default class SingleWMSLayer {
                     const totalOpacity = currentLayerState.itemState.calculateTotalOpacity();
                     const qgisOpacity = currentLayerState.layerConfig?.opacity ?? 1;
                     this._layerOpacities.push(Math.round(255 * totalOpacity * qgisOpacity));
-                    const wmsParam = currentLayerState.wmsParameters;
+                    let wmsParam = {...currentLayerState.wmsParameters};
+                    // consider also symbology initializazion parameters
+                    if (currentLayerState.symbologyInitParameters) {
+                        if(!wmsParam.LEGEND_ON && currentLayerState.symbologyInitParameters.LEGEND_ON) wmsParam.LEGEND_ON = currentLayerState.symbologyInitParameters.LEGEND_ON;
+                        if(!wmsParam.LEGEND_OFF && currentLayerState.symbologyInitParameters.LEGEND_OFF) wmsParam.LEGEND_OFF = currentLayerState.symbologyInitParameters.LEGEND_OFF;
+
+                    }
                     if (wmsParam){
                         if(wmsParam.SELECTIONTOKEN)
                             this._selectionTokens.push(wmsParam.SELECTIONTOKEN);

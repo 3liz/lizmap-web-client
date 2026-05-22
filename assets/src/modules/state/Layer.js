@@ -33,6 +33,8 @@ export class LayerItemState extends EventDispatcher {
         this._type = type
         this._layerTreeItemCfg = layerTreeItemCfg;
         this._parentGroup = null;
+        this._symbologyInitParameters = {};
+
         if (parentGroup instanceof LayerItemState
             && parentGroup.type == 'group') {
             this._parentGroup = parentGroup;
@@ -381,6 +383,9 @@ export class LayerItemState extends EventDispatcher {
                 });
             }, 'symbol.expanded.changed');
         }
+
+        // set checked status based on symbology init parameters, if any.
+        this.setSymbologyCheckedStateFromParameters(this.symbologyInitParameters);
         this.dispatch({
             type: this.mapType + '.symbology.changed',
             name: this.name,
@@ -492,6 +497,51 @@ export class LayerItemState extends EventDispatcher {
      */
     get layerConfig() {
         return this._layerTreeItemCfg.layerConfig;
+    }
+
+    /**
+     * Symbology initialization parameters.
+     * @type {object}
+     */
+    get symbologyInitParameters(){
+        return this._symbologyInitParameters;
+    }
+
+    /**
+     * Symbology initialization parameters. Used to check/uncheck symbols
+     * based on provided status object.
+     * @type {object}
+     */
+    set symbologyInitParameters(val){
+        this._symbologyInitParameters = {...val};
+    }
+
+    /**
+     * Updates the sybology checked state based on LEGEND_ON and LEGEND_OFF parameters
+     * @param {object} legendParameters - LEGEND_ON and LEGEND_OFF parameters
+     * @return {void}
+     */
+    setSymbologyCheckedStateFromParameters(legendParameters){
+        if (Object.keys(legendParameters).length && this.symbology?.children) {
+            const {LEGEND_ON, LEGEND_OFF} = legendParameters;
+            const lOn = LEGEND_ON.split(':')[1];
+            const lOff = LEGEND_OFF.split(':')[1];
+            const childrens = this.symbology.children;
+            lOn.split(',').forEach((o)=>{
+                childrens.forEach((s)=>{
+                    if(s.ruleKey == o) {
+                        s.checked = true;
+                    }
+                })
+            })
+            lOff.split(',').forEach((o)=>{
+                childrens.forEach((s)=>{
+                    if(s.ruleKey == o) {
+                        s.checked = false;
+                    }
+                })
+            })
+        }
     }
 
     /**
