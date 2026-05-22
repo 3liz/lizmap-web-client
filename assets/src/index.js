@@ -229,7 +229,7 @@ const initLizmapApp = () => {
                                 permalink.project &&
                                 permalink.project == project
                             ) {
-                                currentPermalink = permalink.plink;
+                                currentPermalink = permalink;
                             }
                         }
                     } else if (window.location.hash === '#map_status' && mainLizmap.initialConfig.options.automatic_permalink) {
@@ -243,7 +243,7 @@ const initLizmapApp = () => {
                                         (f) => f.repository == repository && f.project == project
                                     );
                                     if(currentPermalinkObj.length == 1) {
-                                        currentPermalink = currentPermalinkObj[0].plink;
+                                        currentPermalink = currentPermalinkObj[0];
                                     }
                                 }
                             }
@@ -255,9 +255,10 @@ const initLizmapApp = () => {
                     }
 
                     if (currentPermalink &&
-                        currentPermalink.bbox
-                        && Array.isArray(currentPermalink.bbox) &&
-                        currentPermalink.bbox.length == 4
+                        currentPermalink.plink &&
+                        currentPermalink.plink.bbox
+                        && Array.isArray(currentPermalink.plink.bbox) &&
+                        currentPermalink.plink.bbox.length == 4
                     ){
                         initialPermalink = currentPermalink;
                     }
@@ -265,7 +266,7 @@ const initLizmapApp = () => {
                     // raw permalink
                     let initialExtentPermalink = window.location.hash.substring(1).split('|')[0].split(',');
                     if (initialExtentPermalink.length === 4) {
-                        initialPermalink = { bbox: initialExtentPermalink };
+                        initialPermalink = { plink: {bbox: initialExtentPermalink }};
                     }
                 }
             }
