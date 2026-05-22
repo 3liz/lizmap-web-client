@@ -495,6 +495,9 @@ export default class Action {
                 this.runCallbacks(action, features);
             }
 
+            // Set the action as active
+            this.ACTIVE_LIZMAP_ACTION = this.buildActionInstanceUniqueId(action.name, scope, layerId, featureId);
+
             /**
              * Lizmap event to allow other scripts to process the data if needed
              * @event actionResultReceived
@@ -511,9 +514,6 @@ export default class Action {
                     'features': features // in map projection
                 }
             );
-
-            // Set the action as active
-            this.ACTIVE_LIZMAP_ACTION = this.buildActionInstanceUniqueId(action.name, scope, layerId, featureId);
 
         } catch (error) {
             // Display the error
