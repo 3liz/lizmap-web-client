@@ -835,14 +835,15 @@ test.describe('Read short link permalink @readonly', () => {
         await page.evaluate(() => lizMap.mainLizmap.map.getView().setCenter([770485, 6277813]));
 
         await page.waitForTimeout(200);
-
+        /** @type {{[key: string]: string|RegExp|Array}} */
         let expectedPermalinkParameters = {
             repository:'testsrepository',
             project:'layer_legends',
-            bbox: /3.5170\d+,43.4213\d+,4.2346\d+,43.7692\d+/,
+            bbox: /3.5148\d+,43.4213\d+,4.2324\d+,43.7692\d+/,
             layers: 'layer_legend_single_symbol,layer_legend_categorized,layer_legend_ruled,tramway_lines,legend_option_test',
             styles:'d%C3%A9faut,d%C3%A9faut,d%C3%A9faut,a_single,',
-            opacities:'1,1,1,1,1'
+            opacities:'1,1,1,1,1',
+            symbology: ['','','','','']
         }
         await project.checkShortLinkPermalink(expectedPermalinkParameters);
 
@@ -856,50 +857,58 @@ test.describe('Read short link permalink @readonly', () => {
         await page.getByTestId('layer_legend_ruled').locator('> div input').click();
         await project.checkShortLinkPermalink({
             ...expectedPermalinkParameters,
-            bbox: /3.7314\d+,43.5261\d+,4.0184\d+,43.6653\d+/,
+            bbox: /3.7292\d+,43.5261\d+,4.0163\d+,43.6653\d+/,
             layers: 'layer_legend_single_symbol,layer_legend_categorized,tramway_lines,legend_option_test',
             styles:'d%C3%A9faut,d%C3%A9faut,a_single,',
-            opacities:'1,1,1,1'
+            opacities:'1,1,1,1',
+            symbology: ['','','','']
         });
 
         // change layer opacity
         await project.setLayerOpacity('layer_legend_single_symbol','20');
         await project.checkShortLinkPermalink({
             ...expectedPermalinkParameters,
-            bbox: /3.7314\d+,43.5261\d+,4.0184\d+,43.6653\d+/,
+            bbox: /3.7292\d+,43.5261\d+,4.0163\d+,43.6653\d+/,
             layers: 'layer_legend_single_symbol,layer_legend_categorized,tramway_lines,legend_option_test',
             styles:'d%C3%A9faut,d%C3%A9faut,a_single,',
-            opacities:'0.2,1,1,1'
+            opacities:'0.2,1,1,1',
+            symbology: ['','','','']
         });
 
         // toggle group as layer
         await page.getByTestId('Group as layer').locator('> div input').click();
         await project.checkShortLinkPermalink({
             ...expectedPermalinkParameters,
-            bbox: /3.7314\d+,43.5261\d+,4.0184\d+,43.6653\d+/,
+            bbox: /3.7292\d+,43.5261\d+,4.0163\d+,43.6653\d+/,
             layers: 'layer_legend_single_symbol,layer_legend_categorized,tramway_lines,legend_option_test,Group%20as%20layer',
             styles:'d%C3%A9faut,d%C3%A9faut,a_single,,',
-            opacities:'0.2,1,1,1,1'
+            opacities:'0.2,1,1,1,1',
+            symbology: ['','','','','']
         });
 
         // change layer style
         await project.changeLayerStyle('tramway_lines','categorized');
         await project.checkShortLinkPermalink({
             ...expectedPermalinkParameters,
-            bbox: /3.7314\d+,43.5261\d+,4.0184\d+,43.6653\d+/,
+            bbox: /3.7292\d+,43.5261\d+,4.0163\d+,43.6653\d+/,
             layers: 'layer_legend_single_symbol,layer_legend_categorized,tramway_lines,legend_option_test,Group%20as%20layer',
             styles:'d%C3%A9faut,d%C3%A9faut,categorized,,',
-            opacities:'0.2,1,1,1,1'
+            opacities:'0.2,1,1,1,1',
+            symbology: ['','','','','']
         });
 
         // reload page
         await reloadMap(page);
+        // NOTE: Converting the CRS to EPSG:4326 may result in different approximations.
+        // This is especially true when reloading the page with a initial extent parameter.
+        // The extent of the approximation depends on the project's CRS.
         await project.checkShortLinkPermalink({
             ...expectedPermalinkParameters,
-            bbox: /3.7314\d+,43.5261\d+,4.0184\d+,43.6653\d+/,
+            bbox: /3.7296\d+,43.5261\d+,4.0166\d+,43.6653\d+/,
             layers: 'layer_legend_single_symbol,layer_legend_categorized,tramway_lines,legend_option_test,Group%20as%20layer',
             styles:'d%C3%A9faut,d%C3%A9faut,categorized,,',
-            opacities:'0.2,1,1,1,1'
+            opacities:'0.2,1,1,1,1',
+            symbology: ['','','','','']
         });
 
         // check user interface
@@ -922,7 +931,7 @@ test.describe('Read short link permalink @readonly', () => {
     test('Load short link permalink', async ({ page }) => {
         const project = new ProjectPage(page, 'short_link_permalink');
         let permalinkRequestPromise = project.waitForPermalinkGetRequest();
-        await project.open(false,"#permalink=h47yokjwuJ4o");
+        await project.open(false,"#permalink=18cpdxABubeZ");
 
         let permalinkRequest = await permalinkRequestPromise;
         /** @type {{[key: string]: string|RegExp}} */
@@ -930,7 +939,7 @@ test.describe('Read short link permalink @readonly', () => {
             'o': 'g',
             'repository': 'testsrepository',
             'project': 'short_link_permalink',
-            'id': 'h47yokjwuJ4o',
+            'id': '18cpdxABubeZ',
         }
         requestExpect(permalinkRequest).toContainParametersInUrl(permalinkParameters);
         let permalinkResponse = await permalinkRequest.response();
@@ -952,14 +961,15 @@ test.describe('Read short link permalink @readonly', () => {
         // hash should be equal to map_status
         url_to_check = new URL(page.url());
         await expect(url_to_check.hash).toBe("#map_status");
-
+        /** @type {{[key: string]: string|RegExp|Array}} */
         let expectedPermalinkParameters = {
             repository:'testsrepository',
             project:'short_link_permalink',
             bbox: /3.7810\d+,43.5318\d+,3.988\d+,43.6688\d+/,
             layers: 'single_wms_points,single_wms_lines,single_wms_baselayer',
             styles:'default,default,default',
-            opacities:'1,1,1'
+            opacities:'1,1,1',
+            symbology: ['','','']
         }
         await project.checkShortLinkPermalink(expectedPermalinkParameters);
 
@@ -1001,8 +1011,8 @@ test.describe('Read short link permalink @readonly', () => {
         await(page.locator('#content div.alert.alert-danger .btn-close')).click();
 
         let url_to_check = new URL(page.url());
-        // on init, if the permalink does not exists, the hash sould be null
-        expect(url_to_check.hash).toBe("");
+        // on init, if the permalink does not exists se hash to map_status if automatic_permalink is enabled
+        expect(url_to_check.hash).toBe("#map_status");
 
         // change hash with another invalid permalink
         const newHash = '#permalink=newUnknownPermalink';
@@ -1046,14 +1056,16 @@ test.describe('Write short link permalink @write', () => {
         await page.getByTestId('single_wms_baselayer').locator('> div input').click();
         await project.setLayerOpacity('single_wms_lines','60');
         await project.changeLayerStyle('single_wms_points','default');
-
+        await project.closeLayerInfo();
+        /** @type {{[key: string]: string|RegExp|Array}} */
         let expectedPermalinkParameters = {
             repository:'testsrepository',
             project:'short_link_permalink',
             bbox: /3.6273\d+,43.4294\d+,4.1451\d+,43.7717\d+/,
             layers: 'single_wms_points,single_wms_lines',
             styles:'default,default',
-            opacities:'1,0.6'
+            opacities:'1,0.6',
+            symbology:['','']
         }
 
         await project.checkShortLinkPermalink(expectedPermalinkParameters);
@@ -1080,7 +1092,7 @@ test.describe('Write short link permalink @write', () => {
 
         let body = await permalinkResponse?.json();
 
-        expect(body).toHaveProperty('permalink','JewKYGj9uRnu');
+        expect(body).toHaveProperty('permalink','9jjvi-P30Xl8');
 
         // check permalink panel interface
         expect(page.locator("#lizmap-new-permalink")).toBeDisabled();
@@ -1088,8 +1100,8 @@ test.describe('Write short link permalink @write', () => {
 
         // inspect history table
         expect(page.locator("#permalink-history table tr")).toHaveCount(1);
-        await project.inspectPermalinkHistoryTableRecord("JewKYGj9uRnu");
-        await project.copyPermalinkToClipboard("JewKYGj9uRnu");
+        await project.inspectPermalinkHistoryTableRecord("9jjvi-P30Xl8");
+        await project.copyPermalinkToClipboard("9jjvi-P30Xl8");
 
         // switch layer on/off
         await page.getByTestId('single_wms_baselayer').locator('> div input').click();
@@ -1109,13 +1121,13 @@ test.describe('Write short link permalink @write', () => {
 
         body = await permalinkResponse?.json();
 
-        expect(body).toHaveProperty('permalink','JewKYGj9uRnu');
+        expect(body).toHaveProperty('permalink','9jjvi-P30Xl8');
         expect(page.locator("#lizmap-new-permalink")).toBeDisabled();
         expect(await page.locator("#lizmap-new-permalink").textContent()).toBe("Permalink copied to clipboard");
 
         // inspect history table
         expect(page.locator("#permalink-history table tr")).toHaveCount(1);
-        await project.inspectPermalinkHistoryTableRecord("JewKYGj9uRnu");
+        await project.inspectPermalinkHistoryTableRecord("9jjvi-P30Xl8");
 
         // create new permalink
         await page.getByTestId('single_wms_baselayer').locator('> div input').click();
@@ -1130,15 +1142,15 @@ test.describe('Write short link permalink @write', () => {
 
         body = await permalinkResponse?.json();
 
-        expect(body).toHaveProperty('permalink','gJTMpHVL__la');
+        expect(body).toHaveProperty('permalink','gEnvQzYMxZGt');
         expect(page.locator("#lizmap-new-permalink")).toBeDisabled();
         expect(await page.locator("#lizmap-new-permalink").textContent()).toBe("Permalink copied to clipboard");
         expect(page.locator("#permalink-history table tr")).toHaveCount(2);
-        await project.inspectPermalinkHistoryTableRecord("gJTMpHVL__la");
+        await project.inspectPermalinkHistoryTableRecord("gEnvQzYMxZGt");
 
         // inspect share functionality
-        await project.inspectPermalinkSharePanel("JewKYGj9uRnu");
-        await project.inspectPermalinkSharePanel("gJTMpHVL__la");
+        await project.inspectPermalinkSharePanel("9jjvi-P30Xl8");
+        await project.inspectPermalinkSharePanel("gEnvQzYMxZGt");
 
         // hash should be equal to map_status
         let url_to_check = new URL(page.url());
@@ -1157,20 +1169,559 @@ test.describe('Write short link permalink @write', () => {
 
         body = await permalinkResponse?.json();
 
-        expect(body).toHaveProperty('permalink','UFgQYYLMAbyd');
+        expect(body).toHaveProperty('permalink','LMZam0ZnK3Ps');
         expect(page.locator("#lizmap-new-permalink")).toBeDisabled();
         expect(await page.locator("#lizmap-new-permalink").textContent()).toBe("Permalink copied to clipboard");
         expect(page.locator("#permalink-history table tr")).toHaveCount(3);
-        await project.inspectPermalinkHistoryTableRecord("UFgQYYLMAbyd");
-        await project.inspectPermalinkSharePanel("UFgQYYLMAbyd");
+        await project.inspectPermalinkHistoryTableRecord("LMZam0ZnK3Ps");
+        await project.inspectPermalinkSharePanel("LMZam0ZnK3Ps");
 
         // remove permalink
-        await project.removePermalinkFromLocalStorage("UFgQYYLMAbyd");
+        await project.removePermalinkFromLocalStorage("LMZam0ZnK3Ps");
         expect(page.locator("#permalink-history table tr")).toHaveCount(2);
 
         // clear history
         await project.clearPermalinkHistory();
         expect(page.locator("#permalink-history table")).toHaveCount(0);
+    })
+
+    test('Add short link permalink with symbology', async ({browser, page}) => {
+        const project = new ProjectPage(page, 'short_link_permalink');
+        await project.open();
+        // interaction on symbology
+        await project.changeLayerStyle('single_wms_points','default');
+        await project.setLayerOpacity('single_wms_lines','60');
+        await project.closeLayerInfo();
+
+        await page.waitForTimeout(500);
+
+        /** @type {{[key: string]: string|RegExp|Array}} */
+        let expectedPermalinkParameters = {
+            repository:'testsrepository',
+            project:'short_link_permalink',
+            bbox: /3.6273\d+,43.4294\d+,4.1451\d+,43.7717\d+/,
+            layers: 'single_wms_points,single_wms_lines,single_wms_baselayer',
+            styles:'default,default,default',
+            opacities:'1,0.6,1',
+            symbology:['','','']
+        }
+
+        await project.checkShortLinkPermalink(expectedPermalinkParameters);
+        await project.changeLayerStyle('single_wms_points','classified');
+        await page.waitForTimeout(500);
+        await project.toggleLayerSymbol('single_wms_points',0,false);
+        await project.closeLayerInfo();
+
+        /** @type {{[key: string]: string|RegExp|Array}} */
+        expectedPermalinkParameters = {
+            repository:'testsrepository',
+            project:'short_link_permalink',
+            bbox: /3.6273\d+,43.4294\d+,4.1451\d+,43.7717\d+/,
+            layers: 'single_wms_points,single_wms_lines,single_wms_baselayer',
+            styles:'classified,default,default',
+            opacities:'1,0.6,1',
+            symbology:[{
+                LEGEND_ON: 'single_wms_points:{fa9e5723-097e-4212-bf40-4a9ccc70c024},{888c4c7c-c27b-45e4-ad28-5a75c2ca231b},'+
+                '{bffd7db7-e86c-4ee4-b5f3-66d75a7ada61},{77b11021-37e2-40d5-8880-c0f79581b67e},'+
+                '{f3a2bb5b-da44-4afe-b55a-3badae61b697},{a5641572-5c16-4f3c-8c8c-c585d0b889ce}',
+                LEGEND_OFF: 'single_wms_points:{d68c60ac-411c-4907-a31c-8d6aaac78b37}'},'',''
+            ]
+        }
+        await project.checkShortLinkPermalink(expectedPermalinkParameters);
+
+        let url_to_check = new URL(page.url());
+        expect(url_to_check.hash).toBe("#map_status");
+        /** @type {{[key: string]: string|RegExp}} */
+        const permalinkUrlParameters = {
+            'o': 'add',
+            'repository': 'testsrepository',
+            'project': 'short_link_permalink',
+        }
+        // open permalink panel
+        await project.openPermalinkPanel();
+        expect(page.locator("#permalink-generator")).toBeVisible();
+        expect(page.locator("#permalink-history table")).toHaveCount(0);
+
+        // add permalink with symbology
+        let permalinkAddRequestPromise = project.waitForPermalinkAddRequest();
+        await page.locator("#lizmap-new-permalink").click();
+        let permalinkAddRequest = await permalinkAddRequestPromise;
+        requestExpect(permalinkAddRequest).toContainParametersInUrl(permalinkUrlParameters);
+        let permalinkResponse = await permalinkAddRequest.response();
+        responseExpect(permalinkResponse).toBeJson();
+
+        let body = await permalinkResponse?.json();
+
+        expect(body).toHaveProperty('permalink','a6ADNM4iC66O');
+        expect(page.locator("#lizmap-new-permalink")).toBeDisabled();
+        expect(await page.locator("#lizmap-new-permalink").textContent()).toBe("Permalink copied to clipboard");
+        expect(page.locator("#permalink-history table tr")).toHaveCount(1);
+        await project.inspectPermalinkHistoryTableRecord("a6ADNM4iC66O");
+        await project.inspectPermalinkSharePanel("a6ADNM4iC66O");
+
+        url_to_check = new URL(page.url());
+        expect(url_to_check.hash).toBe("#map_status");
+
+        // reload map
+        await reloadMap(page);
+        await project.checkShortLinkPermalink(expectedPermalinkParameters);
+
+        // hash should be equal to map_status
+        url_to_check = new URL(page.url());
+        expect(url_to_check.hash).toBe("#map_status");
+
+        // Visibility
+        await expect(page.getByTestId('single_wms_points').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_lines').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_baselayer').locator('> div input')).toBeChecked();
+
+        // Style
+        await project.openLayerInfo('single_wms_points');
+        await expect(page.locator('#sub-dock select.styleLayer')).toHaveValue('classified');
+        await project.closeLayerInfo();
+
+        // Opacity
+        await project.openLayerInfo('single_wms_lines');
+        await expect(page.locator('#sub-dock .btn-opacity-layer.active')).toHaveText('60');
+        await project.closeLayerInfo();
+
+        // Symbology
+        await page.getByTestId('single_wms_points').locator('div.expandable').click();
+        await expect(page.getByTestId('single_wms_points').locator('ul li').nth(0).locator('input')).not.toBeChecked();
+        await expect(page.getByTestId('single_wms_points').locator('ul li').nth(1).locator('input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_points').locator('ul li').nth(2).locator('input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_points').locator('ul li').nth(3).locator('input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_points').locator('ul li').nth(4).locator('input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_points').locator('ul li').nth(5).locator('input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_points').locator('ul li').nth(6).locator('input')).toBeChecked();
+
+        // change layer style, visibility and then reload
+        await project.changeLayerStyle('single_wms_points','default');
+        await page.getByTestId('single_wms_baselayer').locator('> div input').click();
+
+        /** @type {{[key: string]: string|RegExp|Array}} */
+        expectedPermalinkParameters = {
+            repository:'testsrepository',
+            project:'short_link_permalink',
+            bbox: /3.6273\d+,43.4294\d+,4.1451\d+,43.7717\d+/,
+            layers: 'single_wms_points,single_wms_lines',
+            styles:'default,default',
+            opacities:'1,0.6',
+            symbology:['','']
+        }
+
+        page.waitForTimeout(500);
+        // reload map
+        await reloadMap(page);
+        await project.checkShortLinkPermalink(expectedPermalinkParameters);
+
+        // change hash with a valid permalink
+        let newHash = '#permalink=a6ADNM4iC66O';
+        let permalinkRequestPromise = project.waitForPermalinkGetRequest();
+        await page.evaluate(token => window.location.hash = token, newHash);
+        let permalinkGetRequest = await permalinkRequestPromise;
+
+        /** @type {{[key: string]: string|RegExp}} */
+        const newPermalinkParameters = {
+            'o': 'g',
+            'repository': 'testsrepository',
+            'project': 'short_link_permalink',
+            'id': 'a6ADNM4iC66O',
+        }
+        requestExpect(permalinkGetRequest).toContainParametersInUrl(newPermalinkParameters);
+        permalinkResponse = await permalinkGetRequest.response();
+        responseExpect(permalinkResponse).toBeJson();
+
+        await page.waitForTimeout(500);
+
+        /** @type {{[key: string]: string|RegExp|Array}} */
+        expectedPermalinkParameters = {
+            repository:'testsrepository',
+            project:'short_link_permalink',
+            bbox: /3.6273\d+,43.4294\d+,4.1451\d+,43.7717\d+/,
+            layers: 'single_wms_points,single_wms_lines,single_wms_baselayer',
+            styles:'classified,default,default',
+            opacities:'1,0.6,1',
+            symbology:[
+                {LEGEND_ON: 'single_wms_points:{fa9e5723-097e-4212-bf40-4a9ccc70c024},{888c4c7c-c27b-45e4-ad28-5a75c2ca231b},'+
+                '{bffd7db7-e86c-4ee4-b5f3-66d75a7ada61},{77b11021-37e2-40d5-8880-c0f79581b67e},{f3a2bb5b-da44-4afe-b55a-3badae61b697},{a5641572-5c16-4f3c-8c8c-c585d0b889ce}',
+                LEGEND_OFF: 'single_wms_points:{d68c60ac-411c-4907-a31c-8d6aaac78b37}'},'',''
+            ]
+        }
+
+        await project.checkShortLinkPermalink(expectedPermalinkParameters);
+
+        // Visibility
+        await expect(page.getByTestId('single_wms_points').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_lines').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_baselayer').locator('> div input')).toBeChecked();
+
+
+        // Style
+        await project.openLayerInfo('single_wms_points');
+        await expect(page.locator('#sub-dock select.styleLayer')).toHaveValue('classified');
+        await project.closeLayerInfo();
+
+        // Opacity
+        await project.openLayerInfo('single_wms_lines');
+        await expect(page.locator('#sub-dock .btn-opacity-layer.active')).toHaveText('60');
+        await project.closeLayerInfo();
+
+        // Symbology
+        await page.getByTestId('single_wms_points').locator('div.expandable').click();
+        await expect(page.getByTestId('single_wms_points').locator('ul li').nth(0).locator('input')).not.toBeChecked();
+        await expect(page.getByTestId('single_wms_points').locator('ul li').nth(1).locator('input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_points').locator('ul li').nth(2).locator('input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_points').locator('ul li').nth(3).locator('input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_points').locator('ul li').nth(4).locator('input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_points').locator('ul li').nth(5).locator('input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_points').locator('ul li').nth(6).locator('input')).toBeChecked();
+
+        // hash should be equal to map_status
+        url_to_check = new URL(page.url());
+        expect(url_to_check.hash).toBe("#map_status");
+
+        // reload map and check permalink
+        await reloadMap(page);
+        await project.checkShortLinkPermalink(expectedPermalinkParameters);
+
+        // Visibility
+        await expect(page.getByTestId('single_wms_points').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_lines').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_baselayer').locator('> div input')).toBeChecked();
+
+        // Style
+        await project.openLayerInfo('single_wms_points');
+        await expect(page.locator('#sub-dock select.styleLayer')).toHaveValue('classified');
+        await project.closeLayerInfo();
+
+        // Opacity
+        await project.openLayerInfo('single_wms_lines');
+        await expect(page.locator('#sub-dock .btn-opacity-layer.active')).toHaveText('60');
+        await project.closeLayerInfo();
+
+        // Symbology
+        await page.getByTestId('single_wms_points').locator('div.expandable').click();
+        await expect(page.getByTestId('single_wms_points').locator('ul li').nth(0).locator('input')).not.toBeChecked();
+        await expect(page.getByTestId('single_wms_points').locator('ul li').nth(1).locator('input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_points').locator('ul li').nth(2).locator('input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_points').locator('ul li').nth(3).locator('input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_points').locator('ul li').nth(4).locator('input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_points').locator('ul li').nth(5).locator('input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_points').locator('ul li').nth(6).locator('input')).toBeChecked();
+
+        // hash should be equal to map_status
+        url_to_check = new URL(page.url());
+        expect(url_to_check.hash).toBe("#map_status");
+
+        // load a fresh page with permalink for initialization
+        const context = await browser.newContext();
+        const pageP = await context.newPage();
+        const projectP = new ProjectPage(pageP, 'short_link_permalink');
+        await projectP.open(false,"#permalink=a6ADNM4iC66O");
+        let permalinkRequest = await permalinkRequestPromise;
+
+        /** @type {{[key: string]: string|RegExp}} */
+        const permalinkParameters = {
+            'o': 'g',
+            'repository': 'testsrepository',
+            'project': 'short_link_permalink',
+            'id': 'a6ADNM4iC66O',
+        }
+        requestExpect(permalinkRequest).toContainParametersInUrl(permalinkParameters);
+        permalinkResponse = await permalinkRequest.response();
+        responseExpect(permalinkResponse).toBeJson();
+
+        await pageP.waitForTimeout(500);
+        await projectP.checkShortLinkPermalink(expectedPermalinkParameters);
+        // Visibility
+        await expect(pageP.getByTestId('single_wms_points').locator('> div input')).toBeChecked();
+        await expect(pageP.getByTestId('single_wms_lines').locator('> div input')).toBeChecked();
+        await expect(pageP.getByTestId('single_wms_baselayer').locator('> div input')).toBeChecked();
+
+        // Style
+        await projectP.openLayerInfo('single_wms_points');
+        await expect(pageP.locator('#sub-dock select.styleLayer')).toHaveValue('classified');
+        await projectP.closeLayerInfo();
+
+        // Opacity
+        await projectP.openLayerInfo('single_wms_lines');
+        await expect(pageP.locator('#sub-dock .btn-opacity-layer.active')).toHaveText('60');
+        await projectP.closeLayerInfo();
+
+        // Symbology
+        await pageP.getByTestId('single_wms_points').locator('div.expandable').click();
+        await expect(pageP.getByTestId('single_wms_points').locator('ul li').nth(0).locator('input')).not.toBeChecked();
+        await expect(page.getByTestId('single_wms_points').locator('ul li').nth(1).locator('input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_points').locator('ul li').nth(2).locator('input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_points').locator('ul li').nth(3).locator('input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_points').locator('ul li').nth(4).locator('input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_points').locator('ul li').nth(5).locator('input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_points').locator('ul li').nth(6).locator('input')).toBeChecked();
+
+        // hash should be equal to map_status
+        url_to_check = new URL(pageP.url());
+        expect(url_to_check.hash).toBe("#map_status");
+
+    })
+
+    test('Add short link permalink with symbology using single wms option', async ({page, browser})=>{
+
+        await page.route('**/service/getProjectConfig*', async route => {
+            const response = await route.fetch();
+            const json = await response.json();
+            json.options['short_link_permalink'] = true;
+            await route.fulfill({ response, json });
+        });
+        const project = new ProjectPage(page, 'single_wms_image');
+        await project.open();
+
+        await project.changeLayerStyle('single_wms_points','white_dots');
+        await project.toggleLayerSymbol('single_wms_lines',0,false);
+        await project.toggleLayerSymbol('single_wms_lines',1,false);
+        await project.setLayerOpacity('single_wms_polygons','60');
+        await project.closeLayerInfo();
+        await page.getByTestId('single_wms_lines_group').locator('> div input').click();
+
+        /** @type {{[key: string]: string|RegExp|Array}} */
+        let expectedPermalinkParameters = {
+            repository:'testsrepository',
+            project:'single_wms_image',
+            bbox: /3.5969\d+,43.4696\d+,4.1943\d+,43.7555\d+/,
+            layers: 'GroupAsLayer,Group_1,single_wms_points_group,single_wms_points,single_wms_lines,single_wms_polygons',
+            styles:',,default,white_dots,default,default',
+            opacities:'1,1,1,1,1,0.6',
+            symbology:['','','','',{LEGEND_ON: 'single_wms_lines:2,3,4',LEGEND_OFF: 'single_wms_lines:0,1'},'']
+        }
+        await project.checkShortLinkPermalink(expectedPermalinkParameters);
+        // hash should be equal to map_status
+        let url_to_check = new URL(page.url());
+        expect(url_to_check.hash).toBe("#map_status");
+        // reload page and check layer tree
+
+        await reloadMap(page);
+        await project.checkShortLinkPermalink(expectedPermalinkParameters);
+        // Visibility
+        await expect(page.getByTestId('GroupAsLayer').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('Group_1').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_lines_group').locator('> div input')).not.toBeChecked();
+        await expect(page.getByTestId('single_wms_points_group').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_points').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_lines').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_polygons').locator('> div input')).toBeChecked();
+
+        // Style
+        await project.openLayerInfo('single_wms_points');
+        await expect(page.locator('#sub-dock select.styleLayer')).toHaveValue('white_dots');
+        await project.closeLayerInfo();
+
+        // Opacity
+        await project.openLayerInfo('single_wms_polygons');
+        await expect(page.locator('#sub-dock .btn-opacity-layer.active')).toHaveText('60');
+        await project.closeLayerInfo();
+
+        // Symbology
+        await page.getByTestId('single_wms_lines').locator('div.expandable').click();
+        await expect(page.getByTestId('single_wms_lines').locator('ul li').nth(0).locator('input')).not.toBeChecked();
+        await expect(page.getByTestId('single_wms_lines').locator('ul li').nth(1).locator('input')).not.toBeChecked();
+        await expect(page.getByTestId('single_wms_lines').locator('ul li').nth(2).locator('input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_lines').locator('ul li').nth(3).locator('input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_lines').locator('ul li').nth(4).locator('input')).toBeChecked();
+
+        // save new permalink
+        // open permalink panel
+        await project.openPermalinkPanel();
+        /** @type {{[key: string]: string|RegExp}} */
+        const permalinkUrlParameters = {
+            'o': 'add',
+            'repository': 'testsrepository',
+            'project': 'single_wms_image',
+        }
+        expect(page.locator("#permalink-generator")).toBeVisible();
+        expect(page.locator("#permalink-history table")).toHaveCount(0);
+        // add permalink with symbology
+        let permalinkAddRequestPromise = project.waitForPermalinkAddRequest();
+        await page.locator("#lizmap-new-permalink").click();
+        let permalinkAddRequest = await permalinkAddRequestPromise;
+        requestExpect(permalinkAddRequest).toContainParametersInUrl(permalinkUrlParameters);
+        let permalinkResponse = await permalinkAddRequest.response();
+        responseExpect(permalinkResponse).toBeJson();
+
+        let body = await permalinkResponse?.json();
+
+        expect(body).toHaveProperty('permalink','_oWA_g8p0fWw');
+        expect(page.locator("#lizmap-new-permalink")).toBeDisabled();
+        expect(await page.locator("#lizmap-new-permalink").textContent()).toBe("Permalink copied to clipboard");
+        expect(page.locator("#permalink-history table tr")).toHaveCount(1);
+        await project.inspectPermalinkHistoryTableRecord("_oWA_g8p0fWw");
+        await project.inspectPermalinkSharePanel("_oWA_g8p0fWw");
+
+        url_to_check = new URL(page.url());
+        expect(url_to_check.hash).toBe("#map_status");
+
+        // change layer style
+        await project.changeLayerStyle('single_wms_points','default');
+        await project.closeLayerInfo();
+        expectedPermalinkParameters = {
+            repository:'testsrepository',
+            project:'single_wms_image',
+            bbox: /3.5969\d+,43.4696\d+,4.1943\d+,43.7555\d+/,
+            layers: 'GroupAsLayer,Group_1,single_wms_points_group,single_wms_points,single_wms_lines,single_wms_polygons',
+            styles:',,default,default,default,default',
+            opacities:'1,1,1,1,1,0.6',
+            symbology:['','','','',{LEGEND_ON: 'single_wms_lines:2,3,4',LEGEND_OFF: 'single_wms_lines:0,1'},'']
+        }
+        await project.checkShortLinkPermalink(expectedPermalinkParameters);
+        // hash should be equal to map_status
+        url_to_check = new URL(page.url());
+        expect(url_to_check.hash).toBe("#map_status");
+
+        // reload map and check permalink parameters
+        await reloadMap(page);
+        await project.checkShortLinkPermalink(expectedPermalinkParameters);
+
+        // Visibility
+        await expect(page.getByTestId('GroupAsLayer').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('Group_1').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_lines_group').locator('> div input')).not.toBeChecked();
+        await expect(page.getByTestId('single_wms_points_group').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_points').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_lines').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_polygons').locator('> div input')).toBeChecked();
+
+        // Style
+        await project.openLayerInfo('single_wms_points');
+        await expect(page.locator('#sub-dock select.styleLayer')).toHaveValue('default');
+        await project.closeLayerInfo();
+
+        // Opacity
+        await project.openLayerInfo('single_wms_polygons');
+        await expect(page.locator('#sub-dock .btn-opacity-layer.active')).toHaveText('60');
+        await project.closeLayerInfo();
+
+        // Symbology
+        await page.getByTestId('single_wms_lines').locator('div.expandable').click();
+        await expect(page.getByTestId('single_wms_lines').locator('ul li').nth(0).locator('input')).not.toBeChecked();
+        await expect(page.getByTestId('single_wms_lines').locator('ul li').nth(1).locator('input')).not.toBeChecked();
+        await expect(page.getByTestId('single_wms_lines').locator('ul li').nth(2).locator('input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_lines').locator('ul li').nth(3).locator('input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_lines').locator('ul li').nth(4).locator('input')).toBeChecked();
+
+        // change hash with a valid permalink
+        let newHash = '#permalink=_oWA_g8p0fWw';
+        let permalinkRequestPromise = project.waitForPermalinkGetRequest();
+        await page.evaluate(token => window.location.hash = token, newHash);
+        let permalinkGetRequest = await permalinkRequestPromise;
+
+        /** @type {{[key: string]: string|RegExp}} */
+        const newPermalinkParameters = {
+            'o': 'g',
+            'repository': 'testsrepository',
+            'project': 'single_wms_image',
+            'id': '_oWA_g8p0fWw',
+        }
+        requestExpect(permalinkGetRequest).toContainParametersInUrl(newPermalinkParameters);
+        permalinkResponse = await permalinkGetRequest.response();
+        responseExpect(permalinkResponse).toBeJson();
+
+        await page.waitForTimeout(500);
+
+        expectedPermalinkParameters = {
+            repository:'testsrepository',
+            project:'single_wms_image',
+            bbox: /3.5969\d+,43.4696\d+,4.1943\d+,43.7555\d+/,
+            layers: 'GroupAsLayer,Group_1,single_wms_points_group,single_wms_points,single_wms_lines,single_wms_polygons',
+            styles:',,default,white_dots,default,default',
+            opacities:'1,1,1,1,1,0.6',
+            symbology:['','','','',{LEGEND_ON: 'single_wms_lines:2,3,4',LEGEND_OFF: 'single_wms_lines:0,1'},'']
+        }
+        await project.checkShortLinkPermalink(expectedPermalinkParameters);
+
+        // Visibility
+        await expect(page.getByTestId('GroupAsLayer').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('Group_1').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_lines_group').locator('> div input')).not.toBeChecked();
+        await expect(page.getByTestId('single_wms_points_group').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_points').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_lines').locator('> div input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_polygons').locator('> div input')).toBeChecked();
+
+        // Style
+        await project.openLayerInfo('single_wms_points');
+        await expect(page.locator('#sub-dock select.styleLayer')).toHaveValue('white_dots');
+        await project.closeLayerInfo();
+
+        // Opacity
+        await project.openLayerInfo('single_wms_polygons');
+        await expect(page.locator('#sub-dock .btn-opacity-layer.active')).toHaveText('60');
+        await project.closeLayerInfo();
+
+        // Symbology
+        await page.getByTestId('single_wms_lines').locator('div.expandable').click();
+        await expect(page.getByTestId('single_wms_lines').locator('ul li').nth(0).locator('input')).not.toBeChecked();
+        await expect(page.getByTestId('single_wms_lines').locator('ul li').nth(1).locator('input')).not.toBeChecked();
+        await expect(page.getByTestId('single_wms_lines').locator('ul li').nth(2).locator('input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_lines').locator('ul li').nth(3).locator('input')).toBeChecked();
+        await expect(page.getByTestId('single_wms_lines').locator('ul li').nth(4).locator('input')).toBeChecked();
+
+        // load a fresh page with permalink for initialization
+        const context = await browser.newContext();
+        const pageP = await context.newPage();
+        await pageP.route('**/service/getProjectConfig*', async route => {
+            const response = await route.fetch();
+            const json = await response.json();
+            json.options['short_link_permalink'] = true;
+            await route.fulfill({ response, json });
+        });
+        const projectP = new ProjectPage(pageP, 'single_wms_image');
+        await projectP.open(false,"#permalink=_oWA_g8p0fWw");
+        let permalinkRequest = await permalinkRequestPromise;
+
+        /** @type {{[key: string]: string|RegExp}} */
+        const permalinkParameters = {
+            'o': 'g',
+            'repository': 'testsrepository',
+            'project': 'single_wms_image',
+            'id': '_oWA_g8p0fWw',
+        }
+        requestExpect(permalinkRequest).toContainParametersInUrl(permalinkParameters);
+        permalinkResponse = await permalinkRequest.response();
+        responseExpect(permalinkResponse).toBeJson();
+
+        await pageP.waitForTimeout(500);
+        await projectP.checkShortLinkPermalink(expectedPermalinkParameters);
+        // Visibility
+        await expect(pageP.getByTestId('GroupAsLayer').locator('> div input')).toBeChecked();
+        await expect(pageP.getByTestId('Group_1').locator('> div input')).toBeChecked();
+        await expect(pageP.getByTestId('single_wms_lines_group').locator('> div input')).not.toBeChecked();
+        await expect(pageP.getByTestId('single_wms_points_group').locator('> div input')).toBeChecked();
+        await expect(pageP.getByTestId('single_wms_points').locator('> div input')).toBeChecked();
+        await expect(pageP.getByTestId('single_wms_lines').locator('> div input')).toBeChecked();
+        await expect(pageP.getByTestId('single_wms_polygons').locator('> div input')).toBeChecked();
+
+        // Style
+        await projectP.openLayerInfo('single_wms_points');
+        await expect(pageP.locator('#sub-dock select.styleLayer')).toHaveValue('white_dots');
+        await projectP.closeLayerInfo();
+
+        // Opacity
+        await projectP.openLayerInfo('single_wms_polygons');
+        await expect(pageP.locator('#sub-dock .btn-opacity-layer.active')).toHaveText('60');
+        await projectP.closeLayerInfo();
+
+        // Symbology
+        await pageP.getByTestId('single_wms_lines').locator('div.expandable').click();
+        await expect(pageP.getByTestId('single_wms_lines').locator('ul li').nth(0).locator('input')).not.toBeChecked();
+        await expect(pageP.getByTestId('single_wms_lines').locator('ul li').nth(1).locator('input')).not.toBeChecked();
+        await expect(pageP.getByTestId('single_wms_lines').locator('ul li').nth(2).locator('input')).toBeChecked();
+        await expect(pageP.getByTestId('single_wms_lines').locator('ul li').nth(3).locator('input')).toBeChecked();
+        await expect(pageP.getByTestId('single_wms_lines').locator('ul li').nth(4).locator('input')).toBeChecked();
+        // hash should be equal to map_status
+        url_to_check = new URL(pageP.url());
+        expect(url_to_check.hash).toBe("#map_status");
+
+        await page.unroute('**/service/getProjectConfig*');
+        await pageP.unroute('**/service/getProjectConfig*');
     })
 })
 
@@ -1196,7 +1747,7 @@ test.describe('Short link permalink, no automatic permalink', () => {
         let permalinkRequestPromise = project.waitForPermalinkGetRequest();
         let getMapRequestPromise = project.waitForGetMapRequest();
 
-        await project.open(false,"#permalink=h47yokjwuJ4o");
+        await project.open(false,"#permalink=18cpdxABubeZ");
 
         let permalinkRequest = await permalinkRequestPromise;
         let getMapRequest = await getMapRequestPromise;
@@ -1205,7 +1756,7 @@ test.describe('Short link permalink, no automatic permalink', () => {
             'o': 'g',
             'repository': 'testsrepository',
             'project': 'short_link_permalink',
-            'id': 'h47yokjwuJ4o',
+            'id': '18cpdxABubeZ',
         }
         requestExpect(permalinkRequest).toContainParametersInUrl(permalinkParameters);
         let permalinkResponse = await permalinkRequest.response();
@@ -1218,7 +1769,7 @@ test.describe('Short link permalink, no automatic permalink', () => {
             'REQUEST': 'GetMap',
             'FORMAT': /^image\/png/,
             'TRANSPARENT': /\b(\w*^true$\w*)\b/gmi,
-            'LAYERS': 'single_wms_baselayer,single_wms_lines,single_wms_points',
+            'LAYERS': 'single_wms_baselayer,single_wms_lines',
             'CRS': 'EPSG:4326',
             'WIDTH': '958',
             'HEIGHT': '633',
