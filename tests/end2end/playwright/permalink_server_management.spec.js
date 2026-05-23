@@ -101,7 +101,8 @@ test.describe('Permalink page',()=>{
             bbox: /3.6273\d+,43.4294\d+,4.1451\d+,43.7717\d+/,
             layers: 'single_wms_points,single_wms_lines',
             styles:'default,default',
-            opacities:'1,0.6'
+            opacities:'1,0.6',
+            symbology: ['','']
         }
 
         await permalinkProject.checkShortLinkPermalink(expectedPermalinkParameters);
@@ -128,10 +129,10 @@ test.describe('Permalink page',()=>{
 
         let body = await permalinkResponse?.json();
 
-        expect(body).toHaveProperty('permalink','JewKYGj9uRnu');
+        expect(body).toHaveProperty('permalink','9jjvi-P30Xl8');
         // inspect history table
         expect(permalinkProjectPage.locator("#permalink-history table tr")).toHaveCount(1);
-        await permalinkProject.inspectPermalinkHistoryTableRecord("JewKYGj9uRnu");
+        await permalinkProject.inspectPermalinkHistoryTableRecord("9jjvi-P30Xl8");
 
         // check counter on permalink page
         await adminPage.openPage('Permalinks');
@@ -143,7 +144,7 @@ test.describe('Permalink page',()=>{
 
         // change hash on the project page and check local storage;
         // the current permalink should be deleted because it no longer exists
-        const newHash = '#permalink=JewKYGj9uRnu';
+        const newHash = '#permalink=9jjvi-P30Xl8';
         let permalinkRequestPromise = permalinkProject.waitForPermalinkGetRequest();
         await permalinkProjectPage.evaluate(token => window.location.hash = token, newHash);
         let permalinkRequest = await permalinkRequestPromise;
@@ -153,7 +154,7 @@ test.describe('Permalink page',()=>{
             'o': 'g',
             'repository': 'testsrepository',
             'project': 'short_link_permalink',
-            'id': 'JewKYGj9uRnu',
+            'id': '9jjvi-P30Xl8',
         }
         requestExpect(permalinkRequest).toContainParametersInUrl(newPermalinkParameters);
         permalinkResponse = await permalinkRequest.response();
@@ -185,13 +186,14 @@ test.describe('Permalink page',()=>{
                     bbox:["3.772082","43.547726","3.997095","43.652970"],
                     layers:["single_wms_lines","single_wms_baselayer"],
                     styles:["default","default"],
-                    opacities:[1,1]
+                    opacities:[1,1],
+                    symbology: ['','']
                 }
             }
         });
 
         const insertBody = await checkJson(response);
-        expect(insertBody).toHaveProperty('permalink', 'h47yokjwuJ4o');
+        expect(insertBody).toHaveProperty('permalink', '18cpdxABubeZ');
     })
 
 })
