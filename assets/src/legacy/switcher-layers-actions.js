@@ -635,13 +635,38 @@ var lizLayerActionButtons = function() {
 
             // Cancel Lizmap global filter
             $('#layerActionUnfilter').click(function(){
-                var layerName = lizMap.lizmapLayerFilterActive;
-                if( !layerName )
+                // Collect every layer that currently has an active filter, not
+                // only the last one stored in lizmapLayerFilterActive (#1551).
+                // The selection tool can filter several layers at once.
+                var filteredLayers = [];
+                for (var lName in lizMap.config.layers) {
+                    var lConfig = lizMap.config.layers[lName];
+                    // Selection tool / attribute-table filter sets filteredFeatures
+                    var lFilteredFeatures = lConfig['filteredFeatures'];
+                    var hasFilteredFeatures = Array.isArray(lFilteredFeatures) && lFilteredFeatures.length;
+                    // Form filter "simple" method sets a WMS filter on request_params
+                    var rParams = lConfig['request_params'];
+                    var hasRequestFilter = rParams
+                        && (rParams['exp_filter'] || rParams['filter'] || rParams['filtertoken']);
+                    if (hasFilteredFeatures || hasRequestFilter) {
+                        filteredLayers.push(lName);
+                    }
+                }
+
+                // Keep the legacy single active layer as a fallback
+                if (lizMap.lizmapLayerFilterActive
+                    && filteredLayers.indexOf(lizMap.lizmapLayerFilterActive) === -1) {
+                    filteredLayers.push(lizMap.lizmapLayerFilterActive);
+                }
+
+                if( !filteredLayers.length )
                     return false;
 
-                lizMap.events.triggerEvent("layerfeatureremovefilter",
-                    { 'featureType': layerName}
-                );
+                for (var i = 0; i < filteredLayers.length; i++) {
+                    lizMap.events.triggerEvent("layerfeatureremovefilter",
+                        { 'featureType': filteredLayers[i]}
+                    );
+                }
                 lizMap.lizmapLayerFilterActive = null;
                 $(this).hide();
 
