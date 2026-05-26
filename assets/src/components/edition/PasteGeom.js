@@ -50,11 +50,16 @@ export default class pasteGeom extends HTMLElement {
     }
 
     connectedCallback() {
+        // Tooltip is initialized on the inner <button> via $('button', this).tooltip(...)
+        // below. The wrapper <lizmap-paste-geom> in map_edition.tpl must NOT carry
+        // data-bs-toggle/data-bs-title attributes — otherwise the global Bootstrap
+        // tooltip init in legacy/map.js attaches a second tooltip to the wrapper
+        // and both render on hover, each with its own locale key.
         this._template = () =>
             html`
         <button class='btn btn-sm ${this._active ? 'active btn-primary' : ''}'
             data-bs-toggle="tooltip"
-            data-bs-title='${lizDict['edition.geom.copyPaste'] || 'Copy the geometry from an existing map layer feature'}'
+            data-bs-title='${lizDict['edition.geom.copyPaste'] || 'Copy and paste an existing geometry'}'
             ?disabled=${!this._canActivate()}
             @click=${() => this._toggle()}>
             <svg>
@@ -64,7 +69,7 @@ export default class pasteGeom extends HTMLElement {
 
         render(this._template(), this);
 
-        // Add tooltip on buttons
+        // Add tooltip on the inner button
         $('button', this).tooltip({
             placement: 'top'
         });
