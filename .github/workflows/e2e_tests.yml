@@ -159,11 +159,30 @@ jobs:
         working-directory: ./
         run: |
           npm run bats
+      - name: Get Playwright version
+        id: playwright-version
+        run: |
+          VERSION=$(node -p "require('@playwright/test/package.json').version")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
-      - name: Install Playwright
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright-version.outputs.version }}
+
+      - name: Install Playwright with browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         working-directory: tests/end2end
         run: |
           npx playwright install --with-deps chromium
+
+      - name: Install Playwright dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        working-directory: tests/end2end
+        run: |
+          npx playwright install-deps
 
       - name: Run Playwright tests tagged "@requests" and "@readonly"
         id: test-playwright-requests
