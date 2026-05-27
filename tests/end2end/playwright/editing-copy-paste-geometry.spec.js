@@ -646,9 +646,9 @@ test.describe('Copy-paste geometry — geometry type filtering',
                     await cancelEditForm(project);
                     await deleteFeature(project, TGT_X, TGT_Y, editIds['id'], editLayer.id);
                     await deleteFeature(project, SRC_X, SRC_Y, srcIds['id'], srcLayer.id);
+                });
         });
     });
-});
 
 // ---------------------------------------------------------------------------
 // Test suite 5: Full copy-paste workflow (happy path)
@@ -842,3 +842,161 @@ test.describe('Copy-paste geometry — edge cases',
                 await deleteFeature(project, SRC_X, SRC_Y, ids['id'], LAYERS.polygon.id);
             });
     });
+
+// ---------------------------------------------------------------------------
+// Test suite 7: User-facing messages routed through GeometryCopyHandler._notify
+// ---------------------------------------------------------------------------
+//
+// _notify (assets/src/modules/GeometryCopyHandler.js) is the single entry
+// point for every status message the copy workflow shows the user
+// ("No compatible features found", "Geometry copied successfully", etc.).
+// It guarantees two invariants:
+//
+//   1. Each call inserts an alert with id="lizmap-copy-geometry-message" so
+//      the element is uniquely addressable.
+//   2. Any previous element with that id is removed BEFORE the new one is
+//      added, so multiple successive calls never stack visible alerts.
+//
+// Without that dedup, repeated map clicks in copy mode would pile up alerts
+// in the #message container (lizMap.addMessage just appends), which was the
+// original bug reported on PR #6405.
+//
+// Both tests below exercise the same trigger path — clicking on an empty area
+// while copy mode is active fires the "no compatible features found" branch —
+// because it is the easiest deterministic way to invoke _notify from the UI.
+
+test.describe('Copy-paste geometry — user-facing messages (_notify)',
+    { tag: ['@write'] }, () => {
+
+        test('TC-40: clicking on an empty area in copy mode displays #lizmap-copy-geometry-message',
+            async ({ page }) => {
+                const project = new ProjectPage(page, PROJECT);
+                await project.open();
+
+                // Need an existing feature so we can enter modify mode (button enabled)
+                const ids = await createFeature(
+                    project, page,
+                    LAYERS.polygon.name, 'polygon',
+                    SRC_X, SRC_Y,
+                    'tc40-source',
+                );
+
+                await openEditFormForFeature(project, SRC_X, SRC_Y, ids['id'], LAYERS.polygon.id);
+
+                // Make sure no stale copy-workflow message is leftover from a previous test
+                await expect(page.locator('#lizmap-copy-geometry-message')).toHaveCount(0);
+
+                const btn = page.locator('lizmap-paste-geom button');
+                await btn.click();
+                await expect(btn).toHaveClass(/active/);
+
+                // Click on a corner where no test feature exists — the WMS response
+                // will be empty so GeometryCopyHandler._handleWMSResponse goes through
+                // the "no compatible features" branch and calls _notify(...).
+                const gfiRequestPromise = waitForCopyModeGFIRequest(page);
+                await project.clickOnMapLegacy(EMPTY_X, EMPTY_Y);
+                await (await gfiRequestPromise).response();
+
+                // The message element must exist, be visible, and carry the
+                // dedicated id used by _notify so the dedup logic can target it.
+                const message = page.locator('#lizmap-copy-geometry-message');
+                await expect(message).toHaveCount(1);
+                await expect(message).toBeVisible();
+
+                // The displayed text must match either the translated lizDict entry
+                // or the English fallback hard-coded in GeometryCopyHandler.
+                const liz = await lizDictKey(page, 'edition.geom.copyPaste.noCompatibleFeatures');
+                const expectedText = liz ?? 'No compatible features found at this location';
+                await expect(message).toContainText(expectedText);
+
+                // The alert uses the Bootstrap info style ("alert-info") as
+                // requested by _notify(message, 'info').
+                await expect(message).toHaveClass(/alert-info/);
+
+                // Cleanup
+                await cancelEditForm(project);
+                await deleteFeature(project, SRC_X, SRC_Y, ids['id'], LAYERS.polygon.id);
+            });
+
+        test('TC-41: successive _notify calls do not stack — only one #lizmap-copy-geometry-message at any time',
+            async ({ page }) => {
+                const project = new ProjectPage(page, PROJECT);
+                await project.open();
+
+                const ids = await createFeature(
+                    project, page,
+                    LAYERS.polygon.name, 'polygon',
+                    SRC_X, SRC_Y,
+                    'tc41-source',
+                );
+
+                await openEditFormForFeature(project, SRC_X, SRC_Y, ids['id'], LAYERS.polygon.id);
+
+                const btn = page.locator('lizmap-paste-geom button');
+                const message = page.locator('#lizmap-copy-geometry-message');
+
+                // ---- First _notify call ----
+                // Activate copy mode → click empty area → _notify fires once.
+                await btn.click();
+                await expect(btn).toHaveClass(/active/);
+
+                const gfi1Promise = waitForCopyModeGFIRequest(page);
+                await project.clickOnMapLegacy(EMPTY_X, EMPTY_Y);
+                await (await gfi1Promise).response();
+
+                await expect(message).toHaveCount(1);
+
+                // Capture a unique handle to the first message DOM node so we can
+                // prove it was removed (and not merely the same element re-rendered)
+                // when the second _notify call fires.
+                const firstMessageHandle = await message.elementHandle();
+                expect(firstMessageHandle).not.toBeNull();
+
+                // GeometryCopyHandler auto-deactivates copy mode when no feature
+                // matches, so re-activate it for the second round.
+                await expect(btn).not.toHaveClass(/active/);
+
+                // ---- Second _notify call ----
+                await btn.click();
+                await expect(btn).toHaveClass(/active/);
+
+                const gfi2Promise = waitForCopyModeGFIRequest(page);
+                await project.clickOnMapLegacy(EMPTY_X, EMPTY_Y);
+                await (await gfi2Promise).response();
+
+                // After the second call the count must still be exactly 1:
+                // _notify removes the previous element before appending a new one.
+                await expect(message).toHaveCount(1);
+                await expect(message).toBeVisible();
+
+                // The first node must no longer be connected to the DOM, which
+                // confirms it was explicitly removed (not just hidden behind a
+                // sibling) by the _notify dedup logic.
+                const firstStillConnected = await firstMessageHandle?.evaluate(
+                    el => el.isConnected,
+                );
+                expect(firstStillConnected).toBe(false);
+
+                // Cleanup
+                await cancelEditForm(project);
+                await deleteFeature(project, SRC_X, SRC_Y, ids['id'], LAYERS.polygon.id);
+            });
+    });
+
+/**
+ * Read a lizDict translation entry from the running page so the assertion
+ * works regardless of the locale the browser was started with. Falls back to
+ * undefined if the key is not present, letting the caller use a hard-coded
+ * English string instead.
+ *
+ * @param {import('@playwright/test').Page} page - Playwright page handle
+ * @param {string} key - lizDict key, e.g. 'edition.geom.copyPaste.noCompatibleFeatures'
+ * @returns {Promise<string|undefined>} The translated value or undefined when the key is missing
+ */
+async function lizDictKey(page, key) {
+    return await page.evaluate(
+        k => /** @type {Record<string,string>} */
+            (globalThis['lizDict'] ?? {})[k],
+        key,
+    );
+}

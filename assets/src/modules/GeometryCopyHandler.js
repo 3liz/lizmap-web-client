@@ -127,8 +127,22 @@ export default class GeometryCopyHandler {
             return layerCfg && layerCfg.popup;
         });
 
+        // QGIS Server only returns geometries in GetFeatureInfo when the layer
+        // is published as WFS. Layers that are popup-enabled but not WFS-
+        // published return popup HTML without the geometry hidden input, so we
+        // would silently skip every feature. Filter them out up front.
+        const wfsLayerNames = this._getWfsLayerNames();
+        candidateLayers = candidateLayers.filter(layer => {
+            const layerName = layer.wmsName || layer.name;
+            return wfsLayerNames.has(layerName);
+        });
+
         if (!candidateLayers.length) {
-            lizMap.addMessage('No queryable layers found. Please enable popup on layers you want to copy from.', 'info', true);
+            this._notify(
+                lizDict['edition.geom.copyPaste.noCopyableLayers']
+                || 'No copyable layers found. Layers must be visible, popup-enabled and published as WFS to copy their geometries.',
+                'info'
+            );
             this.deactivate();
             return;
         }
@@ -204,9 +218,38 @@ export default class GeometryCopyHandler {
             this._handleWMSResponse(response, pixelPosition);
         }).catch(() => {
             $('#newOlMap').css('cursor', 'crosshair');
-            lizMap.addMessage('Error querying features', 'error', true);
+            this._notify(
+                lizDict['edition.geom.copyPaste.queryError']
+                || 'Error querying features',
+                'error'
+            );
             this.deactivate();
         });
+    }
+
+    /**
+     * Get WFS-published layer names from the project configuration.
+     * @returns {Set<string>} Set of WFS layer names
+     */
+    _getWfsLayerNames() {
+        const wfsFeatureTypes = mainLizmap.initialConfig?.vectorLayerFeatureTypeList || [];
+        return new Set(wfsFeatureTypes.map(ft => ft.Name));
+    }
+
+    /**
+     * Show a status message for the copy workflow. Replaces any previous
+     * copy-workflow message so they do not stack up across clicks, and
+     * auto-dismisses after a short delay.
+     * @param {string} message - Message to display
+     * @param {string} type - Message type (info, error, success)
+     */
+    _notify(message, type) {
+        $('#lizmap-copy-geometry-message').remove();
+        const $msg = lizMap.addMessage(message, type, true);
+        $msg.attr('id', 'lizmap-copy-geometry-message');
+        window.setTimeout(() => {
+            $msg.remove();
+        }, 5000);
     }
 
     /**
@@ -276,7 +319,11 @@ export default class GeometryCopyHandler {
         if (features.length > 0) {
             this._showFeaturePicker(features, pixelPosition);
         } else {
-            lizMap.addMessage('No compatible features found at this location', 'info', true);
+            this._notify(
+                lizDict['edition.geom.copyPaste.noCompatibleFeatures']
+                || 'No compatible features found at this location',
+                'info'
+            );
             this.deactivate();
         }
     }
@@ -343,7 +390,11 @@ export default class GeometryCopyHandler {
         this._applyGeometryToEditing(featureData.geometry);
 
         // Visual feedback
-        lizMap.addMessage('Geometry copied successfully', 'info', true);
+        this._notify(
+            lizDict['edition.geom.copyPaste.copied']
+            || 'Geometry copied successfully',
+            'info'
+        );
 
         // Deactivate copy mode
         this.deactivate();
