@@ -65,7 +65,7 @@
                         data-bs-toggle="tooltip" data-bs-title="{@view~edition.geomtool.restartdrawing.title@}">
                         <i class="icon-refresh"></i>
                     </button>
-                    <lizmap-paste-geom data-bs-toggle="tooltip" data-bs-title="{@view~edition.geomtool.copypastegeom.title@}"></lizmap-paste-geom>
+                    <lizmap-paste-geom></lizmap-paste-geom>
                     <lizmap-paste-stored-geom style="display:none;" data-bs-toggle="tooltip" data-bs-title="{@view~edition.geomtool.pastegeom.title@}"></lizmap-paste-stored-geom>
                     <form id="edition-point-coord-form" class="form-horizontal">
                         <fieldset>
