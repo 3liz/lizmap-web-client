@@ -13,6 +13,9 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * **[Klein und Leber GbR](https://www.gisgeometer.de/)** with @meyerlor
 * **[ETRA SpA Società benefit](https://www.etraspa.it/)** with Faunalia and @mind84
 * **[Faunalia](https://www.faunalia.eu/)** with @mind84
+* **[Terre De Provence Agglomération](https://www.terredeprovence-agglo.com/)**
+* **[Conseil Départemental du Calvados](https://www.calvados.fr/)**
+* **[JP Énergie Environnement](https://www.jpee.fr/)**
 
 ### Added
 
@@ -22,6 +25,9 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Short link permalink functionality
 * Edition - Support QGIS dynamic default-value expressions in edit forms, including geometry-based (`$x`, `$y`, `$area`, `$length`, `$geometry`) and field-referencing expressions (e.g. `"firstname" || ' ' || "lastname"`). Defaults are re-evaluated when the geometry is drawn/edited and when a referenced field changes, honoring QGIS's `applyOnUpdate` flag.
 * UI - Auto-activate box selection when opening the selection tool
+* MAP - Geolocation tracking orientation: rotate map view
+* Action - add actionStarted event
+* Add symbology to the permalink
 
 ### Security
 
@@ -44,6 +50,10 @@ with some extra keywords: backend, tests, test, translation, funders, important
 * Map - WMS baselayers from QGIS layers now proxy through QGIS Server
 * Popup - Place children features tables inside drag-and-drop relation placeholders
 * Print - Respect cfg layout order in print panel
+* GetPrint PDF with always text option
+* Map - geometry type case mismatch in zoomToGeometryOrExtent function
+* Action - reset ignored when called from actionResultReceived event
+* Edition - copy-paste geometry
 
 ### Tests
 
