@@ -3509,7 +3509,7 @@ window.lizMap = function() {
 
             // create the map
             initProjections(firstLayer);
-            createMap(startupConfigurations.featuresExtent, initialPermalink?.bbox);
+            createMap(startupConfigurations.featuresExtent, initialPermalink?.plink?.bbox);
             lizMap.map = map;
             lizMap.layers = layers;
             lizMap.baselayers = baselayers;

@@ -778,6 +778,14 @@ export class ProjectPage extends BasePage {
     }
 
     /**
+     * Close su dock
+     * @returns {Promise<void>}
+     */
+    async closeLayerInfo() {
+        await this.page.locator('#hide-sub-dock').click();
+    }
+
+    /**
      * setLayerOpacity function
      * Open the info layer panel for the given layer
      * @param {string} layer Name of the layer
@@ -1000,6 +1008,22 @@ export class ProjectPage extends BasePage {
     }
 
     /**
+     * Toggles the symbol at given index for the given layer.
+     * @param {string} layer Name of the layer
+     * @param {number} index symbol index on layertree
+     * @param {boolean} check wheter to check or uncheck symbol
+     * @returns {Promise<void>}
+     */
+    async toggleLayerSymbol(layer, index, check){
+        //open layer symbology tree
+        if (await this.treeView.getByTestId(layer).locator('div.expandable.expanded').count() == 0) {
+            await this.treeView.getByTestId(layer).locator('div.expandable').click();
+        }
+        const symbolInput = await this.treeView.getByTestId(layer).locator('ul li').nth(index).locator('input');
+        check ? await symbolInput.check() : await symbolInput.uncheck();
+    }
+
+    /**
      * Open permalink UI panel
      * @returns {Promise<void>}
      */
@@ -1017,7 +1041,6 @@ export class ProjectPage extends BasePage {
         expect(permalink).not.toBe(null);
         const permalinkJSON = JSON.parse(permalink);
         expect(permalinkJSON).not.toBe(null);
-        console.log(permalinkJSON[0].plink.bbox);
         expect(permalinkJSON).toHaveLength(1);
         expect(permalinkJSON[0]).toHaveProperty('repository', expectedPermalink.repository);
         expect(permalinkJSON[0]).toHaveProperty('project', expectedPermalink.project);
@@ -1030,6 +1053,7 @@ export class ProjectPage extends BasePage {
         expect(permalinkJSON[0].plink.opacities.join(',')).toBe(expectedPermalink.opacities);
         expect(permalinkJSON[0].plink).toHaveProperty('styles');
         expect(permalinkJSON[0].plink.styles.join(',')).toBe(expectedPermalink.styles);
+        expect(permalinkJSON[0].plink.symbology).toStrictEqual(expectedPermalink.symbology);
     }
 
     /**

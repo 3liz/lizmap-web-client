@@ -44,12 +44,14 @@ export default class Permalink {
 
         this._currentPermalinkId = null;
 
+        this._symbologyMap = new Map();
+
         // initialize current permalink, if any
         this.currentPermalinkProperties = initialPermalink;
 
         // Change `checked`, `style` states based on URL fragment
         if (window.location.hash) {
-            this._runPermalink(false);
+            this._runPermalink(false, true);
         }
 
         this._historyTableTemplate = (links = [], newEntry) => html`
@@ -110,10 +112,15 @@ export default class Permalink {
                     return;
                 }
                 if (window.location.hash) {
-                    this._runPermalink();
+                    this._runPermalink(true);
                 }
             }
         );
+
+        this._updatePermalinkParameters = () => {
+            this._enableNewPermalinkButton();
+            this._writeURLFragment();
+        }
 
         this._refreshURLsInPermalinkComponent();
 
@@ -127,15 +134,22 @@ export default class Permalink {
                     this._ignoreStartupMapEvents = false;
                     return;
                 }
-                this._enableNewPermalinkButton();
-                this._writeURLFragment();
+                this._updatePermalinkParameters();
             }, ['map.state.changed']
         );
 
         mainLizmap.state.rootMapGroup.addListener(
-            () => {
-                this._enableNewPermalinkButton();
-                this._writeURLFragment();
+            (ev) => {
+                const evtStyleChange = ev.type.indexOf("style.changed") >= 0;
+                if (this._shortLinkPermalink && evtStyleChange) {
+                    mainLizmap.state.rootMapGroup.getMapLayerByName(ev.name).removeListener(
+                        this._updatePermalinkParameters,
+                        'layer.symbol.checked.changed'
+                    );
+                    if (this._symbologyMap.get(ev.name))
+                        this._resetPermalinkSymbology(ev.name);
+                }
+                this._updatePermalinkParameters();
             },
             [
                 'layer.visibility.changed',
@@ -146,6 +160,23 @@ export default class Permalink {
                 'group.opacity.changed',
             ]
         );
+
+        if (this._shortLinkPermalink) {
+            mainLizmap.state.rootMapGroup.addListener(
+                (ev) => {
+                    mainLizmap.state.rootMapGroup.getMapLayerByName(ev.name).addListener(
+                        this._updatePermalinkParameters,
+                        [
+                            'layer.symbol.checked.changed'
+                        ]
+                    )
+                    const item = mainLizmap.state.layersAndGroupsCollection.getLayerOrGroupByName(ev.name);
+                    this._symbologyMap.set(ev.name, true);
+                    item.symbologyInitParameters = {};
+                    this._updatePermalinkParameters();
+                }, ['layer.symbology.changed']
+            )
+        }
     }
 
     /**
@@ -379,7 +410,7 @@ export default class Permalink {
         document.querySelectorAll('.btn-geobookmark-run').forEach(button => {
             button.addEventListener('click', event => {
                 if (decodeURIComponent(window.location.hash) === event.currentTarget.getAttribute('href')) {
-                    this._runPermalink();
+                    this._runPermalink(true);
                 }
             });
         });
@@ -452,6 +483,29 @@ export default class Permalink {
             localStorage.removeItem('lizmap_permalink_history');
             this._renderHistoryTemplate();
         }
+    }
+
+    /**
+     * Reset current permalink symbology information
+     * @param {string} layerName the layer name
+     * @returns {void}
+     */
+    _resetPermalinkSymbology(layerName){
+        let currentPermalink = this.currentPermalinkProperties;
+        const {repository, project} = globalThis['lizUrls'].params;
+        this._symbologyMap.set(layerName, false);
+        const nameEncoded = encodeURIComponent(layerName);
+        if(currentPermalink && currentPermalink.layers && currentPermalink.symbology) {
+            const layerIndex = currentPermalink.layers.indexOf(nameEncoded);
+            if(layerIndex > -1) {
+                currentPermalink.symbology[layerIndex] = '';
+                const item = mainLizmap.state.layersAndGroupsCollection.getLayerOrGroupByName(layerName);
+
+                item.symbologyInitParameters = {};
+            }
+        }
+
+        this.currentPermalinkProperties = {repository:repository, project:project, plink:{...currentPermalink}};
     }
 
     /**
@@ -565,9 +619,10 @@ export default class Permalink {
     /**
      * Runs the permalink to update the map
      * @param {boolean} setExtent - whether set the map extent or not
+     * @param {boolean} useInitialPermalink - whether ignore permalink hash and use initial permalink
      * @returns {Promise<void>}
      */
-    async _runPermalink(setExtent = true) {
+    async _runPermalink(setExtent, useInitialPermalink = false) {
         if (this._hash === ''+window.location.hash) {
             return;
         }
@@ -579,20 +634,23 @@ export default class Permalink {
         this._hash = ''+window.location.hash;
 
         if (this._shortLinkPermalink && this._hash.indexOf('#permalink=') == 0){
-            const shortLink = window.location.hash.substring(1).split('=')[1];
-            if (shortLink) {
-                const permalink = await this.constructor.getPermalink(shortLink);
-                if (!permalink) return;
-                if(permalink.hasOwnProperty('error')) {
-                    mainLizmap.displayMessage(permalink.error.reduce((p,c) => p + '\n' + c,''),'danger',true);
-                    // remove permalink from local storage
-                    this._updatePermalinkHistory(shortLink,'d');
-                } else {
-                    this.currentPermalinkProperties = permalink;
+            if(!useInitialPermalink) {
+                const shortLink = window.location.hash.substring(1).split('=')[1];
+                if (shortLink) {
+                    const permalink = await this.constructor.getPermalink(shortLink);
+                    if (!permalink) return;
+                    if(permalink.hasOwnProperty('error')) {
+                        mainLizmap.displayMessage(permalink.error.reduce((p,c) => p + '\n' + c,''),'danger',true);
+                        // remove permalink from local storage
+                        this._updatePermalinkHistory(shortLink,'d');
+                    } else {
+                        this.currentPermalinkProperties = permalink;
+                    }
                 }
             }
+
             if (mainLizmap.config.options.automatic_permalink) {
-                window.location.hash = "#map_status";
+                history.replaceState(null, '', window.location.pathname + window.location.search +'#map_status');
             } else history.replaceState(null, '', window.location.pathname + window.location.search)
         }
 
@@ -601,7 +659,7 @@ export default class Permalink {
             mainLizmap.state.layersAndGroupsCollection.groups.reverse() // reverse groups array to get from leaf to root
         );
 
-        const [extent4326, itemsInURL, stylesInURL, opacitiesInURL] = this._getPermalinkValues();
+        const [extent4326, itemsInURL, stylesInURL, opacitiesInURL, symbologyInUrl] = this._getPermalinkValues();
 
         if (setExtent
             && extent4326
@@ -626,6 +684,15 @@ export default class Permalink {
                     }
                     if (opacitiesInURL[itemIndex]) {
                         item.opacity = parseFloat(opacitiesInURL[itemIndex]);
+                    }
+                    if (symbologyInUrl && symbologyInUrl[itemIndex]) {
+                        // if symbology is already loaded, update its checked state
+                        if (this._symbologyMap.get(item.name)) {
+                            item.setSymbologyCheckedStateFromParameters(symbologyInUrl[itemIndex]);
+                        } else {
+                            // store info
+                            item.symbologyInitParameters = symbologyInUrl[itemIndex];
+                        }
                     }
                 } else {
                     item.checked = false;
@@ -723,6 +790,11 @@ export default class Permalink {
         }
     }
 
+    /**
+     * Writes the hash.
+     * If the short link permalink functionality is enabled, stores the permalink information in the local storage
+     * @returns {void}
+     */
     _writeURLFragment() {
         // Don't write initial permalink if waiting for first theme to be applied
         if (this._suspendInitialWrite) {
@@ -748,12 +820,21 @@ export default class Permalink {
         let itemsVisibility = [];
         let itemsStyle = [];
         let itemsOpacity = [];
+        let itemsSymbology = [];
 
         for (const item of mainLizmap.state.rootMapGroup.findMapLayersAndGroups()) {
             if (item.checked){
                 itemsVisibility.push(encodeURIComponent(item.name));
                 itemsStyle.push(item.wmsSelectedStyleName ? encodeURIComponent(item.wmsSelectedStyleName) : item.wmsSelectedStyleName);
                 itemsOpacity.push(item.opacity);
+                if (this._shortLinkPermalink) {
+                    if (item.symbology && item.symbology.wmsParameters) {
+                        const symbologyParameters = item.symbology.wmsParameters(item.name);
+                        if(symbologyParameters && Object.keys(symbologyParameters).length) {
+                            itemsSymbology.push(symbologyParameters);
+                        } else itemsSymbology.push('');
+                    } else itemsSymbology.push('')
+                }
             }
         }
 
@@ -779,13 +860,14 @@ export default class Permalink {
             if (itemsVisibility.length) hashParams.layers = itemsVisibility;
             if (itemsStyle.length) hashParams.styles = itemsStyle;
             if (itemsOpacity.length) hashParams.opacities = itemsOpacity;
+            if (itemsSymbology.length) hashParams.symbology = itemsSymbology;
 
             this.currentPermalinkProperties = {repository: repository, project: project, plink: hashParams};
         }
 
         if (mainLizmap.initialConfig.options.automatic_permalink) {
             if (this._shortLinkPermalink) {
-                window.location.hash = 'map_status'
+                history.replaceState(null, '', window.location.pathname + window.location.search +'#map_status');
             } else {
                 this._ignoreHashChange = true;
                 window.location.hash = hash;
